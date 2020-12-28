@@ -8,7 +8,7 @@ namespace JaggedAlliance.Platform.Tests
         [Fact]
         public void LoadsLibraries()
         {
-            const string dataDir = @"C:\JaggedAllianceDotnet\Data";
+            const string dataDir = @"G:\Projects\SharpAlliance\Data";
 
             var library = new Library(dataDir);
             Assert.True(library.InitializeFileDatabase());

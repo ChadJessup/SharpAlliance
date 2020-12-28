@@ -3,29 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30803.129
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance.Editor", "JaggedAlliance.Editor\JaggedAlliance.Editor.csproj", "{BDFFAF35-CB13-442F-A9DD-4FDB8E01886C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Editor", "SharpAlliance.Editor\SharpAlliance.Editor.csproj", "{BDFFAF35-CB13-442F-A9DD-4FDB8E01886C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance.Laptop", "JaggedAlliance.Laptop\JaggedAlliance.Laptop.csproj", "{2BD22ABB-D8F2-4E29-84A1-42C03980B3F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Laptop", "SharpAlliance.Laptop\SharpAlliance.Laptop.csproj", "{2BD22ABB-D8F2-4E29-84A1-42C03980B3F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance.Platform", "JaggedAlliance.Platform\JaggedAlliance.Platform.csproj", "{E04B99C3-D3E6-4650-9F75-49E665BDC0B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Platform", "SharpAlliance.Platform\SharpAlliance.Platform.csproj", "{E04B99C3-D3E6-4650-9F75-49E665BDC0B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance.Web.Server", "JaggedAlliance.Web\Server\JaggedAlliance.Web.Server.csproj", "{24A494C2-4DEB-4CBA-B558-65C1B6F492FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Web.Server", "SharpAlliance.Web\Server\SharpAlliance.Web.Server.csproj", "{24A494C2-4DEB-4CBA-B558-65C1B6F492FE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance.Web.Client", "JaggedAlliance.Web\Client\JaggedAlliance.Web.Client.csproj", "{A0FF96E4-B3B2-4D38-9FB4-6931B260F91E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Web.Client", "SharpAlliance.Web\Client\SharpAlliance.Web.Client.csproj", "{A0FF96E4-B3B2-4D38-9FB4-6931B260F91E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance.Web.Shared", "JaggedAlliance.Web\Shared\JaggedAlliance.Web.Shared.csproj", "{610FB60E-7BE2-4EF7-BF2E-858D78F68B3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Web.Shared", "SharpAlliance.Web\Shared\SharpAlliance.Web.Shared.csproj", "{610FB60E-7BE2-4EF7-BF2E-858D78F68B3C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance.Platform.Tests", "Tests\JaggedAlliance.Platform.Tests\JaggedAlliance.Platform.Tests.csproj", "{912F991D-0296-4AAC-A3A9-5E0EE98132DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Platform.Tests", "Tests\SharpAlliance.Platform.Tests\SharpAlliance.Platform.Tests.csproj", "{912F991D-0296-4AAC-A3A9-5E0EE98132DD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{45C67629-0A80-476C-A71A-3C1DDFD294B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JaggedAlliance", "JaggedAlliance\JaggedAlliance.csproj", "{7EA5A120-9842-4960-AE60-09E67946055E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance", "SharpAlliance\SharpAlliance.csproj", "{7EA5A120-9842-4960-AE60-09E67946055E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C5B24EAE-895F-46BB-AEB2-4F4C91996634}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.Core", "SharpAlliance.Core\SharpAlliance.Core.csproj", "{BA2FEB4F-7EED-4181-A986-5483408D6BDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{7EA5A120-9842-4960-AE60-09E67946055E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EA5A120-9842-4960-AE60-09E67946055E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EA5A120-9842-4960-AE60-09E67946055E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA2FEB4F-7EED-4181-A986-5483408D6BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA2FEB4F-7EED-4181-A986-5483408D6BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA2FEB4F-7EED-4181-A986-5483408D6BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA2FEB4F-7EED-4181-A986-5483408D6BDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
