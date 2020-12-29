@@ -1,0 +1,8 @@
+{
+  "DataDirectory": "C:\\SharpAlliance\\Data",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug"
+    }
+  }
+}

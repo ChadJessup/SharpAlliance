@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpAlliance.Platform.LibraryDatabase
+namespace SharpAlliance.Platform.Interfaces
 {
-    class FileDatabase
+    public interface IFileManager
     {
     }
 }

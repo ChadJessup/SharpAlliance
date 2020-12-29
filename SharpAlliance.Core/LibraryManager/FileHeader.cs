@@ -1,4 +1,4 @@
-﻿namespace SharpAlliance.Platform.LibraryDatabase
+﻿namespace SharpAlliance.Core.LibraryManager
 {
     public readonly struct FileHeader
     {

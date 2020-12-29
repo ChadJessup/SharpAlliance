@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
-using SharpAlliance.Platform.LibraryDatabase;
+using SharpAlliance.Platform.Interfaces;
+using SharpAlliance.Core.LibraryManager;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace SharpAlliance.Platform
+namespace SharpAlliance.Core
 {
-    public class Library
+    public class LibraryFileManager : ILibraryManager
     {
         private const int INITIAL_NUM_HANDLES = 20;
 
-        public Library(string dataDir)
+        public LibraryFileManager(ILogger<ILibraryManager> logger, IConfiguration configuration)
         {
+            var dataDir = configuration["DataDirectory"];
+
             if (!Directory.Exists(dataDir))
             {
                 throw new DirectoryNotFoundException(dataDir);
@@ -29,7 +32,7 @@ namespace SharpAlliance.Platform
         public RealFileHeader RealFiles;
         public string DataDirectory { get; init; }
 
-        public bool InitializeFileDatabase()
+        public bool InitializeLibraries()
         {
             bool fLibraryInited = false;
 
@@ -159,8 +162,7 @@ namespace SharpAlliance.Platform
             br.ReadByte();
 
             // convert windows FILETIME to DateTime.
-            var buffer = new Span<byte>(br.ReadBytes(8));
-            var ticks = BitConverter.ToInt64(buffer);
+            var ticks = BitConverter.ToInt64(br.ReadBytes(8));
 
             return DateTime.FromFileTimeUtc(ticks);
         }

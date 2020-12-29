@@ -1,0 +1,36 @@
+﻿<Project>
+  <PropertyGroup>
+    <Authors>Chad Jessup</Authors>
+    <Company>Good Enough Industries</Company>
+    <Product>$(ProjectName)</Product>
+    <Version>0.0.1</Version>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>CA1710</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--<RuntimeIdentifiers>win-x64;win-x86;linux-x64;linux-musl-x64;linux-arm;win-arm;win-arm64</RuntimeIdentifiers>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
+    <Nullable>enable</Nullable>
+    <LangVersion>9.0</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <!-- Github Sourcelink values -->
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <!-- These packages are automatically added to any csproj in this directory tree. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>

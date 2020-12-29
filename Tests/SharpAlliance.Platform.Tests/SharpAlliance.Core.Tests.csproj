@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SharpAlliance.Core\SharpAlliance.Core.csproj" />
     <ProjectReference Include="..\..\SharpAlliance.Platform\SharpAlliance.Platform.csproj" />
   </ItemGroup>
 
