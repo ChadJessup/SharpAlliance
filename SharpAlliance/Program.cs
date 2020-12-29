@@ -1,18 +1,9 @@
-﻿using System.IO;
-using System.Numerics;
-using Veldrid;
-using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
-using Veldrid.SPIRV;
-using System.Text;
-using SharpDX;
-using Microsoft.Extensions.Configuration;
+﻿using System;
 using System.Threading.Tasks;
-using System;
-using SharpAlliance.Platform;
-using System.Runtime.CompilerServices;
-using SharpAlliance.Platform.Interfaces;
+using Microsoft.Extensions.Configuration;
 using SharpAlliance.Core;
+using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance
 {
@@ -38,10 +29,14 @@ namespace SharpAlliance
 
             // Adding components that as closely match Jagged Alliance 2's internals as possible.
             // These components can have other components injected in when instantiated.
-            platformBuilder.AddLibraryManager<LibraryFileManager>();
+            platformBuilder
+                .AddLibraryManager<LibraryFileManager>()
+                .AddInputManager<InputManager>()
+                .AddVideoManager<VideoManager>()
+                .AddOtherComponents();
 
             // Initialize the game platform as a whole, which returns a game context
-            // containing 
+            // containing platform components for core game logic to use.
             using var context = platformBuilder.Build();
 
 
@@ -51,7 +46,7 @@ namespace SharpAlliance
 
     public static class StandardSharpAllianceExtensions
     {
-        public static IGamePlatformBuilder AddOriginalComponents(this IGamePlatformBuilder builder)
+        public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
             return builder;
         }
