@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JaggedAlliance.Web.Client
+namespace SharpAlliance.Web.Client
 {
     public class Program
     {

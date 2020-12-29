@@ -1,4 +1,4 @@
-﻿using JaggedAlliance.Web.Shared;
+﻿using SharpAlliance.Web.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace JaggedAlliance.Web.Server.Controllers
+namespace SharpAlliance.Web.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]

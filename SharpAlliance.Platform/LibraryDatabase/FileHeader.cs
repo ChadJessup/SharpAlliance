@@ -1,4 +1,4 @@
-﻿namespace JaggedAlliance.Platform.LibraryDatabase
+﻿namespace SharpAlliance.Platform.LibraryDatabase
 {
     public readonly struct FileHeader
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JaggedAlliance.Editor
+namespace SharpAlliance.Editor
 {
     public class Class1
     {

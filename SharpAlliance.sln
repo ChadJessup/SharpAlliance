@@ -27,7 +27,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.Core", "SharpAlliance.Core\SharpAlliance.Core.csproj", "{BA2FEB4F-7EED-4181-A986-5483408D6BDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Core", "SharpAlliance.Core\SharpAlliance.Core.csproj", "{BA2FEB4F-7EED-4181-A986-5483408D6BDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.Strategic", "SharpAlliance.Strategic\SharpAlliance.Strategic.csproj", "{CF461EBB-24B3-409C-BF19-52D3745E92CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.Tactical", "SharpAlliance.Tactical\SharpAlliance.Tactical.csproj", "{1160BF7E-6489-4CF9-A002-47D880327096}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.TacticalAI", "SharpAlliance.TacticalAI\SharpAlliance.TacticalAI.csproj", "{83A0067A-538B-4DAA-983C-B0E1CFE4814B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.TileEngine", "SharpAlliance.TileEngine\SharpAlliance.TileEngine.csproj", "{39C99DED-9DEB-4033-B560-E84D9EA1A371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.Utils", "SharpAlliance.Utils\SharpAlliance.Utils.csproj", "{E85C2319-2A46-4632-86E7-10C1EB4A9AB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +81,26 @@ Global
 		{BA2FEB4F-7EED-4181-A986-5483408D6BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA2FEB4F-7EED-4181-A986-5483408D6BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA2FEB4F-7EED-4181-A986-5483408D6BDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF461EBB-24B3-409C-BF19-52D3745E92CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF461EBB-24B3-409C-BF19-52D3745E92CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF461EBB-24B3-409C-BF19-52D3745E92CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF461EBB-24B3-409C-BF19-52D3745E92CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1160BF7E-6489-4CF9-A002-47D880327096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1160BF7E-6489-4CF9-A002-47D880327096}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1160BF7E-6489-4CF9-A002-47D880327096}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1160BF7E-6489-4CF9-A002-47D880327096}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83A0067A-538B-4DAA-983C-B0E1CFE4814B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83A0067A-538B-4DAA-983C-B0E1CFE4814B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83A0067A-538B-4DAA-983C-B0E1CFE4814B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83A0067A-538B-4DAA-983C-B0E1CFE4814B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39C99DED-9DEB-4033-B560-E84D9EA1A371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39C99DED-9DEB-4033-B560-E84D9EA1A371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39C99DED-9DEB-4033-B560-E84D9EA1A371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39C99DED-9DEB-4033-B560-E84D9EA1A371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E85C2319-2A46-4632-86E7-10C1EB4A9AB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E85C2319-2A46-4632-86E7-10C1EB4A9AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E85C2319-2A46-4632-86E7-10C1EB4A9AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E85C2319-2A46-4632-86E7-10C1EB4A9AB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

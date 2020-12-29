@@ -1,6 +1,6 @@
 {
-  "name": "JaggedAlliance.Web",
-  "short_name": "JaggedAlliance.Web",
+  "name": "SharpAlliance.Web",
+  "short_name": "SharpAlliance.Web",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JaggedAlliance.Web.Shared
+namespace SharpAlliance.Web.Shared
 {
     public class WeatherForecast
     {

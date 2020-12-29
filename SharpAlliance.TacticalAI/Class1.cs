@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpAlliance.Laptop
+namespace SharpAlliance.TacticalAI
 {
     public class Class1
     {

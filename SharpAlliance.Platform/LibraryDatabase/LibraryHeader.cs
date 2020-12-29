@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace JaggedAlliance.Platform.LibraryDatabase
+namespace SharpAlliance.Platform.LibraryDatabase
 {
     public record LibraryHeader
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JaggedAlliance.Platform.LibraryDatabase
+namespace SharpAlliance.Platform.LibraryDatabase
 {
     class FileDatabase
     {

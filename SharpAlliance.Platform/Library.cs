@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using JaggedAlliance.Platform.LibraryDatabase;
+using SharpAlliance.Platform.LibraryDatabase;
 
-namespace JaggedAlliance.Platform
+namespace SharpAlliance.Platform
 {
     public class Library
     {

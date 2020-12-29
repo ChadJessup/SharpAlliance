@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JaggedAlliance.Platform.LibraryDatabase
+namespace SharpAlliance.Platform.LibraryDatabase
 {
     public struct DirEntry
     {

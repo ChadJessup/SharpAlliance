@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpAlliance.Laptop
+namespace SharpAlliance.Utils
 {
     public class Class1
     {

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JaggedAlliance.Platform
+namespace SharpAlliance.Platform
 {
     public static class FileManager
     {

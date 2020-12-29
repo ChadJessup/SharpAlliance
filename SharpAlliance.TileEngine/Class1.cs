@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpAlliance.Laptop
+namespace SharpAlliance.TileEngine
 {
     public class Class1
     {

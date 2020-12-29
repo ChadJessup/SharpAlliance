@@ -9,8 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\JaggedAlliance.Web.Client.csproj" />
-    <ProjectReference Include="..\Shared\JaggedAlliance.Web.Shared.csproj" />
+    <ProjectReference Include="..\Client\SharpAlliance.Web.Client.csproj" />
+    <ProjectReference Include="..\Shared\SharpAlliance.Web.Shared.csproj" />
   </ItemGroup>
 
 

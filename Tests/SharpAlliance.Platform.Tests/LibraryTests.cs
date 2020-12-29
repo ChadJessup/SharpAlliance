@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace JaggedAlliance.Platform.Tests
+namespace SharpAlliance.Platform.Tests
 {
     public class LibraryTests
     {
