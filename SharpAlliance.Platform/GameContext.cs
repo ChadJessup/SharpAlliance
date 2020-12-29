@@ -3,12 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Platform
 {
     public class GameContext : IDisposable
     {
+        private readonly ILogger<GameContext>? logger;
+        
+        // protect against double dispose.
         private bool disposedValue;
+
+        public GameContext(
+            ILogger<GameContext>? logger,
+            IServiceProvider services,
+            IConfiguration configuration)
+        {
+            this.logger = logger;
+            this.Services = services;
+            this.Configuration = configuration;
+
+            this.logger?.LogDebug($"Initialized {nameof(GameContext)}");
+        }
+
+        public IServiceProvider Services { get; }
+        public IConfiguration Configuration { get; init; }
+        public ILibraryManager LibraryManager { get; init; }
+        public IVideoManager VideoManager { get; init; }
+        public IInputManager InputManager { get; init; }
+        public IFileManager FileManager { get; init; }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -16,7 +41,10 @@ namespace SharpAlliance.Platform
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
+                    this.LibraryManager?.Dispose();
+                    this.VideoManager?.Dispose();
+                    this.InputManager?.Dispose();
+                    this.FileManager?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

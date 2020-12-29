@@ -5,9 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Platform
+namespace SharpAlliance.Core
 {
     public class InputManager : IInputManager
     {
+        public void Dispose()
+        {
+        }
     }
 }

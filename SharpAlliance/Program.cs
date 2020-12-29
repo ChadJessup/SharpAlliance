@@ -34,10 +34,11 @@ namespace SharpAlliance
                 .AddCommandLine(args);
 
             // pass configuration to GamePlatformBuilder...
-            var platformBuilder = new GamePlatformBuilder(configurationBuilder)
-                // These are the components that most closely match the original source
-                // Video/Audio/Input, etc
-                .AddOriginalComponents();
+            IGamePlatformBuilder platformBuilder = new GamePlatformBuilder(configurationBuilder);
+
+            // Adding components that as closely match Jagged Alliance 2's internals as possible.
+            // These components can have other components injected in when instantiated.
+            platformBuilder.AddLibraryManager<LibraryFileManager>();
 
             // Initialize the game platform as a whole, which returns a game context
             // containing 
@@ -47,12 +48,11 @@ namespace SharpAlliance
             return await Task.FromResult(0);
         }
     }
- 
+
     public static class StandardSharpAllianceExtensions
     {
         public static IGamePlatformBuilder AddOriginalComponents(this IGamePlatformBuilder builder)
         {
-            builder.AddLibraryManager<LibraryFileManager>();
             return builder;
         }
     }

@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Platform
@@ -71,8 +72,21 @@ namespace SharpAlliance.Platform
 
         public GameContext Build()
         {
-            this.GameContext = this.ServiceCollection.BuildServiceProvider()
-                .GetRequiredService<GameContext>();
+            // Since dependencies are expected to need GameContext, we'll build it ourselves.
+            // This is also a bit easier to debug for people new to this pattern.
+            // Full DI is used after this...
+            var provider = this.ServiceCollection.BuildServiceProvider();
+
+                this.GameContext = new(
+                    provider.GetRequiredService<ILogger<GameContext>>(),
+                    provider,
+                    this.Configuration)
+                {
+                    FileManager = provider.GetService<IFileManager>(),
+                    InputManager = provider.GetService<IInputManager>(),
+                    LibraryManager = provider.GetService<ILibraryManager>(),
+                    VideoManager = provider.GetService<IVideoManager>(),
+                };
 
             return this.GameContext;
         }

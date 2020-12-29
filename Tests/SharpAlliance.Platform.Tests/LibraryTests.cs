@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using SharpAlliance.Platform;
 using Xunit;
 
 namespace SharpAlliance.Core.Tests
@@ -18,8 +19,10 @@ namespace SharpAlliance.Core.Tests
                 })
                 .Build();
 
+            var context = new GameContext(null, null, config);
+
             // TODO: Moqs for logger across all tests.
-            var library = new LibraryFileManager(null, config);
+            var library = new LibraryFileManager(null, context);
             Assert.True(library.InitializeLibraries());
 
             Assert.True(library.IsInitialized);

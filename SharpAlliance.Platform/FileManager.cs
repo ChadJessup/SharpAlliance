@@ -5,5 +5,8 @@ namespace SharpAlliance.Platform
 {
     public class FileManager : IFileManager
     {
+        public void Dispose()
+        {
+        }
     }
 }

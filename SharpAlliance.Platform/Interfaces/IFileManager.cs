@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpAlliance.Platform.Interfaces
 {
-    public interface IFileManager
+    public interface IFileManager : IDisposable
     {
     }
 }

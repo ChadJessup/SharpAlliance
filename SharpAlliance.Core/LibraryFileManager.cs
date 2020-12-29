@@ -6,6 +6,7 @@ using SharpAlliance.Platform.Interfaces;
 using SharpAlliance.Core.LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core
 {
@@ -13,9 +14,9 @@ namespace SharpAlliance.Core
     {
         private const int INITIAL_NUM_HANDLES = 20;
 
-        public LibraryFileManager(ILogger<ILibraryManager> logger, IConfiguration configuration)
+        public LibraryFileManager(ILogger<ILibraryManager> logger, GameContext context)
         {
-            var dataDir = configuration["DataDirectory"];
+            var dataDir = context.Configuration["DataDirectory"];
 
             if (!Directory.Exists(dataDir))
             {
@@ -179,6 +180,10 @@ namespace SharpAlliance.Core
                 fContainsSubDirectories = br.ReadBoolean(),
                 iReserved = br.ReadInt32()
             };
+
+        public void Dispose()
+        {
+        }
 
         private static Dictionary<LibraryNames, LibraryInitHeader> GameLibraries = new()
         {
