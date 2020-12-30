@@ -18,4 +18,16 @@
     <ProjectReference Include="..\SharpAlliance.Core\SharpAlliance.Core.csproj" />
     <ProjectReference Include="..\SharpAlliance.Platform\SharpAlliance.Platform.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SharpAlliance.BeastWorld.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SharpAlliance.DevWorld.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="SharpAlliance.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

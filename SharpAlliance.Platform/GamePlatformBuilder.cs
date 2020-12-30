@@ -64,6 +64,7 @@ namespace SharpAlliance.Platform
             serviceCollection.AddLogging();
             serviceCollection.AddOptions();
 
+            serviceCollection.TryAddSingleton<GameContext>();
             serviceCollection.TryAddSingleton(configuration);
             serviceCollection.TryAddSingleton(serviceCollection);
 

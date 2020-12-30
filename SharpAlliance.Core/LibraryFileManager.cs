@@ -16,7 +16,7 @@ namespace SharpAlliance.Core
 
         public LibraryFileManager(ILogger<ILibraryManager> logger, GameContext context)
         {
-            var dataDir = context.Configuration["DataDirectory"];
+            var dataDir = context.Configuration["DataDirectory"] ?? ".\\Data";
 
             if (!Directory.Exists(dataDir))
             {
@@ -28,7 +28,7 @@ namespace SharpAlliance.Core
 
         public string ManagerName { get; set; }
         public Dictionary<LibraryNames, LibraryHeader> Libraries { get; set; } = new();
-        public int NumberOfLibraries { get; set; }
+        public int NumberOfLibraries => this.Libraries.Count;
         public bool IsInitialized { get; set; }
         public RealFileHeader RealFiles;
         public string DataDirectory { get; init; }
@@ -104,7 +104,8 @@ namespace SharpAlliance.Core
 
             LibHeader libHeader = this.ParseLibHeader(br);
 
-            //place the file pointer at the begining of the file headers ( they are at the end of the file )
+            //place the file pointer at the begining of the file headers (they are at the end of the file)
+            // 280 is the size of the LibHeader on disk, with padding involved.
             hFile.Seek(-(libHeader.iEntries * 280), SeekOrigin.End);
 
             //loop through the library and determine the number of files that are FILE_OK
@@ -123,12 +124,12 @@ namespace SharpAlliance.Core
                         uiFileOffset = dirEntry.uiOffset,
                         uiFileLength = dirEntry.uiLength,
                     });
+
+                    numEntries++;
                 }
             }
 
             pLibHeader.sLibraryPath = libHeader.sPathToLibrary;
-            pLibHeader.usNumberOfEntries = numEntries;
-
             pLibHeader.hLibraryHandle = hFile;
             pLibHeader.usNumberOfEntries = numEntries;
             pLibHeader.fLibraryOpen = true;
@@ -140,20 +141,20 @@ namespace SharpAlliance.Core
 
         private DirEntry ParseDirEntry(BinaryReader br)
         {
-            DirEntry de = new();
-            de.sFileName = new string(br.ReadChars(256)).TrimEnd('\0');
-            de.uiOffset = br.ReadUInt32();
-            de.uiLength = br.ReadUInt32();
-            de.ubState = br.ReadByte();
-            de.ubReserved = br.ReadByte();
-            de.sFileTime = this.ParseFileTime(br);
-            de.usReserved2 = br.ReadUInt16();
+            DirEntry dirEntry = new();
+            dirEntry.sFileName = new string(br.ReadChars(256)).TrimEnd('\0');
+            dirEntry.uiOffset = br.ReadUInt32();
+            dirEntry.uiLength = br.ReadUInt32();
+            dirEntry.ubState = br.ReadByte();
+            dirEntry.ubReserved = br.ReadByte();
+            dirEntry.sFileTime = this.ParseFileTime(br);
+            dirEntry.usReserved2 = br.ReadUInt16();
 
             // padding
             br.ReadByte();
             br.ReadByte();
 
-            return de;
+            return dirEntry;
         }
 
         private DateTime ParseFileTime(BinaryReader br)
@@ -185,30 +186,31 @@ namespace SharpAlliance.Core
         {
         }
 
+        // TODO: Make data driven
         private static Dictionary<LibraryNames, LibraryInitHeader> GameLibraries = new()
         {
-            { LibraryNames.DATA, new("Data.slf", false, true) },
-            { LibraryNames.AMBIENT, new("Ambient.slf", false, true) },
-            { LibraryNames.ANIMS, new("Anims.slf", false, true) },
-            { LibraryNames.BATTLESNDS, new("BattleSnds.slf", false, true) },
-            { LibraryNames.BIGITEMS, new("BigItems.slf", false, true) },
+            { LibraryNames.DATA,        new("Data.slf", false, true) },
+            { LibraryNames.AMBIENT,     new("Ambient.slf", false, true) },
+            { LibraryNames.ANIMS,       new("Anims.slf", false, true) },
+            { LibraryNames.BATTLESNDS,  new("BattleSnds.slf", false, true) },
+            { LibraryNames.BIGITEMS,    new("BigItems.slf", false, true) },
             { LibraryNames.BINARY_DATA, new("BinaryData.slf", false, true) },
-            { LibraryNames.CURSORS, new("Cursors.slf", false, true) },
-            { LibraryNames.FACES, new("Faces.slf", false, true) },
-            { LibraryNames.FONTS, new("Fonts.slf", false, true) },
-            { LibraryNames.INTERFACE, new("Interface.slf", false, true) },
-            { LibraryNames.LAPTOP, new("Laptop.slf", false, true) },
-            { LibraryNames.MAPS, new("Maps.slf", true, true) },
-            { LibraryNames.MERCEDT, new("MercEdt.slf", false, true) },
-            { LibraryNames.MUSIC, new("Music.slf", true, true) },
-            { LibraryNames.NPC_SPEECH, new("Npc_Speech.slf", true, true) },
-            { LibraryNames.NPC_DATA, new("NpcData.slf", false, true) },
-            { LibraryNames.RADAR_MAPS, new("RadarMaps.slf", false, true) },
-            { LibraryNames.SOUNDS, new("Sounds.slf", false, true) },
-            { LibraryNames.SPEECH, new("Speech.slf", true, true) },
-            { LibraryNames.TILESETS, new("TileSets.slf", true, true) },
+            { LibraryNames.CURSORS,     new("Cursors.slf", false, true) },
+            { LibraryNames.FACES,       new("Faces.slf", false, true) },
+            { LibraryNames.FONTS,       new("Fonts.slf", false, true) },
+            { LibraryNames.INTERFACE,   new("Interface.slf", false, true) },
+            { LibraryNames.LAPTOP,      new("Laptop.slf", false, true) },
+            { LibraryNames.MAPS,        new("Maps.slf", true, true) },
+            { LibraryNames.MERCEDT,     new("MercEdt.slf", false, true) },
+            { LibraryNames.MUSIC,       new("Music.slf", true, true) },
+            { LibraryNames.NPC_SPEECH,  new("Npc_Speech.slf", true, true) },
+            { LibraryNames.NPC_DATA,    new("NpcData.slf", false, true) },
+            { LibraryNames.RADAR_MAPS,  new("RadarMaps.slf", false, true) },
+            { LibraryNames.SOUNDS,      new("Sounds.slf", false, true) },
+            { LibraryNames.SPEECH,      new("Speech.slf", true, true) },
+            { LibraryNames.TILESETS,    new("TileSets.slf", true, true) },
             { LibraryNames.LOADSCREENS, new("LoadScreens.slf", true, true) },
-            { LibraryNames.INTRO, new("Intro.slf", true, true) },
+            { LibraryNames.INTRO,       new("Intro.slf", true, true) },
         };
     }
 }
