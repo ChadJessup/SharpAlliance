@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpAlliance.Platform.Interfaces
 {
-    public interface ILibraryManager : ISharpAllianceManager
+    public interface ISoundManager : ISharpAllianceManager
     {
     }
 }

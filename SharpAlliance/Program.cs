@@ -32,13 +32,12 @@ namespace SharpAlliance
             platformBuilder
                 .AddLibraryManager<LibraryFileManager>()
                 .AddInputManager<InputManager>()
-                .AddVideoManager<VideoManager>()
+                .AddVideoManager<DirectDrawVideoManager>()
                 .AddOtherComponents();
 
             // Initialize the game platform as a whole, which returns a game context
             // containing platform components for core game logic to use.
             using var context = platformBuilder.Build();
-
 
             return await Task.FromResult(0);
         }

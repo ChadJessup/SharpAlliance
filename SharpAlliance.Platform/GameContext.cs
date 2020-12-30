@@ -34,6 +34,20 @@ namespace SharpAlliance.Platform
         public IVideoManager VideoManager { get; init; }
         public IInputManager InputManager { get; init; }
         public IFileManager FileManager { get; init; }
+        public ISoundManager SoundManager { get; init; }
+
+        public bool Initialize()
+        {
+            var success = true;
+
+            success &= this.LibraryManager.Initialize();
+            success &= this.VideoManager.Initialize();
+            success &= this.InputManager.Initialize();
+            success &= this.FileManager.Initialize();
+            success &= this.SoundManager.Initialize();
+
+            return success;
+        }
 
         protected virtual void Dispose(bool disposing)
         {

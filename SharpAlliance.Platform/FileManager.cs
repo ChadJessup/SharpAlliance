@@ -5,6 +5,11 @@ namespace SharpAlliance.Platform
 {
     public class FileManager : IFileManager
     {
+        public bool Initialize()
+        {
+            return true;
+        }
+
         public void Dispose()
         {
         }

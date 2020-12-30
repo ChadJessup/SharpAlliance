@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Platform.Interfaces;
+using SharpAlliance.Platform.NullManagers;
 
 namespace SharpAlliance.Platform
 {
@@ -68,6 +69,14 @@ namespace SharpAlliance.Platform
             serviceCollection.TryAddSingleton(configuration);
             serviceCollection.TryAddSingleton(serviceCollection);
 
+            // Null Managers for when an implementation doesn't provide one.
+            // We still inject something that won't crash or cause null ref exceptions.
+            serviceCollection.TryAddSingleton<IFileManager, NullFileManager>();
+            serviceCollection.TryAddSingleton<ISoundManager, NullSoundManager>();
+            serviceCollection.TryAddSingleton<ISound2dManager, NullSoundManager>();
+            serviceCollection.TryAddSingleton<ISound3dManager, NullSoundManager>();
+            serviceCollection.TryAddSingleton<IInputManager, NullInputManager>();
+
             return serviceCollection;
         }
 
@@ -78,16 +87,24 @@ namespace SharpAlliance.Platform
             // Full DI is used after this...
             var provider = this.ServiceCollection.BuildServiceProvider();
 
-                this.GameContext = new(
-                    provider.GetRequiredService<ILogger<GameContext>>(),
-                    provider,
-                    this.Configuration)
-                {
-                    FileManager = provider.GetService<IFileManager>(),
-                    InputManager = provider.GetService<IInputManager>(),
-                    LibraryManager = provider.GetService<ILibraryManager>(),
-                    VideoManager = provider.GetService<IVideoManager>(),
-                };
+            this.GameContext = new(
+                provider.GetRequiredService<ILogger<GameContext>>(),
+                provider,
+                this.Configuration)
+            {
+                FileManager = provider.GetRequiredService<IFileManager>(),
+                InputManager = provider.GetRequiredService<IInputManager>(),
+                LibraryManager = provider.GetRequiredService<ILibraryManager>(),
+                VideoManager = provider.GetRequiredService<IVideoManager>(),
+                SoundManager = provider.GetRequiredService<ISoundManager>(),
+            };
+
+            var success = this.GameContext.Initialize();
+
+            if (!success)
+            {
+
+            }
 
             return this.GameContext;
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpAlliance.Platform.Interfaces
 {
-    public interface IVideoManager : IDisposable
+    public interface IVideoManager : ISharpAllianceManager
     {
     }
 }

@@ -23,7 +23,7 @@ namespace SharpAlliance.Core.Tests
 
             // TODO: Moqs for logger across all tests.
             var library = new LibraryFileManager(null, context);
-            Assert.True(library.InitializeLibraries());
+            Assert.True(library.Initialize());
 
             Assert.True(library.IsInitialized);
             Assert.All(library.Libraries.Values, l => Assert.True(l.fLibraryOpen));

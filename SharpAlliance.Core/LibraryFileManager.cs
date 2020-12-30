@@ -33,7 +33,7 @@ namespace SharpAlliance.Core
         public RealFileHeader RealFiles;
         public string DataDirectory { get; init; }
 
-        public bool InitializeLibraries()
+        public bool Initialize()
         {
             bool fLibraryInited = false;
 
