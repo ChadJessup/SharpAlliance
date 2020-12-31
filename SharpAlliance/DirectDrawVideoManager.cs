@@ -58,7 +58,6 @@ namespace SharpAlliance
             var d2PixelFormat = new d2.PixelFormat(dxgi.Format.R8G8B8A8_UNorm, d2.AlphaMode.Premultiplied);
 
             // if in D2D was specified an R-G-B-A format - use the same for wic
-            var wicPixelFormat = wic.PixelFormat.Format32bppPRGBA;
 
             HwndRenderTargetProperties wtp = new()
             {
