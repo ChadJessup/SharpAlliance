@@ -1,96 +1,191 @@
 ﻿using SharpAlliance.Platform.Interfaces;
+using System;
+using System.Diagnostics;
 using SharpDX;
 using SharpDX.Direct2D1;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX.Windows;
-using d2 = SharpDX.Direct2D1;
-using d3d = SharpDX.Direct3D11;
-using dw = SharpDX.DirectWrite;
-using dxgi = SharpDX.DXGI;
-using wic = SharpDX.WIC;
+
+using AlphaMode = SharpDX.Direct2D1.AlphaMode;
+using Device = SharpDX.Direct3D11.Device;
+using Factory = SharpDX.DXGI.Factory;
+using SharpDX.Mathematics.Interop;
+using System.Collections.Generic;
+using SharpAlliance.Platform;
 
 namespace SharpAlliance
 {
     public class DirectDrawVideoManager : IVideoManager
     {
-//        private D2DFactory d2dFactory;
-//        private DWriteFactory dwFactory;
-        private RenderForm mainForm;
-        private WindowRenderTarget renderTarget;
+        public static class Constants
+        {
+            public const int MAX_DIRTY_REGIONS = 128;
+
+            public const int VIDEO_OFF = 0x00;
+            public const int VIDEO_ON = 0x01;
+            public const int VIDEO_SHUTTING_DOWN = 0x02;
+            public const int VIDEO_SUSPENDED = 0x04;
+
+            public const int THREAD_OFF = 0x00;
+            public const int THREAD_ON = 0x01;
+            public const int THREAD_SUSPENDED = 0x02;
+
+            public const int CURRENT_MOUSE_DATA = 0;
+            public const int PREVIOUS_MOUSE_DATA = 1;
+            public const int MAX_NUM_FRAMES = 25;
+        }
+
+        private int gusScreenWidth;
+        private int gusScreenHeight;
+        private int gubScreenPixelDepth;
+
+        private Rectangle gScrollRegion;
+
+        private bool gfVideoCapture = false;
+        private int guiFramePeriod = (1000 / 15);
+        private int guiLastFrame;
+        private int[] gpFrameData = new int[Constants.MAX_NUM_FRAMES];
+        private int giNumFrames = 0;
+        private Rectangle rcWindow;
+
+        private int gusMouseCursorWidth;
+        private int gusMouseCursorHeight;
+        private int gsMouseCursorXOffset;
+        private int gsMouseCursorYOffset;
+        private bool gfFatalError = false;
+        private string gFatalErrorString;
+
+        // 8-bit palette stuff
+        private SGPPaletteEntry[] gSgpPalette = new SGPPaletteEntry[256];
+        private int guiFrameBufferState;    // BUFFER_READY, BUFFER_DIRTY
+        private int guiMouseBufferState;    // BUFFER_READY, BUFFER_DIRTY, BUFFER_DISABLED
+        private int guiVideoManagerState;   // VIDEO_ON, VIDEO_OFF, VIDEO_SUSPENDED, VIDEO_SHUTTING_DOWN
+        private int guiRefreshThreadState;  // THREAD_ON, THREAD_OFF, THREAD_SUSPENDED
+
+        //void (* gpFrameBufferRefreshOverride) (void);
+        private Rectangle[] gListOfDirtyRegions = new Rectangle[Constants.MAX_DIRTY_REGIONS];
+        private int guiDirtyRegionCount;
+        private bool gfForceFullScreenRefresh;
+
+        private Rectangle[] gDirtyRegionsEx = new Rectangle[Constants.MAX_DIRTY_REGIONS];
+        private int[] gDirtyRegionsFlagsEx = new int[Constants.MAX_DIRTY_REGIONS];
+        private int guiDirtyRegionExCount;
+
+        private Rectangle[] gBACKUPListOfDirtyRegions = new Rectangle[Constants.MAX_DIRTY_REGIONS];
+        private int gBACKUPuiDirtyRegionCount;
+        private bool gBACKUPfForceFullScreenRefresh;
+
+        private bool gfPrintFrameBuffer;
+        private int guiPrintFrameBufferIndex;
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        //
+        // External Variables
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+        int  gusRedMask;
+        int  gusGreenMask;
+        int  gusBlueMask;
+        int gusRedShift;
+        int gusBlueShift;
+        int gusGreenShift;
+
+        private RenderTarget? d2dRenderTarget;
+        private RenderTargetView? renderView;
+        private Texture2D? backBuffer;
+        private SwapChain? swapChain;
+        private RenderForm? form;
+        private Factory? factory;
+        private Device? device;
 
         public bool Initialize()
         {
-            this.mainForm = new RenderForm("Sharp Alliance!")
+            this.form = new RenderForm("Sharp Alliance!")
             {
                 Width = 640,
                 Height = 480,
-                 
             };
 
-//            d2dFactory = new D2DFactory();
-//            dwFactory = new DWriteFactory(SharpDX.DirectWrite.FactoryType.Shared);
-            var defaultDevice = new d3d.Device(
-                SharpDX.Direct3D.DriverType.Hardware,
-                d3d.DeviceCreationFlags.VideoSupport
-                | d3d.DeviceCreationFlags.BgraSupport
-                | d3d.DeviceCreationFlags.None);
-
-            var d3dDevice = defaultDevice.QueryInterface<d3d.Device1>(); // get a reference to the Direct3D 11.1 device
-            var dxgiDevice = d3dDevice.QueryInterface<dxgi.Device>(); // get a reference to DXGI device
-
-            var d2dDevice = new d2.Device(dxgiDevice); // initialize the D2D device
-
-            var imagingFactory = new wic.ImagingFactory2(); // initialize the WIC factory
-
-            // initialize the DeviceContext - it will be the D2D render target and will allow all rendering operations
-            var d2dContext = new d2.DeviceContext(d2dDevice, d2.DeviceContextOptions.None);
-            var sd = new SurfaceDescription()
+            // SwapChain description
+            var desc = new SwapChainDescription()
             {
-                   
+                BufferCount = 1,
+                ModeDescription = new ModeDescription(
+                    this.form.ClientSize.Width,
+                    this.form.ClientSize.Height,
+                    new Rational(60, 1), Format.R8G8B8A8_UNorm),
+                IsWindowed = true,
+                OutputHandle = this.form.Handle,
+                SampleDescription = new SampleDescription(1, 0),
+                SwapEffect = SwapEffect.Discard,
+                Usage = Usage.RenderTargetOutput
             };
 
-            var s1 = new SharpDX.DXGI.Surface1(d3dDevice.NativePointer);
-            var s2 = new SharpDX.DXGI.Surface2(d3dDevice.NativePointer);
-            
-            var dwFactory = new dw.Factory();
+            // Create Device and SwapChain
+            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport, new SharpDX.Direct3D.FeatureLevel[] { SharpDX.Direct3D.FeatureLevel.Level_10_0 }, desc, out this.device, out this.swapChain);
 
-            // specify a pixel format that is supported by both D2D and WIC
-            var d2PixelFormat = new d2.PixelFormat(dxgi.Format.R8G8B8A8_UNorm, d2.AlphaMode.Premultiplied);
+            var d2dFactory = new SharpDX.Direct2D1.Factory();
 
-            // if in D2D was specified an R-G-B-A format - use the same for wic
+            int width = this.form.ClientSize.Width;
+            int height = this.form.ClientSize.Height;
 
-            HwndRenderTargetProperties wtp = new()
-            {
-                Hwnd = mainForm.Handle,
-                PixelSize = new Size2(mainForm.ClientSize.Width, mainForm.ClientSize.Height),
-                PresentOptions = PresentOptions.Immediately,
-            };
+            // Ignore all windows events
+            this.factory = this.swapChain.GetParent<Factory>();
+            this.factory.MakeWindowAssociation(this.form.Handle, WindowAssociationFlags.None);
 
-            var rtp = new RenderTargetProperties(RenderTargetType.Hardware, d2PixelFormat, 0, 0, RenderTargetUsage.GdiCompatible, FeatureLevel.Level_DEFAULT);
-            renderTarget = new WindowRenderTarget(d2dContext.Factory, new RenderTargetProperties(), wtp);
+            // New RenderTargetView from the backbuffer
+            this.backBuffer = Texture2D.FromSwapChain<Texture2D>(this.swapChain, 0);
+            this.renderView = new(this.device, this.backBuffer);
 
-            RenderLoop.Run(mainForm, () =>
-            {
-                renderTarget.BeginDraw();
+            Surface surface = this.backBuffer.QueryInterface<Surface>();
 
-                try
-                {
-                    renderTarget.EndDraw();
-                }
-                catch
-                {
-                }
-            });
+            this.d2dRenderTarget = new RenderTarget(
+                d2dFactory,
+                surface,
+                new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied)));
 
-            d2dContext.Dispose();
-            dwFactory.Dispose();
-            renderTarget.Dispose();
+            //var solidColorBrush = new SolidColorBrush(d2dRenderTarget, new RawColor4(255, 255, 255, 255));
+
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
+            //
+            //var rectangleGeometry = new RoundedRectangleGeometry(
+            //    d2dFactory,
+            //    new RoundedRectangle()
+            //    {
+            //        RadiusX = 32,
+            //        RadiusY = 32,
+            //        Rect = new RectangleF(128, 128, width - 128 * 2, height - 128 * 2)
+            //    });
+
+            //            RenderLoop.Run(form, () =>
+            //            {
+            //                d2dRenderTarget.BeginDraw();
+            //                d2dRenderTarget.Clear(new RawColor4(0,0,0,255));
+            //                solidColorBrush.Color = new Color4(1, 1, 1, (float)Math.Abs(Math.Cos(stopwatch.ElapsedMilliseconds * .001)));
+            //                d2dRenderTarget.FillGeometry(rectangleGeometry, solidColorBrush, null);
+            //                d2dRenderTarget.EndDraw();
+            //
+            //                swapChain.Present(0, PresentFlags.None);
+            //            });
 
             return true;
         }
 
         public void Dispose()
         {
+            // Release all resources
+            this.renderView?.Dispose();
+            this.backBuffer?.Dispose();
+            this.device?.ImmediateContext.ClearState();
+            this.device?.ImmediateContext.Flush();
+            this.device?.Dispose();
+            this.device?.Dispose();
+            this.swapChain?.Dispose();
+            this.factory?.Dispose();
         }
     }
 }

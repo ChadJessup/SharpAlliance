@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Platform.Interfaces;
+using SharpAlliance.Platform.NullManagers;
 
 namespace SharpAlliance.Platform
 {
@@ -29,12 +30,13 @@ namespace SharpAlliance.Platform
         }
 
         public IServiceProvider Services { get; }
-        public IConfiguration Configuration { get; init; }
-        public ILibraryManager LibraryManager { get; init; }
-        public IVideoManager VideoManager { get; init; }
-        public IInputManager InputManager { get; init; }
-        public IFileManager FileManager { get; init; }
-        public ISoundManager SoundManager { get; init; }
+        public IConfiguration Configuration { get; }
+        public ILibraryManager LibraryManager { get; set; }
+        public IVideoManager VideoManager { get; set; } = new NullVideoManager();
+        public IInputManager InputManager { get; set; } = new NullInputManager();
+        public IFileManager FileManager { get; set; } = new NullFileManager();
+        public ISoundManager SoundManager { get; set; } = new NullSoundManager();
+        public IScreenManager ScreenManager { get; set; } = new NullScreenManager();
 
         public bool Initialize()
         {
@@ -45,25 +47,28 @@ namespace SharpAlliance.Platform
             success &= this.InputManager.Initialize();
             success &= this.FileManager.Initialize();
             success &= this.SoundManager.Initialize();
+            success &= this.ScreenManager.Initialize();
 
             return success;
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!this.disposedValue)
             {
                 if (disposing)
                 {
-                    this.LibraryManager?.Dispose();
-                    this.VideoManager?.Dispose();
-                    this.InputManager?.Dispose();
-                    this.FileManager?.Dispose();
+                    this.LibraryManager.Dispose();
+                    this.VideoManager.Dispose();
+                    this.InputManager.Dispose();
+                    this.FileManager.Dispose();
+                    this.SoundManager.Dispose();
+                    this.ScreenManager.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
-                disposedValue = true;
+                this.disposedValue = true;
             }
         }
 
@@ -77,7 +82,7 @@ namespace SharpAlliance.Platform
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            this.Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
     }

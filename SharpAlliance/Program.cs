@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SharpAlliance.Core;
+using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
@@ -9,14 +12,18 @@ namespace SharpAlliance
 {
     /// <summary>
     /// This executable is the one that most closely matches the original Jagged Alliance 2
-    /// game. It uses DirectDraw, raw inputs, etc.
+    /// game. It uses Direct2d, raw inputs, etc.
     /// 
     /// Think of this as an example for how to implement other versions of SharpAlliance.
     /// </summary>
     public class Program
     {
+        private CancellationTokenSource cts = new CancellationTokenSource();
+
         public static async Task<int> Main(string[] args)
         {
+            var program = new Program();
+
             // By default, GamePlatform will look for SharpAlliance.json for configuration options,
             // but let's add per-machine configuration as well (and commandline args),
             // since I dev this on multiple machines...and need examples.
@@ -39,7 +46,33 @@ namespace SharpAlliance
             // containing platform components for core game logic to use.
             using var context = platformBuilder.Build();
 
+            // Register all our screens...
+            RegisterGameScreens(context);
+
+            // Call some game specific start up and splash screen!
+            var splashScreen = await context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen);
+
+            // The rest is up to game-specific logic, pass the context into a loop and go.
+            await Task.WhenAll(program.GameLoop(context, program.cts.Token));
+
             return await Task.FromResult(0);
+        }
+
+        private static void RegisterGameScreens(GameContext context)
+        {
+            var sm = context.ScreenManager;
+
+            sm.AddScreen<SplashScreen>(ScreenNames.SplashScreen);
+        }
+
+        public Task<int> GameLoop(GameContext context, CancellationToken token = default)
+        {
+            while (!token.IsCancellationRequested)
+            {
+
+            }
+
+            return Task.FromResult(0);
         }
     }
 
