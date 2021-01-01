@@ -33,5 +33,10 @@ namespace SharpAlliance.Core.Screens
         public void Dispose()
         {
         }
+
+        public ValueTask<int> Handle()
+        {
+            return ValueTask.FromResult(0);
+        }
     }
 }

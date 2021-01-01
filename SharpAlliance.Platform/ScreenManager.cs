@@ -83,6 +83,16 @@ namespace SharpAlliance.Platform
             return this;
         }
 
+        public ValueTask<int> HandleCurrentScreen()
+        {
+            if (this.CurrentScreen != null)
+            {
+                return this.CurrentScreen.Handle();
+            }
+
+            return ValueTask.FromResult(-1);
+        }
+
         public void Dispose()
         {
             foreach (var screen in this.Screens.Values)
@@ -98,5 +108,16 @@ namespace SharpAlliance.Platform
 
         bool IsInitialized { get; set; }
         ValueTask Activate();
+
+        ValueTask<int> Handle();
+    }
+
+    public enum ScreenState
+    {
+        Unknown = 0,
+        Inactive,
+        Initializing,
+        Active,
+        ShuttingDown,
     }
 }

@@ -77,6 +77,7 @@ namespace SharpAlliance.Platform
             serviceCollection.TryAddSingleton<IInputManager, NullInputManager>();
             serviceCollection.TryAddSingleton<IVideoManager, NullVideoManager>();
             serviceCollection.TryAddSingleton<IScreenManager, ScreenManager>();
+            serviceCollection.TryAddSingleton<ITimeManager, TimeManager>();
 
             return serviceCollection;
         }
@@ -96,6 +97,7 @@ namespace SharpAlliance.Platform
             this.GameContext.VideoManager = provider.GetRequiredService<IVideoManager>();
             this.GameContext.SoundManager = provider.GetRequiredService<ISoundManager>();
             this.GameContext.ScreenManager = provider.GetRequiredService<IScreenManager>();
+            this.GameContext.TimeManager = provider.GetRequiredService<ITimeManager>();
 
             var success = this.GameContext.Initialize();
 

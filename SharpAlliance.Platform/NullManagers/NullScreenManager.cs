@@ -57,6 +57,11 @@ namespace SharpAlliance.Platform.NullManagers
             {
             }
 
+            public ValueTask<int> Handle()
+            {
+                return ValueTask.FromResult(0);
+            }
+
             public bool Initialize()
             {
                 return true;
