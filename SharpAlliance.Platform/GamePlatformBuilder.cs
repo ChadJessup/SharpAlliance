@@ -76,8 +76,11 @@ namespace SharpAlliance.Platform
             serviceCollection.TryAddSingleton<ISound3dManager, NullSoundManager>();
             serviceCollection.TryAddSingleton<IInputManager, NullInputManager>();
             serviceCollection.TryAddSingleton<IVideoManager, NullVideoManager>();
+
+            // These can be overwritten by custom implementations, but are fairly generic.
             serviceCollection.TryAddSingleton<IScreenManager, ScreenManager>();
-            serviceCollection.TryAddSingleton<ITimeManager, TimeManager>();
+            serviceCollection.TryAddSingleton<ITimerManager, TimerManager>();
+            serviceCollection.TryAddSingleton<IClockManager, ClockManager>();
 
             return serviceCollection;
         }
@@ -97,7 +100,8 @@ namespace SharpAlliance.Platform
             this.GameContext.VideoManager = provider.GetRequiredService<IVideoManager>();
             this.GameContext.SoundManager = provider.GetRequiredService<ISoundManager>();
             this.GameContext.ScreenManager = provider.GetRequiredService<IScreenManager>();
-            this.GameContext.TimeManager = provider.GetRequiredService<ITimeManager>();
+            this.GameContext.TimerManager = provider.GetRequiredService<ITimerManager>();
+            this.GameContext.ClockManager = provider.GetRequiredService<IClockManager>();
 
             var success = this.GameContext.Initialize();
 

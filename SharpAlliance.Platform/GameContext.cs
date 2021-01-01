@@ -31,13 +31,14 @@ namespace SharpAlliance.Platform
 
         public IServiceProvider Services { get; }
         public IConfiguration Configuration { get; }
-        public ILibraryManager LibraryManager { get; set; }
+        public ILibraryManager? LibraryManager { get; set; }
         public IVideoManager VideoManager { get; set; } = new NullVideoManager();
         public IInputManager InputManager { get; set; } = new NullInputManager();
         public IFileManager FileManager { get; set; } = new NullFileManager();
         public ISoundManager SoundManager { get; set; } = new NullSoundManager();
         public IScreenManager ScreenManager { get; set; } = new NullScreenManager();
-        public ITimeManager TimeManager { get; set; } = new TimeManager();
+        public ITimerManager TimerManager { get; set; } = new TimerManager();
+        public IClockManager ClockManager { get; set; } = new ClockManager();
 
         public bool Initialize()
         {
@@ -49,7 +50,8 @@ namespace SharpAlliance.Platform
             success &= this.FileManager.Initialize();
             success &= this.SoundManager.Initialize();
             success &= this.ScreenManager.Initialize();
-            success &= this.TimeManager.Initialize();
+            success &= this.TimerManager.Initialize();
+            success &= this.ClockManager.Initialize();
 
             return success;
         }
@@ -66,7 +68,8 @@ namespace SharpAlliance.Platform
                     this.FileManager.Dispose();
                     this.SoundManager.Dispose();
                     this.ScreenManager.Dispose();
-                    this.TimeManager.Dispose();
+                    this.TimerManager.Dispose();
+                    this.ClockManager.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

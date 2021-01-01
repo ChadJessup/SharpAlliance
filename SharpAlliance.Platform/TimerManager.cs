@@ -3,7 +3,7 @@ using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Platform
 {
-    public class TimeManager : ITimeManager
+    public class TimerManager : ITimerManager
     {
         public TimeSpan BaseTimeSlice { get; set; } = TimeSpan.FromSeconds(10.0);
 

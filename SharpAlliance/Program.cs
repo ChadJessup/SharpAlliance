@@ -53,7 +53,7 @@ namespace SharpAlliance
             var splashScreen = await context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen);
 
             // The rest is up to game-specific logic, pass the context into a loop and go.
-            await Task.WhenAll(program.GameLoop(context, program.cts.Token));
+            await Task.Run(() => program.GameLoop(context, program.cts.Token));
 
             return await Task.FromResult(0);
         }
@@ -65,14 +65,14 @@ namespace SharpAlliance
             sm.AddScreen<SplashScreen>(ScreenNames.SplashScreen);
         }
 
-        public Task<int> GameLoop(GameContext context, CancellationToken token = default)
+        public async Task<int> GameLoop(GameContext context, CancellationToken token = default)
         {
             while (!token.IsCancellationRequested)
             {
-
+                await Task.Delay(TimeSpan.FromMilliseconds(100), token);
             }
 
-            return Task.FromResult(0);
+            return 0;
         }
     }
 

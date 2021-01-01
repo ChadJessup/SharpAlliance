@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpAlliance.Platform.Interfaces
 {
-    public interface ITimeManager : ISharpAllianceManager
+    public interface ITimerManager : ISharpAllianceManager
     {
         // Going to try TimeSpan and DateTime's for now...might be too much trouble. If so, move to longs.
         TimeSpan BaseTimeSlice { get; set; }

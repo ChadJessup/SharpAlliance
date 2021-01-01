@@ -16,7 +16,6 @@ namespace SharpAlliance.Platform.NullManagers
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
 }
