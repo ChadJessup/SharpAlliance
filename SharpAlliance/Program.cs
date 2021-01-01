@@ -40,11 +40,14 @@ namespace SharpAlliance
                 .AddLibraryManager<LibraryFileManager>()
                 .AddInputManager<InputManager>()
                 .AddVideoManager<DirectDrawVideoManager>()
+                .AddGameLogic<SharpAllianceGameLogic>()
                 .AddOtherComponents();
 
             // Initialize the game platform as a whole, which returns a game context
             // containing platform components for core game logic to use.
             using var context = platformBuilder.Build();
+
+
 
             // Register all our screens...
             RegisterGameScreens(context);
@@ -58,13 +61,6 @@ namespace SharpAlliance
             return await Task.FromResult(0);
         }
 
-        private static void RegisterGameScreens(GameContext context)
-        {
-            var sm = context.ScreenManager;
-
-            sm.AddScreen<SplashScreen>(ScreenNames.SplashScreen);
-        }
-
         public async Task<int> GameLoop(GameContext context, CancellationToken token = default)
         {
             while (!token.IsCancellationRequested)
@@ -73,6 +69,13 @@ namespace SharpAlliance
             }
 
             return 0;
+        }
+
+        private static void RegisterGameScreens(GameContext context)
+        {
+            var sm = context.ScreenManager;
+
+            sm.AddScreen<SplashScreen>(ScreenNames.SplashScreen);
         }
     }
 

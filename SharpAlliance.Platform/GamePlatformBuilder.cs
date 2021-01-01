@@ -102,6 +102,7 @@ namespace SharpAlliance.Platform
             this.GameContext.ScreenManager = provider.GetRequiredService<IScreenManager>();
             this.GameContext.TimerManager = provider.GetRequiredService<ITimerManager>();
             this.GameContext.ClockManager = provider.GetRequiredService<IClockManager>();
+            this.GameContext.GameLogic = provider.GetRequiredService<IGameLogic>();
 
             var success = this.GameContext.Initialize();
 

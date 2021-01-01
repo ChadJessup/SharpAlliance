@@ -31,6 +31,7 @@ namespace SharpAlliance.Platform
 
         public IServiceProvider Services { get; }
         public IConfiguration Configuration { get; }
+        public IGameLogic? GameLogic { get; set; }
         public ILibraryManager? LibraryManager { get; set; }
         public IVideoManager VideoManager { get; set; } = new NullVideoManager();
         public IInputManager InputManager { get; set; } = new NullInputManager();
@@ -44,7 +45,8 @@ namespace SharpAlliance.Platform
         {
             var success = true;
 
-            success &= this.LibraryManager.Initialize();
+            success &= this.GameLogic?.Initialize() ?? false;
+            success &= this.LibraryManager?.Initialize() ?? false;
             success &= this.VideoManager.Initialize();
             success &= this.InputManager.Initialize();
             success &= this.FileManager.Initialize();
@@ -62,7 +64,8 @@ namespace SharpAlliance.Platform
             {
                 if (disposing)
                 {
-                    this.LibraryManager.Dispose();
+                    this.GameLogic?.Dispose();
+                    this.LibraryManager?.Dispose();
                     this.VideoManager.Dispose();
                     this.InputManager.Dispose();
                     this.FileManager.Dispose();
