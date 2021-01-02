@@ -62,17 +62,17 @@ namespace SharpAlliance.Platform
             return this.ActivateScreen(screen);
         }
 
-        public ValueTask<IScreen> ActivateScreen(IScreen screen)
+        public async ValueTask<IScreen> ActivateScreen(IScreen screen)
         {
             if (!screen.IsInitialized)
             {
-                screen.IsInitialized = screen.Initialize();
+                screen.IsInitialized = await screen.Initialize();
             }
 
             this.currentScreenTask = screen.Activate().AsTask();
             this.CurrentScreen = screen;
 
-            return ValueTask.FromResult(this.CurrentScreen);
+            return this.CurrentScreen;
         }
 
         public IScreenManager AddScreen<TScreen>(string screenName)
@@ -104,7 +104,7 @@ namespace SharpAlliance.Platform
 
     public interface IScreen : IDisposable
     {
-        bool Initialize();
+        ValueTask<bool> Initialize();
 
         bool IsInitialized { get; set; }
         ValueTask Activate();

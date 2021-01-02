@@ -19,12 +19,22 @@ namespace SharpAlliance.Core
 
         public async ValueTask<bool> Initialize()
         {
-            RegisterGameScreens(this.context);
+            this.RegisterGameScreens(this.context);
+
+            await this.InitializeScreens(this.context.ScreenManager.Screens);
 
             // Call some game specific start up and splash screen!
             var splashScreen = await context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen);
 
             return true;
+        }
+
+        private async Task InitializeScreens(Dictionary<string, IScreen> screens)
+        {
+            foreach (var screen in screens.Values)
+            {
+                await screen.Initialize();
+            }
         }
 
         public async Task<int> GameLoop(CancellationToken token = default)
