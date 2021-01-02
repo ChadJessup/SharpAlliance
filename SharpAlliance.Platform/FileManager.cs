@@ -1,13 +1,14 @@
 ﻿using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Platform
 {
     public class FileManager : IFileManager
     {
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
 
         public void Dispose()

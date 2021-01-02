@@ -1,4 +1,5 @@
-﻿using SharpAlliance.Platform.Interfaces;
+﻿using System.Threading.Tasks;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Platform.NullManagers
 {
@@ -8,9 +9,9 @@ namespace SharpAlliance.Platform.NullManagers
         {
         }
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
     }
 }

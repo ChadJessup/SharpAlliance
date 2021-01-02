@@ -10,9 +10,9 @@ namespace SharpAlliance.Core
 {
     public class InputManager : IInputManager
     {
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
 
         public void Dispose()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SharpAlliance.Platform;
 using Xunit;
@@ -9,7 +10,7 @@ namespace SharpAlliance.Core.Tests
     public class LibraryTests
     {
         [Fact]
-        public void LoadsLibraries()
+        public async Task LoadsLibraries()
         {
             const string dataDir = @"C:\SharpAlliance\Data";
             var config = new ConfigurationBuilder()
@@ -23,7 +24,7 @@ namespace SharpAlliance.Core.Tests
 
             // TODO: Moqs for logger across all tests.
             var library = new LibraryFileManager(null, context);
-            Assert.True(library.Initialize());
+            Assert.True(await library.Initialize());
 
             Assert.True(library.IsInitialized);
             Assert.All(library.Libraries.Values, l => Assert.True(l.fLibraryOpen));

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ namespace SharpAlliance.Platform
     public class GameContext : IDisposable
     {
         private readonly ILogger<GameContext>? logger;
-        
+
         // protect against double dispose.
         private bool disposedValue;
 
@@ -31,8 +32,8 @@ namespace SharpAlliance.Platform
 
         public IServiceProvider Services { get; }
         public IConfiguration Configuration { get; }
-        public IGameLogic? GameLogic { get; set; }
-        public ILibraryManager? LibraryManager { get; set; }
+        public IGameLogic GameLogic { get; set; }
+        public ILibraryManager LibraryManager { get; set; }
         public IVideoManager VideoManager { get; set; } = new NullVideoManager();
         public IInputManager InputManager { get; set; } = new NullInputManager();
         public IFileManager FileManager { get; set; } = new NullFileManager();
@@ -41,19 +42,31 @@ namespace SharpAlliance.Platform
         public ITimerManager TimerManager { get; set; } = new TimerManager();
         public IClockManager ClockManager { get; set; } = new ClockManager();
 
-        public bool Initialize()
+        public async Task<int> StartGameLoop(CancellationToken token = default)
+        {
+            if (this.GameLogic is null)
+            {
+                throw new NullReferenceException("GameLogic must be provided!");
+            }
+
+            var result = await Task.Run(() => this.GameLogic?.GameLoop(token));
+
+            return result;
+        }
+
+        public async Task<bool> Initialize()
         {
             var success = true;
 
-            success &= this.GameLogic?.Initialize() ?? false;
-            success &= this.LibraryManager?.Initialize() ?? false;
-            success &= this.VideoManager.Initialize();
-            success &= this.InputManager.Initialize();
-            success &= this.FileManager.Initialize();
-            success &= this.SoundManager.Initialize();
-            success &= this.ScreenManager.Initialize();
-            success &= this.TimerManager.Initialize();
-            success &= this.ClockManager.Initialize();
+            success &= await this.GameLogic.Initialize();;
+            success &= await this.LibraryManager.Initialize();
+            success &= await this.VideoManager.Initialize();
+            success &= await this.InputManager.Initialize();
+            success &= await this.FileManager.Initialize();
+            success &= await this.SoundManager.Initialize();
+            success &= await this.ScreenManager.Initialize();
+            success &= await this.TimerManager.Initialize();
+            success &= await this.ClockManager.Initialize();
 
             return success;
         }

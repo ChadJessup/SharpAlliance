@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Platform
@@ -7,9 +8,9 @@ namespace SharpAlliance.Platform
     {
         public TimeSpan BaseTimeSlice { get; set; } = TimeSpan.FromSeconds(10.0);
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
 
 

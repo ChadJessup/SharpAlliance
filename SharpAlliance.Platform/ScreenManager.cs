@@ -20,9 +20,9 @@ namespace SharpAlliance.Platform
         public Dictionary<string, IScreen> Screens { get; set; } = new();
         public IScreen CurrentScreen { get; private set; }
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
 
         public bool ScreenExists(string screenName) => this.Screens.ContainsKey(screenName);

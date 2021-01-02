@@ -104,7 +104,8 @@ namespace SharpAlliance.Platform
             this.GameContext.ClockManager = provider.GetRequiredService<IClockManager>();
             this.GameContext.GameLogic = provider.GetRequiredService<IGameLogic>();
 
-            var success = this.GameContext.Initialize();
+            // Purposefully block on initialize with .Result.
+            var success = this.GameContext.Initialize().Result;
 
             if (!success)
             {

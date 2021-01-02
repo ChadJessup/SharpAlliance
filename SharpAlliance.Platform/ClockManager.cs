@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Timers;
 using SharpAlliance.Platform.Interfaces;
 
@@ -12,7 +13,7 @@ namespace SharpAlliance.Platform
 
         private Timer? globalTimer;
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
             this.guiStartupTime = this.guiCurrentTime = DateTime.Now.Ticks;
             this.globalTimer = new Timer
@@ -24,12 +25,14 @@ namespace SharpAlliance.Platform
             this.globalTimer.Elapsed += this.ClockCallback;
             this.StartTimer();
 
-            return true;
+            return ValueTask.FromResult(true);
         }
 
         private void ClockCallback(object sender, ElapsedEventArgs e)
         {
             this.guiCurrentTime = e.SignalTime.Ticks;
+
+            Console.WriteLine(nameof(ClockCallback));
 
             this.StartTimer();
         }

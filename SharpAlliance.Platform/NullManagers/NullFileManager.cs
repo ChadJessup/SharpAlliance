@@ -9,9 +9,9 @@ namespace SharpAlliance.Platform.NullManagers
 {
     public class NullFileManager : IFileManager
     {
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
 
         public void Dispose()

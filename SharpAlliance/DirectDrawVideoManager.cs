@@ -14,6 +14,7 @@ using Factory = SharpDX.DXGI.Factory;
 using SharpDX.Mathematics.Interop;
 using System.Collections.Generic;
 using SharpAlliance.Platform;
+using System.Threading.Tasks;
 
 namespace SharpAlliance
 {
@@ -101,7 +102,7 @@ namespace SharpAlliance
         private Factory? factory;
         private Device? device;
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
             this.form = new RenderForm("Sharp Alliance!")
             {
@@ -172,7 +173,7 @@ namespace SharpAlliance
             //                swapChain.Present(0, PresentFlags.None);
             //            });
 
-            return true;
+            return ValueTask.FromResult(true);
         }
 
         public void Dispose()

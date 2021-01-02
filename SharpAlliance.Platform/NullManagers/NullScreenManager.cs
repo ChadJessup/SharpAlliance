@@ -20,9 +20,9 @@ namespace SharpAlliance.Platform.NullManagers
             return ValueTask.FromResult<IScreen>(ns);
         }
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
 
         public void Dispose()

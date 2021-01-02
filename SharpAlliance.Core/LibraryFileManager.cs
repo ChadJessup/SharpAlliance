@@ -7,6 +7,7 @@ using SharpAlliance.Core.LibraryManager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Platform;
+using System.Threading.Tasks;
 
 namespace SharpAlliance.Core
 {
@@ -33,7 +34,7 @@ namespace SharpAlliance.Core
         public RealFileHeader RealFiles;
         public string DataDirectory { get; init; }
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
             bool fLibraryInited = false;
 
@@ -63,7 +64,7 @@ namespace SharpAlliance.Core
             //set the initial number how many files can be opened at the one time
             this.RealFiles.iSizeOfOpenFileArray = INITIAL_NUM_HANDLES;
 
-            return true;
+            return ValueTask.FromResult(true);
         }
 
 

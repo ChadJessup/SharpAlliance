@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SharpAlliance.Platform.Interfaces
 {
     public interface ISharpAllianceManager : IDisposable
     {
-        bool Initialize();
+        ValueTask<bool> Initialize();
 
     }
 }

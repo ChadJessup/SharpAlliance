@@ -47,35 +47,10 @@ namespace SharpAlliance
             // containing platform components for core game logic to use.
             using var context = platformBuilder.Build();
 
-
-
-            // Register all our screens...
-            RegisterGameScreens(context);
-
-            // Call some game specific start up and splash screen!
-            var splashScreen = await context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen);
-
             // The rest is up to game-specific logic, pass the context into a loop and go.
-            var result = await Task.Run(() => program.GameLoop(context, program.cts.Token));
+            var result = await context.StartGameLoop(program.cts.Token);
 
             return result;
-        }
-
-        public async Task<int> GameLoop(GameContext context, CancellationToken token = default)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(100), token);
-            }
-
-            return 0;
-        }
-
-        private static void RegisterGameScreens(GameContext context)
-        {
-            var sm = context.ScreenManager;
-
-            sm.AddScreen<SplashScreen>(ScreenNames.SplashScreen);
         }
     }
 
