@@ -13,17 +13,21 @@ namespace SharpAlliance.Platform
 
         private Timer? globalTimer;
 
+        public bool IsInitialized { get; private set; }
+
         public ValueTask<bool> Initialize()
         {
             this.guiStartupTime = this.guiCurrentTime = DateTime.Now.Ticks;
             this.globalTimer = new Timer
             {
                 Interval = this.interval.TotalMilliseconds,
-                AutoReset = false
+                AutoReset = false,
             };
 
             this.globalTimer.Elapsed += this.ClockCallback;
             this.StartTimer();
+
+            this.IsInitialized = true;
 
             return ValueTask.FromResult(true);
         }
@@ -31,8 +35,6 @@ namespace SharpAlliance.Platform
         private void ClockCallback(object sender, ElapsedEventArgs e)
         {
             this.guiCurrentTime = e.SignalTime.Ticks;
-
-            Console.WriteLine(nameof(ClockCallback));
 
             this.StartTimer();
         }

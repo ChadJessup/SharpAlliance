@@ -30,10 +30,10 @@ namespace SharpAlliance.Platform
             this.logger?.LogDebug($"Initialized {nameof(GameContext)}");
         }
 
+        public GameState State { get; set; } = GameState.Unknown;
         public IServiceProvider Services { get; }
         public IConfiguration Configuration { get; }
         public IGameLogic GameLogic { get; set; }
-        public ILibraryManager LibraryManager { get; set; }
         public IVideoManager VideoManager { get; set; } = new NullVideoManager();
         public IInputManager InputManager { get; set; } = new NullInputManager();
         public IFileManager FileManager { get; set; } = new NullFileManager();
@@ -49,17 +49,21 @@ namespace SharpAlliance.Platform
                 throw new NullReferenceException("GameLogic must be provided!");
             }
 
+            this.State = GameState.Running;
+
             var result = await Task.Run(() => this.GameLogic?.GameLoop(token));
+
+            this.State = GameState.Exiting;
 
             return result;
         }
 
         public async Task<bool> Initialize()
         {
+            this.State = GameState.Initializing;
             var success = true;
 
             success &= await this.GameLogic.Initialize();;
-            success &= await this.LibraryManager.Initialize();
             success &= await this.VideoManager.Initialize();
             success &= await this.InputManager.Initialize();
             success &= await this.FileManager.Initialize();
@@ -75,10 +79,11 @@ namespace SharpAlliance.Platform
         {
             if (!this.disposedValue)
             {
+                this.State = GameState.Disposing;
+
                 if (disposing)
                 {
                     this.GameLogic?.Dispose();
-                    this.LibraryManager?.Dispose();
                     this.VideoManager.Dispose();
                     this.InputManager.Dispose();
                     this.FileManager.Dispose();

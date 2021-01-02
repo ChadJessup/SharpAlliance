@@ -8,5 +8,18 @@ namespace SharpAlliance.Platform.Interfaces
 {
     public interface IInputManager : ISharpAllianceManager
     {
+        void KeyboardChangeEvent(KeyEvent keyEvent);
+        void MouseChangeEvent(MouseEvent mouseEvent);
+    }
+
+
+    public readonly struct KeyEvent
+    {
+
+    }
+
+    public readonly struct MouseEvent
+    {
+
     }
 }

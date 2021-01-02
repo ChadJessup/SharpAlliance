@@ -15,6 +15,14 @@
         public int MusicVolume { get; set; }
         public int SoundEffectVolume { get; set; }
         public int SpeechVolume { get; set; }
-        public
+        // public Options
+        public string VersionNumber { get; set; }
+        public int uiSettingsVersionNumber { get; set; }
+        public int uiMeanwhileScenesSeenFlags { get; set; }
+
+        public bool fHideHelpInAllScreens { get; set; }
+        public bool fUNUSEDPlayerFinishedTheGame { get; set; } // JA2Gold: for UB compatibility
+        public int ubSizeOfDisplayCover { get; set; }
+        public int ubSizeOfLOS { get; set; }
     }
 }

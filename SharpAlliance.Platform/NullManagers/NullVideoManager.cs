@@ -5,6 +5,8 @@ namespace SharpAlliance.Platform.NullManagers
 {
     public class NullVideoManager : IVideoManager
     {
+        public bool IsInitialized { get; } = true;
+
         public void Dispose()
         {
         }

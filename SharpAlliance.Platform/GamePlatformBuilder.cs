@@ -42,7 +42,7 @@ namespace SharpAlliance.Platform
                 .Build();
 
             serviceCollection ??= new ServiceCollection();
-            this.ServiceCollection = this.BuildDependencyTree(configuration, serviceCollection);
+            this.Services = this.BuildDependencyTree(configuration, serviceCollection);
         }
 
         public GamePlatformBuilder(IConfigurationBuilder configurationBuilder)
@@ -51,7 +51,7 @@ namespace SharpAlliance.Platform
         }
 
         public GameContext? GameContext { get; set; }
-        public IServiceCollection ServiceCollection { get; set; }
+        public IServiceCollection Services { get; set; }
         public IConfiguration Configuration { get; set; }
 
         public bool gfProgramIsRunning { get; set; } // Turn this to FALSE to exit program
@@ -64,6 +64,7 @@ namespace SharpAlliance.Platform
         {
             serviceCollection.AddLogging();
             serviceCollection.AddOptions();
+            serviceCollection.AddLocalization();
 
             serviceCollection.TryAddSingleton<GameContext>();
             serviceCollection.TryAddSingleton(configuration);
@@ -90,13 +91,12 @@ namespace SharpAlliance.Platform
             // Since dependencies are expected to need GameContext, we'll build it ourselves.
             // This is also a bit easier to debug for people new to this pattern.
             // Full DI is used after this...
-            var provider = this.ServiceCollection.BuildServiceProvider();
+            var provider = this.Services.BuildServiceProvider();
 
             this.GameContext = provider.GetRequiredService<GameContext>();
 
             this.GameContext.FileManager = provider.GetRequiredService<IFileManager>();
             this.GameContext.InputManager = provider.GetRequiredService<IInputManager>();
-            this.GameContext.LibraryManager = provider.GetRequiredService<ILibraryManager>();
             this.GameContext.VideoManager = provider.GetRequiredService<IVideoManager>();
             this.GameContext.SoundManager = provider.GetRequiredService<ISoundManager>();
             this.GameContext.ScreenManager = provider.GetRequiredService<IScreenManager>();
@@ -119,7 +119,7 @@ namespace SharpAlliance.Platform
             where TService : class
             where TImplementation : class, TService
         {
-            this.ServiceCollection.AddSingleton<TService, TImplementation>();
+            this.Services.AddSingleton<TService, TImplementation>();
 
             return this;
         }

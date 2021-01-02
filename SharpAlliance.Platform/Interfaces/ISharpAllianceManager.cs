@@ -6,6 +6,6 @@ namespace SharpAlliance.Platform.Interfaces
     public interface ISharpAllianceManager : IDisposable
     {
         ValueTask<bool> Initialize();
-
+        bool IsInitialized { get; }
     }
 }

@@ -9,6 +9,8 @@ namespace SharpAlliance.Platform.NullManagers
 {
     public class NullSoundManager : ISoundManager, ISound2dManager, ISound3dManager
     {
+        public bool IsInitialized { get; } = true;
+
         public ValueTask<bool> Initialize()
         {
             return ValueTask.FromResult(true);

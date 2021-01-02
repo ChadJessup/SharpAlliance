@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
@@ -13,9 +14,15 @@ namespace SharpAlliance.Core
     public class SharpAllianceGameLogic : IGameLogic
     {
         private readonly GameContext context;
+        private readonly IStringLocalizer<string> strings;
 
-        public SharpAllianceGameLogic(GameContext context)
-        => this.context = context;
+        public bool IsInitialized { get; private set; }
+
+        public SharpAllianceGameLogic(GameContext context, IStringLocalizer<string> strings)
+        {
+            this.context = context;
+            this.strings = strings;
+        }
 
         public async ValueTask<bool> Initialize()
         {
@@ -23,8 +30,7 @@ namespace SharpAlliance.Core
 
             await this.InitializeScreens(this.context.ScreenManager.Screens);
 
-            // Call some game specific start up and splash screen!
-            var splashScreen = await context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen);
+            this.IsInitialized = true;
 
             return true;
         }
@@ -39,10 +45,27 @@ namespace SharpAlliance.Core
 
         public async Task<int> GameLoop(CancellationToken token = default)
         {
-            while (!token.IsCancellationRequested)
+            var inputManager = this.context.InputManager as InputManager;
+
+            if (inputManager is null)
             {
-                await Task.Delay(100);
-                Console.WriteLine(nameof(GameLoop));
+                return 0;
+            }
+
+            // Call some game specific start up and splash screen!
+            var splashScreen = await this.context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen);
+
+            while (this.context.State == GameState.Running && !token.IsCancellationRequested)
+            {
+                while (inputManager.DequeSpecificEvent(
+                    out var inputAtom,
+                    MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
+                {
+                    switch (inputAtom!.Value.MouseEvents)
+                    {
+                    
+                    }
+                }
             }
 
             return 0;

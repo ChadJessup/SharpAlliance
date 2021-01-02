@@ -6,8 +6,11 @@ namespace SharpAlliance.Platform
 {
     public class FileManager : IFileManager
     {
+        public bool IsInitialized { get; private set; }
+
         public ValueTask<bool> Initialize()
         {
+            this.IsInitialized = true;
             return ValueTask.FromResult(true);
         }
 

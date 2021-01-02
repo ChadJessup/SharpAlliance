@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpAlliance.Platform.Interfaces;
-using SharpAlliance.Core.LibraryManager;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using SharpAlliance.Platform;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.LibraryManager;
+using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core
 {

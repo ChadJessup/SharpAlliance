@@ -3,8 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SharpAlliance.Core;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
@@ -18,11 +21,11 @@ namespace SharpAlliance
     /// </summary>
     public class Program
     {
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource cts = new();
 
         public static async Task<int> Main(string[] args)
         {
-            var program = new Program();
+            Program program = new();
 
             // By default, GamePlatform will look for SharpAlliance.json for configuration options,
             // but let's add per-machine configuration as well (and commandline args),
@@ -56,8 +59,22 @@ namespace SharpAlliance
 
     public static class StandardSharpAllianceExtensions
     {
+        public static IGamePlatformBuilder AddLibraryManager<TLibraryManager>(this IGamePlatformBuilder builder)
+            where TLibraryManager : class, ILibraryManager
+        {
+            builder.AddDependency<ILibraryManager, TLibraryManager>();
+
+            return builder;
+        }
+
         public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
+            builder.Services.AddSingleton<MouseSubsystem>();
+            builder.Services.AddSingleton<ButtonSubsystem>();
+            builder.Services.AddSingleton<CursorSubSystem>();
+            builder.Services.AddSingleton<FontSubSystem>();
+            builder.Services.AddSingleton<HelpScreenSubSystem>();
+
             return builder;
         }
     }

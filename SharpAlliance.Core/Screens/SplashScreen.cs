@@ -19,24 +19,25 @@ namespace SharpAlliance.Core.Screens
         }
 
         public bool IsInitialized { get; set; }
+        public ScreenState State { get; set; } = ScreenState.Unknown;
 
         public ValueTask Activate()
         {
             return ValueTask.CompletedTask;
         }
 
-        public bool Initialize()
+        public ValueTask<bool> Initialize()
         {
-            return true;
-        }
-
-        public void Dispose()
-        {
+            return ValueTask.FromResult(true);
         }
 
         public ValueTask<int> Handle()
         {
             return ValueTask.FromResult(0);
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

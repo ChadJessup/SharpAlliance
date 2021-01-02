@@ -20,14 +20,6 @@ namespace SharpAlliance.Platform
             return builder;
         }
 
-        public static IGamePlatformBuilder AddLibraryManager<TLibraryManager>(this IGamePlatformBuilder builder)
-            where TLibraryManager : class, ILibraryManager
-        {
-            builder.AddDependency<ILibraryManager, TLibraryManager>();
-
-            return builder;
-        }
-
         public static IGamePlatformBuilder AddGameLogic<TGameLogic>(this IGamePlatformBuilder builder)
             where TGameLogic : class, IGameLogic
         {

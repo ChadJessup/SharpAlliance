@@ -9,12 +9,22 @@ namespace SharpAlliance.Platform.NullManagers
 {
     public class NullInputManager : IInputManager
     {
+        public bool IsInitialized { get; } = true;
+
         public ValueTask<bool> Initialize()
         {
             return ValueTask.FromResult(true);
         }
 
         public void Dispose()
+        {
+        }
+
+        public void KeyboardChangeEvent(KeyEvent keyEvent)
+        {
+        }
+
+        public void MouseChangeEvent(MouseEvent mouseEvent)
         {
         }
     }

@@ -7,6 +7,7 @@ namespace SharpAlliance.Platform.NullManagers
     public class NullScreenManager : IScreenManager
     {
         public Dictionary<string, IScreen> Screens { get; set; } = new();
+        public bool IsInitialized { get; } = true;
 
         public IScreenManager AddScreen<TScreen>(string screenName)
             where TScreen : IScreen
@@ -47,6 +48,7 @@ namespace SharpAlliance.Platform.NullManagers
         private class NullScreen : IScreen
         {
             public bool IsInitialized { get; set; } = true;
+            public ScreenState State { get; set; } = ScreenState.Unknown;
 
             public ValueTask Activate()
             {
@@ -62,9 +64,9 @@ namespace SharpAlliance.Platform.NullManagers
                 return ValueTask.FromResult(0);
             }
 
-            public bool Initialize()
+            public ValueTask<bool> Initialize()
             {
-                return true;
+                return ValueTask.FromResult(true);
             }
         }
     }

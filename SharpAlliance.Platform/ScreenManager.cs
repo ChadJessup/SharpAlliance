@@ -19,9 +19,11 @@ namespace SharpAlliance.Platform
 
         public Dictionary<string, IScreen> Screens { get; set; } = new();
         public IScreen CurrentScreen { get; private set; }
+        public bool IsInitialized { get; private set; }
 
         public ValueTask<bool> Initialize()
         {
+            this.IsInitialized = true;
             return ValueTask.FromResult(true);
         }
 
@@ -110,6 +112,8 @@ namespace SharpAlliance.Platform
         ValueTask Activate();
 
         ValueTask<int> Handle();
+
+        ScreenState State { get; set; }
     }
 
     public enum ScreenState

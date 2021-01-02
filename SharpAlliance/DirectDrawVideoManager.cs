@@ -15,6 +15,8 @@ using SharpDX.Mathematics.Interop;
 using System.Collections.Generic;
 using SharpAlliance.Platform;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System.Windows.Forms;
 
 namespace SharpAlliance
 {
@@ -37,6 +39,10 @@ namespace SharpAlliance
             public const int PREVIOUS_MOUSE_DATA = 1;
             public const int MAX_NUM_FRAMES = 25;
         }
+
+        private readonly ILogger<DirectDrawVideoManager> logger;
+        private readonly IInputManager inputManager;
+        private readonly GameContext context;
 
         private int gusScreenWidth;
         private int gusScreenHeight;
@@ -87,9 +93,9 @@ namespace SharpAlliance
         //
         ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-        int  gusRedMask;
-        int  gusGreenMask;
-        int  gusBlueMask;
+        int gusRedMask;
+        int gusGreenMask;
+        int gusBlueMask;
         int gusRedShift;
         int gusBlueShift;
         int gusGreenShift;
@@ -102,13 +108,32 @@ namespace SharpAlliance
         private Factory? factory;
         private Device? device;
 
-        public ValueTask<bool> Initialize()
+        public bool IsInitialized { get; private set; }
+
+        public DirectDrawVideoManager(
+            ILogger<DirectDrawVideoManager> logger,
+            GameContext context,
+            IInputManager inputManager)
+        {
+            this.logger = logger;
+            this.context = context;
+            this.inputManager = inputManager;
+        }
+
+        public async ValueTask<bool> Initialize()
         {
             this.form = new RenderForm("Sharp Alliance!")
             {
                 Width = 640,
                 Height = 480,
             };
+
+            if (!this.inputManager.IsInitialized)
+            {
+                await this.inputManager.Initialize();
+            }
+
+            this.HookupInputs(this.inputManager);
 
             // SwapChain description
             var desc = new SwapChainDescription()
@@ -148,36 +173,59 @@ namespace SharpAlliance
                 surface,
                 new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied)));
 
-            //var solidColorBrush = new SolidColorBrush(d2dRenderTarget, new RawColor4(255, 255, 255, 255));
+            var solidColorBrush = new SolidColorBrush(this.d2dRenderTarget, new RawColor4(255, 255, 255, 255));
 
-            // Stopwatch stopwatch = new Stopwatch();
-            // stopwatch.Start();
-            //
-            //var rectangleGeometry = new RoundedRectangleGeometry(
-            //    d2dFactory,
-            //    new RoundedRectangle()
-            //    {
-            //        RadiusX = 32,
-            //        RadiusY = 32,
-            //        Rect = new RectangleF(128, 128, width - 128 * 2, height - 128 * 2)
-            //    });
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
 
-            //            RenderLoop.Run(form, () =>
-            //            {
-            //                d2dRenderTarget.BeginDraw();
-            //                d2dRenderTarget.Clear(new RawColor4(0,0,0,255));
-            //                solidColorBrush.Color = new Color4(1, 1, 1, (float)Math.Abs(Math.Cos(stopwatch.ElapsedMilliseconds * .001)));
-            //                d2dRenderTarget.FillGeometry(rectangleGeometry, solidColorBrush, null);
-            //                d2dRenderTarget.EndDraw();
-            //
-            //                swapChain.Present(0, PresentFlags.None);
-            //            });
+            var rectangleGeometry = new RoundedRectangleGeometry(
+                d2dFactory,
+                new RoundedRectangle()
+                {
+                    RadiusX = 32,
+                    RadiusY = 32,
+                    Rect = new RectangleF(128, 128, width - 128 * 2, height - 128 * 2)
+                });
 
-            return ValueTask.FromResult(true);
+            RenderLoop.Run(this.form, () =>
+            {
+                this.d2dRenderTarget.BeginDraw();
+                this.d2dRenderTarget.Clear(new RawColor4(0, 0, 0, 255));
+                solidColorBrush.Color = new Color4(1, 1, 1, (float)Math.Abs(Math.Cos(stopwatch.ElapsedMilliseconds * .001)));
+                this.d2dRenderTarget.FillGeometry(rectangleGeometry, solidColorBrush, null);
+                this.d2dRenderTarget.EndDraw();
+
+                this.swapChain.Present(0, PresentFlags.None);
+            });
+
+            this.IsInitialized = true;
+            return this.IsInitialized;
+        }
+
+        private void HookupInputs(IInputManager inputManager)
+        {
+            if (this.form is not null)
+            {
+                this.form.KeyDown += this.KeyboardEvent;
+                this.form.KeyUp += this.KeyboardEvent;
+            }
+
+            //form.mou
+        }
+        private void KeyboardEvent(object? o, KeyEventArgs e)
+        {
+
         }
 
         public void Dispose()
         {
+            // Unhook events...
+            if (this.form is not null)
+            {
+                this.form.KeyUp -= this.KeyboardEvent;
+                this.form.KeyDown -= this.KeyboardEvent;
+            }
+
             // Release all resources
             this.renderView?.Dispose();
             this.backBuffer?.Dispose();
@@ -187,6 +235,8 @@ namespace SharpAlliance
             this.device?.Dispose();
             this.swapChain?.Dispose();
             this.factory?.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }
