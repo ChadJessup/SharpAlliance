@@ -69,7 +69,7 @@ namespace SharpAlliance
 
         public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
-            builder.Services.AddSingleton<MouseSubsystem>();
+            builder.Services.AddSingleton<MouseSubSystem>();
             builder.Services.AddSingleton<ButtonSubsystem>();
             builder.Services.AddSingleton<CursorSubSystem>();
             builder.Services.AddSingleton<FontSubSystem>();

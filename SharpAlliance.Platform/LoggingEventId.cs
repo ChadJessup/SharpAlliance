@@ -21,7 +21,7 @@ namespace SharpAlliance.Platform
         public static EventId VIDEOOBJECT = new(14, nameof(VIDEOOBJECT));
         public static EventId FONT_HANDLER = new(15, nameof(FONT_HANDLER));
         public static EventId VIDEOSURFACE = new(16, nameof(VIDEOSURFACE));
-        public static EventId MOUSE_SYSTEM = new(17, nameof(MOUSE_SYSTEM));
+        public static EventId MouseSystem = new(17, nameof(MouseSystem));
         public static EventId BUTTON_HANDLER = new(18, nameof(BUTTON_HANDLER));
         public static EventId MUTEX = new(19, nameof(MUTEX));
         public static EventId BLIT_QUEUE = new(20, nameof(BLIT_QUEUE));
