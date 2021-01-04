@@ -12,6 +12,7 @@ namespace SharpAlliance.Core.Screens
         private readonly GameContext context;
         private readonly int guiSplashFrameFade = 10;
         private readonly int guiSplashStartTime = 0;
+        private IntroScreen gbIntroScreenMode = IntroScreen.Unknown;
 
         public SplashScreen(GameContext context)
         {
@@ -20,6 +21,22 @@ namespace SharpAlliance.Core.Screens
 
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; } = ScreenState.Unknown;
+
+        public void SetIntroType(IntroScreen introType)
+        {
+            if (introType == IntroScreen.BEGINING)
+            {
+                gbIntroScreenMode = IntroScreen.BEGINING;
+            }
+            else if (introType == IntroScreen.ENDING)
+            {
+                gbIntroScreenMode = IntroScreen.ENDING;
+            }
+            else if (introType == IntroScreen.SPLASH)
+            {
+                gbIntroScreenMode = IntroScreen.SPLASH;
+            }
+        }
 
         public ValueTask Activate()
         {
@@ -40,4 +57,13 @@ namespace SharpAlliance.Core.Screens
         {
         }
     }
+
+    public enum IntroScreen
+    {
+        Unknown = 0,
+        BEGINING,         //set when viewing the intro at the begining of the game
+        ENDING,               //set when viewing the end game video.
+
+        SPLASH,
+    };
 }

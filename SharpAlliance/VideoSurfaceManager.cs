@@ -10,7 +10,7 @@ namespace SharpAlliance
     public class VideoSurfaceManager : IVideoSurfaceManager
     {
         private readonly ILogger<VideoSurfaceManager> logger;
-        private readonly DirectDrawVideoManager video;
+        private readonly VorticeVideoManager video;
 
         private VSURFACE_NODE? gpVSurfaceHead = null;
         private VSURFACE_NODE? gpVSurfaceTail = null;
@@ -30,7 +30,7 @@ namespace SharpAlliance
         {
             this.logger = logger;
 
-            this.video = (videoManager as DirectDrawVideoManager)!;
+            this.video = (videoManager as VorticeVideoManager)!;
 
             this.IsInitialized = this.Initialize().AsTask().Result;
             ;
@@ -57,7 +57,7 @@ namespace SharpAlliance
 
         private bool SetPrimaryVideoSurfaces()
         {
-            Surface2 pSurface;
+            //Surface2 pSurface;
 
             // Delete surfaces if they exist
             DeletePrimaryVideoSurfaces();
@@ -65,39 +65,39 @@ namespace SharpAlliance
             //
             // Get Primary surface
             //
-            pSurface = this.video.GetPrimarySurfaceObject();
+            //pSurface = this.video.GetPrimarySurfaceObject();
             // CHECKF(pSurface != null);
 
-            ghPrimary = CreateVideoSurfaceFromDDSurface(pSurface);
+            //ghPrimary = CreateVideoSurfaceFromDDSurface(pSurface);
             // CHECKF(ghPrimary != null);
 
             //
             // Get Backbuffer surface
             //
 
-            pSurface = GetBackBufferObject();
+            //pSurface = GetBackBufferObject();
             // CHECKF(pSurface != null);
 
-            ghBackBuffer = CreateVideoSurfaceFromDDSurface(pSurface);
+            //ghBackBuffer = CreateVideoSurfaceFromDDSurface(pSurface);
             // CHECKF(ghBackBuffer != null);
 
             //
             // Get mouse buffer surface
             //
-            pSurface = GetMouseBufferObject();
+            //pSurface = GetMouseBufferObject();
             //CHECKF(pSurface != null);
 
-            ghMouseBuffer = CreateVideoSurfaceFromDDSurface(pSurface);
+            //ghMouseBuffer = CreateVideoSurfaceFromDDSurface(pSurface);
             //CHECKF(ghMouseBuffer != null);
 
             //
             // Get frame buffer surface
             //
 
-            pSurface = GetFrameBufferObject();
+            //pSurface = GetFrameBufferObject();
             //CHECKF(pSurface != null);
 
-            ghFrameBuffer = CreateVideoSurfaceFromDDSurface(pSurface);
+            //ghFrameBuffer = CreateVideoSurfaceFromDDSurface(pSurface);
             //CHECKF(ghFrameBuffer != null);
 
             return true;
@@ -135,19 +135,19 @@ namespace SharpAlliance
         }
 
         // Deletes all palettes, surfaces and region data
-        private bool DeleteVideoSurface(HVSURFACE hVSurface)
+        private bool DeleteVideoSurface(HVSURFACE? hVSurface)
         {
-            Surface2 lpDDSurface;
+//            Surface2 lpDDSurface;
 
             // Assertions
             //CHECKF(hVSurface != null);
 
             // Release palette
-            if (hVSurface.pPalette != null)
-            {
-                DDReleasePalette((LPDIRECTDRAWPALETTE)hVSurface.pPalette);
-                hVSurface.pPalette = null;
-            }
+      //      if (hVSurface.pPalette != null)
+      //      {
+      //          DDReleasePalette((LPDIRECTDRAWPALETTE)hVSurface.pPalette);
+      //          hVSurface.pPalette = null;
+      //      }
 
             //if ( hVSurface.pClipper != null )
             //{
@@ -156,32 +156,32 @@ namespace SharpAlliance
             //}
 
             // Get surface pointer
-            lpDDSurface = (Surface2)hVSurface.pSurfaceData;
+       //     lpDDSurface = (Surface2)hVSurface.pSurfaceData;
 
             // Release surface
-            if (hVSurface.pSurfaceData1 != null)
-            {
-                DDReleaseSurface((Surface1)hVSurface.pSurfaceData1, lpDDSurface);
-            }
+        //    if (hVSurface.pSurfaceData1 != null)
+        //    {
+        //        DDReleaseSurface((Surface1)hVSurface.pSurfaceData1, lpDDSurface);
+        //    }
 
             // Release backup surface
-            if (hVSurface.pSavedSurfaceData != null)
-            {
-                DDReleaseSurface((Surface1)hVSurface.pSavedSurfaceData1,
-                                        (Surface2)hVSurface.pSavedSurfaceData);
-            }
+          //  if (hVSurface.pSavedSurfaceData != null)
+          //  {
+          //      DDReleaseSurface((Surface1)hVSurface.pSavedSurfaceData1,
+          //                              (Surface2)hVSurface.pSavedSurfaceData);
+          //  }
 
             // Release region data
-            hVSurface.RegionList.Clear();
+            hVSurface.Value.RegionList.Clear();
 
             //If there is a 16bpp palette, free it
-            if (hVSurface.p16BPPPalette != null)
+            if (hVSurface.Value.p16BPPPalette != null)
             {
                 // MemFree(hVSurface.p16BPPPalette);
-                hVSurface.p16BPPPalette = null;
+             //   hVSurface?.p16BPPPalette = null;
             }
 
-            giMemUsedInSurfaces -= hVSurface.usHeight * hVSurface.usWidth * (hVSurface.ubBitDepth / 8);
+            //giMemUsedInSurfaces -= hVSurface.usHeight * hVSurface.usWidth * (hVSurface.ubBitDepth / 8);
 
             // Release object
             //MemFree(hVSurface);

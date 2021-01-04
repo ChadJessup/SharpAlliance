@@ -13,7 +13,7 @@ namespace SharpAlliance.Core.Screens
         public const string SAVING_SCREEN = nameof(SAVING_SCREEN);
         public const string LOADING_SCREEN = nameof(LOADING_SCREEN);
         public const string ERROR_SCREEN = nameof(ERROR_SCREEN);
-        public const string INIT_SCREEN = nameof(INIT_SCREEN);
+        public const string InitScreen = nameof(InitScreen);
         public const string GAME_SCREEN = nameof(GAME_SCREEN);
         public const string ANIEDIT_SCREEN = nameof(ANIEDIT_SCREEN);
         public const string PALEDIT_SCREEN = nameof(PALEDIT_SCREEN);

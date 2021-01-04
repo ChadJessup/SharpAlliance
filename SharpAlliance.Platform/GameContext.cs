@@ -34,6 +34,8 @@ namespace SharpAlliance.Platform
         public IServiceProvider Services { get; }
         public IConfiguration Configuration { get; }
         public IGameLogic GameLogic { get; set; }
+        public IOSManager OSManager { get; set; }
+
         public IVideoManager VideoManager { get; set; } = new NullVideoManager();
         public IInputManager InputManager { get; set; } = new NullInputManager();
         public IFileManager FileManager { get; set; } = new NullFileManager();
@@ -41,6 +43,7 @@ namespace SharpAlliance.Platform
         public IScreenManager ScreenManager { get; set; } = new NullScreenManager();
         public ITimerManager TimerManager { get; set; } = new TimerManager();
         public IClockManager ClockManager { get; set; } = new ClockManager();
+        public bool ApplicationActive { get; private set; }
 
         public async Task<int> StartGameLoop(CancellationToken token = default)
         {
@@ -51,7 +54,7 @@ namespace SharpAlliance.Platform
 
             this.State = GameState.Running;
 
-            var result = await Task.Run(() => this.GameLogic?.GameLoop(token));
+            var result = await Task.Run(() => this.GameLogic?.GameLoop());
 
             this.State = GameState.Exiting;
 
@@ -63,7 +66,7 @@ namespace SharpAlliance.Platform
             this.State = GameState.Initializing;
             var success = true;
 
-            success &= await this.GameLogic.Initialize();;
+            success &= await this.GameLogic.Initialize();
             success &= await this.VideoManager.Initialize();
             success &= await this.InputManager.Initialize();
             success &= await this.FileManager.Initialize();
@@ -71,6 +74,14 @@ namespace SharpAlliance.Platform
             success &= await this.ScreenManager.Initialize();
             success &= await this.TimerManager.Initialize();
             success &= await this.ClockManager.Initialize();
+
+            if (success)
+            {
+                this.ApplicationActive = true;
+                this.State = GameState.Running;
+
+                this.logger.LogDebug("Running Game");
+            }
 
             return success;
         }

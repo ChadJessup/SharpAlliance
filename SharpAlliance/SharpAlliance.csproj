@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +12,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Vortice.Direct2D1" Version="1.8.50" />
+    <PackageReference Include="Vortice.Direct3D11" Version="1.8.50" />
+    <PackageReference Include="Vortice.Direct3D12" Version="1.8.50" />
     <PackageReference Include="Vortice.Dxc" Version="1.8.50" />
+    <PackageReference Include="Vortice.DXGI" Version="1.8.50" />
   </ItemGroup>
 
   <ItemGroup>

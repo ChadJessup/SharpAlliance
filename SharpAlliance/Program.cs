@@ -11,6 +11,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Vortice;
 
 namespace SharpAlliance
 {
@@ -20,14 +21,12 @@ namespace SharpAlliance
     /// 
     /// Think of this as an example for how to implement other versions of SharpAlliance.
     /// </summary>
-    public class Program
+    public class Program //: Application
     {
-        private readonly CancellationTokenSource cts = new();
+        private static readonly CancellationTokenSource cts = new();
 
         public static async Task<int> Main(string[] args)
         {
-            Program program = new();
-
             // By default, GamePlatform will look for SharpAlliance.json for configuration options,
             // but let's add per-machine configuration as well (and commandline args),
             // since I dev this on multiple machines...and need examples.
@@ -43,7 +42,7 @@ namespace SharpAlliance
             platformBuilder
                 .AddLibraryManager<LibraryFileManager>()
                 .AddInputManager<InputManager>()
-                .AddVideoManager<DirectDrawVideoManager>()
+                .AddVideoManager<VorticeVideoManager>()
                 .AddGameLogic<SharpAllianceGameLogic>()
                 .AddOtherComponents();
 
@@ -52,10 +51,13 @@ namespace SharpAlliance
             using var context = platformBuilder.Build();
 
             // The rest is up to game-specific logic, pass the context into a loop and go.
-            var result = await context.StartGameLoop(program.cts.Token);
+            var result = await context.StartGameLoop(cts.Token);
 
             return result;
         }
+
+        public Program()// : base(true) { }
+        { }
     }
 
     public static class StandardSharpAllianceExtensions
@@ -70,11 +72,14 @@ namespace SharpAlliance
 
         public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
+            builder.AddDependency<IOSManager, WindowsSubSystem>();
+
             builder.Services.AddSingleton<MouseSubSystem>();
             builder.Services.AddSingleton<ButtonSubSystem>();
             builder.Services.AddSingleton<CursorSubSystem>();
             builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
+            builder.Services.AddSingleton<SaveGameSubSystem>();
 
             return builder;
         }
