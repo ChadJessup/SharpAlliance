@@ -5,15 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Core
+namespace SharpAlliance.Core.Managers
 {
     public class InputManager : IInputManager
     {
         private readonly ILogger<InputManager> logger;
-
+        private readonly MouseSubSystem mouseSystem;
+        private readonly ButtonSubSystem buttonSystem;
         private int[] gsKeyTranslationTable = new int[1024];
         private bool gfApplicationActive;
         private bool[] gfKeyState = new bool[256];            // TRUE = Pressed, FALSE = Not Pressed
@@ -67,9 +69,14 @@ namespace SharpAlliance.Core
 
         //StringInput* gpCurrentStringDescriptor;
 
-        public InputManager(ILogger<InputManager> logger)
+        public InputManager(
+            ILogger<InputManager> logger, 
+            MouseSubSystem mouseSubSystem,
+            ButtonSubSystem buttonSubsystem)
         {
             this.logger = logger;
+            this.mouseSystem = mouseSubSystem;
+            this.buttonSystem = buttonSubsystem;
         }
 
         public ValueTask<bool> Initialize()

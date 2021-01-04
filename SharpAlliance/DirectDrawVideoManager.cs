@@ -1,22 +1,11 @@
-﻿using SharpAlliance.Platform.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics;
-using SharpDX;
-using SharpDX.Direct2D1;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using SharpDX.Windows;
-
-using AlphaMode = SharpDX.Direct2D1.AlphaMode;
-using Device = SharpDX.Direct3D11.Device;
-using Factory = SharpDX.DXGI.Factory;
-using SharpDX.Mathematics.Interop;
-using System.Collections.Generic;
-using SharpAlliance.Platform;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using System.Windows.Forms;
+using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
+using Vortice.Mathematics;
 
 namespace SharpAlliance
 {
@@ -99,6 +88,16 @@ namespace SharpAlliance
         int gusRedShift;
         int gusBlueShift;
         int gusGreenShift;
+        //
+        // Direct Draw objects for both the Primary and Backbuffer surfaces
+        //
+
+        private LPDIRECTDRAW? _gpDirectDrawObject = null;
+        private LPDIRECTDRAW2 gpDirectDrawObject = null;
+
+        private Surface? _gpPrimarySurface = null;
+        private Surface2? gpPrimarySurface = null;
+        private Surface2? gpBackBuffer = null;
 
         private RenderTarget? d2dRenderTarget;
         private RenderTargetView? renderView;
@@ -190,6 +189,7 @@ namespace SharpAlliance
             RenderLoop.Run(this.form, () =>
             {
                 this.d2dRenderTarget.BeginDraw();
+                this.d2dRenderTarget.
                 this.d2dRenderTarget.Clear(new RawColor4(0, 0, 0, 255));
                 solidColorBrush.Color = new Color4(1, 1, 1, (float)Math.Abs(Math.Cos(stopwatch.ElapsedMilliseconds * .001)));
                 this.d2dRenderTarget.FillGeometry(rectangleGeometry, solidColorBrush, null);
@@ -212,9 +212,18 @@ namespace SharpAlliance
 
             //form.mou
         }
+
         private void KeyboardEvent(object? o, KeyEventArgs e)
         {
 
+        }
+
+
+        public Surface2 GetPrimarySurfaceObject()
+        {
+            //Assert(gpPrimarySurface != null);
+
+            return gpPrimarySurface;
         }
 
         public void Dispose()

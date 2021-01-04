@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpAlliance.Core.LibraryManager
+namespace SharpAlliance.Core.Managers.Library
 {
     class FileDatabase
     {

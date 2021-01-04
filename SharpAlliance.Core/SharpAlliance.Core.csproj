@@ -9,4 +9,13 @@
     <ProjectReference Include="..\SharpAlliance.Platform\SharpAlliance.Platform.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ImageManager\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
+    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
+  </ItemGroup>
+
 </Project>

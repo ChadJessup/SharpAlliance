@@ -47,6 +47,7 @@ namespace SharpAlliance.Core.SubSystems
 
         private int gsFastHelpDelay = 600; // In timer ticks
         private bool gfShowFastHelp = true;
+
         MouseRegion MSYS_SystemBaseRegion = new()
         {
             IDNumber = MSYS_ID.SYSTEM,
@@ -86,50 +87,53 @@ namespace SharpAlliance.Core.SubSystems
                 this.MSYS_TrashRegList();
             }
 
-            MSYS_CurrentID = MSYS_ID.SYSTEM;
-            MSYS_ScanForID = false;
+            this.MSYS_CurrentID = MSYS_ID.SYSTEM;
+            this.MSYS_ScanForID = false;
 
-            MSYS_CurrentMX = 0;
-            MSYS_CurrentMY = 0;
-            MSYS_CurrentButtons = 0;
-            MSYS_Action = MouseDos.ACTION;
+            this.MSYS_CurrentMX = 0;
+            this.MSYS_CurrentMY = 0;
+            this.MSYS_CurrentButtons = 0;
+            this.MSYS_Action = MouseDos.ACTION;
 
-            MSYS_PrevRegion = null;
-            MSYS_SystemInitialized = true;
-            MSYS_UseMouseHandlerHook = false;
+            this.MSYS_PrevRegion = null;
+            this.MSYS_SystemInitialized = true;
+            this.MSYS_UseMouseHandlerHook = false;
 
-            MSYS_Mouse_Grabbed = false;
-            MSYS_GrabRegion = null;
+            this.MSYS_Mouse_Grabbed = false;
+            this.MSYS_GrabRegion = null;
 
             // Setup the system's background region
-            MSYS_SystemBaseRegion.IDNumber = MSYS_ID.SYSTEM;
-            MSYS_SystemBaseRegion.PriorityLevel = MSYS_PRIORITY.SYSTEM;
-            MSYS_SystemBaseRegion.uiFlags = MouseRegionFlags.BASE_REGION_FLAGS;
-            MSYS_SystemBaseRegion.RegionTopLeftX = -32767;
-            MSYS_SystemBaseRegion.RegionTopLeftY = -32767;
-            MSYS_SystemBaseRegion.RegionBottomRightX = 32767;
-            MSYS_SystemBaseRegion.RegionBottomRightY = 32767;
-            MSYS_SystemBaseRegion.MouseXPos = 0;
-            MSYS_SystemBaseRegion.MouseYPos = 0;
-            MSYS_SystemBaseRegion.RelativeXPos = 0;
-            MSYS_SystemBaseRegion.RelativeYPos = 0;
-            MSYS_SystemBaseRegion.ButtonState = 0;
-            MSYS_SystemBaseRegion.Cursor = 0;
-            MSYS_SystemBaseRegion.UserData[0] = 0;
-            MSYS_SystemBaseRegion.UserData[1] = 0;
-            MSYS_SystemBaseRegion.UserData[2] = 0;
-            MSYS_SystemBaseRegion.UserData[3] = 0;
-            MSYS_SystemBaseRegion.MovementCallback = null;
-            MSYS_SystemBaseRegion.ButtonCallback = null;
+            this.MSYS_SystemBaseRegion.IDNumber = MSYS_ID.SYSTEM;
+            this.MSYS_SystemBaseRegion.PriorityLevel = MSYS_PRIORITY.SYSTEM;
+            this.MSYS_SystemBaseRegion.uiFlags = MouseRegionFlags.BASE_REGION_FLAGS;
+            this.MSYS_SystemBaseRegion.RegionTopLeftX = -32767;
+            this.MSYS_SystemBaseRegion.RegionTopLeftY = -32767;
+            this.MSYS_SystemBaseRegion.RegionBottomRightX = 32767;
+            this.MSYS_SystemBaseRegion.RegionBottomRightY = 32767;
+            this.MSYS_SystemBaseRegion.MouseXPos = 0;
+            this.MSYS_SystemBaseRegion.MouseYPos = 0;
+            this.MSYS_SystemBaseRegion.RelativeXPos = 0;
+            this.MSYS_SystemBaseRegion.RelativeYPos = 0;
+            this.MSYS_SystemBaseRegion.ButtonState = 0;
+            this.MSYS_SystemBaseRegion.Cursor = 0;
+            this.MSYS_SystemBaseRegion.UserData[0] = 0;
+            this.MSYS_SystemBaseRegion.UserData[1] = 0;
+            this.MSYS_SystemBaseRegion.UserData[2] = 0;
+            this.MSYS_SystemBaseRegion.UserData[3] = 0;
+            this.MSYS_SystemBaseRegion.MovementCallback = null;
+            this.MSYS_SystemBaseRegion.ButtonCallback = null;
 
-            MSYS_SystemBaseRegion.FastHelpTimer = 0;
-            MSYS_SystemBaseRegion.FastHelpText = 0;
-            MSYS_SystemBaseRegion.FastHelpRect = -1;
+            this.MSYS_SystemBaseRegion.FastHelpTimer = 0;
+            this.MSYS_SystemBaseRegion.FastHelpText = 0;
+            this.MSYS_SystemBaseRegion.FastHelpRect = -1;
 
-            MSYS_SystemBaseRegion.next = null;
-            MSYS_SystemBaseRegion.prev = null;
+            this.MSYS_SystemBaseRegion.next = null;
+            this.MSYS_SystemBaseRegion.prev = null;
+
+            this.MSYS_AddRegionToList(ref this.MSYS_SystemBaseRegion);
+
+            this.MSYS_UseMouseHandlerHook = true;
         }
-
 
         //======================================================================================================
         //	MSYS_TrashRegList
@@ -138,15 +142,15 @@ namespace SharpAlliance.Core.SubSystems
         //
         private void MSYS_TrashRegList()
         {
-            while (MSYS_RegList is not null)
+            while (this.MSYS_RegList is not null)
             {
-                if (MSYS_RegList.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
+                if (this.MSYS_RegList.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
                 {
-                    MSYS_RemoveRegion(ref MSYS_RegList);
+                    this.MSYS_RemoveRegion(ref this.MSYS_RegList);
                 }
                 else
                 {
-                    MSYS_RegList = MSYS_RegList.next;
+                    this.MSYS_RegList = this.MSYS_RegList.next;
                 }
             }
         }
@@ -191,30 +195,30 @@ namespace SharpAlliance.Core.SubSystems
 
             region.FastHelpText = null;
 
-            MSYS_DeleteRegionFromList(ref region);
+            this.MSYS_DeleteRegionFromList(ref region);
 
             //if the previous region is the one that we are deleting, reset the previous region
-            if (MSYS_PrevRegion == region)
+            if (this.MSYS_PrevRegion == region)
             {
-                MSYS_PrevRegion = null;
+                this.MSYS_PrevRegion = null;
             }
 
             //if the current region is the one that we are deleting, then clear it.
-            if (MSYS_CurrRegion == region)
+            if (this.MSYS_CurrRegion == region)
             {
-                MSYS_CurrRegion = null;
+                this.MSYS_CurrRegion = null;
             }
 
             //dirty our update flag
-            gfRefreshUpdate = true;
+            this.gfRefreshUpdate = true;
 
             // Check if this is a locked region, and unlock if so
-            if (gfClickedModeOn)
+            if (this.gfClickedModeOn)
             {
                 // Set global ID
-                if (gusClickedIDNumber == region.IDNumber)
+                if (this.gusClickedIDNumber == region.IDNumber)
                 {
-                    gfClickedModeOn = false;
+                    this.gfClickedModeOn = false;
                 }
             }
 
@@ -237,23 +241,23 @@ namespace SharpAlliance.Core.SubSystems
             // re-insert the region.
             if (region.next is not null || region.prev is not null)
             { // if it wasn't actually there, then call does nothing!
-                MSYS_DeleteRegionFromList(ref region);
+                this.MSYS_DeleteRegionFromList(ref region);
             }
 
             // Set an ID number!
-            region.IDNumber = MSYS_GetNewID();
+            region.IDNumber = this.MSYS_GetNewID();
 
             region.next = null;
             region.prev = null;
 
-            if (MSYS_RegList is not null)
+            if (this.MSYS_RegList is null)
             { // Null list, so add it straight up.
-                MSYS_RegList = region;
+                this.MSYS_RegList = region;
             }
             else
             {
                 // Walk down list until we find place to insert (or at end of list)
-                curr = MSYS_RegList;
+                curr = this.MSYS_RegList!;
                 done = false;
                 while ((curr.next != null) && !done)
                 {
@@ -290,9 +294,9 @@ namespace SharpAlliance.Core.SubSystems
                         region.prev.next = region;
                     }
 
-                    if (MSYS_RegList == curr)   // Make sure if adding at start, to adjust the list pointer
+                    if (this.MSYS_RegList == curr)   // Make sure if adding at start, to adjust the list pointer
                     {
-                        MSYS_RegList = region;
+                        this.MSYS_RegList = region;
                     }
                 }
             }
@@ -313,19 +317,19 @@ namespace SharpAlliance.Core.SubSystems
             bool done;
             MouseRegion? node;
 
-            retID = MSYS_CurrentID;
-            MSYS_CurrentID++;
+            retID = this.MSYS_CurrentID;
+            this.MSYS_CurrentID++;
 
             // Crapy scan for an unused ID
-            if ((MSYS_CurrentID >= MSYS_ID.MAX) || MSYS_ScanForID)
+            if ((this.MSYS_CurrentID >= MSYS_ID.MAX) || this.MSYS_ScanForID)
             {
-                MSYS_ScanForID = true;
+                this.MSYS_ScanForID = true;
                 Current = MSYS_ID.BASE;
                 done = found = false;
                 while (!done)
                 {
                     found = false;
-                    node = MSYS_RegList;
+                    node = this.MSYS_RegList;
                     while (node != null && !found)
                     {
                         if (node.IDNumber == Current)
@@ -347,7 +351,7 @@ namespace SharpAlliance.Core.SubSystems
                         }
                     }
                 }
-                MSYS_CurrentID = Current;
+                this.MSYS_CurrentID = Current;
             }
 
             return (retID);
@@ -365,7 +369,7 @@ namespace SharpAlliance.Core.SubSystems
             bool found;
 
             found = false;
-            Current = MSYS_RegList;
+            Current = this.MSYS_RegList;
             while (Current is not null && !found)
             {
                 if (Current.IDNumber == region.IDNumber)
@@ -387,24 +391,24 @@ namespace SharpAlliance.Core.SubSystems
         private void MSYS_DeleteRegionFromList(ref MouseRegion region)
         {
             // If no list present, there's nothin' to do.
-            if (MSYS_RegList is null)
+            if (this.MSYS_RegList is null)
             {
                 return;
             }
 
             // Check if region in list
-            if (!MSYS_RegionInList(ref region))
+            if (!this.MSYS_RegionInList(ref region))
             {
                 return;
             }
 
             // Remove a node from the list
-            if (MSYS_RegList == region)
+            if (this.MSYS_RegList == region)
             { // First node on list, adjust main pointer.
-                MSYS_RegList = region.next;
-                if (MSYS_RegList != null)
+                this.MSYS_RegList = region.next;
+                if (this.MSYS_RegList != null)
                 {
-                    MSYS_RegList.prev = null;
+                    this.MSYS_RegList.prev = null;
                 }
 
                 region.next = region.prev = null;
@@ -426,27 +430,27 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Did we delete a grabbed region?
-            if (MSYS_Mouse_Grabbed)
+            if (this.MSYS_Mouse_Grabbed)
             {
-                if (MSYS_GrabRegion == region)
+                if (this.MSYS_GrabRegion == region)
                 {
-                    MSYS_Mouse_Grabbed = false;
-                    MSYS_GrabRegion = null;
+                    this.MSYS_Mouse_Grabbed = false;
+                    this.MSYS_GrabRegion = null;
                 }
             }
 
             // Is only the system background region remaining?
-            if (MSYS_RegList == MSYS_SystemBaseRegion)
+            if (this.MSYS_RegList == this.MSYS_SystemBaseRegion)
             {
                 // Yup, so let's reset the ID values!
-                MSYS_CurrentID = MSYS_ID.BASE;
-                MSYS_ScanForID = false;
+                this.MSYS_CurrentID = MSYS_ID.BASE;
+                this.MSYS_ScanForID = false;
             }
-            else if (MSYS_RegList is null)
+            else if (this.MSYS_RegList is null)
             {
                 // Ack, we actually emptied the list, so let's reset for re-init possibilities
-                MSYS_CurrentID = MSYS_ID.SYSTEM;
-                MSYS_ScanForID = false;
+                this.MSYS_CurrentID = MSYS_ID.SYSTEM;
+                this.MSYS_ScanForID = false;
             }
         }
 

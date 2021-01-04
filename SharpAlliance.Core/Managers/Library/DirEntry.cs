@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpAlliance.Core.LibraryManager
+namespace SharpAlliance.Core.Managers.Library
 {
     public struct DirEntry
     {

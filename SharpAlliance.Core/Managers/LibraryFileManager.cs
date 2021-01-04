@@ -5,10 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Core.LibraryManager;
+using SharpAlliance.Core.Managers.Library;
 using SharpAlliance.Platform;
 
-namespace SharpAlliance.Core
+namespace SharpAlliance.Core.Managers
 {
     public class LibraryFileManager : ILibraryManager
     {

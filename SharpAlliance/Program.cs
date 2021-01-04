@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SharpAlliance.Core;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
@@ -70,7 +71,7 @@ namespace SharpAlliance
         public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
             builder.Services.AddSingleton<MouseSubSystem>();
-            builder.Services.AddSingleton<ButtonSubsystem>();
+            builder.Services.AddSingleton<ButtonSubSystem>();
             builder.Services.AddSingleton<CursorSubSystem>();
             builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();

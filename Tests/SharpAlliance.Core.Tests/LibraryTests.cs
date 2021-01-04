@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
 using Xunit;
 

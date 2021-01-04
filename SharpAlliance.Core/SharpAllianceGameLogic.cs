@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;

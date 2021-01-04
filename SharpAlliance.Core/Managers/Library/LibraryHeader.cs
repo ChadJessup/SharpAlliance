@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace SharpAlliance.Core.LibraryManager
+namespace SharpAlliance.Core.Managers.Library
 {
     public record LibraryHeader
     {
