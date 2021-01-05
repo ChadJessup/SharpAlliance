@@ -9,5 +9,6 @@ namespace SharpAlliance.Platform.Interfaces
 {
     public interface IOSManager : ISharpAllianceManager
     {
+        ValueTask<bool> Pump(Action gameLoopCallback);
     }
 }

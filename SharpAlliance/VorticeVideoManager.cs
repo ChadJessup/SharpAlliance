@@ -156,6 +156,13 @@ namespace SharpAlliance
         //        return gpPrimarySurface;
         //    }
 
+        public void Draw()
+        {
+            this.graphicsDevice.DrawFrame((w,h) =>
+            {
+            });
+        }
+
         public void Dispose()
         {
             // Unhook events...

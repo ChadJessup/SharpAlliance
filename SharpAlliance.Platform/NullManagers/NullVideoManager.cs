@@ -11,6 +11,10 @@ namespace SharpAlliance.Platform.NullManagers
         {
         }
 
+        public void Draw()
+        {
+        }
+
         public ValueTask<bool> Initialize()
         {
             return ValueTask.FromResult(true);

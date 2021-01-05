@@ -107,7 +107,7 @@ namespace Vortice
             // Create Command queue.
             GraphicsQueue = _d3d12Device.CreateCommandQueue(CommandListType.Direct);
 
-            SwapChainDescription1 swapChainDesc = new SwapChainDescription1
+            SwapChainDescription1 swapChainDesc = new()
             {
                 BufferCount = RenderLatency,
                 Width = window.Width,
@@ -120,7 +120,7 @@ namespace Vortice
 
             using (IDXGISwapChain1 swapChain = DXGIFactory.CreateSwapChainForHwnd(GraphicsQueue, window.Handle, swapChainDesc))
             {
-                DXGIFactory.MakeWindowAssociation(window.Handle, WindowAssociationFlags.IgnoreAltEnter);
+                DXGIFactory.MakeWindowAssociation(window.Handle, WindowAssociationFlags.Valid);
 
                 SwapChain = swapChain.QueryInterface<IDXGISwapChain3>();
                 _backbufferIndex = SwapChain.GetCurrentBackBufferIndex();

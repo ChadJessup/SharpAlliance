@@ -18,6 +18,7 @@ namespace SharpAlliance.Core
         private readonly ButtonSubSystem buttons;
         private readonly CursorSubSystem cursors;
         private readonly SaveGameSubSystem saves;
+        private readonly IVideoManager video;
         private readonly IOSManager os;
         private readonly MouseSubSystem mouse;
         private readonly FontSubSystem fonts;
@@ -35,7 +36,8 @@ namespace SharpAlliance.Core
             HelpScreenSubSystem helpScreenSubSystem,
             IInputManager inputManager,
             SaveGameSubSystem saveGameSubSystem,
-            IOSManager OSManager)
+            IOSManager OSManager,
+            IVideoManager videoManager)
         {
             this.context = context;
             this.strings = strings;
@@ -46,8 +48,9 @@ namespace SharpAlliance.Core
             this.cursors = cursorSubSystem;
             this.fonts = fontSubSystem;
             this.helpScreen = helpScreenSubSystem;
-            this.inputs = (InputManager)inputManager;
+            this.inputs = (inputManager as InputManager)!;
             this.saves = saveGameSubSystem;
+            this.video = videoManager;
 
             this.os = OSManager;
         }
@@ -71,14 +74,21 @@ namespace SharpAlliance.Core
         {
             while (this.context.State == GameState.Running && !token.IsCancellationRequested)
             {
-                while (this.inputs.DequeSpecificEvent(
-                    out var inputAtom,
-                    MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
+//                this.video.Draw();
+                var shouldContinue = await this.os.Pump(() =>
                 {
-                    switch (inputAtom!.Value.MouseEvents)
+                    while (this.inputs.DequeSpecificEvent(out var inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
                     {
+                        switch (inputAtom!.Value.MouseEvents)
+                        {
 
+                        }
                     }
+                });
+
+                if (!shouldContinue)
+                {
+
                 }
             }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -17,6 +18,7 @@ namespace SharpAlliance
     {
         private readonly GameContext context;
         private readonly ILogger<WindowsSubSystem> logger;
+        private readonly IVideoManager video;
         public static readonly string WndClassName = "VorticeWindow";
         public readonly IntPtr HInstance = GetModuleHandle(null);
 
@@ -32,6 +34,7 @@ namespace SharpAlliance
         {
             this.context = context;
             this.logger = logger;
+            this.video = videoManager;
 
             this.Initialize();
         }
@@ -52,14 +55,24 @@ namespace SharpAlliance
             validation = true;
 #endif
 
-            VorticeVideoManager vorticeVideoManager = (VorticeVideoManager)this.context.VideoManager;
-            vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, MainWindow));
+            if (this.MainWindow is not null)
+            {
+                VorticeVideoManager vorticeVideoManager = (VorticeVideoManager)this.context.VideoManager;
+                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, MainWindow));
+            }
 
             return ValueTask.FromResult(true);
         }
 
         public Window MainWindow { get; private set; }
         public bool IsInitialized { get; }
+
+        public void CreateWindow(string name = "Vortice")
+        {
+            this.MainWindow = new Window(name, 800, 600);
+            VorticeVideoManager vorticeVideoManager = (VorticeVideoManager)this.context.VideoManager;
+            vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(true, MainWindow));
+        }
 
         private void PlatformConstruct()
         {
@@ -85,9 +98,9 @@ namespace SharpAlliance
                     );
             }
 
-            // Create main window.
-            MainWindow = new Window("Vortice", 800, 600);
+            // Defer actual window creation until we are on the right thread.
         }
+
         private IntPtr ProcessWindowMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
             if (msg == (uint)WindowMessage.ActivateApp)
@@ -115,48 +128,54 @@ namespace SharpAlliance
             return DefWindowProc(hWnd, msg, wParam, lParam);
         }
 
-        private void PlatformRun()
+        public ValueTask<bool> Pump(Action gameLoopCallback)
         {
-            while (!_exitRequested)
+            if (this.MainWindow is null)
             {
-                if (!_paused)
+                this.CreateWindow();
+            }
+
+            if (!_paused)
+            {
+                Console.WriteLine($"Pump Thread: {Thread.CurrentThread.ManagedThreadId}");
+
+                const uint PM_REMOVE = 1;
+                if (PeekMessage(out var msg, IntPtr.Zero, 0, 0, PM_REMOVE))
                 {
-                    const uint PM_REMOVE = 1;
-                    if (PeekMessage(out var msg, IntPtr.Zero, 0, 0, PM_REMOVE))
+                    TranslateMessage(ref msg);
+                    DispatchMessage(ref msg);
+
+                    if (msg.Value == (uint)WindowMessage.Quit)
                     {
-                        TranslateMessage(ref msg);
-                        DispatchMessage(ref msg);
-
-                        if (msg.Value == (uint)WindowMessage.Quit)
-                        {
-                            _exitRequested = true;
-                            break;
-                        }
+                        _exitRequested = true;
+                        return ValueTask.FromResult(false);
                     }
+                }
 
-                    //Tick();
+                gameLoopCallback();
+            }
+            else
+            {
+                var ret = GetMessage(out var msg, IntPtr.Zero, 0, 0);
+                if (ret == 0)
+                {
+                    _exitRequested = true;
+                    return ValueTask.FromResult(false);
+                }
+                else if (ret == -1)
+                {
+                    //Log.Error("[Win32] - Failed to get message");
+                    _exitRequested = true;
+                    return ValueTask.FromResult(false);
                 }
                 else
                 {
-                    var ret = GetMessage(out var msg, IntPtr.Zero, 0, 0);
-                    if (ret == 0)
-                    {
-                        _exitRequested = true;
-                        break;
-                    }
-                    else if (ret == -1)
-                    {
-                        //Log.Error("[Win32] - Failed to get message");
-                        _exitRequested = true;
-                        break;
-                    }
-                    else
-                    {
-                        TranslateMessage(ref msg);
-                        DispatchMessage(ref msg);
-                    }
+                    TranslateMessage(ref msg);
+                    DispatchMessage(ref msg);
                 }
             }
+
+            return ValueTask.FromResult(true);
         }
 
         private void OnActivated()

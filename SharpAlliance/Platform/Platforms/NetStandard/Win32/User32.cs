@@ -509,6 +509,10 @@ namespace Vortice.Win32
         public static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommand nCmdShow);
 
 
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport(LibraryName, ExactSpelling = true)]
+        public static extern bool UpdateWindow(IntPtr hWnd);
+
         [DllImport(LibraryName)]
         public static extern void PostQuitMessage(int nExitCode);
     }
