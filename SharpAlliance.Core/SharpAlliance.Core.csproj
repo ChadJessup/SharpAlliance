@@ -13,4 +13,8 @@
     <Folder Include="ImageManager\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Vortice.Mathematics" Version="1.3.3" />
+  </ItemGroup>
+
 </Project>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -78,6 +79,8 @@ namespace SharpAlliance.Core.Managers
             this.mouseSystem = mouseSubSystem;
             this.buttonSystem = buttonSubsystem;
         }
+
+        public void GetCursorPosition(out Point mousePos) => GetCursorPos(out mousePos);
 
         public ValueTask<bool> Initialize()
         {
@@ -190,6 +193,18 @@ namespace SharpAlliance.Core.Managers
         public void MouseChangeEvent(MouseEvent mouseEvent)
         {
         }
+
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LPPOINT
+        {
+            public long x;
+            public long y;
+        }
+
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", ExactSpelling = true)]
+        public static extern bool GetCursorPos(out Point lpPoint);
 
         public struct InputAtom
         {

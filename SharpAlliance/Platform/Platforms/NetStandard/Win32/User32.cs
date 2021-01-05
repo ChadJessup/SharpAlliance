@@ -369,6 +369,13 @@ namespace Vortice.Win32
         public Point Point;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct LPPOINT
+    {
+        public long x;
+        public long y;
+    }
+
     public delegate IntPtr WNDPROC(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -508,6 +515,9 @@ namespace Vortice.Win32
         [DllImport(LibraryName, ExactSpelling = true)]
         public static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommand nCmdShow);
 
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport(LibraryName, ExactSpelling = true)]
+        public static extern bool GetCursorPos(out LPPOINT lpPoint);
 
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport(LibraryName, ExactSpelling = true)]

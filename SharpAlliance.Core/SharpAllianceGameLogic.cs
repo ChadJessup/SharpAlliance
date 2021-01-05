@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -23,6 +24,8 @@ namespace SharpAlliance.Core
         private readonly MouseSubSystem mouse;
         private readonly FontSubSystem fonts;
         private readonly InputManager inputs;
+
+        private IScreen guiCurrentScreen;
 
         public bool IsInitialized { get; private set; }
 
@@ -74,9 +77,15 @@ namespace SharpAlliance.Core
         {
             while (this.context.State == GameState.Running && !token.IsCancellationRequested)
             {
-//                this.video.Draw();
                 var shouldContinue = await this.os.Pump(() =>
                 {
+                    IScreen uiOldScreen = guiCurrentScreen;
+
+                    this.inputs.GetCursorPosition(out Point MousePos);
+
+                    // Hook into mouse stuff for MOVEMENT MESSAGES
+                    //MouseSystemHook(MOUSE_POS, (UINT16)MousePos.x, (UINT16)MousePos.y, _LeftButtonDown, _RightButtonDown);
+
                     while (this.inputs.DequeSpecificEvent(out var inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
                     {
                         switch (inputAtom!.Value.MouseEvents)
@@ -88,7 +97,7 @@ namespace SharpAlliance.Core
 
                 if (!shouldContinue)
                 {
-
+                    this.context.State = GameState.ExitRequested;
                 }
             }
 

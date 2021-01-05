@@ -9,5 +9,6 @@
         Paused,
         Exiting,
         Disposing,
+        ExitRequested,
     }
 }

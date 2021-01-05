@@ -137,8 +137,6 @@ namespace SharpAlliance
 
             if (!_paused)
             {
-                Console.WriteLine($"Pump Thread: {Thread.CurrentThread.ManagedThreadId}");
-
                 const uint PM_REMOVE = 1;
                 if (PeekMessage(out var msg, IntPtr.Zero, 0, 0, PM_REMOVE))
                 {
