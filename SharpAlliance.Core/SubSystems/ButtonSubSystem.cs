@@ -41,6 +41,10 @@ namespace SharpAlliance.Core.SubSystems
 
         public List<ButtonPics> ButtonPictures { get; } = new(Constants.MAX_BUTTON_PICS);
 
+        public void ReleaseAnchorMode()
+        {
+        }
+
         public void Dispose()
         {
         }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using SharpAlliance.Platform.Interfaces;
 using SharpAlliance.Platform.NullManagers;
 
@@ -77,6 +74,7 @@ namespace SharpAlliance.Platform
             serviceCollection.TryAddSingleton<ISound3dManager, NullSoundManager>();
             serviceCollection.TryAddSingleton<IInputManager, NullInputManager>();
             serviceCollection.TryAddSingleton<IVideoManager, NullVideoManager>();
+            serviceCollection.TryAddSingleton<IMusicManager, NullMusicManager>();
 
             // These can be overwritten by custom implementations, but are fairly generic.
             serviceCollection.TryAddSingleton<IScreenManager, ScreenManager>();
@@ -104,6 +102,7 @@ namespace SharpAlliance.Platform
             this.GameContext.ClockManager = provider.GetRequiredService<IClockManager>();
             this.GameContext.GameLogic = provider.GetRequiredService<IGameLogic>();
             this.GameContext.OSManager = provider.GetRequiredService<IOSManager>();
+            this.GameContext.MusicManager = provider.GetRequiredService<IMusicManager>();
 
             // Purposefully block on initialize with .Result.
             var success = this.GameContext.Initialize().Result;

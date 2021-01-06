@@ -36,6 +36,7 @@ namespace SharpAlliance.Platform
         public IGameLogic GameLogic { get; set; }
         public IOSManager OSManager { get; set; }
 
+        public IMusicManager MusicManager { get; set; } = new NullMusicManager();
         public IVideoManager VideoManager { get; set; } = new NullVideoManager();
         public IInputManager InputManager { get; set; } = new NullInputManager();
         public IFileManager FileManager { get; set; } = new NullFileManager();

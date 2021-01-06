@@ -24,6 +24,7 @@ namespace SharpAlliance.Core
         private readonly MouseSubSystem mouse;
         private readonly FontSubSystem fonts;
         private readonly InputManager inputs;
+        private readonly IMusicManager music;
 
         private IScreen guiCurrentScreen;
 
@@ -40,7 +41,8 @@ namespace SharpAlliance.Core
             IInputManager inputManager,
             SaveGameSubSystem saveGameSubSystem,
             IOSManager OSManager,
-            IVideoManager videoManager)
+            IVideoManager videoManager,
+            IMusicManager musicManager)
         {
             this.context = context;
             this.strings = strings;
@@ -54,6 +56,7 @@ namespace SharpAlliance.Core
             this.inputs = (inputManager as InputManager)!;
             this.saves = saveGameSubSystem;
             this.video = videoManager;
+            this.music = musicManager;
 
             this.os = OSManager;
         }
@@ -84,7 +87,9 @@ namespace SharpAlliance.Core
                     this.inputs.GetCursorPosition(out Point MousePos);
 
                     // Hook into mouse stuff for MOVEMENT MESSAGES
-                    //MouseSystemHook(MOUSE_POS, (UINT16)MousePos.x, (UINT16)MousePos.y, _LeftButtonDown, _RightButtonDown);
+                    this.mouse.MouseHook(MouseEvents.MOUSE_POS, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+
+                    this.music.MusicPoll(false);
 
                     while (this.inputs.DequeSpecificEvent(out var inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
                     {

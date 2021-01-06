@@ -12,5 +12,10 @@ namespace SharpAlliance.Core.SubSystems
         public void Dispose()
         {
         }
+
+        internal void SetCurrentCursorFromDatabase(int cursor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

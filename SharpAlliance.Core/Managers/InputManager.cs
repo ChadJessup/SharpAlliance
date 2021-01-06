@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -40,8 +39,8 @@ namespace SharpAlliance.Core.Managers
         private int guiRightButtonRepeatTimer;
 
         private bool gfTrackMousePos;            // TRUE = queue mouse movement events, FALSE = don't
-        private bool gfLeftButtonState;      // TRUE = Pressed, FALSE = Not Pressed
-        private bool gfRightButtonState;     // TRUE = Pressed, FALSE = Not Pressed
+        public bool gfLeftButtonState { get; set; }      // TRUE = Pressed, FALSE = Not Pressed
+        public bool gfRightButtonState { get; set; }     // TRUE = Pressed, FALSE = Not Pressed
         private int gusMouseXPos;                    // X position of the mouse on screen
         private int gusMouseYPos;                    // y position of the mouse on screen
 
@@ -71,7 +70,7 @@ namespace SharpAlliance.Core.Managers
         //StringInput* gpCurrentStringDescriptor;
 
         public InputManager(
-            ILogger<InputManager> logger, 
+            ILogger<InputManager> logger,
             MouseSubSystem mouseSubSystem,
             ButtonSubSystem buttonSubsystem)
         {
