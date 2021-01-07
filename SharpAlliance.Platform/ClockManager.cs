@@ -53,5 +53,10 @@ namespace SharpAlliance.Platform
 
             this.globalTimer?.Dispose();
         }
+
+        public void UpdateClock()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

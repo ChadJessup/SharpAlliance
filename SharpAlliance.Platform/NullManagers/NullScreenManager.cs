@@ -8,6 +8,8 @@ namespace SharpAlliance.Platform.NullManagers
     {
         public Dictionary<string, IScreen> Screens { get; set; } = new();
         public bool IsInitialized { get; } = true;
+        public IScreen CurrentScreen { get; }
+        public IScreen guiPendingScreen { get; set; }
 
         public IScreenManager AddScreen<TScreen>(string screenName)
             where TScreen : IScreen
@@ -45,8 +47,29 @@ namespace SharpAlliance.Platform.NullManagers
             return ValueTask.FromResult<IScreen>(new NullScreen());
         }
 
-        private class NullScreen : IScreen
+        public void RefreshScreen(object p)
         {
+            throw new System.NotImplementedException();
+        }
+
+        public void HandleNewScreenChange(IScreen uiOldScreen, IScreen guiCurrentScreen)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void EndMapScreen(bool v)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void ExitLaptop()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public class NullScreen : IScreen
+        {
+            public static IScreen Instance { get; } = new NullScreen();
             public bool IsInitialized { get; set; } = true;
             public ScreenState State { get; set; } = ScreenState.Unknown;
 
@@ -59,9 +82,9 @@ namespace SharpAlliance.Platform.NullManagers
             {
             }
 
-            public ValueTask<int> Handle()
+            public ValueTask<IScreen> Handle()
             {
-                return ValueTask.FromResult(0);
+                return ValueTask.FromResult<IScreen>(this);
             }
 
             public ValueTask<bool> Initialize()

@@ -17,7 +17,6 @@ namespace SharpAlliance.Core.SubSystems
         }
 
         private readonly ILogger<ButtonSubSystem> logger;
-        private readonly MouseSubSystem mouseSystem;
         private int gbDisabledButtonStyle;
         private GUI_BUTTON gpCurrentFastHelpButton;
 
@@ -33,10 +32,9 @@ namespace SharpAlliance.Core.SubSystems
 
         private int ButtonsInList = 0;
 
-        public ButtonSubSystem(ILogger<ButtonSubSystem> logger, MouseSubSystem mouseSubSystem)
+        public ButtonSubSystem(ILogger<ButtonSubSystem> logger)
         {
             this.logger = logger;
-            this.mouseSystem = mouseSubSystem;
         }
 
         public List<ButtonPics> ButtonPictures { get; } = new(Constants.MAX_BUTTON_PICS);

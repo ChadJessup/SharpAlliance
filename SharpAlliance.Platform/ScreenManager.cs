@@ -20,6 +20,7 @@ namespace SharpAlliance.Platform
         public Dictionary<string, IScreen> Screens { get; set; } = new();
         public IScreen CurrentScreen { get; private set; }
         public bool IsInitialized { get; private set; }
+        public IScreen guiPendingScreen { get; set; }
 
         public ValueTask<bool> Initialize()
         {
@@ -85,14 +86,14 @@ namespace SharpAlliance.Platform
             return this;
         }
 
-        public ValueTask<int> HandleCurrentScreen()
+        public ValueTask<IScreen?> HandleCurrentScreen()
         {
             if (this.CurrentScreen != null)
             {
-                return this.CurrentScreen.Handle();
+                return this.CurrentScreen.Handle()!;
             }
 
-            return ValueTask.FromResult(-1);
+            return ValueTask.FromResult<IScreen?>(null);
         }
 
         public void Dispose()
@@ -101,6 +102,14 @@ namespace SharpAlliance.Platform
             {
                 screen.Dispose();
             }
+        }
+
+        public void EndMapScreen(bool v)
+        {
+        }
+
+        public void ExitLaptop()
+        {
         }
     }
 
@@ -111,7 +120,7 @@ namespace SharpAlliance.Platform
         bool IsInitialized { get; set; }
         ValueTask Activate();
 
-        ValueTask<int> Handle();
+        ValueTask<IScreen> Handle();
 
         ScreenState State { get; set; }
     }

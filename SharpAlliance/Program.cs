@@ -74,12 +74,14 @@ namespace SharpAlliance
         {
             builder.AddDependency<IOSManager, WindowsSubSystem>();
 
+            builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<MouseSubSystem>();
             builder.Services.AddSingleton<ButtonSubSystem>();
             builder.Services.AddSingleton<CursorSubSystem>();
-            builder.Services.AddSingleton<FontSubSystem>();
-            builder.Services.AddSingleton<HelpScreenSubSystem>();
             builder.Services.AddSingleton<SaveGameSubSystem>();
+            builder.Services.AddSingleton<MessageBoxSubSystem>();
+            builder.Services.AddSingleton<HelpScreenSubSystem>();
+            builder.Services.AddSingleton<Globals>();
 
             return builder;
         }

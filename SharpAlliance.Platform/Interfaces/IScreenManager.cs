@@ -11,5 +11,10 @@ namespace SharpAlliance.Platform.Interfaces
         Dictionary<string, IScreen> Screens { get; set; }
         ValueTask<IScreen> GetScreen(string screenName, bool activate);
         IScreenManager AddScreen<TScreen>(string screenName) where TScreen : IScreen;
+        IScreen CurrentScreen { get; }
+        IScreen guiPendingScreen { get; set; }
+
+        void EndMapScreen(bool v);
+        void ExitLaptop();
     }
 }

@@ -48,9 +48,9 @@ namespace SharpAlliance.Core.Screens
             return ValueTask.FromResult(true);
         }
 
-        public ValueTask<int> Handle()
+        public ValueTask<IScreen> Handle()
         {
-            return ValueTask.FromResult(0);
+            return ValueTask.FromResult<IScreen>(this);
         }
 
         public void Dispose()

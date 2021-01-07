@@ -9,5 +9,6 @@ namespace SharpAlliance.Platform.Interfaces
     public interface IClockManager : ISharpAllianceManager
     {
         long GetClock();
+        void UpdateClock();
     }
 }

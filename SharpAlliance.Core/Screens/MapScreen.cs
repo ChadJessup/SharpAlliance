@@ -7,7 +7,7 @@ using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core.Screens
 {
-    public class InitScreen : IScreen
+    public class MapScreen : IScreen
     {
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }

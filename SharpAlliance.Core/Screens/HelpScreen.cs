@@ -7,7 +7,7 @@ using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core.Screens
 {
-    public class InitScreen : IScreen
+    public class HelpScreen : IScreen
     {
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }
@@ -15,6 +15,10 @@ namespace SharpAlliance.Core.Screens
         public ValueTask Activate()
         {
             return ValueTask.CompletedTask;
+        }
+
+        public void Dispose()
+        {
         }
 
         public ValueTask<IScreen> Handle()
@@ -26,10 +30,5 @@ namespace SharpAlliance.Core.Screens
         {
             return ValueTask.FromResult(true);
         }
-
-        public void Dispose()
-        {
-        }
-
     }
 }
