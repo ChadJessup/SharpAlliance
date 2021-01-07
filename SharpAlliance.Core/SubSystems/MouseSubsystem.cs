@@ -4,12 +4,14 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.SubSystems
 {
     public class MouseSubSystem : IDisposable
     {
         private readonly ILogger<MouseSubSystem> logger;
+        private readonly IClockManager clock;
         private readonly ButtonSubSystem buttons;
         private readonly CursorSubSystem cursors;
         private const int MSYS_DOUBLECLICK_DELAY = 400;
@@ -18,7 +20,7 @@ namespace SharpAlliance.Core.SubSystems
         //click to determine if a double click event has been detected.
         private MouseRegion? gpRegionLastLButtonDown = null;
         private MouseRegion? gpRegionLastLButtonUp = null;
-        private int guiRegionLastLButtonDownTime = 0;
+        private long guiRegionLastLButtonDownTime = 0;
 
         private bool MSYS_ScanForID = false;
         private int MSYS_CurrentID = MSYS_ID.SYSTEM;
@@ -80,12 +82,14 @@ namespace SharpAlliance.Core.SubSystems
 
         public MouseSubSystem(
             ILogger<MouseSubSystem> logger,
+            IClockManager clockManager,
             ButtonSubSystem buttonManager,
             CursorSubSystem cursorSubSystem)
         {
             this.logger = logger;
 
             this.logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
+            this.clock = clockManager;
             this.buttons = buttonManager;
             this.cursors = cursorSubSystem;
 
@@ -288,11 +292,11 @@ namespace SharpAlliance.Core.SubSystems
 
             while (!found && MSYS_CurrRegion is not null)
             {
-                if (MSYS_CurrRegion.uiFlags & (MSYS_REGION_ENABLED | MSYS_ALLOW_DISABLED_FASTHELP) &&
-                   (MSYS_CurrRegion.RegionTopLeftX <= MSYS_CurrentMX) &&       // Check boundaries
-                   (MSYS_CurrRegion.RegionTopLeftY <= MSYS_CurrentMY) &&
-                   (MSYS_CurrRegion.RegionBottomRightX >= MSYS_CurrentMX) &&
-                   (MSYS_CurrRegion.RegionBottomRightY >= MSYS_CurrentMY))
+                if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED | MouseRegionFlags.ALLOW_DISABLED_FASTHELP)
+                    && (MSYS_CurrRegion.RegionTopLeftX <= MSYS_CurrentMX)       // Check boundaries
+                    && (MSYS_CurrRegion.RegionTopLeftY <= MSYS_CurrentMY)
+                    && (MSYS_CurrRegion.RegionBottomRightX >= MSYS_CurrentMX)
+                    && (MSYS_CurrRegion.RegionBottomRightY >= MSYS_CurrentMY))
                 {
                     // We got the right region. We don't need to check for priorities 'cause
                     // the whole list is sorted the right way!
@@ -306,38 +310,39 @@ namespace SharpAlliance.Core.SubSystems
 
             if (MSYS_PrevRegion is not null)
             {
-                MSYS_PrevRegion.uiFlags &= (~MSYS_MOUSE_IN_AREA);
+                MSYS_PrevRegion.uiFlags &= (~MouseRegionFlags.MOUSE_IN_AREA);
 
                 if (MSYS_PrevRegion != MSYS_CurrRegion)
                 {
                     //Remove the help text for the previous region if one is currently being displayed.
-                    if (MSYS_PrevRegion.FastHelpText)
+                    if (MSYS_PrevRegion.FastHelpText is not null)
                     {
                         //ExecuteMouseHelpEndCallBack( MSYS_PrevRegion );
 
-//# ifdef _JA2_RENDER_DIRTY
-//                        if (MSYS_PrevRegion.uiFlags & MSYS_GOT_BACKGROUND)
-//                        {
-//                            FreeBackgroundRectPending(MSYS_PrevRegion.FastHelpRect);
-//                        }
-//#endif
-                        MSYS_PrevRegion.uiFlags &= (~MSYS_GOT_BACKGROUND);
-                        MSYS_PrevRegion.uiFlags &= (~MSYS_FASTHELP_RESET);
+                        //# ifdef _JA2_RENDER_DIRTY
+                        //                        if (MSYS_PrevRegion.uiFlags & MSYS_GOT_BACKGROUND)
+                        //                        {
+                        //                            FreeBackgroundRectPending(MSYS_PrevRegion.FastHelpRect);
+                        //                        }
+                        //#endif
+                        MSYS_PrevRegion.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
+                        MSYS_PrevRegion.uiFlags &= (~MouseRegionFlags.FASTHELP_RESET);
 
                         //if( region.uiFlags & MSYS_REGION_ENABLED )
                         //	region.uiFlags |= BUTTON_DIRTY;
-//# ifndef JA2			
-//                        VideoRemoveToolTip();
-//#endif
+                        //# ifndef JA2			
+                        //                        VideoRemoveToolTip();
+                        //#endif
                     }
 
                     MSYS_CurrRegion.FastHelpTimer = gsFastHelpDelay;
 
                     // Force a callbacks to happen on previous region to indicate that
                     // the mouse has left the old region
-                    if (MSYS_PrevRegion.uiFlags & MSYS_MOVE_CALLBACK && MSYS_PrevRegion.uiFlags & MSYS_REGION_ENABLED)
+                    if (MSYS_PrevRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK)
+                        && MSYS_PrevRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                     {
-                        (*(MSYS_PrevRegion.MovementCallback))(MSYS_PrevRegion, MSYS_CALLBACK_REASON_LOST_MOUSE);
+                        MSYS_PrevRegion.MovementCallback(MSYS_PrevRegion, MouseCallbackReasons.LOST_MOUSE);
                     }
                 }
             }
@@ -349,32 +354,34 @@ namespace SharpAlliance.Core.SubSystems
                 {
                     //Kris -- October 27, 1997
                     //Implemented gain mouse region
-                    if (MSYS_CurrRegion.uiFlags & MSYS_MOVE_CALLBACK)
+                    
+                    if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK))
                     {
-                        if (MSYS_CurrRegion.FastHelpText && !(MSYS_CurrRegion.uiFlags & MSYS_FASTHELP_RESET))
+                        if (MSYS_CurrRegion.FastHelpText is not null
+                            && !(MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.FASTHELP_RESET)))
                         {
                             //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
                             MSYS_CurrRegion.FastHelpTimer = gsFastHelpDelay;
-//# ifdef _JA2_RENDER_DIRTY
-//                            if (MSYS_CurrRegion.uiFlags & MSYS_GOT_BACKGROUND)
-//                                FreeBackgroundRectPending(MSYS_CurrRegion.FastHelpRect);
-//#endif
-                            MSYS_CurrRegion.uiFlags &= (~MSYS_GOT_BACKGROUND);
-                            MSYS_CurrRegion.uiFlags |= MSYS_FASTHELP_RESET;
+                            //# ifdef _JA2_RENDER_DIRTY
+                            //                            if (MSYS_CurrRegion.uiFlags & MSYS_GOT_BACKGROUND)
+                            //                                FreeBackgroundRectPending(MSYS_CurrRegion.FastHelpRect);
+                            //#endif
+                            MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
+                            MSYS_CurrRegion.uiFlags |= MouseRegionFlags.FASTHELP_RESET;
 
                             //if( b.uiFlags & BUTTON_ENABLED )
                             //	b.uiFlags |= BUTTON_DIRTY;
                         }
-                        if (MSYS_CurrRegion.uiFlags & MSYS_REGION_ENABLED)
+                        if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                         {
-                            (*(MSYS_CurrRegion.MovementCallback))(MSYS_CurrRegion, MSYS_CALLBACK_REASON_GAIN_MOUSE);
+                            MSYS_CurrRegion.MovementCallback(MSYS_CurrRegion, MouseCallbackReasons.GAIN_MOUSE);
                         }
                     }
 
                     // if the cursor is set and is not set to no cursor
-                    if (MSYS_CurrRegion.uiFlags & MSYS_REGION_ENABLED &&
-                                  MSYS_CurrRegion.uiFlags & MSYS_SET_CURSOR &&
-                                  MSYS_CurrRegion.Cursor != MSYS_NO_CURSOR)
+                    if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED) &&
+                                  MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.SET_CURSOR) &&
+                                  MSYS_CurrRegion.Cursor != 0)
                     {
                         MSYS_SetCurrentCursor(MSYS_CurrRegion.Cursor);
                     }
@@ -385,14 +392,14 @@ namespace SharpAlliance.Core.SubSystems
                         pTempRegion = MSYS_CurrRegion.next;
                         while ((pTempRegion != null) && (!fFound))
                         {
-                            if ((pTempRegion.uiFlags & MSYS_REGION_ENABLED) &&
+                            if ((pTempRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED)) &&
                                    (pTempRegion.RegionTopLeftX <= MSYS_CurrentMX) &&
                                    (pTempRegion.RegionTopLeftY <= MSYS_CurrentMY) &&
                                    (pTempRegion.RegionBottomRightX >= MSYS_CurrentMX) &&
-                                   (pTempRegion.RegionBottomRightY >= MSYS_CurrentMY) && (pTempRegion.uiFlags & MSYS_SET_CURSOR))
+                                   (pTempRegion.RegionBottomRightY >= MSYS_CurrentMY) && (pTempRegion.uiFlags.HasFlag(MouseRegionFlags.SET_CURSOR)))
                             {
                                 fFound = true;
-                                if (pTempRegion.Cursor != MSYS_NO_CURSOR)
+                                if (pTempRegion.Cursor != 0)//MSYS_NO_CURSOR)
                                 {
                                     MSYS_SetCurrentCursor(pTempRegion.Cursor);
                                 }
@@ -405,7 +412,7 @@ namespace SharpAlliance.Core.SubSystems
                 // OK, if we do not have a button down, any button is game!
                 if (!gfClickedModeOn || (gfClickedModeOn && gusClickedIDNumber == MSYS_CurrRegion.IDNumber))
                 {
-                    MSYS_CurrRegion.uiFlags |= MSYS_MOUSE_IN_AREA;
+                    MSYS_CurrRegion.uiFlags |= MouseRegionFlags.MOUSE_IN_AREA;
 
                     MSYS_CurrRegion.MouseXPos = MSYS_CurrentMX;
                     MSYS_CurrRegion.MouseYPos = MSYS_CurrentMY;
@@ -414,10 +421,11 @@ namespace SharpAlliance.Core.SubSystems
 
                     MSYS_CurrRegion.ButtonState = MSYS_CurrentButtons;
 
-                    if (MSYS_CurrRegion.uiFlags & MSYS_REGION_ENABLED &&
-                            MSYS_CurrRegion.uiFlags & MSYS_MOVE_CALLBACK && MSYS_Action & MouseDos.MOVE)
+                    if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED)
+                        && MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK)
+                        && MSYS_Action.HasFlag(MouseDos.MOVE))
                     {
-                        (*(MSYS_CurrRegion.MovementCallback))(MSYS_CurrRegion, MSYS_CALLBACK_REASON_MOVE);
+                        MSYS_CurrRegion.ButtonCallback(MSYS_CurrRegion, MouseCallbackReasons.MOVE);
                     }
 
                     //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
@@ -425,82 +433,84 @@ namespace SharpAlliance.Core.SubSystems
 
                     MSYS_Action &= (~MouseDos.MOVE);
 
-                    if ((MSYS_CurrRegion.uiFlags & MSYS_BUTTON_CALLBACK) && (MSYS_Action & MouseDos.BUTTONS))
+                    if ((MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.BUTTON_CALLBACK)) && (MSYS_Action.HasFlag(MouseDos.BUTTONS)))
                     {
-                        if (MSYS_CurrRegion.uiFlags & MSYS_REGION_ENABLED)
+                        if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                         {
-                            ButtonReason = MSYS_CALLBACK_REASON_NONE;
-                            if (MSYS_Action & MouseDos.LBUTTON_DWN)
+                            ButtonReason = (int)MouseCallbackReasons.NONE;
+                            if (MSYS_Action.HasFlag(MouseDos.LBUTTON_DWN))
                             {
-                                ButtonReason |= MSYS_CALLBACK_REASON_LBUTTON_DWN;
+                                ButtonReason |= (int)MouseCallbackReasons.LBUTTON_DWN;
                                 gfClickedModeOn = true;
                                 // Set global ID
                                 gusClickedIDNumber = MSYS_CurrRegion.IDNumber;
                             }
 
-                            if (MSYS_Action & MouseDos.LBUTTON_UP)
+                            if (MSYS_Action.HasFlag(MouseDos.LBUTTON_UP))
                             {
-                                ButtonReason |= MSYS_CALLBACK_REASON_LBUTTON_UP;
+                                ButtonReason |= (int)MouseCallbackReasons.LBUTTON_UP;
                                 gfClickedModeOn = false;
                             }
 
-                            if (MSYS_Action & MouseDos.RBUTTON_DWN)
+                            if (MSYS_Action.HasFlag(MouseDos.RBUTTON_DWN))
                             {
-                                ButtonReason |= MSYS_CALLBACK_REASON_RBUTTON_DWN;
+                                ButtonReason |= (int)MouseCallbackReasons.RBUTTON_DWN;
                                 gfClickedModeOn = true;
                                 // Set global ID
                                 gusClickedIDNumber = MSYS_CurrRegion.IDNumber;
                             }
 
-                            if (MSYS_Action & MouseDos.RBUTTON_UP)
+                            if (MSYS_Action.HasFlag(MouseDos.RBUTTON_UP))
                             {
-                                ButtonReason |= MSYS_CALLBACK_REASON_RBUTTON_UP;
+                                ButtonReason |= (int)MouseCallbackReasons.RBUTTON_UP;
                                 gfClickedModeOn = false;
                             }
 
                             // ATE: Added repeat resons....
-                            if (MSYS_Action & MouseDos.LBUTTON_REPEAT)
+                            if (MSYS_Action.HasFlag(MouseDos.LBUTTON_REPEAT))
                             {
-                                ButtonReason |= MSYS_CALLBACK_REASON_LBUTTON_REPEAT;
+                                ButtonReason |= (int)MouseCallbackReasons.LBUTTON_REPEAT;
                             }
 
-                            if (MSYS_Action & MouseDos.RBUTTON_REPEAT)
+                            if (MSYS_Action.HasFlag(MouseDos.RBUTTON_REPEAT))
                             {
-                                ButtonReason |= MSYS_CALLBACK_REASON_RBUTTON_REPEAT;
+                                ButtonReason |= (int)MouseCallbackReasons.RBUTTON_REPEAT;
                             }
 
-                            if (ButtonReason != MSYS_CALLBACK_REASON_NONE)
+                            if (ButtonReason != (int)MouseCallbackReasons.NONE)
                             {
-                                if (MSYS_CurrRegion.uiFlags & MSYS_FASTHELP)
+
+                                if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.FASTHELP))
                                 {
                                     // Button was clicked so remove any FastHelp text
-                                    MSYS_CurrRegion.uiFlags &= (~MSYS_FASTHELP);
+                                    MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.FASTHELP);
                                     //# ifdef _JA2_RENDER_DIRTY
                                     //                                    if (MSYS_CurrRegion.uiFlags & MSYS_GOT_BACKGROUND)
                                     //                                        FreeBackgroundRectPending(MSYS_CurrRegion.FastHelpRect);
                                     //#endif
-                                    MSYS_CurrRegion.uiFlags &= (~MSYS_GOT_BACKGROUND);
+
+                                    MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
 
                                     //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
                                     MSYS_CurrRegion.FastHelpTimer = gsFastHelpDelay;
-                                    MSYS_CurrRegion.uiFlags &= (~MSYS_FASTHELP_RESET);
+                                    MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.FASTHELP_RESET);
 
                                     //if( b.uiFlags & BUTTON_ENABLED )
                                     //	b.uiFlags |= BUTTON_DIRTY;
-                                    VideoRemoveToolTip();
+                                    // VideoRemoveToolTip();
                                 }
 
                                 //Kris: Nov 31, 1999 -- Added support for double click events.
                                 //This is where double clicks are checked and passed down.
-                                if (ButtonReason == MSYS_CALLBACK_REASON_LBUTTON_DWN)
+                                if (ButtonReason == (int)MouseCallbackReasons.LBUTTON_DWN)
                                 {
-                                    int uiCurrTime = GetClock();
+                                    long uiCurrTime = this.clock.GetClock();
                                     if (gpRegionLastLButtonDown == MSYS_CurrRegion &&
                                             gpRegionLastLButtonUp == MSYS_CurrRegion &&
                                             uiCurrTime <= guiRegionLastLButtonDownTime + MSYS_DOUBLECLICK_DELAY)
                                     { //Sequential left click on same button within the maximum time allowed for a double click
                                       //Double click check succeeded, set flag and reset double click globals.
-                                        ButtonReason |= MSYS_CALLBACK_REASON_LBUTTON_DOUBLECLICK;
+                                        ButtonReason |= (int)MouseCallbackReasons.LBUTTON_DOUBLECLICK;
                                         gpRegionLastLButtonDown = null;
                                         gpRegionLastLButtonUp = null;
                                         guiRegionLastLButtonDownTime = 0;
@@ -508,12 +518,12 @@ namespace SharpAlliance.Core.SubSystems
                                     else
                                     { //First click, record time and region pointer (to check if 2nd click detected later)
                                         gpRegionLastLButtonDown = MSYS_CurrRegion;
-                                        guiRegionLastLButtonDownTime = GetClock();
+                                        guiRegionLastLButtonDownTime = this.clock.GetClock();
                                     }
                                 }
-                                else if (ButtonReason == MSYS_CALLBACK_REASON_LBUTTON_UP)
+                                else if (ButtonReason == (int)MouseCallbackReasons.LBUTTON_UP)
                                 {
-                                    int uiCurrTime = GetClock();
+                                    long uiCurrTime = this.clock.GetClock();
                                     if (gpRegionLastLButtonDown == MSYS_CurrRegion &&
                                             uiCurrTime <= guiRegionLastLButtonDownTime + MSYS_DOUBLECLICK_DELAY)
                                     { //Double click is Left down, then left up, then left down.  We have just detected the left up here (step 2).
@@ -527,36 +537,37 @@ namespace SharpAlliance.Core.SubSystems
                                     }
                                 }
 
-                                (*(MSYS_CurrRegion.ButtonCallback))(MSYS_CurrRegion, ButtonReason);
+                                // TODO: Cast to MouseCallbackReasons shouldn't be here, move to two sep callbacks.
+                                MSYS_CurrRegion.ButtonCallback(MSYS_CurrRegion, (MouseCallbackReasons)ButtonReason);
                             }
                         }
                     }
 
                     MSYS_Action &= (~MouseDos.BUTTONS);
                 }
-                else if (MSYS_CurrRegion.uiFlags & MSYS_REGION_ENABLED)
+                else if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                 {
                     // OK here, if we have release a button, UNSET LOCK wherever you are....
                     // Just don't give this button the message....
-                    if (MSYS_Action & MouseDos.RBUTTON_UP)
+                    if (MSYS_Action.HasFlag(MouseDos.RBUTTON_UP))
                     {
                         gfClickedModeOn = false;
                     }
-                    if (MSYS_Action & MouseDos.LBUTTON_UP)
+                    if (MSYS_Action.HasFlag(MouseDos.LBUTTON_UP))
                     {
                         gfClickedModeOn = false;
                     }
 
                     // OK, you still want move messages however....
-                    MSYS_CurrRegion.uiFlags |= MSYS_MOUSE_IN_AREA;
+                    MSYS_CurrRegion.uiFlags |= MouseRegionFlags.MOUSE_IN_AREA;
                     MSYS_CurrRegion.MouseXPos = MSYS_CurrentMX;
                     MSYS_CurrRegion.MouseYPos = MSYS_CurrentMY;
                     MSYS_CurrRegion.RelativeXPos = MSYS_CurrentMX - MSYS_CurrRegion.RegionTopLeftX;
                     MSYS_CurrRegion.RelativeYPos = MSYS_CurrentMY - MSYS_CurrRegion.RegionTopLeftY;
 
-                    if ((MSYS_CurrRegion.uiFlags & MSYS_MOVE_CALLBACK) && (MSYS_Action & MouseDos.MOVE))
+                    if ((MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK)) && (MSYS_Action.HasFlag(MouseDos.MOVE)))
                     {
-                        (*(MSYS_CurrRegion.MovementCallback))(MSYS_CurrRegion, MSYS_CALLBACK_REASON_MOVE);
+                        MSYS_CurrRegion.MovementCallback(MSYS_CurrRegion, MouseCallbackReasons.MOVE);
                     }
 
                     MSYS_Action &= (~MouseDos.MOVE);
@@ -1016,6 +1027,6 @@ namespace SharpAlliance.Core.SubSystems
         BUTTONS = LBUTTON_DWN | LBUTTON_UP | RBUTTON_DWN | RBUTTON_UP | RBUTTON_REPEAT | LBUTTON_REPEAT,
     }
 
-    public delegate void MouseCallback(MouseRegion region, int callbackReason);
+    public delegate void MouseCallback(MouseRegion region, MouseCallbackReasons callbackReason);
     public delegate void MOUSE_HELPTEXT_DONE_CALLBACK();
 }

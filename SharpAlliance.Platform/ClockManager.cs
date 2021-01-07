@@ -32,6 +32,11 @@ namespace SharpAlliance.Platform
             return ValueTask.FromResult(true);
         }
 
+        public long GetClock()
+        {
+            return guiCurrentTime;
+        }
+
         private void ClockCallback(object sender, ElapsedEventArgs e)
         {
             this.guiCurrentTime = e.SignalTime.Ticks;
