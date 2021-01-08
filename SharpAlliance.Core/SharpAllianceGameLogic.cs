@@ -24,7 +24,7 @@ namespace SharpAlliance.Core
         private readonly IOSManager os;
         private readonly MouseSubSystem mouse;
         private readonly FontSubSystem fonts;
-        private readonly InputManager inputs;
+        private readonly IInputManager inputs;
         private readonly IMusicManager music;
         private readonly MessageBoxSubSystem messageBox;
         private readonly Globals globals;
@@ -57,7 +57,7 @@ namespace SharpAlliance.Core
             this.cursors = cursorSubSystem;
             this.fonts = fontSubSystem;
             this.helpScreen = helpScreenSubSystem;
-            this.inputs = (inputManager as InputManager)!;
+            this.inputs = inputManager;
             this.saves = saveGameSubSystem;
             this.video = videoManager;
             this.music = musicManager;
@@ -99,7 +99,7 @@ namespace SharpAlliance.Core
 
                     this.music.MusicPoll(false);
 
-                    while (this.inputs.DequeSpecificEvent(out var inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
+                    while (this.inputs.DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
                     {
                         switch (inputAtom!.Value.MouseEvents)
                         {
@@ -184,7 +184,7 @@ namespace SharpAlliance.Core
                         switch (guiCurrentScreen)
                         {
                             case MapScreen ms when sm.guiPendingScreen is MSG_BOX_SCREEN:
-                                    sm.EndMapScreen(false);
+                                sm.EndMapScreen(false);
                                 break;
                             case LAPTOP_SCREEN:
                                 sm.ExitLaptop();
@@ -203,10 +203,8 @@ namespace SharpAlliance.Core
 
                     guiCurrentScreen = sm.guiPendingScreen;
                     sm.guiPendingScreen = NullScreen.Instance;
-
                 }
 
-                
                 uiOldScreen = await sm.CurrentScreen.Handle();
 
                 // if the screen has chnaged

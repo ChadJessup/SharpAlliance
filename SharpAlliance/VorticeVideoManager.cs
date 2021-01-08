@@ -216,7 +216,7 @@ namespace SharpAlliance
         static Point MousePos;
         static bool fFirstTime = true;
 
-        public void RefreshScreen(object p)
+        public void RefreshScreen(object? dummy)
         {
             int usScreenWidth, usScreenHeight;
             int ReturnCode;

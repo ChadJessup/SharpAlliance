@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace SharpAlliance.Platform.Interfaces
 {
     public interface IInputManager : ISharpAllianceManager
     {
+        bool gfLeftButtonState { get; set; }
+        bool gfRightButtonState { get; set; }
+
         void KeyboardChangeEvent(KeyEvent keyEvent);
         void MouseChangeEvent(MouseEvent mouseEvent);
+        void GetCursorPosition(out Point mousePos);
+        bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents);
     }
 
 

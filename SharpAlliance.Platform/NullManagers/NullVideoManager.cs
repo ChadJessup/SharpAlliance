@@ -20,7 +20,7 @@ namespace SharpAlliance.Platform.NullManagers
             return ValueTask.FromResult(true);
         }
 
-        public void RefreshScreen(object dummy)
+        public void RefreshScreen(object? dummy)
         {
         }
     }

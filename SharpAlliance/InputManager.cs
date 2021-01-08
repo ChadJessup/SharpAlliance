@@ -1,15 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Vortice.XInput;
+using static Vortice.Win32.User32;
 
-namespace SharpAlliance.Core.Managers
+namespace SharpAlliance
 {
     public class InputManager : IInputManager
     {
@@ -24,6 +29,9 @@ namespace SharpAlliance.Core.Managers
         private int gfShiftState;                    // TRUE = Pressed, FALSE = Not Pressed
         private int gfAltState;                      // TRUE = Pressed, FALSE = Not Pressed
         private int gfCtrlState;                     // TRUE = Pressed, FALSE = Not Pressed
+
+        private const int WH_MOUSE = 7;
+        private const int WH_KEYBOARD = 2;
 
         // These data structure are used to track the mouse while polling
 
@@ -64,6 +72,8 @@ namespace SharpAlliance.Core.Managers
         // the related string
 
         private bool gfCurrentStringInputState;
+        private HookProcedureHandle ghKeyboardHook;
+        private object ghMouseHook;
 
         public bool IsInitialized { get; private set; }
 
@@ -111,15 +121,25 @@ namespace SharpAlliance.Core.Managers
             this.gfCurrentStringInputState = false;
             //gpCurrentStringDescriptor = null;
             // Activate the hook functions for both keyboard and Mouse
-            //ghKeyboardHook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)KeyboardHandler, (HINSTANCE)0, GetCurrentThreadId());
+            this.ghKeyboardHook = SetWindowsHookEx(WH_KEYBOARD, KeyboardHandler, IntPtr.Zero, 0);
             //DbgMessage(TOPIC_INPUT, DBG_LEVEL_2, String("Set keyboard hook returned %d", ghKeyboardHook));
             //this.logger.LogDebug(LoggingEventId.TOPIC_INPUT, )
-            //ghMouseHook = SetWindowsHookEx(WH_MOUSE, (HOOKPROC)MouseHandler, (HINSTANCE)0, GetCurrentThreadId());
+            this.ghMouseHook = SetWindowsHookEx(WH_MOUSE, MouseHandler, IntPtr.Zero, Thread.CurrentThread.ManagedThreadId);
             //DbgMessage(TOPIC_INPUT, DBG_LEVEL_2, String("Set mouse hook returned %d", ghMouseHook));
 
             this.IsInitialized = true;
 
             return ValueTask.FromResult(true);
+        }
+
+        private IntPtr MouseHandler(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
+        }
+
+        private IntPtr KeyboardHandler(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
         }
 
         public bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents)
@@ -140,6 +160,25 @@ namespace SharpAlliance.Core.Managers
 
             inputAtom = null;
             return false;
+        }
+
+        private static IntPtr HookProcedure(int nCode, IntPtr wParam, IntPtr lParam, Callback callback)
+        {
+            var passThrough = nCode != 0;
+            if (passThrough)
+            {
+                return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
+            }
+
+            var callbackData = new CallbackData(wParam, lParam);
+            var continueProcessing = callback(callbackData);
+
+            if (!continueProcessing)
+            {
+                return new IntPtr(-1);
+            }
+
+            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
         }
 
         private bool DequeueEvent(out InputAtom? inputAtom)
@@ -204,23 +243,5 @@ namespace SharpAlliance.Core.Managers
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", ExactSpelling = true)]
         public static extern bool GetCursorPos(out Point lpPoint);
-
-        public struct InputAtom
-        {
-            public InputAtom(InputAtom other)
-            {
-                this.uiTimeStamp = other.uiTimeStamp;
-                this.usKeyState = other.usKeyState;
-                this.MouseEvents = other.MouseEvents;
-                this.usParam = other.usParam;
-                this.uiParam = other.uiParam;
-            }
-
-            public int uiTimeStamp;
-            public int usKeyState;
-            public MouseEvents MouseEvents;
-            public int usParam;
-            public int uiParam;
-        }
     }
 }
