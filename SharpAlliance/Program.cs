@@ -82,6 +82,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<MessageBoxSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
             builder.Services.AddSingleton<Globals>();
+            builder.Services.AddSingleton<RenderWorld>();
 
             return builder;
         }

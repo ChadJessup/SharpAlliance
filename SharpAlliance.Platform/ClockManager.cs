@@ -56,7 +56,11 @@ namespace SharpAlliance.Platform
 
         public void UpdateClock()
         {
-            throw new NotImplementedException();
+        }
+
+        public long GetTickCount()
+        {
+            return this.guiCurrentTime;
         }
     }
 }

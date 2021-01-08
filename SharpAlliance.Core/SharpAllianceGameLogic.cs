@@ -258,6 +258,7 @@ namespace SharpAlliance.Core
             sm.AddScreen<MapScreen>(ScreenNames.MAP_SCREEN);
             sm.AddScreen<LAPTOP_SCREEN>(ScreenNames.LAPTOP_SCREEN);
             sm.AddScreen<MSG_BOX_SCREEN>(ScreenNames.MSG_BOX_SCREEN);
+            sm.AddScreen<FadeScreen>(ScreenNames.FADE_SCREEN);
         }
 
         public void Dispose()
