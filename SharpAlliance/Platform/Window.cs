@@ -21,10 +21,10 @@ namespace Vortice
 
         public Window(string title, int width, int height)
         {
-            Title = title;
-            Width = width;
-            Height = height;
-            PlatformConstruct();
+            this.Title = title;
+            this.Width = width;
+            this.Height = height;
+            this.PlatformConstruct();
         }
 
         private void PlatformConstruct()
@@ -46,14 +46,14 @@ namespace Vortice
             //}
             //else
             {
-                if (Width > 0 && Height > 0)
+                if (this.Width > 0 && this.Height > 0)
                 {
                     int screenWidth = GetSystemMetrics(SystemMetrics.SM_CXSCREEN);
                     int screenHeight = GetSystemMetrics(SystemMetrics.SM_CYSCREEN);
 
                     // Place the window in the middle of the screen.WS_EX_APPWINDOW
-                    x = (screenWidth - Width) / 2;
-                    y = (screenHeight - Height) / 2;
+                    x = (screenWidth - this.Width) / 2;
+                    y = (screenHeight - this.Height) / 2;
                 }
 
                 if (resizable)
@@ -72,9 +72,9 @@ namespace Vortice
             int windowWidth;
             int windowHeight;
 
-            if (Width > 0 && Height > 0)
+            if (this.Width > 0 && this.Height > 0)
             {
-                var rect = new RawRect(0, 0, Width, Height);
+                var rect = new RawRect(0, 0, this.Width, this.Height);
 
                 // Adjust according to window styles
                 AdjustWindowRectEx(
@@ -91,10 +91,10 @@ namespace Vortice
                 x = y = windowWidth = windowHeight = CW_USEDEFAULT;
             }
 
-            Handle = CreateWindowEx(
+            this.Handle = CreateWindowEx(
                 (int)styleEx,
                 WindowsSubSystem.WndClassName,
-                Title,
+                this.Title,
                 (int)style,
                 x,
                 y,
@@ -105,26 +105,26 @@ namespace Vortice
                 IntPtr.Zero,
                 IntPtr.Zero);
 
-            if (Handle == IntPtr.Zero)
+            if (this.Handle == IntPtr.Zero)
             {
                 var error = Marshal.GetLastWin32Error();
                 var hresult = Marshal.GetHRForLastWin32Error();
                 return;
             }
 
-            ShowWindow(Handle, ShowWindowCommand.Normal);
-            UpdateWindow(Handle);
-            Width = windowWidth;
-            Height = windowHeight;
+            ShowWindow(this.Handle, ShowWindowCommand.Normal);
+            UpdateWindow(this.Handle);
+            this.Width = windowWidth;
+            this.Height = windowHeight;
         }
 
         public void Destroy()
         {
-            IntPtr hwnd = Handle;
+            IntPtr hwnd = this.Handle;
             if (hwnd != IntPtr.Zero)
             {
                 IntPtr destroyHandle = hwnd;
-                Handle = IntPtr.Zero;
+                this.Handle = IntPtr.Zero;
 
                 Debug.WriteLine($"[WIN32] - Destroying window: {destroyHandle}");
                 DestroyWindow(destroyHandle);

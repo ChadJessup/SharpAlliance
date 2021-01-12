@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using Gma.System.MouseKeyHook;
 using Microsoft.Extensions.Logging;
-using SharpAlliance.Core;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using Vortice.XInput;
 using static Vortice.Win32.User32;
 
 namespace SharpAlliance
@@ -29,6 +25,7 @@ namespace SharpAlliance
         private int gfShiftState;                    // TRUE = Pressed, FALSE = Not Pressed
         private int gfAltState;                      // TRUE = Pressed, FALSE = Not Pressed
         private int gfCtrlState;                     // TRUE = Pressed, FALSE = Not Pressed
+        private IKeyboardMouseEvents globalHook;
 
         private const int WH_MOUSE = 7;
         private const int WH_KEYBOARD = 2;
@@ -72,6 +69,7 @@ namespace SharpAlliance
         // the related string
 
         private bool gfCurrentStringInputState;
+        private IntPtr hInstance;
         private HookProcedureHandle ghKeyboardHook;
         private object ghMouseHook;
 
@@ -89,10 +87,21 @@ namespace SharpAlliance
             this.buttonSystem = buttonSubsystem;
         }
 
+        //private void KeyboardHandler(object sender, KeyPressEventArgs e)
+        //{
+        //    Console.WriteLine("KeyPress: \t{0}", e.KeyChar);
+        //}
+
+
         public void GetCursorPosition(out Point mousePos) => GetCursorPos(out mousePos);
 
         public ValueTask<bool> Initialize()
         {
+            if (this.IsInitialized)
+            {
+                return ValueTask.FromResult(true);
+            }
+
             // Initialize the Event Queue
             this.gusQueueCount = 0;
             this.gusHeadIndex = 0;
@@ -119,27 +128,12 @@ namespace SharpAlliance
             this.gusMouseYPos = 240;
             // Initialize the string input mechanism
             this.gfCurrentStringInputState = false;
-            //gpCurrentStringDescriptor = null;
-            // Activate the hook functions for both keyboard and Mouse
-            this.ghKeyboardHook = SetWindowsHookEx(WH_KEYBOARD, KeyboardHandler, IntPtr.Zero, 0);
-            //DbgMessage(TOPIC_INPUT, DBG_LEVEL_2, String("Set keyboard hook returned %d", ghKeyboardHook));
-            //this.logger.LogDebug(LoggingEventId.TOPIC_INPUT, )
-            this.ghMouseHook = SetWindowsHookEx(WH_MOUSE, MouseHandler, IntPtr.Zero, Thread.CurrentThread.ManagedThreadId);
-            //DbgMessage(TOPIC_INPUT, DBG_LEVEL_2, String("Set mouse hook returned %d", ghMouseHook));
+
+            ////gpCurrentStringDescriptor = null;
 
             this.IsInitialized = true;
 
             return ValueTask.FromResult(true);
-        }
-
-        private IntPtr MouseHandler(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
-        }
-
-        private IntPtr KeyboardHandler(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
         }
 
         public bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents)
@@ -160,25 +154,6 @@ namespace SharpAlliance
 
             inputAtom = null;
             return false;
-        }
-
-        private static IntPtr HookProcedure(int nCode, IntPtr wParam, IntPtr lParam, Callback callback)
-        {
-            var passThrough = nCode != 0;
-            if (passThrough)
-            {
-                return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
-            }
-
-            var callbackData = new CallbackData(wParam, lParam);
-            var continueProcessing = callback(callbackData);
-
-            if (!continueProcessing)
-            {
-                return new IntPtr(-1);
-            }
-
-            return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
         }
 
         private bool DequeueEvent(out InputAtom? inputAtom)
@@ -216,13 +191,6 @@ namespace SharpAlliance
             }
         }
 
-        private void HandleSingleClicksAndButtonRepeats()
-        {
-        }
-
-        public void Dispose()
-        {
-        }
 
         public void KeyboardChangeEvent(KeyEvent keyEvent)
         {
@@ -232,6 +200,13 @@ namespace SharpAlliance
         {
         }
 
+        private void HandleSingleClicksAndButtonRepeats()
+        {
+        }
+
+        public void Dispose()
+        {
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct LPPOINT

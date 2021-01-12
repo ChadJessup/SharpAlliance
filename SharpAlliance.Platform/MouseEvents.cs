@@ -13,7 +13,7 @@ namespace SharpAlliance.Platform
         RIGHT_BUTTON_DOWN = 0x0080,
         RIGHT_BUTTON_UP = 0x0100,
         RIGHT_BUTTON_REPEAT = 0x0200,
-        MOUSE_POS = 0x0400,
+        MousePosition = 0x0400,
         MOUSE_WHEEL = 0x0800,
     }
 

@@ -363,7 +363,7 @@ namespace Vortice.Win32
     public struct Message
     {
         public IntPtr Hwnd;
-        public uint Value;
+        public WindowMessage Value;
         public IntPtr WParam;
         public IntPtr LParam;
         public uint Time;
@@ -559,7 +559,7 @@ namespace Vortice.Win32
         ///     thread created by a different process, the lpfn parameter must point to a hook procedure in a dynamic-link
         ///     library (DLL). Otherwise, lpfn can point to a hook procedure in the code associated with the current process.
         /// </param>
-        /// <param name="hMod">
+        /// <param name="hInstance">
         ///     [in] Handle to the DLL containing the hook procedure pointed to by the lpfn parameter.
         ///     The hMod parameter must be set to NULL if the dwThreadId parameter specifies a thread created by
         ///     the current process and if the hook procedure is within the code associated with the current process.
@@ -580,7 +580,7 @@ namespace Vortice.Win32
         internal static extern HookProcedureHandle SetWindowsHookEx(
             int idHook,
             HookProcedure lpfn,
-            IntPtr hMod,
+            IntPtr hInstance,
             int dwThreadId);
 
         /// <summary>

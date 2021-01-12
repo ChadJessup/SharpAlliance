@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -19,12 +20,13 @@ namespace SharpAlliance
         private readonly GameContext context;
         private readonly ILogger<WindowsSubSystem> logger;
         private readonly IVideoManager video;
+        private readonly IInputManager input;
         public static readonly string WndClassName = "VorticeWindow";
         public readonly IntPtr HInstance = GetModuleHandle(null);
 
         private WNDPROC _wndProc;
         private bool _paused;
-        private bool _exitRequested;
+        private bool exitRequested;
 
         public WindowsSubSystem(
             ILogger<WindowsSubSystem> logger,
@@ -35,7 +37,7 @@ namespace SharpAlliance
             this.context = context;
             this.logger = logger;
             this.video = videoManager;
-
+            this.input = inputManager;
             this.Initialize();
         }
 
@@ -58,7 +60,7 @@ namespace SharpAlliance
             if (this.MainWindow is not null)
             {
                 VorticeVideoManager vorticeVideoManager = (VorticeVideoManager)this.context.VideoManager;
-                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, MainWindow));
+                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
             }
 
             return ValueTask.FromResult(true);
@@ -71,12 +73,12 @@ namespace SharpAlliance
         {
             this.MainWindow = new Window(name, 800, 600);
             VorticeVideoManager vorticeVideoManager = (VorticeVideoManager)this.context.VideoManager;
-            vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(true, MainWindow));
+            vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(true, this.MainWindow));
         }
 
         private void PlatformConstruct()
         {
-            _wndProc = ProcessWindowMessage;
+            this._wndProc = this.ProcessWindowMessage;
             var wndClassEx = new WNDCLASSEX
             {
                 Size = Unsafe.SizeOf<WNDCLASSEX>(),
@@ -93,9 +95,7 @@ namespace SharpAlliance
 
             if (atom == 0)
             {
-                throw new InvalidOperationException(
-                    $"Failed to register window class. Error: {Marshal.GetLastWin32Error()}"
-                    );
+                throw new InvalidOperationException($"Failed to register window class. Error: {Marshal.GetLastWin32Error()}");
             }
 
             // Defer actual window creation until we are on the right thread.
@@ -105,14 +105,14 @@ namespace SharpAlliance
         {
             if (msg == (uint)WindowMessage.ActivateApp)
             {
-                _paused = IntPtrToInt32(wParam) == 0;
+                this._paused = IntPtrToInt32(wParam) == 0;
                 if (IntPtrToInt32(wParam) != 0)
                 {
-                    OnActivated();
+                    this.OnActivated();
                 }
                 else
                 {
-                    OnDeactivated();
+                    this.OnDeactivated();
                 }
 
                 return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -135,7 +135,7 @@ namespace SharpAlliance
                 this.CreateWindow();
             }
 
-            if (!_paused)
+            if (!this._paused)
             {
                 const uint PM_REMOVE = 1;
                 if (PeekMessage(out var msg, IntPtr.Zero, 0, 0, PM_REMOVE))
@@ -143,11 +143,16 @@ namespace SharpAlliance
                     TranslateMessage(ref msg);
                     DispatchMessage(ref msg);
 
-                    if (msg.Value == (uint)WindowMessage.Quit)
+                    switch (msg.Value)
                     {
-                        _exitRequested = true;
-                        return ValueTask.FromResult(false);
-                    }
+                        case WindowMessage.MouseMove:
+                            this.input.MouseChangeEvent(this.ConvertToMouseEvent(MouseEvents.MousePosition, msg));
+                            break;
+
+                        case WindowMessage.Quit:
+                            this.exitRequested = true;
+                            return ValueTask.FromResult(false);
+                    };
                 }
 
                 gameLoopCallback();
@@ -157,13 +162,13 @@ namespace SharpAlliance
                 var ret = GetMessage(out var msg, IntPtr.Zero, 0, 0);
                 if (ret == 0)
                 {
-                    _exitRequested = true;
+                    this.exitRequested = true;
                     return ValueTask.FromResult(false);
                 }
                 else if (ret == -1)
                 {
                     //Log.Error("[Win32] - Failed to get message");
-                    _exitRequested = true;
+                    this.exitRequested = true;
                     return ValueTask.FromResult(false);
                 }
                 else
@@ -174,6 +179,28 @@ namespace SharpAlliance
             }
 
             return ValueTask.FromResult(true);
+        }
+
+        private MouseEvent ConvertToMouseEvent(MouseEvents eventType, Message msg)
+        {
+            static Point ConvertToPoint(IntPtr lParam)
+            {
+                return new Point
+                {
+                    X = GET_X_LPARAM(lParam),
+                    Y = GET_Y_LPARAM(lParam),
+                };
+            }
+
+            var me = new MouseEvent
+            {
+                EventType = eventType,
+                Position = ConvertToPoint(msg.LParam),
+            };
+
+            Console.WriteLine($"{me.Position.X}:{me.Position.Y}");
+
+            return me;
         }
 
         private void OnActivated()
@@ -192,5 +219,10 @@ namespace SharpAlliance
         public void Dispose()
         {
         }
+
+        public static int GET_X_LPARAM(IntPtr lp) => ((int)(short)LOWORD(lp));
+        public static int GET_Y_LPARAM(IntPtr lp) => ((int)(short)HIWORD(lp));
+        public static ushort LOWORD(IntPtr _dw) => ((ushort)(((ulong)(_dw)) & 0xffff));
+        public static ushort HIWORD(IntPtr _dw) => ((ushort)((((ulong)(_dw)) >> 16) & 0xffff));
     }
 }

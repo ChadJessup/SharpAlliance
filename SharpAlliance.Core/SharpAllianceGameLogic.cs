@@ -95,7 +95,7 @@ namespace SharpAlliance.Core
                     this.inputs.GetCursorPosition(out Point MousePos);
 
                     // Hook into mouse stuff for MOVEMENT MESSAGES
-                    this.mouse.MouseHook(MouseEvents.MOUSE_POS, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                    this.mouse.MouseHook(MouseEvents.MousePosition, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
 
                     this.music.MusicPoll(false);
 

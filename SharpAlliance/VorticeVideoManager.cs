@@ -56,14 +56,14 @@ namespace SharpAlliance
         private readonly ScreenManager screenManager;
         private readonly GameContext context;
         private readonly MouseCursorBackground[] gMouseCursorBackground = new MouseCursorBackground[2];
-        
-        private FadeScreen fadeScreen;
-        private Action gpFrameBufferRefreshOverride;
-        
+
+        private FadeScreen? fadeScreen;
+        private Action? gpFrameBufferRefreshOverride;
+
         private IGraphicsDevice graphicsDevice;
 
-        private int gusScreenWidth;
-        private int gusScreenHeight;
+        private int gusScreenWidth = 640;
+        private int gusScreenHeight = 480;
         private int gubScreenPixelDepth;
 
         private Rectangle gScrollRegion;
@@ -157,6 +157,17 @@ namespace SharpAlliance
                 await this.inputs.Initialize();
             }
 
+            guiFrameBufferState = Constants.BUFFER_DIRTY;
+            guiMouseBufferState = Constants.BUFFER_DISABLED;
+            guiVideoManagerState = Constants.VIDEO_ON;
+            guiRefreshThreadState = Constants.THREAD_OFF;
+            guiDirtyRegionCount = 0;
+            gfForceFullScreenRefresh = true;
+            gpFrameBufferRefreshOverride = null;
+            //gpCursorStore = NULL;
+            gfPrintFrameBuffer = false;
+            guiPrintFrameBufferIndex = 0;
+
             // this.fadeScreen = (screenManager.GetScreen(ScreenNames.FADE_SCREEN, activate: true).AsTask().Result as FadeScreen)!;
             this.IsInitialized = true;
             return this.IsInitialized;
@@ -166,31 +177,6 @@ namespace SharpAlliance
         {
             this.graphicsDevice = gDevice;
         }
-
-        private void HookupInputs(IInputManager inputManager)
-        {
-            //if (this.form is not null)
-            {
-                //                this.form.KeyDown += this.KeyboardEvent;
-                //                this.form.KeyUp += this.KeyboardEvent;
-            }
-
-            //form.mou
-        }
-
-        //      private void KeyboardEvent(object? o, KeyEventArgs e)
-        //{
-
-        //  }
-
-
-        //    public Surface2 GetPrimarySurfaceObject()
-        //    {
-        //        //Assert(gpPrimarySurface != null);
-        //
-        //        return gpPrimarySurface;
-        //    }
-
         public void Draw()
         {
             this.graphicsDevice.DrawFrame((w, h) =>
@@ -200,13 +186,6 @@ namespace SharpAlliance
 
         public void Dispose()
         {
-            // Unhook events...
-            //if (this.form is not null)
-            {
-                //      this.form.KeyUp -= this.KeyboardEvent;
-                //      this.form.KeyDown -= this.KeyboardEvent;
-            }
-
             GC.SuppressFinalize(this);
         }
 
@@ -218,7 +197,8 @@ namespace SharpAlliance
 
         public void RefreshScreen(object? dummy)
         {
-            int usScreenWidth, usScreenHeight;
+            int usScreenWidth;
+            int usScreenHeight;
             int ReturnCode;
             long uiTime;
 
@@ -229,8 +209,7 @@ namespace SharpAlliance
                 fShowMouse = false;
             }
 
-
-            //DebugMsg(TOPIC_VIDEO, DBG_LEVEL_0, "Looping in refresh");
+            this.logger.LogDebug(LoggingEventId.VIDEO, "Looping in refresh");
 
             ///////////////////////////////////////////////////////////////////////////////////////////////
             // 
@@ -240,8 +219,8 @@ namespace SharpAlliance
 
             switch (guiVideoManagerState)
             {
-                case Constants.VIDEO_ON
-              : //
+                case Constants.VIDEO_ON:
+                //
                 // Excellent, everything is cosher, we continue on
                 //
                     uiRefreshThreadState = guiRefreshThreadState = Constants.THREAD_ON;
@@ -337,9 +316,9 @@ namespace SharpAlliance
                 }
 
 
-                if (this.fadeScreen.gfFadeInitialized && this.fadeScreen.gfFadeInVideo)
+                if (this.fadeScreen?.gfFadeInitialized ?? false && this.fadeScreen.gfFadeInVideo)
                 {
-                    this.fadeScreen.gFadeFunction();
+                    this.fadeScreen!.gFadeFunction();
                 }
                 else
                 //

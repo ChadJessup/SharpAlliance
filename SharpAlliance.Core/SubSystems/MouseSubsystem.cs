@@ -246,7 +246,7 @@ namespace SharpAlliance.Core.SubSystems
                     MSYS_UpdateMouseRegion();
                     break;
 
-                case MouseEvents.MOUSE_POS:
+                case MouseEvents.MousePosition:
                     if ((Xcoord != MSYS_CurrentMX) || (Ycoord != MSYS_CurrentMY) || gfRefreshUpdate)
                     {
                         MSYS_Action |= MouseDos.MOVE;

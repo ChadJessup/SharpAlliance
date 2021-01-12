@@ -13,7 +13,6 @@ namespace SharpAlliance.Platform.Interfaces
         bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents);
     }
 
-
     public readonly struct KeyEvent
     {
 
@@ -21,6 +20,7 @@ namespace SharpAlliance.Platform.Interfaces
 
     public readonly struct MouseEvent
     {
-
+        public MouseEvents EventType { get; init; }
+        public Point Position { get; init; }
     }
 }
