@@ -10,7 +10,7 @@ namespace SharpAlliance
     public class VideoSurfaceManager : IVideoSurfaceManager
     {
         private readonly ILogger<VideoSurfaceManager> logger;
-        private readonly VorticeVideoManager video;
+        private readonly VeldridVideoManager video;
 
         private VSURFACE_NODE? gpVSurfaceHead = null;
         private VSURFACE_NODE? gpVSurfaceTail = null;
@@ -30,7 +30,7 @@ namespace SharpAlliance
         {
             this.logger = logger;
 
-            this.video = (videoManager as VorticeVideoManager)!;
+            this.video = (videoManager as VeldridVideoManager)!;
 
             this.IsInitialized = this.Initialize().AsTask().Result;
             ;

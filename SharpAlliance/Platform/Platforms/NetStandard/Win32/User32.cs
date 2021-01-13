@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
-using Vortice.Mathematics;
+using Veldrid;
 
 namespace Vortice.Win32
 {
@@ -489,11 +489,11 @@ namespace Vortice.Win32
 
         [return: MarshalAs(UnmanagedType.U1)]
         [DllImport(LibraryName, ExactSpelling = true)]
-        public static extern bool AdjustWindowRect([In] [Out] ref RawRect lpRect, WindowStyles dwStyle, bool hasMenu);
+        public static extern bool AdjustWindowRect([In] [Out] ref Rectangle lpRect, WindowStyles dwStyle, bool hasMenu);
 
         [return: MarshalAs(UnmanagedType.U1)]
         [DllImport(LibraryName, ExactSpelling = true)]
-        public static extern bool AdjustWindowRectEx([In] [Out] ref RawRect lpRect, WindowStyles dwStyle, bool bMenu, WindowExStyles exStyle);
+        public static extern bool AdjustWindowRectEx([In] [Out] ref Rectangle lpRect, WindowStyles dwStyle, bool bMenu, WindowExStyles exStyle);
 
         [DllImport(LibraryName, CharSet = CharSet.Unicode)]
         public static extern IntPtr CreateWindowEx(

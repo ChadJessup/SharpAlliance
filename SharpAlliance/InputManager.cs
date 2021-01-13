@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Gma.System.MouseKeyHook;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
@@ -25,7 +24,6 @@ namespace SharpAlliance
         private int gfShiftState;                    // TRUE = Pressed, FALSE = Not Pressed
         private int gfAltState;                      // TRUE = Pressed, FALSE = Not Pressed
         private int gfCtrlState;                     // TRUE = Pressed, FALSE = Not Pressed
-        private IKeyboardMouseEvents globalHook;
 
         private const int WH_MOUSE = 7;
         private const int WH_KEYBOARD = 2;

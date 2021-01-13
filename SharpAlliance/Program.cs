@@ -42,7 +42,7 @@ namespace SharpAlliance
             platformBuilder
                 .AddLibraryManager<LibraryFileManager>()
                 .AddInputManager<InputManager>()
-                .AddVideoManager<VorticeVideoManager>()
+                .AddVideoManager<VeldridVideoManager>()
                 .AddGameLogic<SharpAllianceGameLogic>()
                 .AddOtherComponents();
 

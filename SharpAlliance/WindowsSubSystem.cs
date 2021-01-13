@@ -43,13 +43,6 @@ namespace SharpAlliance
 
         public ValueTask<bool> Initialize()
         {
-
-            //this.HookupInputs(this.inputManager);
-
-            if (!D3D12GraphicsDevice.IsSupported())
-            {
-            }
-
             this.PlatformConstruct();
 
             var validation = false;
@@ -59,8 +52,8 @@ namespace SharpAlliance
 
             if (this.MainWindow is not null)
             {
-                VorticeVideoManager vorticeVideoManager = (VorticeVideoManager)this.context.VideoManager;
-                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
+                VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.VideoManager;
+//                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
             }
 
             return ValueTask.FromResult(true);
@@ -71,9 +64,7 @@ namespace SharpAlliance
 
         public void CreateWindow(string name = "Vortice")
         {
-            this.MainWindow = new Window(name, 800, 600);
-            VorticeVideoManager vorticeVideoManager = (VorticeVideoManager)this.context.VideoManager;
-            vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(true, this.MainWindow));
+            VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.VideoManager;
         }
 
         private void PlatformConstruct()

@@ -9,13 +9,13 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using Vortice;
-using Vortice.Mathematics;
-using Vortice.Win32;
+using Veldrid;
+using Veldrid.Sdl2;
+using Veldrid.StartupUtilities;
 
 namespace SharpAlliance
 {
-    public class VorticeVideoManager : IVideoManager
+    public class VeldridVideoManager : IVideoManager
     {
         public static class Constants
         {
@@ -48,7 +48,7 @@ namespace SharpAlliance
         const int DDERR_WASSTILLDRAWING = 0x8700000; // not real value
         const int DDERR_SURFACELOST = 0x9700000;
 
-        private readonly ILogger<VorticeVideoManager> logger;
+        private readonly ILogger<VeldridVideoManager> logger;
         private readonly WindowsSubSystem windows;
         private readonly InputManager inputs;
         private readonly MouseSubSystem mouse;
@@ -57,10 +57,13 @@ namespace SharpAlliance
         private readonly GameContext context;
         private readonly MouseCursorBackground[] gMouseCursorBackground = new MouseCursorBackground[2];
 
+        private Sdl2Window _window;
+        private GraphicsDevice _gd;
+        private bool _colorSrgb = true;
+        private FullScreenQuad _fsq;
+
         private FadeScreen? fadeScreen;
         private Action? gpFrameBufferRefreshOverride;
-
-        private IGraphicsDevice graphicsDevice;
 
         private int gusScreenWidth = 640;
         private int gusScreenHeight = 480;
@@ -134,8 +137,8 @@ namespace SharpAlliance
         private const int SCREEN_HEIGHT = 480;
         private const int PIXEL_DEPTH = 16;
 
-        public VorticeVideoManager(
-            ILogger<VorticeVideoManager> logger,
+        public VeldridVideoManager(
+            ILogger<VeldridVideoManager> logger,
             GameContext context,
             IInputManager inputManager,
             MouseSubSystem mouseSubSystem,
@@ -150,38 +153,62 @@ namespace SharpAlliance
             this.screenManager = (screenManager as ScreenManager)!;
         }
 
-        public async ValueTask<bool> Initialize()
+        public unsafe async ValueTask<bool> Initialize()
         {
-            if (!this.inputs.IsInitialized)
+            SDL_version version;
+            Sdl2Native.SDL_GetVersion(&version);
+            WindowCreateInfo windowCI = new WindowCreateInfo
             {
-                await this.inputs.Initialize();
-            }
+                X = 50,
+                Y = 50,
+                WindowWidth = 960,
+                WindowHeight = 540,
+                WindowInitialState = WindowState.Normal,
+                WindowTitle = "Veldrid NeoDemo"
+            };
+            GraphicsDeviceOptions gdOptions = new GraphicsDeviceOptions(false, null, false, ResourceBindingModel.Improved, true, true, this._colorSrgb);
+#if DEBUG
+            gdOptions.Debug = true;
+#endif
+            VeldridStartup.CreateWindowAndGraphicsDevice(
+                windowCI,
+                gdOptions,
+                //VeldridStartup.GetPlatformDefaultBackend(),
+                //GraphicsBackend.Metal,
+                //GraphicsBackend.Vulkan,
+                //GraphicsBackend.OpenGL,
+                //GraphicsBackend.OpenGLES,
+                out this._window,
+                out this._gd);
 
-            guiFrameBufferState = Constants.BUFFER_DIRTY;
-            guiMouseBufferState = Constants.BUFFER_DISABLED;
-            guiVideoManagerState = Constants.VIDEO_ON;
-            guiRefreshThreadState = Constants.THREAD_OFF;
-            guiDirtyRegionCount = 0;
-            gfForceFullScreenRefresh = true;
-            gpFrameBufferRefreshOverride = null;
+            this._window.Resized += () => this._windowResized = true;
+
+            this.guiFrameBufferState = Constants.BUFFER_DIRTY;
+            this.guiMouseBufferState = Constants.BUFFER_DISABLED;
+            this.guiVideoManagerState = Constants.VIDEO_ON;
+            this.guiRefreshThreadState = Constants.THREAD_OFF;
+            this.guiDirtyRegionCount = 0;
+            this.gfForceFullScreenRefresh = true;
+            this.gpFrameBufferRefreshOverride = null;
             //gpCursorStore = NULL;
-            gfPrintFrameBuffer = false;
-            guiPrintFrameBufferIndex = 0;
+            this.gfPrintFrameBuffer = false;
+            this.guiPrintFrameBufferIndex = 0;
 
             // this.fadeScreen = (screenManager.GetScreen(ScreenNames.FADE_SCREEN, activate: true).AsTask().Result as FadeScreen)!;
             this.IsInitialized = true;
             return this.IsInitialized;
         }
 
-        internal void SetGraphicsDevice(D3D12GraphicsDevice gDevice)
-        {
-            this.graphicsDevice = gDevice;
-        }
+//        public void SetGraphicsDevice(D3D12GraphicsDevice gDevice)
+//        {
+//  //          this.graphicsDevice = gDevice;
+//        }
+
         public void Draw()
         {
-            this.graphicsDevice.DrawFrame((w, h) =>
-            {
-            });
+//            this.graphicsDevice.DrawFrame((w, h) =>
+//            {
+//            });
         }
 
         public void Dispose()
@@ -194,6 +221,7 @@ namespace SharpAlliance
         static Rectangle Region;
         static Point MousePos;
         static bool fFirstTime = true;
+        private bool _windowResized;
 
         public void RefreshScreen(object? dummy)
         {
@@ -217,36 +245,36 @@ namespace SharpAlliance
             //
             ///////////////////////////////////////////////////////////////////////////////////////////////
 
-            switch (guiVideoManagerState)
+            switch (this.guiVideoManagerState)
             {
                 case Constants.VIDEO_ON:
                 //
                 // Excellent, everything is cosher, we continue on
                 //
-                    uiRefreshThreadState = guiRefreshThreadState = Constants.THREAD_ON;
-                    usScreenWidth = gusScreenWidth;
-                    usScreenHeight = gusScreenHeight;
+                    uiRefreshThreadState = this.guiRefreshThreadState = Constants.THREAD_ON;
+                    usScreenWidth = this.gusScreenWidth;
+                    usScreenHeight = this.gusScreenHeight;
                     break;
                 case Constants.VIDEO_OFF
               : //
                 // Hot damn, the video manager is suddenly off. We have to bugger out of here. Don't forget to
                 // leave the critical section
                 //
-                    guiRefreshThreadState = Constants.THREAD_OFF;
+                    this.guiRefreshThreadState = Constants.THREAD_OFF;
                     return;
                 case Constants.VIDEO_SUSPENDED
               : //
                 // This are suspended. Make sure the refresh function does try to access any of the direct
                 // draw surfaces
                 //
-                    uiRefreshThreadState = guiRefreshThreadState = Constants.THREAD_SUSPENDED;
+                    uiRefreshThreadState = this.guiRefreshThreadState = Constants.THREAD_SUSPENDED;
                     break;
                 case Constants.VIDEO_SHUTTING_DOWN
               : //
                 // Well things are shutting down. So we need to bugger out of there. Don't forget to leave the
                 // critical section before returning
                 //
-                    guiRefreshThreadState = Constants.THREAD_OFF;
+                    this.guiRefreshThreadState = Constants.THREAD_OFF;
                     return;
             }
 
@@ -266,12 +294,12 @@ namespace SharpAlliance
 
 
             // RESTORE OLD POSITION OF MOUSE
-            if (gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore == true)
+            if (this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore == true)
             {
-                Region.Left = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft;
-                Region.Top = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop;
-                Region.Width = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
-                Region.Height = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
+                Region.X = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft;
+                Region.Y = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop;
+                Region.Width = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
+                Region.Height = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
 
                 do
                 {
@@ -297,21 +325,21 @@ namespace SharpAlliance
             // Ok we were able to get a hold of the frame buffer stuff. Check to see if it needs updating
             // if not, release the frame buffer stuff right away
             //
-            if (guiFrameBufferState == Constants.BUFFER_DIRTY)
+            if (this.guiFrameBufferState == Constants.BUFFER_DIRTY)
             {
 
                 // Well the frame buffer is dirty.
                 //
 
-                if (gpFrameBufferRefreshOverride != null)
+                if (this.gpFrameBufferRefreshOverride != null)
                 {
                     //
                     // Method (3) - We are using a function override to refresh the frame buffer. First we
                     // call the override function then we must set the override pointer to null
                     //
 
-                    gpFrameBufferRefreshOverride();
-                    gpFrameBufferRefreshOverride = null;
+                    this.gpFrameBufferRefreshOverride();
+                    this.gpFrameBufferRefreshOverride = null;
 
                 }
 
@@ -325,14 +353,14 @@ namespace SharpAlliance
                 // Either Method (1) or (2)
                 //
                 {
-                    if (gfForceFullScreenRefresh == true)
+                    if (this.gfForceFullScreenRefresh == true)
                     {
                         //
                         // Method (1) - We will be refreshing the entire screen
                         //
 
-                        Region.Left = 0;
-                        Region.Top = 0;
+                        Region.X = 0;
+                        Region.Y = 0;
                         Region.Width = usScreenWidth;
                         Region.Height = usScreenHeight;
 
@@ -342,7 +370,7 @@ namespace SharpAlliance
                             // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, 0, 0, gpFrameBuffer, ref Region, DDBLTFAST_NOCOLORKEY);
                             if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
                             {
-                                //                                // DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+                                // DirectXAttempt(ReturnCode, __LINE__, __FILE__);
 
                                 if (ReturnCode == DDERR_SURFACELOST)
                                 {
@@ -355,17 +383,17 @@ namespace SharpAlliance
                     }
                     else
                     {
-                        for (uiIndex = 0; uiIndex < guiDirtyRegionCount; uiIndex++)
+                        for (uiIndex = 0; uiIndex < this.guiDirtyRegionCount; uiIndex++)
                         {
-                            Region.Left = gListOfDirtyRegions[uiIndex].Left;
-                            Region.Top = gListOfDirtyRegions[uiIndex].Top;
-                            Region.Width = gListOfDirtyRegions[uiIndex].Width;
-                            Region.Height = gListOfDirtyRegions[uiIndex].Height;
+                            Region.X = this.gListOfDirtyRegions[uiIndex].Left;
+                            Region.Y = this.gListOfDirtyRegions[uiIndex].Top;
+                            Region.Width = this.gListOfDirtyRegions[uiIndex].Width;
+                            Region.Height = this.gListOfDirtyRegions[uiIndex].Height;
 
                             do
                             {
                                 ReturnCode = DD_OK;
-                                // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.Left, Region.Top, gpFrameBuffer, ref Region, DDBLTFAST_NOCOLORKEY);
+                                // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.X, Region.Y, gpFrameBuffer, ref Region, DDBLTFAST_NOCOLORKEY);
                                 if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
                                 {
                                     // DirectXAttempt(ReturnCode, __LINE__, __FILE__);
@@ -380,29 +408,28 @@ namespace SharpAlliance
                         }
 
                         // Now do new, extended dirty regions
-                        for (uiIndex = 0; uiIndex < guiDirtyRegionExCount; uiIndex++)
+                        for (uiIndex = 0; uiIndex < this.guiDirtyRegionExCount; uiIndex++)
                         {
-                            Region.Left = gDirtyRegionsEx[uiIndex].Left;
-                            Region.Top = gDirtyRegionsEx[uiIndex].Top;
-                            Region.Width = gDirtyRegionsEx[uiIndex].Width;
-                            Region.Height = gDirtyRegionsEx[uiIndex].Height;
+                            Region.X = this.gDirtyRegionsEx[uiIndex].Left;
+                            Region.Y = this.gDirtyRegionsEx[uiIndex].Top;
+                            Region.Width = this.gDirtyRegionsEx[uiIndex].Width;
+                            Region.Height = this.gDirtyRegionsEx[uiIndex].Height;
 
                             // Do some checks if we are in the process of scrolling!	
                             if (this.renderWorld.gfRenderScroll)
                             {
 
                                 // Check if we are completely out of bounds
-                                if (Region.Top <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y && Region.Height <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y)
+                                if (Region.Y <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y && Region.Height <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y)
                                 {
                                     continue;
                                 }
-
                             }
 
                             do
                             {
                                 ReturnCode = DD_OK;
-                                // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.Left, Region.Top, gpFrameBuffer, ref Region, DDBLTFAST_NOCOLORKEY);
+                                // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.X, Region.Y, gpFrameBuffer, ref Region, DDBLTFAST_NOCOLORKEY);
                                 //if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
                                 //{
                                 //    // DirectXAttempt(ReturnCode, __LINE__, __FILE__);
@@ -426,32 +453,29 @@ namespace SharpAlliance
                 //}
                 //gfIgnoreScrollDueToCenterAdjust = false;
 
-
-
-
                 //
                 // Update the guiFrameBufferState variable to reflect that the frame buffer can now be handled
                 //
 
-                guiFrameBufferState = Constants.BUFFER_READY;
+                this.guiFrameBufferState = Constants.BUFFER_READY;
             }
 
             //
             // Do we want to print the frame stuff ??
             //
 
-            if (gfVideoCapture)
+            if (this.gfVideoCapture)
             {
                 uiTime = this.context.ClockManager.GetTickCount();
-                if ((uiTime < guiLastFrame) || (uiTime > (guiLastFrame + guiFramePeriod)))
+                if ((uiTime < this.guiLastFrame) || (uiTime > (this.guiLastFrame + this.guiFramePeriod)))
                 {
                     //SnapshotSmall();
-                    guiLastFrame = uiTime;
+                    this.guiLastFrame = uiTime;
                 }
             }
 
 
-            if (gfPrintFrameBuffer == true)
+            if (this.gfPrintFrameBuffer == true)
             {
                 //LPDIRECTDRAWSURFACE _pTmpBuffer;
                 //LPDIRECTDRAWSURFACE2 pTmpBuffer;
@@ -493,8 +517,8 @@ namespace SharpAlliance
                 // Copy the primary surface to the temporary surface
                 //
 
-                Region.Left = 0;
-                Region.Top = 0;
+                Region.X = 0;
+                Region.Y = 0;
                 Region.Width = usScreenWidth;
                 Region.Height = usScreenHeight;
 
@@ -584,7 +608,7 @@ namespace SharpAlliance
                 // Release temp surface
                 //
 
-                gfPrintFrameBuffer = false;
+                this.gfPrintFrameBuffer = false;
                 //IDirectDrawSurface2_Release(pTmpBuffer);
 
                 //strcat(ExecDir, "\\Data");
@@ -596,16 +620,16 @@ namespace SharpAlliance
             // if not, release the frame buffer stuff right away
             //
 
-            if (guiMouseBufferState == Constants.BUFFER_DIRTY)
+            if (this.guiMouseBufferState == Constants.BUFFER_DIRTY)
             {
                 //
                 // Well the mouse buffer is dirty. Upload the whole thing
                 //
 
-                Region.Left = 0;
-                Region.Top = 0;
-                Region.Width = gusMouseCursorWidth;
-                Region.Height = gusMouseCursorHeight;
+                Region.X = 0;
+                Region.Y = 0;
+                Region.Width = this.gusMouseCursorWidth;
+                Region.Height = this.gusMouseCursorHeight;
 
                 do
                 {
@@ -617,7 +641,7 @@ namespace SharpAlliance
                     }
                 } while (ReturnCode != DD_OK);
 
-                guiMouseBufferState = Constants.BUFFER_READY;
+                this.guiMouseBufferState = Constants.BUFFER_READY;
             }
 
             //
@@ -626,7 +650,7 @@ namespace SharpAlliance
 
             if (fShowMouse == false)
             {
-                if (guiMouseBufferState == Constants.BUFFER_READY)
+                if (this.guiMouseBufferState == Constants.BUFFER_READY)
                 {
                     fShowMouse = true;
                 }
@@ -637,7 +661,7 @@ namespace SharpAlliance
             }
             else
             {
-                if (guiMouseBufferState == Constants.BUFFER_DISABLED)
+                if (this.guiMouseBufferState == Constants.BUFFER_DISABLED)
                 {
                     fShowMouse = false;
                 }
@@ -665,10 +689,10 @@ namespace SharpAlliance
                 // Step (1) - Save mouse background
                 //                      
 
-                Region.Left = MousePos.X - gsMouseCursorXOffset;
-                Region.Top = MousePos.Y - gsMouseCursorYOffset;
-                Region.Width = Region.Left + gusMouseCursorWidth;
-                Region.Height = Region.Top + gusMouseCursorHeight;
+                Region.X = MousePos.X - this.gsMouseCursorXOffset;
+                Region.Y = MousePos.Y - this.gsMouseCursorYOffset;
+                Region.Width = Region.X + this.gusMouseCursorWidth;
+                Region.Height = Region.Y + this.gusMouseCursorHeight;
 
                 if (Region.Width > usScreenWidth)
                 {
@@ -680,43 +704,43 @@ namespace SharpAlliance
                     Region.Height = usScreenHeight;
                 }
 
-                if ((Region.Width > Region.Left) && (Region.Height > Region.Top))
+                if ((Region.Width > Region.X) && (Region.Height > Region.Y))
                 {
                     //
                     // Make sure the mouse background is marked for restore and coordinates are saved for the
                     // future restore
                     //
 
-                    gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = true;
-                    gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight = (int)Region.Width - (int)Region.Left;
-                    gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom = (int)Region.Height - (int)Region.Top;
-                    if (Region.Left < 0)
+                    this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = true;
+                    this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight = (int)Region.Width - (int)Region.X;
+                    this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom = (int)Region.Height - (int)Region.Y;
+                    if (Region.X < 0)
                     {
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = (int)(0 - Region.Left);
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = 0;
-                        Region.Left = 0;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = (int)(0 - Region.X);
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = 0;
+                        Region.X = 0;
                     }
                     else
                     {
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = (int)MousePos.X - gsMouseCursorXOffset;
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = 0;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = (int)MousePos.X - this.gsMouseCursorXOffset;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = 0;
                     }
-                    if (Region.Top < 0)
+                    if (Region.Y < 0)
                     {
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = 0;
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = (int)(0 - Region.Top);
-                        Region.Top = 0;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = 0;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = (int)(0 - Region.Y);
+                        Region.Y = 0;
                     }
                     else
                     {
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = (int)MousePos.Y - gsMouseCursorYOffset;
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = 0;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = (int)MousePos.Y - this.gsMouseCursorYOffset;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = 0;
                     }
 
-                    if ((Region.Width > Region.Left) && (Region.Height > Region.Top))
+                    if ((Region.Width > Region.X) && (Region.Height > Region.Y))
                     {
                         // Save clipped region
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region = Region;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region = Region;
 
                         //
                         // Ok, do the actual data save to the mouse background
@@ -741,10 +765,10 @@ namespace SharpAlliance
                         // Step (2) - Blit mouse cursor to back buffer
                         //
 
-                        Region.Left = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft;
-                        Region.Top = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop;
-                        Region.Width = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
-                        Region.Height = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
+                        Region.X = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft;
+                        Region.Y = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop;
+                        Region.Width = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
+                        Region.Height = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
 
                         do
                         {
@@ -766,7 +790,7 @@ namespace SharpAlliance
                         // Hum, the mouse was not blitted this round. Henceforth we will flag fRestore as false
                         //
 
-                        gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
+                        this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
                     }
 
                 }
@@ -776,7 +800,7 @@ namespace SharpAlliance
                     // Hum, the mouse was not blitted this round. Henceforth we will flag fRestore as false
                     //
 
-                    gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
+                    this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
 
                 }
             }
@@ -786,7 +810,7 @@ namespace SharpAlliance
                 // Well since there was no mouse handling this round, we disable the mouse restore
                 //        
 
-                gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
+                this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
 
             }
 
@@ -854,8 +878,8 @@ namespace SharpAlliance
             //
             if (this.renderWorld.gfRenderScroll)
             {
-                Region.Left = 0;
-                Region.Top = 0;
+                Region.X = 0;
+                Region.Y = 0;
                 Region.Width = 640;
                 Region.Height = 360;
 
@@ -890,9 +914,9 @@ namespace SharpAlliance
             // COPY MOUSE AREAS FROM PRIMARY BACK!
 
             // FIRST OLD ERASED POSITION
-            if (gMouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].fRestore == true)
+            if (this.gMouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].fRestore == true)
             {
-                Region = gMouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].Region;
+                Region = this.gMouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].Region;
 
                 do
                 {
@@ -910,9 +934,9 @@ namespace SharpAlliance
             }
 
             // NOW NEW MOUSE AREA
-            if (gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore == true)
+            if (this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore == true)
             {
-                Region = gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region;
+                Region = this.gMouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region;
 
 
                 do
@@ -930,13 +954,13 @@ namespace SharpAlliance
                 } while (ReturnCode != DD_OK);
             }
 
-            if (gfForceFullScreenRefresh == true)
+            if (this.gfForceFullScreenRefresh == true)
             {
                 //
                 // Method (1) - We will be refreshing the entire screen
                 //
-                Region.Left = 0;
-                Region.Top = 0;
+                Region.X = 0;
+                Region.Y = 0;
                 Region.Width = SCREEN_WIDTH;
                 Region.Height = SCREEN_HEIGHT;
 
@@ -956,22 +980,22 @@ namespace SharpAlliance
                     }
                 } while (ReturnCode != DD_OK);
 
-                guiDirtyRegionCount = 0;
-                guiDirtyRegionExCount = 0;
-                gfForceFullScreenRefresh = false;
+                this.guiDirtyRegionCount = 0;
+                this.guiDirtyRegionExCount = 0;
+                this.gfForceFullScreenRefresh = false;
             }
             else
             {
-                for (uiIndex = 0; uiIndex < guiDirtyRegionCount; uiIndex++)
+                for (uiIndex = 0; uiIndex < this.guiDirtyRegionCount; uiIndex++)
                 {
-                    Region.Left = gListOfDirtyRegions[uiIndex].Left;
-                    Region.Top = gListOfDirtyRegions[uiIndex].Top;
-                    Region.Width = gListOfDirtyRegions[uiIndex].Width;
-                    Region.Height = gListOfDirtyRegions[uiIndex].Height;
+                    Region.X = this.gListOfDirtyRegions[uiIndex].Left;
+                    Region.Y = this.gListOfDirtyRegions[uiIndex].Top;
+                    Region.Width = this.gListOfDirtyRegions[uiIndex].Width;
+                    Region.Height = this.gListOfDirtyRegions[uiIndex].Height;
 
                     do
                     {
-                        // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.Left, Region.Top, gpPrimarySurface, ref Region, DDBLTFAST_NOCOLORKEY);
+                        // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.X, Region.Y, gpPrimarySurface, ref Region, DDBLTFAST_NOCOLORKEY);
                         if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
                         {
                             // DirectXAttempt(ReturnCode, __LINE__, __FILE__);
@@ -984,27 +1008,27 @@ namespace SharpAlliance
                     } while (ReturnCode != DD_OK);
                 }
 
-                guiDirtyRegionCount = 0;
-                gfForceFullScreenRefresh = false;
+                this.guiDirtyRegionCount = 0;
+                this.gfForceFullScreenRefresh = false;
 
             }
 
             // Do extended dirty regions!
-            for (uiIndex = 0; uiIndex < guiDirtyRegionExCount; uiIndex++)
+            for (uiIndex = 0; uiIndex < this.guiDirtyRegionExCount; uiIndex++)
             {
-                Region.Left = gDirtyRegionsEx[uiIndex].Left;
-                Region.Top = gDirtyRegionsEx[uiIndex].Top;
-                Region.Width = gDirtyRegionsEx[uiIndex].Width;
-                Region.Height = gDirtyRegionsEx[uiIndex].Height;
+                Region.X = this.gDirtyRegionsEx[uiIndex].Left;
+                Region.Y = this.gDirtyRegionsEx[uiIndex].Top;
+                Region.Width = this.gDirtyRegionsEx[uiIndex].Width;
+                Region.Height = this.gDirtyRegionsEx[uiIndex].Height;
 
-                if ((Region.Top < this.renderWorld.gsVIEWPORT_WINDOW_END_Y) && this.renderWorld.gfRenderScroll)
+                if ((Region.Y < this.renderWorld.gsVIEWPORT_WINDOW_END_Y) && this.renderWorld.gfRenderScroll)
                 {
                     continue;
                 }
 
                 do
                 {
-                    // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.Left, Region.Top, gpPrimarySurface, ref Region, DDBLTFAST_NOCOLORKEY);
+                    // ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, Region.X, Region.Y, gpPrimarySurface, ref Region, DDBLTFAST_NOCOLORKEY);
                     if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
                     {
                         // DirectXAttempt(ReturnCode, __LINE__, __FILE__);
@@ -1017,7 +1041,7 @@ namespace SharpAlliance
                 } while (ReturnCode != DD_OK);
             }
 
-            guiDirtyRegionExCount = 0;
+            this.guiDirtyRegionExCount = 0;
 
 
         ENDOFLOOP:
@@ -1038,4 +1062,3 @@ namespace SharpAlliance
         //LPDIRECTDRAWSURFACE2 pSurface;
     }
 }
-

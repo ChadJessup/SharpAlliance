@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SharpAlliance;
+using Veldrid;
 using Vortice.Win32;
 using static Vortice.Win32.User32;
 
@@ -74,7 +75,7 @@ namespace Vortice
 
             if (this.Width > 0 && this.Height > 0)
             {
-                var rect = new RawRect(0, 0, this.Width, this.Height);
+                var rect = new Rectangle(0, 0, this.Width, this.Height);
 
                 // Adjust according to window styles
                 AdjustWindowRectEx(
