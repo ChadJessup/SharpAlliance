@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 using Vortice;
 using Vortice.Win32;
 using static Vortice.Win32.Kernel32;
@@ -183,15 +183,16 @@ namespace SharpAlliance
                 };
             }
 
-            var me = new MouseEvent
-            {
-                EventType = eventType,
-                Position = ConvertToPoint(msg.LParam),
-            };
+            //var me = new MouseEvent
+            //{
+            //     MouseButton = 
+            //    EventType = eventType,
+            //    Position = ConvertToPoint(msg.LParam),
+            //};
+            //
+            //Console.WriteLine($"{me.Position.X}:{me.Position.Y}");
 
-            Console.WriteLine($"{me.Position.X}:{me.Position.Y}");
-
-            return me;
+            return new MouseEvent();
         }
 
         private void OnActivated()

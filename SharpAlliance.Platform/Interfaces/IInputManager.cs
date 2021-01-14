@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Veldrid;
 
 namespace SharpAlliance.Platform.Interfaces
 {
@@ -11,16 +11,17 @@ namespace SharpAlliance.Platform.Interfaces
         void MouseChangeEvent(MouseEvent mouseEvent);
         void GetCursorPosition(out Point mousePos);
         bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents);
+        void ProcessEvents();
     }
 
-    public readonly struct KeyEvent
-    {
+    //public readonly struct KeyEvent
+    //{
 
-    }
+    //}
 
-    public readonly struct MouseEvent
-    {
-        public MouseEvents EventType { get; init; }
-        public Point Position { get; init; }
-    }
+    //public readonly struct MouseEvent
+    //{
+    //    public MouseEvents EventType { get; init; }
+    //    public Point Position { get; init; }
+    //}
 }

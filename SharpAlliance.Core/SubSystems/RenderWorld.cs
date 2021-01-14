@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Vortice.Mathematics;
+using Veldrid;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -13,7 +13,7 @@ namespace SharpAlliance.Core.SubSystems
         public bool gfScrollStart { get; set; }
         public int gsScrollXIncrement { get; set; }
         public int gsScrollYIncrement { get; set; }
-        public int guiScrollDirection { get; set; }
+        public ScrollDirection guiScrollDirection { get; set; }
         public int gsRenderHeight { get; set; }
         // GLOBAL VARIABLES
         public int SCROLL_X_STEP;
@@ -57,5 +57,21 @@ namespace SharpAlliance.Core.SubSystems
         public void Dispose()
         {
         }
+
+        public void RenderStaticWorldRect(Rectangle rect, bool fDynamicsToo)
+        {
+        }
+    }
+
+    public enum ScrollDirection
+    {
+        SCROLL_UP = 0x00000001,
+        SCROLL_DOWN = 0x00000002,
+        SCROLL_RIGHT = 0x00000004,
+        SCROLL_LEFT = 0x00000008,
+        SCROLL_UPLEFT = 0x00000020,
+        SCROLL_UPRIGHT = 0x00000040,
+        SCROLL_DOWNLEFT = 0x00000080,
+        SCROLL_DOWNRIGHT = 0x00000200,
     }
 }

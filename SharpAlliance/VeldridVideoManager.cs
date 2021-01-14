@@ -58,6 +58,7 @@ namespace SharpAlliance
         private readonly MouseCursorBackground[] gMouseCursorBackground = new MouseCursorBackground[2];
 
         private Sdl2Window _window;
+        public Sdl2Window Window { get => this._window; }
         private GraphicsDevice _gd;
         private bool _colorSrgb = true;
         private FullScreenQuad _fsq;
@@ -124,8 +125,8 @@ namespace SharpAlliance
         // Direct Draw objects for both the Primary and Backbuffer surfaces
         //
 
-        // private LPDIRECTDRAW? _gpDirectDrawObject = null;
-        // private LPDIRECTDRAW2 gpDirectDrawObject = null;
+        // private LPDIRectangleDRAW? _gpDirectDrawObject = null;
+        // private LPDIRectangleDRAW2 gpDirectDrawObject = null;
 
         //private Surface? _gpPrimarySurface = null;
         //private Surface2? gpPrimarySurface = null;
@@ -181,7 +182,7 @@ namespace SharpAlliance
                 out this._window,
                 out this._gd);
 
-            this._window.Resized += () => this._windowResized = true;
+            this.Window.Resized += () => this._windowResized = true;
 
             this.guiFrameBufferState = Constants.BUFFER_DIRTY;
             this.guiMouseBufferState = Constants.BUFFER_DISABLED;
@@ -199,16 +200,14 @@ namespace SharpAlliance
             return this.IsInitialized;
         }
 
-//        public void SetGraphicsDevice(D3D12GraphicsDevice gDevice)
-//        {
-//  //          this.graphicsDevice = gDevice;
-//        }
+        //        public void SetGraphicsDevice(D3D12GraphicsDevice gDevice)
+        //        {
+        //  //          this.graphicsDevice = gDevice;
+        //        }
 
         public void Draw()
         {
-//            this.graphicsDevice.DrawFrame((w, h) =>
-//            {
-//            });
+
         }
 
         public void Dispose()
@@ -248,9 +247,9 @@ namespace SharpAlliance
             switch (this.guiVideoManagerState)
             {
                 case Constants.VIDEO_ON:
-                //
-                // Excellent, everything is cosher, we continue on
-                //
+                    //
+                    // Excellent, everything is cosher, we continue on
+                    //
                     uiRefreshThreadState = this.guiRefreshThreadState = Constants.THREAD_ON;
                     usScreenWidth = this.gusScreenWidth;
                     usScreenHeight = this.gusScreenHeight;
@@ -447,11 +446,19 @@ namespace SharpAlliance
 
                 }
 
-                //if (gfRenderScroll)
-                //{
-                //    ScrollJA2Background(guiScrollDirection, gsScrollXIncrement, gsScrollYIncrement, gpPrimarySurface, gpBackBuffer, true, Constants.PREVIOUS_MOUSE_DATA);
-                //}
-                //gfIgnoreScrollDueToCenterAdjust = false;
+                if (this.renderWorld.gfRenderScroll)
+                {
+                    ScrollJA2Background(
+                        this.renderWorld.guiScrollDirection,
+                        this.renderWorld.gsScrollXIncrement,
+                        this.renderWorld.gsScrollYIncrement,
+                        //this.gpPrimarySurface,
+                        //this.gpBackBuffer,
+                        true,
+                        Constants.PREVIOUS_MOUSE_DATA);
+                }
+
+                this.renderWorld.gfIgnoreScrollDueToCenterAdjust = false;
 
                 //
                 // Update the guiFrameBufferState variable to reflect that the frame buffer can now be handled
@@ -477,8 +484,8 @@ namespace SharpAlliance
 
             if (this.gfPrintFrameBuffer == true)
             {
-                //LPDIRECTDRAWSURFACE _pTmpBuffer;
-                //LPDIRECTDRAWSURFACE2 pTmpBuffer;
+                //LPDIRectangleDRAWSURFACE _pTmpBuffer;
+                //LPDIRectangleDRAWSURFACE2 pTmpBuffer;
                 //DDSURFACEDESC SurfaceDescription;
                 FileStream OutputFile;
                 string? FileName;
@@ -1050,6 +1057,533 @@ namespace SharpAlliance
             fFirstTime = false;
 
         }
+
+        private void ScrollJA2Background(
+            ScrollDirection uiDirection, 
+            int sScrollXIncrement,
+            int sScrollYIncrement,
+            bool fRenderStrip,
+            int uiCurrentMouseBackbuffer)
+        {
+            int usWidth, usHeight;
+            int ubBitDepth;
+            int ReturnCode = DD_OK;
+            Rectangle Region;
+            int usMouseXPos, usMouseYPos;
+            Rectangle[] StripRegions = new Rectangle[2];
+            Rectangle MouseRegion;
+            int usNumStrips = 0;
+            int cnt;
+            int sShiftX, sShiftY;
+            int uiCountY;
+
+            this.GetCurrentVideoSettings(out usWidth, out usHeight, out ubBitDepth);
+            usHeight = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - this.renderWorld.gsVIEWPORT_WINDOW_START_Y);
+
+
+            StripRegions[0].X = this.renderWorld.gsVIEWPORT_START_X;
+            StripRegions[0].Width = this.renderWorld.gsVIEWPORT_END_X;
+            StripRegions[0].Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+            StripRegions[0].Height = this.renderWorld.gsVIEWPORT_WINDOW_END_Y;
+            StripRegions[1].X = this.renderWorld.gsVIEWPORT_START_X;
+            StripRegions[1].Width = this.renderWorld.gsVIEWPORT_END_X;
+            StripRegions[1].Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+            StripRegions[1].Height = this.renderWorld.gsVIEWPORT_WINDOW_END_Y;
+
+            MouseRegion.X = gMouseCursorBackground[uiCurrentMouseBackbuffer].usLeft;
+            MouseRegion.Y = gMouseCursorBackground[uiCurrentMouseBackbuffer].usTop;
+            MouseRegion.Width = gMouseCursorBackground[uiCurrentMouseBackbuffer].usRight;
+            MouseRegion.Height = gMouseCursorBackground[uiCurrentMouseBackbuffer].usBottom;
+
+            usMouseXPos = gMouseCursorBackground[uiCurrentMouseBackbuffer].usMouseXPos;
+            usMouseYPos = gMouseCursorBackground[uiCurrentMouseBackbuffer].usMouseYPos;
+
+
+            switch (uiDirection)
+            {
+                case ScrollDirection.SCROLL_LEFT:
+
+                    Region.X = 0;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Width = usWidth - (sScrollXIncrement);
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, sScrollXIncrement, gsVIEWPORT_WINDOW_START_Y, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                    // // memset z-buffer
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, sScrollXIncrement * 2);
+
+                    }
+
+                    StripRegions[0].Width = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    usMouseXPos += sScrollXIncrement;
+
+                    usNumStrips = 1;
+                    break;
+
+                case ScrollDirection.SCROLL_RIGHT:
+
+
+                    Region.X = sScrollXIncrement;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Width = usWidth;
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, 0, gsVIEWPORT_WINDOW_START_Y, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                    // // memset z-buffer
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
+                    }
+
+
+                    //for(uiCountY=0; uiCountY < usHeight; uiCountY++)
+                    //{
+                    //	memcpy(pDestBuf+(uiCountY*uiDestPitchBYTES),
+                    //					pSrcBuf+(uiCountY*uiDestPitchBYTES)+sScrollXIncrement*uiBPP,
+                    //					uiDestPitchBYTES-sScrollXIncrement*uiBPP);
+                    //}
+
+                    StripRegions[0].X = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    usMouseXPos -= sScrollXIncrement;
+
+                    usNumStrips = 1;
+                    break;
+
+                case ScrollDirection.SCROLL_UP:
+
+                    Region.X = 0;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Width = usWidth;
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, 0, gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+
+                    for (uiCountY = sScrollYIncrement - 1 + this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY >= this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
+                    }
+
+                    //for(uiCountY=usHeight-1; uiCountY >= sScrollYIncrement; uiCountY--)
+                    //{
+                    //	memcpy(pDestBuf+(uiCountY*uiDestPitchBYTES),
+                    //					pSrcBuf+((uiCountY-sScrollYIncrement)*uiDestPitchBYTES),
+                    //					uiDestPitchBYTES);
+                    //}
+                    StripRegions[0].Height = (int)(this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
+                    usNumStrips = 1;
+
+                    usMouseYPos += sScrollYIncrement;
+
+                    break;
+
+                case ScrollDirection.SCROLL_DOWN:
+
+                    Region.X = 0;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
+                    Region.Width = usWidth;
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, 0, gsVIEWPORT_WINDOW_START_Y, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                    // Zero out z
+                    for (uiCountY = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement); uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
+                    }
+
+                    //for(uiCountY=0; uiCountY < (usHeight-sScrollYIncrement); uiCountY++)
+                    //{
+                    //	memcpy(pDestBuf+(uiCountY*uiDestPitchBYTES),
+                    //					pSrcBuf+((uiCountY+sScrollYIncrement)*uiDestPitchBYTES),
+                    //					uiDestPitchBYTES);
+                    //}
+
+                    StripRegions[0].Y = (int)(this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    usNumStrips = 1;
+
+                    usMouseYPos -= sScrollYIncrement;
+
+                    break;
+
+                case ScrollDirection.SCROLL_UPLEFT:
+
+                    Region.X = 0;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Width = usWidth - (sScrollXIncrement);
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, sScrollXIncrement, gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                    // // memset z-buffer
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, sScrollXIncrement * 2);
+
+                    }
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement - 1; uiCountY >= this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
+                    }
+
+
+                    StripRegions[0].Width = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[1].Height = (int)(this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
+                    StripRegions[1].X = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    usNumStrips = 2;
+
+                    usMouseYPos += sScrollYIncrement;
+                    usMouseXPos += sScrollXIncrement;
+
+                    break;
+
+                case ScrollDirection.SCROLL_UPRIGHT:
+
+                    Region.X = sScrollXIncrement;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Width = usWidth;
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, 0, gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                    // // memset z-buffer
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
+                    }
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement - 1; uiCountY >= this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
+                    }
+
+
+                    StripRegions[0].X = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[1].Height = (int)(this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
+                    StripRegions[1].Width = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    usNumStrips = 2;
+
+                    usMouseYPos += sScrollYIncrement;
+                    usMouseXPos -= sScrollXIncrement;
+
+                    break;
+
+                case ScrollDirection.SCROLL_DOWNLEFT:
+
+                    Region.X = 0;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
+                    Region.Width = usWidth - (sScrollXIncrement);
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, sScrollXIncrement, gsVIEWPORT_WINDOW_START_Y, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                    // // memset z-buffer
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, sScrollXIncrement * 2);
+
+                    }
+                    for (uiCountY = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement); uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
+                    }
+
+
+                    StripRegions[0].Width = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+
+
+                    StripRegions[1].Y = (int)(this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[1].X = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    usNumStrips = 2;
+
+                    usMouseYPos -= sScrollYIncrement;
+                    usMouseXPos += sScrollXIncrement;
+
+                    break;
+
+                case ScrollDirection.SCROLL_DOWNRIGHT:
+
+                    Region.X = sScrollXIncrement;
+                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
+                    Region.Width = usWidth;
+                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+
+                    do
+                    {
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, 0, gsVIEWPORT_WINDOW_START_Y, pSource, (LPRectangle) & Region, DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                          //  DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+
+                            if (ReturnCode == DDERR_SURFACELOST)
+                            {
+                                break;
+                            }
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                    // // memset z-buffer
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
+                    }
+                    for (uiCountY = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement); uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    {
+                        // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
+                    }
+
+
+                    StripRegions[0].X = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[1].Y = (int)(this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[1].Width = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    usNumStrips = 2;
+
+                    usMouseYPos -= sScrollYIncrement;
+                    usMouseXPos -= sScrollXIncrement;
+
+                    break;
+
+            }
+
+            if (fRenderStrip)
+            {
+
+                // Memset to 0
+# if SCROLL_TEST
+                {
+                    DDBLTFX BlitterFX;
+
+                    BlitterFX.dwSize = sizeof(DDBLTFX);
+                    BlitterFX.dwFillColor = 0;
+
+                    DDBltSurface((LPDIRectangleDRAWSURFACE2)pDest, NULL, NULL, NULL, DDBLT_COLORFILL, &BlitterFX);
+                }
+#endif
+
+
+                for (cnt = 0; cnt < usNumStrips; cnt++)
+                {
+                    this.renderWorld.RenderStaticWorldRect(StripRegions[cnt], true);
+                    // Optimize Redundent tiles too!
+                    //ExamineZBufferRect( (int)StripRegions[ cnt ].X, (int)StripRegions[ cnt ].Y, (int)StripRegions[ cnt ].Width, (int)StripRegions[ cnt ].Height );
+
+                    do
+                    {
+                        ReturnCode = DD_OK;
+                        //ReturnCode = IDirectDrawSurface2_SGPBltFast(pDest, StripRegions[cnt].X, StripRegions[cnt].Y, gpFrameBuffer, (LPRectangle) & (StripRegions[cnt]), DDBLTFAST_NOCOLORKEY);
+                        if ((ReturnCode != DD_OK) && (ReturnCode != DDERR_WASSTILLDRAWING))
+                        {
+                            //DirectXAttempt(ReturnCode, __LINE__, __FILE__);
+                        }
+
+                        if (ReturnCode == DDERR_SURFACELOST)
+                        {
+                            break;
+                        }
+                    } while (ReturnCode != DD_OK);
+
+                }
+
+                sShiftX = 0;
+                sShiftY = 0;
+
+                switch (uiDirection)
+                {
+                    case ScrollDirection.SCROLL_LEFT:
+
+                        sShiftX = sScrollXIncrement;
+                        sShiftY = 0;
+                        break;
+
+                    case ScrollDirection.SCROLL_RIGHT:
+
+                        sShiftX = -sScrollXIncrement;
+                        sShiftY = 0;
+                        break;
+
+                    case ScrollDirection.SCROLL_UP:
+
+                        sShiftX = 0;
+                        sShiftY = sScrollYIncrement;
+                        break;
+
+                    case ScrollDirection.SCROLL_DOWN:
+
+                        sShiftX = 0;
+                        sShiftY = -sScrollYIncrement;
+                        break;
+
+                    case ScrollDirection.SCROLL_UPLEFT:
+
+                        sShiftX = sScrollXIncrement;
+                        sShiftY = sScrollYIncrement;
+                        break;
+
+                    case ScrollDirection.SCROLL_UPRIGHT:
+
+                        sShiftX = -sScrollXIncrement;
+                        sShiftY = sScrollYIncrement;
+                        break;
+
+                    case ScrollDirection.SCROLL_DOWNLEFT:
+
+                        sShiftX = sScrollXIncrement;
+                        sShiftY = -sScrollYIncrement;
+                        break;
+
+                    case ScrollDirection.SCROLL_DOWNRIGHT:
+
+                        sShiftX = -sScrollXIncrement;
+                        sShiftY = -sScrollYIncrement;
+                        break;
+                }
+
+                // RESTORE SHIFTED
+                this.RestoreShiftedVideoOverlays(sShiftX, sShiftY);
+
+                // SAVE NEW
+                this.SaveVideoOverlaysArea(VideoSurfaceManager.BACKBUFFER);
+
+                // BLIT NEW
+                this.ExecuteVideoOverlaysToAlternateBuffer(VideoSurfaceManager.BACKBUFFER);
+
+
+#if false
+
+		// Erase mouse from old position
+		if (gMouseCursorBackground[ uiCurrentMouseBackbuffer ].fRestore == TRUE )
+		{
+
+			do
+			{
+				ReturnCode = IDirectDrawSurface2_SGPBltFast(gpBackBuffer, usMouseXPos, usMouseYPos, gMouseCursorBackground[uiCurrentMouseBackbuffer].pSurface, (LPRectangle)&MouseRegion, DDBLTFAST_NOCOLORKEY);
+				if ((ReturnCode != DD_OK)&&(ReturnCode != DDERR_WASSTILLDRAWING))
+				{
+					DirectXAttempt ( ReturnCode, __LINE__, __FILE__ );
+
+					if (ReturnCode == DDERR_SURFACELOST)
+					{
+
+					}
+				}
+			} while (ReturnCode != DD_OK);
+		}
+
+#endif
+
+            }
+
+            //InvalidateRegion( sLeftDraw, sTopDraw, sRightDraw, sBottomDraw );
+
+            //UpdateSaveBuffer();
+            //SaveBackgroundRects();
+        }
+
+        private void RestoreShiftedVideoOverlays(int sShiftX, int sShiftY)
+        {
+        }
+
+        private void SaveVideoOverlaysArea(uint bACKBUFFER)
+        {
+        }
+
+        private void ExecuteVideoOverlaysToAlternateBuffer(uint bACKBUFFER)
+        {
+        }
+
+        private void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
+        {
+            usWidth = 0;
+            usHeight = 0;
+            ubBitDepth = 0;
+        }
     }
 
     public struct MouseCursorBackground
@@ -1058,7 +1592,7 @@ namespace SharpAlliance
         public int usMouseXPos, usMouseYPos;
         public int usLeft, usTop, usRight, usBottom;
         public Rectangle Region;
-        //LPDIRECTDRAWSURFACE _pSurface;
-        //LPDIRECTDRAWSURFACE2 pSurface;
+        //LPDIRectangleDRAWSURFACE _pSurface;
+        //LPDIRectangleDRAWSURFACE2 pSurface;
     }
 }

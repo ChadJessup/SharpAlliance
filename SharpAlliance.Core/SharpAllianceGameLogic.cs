@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -8,6 +7,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 using static SharpAlliance.Platform.NullManagers.NullScreenManager;
 
 namespace SharpAlliance.Core
@@ -91,6 +91,8 @@ namespace SharpAlliance.Core
                 var shouldContinue = await this.os.Pump(() =>
                 {
                     IScreen uiOldScreen = guiCurrentScreen;
+
+                    this.inputs.ProcessEvents();
 
                     this.inputs.GetCursorPosition(out Point MousePos);
 

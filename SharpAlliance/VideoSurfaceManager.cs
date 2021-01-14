@@ -9,6 +9,11 @@ namespace SharpAlliance
 {
     public class VideoSurfaceManager : IVideoSurfaceManager
     {
+        public const uint PRIMARY_SURFACE = 0xFFFFFFF0;
+        public const uint BACKBUFFER = 0xFFFFFFF1;
+        public const uint FRAME_BUFFER = 0xFFFFFFF2;
+        public const uint MOUSE_BUFFER = 0xFFFFFFF3;
+
         private readonly ILogger<VideoSurfaceManager> logger;
         private readonly VeldridVideoManager video;
 
@@ -137,17 +142,17 @@ namespace SharpAlliance
         // Deletes all palettes, surfaces and region data
         private bool DeleteVideoSurface(HVSURFACE? hVSurface)
         {
-//            Surface2 lpDDSurface;
+            //            Surface2 lpDDSurface;
 
             // Assertions
             //CHECKF(hVSurface != null);
 
             // Release palette
-      //      if (hVSurface.pPalette != null)
-      //      {
-      //          DDReleasePalette((LPDIRECTDRAWPALETTE)hVSurface.pPalette);
-      //          hVSurface.pPalette = null;
-      //      }
+            //      if (hVSurface.pPalette != null)
+            //      {
+            //          DDReleasePalette((LPDIRECTDRAWPALETTE)hVSurface.pPalette);
+            //          hVSurface.pPalette = null;
+            //      }
 
             //if ( hVSurface.pClipper != null )
             //{
@@ -156,20 +161,20 @@ namespace SharpAlliance
             //}
 
             // Get surface pointer
-       //     lpDDSurface = (Surface2)hVSurface.pSurfaceData;
+            //     lpDDSurface = (Surface2)hVSurface.pSurfaceData;
 
             // Release surface
-        //    if (hVSurface.pSurfaceData1 != null)
-        //    {
-        //        DDReleaseSurface((Surface1)hVSurface.pSurfaceData1, lpDDSurface);
-        //    }
+            //    if (hVSurface.pSurfaceData1 != null)
+            //    {
+            //        DDReleaseSurface((Surface1)hVSurface.pSurfaceData1, lpDDSurface);
+            //    }
 
             // Release backup surface
-          //  if (hVSurface.pSavedSurfaceData != null)
-          //  {
-          //      DDReleaseSurface((Surface1)hVSurface.pSavedSurfaceData1,
-          //                              (Surface2)hVSurface.pSavedSurfaceData);
-          //  }
+            //  if (hVSurface.pSavedSurfaceData != null)
+            //  {
+            //      DDReleaseSurface((Surface1)hVSurface.pSavedSurfaceData1,
+            //                              (Surface2)hVSurface.pSavedSurfaceData);
+            //  }
 
             // Release region data
             hVSurface.Value.RegionList.Clear();
@@ -178,7 +183,7 @@ namespace SharpAlliance
             if (hVSurface.Value.p16BPPPalette != null)
             {
                 // MemFree(hVSurface.p16BPPPalette);
-             //   hVSurface?.p16BPPPalette = null;
+                //   hVSurface?.p16BPPPalette = null;
             }
 
             //giMemUsedInSurfaces -= hVSurface.usHeight * hVSurface.usWidth * (hVSurface.ubBitDepth / 8);

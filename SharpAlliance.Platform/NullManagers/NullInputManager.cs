@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using Veldrid;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,12 +33,17 @@ namespace SharpAlliance.Platform.NullManagers
 
         public void GetCursorPosition(out Point mousePos)
         {
-            throw new NotImplementedException();
+            mousePos = new Point();
         }
 
         public bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents)
         {
-            throw new NotImplementedException();
+            inputAtom = new InputAtom();
+            return true;
+        }
+
+        public void ProcessEvents()
+        {
         }
     }
 }

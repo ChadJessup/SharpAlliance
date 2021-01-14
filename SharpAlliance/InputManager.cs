@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using static Vortice.Win32.User32;
+using Veldrid;
+using Veldrid.Sdl2;
 
 namespace SharpAlliance
 {
@@ -16,6 +17,8 @@ namespace SharpAlliance
         private readonly ILogger<InputManager> logger;
         private readonly MouseSubSystem mouseSystem;
         private readonly ButtonSubSystem buttonSystem;
+        private readonly GameContext context;
+        private VeldridVideoManager video;
         private int[] gsKeyTranslationTable = new int[1024];
         private bool gfApplicationActive;
         private bool[] gfKeyState = new bool[256];            // TRUE = Pressed, FALSE = Not Pressed
@@ -68,7 +71,7 @@ namespace SharpAlliance
 
         private bool gfCurrentStringInputState;
         private IntPtr hInstance;
-        private HookProcedureHandle ghKeyboardHook;
+        //private HookProcedureHandle ghKeyboardHook;
         private object ghMouseHook;
 
         public bool IsInitialized { get; private set; }
@@ -78,11 +81,13 @@ namespace SharpAlliance
         public InputManager(
             ILogger<InputManager> logger,
             MouseSubSystem mouseSubSystem,
-            ButtonSubSystem buttonSubsystem)
+            ButtonSubSystem buttonSubsystem,
+            GameContext gameContext)
         {
             this.logger = logger;
             this.mouseSystem = mouseSubSystem;
             this.buttonSystem = buttonSubsystem;
+            this.context = gameContext;
         }
 
         //private void KeyboardHandler(object sender, KeyPressEventArgs e)
@@ -91,7 +96,11 @@ namespace SharpAlliance
         //}
 
 
-        public void GetCursorPosition(out Point mousePos) => GetCursorPos(out mousePos);
+        public void GetCursorPosition(out Point mousePos)
+        {
+            var pos = InputTracker.MousePosition;
+            mousePos = new Point((int)pos.X, (int)pos.Y);
+        }
 
         public ValueTask<bool> Initialize()
         {
@@ -99,6 +108,8 @@ namespace SharpAlliance
             {
                 return ValueTask.FromResult(true);
             }
+
+            this.video = (this.context.VideoManager as VeldridVideoManager)!;
 
             // Initialize the Event Queue
             this.gusQueueCount = 0;
@@ -132,6 +143,17 @@ namespace SharpAlliance
             this.IsInitialized = true;
 
             return ValueTask.FromResult(true);
+        }
+
+        public void ProcessEvents()
+        {
+            InputSnapshot? snapshot = null;
+            Sdl2Events.ProcessEvents();
+            snapshot = this.video.Window.PumpEvents();
+            InputTracker.UpdateFrameInput(snapshot, this.video.Window);
+
+            this.gfLeftButtonState = snapshot.IsMouseDown(MouseButton.Left);
+            this.gfRightButtonState = snapshot.IsMouseDown(MouseButton.Right);
         }
 
         public bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents)
