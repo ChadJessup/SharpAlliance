@@ -73,8 +73,8 @@ namespace SharpAlliance.Core
             this.saves.LoadGameSettings();
             this.saves.InitGameOptions();
 
-            var splashScreen = await this.context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen) as SplashScreen;
-            splashScreen?.SetIntroType(IntroScreen.SPLASH);
+            var introScreen = await this.context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen) as SplashScreen;
+            introScreen?.SetIntroType(IntroScreenType.SPLASH);
 
             this.IsInitialized = true;
 
@@ -88,89 +88,46 @@ namespace SharpAlliance.Core
 
             while (this.context.State == GameState.Running && !token.IsCancellationRequested)
             {
-                var shouldContinue = await this.os.Pump(() =>
+                uiOldScreen = this.guiCurrentScreen;
+
+                this.inputs.ProcessEvents();
+
+                this.inputs.GetCursorPosition(out Point MousePos);
+
+                // Hook into mouse stuff for MOVEMENT MESSAGES
+                this.mouse.MouseHook(MouseEvents.MousePosition, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+
+                this.music.MusicPoll(false);
+
+                while (this.inputs.DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
                 {
-                    IScreen uiOldScreen = guiCurrentScreen;
-
-                    this.inputs.ProcessEvents();
-
-                    this.inputs.GetCursorPosition(out Point MousePos);
-
-                    // Hook into mouse stuff for MOVEMENT MESSAGES
-                    this.mouse.MouseHook(MouseEvents.MousePosition, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
-
-                    this.music.MusicPoll(false);
-
-                    while (this.inputs.DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
+                    switch (inputAtom!.Value.MouseEvents)
                     {
-                        switch (inputAtom!.Value.MouseEvents)
-                        {
-                            case MouseEvents.LEFT_BUTTON_DOWN:
-                                this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
-                                break;
-                            case MouseEvents.LEFT_BUTTON_UP:
-                                this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
-                                break;
-                            case MouseEvents.RIGHT_BUTTON_DOWN:
-                                this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
-                                break;
-                            case MouseEvents.RIGHT_BUTTON_UP:
-                                this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
-                                break;
-                            case MouseEvents.LEFT_BUTTON_REPEAT:
-                                this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
-                                break;
-                            case MouseEvents.RIGHT_BUTTON_REPEAT:
-                                this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
-                                break;
-                        }
+                        case MouseEvents.LEFT_BUTTON_DOWN:
+                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            break;
+                        case MouseEvents.LEFT_BUTTON_UP:
+                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            break;
+                        case MouseEvents.RIGHT_BUTTON_DOWN:
+                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            break;
+                        case MouseEvents.RIGHT_BUTTON_UP:
+                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            break;
+                        case MouseEvents.LEFT_BUTTON_REPEAT:
+                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            break;
+                        case MouseEvents.RIGHT_BUTTON_REPEAT:
+                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            break;
                     }
-                });
+                }
 
                 if (this.globals.gfGlobalError)
                 {
-                    guiCurrentScreen = await sm.GetScreen(ScreenNames.ERROR_SCREEN, activate: true);
+                    this.guiCurrentScreen = await sm.GetScreen(ScreenNames.ERROR_SCREEN, activate: true);
                 }
-
-
-                //if we are to check for free space on the hard drive
-                //if (gubCheckForFreeSpaceOnHardDriveCount < DONT_CHECK_FOR_FREE_SPACE)
-                //{
-                //    //only if we are in a screen that can get this check
-                //    if (guiCurrentScreen == MAP_SCREEN || guiCurrentScreen == GAME_SCREEN || guiCurrentScreen == SAVE_LOAD_SCREEN)
-                //    {
-                //        if (gubCheckForFreeSpaceOnHardDriveCount < 1)
-                //        {
-                //            gubCheckForFreeSpaceOnHardDriveCount++;
-                //        }
-                //        else
-                //        {
-                //            // Make sure the user has enough hard drive space
-                //            //if (!DoesUserHaveEnoughHardDriveSpace())
-                //            //{
-                //            //    CHAR16 zText[512];
-                //            //    CHAR16 zSpaceOnDrive[512];
-                //            //    UINT32 uiSpaceOnDrive;
-                //            //    CHAR16 zSizeNeeded[512];
-                //            //
-                //            //    wprintf(zSizeNeeded, L"%d", REQUIRED_FREE_SPACE / BYTESINMEGABYTE);
-                //            //    InsertCommasForDollarFigure(zSizeNeeded);
-                //            //
-                //            //    uiSpaceOnDrive = GetFreeSpaceOnHardDriveWhereGameIsRunningFrom();
-                //            //
-                //            //    wprintf(zSpaceOnDrive, L"%.2f", uiSpaceOnDrive / (FLOAT)BYTESINMEGABYTE);
-                //            //
-                //            //    wprintf(zText, pMessageStrings[MSG_LOWDISKSPACE_WARNING], zSpaceOnDrive, zSizeNeeded);
-                //            //
-                //            //    if (guiPreviousOptionScreen == MAP_SCREEN)
-                //            //        DoMapMessageBox(MSG_BOX_BASIC_STYLE, zText, MAP_SCREEN, MSG_BOX_FLAG_OK, NULL);
-                //            //    else
-                //            //        DoMessageBox(MSG_BOX_BASIC_STYLE, zText, GAME_SCREEN, MSG_BOX_FLAG_OK, NULL, NULL);
-                //            //}
-                //            //gubCheckForFreeSpaceOnHardDriveCount = DONT_CHECK_FOR_FREE_SPACE;
-                //        }
-                //    }
-                //}
 
                 // ATE: Force to be in message box screen!
                 if (this.messageBox.gfInMsgBox)
@@ -181,9 +138,9 @@ namespace SharpAlliance.Core
                 if (sm.guiPendingScreen != NullScreen.Instance)
                 {
                     // Based on active screen, deinit!
-                    if (sm.guiPendingScreen != guiCurrentScreen)
+                    if (sm.guiPendingScreen != this.guiCurrentScreen)
                     {
-                        switch (guiCurrentScreen)
+                        switch (this.guiCurrentScreen)
                         {
                             case MapScreen ms when sm.guiPendingScreen is MSG_BOX_SCREEN:
                                 sm.EndMapScreen(false);
@@ -200,29 +157,31 @@ namespace SharpAlliance.Core
                         // Set the fact that the screen has changed
                         uiOldScreen = sm.guiPendingScreen;
 
-                        this.HandleNewScreenChange(sm.guiPendingScreen, guiCurrentScreen);
+                        this.HandleNewScreenChange(sm.guiPendingScreen, this.guiCurrentScreen);
                     }
 
-                    guiCurrentScreen = sm.guiPendingScreen;
+                    this.guiCurrentScreen = sm.guiPendingScreen;
                     sm.guiPendingScreen = NullScreen.Instance;
                 }
 
                 uiOldScreen = await sm.CurrentScreen.Handle();
 
                 // if the screen has chnaged
-                if (uiOldScreen != guiCurrentScreen)
+                if (uiOldScreen != this.guiCurrentScreen)
                 {
-                    this.HandleNewScreenChange(uiOldScreen, guiCurrentScreen);
-                    guiCurrentScreen = uiOldScreen;
+                    this.HandleNewScreenChange(uiOldScreen, this.guiCurrentScreen);
+                    this.guiCurrentScreen = uiOldScreen;
                 }
 
                 this.video.RefreshScreen(null);
+
+                this.video.DrawFrame();
 
                 this.globals.guiGameCycleCounter++;
 
                 this.context.ClockManager.UpdateClock();
 
-                if (!shouldContinue)
+                if (this.context.State != GameState.Running)
                 {
                     this.context.State = GameState.ExitRequested;
                 }
@@ -259,6 +218,49 @@ namespace SharpAlliance.Core
             sm.AddScreen<LAPTOP_SCREEN>(ScreenNames.LAPTOP_SCREEN);
             sm.AddScreen<MSG_BOX_SCREEN>(ScreenNames.MSG_BOX_SCREEN);
             sm.AddScreen<FadeScreen>(ScreenNames.FADE_SCREEN);
+        }
+
+        private void CheckForSpace()
+        {
+
+            //if we are to check for free space on the hard drive
+            //if (gubCheckForFreeSpaceOnHardDriveCount < DONT_CHECK_FOR_FREE_SPACE)
+            //{
+            //    //only if we are in a screen that can get this check
+            //    if (guiCurrentScreen == MAP_SCREEN || guiCurrentScreen == GAME_SCREEN || guiCurrentScreen == SAVE_LOAD_SCREEN)
+            //    {
+            //        if (gubCheckForFreeSpaceOnHardDriveCount < 1)
+            //        {
+            //            gubCheckForFreeSpaceOnHardDriveCount++;
+            //        }
+            //        else
+            //        {
+            //            // Make sure the user has enough hard drive space
+            //            //if (!DoesUserHaveEnoughHardDriveSpace())
+            //            //{
+            //            //    CHAR16 zText[512];
+            //            //    CHAR16 zSpaceOnDrive[512];
+            //            //    UINT32 uiSpaceOnDrive;
+            //            //    CHAR16 zSizeNeeded[512];
+            //            //
+            //            //    wprintf(zSizeNeeded, L"%d", REQUIRED_FREE_SPACE / BYTESINMEGABYTE);
+            //            //    InsertCommasForDollarFigure(zSizeNeeded);
+            //            //
+            //            //    uiSpaceOnDrive = GetFreeSpaceOnHardDriveWhereGameIsRunningFrom();
+            //            //
+            //            //    wprintf(zSpaceOnDrive, L"%.2f", uiSpaceOnDrive / (FLOAT)BYTESINMEGABYTE);
+            //            //
+            //            //    wprintf(zText, pMessageStrings[MSG_LOWDISKSPACE_WARNING], zSpaceOnDrive, zSizeNeeded);
+            //            //
+            //            //    if (guiPreviousOptionScreen == MAP_SCREEN)
+            //            //        DoMapMessageBox(MSG_BOX_BASIC_STYLE, zText, MAP_SCREEN, MSG_BOX_FLAG_OK, NULL);
+            //            //    else
+            //            //        DoMessageBox(MSG_BOX_BASIC_STYLE, zText, GAME_SCREEN, MSG_BOX_FLAG_OK, NULL, NULL);
+            //            //}
+            //            //gubCheckForFreeSpaceOnHardDriveCount = DONT_CHECK_FOR_FREE_SPACE;
+            //        }
+            //    }
+            //}
         }
 
         public void Dispose()

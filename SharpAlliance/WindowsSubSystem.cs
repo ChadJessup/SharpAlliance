@@ -8,6 +8,7 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using Veldrid;
+using Veldrid.Sdl2;
 using Vortice;
 using Vortice.Win32;
 using static Vortice.Win32.Kernel32;
@@ -53,18 +54,21 @@ namespace SharpAlliance
             if (this.MainWindow is not null)
             {
                 VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.VideoManager;
+                this.MainWindow = vorticeVideoManager.Window;
+
 //                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
             }
 
             return ValueTask.FromResult(true);
         }
 
-        public Window MainWindow { get; private set; }
+        public Sdl2Window MainWindow { get; private set; }
         public bool IsInitialized { get; }
 
-        public void CreateWindow(string name = "Vortice")
+        public Sdl2Window CreateWindow(string name = "Vortice")
         {
             VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.VideoManager;
+            return vorticeVideoManager.Window;
         }
 
         private void PlatformConstruct()
@@ -123,7 +127,7 @@ namespace SharpAlliance
         {
             if (this.MainWindow is null)
             {
-                this.CreateWindow();
+                this.MainWindow = this.CreateWindow();
             }
 
             if (!this._paused)

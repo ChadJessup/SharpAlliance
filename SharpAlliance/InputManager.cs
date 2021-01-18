@@ -147,13 +147,21 @@ namespace SharpAlliance
 
         public void ProcessEvents()
         {
-            InputSnapshot? snapshot = null;
-            Sdl2Events.ProcessEvents();
-            snapshot = this.video.Window.PumpEvents();
-            InputTracker.UpdateFrameInput(snapshot, this.video.Window);
+            try
+            {
+                InputSnapshot? snapshot = null;
+                snapshot = this.video.Window.PumpEvents();
+                InputTracker.UpdateFrameInput(snapshot, this.video.Window);
 
-            this.gfLeftButtonState = snapshot.IsMouseDown(MouseButton.Left);
-            this.gfRightButtonState = snapshot.IsMouseDown(MouseButton.Right);
+                this.gfLeftButtonState = snapshot.IsMouseDown(MouseButton.Left);
+                this.gfRightButtonState = snapshot.IsMouseDown(MouseButton.Right);
+            }
+            catch
+            {
+                // threaded input can throw in sdl2 library.
+                // TODO: bug it and work on getting it fixed.
+                this.logger.LogDebug(LoggingEventId.INPUT, "Exception from PumpEvents");
+            }
         }
 
         public bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents)

@@ -38,7 +38,6 @@ namespace SharpAlliance
             this.video = (videoManager as VeldridVideoManager)!;
 
             this.IsInitialized = this.Initialize().AsTask().Result;
-            ;
         }
 
         public bool IsInitialized { get; }

@@ -8,7 +8,7 @@ namespace SharpAlliance.Platform.Interfaces
 {
     public interface IVideoManager : ISharpAllianceManager
     {
-        void Draw();
+        void DrawFrame();
         void RefreshScreen(object? p);
     }
 }

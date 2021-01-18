@@ -14,12 +14,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Shaders\Compute.glsl" />
+    <None Remove="Assets\Shaders\Fragment.glsl" />
+    <None Remove="Assets\Shaders\sprite.frag" />
+    <None Remove="Assets\Shaders\sprite.frag.spv" />
+    <None Remove="Assets\Shaders\sprite.vert" />
+    <None Remove="Assets\Shaders\sprite.vert.spv" />
+    <None Remove="Assets\Shaders\Vertex.glsl" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="Platform\D3D12GraphicsDevice.cs" />
     <Compile Include="Platform\IGraphicsDevice.cs" />
     <Compile Include="Platform\Platforms\NetStandard\Win32\Kernel32.cs" />
     <Compile Include="Platform\Platforms\NetStandard\Win32\User32.cs" />
     <Compile Include="Platform\ShaderCompiler.cs" />
     <Compile Include="Platform\Window.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Shaders\**">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +46,7 @@
     <PackageReference Include="Veldrid.ImageSharp" Version="4.8.0" />
     <PackageReference Include="Veldrid.OpenGLBindings" Version="4.8.0" />
     <PackageReference Include="Veldrid.SDL2" Version="4.8.0" />
+    <PackageReference Include="Veldrid.SPIRV" Version="1.0.13" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
     <PackageReference Include="Veldrid.Utilities" Version="4.8.0" />
   </ItemGroup>

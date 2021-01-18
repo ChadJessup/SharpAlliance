@@ -13,6 +13,7 @@ namespace SharpAlliance.Core.Managers
     public class LibraryFileManager : ILibraryManager
     {
         private const int INITIAL_NUM_HANDLES = 20;
+        private LibraryNames gsCurrentLibrary;
 
         public LibraryFileManager(ILogger<ILibraryManager> logger, GameContext context)
         {
@@ -66,7 +67,6 @@ namespace SharpAlliance.Core.Managers
             return ValueTask.FromResult(true);
         }
 
-
         //************************************************************************
         //
         //	OpenLibrary() Opens a library from the 'array' of library names
@@ -79,7 +79,7 @@ namespace SharpAlliance.Core.Managers
             //if the library is already opened, report an error
             if (this.Libraries.TryGetValue(libraryName, out var library) && library.fLibraryOpen)
             {
-                return (false);
+                return false;
             }
 
             this.Libraries.TryAdd(libraryName, new LibraryHeader());
@@ -143,8 +143,8 @@ namespace SharpAlliance.Core.Managers
         {
             DirEntry dirEntry = new();
             dirEntry.sFileName = new string(br.ReadChars(256)).TrimEnd('\0');
-            dirEntry.uiOffset = br.ReadUInt32();
-            dirEntry.uiLength = br.ReadUInt32();
+            dirEntry.uiOffset = (int)br.ReadUInt32();
+            dirEntry.uiLength = (int)br.ReadUInt32();
             dirEntry.ubState = br.ReadByte();
             dirEntry.ubReserved = br.ReadByte();
             dirEntry.sFileTime = this.ParseFileTime(br);
@@ -155,6 +155,138 @@ namespace SharpAlliance.Core.Managers
             br.ReadByte();
 
             return dirEntry;
+        }
+
+        //************************************************************************
+        //
+        // CheckIfFileExistInLibrary() determines if a file exists in a library.
+        //
+        //************************************************************************
+        private bool CheckIfFileExistInLibrary(string pFileName)
+        {
+            LibraryNames sLibraryID;
+
+            //get thelibrary that file is in
+            sLibraryID = GetLibraryIDFromFileName(pFileName);
+            if (sLibraryID == LibraryNames.Unknown)
+            {
+                //not in any library
+                return false;
+            }
+
+            return this.GetFileHeaderFromLibrary(
+                sLibraryID,
+                pFileName,
+                out FileHeader? pFileHeader);
+        }
+
+        //************************************************************************
+        //
+        //	GetFileHeaderFromLibrary() performsperforms a binary search of the
+        //	library.  It adds the libraries path to the file in the
+        //	library and then string compared that to the name that we are
+        //	searching for.
+        //
+        //************************************************************************
+
+        private bool GetFileHeaderFromLibrary(LibraryNames sLibraryID, string pstrFileName, out FileHeader? pFileHeader)
+        {
+            //combi ne the library path to the file name (need it for the search of the library )
+            string sFileNameWithPath = pstrFileName;
+
+            this.gsCurrentLibrary = sLibraryID;
+
+            /* try to find the filename using a binary search algorithm: */
+            pFileHeader = null;
+            // (FileHeader)bsearch(
+            // (char*)&sFileNameWithPath,
+            // (FileHeader)Libraries[sLibraryID].pFileHeader,
+            // Libraries[sLibraryID].usNumberOfEntries,
+            // sizeof(FileHeader),
+            // (int(*)(const void*, const void*))CompareFileNames );
+
+            if (pFileHeader.HasValue)
+            {
+                return true;
+            }
+            else
+            {
+                pFileHeader = null;
+                return false;
+            }
+        }
+
+        //************************************************************************
+        //
+        //	This function finds out if the file CAN be in a library.  It determines
+        //	if the library that the file MAY be in is open.
+        //	( eg. File is  Laptop\Test.sti, if the Laptop\ library is open, it returns true
+        //
+        //************************************************************************
+        private LibraryNames GetLibraryIDFromFileName(string pFileName)
+        {
+            int sLoop1, sBestMatch = (int)LibraryNames.Unknown;
+
+            //loop through all the libraries to check which library the file is in
+            for (sLoop1 = 0; sLoop1 < this.Libraries.Count; sLoop1++)
+            {
+                //if the library is not loaded, dont try to access the array
+                if (IsLibraryOpened((LibraryNames)sLoop1))
+                {
+                    //if the library path name is of size zero, ( the library is for the default path )
+                    if (this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Length == 0)
+                    {
+                        //determine if there is a directory in the file name
+                        if (!pFileName.Contains('\\') && !pFileName.Contains('/'))
+                        {
+                            //There is no directory in the file name
+                            return (LibraryNames)sLoop1;
+                        }
+                    }
+
+                    //compare the library name to the file name that is passed in
+                    else
+                    {
+                        // if the directory paths are the same, to the length of the lib's path
+                        if (this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Equals(pFileName) || this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Length == 0)
+                        {
+                            // if we've never matched, or this match's path is longer than the previous match (meaning it's more exact)
+                            if (sBestMatch == (int)LibraryNames.Unknown || this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Length > this.Libraries[(LibraryNames)sBestMatch].sLibraryPath.Length)
+                            {
+                                sBestMatch = sLoop1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //no library was found, return an error
+            return (LibraryNames)sBestMatch;
+        }
+
+        private bool IsLibraryOpened(LibraryNames sLibraryID)
+        {
+            //if the database is not initialized
+            if (!this.IsInitialized)
+            {
+                return false;
+            }
+
+            //if we are trying to do something with an invalid library id
+            if ((int)sLibraryID >= this.Libraries.Count)
+            {
+                return false;
+            }
+
+            //if the library is opened
+            if (this.Libraries[sLibraryID].fLibraryOpen)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private DateTime ParseFileTime(BinaryReader br)
@@ -168,6 +300,65 @@ namespace SharpAlliance.Core.Managers
 
             return DateTime.FromFileTimeUtc(ticks);
         }
+
+        private bool LoadDataFromLibrary(LibraryNames sLibraryID, int uiFileNum, byte[] pData, int uiBytesToRead, out int pBytesRead)
+        {
+            int uiOffsetInLibrary, uiLength;
+            Stream hLibraryFile;
+            int uiNumBytesRead;
+            int uiCurPos;
+
+            //get the offset into the library, the length and current position of the file pointer.
+            uiOffsetInLibrary = this.Libraries[sLibraryID].pOpenFiles[uiFileNum].pFileHeader.uiFileOffset;
+            uiLength = this.Libraries[sLibraryID].pOpenFiles[uiFileNum].pFileHeader.uiFileLength;
+            hLibraryFile = this.Libraries[sLibraryID].hLibraryHandle;
+            uiCurPos = this.Libraries[sLibraryID].pOpenFiles[uiFileNum].uiFilePosInFile;
+
+            //set the file pointer to the right location
+            this.SetFilePointer(hLibraryFile, (uiOffsetInLibrary + uiCurPos), SeekOrigin.Begin);
+
+            //if we are trying to read more data then the size of the file, return an error
+            if (uiBytesToRead + uiCurPos > uiLength)
+            {
+                pBytesRead = 0;
+                return false;
+            }
+
+            //get the data
+            if (!this.ReadFile(hLibraryFile, pData, uiBytesToRead, out uiNumBytesRead))
+            {
+                pBytesRead = 0;
+                return false;
+            }
+
+            if (uiBytesToRead != uiNumBytesRead)
+            {
+                //		Gets the reason why the function failed
+                //		UINT32 uiLastError = GetLastError();
+                //		char zString[1024];
+                //		FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, NULL);
+                pBytesRead = 0;
+                return false;
+            }
+
+            this.Libraries[sLibraryID].pOpenFiles[uiFileNum].uiFilePosInFile += uiNumBytesRead;
+
+            //	CloseHandle( hLibraryFile );
+
+            pBytesRead = uiNumBytesRead;
+
+            return true;
+        }
+
+        private bool ReadFile(Stream hLibraryFile, byte[] pData, int count, out int uiNumBytesRead)
+        {
+            uiNumBytesRead = hLibraryFile.Read(pData, 0, count);
+
+            return true;
+        }
+
+        private long SetFilePointer(Stream hLibraryFile, int offset, SeekOrigin origin)
+            => hLibraryFile.Seek(offset, origin);
 
         private LibHeader ParseLibHeader(BinaryReader br)
             => new()
@@ -189,28 +380,28 @@ namespace SharpAlliance.Core.Managers
         // TODO: Make data driven
         private static Dictionary<LibraryNames, LibraryInitHeader> GameLibraries = new()
         {
-            { LibraryNames.DATA,        new("Data.slf", false, true) },
-            { LibraryNames.AMBIENT,     new("Ambient.slf", false, true) },
-            { LibraryNames.ANIMS,       new("Anims.slf", false, true) },
-            { LibraryNames.BATTLESNDS,  new("BattleSnds.slf", false, true) },
-            { LibraryNames.BIGITEMS,    new("BigItems.slf", false, true) },
+            { LibraryNames.DATA, new("Data.slf", false, true) },
+            { LibraryNames.AMBIENT, new("Ambient.slf", false, true) },
+            { LibraryNames.ANIMS, new("Anims.slf", false, true) },
+            { LibraryNames.BATTLESNDS, new("BattleSnds.slf", false, true) },
+            { LibraryNames.BIGITEMS, new("BigItems.slf", false, true) },
             { LibraryNames.BINARY_DATA, new("BinaryData.slf", false, true) },
-            { LibraryNames.CURSORS,     new("Cursors.slf", false, true) },
-            { LibraryNames.FACES,       new("Faces.slf", false, true) },
-            { LibraryNames.FONTS,       new("Fonts.slf", false, true) },
-            { LibraryNames.INTERFACE,   new("Interface.slf", false, true) },
-            { LibraryNames.LAPTOP,      new("Laptop.slf", false, true) },
-            { LibraryNames.MAPS,        new("Maps.slf", true, true) },
-            { LibraryNames.MERCEDT,     new("MercEdt.slf", false, true) },
-            { LibraryNames.MUSIC,       new("Music.slf", true, true) },
-            { LibraryNames.NPC_SPEECH,  new("Npc_Speech.slf", true, true) },
-            { LibraryNames.NPC_DATA,    new("NpcData.slf", false, true) },
-            { LibraryNames.RADAR_MAPS,  new("RadarMaps.slf", false, true) },
-            { LibraryNames.SOUNDS,      new("Sounds.slf", false, true) },
-            { LibraryNames.SPEECH,      new("Speech.slf", true, true) },
-            { LibraryNames.TILESETS,    new("TileSets.slf", true, true) },
+            { LibraryNames.CURSORS, new("Cursors.slf", false, true) },
+            { LibraryNames.FACES, new("Faces.slf", false, true) },
+            { LibraryNames.FONTS, new("Fonts.slf", false, true) },
+            { LibraryNames.INTERFACE, new("Interface.slf", false, true) },
+            { LibraryNames.LAPTOP, new("Laptop.slf", false, true) },
+            { LibraryNames.MAPS, new("Maps.slf", true, true) },
+            { LibraryNames.MERCEDT, new("MercEdt.slf", false, true) },
+            { LibraryNames.MUSIC, new("Music.slf", true, true) },
+            { LibraryNames.NPC_SPEECH, new("Npc_Speech.slf", true, true) },
+            { LibraryNames.NPC_DATA, new("NpcData.slf", false, true) },
+            { LibraryNames.RADAR_MAPS, new("RadarMaps.slf", false, true) },
+            { LibraryNames.SOUNDS, new("Sounds.slf", false, true) },
+            { LibraryNames.SPEECH, new("Speech.slf", true, true) },
+            { LibraryNames.TILESETS, new("TileSets.slf", true, true) },
             { LibraryNames.LOADSCREENS, new("LoadScreens.slf", true, true) },
-            { LibraryNames.INTRO,       new("Intro.slf", true, true) },
+            { LibraryNames.INTRO, new("Intro.slf", true, true) },
         };
     }
 }

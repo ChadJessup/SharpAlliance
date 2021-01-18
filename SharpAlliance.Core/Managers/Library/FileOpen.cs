@@ -1,10 +1,10 @@
 ﻿namespace SharpAlliance.Core.Managers.Library
 {
-    public struct FileOpen
+    public class FileOpen
     {
-        uint uiFileID;                                            // id of the file ( they start at 1 )
-        uint uiFilePosInFile;                         // current position in the file
-        uint uiActualPositionInLibrary;       // Current File pointer position in actuall library
-        FileHeader pFileHeader;
+        public uint uiFileID;                                            // id of the file ( they start at 1 )
+        public int uiFilePosInFile;                         // current position in the file
+        public uint uiActualPositionInLibrary;       // Current File pointer position in actuall library
+        public FileHeader pFileHeader;
     }
 }

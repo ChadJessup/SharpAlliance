@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -12,29 +9,32 @@ namespace SharpAlliance.Core.Screens
         private readonly GameContext context;
         private readonly int guiSplashFrameFade = 10;
         private readonly int guiSplashStartTime = 0;
-        private IntroScreen gbIntroScreenMode = IntroScreen.Unknown;
+        private IntroScreenType gbIntroScreenMode = IntroScreenType.Unknown;
+        private bool gfIntroScreenEntry;
+        private IVideoManager video;
 
         public SplashScreen(GameContext context)
         {
             this.context = context;
+            this.video = this.context.VideoManager;
         }
 
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; } = ScreenState.Unknown;
 
-        public void SetIntroType(IntroScreen introType)
+        public void SetIntroType(IntroScreenType introType)
         {
-            if (introType == IntroScreen.BEGINING)
+            if (introType == IntroScreenType.BEGINING)
             {
-                gbIntroScreenMode = IntroScreen.BEGINING;
+                gbIntroScreenMode = IntroScreenType.BEGINING;
             }
-            else if (introType == IntroScreen.ENDING)
+            else if (introType == IntroScreenType.ENDING)
             {
-                gbIntroScreenMode = IntroScreen.ENDING;
+                gbIntroScreenMode = IntroScreenType.ENDING;
             }
-            else if (introType == IntroScreen.SPLASH)
+            else if (introType == IntroScreenType.SPLASH)
             {
-                gbIntroScreenMode = IntroScreen.SPLASH;
+                gbIntroScreenMode = IntroScreenType.SPLASH;
             }
         }
 
@@ -45,11 +45,16 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<bool> Initialize()
         {
+            //Set so next time we come in, we can set up
+            gfIntroScreenEntry = true;
+
             return ValueTask.FromResult(true);
         }
 
         public ValueTask<IScreen> Handle()
         {
+            this.video.RefreshScreen(null);
+
             return ValueTask.FromResult<IScreen>(this);
         }
 
@@ -58,7 +63,7 @@ namespace SharpAlliance.Core.Screens
         }
     }
 
-    public enum IntroScreen
+    public enum IntroScreenType
     {
         Unknown = 0,
         BEGINING,         //set when viewing the intro at the begining of the game

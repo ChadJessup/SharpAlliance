@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -79,6 +80,9 @@ namespace SharpAlliance.Core.SubSystems
         };
 
         public bool gfRefreshUpdate = false;
+
+        public Texture gpMouseCursor { get; set; }
+        public Texture gpMouseCursorOriginal { get; set; }
 
         public MouseSubSystem(
             ILogger<MouseSubSystem> logger,
@@ -354,7 +358,7 @@ namespace SharpAlliance.Core.SubSystems
                 {
                     //Kris -- October 27, 1997
                     //Implemented gain mouse region
-                    
+
                     if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK))
                     {
                         if (MSYS_CurrRegion.FastHelpText is not null
@@ -580,6 +584,14 @@ namespace SharpAlliance.Core.SubSystems
             }
         }
 
+        public void Draw(
+            MouseCursorBackground mouseCursorBackground,
+            ref Rectangle region,
+            GraphicsDevice graphicDevice,
+            CommandList commandList)
+        {
+
+        }
 
         //=================================================================================================
         //	MSYS_SetCurrentCursor
@@ -807,6 +819,7 @@ namespace SharpAlliance.Core.SubSystems
                         }
                     }
                 }
+            
                 this.MSYS_CurrentID = Current;
             }
 
@@ -1025,6 +1038,16 @@ namespace SharpAlliance.Core.SubSystems
         RBUTTON_REPEAT = 64,
 
         BUTTONS = LBUTTON_DWN | LBUTTON_UP | RBUTTON_DWN | RBUTTON_UP | RBUTTON_REPEAT | LBUTTON_REPEAT,
+    }
+
+    public struct MouseCursorBackground
+    {
+        public bool fRestore;
+        public int usMouseXPos, usMouseYPos;
+        public int usLeft, usTop, usRight, usBottom;
+        public Rectangle Region;
+        public Texture _pSurface;
+        public Texture  pSurface;
     }
 
     public delegate void MouseCallback(MouseRegion region, MouseCallbackReasons callbackReason);

@@ -3,7 +3,7 @@
     public readonly struct FileHeader
     {
         public string pFileName { get; init; }
-        public uint uiFileLength { get; init; }
-        public uint uiFileOffset { get; init; }
+        public int uiFileLength { get; init; }
+        public int uiFileOffset { get; init; }
     }
 }

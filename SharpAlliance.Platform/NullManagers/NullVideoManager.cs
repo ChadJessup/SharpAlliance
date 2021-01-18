@@ -11,7 +11,7 @@ namespace SharpAlliance.Platform.NullManagers
         {
         }
 
-        public void Draw()
+        public void DrawFrame()
         {
         }
 

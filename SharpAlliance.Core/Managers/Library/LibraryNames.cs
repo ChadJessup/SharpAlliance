@@ -2,7 +2,8 @@
 {
     public enum LibraryNames
     {
-		DATA = 0,
+        Unknown = -1,
+        DATA = 0,
 		AMBIENT,
 		ANIMS,
 		BATTLESNDS,
@@ -24,5 +25,5 @@
 		TILESETS,
 		LOADSCREENS,
 		INTRO,
-	}
+    }
 }
