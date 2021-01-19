@@ -7,10 +7,10 @@ namespace SharpAlliance.Core.Screens
     public class SplashScreen : IScreen
     {
         private readonly GameContext context;
-        private readonly int guiSplashFrameFade = 10;
-        private readonly int guiSplashStartTime = 0;
+        private int guiSplashFrameFade = 10;
         private IntroScreenType gbIntroScreenMode = IntroScreenType.Unknown;
         private bool gfIntroScreenEntry;
+        private long guiSplashStartTime = 0;
         private IVideoManager video;
 
         public SplashScreen(GameContext context)
@@ -26,15 +26,15 @@ namespace SharpAlliance.Core.Screens
         {
             if (introType == IntroScreenType.BEGINING)
             {
-                gbIntroScreenMode = IntroScreenType.BEGINING;
+                this.gbIntroScreenMode = IntroScreenType.BEGINING;
             }
             else if (introType == IntroScreenType.ENDING)
             {
-                gbIntroScreenMode = IntroScreenType.ENDING;
+                this.gbIntroScreenMode = IntroScreenType.ENDING;
             }
             else if (introType == IntroScreenType.SPLASH)
             {
-                gbIntroScreenMode = IntroScreenType.SPLASH;
+                this.gbIntroScreenMode = IntroScreenType.SPLASH;
             }
         }
 
@@ -46,15 +46,17 @@ namespace SharpAlliance.Core.Screens
         public ValueTask<bool> Initialize()
         {
             //Set so next time we come in, we can set up
-            gfIntroScreenEntry = true;
+            this.gfIntroScreenEntry = true;
 
             return ValueTask.FromResult(true);
         }
 
         public ValueTask<IScreen> Handle()
         {
-            this.video.RefreshScreen(null);
+            this.video.InvalidateScreen();
+            this.video.RefreshScreen();
 
+            this.guiSplashStartTime = this.context.ClockManager.GetClock();
             return ValueTask.FromResult<IScreen>(this);
         }
 

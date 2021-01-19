@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Veldrid;
+using SixLabors.ImageSharp;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
+using Point = SixLabors.ImageSharp.Point;
 
 namespace SharpAlliance.Core.SubSystems
 {

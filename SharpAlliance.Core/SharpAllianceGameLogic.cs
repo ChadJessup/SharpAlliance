@@ -29,6 +29,7 @@ namespace SharpAlliance.Core
         private readonly MessageBoxSubSystem messageBox;
         private readonly Globals globals;
         private IScreen guiCurrentScreen;
+        private MapScreen mapScreen;
 
         public bool IsInitialized { get; private set; }
 
@@ -73,9 +74,12 @@ namespace SharpAlliance.Core
             this.saves.LoadGameSettings();
             this.saves.InitGameOptions();
 
-            var introScreen = await this.context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen) as SplashScreen;
-            introScreen?.SetIntroType(IntroScreenType.SPLASH);
+            var splashScreen = await this.context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen) as SplashScreen;
+            splashScreen?.SetIntroType(IntroScreenType.SPLASH);
 
+            this.mapScreen = (await this.context.ScreenManager.GetScreen(ScreenNames.MAP_SCREEN, activate: false) as MapScreen)!;
+
+            this.mapScreen.HandlePreloadOfMapGraphics();
             this.IsInitialized = true;
 
             return this.IsInitialized;
@@ -173,7 +177,7 @@ namespace SharpAlliance.Core
                     this.guiCurrentScreen = uiOldScreen;
                 }
 
-                this.video.RefreshScreen(null);
+                this.video.RefreshScreen();
 
                 this.video.DrawFrame();
 

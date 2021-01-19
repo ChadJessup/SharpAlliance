@@ -28,6 +28,10 @@ namespace SharpAlliance.Core.Managers
             public const int HVOBJECT_GLOW_RED = 3;
         }
 
+        public const int VOBJECT_CREATE_DEFAULT = 0x00000020;   // Creates and empty object of given width, height and BPP
+        public const int VOBJECT_CREATE_FROMFILE = 0x00000040;  // Creates a video object from a file ( using HIMAGE )
+        public const int VOBJECT_CREATE_FROMHIMAGE = 0x00000080;	// Creates a video object from a pre-loaded hImage
+
         private readonly ILogger<VideoObjectManager> logger;
         private List<int> ghVideoObjects;
         private bool gfVideoObjectsInit = false;
@@ -53,9 +57,13 @@ namespace SharpAlliance.Core.Managers
         public ValueTask<bool> Initialize()
         {
             this.logger.LogDebug(LoggingEventId.VIDEOOBJECT, "Video Object Manager");
-            gpVObjectHead = gpVObjectTail = null;
-            gfVideoObjectsInit = true;
+            this.gpVObjectHead = this.gpVObjectTail = null;
+            this.gfVideoObjectsInit = true;
             return ValueTask.FromResult(true);
+        }
+
+        public void AddVideoObject(ref VOBJECT_DESC vObjectDesc, object guiUpdatePanelTactical)
+        {
         }
 
         public void Dispose()
@@ -125,5 +133,13 @@ namespace SharpAlliance.Core.Managers
         public int usHeight;
         public int sOffsetX;
         public int sOffsetY;
+    }
+
+    public struct VOBJECT_DESC
+    {
+        public int fCreateFlags;                        // Specifies creation flags like from file or not
+        public string ImageFile;                          // Filename of image data to use
+        public HIMAGE hImage;
+        public byte ubBitDepth;                           // BPP, ignored if given from file
     }
 }

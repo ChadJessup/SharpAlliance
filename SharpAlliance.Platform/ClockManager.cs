@@ -34,7 +34,7 @@ namespace SharpAlliance.Platform
 
         public long GetClock()
         {
-            return guiCurrentTime;
+            return this.guiCurrentTime;
         }
 
         private void ClockCallback(object sender, ElapsedEventArgs e)

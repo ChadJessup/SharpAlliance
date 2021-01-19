@@ -12,14 +12,15 @@ using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using Veldrid;
 using Veldrid.ImageSharp;
 using Veldrid.Sdl2;
 using Veldrid.SPIRV;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
-using Point = Veldrid.Point;
-using Rectangle = Veldrid.Rectangle;
+using Point = SixLabors.ImageSharp.Point;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance
 {
@@ -162,10 +163,10 @@ namespace SharpAlliance
         static bool fFirstTime = true;
         private bool windowResized;
 
-        private Texture backBuffer;
-        private Texture gpFrameBuffer;
-        private Texture gpPrimarySurface;
-        private Texture gpBackBuffer;
+        private Image<Rgba32> backBuffer;
+        private Image<Rgba32> gpFrameBuffer;
+        private Image<Rgba32> gpPrimarySurface;
+        private Image<Rgba32> gpBackBuffer;
 
         public VeldridVideoManager(
             ILogger<VeldridVideoManager> logger,
@@ -181,6 +182,11 @@ namespace SharpAlliance
             this.mouse = mouseSubSystem;
             this.renderWorld = renderWorld;
             this.screenManager = (screenManager as ScreenManager)!;
+
+            this.gpPrimarySurface = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+            this.gpFrameBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+            this.gpBackBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+            this.backBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
 
             Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
         }
@@ -296,11 +302,10 @@ namespace SharpAlliance
         public static Stream OpenEmbeddedAssetStream(string name)
             => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-        public void RefreshScreen(object? dummy)
+        public void RefreshScreen()
         {
             int usScreenWidth;
             int usScreenHeight;
-            int ReturnCode;
             long uiTime;
 
             usScreenWidth = usScreenHeight = 0;
@@ -366,7 +371,7 @@ namespace SharpAlliance
 
                 this.mouse.Draw(
                     this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA],
-                    ref Region,
+                    Region,
                     this.graphicDevice,
                     this.commandList);
 
@@ -403,10 +408,10 @@ namespace SharpAlliance
                         Region.Width = usScreenWidth;
                         Region.Height = usScreenHeight;
 
-                        this.DrawRegion(
+                        this.BlitRegion(
                             this.gpBackBuffer,
                             new Point(0, 0),
-                            ref Region,
+                            Region,
                             this.gpFrameBuffer);
                     }
                     else
@@ -418,10 +423,10 @@ namespace SharpAlliance
                             Region.Width = this.gListOfDirtyRegions[uiIndex].Width;
                             Region.Height = this.gListOfDirtyRegions[uiIndex].Height;
 
-                            this.DrawRegion(
+                            this.BlitRegion(
                                 this.backBuffer,
-                                Region.Position,
-                                ref Region,
+                                new Point(Region.X, Region.Y),
+                                Region,
                                 this.gpPrimarySurface);
                         }
 
@@ -443,10 +448,10 @@ namespace SharpAlliance
                                 }
                             }
 
-                            this.DrawRegion(
+                            this.BlitRegion(
                                 this.backBuffer,
-                                Region.Position,
-                                ref Region,
+                                Region.ToPoint(),
+                                Region,
                                 this.gpFrameBuffer);
                         }
                     }
@@ -494,13 +499,9 @@ namespace SharpAlliance
 
                 // Create temporary system memory surface. This is used to correct problems with the backbuffer
                 // surface which can be interlaced or have a funky pitch
-                Texture _pTmpBuffer = new ImageSharpTexture(
-                    new Image<Rgba32>(usScreenWidth, usScreenHeight), false)
-                        .CreateDeviceTexture(this.graphicDevice, this.graphicDevice.ResourceFactory);
+                Image<Rgba32> _pTmpBuffer = new(usScreenWidth, usScreenHeight);
 
-                Texture pTmpBuffer = new ImageSharpTexture(
-                    new Image<Rgba32>(usScreenWidth, usScreenHeight), false)
-                        .CreateDeviceTexture(this.graphicDevice, this.graphicDevice.ResourceFactory);
+                Image<Rgba32> pTmpBuffer = new(usScreenWidth, usScreenHeight);
 
                 // Copy the primary surface to the temporary surface
                 Region.X = 0;
@@ -508,9 +509,9 @@ namespace SharpAlliance
                 Region.Width = usScreenWidth;
                 Region.Height = usScreenHeight;
 
-                this.DrawRegion(pTmpBuffer,
+                this.BlitRegion(pTmpBuffer,
                     new Point(0, 0),
-                    ref Region,
+                    Region,
                     this.gpPrimarySurface);
 
                 // Ok now that temp surface has contents of backbuffer, copy temp surface to disk
@@ -605,10 +606,10 @@ namespace SharpAlliance
                 Region.Width = this.gusMouseCursorWidth;
                 Region.Height = this.gusMouseCursorHeight;
 
-                this.DrawRegion(
+                this.BlitRegion(
                     this.mouse.gpMouseCursor,
                     new Point(0, 0),
-                    ref Region,
+                    Region,
                     this.mouse.gpMouseCursorOriginal);
 
                 this.guiMouseBufferState = BufferState.READY;
@@ -704,11 +705,11 @@ namespace SharpAlliance
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region = Region;
 
                         // Ok, do the actual data save to the mouse background
-                        this.DrawRegion(
+                        this.BlitRegion(
                             this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].pSurface,
                             new Point(this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft,
                                 this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop),
-                            ref Region,
+                            Region,
                             this.gpBackBuffer);
 
                         // Step (2) - Blit mouse cursor to back buffer
@@ -717,11 +718,11 @@ namespace SharpAlliance
                         Region.Width = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
                         Region.Height = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
 
-                        this.DrawRegion(
+                        this.BlitRegion(
                             this.gpBackBuffer,
                             new Point(this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
                                 this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos),
-                            ref Region,
+                            Region,
                             this.mouse.gpMouseCursor);
                     }
                     else
@@ -756,12 +757,12 @@ namespace SharpAlliance
             // Step (1) - Flip pages
             //
             //# ifdef WINDOWED_MODE
-            var emptyRect = new Rectangle();
+            var fullRect = new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-            this.DrawRegion(
+            this.BlitRegion(
                 this.gpPrimarySurface,
-                this.rcWindow.Position,
-                ref emptyRect,
+                this.rcWindow.ToPoint(),
+                fullRect,
                 this.gpBackBuffer);
 
             //#else
@@ -781,10 +782,10 @@ namespace SharpAlliance
                 Region.Width = 640;
                 Region.Height = 360;
 
-                this.DrawRegion(
+                this.BlitRegion(
                     this.gpBackBuffer,
                     new Point(0, 0),
-                    ref Region,
+                    Region,
                     this.gpPrimarySurface);
 
                 // Get new background for mouse
@@ -800,11 +801,11 @@ namespace SharpAlliance
             {
                 Region = this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].Region;
 
-                this.DrawRegion(
+                this.BlitRegion(
                     this.gpBackBuffer,
                     new Point(this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].usMouseXPos,
                         this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].usMouseYPos),
-                    ref Region,
+                    Region,
                     this.gpPrimarySurface);
             }
 
@@ -813,11 +814,11 @@ namespace SharpAlliance
             {
                 Region = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region;
 
-                this.DrawRegion(
+                this.BlitRegion(
                     this.gpBackBuffer,
                     new Point(this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos),
-                    ref Region,
+                    Region,
                     this.gpPrimarySurface);
             }
 
@@ -829,9 +830,9 @@ namespace SharpAlliance
                 Region.Width = SCREEN_WIDTH;
                 Region.Height = SCREEN_HEIGHT;
 
-                this.DrawRegion(this.gpBackBuffer,
+                this.BlitRegion(this.gpBackBuffer,
                     new Point(0, 0),
-                    ref Region,
+                    Region,
                     this.gpPrimarySurface);
 
                 this.guiDirtyRegionCount = 0;
@@ -847,9 +848,9 @@ namespace SharpAlliance
                     Region.Width = this.gListOfDirtyRegions[uiIndex].Width;
                     Region.Height = this.gListOfDirtyRegions[uiIndex].Height;
 
-                    this.DrawRegion(this.gpBackBuffer,
+                    this.BlitRegion(this.gpBackBuffer,
                         new Point(Region.X, Region.Y),
-                        ref Region,
+                        Region,
                         this.gpPrimarySurface);
                 }
 
@@ -871,9 +872,9 @@ namespace SharpAlliance
                     continue;
                 }
 
-                this.DrawRegion(this.gpBackBuffer,
+                this.BlitRegion(this.gpBackBuffer,
                     new Point(Region.X, Region.Y),
-                    ref Region,
+                    Region,
                     this.gpPrimarySurface);
             }
 
@@ -883,52 +884,67 @@ namespace SharpAlliance
         }
 
         private void DrawRegion(
-            Texture destinationTexture,
+            Image<Rgba32> destinationTexture,
             Vector2 destinationPoint,
-            ref Rectangle sourceRegion,
-            Texture sourceTexture)
-            => this.DrawRegion(
+            Rectangle sourceRegion,
+            Image<Rgba32> sourceTexture)
+            => this.BlitRegion(
                 destinationTexture,
                 new Point((int)destinationPoint.X, (int)destinationPoint.Y),
-                ref sourceRegion,
+                sourceRegion,
                 sourceTexture);
 
         private void DrawRegion(
-            Texture destinationTexture,
+            Image<Rgba32> destinationTexture,
             int destinationPointX,
             int destinationPointY,
-            ref Rectangle sourceRegion,
-            Texture sourceTexture)
-            => this.DrawRegion(
+            Rectangle sourceRegion,
+            Image<Rgba32> sourceTexture)
+            => this.BlitRegion(
                 destinationTexture,
                 new Point(destinationPointX, destinationPointY),
-                ref sourceRegion,
+                sourceRegion,
                 sourceTexture);
 
-        private void DrawRegion(
-            Texture destinationTexture,
-            Point destinationPoint,
-            ref Rectangle sourceRegion,
-            Texture sourceTexture)
+        private GraphicsOptions overLayOptions = new()
         {
+        };
+
+        private void BlitRegion(
+                Image<Rgba32> destinationTexture,
+                Point destinationPoint,
+                Rectangle sourceRegion,
+                Image<Rgba32> srcImage)
+        {
+            if (destinationTexture is null
+                || srcImage is null)
+            {
+
+            }
+
+            destinationTexture.Mutate(ctx =>
+            {
+                srcImage.Mutate(src => src.Crop(sourceRegion));
+                ctx.DrawImage(srcImage, destinationPoint, this.overLayOptions);
+            });
         }
 
         private void ScrollJA2Background(
             ScrollDirection uiDirection,
             int sScrollXIncrement,
             int sScrollYIncrement,
-            Texture pSource,
-            Texture pDest,
+            Image<Rgba32> pSource,
+            Image<Rgba32> pDest,
             bool fRenderStrip,
             int uiCurrentMouseBackbuffer)
         {
             int usWidth, usHeight;
             int ubBitDepth;
             int ReturnCode = DD_OK;
-            Rectangle Region;
+            Rectangle Region = new();
             int usMouseXPos, usMouseYPos;
             Rectangle[] StripRegions = new Rectangle[2];
-            Rectangle MouseRegion;
+            Rectangle MouseRegion = new();
             int usNumStrips = 0;
             int cnt;
             int sShiftX, sShiftY;
@@ -967,7 +983,7 @@ namespace SharpAlliance
                         pDest,
                         sScrollXIncrement,
                         this.renderWorld.gsVIEWPORT_WINDOW_START_Y,
-                        ref Region,
+                        Region,
                         pSource);
 
                     // memset z-buffer
@@ -994,7 +1010,7 @@ namespace SharpAlliance
                         pDest,
                         0,
                         this.renderWorld.gsVIEWPORT_WINDOW_START_Y,
-                        ref Region,
+                        Region,
                         pSource);
 
                     // // memset z-buffer
@@ -1027,7 +1043,7 @@ namespace SharpAlliance
                         pDest,
                         0,
                         this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
-                        ref Region,
+                        Region,
                         pSource);
 
                     for (uiCountY = sScrollYIncrement - 1 + this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY >= this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
@@ -1059,7 +1075,7 @@ namespace SharpAlliance
                         pDest,
                         0,
                         this.renderWorld.gsVIEWPORT_WINDOW_START_Y,
-                        ref Region,
+                        Region,
                         pSource);
 
                     // Zero out z
@@ -1093,7 +1109,7 @@ namespace SharpAlliance
                         pDest,
                         sScrollXIncrement,
                         this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
-                        ref Region,
+                        Region,
                         pSource);
 
                     // // memset z-buffer
@@ -1124,10 +1140,10 @@ namespace SharpAlliance
                     Region.Width = usWidth;
                     Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
-                    this.DrawRegion(
+                    this.BlitRegion(
                         pDest,
                         new Point(0, this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement),
-                        ref Region,
+                        Region,
                         pSource);
 
                     // // memset z-buffer
@@ -1157,10 +1173,10 @@ namespace SharpAlliance
                     Region.Width = usWidth - (sScrollXIncrement);
                     Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                    this.DrawRegion(
+                    this.BlitRegion(
                         pDest,
                         new Point(sScrollXIncrement, this.renderWorld.gsVIEWPORT_WINDOW_START_Y),
-                        ref Region,
+                        Region,
                         pSource);
 
                     // // memset z-buffer
@@ -1192,10 +1208,10 @@ namespace SharpAlliance
                     Region.Width = usWidth;
                     Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                    this.DrawRegion(
+                    this.BlitRegion(
                         pDest,
                         new Point(0, this.renderWorld.gsVIEWPORT_WINDOW_START_Y),
-                        ref Region,
+                        Region,
                         pSource);
 
                     // // memset z-buffer
@@ -1241,10 +1257,10 @@ namespace SharpAlliance
                     // Optimize Redundent tiles too!
                     //ExamineZBufferRect( (int)StripRegions[ cnt ].X, (int)StripRegions[ cnt ].Y, (int)StripRegions[ cnt ].Width, (int)StripRegions[ cnt ].Height );
 
-                    this.DrawRegion(
+                    this.BlitRegion(
                         pDest,
                         new Point(StripRegions[cnt].X, StripRegions[cnt].Y),
-                        ref StripRegions[cnt],
+                        StripRegions[cnt],
                         this.gpFrameBuffer);
                 }
 
@@ -1362,6 +1378,14 @@ namespace SharpAlliance
             ubBitDepth = 0;
         }
 
+        public void InvalidateScreen()
+        {
+            this.guiDirtyRegionCount = 0;
+            this.guiDirtyRegionExCount = 0;
+            this.gfForceFullScreenRefresh = true;
+            this.guiFrameBufferState = BufferState.DIRTY;
+        }
+
         public void Dispose()
         {
             this.graphicDevice.WaitForIdle();
@@ -1394,5 +1418,10 @@ namespace SharpAlliance
         Off,
         On,
         Suspended,
+    }
+
+    public static class RectangleHelpers
+    {
+        public static Point ToPoint(this Rectangle rect) => new(rect.X, rect.Y);
     }
 }

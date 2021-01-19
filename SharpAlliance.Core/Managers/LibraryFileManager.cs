@@ -45,7 +45,7 @@ namespace SharpAlliance.Core.Managers
                 if (GameLibraries[libraryName].InitOnStart)
                 {
                     //if the library exists
-                    if (OpenLibrary(libraryName))
+                    if (this.OpenLibrary(libraryName))
                     {
                         fLibraryInited = true;
                     }
@@ -85,7 +85,7 @@ namespace SharpAlliance.Core.Managers
             this.Libraries.TryAdd(libraryName, new LibraryHeader());
 
             //if we cant open the library
-            if (!InitializeLibrary(GameLibraries[libraryName].LibraryName, this.Libraries[libraryName], GameLibraries[libraryName].OnCdRom))
+            if (!this.InitializeLibrary(GameLibraries[libraryName].LibraryName, this.Libraries[libraryName], GameLibraries[libraryName].OnCdRom))
             {
                 return false;
             }
@@ -167,7 +167,7 @@ namespace SharpAlliance.Core.Managers
             LibraryNames sLibraryID;
 
             //get thelibrary that file is in
-            sLibraryID = GetLibraryIDFromFileName(pFileName);
+            sLibraryID = this.GetLibraryIDFromFileName(pFileName);
             if (sLibraryID == LibraryNames.Unknown)
             {
                 //not in any library
@@ -231,7 +231,7 @@ namespace SharpAlliance.Core.Managers
             for (sLoop1 = 0; sLoop1 < this.Libraries.Count; sLoop1++)
             {
                 //if the library is not loaded, dont try to access the array
-                if (IsLibraryOpened((LibraryNames)sLoop1))
+                if (this.IsLibraryOpened((LibraryNames)sLoop1))
                 {
                     //if the library path name is of size zero, ( the library is for the default path )
                     if (this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Length == 0)

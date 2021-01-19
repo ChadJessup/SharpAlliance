@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
+using SharpAlliance.Platform.Interfaces; 
 
 namespace SharpAlliance
 {
@@ -45,12 +45,12 @@ namespace SharpAlliance
         public ValueTask<bool> Initialize()
         {
             this.logger.LogDebug(LoggingEventId.VIDEOSURFACE, "Video Surface Manager");
-            gpVSurfaceHead = gpVSurfaceTail = null;
+            this.gpVSurfaceHead = this.gpVSurfaceTail = null;
 
-            giMemUsedInSurfaces = 0;
+            this.giMemUsedInSurfaces = 0;
 
             // Create primary and backbuffer from globals
-            if (!SetPrimaryVideoSurfaces())
+            if (!this.SetPrimaryVideoSurfaces())
             {
                 this.logger.LogDebug(LoggingEventId.VIDEOSURFACE, "Could not create primary surfaces");
                 return ValueTask.FromResult(false);
@@ -64,7 +64,7 @@ namespace SharpAlliance
             //Surface2 pSurface;
 
             // Delete surfaces if they exist
-            DeletePrimaryVideoSurfaces();
+            this.DeletePrimaryVideoSurfaces();
 
             //
             // Get Primary surface
@@ -113,28 +113,28 @@ namespace SharpAlliance
             // If globals are not null, delete them
             //
 
-            if (ghPrimary != null)
+            if (this.ghPrimary != null)
             {
-                DeleteVideoSurface(ghPrimary);
-                ghPrimary = null;
+                this.DeleteVideoSurface(this.ghPrimary);
+                this.ghPrimary = null;
             }
 
-            if (ghBackBuffer != null)
+            if (this.ghBackBuffer != null)
             {
-                DeleteVideoSurface(ghBackBuffer);
-                ghBackBuffer = null;
+                this.DeleteVideoSurface(this.ghBackBuffer);
+                this.ghBackBuffer = null;
             }
 
-            if (ghFrameBuffer != null)
+            if (this.ghFrameBuffer != null)
             {
-                DeleteVideoSurface(ghFrameBuffer);
-                ghFrameBuffer = null;
+                this.DeleteVideoSurface(this.ghFrameBuffer);
+                this.ghFrameBuffer = null;
             }
 
-            if (ghMouseBuffer != null)
+            if (this.ghMouseBuffer != null)
             {
-                DeleteVideoSurface(ghMouseBuffer);
-                ghMouseBuffer = null;
+                this.DeleteVideoSurface(this.ghMouseBuffer);
+                this.ghMouseBuffer = null;
             }
         }
 

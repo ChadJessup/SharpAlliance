@@ -73,7 +73,10 @@ namespace SharpAlliance
         public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
             builder.AddDependency<IOSManager, WindowsSubSystem>();
+            builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
 
+            builder.Services.AddSingleton<Globals>();
+            builder.Services.AddSingleton<RenderWorld>();
             builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<MouseSubSystem>();
             builder.Services.AddSingleton<ButtonSubSystem>();
@@ -81,8 +84,9 @@ namespace SharpAlliance
             builder.Services.AddSingleton<SaveGameSubSystem>();
             builder.Services.AddSingleton<MessageBoxSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
-            builder.Services.AddSingleton<Globals>();
-            builder.Services.AddSingleton<RenderWorld>();
+            builder.Services.AddSingleton<MapScreenInterfaceMap>();
+            builder.Services.AddSingleton<MessageSubSystem>();
+
 
             return builder;
         }

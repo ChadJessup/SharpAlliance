@@ -605,8 +605,8 @@ namespace Vortice.Win32
         {
             public CallbackData(IntPtr wParam, IntPtr lParam)
             {
-                WParam = wParam;
-                LParam = lParam;
+                this.WParam = wParam;
+                this.LParam = lParam;
             }
 
             public IntPtr WParam { get; }
@@ -638,7 +638,7 @@ namespace Vortice.Win32
                     return true;
                 }
 
-                return UnhookWindowsHookEx(handle) != 0;
+                return UnhookWindowsHookEx(this.handle) != 0;
             }
         }
     }

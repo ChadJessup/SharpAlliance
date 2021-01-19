@@ -20,29 +20,29 @@ namespace SharpAlliance
         private ResourceLayout _texLayout;
         private Pipeline _pipeline;
 
-        private Dictionary<string, (Texture, TextureView, ResourceSet)> _loadedImages
-            = new Dictionary<string, (Texture, TextureView, ResourceSet)>();
+        private Dictionary<SpriteInfo, (Texture, TextureView, ResourceSet)> _loadedImages
+            = new Dictionary<SpriteInfo, (Texture, TextureView, ResourceSet)>();
         private ResourceSet _textSet;
 
         public SpriteRenderer(GraphicsDevice gd)
         {
             ResourceFactory factory = gd.ResourceFactory;
 
-            _vertexBuffer = factory.CreateBuffer(new BufferDescription(1000, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
-            _textBuffer = factory.CreateBuffer(new BufferDescription(QuadVertex.VertexSize, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
-            _orthoBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
+            this._vertexBuffer = factory.CreateBuffer(new BufferDescription(1000, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
+            this._textBuffer = factory.CreateBuffer(new BufferDescription(QuadVertex.VertexSize, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
+            this._orthoBuffer = factory.CreateBuffer(new BufferDescription(64, BufferUsage.UniformBuffer));
 
-            _orthoLayout = factory.CreateResourceLayout(
+            this._orthoLayout = factory.CreateResourceLayout(
                 new ResourceLayoutDescription(
                     new ResourceLayoutElementDescription("OrthographicProjection", ResourceKind.UniformBuffer, ShaderStages.Vertex)));
-            _orthoSet = factory.CreateResourceSet(new ResourceSetDescription(_orthoLayout, _orthoBuffer));
+            this._orthoSet = factory.CreateResourceSet(new ResourceSetDescription(this._orthoLayout, this._orthoBuffer));
 
-            _texLayout = factory.CreateResourceLayout(
+            this._texLayout = factory.CreateResourceLayout(
                 new ResourceLayoutDescription(
                     new ResourceLayoutElementDescription("SpriteTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
                     new ResourceLayoutElementDescription("SpriteSampler", ResourceKind.Sampler, ShaderStages.Fragment)));
 
-            _pipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
+            this._pipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription(
                 BlendStateDescription.SingleAlphaBlend,
                 DepthStencilStateDescription.Disabled,
                 RasterizerStateDescription.CullNone,
@@ -59,10 +59,10 @@ namespace SharpAlliance
                             new VertexElementDescription("Rotation", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float1))
                     },
                     factory.CreateFromSpirv(
-                        new ShaderDescription(ShaderStages.Vertex, LoadShaderBytes("sprite.vert.spv"), "main"),
-                        new ShaderDescription(ShaderStages.Fragment, LoadShaderBytes("sprite.frag.spv"), "main"),
-                        GetCompilationOptions(factory))),
-                new[] { _orthoLayout, _texLayout },
+                        new ShaderDescription(ShaderStages.Vertex, this.LoadShaderBytes("sprite.vert.spv"), "main"),
+                        new ShaderDescription(ShaderStages.Fragment, this.LoadShaderBytes("sprite.frag.spv"), "main"),
+                        this.GetCompilationOptions(factory))),
+                new[] { this._orthoLayout, this._texLayout },
                 gd.MainSwapchain.Framebuffer.OutputDescription));
         }
 
@@ -77,31 +77,35 @@ namespace SharpAlliance
         private byte[] LoadShaderBytes(string name)
         {
             return VeldridVideoManager.ReadEmbeddedAssetBytes(name);
-//            return File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Shaders", name));
+            //            return File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Shaders", name));
         }
 
+
         public void AddSprite(Vector2 position, Vector2 size, string spriteName)
-            => AddSprite(position, size, spriteName, RgbaByte.White, 0f);
+            => this.AddSprite(position, size, spriteName, RgbaByte.White, 0f);
 
         public void AddSprite(Vector2 position, Vector2 size, string spriteName, RgbaByte tint, float rotation)
         {
-            _draws.Add(new SpriteInfo(spriteName, new QuadVertex(position, size, tint, rotation)));
+            this._draws.Add(new SpriteInfo(spriteName, new QuadVertex(position, size, tint, rotation)));
         }
 
-        private ResourceSet Load(GraphicsDevice gd, string spriteName)
+        private ResourceSet Load(GraphicsDevice gd, SpriteInfo spriteInfo)
         {
-            if (!_loadedImages.TryGetValue(spriteName, out (Texture, TextureView, ResourceSet) ret))
+            if (!this._loadedImages.TryGetValue(spriteInfo, out (Texture, TextureView, ResourceSet) ret))
             {
-                string texPath = Path.Combine(AppContext.BaseDirectory, "Assets", spriteName);
-                Texture tex = new ImageSharpTexture(texPath, false)
-                    .CreateDeviceTexture(gd, gd.ResourceFactory);
+                string texPath = Path.Combine(AppContext.BaseDirectory, "Assets", spriteInfo.SpriteName);
+
+                Texture tex = spriteInfo.Texture is null
+                    ? new ImageSharpTexture(texPath, false).CreateDeviceTexture(gd, gd.ResourceFactory)
+                    : spriteInfo.Texture;
+
                 TextureView view = gd.ResourceFactory.CreateTextureView(tex);
                 ResourceSet set = gd.ResourceFactory.CreateResourceSet(new ResourceSetDescription(
-                    _texLayout,
+                    this._texLayout,
                     view,
                     gd.PointSampler));
                 ret = (tex, view, set);
-                _loadedImages.Add(spriteName, ret);
+                this._loadedImages.Add(spriteInfo, ret);
             }
 
             return ret.Item3;
@@ -109,7 +113,7 @@ namespace SharpAlliance
 
         public void Draw(GraphicsDevice gd, CommandList cl)
         {
-            if (_draws.Count == 0)
+            if (this._draws.Count == 0)
             {
                 return;
             }
@@ -117,27 +121,31 @@ namespace SharpAlliance
             float width = gd.MainSwapchain.Framebuffer.Width;
             float height = gd.MainSwapchain.Framebuffer.Height;
             gd.UpdateBuffer(
-                _orthoBuffer,
+                this._orthoBuffer,
                 0,
                 Matrix4x4.CreateOrthographicOffCenter(0, width, 0, height, 0, 1));
 
-            EnsureBufferSize(gd, (uint)_draws.Count * QuadVertex.VertexSize);
-            MappedResourceView<QuadVertex> writemap = gd.Map<QuadVertex>(_vertexBuffer, MapMode.Write);
-            for (int i = 0; i < _draws.Count; i++)
+            this.EnsureBufferSize(gd, (uint)this._draws.Count * QuadVertex.VertexSize);
+            MappedResourceView<QuadVertex> writemap = gd.Map<QuadVertex>(this._vertexBuffer, MapMode.Write);
+            for (int i = 0; i < this._draws.Count; i++)
             {
-                writemap[i] = _draws[i].Quad;
+                writemap[i] = this._draws[i].Quad;
             }
-            gd.Unmap(_vertexBuffer);
+            gd.Unmap(this._vertexBuffer);
 
-            cl.SetPipeline(_pipeline);
-            cl.SetVertexBuffer(0, _vertexBuffer);
-            cl.SetGraphicsResourceSet(0, _orthoSet);
+            cl.SetPipeline(this._pipeline);
+            cl.SetVertexBuffer(0, this._vertexBuffer);
+            cl.SetGraphicsResourceSet(0, this._orthoSet);
 
-            for (int i = 0; i < _draws.Count;)
+            for (int i = 0; i < this._draws.Count;)
             {
                 uint batchStart = (uint)i;
-                string spriteName = _draws[i].SpriteName;
-                ResourceSet rs = Load(gd, spriteName);
+
+                ResourceSet rs;
+
+                string spriteName = this._draws[i].SpriteName;
+                rs = this.Load(gd, this._draws[i]);
+
                 cl.SetGraphicsResourceSet(1, rs);
                 uint batchSize = 0;
                 do
@@ -145,47 +153,56 @@ namespace SharpAlliance
                     i += 1;
                     batchSize += 1;
                 }
-                while (i < _draws.Count && _draws[i].SpriteName == spriteName);
+                while (i < this._draws.Count && this._draws[i].SpriteName == spriteName);
 
                 cl.Draw(4, batchSize, 0, batchStart);
             }
 
-            _draws.Clear();
+            this._draws.Clear();
         }
 
         internal void RenderText(GraphicsDevice gd, CommandList cl, TextureView textureView, Vector2 pos)
         {
-            cl.SetPipeline(_pipeline);
-            cl.SetVertexBuffer(0, _textBuffer);
-            cl.SetGraphicsResourceSet(0, _orthoSet);
-            if (_textSet == null)
+            cl.SetPipeline(this._pipeline);
+            cl.SetVertexBuffer(0, this._textBuffer);
+            cl.SetGraphicsResourceSet(0, this._orthoSet);
+            if (this._textSet == null)
             {
-                _textSet = gd.ResourceFactory.CreateResourceSet(new ResourceSetDescription(_texLayout, textureView, gd.PointSampler));
+                this._textSet = gd.ResourceFactory.CreateResourceSet(new ResourceSetDescription(this._texLayout, textureView, gd.PointSampler));
             }
-            cl.SetGraphicsResourceSet(1, _textSet);
+            cl.SetGraphicsResourceSet(1, this._textSet);
             Texture target = textureView.Target;
-            cl.UpdateBuffer(_textBuffer, 0, new QuadVertex(pos, new Vector2(target.Width, target.Height)));
+            cl.UpdateBuffer(this._textBuffer, 0, new QuadVertex(pos, new Vector2(target.Width, target.Height)));
             cl.Draw(4, 1, 0, 0);
         }
 
         private void EnsureBufferSize(GraphicsDevice gd, uint size)
         {
-            if (_vertexBuffer.SizeInBytes < size)
+            if (this._vertexBuffer.SizeInBytes < size)
             {
-                _vertexBuffer.Dispose();
-                _vertexBuffer = gd.ResourceFactory.CreateBuffer(
+                this._vertexBuffer.Dispose();
+                this._vertexBuffer = gd.ResourceFactory.CreateBuffer(
                     new BufferDescription(size, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
             }
         }
 
         private struct SpriteInfo
         {
-            public SpriteInfo(string spriteName, QuadVertex quad)
+            public SpriteInfo(Texture texture, QuadVertex quad)
             {
-                SpriteName = spriteName;
-                Quad = quad;
+                this.Texture = texture;
+                this.Quad = quad;
+                this.SpriteName = string.Empty;
             }
 
+            public SpriteInfo(string spriteName, QuadVertex quad)
+            {
+                this.SpriteName = spriteName;
+                this.Quad = quad;
+                this.Texture = null;
+            }
+
+            public Texture? Texture { get; }
             public string SpriteName { get; }
             public QuadVertex Quad { get; }
         }
@@ -202,10 +219,10 @@ namespace SharpAlliance
             public QuadVertex(Vector2 position, Vector2 size) : this(position, size, RgbaByte.White, 0f) { }
             public QuadVertex(Vector2 position, Vector2 size, RgbaByte tint, float rotation)
             {
-                Position = position;
-                Size = size;
-                Tint = tint;
-                Rotation = rotation;
+                this.Position = position;
+                this.Size = size;
+                this.Tint = tint;
+                this.Rotation = rotation;
             }
         }
     }

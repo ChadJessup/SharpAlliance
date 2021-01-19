@@ -32,10 +32,29 @@ namespace SharpAlliance.Platform
 
         public async ValueTask<IScreen> GetScreen(string screenName, bool activate = false)
         {
-            if (!this.Screens.TryGetValue(screenName, out var screen))
+            Type? screenType = null;
+            if (!this.Screens.TryGetValue(screenName, out var screen)
+                && !this.ScreenTypes.TryGetValue(screenName, out screenType))
             {
                 throw new ArgumentException($"Screen {screenName} not found.");
             }
+
+            if (screen is not null)
+            {
+                return screen;
+            }
+
+            if (screenType is not null)
+            {
+                screen = ActivatorUtilities.GetServiceOrCreateInstance(this.context.Services, screenType) as IScreen;
+            }
+
+            if (screen is null)
+            {
+                throw new ArgumentException($"Screen {screenName} not found.");
+            }
+
+            this.Screens.Add(screenName, screen);
 
             if (activate)
             {
@@ -55,6 +74,7 @@ namespace SharpAlliance.Platform
                 }
 
                 screen = ActivatorUtilities.GetServiceOrCreateInstance(this.context.Services, screenType) as IScreen;
+                this.Screens.Add(screenName, screen!);
             }
 
             if (screen is null)
