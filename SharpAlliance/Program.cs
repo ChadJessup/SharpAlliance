@@ -74,6 +74,7 @@ namespace SharpAlliance
         {
             builder.AddDependency<IOSManager, WindowsSubSystem>();
             builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
+            builder.AddDependency<IScreenManager, ScreenManager>();
 
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<RenderWorld>();

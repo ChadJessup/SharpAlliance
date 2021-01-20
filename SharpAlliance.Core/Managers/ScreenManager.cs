@@ -2,13 +2,25 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using SharpAlliance.Platform.Interfaces;
+using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Screens;
+using SharpAlliance.Platform;
 
-namespace SharpAlliance.Platform
+namespace SharpAlliance.Core.Managers
 {
     public class ScreenManager : IScreenManager
     {
-        private Dictionary<string, Type> ScreenTypes { get; set; } = new();
+        // GLOBAL FOR PAL EDITOR 
+        // TODO: Move out of global scope once pieces are all in place.
+        public static byte CurrentPalette = 0;
+        public static int guiBackgroundRect;
+        public static bool gfExitPalEditScreen = false;
+        public static bool gfExitDebugScreen = false;
+        public static bool gfInitRect = true;
+        public static bool FirstTime = true;
+        public static bool gfDoneWithSplashScreen = false;
+
+        private Dictionary<ScreenName, Type> ScreenTypes { get; set; } = new();
         private readonly GameContext context;
         private Task currentScreenTask;
 
@@ -17,10 +29,11 @@ namespace SharpAlliance.Platform
             this.context = context;
         }
 
-        public Dictionary<string, IScreen> Screens { get; set; } = new();
+        public Dictionary<ScreenName, IScreen> Screens { get; set; } = new();
         public IScreen CurrentScreen { get; private set; }
         public bool IsInitialized { get; private set; }
         public IScreen guiPendingScreen { get; set; }
+        public ScreenName CurrentScreenName { get; set; }
 
         public ValueTask<bool> Initialize()
         {
@@ -28,9 +41,9 @@ namespace SharpAlliance.Platform
             return ValueTask.FromResult(true);
         }
 
-        public bool ScreenExists(string screenName) => this.Screens.ContainsKey(screenName);
+        public bool ScreenExists(ScreenName screenName) => this.Screens.ContainsKey(screenName);
 
-        public async ValueTask<IScreen> GetScreen(string screenName, bool activate = false)
+        public async ValueTask<IScreen> GetScreen(ScreenName screenName, bool activate = false)
         {
             Type? screenType = null;
             if (!this.Screens.TryGetValue(screenName, out var screen)
@@ -41,6 +54,7 @@ namespace SharpAlliance.Platform
 
             if (screen is not null)
             {
+                this.CurrentScreenName = screenName;
                 return screen;
             }
 
@@ -58,13 +72,15 @@ namespace SharpAlliance.Platform
 
             if (activate)
             {
+                this.CurrentScreenName = screenName;
                 return await this.ActivateScreen(screen);
             }
 
+            this.CurrentScreenName = screenName;
             return screen;
         }
 
-        public ValueTask<IScreen> ActivateScreen(string screenName)
+        public ValueTask<IScreen> ActivateScreen(ScreenName screenName)
         {
             if (!this.Screens.TryGetValue(screenName, out var screen))
             {
@@ -98,7 +114,7 @@ namespace SharpAlliance.Platform
             return this.CurrentScreen;
         }
 
-        public IScreenManager AddScreen<TScreen>(string screenName)
+        public IScreenManager AddScreen<TScreen>(ScreenName screenName)
             where TScreen : IScreen
         {
             this.ScreenTypes.TryAdd(screenName, typeof(TScreen));
@@ -110,7 +126,7 @@ namespace SharpAlliance.Platform
         {
             if (this.CurrentScreen != null)
             {
-                return this.CurrentScreen.Handle()!;
+                var nextScreen = this.CurrentScreen.Handle()!;
             }
 
             return ValueTask.FromResult<IScreen?>(null);
@@ -140,7 +156,7 @@ namespace SharpAlliance.Platform
         bool IsInitialized { get; set; }
         ValueTask Activate();
 
-        ValueTask<IScreen> Handle();
+        ValueTask<ScreenName> Handle();
 
         ScreenState State { get; set; }
     }

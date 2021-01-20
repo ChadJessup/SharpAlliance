@@ -40,11 +40,22 @@ namespace SharpAlliance.Core.Managers.VideoSurfaces
     /// </summary>
     public struct VSURFACE_DESC
     {
-        public int fCreateFlags;                        // Specifies creation flags like from file or not
+        public VSurfaceCreateFlags fCreateFlags;                        // Specifies creation flags like from file or not
         public string ImageFile;                          // Filename of image data to use
         public int usWidth;                             // Width, ignored if given from file
         public int usHeight;                                // Height, ignored if given from file
         public int ubBitDepth;                          // BPP, ignored if given from file
+    }
+
+    [Flags]
+    public enum VSurfaceCreateFlags
+    {
+        VSURFACE_DEFAULT_MEM_USAGE = 0x00000001, // Default mem usage is same as DD, try video and then try system. Will usually work
+        VSURFACE_VIDEO_MEM_USAGE = 0x00000002, // Will force surface into video memory and will fail if it can't
+        VSURFACE_SYSTEM_MEM_USAGE = 0x00000004, // Will force surface into system memory and will fail if it can't
+        VSURFACE_CREATE_DEFAULT = 0x00000020, // Creates and empty Surface of given width, height and BPP
+        VSURFACE_CREATE_FROMFILE = 0x00000040, // Creates a video Surface from a file ( using HIMAGE )
+        VSURFACE_RESERVED_SURFACE = 0x00000100,	// Reserved for special purposes, like a primary surface
     }
 
     public struct VSurfaceRegion

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core.Screens
@@ -17,9 +18,9 @@ namespace SharpAlliance.Core.Screens
             return ValueTask.CompletedTask;
         }
 
-        public ValueTask<IScreen> Handle()
+        public ValueTask<ScreenName> Handle()
         {
-            return ValueTask.FromResult<IScreen>(this);
+            return ValueTask.FromResult(ScreenName.LAPTOP_SCREEN);
         }
 
         public ValueTask<bool> Initialize()

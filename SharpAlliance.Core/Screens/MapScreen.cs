@@ -34,9 +34,9 @@ namespace SharpAlliance.Core.Screens
             return ValueTask.CompletedTask;
         }
 
-        public ValueTask<IScreen> Handle()
+        public ValueTask<ScreenName> Handle()
         {
-            return ValueTask.FromResult<IScreen>(this);
+            return ValueTask.FromResult(ScreenName.MAP_SCREEN);
         }
 
         public ValueTask<bool> Initialize()

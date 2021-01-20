@@ -139,7 +139,7 @@ namespace SharpAlliance
         }
 
         // Deletes all palettes, surfaces and region data
-        private bool DeleteVideoSurface(HVSURFACE? hVSurface)
+        public bool DeleteVideoSurface(HVSURFACE? hVSurface)
         {
             //            Surface2 lpDDSurface;
 
@@ -191,6 +191,11 @@ namespace SharpAlliance
             //MemFree(hVSurface);
 
             return true;
+        }
+
+        public HVSURFACE? CreateVideoSurface(ref VSURFACE_DESC vs_desc)
+        {
+            throw new System.NotImplementedException();
         }
 
         public void Dispose()

@@ -2,13 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using Veldrid;
-using static SharpAlliance.Platform.NullManagers.NullScreenManager;
+using static SharpAlliance.Core.Screens.IntroScreen;
 
 namespace SharpAlliance.Core
 {
@@ -22,6 +23,7 @@ namespace SharpAlliance.Core
         private readonly SaveGameSubSystem saves;
         private readonly IVideoManager video;
         private readonly IOSManager os;
+        private readonly IScreenManager screen;
         private readonly MouseSubSystem mouse;
         private readonly FontSubSystem fonts;
         private readonly IInputManager inputs;
@@ -45,6 +47,7 @@ namespace SharpAlliance.Core
             SaveGameSubSystem saveGameSubSystem,
             MessageBoxSubSystem messageBoxSubSystem,
             IOSManager OSManager,
+            IScreenManager screenManager,
             IVideoManager videoManager,
             IMusicManager musicManager,
             Globals globals)
@@ -65,19 +68,20 @@ namespace SharpAlliance.Core
             this.messageBox = messageBoxSubSystem;
             this.globals = globals;
             this.os = OSManager;
+            this.screen = screenManager;
         }
 
         public async ValueTask<bool> Initialize()
         {
-            this.RegisterGameScreens(this.context);
-            await this.InitializeScreens(this.context.ScreenManager.Screens);
+            this.RegisterGameScreens(this.context, this.screen);
+            await this.InitializeScreens(this.screen.Screens);
             this.saves.LoadGameSettings();
             this.saves.InitGameOptions();
 
-            var splashScreen = await this.context.ScreenManager.ActivateScreen(ScreenNames.SplashScreen) as SplashScreen;
-            splashScreen?.SetIntroType(IntroScreenType.SPLASH);
+            var introScreen = await this.screen.ActivateScreen(ScreenName.INTRO_SCREEN) as IntroScreen;
+            introScreen?.SetIntroType(IntroScreenType.SPLASH);
 
-            this.mapScreen = (await this.context.ScreenManager.GetScreen(ScreenNames.MAP_SCREEN, activate: false) as MapScreen)!;
+            this.mapScreen = (await this.screen.GetScreen(ScreenName.MAP_SCREEN, activate: false) as MapScreen)!;
 
             this.mapScreen.HandlePreloadOfMapGraphics();
             this.IsInitialized = true;
@@ -87,8 +91,8 @@ namespace SharpAlliance.Core
 
         public async Task<int> GameLoop(CancellationToken token = default)
         {
-            IScreen uiOldScreen = this.context.ScreenManager.CurrentScreen;
-            var sm = this.context.ScreenManager;
+            IScreen uiOldScreen = this.screen.CurrentScreen;
+            var sm = this.screen;
 
             while (this.context.State == GameState.Running && !token.IsCancellationRequested)
             {
@@ -130,13 +134,13 @@ namespace SharpAlliance.Core
 
                 if (this.globals.gfGlobalError)
                 {
-                    this.guiCurrentScreen = await sm.GetScreen(ScreenNames.ERROR_SCREEN, activate: true);
+                    this.guiCurrentScreen = await sm.GetScreen(ScreenName.ERROR_SCREEN, activate: true);
                 }
 
                 // ATE: Force to be in message box screen!
                 if (this.messageBox.gfInMsgBox)
                 {
-                    sm.guiPendingScreen = await sm.GetScreen(ScreenNames.MSG_BOX_SCREEN, activate: true);
+                    sm.guiPendingScreen = await sm.GetScreen(ScreenName.MSG_BOX_SCREEN, activate: true);
                 }
 
                 if (sm.guiPendingScreen != NullScreen.Instance)
@@ -168,7 +172,8 @@ namespace SharpAlliance.Core
                     sm.guiPendingScreen = NullScreen.Instance;
                 }
 
-                uiOldScreen = await sm.CurrentScreen.Handle();
+                var oldScreenName = await sm.CurrentScreen.Handle();
+                uiOldScreen = await sm.GetScreen(oldScreenName, activate: false);
 
                 // if the screen has chnaged
                 if (uiOldScreen != this.guiCurrentScreen)
@@ -204,7 +209,7 @@ namespace SharpAlliance.Core
             }
         }
 
-        private async Task InitializeScreens(Dictionary<string, IScreen> screens)
+        private async Task InitializeScreens(Dictionary<ScreenName, IScreen> screens)
         {
             foreach (var screen in screens.Values)
             {
@@ -212,16 +217,17 @@ namespace SharpAlliance.Core
             }
         }
 
-        private void RegisterGameScreens(GameContext context)
+        private void RegisterGameScreens(GameContext context, IScreenManager screen)
         {
-            var sm = context.ScreenManager;
+            var sm = screen;
 
-            sm.AddScreen<SplashScreen>(ScreenNames.SplashScreen);
-            sm.AddScreen<InitScreen>(ScreenNames.InitScreen);
-            sm.AddScreen<MapScreen>(ScreenNames.MAP_SCREEN);
-            sm.AddScreen<LAPTOP_SCREEN>(ScreenNames.LAPTOP_SCREEN);
-            sm.AddScreen<MSG_BOX_SCREEN>(ScreenNames.MSG_BOX_SCREEN);
-            sm.AddScreen<FadeScreen>(ScreenNames.FADE_SCREEN);
+            sm.AddScreen<InitScreen>(ScreenName.InitScreen);
+            sm.AddScreen<IntroScreen>(ScreenName.INTRO_SCREEN);
+            sm.AddScreen<MapScreen>(ScreenName.MAP_SCREEN);
+            sm.AddScreen<LAPTOP_SCREEN>(ScreenName.LAPTOP_SCREEN);
+            sm.AddScreen<MSG_BOX_SCREEN>(ScreenName.MSG_BOX_SCREEN);
+            sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
+            sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
         }
 
         private void CheckForSpace()

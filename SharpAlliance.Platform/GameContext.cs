@@ -41,7 +41,6 @@ namespace SharpAlliance.Platform
         public IInputManager InputManager { get; set; } = new NullInputManager();
         public IFileManager FileManager { get; set; } = new NullFileManager();
         public ISoundManager SoundManager { get; set; } = new NullSoundManager();
-        public IScreenManager ScreenManager { get; set; } = new NullScreenManager();
         public ITimerManager TimerManager { get; set; } = new TimerManager();
         public IClockManager ClockManager { get; set; } = new ClockManager();
         public bool ApplicationActive { get; private set; }
@@ -72,7 +71,6 @@ namespace SharpAlliance.Platform
             success &= await this.InputManager.Initialize();
             success &= await this.FileManager.Initialize();
             success &= await this.SoundManager.Initialize();
-            success &= await this.ScreenManager.Initialize();
             success &= await this.TimerManager.Initialize();
             success &= await this.ClockManager.Initialize();
 
@@ -100,7 +98,6 @@ namespace SharpAlliance.Platform
                     this.InputManager.Dispose();
                     this.FileManager.Dispose();
                     this.SoundManager.Dispose();
-                    this.ScreenManager.Dispose();
                     this.TimerManager.Dispose();
                     this.ClockManager.Dispose();
                 }

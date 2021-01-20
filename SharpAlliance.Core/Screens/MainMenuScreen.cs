@@ -8,28 +8,39 @@ using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core.Screens
 {
-    public class HelpScreen : IScreen
+    public class MainMenuScreen : IScreen
     {
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }
+        public bool gfFadeInitialized;
+        public bool gfFadeIn;
+        public bool gfFadeInVideo;
+        public int gbFadeType;
+        public Action gFadeFunction;
 
         public ValueTask Activate()
         {
-            return ValueTask.CompletedTask;
+            throw new NotImplementedException();
         }
 
         public void Dispose()
         {
+            throw new NotImplementedException();
         }
 
         public ValueTask<ScreenName> Handle()
         {
-            return ValueTask.FromResult(ScreenName.HelpScreen);
+            throw new NotImplementedException();
         }
 
         public ValueTask<bool> Initialize()
         {
-            return ValueTask.FromResult(true);
+            throw new NotImplementedException();
+        }
+
+        internal void InitMainMenu()
+        {
+            throw new NotImplementedException();
         }
     }
 }

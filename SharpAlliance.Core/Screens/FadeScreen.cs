@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
 
 namespace SharpAlliance.Core.Screens
@@ -27,7 +28,7 @@ namespace SharpAlliance.Core.Screens
             throw new NotImplementedException();
         }
 
-        public ValueTask<IScreen> Handle()
+        public ValueTask<ScreenName> Handle()
         {
             throw new NotImplementedException();
         }

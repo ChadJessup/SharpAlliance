@@ -12,5 +12,31 @@ namespace SharpAlliance.Core.SubSystems
         public void Dispose()
         {
         }
+
+        internal void SetFont(object tINYFONT1)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetFontBackground(object fONT_MCOLOR_BLACK)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetFontForeground(object fONT_MCOLOR_WHITE)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public enum FontStyle
+    {
+        TINYFONT1
+    }
+
+    public enum FontColor
+    {
+        FONT_MCOLOR_WHITE,
+        FONT_MCOLOR_BLACK
     }
 }

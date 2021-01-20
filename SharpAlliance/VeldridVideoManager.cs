@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Screens;
@@ -107,8 +108,8 @@ namespace SharpAlliance
         private SGPPaletteEntry[] gSgpPalette = new SGPPaletteEntry[256];
         private BufferState guiFrameBufferState;    // BUFFER_READY, BUFFER_DIRTY
         private BufferState guiMouseBufferState;    // BUFFER_READY, BUFFER_DIRTY, BUFFER_DISABLED
-        private VideoManagerState guiVideoManagerState;   // VIDEO_ON, VIDEO_OFF, Constants.VIDEO_SUSPENDED, Constants.VIDEO_SHUTTING_DOWN
-        private ThreadState guiRefreshThreadState;  // Constants.THREAD_ON, Constants.THREAD_OFF, Constants.THREAD_SUSPENDED
+        private VideoManagerState guiVideoManagerState;   // VIDEO_ON, VIDEO_OFF, VIDEO_SUSPENDED, VIDEO_SHUTTING_DOWN
+        private ThreadState guiRefreshThreadState;  // THREAD_ON, THREAD_OFF, THREAD_SUSPENDED
 
         //void (* gpFrameBufferRefreshOverride) (void);
         private Rectangle[] gListOfDirtyRegions = new Rectangle[Constants.MAX_DIRTY_REGIONS];

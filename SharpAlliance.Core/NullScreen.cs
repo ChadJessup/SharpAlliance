@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Platform;
+using SharpAlliance.Core.Screens;
 
-namespace SharpAlliance.Core.Screens
+namespace SharpAlliance.Core
 {
-    public class HelpScreen : IScreen
+    internal class NullScreen : IScreen
     {
+        public static IScreen Instance { get; } = new NullScreen();
+
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }
 
@@ -24,7 +22,7 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<ScreenName> Handle()
         {
-            return ValueTask.FromResult(ScreenName.HelpScreen);
+            return ValueTask.FromResult(ScreenName.NullScreen);
         }
 
         public ValueTask<bool> Initialize()
