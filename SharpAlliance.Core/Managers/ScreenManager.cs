@@ -32,8 +32,7 @@ namespace SharpAlliance.Core.Managers
         public Dictionary<ScreenName, IScreen> Screens { get; set; } = new();
         public IScreen CurrentScreen { get; private set; }
         public bool IsInitialized { get; private set; }
-        public IScreen guiPendingScreen { get; set; }
-        public ScreenName CurrentScreenName { get; set; }
+        public IScreen guiPendingScreen { get; set; } = NullScreen.Instance;
 
         public ValueTask<bool> Initialize()
         {
@@ -54,7 +53,11 @@ namespace SharpAlliance.Core.Managers
 
             if (screen is not null)
             {
-                this.CurrentScreenName = screenName;
+                if (activate)
+                {
+                    return await this.ActivateScreen(screen);
+                }
+
                 return screen;
             }
 
@@ -72,11 +75,9 @@ namespace SharpAlliance.Core.Managers
 
             if (activate)
             {
-                this.CurrentScreenName = screenName;
                 return await this.ActivateScreen(screen);
             }
 
-            this.CurrentScreenName = screenName;
             return screen;
         }
 

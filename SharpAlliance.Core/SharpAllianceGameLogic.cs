@@ -30,7 +30,6 @@ namespace SharpAlliance.Core
         private readonly IMusicManager music;
         private readonly MessageBoxSubSystem messageBox;
         private readonly Globals globals;
-        private IScreen guiCurrentScreen;
         private MapScreen mapScreen;
 
         public bool IsInitialized { get; private set; }
@@ -78,8 +77,7 @@ namespace SharpAlliance.Core
             this.saves.LoadGameSettings();
             this.saves.InitGameOptions();
 
-            var introScreen = await this.screen.ActivateScreen(ScreenName.INTRO_SCREEN) as IntroScreen;
-            introScreen?.SetIntroType(IntroScreenType.SPLASH);
+            var initScreen = await this.screen.ActivateScreen(ScreenName.InitScreen) as InitScreen;
 
             this.mapScreen = (await this.screen.GetScreen(ScreenName.MAP_SCREEN, activate: false) as MapScreen)!;
 
@@ -96,7 +94,7 @@ namespace SharpAlliance.Core
 
             while (this.context.State == GameState.Running && !token.IsCancellationRequested)
             {
-                uiOldScreen = this.guiCurrentScreen;
+                uiOldScreen = sm.CurrentScreen;
 
                 this.inputs.ProcessEvents();
 
@@ -134,7 +132,7 @@ namespace SharpAlliance.Core
 
                 if (this.globals.gfGlobalError)
                 {
-                    this.guiCurrentScreen = await sm.GetScreen(ScreenName.ERROR_SCREEN, activate: true);
+                    await sm.ActivateScreen(ScreenName.ERROR_SCREEN);
                 }
 
                 // ATE: Force to be in message box screen!
@@ -146,9 +144,9 @@ namespace SharpAlliance.Core
                 if (sm.guiPendingScreen != NullScreen.Instance)
                 {
                     // Based on active screen, deinit!
-                    if (sm.guiPendingScreen != this.guiCurrentScreen)
+                    if (sm.guiPendingScreen != sm.CurrentScreen)
                     {
-                        switch (this.guiCurrentScreen)
+                        switch (sm.CurrentScreen)
                         {
                             case MapScreen ms when sm.guiPendingScreen is MSG_BOX_SCREEN:
                                 sm.EndMapScreen(false);
@@ -165,21 +163,21 @@ namespace SharpAlliance.Core
                         // Set the fact that the screen has changed
                         uiOldScreen = sm.guiPendingScreen;
 
-                        this.HandleNewScreenChange(sm.guiPendingScreen, this.guiCurrentScreen);
+                        this.HandleNewScreenChange(sm.guiPendingScreen, sm.CurrentScreen);
                     }
 
-                    this.guiCurrentScreen = sm.guiPendingScreen;
+                    await sm.ActivateScreen(sm.guiPendingScreen);
                     sm.guiPendingScreen = NullScreen.Instance;
                 }
 
-                var oldScreenName = await sm.CurrentScreen.Handle();
-                uiOldScreen = await sm.GetScreen(oldScreenName, activate: false);
+                var nextScreenName = await sm.CurrentScreen.Handle();
+                uiOldScreen = await sm.GetScreen(nextScreenName, activate: false);
 
                 // if the screen has chnaged
-                if (uiOldScreen != this.guiCurrentScreen)
+                if (uiOldScreen != sm.CurrentScreen)
                 {
-                    this.HandleNewScreenChange(uiOldScreen, this.guiCurrentScreen);
-                    this.guiCurrentScreen = uiOldScreen;
+                    this.HandleNewScreenChange(uiOldScreen, sm.CurrentScreen);
+                    await sm.ActivateScreen(uiOldScreen);
                 }
 
                 this.video.RefreshScreen();

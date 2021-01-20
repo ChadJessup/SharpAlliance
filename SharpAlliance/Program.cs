@@ -75,6 +75,7 @@ namespace SharpAlliance
             builder.AddDependency<IOSManager, WindowsSubSystem>();
             builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
             builder.AddDependency<IScreenManager, ScreenManager>();
+            builder.AddDependency<IVideoSurfaceManager, VideoSurfaceManager>();
 
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<RenderWorld>();
@@ -82,12 +83,13 @@ namespace SharpAlliance
             builder.Services.AddSingleton<MouseSubSystem>();
             builder.Services.AddSingleton<ButtonSubSystem>();
             builder.Services.AddSingleton<CursorSubSystem>();
+            builder.Services.AddSingleton<MessageSubSystem>();
             builder.Services.AddSingleton<SaveGameSubSystem>();
             builder.Services.AddSingleton<MessageBoxSubSystem>();
+            builder.Services.AddSingleton<CinematicsSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
+            builder.Services.AddSingleton<RenderDirtySubSystem>();
             builder.Services.AddSingleton<MapScreenInterfaceMap>();
-            builder.Services.AddSingleton<MessageSubSystem>();
-
 
             return builder;
         }

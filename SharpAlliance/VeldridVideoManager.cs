@@ -1395,6 +1395,14 @@ namespace SharpAlliance
 
             GC.SuppressFinalize(this);
         }
+
+        public void InvalidateRegion(int v1, int v2, int v3, int v4)
+        {
+        }
+
+        public void EndFrameBufferRender()
+        {
+        }
     }
 
     public enum BufferState

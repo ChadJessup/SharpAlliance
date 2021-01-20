@@ -20,5 +20,9 @@ namespace SharpAlliance.Platform.NullManagers
         {
             return true;
         }
+
+        public void SetMusicMode(MusicMode mode)
+        {
+        }
     }
 }

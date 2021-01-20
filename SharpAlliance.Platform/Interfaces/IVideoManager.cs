@@ -15,5 +15,7 @@ namespace SharpAlliance.Platform.Interfaces
         void DrawFrame();
         void RefreshScreen();
         void InvalidateScreen();
+        void InvalidateRegion(int v1, int v2, int v3, int v4);
+        void EndFrameBufferRender();
     }
 }

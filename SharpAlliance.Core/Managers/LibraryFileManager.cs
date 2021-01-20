@@ -264,7 +264,7 @@ namespace SharpAlliance.Core.Managers
             return (LibraryNames)sBestMatch;
         }
 
-        private bool IsLibraryOpened(LibraryNames sLibraryID)
+        public bool IsLibraryOpened(LibraryNames sLibraryID)
         {
             //if the database is not initialized
             if (!this.IsInitialized)

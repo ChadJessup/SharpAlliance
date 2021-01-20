@@ -9,13 +9,12 @@ namespace SharpAlliance.Core.SubSystems
 {
     public class CursorSubSystem : IDisposable
     {
-        public void Dispose()
+        public void SetCurrentCursorFromDatabase(int cursor)
         {
         }
 
-        internal void SetCurrentCursorFromDatabase(int cursor)
+        public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
 }

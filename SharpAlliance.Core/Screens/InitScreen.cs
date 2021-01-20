@@ -47,13 +47,12 @@ namespace SharpAlliance.Core.Screens
 
             return ValueTask.FromResult(true);
         }
+        public static HVSURFACE? hVSurface;
+        public static byte ubCurrentScreen = 255;
 
         public async ValueTask<ScreenName> Handle()
         {
             VSURFACE_DESC vs_desc = new();
-            HVSURFACE? hVSurface;
-            byte ubCurrentScreen = 255;
-
 
             if (ubCurrentScreen == 255)
             {

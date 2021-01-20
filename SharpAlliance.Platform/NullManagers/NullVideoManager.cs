@@ -15,9 +15,19 @@ namespace SharpAlliance.Platform.NullManagers
         {
         }
 
+        public void EndFrameBufferRender()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public ValueTask<bool> Initialize()
         {
             return ValueTask.FromResult(true);
+        }
+
+        public void InvalidateRegion(int v1, int v2, int v3, int v4)
+        {
+            throw new System.NotImplementedException();
         }
 
         public void InvalidateScreen()

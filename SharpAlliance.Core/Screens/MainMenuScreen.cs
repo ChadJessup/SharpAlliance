@@ -20,27 +20,29 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask Activate()
         {
-            throw new NotImplementedException();
+            return ValueTask.CompletedTask;
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public ValueTask<ScreenName> Handle()
         {
-            throw new NotImplementedException();
+            return ValueTask.FromResult(ScreenName.MAINMENU_SCREEN);
         }
 
         public ValueTask<bool> Initialize()
         {
-            throw new NotImplementedException();
+            return ValueTask.FromResult(true);
         }
 
         internal void InitMainMenu()
         {
-            throw new NotImplementedException();
+        }
+
+        internal void ClearMainMenu()
+        {
         }
     }
 }
