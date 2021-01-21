@@ -200,7 +200,7 @@ namespace SharpAlliance.Core
         public void HandleNewScreenChange(IScreen newScreen, IScreen oldScreen)
         {
             //if we are not going into the message box screen, and we didnt just come from it
-            if ((newScreen is not MSG_BOX_SCREEN && oldScreen is not MSG_BOX_SCREEN))
+            if (newScreen is not MSG_BOX_SCREEN && oldScreen is not MSG_BOX_SCREEN)
             {
                 //reset the help screen
                 //NewScreenSoResetHelpScreen();

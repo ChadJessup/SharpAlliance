@@ -39,10 +39,10 @@ namespace SharpAlliance.Core.SubSystems
             public const int WORLD_MAP_X = 18;
 
             // dirty regions for the map
-            public const int DMAP_GRID_X = (MAP_GRID_X + 1);
-            public const int DMAP_GRID_Y = (MAP_GRID_Y + 1);
-            public const int DMAP_GRID_ZOOM_X = (MAP_GRID_ZOOM_X + 1);
-            public const int DMAP_GRID_ZOOM_Y = (MAP_GRID_ZOOM_Y + 1);
+            public const int DMAP_GRID_X = MAP_GRID_X + 1;
+            public const int DMAP_GRID_Y = MAP_GRID_Y + 1;
+            public const int DMAP_GRID_ZOOM_X = MAP_GRID_ZOOM_X + 1;
+            public const int DMAP_GRID_ZOOM_Y = MAP_GRID_ZOOM_Y + 1;
 
             // Orta position on the map
             public const int ORTA_SECTOR_X = 4;

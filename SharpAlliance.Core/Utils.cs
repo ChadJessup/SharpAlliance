@@ -35,4 +35,23 @@ namespace SharpAlliance.Core
         }
 
     }
+
+    public static class RandomHelpers
+    {
+        // Maximum value that can be returned by the rand function:
+        private const int RAND_MAX = 0x7fff;
+
+        // Returns a pseudo-random integer between 0 and uiRange
+        public static int GetRandom(this Random rand, int uiRange)
+        {
+            // Always return 0, if no range given (it's not an error)
+
+            if (uiRange == 0)
+            {
+                return 0;
+            }
+
+            return rand.Next(0, RAND_MAX) * uiRange / RAND_MAX % uiRange;
+        }
+    }
 }

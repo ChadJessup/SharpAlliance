@@ -207,7 +207,7 @@ namespace SharpAlliance.Core.SubSystems
                     }
                     else
                     {
-                        this.MSYS_CurrentButtons &= (~ButtonMasks.MSYS_LEFT_BUTTON);
+                        this.MSYS_CurrentButtons &= ~ButtonMasks.MSYS_LEFT_BUTTON;
                     }
 
                     if (rightButtonDown)
@@ -216,7 +216,7 @@ namespace SharpAlliance.Core.SubSystems
                     }
                     else
                     {
-                        this.MSYS_CurrentButtons &= (~ButtonMasks.MSYS_RIGHT_BUTTON);
+                        this.MSYS_CurrentButtons &= ~ButtonMasks.MSYS_RIGHT_BUTTON;
                     }
 
                     if ((Xcoord != this.MSYS_CurrentMX) || (Ycoord != this.MSYS_CurrentMY))
@@ -317,7 +317,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (this.MSYS_PrevRegion is not null)
             {
-                this.MSYS_PrevRegion.uiFlags &= (~MouseRegionFlags.MOUSE_IN_AREA);
+                this.MSYS_PrevRegion.uiFlags &= ~MouseRegionFlags.MOUSE_IN_AREA;
 
                 if (this.MSYS_PrevRegion != this.MSYS_CurrRegion)
                 {
@@ -332,8 +332,8 @@ namespace SharpAlliance.Core.SubSystems
                         //                            FreeBackgroundRectPending(MSYS_PrevRegion.FastHelpRect);
                         //                        }
                         //#endif
-                        this.MSYS_PrevRegion.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
-                        this.MSYS_PrevRegion.uiFlags &= (~MouseRegionFlags.FASTHELP_RESET);
+                        this.MSYS_PrevRegion.uiFlags &= ~MouseRegionFlags.GOT_BACKGROUND;
+                        this.MSYS_PrevRegion.uiFlags &= ~MouseRegionFlags.FASTHELP_RESET;
 
                         //if( region.uiFlags & MSYS_REGION_ENABLED )
                         //	region.uiFlags |= BUTTON_DIRTY;
@@ -365,7 +365,7 @@ namespace SharpAlliance.Core.SubSystems
                     if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK))
                     {
                         if (this.MSYS_CurrRegion.FastHelpText is not null
-                            && !(this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.FASTHELP_RESET)))
+                            && !this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.FASTHELP_RESET))
                         {
                             //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
                             this.MSYS_CurrRegion.FastHelpTimer = this.gsFastHelpDelay;
@@ -373,7 +373,7 @@ namespace SharpAlliance.Core.SubSystems
                             //                            if (MSYS_CurrRegion.uiFlags & MSYS_GOT_BACKGROUND)
                             //                                FreeBackgroundRectPending(MSYS_CurrRegion.FastHelpRect);
                             //#endif
-                            this.MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
+                            this.MSYS_CurrRegion.uiFlags &= ~MouseRegionFlags.GOT_BACKGROUND;
                             this.MSYS_CurrRegion.uiFlags |= MouseRegionFlags.FASTHELP_RESET;
 
                             //if( b.uiFlags & BUTTON_ENABLED )
@@ -399,11 +399,11 @@ namespace SharpAlliance.Core.SubSystems
                         pTempRegion = this.MSYS_CurrRegion.next;
                         while ((pTempRegion != null) && (!fFound))
                         {
-                            if ((pTempRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED)) &&
+                            if (pTempRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED) &&
                                    (pTempRegion.RegionTopLeftX <= this.MSYS_CurrentMX) &&
                                    (pTempRegion.RegionTopLeftY <= this.MSYS_CurrentMY) &&
                                    (pTempRegion.RegionBottomRightX >= this.MSYS_CurrentMX) &&
-                                   (pTempRegion.RegionBottomRightY >= this.MSYS_CurrentMY) && (pTempRegion.uiFlags.HasFlag(MouseRegionFlags.SET_CURSOR)))
+                                   (pTempRegion.RegionBottomRightY >= this.MSYS_CurrentMY) && pTempRegion.uiFlags.HasFlag(MouseRegionFlags.SET_CURSOR))
                             {
                                 fFound = true;
                                 if (pTempRegion.Cursor != 0)//MSYS_NO_CURSOR)
@@ -438,9 +438,9 @@ namespace SharpAlliance.Core.SubSystems
                     //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
                     //MSYS_CurrRegion.FastHelpTimer = gsFastHelpDelay;
 
-                    this.MSYS_Action &= (~MouseDos.MOVE);
+                    this.MSYS_Action &= ~MouseDos.MOVE;
 
-                    if ((this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.BUTTON_CALLBACK)) && (this.MSYS_Action.HasFlag(MouseDos.BUTTONS)))
+                    if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.BUTTON_CALLBACK) && this.MSYS_Action.HasFlag(MouseDos.BUTTONS))
                     {
                         if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                         {
@@ -490,17 +490,17 @@ namespace SharpAlliance.Core.SubSystems
                                 if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.FASTHELP))
                                 {
                                     // Button was clicked so remove any FastHelp text
-                                    this.MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.FASTHELP);
+                                    this.MSYS_CurrRegion.uiFlags &= ~MouseRegionFlags.FASTHELP;
                                     //# ifdef _JA2_RENDER_DIRTY
                                     //                                    if (MSYS_CurrRegion.uiFlags & MSYS_GOT_BACKGROUND)
                                     //                                        FreeBackgroundRectPending(MSYS_CurrRegion.FastHelpRect);
                                     //#endif
 
-                                    this.MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
+                                    this.MSYS_CurrRegion.uiFlags &= ~MouseRegionFlags.GOT_BACKGROUND;
 
                                     //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
                                     this.MSYS_CurrRegion.FastHelpTimer = this.gsFastHelpDelay;
-                                    this.MSYS_CurrRegion.uiFlags &= (~MouseRegionFlags.FASTHELP_RESET);
+                                    this.MSYS_CurrRegion.uiFlags &= ~MouseRegionFlags.FASTHELP_RESET;
 
                                     //if( b.uiFlags & BUTTON_ENABLED )
                                     //	b.uiFlags |= BUTTON_DIRTY;
@@ -550,7 +550,7 @@ namespace SharpAlliance.Core.SubSystems
                         }
                     }
 
-                    this.MSYS_Action &= (~MouseDos.BUTTONS);
+                    this.MSYS_Action &= ~MouseDos.BUTTONS;
                 }
                 else if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                 {
@@ -572,12 +572,12 @@ namespace SharpAlliance.Core.SubSystems
                     this.MSYS_CurrRegion.RelativeXPos = this.MSYS_CurrentMX - this.MSYS_CurrRegion.RegionTopLeftX;
                     this.MSYS_CurrRegion.RelativeYPos = this.MSYS_CurrentMY - this.MSYS_CurrRegion.RegionTopLeftY;
 
-                    if ((this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK)) && (this.MSYS_Action.HasFlag(MouseDos.MOVE)))
+                    if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK) && this.MSYS_Action.HasFlag(MouseDos.MOVE))
                     {
                         this.MSYS_CurrRegion.MovementCallback(this.MSYS_CurrRegion, MouseCallbackReasons.MOVE);
                     }
 
-                    this.MSYS_Action &= (~MouseDos.MOVE);
+                    this.MSYS_Action &= ~MouseDos.MOVE;
                 }
                 this.MSYS_PrevRegion = this.MSYS_CurrRegion;
             }
@@ -643,7 +643,7 @@ namespace SharpAlliance.Core.SubSystems
                 //AssertMsg(0, "Attempting to remove a null region.");
             }
 
-            if (!(region.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS)))
+            if (!region.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
             {
                 // AssertMsg(0, "Attempting to remove an already removed region.");
             }
@@ -826,7 +826,7 @@ namespace SharpAlliance.Core.SubSystems
                 this.MSYS_CurrentID = Current;
             }
 
-            return (retID);
+            return retID;
         }
 
 

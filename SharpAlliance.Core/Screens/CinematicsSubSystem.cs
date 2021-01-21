@@ -5,9 +5,8 @@ namespace SharpAlliance.Core.Screens
 {
     public class CinematicsSubSystem
     {
-        internal void SmkInitialize(IVideoManager video, int v1, int v2)
+        public void SmkInitialize(IVideoManager video, int width, int height)
         {
-            throw new NotImplementedException();
         }
     }
 }

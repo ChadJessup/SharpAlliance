@@ -25,6 +25,8 @@ namespace SharpAlliance.Core.Managers
             }
 
             this.DataDirectory = dataDir;
+
+            this.Initialize();
         }
 
         public string ManagerName { get; set; }
@@ -41,6 +43,11 @@ namespace SharpAlliance.Core.Managers
             //Load up each library
             foreach (var libraryName in Enum.GetValues<LibraryNames>().Cast<LibraryNames>())
             {
+                if (libraryName == LibraryNames.Unknown)
+                {
+                    continue;
+                }
+
                 //if you want to init the library at the begining of the game
                 if (GameLibraries[libraryName].InitOnStart)
                 {
@@ -315,7 +322,7 @@ namespace SharpAlliance.Core.Managers
             uiCurPos = this.Libraries[sLibraryID].pOpenFiles[uiFileNum].uiFilePosInFile;
 
             //set the file pointer to the right location
-            this.SetFilePointer(hLibraryFile, (uiOffsetInLibrary + uiCurPos), SeekOrigin.Begin);
+            this.SetFilePointer(hLibraryFile, uiOffsetInLibrary + uiCurPos, SeekOrigin.Begin);
 
             //if we are trying to read more data then the size of the file, return an error
             if (uiBytesToRead + uiCurPos > uiLength)
