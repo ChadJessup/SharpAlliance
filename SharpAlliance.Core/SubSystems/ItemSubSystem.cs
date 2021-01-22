@@ -1,4 +1,7 @@
-﻿namespace SharpAlliance.Core.SubSystems
+﻿using System;
+using System.Collections.Generic;
+
+namespace SharpAlliance.Core.SubSystems
 {
     public class ItemSubSystem
     {
@@ -8,58 +11,176 @@
             public const int MAX_ATTACHMENTS = 4;
             public const int MAX_MONEY_PER_SLOT = 20000;
         }
-    }
 
-    public enum DetonatorType
-    {
-        Unknown = 0,
-        BOMB_TIMED = 1,
-        BOMB_REMOTE,
-        BOMB_PRESSURE,
-        BOMB_SWITCH
-    }
+        public Dictionary<Items, Items> ReplacementGuns = new()
+        {
+            { Items.BARRACUDA, Items.DESERTEAGLE },
+            { Items.M1911, Items.GLOCK_17 },
+            { Items.GLOCK_18, Items.BERETTA_93R },
+            { Items.BERETTA_92F, Items.GLOCK_17 },
+            { Items.TYPE85, Items.BERETTA_93R },
+            { Items.THOMPSON, Items.MP5K },
+            { Items.MP53, Items.MP5K },
+            { Items.SPAS15, Items.M870 },
+            { Items.AKSU74, Items.MAC10 },
+            { Items.SKS, Items.MINI14 },
+            { Items.AKM, Items.G41 },
+            { Items.G3A3, Items.G41 },
+            { Items.AK74, Items.G41 },
+            { Items.DRAGUNOV, Items.M24 },
+            { Items.FAMAS, Items.M14 },
+            { Items.AUG, Items.C7 },
+            { Items.RPK74, Items.MINIMI },
+            { Items.HK21E, Items.MINIMI },
+            { 0, 0 }
+        };
 
-    public class OBJECTTYPE
-    {
-        public ushort usItem;
-        public byte ubNumberOfObjects;
-        public sbyte bGunStatus;            // status % of gun
-        public byte ubGunAmmoType;    // ammo type, as per weapons.h
-        public byte ubGunShotsLeft;   // duh, amount of ammo left
-        public ushort usGunAmmoItem;   // the item # for the item table
-        public sbyte bGunAmmoStatus; // only for "attached ammo" - grenades, mortar shells
-        public byte[] ubGunUnused = new byte[ItemSubSystem.IntentoryConstants.MAX_OBJECTS_PER_SLOT - 6];
-        public byte[] ubShotsLeft = new byte[ItemSubSystem.IntentoryConstants.MAX_OBJECTS_PER_SLOT];
-        public sbyte[] bStatus = new sbyte[ItemSubSystem.IntentoryConstants.MAX_OBJECTS_PER_SLOT];
-        public sbyte bMoneyStatus;
-        public int uiMoneyAmount;
-        public byte[] ubMoneyUnused = new byte[ItemSubSystem.IntentoryConstants.MAX_OBJECTS_PER_SLOT - 5];
 
-        // this is used by placed bombs, switches, and the action item
-        public sbyte bBombStatus;           // % status
-        public sbyte bDetonatorType;        // timed, remote, or pressure-activated
-        public ushort usBombItem;              // the usItem of the bomb.
-        public sbyte bDelay;                // >=0 values used only
-        public sbyte bFrequency;        // >=0 values used only
-        public byte ubBombOwner; // side which placed the bomb
-        public byte bActionValue;// this is used by the ACTION_ITEM fake item
-        public byte ubTolerance; // tolerance value for panic triggers
-        public byte ubLocationID; // location value for remote non-bomb (special!) triggers
-        public sbyte[] bKeyStatus = new sbyte[6];
-        public byte ubKeyID;
-        public byte[] ubKeyUnused = new byte[1];
-        public byte ubOwnerProfile;
-        public byte ubOwnerCivGroup;
-        public byte[] ubOwnershipUnused = new byte[6];
-        // attached objects
-        public ushort[] usAttachItem = new ushort[ItemSubSystem.IntentoryConstants.MAX_ATTACHMENTS];
-        public sbyte[] bAttachStatus = new sbyte[ItemSubSystem.IntentoryConstants.MAX_ATTACHMENTS];
+        public Dictionary<Items, Items> ReplacementAmmo = new()
+        {
+            { Items.CLIP545_30_AP, Items.CLIP556_30_AP },
+            { Items.CLIP545_30_HP, Items.CLIP556_30_HP },
+            { Items.CLIP762W_10_AP, Items.CLIP762N_5_AP },
+            { Items.CLIP762W_30_AP, Items.CLIP762N_20_AP },
+            { Items.CLIP762W_10_HP, Items.CLIP762N_5_HP },
+            { Items.CLIP762W_30_HP, Items.CLIP762N_20_HP },
+            { 0, 0 },
+        };
 
-        public sbyte fFlags;
-        public byte ubMission;
-        public sbyte bTrap;        // 1-10 exp_lvl to detect
-        public byte ubImprintID;  // ID of merc that item is imprinted on
-        public byte ubWeight;
-        public byte fUsed;                // flags for whether the item is used or not
+        private Dictionary<Items, INVTYPE> items = new();
+
+        // also used for ammo
+        public bool ExtendedGunListGun(Items usGun)
+        {
+            return this[usGun].fFlags.HasFlag(ItemAttributes.ITEM_BIGGUNLIST);
+        }
+
+        public Items StandardGunListReplacement(Items usGun)
+        {
+            Items ubLoop;
+
+            if (ExtendedGunListGun(usGun))
+            {
+                ubLoop = 0;
+                while (ReplacementGuns[ubLoop] != 0)
+                {
+                    if (ReplacementGuns[ubLoop] == usGun)
+                    {
+                        return ReplacementGuns[ubLoop];
+                    }
+
+                    ubLoop++;
+                }
+
+                // ERROR!
+                //AssertMsg(0, String("Extended gun with no replacement %d, CC:0", usGun));
+                return Items.NONE;
+            }
+            else
+            {
+                return Items.NONE;
+            }
+        }
+
+        public Items StandardGunListAmmoReplacement(Items usAmmo)
+        {
+            Items ubLoop;
+
+            if (ExtendedGunListGun(usAmmo))
+            {
+                ubLoop = 0;
+                while (ReplacementAmmo[ubLoop] != 0)
+                {
+                    if (ReplacementAmmo[ubLoop] == usAmmo)
+                    {
+                        return ReplacementAmmo[ubLoop];
+                    }
+
+                    ubLoop++;
+                }
+                // ERROR!
+                //AssertMsg(0, String("Extended gun with no replacement %d, CC:0", usAmmo));
+
+                return Items.NONE;
+            }
+            else
+            {
+                return Items.NONE;
+            }
+        }
+
+        /// <summary>
+        /// Returns the <seealso cref="INVTYPE"/> associated with <seealso cref="Items"/> passed in.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public INVTYPE this[Items item]
+        {
+            get { return this.items[item]; }
+            set { this.items[item] = value; }
+        }
+
+        public Items FindReplacementMagazineIfNecessary(Items usOldGun, Items usOldAmmo, Items usNewGun)
+        {
+            Items usNewAmmo = Items.NONE;
+            int oldGunIdx = (int)usOldGun;
+
+            if ((WeaponTypes.Magazines[this[usOldAmmo].ubClassIndex].ubCalibre == WeaponTypes.Weapon[oldGunIdx].ubCalibre)
+                && (WeaponTypes.Magazines[this[usOldAmmo].ubClassIndex].ubMagSize == WeaponTypes.Weapon[oldGunIdx].ubMagSize))
+            {
+                // must replace this!
+                usNewAmmo = FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazines[this.items[usOldAmmo].ubClassIndex].ubAmmoType);
+            }
+
+            return usNewAmmo;
+        }
+
+        public Items FindReplacementMagazine(CaliberType ubCalibre, int ubMagSize, AmmoType ubAmmoType)
+        {
+            int ubLoop;
+            Items usDefault;
+
+            ubLoop = 0;
+            usDefault = Items.NONE;
+
+            while (WeaponTypes.Magazines[ubLoop].ubCalibre != CaliberType.NOAMMO)
+            {
+                if (WeaponTypes.Magazines[ubLoop].ubCalibre == ubCalibre
+                    && WeaponTypes.Magazines[ubLoop].ubMagSize == ubMagSize)
+                {
+                    if (WeaponTypes.Magazines[ubLoop].ubAmmoType == ubAmmoType)
+                    {
+                        return MagazineClassIndexToItemType(ubLoop);
+                    }
+                    else if (usDefault == Items.NONE)
+                    {
+                        // store this one to use if all else fails
+                        usDefault = MagazineClassIndexToItemType(ubLoop);
+                    }
+                }
+
+                ubLoop++;
+            }
+
+            return usDefault;
+        }
+
+        public Items MagazineClassIndexToItemType(int usMagIndex)
+        {
+            Items usLoop;
+
+            // Note: if any ammo items in the item table are separated from the main group,
+            // this function will have to be rewritten to scan the item table for an item
+            // with item class ammo, which has class index usMagIndex
+            for (usLoop = (Items)ItemIndexes.FIRST_AMMO; usLoop < Items.MAXITEMS; usLoop++)
+            {
+                if (this[usLoop].ubClassIndex == usMagIndex)
+                {
+                    return usLoop;
+                }
+            }
+
+            return Items.NONE;
+        }
     }
 }

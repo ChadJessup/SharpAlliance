@@ -8,12 +8,13 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.SubSystems
 {
     public class SoldierProfileSubSystem
     {
-        private static class Constants
+        internal static class Constants
         {
             public const int NUM_TERRORISTS = 6;
 
@@ -28,26 +29,30 @@ namespace SharpAlliance.Core.SubSystems
         }
 
         private readonly ILogger<SoldierProfileSubSystem> logger;
-        private readonly FileManager fileManager;
+        private readonly IFileManager fileManager;
         private readonly DialogControl dialogs;
         private readonly GameOptions gGameOptions;
         private readonly ItemSubSystem items;
+        private readonly TownReputations townReputations;
+        private readonly Cars cars;
         private int gubNumTerrorists = 0;
         private Random rnd;
 
         public SoldierProfileSubSystem(
             ILogger<SoldierProfileSubSystem> logger,
-            FileManager fileManager,
-            DialogControl dialogControl,
+            IFileManager fileManager,
             GameOptions gameOptions,
-            ItemSubSystem itemSubSystem)
+            ItemSubSystem itemSubSystem,
+            TownReputations townRep,
+            Cars carPortraits)
         {
             this.logger = logger;
             this.fileManager = fileManager;
-            this.dialogs = dialogControl;
             this.gGameOptions = gameOptions;
             this.rnd = new Random(DateTime.UtcNow.Millisecond);
             this.items = itemSubSystem;
+            this.townReputations = townRep;
+            this.cars = carPortraits;
         }
 
         public Dictionary<NPCIDs, MERCPROFILE> gMercProfiles { get; } = new();
@@ -81,14 +86,15 @@ namespace SharpAlliance.Core.SubSystems
                 //}
 
                 //if the Dialogue exists for the merc, allow the merc to be hired
-                if (this.dialogs.DialogueDataFileExistsForProfile(uiLoop, 0, false, out var _))
-                {
-                    gMercProfiles[npcId].bMercStatus = 0;
-                }
-                else
-                {
-                    gMercProfiles[npcId].bMercStatus = MercStatus.MERC_HAS_NO_TEXT_FILE;
-                }
+                // TODO: figure out circular dependency
+                //if (this.DialogueDataFileExistsForProfile(uiLoop, 0, false, out var _))
+                //{
+                //    gMercProfiles[npcId].bMercStatus = 0;
+                //}
+                //else
+                //{
+                //    gMercProfiles[npcId].bMercStatus = MercStatus.MERC_HAS_NO_TEXT_FILE;
+                //}
 
                 // if the merc has a medical deposit
                 if (gMercProfiles[npcId].bMedicalDeposit > 0)
@@ -108,15 +114,14 @@ namespace SharpAlliance.Core.SubSystems
 
                 if (!gGameOptions.GunNut)
                 {
-
                     // CJC: replace guns in profile if they aren't available
                     for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
                     {
                         usItem = gMercProfiles[npcId].inv[uiLoop2];
 
-                        if ((Item[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN)) && ExtendedGunListGun(usItem))
+                        if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN) && this.items.ExtendedGunListGun(usItem))
                         {
-                            usNewGun = StandardGunListReplacement(usItem);
+                            usNewGun = this.items.StandardGunListReplacement(usItem);
                             if (usNewGun != Items.NONE)
                             {
                                 gMercProfiles[npcId].inv[uiLoop2] = usNewGun;
@@ -125,9 +130,9 @@ namespace SharpAlliance.Core.SubSystems
                                 for (uiLoop3 = 0; uiLoop3 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop3++)
                                 {
                                     usAmmo = gMercProfiles[npcId].inv[uiLoop3];
-                                    if (Item[usAmmo].usItemClass.HasFlag(ItemSubTypes.IC_AMMO))
+                                    if (this.items[usAmmo].usItemClass.HasFlag(ItemSubTypes.IC_AMMO))
                                     {
-                                        usNewAmmo = FindReplacementMagazineIfNecessary(usItem, usAmmo, usNewGun);
+                                        usNewAmmo = this.items.FindReplacementMagazineIfNecessary(usItem, usAmmo, usNewGun);
                                         if (usNewAmmo != Items.NONE)
                                         {
                                             // found a new magazine, replace...
@@ -153,15 +158,15 @@ namespace SharpAlliance.Core.SubSystems
                     if (usItem != Items.NONE)
                     {
                         // Check if it's a gun
-                        if (Item[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN))
+                        if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN))
                         {
-                            gMercProfiles[npcId].bMainGunAttractiveness = Weapon[usItem].ubDeadliness;
+                            gMercProfiles[npcId].bMainGunAttractiveness = WeaponTypes.Weapon[(int)usItem].ubDeadliness;
                         }
 
                         // If it's armour
-                        if (Item[usItem].usItemClass.HasFlag(ItemSubTypes.IC_ARMOUR))
+                        if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_ARMOUR))
                         {
-                            gMercProfiles[npcId].bArmourAttractiveness = Armour[Item[usItem].ubClassIndex].ubProtection;
+                            gMercProfiles[npcId].bArmourAttractiveness = WeaponTypes.Armour[this.items[usItem].ubClassIndex].ubProtection;
                         }
                     }
                 }
@@ -179,7 +184,7 @@ namespace SharpAlliance.Core.SubSystems
                         usItem = gMercProfiles[npcId].inv[uiLoop2];
 
                         //add the cost
-                        gMercProfiles[npcId].usOptionalGearCost += Item[usItem].usPrice;
+                        gMercProfiles[npcId].usOptionalGearCost += this.items[usItem].usPrice;
                     }
                 }
 
@@ -205,15 +210,12 @@ namespace SharpAlliance.Core.SubSystems
             StartSomeMercsOnAssignment();
 
             // initial recruitable mercs' reputation in each town
-            InitializeProfilesForTownReputation();
+            this.townReputations.InitializeProfilesForTownReputation();
 
             EditScreen.gfProfileDataLoaded = true;
 
-            // no better place..heh?.. will load faces for profiles that are 'extern'.....won't have soldiertype instances
-            InitalizeStaticExternalNPCFaces();
-
             // car portrait values
-            LoadCarPortraitValues();
+            this.cars.LoadCarPortraitValues();
 
             return true;
         }
@@ -237,7 +239,7 @@ namespace SharpAlliance.Core.SubSystems
                     pProfile.bMercStatus = MercStatus.MERC_WORKING_ELSEWHERE;
 
                     // 1-(6 to 11) days
-                    pProfile.uiDayBecomesAvailable = 1 + this.rnd.Next(0, (6 + (pProfile.bExpLevel / 2)));
+                    pProfile.uiDayBecomesAvailable = 1 + this.rnd.Next(0, 6 + (pProfile.bExpLevel / 2));
                 }
                 else
                 {

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.SubSystems.MERCPROFILE;
 
 namespace SharpAlliance.Core.SubSystems
@@ -11,30 +13,55 @@ namespace SharpAlliance.Core.SubSystems
     public class DialogControl
     {
         private readonly SoldierProfileSubSystem soldiers;
-        private readonly FileManager fileManager;
+        private readonly IFileManager fileManager;
         private readonly QuestEngine quests;
+        private readonly InterfaceDialogSubSystem interfaceDialog;
+        private readonly Faces faces;
 
         public DialogControl(
-            FileManager fileManager, 
+            IFileManager fileManager,
             SoldierProfileSubSystem soldiers,
-            QuestEngine questEngine)
+            QuestEngine questEngine,
+            InterfaceDialogSubSystem interfaceDialogSubSystem,
+            Faces faces)
         {
             this.soldiers = soldiers;
             this.fileManager = fileManager;
             this.quests = questEngine;
+            this.interfaceDialog = interfaceDialogSubSystem;
+            this.faces = faces;
+
+            // no better place..heh?.. will load faces for profiles that are 'extern'.....won't have soldiertype instances
+            this.InitalizeStaticExternalNPCFaces();
         }
 
+
+        private bool fExternFacesLoaded = false;
         private bool gfUseAlternateDialogueFile = false;
+
+        public int[] uiExternalStaticNPCFaces = new int[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES];
+
+        public int[] uiExternalFaceProfileIds = new int[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES]
+        {
+            97,
+            106,
+            148,
+            156,
+            157,
+            158,
+        };
+
 
         // Used to see if the dialog text file exists
         public bool DialogueDataFileExistsForProfile(int ubCharacterNum, int usQuoteNum, bool fWavFile, out string ppStr)
         {
             string pFilename = GetDialogueDataFilename(ubCharacterNum, usQuoteNum, fWavFile);
 
-                ppStr = pFilename;
+            ppStr = pFilename;
 
             return this.fileManager.FileExists(pFilename);
         }
+
         public const int FIRST_RPC = 57;
         private string GetDialogueDataFilename(int ubCharacterNum, int usQuoteNum, bool fWavFile)
         {
@@ -58,7 +85,7 @@ namespace SharpAlliance.Core.SubSystems
             }
             else if (ubCharacterNum >= FIRST_RPC &&
                     (!this.soldiers.gMercProfiles[(NPCIDs)ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)
-                    || ProfileCurrentlyTalkingInDialoguePanel(ubCharacterNum)
+                    || this.interfaceDialog.ProfileCurrentlyTalkingInDialoguePanel(ubCharacterNum)
                     || this.soldiers.gMercProfiles[(NPCIDs)ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_FORCENPCQUOTE))
                     )
             {
@@ -103,5 +130,36 @@ namespace SharpAlliance.Core.SubSystems
 
             return zFileName;
         }
+
+        public void InitalizeStaticExternalNPCFaces()
+        {
+            int iCounter = 0;
+            // go and grab all external NPC faces that are needed for the game who won't exist as soldiertypes
+
+            if (fExternFacesLoaded == true)
+            {
+                return;
+            }
+
+            fExternFacesLoaded = true;
+
+            for (iCounter = 0; iCounter < (int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES; iCounter++)
+            {
+                uiExternalStaticNPCFaces[iCounter] = (int)this.faces.InitFace(uiExternalFaceProfileIds[iCounter], OverheadTypes.NOBODY, FaceFlags.FACE_FORCE_SMALL);
+            }
+
+            return;
+        }
     }
+
+    public enum ExternalFaces
+    {
+        SKYRIDER_EXTERNAL_FACE = 0,
+        MINER_FRED_EXTERNAL_FACE,
+        MINER_MATT_EXTERNAL_FACE,
+        MINER_OSWALD_EXTERNAL_FACE,
+        MINER_CALVIN_EXTERNAL_FACE,
+        MINER_CARL_EXTERNAL_FACE,
+        NUMBER_OF_EXTERNAL_NPC_FACES,
+    };
 }

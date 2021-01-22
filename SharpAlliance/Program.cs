@@ -91,6 +91,11 @@ namespace SharpAlliance
             builder.Services.AddSingleton<RenderDirtySubSystem>();
             builder.Services.AddSingleton<MapScreenInterfaceMap>();
             builder.Services.AddSingleton<SoldierProfileSubSystem>();
+            builder.Services.AddSingleton<DialogControl>();
+            builder.Services.AddSingleton<GameOptions>();
+            builder.Services.AddSingleton<ItemSubSystem>();
+            builder.Services.AddSingleton<TownReputations>();
+            builder.Services.AddSingleton<Cars>();
 
             return builder;
         }

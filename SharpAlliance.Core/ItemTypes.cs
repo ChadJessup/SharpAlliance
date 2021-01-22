@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace SharpAlliance.Core
 {
-    public class ItemSubSystem
-    {
-
-    }
-
     [Flags]
     public enum ItemAttributes
     {
@@ -102,7 +97,7 @@ namespace SharpAlliance.Core
 
     public class INVTYPE
     {
-        public int usItemClass;
+        public ItemSubTypes usItemClass;
         public int ubClassIndex;
         public int ubCursor;
         public int bSoundType;
@@ -114,7 +109,7 @@ namespace SharpAlliance.Core
         public int ubCoolness;
         public int bReliability;
         public int bRepairEase;
-        public int fFlags;
+        public ItemAttributes fFlags;
     }
 
     public enum DetonatorType
@@ -259,7 +254,7 @@ namespace SharpAlliance.Core
         CROWBAR,
         AUTO_ROCKET_RIFLE,
 
-        MAX_WEAPONS = (ItemIndexes.FIRST_AMMO - 1),
+        MAX_WEAPONS = ItemIndexes.FIRST_AMMO - 1,
 
         CLIP9_15 = ItemIndexes.FIRST_AMMO,
         CLIP9_30,
