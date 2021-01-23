@@ -59,11 +59,15 @@ namespace SharpAlliance.Core.Screens
 
             VObjectDesc.fCreateFlags = VideoObjectManager.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm.sti");
-            this.videoObjects.AddVideoObject(ref VObjectDesc, this.mapScreenInterface.guiUpdatePanel);
+
+            
+            this.videoObjects.AddVideoObject(ref VObjectDesc, out var idx1);
+            this.mapScreenInterface.guiUpdatePanel = idx1;
 
             VObjectDesc.fCreateFlags = VideoObjectManager.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm_tactical.sti");
-            this.videoObjects.AddVideoObject(ref VObjectDesc, this.mapScreenInterface.guiUpdatePanelTactical);
+            this.videoObjects.AddVideoObject(ref VObjectDesc, out var idx2);
+            this.mapScreenInterface.guiUpdatePanelTactical = idx2;
 
             return ValueTask.FromResult(true);
         }

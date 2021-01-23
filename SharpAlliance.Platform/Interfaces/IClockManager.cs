@@ -8,6 +8,8 @@ namespace SharpAlliance.Platform.Interfaces
 {
     public interface IClockManager : ISharpAllianceManager
     {
+        bool gfGamePaused { get; set; }
+
         long GetClock();
         long GetTickCount();
         void UpdateClock();

@@ -19,5 +19,10 @@ namespace SharpAlliance.Platform.NullManagers
         public void Dispose()
         {
         }
+
+        public void SoundStopAll()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -96,6 +96,26 @@ namespace SharpAlliance
             builder.Services.AddSingleton<ItemSubSystem>();
             builder.Services.AddSingleton<TownReputations>();
             builder.Services.AddSingleton<Cars>();
+            builder.Services.AddSingleton<GameInit>();
+            builder.Services.AddSingleton<StrategicMap>();
+            builder.Services.AddSingleton<TacticalSaveSubSystem>();
+            builder.Services.AddSingleton<SoldierCreate>();
+            builder.Services.AddSingleton<Overhead>();
+            builder.Services.AddSingleton<Emails>();
+            builder.Services.AddSingleton<Laptop>();
+            builder.Services.AddSingleton<Interface>();
+            builder.Services.AddSingleton<TurnBasedInput>();
+            builder.Services.AddSingleton<Cheats>();
+            builder.Services.AddSingleton<GameEvents>();
+            builder.Services.AddSingleton<NPC>();
+            builder.Services.AddSingleton<ShopKeeper>();
+            builder.Services.AddSingleton<World>();
+            builder.Services.AddSingleton<HelpScreenSubSystem>();
+            builder.Services.AddSingleton<DialogControl>();
+            builder.Services.AddSingleton<AirRaid>();
+            builder.Services.AddSingleton<QuestEngine>();
+            builder.Services.AddSingleton<InterfaceDialogSubSystem>();
+            builder.Services.AddSingleton<Faces>();
 
             return builder;
         }

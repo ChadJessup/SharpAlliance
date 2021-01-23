@@ -22,6 +22,40 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Shaders\Compute.glsl" />
+    <None Remove="Assets\Shaders\Fragment.glsl" />
+    <None Remove="Assets\Shaders\sprite.frag" />
+    <None Remove="Assets\Shaders\sprite.frag.spv" />
+    <None Remove="Assets\Shaders\sprite.vert" />
+    <None Remove="Assets\Shaders\sprite.vert.spv" />
+    <None Remove="Assets\Shaders\Vertex.glsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Shaders\Compute.glsl">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Shaders\Fragment.glsl">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Shaders\sprite.frag">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Shaders\sprite.frag.spv">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Shaders\sprite.vert">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Shaders\sprite.vert.spv">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Shaders\Vertex.glsl">
+      <LogicalName>%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SharpAlliance.Platform\SharpAlliance.Platform.csproj" />
     <ProjectReference Include="..\SharpAlliance.Strategic\SharpAlliance.Strategic.csproj" />
   </ItemGroup>
@@ -35,6 +69,12 @@
     <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="Veldrid" Version="4.8.0" />
     <PackageReference Include="Veldrid.SDL2" Version="4.8.0" />
+    <PackageReference Include="Veldrid.ImageSharp" Version="4.8.0" />
+    <PackageReference Include="Veldrid.OpenGLBindings" Version="4.8.0" />
+    <PackageReference Include="Veldrid.SPIRV" Version="1.0.13" />
+    <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
+    <PackageReference Include="Veldrid.Utilities" Version="4.8.0" />
+
   </ItemGroup>
 
 </Project>

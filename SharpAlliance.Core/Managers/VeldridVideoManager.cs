@@ -23,7 +23,7 @@ using Veldrid.Utilities;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
-namespace SharpAlliance
+namespace SharpAlliance.Core.Managers
 {
     public class VeldridVideoManager : IVideoManager
     {
@@ -47,7 +47,7 @@ namespace SharpAlliance
 
         private readonly ILogger<VeldridVideoManager> logger;
         // private readonly WindowsSubSystem windows;
-        private readonly InputManager inputs;
+        private readonly IInputManager inputs;
         private readonly MouseSubSystem mouse;
         private readonly RenderWorld renderWorld;
         private readonly ScreenManager screenManager;

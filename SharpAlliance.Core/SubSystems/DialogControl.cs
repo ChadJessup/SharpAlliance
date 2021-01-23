@@ -131,6 +131,10 @@ namespace SharpAlliance.Core.SubSystems
             return zFileName;
         }
 
+        public void EmptyDialogueQueue()
+        {
+        }
+
         public void InitalizeStaticExternalNPCFaces()
         {
             int iCounter = 0;

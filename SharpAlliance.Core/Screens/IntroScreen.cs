@@ -16,7 +16,9 @@ namespace SharpAlliance.Core.Screens
     public class IntroScreen : IScreen
     {
         private IntroScreenType gbIntroScreenMode = IntroScreenType.Unknown;
+        private readonly GameInit gameInit;
         private readonly GameContext context;
+        private readonly IScreenManager screens;
         private readonly IVideoManager video;
         private readonly MouseSubSystem mouse;
         private readonly CursorSubSystem cursor;
@@ -25,10 +27,32 @@ namespace SharpAlliance.Core.Screens
         private readonly ILibraryManager library;
         private readonly CinematicsSubSystem cinematics;
         private readonly SoldierProfileSubSystem soldiers;
+        private readonly IVideoSurfaceManager videoSurface;
+        private readonly IVideoObjectManager videoObject;
         private bool gfIntroScreenEntry;
         private bool gfIntroScreenExit;
         private long guiSplashStartTime = 0;
         private int guiSplashFrameFade = 10;
+
+        private SMKFLIC? gpSmackFlic = null;
+        private string[] gpzSmackerFileNames = new string[]
+        {
+        	//begining of the game
+        	"INTRO\\Rebel_cr.smk",
+            "INTRO\\Omerta.smk",
+            "INTRO\\Prague_cr.smk",
+            "INTRO\\Prague.smk",
+
+        	//endgame
+        	"INTRO\\Throne_Mig.smk",
+            "INTRO\\Throne_NoMig.smk",
+            "INTRO\\Heli_FlyBy.smk",
+            "INTRO\\Heli_Sky.smk",
+            "INTRO\\Heli_NoSky.smk",
+
+            "INTRO\\SplashScreen.smk",
+            "INTRO\\TalonSoftid_endhold.smk",
+        };
 
         public IntroScreen(GameContext context,
             MouseSubSystem mouseSubSystem,
@@ -37,9 +61,15 @@ namespace SharpAlliance.Core.Screens
             IMusicManager musicManager,
             ILibraryManager libraryManager,
             CinematicsSubSystem cinematics,
-            SoldierProfileSubSystem soldierSubSystem)
+            SoldierProfileSubSystem soldierSubSystem,
+            IScreenManager screenManager,
+            GameInit gameInit,
+            IVideoSurfaceManager videoSurfaceManager,
+            IVideoObjectManager videoObjectManager)
         {
+            this.gameInit = gameInit;
             this.context = context;
+            this.screens = screenManager;
             this.video = this.context.VideoManager;
             this.mouse = mouseSubSystem;
             this.cursor = cursorSubSystem;
@@ -48,6 +78,8 @@ namespace SharpAlliance.Core.Screens
             this.library = libraryManager;
             this.cinematics = cinematics;
             this.soldiers = soldierSubSystem;
+            this.videoSurface = videoSurfaceManager;
+            this.videoObject = videoObjectManager;
         }
 
         public bool IsInitialized { get; set; }
@@ -143,8 +175,26 @@ namespace SharpAlliance.Core.Screens
             return true;
         }
 
-        private void StartPlayingIntroFlic(SmackerFiles iFirstVideoID)
+        private void StartPlayingIntroFlic(SmackerFiles iIndexOfFlicToPlay)
         {
+            if (iIndexOfFlicToPlay != SmackerFiles.SMKINTRO_NO_VIDEO)
+            {
+                //start playing a flic
+                // TODO: port libsmacker
+                //gpSmackFlic = SmkPlayFlic(gpzSmackerFileNames[(int)iIndexOfFlicToPlay], 0, 0, true);
+
+                gpSmackFlic = null;
+
+                if (gpSmackFlic != null)
+                {
+                    giCurrentIntroBeingPlayed = iIndexOfFlicToPlay;
+                }
+                else
+                {
+                    //do a check
+                    PrepareToExitIntroScreen();
+                }
+            }
         }
 
         private SmackerFiles GetNextIntroVideo(SmackerFiles uiCurrentVideo)
@@ -238,6 +288,76 @@ namespace SharpAlliance.Core.Screens
 
         private void PrepareToExitIntroScreen()
         {
+            //if its the intro at the begining of the game
+            if (gbIntroScreenMode == IntroScreenType.INTRO_BEGINING)
+            {
+                //go to the init screen
+                guiIntroExitScreen = ScreenName.InitScreen;
+            }
+            else if (gbIntroScreenMode == IntroScreenType.INTRO_SPLASH)
+            {
+                //display a logo when exiting
+                DisplaySirtechSplashScreen();
+
+                ScreenManager.gfDoneWithSplashScreen = true;
+                guiIntroExitScreen = ScreenName.InitScreen;
+            }
+            else
+            {
+                //We want to reinitialize the game
+                this.gameInit.ReStartingGame();
+
+                //		guiIntroExitScreen = MAINMENU_SCREEN;
+                guiIntroExitScreen = ScreenName.CREDIT_SCREEN;
+            }
+
+            gfIntroScreenExit = true;
+        }
+
+        private void DisplaySirtechSplashScreen()
+        {
+            HVOBJECT hPixHandle;
+            VOBJECT_DESC VObjectDesc;
+            int uiLogoID;
+
+            int uiDestPitchBYTES;
+            byte[] pDestBuf;
+
+            // JA3Gold: do nothing until we have a graphic to replace Talonsoft's
+            //return;
+
+            // CLEAR THE FRAME BUFFER
+            pDestBuf = this.videoSurface.LockVideoSurface(VideoSurfaceManager.FRAME_BUFFER, out uiDestPitchBYTES);
+            //memset(pDestBuf, 0, SCREEN_HEIGHT * uiDestPitchBYTES);
+            this.videoSurface.UnLockVideoSurface(VideoSurfaceManager.FRAME_BUFFER);
+
+
+            //memset(&VObjectDesc, 0, sizeof(VOBJECT_DESC));
+            VObjectDesc = new();
+            VObjectDesc.fCreateFlags = VideoObjectManager.VOBJECT_CREATE_FROMFILE;
+            VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\SirtechSplash.sti");
+
+            //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
+            if (!this.videoObject.AddVideoObject(ref VObjectDesc, out uiLogoID))
+            {
+                // AssertMsg(0, String("Failed to load %s", VObjectDesc.ImageFile));
+                return;
+            }
+
+            this.videoObject.GetVideoObject(uiLogoID, out hPixHandle);
+            this.videoObject.BltVideoObject(
+                VideoSurfaceManager.FRAME_BUFFER,
+                hPixHandle,
+                0,
+                0,
+                0,
+                VideoObjectManager.Constants.VO_BLT_SRCTRANSPARENCY,
+                null);
+
+            this.videoObject.DeleteVideoObjectFromIndex(uiLogoID);
+
+            this.video.InvalidateScreen();
+            this.video.RefreshScreen();
         }
 
         public ValueTask<bool> Initialize()

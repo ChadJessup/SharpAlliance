@@ -13,7 +13,7 @@ namespace SharpAlliance.Core.Managers
 {
     public class VideoObjectManager : IVideoObjectManager
     {
-        private static class Constants
+        public static class Constants
         {
             public const int DEFAULT_VIDEO_OBJECT_LIST_SIZE = 10;
 
@@ -26,6 +26,15 @@ namespace SharpAlliance.Core.Managers
             public const int HVOBJECT_GLOW_BLUE = 1;
             public const int HVOBJECT_GLOW_YELLOW = 2;
             public const int HVOBJECT_GLOW_RED = 3;
+
+            // Defines for blitting
+            public const int VO_BLT_CLIP = 0x000000001;
+            public const int VO_BLT_SRCTRANSPARENCY = 0x000000002;
+            public const int VO_BLT_TRANSSHADOW = 0x000000003;
+            public const int VO_BLT_DESTTRANSPARENCY = 0x000000120;
+            public const int VO_BLT_SHADOW = 0x000000200;
+            public const int VO_BLT_MIRROR_Y = 0x000001000; // must be the same as VS_BLT_MIRROR_Y for Wiz!!!
+            public const int VO_BLT_UNCOMPRESSED = 0x000004000;
         }
 
         public const int VOBJECT_CREATE_DEFAULT = 0x00000020;   // Creates and empty object of given width, height and BPP
@@ -62,12 +71,31 @@ namespace SharpAlliance.Core.Managers
             return ValueTask.FromResult(true);
         }
 
-        public void AddVideoObject(ref VOBJECT_DESC vObjectDesc, object guiUpdatePanelTactical)
+        public bool AddVideoObject(ref VOBJECT_DESC vObjectDesc, out int uiIndex)
         {
+            uiIndex = 0;
+
+            return true;
         }
 
         public void Dispose()
         {
+        }
+
+        public bool GetVideoObject(int uiLogoID, out HVOBJECT hPixHandle)
+        {
+            hPixHandle = new HVOBJECT();
+            return true;
+        }
+
+        public bool BltVideoObject(uint fRAME_BUFFER, HVOBJECT hPixHandle, int v1, int v2, int v3, int vO_BLT_SRCTRANSPARENCY, object? p)
+        {
+            return true;
+        }
+
+        public bool DeleteVideoObjectFromIndex(int uiLogoID)
+        {
+            return true;
         }
     }
 

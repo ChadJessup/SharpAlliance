@@ -14,5 +14,9 @@ namespace SharpAlliance.Core.SubSystems
         public void Dispose()
         {
         }
+
+        public void InitHelpScreenSystem()
+        {
+        }
     }
 }

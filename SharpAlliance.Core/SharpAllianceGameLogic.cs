@@ -80,6 +80,8 @@ namespace SharpAlliance.Core
             var initScreen = await this.screen.ActivateScreen(ScreenName.InitScreen) as InitScreen;
 
             this.mapScreen = (await this.screen.GetScreen(ScreenName.MAP_SCREEN, activate: false) as MapScreen)!;
+            var introScreen = (await this.screen.GetScreen(ScreenName.INTRO_SCREEN, activate: false) as IntroScreen)!;
+            introScreen.SetIntroType(IntroScreenType.INTRO_SPLASH);
 
             this.mapScreen.HandlePreloadOfMapGraphics();
             this.IsInitialized = true;

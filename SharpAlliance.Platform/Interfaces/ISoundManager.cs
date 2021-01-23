@@ -8,5 +8,6 @@ namespace SharpAlliance.Platform.Interfaces
 {
     public interface ISoundManager : ISharpAllianceManager
     {
+        void SoundStopAll();
     }
 }

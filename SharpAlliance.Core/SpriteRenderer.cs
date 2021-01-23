@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using SharpAlliance.Core.Managers;
 using Veldrid;
 using Veldrid.ImageSharp;
 using Veldrid.SPIRV;

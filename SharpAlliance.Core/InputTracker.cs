@@ -5,7 +5,7 @@ using System.Text;
 using Veldrid;
 using Veldrid.Sdl2;
 
-namespace SharpAlliance
+namespace SharpAlliance.Core
 {
     public static class InputTracker
     {

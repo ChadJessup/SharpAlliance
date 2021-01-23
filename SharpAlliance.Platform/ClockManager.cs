@@ -14,6 +14,7 @@ namespace SharpAlliance.Platform
         private Timer? globalTimer;
 
         public bool IsInitialized { get; private set; }
+        public bool gfGamePaused { get; set; }
 
         public ValueTask<bool> Initialize()
         {

@@ -9,29 +9,30 @@ namespace SharpAlliance.Core
     public static class Utils
     {
         private static int GETPIXELDEPTH() => 16;
+        private static string DATA_8_BIT_DIR = "8-Bit\\";
 
         public static string FilenameForBPP(string pFilename)
         {
-            //            char Drive[128], Dir[128], Name[128], Ext[128];
+            string Drive, Dir, Name, Ext;
 
-            //        if (GETPIXELDEPTH() == 16)
-            //        {
-            // no processing for 16 bit names
+            if (GETPIXELDEPTH() == 16)
+            {
+                // no processing for 16 bit names
+                return pFilename;
+            }
+            else
+            {
+                //_splitpath(pFilename, Drive, Dir, Name, Ext);
+
+                //strcat(Name, "_8");
+
+                //pDestination = Drive
+                //    + DATA_8_BIT_DIR
+                //    + Name + "_8"
+                //    + Ext;
+            }
+
             return pFilename;
-            //          }
-            //          else
-            //          {
-            //              _splitpath(pFilename, Drive, Dir, Name, Ext);
-            //
-            //              strcat(Name, "_8");
-            //
-            //              strcpy(pDestination, Drive);
-            //              //strcat(pDestination, Dir);
-            //              strcat(pDestination, DATA_8_BIT_DIR);
-            //              strcat(pDestination, Name);
-            //              strcat(pDestination, Ext);
-            //          }
-
         }
 
     }

@@ -19,5 +19,10 @@ namespace SharpAlliance.Core.SubSystems
         public void Dispose()
         {
         }
+
+        internal void InitTacticalSave(bool fCreateTempDir)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

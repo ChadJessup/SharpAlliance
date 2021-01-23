@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces; 
+using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance
+namespace SharpAlliance.Core.Managers
 {
     public class VideoSurfaceManager : IVideoSurfaceManager
     {
@@ -195,10 +196,20 @@ namespace SharpAlliance
 
         public HVSURFACE? CreateVideoSurface(ref VSURFACE_DESC vs_desc)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public void Dispose()
+        {
+        }
+
+        public byte[] LockVideoSurface(uint fRAME_BUFFER, out int uiDestPitchBYTES)
+        {
+            uiDestPitchBYTES = 0;
+            return Array.Empty<byte>();
+        }
+
+        public void UnLockVideoSurface(uint fRAME_BUFFER)
         {
         }
     }

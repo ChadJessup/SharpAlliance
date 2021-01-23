@@ -4,13 +4,14 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using Veldrid;
 using Veldrid.Sdl2;
 
-namespace SharpAlliance
+namespace SharpAlliance.Core
 {
     public class InputManager : IInputManager
     {

@@ -7,5 +7,7 @@ namespace SharpAlliance.Core.Interfaces
     {
         HVSURFACE? CreateVideoSurface(ref VSURFACE_DESC vs_desc);
         bool DeleteVideoSurface(HVSURFACE? hVSurface);
+        byte[] LockVideoSurface(uint fRAME_BUFFER, out int uiDestPitchBYTES);
+        void UnLockVideoSurface(uint fRAME_BUFFER);
     }
 }
