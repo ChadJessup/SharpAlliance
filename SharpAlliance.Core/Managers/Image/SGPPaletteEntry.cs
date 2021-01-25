@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core.Managers.Image
+﻿using System;
+
+namespace SharpAlliance.Core.Managers.Image
 {
     public static class ImageConstants
     {
@@ -69,29 +71,17 @@
         public int usNumberOfObjects;
     }
 
-    // Image header structure
-    public struct HIMAGE
+    [Flags]
+    public enum HIMAGECreateFlags
     {
-        public int usWidth;
-        public int usHeight;
-        public int ubBitDepth;
-        public int fFlags;
-        public string ImageFile;
-        public int iFileLoader;
-        public SGPPaletteEntry pPalette;
-        public int pui16BPPPalette;
-        public int pAppData;
-        public int uiAppDataSize;
-        // This union is used to describe each data type and is flexible to include the
-        // data strucutre of the compresssed format, once developed.
-        public byte[] pImageData;
-        public byte[] pCompressedImageData;
-        public int p8BPPData;
-        public int p16BPPData;
-        public int pPixData8;
-        public int uiSizePixData;
-        public ETRLEObject pETRLEObject;
-        public int usNumberOfObjects;
+        // Defines for image charactoristics
+        IMAGE_COMPRESSED = 0x0001,
+        IMAGE_TRLECOMPRESSED = 0x0002,
+        IMAGE_PALETTE = 0x0004,
+        IMAGE_BITMAPDATA = 0x0008,
+        IMAGE_APPDATA = 0x0010,
+        IMAGE_ALLIMAGEDATA = 0x000C,
+        IMAGE_ALLDATA = 0x001C,
     }
 
     public readonly struct SGPPaletteEntry

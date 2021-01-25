@@ -18,13 +18,15 @@ namespace SharpAlliance.Core.Screens
         private readonly IVideoSurfaceManager videoSurface;
         private readonly FontSubSystem font;
         private readonly IScreenManager screen;
+        private readonly IFileManager fileManager;
 
         public InitScreen(
             GameContext context,
             CursorSubSystem cursorSubSystem,
             IVideoSurfaceManager videoSurfaceManager,
             FontSubSystem fontSubSystem,
-            IScreenManager sm)
+            IScreenManager sm,
+            IFileManager fileManager)
         {
             this.context = context;
             this.video = this.context.VideoManager;
@@ -32,6 +34,7 @@ namespace SharpAlliance.Core.Screens
             this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
             this.screen = sm;
+            this.fileManager = fileManager;
         }
 
         public bool IsInitialized { get; set; }
@@ -56,15 +59,16 @@ namespace SharpAlliance.Core.Screens
 
             if (ubCurrentScreen == 255)
             {
-                if (ScreenManager.gfDoneWithSplashScreen)
-                {
-                    ubCurrentScreen = 0;
-                }
-                else
-                {
-                    this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
-                    return ScreenName.INTRO_SCREEN;
-                }
+                ubCurrentScreen = 0;
+                // TODO: read when smacker comes in.
+                //if (ScreenManager.gfDoneWithSplashScreen)
+                //{
+                //}
+                //else
+                //{
+                //    this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
+                //    return ScreenName.INTRO_SCREEN;
+                //}
             }
 
             if (ubCurrentScreen == 0)
@@ -82,7 +86,7 @@ namespace SharpAlliance.Core.Screens
 
                 vs_desc.ImageFile = "ja2_logo.STI";
 
-                hVSurface = this.videoSurface.CreateVideoSurface(ref vs_desc);
+                hVSurface = await this.videoSurface.CreateVideoSurface(vs_desc, this.fileManager);
                 if (hVSurface is null)
                 {
                     //AssertMsg(0, "Failed to load ja2_logo.sti!");

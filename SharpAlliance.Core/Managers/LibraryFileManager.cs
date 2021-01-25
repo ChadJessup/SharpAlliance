@@ -2,22 +2,33 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Library;
 using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.Managers
 {
     public class LibraryFileManager : ILibraryManager
     {
         private const int INITIAL_NUM_HANDLES = 20;
+        //private readonly FileManager files;
+        public DatabaseManagerHeader gFileDataBase { get; set; }
+        private GameContext context;
+        private readonly GameOptions options;
         private LibraryNames gsCurrentLibrary;
 
-        public LibraryFileManager(ILogger<ILibraryManager> logger, GameContext context)
+        public LibraryFileManager(
+            ILogger<ILibraryManager> logger,
+            GameContext context,
+            GameOptions options)
         {
             var dataDir = context.Configuration["DataDirectory"] ?? ".\\Data";
+            this.context = context;
+            this.options = options;
 
             if (!Directory.Exists(dataDir))
             {
@@ -33,7 +44,7 @@ namespace SharpAlliance.Core.Managers
         public Dictionary<LibraryNames, LibraryHeader> Libraries { get; set; } = new();
         public int NumberOfLibraries => this.Libraries.Count;
         public bool IsInitialized { get; set; }
-        public RealFileHeader RealFiles;
+        public RealFileHeader RealFiles { get; } = new RealFileHeader();
         public string DataDirectory { get; init; }
 
         public ValueTask<bool> Initialize()
@@ -67,9 +78,6 @@ namespace SharpAlliance.Core.Managers
 
             //signify that the database has been initialized ( only if there was a library loaded )
             this.IsInitialized = fLibraryInited;
-
-            //set the initial number how many files can be opened at the one time
-            this.RealFiles.iSizeOfOpenFileArray = INITIAL_NUM_HANDLES;
 
             return ValueTask.FromResult(true);
         }
@@ -106,8 +114,8 @@ namespace SharpAlliance.Core.Managers
             DirEntry dirEntry;
 
             //open the library for reading ( if it exists )
-            using var hFile = File.OpenRead(Path.Combine(this.DataDirectory, pLibraryName));
-            using BinaryReader br = new(hFile);
+            var hFile = File.OpenRead(Path.Combine(this.DataDirectory, pLibraryName));
+            using BinaryReader br = new(hFile, Encoding.Default, leaveOpen: true);
 
             LibHeader libHeader = this.ParseLibHeader(br);
 
@@ -140,8 +148,6 @@ namespace SharpAlliance.Core.Managers
             pLibHeader.hLibraryHandle = hFile;
             pLibHeader.usNumberOfEntries = numEntries;
             pLibHeader.fLibraryOpen = true;
-            pLibHeader.iNumFilesOpen = 0;
-            pLibHeader.iSizeOfOpenFileArray = INITIAL_NUM_HANDLES;
 
             return true;
         }
@@ -169,7 +175,7 @@ namespace SharpAlliance.Core.Managers
         // CheckIfFileExistInLibrary() determines if a file exists in a library.
         //
         //************************************************************************
-        private bool CheckIfFileExistInLibrary(string pFileName)
+        public bool CheckIfFileExistsInLibrary(string pFileName)
         {
             LibraryNames sLibraryID;
 
@@ -184,7 +190,7 @@ namespace SharpAlliance.Core.Managers
             return this.GetFileHeaderFromLibrary(
                 sLibraryID,
                 pFileName,
-                out FileHeader? pFileHeader);
+                out FileHeader? _);
         }
 
         //************************************************************************
@@ -198,29 +204,11 @@ namespace SharpAlliance.Core.Managers
 
         private bool GetFileHeaderFromLibrary(LibraryNames sLibraryID, string pstrFileName, out FileHeader? pFileHeader)
         {
-            //combi ne the library path to the file name (need it for the search of the library )
-            string sFileNameWithPath = pstrFileName;
-
+            pFileHeader = null;
             this.gsCurrentLibrary = sLibraryID;
 
-            /* try to find the filename using a binary search algorithm: */
-            pFileHeader = null;
-            // (FileHeader)bsearch(
-            // (char*)&sFileNameWithPath,
-            // (FileHeader)Libraries[sLibraryID].pFileHeader,
-            // Libraries[sLibraryID].usNumberOfEntries,
-            // sizeof(FileHeader),
-            // (int(*)(const void*, const void*))CompareFileNames );
-
-            if (pFileHeader.HasValue)
-            {
-                return true;
-            }
-            else
-            {
-                pFileHeader = null;
-                return false;
-            }
+            return this.Libraries.TryGetValue(sLibraryID, out var library)
+                && library.TryGetValue(pstrFileName, out pFileHeader);
         }
 
         //************************************************************************
@@ -382,6 +370,128 @@ namespace SharpAlliance.Core.Managers
 
         public void Dispose()
         {
+        }
+
+        public Stream OpenFileFromLibrary(string pName)
+        {
+            this.gFileDataBase = (this.context.FileManager as FileManager)!.gFileDataBase;
+
+            FileHeader? pFileHeader;
+            Stream hLibFile;
+            LibraryNames sLibraryID;
+            uint uiLoop1;
+            uint uiFileNum = 0;
+
+            long uiNewFilePosition = 0;
+
+
+            //Check if the file can be contained from an open library ( the path to the file a library path )
+            sLibraryID = GetLibraryIDFromFileName(pName);
+
+            if (sLibraryID != LibraryNames.Unknown)
+            {
+                //Check if another file is already open in the library ( report a warning if so )
+
+                //		if( gFileDataBase.pLibraries[ sLibraryID ].fAnotherFileAlreadyOpenedLibrary )
+                if (this.gFileDataBase.pLibraries[sLibraryID].uiIdOfOtherFileAlreadyOpenedLibrary != 0)
+                {
+                    // Temp removed
+                    //			FastDebugMsg(String("\n*******\nOpenFileFromLibrary():  Warning!:  Trying to load file '%s' from the library '%s' which already has a file open\n", pName, gGameLibaries[ sLibraryID ].sLibraryName ) );
+                    //			FastDebugMsg(String("\n*******\nOpenFileFromLibrary():  Warning!:  Trying to load file '%s' from the library '%s' which already has a file open ( file open is '%s')\n", pName, gGameLibaries[ sLibraryID ].sLibraryName, gFileDataBase.pLibraries[ sLibraryID ].pOpenFiles[ gFileDataBase.pLibraries[ sLibraryID ].uiIdOfOtherFileAlreadyOpenedLibrary ].pFileHeader->pFileName ) );
+                }
+
+                //check if the file is already open
+                if (this.CheckIfFileIsAlreadyOpen(pName, sLibraryID))
+                {
+                    return Stream.Null;
+                }
+
+                //if the file is in a library, get the file
+                if (GetFileHeaderFromLibrary(sLibraryID, pName, out pFileHeader))
+                {
+                    //Create a library handle for the new file
+                    hLibFile = CreateLibraryFileStream(sLibraryID, pFileHeader);
+
+                    //Set the current file data into the array of open files
+                    var fos = new FileOpenStruct
+                    {
+                        uiFileID = hLibFile.GetHashCode(),
+                        uiFilePosInFile = 0,
+                        pFileHeader = pFileHeader!.Value,
+                        uiActualPositionInLibrary = pFileHeader.Value.uiFileOffset,
+                    };
+
+                    gFileDataBase.pLibraries[sLibraryID].pOpenFiles.Add(fos);
+
+                    //Set the file position in the library to the begining of the 'file' in the library
+                    uiNewFilePosition = SetFilePointer(gFileDataBase.pLibraries[sLibraryID].hLibraryHandle, gFileDataBase.pLibraries[sLibraryID].pOpenFiles[(int)uiFileNum].pFileHeader.uiFileOffset, SeekOrigin.Begin);
+
+                    uiNewFilePosition = gFileDataBase.pLibraries[sLibraryID].hLibraryHandle.Length;
+                }
+                else
+                {
+                    // Failed to find the file in a library
+                    return Stream.Null;
+                }
+            }
+            else
+            {
+                // Library is not open, or doesnt exist
+                return Stream.Null;
+            }
+
+            //Set the fact the a file is currently open in the library
+            //	gFileDataBase.pLibraries[ sLibraryID ].fAnotherFileAlreadyOpenedLibrary = TRUE;
+            gFileDataBase.pLibraries[sLibraryID].uiIdOfOtherFileAlreadyOpenedLibrary = uiFileNum;
+
+            return hLibFile;
+        }
+
+        private Stream CreateLibraryFileStream(LibraryNames sLibraryID, FileHeader? pFileHeader)
+        {
+            if (!this.Libraries.TryGetValue(sLibraryID, out var libraryHeader))
+            {
+                return Stream.Null;
+            }
+
+            if (!libraryHeader.fLibraryOpen && !this.OpenLibrary(sLibraryID))
+            {
+                return Stream.Null;
+            }
+
+            // make a buffer for the file...
+            var buffer = new byte[pFileHeader.Value.uiFileLength];
+            var ms = new MemoryStream();
+
+            var seekedAmount = libraryHeader.hLibraryHandle.Seek(pFileHeader.Value.uiFileOffset, SeekOrigin.Begin);
+            libraryHeader.hLibraryHandle.CopyTo(ms, pFileHeader.Value.uiFileLength);
+
+            using FileStream fs = new(Path.Combine("C:\\assets", pFileHeader.Value.pFileName), FileMode.OpenOrCreate);
+            ms.Seek(0, SeekOrigin.Begin);
+            ms.CopyTo(fs);
+            ms.Seek(0, SeekOrigin.Begin);
+
+            return ms;
+        }
+
+        public bool CheckIfFileIsAlreadyOpen(string pFileName, LibraryNames sLibraryID)
+        {
+            int usLoop1 = 0;
+
+            //string sName[60];
+            //string sPath[90];
+            //string sDrive[60];
+            //string sExt[6];
+
+            string sTempName;
+
+            if (!this.Libraries.TryGetValue(sLibraryID, out var lib))
+            {
+                return false;
+            }
+
+            return lib.fLibraryOpen
+                && lib.pOpenFiles.Any(of => of.pFileHeader.pFileName.Equals(pFileName, StringComparison.OrdinalIgnoreCase));
         }
 
         // TODO: Make data driven

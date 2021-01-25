@@ -24,7 +24,7 @@ namespace SharpAlliance.Core.Tests
             var context = new GameContext(null, null, config);
 
             // TODO: Moqs for logger across all tests.
-            var library = new LibraryFileManager(null, context);
+            var library = new LibraryFileManager(null, context, null);
             Assert.True(await library.Initialize());
 
             Assert.True(library.IsInitialized);

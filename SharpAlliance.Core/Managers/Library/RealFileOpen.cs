@@ -1,8 +1,11 @@
-﻿namespace SharpAlliance.Core.Managers.Library
+﻿using System.IO;
+using Microsoft.Win32.SafeHandles;
+
+namespace SharpAlliance.Core.Managers.Library
 {
-    public struct RealFileOpen
+    public record RealFileOpen
     {
-        public uint FileID;                        // id of the file ( they start at 1 )
-        public int RealFileHandle;     // if the file is a Real File, this its handle
+        public int uiFileID { get; set; }                        // id of the file ( they start at 1 )
+        public Stream Stream { get; set; }     // if the file is a Real File, this its handle
     }
 }

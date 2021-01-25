@@ -13,19 +13,16 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        internal void SetFont(object tINYFONT1)
+        public void SetFont(object tINYFONT1)
         {
-            throw new NotImplementedException();
         }
 
-        internal void SetFontBackground(object fONT_MCOLOR_BLACK)
+        public void SetFontBackground(object fONT_MCOLOR_BLACK)
         {
-            throw new NotImplementedException();
         }
 
-        internal void SetFontForeground(object fONT_MCOLOR_WHITE)
+        public void SetFontForeground(object fONT_MCOLOR_WHITE)
         {
-            throw new NotImplementedException();
         }
     }
 

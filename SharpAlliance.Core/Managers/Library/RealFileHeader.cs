@@ -1,9 +1,10 @@
-﻿namespace SharpAlliance.Core.Managers.Library
+﻿using System.Collections.Generic;
+
+namespace SharpAlliance.Core.Managers.Library
 {
-    public struct RealFileHeader
+    public class RealFileHeader
     {
-        public int iNumFilesOpen;
-        public int iSizeOfOpenFileArray;
-        public RealFileOpen pRealFilesOpen;
+        public int iNumFilesOpen => this.pRealFilesOpen.Count;
+        public List<RealFileOpen> pRealFilesOpen { get; } = new();
     }
 }

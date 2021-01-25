@@ -76,6 +76,8 @@ namespace SharpAlliance
             builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
             builder.AddDependency<IScreenManager, ScreenManager>();
             builder.AddDependency<IVideoSurfaceManager, VideoSurfaceManager>();
+            builder.AddDependency<IFileManager, FileManager>();
+            builder.AddDependency<ILibraryManager, LibraryFileManager>();
 
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<RenderWorld>();
