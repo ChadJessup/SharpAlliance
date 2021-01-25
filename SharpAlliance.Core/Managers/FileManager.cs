@@ -1,10 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.Managers

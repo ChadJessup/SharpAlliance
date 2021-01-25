@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
@@ -16,12 +15,13 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Veldrid;
 using Veldrid.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 using Veldrid.Sdl2;
-using Veldrid.SPIRV;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
+using static SharpAlliance.Core.Managers.VideoObjectManager;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -52,15 +52,17 @@ namespace SharpAlliance.Core.Managers
         private readonly RenderWorld renderWorld;
         private readonly ScreenManager screenManager;
         private readonly GameContext context;
+        private readonly IFileManager files;
         private readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
 
         private Sdl2Window window;
         public Sdl2Window Window { get => this.window; }
-        private GraphicsDevice graphicDevice;
-        private ResourceFactory factory;
+        public GraphicsDevice GraphicDevice { get; private set; }
+        public ResourceFactory Factory { get; private set; }
+        public SpriteRenderer SpriteRenderer { get; private set; }
+
         private Swapchain mainSwapchain;
         private CommandList commandList;
-        private SpriteRenderer sr;
         private DeviceBuffer _screenSizeBuffer;
         private DeviceBuffer _shiftBuffer;
         private DeviceBuffer _vertexBuffer;
@@ -158,27 +160,29 @@ namespace SharpAlliance.Core.Managers
 
         static ThreadState uiRefreshThreadState;
         static int uiIndex;
+
         static bool fShowMouse;
         static Rectangle Region;
         static Point MousePos;
         static bool fFirstTime = true;
         private bool windowResized;
 
-        private Image<Rgba32> backBuffer;
+        private Texture backBuffer;
         private Image<Rgba32> gpFrameBuffer;
         private Image<Rgba32> gpPrimarySurface;
-        private Image<Rgba32> gpBackBuffer;
 
         public VeldridVideoManager(
             ILogger<VeldridVideoManager> logger,
             GameContext context,
             IInputManager inputManager,
+            IFileManager fileManager,
             MouseSubSystem mouseSubSystem,
             RenderWorld renderWorld,
             IScreenManager screenManager)
         {
             this.logger = logger;
             this.context = context;
+            this.files = fileManager;
             this.inputs = (inputManager as InputManager)!;
             this.mouse = mouseSubSystem;
             this.renderWorld = renderWorld;
@@ -186,20 +190,18 @@ namespace SharpAlliance.Core.Managers
 
             this.gpPrimarySurface = new(SCREEN_WIDTH, SCREEN_HEIGHT);
             this.gpFrameBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-            this.gpBackBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-            this.backBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
 
             Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
         }
 
-        public ValueTask<bool> Initialize()
+        public async ValueTask<bool> Initialize()
         {
             WindowCreateInfo windowCI = new()
             {
                 X = 50,
                 Y = 50,
-                WindowWidth = 960,
-                WindowHeight = 540,
+                WindowWidth = 640,
+                WindowHeight = 480,
                 WindowInitialState = WindowState.Normal,
                 WindowTitle = "Sharp Alliance!!!",
             };
@@ -246,17 +248,17 @@ namespace SharpAlliance.Core.Managers
                 flags,
                 threadedProcessing: true);
 
-            this.graphicDevice = VeldridStartup.CreateGraphicsDevice(
+            this.GraphicDevice = VeldridStartup.CreateGraphicsDevice(
                 this.window,
                 gdOptions);
 
             this.Window.Resized += () => this.windowResized = true;
             //this.Window.PollIntervalInMs = 1000 / 30;
-            this.factory = new DisposeCollectorResourceFactory(this.graphicDevice.ResourceFactory);
-            this.mainSwapchain = this.graphicDevice.MainSwapchain;
-            this.commandList = this.graphicDevice.ResourceFactory.CreateCommandList();
+            this.Factory = new DisposeCollectorResourceFactory(this.GraphicDevice.ResourceFactory);
+            this.mainSwapchain = this.GraphicDevice.MainSwapchain;
+            this.commandList = this.GraphicDevice.ResourceFactory.CreateCommandList();
 
-            this.sr = new SpriteRenderer(this.graphicDevice);
+            this.SpriteRenderer = new SpriteRenderer(this.GraphicDevice);
 
             this.guiFrameBufferState = BufferState.DIRTY;
             this.guiMouseBufferState = BufferState.DISABLED;
@@ -265,29 +267,33 @@ namespace SharpAlliance.Core.Managers
             this.guiDirtyRegionCount = 0;
             this.gfForceFullScreenRefresh = true;
             this.gpFrameBufferRefreshOverride = null;
-            //gpCursorStore = NULL;
+            //gpCursorStore = null;
             this.gfPrintFrameBuffer = false;
             this.guiPrintFrameBufferIndex = 0;
 
-            // this.fadeScreen = (screenManager.GetScreen(ScreenNames.FADE_SCREEN, activate: true).AsTask().Result as FadeScreen)!;
-            this.IsInitialized = true;
+            this.backBuffer = new ImageSharpTexture(new Image<Rgba32>(SCREEN_WIDTH, SCREEN_HEIGHT), mipmap: false)
+                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
 
-            return ValueTask.FromResult(this.IsInitialized);
+            // this.fadeScreen = (screenManager.GetScreen(ScreenNames.FADE_SCREEN, activate: true).AsTask().Result as FadeScreen)!;
+            this.IsInitialized = await this.files.Initialize();
+
+            return this.IsInitialized;
         }
 
         public void DrawFrame()
         {
+            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), this.backBuffer);
             this.commandList.Begin();
 
             this.commandList.SetFramebuffer(this.mainSwapchain.Framebuffer);
             this.commandList.ClearColorTarget(0, this.clearColor);
 
-            this.sr.Draw(this.graphicDevice, this.commandList);
+            this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
 
             this.commandList.End();
 
-            this.graphicDevice.SubmitCommands(this.commandList);
-            this.graphicDevice.SwapBuffers(this.mainSwapchain);
+            this.GraphicDevice.SubmitCommands(this.commandList);
+            this.GraphicDevice.SwapBuffers(this.mainSwapchain);
         }
 
         public static byte[] ReadEmbeddedAssetBytes(string name)
@@ -302,6 +308,71 @@ namespace SharpAlliance.Core.Managers
 
         public static Stream OpenEmbeddedAssetStream(string name)
             => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
+
+        public async ValueTask<HVOBJECT> CreateVideoObject(VOBJECT_DESC VObjectDesc)
+        {
+            HVOBJECT hVObject = new();
+            HIMAGE hImage;
+            ETRLEData TempETRLEData = new();
+
+            if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE) || VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMHIMAGE))
+            {
+                if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE))
+                {
+                    // Create himage object from file
+                    hImage = await HIMAGE.CreateImage(VObjectDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
+                }
+                else
+                { // create video object from provided hImage
+                    hImage = VObjectDesc.hImage;
+                }
+
+                // Check if returned himage is TRLE compressed - return error if not
+                if (!(hImage.fFlags.HasFlag(HIMAGECreateFlags.IMAGE_TRLECOMPRESSED)))
+                {
+                    throw new InvalidOperationException("hImage was null");
+                }
+
+                // Get TRLE data
+                this.GetETRLEImageData(hImage, ref TempETRLEData);
+
+                // Set values
+                hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
+                hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
+                hVObject.pPixData = TempETRLEData.pPixData;
+                hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
+
+                // Set palette from himage
+                // if (hImage.ubBitDepth == 8)
+                // {
+                //     hVObject.pShade8 = ubColorTables[DEFAULT_SHADE_LEVEL];
+                //     hVObject.pGlow8 = ubColorTables[0];
+                // 
+                //     SetVideoObjectPalette(hVObject, hImage.pPalette);
+                // 
+                // }
+
+                if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE))
+                {
+                    // Delete himage object
+                    // DestroyImage(hImage);
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("hImage was null");
+            }
+
+            // All is well
+            //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
+
+            return hVObject;
+        }
+
+        private void GetETRLEImageData(HIMAGE? hImage, ref ETRLEData tempETRLEData)
+        {
+            throw new NotImplementedException();
+        }
 
         public void RefreshScreen()
         {
@@ -328,7 +399,8 @@ namespace SharpAlliance.Core.Managers
             {
                 case VideoManagerState.On:
                     // Excellent, everything is cosher, we continue on
-                    uiRefreshThreadState = this.guiRefreshThreadState = ThreadState.On;
+                    uiRefreshThreadState = ThreadState.On;
+                    this.guiRefreshThreadState = ThreadState.On;
                     usScreenWidth = this.gusScreenWidth;
                     usScreenHeight = this.gusScreenHeight;
                     break;
@@ -373,7 +445,7 @@ namespace SharpAlliance.Core.Managers
                 this.mouse.Draw(
                     this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA],
                     Region,
-                    this.graphicDevice,
+                    this.GraphicDevice,
                     this.commandList);
 
                 // Save position into other background region
@@ -410,7 +482,7 @@ namespace SharpAlliance.Core.Managers
                         Region.Height = usScreenHeight;
 
                         this.BlitRegion(
-                            this.gpBackBuffer,
+                            this.backBuffer,
                             new Point(0, 0),
                             Region,
                             this.gpFrameBuffer);
@@ -465,7 +537,7 @@ namespace SharpAlliance.Core.Managers
                         this.renderWorld.gsScrollXIncrement,
                         this.renderWorld.gsScrollYIncrement,
                         this.gpPrimarySurface,
-                        this.gpBackBuffer,
+                        this.backBuffer,
                         true,
                         Constants.PREVIOUS_MOUSE_DATA);
                 }
@@ -489,31 +561,32 @@ namespace SharpAlliance.Core.Managers
 
             if (this.gfPrintFrameBuffer == true)
             {
-                FileStream? OutputFile;
-                string? FileName;
-                int iIndex;
-                string? ExecDir;
-                int[] p16BPPData;
-
-                //GetExecutableDirectory(ExecDir);
-                //SetFileManCurrentDirectory(ExecDir);
-
-                // Create temporary system memory surface. This is used to correct problems with the backbuffer
-                // surface which can be interlaced or have a funky pitch
-                Image<Rgba32> _pTmpBuffer = new(usScreenWidth, usScreenHeight);
-
-                Image<Rgba32> pTmpBuffer = new(usScreenWidth, usScreenHeight);
-
-                // Copy the primary surface to the temporary surface
-                Region.X = 0;
-                Region.Y = 0;
-                Region.Width = usScreenWidth;
-                Region.Height = usScreenHeight;
-
-                this.BlitRegion(pTmpBuffer,
-                    new Point(0, 0),
-                    Region,
-                    this.gpPrimarySurface);
+                //FileStream? OutputFile;
+                //string? FileName;
+                //int iIndex;
+                //string? ExecDir;
+                //int[] p16BPPData;
+                //
+                ////GetExecutableDirectory(ExecDir);
+                ////SetFileManCurrentDirectory(ExecDir);
+                //
+                //// Create temporary system memory surface. This is used to correct problems with the backbuffer
+                //// surface which can be interlaced or have a funky pitch
+                //Image<Rgba32> _pTmpBuffer = new(usScreenWidth, usScreenHeight);
+                //
+                //Image<Rgba32> pTmpBuffer = new(usScreenWidth, usScreenHeight);
+                //
+                //// Copy the primary surface to the temporary surface
+                //Region.X = 0;
+                //Region.Y = 0;
+                //Region.Width = usScreenWidth;
+                //Region.Height = usScreenHeight;
+                //
+                //this.BlitRegion(
+                //    pTmpBuffer,
+                //    new Point(0, 0),
+                //    Region,
+                //    this.gpPrimarySurface);
 
                 // Ok now that temp surface has contents of backbuffer, copy temp surface to disk
                 //sprintf(FileName, "SCREEN%03d.TGA", guiPrintFrameBufferIndex++);
@@ -590,8 +663,8 @@ namespace SharpAlliance.Core.Managers
                 // Release temp surface
                 this.gfPrintFrameBuffer = false;
 
-                _pTmpBuffer?.Dispose();
-                pTmpBuffer?.Dispose();
+                //_pTmpBuffer?.Dispose();
+                //pTmpBuffer?.Dispose();
 
                 //strcat(ExecDir, "\\Data");
                 //SetFileManCurrentDirectory(ExecDir);
@@ -619,21 +692,11 @@ namespace SharpAlliance.Core.Managers
             // Check current state of the mouse cursor
             if (fShowMouse == false)
             {
-                if (this.guiMouseBufferState == BufferState.READY)
-                {
-                    fShowMouse = true;
-                }
-                else
-                {
-                    fShowMouse = false;
-                }
+                fShowMouse = this.guiMouseBufferState == BufferState.READY;
             }
             else
             {
-                if (this.guiMouseBufferState == BufferState.DISABLED)
-                {
-                    fShowMouse = false;
-                }
+                fShowMouse = this.guiMouseBufferState == BufferState.DISABLED;
             }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -706,12 +769,13 @@ namespace SharpAlliance.Core.Managers
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region = Region;
 
                         // Ok, do the actual data save to the mouse background
-                        this.BlitRegion(
-                            this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].pSurface,
-                            new Point(this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft,
-                                this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop),
-                            Region,
-                            this.gpBackBuffer);
+                        //this.BlitRegion(
+                        //    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].pSurface,
+                        //    new Point(
+                        //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft,
+                        //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop),
+                        //    Region,
+                        //    this.backBuffer);
 
                         // Step (2) - Blit mouse cursor to back buffer
                         Region.X = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft;
@@ -719,12 +783,13 @@ namespace SharpAlliance.Core.Managers
                         Region.Width = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
                         Region.Height = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
 
-                        this.BlitRegion(
-                            this.gpBackBuffer,
-                            new Point(this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
-                                this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos),
-                            Region,
-                            this.mouse.gpMouseCursor);
+                        //this.BlitRegion(
+                        //    this.backBuffer,
+                        //    new Point(
+                        //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
+                        //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos),
+                        //    Region,
+                        //    this.mouse.gpMouseCursor);
                     }
                     else
                     {
@@ -757,23 +822,13 @@ namespace SharpAlliance.Core.Managers
             //
             // Step (1) - Flip pages
             //
-            //# ifdef WINDOWED_MODE
             var fullRect = new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-            this.BlitRegion(
-                this.gpPrimarySurface,
-                this.rcWindow.ToPoint(),
-                fullRect,
-                this.gpBackBuffer);
-
-            //#else
-
-            //ReturnCode = IDirectDrawSurface_Flip(
-            //_gpPrimarySurface,
-            //null,
-            //DDFLIP_WAIT);
-
-            //#endif
+            //this.BlitRegion(
+            //    this.gpPrimarySurface,
+            //    this.rcWindow.ToPoint(),
+            //    fullRect,
+            //    this.backBuffer);
 
             // Step (2) - Copy Primary Surface to the Back Buffer
             if (this.renderWorld.gfRenderScroll)
@@ -784,7 +839,7 @@ namespace SharpAlliance.Core.Managers
                 Region.Height = 360;
 
                 this.BlitRegion(
-                    this.gpBackBuffer,
+                    this.backBuffer,
                     new Point(0, 0),
                     Region,
                     this.gpPrimarySurface);
@@ -803,8 +858,9 @@ namespace SharpAlliance.Core.Managers
                 Region = this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].Region;
 
                 this.BlitRegion(
-                    this.gpBackBuffer,
-                    new Point(this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].usMouseXPos,
+                    this.backBuffer,
+                    new Point(
+                        this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].usMouseXPos,
                         this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].usMouseYPos),
                     Region,
                     this.gpPrimarySurface);
@@ -816,8 +872,9 @@ namespace SharpAlliance.Core.Managers
                 Region = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region;
 
                 this.BlitRegion(
-                    this.gpBackBuffer,
-                    new Point(this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
+                    this.backBuffer,
+                    new Point(
+                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos),
                     Region,
                     this.gpPrimarySurface);
@@ -831,7 +888,8 @@ namespace SharpAlliance.Core.Managers
                 Region.Width = SCREEN_WIDTH;
                 Region.Height = SCREEN_HEIGHT;
 
-                this.BlitRegion(this.gpBackBuffer,
+                this.BlitRegion(
+                    this.backBuffer,
                     new Point(0, 0),
                     Region,
                     this.gpPrimarySurface);
@@ -849,7 +907,8 @@ namespace SharpAlliance.Core.Managers
                     Region.Width = this.gListOfDirtyRegions[uiIndex].Width;
                     Region.Height = this.gListOfDirtyRegions[uiIndex].Height;
 
-                    this.BlitRegion(this.gpBackBuffer,
+                    this.BlitRegion(
+                        this.backBuffer,
                         new Point(Region.X, Region.Y),
                         Region,
                         this.gpPrimarySurface);
@@ -857,7 +916,6 @@ namespace SharpAlliance.Core.Managers
 
                 this.guiDirtyRegionCount = 0;
                 this.gfForceFullScreenRefresh = false;
-
             }
 
             // Do extended dirty regions!
@@ -873,7 +931,8 @@ namespace SharpAlliance.Core.Managers
                     continue;
                 }
 
-                this.BlitRegion(this.gpBackBuffer,
+                this.BlitRegion(
+                    this.backBuffer,
                     new Point(Region.X, Region.Y),
                     Region,
                     this.gpPrimarySurface);
@@ -885,7 +944,7 @@ namespace SharpAlliance.Core.Managers
         }
 
         private void DrawRegion(
-            Image<Rgba32> destinationTexture,
+            Texture destinationTexture,
             Vector2 destinationPoint,
             Rectangle sourceRegion,
             Image<Rgba32> sourceTexture)
@@ -896,7 +955,7 @@ namespace SharpAlliance.Core.Managers
                 sourceTexture);
 
         private void DrawRegion(
-            Image<Rgba32> destinationTexture,
+            Texture destinationTexture,
             int destinationPointX,
             int destinationPointY,
             Rectangle sourceRegion,
@@ -911,23 +970,41 @@ namespace SharpAlliance.Core.Managers
         {
         };
 
-        private void BlitRegion(
-                Image<Rgba32> destinationTexture,
-                Point destinationPoint,
-                Rectangle sourceRegion,
-                Image<Rgba32> srcImage)
+        private unsafe void BlitRegion(
+            Texture texture,
+            Point destinationPoint,
+            Rectangle sourceRegion,
+            Image<Rgba32> srcImage)
         {
-            if (destinationTexture is null
-                || srcImage is null)
-            {
+            srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
 
-            }
+            var newTexture = new ImageSharpTexture(srcImage)
+                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
 
-            destinationTexture.Mutate(ctx =>
-            {
-                srcImage.Mutate(src => src.Crop(sourceRegion));
-                ctx.DrawImage(srcImage, destinationPoint, this.overLayOptions);
-            });
+            var finalRect = new Veldrid.Rectangle(
+                new Veldrid.Point(destinationPoint.X, destinationPoint.Y),
+                new Veldrid.Point(sourceRegion.Width, sourceRegion.Height));
+
+            this.SpriteRenderer.AddSprite(finalRect, newTexture);
+
+            //srcImage.TryGetSinglePixelSpan(out var pixelSpan);
+            //
+            //fixed (void* data = &MemoryMarshal.GetReference(pixelSpan))
+            //{
+            //    uint size = (uint)(srcImage.Width * srcImage.Height * 4);
+            //    this.GraphicDevice.UpdateTexture(
+            //        texture, 
+            //        (IntPtr)data, 
+            //        size, 
+            //        0, 
+            //        0, 
+            //        0, 
+            //        texture.Width, 
+            //        texture.Height, 
+            //        1, 
+            //        0, 
+            //        0);
+            //}
         }
 
         private void ScrollJA2Background(
@@ -935,7 +1012,7 @@ namespace SharpAlliance.Core.Managers
             int sScrollXIncrement,
             int sScrollYIncrement,
             Image<Rgba32> pSource,
-            Image<Rgba32> pDest,
+            Texture pDest,
             bool fRenderStrip,
             int uiCurrentMouseBackbuffer)
         {
@@ -1000,7 +1077,6 @@ namespace SharpAlliance.Core.Managers
                     break;
 
                 case ScrollDirection.SCROLL_RIGHT:
-
 
                     Region.X = sScrollXIncrement;
                     Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
@@ -1247,7 +1323,7 @@ namespace SharpAlliance.Core.Managers
                     BlitterFX.dwSize = sizeof(DDBLTFX);
                     BlitterFX.dwFillColor = 0;
 
-                    DDBltSurface((LPDIRectangleDRAWSURFACE2)pDest, NULL, NULL, NULL, DDBLT_COLORFILL, &BlitterFX);
+                    DDBltSurface((LPDIRectangleDRAWSURFACE2)pDest, null, null, null, DDBLT_COLORFILL, &BlitterFX);
                 }
 #endif
 
@@ -1389,9 +1465,9 @@ namespace SharpAlliance.Core.Managers
 
         public void Dispose()
         {
-            this.graphicDevice.WaitForIdle();
-            (this.factory as DisposeCollectorResourceFactory)!.DisposeCollector.DisposeAll();
-            this.graphicDevice.Dispose();
+            this.GraphicDevice.WaitForIdle();
+            (this.Factory as DisposeCollectorResourceFactory)!.DisposeCollector.DisposeAll();
+            this.GraphicDevice.Dispose();
 
             GC.SuppressFinalize(this);
         }

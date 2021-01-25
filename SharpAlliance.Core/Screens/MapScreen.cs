@@ -7,6 +7,7 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
+using static SharpAlliance.Core.Managers.VideoObjectManager;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -57,14 +58,14 @@ namespace SharpAlliance.Core.Screens
             // set up leave list arrays for dismissed mercs
             this.mapScreenInterface.InitLeaveList();
 
-            VObjectDesc.fCreateFlags = VideoObjectManager.VOBJECT_CREATE_FROMFILE;
+            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm.sti");
 
             
             this.videoObjects.AddVideoObject(ref VObjectDesc, out var idx1);
             this.mapScreenInterface.guiUpdatePanel = idx1;
 
-            VObjectDesc.fCreateFlags = VideoObjectManager.VOBJECT_CREATE_FROMFILE;
+            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm_tactical.sti");
             this.videoObjects.AddVideoObject(ref VObjectDesc, out var idx2);
             this.mapScreenInterface.guiUpdatePanelTactical = idx2;

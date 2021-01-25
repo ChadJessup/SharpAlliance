@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
@@ -8,7 +9,8 @@ using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Rectangle = Veldrid.Rectangle;
+using SixLabors.ImageSharp.Processing;
+using Veldrid.ImageSharp;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -18,6 +20,7 @@ namespace SharpAlliance.Core.Managers
         public const uint BACKBUFFER = 0xFFFFFFF1;
         public const uint FRAME_BUFFER = 0xFFFFFFF2;
         public const uint MOUSE_BUFFER = 0xFFFFFFF3;
+        public const int DEFAULT_NUM_REGIONS = 5;
 
         private readonly ILogger<VideoSurfaceManager> logger;
         private readonly VeldridVideoManager video;
@@ -181,315 +184,58 @@ namespace SharpAlliance.Core.Managers
             //  }
 
             // Release region data
-            hVSurface.Value.RegionList.Clear();
-
-            //If there is a 16bpp palette, free it
-            if (hVSurface.Value.p16BPPPalette != null)
-            {
-                // MemFree(hVSurface.p16BPPPalette);
-                //   hVSurface?.p16BPPPalette = null;
-            }
-
-            //giMemUsedInSurfaces -= hVSurface.usHeight * hVSurface.usWidth * (hVSurface.ubBitDepth / 8);
-
-            // Release object
-            //MemFree(hVSurface);
+            hVSurface?.RegionList.Clear();
+            hVSurface?.Texture.Dispose();
 
             return true;
         }
 
-        public async ValueTask<HVSURFACE?> CreateVideoSurface(VSURFACE_DESC VSurfaceDesc, IFileManager fileManager)
+        public async ValueTask<HVSURFACE> CreateVideoSurface(VSURFACE_DESC VSurfaceDesc, IFileManager fileManager)
         {
-            //LPDIRECTDRAW2 lpDD2Object;
-            //DDSURFACEDESC SurfaceDescription;
-            Image<Rgba32> SurfaceDescription;
-            //DDPIXELFORMAT PixelFormat;
-            //LPDIRECTDRAWSURFACE lpDDS;
-            //LPDIRECTDRAWSURFACE2 lpDDS2;
             HVSURFACE hVSurface;
             HIMAGE hImage = new();
-            Rectangle tempRect = new();
-            int  usHeight;
-            int  usWidth;
+            Rectangle? tempRect = null;
+            int usHeight;
+            int usWidth;
             int ubBitDepth;
-            VSurfaceCreateFlags fMemUsage;
-
-            int uiRBitMask;
-            int uiGBitMask;
-            int uiBBitMask;
-            
-            //
-            // Get Direct Draw Object
-            //
-            //lpDD2Object = GetDirectDraw2Object();
-
-            //
-            // The description structure contains memory usage flag
-            //
-            fMemUsage = VSurfaceDesc.fCreateFlags;
-
-            //
-            // Check creation options
-            //
-
-            do
-            {
-                //
-                // Check if creating from file
-                //
-
-                if (VSurfaceDesc.fCreateFlags.HasFlag(VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE))
-                {
-                    //
-                    // Create himage object from file
-                    //
-
-                    var tmpHIMAGE = await HIMAGE.CreateImage(VSurfaceDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, fileManager);
-
-                    if (tmpHIMAGE == null)
-                    {
-                        // DbgMessage(TOPIC_VIDEOSURFACE, DBG_LEVEL_2, "Invalid Image Filename given");
-                        return null;
-                    }
-
-                    hImage = tmpHIMAGE.Value;
-
-                    //
-                    // Set values from himage
-                    //
-                    usHeight = hImage.usHeight;
-                    usWidth = hImage.usWidth;
-                    ubBitDepth = hImage.ubBitDepth;
-                    break;
-                }
-
-                //
-                // If here, no special options given,
-                // Set values from given description structure
-                //
-
-                usHeight = VSurfaceDesc.usHeight;
-                usWidth = VSurfaceDesc.usWidth;
-                ubBitDepth = VSurfaceDesc.ubBitDepth;
-
-            } while (false);
-
-            //
-            // Assertions
-            //
-
-            // Assert(usHeight > 0);
-            // Assert(usWidth > 0);
-
-            //
-            // Setup Direct Draw Description
-            // First do Pixel Format
-            //
-
-            //memset(&PixelFormat, 0, sizeof(PixelFormat));
-            //PixelFormat.dwSize = sizeof(DDPIXELFORMAT);
-
-            switch (ubBitDepth)
-            {
-
-                case 8:
-
-                    //PixelFormat.dwFlags = DDPF_RGB | DDPF_PALETTEINDEXED8;
-                    //PixelFormat.dwRGBBitCount = 8;
-                    break;
-
-                case 16:
-
-                    // PixelFormat.dwFlags = DDPF_RGB;
-                    // PixelFormat.dwRGBBitCount = 16;
-
-                    //
-                    // Get current Pixel Format from DirectDraw
-                    //
-
-                    // We're using pixel formats too -- DB/Wiz
-
-                    // CHECKF(GetPrimaryRGBDistributionMasks(&uiRBitMask, &uiGBitMask, &uiBBitMask));
-                    // PixelFormat.dwRBitMask = uiRBitMask;
-                    // PixelFormat.dwGBitMask = uiGBitMask;
-                    // PixelFormat.dwBBitMask = uiBBitMask;
-                    break;
-
-                default:
-
-                    //
-                    // If Here, an invalid format was given
-                    //
-
-                    // DbgMessage(TOPIC_VIDEOSURFACE, DBG_LEVEL_2, "Invalid BPP value, can only be 8 or 16.");
-                    return null;
-            }
-
-            //SurfaceDescription.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-
-            //
-            // Do memory description, based on specified flags
-            //
-
-            // do
-            // {
-                // if (fMemUsage & VSURFACE_DEFAULT_MEM_USAGE)
-                // {
-                //     SurfaceDescription.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
-                //     break;
-                // }
-                // if (fMemUsage & VSURFACE_VIDEO_MEM_USAGE)
-                // {
-                //     SurfaceDescription.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
-                //     break;
-                // }
-                // 
-                // if (fMemUsage & VSURFACE_SYSTEM_MEM_USAGE)
-                // {
-                //     SurfaceDescription.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-                //     break;
-                // }
-
-                //
-                // Once here, no mem flags were given, use default
-                //
-
-                // SurfaceDescription.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
-
-            // } while (false);
-
-            //
-            // Set other, common structure elements
-            //
-
-            // SurfaceDescription.dwSize = sizeof(DDSURFACEDESC);
-            // SurfaceDescription.dwWidth = usWidth;
-            // SurfaceDescription.dwHeight = usHeight;
-            // SurfaceDescription.ddpfPixelFormat = PixelFormat;
-
-            //
-            // Create Surface
-            //
-
-            //DDCreateSurface(lpDD2Object, &SurfaceDescription, &lpDDS, &lpDDS2);
-
-            //
-            // Allocate memory for Video Surface data and initialize
-            //
-
-            //hVSurface = MemAlloc(sizeof(SGPVSurface));
-            //memset(hVSurface, 0, sizeof(SGPVSurface));
-            //CHECKF(hVSurface != null);
-
-            hVSurface.usHeight = usHeight;
-            hVSurface.usWidth = usWidth;
-            hVSurface.ubBitDepth = ubBitDepth;
-            hVSurface.pSurfaceData1 = null;// (PTR)lpDDS;
-            hVSurface.pSurfaceData = null;//(PTR)lpDDS2;
-            hVSurface.pSavedSurfaceData1 = null;
-            hVSurface.pSavedSurfaceData = null;
-            hVSurface.pPalette = null;
-            hVSurface.p16BPPPalette = null;
-            hVSurface.TransparentColor = 0;// FROMRGB(0, 0, 0);
-            hVSurface.RegionList = null;// CreateList(DEFAULT_NUM_REGIONS, sizeof(VSURFACE_REGION));
-            hVSurface.fFlags = 0;
-            hVSurface.pClipper = null;
-
-            //
-            // Determine memory and other attributes of newly created surface
-            //
-
-            //DDGetSurfaceDescription(lpDDS2, &SurfaceDescription);
-
-            //
-            // Fail if create tried for video but it's in system
-            //
-
-            if (VSurfaceDesc.fCreateFlags.HasFlag(VSurfaceCreateFlags.VSURFACE_VIDEO_MEM_USAGE))// && SurfaceDescription.ddsCaps.dwCaps & DDSCAPS_SYSTEMMEMORY)
-            {
-                //
-                // Return failure due to not in video
-                //
-
-              //  DbgMessage(TOPIC_VIDEOSURFACE, DBG_LEVEL_2, String("Failed to create Video Surface in video memory"));
-              //  DDReleaseSurface(&lpDDS, &lpDDS2);
-              //  MemFree(hVSurface);
-                return null;
-            }
-
-            //
-            // Look for system memory
-            //
-
-            //if (SurfaceDescription.ddsCaps.dwCaps & DDSCAPS_SYSTEMMEMORY)
-            //{
-            //    hVSurface.fFlags |= VSURFACE_SYSTEM_MEM_USAGE;
-            //}
-
-            //
-            // Look for video memory
-            //
-
-            //if (SurfaceDescription.ddsCaps.dwCaps & DDSCAPS_VIDEOMEMORY)
-            //{
-            //    hVSurface.fFlags |= VSURFACE_VIDEO_MEM_USAGE;
-            //}
-
-            //
-            // If in video memory, create backup surface
-            //
-
-            SurfaceDescription = new Image<Rgba32>(usWidth, usHeight, new Rgba32(0, 0, 0));
-
-            // if (hVSurface.fFlags & VSURFACE_VIDEO_MEM_USAGE)
-            // {
-            //     SurfaceDescription.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-            //     SurfaceDescription.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-            //     SurfaceDescription.dwSize = sizeof(DDSURFACEDESC);
-            //     SurfaceDescription.dwWidth = usWidth;
-            //     SurfaceDescription.dwHeight = usHeight;
-            //     SurfaceDescription.ddpfPixelFormat = PixelFormat;
-            // 
-            //     //
-            //     // Create Surface
-            //     //
-            // 
-            //     DDCreateSurface(lpDD2Object, &SurfaceDescription, &lpDDS, &lpDDS2);
-            // 
-            //     //
-            //     // Save surface to backup
-            //     //
-            // 
-            //     hVSurface.pSavedSurfaceData1 = lpDDS;
-            //     hVSurface.pSavedSurfaceData = lpDDS2;
-            // }
-
-            //
-            // Initialize surface with hImage , if given
-            //
 
             if (VSurfaceDesc.fCreateFlags.HasFlag(VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE))
             {
-                tempRect.X = 0;
-                tempRect.Y = 0;
-                tempRect.Width = hImage.usWidth - 1;
-                tempRect.Height = hImage.usHeight - 1;
-                //SetVideoSurfaceDataFromHImage(hVSurface, hImage, 0, 0, ref tempRect);
+                var tmpHIMAGE = await HIMAGE.CreateImage(VSurfaceDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, fileManager);
+
+                hImage = tmpHIMAGE;
 
                 //
-                // Set palette from himage
+                // Set values from himage
                 //
+                usHeight = hImage.usHeight;
+                usWidth = hImage.usWidth;
+                ubBitDepth = hImage.ubBitDepth;
+            }
 
-                if (hImage.ubBitDepth == 8)
+            usHeight = VSurfaceDesc.usHeight;
+            usWidth = VSurfaceDesc.usWidth;
+            ubBitDepth = VSurfaceDesc.ubBitDepth;
+
+            hVSurface.usHeight = usHeight;
+            hVSurface.usWidth = usWidth;
+            hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImage, mipmap: false).CreateDeviceTexture(this.video.GraphicDevice, this.video.GraphicDevice.ResourceFactory);
+            hVSurface.TransparentColor = 0;// FROMRGB(0, 0, 0);
+            hVSurface.RegionList = new List<VSurfaceRegion>(DEFAULT_NUM_REGIONS);
+
+            if (VSurfaceDesc.fCreateFlags.HasFlag(VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE))
+            {
+                tempRect = new()
                 {
-                  //  SetVideoSurfacePalette(hVSurface, hImage.pPalette);
-                }
+                    X = 0,
+                    Y = 0,
+                    Width = hImage.usWidth - 1,
+                    Height = hImage.usHeight - 1,
+                };
 
-                //
-                // Delete himage object
-                //
+                SetVideoSurfaceDataFromHImage(hVSurface, hImage, 0, 0, ref tempRect);
 
-                //DestroyImage(hImage);
+                // this.DestroyImage(hImage);
             }
 
             //
@@ -498,13 +244,63 @@ namespace SharpAlliance.Core.Managers
 
             hVSurface.usHeight = usHeight;
             hVSurface.usWidth = usWidth;
-            hVSurface.ubBitDepth = ubBitDepth;
-
-            giMemUsedInSurfaces += hVSurface.usHeight * hVSurface.usWidth * (hVSurface.ubBitDepth / 8);
-
-            //DbgMessage(TOPIC_VIDEOSURFACE, DBG_LEVEL_3, String("Success in Creating Video Surface"));
 
             return hVSurface;
+        }
+
+        private void DestroyImage(HIMAGE hImage)
+        {
+            hImage.ParsedImage?.Dispose();
+        }
+
+        private bool SetVideoSurfaceDataFromHImage(HVSURFACE hVSurface, HIMAGE hImage, int usX, int usY, ref Rectangle? pSrcRect)
+        {
+            Rectangle aRect = new();
+
+            // Blit Surface
+            // If rect is null, use entire image size
+            if (pSrcRect == null)
+            {
+                aRect.X = 0;
+                aRect.Y = 0;
+                aRect.Width = hImage.usWidth;
+                aRect.Height = hImage.usHeight;
+            }
+            else
+            {
+                aRect.X = pSrcRect.Value.X;
+                aRect.Y = pSrcRect.Value.Y;
+                aRect.Width = pSrcRect.Value.Width;
+                aRect.Height = pSrcRect.Value.Height;
+            }
+
+            hImage.ParsedImage.Mutate(ipc => ipc.Crop(aRect));
+
+            hImage.ParsedImage!.TryGetSinglePixelSpan(out var pixelSpan);
+
+            if (hVSurface.Texture == null)
+            {
+                hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImage, mipmap: false)
+                    .CreateDeviceTexture(
+                        this.video.GraphicDevice,
+                        this.video.GraphicDevice.ResourceFactory);
+            }
+            else
+            {
+                this.video.GraphicDevice.UpdateTexture<Rgba32>(
+                    hVSurface.Texture,
+                    pixelSpan.ToArray(),
+                    (uint)usX,
+                    (uint)usY,
+                    0,
+                    (uint)aRect.Width,
+                    (uint)aRect.Height,
+                    0,
+                    0,
+                    0);
+            }
+
+            return true;
         }
 
         public void Dispose()

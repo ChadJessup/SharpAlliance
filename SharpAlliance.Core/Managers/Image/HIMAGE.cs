@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
@@ -40,7 +41,7 @@ namespace SharpAlliance.Core.Managers.Image
 
         public Image<Rgba32>? ParsedImage { get; set; }
 
-        public static async ValueTask<HIMAGE?> CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager)
+        public static async ValueTask<HIMAGE> CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager)
         {
             HIMAGE hImage;
             var ext = Path.GetExtension(imageFilePath);
@@ -67,7 +68,7 @@ namespace SharpAlliance.Core.Managers.Image
             hImage = await LoadImage(hImage, createFlags, fileManager);
             if (hImage.ParsedImage is null)
             {
-                return null;
+                throw new InvalidProgramException($"{nameof(hImage.ParsedImage)} was null");
             }
 
             return hImage;
@@ -78,6 +79,12 @@ namespace SharpAlliance.Core.Managers.Image
             bool fReturnVal = await hImage.iFileLoader.LoadImage(ref hImage, createFlags, fileManager);
 
             // TODO: log
+            if (!fReturnVal)
+            {
+
+            }
+
+            hImage.ParsedImage.SaveAsPng($@"c:\assets\{Path.GetFileNameWithoutExtension(hImage.ImageFile)}.png");
 
             return hImage;
         }

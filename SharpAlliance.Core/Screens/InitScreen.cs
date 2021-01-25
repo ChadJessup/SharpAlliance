@@ -6,6 +6,7 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -13,7 +14,7 @@ namespace SharpAlliance.Core.Screens
     public class InitScreen : IScreen
     {
         private readonly GameContext context;
-        private readonly IVideoManager video;
+        private readonly VeldridVideoManager video;
         private readonly CursorSubSystem cursor;
         private readonly IVideoSurfaceManager videoSurface;
         private readonly FontSubSystem font;
@@ -29,7 +30,7 @@ namespace SharpAlliance.Core.Screens
             IFileManager fileManager)
         {
             this.context = context;
-            this.video = this.context.VideoManager;
+            this.video = (this.context.VideoManager as VeldridVideoManager)!;
             this.cursor = cursorSubSystem;
             this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
@@ -73,14 +74,6 @@ namespace SharpAlliance.Core.Screens
 
             if (ubCurrentScreen == 0)
             {
-                //if (strcmp(gzCommandLine, "-NODD") == 0)
-                //{
-                //    gfDontUseDDBlits = true;
-                //}
-
-                // Load version number....
-                //HandleLimitedNumExecutions( );
-
                 // Load init screen and blit!
                 vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
@@ -90,8 +83,10 @@ namespace SharpAlliance.Core.Screens
                 if (hVSurface is null)
                 {
                     //AssertMsg(0, "Failed to load ja2_logo.sti!");
+                    return ScreenName.ERROR_SCREEN;
                 }
 
+                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture);
                 //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
                 ubCurrentScreen = 1;
 
@@ -117,7 +112,7 @@ namespace SharpAlliance.Core.Screens
                 this.video.InvalidateScreen();
 
                 // Delete video Surface
-                this.videoSurface.DeleteVideoSurface(hVSurface);
+                // this.videoSurface.DeleteVideoSurface(hVSurface);
                 //ATE: Set to true to reset before going into main screen!
 
                 this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);

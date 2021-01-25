@@ -103,11 +103,11 @@ namespace SharpAlliance.Core
             mousePos = new Point((int)pos.X, (int)pos.Y);
         }
 
-        public ValueTask<bool> Initialize()
+        public async ValueTask<bool> Initialize()
         {
             if (this.IsInitialized)
             {
-                return ValueTask.FromResult(true);
+                return true;
             }
 
             this.video = (this.context.VideoManager as VeldridVideoManager)!;
@@ -141,9 +141,9 @@ namespace SharpAlliance.Core
 
             ////gpCurrentStringDescriptor = null;
 
-            this.IsInitialized = true;
+            this.IsInitialized = await this.buttonSystem.Initialize(this.context);
 
-            return ValueTask.FromResult(true);
+            return this.IsInitialized;
         }
 
         public void ProcessEvents()

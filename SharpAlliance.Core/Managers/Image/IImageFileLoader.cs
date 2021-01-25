@@ -51,18 +51,15 @@ namespace SharpAlliance.Core.Managers.Image
             }
 
             using var stream = fileManager.FileOpen(hImage.ImageFile, FileAccess.Read, fDeleteOnClose: false);
-            var i = Image<Rgba32>.Load(stream, this);
-            
+            var config = SixLabors.ImageSharp.Configuration.Default;
+            config.Properties.Add(stream, hImage);
+            var i = Image<Rgba32>.Load(config, stream, this);
+
             hImage.ParsedImage = (Image<Rgba32>)i;
             hImage.usWidth = i.Width;
             hImage.usHeight = i.Height;
 
             return ValueTask.FromResult(true);
-        }
-
-        private bool STCILoadIndexed(ref HIMAGE tempImage, HIMAGECreateFlags flags, ref STCIHeader header)
-        {
-            return false;
         }
 
         public Image<TPixel> Decode<TPixel>(Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
@@ -77,28 +74,237 @@ namespace SharpAlliance.Core.Managers.Image
             {
                 image = this.DecodeRgba<TPixel>(header, configuration, stream);
             }
-            else
+            else if (header.fFlags.HasFlag(STCITypes.STCI_INDEXED))
             {
+                image = this.DecodeIndexed<TPixel>(header, configuration, stream);
+            }
+            else if (header.fFlags.HasFlag(STCITypes.STCI_ETRLE_COMPRESSED))
+            {
+                image = this.DecodeETRLECompressed<TPixel>(header, configuration, stream);
+            }
+            else
+            { 
                 image = new Image<TPixel>(1, 1);
             }
 
-            image.SaveAsPng(@"c:\assets\save2.png");
+            HIMAGE hImage = (HIMAGE)configuration.Properties[stream];
             return image;
+        }
+
+        private Image<TPixel> DecodeIndexed<TPixel>(STCIHeader pHeader, Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
+        {
+            Image<TPixel> image = new Image<TPixel>(pHeader.usWidth, pHeader.usHeight);
+
+            uint uiFileSectionSize;
+            uint uiBytesRead;
+            int? pSTCIPalette = null;
+
+            if (pHeader.fFlags & IMAGE_PALETTE)
+            { // Allocate memory for reading in the palette
+                if (pHeader.Indexed.uiNumberOfColours != 256)
+                {
+                    //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Palettized image has bad palette size.");
+                    return null;
+                }
+                
+                uiFileSectionSize = pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
+                //pSTCIPalette = MemAlloc(uiFileSectionSize);
+                if (pSTCIPalette == null)
+                {
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Out of memory!");
+                    // FileClose(hFile);
+                    return null;
+                }
+
+                // ATE: Memset: Jan 16/99
+                //memset(pSTCIPalette, 0, uiFileSectionSize);
+
+                // Read in the palette
+                if (!this.files.FileRead(hFile, pSTCIPalette, uiFileSectionSize, &uiBytesRead) || uiBytesRead != uiFileSectionSize)
+                {
+                    //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading palette!");
+                    //FileClose(hFile);
+                    //MemFree(pSTCIPalette);
+                    return null;
+                }
+                else if (!STCISetPalette(pSTCIPalette, hImage))
+                {
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem setting hImage-format palette!");
+                    // FileClose(hFile);
+                    // MemFree(pSTCIPalette);
+                    return null;
+                }
+
+                hImage.fFlags |= IMAGE_PALETTE;
+                // Free the temporary buffer
+                // MemFree(pSTCIPalette);
+            }
+            else if (fContents & (IMAGE_BITMAPDATA | IMAGE_APPDATA))
+            { // seek past the palette
+                uiFileSectionSize = pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
+                if (FileSeek(hFile, uiFileSectionSize, FILE_SEEK_FROM_CURRENT) == false)
+                {
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past palette!");
+                    // FileClose(hFile);
+                    return null;
+                }
+            }
+            if (fContents & IMAGE_BITMAPDATA)
+            {
+                if (pHeader.fFlags.HasFlag(STCITypes.STCI_ETRLE_COMPRESSED))
+                {
+                    // load data for the subimage (object) structures
+                    // Assert(sizeof(ETRLEObject) == STCI_SUBIMAGE_SIZE);
+                    hImage.usNumberOfObjects = pHeader.Indexed.usNumberOfSubImages;
+                    uiFileSectionSize = hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
+                    hImage.pETRLEObject = MemAlloc(uiFileSectionSize);
+                    if (hImage.pETRLEObject == null)
+                    {
+                        // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Out of memory!");
+                        // FileClose(hFile);
+                        if (fContents & IMAGE_PALETTE)
+                        {
+                            // MemFree(hImage.pPalette);
+                        }
+                        return null;
+                    }
+                    if (!FileRead(hFile, hImage.pETRLEObject, uiFileSectionSize, &uiBytesRead) || uiBytesRead != uiFileSectionSize)
+                    {
+                        // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Error loading subimage structures!");
+                        // FileClose(hFile);
+                        if (fContents & IMAGE_PALETTE)
+                        {
+                           // MemFree(hImage.pPalette);
+                        }
+                        // MemFree(hImage.pETRLEObject);
+                        return null;
+                    }
+
+                    hImage.uiSizePixData = pHeader.uiStoredSize;
+                    hImage.fFlags |= IMAGE_TRLECOMPRESSED;
+                }
+                // allocate memory for and read in the image data
+                //hImage.pImageData = MemAlloc(pHeader.uiStoredSize);
+                if (hImage.pImageData == null)
+                {
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Out of memory!");
+                    // FileClose(hFile);
+                    if (fContents & IMAGE_PALETTE)
+                    {
+                       // MemFree(hImage.pPalette);
+                    }
+                    if (hImage.usNumberOfObjects > 0)
+                    {
+                        //MemFree(hImage.pETRLEObject);
+                    }
+
+                    return null;
+                }
+                else if (!FileRead(hFile, hImage.pImageData, pHeader.uiStoredSize, &uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
+                { // Problem reading in the image data!
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Error loading image data!");
+                    // FileClose(hFile);
+                    // MemFree(hImage.pImageData);
+                    if (fContents & IMAGE_PALETTE)
+                    {
+                       // MemFree(hImage.pPalette);
+                    }
+                    if (hImage.usNumberOfObjects > 0)
+                    {
+                        // MemFree(hImage.pETRLEObject);
+                    }
+                    return null;
+                }
+
+                hImage.fFlags |= IMAGE_BITMAPDATA;
+            }
+            else if (fContents & IMAGE_APPDATA) // then there's a point in seeking ahead
+            {
+                if (FileSeek(hFile, pHeader.uiStoredSize, FILE_SEEK_FROM_CURRENT) == false)
+                {
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past image data!");
+                    // FileClose(hFile);
+                    return null;
+                }
+            }
+
+            if (fContents & IMAGE_APPDATA && pHeader.uiAppDataSize > 0)
+            {
+                // load application-specific data
+                hImage.pAppData = MemAlloc(pHeader.uiAppDataSize);
+                if (hImage.pAppData == null)
+                {
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Out of memory!");
+                    // FileClose(hFile);
+                    // MemFree(hImage.pAppData);
+                    if (fContents & IMAGE_PALETTE)
+                    {
+                       // MemFree(hImage.pPalette);
+                    }
+                    if (fContents & IMAGE_BITMAPDATA)
+                    {
+                        //MemFree(hImage.pImageData);
+                    }
+                    if (hImage.usNumberOfObjects > 0)
+                    {
+                        // MemFree(hImage.pETRLEObject);
+                    }
+                    return null;
+                }
+
+                if (!FileRead(hFile, hImage.pAppData, pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
+                {
+                    // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Error loading application-specific data!");
+                    // FileClose(hFile);
+                    // MemFree(hImage.pAppData);
+                    if (fContents & IMAGE_PALETTE)
+                    {
+                       // MemFree(hImage.pPalette);
+                    }
+                    if (fContents & IMAGE_BITMAPDATA)
+                    {
+                        // MemFree(hImage.pImageData);
+                    }
+                    if (hImage.usNumberOfObjects > 0)
+                    {
+                        // MemFree(hImage.pETRLEObject);
+                    }
+                    return null;
+                }
+
+                hImage.uiAppDataSize = pHeader.uiAppDataSize;
+
+                hImage.fFlags |= IMAGE_APPDATA;
+            }
+            else
+            {
+                hImage.pAppData = null;
+                hImage.uiAppDataSize = 0;
+            }
+
+            return image;
+        }
+
+        private Image<TPixel> DecodeETRLECompressed<TPixel>(STCIHeader header, Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
+        {
+            return new Image<TPixel>(1, 1);
         }
 
         private Image<TPixel> DecodeRgba<TPixel>(STCIHeader header, Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
         {
+            var rgba32 = new Rgba32();
+            TPixel color = default;
+
             var numOfPixels = header.usHeight * header.usWidth;
 
             using var byteBuffer = configuration.MemoryAllocator.AllocateManagedByteBuffer(numOfPixels * header.ubDepth);
-
             stream.Read(byteBuffer.Array);
             Span<ushort> pixelSpan = MemoryMarshal.Cast<byte, ushort>(byteBuffer.Memory.Span);
 
             var image = new Image<TPixel>(configuration, header.usWidth, header.usHeight);
-            var rgba32 = new Rgba32();
-            TPixel color = default;
+
             int idx = 0;
+
             for (int y = 0; y < header.usHeight; y++)
             {
                 Span<TPixel> pixelRow = image.GetPixelRowSpan(y);

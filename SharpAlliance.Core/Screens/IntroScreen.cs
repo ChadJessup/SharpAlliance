@@ -9,6 +9,7 @@ using SharpAlliance.Core.Managers.Library;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using static SharpAlliance.Core.Managers.VideoObjectManager;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -334,7 +335,7 @@ namespace SharpAlliance.Core.Screens
 
             //memset(&VObjectDesc, 0, sizeof(VOBJECT_DESC));
             VObjectDesc = new();
-            VObjectDesc.fCreateFlags = VideoObjectManager.VOBJECT_CREATE_FROMFILE;
+            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\SirtechSplash.sti");
 
             //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);

@@ -84,7 +84,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public bool gfRefreshUpdate = false;
 
-        public Image<Rgba32> gpMouseCursor { get; set; }
+        public Texture gpMouseCursor { get; set; }
         public Image<Rgba32> gpMouseCursorOriginal { get; set; }
 
         public MouseSubSystem(
@@ -1049,8 +1049,8 @@ namespace SharpAlliance.Core.SubSystems
         public int usMouseXPos, usMouseYPos;
         public int usLeft, usTop, usRight, usBottom;
         public Rectangle Region;
-        public Image<Rgba32> _pSurface;
-        public Image<Rgba32>  pSurface;
+        public Texture _pSurface;
+        public Texture  pSurface;
     }
 
     public delegate void MouseCallback(MouseRegion region, MouseCallbackReasons callbackReason);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using Veldrid;
 using Veldrid.ImageSharp;
 using Veldrid.SPIRV;
@@ -90,21 +91,38 @@ namespace SharpAlliance
             this._draws.Add(new SpriteInfo(spriteName, new QuadVertex(position, size, tint, rotation)));
         }
 
+        public void AddSprite(Rectangle rectangle, Texture texture, RgbaByte? tint = null, float rotation = 0f)
+        {
+            if (tint is null)
+            {
+                tint = RgbaByte.White;
+            }
+
+            this._draws.Add(new SpriteInfo()
+            {
+                Texture = texture,
+                Quad = new QuadVertex(rectangle.Position, rectangle.Size, tint.Value, rotation),
+            });
+        }
+
         private ResourceSet Load(GraphicsDevice gd, SpriteInfo spriteInfo)
         {
             if (!this._loadedImages.TryGetValue(spriteInfo, out (Texture, TextureView, ResourceSet) ret))
             {
-                string texPath = Path.Combine(AppContext.BaseDirectory, "Assets", spriteInfo.SpriteName);
+                Texture? tex = spriteInfo.Texture;
 
-                Texture tex = spriteInfo.Texture is null
-                    ? new ImageSharpTexture(texPath, false).CreateDeviceTexture(gd, gd.ResourceFactory)
-                    : spriteInfo.Texture;
+                if (!string.IsNullOrWhiteSpace(spriteInfo.SpriteName) && spriteInfo.Texture is not null)
+                {
+                    string texPath = Path.Combine(AppContext.BaseDirectory, "Assets", spriteInfo.SpriteName);
+                    tex = new ImageSharpTexture(texPath, false).CreateDeviceTexture(gd, gd.ResourceFactory);
+                }
 
                 TextureView view = gd.ResourceFactory.CreateTextureView(tex);
                 ResourceSet set = gd.ResourceFactory.CreateResourceSet(new ResourceSetDescription(
                     this._texLayout,
                     view,
                     gd.PointSampler));
+
                 ret = (tex, view, set);
                 this._loadedImages.Add(spriteInfo, ret);
             }
@@ -203,9 +221,9 @@ namespace SharpAlliance
                 this.Texture = null;
             }
 
-            public Texture? Texture { get; }
-            public string SpriteName { get; }
-            public QuadVertex Quad { get; }
+            public Texture? Texture { get; init; }
+            public string SpriteName { get; init; }
+            public QuadVertex Quad { get; init; }
         }
 
         private struct QuadVertex

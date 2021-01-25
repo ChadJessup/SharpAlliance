@@ -37,10 +37,6 @@ namespace SharpAlliance.Core.Managers
             public const int VO_BLT_UNCOMPRESSED = 0x000004000;
         }
 
-        public const int VOBJECT_CREATE_DEFAULT = 0x00000020;   // Creates and empty object of given width, height and BPP
-        public const int VOBJECT_CREATE_FROMFILE = 0x00000040;  // Creates a video object from a file ( using HIMAGE )
-        public const int VOBJECT_CREATE_FROMHIMAGE = 0x00000080;	// Creates a video object from a pre-loaded hImage
-
         private readonly ILogger<VideoObjectManager> logger;
         private List<int> ghVideoObjects;
         private bool gfVideoObjectsInit = false;
@@ -118,10 +114,10 @@ namespace SharpAlliance.Core.Managers
         public int uiSizePixData;           // ETRLE data size
         public SGPPaletteEntry? pPaletteEntry;             // 8BPP Palette						  
         public int TransparentColor;          // Defaults to 0,0,0
-        public int? p16BPPPalette;              // A 16BPP palette used for 8->16 blits
+        public byte[] p16BPPPalette;              // A 16BPP palette used for 8->16 blits
 
-        public List<int> pPixData;                       // ETRLE pixel data
-        public ETRLEObject? pETRLEObject;              // Object offset data etc
+        public byte[] pPixData;                       // ETRLE pixel data
+        public ETRLEObject pETRLEObject;              // Object offset data etc
         public SixteenBPPObjectInfo? p16BPPObject;
         public int[] pShades = new int[HVOBJECT_SHADE_TABLES]; // Shading tables
         public int? pShadeCurrent;
@@ -163,9 +159,17 @@ namespace SharpAlliance.Core.Managers
         public int sOffsetY;
     }
 
+    [Flags]
+    public enum VideoObjectCreateFlags
+    {
+        VOBJECT_CREATE_DEFAULT = 0x00000020,   // Creates and empty object of given width, height and BPP
+        VOBJECT_CREATE_FROMFILE = 0x00000040,  // Creates a video object from a file ( using HIMAGE )
+        VOBJECT_CREATE_FROMHIMAGE = 0x00000080,    // Creates a video object from a pre-loaded hImage
+    };
+
     public struct VOBJECT_DESC
     {
-        public int fCreateFlags;                        // Specifies creation flags like from file or not
+        public VideoObjectCreateFlags fCreateFlags;                        // Specifies creation flags like from file or not
         public string ImageFile;                          // Filename of image data to use
         public HIMAGE hImage;
         public byte ubBitDepth;                           // BPP, ignored if given from file
