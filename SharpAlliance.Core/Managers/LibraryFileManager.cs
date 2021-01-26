@@ -206,7 +206,10 @@ namespace SharpAlliance.Core.Managers
         {
             pFileHeader = null;
             this.gsCurrentLibrary = sLibraryID;
+            if (sLibraryID == LibraryNames.INTERFACE)
+            {
 
+            }
             return this.Libraries.TryGetValue(sLibraryID, out var library)
                 && library.TryGetValue(pstrFileName, out pFileHeader);
         }
@@ -238,12 +241,10 @@ namespace SharpAlliance.Core.Managers
                             return (LibraryNames)sLoop1;
                         }
                     }
-
-                    //compare the library name to the file name that is passed in
                     else
                     {
                         // if the directory paths are the same, to the length of the lib's path
-                        if (this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Equals(pFileName) || this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Length == 0)
+                        if (pFileName.ToUpper().Contains(this.Libraries[(LibraryNames)sLoop1].sLibraryPath.ToUpper()))
                         {
                             // if we've never matched, or this match's path is longer than the previous match (meaning it's more exact)
                             if (sBestMatch == (int)LibraryNames.Unknown || this.Libraries[(LibraryNames)sLoop1].sLibraryPath.Length > this.Libraries[(LibraryNames)sBestMatch].sLibraryPath.Length)

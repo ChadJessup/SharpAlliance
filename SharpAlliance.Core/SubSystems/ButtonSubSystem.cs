@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -57,7 +60,7 @@ namespace SharpAlliance.Core.SubSystems
         private HVOBJECT[] GenericButtonOnNormal = new HVOBJECT[Constants.MAX_GENERIC_PICS];
         private HVOBJECT[] GenericButtonOnHilite = new HVOBJECT[Constants.MAX_GENERIC_PICS];
         private HVOBJECT[] GenericButtonBackground = new HVOBJECT[Constants.MAX_GENERIC_PICS];
-        private ushort[] GenericButtonFillColors = new ushort[Constants.MAX_GENERIC_PICS];
+        private Rgba32[] GenericButtonFillColors = new Rgba32[Constants.MAX_GENERIC_PICS];
         private ushort[] GenericButtonBackgroundIndex = new ushort[Constants.MAX_GENERIC_PICS];
         private short[] GenericButtonOffsetX = new short[Constants.MAX_GENERIC_PICS];
         private short[] GenericButtonOffsetY = new short[Constants.MAX_GENERIC_PICS];
@@ -79,7 +82,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public async ValueTask<bool> Initialize(GameContext gameContext)
         {
-            this.video = (gameContext.VideoManager as VeldridVideoManager)!;
+            this.video = (gameContext.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
 
             this.IsInitialized = await this.InitializeButtonImageManager(
                 Surfaces.Unknown,
@@ -153,7 +156,7 @@ namespace SharpAlliance.Core.SubSystems
                 //this.GenericButtonOnHilite[x] = null;
                 //this.GenericButtonBackground[x] = null;
                 this.GenericButtonBackgroundIndex[x] = 0;
-                this.GenericButtonFillColors[x] = 0;
+                this.GenericButtonFillColors[x] = new Rgba32(0, 0, 0);
                 this.GenericButtonBackgroundIndex[x] = 0;
                 this.GenericButtonOffsetX[x] = 0;
                 this.GenericButtonOffsetY[x] = 0;

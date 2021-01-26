@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
@@ -43,8 +44,11 @@ namespace SharpAlliance
             this.Initialize();
         }
 
-        public ValueTask<bool> Initialize()
+        public async ValueTask<bool> Initialize()
         {
+            await this.video.Initialize();
+            await this.input.Initialize();
+
             this.PlatformConstruct();
 
             var validation = false;
@@ -54,13 +58,13 @@ namespace SharpAlliance
 
             if (this.MainWindow is not null)
             {
-                VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.VideoManager;
+                VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<IVideoManager>();
                 this.MainWindow = vorticeVideoManager.Window;
 
 //                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
             }
 
-            return ValueTask.FromResult(true);
+            return true;
         }
 
         public Sdl2Window MainWindow { get; private set; }
@@ -68,7 +72,7 @@ namespace SharpAlliance
 
         public Sdl2Window CreateWindow(string name = "Vortice")
         {
-            VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.VideoManager;
+            VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<IVideoManager>();
             return vorticeVideoManager.Window;
         }
 

@@ -12,14 +12,6 @@ namespace SharpAlliance.Platform
             return builder;
         }
 
-        public static IGamePlatformBuilder AddVideoManager<TVideoManager>(this IGamePlatformBuilder builder)
-            where TVideoManager : class, IVideoManager
-        {
-            builder.AddDependency<IVideoManager, TVideoManager>();
-
-            return builder;
-        }
-
         public static IGamePlatformBuilder AddGameLogic<TGameLogic>(this IGamePlatformBuilder builder)
             where TGameLogic : class, IGameLogic
         {

@@ -65,13 +65,14 @@ namespace SharpAlliance.Core.Screens
             SoldierProfileSubSystem soldierSubSystem,
             IScreenManager screenManager,
             GameInit gameInit,
+            IVideoManager videoManager,
             IVideoSurfaceManager videoSurfaceManager,
             IVideoObjectManager videoObjectManager)
         {
             this.gameInit = gameInit;
             this.context = context;
             this.screens = screenManager;
-            this.video = this.context.VideoManager;
+            this.video = videoManager;
             this.mouse = mouseSubSystem;
             this.cursor = cursorSubSystem;
             this.renderDirty = renderDirtySubSystem;
@@ -130,6 +131,39 @@ namespace SharpAlliance.Core.Screens
 
         private void HandleIntroScreen()
         {
+            bool fFlicStillPlaying = false;
+
+            //if we are exiting this screen, this frame, dont update the screen
+            if (gfIntroScreenExit)
+            {
+                return;
+            }
+
+            //handle smaker each frame
+            fFlicStillPlaying = SmkPollFlics();
+
+            //if the flic is not playing
+            if (!fFlicStillPlaying)
+            {
+                var iNextVideoToPlay = GetNextIntroVideo(giCurrentIntroBeingPlayed);
+
+                if (iNextVideoToPlay != SmackerFiles.SMKINTRO_NO_VIDEO)
+                {
+                    StartPlayingIntroFlic(iNextVideoToPlay);
+                }
+                else
+                {
+                    PrepareToExitIntroScreen();
+                    giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
+                }
+            }
+
+            this.video.InvalidateScreen();
+        }
+
+        private bool SmkPollFlics()
+        {
+            return false;
         }
 
         private void GetIntroScreenUserInput()
@@ -140,8 +174,8 @@ namespace SharpAlliance.Core.Screens
         {
             SmackerFiles iFirstVideoID = SmackerFiles.SMKINTRO_NO_VIDEO;
 
-            var mm = new MainMenuScreen();
-            mm.ClearMainMenu();
+            // var mm = new MainMenuScreen();
+            // mm.ClearMainMenu();
 
             this.cursor.SetCurrentCursorFromDatabase(0);// VIDEO_NO_CURSOR);
 
@@ -339,7 +373,7 @@ namespace SharpAlliance.Core.Screens
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\SirtechSplash.sti");
 
             //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
-            if (!this.videoObject.AddVideoObject(ref VObjectDesc, out uiLogoID))
+            if (!this.video.AddVideoObject(ref VObjectDesc, out uiLogoID))
             {
                 // AssertMsg(0, String("Failed to load %s", VObjectDesc.ImageFile));
                 return;

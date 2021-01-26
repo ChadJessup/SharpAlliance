@@ -24,13 +24,14 @@ namespace SharpAlliance.Core.Screens
         public InitScreen(
             GameContext context,
             CursorSubSystem cursorSubSystem,
+            IVideoManager videoManager,
             IVideoSurfaceManager videoSurfaceManager,
             FontSubSystem fontSubSystem,
             IScreenManager sm,
             IFileManager fileManager)
         {
             this.context = context;
-            this.video = (this.context.VideoManager as VeldridVideoManager)!;
+            this.video = (videoManager as VeldridVideoManager)!;
             this.cursor = cursorSubSystem;
             this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
@@ -60,16 +61,16 @@ namespace SharpAlliance.Core.Screens
 
             if (ubCurrentScreen == 255)
             {
-                ubCurrentScreen = 0;
                 // TODO: read when smacker comes in.
-                //if (ScreenManager.gfDoneWithSplashScreen)
-                //{
-                //}
-                //else
-                //{
-                //    this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
-                //    return ScreenName.INTRO_SCREEN;
-                //}
+                if (ScreenManager.gfDoneWithSplashScreen)
+                {
+                    ubCurrentScreen = 0;
+                }
+                else
+                {
+                    this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
+                    return ScreenName.INTRO_SCREEN;
+                }
             }
 
             if (ubCurrentScreen == 0)
@@ -155,6 +156,7 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<ScreenName> InitializeJA2()
         {
+
             return ValueTask.FromResult(ScreenName.InitScreen);
         }
 

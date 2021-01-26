@@ -1,28 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
-using SharpAlliance.Platform;
-using static SharpAlliance.Core.Managers.VideoObjectManager;
 
 namespace SharpAlliance.Core.Screens
 {
     public class MapScreen : IScreen
     {
-        private readonly IVideoObjectManager videoObjects;
+        private readonly IVideoManager video;
         private readonly MapScreenInterfaceMap mapScreenInterface;
         private readonly MessageSubSystem messages;
 
         public MapScreen(
-            IVideoObjectManager videoObjectManager,
+            IVideoManager videoManager,
             MapScreenInterfaceMap mapScreenInterfaceMap,
             MessageSubSystem messageSubSystem)
         { 
-            this.videoObjects = videoObjectManager;
+            this.video = videoManager;
             this.mapScreenInterface = mapScreenInterfaceMap;
             this.messages = messageSubSystem;
         }
@@ -62,12 +56,12 @@ namespace SharpAlliance.Core.Screens
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm.sti");
 
             
-            this.videoObjects.AddVideoObject(ref VObjectDesc, out var idx1);
+            this.video.AddVideoObject(ref VObjectDesc, out var idx1);
             this.mapScreenInterface.guiUpdatePanel = idx1;
 
             VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm_tactical.sti");
-            this.videoObjects.AddVideoObject(ref VObjectDesc, out var idx2);
+            this.video.AddVideoObject(ref VObjectDesc, out var idx2);
             this.mapScreenInterface.guiUpdatePanelTactical = idx2;
 
             return ValueTask.FromResult(true);

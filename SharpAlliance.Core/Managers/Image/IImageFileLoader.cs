@@ -214,45 +214,43 @@ namespace SharpAlliance.Core.Managers.Image
             return image;
         }
 
-        private Image<TPixel> CreateIndexedImage<TPixel>(
+        public Image<TPixel> CreateIndexedImage<TPixel>(
             Configuration configuration,
             ref Image<TPixel> image,
-            ref STCIHeader header,
             ref HIMAGE hImage,
-            ref byte[] pSTCIPalette)
+            ref HVOBJECT hVObject)
             where TPixel : unmanaged, IPixel<TPixel>
         {
-            hImage.ubBitDepth = header.ubDepth;
-
             var rgba32 = new Rgba32();
             TPixel color = default;
 
-            var numOfPixels = header.usHeight * header.usWidth;
+            var numOfPixels = image.Height * image.Width;
 
-            using var byteBuffer = configuration.MemoryAllocator.AllocateManagedByteBuffer(numOfPixels * header.ubDepth);
-            //stream.Read(byteBuffer.Array);
-            Span<ushort> pixelSpan = MemoryMarshal.Cast<byte, ushort>(byteBuffer.Memory.Span);
-
+            //using var byteBuffer = configuration.MemoryAllocator.AllocateManagedByteBuffer(numOfPixels * image.PixelType.BitsPerPixel);
+            ReadOnlySpan<byte> indexSpan = new ReadOnlySpan<byte>(hVObject.pPixData);
+            ReadOnlySpan<Rgba32> paletteSpan = new ReadOnlySpan<Rgba32>(hVObject.Palette);
+            
             int idx = 0;
 
-            for (int y = 0; y < header.usHeight; y++)
+            try
             {
-                Span<TPixel> pixelRow = image.GetPixelRowSpan(y);
-                for (int x = 0; x < header.usWidth; x++)
+                for (int y = 0; y < image.Height; y++)
                 {
-                    var bgr565 = new Bgr565
+                    Span<TPixel> pixelRow = image.GetPixelRowSpan(y);
+                    for (int x = 0; x < image.Width; x++)
                     {
-                        PackedValue = pixelSpan[idx],
-                    };
+                        var pixel = paletteSpan[indexSpan[idx]];
+                        color.FromRgba32(pixel);
 
-                    bgr565.ToRgba32(ref rgba32);
-                    color.FromRgba32(rgba32);
-
-                    pixelRow[x] = color;
-                    idx++;
+                        pixelRow[x] = color;
+                        idx++;
+                    }
                 }
             }
+            catch (Exception e)
+            {
 
+            }
             return image;
         }
 

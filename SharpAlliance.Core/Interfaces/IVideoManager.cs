@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SharpAlliance.Core.Managers;
+using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Platform.Interfaces
+namespace SharpAlliance.Core.Interfaces
 {
     public interface IVideoManager : ISharpAllianceManager
     {
@@ -17,5 +14,6 @@ namespace SharpAlliance.Platform.Interfaces
         void InvalidateScreen();
         void InvalidateRegion(int v1, int v2, int v3, int v4);
         void EndFrameBufferRender();
+        bool AddVideoObject(ref VOBJECT_DESC vObjectDesc, out int uiLogoID);
     }
 }

@@ -32,7 +32,14 @@ namespace SharpAlliance.Core.Managers.Library
 
         public bool TryGetValue(string fileName, out FileHeader? fileHeader)
         {
-            fileHeader = this.pFileHeader.FirstOrDefault(fh => fh.pFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase));
+            var fileNameNoLibrary = fileName;
+
+            if (!string.IsNullOrWhiteSpace(this.sLibraryPath))
+            {
+                fileNameNoLibrary = fileName.ToUpper().Replace(this.sLibraryPath.ToUpper(), "");
+            }
+
+            fileHeader = this.pFileHeader.FirstOrDefault(fh => fh.pFileName.Equals(fileNameNoLibrary, StringComparison.OrdinalIgnoreCase));
 
             return fileHeader.HasValue;
         }

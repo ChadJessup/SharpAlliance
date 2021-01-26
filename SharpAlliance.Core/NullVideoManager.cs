@@ -1,11 +1,18 @@
 ﻿using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Platform.NullManagers
+namespace SharpAlliance.Core.NullManagers
 {
     public class NullVideoManager : IVideoManager
     {
         public bool IsInitialized { get; } = true;
+
+        public bool AddVideoObject(ref VOBJECT_DESC vObjectDesc, out int uiLogoID)
+        {
+            throw new System.NotImplementedException();
+        }
 
         public void Dispose()
         {

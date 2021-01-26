@@ -42,7 +42,6 @@ namespace SharpAlliance
             platformBuilder
                 .AddLibraryManager<LibraryFileManager>()
                 .AddInputManager<InputManager>()
-                .AddVideoManager<VeldridVideoManager>()
                 .AddGameLogic<SharpAllianceGameLogic>()
                 .AddOtherComponents();
 
@@ -78,6 +77,7 @@ namespace SharpAlliance
             builder.AddDependency<IVideoSurfaceManager, VideoSurfaceManager>();
             builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
+            builder.AddDependency<IVideoManager, VeldridVideoManager>();
 
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<RenderWorld>();

@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
@@ -110,7 +112,7 @@ namespace SharpAlliance.Core
                 return true;
             }
 
-            this.video = (this.context.VideoManager as VeldridVideoManager)!;
+            this.video = (this.context.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
 
             // Initialize the Event Queue
             this.gusQueueCount = 0;

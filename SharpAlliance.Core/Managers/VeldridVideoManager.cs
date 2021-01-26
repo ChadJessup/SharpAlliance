@@ -21,7 +21,6 @@ using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
-using static SharpAlliance.Core.Managers.VideoObjectManager;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -46,6 +45,8 @@ namespace SharpAlliance.Core.Managers
         const int DDERR_SURFACELOST = 0x9700000;
 
         private readonly ILogger<VeldridVideoManager> logger;
+        private readonly VideoObjectManager videoObject;
+
         // private readonly WindowsSubSystem windows;
         private readonly IInputManager inputs;
         private readonly MouseSubSystem mouse;
@@ -180,9 +181,11 @@ namespace SharpAlliance.Core.Managers
             MouseSubSystem mouseSubSystem,
             RenderWorld renderWorld,
             IScreenManager screenManager,
+            IVideoObjectManager videoObjectManager,
             Shading shading)
         {
             this.logger = logger;
+            this.videoObject = (videoObjectManager as VideoObjectManager)!;
             this.context = context;
             this.files = fileManager;
             this.inputs = (inputManager as InputManager)!;
@@ -285,11 +288,11 @@ namespace SharpAlliance.Core.Managers
 
         public void DrawFrame()
         {
-            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), this.backBuffer);
+//            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), this.backBuffer);
             this.commandList.Begin();
 
             this.commandList.SetFramebuffer(this.mainSwapchain.Framebuffer);
-            this.commandList.ClearColorTarget(0, this.clearColor);
+           // this.commandList.ClearColorTarget(0, this.clearColor);
 
             this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
 
@@ -312,6 +315,58 @@ namespace SharpAlliance.Core.Managers
         public static Stream OpenEmbeddedAssetStream(string name)
             => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
+        public bool AddVideoObject(ref VOBJECT_DESC pVObjectDesc, out int puiIndex)
+        {
+            puiIndex = -1;
+            // Create video object
+            HVOBJECT? hVObject = CreateVideoObject(pVObjectDesc).AsTask().Result;
+
+            if (hVObject is null)
+            {
+                // Video Object will set error condition.
+                return false;
+            }
+
+            // Set transparency to default
+            // SetVideoObjectTransparencyColor(hVObject, FROMRGB(0, 0, 0));
+
+            // Set into video object list
+            if (this.videoObject.gpVObjectHead is not null)
+            { //Add node after tail
+                this.videoObject.gpVObjectTail.next = new VOBJECT_NODE
+                {
+                    prev = this.videoObject.gpVObjectTail,
+                    next = null,
+                };
+
+                this.videoObject.gpVObjectTail = this.videoObject.gpVObjectTail.next;
+            }
+            else
+            { //new list
+                this.videoObject.gpVObjectHead = new VOBJECT_NODE();
+                this.videoObject.gpVObjectHead.prev = this.videoObject.gpVObjectHead.next = null;
+                this.videoObject.gpVObjectTail = this.videoObject.gpVObjectHead;
+            }
+
+            this.videoObject.gpVObjectTail.pName = null;
+            this.videoObject.gpVObjectTail.pCode = null;
+
+            //Set the hVObject into the node.
+            this.videoObject.gpVObjectTail.hVObject = hVObject;
+            this.videoObject.gpVObjectTail.uiIndex = this.videoObject.guiVObjectIndex += 2;
+            puiIndex = this.videoObject.gpVObjectTail.uiIndex;
+
+            this.videoObject.guiVObjectSize++;
+            this.videoObject.guiVObjectTotalAdded++;
+
+            if (this.videoObject.CountVideoObjectNodes() != this.videoObject.guiVObjectSize)
+            {
+                this.videoObject.guiVObjectSize = this.videoObject.guiVObjectSize;
+            }
+
+            return true;
+        }
+
         public async ValueTask<HVOBJECT> CreateVideoObject(VOBJECT_DESC VObjectDesc)
         {
             HVOBJECT hVObject = new();
@@ -324,6 +379,32 @@ namespace SharpAlliance.Core.Managers
                 {
                     // Create himage object from file
                     hImage = await HIMAGE.CreateImage(VObjectDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
+
+                    // Get TRLE data
+                    this.GetETRLEImageData(hImage, ref TempETRLEData);
+
+                    // Set values
+                    hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
+                    hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
+                    hVObject.pPixData = TempETRLEData.pPixData;
+                    hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
+
+                    // Set palette from himage
+                    if (hImage.ubBitDepth == 8)
+                    {
+                        hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+                        hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
+
+                        SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+                    }
+
+                    var img = hImage.ParsedImage!;
+
+                    //hImage.ParsedImage = new STCIImageFileLoader().CreateIndexedImage(
+                    //    hImage.ParsedImage.GetConfiguration(),
+                    //    ref img,
+                    //    ref hImage, 
+                    //    ref hVObject);
                 }
                 else
                 { // create video object from provided hImage
@@ -336,23 +417,6 @@ namespace SharpAlliance.Core.Managers
                     throw new InvalidOperationException("hImage was null");
                 }
 
-                // Get TRLE data
-                this.GetETRLEImageData(hImage, ref TempETRLEData);
-
-                // Set values
-                hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
-                hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
-                hVObject.pPixData = TempETRLEData.pPixData;
-                hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
-
-                // Set palette from himage
-                if (hImage.ubBitDepth == 8)
-                {
-                    hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
-                    hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
-
-                    SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
-                }
             }
             else
             {
@@ -361,13 +425,6 @@ namespace SharpAlliance.Core.Managers
 
             // All is well
             //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
-
-//            image = this.CreateIndexedImage(
-//                configuration,
-//                ref image,
-//                ref pHeader,
-//                ref hImage,
-//                ref pSTCIPalette!);
 
             return hVObject;
         }

@@ -41,18 +41,17 @@ namespace SharpAlliance.Core.Managers
         private readonly ILogger<VideoObjectManager> logger;
         private List<int> ghVideoObjects;
         private bool gfVideoObjectsInit = false;
-        VOBJECT_NODE? gpVObjectHead = null;
-        VOBJECT_NODE? gpVObjectTail = null;
-        private int guiVObjectIndex = 1;
-        private int guiVObjectSize = 0;
-        private int guiVObjectTotalAdded = 0;
+        public VOBJECT_NODE gpVObjectHead { get; set; } = new VOBJECT_NODE();
+        public VOBJECT_NODE gpVObjectTail { get; set; } = new VOBJECT_NODE();
+        public int guiVObjectIndex { get; set; } = 1;
+        public int guiVObjectSize { get; set; } = 0;
+        public int guiVObjectTotalAdded { get; set; } = 0;
 
         public VideoObjectManager(ILogger<VideoObjectManager> logger)
         {
             this.logger = logger;
 
-            this.gpVObjectHead = null;
-            this.gpVObjectTail = null;
+            this.gpVObjectTail = this.gpVObjectHead;
             this.gfVideoObjectsInit = true;
 
             this.IsInitialized = true;
@@ -68,21 +67,26 @@ namespace SharpAlliance.Core.Managers
             return ValueTask.FromResult(true);
         }
 
-        public bool AddVideoObject(ref VOBJECT_DESC vObjectDesc, out int uiIndex)
-        {
-            uiIndex = 0;
-
-            return true;
-        }
-
         public void Dispose()
         {
         }
 
-        public bool GetVideoObject(int uiLogoID, out HVOBJECT hPixHandle)
+        public bool GetVideoObject(int uiIndex, out HVOBJECT hVObject)
         {
-            hPixHandle = new HVOBJECT();
-            return true;
+            VOBJECT_NODE? curr = gpVObjectHead;
+            while (curr is not null)
+            {
+                if (curr.uiIndex == uiIndex)
+                {
+                    hVObject = curr.hVObject;
+                    return true;
+                }
+
+                curr = curr.next;
+            }
+
+            hVObject = new HVOBJECT();
+            return false;
         }
 
         public bool BltVideoObject(uint fRAME_BUFFER, HVOBJECT hPixHandle, int v1, int v2, int v3, int vO_BLT_SRCTRANSPARENCY, object? p)
@@ -94,14 +98,28 @@ namespace SharpAlliance.Core.Managers
         {
             return true;
         }
+
+        public int CountVideoObjectNodes()
+        {
+            VOBJECT_NODE? curr = gpVObjectHead;
+            int i = 0;
+
+            while (curr is not null)
+            {
+                i++;
+                curr = curr.next;
+            }
+
+            return i;
+        }
     }
 
     public class VOBJECT_NODE
     {
-        HVOBJECT hVObject;
+        public HVOBJECT hVObject;
         public int uiIndex;
-        public VOBJECT_NODE next;
-        public VOBJECT_NODE prev;
+        public VOBJECT_NODE? next;
+        public VOBJECT_NODE? prev;
 
         public int? pName;
         public int? pCode;

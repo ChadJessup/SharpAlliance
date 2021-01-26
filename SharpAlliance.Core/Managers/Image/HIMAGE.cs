@@ -79,62 +79,69 @@ namespace SharpAlliance.Core.Managers.Image
         {
             Rgba32[] palette;
             uint cnt;
-            // ushort r16, g16, b16, usColor;
-            // byte r, g, b;
+             ushort r16, g16, b16, usColor;
+             byte r, g, b;
+
+            gusRedShift = -8;
+            gusGreenShift = 8;
+            gusBlueShift = 0;
+            gusRedMask = 0;
+            gusGreenMask = 65280;
+            gusBlueMask = 255;
 
             palette = new Rgba32[256];
 
             for (cnt = 0; cnt < 256; cnt++)
             {
-                Bgr565 pixel = new Bgr565(
-                    pPalette[cnt].peRed,
-                    pPalette[cnt].peGreen,
-                    pPalette[cnt].peBlue);
+                 r = pPalette[cnt].peRed;
+                 g = pPalette[cnt].peGreen;
+                 b = pPalette[cnt].peBlue;
 
-                // r = pPalette[cnt].peRed;
-                // g = pPalette[cnt].peGreen;
-                // b = pPalette[cnt].peBlue;
+                if (gusRedShift < 0)
+                {
+                    r16 = (ushort)(r >> Math.Abs(gusRedShift));
+                }
+                else
+                {
+                    r16 = (ushort)(r << gusRedShift);
+                }
+                
+                if (gusGreenShift < 0)
+                {
+                    g16 = (ushort)(g >> Math.Abs(gusGreenShift));
+                }
+                else
+                {
+                    g16 = (ushort)(g << gusGreenShift);
+                }
+                
+                if (gusBlueShift < 0)
+                {
+                    b16 = (ushort)(b >> Math.Abs(gusBlueShift));
+                }
+                else
+                {
+                    b16 = (ushort)(b << gusBlueShift);
+                }
+                
+                usColor = (ushort)((r16 & gusRedMask) | (g16 & gusGreenMask) | (b16 & gusBlueMask));
+                
+                if (usColor == 0)
+                {
+                    if ((r + g + b) != 0)
+                    {
+                        usColor = (ushort)(HIMAGE.BLACK_SUBSTITUTE | gusAlphaMask);
+                    }
+                }
+                else
+                {
+                    usColor |= gusAlphaMask;
+                }
 
-                //if (gusRedShift < 0)
-                //{
-                //    r16 = (ushort)(r >> Math.Abs(gusRedShift));
-                //}
-                //else
-                //{
-                //    r16 = (ushort)(r << gusRedShift);
-                //}
-                //
-                //if (gusGreenShift < 0)
-                //{
-                //    g16 = (ushort)(g >> Math.Abs(gusGreenShift));
-                //}
-                //else
-                //{
-                //    g16 = (ushort)(g << gusGreenShift);
-                //}
-                //
-                //if (gusBlueShift < 0)
-                //{
-                //    b16 = (ushort)(b >> Math.Abs(gusBlueShift));
-                //}
-                //else
-                //{
-                //    b16 = (ushort)(b << gusBlueShift);
-                //}
-                //
-                //usColor = (ushort)((r16 & gusRedMask) | (g16 & gusGreenMask) | (b16 & gusBlueMask));
-                //
-                //if (usColor == 0)
-                //{
-                //    if ((r + g + b) != 0)
-                //    {
-                //        usColor = (ushort)(HIMAGE.BLACK_SUBSTITUTE | gusAlphaMask);
-                //    }
-                //}
-                //else
-                //{
-                //    usColor |= gusAlphaMask;
-                //}
+                Bgr565 pixel = new Bgr565()
+                {
+                    PackedValue = usColor,
+                };
 
                 pixel.ToRgba32(ref palette[cnt]);
             }
