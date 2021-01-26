@@ -32,5 +32,21 @@ namespace SharpAlliance.Platform.NullManagers
         {
             throw new NotImplementedException();
         }
+
+        public bool FileRead(Stream stream, ref byte[] pSTCIPalette, uint uiFileSectionSize, out uint uiBytesRead)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool FileRead<T>(Stream stream, ref T[] fillArray, uint uiFileSectionSize, out uint uiBytesRead)
+            where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
     }
 }

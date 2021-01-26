@@ -24,22 +24,23 @@ namespace SharpAlliance.Core.Managers.Image
         public HIMAGECreateFlags fFlags;
         public string ImageFile;
         public IImageFileLoader iFileLoader;
-        public SGPPaletteEntry pPalette;
-        public int pui16BPPPalette;
-        public int pAppData;
-        public int uiAppDataSize;
+        public SGPPaletteEntry[] pPalette;
+        public uint pui16BPPPalette;
+        public byte[]? pAppData;
+        public uint uiAppDataSize;
         // This union is used to describe each data type and is flexible to include the
         // data strucutre of the compresssed format, once developed.
         public byte[] pImageData;
         public byte[] pCompressedImageData;
         public int p8BPPData;
         public byte[] p16BPPData;
-        public int pPixData8;
-        public int uiSizePixData;
-        public ETRLEObject pETRLEObject;
-        public int usNumberOfObjects;
+        public byte[] pPixData8;
+        public uint uiSizePixData;
+        public ETRLEObject[] pETRLEObject;
+        public ushort usNumberOfObjects;
 
         public Image<Rgba32>? ParsedImage { get; set; }
+        public const ushort BLACK_SUBSTITUTE = 0x0001;
 
         public static async ValueTask<HIMAGE> CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager)
         {
@@ -72,6 +73,73 @@ namespace SharpAlliance.Core.Managers.Image
             }
 
             return hImage;
+        }
+
+        public Rgba32[] Create16BPPPalette(ref SGPPaletteEntry[] pPalette)
+        {
+            Rgba32[] palette;
+            uint cnt;
+            // ushort r16, g16, b16, usColor;
+            // byte r, g, b;
+
+            palette = new Rgba32[256];
+
+            for (cnt = 0; cnt < 256; cnt++)
+            {
+                Bgr565 pixel = new Bgr565(
+                    pPalette[cnt].peRed,
+                    pPalette[cnt].peGreen,
+                    pPalette[cnt].peBlue);
+
+                // r = pPalette[cnt].peRed;
+                // g = pPalette[cnt].peGreen;
+                // b = pPalette[cnt].peBlue;
+
+                //if (gusRedShift < 0)
+                //{
+                //    r16 = (ushort)(r >> Math.Abs(gusRedShift));
+                //}
+                //else
+                //{
+                //    r16 = (ushort)(r << gusRedShift);
+                //}
+                //
+                //if (gusGreenShift < 0)
+                //{
+                //    g16 = (ushort)(g >> Math.Abs(gusGreenShift));
+                //}
+                //else
+                //{
+                //    g16 = (ushort)(g << gusGreenShift);
+                //}
+                //
+                //if (gusBlueShift < 0)
+                //{
+                //    b16 = (ushort)(b >> Math.Abs(gusBlueShift));
+                //}
+                //else
+                //{
+                //    b16 = (ushort)(b << gusBlueShift);
+                //}
+                //
+                //usColor = (ushort)((r16 & gusRedMask) | (g16 & gusGreenMask) | (b16 & gusBlueMask));
+                //
+                //if (usColor == 0)
+                //{
+                //    if ((r + g + b) != 0)
+                //    {
+                //        usColor = (ushort)(HIMAGE.BLACK_SUBSTITUTE | gusAlphaMask);
+                //    }
+                //}
+                //else
+                //{
+                //    usColor |= gusAlphaMask;
+                //}
+
+                pixel.ToRgba32(ref palette[cnt]);
+            }
+
+            return palette;
         }
 
         private static async ValueTask<HIMAGE> LoadImage(HIMAGE hImage, HIMAGECreateFlags createFlags, IFileManager fileManager)

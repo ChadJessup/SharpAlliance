@@ -12,5 +12,9 @@ namespace SharpAlliance.Platform.Interfaces
         Stream FileOpen(string pFileName, FileAccess read, bool fDeleteOnClose);
         void FileClose(Stream fptr);
         bool FileExists(string pFilename);
+        bool FileRead(Stream stream, ref byte[] pSTCIPalette, uint uiFileSectionSize, out uint uiBytesRead);
+        bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current);
+        bool FileRead<T>(Stream stream, ref T[] fillArray, uint uiFileSectionSize, out uint uiBytesRead)
+            where T : unmanaged;
     }
 }

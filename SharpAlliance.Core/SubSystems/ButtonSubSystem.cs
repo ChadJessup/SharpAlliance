@@ -205,7 +205,7 @@ namespace SharpAlliance.Core.SubSystems
                 return false;
             }
 
-            this.GenericButtonFillColors[0] = this.GenericButtonOffNormal[0].p16BPPPalette[Pix];
+            this.GenericButtonFillColors[0] = this.GenericButtonOffNormal[0].Palette[Pix];
 
             return true;
         }
@@ -227,13 +227,15 @@ namespace SharpAlliance.Core.SubSystems
             // CHECKF(hVObject != NULL);
             // CHECKF(usETRLEIndex < hVObject.usNumberOfObjects);
 
-            //pETRLEObject = hVObject.pETRLEObject[usETRLEIndex];
+            pETRLEObject = hVObject.pETRLEObject[usETRLEIndex];
 
             //CHECKF(usX < pETRLEObject.usWidth);
             //CHECKF(usY < pETRLEObject.usHeight);
 
             // Assuming everything's okay, go ahead and look...
-            // pCurrent = (byte)hVObject.pPixData[pETRLEObject.uiDataOffset];
+            int offset = 0;
+
+            pCurrent = hVObject.pPixData[pETRLEObject.uiDataOffset + offset];
 
             // Skip past all uninteresting scanlines
             while (usLoopY < usY)
@@ -242,13 +244,15 @@ namespace SharpAlliance.Core.SubSystems
                 {
                     if ((pCurrent & COMPRESS_TRANSPARENT) != 0)
                     {
-                        pCurrent++;
+                        pCurrent = hVObject.pPixData[pETRLEObject.uiDataOffset + ++offset];
                     }
                     else
                     {
-                        pCurrent += (byte)(pCurrent & COMPRESS_RUN_MASK);
+                        offset += (byte)(pCurrent & COMPRESS_RUN_MASK);
+                        pCurrent = hVObject.pPixData[pETRLEObject.uiDataOffset + offset];
                     }
                 }
+
                 usLoopY++;
             }
 
@@ -266,7 +270,7 @@ namespace SharpAlliance.Core.SubSystems
                     }
                     else
                     {
-                        pCurrent++;
+                        pCurrent = hVObject.pPixData[pETRLEObject.uiDataOffset + ++offset];
                     }
                 }
                 else
@@ -274,13 +278,16 @@ namespace SharpAlliance.Core.SubSystems
                     if (usLoopX + ubRunLength >= usX)
                     {
                         // skip to the correct byte; skip at least 1 to get past the byte defining the run
-                        pCurrent += (byte)((usX - usLoopX) + 1);
+                        offset += (byte)((usX - usLoopX) + 1);
+                        pCurrent = hVObject.pPixData[pETRLEObject.uiDataOffset + offset];
+
                         pDest = pCurrent;
                         return true;
                     }
                     else
                     {
-                        pCurrent += (byte)(ubRunLength + 1);
+                        offset += (byte)(ubRunLength + 1);
+                        pCurrent = hVObject.pPixData[pETRLEObject.uiDataOffset + offset];
                     }
                 }
                 usLoopX += ubRunLength;

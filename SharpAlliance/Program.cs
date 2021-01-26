@@ -118,6 +118,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<QuestEngine>();
             builder.Services.AddSingleton<InterfaceDialogSubSystem>();
             builder.Services.AddSingleton<Faces>();
+            builder.Services.AddSingleton<Shading>();
 
             return builder;
         }

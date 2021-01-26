@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform.Interfaces;
@@ -14,7 +16,6 @@ namespace SharpAlliance.Core.Managers
         public FileManager(ILibraryManager libraryFileManager)
         {
             this.library = libraryFileManager;
-
         }
 
         public bool IsInitialized { get; private set; }
@@ -211,7 +212,7 @@ namespace SharpAlliance.Core.Managers
             bool fRet;
             byte[] pMemBlock = new byte[uiBytesToRead];
 
-            fRet = this.FileRead(hFile, pDest, uiBytesToRead, out puiBytesRead);
+            fRet = this.FileRead(hFile, ref pDest, uiBytesToRead, out puiBytesRead);
             if (fRet)
             {
                 // pMemBlock = pDest;
@@ -232,14 +233,34 @@ namespace SharpAlliance.Core.Managers
             return fRet;
         }
 
-        private bool FileRead(Stream hFile, byte[] pDest, uint uiBytesToRead, out uint puiBytesRead)
+        public long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
+            => hLibraryHandle.Seek(offset, origin);
+
+        public bool FileRead(Stream stream, ref byte[] buffer, uint uiBytesToRead, out uint uiBytesRead)
         {
-            puiBytesRead = 1;
+            uiBytesRead = (uint)stream.Read(buffer, 0, (int)uiBytesToRead);
 
             return true;
         }
 
-        public long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
-            => hLibraryHandle.Seek(offset, origin);
+        public bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current)
+        {
+            stream.Seek(uiStoredSize, current);
+
+            return true;
+        }
+
+        public bool FileRead<T>(Stream stream, ref T[] obj, uint uiFileSectionSize, out uint uiBytesRead)
+            where T : unmanaged
+        {
+            var buffer = new byte[uiFileSectionSize];
+            uiBytesRead = (uint)stream.Read(buffer, 0, (int)uiFileSectionSize);
+            var bufferSpan = new ReadOnlySpan<byte>(buffer);
+
+            var tSpan = MemoryMarshal.Cast<byte, T>(bufferSpan);
+
+            obj = tSpan.ToArray();
+            return true;
+        }
     }
 }

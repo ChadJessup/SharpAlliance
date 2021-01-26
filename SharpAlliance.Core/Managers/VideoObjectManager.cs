@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Platform;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -111,19 +112,21 @@ namespace SharpAlliance.Core.Managers
         public const int HVOBJECT_SHADE_TABLES = 48;
 
         public int fFlags;                              // Special flags
-        public int uiSizePixData;           // ETRLE data size
-        public SGPPaletteEntry? pPaletteEntry;             // 8BPP Palette						  
+        public uint uiSizePixData;           // ETRLE data size
+        public SGPPaletteEntry[] pPaletteEntry;             // 8BPP Palette						  
         public int TransparentColor;          // Defaults to 0,0,0
-        public byte[] p16BPPPalette;              // A 16BPP palette used for 8->16 blits
+        //public ushort[] p16BPPPalette;              // A 16BPP palette used for 8->16 blits
+        public Rgba32[] Palette;
 
         public byte[] pPixData;                       // ETRLE pixel data
-        public ETRLEObject pETRLEObject;              // Object offset data etc
+        public ETRLEObject[] pETRLEObject;              // Object offset data etc
         public SixteenBPPObjectInfo? p16BPPObject;
         public int[] pShades = new int[HVOBJECT_SHADE_TABLES]; // Shading tables
-        public int? pShadeCurrent;
+        // public ushort[] pShadeCurrent;
+        public Rgba32[] ShadeCurrentPixels;
         public int? pGlow;                              // glow highlight table
-        public int? pShade8;                         // 8-bit shading index table
-        public int? pGlow8;                          // 8-bit glow table
+        public byte? pShade8;                         // 8-bit shading index table
+        public byte? pGlow8;                          // 8-bit glow table
         public ZStripInfo ppZStripInfo;              // Z-value strip info arrays
 
         public int usNumberOf16BPPObjects;

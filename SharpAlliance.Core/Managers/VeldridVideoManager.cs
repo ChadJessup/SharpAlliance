@@ -53,6 +53,7 @@ namespace SharpAlliance.Core.Managers
         private readonly ScreenManager screenManager;
         private readonly GameContext context;
         private readonly IFileManager files;
+        private readonly Shading shading;
         private readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
 
         private Sdl2Window window;
@@ -178,7 +179,8 @@ namespace SharpAlliance.Core.Managers
             IFileManager fileManager,
             MouseSubSystem mouseSubSystem,
             RenderWorld renderWorld,
-            IScreenManager screenManager)
+            IScreenManager screenManager,
+            Shading shading)
         {
             this.logger = logger;
             this.context = context;
@@ -187,6 +189,7 @@ namespace SharpAlliance.Core.Managers
             this.mouse = mouseSubSystem;
             this.renderWorld = renderWorld;
             this.screenManager = (screenManager as ScreenManager)!;
+            this.shading = shading;
 
             this.gpPrimarySurface = new(SCREEN_WIDTH, SCREEN_HEIGHT);
             this.gpFrameBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -343,19 +346,12 @@ namespace SharpAlliance.Core.Managers
                 hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
 
                 // Set palette from himage
-                // if (hImage.ubBitDepth == 8)
-                // {
-                //     hVObject.pShade8 = ubColorTables[DEFAULT_SHADE_LEVEL];
-                //     hVObject.pGlow8 = ubColorTables[0];
-                // 
-                //     SetVideoObjectPalette(hVObject, hImage.pPalette);
-                // 
-                // }
-
-                if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE))
+                if (hImage.ubBitDepth == 8)
                 {
-                    // Delete himage object
-                    // DestroyImage(hImage);
+                    hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+                    hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
+
+                    SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
                 }
             }
             else
@@ -366,12 +362,56 @@ namespace SharpAlliance.Core.Managers
             // All is well
             //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
 
+//            image = this.CreateIndexedImage(
+//                configuration,
+//                ref image,
+//                ref pHeader,
+//                ref hImage,
+//                ref pSTCIPalette!);
+
             return hVObject;
         }
 
-        private void GetETRLEImageData(HIMAGE? hImage, ref ETRLEData tempETRLEData)
+        private bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
         {
-            throw new NotImplementedException();
+            // Create palette object if not already done so
+            hVObject.pPaletteEntry = pSrcPalette;
+
+            // Create 16BPP Palette
+            hVObject.Palette = hImage.Create16BPPPalette(ref pSrcPalette);
+            hVObject.ShadeCurrentPixels = hVObject.Palette;
+
+            //  DbgMessage(TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Video Object Palette change successfull" ));
+            return true;
+        }
+
+        private bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
+        {
+            if (hImage is null)
+            {
+                return false;
+            }
+
+            // Create memory for data
+            pBuffer.usNumberOfObjects = hImage.Value.usNumberOfObjects;
+
+            // Create buffer for objects
+            pBuffer.pETRLEObject = new ETRLEObject[pBuffer.usNumberOfObjects];
+            //CHECKF(pBuffer.pETRLEObject != null);
+
+            // Copy into buffer
+            pBuffer.pETRLEObject = hImage.Value.pETRLEObject;
+
+            // Allocate memory for pixel data
+            pBuffer.pPixData = new byte[hImage.Value.uiSizePixData];
+            //CHECKF(pBuffer.pPixData != null);
+
+            pBuffer.uiSizePixData = hImage.Value.uiSizePixData;
+
+            // Copy into buffer
+            pBuffer.pPixData = hImage.Value.pImageData;
+
+            return true;
         }
 
         public void RefreshScreen()

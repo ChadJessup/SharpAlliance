@@ -15,15 +15,6 @@ namespace SharpAlliance.Core.Managers.Image
         public const int BUFFER_8BPP = 0x1;
         public const int BUFFER_16BPP = 0x2;
 
-        // Defines for image charactoristics
-        public const int IMAGE_COMPRESSED = 0x0001;
-        public const int IMAGE_TRLECOMPRESSED = 0x0002;
-        public const int IMAGE_PALETTE = 0x0004;
-        public const int IMAGE_BITMAPDATA = 0x0008;
-        public const int IMAGE_APPDATA = 0x0010;
-        public const int IMAGE_ALLIMAGEDATA = 0x000C;
-        public const int IMAGE_ALLDATA = 0x001C;
-
         // Palette structure, mimics that of Win32
 
         public const int AUX_FULL_TILE = 0x01;
@@ -55,19 +46,19 @@ namespace SharpAlliance.Core.Managers.Image
     // TRLE subimage structure, mirroring that of ST(C)I
     public struct ETRLEObject
     {
-        public int uiDataOffset;
-        public int uiDataLength;
-        public int sOffsetX;
-        public int sOffsetY;
-        public int usHeight;
-        public int usWidth;
+        public uint uiDataOffset;
+        public uint uiDataLength;
+        public short sOffsetX;
+        public short sOffsetY;
+        public ushort usHeight;
+        public ushort usWidth;
     }
 
     public struct ETRLEData
     {
         public byte[] pPixData;
-        public int uiSizePixData;
-        public ETRLEObject pETRLEObject;
+        public uint uiSizePixData;
+        public ETRLEObject[] pETRLEObject;
         public int usNumberOfObjects;
     }
 
@@ -86,9 +77,9 @@ namespace SharpAlliance.Core.Managers.Image
 
     public readonly struct SGPPaletteEntry
     {
-        public readonly byte peRed;
-        public readonly byte peGreen;
-        public readonly byte peBlue;
-        public readonly byte peFlags;
+        public readonly byte peRed { get; init; }
+        public readonly byte peGreen { get; init; }
+        public readonly byte peBlue { get; init; }
+        public readonly byte peFlags { get; init; }
     }
 }
