@@ -48,5 +48,10 @@ namespace SharpAlliance.Platform.NullManagers
         {
             throw new NotImplementedException();
         }
+
+        public bool FileRead(Stream stream, Span<byte> buffer, out uint bytesRead)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace SharpAlliance.Core.SubSystems
+﻿using System;
+using System.Threading.Tasks;
+
+namespace SharpAlliance.Core.SubSystems
 {
     public class StrategicMap
     {
@@ -6,5 +9,15 @@
         public int gWorldSectorX { get; set; }
         public int gWorldSectorY { get; set; }
         public int gbWorldSectorZ { get; set; }
+
+        public ValueTask<bool> InitStrategicMovementCosts()
+        {
+            return ValueTask.FromResult(true);
+        }
+
+        public ValueTask<bool> InitStrategicEngine()
+        {
+            return ValueTask.FromResult(true);
+        }
     }
 }

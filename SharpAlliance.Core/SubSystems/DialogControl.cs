@@ -154,6 +154,11 @@ namespace SharpAlliance.Core.SubSystems
 
             return;
         }
+
+        public ValueTask<bool> InitalizeDialogueControl()
+        {
+            return ValueTask.FromResult(true);
+        }
     }
 
     public enum ExternalFaces

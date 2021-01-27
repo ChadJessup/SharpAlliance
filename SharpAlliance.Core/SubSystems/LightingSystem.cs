@@ -1,15 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SharpAlliance.Core.SubSystems
 {
-    public class World
+    public class LightingSystem
     {
-        public void TrashWorld()
-        {
-        }
-
-        public ValueTask<bool> InitializeWorld()
+        public ValueTask<bool> InitLightingSystem()
         {
             return ValueTask.FromResult(true);
         }

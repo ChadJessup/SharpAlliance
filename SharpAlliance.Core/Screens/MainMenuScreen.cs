@@ -37,11 +37,12 @@ namespace SharpAlliance.Core.Screens
             return ValueTask.FromResult(true);
         }
 
-        internal void InitMainMenu()
+        public ValueTask<bool> InitMainMenu()
         {
+            return ValueTask.FromResult(true);
         }
 
-        internal void ClearMainMenu()
+        public void ClearMainMenu()
         {
         }
     }

@@ -66,6 +66,7 @@ namespace SharpAlliance.Core.SubSystems
         }
     }
 
+    [Flags]
     public enum ScrollDirection
     {
         SCROLL_UP = 0x00000001,

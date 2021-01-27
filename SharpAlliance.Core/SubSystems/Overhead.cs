@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -8,6 +9,11 @@ namespace SharpAlliance.Core.SubSystems
 
         public void InitOverhead()
         {
+        }
+
+        public ValueTask<bool> InitTacticalEngine()
+        {
+            return ValueTask.FromResult(true);
         }
     }
 

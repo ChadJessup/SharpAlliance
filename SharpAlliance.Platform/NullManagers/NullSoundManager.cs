@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
@@ -24,5 +21,11 @@ namespace SharpAlliance.Platform.NullManagers
         {
             throw new NotImplementedException();
         }
+
+        public ValueTask<bool> InitSound()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

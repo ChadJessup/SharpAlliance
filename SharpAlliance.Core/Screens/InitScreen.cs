@@ -13,30 +13,72 @@ namespace SharpAlliance.Core.Screens
     // jascreens.c = InitScreen = splashscreen
     public class InitScreen : IScreen
     {
+        private readonly Overhead overhead;
         private readonly GameContext context;
         private readonly VeldridVideoManager video;
         private readonly CursorSubSystem cursor;
         private readonly IVideoSurfaceManager videoSurface;
         private readonly FontSubSystem font;
+        private readonly TileCache tileCache;
+        private readonly MercTextBox mercTextBox;
         private readonly IScreenManager screen;
         private readonly IFileManager fileManager;
+        private readonly TextUtils textUtils;
+        private readonly ISoundManager sounds;
+        private readonly RenderWorld renderWorld;
+        private readonly AnimationData animationData;
+        private readonly LightingSystem lighting;
+        private readonly DialogControl dialogs;
+        private readonly IMusicManager music;
+        private readonly World world;
+        private readonly Shading shading;
+        private readonly StrategicMap strategicMap;
+        private readonly EventManager eventManager;
 
         public InitScreen(
+            Overhead overhead,
+            StrategicMap strategicMap,
+            World world,
             GameContext context,
             CursorSubSystem cursorSubSystem,
             IVideoManager videoManager,
             IVideoSurfaceManager videoSurfaceManager,
             FontSubSystem fontSubSystem,
+            EventManager eventManager,
             IScreenManager sm,
-            IFileManager fileManager)
+            IFileManager fileManager,
+            Shading shading,
+            TextUtils textUtils,
+            ISoundManager soundManager,
+            RenderWorld renderWorld,
+            AnimationData animationData,
+            TileCache tileCache,
+            MercTextBox mercTextBox,
+            LightingSystem lightingSystem,
+            DialogControl dialogControl,
+            IMusicManager musicManager)
         {
+            this.overhead = overhead;
+            this.eventManager = eventManager;
+            this.shading = shading;
+            this.strategicMap = strategicMap;
+            this.world = world;
             this.context = context;
             this.video = (videoManager as VeldridVideoManager)!;
             this.cursor = cursorSubSystem;
             this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
+            this.tileCache = tileCache;
+            this.mercTextBox = mercTextBox;
             this.screen = sm;
             this.fileManager = fileManager;
+            this.textUtils = textUtils;
+            this.lighting = lightingSystem;
+            this.sounds = soundManager;
+            this.renderWorld = renderWorld;
+            this.music = musicManager;
+            this.animationData = animationData;
+            this.dialogs = dialogControl;
         }
 
         public bool IsInitialized { get; set; }
@@ -49,9 +91,9 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<bool> Initialize()
         {
-
             return ValueTask.FromResult(true);
         }
+
         public static HVSURFACE? hVSurface;
         public static byte ubCurrentScreen = 255;
 
@@ -87,7 +129,7 @@ namespace SharpAlliance.Core.Screens
                     return ScreenName.ERROR_SCREEN;
                 }
 
-                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture);
+                //this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture);
                 //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
                 ubCurrentScreen = 1;
 
@@ -130,7 +172,8 @@ namespace SharpAlliance.Core.Screens
             if (ubCurrentScreen == 2)
             {
                 var mainMenuScreen = (await this.screen.GetScreen(ScreenName.MAINMENU_SCREEN, activate: true) as MainMenuScreen)!;
-                mainMenuScreen.InitMainMenu();
+                await mainMenuScreen.InitMainMenu();
+
                 ubCurrentScreen = 3;
                 return ScreenName.InitScreen;
             }
@@ -154,10 +197,72 @@ namespace SharpAlliance.Core.Screens
             return ScreenName.InitScreen;
         }
 
-        public ValueTask<ScreenName> InitializeJA2()
+        public async ValueTask<ScreenName> InitializeJA2()
         {
+            await this.textUtils.LoadAllExternalText();
+            await this.sounds.InitSound();
 
-            return ValueTask.FromResult(ScreenName.InitScreen);
+            this.renderWorld.gsRenderCenterX = 805;
+            this.renderWorld.gsRenderCenterY = 805;
+
+            if (!await this.animationData.InitAnimationSystem())
+            {
+                return ScreenName.ERROR_SCREEN;
+            }
+
+            await this.lighting.InitLightingSystem();
+
+            // Init dialog queue system
+            await this.dialogs.InitalizeDialogueControl();
+
+
+            if (!await this.strategicMap.InitStrategicEngine())
+            {
+                return ScreenName.ERROR_SCREEN;
+            }
+
+            //needs to be called here to init the SectorInfo struct
+            await this.strategicMap.InitStrategicMovementCosts();
+
+            // Init tactical engine
+            if (!await this.overhead.InitTacticalEngine())
+            {
+                return ScreenName.ERROR_SCREEN;
+            }
+
+            // Init timer system
+            //Moved to the splash screen code.
+            //InitializeJA2Clock( );
+
+            // INit shade tables
+            await this.shading.BuildShadeTable();
+
+            // INit intensity tables
+            await this.shading.BuildIntensityTable();
+
+            // Init Event Manager
+            if (!await this.eventManager.InitializeEventManager())
+            {
+                return ScreenName.ERROR_SCREEN;
+            }
+
+            // Initailize World
+            if (!await this.world.InitializeWorld())
+            {
+                return ScreenName.ERROR_SCREEN;
+            }
+
+            bool s = await this.tileCache.InitTileCache();
+
+            bool t = await this.mercTextBox.InitMercPopupBox();
+
+            // Set global volume
+            this.music.MusicSetVolume(1);// gGameSettings.ubMusicVolumeSetting);
+
+            await this.shading.DetermineRGBDistributionSettings();
+
+
+            return ScreenName.InitScreen;
         }
 
         public void Dispose()

@@ -4,6 +4,7 @@
     {
         bool MusicPoll(bool force);
         void SetMusicMode(MusicMode nONE);
+        void MusicSetVolume(byte v);
     }
 
     public enum MusicMode

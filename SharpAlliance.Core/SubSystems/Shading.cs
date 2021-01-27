@@ -15,5 +15,20 @@ namespace SharpAlliance.Core.SubSystems
         public const int MAX_SHADE_LEVEL = 15;
 
         public byte[,] ubColorTables = new byte[VideoObjectManager.Constants.HVOBJECT_SHADE_TABLES + 3, 256];
+
+        public ValueTask<bool> BuildShadeTable()
+        {
+            return ValueTask.FromResult(true);
+        }
+
+        public ValueTask<bool> BuildIntensityTable()
+        {
+            return ValueTask.FromResult(true);
+        }
+
+        public ValueTask<bool> DetermineRGBDistributionSettings()
+        {
+            return ValueTask.FromResult(true);
+        }
     }
 }

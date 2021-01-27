@@ -78,7 +78,11 @@ namespace SharpAlliance
             builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
             builder.AddDependency<IVideoManager, VeldridVideoManager>();
+            builder.AddDependency<ISoundManager, SoundManager>();
 
+            builder.Services.AddSingleton<MercTextBox>();
+            builder.Services.AddSingleton<TileCache>();
+            builder.Services.AddSingleton<EventManager>();
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<RenderWorld>();
             builder.Services.AddSingleton<FontSubSystem>();
@@ -119,6 +123,10 @@ namespace SharpAlliance
             builder.Services.AddSingleton<InterfaceDialogSubSystem>();
             builder.Services.AddSingleton<Faces>();
             builder.Services.AddSingleton<Shading>();
+            builder.Services.AddSingleton<TextUtils>();
+            builder.Services.AddSingleton<AnimationData>();
+            builder.Services.AddSingleton<StructureFile>();
+            builder.Services.AddSingleton<LightingSystem>();
 
             return builder;
         }

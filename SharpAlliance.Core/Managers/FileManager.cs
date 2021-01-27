@@ -33,7 +33,7 @@ namespace SharpAlliance.Core.Managers
             return ValueTask.FromResult(true);
         }
 
-        public Stream FileOpen(string strFilename, FileAccess uiOptions, bool fDeleteOnClose)
+        public Stream FileOpen(string strFilename, FileAccess uiOptions, bool fDeleteOnClose = false)
         {
             Stream hFile = Stream.Null;
             FileStream? realFileStream = null;
@@ -239,6 +239,13 @@ namespace SharpAlliance.Core.Managers
         public bool FileRead(Stream stream, ref byte[] buffer, uint uiBytesToRead, out uint uiBytesRead)
         {
             uiBytesRead = (uint)stream.Read(buffer, 0, (int)uiBytesToRead);
+
+            return true;
+        }
+
+        public bool FileRead(Stream stream, Span<byte> buffer, out uint bytesRead)
+        {
+            bytesRead = (uint)stream.Read(buffer);
 
             return true;
         }
