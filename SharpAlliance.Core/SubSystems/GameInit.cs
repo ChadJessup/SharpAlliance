@@ -149,9 +149,9 @@ namespace SharpAlliance.Core.SubSystems
             this.turnBasedInput.gubCheatLevel = Cheats.STARTING_CHEAT_LEVEL;
         }
 
-        private bool InitNewGame(bool fReset)
+        public ValueTask<bool> InitNewGame(bool fReset)
         {
-            return true;
+            return ValueTask.FromResult(true);
         }
     }
 }

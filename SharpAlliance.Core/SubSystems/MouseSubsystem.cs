@@ -28,7 +28,6 @@ namespace SharpAlliance.Core.SubSystems
 
         private bool MSYS_ScanForID = false;
         private int MSYS_CurrentID = MSYS_ID.SYSTEM;
-
         private int MSYS_CurrentMX = 0;
         private int MSYS_CurrentMY = 0;
         private ButtonMasks MSYS_CurrentButtons;
@@ -270,6 +269,10 @@ namespace SharpAlliance.Core.SubSystems
                     //DbgMessage(TOPIC_MOUSE_SYSTEM, DBG_LEVEL_0, "ERROR -- MSYS 2 SGP Mouse Hook got bad type");
                     break;
             }
+        }
+
+        public void MSYS_AddRegion(ref MouseRegion gBackRegion)
+        {
         }
 
 
@@ -601,9 +604,9 @@ namespace SharpAlliance.Core.SubSystems
         //
         //	Sets the mouse cursor to the regions defined value.
         //
-        private void MSYS_SetCurrentCursor(int Cursor)
+        private void MSYS_SetCurrentCursor(Cursor cursor)
         {
-            this.cursors.SetCurrentCursorFromDatabase(Cursor);
+            this.cursors.SetCurrentCursorFromDatabase(cursor);
         }
 
         //======================================================================================================
@@ -632,17 +635,8 @@ namespace SharpAlliance.Core.SubSystems
         //	Removes a region from the list, disables it, then calls the callback functions for
         //	de-initialization.
         //
-        void MSYS_RemoveRegion(ref MouseRegion? region)
+        public void MSYS_RemoveRegion(ref MouseRegion region)
         {
-            if (region is null)
-            {
-#if MOUSESYSTEM_DEBUGGING
-                if (gfIgnoreShutdownAssertions)
-#endif
-                return;
-                //AssertMsg(0, "Attempting to remove a null region.");
-            }
-
             if (!region.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
             {
                 // AssertMsg(0, "Attempting to remove an already removed region.");
@@ -822,7 +816,7 @@ namespace SharpAlliance.Core.SubSystems
                         }
                     }
                 }
-            
+
                 this.MSYS_CurrentID = Current;
             }
 
@@ -853,6 +847,87 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             return found;
+        }
+
+        //=================================================================================================
+        //	MSYS_DefineRegion
+        //
+        //	Inits a MOUSE_REGION structure for use with the mouse system
+        //
+        public void MSYS_DefineRegion(
+            ref MouseRegion region,
+            ushort tlx,
+            ushort tly,
+            ushort brx,
+            ushort bry,
+            MSYS_PRIORITY priority,
+            Cursor crsr,
+            MouseCallback? movecallback,
+            MouseCallback? buttoncallback)
+        {
+            region.IDNumber = MSYS_ID.BASE;
+
+            if (priority == MSYS_PRIORITY.AUTO)
+            {
+                priority = MSYS_PRIORITY.BASE;
+            }
+            else if (priority <= MSYS_PRIORITY.LOWEST)
+            {
+                priority = MSYS_PRIORITY.LOWEST;
+            }
+            else if (priority >= MSYS_PRIORITY.HIGHEST)
+            {
+                priority = MSYS_PRIORITY.HIGHEST;
+            }
+
+            region.PriorityLevel = priority;
+
+            region.uiFlags = MouseRegionFlags.NO_FLAGS;
+
+            region.MovementCallback = movecallback;
+            if (movecallback is not null)
+            {
+                region.uiFlags |= MouseRegionFlags.MOVE_CALLBACK;
+            }
+
+            region.ButtonCallback = buttoncallback;
+            if (buttoncallback is not null)
+            {
+                region.uiFlags |= MouseRegionFlags.BUTTON_CALLBACK;
+            }
+
+            
+            region.Cursor = crsr;
+            if (crsr != Cursor.MSYS_NO_CURSOR)
+            {
+                region.uiFlags |= MouseRegionFlags.SET_CURSOR;
+            }
+
+            region.RegionTopLeftX = tlx;
+            region.RegionTopLeftY = tly;
+            region.RegionBottomRightX = brx;
+            region.RegionBottomRightY = bry;
+
+            region.MouseXPos = 0;
+            region.MouseYPos = 0;
+            region.RelativeXPos = 0;
+            region.RelativeYPos = 0;
+            region.ButtonState = 0;
+
+            //Init fasthelp
+            region.FastHelpText = null;
+            region.FastHelpTimer = 0;
+
+            region.next = null;
+            region.prev = null;
+            region.HelpDoneCallback = null;
+
+            //Add region to system list
+            MSYS_AddRegionToList(ref region);
+            region.uiFlags |= MouseRegionFlags.REGION_ENABLED | MouseRegionFlags.REGION_EXISTS;
+
+            // Dirty our update flag
+            gfRefreshUpdate = true;
         }
 
         //======================================================================================================
@@ -945,7 +1020,7 @@ namespace SharpAlliance.Core.SubSystems
         public int RelativeXPos;             // Mouse's Coordinates relative to the Top-Left corner of the region
         public int RelativeYPos;
         public ButtonMasks ButtonState;             // Current state of the mouse buttons
-        public int Cursor;                          // Cursor to use when mouse in this region (see flags)
+        public Cursor Cursor;                          // Cursor to use when mouse in this region (see flags)
         public MouseCallback? MovementCallback;        // Pointer to callback function if movement occured in this region
         public MouseCallback? ButtonCallback;      // Pointer to callback function if button action occured in this region
         public int[] UserData = new int[4];        // User Data, can be set to anything!
@@ -1050,7 +1125,7 @@ namespace SharpAlliance.Core.SubSystems
         public int usLeft, usTop, usRight, usBottom;
         public Rectangle Region;
         public Texture _pSurface;
-        public Texture  pSurface;
+        public Texture pSurface;
     }
 
     public delegate void MouseCallback(MouseRegion region, MouseCallbackReasons callbackReason);

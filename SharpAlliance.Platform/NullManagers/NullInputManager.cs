@@ -45,5 +45,10 @@ namespace SharpAlliance.Platform.NullManagers
         public void ProcessEvents()
         {
         }
+
+        public void DequeueAllKeyBoardEvents()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

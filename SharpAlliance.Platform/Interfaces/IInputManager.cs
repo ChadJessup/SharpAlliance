@@ -12,6 +12,7 @@ namespace SharpAlliance.Platform.Interfaces
         void GetCursorPosition(out Point mousePos);
         bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents);
         void ProcessEvents();
+        void DequeueAllKeyBoardEvents();
     }
 
     //public readonly struct KeyEvent

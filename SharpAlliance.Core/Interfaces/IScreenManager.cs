@@ -19,5 +19,6 @@ namespace SharpAlliance.Core.Interfaces
 
         void EndMapScreen(bool v);
         void ExitLaptop();
+        ValueTask SetPendingNewScreen(ScreenName pendingScreen);
     }
 }

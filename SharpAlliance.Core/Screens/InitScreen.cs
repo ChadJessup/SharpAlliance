@@ -34,8 +34,10 @@ namespace SharpAlliance.Core.Screens
         private readonly Shading shading;
         private readonly StrategicMap strategicMap;
         private readonly EventManager eventManager;
+        private readonly GameInit gameInit;
 
         public InitScreen(
+            GameInit gameInit,
             Overhead overhead,
             StrategicMap strategicMap,
             World world,
@@ -74,6 +76,7 @@ namespace SharpAlliance.Core.Screens
             this.fileManager = fileManager;
             this.textUtils = textUtils;
             this.lighting = lightingSystem;
+            this.gameInit = gameInit;
             this.sounds = soundManager;
             this.renderWorld = renderWorld;
             this.music = musicManager;
@@ -110,7 +113,7 @@ namespace SharpAlliance.Core.Screens
                 }
                 else
                 {
-                    this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
+                    this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
                     return ScreenName.INTRO_SCREEN;
                 }
             }
@@ -121,7 +124,6 @@ namespace SharpAlliance.Core.Screens
                 vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
                 vs_desc.ImageFile = "ja2_logo.STI";
-
                 hVSurface = await this.videoSurface.CreateVideoSurface(vs_desc, this.fileManager);
                 if (hVSurface is null)
                 {
@@ -129,7 +131,7 @@ namespace SharpAlliance.Core.Screens
                     return ScreenName.ERROR_SCREEN;
                 }
 
-                //this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture);
+                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture);
                 //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
                 ubCurrentScreen = 1;
 
@@ -158,7 +160,7 @@ namespace SharpAlliance.Core.Screens
                 // this.videoSurface.DeleteVideoSurface(hVSurface);
                 //ATE: Set to true to reset before going into main screen!
 
-                this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
 
                 return ScreenName.InitScreen;
             }
@@ -183,15 +185,15 @@ namespace SharpAlliance.Core.Screens
             {
                 ubCurrentScreen = 4;
 
-                this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
                 return ScreenName.InitScreen;
             }
 
             if (ubCurrentScreen == 4)
             {
-                this.cursor.SetCurrentCursorFromDatabase(IVideoManager.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
                 // TODO: Strategic stuff
-                // InitNewGame(false);
+                await this.gameInit.InitNewGame(false);
             }
 
             return ScreenName.InitScreen;

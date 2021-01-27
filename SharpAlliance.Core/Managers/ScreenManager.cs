@@ -148,6 +148,11 @@ namespace SharpAlliance.Core.Managers
         public void ExitLaptop()
         {
         }
+
+        public async ValueTask SetPendingNewScreen(ScreenName pendingScreen)
+        {
+            this.guiPendingScreen = await this.GetScreen(pendingScreen, activate: false);
+        }
     }
 
     public interface IScreen : IDisposable

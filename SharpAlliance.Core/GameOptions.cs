@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core
+﻿using System;
+
+namespace SharpAlliance.Core
 {
     public class GameOptions
     {
@@ -7,6 +9,10 @@
         public DifficultyLevel DifficultyLevel { get; set; } = DifficultyLevel.Easy;
         public bool TurnTimeLimit { get; set; } = false;
         public bool IronManMode { get; set; } = false;
+
+        public void InitGameOptions()
+        {
+        }
     }
 
     public class GameSettings

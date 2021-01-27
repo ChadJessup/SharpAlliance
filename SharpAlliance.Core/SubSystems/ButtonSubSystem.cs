@@ -213,6 +213,11 @@ namespace SharpAlliance.Core.SubSystems
             return true;
         }
 
+        public bool DisableButton(int iButtonID)
+        {
+            return false;
+        }
+
         private bool GetETRLEPixelValue(
             ref byte pDest,
             HVOBJECT hVObject,

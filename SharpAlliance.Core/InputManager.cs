@@ -249,5 +249,9 @@ namespace SharpAlliance.Core
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", ExactSpelling = true)]
         public static extern bool GetCursorPos(out Point lpPoint);
+
+        public void DequeueAllKeyBoardEvents()
+        {
+        }
     }
 }
