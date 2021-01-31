@@ -43,7 +43,7 @@ namespace SharpAlliance.Core.Managers.Image
         public List<Image<Rgba32>> ParsedImages { get; set; }
         public const ushort BLACK_SUBSTITUTE = 0x0001;
 
-        public static async ValueTask<HIMAGE> CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager, VOBJECT_DESC? vobject = null)
+        public static HIMAGE CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager, VOBJECT_DESC? vobject = null)
         {
             HIMAGE hImage;
             var ext = Path.GetExtension(imageFilePath);
@@ -68,7 +68,7 @@ namespace SharpAlliance.Core.Managers.Image
                 ParsedImages = new(),
             };
 
-            hImage = await LoadImage(hImage, createFlags, fileManager);
+            hImage = LoadImage(hImage, createFlags, fileManager);
             if (hImage.ParsedImages is null)
             {
                 throw new InvalidProgramException($"{nameof(hImage.ParsedImages)} was null");
@@ -156,9 +156,9 @@ namespace SharpAlliance.Core.Managers.Image
             return palette;
         }
 
-        private static async ValueTask<HIMAGE> LoadImage(HIMAGE hImage, HIMAGECreateFlags createFlags, IFileManager fileManager)
+        private static HIMAGE LoadImage(HIMAGE hImage, HIMAGECreateFlags createFlags, IFileManager fileManager)
         {
-            bool fReturnVal = await hImage.iFileLoader.LoadImage(ref hImage, createFlags, fileManager);
+            bool fReturnVal = hImage.iFileLoader.LoadImage(ref hImage, createFlags, fileManager);
 
             // TODO: log
             if (!fReturnVal)

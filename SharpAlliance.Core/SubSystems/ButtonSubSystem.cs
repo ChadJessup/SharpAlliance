@@ -177,7 +177,7 @@ namespace SharpAlliance.Core.SubSystems
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_OFF;
 
-            this.GenericButtonOffNormal[0] = await this.video.CreateVideoObject(vo_desc);
+            this.GenericButtonOffNormal[0] = this.video.CreateVideoObject(ref vo_desc);
             if (this.GenericButtonOffNormal[0] == null)
             {
                 //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_OFF);
@@ -187,7 +187,7 @@ namespace SharpAlliance.Core.SubSystems
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_ON;
 
-            if ((this.GenericButtonOnNormal[0] = await this.video.CreateVideoObject(vo_desc)) == null)
+            if ((this.GenericButtonOnNormal[0] = this.video.CreateVideoObject(ref vo_desc)) == null)
             {
                 //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_ON);
                 return false;
@@ -199,12 +199,12 @@ namespace SharpAlliance.Core.SubSystems
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_OFF_HI;
 
-            this.GenericButtonOffHilite[0] = await this.video.CreateVideoObject(vo_desc);
+            this.GenericButtonOffHilite[0] = this.video.CreateVideoObject(ref vo_desc);
 
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_ON_HI;
 
-            this.GenericButtonOnHilite[0] = await this.video.CreateVideoObject(vo_desc);
+            this.GenericButtonOnHilite[0] = this.video.CreateVideoObject(ref vo_desc);
 
             Pix = 0;
             if (!this.GetETRLEPixelValue(ref Pix, this.GenericButtonOffNormal[0], 8, 0, 0))

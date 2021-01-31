@@ -13,15 +13,15 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        public void SetFont(object tINYFONT1)
+        public void SetFont(FontStyle fontStyle)
         {
         }
 
-        public void SetFontBackground(object fONT_MCOLOR_BLACK)
+        public void SetFontBackground(FontColor fontColor)
         {
         }
 
-        public void SetFontForeground(object fONT_MCOLOR_WHITE)
+        public void SetFontForeground(FontColor fontColor)
         {
         }
 

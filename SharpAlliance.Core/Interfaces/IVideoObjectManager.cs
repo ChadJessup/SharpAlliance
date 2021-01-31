@@ -10,7 +10,7 @@ namespace SharpAlliance.Core.Interfaces
 {
     public interface IVideoObjectManager : ISharpAllianceManager
     {
-        bool GetVideoObject(int uiLogoID, out HVOBJECT hPixHandle);
+        bool GetVideoObject(string key, out HVOBJECT hPixHandle);
         bool BltVideoObject(
             uint uiDestVSurface,
             HVOBJECT hSrcVObject,

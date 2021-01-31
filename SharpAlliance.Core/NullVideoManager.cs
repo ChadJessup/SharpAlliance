@@ -5,6 +5,7 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
 namespace SharpAlliance.Core.NullManagers
 {
@@ -18,7 +19,7 @@ namespace SharpAlliance.Core.NullManagers
         public uint guiEXTRABUFFER { get; set; }
         public bool gfExtraBuffer { get; set; }
 
-        public bool AddVideoObject(ref VOBJECT_DESC vObjectDesc, out int uiLogoID)
+        public bool AddVideoObject(ref VOBJECT_DESC vObjectDesc, out string uiLogoID)
         {
             throw new System.NotImplementedException();
         }
@@ -33,7 +34,27 @@ namespace SharpAlliance.Core.NullManagers
             throw new System.NotImplementedException();
         }
 
+        public void BltVideoObject(uint fRAME_BUFFER, (Texture, HVOBJECT) videoObject, int regionIndex, int X, int Y, int fBltFlags, ref blt_fx pBltFx)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void BltVideoObject(uint fRAME_BUFFER, (Texture, HVOBJECT) videoObject, int regionIndex, int X, int Y, int fBltFlags, ref blt_fx? pBltFx)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void BltVideoObject(uint fRAME_BUFFER, (Texture, HVOBJECT) videoObject, int regionIndex, int X, int Y, int fBltFlags, blt_fx? pBltFx = null)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DeleteVideoObjectFromIndex(string logoKey)
         {
             throw new System.NotImplementedException();
         }
@@ -61,7 +82,12 @@ namespace SharpAlliance.Core.NullManagers
             throw new System.NotImplementedException();
         }
 
-        public void GetVideoObject(out HVOBJECT hPixHandle, int guiMainMenuBackGroundImage)
+        public void GetVideoObject(string key, out HVOBJECT hPixHandle)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void GetVideoObject(string key, out (Texture, HVOBJECT) hPixHandle)
         {
             throw new System.NotImplementedException();
         }

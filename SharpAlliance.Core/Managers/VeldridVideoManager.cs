@@ -22,6 +22,9 @@ using Veldrid.Utilities;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 using SharpAlliance.Core.Managers.VideoSurfaces;
+using System.Collections.Generic;
+using SixLabors.Fonts;
+using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -46,7 +49,8 @@ namespace SharpAlliance.Core.Managers
         const int DDERR_SURFACELOST = 0x9700000;
 
         private readonly ILogger<VeldridVideoManager> logger;
-        private readonly VideoObjectManager videoObject;
+
+        private Dictionary<string, (Texture, HVOBJECT)> loadedTextures = new();
 
         // private readonly WindowsSubSystem windows;
         private readonly IInputManager inputs;
@@ -188,11 +192,9 @@ namespace SharpAlliance.Core.Managers
             MouseSubSystem mouseSubSystem,
             RenderWorld renderWorld,
             IScreenManager screenManager,
-            IVideoObjectManager videoObjectManager,
             Shading shading)
         {
             this.logger = logger;
-            this.videoObject = (videoObjectManager as VideoObjectManager)!;
             this.context = context;
             this.files = fileManager;
             this.inputs = (inputManager as InputManager)!;
@@ -295,11 +297,15 @@ namespace SharpAlliance.Core.Managers
 
         public void DrawFrame()
         {
-            //            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), this.backBuffer);
             this.commandList.Begin();
 
             this.commandList.SetFramebuffer(this.mainSwapchain.Framebuffer);
-            // this.commandList.ClearColorTarget(0, this.clearColor);
+
+            if (this.gfForceFullScreenRefresh || this.clearScreen)
+            {
+                //this.commandList.ClearColorTarget(0, this.clearColor);
+                this.clearScreen = false;
+            }
 
             this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
 
@@ -322,11 +328,17 @@ namespace SharpAlliance.Core.Managers
         public static Stream OpenEmbeddedAssetStream(string name)
             => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-        public bool AddVideoObject(ref VOBJECT_DESC pVObjectDesc, out int puiIndex)
+        public bool AddVideoObject(ref VOBJECT_DESC pVObjectDesc, out string key)
         {
-            puiIndex = -1;
+            if (this.loadedTextures.ContainsKey(pVObjectDesc.ImageFile))
+            {
+                key = pVObjectDesc.ImageFile;
+                return true;
+            }
+
+            key = string.Empty;
             // Create video object
-            HVOBJECT? hVObject = CreateVideoObject(pVObjectDesc).AsTask().Result;
+            HVOBJECT? hVObject = this.CreateVideoObject(ref pVObjectDesc);
 
             if (hVObject is null)
             {
@@ -334,49 +346,23 @@ namespace SharpAlliance.Core.Managers
                 return false;
             }
 
-            // Set transparency to default
-            // SetVideoObjectTransparencyColor(hVObject, FROMRGB(0, 0, 0));
+            var texture = new ImageSharpTexture(pVObjectDesc.hImage.ParsedImages[0], mipmap: false)
+                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
 
-            // Set into video object list
-            if (this.videoObject.gpVObjectHead is not null)
-            { //Add node after tail
-                this.videoObject.gpVObjectTail.next = new VOBJECT_NODE
-                {
-                    prev = this.videoObject.gpVObjectTail,
-                    next = null,
-                };
+            this.loadedTextures.Add(
+                pVObjectDesc.ImageFile,
+                (texture, hVObject));
 
-                this.videoObject.gpVObjectTail = this.videoObject.gpVObjectTail.next;
-            }
-            else
-            { //new list
-                this.videoObject.gpVObjectHead = new VOBJECT_NODE();
-                this.videoObject.gpVObjectHead.prev = this.videoObject.gpVObjectHead.next = null;
-                this.videoObject.gpVObjectTail = this.videoObject.gpVObjectHead;
-            }
-
-            this.videoObject.gpVObjectTail.pName = null;
-            this.videoObject.gpVObjectTail.pCode = null;
-
-            //Set the hVObject into the node.
-            this.videoObject.gpVObjectTail.hVObject = hVObject;
-            this.videoObject.gpVObjectTail.uiIndex = this.videoObject.guiVObjectIndex += 2;
-            puiIndex = this.videoObject.gpVObjectTail.uiIndex;
-
-            this.videoObject.guiVObjectSize++;
-            this.videoObject.guiVObjectTotalAdded++;
-
-            if (this.videoObject.CountVideoObjectNodes() != this.videoObject.guiVObjectSize)
-            {
-                this.videoObject.guiVObjectSize = this.videoObject.guiVObjectSize;
-            }
+            key = pVObjectDesc.ImageFile;
 
             return true;
         }
 
-        public async ValueTask<HVOBJECT> CreateVideoObject(VOBJECT_DESC VObjectDesc)
+        public HVOBJECT CreateVideoObject(ref VOBJECT_DESC VObjectDesc)
         {
             HVOBJECT hVObject = new();
+            hVObject.Name = VObjectDesc.ImageFile;
+
             HIMAGE hImage;
             ETRLEData TempETRLEData = new();
 
@@ -385,7 +371,7 @@ namespace SharpAlliance.Core.Managers
                 if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE))
                 {
                     // Create himage object from file
-                    hImage = await HIMAGE.CreateImage(VObjectDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
+                    hImage = HIMAGE.CreateImage(VObjectDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
 
                     // Get TRLE data
                     this.GetETRLEImageData(hImage, ref TempETRLEData);
@@ -402,16 +388,8 @@ namespace SharpAlliance.Core.Managers
                         hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
                         hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
 
-                        SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+                        this.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
                     }
-
-                    var img = hImage.ParsedImages!;
-
-                    //hImage.ParsedImage = new STCIImageFileLoader().CreateIndexedImage(
-                    //    hImage.ParsedImage.GetConfiguration(),
-                    //    ref img,
-                    //    ref hImage, 
-                    //    ref hVObject);
                 }
                 else
                 { // create video object from provided hImage
@@ -435,10 +413,12 @@ namespace SharpAlliance.Core.Managers
             // All is well
             //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
 
+            VObjectDesc.hImage = hImage;
+
             return hVObject;
         }
 
-        private bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
+        public bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
         {
             // Create palette object if not already done so
             hVObject.pPaletteEntry = pSrcPalette;
@@ -454,14 +434,17 @@ namespace SharpAlliance.Core.Managers
 
             for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
             {
-                hImage.ParsedImages[i]!.SaveAsPng($@"c:\assets\{Path.GetFileNameWithoutExtension(hImage.ImageFile)}_{i}.png");
+                var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
+                var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile));
+                Directory.CreateDirectory(directory);
+                hImage.ParsedImages[i]!.SaveAsPng(Path.Combine(directory, fileName));
             }
 
             //  DbgMessage(TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Video Object Palette change successfull" ));
             return true;
         }
 
-        private bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
+        public bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
         {
             if (hImage is null)
             {
@@ -1085,8 +1068,9 @@ namespace SharpAlliance.Core.Managers
         private GraphicsOptions overLayOptions = new()
         {
         };
+        private bool clearScreen;
 
-        private unsafe void BlitRegion(
+        private void BlitRegion(
             Texture texture,
             Point destinationPoint,
             Rectangle sourceRegion,
@@ -1101,26 +1085,7 @@ namespace SharpAlliance.Core.Managers
                 new Veldrid.Point(destinationPoint.X, destinationPoint.Y),
                 new Veldrid.Point(sourceRegion.Width, sourceRegion.Height));
 
-            this.SpriteRenderer.AddSprite(finalRect, newTexture);
-
-            //srcImage.TryGetSinglePixelSpan(out var pixelSpan);
-            //
-            //fixed (void* data = &MemoryMarshal.GetReference(pixelSpan))
-            //{
-            //    uint size = (uint)(srcImage.Width * srcImage.Height * 4);
-            //    this.GraphicDevice.UpdateTexture(
-            //        texture, 
-            //        (IntPtr)data, 
-            //        size, 
-            //        0, 
-            //        0, 
-            //        0, 
-            //        texture.Width, 
-            //        texture.Height, 
-            //        1, 
-            //        0, 
-            //        0);
-            //}
+            this.SpriteRenderer.AddSprite(finalRect, newTexture, newTexture.GetHashCode().ToString());
         }
 
         private void ScrollJA2Background(
@@ -1573,6 +1538,8 @@ namespace SharpAlliance.Core.Managers
 
         public void InvalidateScreen()
         {
+            this.clearScreen = true;
+
             this.guiDirtyRegionCount = 0;
             this.guiDirtyRegionExCount = 0;
             this.gfForceFullScreenRefresh = true;
@@ -1596,17 +1563,27 @@ namespace SharpAlliance.Core.Managers
         {
         }
 
-        public void GetVideoObject(out HVOBJECT hPixHandle, int guiMainMenuBackGroundImage)
+        public void GetVideoObject(string key, out (Texture, HVOBJECT) hPixHandle)
         {
-            hPixHandle = new();
+            if (!this.loadedTextures.TryGetValue(key, out hPixHandle))
+            {
+                this.logger.LogError("Unable to retrive VideoObject with key: " + key);
+            }
         }
 
-        public void BltVideoObject(uint fRAME_BUFFER, HVOBJECT hPixHandle, int v1, int v2, int v3, int vO_BLT_SRCTRANSPARENCY, object p)
+        public void BltVideoObject(uint frameBuffer, (Texture, HVOBJECT) videoObject, int regionIndex, int X, int Y, int fBltFlags, blt_fx? pBltFx)
         {
+            this.SpriteRenderer.AddSprite(
+                position: new Vector2(X, Y),
+                videoObject: videoObject);
         }
 
-        public void DrawTextToScreen(string v1, int v2, int v3, int v4, FontStyle fONT10ARIAL, FontColor fONT_MCOLOR_WHITE, FontColor fONT_MCOLOR_BLACK, bool v5, TextJustifies cENTER_JUSTIFIED)
+        public void DrawTextToScreen(string text, int usLocX, int usLocY, int width, FontStyle fontStyle, FontColor fontForegroundColor, FontColor fontBackgroundColor, bool dirty, TextJustifies justification)
         {
+            //TextRenderer = new TextRenderer(_gd);
+            //textRenderer.DrawText("0");
+
+            //this.RenderText()
         }
 
         public void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
@@ -1616,12 +1593,12 @@ namespace SharpAlliance.Core.Managers
 
         public void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap)
         {
-            throw new NotImplementedException();
+            vs_desc = new();
+            uiTempMap = 0;
         }
 
         public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette)
         {
-            throw new NotImplementedException();
         }
 
         public ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
@@ -1631,7 +1608,11 @@ namespace SharpAlliance.Core.Managers
 
         public void DeleteVideoSurfaceFromIndex(uint uiTempMap)
         {
-            throw new NotImplementedException();
+        }
+
+        public void DeleteVideoObjectFromIndex(string key)
+        {
+            //this.loadedTextures.Remove(logoKey);
         }
     }
 

@@ -22,11 +22,11 @@ namespace SharpAlliance.Core.Managers.Image
         public const int STCI_8BIT_PALETTE_SIZE = 768;
         public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
-        public ValueTask<bool> LoadImage(ref HIMAGE hImage, HIMAGECreateFlags flags, IFileManager fileManager)
+        public bool LoadImage(ref HIMAGE hImage, HIMAGECreateFlags flags, IFileManager fileManager)
         {
             if (!fileManager.FileExists(hImage.ImageFile))
             {
-                return ValueTask.FromResult(false);
+                return false;
             }
 
             using var stream = fileManager.FileOpen(hImage.ImageFile, FileAccess.Read, fDeleteOnClose: false);
@@ -45,7 +45,7 @@ namespace SharpAlliance.Core.Managers.Image
             hImage.usWidth = i.Width;
             hImage.usHeight = i.Height;
 
-            return ValueTask.FromResult(true);
+            return true;
         }
 
         public Image<TPixel> Decode<TPixel>(Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>

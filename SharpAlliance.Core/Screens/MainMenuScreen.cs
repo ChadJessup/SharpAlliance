@@ -8,6 +8,7 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -51,8 +52,8 @@ namespace SharpAlliance.Core.Screens
 
         ushort[] gusMainMenuButtonWidths = new ushort[(int)MainMenuItems.NUM_MENU_ITEMS];
 
-        int guiMainMenuBackGroundImage;
-        int guiJa2LogoImage;
+        string guiMainMenuBackGroundImage;
+        string guiJa2LogoImage;
 
         private MouseRegion gBackRegion = new();
         private MainMenuItems gbHandledMainMenu = 0;
@@ -166,7 +167,6 @@ namespace SharpAlliance.Core.Screens
                 this.music.SetMusicMode(MusicMode.MAIN_MENU);
             }
 
-
             if (fInitialRender)
             {
                 ClearMainMenu();
@@ -176,7 +176,6 @@ namespace SharpAlliance.Core.Screens
             }
 
             this.RestoreButtonBackGrounds();
-
 
             // Render buttons
             for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
@@ -213,7 +212,6 @@ namespace SharpAlliance.Core.Screens
 
         private void ExitMainMenu()
         {
-            throw new NotImplementedException();
         }
 
         private void HandleMainMenuScreen()
@@ -298,20 +296,24 @@ namespace SharpAlliance.Core.Screens
 
             for (cnt = 0; cnt < (byte)MainMenuItems.NUM_MENU_ITEMS; cnt++)
             {
-                this.renderDirty.RestoreExternBackgroundRect((ushort)(320 - gusMainMenuButtonWidths[cnt] / 2), (short)(MAINMENU_Y + (cnt * MAINMENU_Y_SPACE) - 1), (ushort)(gusMainMenuButtonWidths[cnt] + 1), 23);
+                this.renderDirty.RestoreExternBackgroundRect(
+                    (ushort)(320 - gusMainMenuButtonWidths[cnt] / 2),
+                    (short)(MAINMENU_Y + (cnt * MAINMENU_Y_SPACE) - 1),
+                    (ushort)(gusMainMenuButtonWidths[cnt] + 1),
+                    23);
             }
         }
 
         private void RenderMainMenu()
         {
-            HVOBJECT hPixHandle;
+            (Texture, HVOBJECT) hPixHandle;
 
             //Get and display the background image
-            this.video.GetVideoObject(out hPixHandle, guiMainMenuBackGroundImage);
+            this.video.GetVideoObject(guiMainMenuBackGroundImage, out hPixHandle);
             this.video.BltVideoObject(this.video.guiSAVEBUFFER, hPixHandle, 0, 0, 0, VideoObjectManager.VO_BLT_SRCTRANSPARENCY, null);
             this.video.BltVideoObject(VideoSurfaceManager.FRAME_BUFFER, hPixHandle, 0, 0, 0, VideoObjectManager.VO_BLT_SRCTRANSPARENCY, null);
 
-            this.video.GetVideoObject(out hPixHandle, guiJa2LogoImage);
+            this.video.GetVideoObject(guiJa2LogoImage, out hPixHandle);
             this.video.BltVideoObject(VideoSurfaceManager.FRAME_BUFFER, hPixHandle, 0, 188, 15, VideoObjectManager.VO_BLT_SRCTRANSPARENCY, null);
             this.video.BltVideoObject(this.video.guiSAVEBUFFER, hPixHandle, 0, 188, 15, VideoObjectManager.VO_BLT_SRCTRANSPARENCY, null);
 
@@ -348,7 +350,6 @@ namespace SharpAlliance.Core.Screens
 
             // load ja2 logo graphic and add it
             VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            //	FilenameForBPP("INTERFACE\\Ja2_2.sti", VObjectDesc.ImageFile);
             VObjectDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\Ja2Logo.sti");
             this.video.AddVideoObject(ref VObjectDesc, out guiJa2LogoImage);
 
@@ -456,6 +457,7 @@ namespace SharpAlliance.Core.Screens
 
         public void ClearMainMenu()
         {
+            this.video.InvalidateScreen();
         }
     }
 }

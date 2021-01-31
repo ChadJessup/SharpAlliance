@@ -123,15 +123,18 @@ namespace SharpAlliance.Core.Screens
                 // Load init screen and blit!
                 vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
-                vs_desc.ImageFile = "ja2_logo.STI";
-                hVSurface = await this.videoSurface.CreateVideoSurface(vs_desc, this.fileManager);
+                vs_desc.ImageFile = "LOADSCREENS\\MainMenuBackGround.sti";//"ja2_logo.STI";
+                //vs_desc.ImageFile = "ja2_logo.STI";
+
+                hVSurface = this.videoSurface.CreateVideoSurface(vs_desc, this.fileManager);
+
                 if (hVSurface is null)
                 {
                     //AssertMsg(0, "Failed to load ja2_logo.sti!");
                     return ScreenName.ERROR_SCREEN;
                 }
 
-                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture);
+                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture, vs_desc.ImageFile);
                 //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
                 ubCurrentScreen = 1;
 

@@ -11,7 +11,7 @@ namespace SharpAlliance.Core.Managers.Image
 {
     public interface IImageFileLoader
     {
-        ValueTask<bool> LoadImage(ref HIMAGE hIMAGE, HIMAGECreateFlags flags, IFileManager fileManager);
+        bool LoadImage(ref HIMAGE hIMAGE, HIMAGECreateFlags flags, IFileManager fileManager);
         List<Image<Rgba32>> ApplyPalette(ref HVOBJECT hVObject, ref HIMAGE hImage);
     }
 
@@ -22,9 +22,9 @@ namespace SharpAlliance.Core.Managers.Image
             throw new NotImplementedException();
         }
 
-        public ValueTask<bool> LoadImage(ref HIMAGE hIMAGE, HIMAGECreateFlags flags, IFileManager fileManager)
+        public bool LoadImage(ref HIMAGE hIMAGE, HIMAGECreateFlags flags, IFileManager fileManager)
         {
-            return ValueTask.FromResult(false);
+            return false;
         }
     }
 
@@ -35,9 +35,9 @@ namespace SharpAlliance.Core.Managers.Image
             throw new NotImplementedException();
         }
 
-        public ValueTask<bool> LoadImage(ref HIMAGE hIMAGE, HIMAGECreateFlags flags, IFileManager fileManager)
+        public bool LoadImage(ref HIMAGE hIMAGE, HIMAGECreateFlags flags, IFileManager fileManager)
         {
-            return ValueTask.FromResult(false);
+            return false;
         }
     }
 

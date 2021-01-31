@@ -190,7 +190,7 @@ namespace SharpAlliance.Core.Managers
             return true;
         }
 
-        public async ValueTask<HVSURFACE> CreateVideoSurface(VSURFACE_DESC VSurfaceDesc, IFileManager fileManager)
+        public HVSURFACE CreateVideoSurface(VSURFACE_DESC VSurfaceDesc, IFileManager fileManager)
         {
             HVSURFACE hVSurface;
             HIMAGE hImage = new();
@@ -201,9 +201,30 @@ namespace SharpAlliance.Core.Managers
 
             if (VSurfaceDesc.fCreateFlags.HasFlag(VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE))
             {
-                var tmpHIMAGE = await HIMAGE.CreateImage(VSurfaceDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, fileManager);
+                var tmpHIMAGE = HIMAGE.CreateImage(VSurfaceDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, fileManager);
+
+                ETRLEData TempETRLEData;
+                // Get TRLE data
+                this.video.GetETRLEImageData(hImage, ref TempETRLEData);
+
+                // Set values
+                //hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
+                //hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
+                //hVObject.pPixData = TempETRLEData.pPixData;
+                //hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
+
+                // Set palette from himage
+                if (hImage.ubBitDepth == 8)
+                {
+                    hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+                    hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
+
+                    this.video.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+                }
 
                 hImage = tmpHIMAGE;
+
+                hImage.ParsedImages[0].SaveAsPng("C:\\assets\\temp.png");
 
                 //
                 // Set values from himage

@@ -22,7 +22,7 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        public void RestoreExternBackgroundRect(ushort v1, short v2, ushort v3, int v4)
+        public void RestoreExternBackgroundRect(ushort sLeft, short sTop, ushort sWidth, ushort sHeight)
         {
         }
     }

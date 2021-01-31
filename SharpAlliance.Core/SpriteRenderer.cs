@@ -82,6 +82,11 @@ namespace SharpAlliance
             //            return File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Shaders", name));
         }
 
+        public void AddSprite(Vector2 position, (Texture, HVOBJECT) videoObject)
+            => this.AddSprite(
+                new Rectangle((int)position.X, (int)position.Y, (int)videoObject.Item1.Width, (int)videoObject.Item1.Height),
+                videoObject.Item1,
+                videoObject.Item2.Name);
 
         public void AddSprite(Vector2 position, Vector2 size, string spriteName)
             => this.AddSprite(position, size, spriteName, RgbaByte.White, 0f);
@@ -91,7 +96,7 @@ namespace SharpAlliance
             this._draws.Add(new SpriteInfo(spriteName, new QuadVertex(position, size, tint, rotation)));
         }
 
-        public void AddSprite(Rectangle rectangle, Texture texture, RgbaByte? tint = null, float rotation = 0f)
+        public void AddSprite(Rectangle rectangle, Texture texture, string spriteName, RgbaByte? tint = null, float rotation = 0f)
         {
             if (tint is null)
             {
@@ -100,6 +105,7 @@ namespace SharpAlliance
 
             this._draws.Add(new SpriteInfo()
             {
+                SpriteName = spriteName,
                 Texture = texture,
                 Quad = new QuadVertex(rectangle.Position, rectangle.Size, tint.Value, rotation),
             });
@@ -111,7 +117,7 @@ namespace SharpAlliance
             {
                 Texture? tex = spriteInfo.Texture;
 
-                if (!string.IsNullOrWhiteSpace(spriteInfo.SpriteName) && spriteInfo.Texture is not null)
+                if (!string.IsNullOrWhiteSpace(spriteInfo.SpriteName) && spriteInfo.Texture is null)
                 {
                     string texPath = Path.Combine(AppContext.BaseDirectory, "Assets", spriteInfo.SpriteName);
                     tex = new ImageSharpTexture(texPath, false).CreateDeviceTexture(gd, gd.ResourceFactory);

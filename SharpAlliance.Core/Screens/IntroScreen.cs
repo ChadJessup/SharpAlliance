@@ -9,7 +9,6 @@ using SharpAlliance.Core.Managers.Library;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using static SharpAlliance.Core.Managers.VideoObjectManager;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -28,7 +27,6 @@ namespace SharpAlliance.Core.Screens
         private readonly ILibraryManager library;
         private readonly CinematicsSubSystem cinematics;
         private readonly SoldierProfileSubSystem soldiers;
-        private readonly IVideoSurfaceManager videoSurface;
         private readonly IVideoObjectManager videoObject;
         private bool gfIntroScreenEntry;
         private bool gfIntroScreenExit;
@@ -66,8 +64,7 @@ namespace SharpAlliance.Core.Screens
             IScreenManager screenManager,
             GameInit gameInit,
             IVideoManager videoManager,
-            IVideoSurfaceManager videoSurfaceManager,
-            IVideoObjectManager videoObjectManager)
+            IVideoSurfaceManager videoSurfaceManager)
         {
             this.gameInit = gameInit;
             this.context = context;
@@ -80,8 +77,6 @@ namespace SharpAlliance.Core.Screens
             this.library = libraryManager;
             this.cinematics = cinematics;
             this.soldiers = soldierSubSystem;
-            this.videoSurface = videoSurfaceManager;
-            this.videoObject = videoObjectManager;
         }
 
         public bool IsInitialized { get; set; }
@@ -353,7 +348,7 @@ namespace SharpAlliance.Core.Screens
         {
             HVOBJECT hPixHandle;
             VOBJECT_DESC VObjectDesc;
-            int uiLogoID;
+            string logoKey;
 
             int uiDestPitchBYTES;
             byte[] pDestBuf;
@@ -361,35 +356,29 @@ namespace SharpAlliance.Core.Screens
             // JA3Gold: do nothing until we have a graphic to replace Talonsoft's
             //return;
 
-            // CLEAR THE FRAME BUFFER
-            pDestBuf = this.videoSurface.LockVideoSurface(VideoSurfaceManager.FRAME_BUFFER, out uiDestPitchBYTES);
-            //memset(pDestBuf, 0, SCREEN_HEIGHT * uiDestPitchBYTES);
-            this.videoSurface.UnLockVideoSurface(VideoSurfaceManager.FRAME_BUFFER);
-
-
             //memset(&VObjectDesc, 0, sizeof(VOBJECT_DESC));
             VObjectDesc = new();
             VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\SirtechSplash.sti");
 
             //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
-            if (!this.video.AddVideoObject(ref VObjectDesc, out uiLogoID))
+            if (!this.video.AddVideoObject(ref VObjectDesc, out logoKey))
             {
                 // AssertMsg(0, String("Failed to load %s", VObjectDesc.ImageFile));
                 return;
             }
 
-            this.videoObject.GetVideoObject(uiLogoID, out hPixHandle);
-            this.videoObject.BltVideoObject(
-                VideoSurfaceManager.FRAME_BUFFER,
-                hPixHandle,
+            this.video.GetVideoObject(logoKey, out var videoObject);
+            this.video.BltVideoObject(
+                0,
+                videoObject,
                 0,
                 0,
                 0,
                 VideoObjectManager.VO_BLT_SRCTRANSPARENCY,
                 null);
 
-            this.videoObject.DeleteVideoObjectFromIndex(uiLogoID);
+            this.video.DeleteVideoObjectFromIndex(logoKey);
 
             this.video.InvalidateScreen();
             this.video.RefreshScreen();

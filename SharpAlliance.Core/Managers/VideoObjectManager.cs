@@ -14,7 +14,7 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Managers
 {
-    public class VideoObjectManager : IVideoObjectManager
+    public class VideoObjectManager
     {
         public const int DEFAULT_VIDEO_OBJECT_LIST_SIZE = 10;
 
@@ -68,24 +68,6 @@ namespace SharpAlliance.Core.Managers
 
         public void Dispose()
         {
-        }
-
-        public bool GetVideoObject(int uiIndex, out HVOBJECT hVObject)
-        {
-            VOBJECT_NODE? curr = gpVObjectHead;
-            while (curr is not null)
-            {
-                if (curr.uiIndex == uiIndex)
-                {
-                    hVObject = curr.hVObject;
-                    return true;
-                }
-
-                curr = curr.next;
-            }
-
-            hVObject = new HVOBJECT();
-            return false;
         }
 
         public bool BltVideoObject(
@@ -696,6 +678,8 @@ namespace SharpAlliance.Core.Managers
         public int usNumberOf16BPPObjects;
         public int usNumberOfObjects;   // Total number of objects
         public int ubBitDepth;                       // BPP 
+
+        public string Name { get; set; }
     }
 
     // Effects structure for specialized blitting
