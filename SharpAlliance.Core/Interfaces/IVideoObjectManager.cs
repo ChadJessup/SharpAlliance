@@ -11,7 +11,15 @@ namespace SharpAlliance.Core.Interfaces
     public interface IVideoObjectManager : ISharpAllianceManager
     {
         bool GetVideoObject(int uiLogoID, out HVOBJECT hPixHandle);
-        bool BltVideoObject(uint fRAME_BUFFER, HVOBJECT hPixHandle, int v1, int v2, int v3, int vO_BLT_SRCTRANSPARENCY, object? p);
+        bool BltVideoObject(
+            uint uiDestVSurface,
+            HVOBJECT hSrcVObject,
+            ushort usRegionIndex,
+            int iDestX,
+            int iDestY,
+            int fBltFlags,
+            blt_fx? pBltFx);
+
         bool DeleteVideoObjectFromIndex(int uiLogoID);
     }
 }

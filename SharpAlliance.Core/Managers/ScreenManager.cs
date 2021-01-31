@@ -42,6 +42,9 @@ namespace SharpAlliance.Core.Managers
 
         public bool ScreenExists(ScreenName screenName) => this.Screens.ContainsKey(screenName);
 
+        public async ValueTask<TScreen> GetScreen<TScreen>(ScreenName screenName, bool activate = false) where TScreen : IScreen
+            => (TScreen)await this.GetScreen(screenName, activate);
+
         public async ValueTask<IScreen> GetScreen(ScreenName screenName, bool activate = false)
         {
             Type? screenType = null;

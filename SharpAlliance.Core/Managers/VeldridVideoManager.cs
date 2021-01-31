@@ -21,6 +21,7 @@ using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -155,6 +156,12 @@ namespace SharpAlliance.Core.Managers
         //private Surface2? gpBackBuffer = null
 
         public bool IsInitialized { get; private set; }
+        public uint guiBOTTOMPANEL { get; set; }
+        public uint guiRIGHTPANEL { get; set; }
+        public uint guiRENDERBUFFER { get; set; }
+        public uint guiSAVEBUFFER { get; set; }
+        public uint guiEXTRABUFFER { get; set; }
+        public bool gfExtraBuffer { get; set; }
 
         private const int SCREEN_WIDTH = 640;
         private const int SCREEN_HEIGHT = 480;
@@ -288,11 +295,11 @@ namespace SharpAlliance.Core.Managers
 
         public void DrawFrame()
         {
-//            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), this.backBuffer);
+            //            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), this.backBuffer);
             this.commandList.Begin();
 
             this.commandList.SetFramebuffer(this.mainSwapchain.Framebuffer);
-           // this.commandList.ClearColorTarget(0, this.clearColor);
+            // this.commandList.ClearColorTarget(0, this.clearColor);
 
             this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
 
@@ -398,7 +405,7 @@ namespace SharpAlliance.Core.Managers
                         SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
                     }
 
-                    var img = hImage.ParsedImage!;
+                    var img = hImage.ParsedImages!;
 
                     //hImage.ParsedImage = new STCIImageFileLoader().CreateIndexedImage(
                     //    hImage.ParsedImage.GetConfiguration(),
@@ -417,6 +424,8 @@ namespace SharpAlliance.Core.Managers
                     throw new InvalidOperationException("hImage was null");
                 }
 
+                // Set values from himage
+                hVObject.ubBitDepth = hImage.ubBitDepth;
             }
             else
             {
@@ -437,6 +446,16 @@ namespace SharpAlliance.Core.Managers
             // Create 16BPP Palette
             hVObject.Palette = hImage.Create16BPPPalette(ref pSrcPalette);
             hVObject.ShadeCurrentPixels = hVObject.Palette;
+
+            if (hImage.fFlags.HasFlag(HIMAGECreateFlags.IMAGE_PALETTE))
+            {
+                hImage.ParsedImages = hImage.iFileLoader.ApplyPalette(ref hVObject, ref hImage);
+            }
+
+            for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
+            {
+                hImage.ParsedImages[i]!.SaveAsPng($@"c:\assets\{Path.GetFileNameWithoutExtension(hImage.ImageFile)}_{i}.png");
+            }
 
             //  DbgMessage(TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Video Object Palette change successfull" ));
             return true;
@@ -1575,6 +1594,44 @@ namespace SharpAlliance.Core.Managers
 
         public void EndFrameBufferRender()
         {
+        }
+
+        public void GetVideoObject(out HVOBJECT hPixHandle, int guiMainMenuBackGroundImage)
+        {
+            hPixHandle = new();
+        }
+
+        public void BltVideoObject(uint fRAME_BUFFER, HVOBJECT hPixHandle, int v1, int v2, int v3, int vO_BLT_SRCTRANSPARENCY, object p)
+        {
+        }
+
+        public void DrawTextToScreen(string v1, int v2, int v3, int v4, FontStyle fONT10ARIAL, FontColor fONT_MCOLOR_WHITE, FontColor fONT_MCOLOR_BLACK, bool v5, TextJustifies cENTER_JUSTIFIED)
+        {
+        }
+
+        public void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteVideoSurfaceFromIndex(uint uiTempMap)
+        {
+            throw new NotImplementedException();
         }
     }
 

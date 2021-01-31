@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,36 +15,38 @@ namespace SharpAlliance.Core.SubSystems
 {
     public class ButtonSubSystem : IDisposable
     {
-        private static class Constants
-        {
-            public const int MAX_GENERIC_PICS = 40;
-            public const int MAX_BUTTON_ICONS = 40;
-            public const int MAX_BUTTON_PICS = 256;
-            public const int MAX_BUTTONS = 400;
+        public const int MAX_GENERIC_PICS = 40;
+        public const int MAX_BUTTON_ICONS = 40;
+        public const int MAX_BUTTON_PICS = 256;
+        public const int MAX_BUTTONS = 400;
 
-            public const Surfaces BUTTON_USE_DEFAULT = Surfaces.Unknown;
-            public static readonly int? BUTTON_NO_FILENAME = null;
-            public static readonly int? BUTTON_NO_CALLBACK = null;
-            public const int BUTTON_NO_IMAGE = -1;
-            public const int BUTTON_NO_SLOT = -1;
+        public const Surfaces BUTTON_USE_DEFAULT = Surfaces.Unknown;
+        public static readonly int? BUTTON_NO_FILENAME = null;
+        public static readonly int? BUTTON_NO_CALLBACK = null;
+        public const int BUTTON_NO_IMAGE = -1;
+        public const int BUTTON_NO_SLOT = -1;
 
-            public const int BUTTON_INIT = 1;
-            public const int BUTTON_WAS_CLICKED = 2;
+        public const int BUTTON_INIT = 1;
+        public const int BUTTON_WAS_CLICKED = 2;
 
-            public const string DEFAULT_GENERIC_BUTTON_OFF = "GENBUTN.STI";
-            public const string DEFAULT_GENERIC_BUTTON_ON = "GENBUTN2.STI";
-            public const string DEFAULT_GENERIC_BUTTON_OFF_HI = "GENBUTN3.STI";
-            public const string DEFAULT_GENERIC_BUTTON_ON_HI = "GENBUTN4.STI";
-        }
+        public const string DEFAULT_GENERIC_BUTTON_OFF = "GENBUTN.STI";
+        public const string DEFAULT_GENERIC_BUTTON_ON = "GENBUTN2.STI";
+        public const string DEFAULT_GENERIC_BUTTON_OFF_HI = "GENBUTN3.STI";
+        public const string DEFAULT_GENERIC_BUTTON_ON_HI = "GENBUTN4.STI";
 
         private readonly ILogger<ButtonSubSystem> logger;
         private readonly GameContext gameContext;
+        private readonly FontSubSystem fonts;
         private VeldridVideoManager video;
 
         public bool IsInitialized { get; private set; }
 
         private int gbDisabledButtonStyle;
         private GUI_BUTTON gpCurrentFastHelpButton;
+
+        // flag to state we wish to render buttons on the one after the next pass through render buttons
+        private bool fPausedMarkButtonsDirtyFlag = false;
+        private bool fDisableHelpTextRestoreFlag = false;
 
         private bool gfRenderHilights = true;
 
@@ -53,31 +56,33 @@ namespace SharpAlliance.Core.SubSystems
         private uint ButtonDestPitch = 640 * 2;
         private uint ButtonDestBPP = 16;
 
-        private List<GUI_BUTTON> ButtonList = new(Constants.MAX_BUTTONS);
-        private HVOBJECT[] GenericButtonGrayed = new HVOBJECT[Constants.MAX_GENERIC_PICS];
-        private HVOBJECT[] GenericButtonOffNormal = new HVOBJECT[Constants.MAX_GENERIC_PICS];
-        private HVOBJECT[] GenericButtonOffHilite = new HVOBJECT[Constants.MAX_GENERIC_PICS];
-        private HVOBJECT[] GenericButtonOnNormal = new HVOBJECT[Constants.MAX_GENERIC_PICS];
-        private HVOBJECT[] GenericButtonOnHilite = new HVOBJECT[Constants.MAX_GENERIC_PICS];
-        private HVOBJECT[] GenericButtonBackground = new HVOBJECT[Constants.MAX_GENERIC_PICS];
-        private Rgba32[] GenericButtonFillColors = new Rgba32[Constants.MAX_GENERIC_PICS];
-        private ushort[] GenericButtonBackgroundIndex = new ushort[Constants.MAX_GENERIC_PICS];
-        private short[] GenericButtonOffsetX = new short[Constants.MAX_GENERIC_PICS];
-        private short[] GenericButtonOffsetY = new short[Constants.MAX_GENERIC_PICS];
+        private List<GUI_BUTTON> ButtonList = new(MAX_BUTTONS);
+        private HVOBJECT[] GenericButtonGrayed = new HVOBJECT[MAX_GENERIC_PICS];
+        private HVOBJECT[] GenericButtonOffNormal = new HVOBJECT[MAX_GENERIC_PICS];
+        private HVOBJECT[] GenericButtonOffHilite = new HVOBJECT[MAX_GENERIC_PICS];
+        private HVOBJECT[] GenericButtonOnNormal = new HVOBJECT[MAX_GENERIC_PICS];
+        private HVOBJECT[] GenericButtonOnHilite = new HVOBJECT[MAX_GENERIC_PICS];
+        private HVOBJECT[] GenericButtonBackground = new HVOBJECT[MAX_GENERIC_PICS];
+        private Rgba32[] GenericButtonFillColors = new Rgba32[MAX_GENERIC_PICS];
+        private ushort[] GenericButtonBackgroundIndex = new ushort[MAX_GENERIC_PICS];
+        private short[] GenericButtonOffsetX = new short[MAX_GENERIC_PICS];
+        private short[] GenericButtonOffsetY = new short[MAX_GENERIC_PICS];
 
         public const byte COMPRESS_TRANSPARENT = 0x80;
         public const byte COMPRESS_RUN_MASK = 0x7F;
 
-        private HVOBJECT[] GenericButtonIcons = new HVOBJECT[Constants.MAX_BUTTON_ICONS];
+        private HVOBJECT[] GenericButtonIcons = new HVOBJECT[MAX_BUTTON_ICONS];
 
         private int ButtonsInList = 0;
 
         public ButtonSubSystem(
             ILogger<ButtonSubSystem> logger,
-            GameContext gameContext)
+            GameContext gameContext,
+            FontSubSystem fontSubSystem)
         {
             this.logger = logger;
             this.gameContext = gameContext;
+            this.fonts = fontSubSystem;
         }
 
         public async ValueTask<bool> Initialize(GameContext gameContext)
@@ -92,7 +97,7 @@ namespace SharpAlliance.Core.SubSystems
             return this.IsInitialized;
         }
 
-        public List<ButtonPics> ButtonPictures { get; } = new(Constants.MAX_BUTTON_PICS);
+        public List<ButtonPics> ButtonPictures { get; } = new(MAX_BUTTON_PICS);
 
         private async ValueTask<bool> InitializeButtonImageManager(Surfaces DefaultBuffer, int DefaultPitch, int DefaultBPP)
         {
@@ -101,7 +106,7 @@ namespace SharpAlliance.Core.SubSystems
             int x;
 
             // Set up the default settings
-            if (DefaultBuffer != Constants.BUTTON_USE_DEFAULT)
+            if (DefaultBuffer != BUTTON_USE_DEFAULT)
             {
                 this.ButtonDestBuffer = DefaultBuffer;
             }
@@ -110,7 +115,7 @@ namespace SharpAlliance.Core.SubSystems
                 this.ButtonDestBuffer = Surfaces.FRAME_BUFFER;
             }
 
-            if (DefaultPitch != (int)Constants.BUTTON_USE_DEFAULT)
+            if (DefaultPitch != (int)BUTTON_USE_DEFAULT)
             {
                 this.ButtonDestPitch = (uint)DefaultPitch;
             }
@@ -119,7 +124,7 @@ namespace SharpAlliance.Core.SubSystems
                 this.ButtonDestPitch = 640 * 2;
             }
 
-            if (DefaultBPP != (int)Constants.BUTTON_USE_DEFAULT)
+            if (DefaultBPP != (int)BUTTON_USE_DEFAULT)
             {
                 this.ButtonDestBPP = (uint)DefaultBPP;
             }
@@ -129,7 +134,7 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Blank out all QuickButton images
-            for (x = 0; x < Constants.MAX_BUTTON_PICS; x++)
+            for (x = 0; x < MAX_BUTTON_PICS; x++)
             {
                 var bp = new ButtonPics
                 {
@@ -147,7 +152,7 @@ namespace SharpAlliance.Core.SubSystems
             this.ButtonPicsLoaded = 0;
 
             // Blank out all Generic button data
-            for (x = 0; x < Constants.MAX_GENERIC_PICS; x++)
+            for (x = 0; x < MAX_GENERIC_PICS; x++)
             {
                 //this.GenericButtonGrayed[x] = null;
                 //this.GenericButtonOffNormal[x] = null;
@@ -163,14 +168,14 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Blank out all icon images
-            for (x = 0; x < Constants.MAX_BUTTON_ICONS; x++)
+            for (x = 0; x < MAX_BUTTON_ICONS; x++)
             {
                 // this.GenericButtonIcons[x] = null;
             }
 
             // Load the default generic button images
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            vo_desc.ImageFile = Constants.DEFAULT_GENERIC_BUTTON_OFF;
+            vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_OFF;
 
             this.GenericButtonOffNormal[0] = await this.video.CreateVideoObject(vo_desc);
             if (this.GenericButtonOffNormal[0] == null)
@@ -180,7 +185,7 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            vo_desc.ImageFile = Constants.DEFAULT_GENERIC_BUTTON_ON;
+            vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_ON;
 
             if ((this.GenericButtonOnNormal[0] = await this.video.CreateVideoObject(vo_desc)) == null)
             {
@@ -192,12 +197,12 @@ namespace SharpAlliance.Core.SubSystems
             // doesn't exists, the system simply ignores that file. These are only here as extra images, they
             // aren't required for operation (only OFF Normal and ON Normal are required).
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            vo_desc.ImageFile = Constants.DEFAULT_GENERIC_BUTTON_OFF_HI;
+            vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_OFF_HI;
 
             this.GenericButtonOffHilite[0] = await this.video.CreateVideoObject(vo_desc);
 
             vo_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            vo_desc.ImageFile = Constants.DEFAULT_GENERIC_BUTTON_ON_HI;
+            vo_desc.ImageFile = DEFAULT_GENERIC_BUTTON_ON_HI;
 
             this.GenericButtonOnHilite[0] = await this.video.CreateVideoObject(vo_desc);
 
@@ -211,6 +216,119 @@ namespace SharpAlliance.Core.SubSystems
             this.GenericButtonFillColors[0] = this.GenericButtonOffNormal[0].Palette[Pix];
 
             return true;
+        }
+
+        public void RenderButtons()
+        {
+            if (!ButtonList.Any())
+            {
+                return;
+            }
+
+            int iButtonID;
+            bool fOldButtonDown, fOldEnabled;
+            GUI_BUTTON b;
+
+            this.fonts.SaveFontSettings();
+            for (iButtonID = 0; iButtonID < MAX_BUTTONS; iButtonID++)
+            {
+                // If the button exists, and it's not owned by another object, draw it
+                //Kris:  and make sure that the button isn't hidden.
+                b = ButtonList[iButtonID];
+                if (b.Area.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
+                {
+                    // Check for buttonchanged status
+                    fOldButtonDown = b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON);
+
+                    if (fOldButtonDown != b.uiOldFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+                    {
+                        //Something is different, set dirty!
+                        b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+                    }
+
+                    // Check for button dirty flags
+                    fOldEnabled = (bool)b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED);
+
+                    if (fOldEnabled != b.uiOldFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
+                    {
+                        //Something is different, set dirty!
+                        b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+                    }
+
+                    // If we ABSOLUTELY want to render every frame....
+                    if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_SAVEBACKGROUND))
+                    {
+                        b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+                    }
+
+                    // Set old flags
+                    b.uiOldFlags = b.uiFlags;
+
+                    if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_FORCE_UNDIRTY))
+                    {
+                        b.uiFlags &= ~ButtonFlags.BUTTON_DIRTY;
+                        b.uiFlags &= ~ButtonFlags.BUTTON_FORCE_UNDIRTY;
+                    }
+
+                    // Check if we need to update!
+                    if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_DIRTY))
+                    {
+                        // Turn off dirty flag
+                        b.uiFlags &= ~ButtonFlags.BUTTON_DIRTY;
+                        DrawButtonFromPtr(ref b);
+
+                        this.video.InvalidateRegion(b.Area.RegionTopLeftX, b.Area.RegionTopLeftY, b.Area.RegionBottomRightX, b.Area.RegionBottomRightY);
+                        //#else
+                        //				InvalidateRegion(b.Area.RegionTopLeftX, b.Area.RegionTopLeftY, b.Area.RegionBottomRightX, b.Area.RegionBottomRightY, false);
+
+                    }
+                }
+            }
+
+            // check if we want to render 1 frame later?
+            if ((fPausedMarkButtonsDirtyFlag == true) && (fDisableHelpTextRestoreFlag == false))
+            {
+                fPausedMarkButtonsDirtyFlag = false;
+                this.MarkButtonsDirty();
+            }
+
+            this.fonts.RestoreFontSettings();
+        }
+
+        private void DrawButtonFromPtr(ref GUI_BUTTON button)
+        {
+        }
+
+
+        //=============================================================================
+        //	MarkButtonsDirty
+        //
+        private void MarkButtonsDirty()
+        {
+            int x;
+            for (x = 0; x < MAX_BUTTONS; x++)
+            {
+                // If the button exists, and it's not owned by another object, draw it
+                if (ButtonList[x] is not null)
+                {
+                    // Turn on dirty flag
+                    ButtonList[x].uiFlags |= ButtonFlags.BUTTON_DIRTY;
+                }
+            }
+        }
+
+        public void MarkAButtonDirty(int iButtonNum)
+        {
+            // surgical dirtying . marks a user specified button dirty, without dirty the whole lot of them
+
+
+            // If the button exists, and it's not owned by another object, draw it
+            if (ButtonList.Any() && ButtonList.Count >= iButtonNum)
+            {
+                // Turn on dirty flag
+                var guiButton = ButtonList[iButtonNum];
+                guiButton.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+            }
         }
 
         public bool DisableButton(int iButtonID)
@@ -232,7 +350,7 @@ namespace SharpAlliance.Core.SubSystems
             ETRLEObject pETRLEObject;
 
             // Do a bunch of checks
-            // CHECKF(hVObject != NULL);
+            // CHECKF(hVObject != null);
             // CHECKF(usETRLEIndex < hVObject.usNumberOfObjects);
 
             pETRLEObject = hVObject.pETRLEObject[usETRLEIndex];
@@ -286,7 +404,7 @@ namespace SharpAlliance.Core.SubSystems
                     if (usLoopX + ubRunLength >= usX)
                     {
                         // skip to the correct byte; skip at least 1 to get past the byte defining the run
-                        offset += (byte)((usX - usLoopX) + 1);
+                        offset += (byte)(usX - usLoopX + 1);
                         pCurrent = hVObject.pPixData[pETRLEObject.uiDataOffset + offset];
 
                         pDest = pCurrent;
@@ -318,16 +436,16 @@ namespace SharpAlliance.Core.SubSystems
     // GUI_BUTTON callback function type
     public delegate void GuiCallback(GUI_BUTTON button, int value);
 
-    public struct GUI_BUTTON
+    public class GUI_BUTTON
     {
         public int IDNum;                        // ID Number, contains it's own button number
         public int ImageNum;                    // Image number to use (see DOCs for details)
         public MouseRegion Area;                          // Mouse System's mouse region to use for this button
         public GuiCallback ClickCallback;     // Button Callback when button is clicked
         public GuiCallback MoveCallback;          // Button Callback when mouse moved on this region
-        public int Cursor;                       // Cursor to use for this button
-        public int uiFlags;                 // Button state flags etc.( 32-bit )
-        public int uiOldFlags;              // Old flags from previous render loop
+        public Cursor Cursor;                       // Cursor to use for this button
+        public ButtonFlags uiFlags;                 // Button state flags etc.( 32-bit )
+        public ButtonFlags uiOldFlags;              // Old flags from previous render loop
         public int XLoc;                         // Coordinates where button is on the screen
         public int YLoc;
         public int[] UserData;//[4];          // Place holder for user data etc.
@@ -377,5 +495,31 @@ namespace SharpAlliance.Core.SubSystems
         public int MaxWidth;                // Width of largest image in use
         public int MaxHeight;           // Height of largest image in use
         public int fFlags;                  // Special image flags
+    }
+
+    [Flags]
+    public enum ButtonFlags : uint
+    {
+        //button flags
+        BUTTON_TOGGLE = 0x00000000,
+        BUTTON_QUICK = 0x00000000,
+        BUTTON_ENABLED = 0x00000001,
+        BUTTON_CLICKED_ON = 0x00000002,
+        BUTTON_NO_TOGGLE = 0x00000004,
+        BUTTON_CLICK_CALLBACK = 0x00000008,
+        BUTTON_MOVE_CALLBACK = 0x00000010,
+        BUTTON_GENERIC = 0x00000020,
+        BUTTON_HOT_SPOT = 0x00000040,
+        BUTTON_SELFDELETE_IMAGE = 0x00000080,
+        BUTTON_DELETION_PENDING = 0x00000100,
+        BUTTON_ALLOW_DISABLED_CALLBACK = 0x00000200,
+        BUTTON_DIRTY = 0x00000400,
+        BUTTON_SAVEBACKGROUND = 0x00000800,
+        BUTTON_CHECKBOX = 0x00001000,
+        BUTTON_NEWTOGGLE = 0x00002000,
+        BUTTON_FORCE_UNDIRTY = 0x00004000, // no matter what happens this buttons does NOT get marked dirty
+        BUTTON_IGNORE_CLICKS = 0x00008000, // Ignore any clicks on this button
+        BUTTON_DISABLED_CALLBACK = 0x80000000,
+
     }
 }

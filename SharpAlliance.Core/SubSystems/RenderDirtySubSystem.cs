@@ -21,5 +21,9 @@ namespace SharpAlliance.Core.SubSystems
         public void ExecuteBaseDirtyRectQueue()
         {
         }
+
+        public void RestoreExternBackgroundRect(ushort v1, short v2, ushort v3, int v4)
+        {
+        }
     }
 }

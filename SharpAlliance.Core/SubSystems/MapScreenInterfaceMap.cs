@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using Veldrid;
 
 namespace SharpAlliance.Core.SubSystems
@@ -71,6 +74,18 @@ namespace SharpAlliance.Core.SubSystems
         // holds ids of mercs who left stuff behind
         private int[] guiLeaveListOwnerProfileId = new int[Constants.NUM_LEAVE_LIST_SLOTS];
 
+        // the palettes
+        private ushort pMapLTRedPalette;
+        private ushort pMapDKRedPalette;
+        private ushort pMapLTGreenPalette;
+        private ushort pMapDKGreenPalette;
+
+
+        public MapScreenInterfaceMap(IVideoManager videoManager)
+        {
+            this.video = videoManager;
+        }
+
         public object guiUpdatePanelTactical { get; internal set; }
         public object guiUpdatePanel { get; internal set; }
 
@@ -105,8 +120,9 @@ namespace SharpAlliance.Core.SubSystems
         
         // list of map sectors that player isn't allowed to even highlight
         private bool[,] sBadSectorsList = new bool[Constants.WORLD_MAP_X, Constants.WORLD_MAP_X];
+        private readonly IVideoManager video;
 
-        internal void SetUpBadSectorsList()
+        public void SetUpBadSectorsList()
         {
             // initalizes all sectors to highlighable and then the ones non highlightable are marked as such
             sbyte bY;
@@ -149,9 +165,33 @@ namespace SharpAlliance.Core.SubSystems
             this.sBadSectorsList[13, 14] = true;
         }
 
-        public void InitializePalettesForMap()
+        public ValueTask<bool> InitializePalettesForMap()
         {
+            // init palettes
+            HVSURFACE hSrcVSurface;
+            SGPPaletteEntry[] pPalette = new SGPPaletteEntry[256];
+            VSURFACE_DESC vs_desc;
+            uint uiTempMap;
 
+            // load image
+            vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
+            vs_desc.ImageFile = "INTERFACE\\b_map.pcx";
+            this.video.AddVideoSurface(out vs_desc, out uiTempMap);
+
+            // get video surface
+            this.video.GetVideoSurface(out hSrcVSurface, uiTempMap);
+            this.video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
+
+            // set up various palettes
+            pMapLTRedPalette = this.video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0,   blueScale: 0, mono: true);
+            pMapDKRedPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0,   blueScale: 0, mono: true);
+            pMapLTGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
+            pMapDKGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
+
+            // delete image
+            this.video.DeleteVideoSurfaceFromIndex(uiTempMap);
+
+            return ValueTask.FromResult(true);
         }
 
         public void SetUpMapScreenFastHelpText()
@@ -168,7 +208,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public void InitLeaveList()
         {
-            // init leave list with NULLS/zeroes
+            // init leave list with nullS/zeroes
             for (int iCounter = 0; iCounter < Constants.NUM_LEAVE_LIST_SLOTS; iCounter++)
             {
                 this.gpLeaveList[iCounter] = null;

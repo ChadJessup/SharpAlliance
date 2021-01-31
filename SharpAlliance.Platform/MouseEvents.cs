@@ -21,9 +21,10 @@ namespace SharpAlliance.Platform
     {
         public InputAtom(InputAtom other)
         {
+            this.KeyboardEvents = other.KeyboardEvents;
+            this.MouseEvents = other.MouseEvents;
             this.uiTimeStamp = other.uiTimeStamp;
             this.usKeyState = other.usKeyState;
-            this.MouseEvents = other.MouseEvents;
             this.usParam = other.usParam;
             this.uiParam = other.uiParam;
         }
@@ -31,7 +32,18 @@ namespace SharpAlliance.Platform
         public int uiTimeStamp;
         public int usKeyState;
         public MouseEvents MouseEvents;
+        public KeyboardEvents KeyboardEvents;
         public int usParam;
         public int uiParam;
     }
+
+    [Flags]
+    public enum KeyboardEvents
+    {
+        Unknown = 0x0000,
+        KEY_DOWN = 0x0001,
+        KEY_UP = 0x0002,
+        KEY_REPEAT = 0x0004,
+    }
+
 }

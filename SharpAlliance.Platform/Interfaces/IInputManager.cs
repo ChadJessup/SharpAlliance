@@ -6,7 +6,7 @@ namespace SharpAlliance.Platform.Interfaces
     {
         bool gfLeftButtonState { get; set; }
         bool gfRightButtonState { get; set; }
-
+        bool DequeueEvent(out InputAtom? inputAtom);
         void KeyboardChangeEvent(KeyEvent keyEvent);
         void MouseChangeEvent(MouseEvent mouseEvent);
         void GetCursorPosition(out Point mousePos);

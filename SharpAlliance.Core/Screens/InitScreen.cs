@@ -173,7 +173,7 @@ namespace SharpAlliance.Core.Screens
 
             if (ubCurrentScreen == 2)
             {
-                var mainMenuScreen = (await this.screen.GetScreen(ScreenName.MAINMENU_SCREEN, activate: true) as MainMenuScreen)!;
+                var mainMenuScreen = await this.screen.GetScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN, activate: true);
                 await mainMenuScreen.InitMainMenu();
 
                 ubCurrentScreen = 3;

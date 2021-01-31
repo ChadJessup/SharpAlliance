@@ -91,12 +91,12 @@ namespace SharpAlliance.Core
 
         public async Task<int> GameLoop(CancellationToken token = default)
         {
-            IScreen uiOldScreen = this.screen.CurrentScreen;
+            IScreen nextScreen = this.screen.CurrentScreen;
             var sm = this.screen;
 
             while (this.context.State == GameState.Running && !token.IsCancellationRequested)
             {
-                uiOldScreen = sm.CurrentScreen;
+                nextScreen = sm.CurrentScreen;
 
                 this.inputs.ProcessEvents();
 
@@ -160,10 +160,10 @@ namespace SharpAlliance.Core
                     }
 
                     // if the screen has chnaged
-                    if (uiOldScreen != sm.guiPendingScreen)
+                    if (nextScreen != sm.guiPendingScreen)
                     {
                         // Set the fact that the screen has changed
-                        uiOldScreen = sm.guiPendingScreen;
+                        nextScreen = sm.guiPendingScreen;
 
                         this.HandleNewScreenChange(sm.guiPendingScreen, sm.CurrentScreen);
                     }
@@ -173,13 +173,13 @@ namespace SharpAlliance.Core
                 }
 
                 var nextScreenName = await sm.CurrentScreen.Handle();
-                uiOldScreen = await sm.GetScreen(nextScreenName, activate: false);
+                nextScreen = await sm.GetScreen(nextScreenName, activate: false);
 
                 // if the screen has chnaged
-                if (uiOldScreen != sm.CurrentScreen)
+                if (nextScreen != sm.CurrentScreen)
                 {
-                    this.HandleNewScreenChange(uiOldScreen, sm.CurrentScreen);
-                    await sm.ActivateScreen(uiOldScreen);
+                    this.HandleNewScreenChange(nextScreen, sm.CurrentScreen);
+                    await sm.ActivateScreen(nextScreen);
                 }
 
                 this.video.RefreshScreen();

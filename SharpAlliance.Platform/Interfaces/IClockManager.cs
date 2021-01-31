@@ -13,5 +13,6 @@ namespace SharpAlliance.Platform.Interfaces
         long GetClock();
         long GetTickCount();
         void UpdateClock();
+        uint GetJA2Clock();
     }
 }

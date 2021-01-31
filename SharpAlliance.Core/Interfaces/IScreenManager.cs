@@ -12,6 +12,7 @@ namespace SharpAlliance.Core.Interfaces
         ValueTask<IScreen> ActivateScreen(IScreen screen);
         bool ScreenExists(ScreenName screenName);
         Dictionary<ScreenName, IScreen> Screens { get; set; }
+        ValueTask<TScreen> GetScreen<TScreen>(ScreenName screenName, bool activate) where TScreen : IScreen;
         ValueTask<IScreen> GetScreen(ScreenName screenName, bool activate);
         IScreenManager AddScreen<TScreen>(ScreenName screenName) where TScreen : IScreen;
         IScreen CurrentScreen { get; }

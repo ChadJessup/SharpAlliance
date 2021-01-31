@@ -219,7 +219,7 @@ namespace SharpAlliance.Core.Managers
 
             hVSurface.usHeight = usHeight;
             hVSurface.usWidth = usWidth;
-            hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImage, mipmap: false).CreateDeviceTexture(this.video.GraphicDevice, this.video.GraphicDevice.ResourceFactory);
+            hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false).CreateDeviceTexture(this.video.GraphicDevice, this.video.GraphicDevice.ResourceFactory);
             hVSurface.TransparentColor = 0;// FROMRGB(0, 0, 0);
             hVSurface.RegionList = new List<VSurfaceRegion>(DEFAULT_NUM_REGIONS);
 
@@ -250,7 +250,12 @@ namespace SharpAlliance.Core.Managers
 
         private void DestroyImage(HIMAGE hImage)
         {
-            hImage.ParsedImage?.Dispose();
+            for (int i = 0; i < hImage.ParsedImages.Count; i++)
+            {
+                var img = hImage.ParsedImages[i];
+                img.Dispose();
+                hImage.ParsedImages.RemoveAt(i);
+            }
         }
 
         private bool SetVideoSurfaceDataFromHImage(HVSURFACE hVSurface, HIMAGE hImage, int usX, int usY, ref Rectangle? pSrcRect)
@@ -274,13 +279,13 @@ namespace SharpAlliance.Core.Managers
                 aRect.Height = pSrcRect.Value.Height;
             }
 
-            hImage.ParsedImage.Mutate(ipc => ipc.Crop(aRect));
+            hImage.ParsedImages[0].Mutate(ipc => ipc.Crop(aRect));
 
-            hImage.ParsedImage!.TryGetSinglePixelSpan(out var pixelSpan);
+            hImage.ParsedImages![0].TryGetSinglePixelSpan(out var pixelSpan);
 
             if (hVSurface.Texture == null)
             {
-                hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImage, mipmap: false)
+                hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false)
                     .CreateDeviceTexture(
                         this.video.GraphicDevice,
                         this.video.GraphicDevice.ResourceFactory);
@@ -314,6 +319,14 @@ namespace SharpAlliance.Core.Managers
         }
 
         public void UnLockVideoSurface(uint fRAME_BUFFER)
+        {
+        }
+
+        public void ColorFillVideoSurfaceArea(uint fRAME_BUFFER, int v1, int v2, int v3, int v4, int v5)
+        {
+        }
+
+        public void ShadowVideoSurfaceRectUsingLowPercentTable(uint fRAME_BUFFER, int v1, int v2, int v3, int v4)
         {
         }
     }

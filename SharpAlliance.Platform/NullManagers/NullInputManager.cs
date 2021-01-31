@@ -50,5 +50,10 @@ namespace SharpAlliance.Platform.NullManagers
         {
             throw new NotImplementedException();
         }
+
+        public bool DequeueEvent(out InputAtom? inputAtom)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

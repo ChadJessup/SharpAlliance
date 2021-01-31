@@ -30,5 +30,7 @@ namespace SharpAlliance.Core
         // VIDEO OVERLAYS 
         public int giFPSOverlay;
         public int giCounterPeriodOverlay;
+        public bool gfProgramIsRunning { get; set; } // Turn this to FALSE to exit program
+
     }
 }

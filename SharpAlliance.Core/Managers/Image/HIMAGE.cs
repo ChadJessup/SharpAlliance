@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
@@ -39,10 +40,10 @@ namespace SharpAlliance.Core.Managers.Image
         public ETRLEObject[] pETRLEObject;
         public ushort usNumberOfObjects;
 
-        public Image<Rgba32>? ParsedImage { get; set; }
+        public List<Image<Rgba32>> ParsedImages { get; set; }
         public const ushort BLACK_SUBSTITUTE = 0x0001;
 
-        public static async ValueTask<HIMAGE> CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager)
+        public static async ValueTask<HIMAGE> CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager, VOBJECT_DESC? vobject = null)
         {
             HIMAGE hImage;
             var ext = Path.GetExtension(imageFilePath);
@@ -64,12 +65,13 @@ namespace SharpAlliance.Core.Managers.Image
             {
                 iFileLoader = iFileLoader,
                 ImageFile = imageFilePath,
+                ParsedImages = new(),
             };
 
             hImage = await LoadImage(hImage, createFlags, fileManager);
-            if (hImage.ParsedImage is null)
+            if (hImage.ParsedImages is null)
             {
-                throw new InvalidProgramException($"{nameof(hImage.ParsedImage)} was null");
+                throw new InvalidProgramException($"{nameof(hImage.ParsedImages)} was null");
             }
 
             return hImage;
@@ -79,8 +81,8 @@ namespace SharpAlliance.Core.Managers.Image
         {
             Rgba32[] palette;
             uint cnt;
-             ushort r16, g16, b16, usColor;
-             byte r, g, b;
+            ushort r16, g16, b16, usColor;
+            byte r, g, b;
 
             gusRedShift = -8;
             gusGreenShift = 8;
@@ -93,10 +95,14 @@ namespace SharpAlliance.Core.Managers.Image
 
             for (cnt = 0; cnt < 256; cnt++)
             {
-                 r = pPalette[cnt].peRed;
-                 g = pPalette[cnt].peGreen;
-                 b = pPalette[cnt].peBlue;
+                r = pPalette[cnt].peRed;
+                g = pPalette[cnt].peGreen;
+                b = pPalette[cnt].peBlue;
 
+                var p = new Bgr24(r, g, b);
+                p.ToRgba32(ref palette[cnt]);
+
+                continue;
                 if (gusRedShift < 0)
                 {
                     r16 = (ushort)(r >> Math.Abs(gusRedShift));
@@ -105,7 +111,7 @@ namespace SharpAlliance.Core.Managers.Image
                 {
                     r16 = (ushort)(r << gusRedShift);
                 }
-                
+
                 if (gusGreenShift < 0)
                 {
                     g16 = (ushort)(g >> Math.Abs(gusGreenShift));
@@ -114,7 +120,7 @@ namespace SharpAlliance.Core.Managers.Image
                 {
                     g16 = (ushort)(g << gusGreenShift);
                 }
-                
+
                 if (gusBlueShift < 0)
                 {
                     b16 = (ushort)(b >> Math.Abs(gusBlueShift));
@@ -123,9 +129,9 @@ namespace SharpAlliance.Core.Managers.Image
                 {
                     b16 = (ushort)(b << gusBlueShift);
                 }
-                
+
                 usColor = (ushort)((r16 & gusRedMask) | (g16 & gusGreenMask) | (b16 & gusBlueMask));
-                
+
                 if (usColor == 0)
                 {
                     if ((r + g + b) != 0)
@@ -137,6 +143,7 @@ namespace SharpAlliance.Core.Managers.Image
                 {
                     usColor |= gusAlphaMask;
                 }
+
 
                 Bgr565 pixel = new Bgr565()
                 {
@@ -159,9 +166,9 @@ namespace SharpAlliance.Core.Managers.Image
 
             }
 
-            hImage.ParsedImage.SaveAsPng($@"c:\assets\{Path.GetFileNameWithoutExtension(hImage.ImageFile)}.png");
-
             return hImage;
         }
+
+        public override string ToString() => this.ImageFile;
     }
 }

@@ -32,8 +32,8 @@ namespace SharpAlliance.Core.Screens
         private readonly IVideoObjectManager videoObject;
         private bool gfIntroScreenEntry;
         private bool gfIntroScreenExit;
-        private long guiSplashStartTime = 0;
-        private int guiSplashFrameFade = 10;
+        public long guiSplashStartTime { get; set; } = 0;
+        public int guiSplashFrameFade { get; set; } = 10;
 
         private SMKFLIC? gpSmackFlic = null;
         private string[] gpzSmackerFileNames = new string[]
@@ -386,7 +386,7 @@ namespace SharpAlliance.Core.Screens
                 0,
                 0,
                 0,
-                VideoObjectManager.Constants.VO_BLT_SRCTRANSPARENCY,
+                VideoObjectManager.VO_BLT_SRCTRANSPARENCY,
                 null);
 
             this.videoObject.DeleteVideoObjectFromIndex(uiLogoID);

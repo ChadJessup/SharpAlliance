@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace SharpAlliance.Core
 {
+    // TODO: Move to built-in internationalization stuff.
     public static class EnglishText
     {
-        // TODO: Move to built-in internationalization stuff.
+        public static string[] gzCopyrightText = new string[]
+        {
+            "Copyright (C) 1999 Sir-tech Canada Ltd.  All rights reserved.",
+        };
+
         public static string[] pMapScreenFastHelpTextList = new string[]
         {
             "To change a merc's assignment to such things as another squad, doctor or repair, click within the 'Assign' column",

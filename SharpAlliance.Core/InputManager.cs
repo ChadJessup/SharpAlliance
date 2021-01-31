@@ -187,7 +187,7 @@ namespace SharpAlliance.Core
             return false;
         }
 
-        private bool DequeueEvent(out InputAtom? inputAtom)
+        public bool DequeueEvent(out InputAtom? inputAtom)
         {
             this.HandleSingleClicksAndButtonRepeats();
 

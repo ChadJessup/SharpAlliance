@@ -63,5 +63,10 @@ namespace SharpAlliance.Platform
         {
             return this.guiCurrentTime;
         }
+
+        public uint GetJA2Clock()
+        {
+            return (uint)this.guiCurrentTime;
+        }
     }
 }
