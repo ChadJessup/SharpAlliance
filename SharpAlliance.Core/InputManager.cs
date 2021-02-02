@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,17 +7,15 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using Veldrid;
-using Veldrid.Sdl2;
 
 namespace SharpAlliance.Core
 {
     public class InputManager : IInputManager
     {
         private readonly ILogger<InputManager> logger;
-        private readonly MouseSubSystem mouseSystem;
-        private readonly ButtonSubSystem buttonSystem;
+        public MouseSubSystem mouseSystem { get; init; }
+        public ButtonSubSystem buttonSystem { get; init; }
         private readonly GameContext context;
         private VeldridVideoManager video;
         private int[] gsKeyTranslationTable = new int[1024];

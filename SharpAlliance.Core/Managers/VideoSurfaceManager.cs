@@ -203,24 +203,24 @@ namespace SharpAlliance.Core.Managers
             {
                 var tmpHIMAGE = HIMAGE.CreateImage(VSurfaceDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, fileManager);
 
-                ETRLEData TempETRLEData;
-                // Get TRLE data
-                this.video.GetETRLEImageData(hImage, ref TempETRLEData);
-
-                // Set values
-                //hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
-                //hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
-                //hVObject.pPixData = TempETRLEData.pPixData;
-                //hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
-
-                // Set palette from himage
-                if (hImage.ubBitDepth == 8)
-                {
-                    hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
-                    hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
-
-                    this.video.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
-                }
+//                ETRLEData TempETRLEData = new();
+//                // Get TRLE data
+//                this.video.GetETRLEImageData(hImage, ref TempETRLEData);
+//
+//                // Set values
+//                //hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
+//                //hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
+//                //hVObject.pPixData = TempETRLEData.pPixData;
+//                //hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
+//
+//                // Set palette from himage
+//                if (hImage.ubBitDepth == 8)
+//                {
+//                    hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+//                    hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
+//
+//                    this.video.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+//                }
 
                 hImage = tmpHIMAGE;
 
@@ -254,7 +254,7 @@ namespace SharpAlliance.Core.Managers
                     Height = hImage.usHeight - 1,
                 };
 
-                SetVideoSurfaceDataFromHImage(hVSurface, hImage, 0, 0, ref tempRect);
+                this.SetVideoSurfaceDataFromHImage(hVSurface, hImage, 0, 0, ref tempRect);
 
                 // this.DestroyImage(hImage);
             }

@@ -111,7 +111,7 @@ namespace SharpAlliance.Core.Managers.Image
                     //MemFree(pSTCIPalette);
                     return null;
                 }
-                else if (!STCISetPalette(ref pSTCIPalette, ref hImage))
+                else if (!this.STCISetPalette(ref pSTCIPalette, ref hImage))
                 {
                     // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem setting hImage-format palette!");
                     // FileClose(hFile);
@@ -225,7 +225,7 @@ namespace SharpAlliance.Core.Managers.Image
 
                             // This is the alpha pixel after all the conversions...so replace with
                             // RGBA32 alpha pixel.
-                            if (pixel.R == 45 && pixel.G == 213 && pixel.B == 0)
+                            if (uncompressedData[idx] == 0 || (pixel.R == 45 && pixel.G == 213 && pixel.B == 0))
                             {
                                 pixel = AlphaPixel;
                             }

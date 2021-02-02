@@ -59,14 +59,14 @@ namespace SharpAlliance.Core.SubSystems
         {
             Items ubLoop;
 
-            if (ExtendedGunListGun(usGun))
+            if (this.ExtendedGunListGun(usGun))
             {
                 ubLoop = 0;
-                while (ReplacementGuns[ubLoop] != 0)
+                while (this.ReplacementGuns[ubLoop] != 0)
                 {
-                    if (ReplacementGuns[ubLoop] == usGun)
+                    if (this.ReplacementGuns[ubLoop] == usGun)
                     {
-                        return ReplacementGuns[ubLoop];
+                        return this.ReplacementGuns[ubLoop];
                     }
 
                     ubLoop++;
@@ -86,14 +86,14 @@ namespace SharpAlliance.Core.SubSystems
         {
             Items ubLoop;
 
-            if (ExtendedGunListGun(usAmmo))
+            if (this.ExtendedGunListGun(usAmmo))
             {
                 ubLoop = 0;
-                while (ReplacementAmmo[ubLoop] != 0)
+                while (this.ReplacementAmmo[ubLoop] != 0)
                 {
-                    if (ReplacementAmmo[ubLoop] == usAmmo)
+                    if (this.ReplacementAmmo[ubLoop] == usAmmo)
                     {
-                        return ReplacementAmmo[ubLoop];
+                        return this.ReplacementAmmo[ubLoop];
                     }
 
                     ubLoop++;
@@ -129,7 +129,7 @@ namespace SharpAlliance.Core.SubSystems
                 && (WeaponTypes.Magazines[this[usOldAmmo].ubClassIndex].ubMagSize == WeaponTypes.Weapon[oldGunIdx].ubMagSize))
             {
                 // must replace this!
-                usNewAmmo = FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazines[this.items[usOldAmmo].ubClassIndex].ubAmmoType);
+                usNewAmmo = this.FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazines[this.items[usOldAmmo].ubClassIndex].ubAmmoType);
             }
 
             return usNewAmmo;
@@ -150,12 +150,12 @@ namespace SharpAlliance.Core.SubSystems
                 {
                     if (WeaponTypes.Magazines[ubLoop].ubAmmoType == ubAmmoType)
                     {
-                        return MagazineClassIndexToItemType(ubLoop);
+                        return this.MagazineClassIndexToItemType(ubLoop);
                     }
                     else if (usDefault == Items.NONE)
                     {
                         // store this one to use if all else fails
-                        usDefault = MagazineClassIndexToItemType(ubLoop);
+                        usDefault = this.MagazineClassIndexToItemType(ubLoop);
                     }
                 }
 

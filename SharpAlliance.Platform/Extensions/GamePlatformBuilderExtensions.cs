@@ -4,14 +4,6 @@ namespace SharpAlliance.Platform
 {
     public static class GamePlatformBuilderExtensions
     {
-        public static IGamePlatformBuilder AddInputManager<TInputManager>(this IGamePlatformBuilder builder)
-            where TInputManager : class, IInputManager
-        {
-            builder.AddDependency<IInputManager, TInputManager>();
-
-            return builder;
-        }
-
         public static IGamePlatformBuilder AddGameLogic<TGameLogic>(this IGamePlatformBuilder builder)
             where TGameLogic : class, IGameLogic
         {

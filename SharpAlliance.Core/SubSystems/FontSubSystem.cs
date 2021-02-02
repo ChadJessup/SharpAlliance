@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.SubSystems
@@ -31,6 +32,31 @@ namespace SharpAlliance.Core.SubSystems
 
         public void RestoreFontSettings()
         {
+        }
+
+        public int GetFontHeight(FontStyle usFont)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetFontDestBuffer(Surfaces buttonDestBuffer, int y1, int y2, int width, int height, bool v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal int StringPixLength(string stringText, FontStyle usFont)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetFontShadow(FontColor sShadowColor)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void DisplayWrappedString(ushort xp, ushort yp, int sWrappedWidth, int v1, FontStyle usFont, byte sForeColor, string stringText, object fONT_MCOLOR_BLACK, bool v2, TextJustifies bJustified)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -61,6 +87,7 @@ namespace SharpAlliance.Core.SubSystems
 
     public enum FontColor
     {
+        None = -1,
         FONT_MCOLOR_WHITE,
         FONT_MCOLOR_BLACK
     }

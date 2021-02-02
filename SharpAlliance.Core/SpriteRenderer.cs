@@ -82,11 +82,11 @@ namespace SharpAlliance
             //            return File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Shaders", name));
         }
 
-        public void AddSprite(Vector2 position, (Texture, HVOBJECT) videoObject)
+        public void AddSprite(Vector2 position, HVOBJECT videoObject)
             => this.AddSprite(
-                new Rectangle((int)position.X, (int)position.Y, (int)videoObject.Item1.Width, (int)videoObject.Item1.Height),
-                videoObject.Item1,
-                videoObject.Item2.Name);
+                new Rectangle((int)position.X, (int)position.Y, (int)videoObject.Texture.Width, (int)videoObject.Texture.Height),
+                videoObject.Texture,
+                videoObject.Name);
 
         public void AddSprite(Vector2 position, Vector2 size, string spriteName)
             => this.AddSprite(position, size, spriteName, RgbaByte.White, 0f);

@@ -6,6 +6,7 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp;
 using Veldrid;
 
 namespace SharpAlliance.Core.Screens
@@ -17,7 +18,7 @@ namespace SharpAlliance.Core.Screens
         private readonly GameContext context;
         private readonly VeldridVideoManager video;
         private readonly CursorSubSystem cursor;
-        private readonly IVideoSurfaceManager videoSurface;
+//        private readonly IVideoSurfaceManager videoSurface;
         private readonly FontSubSystem font;
         private readonly TileCache tileCache;
         private readonly MercTextBox mercTextBox;
@@ -44,7 +45,7 @@ namespace SharpAlliance.Core.Screens
             GameContext context,
             CursorSubSystem cursorSubSystem,
             IVideoManager videoManager,
-            IVideoSurfaceManager videoSurfaceManager,
+  //          IVideoSurfaceManager videoSurfaceManager,
             FontSubSystem fontSubSystem,
             EventManager eventManager,
             IScreenManager sm,
@@ -68,7 +69,7 @@ namespace SharpAlliance.Core.Screens
             this.context = context;
             this.video = (videoManager as VeldridVideoManager)!;
             this.cursor = cursorSubSystem;
-            this.videoSurface = videoSurfaceManager;
+    //        this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
             this.tileCache = tileCache;
             this.mercTextBox = mercTextBox;
@@ -97,12 +98,12 @@ namespace SharpAlliance.Core.Screens
             return ValueTask.FromResult(true);
         }
 
-        public static HVSURFACE? hVSurface;
+        public static HVOBJECT hVObject;
         public static byte ubCurrentScreen = 255;
 
         public async ValueTask<ScreenName> Handle()
         {
-            VSURFACE_DESC vs_desc = new();
+            VOBJECT_DESC vs_desc = new();
 
             if (ubCurrentScreen == 255)
             {
@@ -121,20 +122,19 @@ namespace SharpAlliance.Core.Screens
             if (ubCurrentScreen == 0)
             {
                 // Load init screen and blit!
-                vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
+                vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
-                vs_desc.ImageFile = "LOADSCREENS\\MainMenuBackGround.sti";//"ja2_logo.STI";
-                //vs_desc.ImageFile = "ja2_logo.STI";
+                vs_desc.ImageFile = "ja2_logo.STI";
 
-                hVSurface = this.videoSurface.CreateVideoSurface(vs_desc, this.fileManager);
+                hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
 
-                if (hVSurface is null)
+                if (hVObject is null)
                 {
                     //AssertMsg(0, "Failed to load ja2_logo.sti!");
                     return ScreenName.ERROR_SCREEN;
                 }
 
-                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVSurface.Value.Texture, vs_desc.ImageFile);
+                this.video.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), hVObject.Texture, vs_desc.ImageFile);
                 //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
                 ubCurrentScreen = 1;
 

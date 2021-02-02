@@ -27,11 +27,11 @@ namespace SharpAlliance.Core.SubSystems
             string sFilename;
             STRUCTURE_FILE_REF? pStructureFileRef;
 
-            LoadAnimationStateInstructions();
+            this.LoadAnimationStateInstructions();
 
-            InitAnimationSurfacesPerBodytype();
+            this.InitAnimationSurfacesPerBodytype();
 
-            if (!LoadAnimationProfiles())
+            if (!this.LoadAnimationProfiles())
             {
                 //return (SET_ERROR("Problems initializing Animation Profiles"));
                 return ValueTask.FromResult(false);
@@ -42,7 +42,7 @@ namespace SharpAlliance.Core.SubSystems
             {
                 for (cnt2 = 0; cnt2 < (int)StructData.NUM_STRUCT_IDS; cnt2++)
                 {
-                    sFilename = gAnimStructureDatabase[cnt1, cnt2].Filename;
+                    sFilename = this.gAnimStructureDatabase[cnt1, cnt2].Filename;
 
                     if (this.files.FileExists(sFilename))
                     {
@@ -52,7 +52,7 @@ namespace SharpAlliance.Core.SubSystems
                             // SET_ERROR("Animation structure file load failed - %s", sFilename);
                         }
 
-                        gAnimStructureDatabase[cnt1, cnt2].pStructureFileRef = pStructureFileRef;
+                        this.gAnimStructureDatabase[cnt1, cnt2].pStructureFileRef = pStructureFileRef;
                     }
                 }
             }

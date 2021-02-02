@@ -129,27 +129,27 @@ namespace SharpAlliance.Core.Screens
             bool fFlicStillPlaying = false;
 
             //if we are exiting this screen, this frame, dont update the screen
-            if (gfIntroScreenExit)
+            if (this.gfIntroScreenExit)
             {
                 return;
             }
 
             //handle smaker each frame
-            fFlicStillPlaying = SmkPollFlics();
+            fFlicStillPlaying = this.SmkPollFlics();
 
             //if the flic is not playing
             if (!fFlicStillPlaying)
             {
-                var iNextVideoToPlay = GetNextIntroVideo(giCurrentIntroBeingPlayed);
+                var iNextVideoToPlay = this.GetNextIntroVideo(this.giCurrentIntroBeingPlayed);
 
                 if (iNextVideoToPlay != SmackerFiles.SMKINTRO_NO_VIDEO)
                 {
-                    StartPlayingIntroFlic(iNextVideoToPlay);
+                    this.StartPlayingIntroFlic(iNextVideoToPlay);
                 }
                 else
                 {
-                    PrepareToExitIntroScreen();
-                    giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
+                    this.PrepareToExitIntroScreen();
+                    this.giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
                 }
             }
 
@@ -213,16 +213,16 @@ namespace SharpAlliance.Core.Screens
                 // TODO: port libsmacker
                 //gpSmackFlic = SmkPlayFlic(gpzSmackerFileNames[(int)iIndexOfFlicToPlay], 0, 0, true);
 
-                gpSmackFlic = null;
+                this.gpSmackFlic = null;
 
-                if (gpSmackFlic != null)
+                if (this.gpSmackFlic != null)
                 {
-                    giCurrentIntroBeingPlayed = iIndexOfFlicToPlay;
+                    this.giCurrentIntroBeingPlayed = iIndexOfFlicToPlay;
                 }
                 else
                 {
                     //do a check
-                    PrepareToExitIntroScreen();
+                    this.PrepareToExitIntroScreen();
                 }
             }
         }
@@ -232,7 +232,7 @@ namespace SharpAlliance.Core.Screens
             SmackerFiles iStringToUse = SmackerFiles.SMKINTRO_NO_VIDEO;
 
             //switch on whether it is the beginging or the end game video
-            switch (gbIntroScreenMode)
+            switch (this.gbIntroScreenMode)
             {
                 //the video at the begining of the game
                 case IntroScreenType.INTRO_BEGINING:
@@ -319,18 +319,18 @@ namespace SharpAlliance.Core.Screens
         private void PrepareToExitIntroScreen()
         {
             //if its the intro at the begining of the game
-            if (gbIntroScreenMode == IntroScreenType.INTRO_BEGINING)
+            if (this.gbIntroScreenMode == IntroScreenType.INTRO_BEGINING)
             {
                 //go to the init screen
-                guiIntroExitScreen = ScreenName.InitScreen;
+                this.guiIntroExitScreen = ScreenName.InitScreen;
             }
-            else if (gbIntroScreenMode == IntroScreenType.INTRO_SPLASH)
+            else if (this.gbIntroScreenMode == IntroScreenType.INTRO_SPLASH)
             {
                 //display a logo when exiting
-                DisplaySirtechSplashScreen();
+                this.DisplaySirtechSplashScreen();
 
                 ScreenManager.gfDoneWithSplashScreen = true;
-                guiIntroExitScreen = ScreenName.InitScreen;
+                this.guiIntroExitScreen = ScreenName.InitScreen;
             }
             else
             {
@@ -338,10 +338,10 @@ namespace SharpAlliance.Core.Screens
                 this.gameInit.ReStartingGame();
 
                 //		guiIntroExitScreen = MAINMENU_SCREEN;
-                guiIntroExitScreen = ScreenName.CREDIT_SCREEN;
+                this.guiIntroExitScreen = ScreenName.CREDIT_SCREEN;
             }
 
-            gfIntroScreenExit = true;
+            this.gfIntroScreenExit = true;
         }
 
         private void DisplaySirtechSplashScreen()
@@ -362,21 +362,16 @@ namespace SharpAlliance.Core.Screens
             VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\SirtechSplash.sti");
 
             //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
-            if (!this.video.AddVideoObject(ref VObjectDesc, out logoKey))
-            {
-                // AssertMsg(0, String("Failed to load %s", VObjectDesc.ImageFile));
-                return;
-            }
+            var videoObject = this.video.AddVideoObject(ref VObjectDesc, out logoKey);
 
-            this.video.GetVideoObject(logoKey, out var videoObject);
-            this.video.BltVideoObject(
-                0,
-                videoObject,
-                0,
-                0,
-                0,
-                VideoObjectManager.VO_BLT_SRCTRANSPARENCY,
-                null);
+            //this.video.BltVideoObject(
+            //    0,
+            //    videoObject,
+            //    0,
+            //    0,
+            //    0,
+            //    VideoObjectManager.VO_BLT_SRCTRANSPARENCY,
+            //    null);
 
             this.video.DeleteVideoObjectFromIndex(logoKey);
 

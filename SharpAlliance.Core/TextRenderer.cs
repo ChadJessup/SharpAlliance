@@ -23,29 +23,29 @@ namespace SharpAlliance.Core
 
         public TextRenderer(GraphicsDevice gd)
         {
-            _gd = gd;
+            this._gd = gd;
             uint width = 250;
             uint height = 100;
-            _texture = gd.ResourceFactory.CreateTexture(
+            this._texture = gd.ResourceFactory.CreateTexture(
                 TextureDescription.Texture2D(width, height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
-            TextureView = gd.ResourceFactory.CreateTextureView(_texture);
+            this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
 
             FontCollection fc = new FontCollection();
             FontFamily family = fc.Install(Path.Combine(AppContext.BaseDirectory, "Assets", "Fonts", "Sunflower-Medium.ttf"));
-            _font = family.CreateFont(28);
-                
-            _image = new Image<Rgba32>(250, 100);
+            this._font = family.CreateFont(28);
+
+            this._image = new Image<Rgba32>(250, 100);
         }
 
         public unsafe void DrawText(string text)
         {
-            _image.TryGetSinglePixelSpan(out var span);
+            this._image.TryGetSinglePixelSpan(out var span);
             fixed (void* data = &MemoryMarshal.GetReference(span))
             {
-                Unsafe.InitBlock(data, 0, (uint)(_image.Width * _image.Height * 4));
+                Unsafe.InitBlock(data, 0, (uint)(this._image.Width * this._image.Height * 4));
             }
 
-            _image.Mutate(ctx =>
+            this._image.Mutate(ctx =>
             {
                 //ctx.DrawText(
                 //    new TextGraphicsOptions
@@ -60,11 +60,11 @@ namespace SharpAlliance.Core
                 //    new PointF());
             });
 
-            _image.TryGetSinglePixelSpan(out var span2);
+            this._image.TryGetSinglePixelSpan(out var span2);
             fixed (void* data = &MemoryMarshal.GetReference(span2))
             {
-                uint size = (uint)(_image.Width * _image.Height * 4);
-                _gd.UpdateTexture(_texture, (IntPtr)data, size, 0, 0, 0, _texture.Width, _texture.Height, 1, 0, 0);
+                uint size = (uint)(this._image.Width * this._image.Height * 4);
+                this._gd.UpdateTexture(this._texture, (IntPtr)data, size, 0, 0, 0, this._texture.Width, this._texture.Height, 1, 0, 0);
             }
         }
     }

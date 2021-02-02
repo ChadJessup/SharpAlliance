@@ -1,9 +1,15 @@
-﻿using Veldrid;
+﻿using SharpAlliance.Core.SubSystems;
+using SharpAlliance.Platform;
+using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
-namespace SharpAlliance.Platform.Interfaces
+namespace SharpAlliance.Core.Interfaces
 {
     public interface IInputManager : ISharpAllianceManager
     {
+        MouseSubSystem mouseSystem { get; init; }
+        ButtonSubSystem buttonSystem { get; init; }
+
         bool gfLeftButtonState { get; set; }
         bool gfRightButtonState { get; set; }
         bool DequeueEvent(out InputAtom? inputAtom);

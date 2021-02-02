@@ -183,10 +183,10 @@ namespace SharpAlliance.Core.SubSystems
             this.video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
 
             // set up various palettes
-            pMapLTRedPalette = this.video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0,   blueScale: 0, mono: true);
-            pMapDKRedPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0,   blueScale: 0, mono: true);
-            pMapLTGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
-            pMapDKGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
+            this.pMapLTRedPalette = this.video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0,   blueScale: 0, mono: true);
+            this.pMapDKRedPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0,   blueScale: 0, mono: true);
+            this.pMapLTGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
+            this.pMapDKGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
 
             // delete image
             this.video.DeleteVideoSurfaceFromIndex(uiTempMap);

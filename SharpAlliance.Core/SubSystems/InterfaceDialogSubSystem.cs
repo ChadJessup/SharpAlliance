@@ -33,11 +33,11 @@ namespace SharpAlliance.Core.SubSystems
 
         public bool ProfileCurrentlyTalkingInDialoguePanel(int ubProfile)
         {
-            if (gfInTalkPanel)
+            if (this.gfInTalkPanel)
             {
-                if (gpDestSoldier != null)
+                if (this.gpDestSoldier != null)
                 {
-                    if (gpDestSoldier.ubProfile == ubProfile)
+                    if (this.gpDestSoldier.ubProfile == ubProfile)
                     {
                         return true;
                     }

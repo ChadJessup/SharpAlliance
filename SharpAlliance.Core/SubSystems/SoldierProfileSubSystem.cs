@@ -97,46 +97,46 @@ namespace SharpAlliance.Core.SubSystems
                 //}
 
                 // if the merc has a medical deposit
-                if (gMercProfiles[npcId].bMedicalDeposit > 0)
+                if (this.gMercProfiles[npcId].bMedicalDeposit > 0)
                 {
-                    var profile = gMercProfiles[npcId];
-                    gMercProfiles[npcId].sMedicalDepositAmount = CalcMedicalDeposit(ref profile);
+                    var profile = this.gMercProfiles[npcId];
+                    this.gMercProfiles[npcId].sMedicalDepositAmount = this.CalcMedicalDeposit(ref profile);
                 }
                 else
                 {
-                    gMercProfiles[npcId].sMedicalDepositAmount = 0;
+                    this.gMercProfiles[npcId].sMedicalDepositAmount = 0;
                 }
 
                 // ATE: New, face display indipendent of ID num now
                 // Setup face index value
                 // Default is the ubCharNum
-                gMercProfiles[npcId].ubFaceIndex = uiLoop;
+                this.gMercProfiles[npcId].ubFaceIndex = uiLoop;
 
-                if (!gGameOptions.GunNut)
+                if (!this.gGameOptions.GunNut)
                 {
                     // CJC: replace guns in profile if they aren't available
                     for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
                     {
-                        usItem = gMercProfiles[npcId].inv[uiLoop2];
+                        usItem = this.gMercProfiles[npcId].inv[uiLoop2];
 
                         if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN) && this.items.ExtendedGunListGun(usItem))
                         {
                             usNewGun = this.items.StandardGunListReplacement(usItem);
                             if (usNewGun != Items.NONE)
                             {
-                                gMercProfiles[npcId].inv[uiLoop2] = usNewGun;
+                                this.gMercProfiles[npcId].inv[uiLoop2] = usNewGun;
 
                                 // must search through inventory and replace ammo accordingly
                                 for (uiLoop3 = 0; uiLoop3 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop3++)
                                 {
-                                    usAmmo = gMercProfiles[npcId].inv[uiLoop3];
+                                    usAmmo = this.gMercProfiles[npcId].inv[uiLoop3];
                                     if (this.items[usAmmo].usItemClass.HasFlag(ItemSubTypes.IC_AMMO))
                                     {
                                         usNewAmmo = this.items.FindReplacementMagazineIfNecessary(usItem, usAmmo, usNewGun);
                                         if (usNewAmmo != Items.NONE)
                                         {
                                             // found a new magazine, replace...
-                                            gMercProfiles[npcId].inv[uiLoop3] = usNewAmmo;
+                                            this.gMercProfiles[npcId].inv[uiLoop3] = usNewAmmo;
                                         }
                                     }
                                 }
@@ -147,26 +147,26 @@ namespace SharpAlliance.Core.SubSystems
 
                 //ATE: Calculate some inital attractiveness values for buddy's inital equipment...
                 // Look for gun and armour
-                gMercProfiles[npcId].bMainGunAttractiveness = -1;
-                gMercProfiles[npcId].bArmourAttractiveness = -1;
+                this.gMercProfiles[npcId].bMainGunAttractiveness = -1;
+                this.gMercProfiles[npcId].bArmourAttractiveness = -1;
 
                 for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
                 {
                     var npcId2 = (NPCIDs)uiLoop2;
-                    usItem = gMercProfiles[npcId2].inv[uiLoop2];
+                    usItem = this.gMercProfiles[npcId2].inv[uiLoop2];
 
                     if (usItem != Items.NONE)
                     {
                         // Check if it's a gun
                         if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN))
                         {
-                            gMercProfiles[npcId].bMainGunAttractiveness = WeaponTypes.Weapon[(int)usItem].ubDeadliness;
+                            this.gMercProfiles[npcId].bMainGunAttractiveness = WeaponTypes.Weapon[(int)usItem].ubDeadliness;
                         }
 
                         // If it's armour
                         if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_ARMOUR))
                         {
-                            gMercProfiles[npcId].bArmourAttractiveness = WeaponTypes.Armour[this.items[usItem].ubClassIndex].ubProtection;
+                            this.gMercProfiles[npcId].bArmourAttractiveness = WeaponTypes.Armour[this.items[usItem].ubClassIndex].ubProtection;
                         }
                     }
                 }
@@ -175,28 +175,28 @@ namespace SharpAlliance.Core.SubSystems
                 // OK, if we are a created slot, this will get overriden at some time..
 
                 //add up the items the merc has for the usOptionalGearCost 
-                gMercProfiles[npcId].usOptionalGearCost = 0;
+                this.gMercProfiles[npcId].usOptionalGearCost = 0;
                 for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
                 {
-                    if (gMercProfiles[npcId].inv[uiLoop2] != Items.NONE)
+                    if (this.gMercProfiles[npcId].inv[uiLoop2] != Items.NONE)
                     {
                         //get the item
-                        usItem = gMercProfiles[npcId].inv[uiLoop2];
+                        usItem = this.gMercProfiles[npcId].inv[uiLoop2];
 
                         //add the cost
-                        gMercProfiles[npcId].usOptionalGearCost += this.items[usItem].usPrice;
+                        this.gMercProfiles[npcId].usOptionalGearCost += this.items[usItem].usPrice;
                     }
                 }
 
                 //These variables to get loaded in
-                gMercProfiles[npcId].fUseProfileInsertionInfo = false;
-                gMercProfiles[npcId].sGridNo = 0;
+                this.gMercProfiles[npcId].fUseProfileInsertionInfo = false;
+                this.gMercProfiles[npcId].sGridNo = 0;
 
                 // ARM: this is also being done inside the profile editor, but put it here too, so this project's code makes sense
-                gMercProfiles[npcId].bHatedCount[0] = gMercProfiles[npcId].bHatedTime[0];
-                gMercProfiles[npcId].bHatedCount[1] = gMercProfiles[npcId].bHatedTime[1];
-                gMercProfiles[npcId].bLearnToHateCount = gMercProfiles[npcId].bLearnToHateTime;
-                gMercProfiles[npcId].bLearnToLikeCount = gMercProfiles[npcId].bLearnToLikeTime;
+                this.gMercProfiles[npcId].bHatedCount[0] = this.gMercProfiles[npcId].bHatedTime[0];
+                this.gMercProfiles[npcId].bHatedCount[1] = this.gMercProfiles[npcId].bHatedTime[1];
+                this.gMercProfiles[npcId].bLearnToHateCount = this.gMercProfiles[npcId].bLearnToHateTime;
+                this.gMercProfiles[npcId].bLearnToLikeCount = this.gMercProfiles[npcId].bLearnToLikeTime;
             }
 
             // SET SOME DEFAULT LOCATIONS FOR STARTING NPCS
@@ -204,10 +204,10 @@ namespace SharpAlliance.Core.SubSystems
             this.fileManager.FileClose(fptr);
 
             // decide which terrorists are active
-            DecideActiveTerrorists();
+            this.DecideActiveTerrorists();
 
             // initialize mercs' status
-            StartSomeMercsOnAssignment();
+            this.StartSomeMercsOnAssignment();
 
             // initial recruitable mercs' reputation in each town
             this.townReputations.InitializeProfilesForTownReputation();
@@ -229,7 +229,7 @@ namespace SharpAlliance.Core.SubSystems
             // some randomly picked A.I.M. mercs will start off "on assignment" at the beginning of each new game
             for (uiCnt = 0; uiCnt < (NPCIDs)Constants.AIM_AND_MERC_MERCS; uiCnt++)
             {
-                pProfile = gMercProfiles[uiCnt];
+                pProfile = this.gMercProfiles[uiCnt];
 
                 // calc chance to start on assignment
                 uiChance = 5 * pProfile.bExpLevel;
@@ -257,7 +257,7 @@ namespace SharpAlliance.Core.SubSystems
             int usDeposit;
 
             // this rounds off to the nearest hundred
-            usDeposit = ((5 * CalcCompetence(ref profile)) + 50) / 100 * 100;
+            usDeposit = ((5 * this.CalcCompetence(ref profile)) + 50) / 100 * 100;
 
             return usDeposit;
         }
@@ -315,7 +315,7 @@ namespace SharpAlliance.Core.SubSystems
             // EASY:		3, 9%			4, 42%		5, 49%
             // MEDIUM:	3, 25%		4, 50%		5, 25%
             // HARD:		3, 49%		4, 42%		5, 9%
-            switch (gGameOptions.DifficultyLevel)
+            switch (this.gGameOptions.DifficultyLevel)
             {
                 case DifficultyLevel.Easy:
                     uiChance = 70;
@@ -344,13 +344,13 @@ namespace SharpAlliance.Core.SubSystems
                 ubLoop = 1; // start at beginning of array (well, after Elgin)
 
                 // NB terrorist ID of 0 indicates end of array
-                while (ubNumTerroristsAdded < ubNumAdditionalTerrorists && gubTerrorists[ubLoop] != 0)
+                while (ubNumTerroristsAdded < ubNumAdditionalTerrorists && this.gubTerrorists[ubLoop] != 0)
                 {
 
-                    ubTerrorist = gubTerrorists[ubLoop];
+                    ubTerrorist = this.gubTerrorists[ubLoop];
 
                     // random 40% chance of adding this terrorist if not yet placed
-                    if ((gMercProfiles[(NPCIDs)ubTerrorist].sSectorX == 0) && (this.rnd.GetRandom(100) < 40))
+                    if ((this.gMercProfiles[(NPCIDs)ubTerrorist].sSectorX == 0) && (this.rnd.GetRandom(100) < 40))
                     {
                         fFoundSpot = false;
                         // Since there are 5 spots per terrorist and a maximum of 5 terrorists, we
@@ -363,9 +363,9 @@ namespace SharpAlliance.Core.SubSystems
                             uiLocationChoice = this.rnd.GetRandom(Constants.NUM_TERRORIST_POSSIBLE_LOCATIONS);
                             for (ubLoop2 = 0; ubLoop2 < ubNumTerroristsAdded; ubLoop2++)
                             {
-                                if (sTerroristPlacement[ubLoop2, 0] == gsTerroristSector[ubLoop, uiLocationChoice, 0])
+                                if (sTerroristPlacement[ubLoop2, 0] == this.gsTerroristSector[ubLoop, uiLocationChoice, 0])
                                 {
-                                    if (sTerroristPlacement[ubLoop2, 1] == gsTerroristSector[ubLoop, uiLocationChoice, 1])
+                                    if (sTerroristPlacement[ubLoop2, 1] == this.gsTerroristSector[ubLoop, uiLocationChoice, 1])
                                     {
                                         continue;
                                     }
@@ -375,11 +375,11 @@ namespace SharpAlliance.Core.SubSystems
                         } while (!fFoundSpot);
 
                         // place terrorist!
-                        gMercProfiles[(NPCIDs)ubTerrorist].sSectorX = gsTerroristSector[ubLoop, uiLocationChoice, 0];
-                        gMercProfiles[(NPCIDs)ubTerrorist].sSectorY = gsTerroristSector[ubLoop, uiLocationChoice, 1];
-                        gMercProfiles[(NPCIDs)ubTerrorist].bSectorZ = 0;
-                        sTerroristPlacement[ubNumTerroristsAdded, 0] = gMercProfiles[(NPCIDs)ubTerrorist].sSectorX;
-                        sTerroristPlacement[ubNumTerroristsAdded, 1] = gMercProfiles[(NPCIDs)ubTerrorist].sSectorY;
+                        this.gMercProfiles[(NPCIDs)ubTerrorist].sSectorX = this.gsTerroristSector[ubLoop, uiLocationChoice, 0];
+                        this.gMercProfiles[(NPCIDs)ubTerrorist].sSectorY = this.gsTerroristSector[ubLoop, uiLocationChoice, 1];
+                        this.gMercProfiles[(NPCIDs)ubTerrorist].bSectorZ = 0;
+                        sTerroristPlacement[ubNumTerroristsAdded, 0] = this.gMercProfiles[(NPCIDs)ubTerrorist].sSectorX;
+                        sTerroristPlacement[ubNumTerroristsAdded, 1] = this.gMercProfiles[(NPCIDs)ubTerrorist].sSectorY;
                         ubNumTerroristsAdded++;
                     }
 
@@ -391,10 +391,10 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // set total terrorists outstanding in Carmen's info byte
-            gMercProfiles[(NPCIDs)78].bNPCData = 1 + ubNumAdditionalTerrorists;
+            this.gMercProfiles[(NPCIDs)78].bNPCData = 1 + ubNumAdditionalTerrorists;
 
             // store total terrorists
-            gubNumTerrorists = 1 + ubNumAdditionalTerrorists;
+            this.gubNumTerrorists = 1 + ubNumAdditionalTerrorists;
         }
 
         private int[,,] gsTerroristSector = new int[Constants.NUM_TERRORISTS, Constants.NUM_TERRORIST_POSSIBLE_LOCATIONS, 2]

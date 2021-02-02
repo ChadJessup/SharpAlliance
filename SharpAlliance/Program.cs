@@ -41,7 +41,6 @@ namespace SharpAlliance
             // These components can have other components injected in when instantiated.
             platformBuilder
                 .AddLibraryManager<LibraryFileManager>()
-                .AddInputManager<InputManager>()
                 .AddGameLogic<SharpAllianceGameLogic>()
                 .AddOtherComponents();
 
@@ -79,6 +78,7 @@ namespace SharpAlliance
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
             builder.AddDependency<IVideoManager, VeldridVideoManager>();
             builder.AddDependency<ISoundManager, SoundManager>();
+            builder.AddDependency<IInputManager, InputManager>();
 
             builder.Services.AddSingleton<MercTextBox>();
             builder.Services.AddSingleton<TileCache>();

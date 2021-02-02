@@ -87,7 +87,7 @@ namespace SharpAlliance.Core.Managers
                 //create a file handle for the 'real file'
                 //hFile = CreateRealFileHandle(hRealFile);
             }
-            else if (gFileDataBase.fInitialized)
+            else if (this.gFileDataBase.fInitialized)
             {
                 //if the file is to be opened for writing, return an error cause you cant write a file that is in the database library
                 if (fDeleteOnClose)
@@ -166,7 +166,7 @@ namespace SharpAlliance.Core.Managers
 
         private Stream AddToOpenFile(Stream hLibFile)
         {
-            gFileDataBase.RealFiles.pRealFilesOpen.Add(new Library.RealFileOpen
+            this.gFileDataBase.RealFiles.pRealFilesOpen.Add(new Library.RealFileOpen
             {
                 Stream = hLibFile,
             });
@@ -219,7 +219,7 @@ namespace SharpAlliance.Core.Managers
                 for (uiLoop = 0; uiLoop < puiBytesRead; uiLoop++)
                 {
                     ubLastByteForNextLoop = pMemBlock[uiLoop];
-                    pMemBlock[uiLoop] -= (byte)(ubLastByte + ubRotationArray[ubArrayIndex]);
+                    pMemBlock[uiLoop] -= (byte)(ubLastByte + this.ubRotationArray[ubArrayIndex]);
                     ubArrayIndex++;
                     if (ubArrayIndex >= ROTATION_ARRAY_SIZE)
                     {

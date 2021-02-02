@@ -37,7 +37,6 @@ namespace SharpAlliance.Platform
         public IOSManager OSManager { get; set; }
 
         public IMusicManager MusicManager { get; set; } = new NullMusicManager();
-        public IInputManager InputManager { get; set; } = new NullInputManager();
         public IFileManager FileManager { get; set; } = new NullFileManager();
         public ISoundManager SoundManager { get; set; } = new NullSoundManager();
         public ITimerManager TimerManager { get; set; } = new TimerManager();
@@ -66,7 +65,6 @@ namespace SharpAlliance.Platform
             var success = true;
 
             success &= await this.GameLogic.Initialize();
-            success &= await this.InputManager.Initialize();
             success &= await this.FileManager.Initialize();
             success &= await this.SoundManager.Initialize();
             success &= await this.TimerManager.Initialize();
@@ -92,7 +90,6 @@ namespace SharpAlliance.Platform
                 if (disposing)
                 {
                     this.GameLogic?.Dispose();
-                    this.InputManager.Dispose();
                     this.FileManager.Dispose();
                     this.SoundManager.Dispose();
                     this.TimerManager.Dispose();

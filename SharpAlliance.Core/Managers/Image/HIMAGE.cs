@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 namespace SharpAlliance.Core.Managers.Image
 {
     // Image header structure
-    public struct HIMAGE
+    public class HIMAGE
     {
         public ushort gusAlphaMask;// = 0;
         public ushort gusRedMask;// = 0;
@@ -84,12 +84,12 @@ namespace SharpAlliance.Core.Managers.Image
             ushort r16, g16, b16, usColor;
             byte r, g, b;
 
-            gusRedShift = -8;
-            gusGreenShift = 8;
-            gusBlueShift = 0;
-            gusRedMask = 0;
-            gusGreenMask = 65280;
-            gusBlueMask = 255;
+            this.gusRedShift = -8;
+            this.gusGreenShift = 8;
+            this.gusBlueShift = 0;
+            this.gusRedMask = 0;
+            this.gusGreenMask = 65280;
+            this.gusBlueMask = 255;
 
             palette = new Rgba32[256];
 
@@ -103,45 +103,45 @@ namespace SharpAlliance.Core.Managers.Image
                 p.ToRgba32(ref palette[cnt]);
 
                 continue;
-                if (gusRedShift < 0)
+                if (this.gusRedShift < 0)
                 {
-                    r16 = (ushort)(r >> Math.Abs(gusRedShift));
+                    r16 = (ushort)(r >> Math.Abs(this.gusRedShift));
                 }
                 else
                 {
-                    r16 = (ushort)(r << gusRedShift);
+                    r16 = (ushort)(r << this.gusRedShift);
                 }
 
-                if (gusGreenShift < 0)
+                if (this.gusGreenShift < 0)
                 {
-                    g16 = (ushort)(g >> Math.Abs(gusGreenShift));
+                    g16 = (ushort)(g >> Math.Abs(this.gusGreenShift));
                 }
                 else
                 {
-                    g16 = (ushort)(g << gusGreenShift);
+                    g16 = (ushort)(g << this.gusGreenShift);
                 }
 
-                if (gusBlueShift < 0)
+                if (this.gusBlueShift < 0)
                 {
-                    b16 = (ushort)(b >> Math.Abs(gusBlueShift));
+                    b16 = (ushort)(b >> Math.Abs(this.gusBlueShift));
                 }
                 else
                 {
-                    b16 = (ushort)(b << gusBlueShift);
+                    b16 = (ushort)(b << this.gusBlueShift);
                 }
 
-                usColor = (ushort)((r16 & gusRedMask) | (g16 & gusGreenMask) | (b16 & gusBlueMask));
+                usColor = (ushort)((r16 & this.gusRedMask) | (g16 & this.gusGreenMask) | (b16 & this.gusBlueMask));
 
                 if (usColor == 0)
                 {
                     if ((r + g + b) != 0)
                     {
-                        usColor = (ushort)(HIMAGE.BLACK_SUBSTITUTE | gusAlphaMask);
+                        usColor = (ushort)(HIMAGE.BLACK_SUBSTITUTE | this.gusAlphaMask);
                     }
                 }
                 else
                 {
-                    usColor |= gusAlphaMask;
+                    usColor |= this.gusAlphaMask;
                 }
 
 

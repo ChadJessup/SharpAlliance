@@ -19,7 +19,7 @@ namespace SharpAlliance.Core.Managers.Library
         public bool fLibraryOpen { get; set; }
         //	BOOLEAN	fAnotherFileAlreadyOpenedLibrary;				//this variable is set when a file is opened from the library and reset when the file is close.  No 2 files can have access to the library at 1 time.
         public uint uiIdOfOtherFileAlreadyOpenedLibrary;             //this variable is set when a file is opened from the library and reset when the file is close.  No 2 files can have access to the library at 1 time.
-        public int iNumFilesOpen => pOpenFiles.Count;
+        public int iNumFilesOpen => this.pOpenFiles.Count;
         public List<FileHeader> pFileHeader { get; } = new();
         public List<FileOpenStruct> pOpenFiles { get; } = new();
         public uint uiTotalMemoryAllocatedForLibrary;

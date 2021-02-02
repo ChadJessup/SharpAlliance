@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
@@ -12,13 +12,17 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.SubSystems
 {
-    public class MouseSubSystem : IDisposable
+    public delegate void ButtonCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason);
+    public class MouseSubSystem : ISharpAllianceManager
     {
+        public static GuiCallback DefaultMoveCallback { get; private set; }
         private readonly ILogger<MouseSubSystem> logger;
         private readonly IClockManager clock;
         private readonly ButtonSubSystem buttons;
         private readonly CursorSubSystem cursors;
+        private readonly GameContext gameContext;
         private const int MSYS_DOUBLECLICK_DELAY = 400;
+        private IVideoManager video;
 
         //Records and stores the last place the user clicked.  These values are compared to the current
         //click to determine if a double click event has been detected.
@@ -44,8 +48,8 @@ namespace SharpAlliance.Core.SubSystems
 
         private MouseRegion? MSYS_RegList = null;
 
-        private MouseRegion? MSYS_PrevRegion = null;
-        private MouseRegion? MSYS_CurrRegion = null;
+        public MouseRegion? MSYS_PrevRegion = null;
+        public MouseRegion? MSYS_CurrRegion = null;
 
         //When set, the fast help text will be instantaneous, if consecutive regions with help text are
         //hilighted.  It is set, whenever the timer for the first help button expires, and the mode is
@@ -85,19 +89,23 @@ namespace SharpAlliance.Core.SubSystems
 
         public Texture gpMouseCursor { get; set; }
         public Image<Rgba32> gpMouseCursorOriginal { get; set; }
+        public bool IsInitialized { get; }
 
         public MouseSubSystem(
             ILogger<MouseSubSystem> logger,
+            GameContext gameContext,
             IClockManager clockManager,
             ButtonSubSystem buttonManager,
             CursorSubSystem cursorSubSystem)
         {
             this.logger = logger;
 
+            DefaultMoveCallback = this.BtnGenericMouseMoveButtonCallback;
             this.logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
             this.clock = clockManager;
             this.buttons = buttonManager;
             this.cursors = cursorSubSystem;
+            this.gameContext = gameContext;
 
             if (this.MSYS_RegList is not null)
             {
@@ -150,6 +158,43 @@ namespace SharpAlliance.Core.SubSystems
             this.MSYS_AddRegionToList(ref this.MSYS_SystemBaseRegion);
 
             this.MSYS_UseMouseHandlerHook = true;
+        }
+
+        //Generic Button Movement Callback to reset the mouse button if the mouse is no longer
+        //in the button region.
+        public void BtnGenericMouseMoveButtonCallback(ref GUI_BUTTON btn, MouseCallbackReasons reasonValue)
+        {
+            MouseCallbackReasons reason = (MouseCallbackReasons)reasonValue;
+
+            //If the button isn't the anchored button, then we don't want to modify the button state.
+            if (btn != ButtonSubSystem.gpAnchoredButton)
+            {
+                return;
+            }
+
+            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            {
+                if (!ButtonSubSystem.gfAnchoredState)
+                {
+                    btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+                    if (btn.ubSoundSchemeID != 0)
+                    {
+                        this.buttons.PlayButtonSound(btn.IDNum, ButtonSounds.BUTTON_SOUND_CLICKED_OFF);
+                    }
+                }
+
+                this.video.InvalidateRegion(btn.Area.RegionTopLeftX, btn.Area.RegionTopLeftY, btn.Area.RegionBottomRightX, btn.Area.RegionBottomRightY);
+            }
+            else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
+            {
+                btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                if (btn.ubSoundSchemeID != 0)
+                {
+                    this.buttons.PlayButtonSound(btn.IDNum, ButtonSounds.BUTTON_SOUND_CLICKED_ON);
+                }
+
+                this.video.InvalidateRegion(btn.Area.RegionTopLeftX, btn.Area.RegionTopLeftY, btn.Area.RegionBottomRightX, btn.Area.RegionBottomRightY);
+            }
         }
 
         public void MouseHook(MouseEvents mouseEvent, int Xcoord, int Ycoord, bool leftButtonDown, bool rightButtonDown)
@@ -330,7 +375,7 @@ namespace SharpAlliance.Core.SubSystems
                         //ExecuteMouseHelpEndCallBack( MSYS_PrevRegion );
 
                         //# ifdef _JA2_RENDER_DIRTY
-                        //                        if (MSYS_PrevRegion.uiFlags & MSYS_GOT_BACKGROUND)
+                        //                        if (MSYS_PrevRegion.uiFlags.HasFlag(MouseRegionFlags.GOT_BACKGROUND)
                         //                        {
                         //                            FreeBackgroundRectPending(MSYS_PrevRegion.FastHelpRect);
                         //                        }
@@ -338,7 +383,7 @@ namespace SharpAlliance.Core.SubSystems
                         this.MSYS_PrevRegion.uiFlags &= ~MouseRegionFlags.GOT_BACKGROUND;
                         this.MSYS_PrevRegion.uiFlags &= ~MouseRegionFlags.FASTHELP_RESET;
 
-                        //if( region.uiFlags & MSYS_REGION_ENABLED )
+                        //if( region.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED )
                         //	region.uiFlags |= BUTTON_DIRTY;
                         //# ifndef JA2			
                         //                        VideoRemoveToolTip();
@@ -352,7 +397,7 @@ namespace SharpAlliance.Core.SubSystems
                     if (this.MSYS_PrevRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK)
                         && this.MSYS_PrevRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                     {
-                        this.MSYS_PrevRegion.MovementCallback(this.MSYS_PrevRegion, MouseCallbackReasons.LOST_MOUSE);
+                        this.MSYS_PrevRegion.MovementCallback(ref this.MSYS_PrevRegion, MouseCallbackReasons.LOST_MOUSE);
                     }
                 }
             }
@@ -373,7 +418,7 @@ namespace SharpAlliance.Core.SubSystems
                             //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
                             this.MSYS_CurrRegion.FastHelpTimer = this.gsFastHelpDelay;
                             //# ifdef _JA2_RENDER_DIRTY
-                            //                            if (MSYS_CurrRegion.uiFlags & MSYS_GOT_BACKGROUND)
+                            //                            if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.GOT_BACKGROUND)
                             //                                FreeBackgroundRectPending(MSYS_CurrRegion.FastHelpRect);
                             //#endif
                             this.MSYS_CurrRegion.uiFlags &= ~MouseRegionFlags.GOT_BACKGROUND;
@@ -384,7 +429,7 @@ namespace SharpAlliance.Core.SubSystems
                         }
                         if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED))
                         {
-                            this.MSYS_CurrRegion.MovementCallback(this.MSYS_CurrRegion, MouseCallbackReasons.GAIN_MOUSE);
+                            this.MSYS_CurrRegion.MovementCallback(ref this.MSYS_CurrRegion, MouseCallbackReasons.GAIN_MOUSE);
                         }
                     }
 
@@ -435,7 +480,7 @@ namespace SharpAlliance.Core.SubSystems
                         && this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK)
                         && this.MSYS_Action.HasFlag(MouseDos.MOVE))
                     {
-                        this.MSYS_CurrRegion.ButtonCallback(this.MSYS_CurrRegion, MouseCallbackReasons.MOVE);
+                        this.MSYS_CurrRegion.ButtonCallback(ref this.MSYS_CurrRegion, MouseCallbackReasons.MOVE);
                     }
 
                     //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
@@ -495,7 +540,7 @@ namespace SharpAlliance.Core.SubSystems
                                     // Button was clicked so remove any FastHelp text
                                     this.MSYS_CurrRegion.uiFlags &= ~MouseRegionFlags.FASTHELP;
                                     //# ifdef _JA2_RENDER_DIRTY
-                                    //                                    if (MSYS_CurrRegion.uiFlags & MSYS_GOT_BACKGROUND)
+                                    //                                    if (MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.GOT_BACKGROUND)
                                     //                                        FreeBackgroundRectPending(MSYS_CurrRegion.FastHelpRect);
                                     //#endif
 
@@ -548,7 +593,7 @@ namespace SharpAlliance.Core.SubSystems
                                 }
 
                                 // TODO: Cast to MouseCallbackReasons shouldn't be here, move to two sep callbacks.
-                                this.MSYS_CurrRegion.ButtonCallback(this.MSYS_CurrRegion, (MouseCallbackReasons)ButtonReason);
+                                this.MSYS_CurrRegion.ButtonCallback(ref this.MSYS_CurrRegion, (MouseCallbackReasons)ButtonReason);
                             }
                         }
                     }
@@ -577,7 +622,7 @@ namespace SharpAlliance.Core.SubSystems
 
                     if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK) && this.MSYS_Action.HasFlag(MouseDos.MOVE))
                     {
-                        this.MSYS_CurrRegion.MovementCallback(this.MSYS_CurrRegion, MouseCallbackReasons.MOVE);
+                        this.MSYS_CurrRegion.MovementCallback(ref this.MSYS_CurrRegion, MouseCallbackReasons.MOVE);
                     }
 
                     this.MSYS_Action &= ~MouseDos.MOVE;
@@ -607,6 +652,19 @@ namespace SharpAlliance.Core.SubSystems
         private void MSYS_SetCurrentCursor(Cursor cursor)
         {
             this.cursors.SetCurrentCursorFromDatabase(cursor);
+        }
+
+        public void MSYS_SetRegionUserData(ref MouseRegion region, int index, int userdata)
+        {
+            if (index < 0 || index > 3)
+            {
+                // TODO: log
+                string str = $"Attempting MSYS_SetRegionUserData() with out of range index {index}.";
+
+                return;
+            }
+
+            region.UserData[index] = userdata;
         }
 
         //======================================================================================================
@@ -643,7 +701,7 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             //# ifdef _JA2_RENDER_DIRTY
-            //            if (region.uiFlags & MSYS_HAS_BACKRECT)
+            //            if (region.uiFlags.HasFlag(MouseRegionFlags.HAS_BACKRECT)
             //            {
             //                FreeBackgroundRectPending(region.FastHelpRect);
             //                region.uiFlags &= (~MSYS_HAS_BACKRECT);
@@ -765,6 +823,11 @@ namespace SharpAlliance.Core.SubSystems
                     }
                 }
             }
+        }
+
+        internal int MSYS_GetRegionUserData(ref MouseRegion reg, int index)
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -896,7 +959,7 @@ namespace SharpAlliance.Core.SubSystems
                 region.uiFlags |= MouseRegionFlags.BUTTON_CALLBACK;
             }
 
-            
+
             region.Cursor = crsr;
             if (crsr != Cursor.MSYS_NO_CURSOR)
             {
@@ -923,11 +986,11 @@ namespace SharpAlliance.Core.SubSystems
             region.HelpDoneCallback = null;
 
             //Add region to system list
-            MSYS_AddRegionToList(ref region);
+            this.MSYS_AddRegionToList(ref region);
             region.uiFlags |= MouseRegionFlags.REGION_ENABLED | MouseRegionFlags.REGION_EXISTS;
 
             // Dirty our update flag
-            gfRefreshUpdate = true;
+            this.gfRefreshUpdate = true;
         }
 
         //======================================================================================================
@@ -1003,6 +1066,13 @@ namespace SharpAlliance.Core.SubSystems
 
         public void Dispose()
         {
+        }
+
+        public ValueTask<bool> Initialize()
+        {
+            this.video = this.gameContext.Services.GetRequiredService<IVideoManager>();
+
+            return ValueTask.FromResult(true);
         }
     }
 
@@ -1128,6 +1198,6 @@ namespace SharpAlliance.Core.SubSystems
         public Texture pSurface;
     }
 
-    public delegate void MouseCallback(MouseRegion region, MouseCallbackReasons callbackReason);
+    public delegate void MouseCallback(ref MouseRegion region, MouseCallbackReasons callbackReason);
     public delegate void MOUSE_HELPTEXT_DONE_CALLBACK();
 }

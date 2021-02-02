@@ -55,7 +55,7 @@ namespace SharpAlliance.Core.SubSystems
         // Used to see if the dialog text file exists
         public bool DialogueDataFileExistsForProfile(int ubCharacterNum, int usQuoteNum, bool fWavFile, out string ppStr)
         {
-            string pFilename = GetDialogueDataFilename(ubCharacterNum, usQuoteNum, fWavFile);
+            string pFilename = this.GetDialogueDataFilename(ubCharacterNum, usQuoteNum, fWavFile);
 
             ppStr = pFilename;
 
@@ -70,7 +70,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // Are we an NPC OR an RPC that has not been recruited?
             // ATE: Did the || clause here to allow ANY RPC that talks while the talking menu is up to use an npc quote file
-            if (gfUseAlternateDialogueFile)
+            if (this.gfUseAlternateDialogueFile)
             {
                 if (fWavFile)
                 {
@@ -140,16 +140,16 @@ namespace SharpAlliance.Core.SubSystems
             int iCounter = 0;
             // go and grab all external NPC faces that are needed for the game who won't exist as soldiertypes
 
-            if (fExternFacesLoaded == true)
+            if (this.fExternFacesLoaded == true)
             {
                 return;
             }
 
-            fExternFacesLoaded = true;
+            this.fExternFacesLoaded = true;
 
             for (iCounter = 0; iCounter < (int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES; iCounter++)
             {
-                uiExternalStaticNPCFaces[iCounter] = (int)this.faces.InitFace(uiExternalFaceProfileIds[iCounter], OverheadTypes.NOBODY, FaceFlags.FACE_FORCE_SMALL);
+                this.uiExternalStaticNPCFaces[iCounter] = (int)this.faces.InitFace(this.uiExternalFaceProfileIds[iCounter], OverheadTypes.NOBODY, FaceFlags.FACE_FORCE_SMALL);
             }
 
             return;

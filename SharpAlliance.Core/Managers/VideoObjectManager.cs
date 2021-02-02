@@ -10,6 +10,7 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Veldrid;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Managers
@@ -83,7 +84,7 @@ namespace SharpAlliance.Core.Managers
             uint uiPitch;
 
             // Now we have the video object and surface, call the VO blitter function
-            if (!BltVideoObjectToBuffer(
+            if (!this.BltVideoObjectToBuffer(
                 out pBuffer,
                 16,
                 hSrcVObject,
@@ -136,26 +137,26 @@ namespace SharpAlliance.Core.Managers
 
                         if ((fBltFlags & VideoObjectManager.VO_BLT_SRCTRANSPARENCY) == 0)
                         {
-                            if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect))
+                            if (this.BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect))
                             {
-                                Blt8BPPDataTo16BPPBufferTransparentClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect);
+                                this.Blt8BPPDataTo16BPPBufferTransparentClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect);
                             }
                             else
                             {
-                                Blt8BPPDataTo16BPPBufferTransparent(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
+                                this.Blt8BPPDataTo16BPPBufferTransparent(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
                             }
 
                             break;
                         }
                         else if ((fBltFlags & VideoObjectManager.VO_BLT_SHADOW) == 0)
                         {
-                            if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect))
+                            if (this.BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect))
                             {
-                                Blt8BPPDataTo16BPPBufferShadowClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect);
+                                this.Blt8BPPDataTo16BPPBufferShadowClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect);
                             }
                             else
                             {
-                                Blt8BPPDataTo16BPPBufferShadow(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
+                                this.Blt8BPPDataTo16BPPBufferShadow(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
                             }
 
                             break;
@@ -234,10 +235,10 @@ namespace SharpAlliance.Core.Managers
 
             if (clipregion == null)
             {
-                ClipX1 = ClippingRect.Value.Left;
-                ClipY1 = ClippingRect.Value.Top;
-                ClipX2 = ClippingRect.Value.Right;
-                ClipY2 = ClippingRect.Value.Bottom;
+                ClipX1 = this.ClippingRect.Value.Left;
+                ClipY1 = this.ClippingRect.Value.Top;
+                ClipX2 = this.ClippingRect.Value.Right;
+                ClipY2 = this.ClippingRect.Value.Bottom;
             }
             else
             {
@@ -585,10 +586,10 @@ namespace SharpAlliance.Core.Managers
 
             if (clipregion == null)
             {
-                ClipX1 = ClippingRect!.Value.Left;
-                ClipY1 = ClippingRect!.Value.Top;
-                ClipX2 = ClippingRect!.Value.Right;
-                ClipY2 = ClippingRect!.Value.Bottom;
+                ClipX1 = this.ClippingRect!.Value.Left;
+                ClipY1 = this.ClippingRect!.Value.Top;
+                ClipX2 = this.ClippingRect!.Value.Right;
+                ClipY2 = this.ClippingRect!.Value.Bottom;
             }
             else
             {
@@ -629,7 +630,7 @@ namespace SharpAlliance.Core.Managers
 
         public int CountVideoObjectNodes()
         {
-            VOBJECT_NODE? curr = gpVObjectHead;
+            VOBJECT_NODE? curr = this.gpVObjectHead;
             int i = 0;
 
             while (curr is not null)
@@ -679,7 +680,9 @@ namespace SharpAlliance.Core.Managers
         public int usNumberOfObjects;   // Total number of objects
         public int ubBitDepth;                       // BPP 
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public HIMAGE? hImage { get; set; }
+        public Texture? Texture { get; set; }
     }
 
     // Effects structure for specialized blitting
@@ -718,7 +721,7 @@ namespace SharpAlliance.Core.Managers
         VOBJECT_CREATE_FROMHIMAGE = 0x00000080,    // Creates a video object from a pre-loaded hImage
     };
 
-    public struct VOBJECT_DESC
+    public class VOBJECT_DESC
     {
         public VideoObjectCreateFlags fCreateFlags;                        // Specifies creation flags like from file or not
         public string ImageFile;                          // Filename of image data to use

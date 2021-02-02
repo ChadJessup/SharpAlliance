@@ -50,7 +50,7 @@ namespace SharpAlliance.Core.Managers
 
         private readonly ILogger<VeldridVideoManager> logger;
 
-        private Dictionary<string, (Texture, HVOBJECT)> loadedTextures = new();
+        private Dictionary<string, HVOBJECT> loadedTextures = new();
 
         // private readonly WindowsSubSystem windows;
         private readonly IInputManager inputs;
@@ -166,6 +166,7 @@ namespace SharpAlliance.Core.Managers
         public uint guiSAVEBUFFER { get; set; }
         public uint guiEXTRABUFFER { get; set; }
         public bool gfExtraBuffer { get; set; }
+        public int gbPixelDepth { get; }
 
         private const int SCREEN_WIDTH = 640;
         private const int SCREEN_HEIGHT = 480;
@@ -328,34 +329,22 @@ namespace SharpAlliance.Core.Managers
         public static Stream OpenEmbeddedAssetStream(string name)
             => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-        public bool AddVideoObject(ref VOBJECT_DESC pVObjectDesc, out string key)
+        public HVOBJECT AddVideoObject(ref VOBJECT_DESC pVObjectDesc, out string key)
         {
-            if (this.loadedTextures.ContainsKey(pVObjectDesc.ImageFile))
-            {
-                key = pVObjectDesc.ImageFile;
-                return true;
-            }
-
-            key = string.Empty;
-            // Create video object
-            HVOBJECT? hVObject = this.CreateVideoObject(ref pVObjectDesc);
-
-            if (hVObject is null)
-            {
-                // Video Object will set error condition.
-                return false;
-            }
-
-            var texture = new ImageSharpTexture(pVObjectDesc.hImage.ParsedImages[0], mipmap: false)
-                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
-
-            this.loadedTextures.Add(
-                pVObjectDesc.ImageFile,
-                (texture, hVObject));
-
             key = pVObjectDesc.ImageFile;
 
-            return true;
+            if (this.loadedTextures.ContainsKey(pVObjectDesc.ImageFile))
+            {
+                return null;
+            }
+
+            // Create video object
+            HVOBJECT hVObject = this.CreateVideoObject(ref pVObjectDesc);
+            hVObject.hImage = pVObjectDesc.hImage;
+
+            this.loadedTextures.Add(pVObjectDesc.ImageFile, hVObject);
+
+            return hVObject;
         }
 
         public HVOBJECT CreateVideoObject(ref VOBJECT_DESC VObjectDesc)
@@ -396,12 +385,6 @@ namespace SharpAlliance.Core.Managers
                     hImage = VObjectDesc.hImage;
                 }
 
-                // Check if returned himage is TRLE compressed - return error if not
-                if (!(hImage.fFlags.HasFlag(HIMAGECreateFlags.IMAGE_TRLECOMPRESSED)))
-                {
-                    throw new InvalidOperationException("hImage was null");
-                }
-
                 // Set values from himage
                 hVObject.ubBitDepth = hImage.ubBitDepth;
             }
@@ -414,6 +397,9 @@ namespace SharpAlliance.Core.Managers
             //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
 
             VObjectDesc.hImage = hImage;
+
+            hVObject.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false)
+                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
 
             return hVObject;
         }
@@ -452,23 +438,23 @@ namespace SharpAlliance.Core.Managers
             }
 
             // Create memory for data
-            pBuffer.usNumberOfObjects = hImage.Value.usNumberOfObjects;
+            pBuffer.usNumberOfObjects = hImage.usNumberOfObjects;
 
             // Create buffer for objects
             pBuffer.pETRLEObject = new ETRLEObject[pBuffer.usNumberOfObjects];
             //CHECKF(pBuffer.pETRLEObject != null);
 
             // Copy into buffer
-            pBuffer.pETRLEObject = hImage.Value.pETRLEObject;
+            pBuffer.pETRLEObject = hImage.pETRLEObject;
 
             // Allocate memory for pixel data
-            pBuffer.pPixData = new byte[hImage.Value.uiSizePixData];
+            pBuffer.pPixData = new byte[hImage.uiSizePixData];
             //CHECKF(pBuffer.pPixData != null);
 
-            pBuffer.uiSizePixData = hImage.Value.uiSizePixData;
+            pBuffer.uiSizePixData = hImage.uiSizePixData;
 
             // Copy into buffer
-            pBuffer.pPixData = hImage.Value.pImageData;
+            pBuffer.pPixData = hImage.pImageData;
 
             return true;
         }
@@ -1563,7 +1549,7 @@ namespace SharpAlliance.Core.Managers
         {
         }
 
-        public void GetVideoObject(string key, out (Texture, HVOBJECT) hPixHandle)
+        public void GetVideoObject(string key, out HVOBJECT hPixHandle)
         {
             if (!this.loadedTextures.TryGetValue(key, out hPixHandle))
             {
@@ -1571,11 +1557,18 @@ namespace SharpAlliance.Core.Managers
             }
         }
 
-        public void BltVideoObject(uint frameBuffer, (Texture, HVOBJECT) videoObject, int regionIndex, int X, int Y, int fBltFlags, blt_fx? pBltFx)
+        public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y)
         {
-            this.SpriteRenderer.AddSprite(
-                position: new Vector2(X, Y),
-                videoObject: videoObject);
+            if (hVObject.Texture is null)
+            {
+                throw new NullReferenceException("Texture is null for: " + hVObject.Name);
+            }
+
+            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(X, Y, (int)hVObject.Texture.Width, (int)hVObject.Texture.Height), hVObject.Texture, hVObject.Name);
+
+            //            this.SpriteRenderer.AddSprite(
+            //                position: new Vector2(X, Y),
+            //                videoObject: videoObject);
         }
 
         public void DrawTextToScreen(string text, int usLocX, int usLocY, int width, FontStyle fontStyle, FontColor fontForegroundColor, FontColor fontBackgroundColor, bool dirty, TextJustifies justification)
@@ -1613,6 +1606,66 @@ namespace SharpAlliance.Core.Managers
         public void DeleteVideoObjectFromIndex(string key)
         {
             //this.loadedTextures.Remove(logoKey);
+        }
+
+        public void LineDraw(bool v1, int v2, int v3, int v4, int v5, int v6, byte[] pDestBuf)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] LockVideoSurface(Surfaces buttonDestBuffer, out uint uiDestPitchBYTES)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnLockVideoSurface(Surfaces buttonDestBuffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Veldrid.Rectangle clipRect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Veldrid.Rectangle clipRect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ColorFillVideoSurfaceArea(Surfaces buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Blt8BPPDataTo16BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Veldrid.Rectangle clipRect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Veldrid.Rectangle clipRect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetClippingRect(out Veldrid.Rectangle clipRect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetClippingRect(ref Veldrid.Rectangle newClip)
+        {
+            throw new NotImplementedException();
         }
     }
 

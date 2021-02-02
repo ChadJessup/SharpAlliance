@@ -387,7 +387,7 @@ namespace SharpAlliance.Core.Managers
 
 
             //Check if the file can be contained from an open library ( the path to the file a library path )
-            sLibraryID = GetLibraryIDFromFileName(pName);
+            sLibraryID = this.GetLibraryIDFromFileName(pName);
 
             if (sLibraryID != LibraryNames.Unknown)
             {
@@ -408,10 +408,10 @@ namespace SharpAlliance.Core.Managers
                 }
 
                 //if the file is in a library, get the file
-                if (GetFileHeaderFromLibrary(sLibraryID, pName, out pFileHeader))
+                if (this.GetFileHeaderFromLibrary(sLibraryID, pName, out pFileHeader))
                 {
                     //Create a library handle for the new file
-                    hLibFile = CreateLibraryFileStream(sLibraryID, pFileHeader);
+                    hLibFile = this.CreateLibraryFileStream(sLibraryID, pFileHeader);
 
                     //Set the current file data into the array of open files
                     var fos = new FileOpenStruct
@@ -422,12 +422,12 @@ namespace SharpAlliance.Core.Managers
                         uiActualPositionInLibrary = pFileHeader.Value.uiFileOffset,
                     };
 
-                    gFileDataBase.pLibraries[sLibraryID].pOpenFiles.Add(fos);
+                    this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles.Add(fos);
 
                     //Set the file position in the library to the begining of the 'file' in the library
-                    uiNewFilePosition = SetFilePointer(gFileDataBase.pLibraries[sLibraryID].hLibraryHandle, gFileDataBase.pLibraries[sLibraryID].pOpenFiles[(int)uiFileNum].pFileHeader.uiFileOffset, SeekOrigin.Begin);
+                    uiNewFilePosition = this.SetFilePointer(this.gFileDataBase.pLibraries[sLibraryID].hLibraryHandle, this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles[(int)uiFileNum].pFileHeader.uiFileOffset, SeekOrigin.Begin);
 
-                    uiNewFilePosition = gFileDataBase.pLibraries[sLibraryID].hLibraryHandle.Length;
+                    uiNewFilePosition = this.gFileDataBase.pLibraries[sLibraryID].hLibraryHandle.Length;
                 }
                 else
                 {
@@ -443,7 +443,7 @@ namespace SharpAlliance.Core.Managers
 
             //Set the fact the a file is currently open in the library
             //	gFileDataBase.pLibraries[ sLibraryID ].fAnotherFileAlreadyOpenedLibrary = TRUE;
-            gFileDataBase.pLibraries[sLibraryID].uiIdOfOtherFileAlreadyOpenedLibrary = uiFileNum;
+            this.gFileDataBase.pLibraries[sLibraryID].uiIdOfOtherFileAlreadyOpenedLibrary = uiFileNum;
 
             return hLibFile;
         }
