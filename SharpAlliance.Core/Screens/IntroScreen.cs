@@ -97,7 +97,7 @@ namespace SharpAlliance.Core.Screens
                 this.gfIntroScreenEntry = false;
                 this.gfIntroScreenExit = false;
 
-                this.video.InvalidateRegion(0, 0, 640, 480);
+                this.video.InvalidateRegion(new(0, 0, 640, 480));
             }
 
             this.renderDirty.RestoreBackgroundRects();

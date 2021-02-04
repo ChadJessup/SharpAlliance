@@ -8,6 +8,7 @@ using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using Veldrid;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -134,7 +135,7 @@ namespace SharpAlliance.Core.Screens
                     return ScreenName.ERROR_SCREEN;
                 }
 
-                this.video.SpriteRenderer.AddSprite(new Veldrid.Rectangle(0, 0, 640, 480), hVObject.Texture, vs_desc.ImageFile);
+                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVObject.Textures[0], vs_desc.ImageFile);
                 //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
                 ubCurrentScreen = 1;
 

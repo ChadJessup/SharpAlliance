@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.Managers.VideoSurfaces;
+using SixLabors.ImageSharp;
 using Veldrid;
 using Veldrid.ImageSharp;
 using Veldrid.SPIRV;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance
 {
@@ -82,10 +83,10 @@ namespace SharpAlliance
             //            return File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Shaders", name));
         }
 
-        public void AddSprite(Vector2 position, HVOBJECT videoObject)
+        public void AddSprite(Vector2 position, HVOBJECT videoObject, int textureIndex)
             => this.AddSprite(
-                new Rectangle((int)position.X, (int)position.Y, (int)videoObject.Texture.Width, (int)videoObject.Texture.Height),
-                videoObject.Texture,
+                new Rectangle((int)position.X, (int)position.Y, (int)videoObject.Textures[textureIndex].Width, (int)videoObject.Textures[textureIndex].Height),
+                videoObject.Textures[textureIndex],
                 videoObject.Name);
 
         public void AddSprite(Vector2 position, Vector2 size, string spriteName)
@@ -107,7 +108,7 @@ namespace SharpAlliance
             {
                 SpriteName = spriteName,
                 Texture = texture,
-                Quad = new QuadVertex(rectangle.Position, rectangle.Size, tint.Value, rotation),
+                Quad = new QuadVertex(rectangle.ToPoint(), new(rectangle.Size.Width, rectangle.Size.Height), tint.Value, rotation),
             });
         }
 

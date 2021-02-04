@@ -3,8 +3,8 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Veldrid;
 
 namespace SharpAlliance.Core.Interfaces
 {
@@ -25,11 +25,11 @@ namespace SharpAlliance.Core.Interfaces
         void DrawFrame();
         void RefreshScreen();
         void InvalidateScreen();
-        void InvalidateRegion(int v1, int v2, int v3, int v4);
+        void InvalidateRegion(Rectangle bounds);
         void EndFrameBufferRender();
         HVOBJECT AddVideoObject(ref VOBJECT_DESC vObjectDesc, out string key);
         void GetVideoObject(string key, out HVOBJECT hPixHandle);
-        void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y);
+        void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
         void DrawTextToScreen(string v1, int v2, int v3, int v4, FontStyle fONT10ARIAL, FontColor fONT_MCOLOR_WHITE, FontColor fONT_MCOLOR_BLACK, bool v5, TextJustifies cENTER_JUSTIFIED);
         void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap);
         void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap);

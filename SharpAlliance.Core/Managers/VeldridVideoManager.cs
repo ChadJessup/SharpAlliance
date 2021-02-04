@@ -396,10 +396,14 @@ namespace SharpAlliance.Core.Managers
             // All is well
             //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
 
-            VObjectDesc.hImage = hImage;
+            hVObject.hImage = hImage;
+            hVObject.Textures = new Texture[hImage.ParsedImages.Count];
 
-            hVObject.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false)
-                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+            for (int i = 0; i < hImage.ParsedImages.Count; i++)
+            {
+                hVObject.Textures[i] = new ImageSharpTexture(hImage.ParsedImages[i], mipmap: false)
+                    .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+            }
 
             return hVObject;
         }
@@ -1062,14 +1066,15 @@ namespace SharpAlliance.Core.Managers
             Rectangle sourceRegion,
             Image<Rgba32> srcImage)
         {
+
             srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
 
             var newTexture = new ImageSharpTexture(srcImage)
                 .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
 
-            var finalRect = new Veldrid.Rectangle(
-                new Veldrid.Point(destinationPoint.X, destinationPoint.Y),
-                new Veldrid.Point(sourceRegion.Width, sourceRegion.Height));
+            var finalRect = new Rectangle(
+                new Point(destinationPoint.X, destinationPoint.Y),
+                new Size(sourceRegion.Width, sourceRegion.Height));
 
             this.SpriteRenderer.AddSprite(finalRect, newTexture, newTexture.GetHashCode().ToString());
         }
@@ -1541,7 +1546,7 @@ namespace SharpAlliance.Core.Managers
             GC.SuppressFinalize(this);
         }
 
-        public void InvalidateRegion(int v1, int v2, int v3, int v4)
+        public void InvalidateRegion(Rectangle bounds)
         {
         }
 
@@ -1557,18 +1562,16 @@ namespace SharpAlliance.Core.Managers
             }
         }
 
-        public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y)
+        public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
         {
-            if (hVObject.Texture is null)
+            if (hVObject.Textures is null)
             {
                 throw new NullReferenceException("Texture is null for: " + hVObject.Name);
             }
 
-            this.SpriteRenderer.AddSprite(new Veldrid.Rectangle(X, Y, (int)hVObject.Texture.Width, (int)hVObject.Texture.Height), hVObject.Texture, hVObject.Name);
+            int y = (int)hVObject.Textures[textureIndex].Height - Y;
 
-            //            this.SpriteRenderer.AddSprite(
-            //                position: new Vector2(X, Y),
-            //                videoObject: videoObject);
+            this.SpriteRenderer.AddSprite(new Rectangle(X, Y, (int)hVObject.Textures[textureIndex].Width, (int)hVObject.Textures[textureIndex].Height), hVObject.Textures[textureIndex], $"{hVObject.Name}_{textureIndex}");
         }
 
         public void DrawTextToScreen(string text, int usLocX, int usLocY, int width, FontStyle fontStyle, FontColor fontForegroundColor, FontColor fontBackgroundColor, bool dirty, TextJustifies justification)
@@ -1628,12 +1631,12 @@ namespace SharpAlliance.Core.Managers
             throw new NotImplementedException();
         }
 
-        public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Veldrid.Rectangle clipRect)
+        public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
         {
             throw new NotImplementedException();
         }
 
-        public void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Veldrid.Rectangle clipRect)
+        public void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
         {
             throw new NotImplementedException();
         }
@@ -1648,22 +1651,22 @@ namespace SharpAlliance.Core.Managers
             throw new NotImplementedException();
         }
 
-        public void Blt8BPPDataTo16BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Veldrid.Rectangle clipRect)
+        public void Blt8BPPDataTo16BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
         {
             throw new NotImplementedException();
         }
 
-        public void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Veldrid.Rectangle clipRect)
+        public void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
         {
             throw new NotImplementedException();
         }
 
-        public void GetClippingRect(out Veldrid.Rectangle clipRect)
+        public void GetClippingRect(out Rectangle clipRect)
         {
             throw new NotImplementedException();
         }
 
-        public void SetClippingRect(ref Veldrid.Rectangle newClip)
+        public void SetClippingRect(ref Rectangle newClip)
         {
             throw new NotImplementedException();
         }
@@ -1695,6 +1698,10 @@ namespace SharpAlliance.Core.Managers
 
     public static class RectangleHelpers
     {
+        public static Rectangle ToVeldridRectangle(this Rectangle rectangle)
+            => new (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+
         public static Point ToPoint(this Rectangle rect) => new(rect.X, rect.Y);
+        public static Vector2 ToVector2(this Point point) => new(point.X, point.Y);
     }
 }

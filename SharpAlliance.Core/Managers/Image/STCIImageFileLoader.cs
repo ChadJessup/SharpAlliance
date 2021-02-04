@@ -193,7 +193,7 @@ namespace SharpAlliance.Core.Managers.Image
             return image;
         }
 
-        public Image<Rgba32> CreateIndexedImages(
+        public List<Image<Rgba32>> CreateIndexedImages(
             ref HIMAGE hImage,
             ref HVOBJECT hVObject)
         {
@@ -213,29 +213,22 @@ namespace SharpAlliance.Core.Managers.Image
                 var image = new Image<Rgba32>(etrle.usWidth, etrle.usHeight);
                 var imageSpan = indexSpan.Slice((int)etrle.uiDataOffset, (int)etrle.uiDataLength);
 
-                var uncompressedData = this.etrle_decompress(indexSpan.ToArray());
+                var uncompressedData = this.DecompressETRLEBytes(imageSpan.ToArray());
                 for (int y = 0; y < image.Height; y++)
                 {
                     Span<Rgba32> pixelRow = image.GetPixelRowSpan(y);
                     for (int x = 0; x < image.Width && idx < uncompressedData.Length; x++)
                     {
-                        try
+                        var pixel = paletteSpan[uncompressedData[idx]];
+
+                        // This is the alpha pixel after all the conversions...so replace with
+                        // RGBA32 alpha pixel.
+                        if (uncompressedData[idx] == 0 || (pixel.R == 45 && pixel.G == 213 && pixel.B == 0))
                         {
-                            var pixel = paletteSpan[uncompressedData[idx]];
-
-                            // This is the alpha pixel after all the conversions...so replace with
-                            // RGBA32 alpha pixel.
-                            if (uncompressedData[idx] == 0 || (pixel.R == 45 && pixel.G == 213 && pixel.B == 0))
-                            {
-                                pixel = AlphaPixel;
-                            }
-
-                            color.FromRgba32(pixel);
+                            pixel = AlphaPixel;
                         }
-                        catch (Exception e)
-                        {
 
-                        }
+                        color.FromRgba32(pixel);
 
                         pixelRow[x] = color;
                         idx++;
@@ -245,7 +238,7 @@ namespace SharpAlliance.Core.Managers.Image
                 hImage.ParsedImages.Add(image);
             }
 
-            return hImage.ParsedImages[0];
+            return hImage.ParsedImages;
         }
 
         public const byte COMPRESSED_FLAG = 0x80;
@@ -254,7 +247,7 @@ namespace SharpAlliance.Core.Managers.Image
         public const byte IS_COMPRESSED_BYTE_MASK = 0x80;
         public const byte NUMBER_OF_BYTES_MASK = 0x7F;
 
-        public byte[] etrle_decompress(byte[] data)
+        public byte[] DecompressETRLEBytes(byte[] data)
         {
             var number_of_compressed_bytes = data.Length;
             var compressed_bytes = data;

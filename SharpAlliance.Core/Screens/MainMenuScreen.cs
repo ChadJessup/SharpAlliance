@@ -9,6 +9,8 @@ using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using Veldrid;
+using SixLabors.ImageSharp;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -307,14 +309,14 @@ namespace SharpAlliance.Core.Screens
 
             //Get and display the background image
             this.video.GetVideoObject(this.mainMenuBackGroundImageKey, out hPixHandle);
-            this.video.BltVideoObject(hPixHandle, 0, 0, 0);
+            this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
             this.video.GetVideoObject(this.ja2LogoImageKey, out hPixHandle);
-            this.video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Texture.Height));
+            this.video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
 
             this.video.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
 
-            this.video.InvalidateRegion(0, 0, 640, 480);
+            this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
         public ValueTask<bool> Initialize()
@@ -525,10 +527,7 @@ namespace SharpAlliance.Core.Screens
                 // Make a mouse region
                 this.mouse.MSYS_DefineRegion(
                     ref this.gBackRegion,
-                    0,
-                    0,
-                    640,
-                    480,
+                    new(0, 0, 640, 480),
                     MSYS_PRIORITY.HIGHEST,
                     Cursor.NORMAL,
                     null,

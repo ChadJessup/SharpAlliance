@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Veldrid;
-using Veldrid.ImageSharp;
+using SixLabors.ImageSharp;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
+using Point = SixLabors.ImageSharp.Point;
 
 namespace SharpAlliance.Core.Managers.VideoSurfaces
 {
@@ -52,8 +54,8 @@ namespace SharpAlliance.Core.Managers.VideoSurfaces
 
     public struct VSurfaceRegion
     {
-        public Veldrid.Rectangle RegionCoords;          // Rectangle describing coordinates of region
-        public Veldrid.Point Origin;                    // Origin used for hot spots, etc
+        public Rectangle RegionCoords;          // Rectangle describing coordinates of region
+        public Point Origin;                    // Origin used for hot spots, etc
         public int ubHitMask;                   // Byte flags for hit detection
     }
 

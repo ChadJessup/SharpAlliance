@@ -10,8 +10,10 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -314,9 +316,9 @@ namespace SharpAlliance.Core.SubSystems
                     {
                         // Turn off dirty flag
                         b.uiFlags &= ~ButtonFlags.BUTTON_DIRTY;
-                        this.DrawButtonFromPtr(ref b);
+                        this.DrawButtonFromPtr(ref b, iButtonID);
 
-                        this.video.InvalidateRegion(b.Area.RegionTopLeftX, b.Area.RegionTopLeftY, b.Area.RegionBottomRightX, b.Area.RegionBottomRightY);
+                        this.video.InvalidateRegion(b.Area.Bounds);
                     }
                 }
             }
@@ -331,17 +333,17 @@ namespace SharpAlliance.Core.SubSystems
             this.fonts.RestoreFontSettings();
         }
 
-        private void DrawButtonFromPtr(ref GUI_BUTTON b)
+        private void DrawButtonFromPtr(ref GUI_BUTTON b, int id = 0)
         {
             // Draw the appropriate button according to button type
             this.gbDisabledButtonStyle = DISABLED_STYLE.NONE;
             switch (b.uiFlags & ButtonFlags.BUTTON_TYPES)
             {
                 case ButtonFlags.BUTTON_QUICK:
-                    this.DrawQuickButton(ref b);
+                    this.DrawQuickButton(ref b, id);
                     break;
                 case ButtonFlags.BUTTON_GENERIC:
-                    this.DrawGenericButton(ref b);
+                    this.DrawGenericButton(ref b, id);
                     break;
                 case ButtonFlags.BUTTON_HOT_SPOT:
                     if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_NO_TOGGLE))
@@ -350,20 +352,20 @@ namespace SharpAlliance.Core.SubSystems
                     }
                     return;  //hotspots don't have text, but if you want to, change this to a break!
                 case ButtonFlags.BUTTON_CHECKBOX:
-                    this.DrawCheckBoxButton(ref b);
+                    this.DrawCheckBoxButton(ref b, id);
                     break;
             }
 
             //If button has an icon, overlay it on current button.
             if (b.iIconID != -1)
             {
-                this.DrawIconOnButton(ref b);
+                this.DrawIconOnButton(ref b, id);
             }
 
             //If button has text, draw it now
             if (!string.IsNullOrWhiteSpace(b.stringText))
             {
-                this.DrawTextOnButton(ref b);
+                this.DrawTextOnButton(ref b, id);
             }
 
             //If the button is disabled, and a style has been calculated, then
@@ -371,37 +373,41 @@ namespace SharpAlliance.Core.SubSystems
             switch (this.gbDisabledButtonStyle)
             {
                 case DISABLED_STYLE.HATCHED:
-                    this.DrawHatchOnButton(ref b);
+                    this.DrawHatchOnButton(ref b, id);
                     break;
                 case DISABLED_STYLE.SHADED:
-                    this.DrawShadeOnButton(ref b);
+                    this.DrawShadeOnButton(ref b, id);
                     break;
             }
 
             if (b.bDefaultStatus != DEFAULT_STATUS.NONE)
             {
-                this.DrawDefaultOnButton(ref b);
+                this.DrawDefaultOnButton(ref b, id);
             }
         }
 
-        private void DrawDefaultOnButton(ref GUI_BUTTON b)
+        private void DrawDefaultOnButton(ref GUI_BUTTON b, int id = 0)
         {
             byte[] pDestBuf = this.video.LockVideoSurface(ButtonDestBuffer, out uint uiDestPitchBYTES);
             this.video.SetClippingRegionAndImageWidth(uiDestPitchBYTES, 0, 0, 640, 480);
             if (b.bDefaultStatus == DEFAULT_STATUS.DARKBORDER || b.bDefaultStatus == DEFAULT_STATUS.WINDOWS95)
             {
                 //left (one thick)
-                this.video.LineDraw(true, b.Area.RegionTopLeftX - 1, b.Area.RegionTopLeftY - 1, b.Area.RegionTopLeftX - 1, b.Area.RegionBottomRightY + 1, 0, pDestBuf);
+                this.video.LineDraw(true, b.Area.Bounds.X - 1, b.Area.Bounds.Y - 1, b.Area.Bounds.X - 1, b.Area.Bounds.Height + 1, 0, pDestBuf);
                 //top (one thick)
-                this.video.LineDraw(true, b.Area.RegionTopLeftX - 1, b.Area.RegionTopLeftY - 1, b.Area.RegionBottomRightX + 1, b.Area.RegionTopLeftY - 1, 0, pDestBuf);
+                this.video.LineDraw(true, b.Area.Bounds.X - 1, b.Area.Bounds.Y - 1, b.Area.Bounds.Width + 1, b.Area.Bounds.Y - 1, 0, pDestBuf);
                 //right (two thick)
-                this.video.LineDraw(true, b.Area.RegionBottomRightX, b.Area.RegionTopLeftY - 1, b.Area.RegionBottomRightX, b.Area.RegionBottomRightY + 1, 0, pDestBuf);
-                this.video.LineDraw(true, b.Area.RegionBottomRightX + 1, b.Area.RegionTopLeftY - 1, b.Area.RegionBottomRightX + 1, b.Area.RegionBottomRightY + 1, 0, pDestBuf);
+                this.video.LineDraw(true, b.Area.Bounds.Width, b.Area.Bounds.Y - 1, b.Area.Bounds.Width, b.Area.Bounds.Height + 1, 0, pDestBuf);
+                this.video.LineDraw(true, b.Area.Bounds.Width + 1, b.Area.Bounds.Y - 1, b.Area.Bounds.Width + 1, b.Area.Bounds.Height + 1, 0, pDestBuf);
                 //bottom (two thick)
-                this.video.LineDraw(true, b.Area.RegionTopLeftX - 1, b.Area.RegionBottomRightY, b.Area.RegionBottomRightX + 1, b.Area.RegionBottomRightY, 0, pDestBuf);
-                this.video.LineDraw(true, b.Area.RegionTopLeftX - 1, b.Area.RegionBottomRightY + 1, b.Area.RegionBottomRightX + 1, b.Area.RegionBottomRightY + 1, 0, pDestBuf);
+                this.video.LineDraw(true, b.Area.Bounds.X - 1, b.Area.Bounds.Height, b.Area.Bounds.Width + 1, b.Area.Bounds.Height, 0, pDestBuf);
+                this.video.LineDraw(true, b.Area.Bounds.X - 1, b.Area.Bounds.Height + 1, b.Area.Bounds.Width + 1, b.Area.Bounds.Height + 1, 0, pDestBuf);
 
-                this.video.InvalidateRegion(b.Area.RegionTopLeftX - 1, b.Area.RegionTopLeftY - 1, b.Area.RegionBottomRightX + 1, b.Area.RegionBottomRightY + 1);
+                this.video.InvalidateRegion(new Rectangle(
+                    b.Area.Bounds.X - 1,
+                    b.Area.Bounds.Y - 1,
+                    b.Area.Bounds.Width + 1,
+                    b.Area.Bounds.Height + 1));
             }
 
             if (b.bDefaultStatus == DEFAULT_STATUS.DOTTEDINTERIOR || b.bDefaultStatus == DEFAULT_STATUS.WINDOWS95)
@@ -412,35 +418,35 @@ namespace SharpAlliance.Core.SubSystems
             this.video.UnLockVideoSurface(ButtonDestBuffer);
         }
 
-        private void DrawShadeOnButton(ref GUI_BUTTON b)
+        private void DrawShadeOnButton(ref GUI_BUTTON b, int id = 0)
         {
             byte[] pDestBuf;
             uint uiDestPitchBYTES;
             Rectangle ClipRect = new();
-            ClipRect.Y = b.Area.RegionTopLeftX;
-            ClipRect.Width = b.Area.RegionBottomRightX - 1;
-            ClipRect.Y = b.Area.RegionTopLeftY;
-            ClipRect.Height = b.Area.RegionBottomRightY - 1;
+            ClipRect.Y = b.Area.Bounds.X;
+            ClipRect.Width = b.Area.Bounds.Width - 1;
+            ClipRect.Y = b.Area.Bounds.Y;
+            ClipRect.Height = b.Area.Bounds.Height - 1;
             pDestBuf = this.video.LockVideoSurface(ButtonDestBuffer, out uiDestPitchBYTES);
             this.video.Blt16BPPBufferShadowRect(ref pDestBuf, uiDestPitchBYTES, ref ClipRect);
             this.video.UnLockVideoSurface(ButtonDestBuffer);
         }
 
-        private void DrawHatchOnButton(ref GUI_BUTTON b)
+        private void DrawHatchOnButton(ref GUI_BUTTON b, int id = 0)
         {
             byte[] pDestBuf;
             uint uiDestPitchBYTES;
             Rectangle ClipRect = new();
-            ClipRect.Y = b.Area.RegionTopLeftX;
-            ClipRect.Width = b.Area.RegionBottomRightX - 1;
-            ClipRect.Y = b.Area.RegionTopLeftY;
-            ClipRect.Height = b.Area.RegionBottomRightY - 1;
+            ClipRect.Y = b.Area.Bounds.X;
+            ClipRect.Width = b.Area.Bounds.Width - 1;
+            ClipRect.Y = b.Area.Bounds.Y;
+            ClipRect.Height = b.Area.Bounds.Height - 1;
             pDestBuf = this.video.LockVideoSurface(ButtonDestBuffer, out uiDestPitchBYTES);
             this.video.Blt16BPPBufferHatchRect(ref pDestBuf, uiDestPitchBYTES, ref ClipRect);
             this.video.UnLockVideoSurface(ButtonDestBuffer);
         }
 
-        private void DrawTextOnButton(ref GUI_BUTTON b)
+        private void DrawTextOnButton(ref GUI_BUTTON b, int id = 0)
         {
             int xp, yp, width, height, TextX, TextY;
             Rectangle NewClip = new();
@@ -451,8 +457,8 @@ namespace SharpAlliance.Core.SubSystems
             if (!string.IsNullOrWhiteSpace(b.stringText))
             {
                 // Get the width and height of this button
-                width = b.Area.RegionBottomRightX - b.Area.RegionTopLeftX;
-                height = b.Area.RegionBottomRightY - b.Area.RegionTopLeftY;
+                width = b.Area.Bounds.Width - b.Area.Bounds.X;
+                height = b.Area.Bounds.Height - b.Area.Bounds.Y;
 
                 // Compute the viewable area on this button
                 NewClip.X = b.XLoc + 3;
@@ -534,7 +540,7 @@ namespace SharpAlliance.Core.SubSystems
                 }
                 else
                 {
-                    yp = b.Area.RegionTopLeftY + b.bTextYOffset;
+                    yp = b.Area.Bounds.Y + b.bTextYOffset;
                 }
 
                 if (b.bTextXOffset == -1)
@@ -548,7 +554,7 @@ namespace SharpAlliance.Core.SubSystems
                 }
                 else
                 {
-                    xp = b.Area.RegionTopLeftX + b.bTextXOffset;
+                    xp = b.Area.Bounds.X + b.bTextXOffset;
                 }
 
                 // Set the printing font to the button text font
@@ -615,12 +621,12 @@ namespace SharpAlliance.Core.SubSystems
                         //double lined word on the right side of the button to find it drawing way
                         //over to the left.  I've added the necessary code for the right and center
                         //justification.
-                        yp = b.Area.RegionTopLeftY + 2;
+                        yp = b.Area.Bounds.Y + 2;
 
                         switch (b.bJustification)
                         {
                             case ButtonTextJustifies.BUTTON_TEXT_RIGHT:
-                                xp = b.Area.RegionBottomRightX - 3 - b.sWrappedWidth;
+                                xp = b.Area.Bounds.Width - 3 - b.sWrappedWidth;
 
                                 if (b.fShiftText && b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                                 {
@@ -629,7 +635,7 @@ namespace SharpAlliance.Core.SubSystems
                                 }
                                 break;
                             case ButtonTextJustifies.BUTTON_TEXT_CENTER:
-                                xp = b.Area.RegionTopLeftX + 3 + b.sWrappedWidth / 2;
+                                xp = b.Area.Bounds.X + 3 + b.sWrappedWidth / 2;
 
                                 if (b.fShiftText && b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                                 {
@@ -653,7 +659,7 @@ namespace SharpAlliance.Core.SubSystems
 
         }
 
-        private void DrawIconOnButton(ref GUI_BUTTON b)
+        private void DrawIconOnButton(ref GUI_BUTTON b, int id = 0)
         {
             int xp, yp, width, height, IconX, IconY;
             int IconW, IconH;
@@ -666,8 +672,8 @@ namespace SharpAlliance.Core.SubSystems
             if (b.iIconID >= 0)
             {
                 // Get width and height of button area
-                width = b.Area.RegionBottomRightX - b.Area.RegionTopLeftX;
-                height = b.Area.RegionBottomRightY - b.Area.RegionTopLeftY;
+                width = b.Area.Bounds.Width - b.Area.Bounds.X;
+                height = b.Area.Bounds.Height - b.Area.Bounds.Y;
 
                 // Compute viewable area (inside borders)
                 NewClip.Y = b.XLoc + 3;
@@ -755,7 +761,7 @@ namespace SharpAlliance.Core.SubSystems
                 }
                 else
                 {
-                    xp = b.Area.RegionTopLeftX + b.bIconXOffset;
+                    xp = b.Area.Bounds.X + b.bIconXOffset;
                 }
 
                 if (b.bIconYOffset == -1)
@@ -764,7 +770,7 @@ namespace SharpAlliance.Core.SubSystems
                 }
                 else
                 {
-                    yp = b.Area.RegionTopLeftY + b.bIconYOffset;
+                    yp = b.Area.Bounds.Y + b.bIconYOffset;
                 }
 
                 // Was the button clicked on? if so, move the image slightly for the illusion
@@ -780,11 +786,11 @@ namespace SharpAlliance.Core.SubSystems
                 // Blit the icon
                 if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_GENERIC))
                 {
-                    this.video.BltVideoObject(GenericButtonIcons[b.iIconID], b.usIconIndex, (short)xp, (short)yp);
+                    this.video.BltVideoObject(GenericButtonIcons[b.iIconID], b.usIconIndex, (short)xp, (short)yp, b.iIconID);
                 }
                 else
                 {
-                    this.video.BltVideoObject(hvObject, b.usIconIndex, (short)xp, (short)yp);
+                    this.video.BltVideoObject(hvObject, b.usIconIndex, (short)xp, (short)yp, b.usIconIndex);
                 }
 
                 // Restore previous clip region
@@ -793,7 +799,7 @@ namespace SharpAlliance.Core.SubSystems
 
         }
 
-        private void DrawCheckBoxButton(ref GUI_BUTTON b)
+        private void DrawCheckBoxButton(ref GUI_BUTTON b, int id = 0)
         {
             int UseImage;
 
@@ -861,11 +867,11 @@ namespace SharpAlliance.Core.SubSystems
 
             // Display the button image
             this.video.BltVideoObject(ButtonPictures[b.ImageNum].vobj,
-                                         (ushort)UseImage, b.XLoc, b.YLoc);
+                                         (ushort)UseImage, b.XLoc, b.YLoc, UseImage);
 
         }
 
-        private void DrawGenericButton(ref GUI_BUTTON b)
+        private void DrawGenericButton(ref GUI_BUTTON b, int id = 0)
         {
             int NumChunksWide, NumChunksHigh, cx, cy, width, height, hremain, wremain;
             int q, ImgNum, ox, oy;
@@ -930,8 +936,8 @@ namespace SharpAlliance.Core.SubSystems
             pTrav = null;
 
             // Compute the number of button "chunks" needed to be blitted
-            width = b.Area.RegionBottomRightX - b.Area.RegionTopLeftX;
-            height = b.Area.RegionBottomRightY - b.Area.RegionTopLeftY;
+            width = b.Area.Bounds.Width - b.Area.Bounds.X;
+            height = b.Area.Bounds.Height - b.Area.Bounds.Y;
             NumChunksWide = width / iBorderWidth;
             NumChunksHigh = height / iBorderHeight;
             hremain = height % iBorderHeight;
@@ -943,10 +949,10 @@ namespace SharpAlliance.Core.SubSystems
             // Fill the button's area with the button's background color
             this.video.ColorFillVideoSurfaceArea(
                 ButtonDestBuffer,
-                b.Area.RegionTopLeftX,
-                b.Area.RegionTopLeftY,
-                b.Area.RegionBottomRightX,
-                b.Area.RegionBottomRightY,
+                b.Area.Bounds.X,
+                b.Area.Bounds.Y,
+                b.Area.Bounds.Width,
+                b.Area.Bounds.Height,
                 GenericButtonFillColors[b.ImageNum]);
 
             // If there is a background image, fill the button's area with it
@@ -963,10 +969,10 @@ namespace SharpAlliance.Core.SubSystems
                 // Fill the area with the image, tilling it if need be.
                 this.video.ImageFillVideoSurfaceArea(
                     ButtonDestBuffer,
-                    b.Area.RegionTopLeftX + ox,
-                    b.Area.RegionTopLeftY + oy,
-                    b.Area.RegionBottomRightX,
-                    b.Area.RegionBottomRightY,
+                    b.Area.Bounds.X + ox,
+                    b.Area.Bounds.Y + oy,
+                    b.Area.Bounds.Width,
+                    b.Area.Bounds.Height,
                     GenericButtonBackground[b.ImageNum],
                     GenericButtonBackgroundIndex[b.ImageNum],
                     GenericButtonOffsetX[b.ImageNum],
@@ -1139,7 +1145,7 @@ namespace SharpAlliance.Core.SubSystems
             this.video.UnLockVideoSurface(ButtonDestBuffer);
         }
 
-        private void DrawQuickButton(ref GUI_BUTTON b)
+        private void DrawQuickButton(ref GUI_BUTTON b, int id = 0)
         {
             int UseImage;
             UseImage = 0;
@@ -1163,8 +1169,9 @@ namespace SharpAlliance.Core.SubSystems
                 else
                 {
                     // Is the mouse over the button, and do we have hilite image?
-                    if ((b.Area.uiFlags.HasFlag(MouseRegionFlags.MOUSE_IN_AREA) && gfRenderHilights &&
-                            (ButtonPictures[b.ImageNum].OffHilite != -1)))
+                    if ((b.Area.uiFlags.HasFlag(MouseRegionFlags.MOUSE_IN_AREA)
+                        && gfRenderHilights
+                        && (ButtonPictures[b.ImageNum].OffHilite != -1)))
                     {
                         UseImage = ButtonPictures[b.ImageNum].OffHilite;           // Use Off-Hilite image
                     }
@@ -1194,8 +1201,12 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Display the button image
-            this.video.BltVideoObject(ButtonPictures[b.ImageNum].vobj,
-                                         (ushort)UseImage, b.XLoc, b.YLoc);
+            this.video.BltVideoObject(
+                ButtonPictures[b.ImageNum].vobj,
+                (ushort)UseImage,
+                b.XLoc,
+                b.YLoc,
+                UseImage);
         }
 
 
@@ -1324,11 +1335,11 @@ namespace SharpAlliance.Core.SubSystems
         }
 
         public int UseLoadedButtonImage(
-            int LoadedImg, 
-            int Grayed, 
-            int OffNormal, 
-            int OffHilite, 
-            int OnNormal, 
+            int LoadedImg,
+            int Grayed,
+            int OffNormal,
+            int OffHilite,
+            int OnNormal,
             int OnHilite)
         {
             int UseSlot;
@@ -1643,6 +1654,8 @@ namespace SharpAlliance.Core.SubSystems
                 // AssertMsg(0, str);
             }
 
+            yloc = (short)(640 - yloc);
+
             // Strip off any extraneous bits from button type
             BType = Type & (ButtonFlags.BUTTON_TYPE_MASK | ButtonFlags.BUTTON_NEWTOGGLE);
 
@@ -1652,6 +1665,7 @@ namespace SharpAlliance.Core.SubSystems
                 //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "QuickCreateButton: Invalid button image number");
                 return -1;
             }
+
 
             // Get a new button number
             if ((ButtonNum = this.GetNextButtonNumber()) == BUTTON_NO_SLOT)
@@ -1739,10 +1753,11 @@ namespace SharpAlliance.Core.SubSystems
             // Define a MOUSE_REGION for this QuickButton
             this.mouse.MSYS_DefineRegion(
                 ref b.Area,
-                (ushort)xloc,
-                (ushort)yloc,
-                (ushort)(xloc + (short)this.ButtonPictures[Image].MaxWidth),
-                (ushort)(yloc + (short)this.ButtonPictures[Image].MaxHeight),
+                new Rectangle(
+                    xloc,
+                    yloc,
+                    xloc + this.ButtonPictures[Image].MaxWidth,
+                    yloc + this.ButtonPictures[Image].MaxHeight),
                 Priority,
                 Cursor.NORMAL,
                 this.QuickButtonCallbackMMove,
@@ -1778,7 +1793,7 @@ namespace SharpAlliance.Core.SubSystems
             iButtonID = this.mouse.MSYS_GetRegionUserData(ref reg, 0);
 
             // sprintf(str, "QuickButtonCallbackMMove: Mouse Region #%d (%d,%d to %d,%d) has invalid buttonID %d",
-            //                     reg.IDNumber, reg.RegionTopLeftX, reg.RegionTopLeftY, reg.RegionBottomRightX, reg.RegionBottomRightY, iButtonID);
+            //                     reg.IDNumber, reg.Bounds.X, reg.Bounds.Y, reg.Bounds.Width, reg.Bounds.Height, iButtonID);
 
             // AssertMsg(iButtonID >= 0, str);
             // AssertMsg(iButtonID < MAX_BUTTONS, str);
@@ -1886,7 +1901,7 @@ namespace SharpAlliance.Core.SubSystems
             iButtonID = this.mouse.MSYS_GetRegionUserData(ref reg, index: 0);
 
             //      sprintf(str, "QuickButtonCallbackMButn: Mouse Region #%d (%d,%d to %d,%d) has invalid buttonID %d",
-            //                          reg.IDNumber, reg.RegionTopLeftX, reg.RegionTopLeftY, reg.RegionBottomRightX, reg.RegionBottomRightY, iButtonID);
+            //                          reg.IDNumber, reg.Bounds.X, reg.Bounds.Y, reg.Bounds.Width, reg.Bounds.Height, iButtonID);
 
             b = this.ButtonList[iButtonID];
 
@@ -2046,7 +2061,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (StateBefore != StateAfter)
             {
-                this.video.InvalidateRegion(b.Area.RegionTopLeftX, b.Area.RegionTopLeftY, b.Area.RegionBottomRightX, b.Area.RegionBottomRightY);
+                this.video.InvalidateRegion(b.Area.Bounds);
             }
 
             if (this.gfPendingButtonDeletion)
@@ -2164,6 +2179,7 @@ namespace SharpAlliance.Core.SubSystems
     public class ButtonPics
     {
         public HVOBJECT vobj = new();                      // The Image itself
+        public Texture Texture { get; set; }
         public int Grayed;                   // Index to use for a "Grayed-out" button
         public int OffNormal;            // Index to use when button is OFF
         public int OffHilite;            // Index to use when button is OFF w/ hilite on it

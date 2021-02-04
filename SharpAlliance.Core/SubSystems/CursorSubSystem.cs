@@ -172,5 +172,7 @@ namespace SharpAlliance.Core.SubSystems
 
         MSYS_NO_CURSOR = 65534,
         VIDEO_NO_CURSOR = 0xFFFF,
+
+        None = 0x10000,
     }
 }

@@ -8,6 +8,7 @@ using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.SubSystems
@@ -64,16 +65,17 @@ namespace SharpAlliance.Core.SubSystems
             IDNumber = MSYS_ID.SYSTEM,
             PriorityLevel = MSYS_PRIORITY.SYSTEM,
             uiFlags = MouseRegionFlags.BASE_REGION_FLAGS,
-            RegionTopLeftX = -32767,
-            RegionTopLeftY = -32767,
-            RegionBottomRightX = 32767,
-            RegionBottomRightY = 32767,
-            MouseXPos = 0,
-            MouseYPos = 0,
-            RelativeXPos = 0,
-            RelativeYPos = 0,
-            ButtonState = 0,
-            Cursor = 0,
+            Bounds = new()
+            {
+                X = -32767,
+                Y = -32767,
+                Height = 32767,
+                Width = 32767,
+            },
+            MousePos = new(0, 0),
+            RelativeMousePos = new(0, 0),
+            ButtonState = ButtonMasks.None,
+            Cursor = Cursor.None,
             MovementCallback = null,
             ButtonCallback = null,
             UserData = new[] { 0, 0, 0, 0 },
@@ -131,14 +133,11 @@ namespace SharpAlliance.Core.SubSystems
             this.MSYS_SystemBaseRegion.IDNumber = MSYS_ID.SYSTEM;
             this.MSYS_SystemBaseRegion.PriorityLevel = MSYS_PRIORITY.SYSTEM;
             this.MSYS_SystemBaseRegion.uiFlags = MouseRegionFlags.BASE_REGION_FLAGS;
-            this.MSYS_SystemBaseRegion.RegionTopLeftX = -32767;
-            this.MSYS_SystemBaseRegion.RegionTopLeftY = -32767;
-            this.MSYS_SystemBaseRegion.RegionBottomRightX = 32767;
-            this.MSYS_SystemBaseRegion.RegionBottomRightY = 32767;
-            this.MSYS_SystemBaseRegion.MouseXPos = 0;
-            this.MSYS_SystemBaseRegion.MouseYPos = 0;
-            this.MSYS_SystemBaseRegion.RelativeXPos = 0;
-            this.MSYS_SystemBaseRegion.RelativeYPos = 0;
+            this.MSYS_SystemBaseRegion.Bounds = new(-32767, -32767, 32767, 32767);
+
+            this.MSYS_SystemBaseRegion.MousePos = new(0, 0);
+            this.MSYS_SystemBaseRegion.RelativeMousePos = new(0, 0);
+
             this.MSYS_SystemBaseRegion.ButtonState = 0;
             this.MSYS_SystemBaseRegion.Cursor = 0;
             this.MSYS_SystemBaseRegion.UserData[0] = 0;
@@ -183,7 +182,7 @@ namespace SharpAlliance.Core.SubSystems
                     }
                 }
 
-                this.video.InvalidateRegion(btn.Area.RegionTopLeftX, btn.Area.RegionTopLeftY, btn.Area.RegionBottomRightX, btn.Area.RegionBottomRightY);
+                this.video.InvalidateRegion(btn.Area.Bounds);
             }
             else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
             {
@@ -193,7 +192,7 @@ namespace SharpAlliance.Core.SubSystems
                     this.buttons.PlayButtonSound(btn.IDNum, ButtonSounds.BUTTON_SOUND_CLICKED_ON);
                 }
 
-                this.video.InvalidateRegion(btn.Area.RegionTopLeftX, btn.Area.RegionTopLeftY, btn.Area.RegionBottomRightX, btn.Area.RegionBottomRightY);
+                this.video.InvalidateRegion(btn.Area.Bounds);
             }
         }
 
@@ -348,10 +347,10 @@ namespace SharpAlliance.Core.SubSystems
             while (!found && this.MSYS_CurrRegion is not null)
             {
                 if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED | MouseRegionFlags.ALLOW_DISABLED_FASTHELP)
-                    && (this.MSYS_CurrRegion.RegionTopLeftX <= this.MSYS_CurrentMX)       // Check boundaries
-                    && (this.MSYS_CurrRegion.RegionTopLeftY <= this.MSYS_CurrentMY)
-                    && (this.MSYS_CurrRegion.RegionBottomRightX >= this.MSYS_CurrentMX)
-                    && (this.MSYS_CurrRegion.RegionBottomRightY >= this.MSYS_CurrentMY))
+                    && (this.MSYS_CurrRegion.Bounds.X <= this.MSYS_CurrentMX)       // Check boundaries
+                    && (this.MSYS_CurrRegion.Bounds.Y <= this.MSYS_CurrentMY)
+                    && (this.MSYS_CurrRegion.Bounds.Width >= this.MSYS_CurrentMX)
+                    && (this.MSYS_CurrRegion.Bounds.Height >= this.MSYS_CurrentMY))
                 {
                     // We got the right region. We don't need to check for priorities 'cause
                     // the whole list is sorted the right way!
@@ -447,11 +446,12 @@ namespace SharpAlliance.Core.SubSystems
                         pTempRegion = this.MSYS_CurrRegion.next;
                         while ((pTempRegion != null) && (!fFound))
                         {
-                            if (pTempRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED) &&
-                                   (pTempRegion.RegionTopLeftX <= this.MSYS_CurrentMX) &&
-                                   (pTempRegion.RegionTopLeftY <= this.MSYS_CurrentMY) &&
-                                   (pTempRegion.RegionBottomRightX >= this.MSYS_CurrentMX) &&
-                                   (pTempRegion.RegionBottomRightY >= this.MSYS_CurrentMY) && pTempRegion.uiFlags.HasFlag(MouseRegionFlags.SET_CURSOR))
+                            if (pTempRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_ENABLED)
+                                && (pTempRegion.Bounds.X <= this.MSYS_CurrentMX)
+                                && (pTempRegion.Bounds.Y <= this.MSYS_CurrentMY)
+                                && (pTempRegion.Bounds.Width >= this.MSYS_CurrentMX)
+                                && (pTempRegion.Bounds.Height >= this.MSYS_CurrentMY)
+                                && pTempRegion.uiFlags.HasFlag(MouseRegionFlags.SET_CURSOR))
                             {
                                 fFound = true;
                                 if (pTempRegion.Cursor != 0)//MSYS_NO_CURSOR)
@@ -469,10 +469,11 @@ namespace SharpAlliance.Core.SubSystems
                 {
                     this.MSYS_CurrRegion.uiFlags |= MouseRegionFlags.MOUSE_IN_AREA;
 
-                    this.MSYS_CurrRegion.MouseXPos = this.MSYS_CurrentMX;
-                    this.MSYS_CurrRegion.MouseYPos = this.MSYS_CurrentMY;
-                    this.MSYS_CurrRegion.RelativeXPos = this.MSYS_CurrentMX - this.MSYS_CurrRegion.RegionTopLeftX;
-                    this.MSYS_CurrRegion.RelativeYPos = this.MSYS_CurrentMY - this.MSYS_CurrRegion.RegionTopLeftY;
+                    this.MSYS_CurrRegion.MousePos = new Point(this.MSYS_CurrentMX, this.MSYS_CurrentMY);
+
+                    this.MSYS_CurrRegion.RelativeMousePos = new(
+                        this.MSYS_CurrentMX - this.MSYS_CurrRegion.Bounds.X,
+                        this.MSYS_CurrentMY - this.MSYS_CurrRegion.Bounds.Y);
 
                     this.MSYS_CurrRegion.ButtonState = this.MSYS_CurrentButtons;
 
@@ -615,10 +616,13 @@ namespace SharpAlliance.Core.SubSystems
 
                     // OK, you still want move messages however....
                     this.MSYS_CurrRegion.uiFlags |= MouseRegionFlags.MOUSE_IN_AREA;
-                    this.MSYS_CurrRegion.MouseXPos = this.MSYS_CurrentMX;
-                    this.MSYS_CurrRegion.MouseYPos = this.MSYS_CurrentMY;
-                    this.MSYS_CurrRegion.RelativeXPos = this.MSYS_CurrentMX - this.MSYS_CurrRegion.RegionTopLeftX;
-                    this.MSYS_CurrRegion.RelativeYPos = this.MSYS_CurrentMY - this.MSYS_CurrRegion.RegionTopLeftY;
+                    this.MSYS_CurrRegion.MousePos = new(this.MSYS_CurrentMX, this.MSYS_CurrentMY);
+                    this.MSYS_CurrRegion.RelativeMousePos = new(
+                        this.MSYS_CurrentMX - this.MSYS_CurrRegion.Bounds.X,
+                        this.MSYS_CurrentMY - this.MSYS_CurrRegion.Bounds.Y);
+
+                    // this.MSYS_CurrRegion.RelativeXPos = this.MSYS_CurrentMX - this.MSYS_CurrRegion.RegionTopLeftX;
+                    // this.MSYS_CurrRegion.RelativeYPos = this.MSYS_CurrentMY - this.MSYS_CurrRegion.RegionTopLeftY;
 
                     if (this.MSYS_CurrRegion.uiFlags.HasFlag(MouseRegionFlags.MOVE_CALLBACK) && this.MSYS_Action.HasFlag(MouseDos.MOVE))
                     {
@@ -919,10 +923,11 @@ namespace SharpAlliance.Core.SubSystems
         //
         public void MSYS_DefineRegion(
             ref MouseRegion region,
-            ushort tlx,
-            ushort tly,
-            ushort brx,
-            ushort bry,
+            Rectangle bounds,
+            //ushort tlx,
+            //ushort tly,
+            //ushort brx,
+            //ushort bry,
             MSYS_PRIORITY priority,
             Cursor crsr,
             MouseCallback? movecallback,
@@ -966,16 +971,19 @@ namespace SharpAlliance.Core.SubSystems
                 region.uiFlags |= MouseRegionFlags.SET_CURSOR;
             }
 
-            region.RegionTopLeftX = tlx;
-            region.RegionTopLeftY = tly;
-            region.RegionBottomRightX = brx;
-            region.RegionBottomRightY = bry;
+            region.Bounds = bounds;
+            // region.RegionTopLeftX = tlx;
+            // region.RegionTopLeftY = tly;
+            // region.RegionBottomRightX = brx;
+            // region.RegionBottomRightY = bry;
 
-            region.MouseXPos = 0;
-            region.MouseYPos = 0;
-            region.RelativeXPos = 0;
-            region.RelativeYPos = 0;
-            region.ButtonState = 0;
+            region.MousePos = new();
+            region.RelativeMousePos = new();
+            //region.MouseXPos = 0;
+            //region.MouseYPos = 0;
+            //region.RelativeXPos = 0;
+            //region.RelativeYPos = 0;
+            region.ButtonState = ButtonMasks.None;
 
             //Init fasthelp
             region.FastHelpText = null;
@@ -1081,14 +1089,17 @@ namespace SharpAlliance.Core.SubSystems
         public int IDNumber;                        // Region's ID number, set by mouse system
         public MSYS_PRIORITY PriorityLevel;         // Region's Priority, set by system and/or caller
         public MouseRegionFlags uiFlags;                     // Region's state flags
-        public int RegionTopLeftX;           // Screen area affected by this region (absolute coordinates)
-        public int RegionTopLeftY;
-        public int RegionBottomRightX;
-        public int RegionBottomRightY;
-        public int MouseXPos;                    // Mouse's Coordinates in absolute screen coordinates
-        public int MouseYPos;
-        public int RelativeXPos;             // Mouse's Coordinates relative to the Top-Left corner of the region
-        public int RelativeYPos;
+        public Rectangle Bounds;
+        //public int RegionTopLeftX;           // Screen area affected by this region (absolute coordinates)
+        //public int RegionTopLeftY;
+        //public int RegionBottomRightX;
+        //public int RegionBottomRightY;
+        public Point MousePos;
+        public Point RelativeMousePos;
+        // public int MouseXPos;                    // Mouse's Coordinates in absolute screen coordinates
+        // public int MouseYPos;
+        // public int RelativeXPos;             // Mouse's Coordinates relative to the Top-Left corner of the region
+        // public int RelativeYPos;
         public ButtonMasks ButtonState;             // Current state of the mouse buttons
         public Cursor Cursor;                          // Cursor to use when mouse in this region (see flags)
         public MouseCallback? MovementCallback;        // Pointer to callback function if movement occured in this region
@@ -1109,6 +1120,7 @@ namespace SharpAlliance.Core.SubSystems
     public enum ButtonMasks
     {
         // Mouse system button masks
+        None = 0,
         MSYS_LEFT_BUTTON = 1,
         MSYS_RIGHT_BUTTON = 2,
     }

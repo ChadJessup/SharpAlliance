@@ -682,7 +682,7 @@ namespace SharpAlliance.Core.Managers
 
         public string Name { get; set; } = string.Empty;
         public HIMAGE? hImage { get; set; }
-        public Texture? Texture { get; set; }
+        public Texture[] Textures { get; set; }
     }
 
     // Effects structure for specialized blitting
