@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,14 +9,17 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
+using SixLabors.ImageSharp;
 using Veldrid;
+using Point = SixLabors.ImageSharp.Point;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core
 {
     public class InputManager : IInputManager
     {
         private readonly ILogger<InputManager> logger;
-        public MouseSubSystem mouseSystem { get; init; }
+        public MouseSubSystem Mouse { get; init; }
         public ButtonSubSystem buttonSystem { get; init; }
         private readonly GameContext context;
         private VeldridVideoManager video;
@@ -40,21 +45,22 @@ namespace SharpAlliance.Core
         private int gusRecordedKeyState;
         private bool gfRecordedLeftButtonUp;
 
-        private int guiLeftButtonRepeatTimer;
-        private int guiRightButtonRepeatTimer;
+        private long guiLeftButtonRepeatTimer;
+        private long guiRightButtonRepeatTimer;
 
         private bool gfTrackMousePos;            // TRUE = queue mouse movement events, FALSE = don't
         public bool gfLeftButtonState { get; set; }      // TRUE = Pressed, FALSE = Not Pressed
         public bool gfRightButtonState { get; set; }     // TRUE = Pressed, FALSE = Not Pressed
-        private int gusMouseXPos;                    // X position of the mouse on screen
-        private int gusMouseYPos;                    // y position of the mouse on screen
+        public Point gusMousePos { get; set; }                    // position of the mouse on screen
+
+        private const int DBL_CLK_TIME = 300;     // Increased by Alex, Jun-10-97, 200 felt too short
+        private const int BUTTON_REPEAT_TIMEOUT = 250;
+        private const long BUTTON_REPEAT_TIME = 50;
+
 
         // The queue structures are used to track input events using queued events
 
-        private InputAtom[] gEventQueue = new InputAtom[256];
-        private int gusQueueCount;
-        private int gusHeadIndex;
-        private int gusTailIndex;
+        private Queue<InputSnapshot> gEventQueue = new(256);
 
         // ATE: Added to signal if we have had input this frame - cleared by the SGP main loop
         private bool gfSGPInputReceived = false;
@@ -84,16 +90,10 @@ namespace SharpAlliance.Core
             GameContext gameContext)
         {
             this.logger = logger;
-            this.mouseSystem = mouseSubSystem;
+            this.Mouse = mouseSubSystem;
             this.buttonSystem = buttonSubsystem;
             this.context = gameContext;
         }
-
-        //private void KeyboardHandler(object sender, KeyPressEventArgs e)
-        //{
-        //    Console.WriteLine("KeyPress: \t{0}", e.KeyChar);
-        //}
-
 
         public void GetCursorPosition(out Point mousePos)
         {
@@ -110,10 +110,6 @@ namespace SharpAlliance.Core
 
             this.video = (this.context.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
 
-            // Initialize the Event Queue
-            this.gusQueueCount = 0;
-            this.gusHeadIndex = 0;
-            this.gusTailIndex = 0;
             // By default, we will not queue mousemove events
             this.gfTrackMousePos = false;
             // Initialize other variables
@@ -132,8 +128,8 @@ namespace SharpAlliance.Core
             this.guiLeftButtonRepeatTimer = 0;
             this.guiRightButtonRepeatTimer = 0;
             // Set the mouse to the center of the screen
-            this.gusMouseXPos = 320;
-            this.gusMouseYPos = 240;
+            this.gusMousePos = new(320, 240);
+
             // Initialize the string input mechanism
             this.gfCurrentStringInputState = false;
 
@@ -154,6 +150,7 @@ namespace SharpAlliance.Core
 
                 this.gfLeftButtonState = snapshot.IsMouseDown(MouseButton.Left);
                 this.gfRightButtonState = snapshot.IsMouseDown(MouseButton.Right);
+                this.gEventQueue.Enqueue(snapshot);
             }
             catch
             {
@@ -163,57 +160,72 @@ namespace SharpAlliance.Core
             }
         }
 
-        public bool DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents mouseEvents)
+        public bool DequeSpecificEvent(out InputSnapshot inputSnapshot)
         {
-            if (this.gusQueueCount > 0)
+            if (this.gEventQueue.Any())
             {
-                inputAtom = this.gEventQueue[this.gusHeadIndex];
-                if (inputAtom is not null)
+                inputSnapshot = this.gEventQueue.Peek();
+                if (inputSnapshot is not null)
                 {
-                    InputAtom copyInputAtom = (InputAtom)inputAtom;
-
-                    if (copyInputAtom.MouseEvents.HasFlag(mouseEvents))
+                    var copyInputAtom = inputSnapshot;
+                    if (copyInputAtom.MouseEvents.Count >= 1)
                     {
-                        return this.DequeueEvent(out inputAtom);
+                        if (copyInputAtom.MouseEvents.Any())
+                        {
+                            return this.DequeueEvent(out inputSnapshot);
+                        }
                     }
+
+                    return false;
                 }
             }
 
-            inputAtom = null;
+            inputSnapshot = default!;
             return false;
         }
 
-        public bool DequeueEvent(out InputAtom? inputAtom)
+        public MouseEvents ConvertToMouseEvents(ref InputSnapshot inputSnapshot)
+        {
+            var input = inputSnapshot.MouseEvents.First();
+
+            MouseEvents mouseEvent = MouseEvents.Unknown;
+            if (!input.Down && input.MouseButton == MouseButton.Left)
+            {
+
+            }
+
+            if (input.MouseButton == MouseButton.Left)
+            {
+                mouseEvent |= input.Down
+                    ? MouseEvents.LEFT_BUTTON_DOWN
+                    : MouseEvents.LEFT_BUTTON_UP;
+            }
+            else if (input.MouseButton == MouseButton.Right)
+            {
+                mouseEvent |= input.Down
+                    ? MouseEvents.RIGHT_BUTTON_DOWN
+                    : MouseEvents.RIGHT_BUTTON_UP;
+            }
+
+            return mouseEvent;
+        }
+
+        public bool DequeueEvent(out InputSnapshot inputSnapshot)
         {
             this.HandleSingleClicksAndButtonRepeats();
 
             // Is there an event to dequeue
-            if (this.gusQueueCount > 0)
+            if (this.gEventQueue.Any())
             {
                 // We have an event, so we dequeue it
-                //memcpy(Event, &(gEventQueue[gusHeadIndex]), sizeof(InputAtom));
-
-                inputAtom = this.gEventQueue[this.gusHeadIndex];
-
-                if (this.gusHeadIndex == 255)
-                {
-                    this.gusHeadIndex = 0;
-                }
-                else
-                {
-                    this.gusHeadIndex++;
-                }
-
-                // Decrement the number of items on the input queue
-                this.gusQueueCount--;
+                inputSnapshot = this.gEventQueue.Dequeue();
 
                 // dequeued an event, return TRUE
                 return true;
             }
             else
             {
-                // No events to dequeue, return FALSE
-                inputAtom = null;
+                inputSnapshot = default!;
                 return false;
             }
         }
@@ -229,6 +241,49 @@ namespace SharpAlliance.Core
 
         private void HandleSingleClicksAndButtonRepeats()
         {
+            long uiTimer = this.context.ClockManager.GetTickCount();
+
+            // Is there a LEFT mouse button repeat
+            if (this.gfLeftButtonState)
+            {
+                if ((this.guiLeftButtonRepeatTimer > 0) && (this.guiLeftButtonRepeatTimer <= uiTimer))
+                {
+                    Point MousePos;
+
+                    GetCursorPos(out MousePos);
+
+                    this.QueueEvent(MouseEvents.LEFT_BUTTON_REPEAT, null, MousePos);
+                    this.guiLeftButtonRepeatTimer = uiTimer + BUTTON_REPEAT_TIME;
+                }
+            }
+            else
+            {
+                this.guiLeftButtonRepeatTimer = 0;
+            }
+
+
+            // Is there a RIGHT mouse button repeat
+            if (this.gfRightButtonState)
+            {
+                if ((this.guiRightButtonRepeatTimer > 0) && (this.guiRightButtonRepeatTimer <= uiTimer))
+                {
+                    Point MousePos;
+
+                    GetCursorPos(out MousePos);
+                    this.QueueEvent(MouseEvents.RIGHT_BUTTON_REPEAT, 0, MousePos);
+                    this.guiRightButtonRepeatTimer = uiTimer + BUTTON_REPEAT_TIME;
+                }
+            }
+            else
+            {
+                this.guiRightButtonRepeatTimer = 0;
+            }
+
+        }
+
+        private void QueueEvent(MouseEvents mouseEvents, object? parameterOne, object? parameterTwo)
+        {
+
         }
 
         public void Dispose()

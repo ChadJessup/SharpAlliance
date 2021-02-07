@@ -63,8 +63,7 @@ namespace SharpAlliance.Core.Screens
             SoldierProfileSubSystem soldierSubSystem,
             IScreenManager screenManager,
             GameInit gameInit,
-            IVideoManager videoManager,
-            IVideoSurfaceManager videoSurfaceManager)
+            IVideoManager videoManager)
         {
             this.gameInit = gameInit;
             this.context = context;

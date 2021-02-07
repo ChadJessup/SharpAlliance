@@ -1,4 +1,5 @@
-﻿using SharpAlliance.Core.Managers;
+﻿using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
@@ -12,6 +13,7 @@ namespace SharpAlliance.Core.Interfaces
     {
         public const int MAX_CURSOR_WIDTH = 64;
         public const int MAX_CURSOR_HEIGHT = 64;
+        public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
         // TODO move to better area
         public uint guiBOTTOMPANEL { get; set; }
@@ -37,6 +39,7 @@ namespace SharpAlliance.Core.Interfaces
         ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono);
         void DeleteVideoSurfaceFromIndex(uint uiTempMap);
         void DeleteVideoObjectFromIndex(string logoKey);
+        void RestoreBackgroundRects();
         HVOBJECT CreateVideoObject(ref VOBJECT_DESC vo_desc);
         void LineDraw(bool v1, int v2, int v3, int v4, int v5, int v6, byte[] pDestBuf);
         byte[] LockVideoSurface(Surfaces buttonDestBuffer, out uint uiDestPitchBYTES);
@@ -45,10 +48,18 @@ namespace SharpAlliance.Core.Interfaces
         void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
         void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
         void GetClippingRect(out Rectangle clipRect);
-        void ColorFillVideoSurfaceArea(Surfaces buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32);
-        void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
+        void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
+        void SaveBackgroundRects();
+        void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
+        void ExecuteBaseDirtyRectQueue();
         void Blt8BPPDataTo16BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
         void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
         void SetClippingRect(ref Rectangle newClip);
+
+        SpriteRenderer SpriteRenderer { get; }
+        static DebugRenderer DebugRenderer { get; protected set; }
+
+        void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
+        void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle);
     }
 }

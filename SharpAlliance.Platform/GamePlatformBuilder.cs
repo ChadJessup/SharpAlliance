@@ -76,7 +76,6 @@ namespace SharpAlliance.Platform
 
             // These can be overwritten by custom implementations, but are fairly generic.
             serviceCollection.TryAddSingleton<ITimerManager, TimerManager>();
-            serviceCollection.TryAddSingleton<IClockManager, ClockManager>();
 
             return serviceCollection;
         }

@@ -14,5 +14,8 @@ namespace SharpAlliance.Platform.Interfaces
         long GetTickCount();
         void UpdateClock();
         uint GetJA2Clock();
+        void UnPauseGame();
+        void PauseGame();
+        void RemoveMouseRegionForPauseOfClock();
     }
 }

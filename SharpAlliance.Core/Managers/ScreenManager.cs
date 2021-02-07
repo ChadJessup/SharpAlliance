@@ -30,7 +30,10 @@ namespace SharpAlliance.Core.Managers
         }
 
         public Dictionary<ScreenName, IScreen> Screens { get; set; } = new();
+        public Dictionary<Type, ScreenName> ScreenNames { get; set; } = new();
+
         public IScreen CurrentScreen { get; private set; }
+        public ScreenName CurrentScreenName { get; private set; }
         public bool IsInitialized { get; private set; }
         public IScreen guiPendingScreen { get; set; } = NullScreen.Instance;
 
@@ -95,6 +98,7 @@ namespace SharpAlliance.Core.Managers
 
                 screen = ActivatorUtilities.GetServiceOrCreateInstance(this.context.Services, screenType) as IScreen;
                 this.Screens.Add(screenName, screen!);
+                this.ScreenNames.TryAdd(screenType, screenName);
             }
 
             if (screen is null)
@@ -124,16 +128,6 @@ namespace SharpAlliance.Core.Managers
             this.ScreenTypes.TryAdd(screenName, typeof(TScreen));
 
             return this;
-        }
-
-        public ValueTask<IScreen?> HandleCurrentScreen()
-        {
-            if (this.CurrentScreen != null)
-            {
-                var nextScreen = this.CurrentScreen.Handle()!;
-            }
-
-            return ValueTask.FromResult<IScreen?>(null);
         }
 
         public void Dispose()

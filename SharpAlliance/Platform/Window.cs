@@ -68,6 +68,7 @@ namespace Vortice
 
                 styleEx = WindowExStyles.WS_EX_APPWINDOW | WindowExStyles.WS_EX_WINDOWEDGE;
             }
+
             style |= WindowStyles.WS_CLIPCHILDREN | WindowStyles.WS_CLIPSIBLINGS;
 
             int windowWidth;

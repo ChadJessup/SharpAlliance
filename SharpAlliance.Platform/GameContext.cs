@@ -40,7 +40,7 @@ namespace SharpAlliance.Platform
         public IFileManager FileManager { get; set; } = new NullFileManager();
         public ISoundManager SoundManager { get; set; } = new NullSoundManager();
         public ITimerManager TimerManager { get; set; } = new TimerManager();
-        public IClockManager ClockManager { get; set; } = new ClockManager();
+        public IClockManager ClockManager { get; set; }
         public bool ApplicationActive { get; private set; }
 
         public async Task<int> StartGameLoop(CancellationToken token = default)

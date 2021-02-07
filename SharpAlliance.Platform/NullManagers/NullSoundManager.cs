@@ -27,5 +27,29 @@ namespace SharpAlliance.Platform.NullManagers
             throw new NotImplementedException();
         }
 
+        public void SetSoundEffectsVolume(int iNewValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SoundStop(uint uiOptionToggleSound)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetSoundEffectsVolume()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetSpeechVolume()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetSpeechVolume(int iNewValue)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

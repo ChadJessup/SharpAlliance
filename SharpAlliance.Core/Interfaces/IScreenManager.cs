@@ -17,6 +17,7 @@ namespace SharpAlliance.Core.Interfaces
         IScreenManager AddScreen<TScreen>(ScreenName screenName) where TScreen : IScreen;
         IScreen CurrentScreen { get; }
         IScreen guiPendingScreen { get; set; }
+        ScreenName CurrentScreenName { get; }
 
         void EndMapScreen(bool v);
         void ExitLaptop();

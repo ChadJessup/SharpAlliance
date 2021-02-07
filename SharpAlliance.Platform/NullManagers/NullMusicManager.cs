@@ -25,8 +25,13 @@ namespace SharpAlliance.Platform.NullManagers
         {
         }
 
-        public void MusicSetVolume(byte v)
+        public void MusicSetVolume(int value)
         {
+        }
+
+        public int MusicGetVolume()
+        {
+            return 10;
         }
     }
 }

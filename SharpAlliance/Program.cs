@@ -73,15 +73,17 @@ namespace SharpAlliance
             builder.AddDependency<IOSManager, WindowsSubSystem>();
             //builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
             builder.AddDependency<IScreenManager, ScreenManager>();
-            builder.AddDependency<IVideoSurfaceManager, VideoSurfaceManager>();
             builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
             builder.AddDependency<IVideoManager, VeldridVideoManager>();
             builder.AddDependency<ISoundManager, SoundManager>();
             builder.AddDependency<IInputManager, InputManager>();
 
+            builder.Services.AddSingleton<GuiManager>();
+            builder.Services.AddSingleton<SliderSubSystem>();
             builder.Services.AddSingleton<MercTextBox>();
             builder.Services.AddSingleton<TileCache>();
+            builder.Services.AddSingleton<Messages>();
             builder.Services.AddSingleton<EventManager>();
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<RenderWorld>();
@@ -127,6 +129,8 @@ namespace SharpAlliance
             builder.Services.AddSingleton<AnimationData>();
             builder.Services.AddSingleton<StructureFile>();
             builder.Services.AddSingleton<LightingSystem>();
+            builder.Services.AddSingleton<GameSettings>();
+            builder.Services.AddSingleton<IClockManager, ClockManager>();
 
             return builder;
         }

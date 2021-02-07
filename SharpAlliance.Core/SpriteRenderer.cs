@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using SharpAlliance.Core.Managers;
-using SixLabors.ImageSharp;
 using Veldrid;
 using Veldrid.ImageSharp;
 using Veldrid.SPIRV;
@@ -22,13 +21,17 @@ namespace SharpAlliance
         private ResourceSet _orthoSet;
         private ResourceLayout _texLayout;
         private Pipeline _pipeline;
+        protected GraphicsDevice gd;
 
+        public List<SpriteInfo> DrawCalls { get; protected set; }
         private Dictionary<SpriteInfo, (Texture, TextureView, ResourceSet)> _loadedImages
             = new Dictionary<SpriteInfo, (Texture, TextureView, ResourceSet)>();
         private ResourceSet _textSet;
 
         public SpriteRenderer(GraphicsDevice gd)
         {
+            this.DrawCalls = this._draws;
+
             ResourceFactory factory = gd.ResourceFactory;
 
             this._vertexBuffer = factory.CreateBuffer(new BufferDescription(1000, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
@@ -67,6 +70,8 @@ namespace SharpAlliance
                         this.GetCompilationOptions(factory))),
                 new[] { this._orthoLayout, this._texLayout },
                 gd.MainSwapchain.Framebuffer.OutputDescription));
+
+            this.gd = gd;
         }
 
         private CrossCompileOptions GetCompilationOptions(ResourceFactory factory)
@@ -77,25 +82,7 @@ namespace SharpAlliance
             });
         }
 
-        private byte[] LoadShaderBytes(string name)
-        {
-            return VeldridVideoManager.ReadEmbeddedAssetBytes(name);
-            //            return File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Shaders", name));
-        }
-
-        public void AddSprite(Vector2 position, HVOBJECT videoObject, int textureIndex)
-            => this.AddSprite(
-                new Rectangle((int)position.X, (int)position.Y, (int)videoObject.Textures[textureIndex].Width, (int)videoObject.Textures[textureIndex].Height),
-                videoObject.Textures[textureIndex],
-                videoObject.Name);
-
-        public void AddSprite(Vector2 position, Vector2 size, string spriteName)
-            => this.AddSprite(position, size, spriteName, RgbaByte.White, 0f);
-
-        public void AddSprite(Vector2 position, Vector2 size, string spriteName, RgbaByte tint, float rotation)
-        {
-            this._draws.Add(new SpriteInfo(spriteName, new QuadVertex(position, size, tint, rotation)));
-        }
+        private byte[] LoadShaderBytes(string name) => VeldridVideoManager.ReadEmbeddedAssetBytes(name);
 
         public void AddSprite(Rectangle rectangle, Texture texture, string spriteName, RgbaByte? tint = null, float rotation = 0f)
         {
@@ -104,7 +91,7 @@ namespace SharpAlliance
                 tint = RgbaByte.White;
             }
 
-            this._draws.Add(new SpriteInfo()
+            this.DrawCalls.Add(new SpriteInfo()
             {
                 SpriteName = spriteName,
                 Texture = texture,
@@ -137,9 +124,9 @@ namespace SharpAlliance
             return ret.Item3;
         }
 
-        public void Draw(GraphicsDevice gd, CommandList cl)
+        public virtual void Draw(GraphicsDevice gd, CommandList cl, bool clearCalls = true)
         {
-            if (this._draws.Count == 0)
+            if (this.DrawCalls.Count == 0)
             {
                 return;
             }
@@ -151,11 +138,11 @@ namespace SharpAlliance
                 0,
                 Matrix4x4.CreateOrthographicOffCenter(0, width, 0, height, 0, 1));
 
-            this.EnsureBufferSize(gd, (uint)this._draws.Count * QuadVertex.VertexSize);
+            this.EnsureBufferSize(gd, (uint)this.DrawCalls.Count * QuadVertex.VertexSize);
             MappedResourceView<QuadVertex> writemap = gd.Map<QuadVertex>(this._vertexBuffer, MapMode.Write);
-            for (int i = 0; i < this._draws.Count; i++)
+            for (int i = 0; i < this.DrawCalls.Count; i++)
             {
-                writemap[i] = this._draws[i].Quad;
+                writemap[i] = this.DrawCalls[i].Quad;
             }
             gd.Unmap(this._vertexBuffer);
 
@@ -163,14 +150,14 @@ namespace SharpAlliance
             cl.SetVertexBuffer(0, this._vertexBuffer);
             cl.SetGraphicsResourceSet(0, this._orthoSet);
 
-            for (int i = 0; i < this._draws.Count;)
+            for (int i = 0; i < this.DrawCalls.Count;)
             {
                 uint batchStart = (uint)i;
 
                 ResourceSet rs;
 
-                string spriteName = this._draws[i].SpriteName;
-                rs = this.Load(gd, this._draws[i]);
+                string spriteName = this.DrawCalls[i].SpriteName;
+                rs = this.Load(gd, this.DrawCalls[i]);
 
                 cl.SetGraphicsResourceSet(1, rs);
                 uint batchSize = 0;
@@ -179,15 +166,18 @@ namespace SharpAlliance
                     i += 1;
                     batchSize += 1;
                 }
-                while (i < this._draws.Count && this._draws[i].SpriteName == spriteName);
+                while (i < this.DrawCalls.Count && this.DrawCalls[i].SpriteName == spriteName);
 
                 cl.Draw(4, batchSize, 0, batchStart);
             }
 
-            this._draws.Clear();
+            if (clearCalls)
+            {
+                this.DrawCalls.Clear();
+            }
         }
 
-        internal void RenderText(GraphicsDevice gd, CommandList cl, TextureView textureView, Vector2 pos)
+        public virtual void RenderText(GraphicsDevice gd, CommandList cl, TextureView textureView, Vector2 pos)
         {
             cl.SetPipeline(this._pipeline);
             cl.SetVertexBuffer(0, this._textBuffer);
@@ -212,7 +202,7 @@ namespace SharpAlliance
             }
         }
 
-        private struct SpriteInfo
+        public struct SpriteInfo
         {
             public SpriteInfo(Texture texture, QuadVertex quad)
             {
@@ -231,9 +221,23 @@ namespace SharpAlliance
             public Texture? Texture { get; init; }
             public string SpriteName { get; init; }
             public QuadVertex Quad { get; init; }
+
+            public override bool Equals(object? obj)
+            {
+                if (obj is not SpriteInfo other)
+                {
+                    return false;
+                }
+
+                return this.SpriteName.Equals(other.SpriteName, StringComparison.OrdinalIgnoreCase)
+                    && this.Quad.Equals(other.Quad);
+            }
+
+            public override int GetHashCode() => HashCode.Combine(this.SpriteName, this.Quad);
+            public override string ToString() => $"{this.SpriteName}-{this.Quad}";
         }
 
-        private struct QuadVertex
+        public struct QuadVertex
         {
             public const uint VertexSize = 24;
 
@@ -250,6 +254,22 @@ namespace SharpAlliance
                 this.Tint = tint;
                 this.Rotation = rotation;
             }
+
+            public override int GetHashCode() => HashCode.Combine(this.Position, this.Size, this.Tint, this.Rotation);
+            public override bool Equals(object? obj)
+            {
+                if(obj is not QuadVertex quad)
+                {
+                    return false;
+                }
+
+                return this.Position.Equals(quad.Position)
+                    && this.Size.Equals(quad.Size)
+                    && this.Tint.Equals(quad.Tint)
+                    && this.Rotation.Equals(quad.Rotation);
+            }
+
+            public override string ToString() => $"{this.Position}:{this.Size}";
         }
     }
 }

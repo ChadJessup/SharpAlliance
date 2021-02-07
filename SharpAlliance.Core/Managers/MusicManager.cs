@@ -19,6 +19,11 @@ namespace SharpAlliance.Core.Managers
             return ValueTask.FromResult(true);
         }
 
+        public int MusicGetVolume()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool MusicPoll(bool force)
         {
             return true;
@@ -26,6 +31,11 @@ namespace SharpAlliance.Core.Managers
 
         public void MusicSetVolume(byte volume)
         {
+        }
+
+        public void MusicSetVolume(int value)
+        {
+            throw new NotImplementedException();
         }
 
         public void SetMusicMode(MusicMode musicMode)

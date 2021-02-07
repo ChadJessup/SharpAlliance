@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core.SubSystems
 {
     public class FontSubSystem : IDisposable
     {
+        public const int INVALIDATE_TEXT = 0x00000010;
+
+        //Wont display the text.  Used if you just want to get how many lines will be displayed
+        public const int DONT_DISPLAY_TEXT = 0x00000020;
+
         public void Dispose()
         {
         }
@@ -36,29 +37,47 @@ namespace SharpAlliance.Core.SubSystems
 
         public int GetFontHeight(FontStyle usFont)
         {
-            throw new NotImplementedException();
+            return 10;
         }
 
         public void SetFontDestBuffer(Surfaces buttonDestBuffer, int y1, int y2, int width, int height, bool v)
         {
-            throw new NotImplementedException();
         }
 
-        internal int StringPixLength(string stringText, FontStyle usFont)
+        public int StringPixLength(string stringText, FontStyle usFont)
         {
-            throw new NotImplementedException();
+            return 1;
         }
 
-        internal void SetFontShadow(FontColor sShadowColor)
+        public void SetFontShadow(FontColor sShadowColor)
         {
-            throw new NotImplementedException();
         }
 
-        internal void DisplayWrappedString(ushort xp, ushort yp, int sWrappedWidth, int v1, FontStyle usFont, byte sForeColor, string stringText, object fONT_MCOLOR_BLACK, bool v2, TextJustifies bJustified)
+        public int DisplayWrappedString(
+            Point pos,
+            int sWrappedWidth,
+            int v1,
+            FontStyle usFont,
+            FontColor sForeColor,
+            string stringText,
+            FontColor fONT_MCOLOR_BLACK,
+            bool v2,
+            TextJustifies bJustified)
         {
-            throw new NotImplementedException();
+            return 2;
+        }
+
+        public void DrawTextToScreen(string v1, Point pos, int v2, FontStyle oPT_MAIN_FONT, FontColor oPT_MAIN_COLOR, FontColor fONT_MCOLOR_BLACK, bool v3, TextJustifies lEFT_JUSTIFIED)
+        {
         }
     }
+
+    public enum FontShadow
+    {
+        DEFAULT_SHADOW = 2,
+        MILITARY_SHADOW = 67,
+        NO_SHADOW = 0,
+    };
 
     public enum FontStyle
     {
@@ -88,7 +107,7 @@ namespace SharpAlliance.Core.SubSystems
     public enum FontColor
     {
         None = -1,
-        FONT_MCOLOR_WHITE,
+        FONT_MCOLOR_WHITE = 73,
         FONT_MCOLOR_BLACK
     }
 

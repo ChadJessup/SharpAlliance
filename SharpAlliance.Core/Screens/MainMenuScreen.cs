@@ -11,6 +11,7 @@ using SharpAlliance.Platform.Interfaces;
 using Veldrid;
 using SixLabors.ImageSharp;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
+using Point = SixLabors.ImageSharp.Point;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -26,16 +27,15 @@ namespace SharpAlliance.Core.Screens
         private readonly MouseSubSystem mouse;
         private readonly IVideoManager video;
         private readonly Globals globals;
-        private readonly IVideoSurfaceManager vsurface;
         private readonly CursorSubSystem cursor;
         private readonly IClockManager clock;
 
         public const string MAINMENU_TEXT_FILE = "LoadScreens\\MainMenu.edt";
         public const int MAINMENU_RECORD_SIZE = 80 * 2;
-        public const int MAINMENU_X = ((640 - 214) / 2);
+        public const int MAINMENU_X = (640 - 214) / 2;
         public const int MAINMENU_TITLE_Y = 75;
-        public const int MAINMENU_Y = 277;  //200
         public const int MAINMENU_Y_SPACE = 37;
+        public const int MAINMENU_Y = 480 - 187;
 
         // MENU ITEMS
         private enum MainMenuItems
@@ -46,7 +46,8 @@ namespace SharpAlliance.Core.Screens
             PREFERENCES,
             CREDITS,
             QUIT,
-            NUM_MENU_ITEMS
+            NUM_MENU_ITEMS,
+            Unknown = 99,
         };
 
         private Dictionary<MainMenuItems, int> iMenuImages = new();
@@ -57,8 +58,8 @@ namespace SharpAlliance.Core.Screens
         string mainMenuBackGroundImageKey;
         string ja2LogoImageKey;
 
-        private MouseRegion gBackRegion = new();
-        private MainMenuItems gbHandledMainMenu = 0;
+        private MouseRegion gBackRegion = new(nameof(gBackRegion));
+        private MainMenuItems gbHandledMainMenu = MainMenuItems.Unknown;
         private bool fInitialRender = false;
         //bool						gfDoHelpScreen = 0;
 
@@ -76,7 +77,6 @@ namespace SharpAlliance.Core.Screens
             IClockManager clockManager,
             IMusicManager musicManager,
             GameOptions gameOptions,
-            IVideoSurfaceManager videoSurfaceManager,
             ButtonSubSystem buttonSubSystem,
             CursorSubSystem cursorSubSystem,
             IInputManager inputManager,
@@ -84,7 +84,6 @@ namespace SharpAlliance.Core.Screens
             RenderDirtySubSystem renderDirtySubSystem)
         {
             this.globals = globals;
-            this.vsurface = videoSurfaceManager;
             this.cursor = cursorSubSystem;
             this.clock = clockManager;
             this.buttons = buttonSubSystem;
@@ -134,11 +133,11 @@ namespace SharpAlliance.Core.Screens
                 uiTime = this.clock.GetJA2Clock();
                 if (this.introScreen.guiSplashFrameFade > 2)
                 {
-                    this.vsurface.ShadowVideoSurfaceRectUsingLowPercentTable(VideoSurfaceManager.FRAME_BUFFER, 0, 0, 640, 480);
+                    this.video.ShadowVideoSurfaceRectUsingLowPercentTable(new Rectangle(0, 0, 640, 480));
                 }
                 else if (this.introScreen.guiSplashFrameFade > 1)
                 {
-                    this.vsurface.ColorFillVideoSurfaceArea(VideoSurfaceManager.FRAME_BUFFER, 0, 0, 640, 480, 0);
+                    this.video.ColorFillVideoSurfaceArea(new Rectangle(0, 0, 640, 480), Color.Black);
                 }
                 else
                 {
@@ -211,11 +210,19 @@ namespace SharpAlliance.Core.Screens
 
         private void ExitMainMenu()
         {
+            this.CreateDestroyBackGroundMouseMask(false);
+
+            this.CreateDestroyMainMenuButtons(false);
+
+            this.video.DeleteVideoObjectFromIndex(this.mainMenuBackGroundImageKey);
+            this.video.DeleteVideoObjectFromIndex(this.ja2LogoImageKey);
+
+            //gMsgBox.uiExitScreen = ScreenName.MAINMENU_SCREEN;
         }
 
         private void HandleMainMenuScreen()
         {
-            if (this.gbHandledMainMenu != 0)
+            if (this.gbHandledMainMenu != MainMenuItems.Unknown)
             {
                 // Exit according to handled value!
                 switch (this.gbHandledMainMenu)
@@ -266,14 +273,12 @@ namespace SharpAlliance.Core.Screens
             // Check for key
             while (this.input.DequeueEvent(out var InputEvent) == true)
             {
-                switch (InputEvent!.Value.KeyboardEvents)
+                if (InputEvent.KeyEvents.Any(ke => !ke.Down))
                 {
-                    case KeyboardEvents.KEY_UP:
-                        this.SetMainMenuExitScreen(ScreenName.InitScreen);
-                        break;
+                    this.SetMainMenuExitScreen(ScreenName.InitScreen);
+
                 }
             }
-
         }
 
         private void SetMainMenuExitScreen(ScreenName screen)
@@ -324,7 +329,7 @@ namespace SharpAlliance.Core.Screens
             return ValueTask.FromResult(true);
         }
 
-        public ValueTask<bool> InitMainMenu()
+        public async ValueTask<bool> InitMainMenu()
         {
             VOBJECT_DESC VObjectDesc = new();
 
@@ -374,14 +379,14 @@ namespace SharpAlliance.Core.Screens
             this.gbHandledMainMenu = 0;
             this.fInitialRender = true;
 
-            this.screens.SetPendingNewScreen(ScreenName.MAINMENU_SCREEN);
+            await this.screens.SetPendingNewScreen(ScreenName.MAINMENU_SCREEN);
             this.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
 
             this.options.InitGameOptions();
 
             this.input.DequeueAllKeyBoardEvents();
 
-            return ValueTask.FromResult(true);
+            return true;
         }
 
         private static bool fButtonsCreated = false;
@@ -397,7 +402,7 @@ namespace SharpAlliance.Core.Screens
             {
                 if (fButtonsCreated)
                 {
-                    return (true);
+                    return true;
                 }
 
                 //reset the variable that allows the user to ALT click on the continue save btn to load the save instantly
@@ -438,17 +443,16 @@ namespace SharpAlliance.Core.Screens
                     }
 
                     this.iMenuButtons[menuItem] = this.buttons.QuickCreateButton(
-                        this.iMenuImages[menuItem], 
-                        (short)(320 - this.gusMainMenuButtonWidths[cnt] / 2), 
-                        (short)(MAINMENU_Y + (cnt * MAINMENU_Y_SPACE)),
-                        ButtonFlags.BUTTON_TOGGLE, 
+                        this.iMenuImages[menuItem],
+                        new Point(320 - this.gusMainMenuButtonWidths[cnt] / 2, MAINMENU_Y + (cnt * MAINMENU_Y_SPACE)),
+                        ButtonFlags.BUTTON_TOGGLE,
                         MSYS_PRIORITY.HIGHEST,
                         MouseSubSystem.DefaultMoveCallback,
                         this.MenuButtonCallback);
 
                     if (this.iMenuButtons[menuItem] == -1)
                     {
-                        return (false);
+                        return false;
                     }
 
                     this.buttons.ButtonList[this.iMenuButtons[menuItem]].UserData[0] = cnt;
@@ -459,7 +463,9 @@ namespace SharpAlliance.Core.Screens
             else
             {
                 if (!fButtonsCreated)
-                    return (true);
+                {
+                    return true;
+                }
 
                 // Delete images/buttons
                 for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
@@ -471,17 +477,17 @@ namespace SharpAlliance.Core.Screens
                 fButtonsCreated = false;
             }
 
-            return (true);
+            return true;
         }
 
         private void MenuButtonCallback(ref GUI_BUTTON btn, MouseCallbackReasons reasonValue)
         {
-            MouseCallbackReasons reason = (MouseCallbackReasons)reasonValue;
-            short bID;
+            MouseCallbackReasons reason = reasonValue;
+            MainMenuItems bID;
 
-            bID = (short)btn.UserData[0];
+            bID = (MainMenuItems)btn.UserData[0];
 
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
             {
                 return;
             }
@@ -504,7 +510,7 @@ namespace SharpAlliance.Core.Screens
                     // }
                 }
 
-                btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
@@ -532,9 +538,6 @@ namespace SharpAlliance.Core.Screens
                     Cursor.NORMAL,
                     null,
                     this.SelectMainMenuBackGroundRegionCallBack);
-
-                // Add region
-                this.mouse.MSYS_AddRegion(ref this.gBackRegion);
 
                 fRegionCreated = true;
             }

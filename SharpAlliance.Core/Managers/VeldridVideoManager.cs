@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
@@ -15,16 +16,12 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Veldrid;
 using Veldrid.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
+using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
-using SharpAlliance.Core.Managers.VideoSurfaces;
-using System.Collections.Generic;
-using SixLabors.Fonts;
-using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -100,7 +97,7 @@ namespace SharpAlliance.Core.Managers
         private Rectangle gScrollRegion;
 
         private bool gfVideoCapture = false;
-        private int guiFramePeriod = (1000 / 15);
+        private int guiFramePeriod = 1000 / 15;
         private long guiLastFrame;
         private int[] gpFrameData = new int[Constants.MAX_NUM_FRAMES];
         private int giNumFrames = 0;
@@ -275,6 +272,7 @@ namespace SharpAlliance.Core.Managers
             this.commandList = this.GraphicDevice.ResourceFactory.CreateCommandList();
 
             this.SpriteRenderer = new SpriteRenderer(this.GraphicDevice);
+            IVideoManager.DebugRenderer = new DebugRenderer(this.GraphicDevice);
 
             this.guiFrameBufferState = BufferState.DIRTY;
             this.guiMouseBufferState = BufferState.DISABLED;
@@ -304,11 +302,14 @@ namespace SharpAlliance.Core.Managers
 
             if (this.gfForceFullScreenRefresh || this.clearScreen)
             {
-                //this.commandList.ClearColorTarget(0, this.clearColor);
+                this.commandList.ClearColorTarget(0, this.clearColor);
                 this.clearScreen = false;
             }
 
+            //this.commandList.ClearColorTarget(0, this.clearColor);
+
             this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
+            IVideoManager.DebugRenderer.Draw(this.GraphicDevice, this.commandList);
 
             this.commandList.End();
 
@@ -355,7 +356,8 @@ namespace SharpAlliance.Core.Managers
             HIMAGE hImage;
             ETRLEData TempETRLEData = new();
 
-            if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE) || VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMHIMAGE))
+            if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE)
+                || VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMHIMAGE))
             {
                 if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE))
                 {
@@ -425,9 +427,9 @@ namespace SharpAlliance.Core.Managers
             for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
             {
                 var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
-                var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile));
+                var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile)!);
                 Directory.CreateDirectory(directory);
-                hImage.ParsedImages[i]!.SaveAsPng(Path.Combine(directory, fileName));
+                hImage.ParsedImages![i].SaveAsPng(Path.Combine(directory, fileName));
             }
 
             //  DbgMessage(TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Video Object Palette change successfull" ));
@@ -570,11 +572,11 @@ namespace SharpAlliance.Core.Managers
                         Region.Width = usScreenWidth;
                         Region.Height = usScreenHeight;
 
-                        this.BlitRegion(
-                            this.backBuffer,
-                            new Point(0, 0),
-                            Region,
-                            this.gpFrameBuffer);
+                        // this.BlitRegion(
+                        //     this.backBuffer,
+                        //     new Point(0, 0),
+                        //     Region,
+                        //     this.gpFrameBuffer);
                     }
                     else
                     {
@@ -595,16 +597,14 @@ namespace SharpAlliance.Core.Managers
                         // Now do new, extended dirty regions
                         for (uiIndex = 0; uiIndex < this.guiDirtyRegionExCount; uiIndex++)
                         {
-                            Region.X = this.gDirtyRegionsEx[uiIndex].Left;
-                            Region.Y = this.gDirtyRegionsEx[uiIndex].Top;
-                            Region.Width = this.gDirtyRegionsEx[uiIndex].Width;
-                            Region.Height = this.gDirtyRegionsEx[uiIndex].Height;
+                            Region = this.gDirtyRegionsEx[uiIndex];
 
                             // Do some checks if we are in the process of scrolling!	
                             if (this.renderWorld.gfRenderScroll)
                             {
                                 // Check if we are completely out of bounds
-                                if (Region.Y <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y && Region.Height <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y)
+                                if (Region.Y <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y
+                                    && Region.Height <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y)
                                 {
                                     continue;
                                 }
@@ -627,7 +627,7 @@ namespace SharpAlliance.Core.Managers
                         this.renderWorld.gsScrollYIncrement,
                         this.gpPrimarySurface,
                         this.backBuffer,
-                        true,
+                        fRenderStrip: true,
                         Constants.PREVIOUS_MOUSE_DATA);
                 }
 
@@ -827,28 +827,28 @@ namespace SharpAlliance.Core.Managers
                     // Make sure the mouse background is marked for restore and coordinates are saved for the
                     // future restore
                     this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = true;
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight = (int)Region.Width - (int)Region.X;
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom = (int)Region.Height - (int)Region.Y;
+                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight = Region.Width - Region.X;
+                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom = Region.Height - Region.Y;
                     if (Region.X < 0)
                     {
-                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = (int)(0 - Region.X);
+                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = (0 - Region.X);
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = 0;
                         Region.X = 0;
                     }
                     else
                     {
-                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = (int)MousePos.X - this.gsMouseCursorXOffset;
+                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = MousePos.X - this.gsMouseCursorXOffset;
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = 0;
                     }
                     if (Region.Y < 0)
                     {
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = 0;
-                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = (int)(0 - Region.Y);
+                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = (0 - Region.Y);
                         Region.Y = 0;
                     }
                     else
                     {
-                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = (int)MousePos.Y - this.gsMouseCursorYOffset;
+                        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = MousePos.Y - this.gsMouseCursorYOffset;
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = 0;
                     }
 
@@ -1015,7 +1015,8 @@ namespace SharpAlliance.Core.Managers
                 Region.Width = this.gDirtyRegionsEx[uiIndex].Width;
                 Region.Height = this.gDirtyRegionsEx[uiIndex].Height;
 
-                if ((Region.Y < this.renderWorld.gsVIEWPORT_WINDOW_END_Y) && this.renderWorld.gfRenderScroll)
+                if ((Region.Y < this.renderWorld.gsVIEWPORT_WINDOW_END_Y)
+                    && this.renderWorld.gfRenderScroll)
                 {
                     continue;
                 }
@@ -1034,17 +1035,6 @@ namespace SharpAlliance.Core.Managers
 
         private void DrawRegion(
             Texture destinationTexture,
-            Vector2 destinationPoint,
-            Rectangle sourceRegion,
-            Image<Rgba32> sourceTexture)
-            => this.BlitRegion(
-                destinationTexture,
-                new Point((int)destinationPoint.X, (int)destinationPoint.Y),
-                sourceRegion,
-                sourceTexture);
-
-        private void DrawRegion(
-            Texture destinationTexture,
             int destinationPointX,
             int destinationPointY,
             Rectangle sourceRegion,
@@ -1055,9 +1045,6 @@ namespace SharpAlliance.Core.Managers
                 sourceRegion,
                 sourceTexture);
 
-        private GraphicsOptions overLayOptions = new()
-        {
-        };
         private bool clearScreen;
 
         private void BlitRegion(
@@ -1067,16 +1054,16 @@ namespace SharpAlliance.Core.Managers
             Image<Rgba32> srcImage)
         {
 
-            srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
+            //srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
+            //
+            //var newTexture = new ImageSharpTexture(srcImage)
+            //    .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+            //
+            //var finalRect = new Rectangle(
+            //    new Point(destinationPoint.X, destinationPoint.Y),
+            //    new Size(sourceRegion.Width, sourceRegion.Height));
 
-            var newTexture = new ImageSharpTexture(srcImage)
-                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
-
-            var finalRect = new Rectangle(
-                new Point(destinationPoint.X, destinationPoint.Y),
-                new Size(sourceRegion.Width, sourceRegion.Height));
-
-            this.SpriteRenderer.AddSprite(finalRect, newTexture, newTexture.GetHashCode().ToString());
+            // this.SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
         }
 
         private void ScrollJA2Background(
@@ -1090,7 +1077,6 @@ namespace SharpAlliance.Core.Managers
         {
             int usWidth, usHeight;
             int ubBitDepth;
-            int ReturnCode = DD_OK;
             Rectangle Region = new();
             int usMouseXPos, usMouseYPos;
             Rectangle[] StripRegions = new Rectangle[2];
@@ -1101,12 +1087,13 @@ namespace SharpAlliance.Core.Managers
             int uiCountY;
 
             this.GetCurrentVideoSettings(out usWidth, out usHeight, out ubBitDepth);
-            usHeight = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - this.renderWorld.gsVIEWPORT_WINDOW_START_Y);
+            usHeight = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
 
             StripRegions[0].X = this.renderWorld.gsVIEWPORT_START_X;
             StripRegions[0].Width = this.renderWorld.gsVIEWPORT_END_X;
             StripRegions[0].Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
             StripRegions[0].Height = this.renderWorld.gsVIEWPORT_WINDOW_END_Y;
+
             StripRegions[1].X = this.renderWorld.gsVIEWPORT_START_X;
             StripRegions[1].Width = this.renderWorld.gsVIEWPORT_END_X;
             StripRegions[1].Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
@@ -1126,7 +1113,7 @@ namespace SharpAlliance.Core.Managers
 
                     Region.X = 0;
                     Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
-                    Region.Width = usWidth - (sScrollXIncrement);
+                    Region.Width = usWidth - sScrollXIncrement;
                     Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
                     this.DrawRegion(
@@ -1175,7 +1162,7 @@ namespace SharpAlliance.Core.Managers
                     //					uiDestPitchBYTES-sScrollXIncrement*uiBPP);
                     //}
 
-                    StripRegions[0].X = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[0].X = this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement;
                     usMouseXPos -= sScrollXIncrement;
 
                     usNumStrips = 1;
@@ -1228,7 +1215,7 @@ namespace SharpAlliance.Core.Managers
                         pSource);
 
                     // Zero out z
-                    for (uiCountY = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement); uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
@@ -1251,7 +1238,7 @@ namespace SharpAlliance.Core.Managers
 
                     Region.X = 0;
                     Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
-                    Region.Width = usWidth - (sScrollXIncrement);
+                    Region.Width = usWidth - sScrollXIncrement;
                     Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
                     this.DrawRegion(
@@ -1319,7 +1306,7 @@ namespace SharpAlliance.Core.Managers
 
                     Region.X = 0;
                     Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
-                    Region.Width = usWidth - (sScrollXIncrement);
+                    Region.Width = usWidth - sScrollXIncrement;
                     Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
                     this.BlitRegion(
@@ -1334,15 +1321,15 @@ namespace SharpAlliance.Core.Managers
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, sScrollXIncrement * 2);
 
                     }
-                    for (uiCountY = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement); uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
 
-                    StripRegions[0].Width = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[0].Width = (this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
 
-                    StripRegions[1].Y = (int)(this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
-                    StripRegions[1].X = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[1].Y = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[1].X = (this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
                     usNumStrips = 2;
 
                     usMouseYPos -= sScrollYIncrement;
@@ -1368,14 +1355,15 @@ namespace SharpAlliance.Core.Managers
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280) + ((this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
                     }
-                    for (uiCountY = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement); uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+
+                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
 
-                    StripRegions[0].X = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
-                    StripRegions[1].Y = (int)(this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
-                    StripRegions[1].Width = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[0].X =     (this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[1].Y =     (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[1].Width = (this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
                     usNumStrips = 2;
 
                     usMouseYPos -= sScrollYIncrement;
@@ -1386,20 +1374,6 @@ namespace SharpAlliance.Core.Managers
 
             if (fRenderStrip)
             {
-
-                // Memset to 0
-# if SCROLL_TEST
-                {
-                    DDBLTFX BlitterFX;
-
-                    BlitterFX.dwSize = sizeof(DDBLTFX);
-                    BlitterFX.dwFillColor = 0;
-
-                    DDBltSurface((LPDIRectangleDRAWSURFACE2)pDest, null, null, null, DDBLT_COLORFILL, &BlitterFX);
-                }
-#endif
-
-
                 for (cnt = 0; cnt < usNumStrips; cnt++)
                 {
                     this.renderWorld.RenderStaticWorldRect(StripRegions[cnt], true);
@@ -1471,10 +1445,10 @@ namespace SharpAlliance.Core.Managers
                 this.RestoreShiftedVideoOverlays(sShiftX, sShiftY);
 
                 // SAVE NEW
-                this.SaveVideoOverlaysArea(VideoSurfaceManager.BACKBUFFER);
+                //this.SaveVideoOverlaysArea(VideoSurfaceManager.BACKBUFFER);
 
                 // BLIT NEW
-                this.ExecuteVideoOverlaysToAlternateBuffer(VideoSurfaceManager.BACKBUFFER);
+                //this.ExecuteVideoOverlaysToAlternateBuffer(VideoSurfaceManager.BACKBUFFER);
 
 
 #if false
@@ -1669,6 +1643,36 @@ namespace SharpAlliance.Core.Managers
         public void SetClippingRect(ref Rectangle newClip)
         {
             throw new NotImplementedException();
+        }
+
+        public void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color)
+        {
+        }
+
+        public void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle)
+        {
+        }
+
+        public void RestoreBackgroundRects()
+        {
+        }
+
+        public void SaveBackgroundRects()
+        {
+        }
+
+        public void ExecuteBaseDirtyRectQueue()
+        {
         }
     }
 

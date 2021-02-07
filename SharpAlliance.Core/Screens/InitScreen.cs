@@ -1,13 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using SixLabors.ImageSharp;
-using Veldrid;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Screens
@@ -126,7 +122,6 @@ namespace SharpAlliance.Core.Screens
                 vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
                 vs_desc.ImageFile = "ja2_logo.STI";
-
                 hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
 
                 if (hVObject is null)

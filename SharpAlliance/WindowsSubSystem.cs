@@ -41,7 +41,8 @@ namespace SharpAlliance
             this.logger = logger;
             this.video = videoManager;
             this.input = inputManager;
-            this.Initialize();
+
+            this.Initialize().AsTask().Wait();
         }
 
         public async ValueTask<bool> Initialize()
@@ -221,9 +222,9 @@ namespace SharpAlliance
         {
         }
 
-        public static int GET_X_LPARAM(IntPtr lp) => ((int)(short)LOWORD(lp));
-        public static int GET_Y_LPARAM(IntPtr lp) => ((int)(short)HIWORD(lp));
-        public static ushort LOWORD(IntPtr _dw) => ((ushort)(((ulong)(_dw)) & 0xffff));
-        public static ushort HIWORD(IntPtr _dw) => ((ushort)((((ulong)(_dw)) >> 16) & 0xffff));
+        public static int GET_X_LPARAM(IntPtr lp) => (int)(short)LOWORD(lp);
+        public static int GET_Y_LPARAM(IntPtr lp) => (int)(short)HIWORD(lp);
+        public static ushort LOWORD(IntPtr _dw) => (ushort)(((ulong)_dw) & 0xffff);
+        public static ushort HIWORD(IntPtr _dw) => (ushort)((((ulong)_dw) >> 16) & 0xffff);
     }
 }

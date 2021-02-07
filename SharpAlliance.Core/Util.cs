@@ -90,9 +90,18 @@ namespace SharpAlliance
 
         private static float sgn(float x)
         {
-            if (x > 0) return 1;
-            else if (x < 0) return -1;
-            else return 0;
+            if (x > 0)
+            {
+                return 1;
+            }
+            else if (x < 0)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public static Matrix4x4 Inverse(this Matrix4x4 src)
@@ -132,13 +141,19 @@ namespace SharpAlliance
         private static Matrix4x4 CreatePerspective(float fov, float aspectRatio, float near, float far)
         {
             if (fov <= 0.0f || fov >= MathF.PI)
+            {
                 throw new ArgumentOutOfRangeException(nameof(fov));
+            }
 
             if (near <= 0.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(near));
+            }
 
             if (far <= 0.0f)
+            {
                 throw new ArgumentOutOfRangeException(nameof(far));
+            }
 
             float yScale = 1.0f / MathF.Tan(fov * 0.5f);
             float xScale = yScale / aspectRatio;

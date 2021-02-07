@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -20,7 +21,6 @@ namespace SharpAlliance.Core.Managers.Image
         public const uint STCI_SUBIMAGE_SIZE = 16;
         public const int STCI_PALETTE_ELEMENT_SIZE = 3;
         public const int STCI_8BIT_PALETTE_SIZE = 768;
-        public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
         public bool LoadImage(ref HIMAGE hImage, HIMAGECreateFlags flags, IFileManager fileManager)
         {
@@ -223,9 +223,9 @@ namespace SharpAlliance.Core.Managers.Image
 
                         // This is the alpha pixel after all the conversions...so replace with
                         // RGBA32 alpha pixel.
-                        if (uncompressedData[idx] == 0 || (pixel.R == 45 && pixel.G == 213 && pixel.B == 0))
+                        if (uncompressedData[idx] == 0)
                         {
-                            pixel = AlphaPixel;
+                            pixel = IVideoManager.AlphaPixel;
                         }
 
                         color.FromRgba32(pixel);

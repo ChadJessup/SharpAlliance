@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -8,6 +9,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp;
 using Veldrid;
 using static SharpAlliance.Core.Screens.IntroScreen;
 
@@ -100,34 +102,37 @@ namespace SharpAlliance.Core
 
                 this.inputs.ProcessEvents();
 
-                this.inputs.GetCursorPosition(out Point MousePos);
+                this.inputs.GetCursorPosition(out SixLabors.ImageSharp.Point MousePos);
 
                 // Hook into mouse stuff for MOVEMENT MESSAGES
-                this.mouse.MouseHook(MouseEvents.MousePosition, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+
+                this.mouse.MouseHook(MouseEvents.MousePosition, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
 
                 this.music.MusicPoll(false);
 
-                while (this.inputs.DequeSpecificEvent(out InputAtom? inputAtom, MouseEvents.LEFT_BUTTON_REPEAT | MouseEvents.RIGHT_BUTTON_REPEAT | MouseEvents.LEFT_BUTTON_DOWN | MouseEvents.LEFT_BUTTON_UP | MouseEvents.RIGHT_BUTTON_DOWN | MouseEvents.RIGHT_BUTTON_UP))
+                while (this.inputs.DequeSpecificEvent(out InputSnapshot inputSnapshot))
                 {
-                    switch (inputAtom!.Value.MouseEvents)
+                    MouseEvents mouseEvent = this.inputs.ConvertToMouseEvents(ref inputSnapshot);
+
+                    switch (mouseEvent)
                     {
                         case MouseEvents.LEFT_BUTTON_DOWN:
-                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.LEFT_BUTTON_UP:
-                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.RIGHT_BUTTON_DOWN:
-                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.RIGHT_BUTTON_UP:
-                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.LEFT_BUTTON_REPEAT:
-                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.RIGHT_BUTTON_REPEAT:
-                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos.X, MousePos.Y, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                     }
                 }
@@ -228,6 +233,7 @@ namespace SharpAlliance.Core
             sm.AddScreen<MSG_BOX_SCREEN>(ScreenName.MSG_BOX_SCREEN);
             sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
             sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
+            sm.AddScreen<PreferenceScreen>(ScreenName.OPTIONS_SCREEN);
         }
 
         private void CheckForSpace()
