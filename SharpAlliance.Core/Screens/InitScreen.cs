@@ -4,6 +4,7 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Screens
@@ -92,6 +93,11 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<bool> Initialize()
         {
+            VOBJECT_DESC vs_desc = new();
+
+            vs_desc.ImageFile = "ja2_logo.STI";
+            hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
+
             return ValueTask.FromResult(true);
         }
 
@@ -119,18 +125,17 @@ namespace SharpAlliance.Core.Screens
             if (ubCurrentScreen == 0)
             {
                 // Load init screen and blit!
-                vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
+                //vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
-                vs_desc.ImageFile = "ja2_logo.STI";
-                hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
+                // vs_desc.ImageFile = "ja2_logo.STI";
+                // hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
+                // 
+                // if (hVObject is null)
+                // {
+                //     //AssertMsg(0, "Failed to load ja2_logo.sti!");
+                //     return ScreenName.ERROR_SCREEN;
+                // }
 
-                if (hVObject is null)
-                {
-                    //AssertMsg(0, "Failed to load ja2_logo.sti!");
-                    return ScreenName.ERROR_SCREEN;
-                }
-
-                this.video.SpriteRenderer.AddSprite(new Rectangle(0, 0, 640, 480), hVObject.Textures[0], vs_desc.ImageFile);
                 //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
                 ubCurrentScreen = 1;
 
@@ -268,6 +273,16 @@ namespace SharpAlliance.Core.Screens
 
         public void Dispose()
         {
+        }
+
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            sr.AddSprite(new Rectangle(0, 0, 640, 480), hVObject.Textures[0], "SplashScreen");
+        }
+
+        public ValueTask Deactivate()
+        {
+            return ValueTask.CompletedTask;
         }
     }
 }

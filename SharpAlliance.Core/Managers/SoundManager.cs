@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
@@ -54,7 +51,6 @@ namespace SharpAlliance.Core.Managers
 
         public void SetSoundEffectsVolume(int iNewValue)
         {
-            throw new NotImplementedException();
         }
 
         public void SoundStop(uint uiOptionToggleSound)
@@ -73,6 +69,11 @@ namespace SharpAlliance.Core.Managers
 
         public void SetSpeechVolume(int iNewValue)
         {
+        }
+
+        public bool SoundIsPlaying(uint soundID)
+        {
+            return true;
         }
 
         public static string[] szSoundEffects = new string[(int)SoundDefine.NUM_SAMPLES]

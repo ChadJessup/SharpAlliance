@@ -51,5 +51,10 @@ namespace SharpAlliance.Platform.NullManagers
         {
             throw new NotImplementedException();
         }
+
+        public bool SoundIsPlaying(uint uiLastPlayingSoundID)
+        {
+            return true;
+        }
     }
 }

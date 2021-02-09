@@ -226,14 +226,15 @@ namespace SharpAlliance.Core
         {
             var sm = screen;
 
-            sm.AddScreen<InitScreen>(ScreenName.InitScreen);
-            sm.AddScreen<IntroScreen>(ScreenName.INTRO_SCREEN);
             sm.AddScreen<MapScreen>(ScreenName.MAP_SCREEN);
+            sm.AddScreen<InitScreen>(ScreenName.InitScreen);
+            sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
+            sm.AddScreen<IntroScreen>(ScreenName.INTRO_SCREEN);
             sm.AddScreen<LAPTOP_SCREEN>(ScreenName.LAPTOP_SCREEN);
             sm.AddScreen<MSG_BOX_SCREEN>(ScreenName.MSG_BOX_SCREEN);
-            sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
             sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
             sm.AddScreen<PreferenceScreen>(ScreenName.OPTIONS_SCREEN);
+            sm.AddScreen<GameInitOptionsScreen>(ScreenName.GAME_INIT_OPTIONS_SCREEN);
         }
 
         private void CheckForSpace()

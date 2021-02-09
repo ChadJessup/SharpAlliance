@@ -723,7 +723,7 @@ namespace SharpAlliance.Core.Managers
 
     public class VOBJECT_DESC
     {
-        public VideoObjectCreateFlags fCreateFlags;                        // Specifies creation flags like from file or not
+        public VideoObjectCreateFlags fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;                        // Specifies creation flags like from file or not
         public string ImageFile;                          // Filename of image data to use
         public HIMAGE hImage;
         public byte ubBitDepth;                           // BPP, ignored if given from file

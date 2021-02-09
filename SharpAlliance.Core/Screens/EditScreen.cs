@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
+using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -31,6 +32,16 @@ namespace SharpAlliance.Core.Screens
         public ValueTask<bool> Initialize()
         {
             return ValueTask.FromResult(true);
+        }
+
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask Deactivate()
+        {
+            throw new NotImplementedException();
         }
     }
 }

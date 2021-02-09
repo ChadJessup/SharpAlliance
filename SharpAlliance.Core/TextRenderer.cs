@@ -7,6 +7,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Runtime.InteropServices;
+using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace SharpAlliance.Core
 {
@@ -31,9 +32,11 @@ namespace SharpAlliance.Core
             this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
 
             FontCollection fc = new FontCollection();
-            FontFamily family = fc.Install(Path.Combine(AppContext.BaseDirectory, "Assets", "Fonts", "Sunflower-Medium.ttf"));
-            this._font = family.CreateFont(28);
-
+            var families = SystemFonts.Find("Arial");
+            //FontFamily family = fc.CreateFont("Arial", 10);
+            //               fc.Install(Path.Combine(AppContext.BaseDirectory, "Assets", "Fonts", "Sunflower-Medium.ttf"));
+            //this._font = family.CreateFont(28);
+            this._font = families.CreateFont(10, FontStyle.Bold);
             this._image = new Image<Rgba32>(250, 100);
         }
 
@@ -47,17 +50,23 @@ namespace SharpAlliance.Core
 
             this._image.Mutate(ctx =>
             {
-                //ctx.DrawText(
-                //    new TextGraphicsOptions
-                //    {
-                //        WrapTextWidth = _image.Width,
-                //        Antialias = true,
-                //        HorizontalAlignment = HorizontalAlignment.Center
-                //    },
-                //    text,
-                //    _font,
-                //    White,
-                //    new PointF());
+                ctx.DrawText(
+                    new TextGraphicsOptions
+                    {
+                        TextOptions = new TextOptions()
+                        {
+                            WrapTextWidth = _image.Width,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                        },
+                        GraphicsOptions = new GraphicsOptions()
+                        {
+                            Antialias = true,
+                        }
+                    },
+                    text,
+                    _font,
+                    White,
+                    new PointF());
             });
 
             this._image.TryGetSinglePixelSpan(out var span2);

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -30,8 +31,6 @@ namespace SharpAlliance.Core.Managers
 
         public void RenderSliderBars()
         {
-            Slider pTemp = null;
-
             // set the currently selectd slider bar
             if (this.inputs.gfLeftButtonState && this.gpCurrentSlider != null)
             {
@@ -54,21 +53,128 @@ namespace SharpAlliance.Core.Managers
                 this.gpCurrentSlider = null;
             }
 
-            foreach(var slider in this.Sliders)
+            foreach (var slider in this.Sliders)
             {
                 this.RenderSelectedSliderBar(slider);
             }
         }
 
-        private void RenderSelectedSliderBar(Slider slider)
+        private void RenderSelectedSliderBar(Slider pSlider)
         {
+            if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+            {
+            }
+            else
+            {
+                var img = new Image<Rgba32>(pSlider.ubSliderWidth, pSlider.ubSliderHeight);
+                //display the background ( the bar ) 
+                OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y - 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y - 1), pSlider.usBackGroundColor, img);
+                OptDisplayLine(pSlider.usPos.X, pSlider.usPos.Y, (pSlider.usPos.X + pSlider.ubSliderWidth), pSlider.usPos.Y, pSlider.usBackGroundColor, img);
+                OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y + 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y + 1), pSlider.usBackGroundColor, img);
+
+                //invalidate the area
+                this.video.InvalidateRegion(new(
+                    pSlider.usPos.X,
+                    pSlider.usPos.Y - 2,
+                    pSlider.usPos.X + pSlider.ubSliderWidth + 1,
+                    pSlider.usPos.Y + 2));
+            }
+
+            RenderSliderBox(pSlider);
+        }
+
+        private void RenderSliderBox(Slider pSlider)
+        {
+            HVOBJECT hPixHandle;
+            Rectangle SrcRect = new();
+            Rectangle DestRect = new();
+
+
+            if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+            {
+                //fill out the settings for the current dest and source rects
+                SrcRect.X = 0;
+                SrcRect.Y = 0;
+                SrcRect.Width = pSlider.ubSliderWidth;
+                SrcRect.Height = pSlider.ubSliderHeight;
+
+                DestRect.X = pSlider.usPos.X - pSlider.ubSliderWidth / 2;
+                DestRect.Y = pSlider.usCurrentSliderBoxPosition - pSlider.ubSliderHeight / 2;
+                DestRect.Width = DestRect.Left + pSlider.ubSliderWidth;
+                DestRect.Height = DestRect.Top + pSlider.ubSliderHeight;
+
+
+                //If it is not the first time to render the slider
+                if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
+                {
+                    //Restore the old rect
+                    //this.video.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
+
+                    //invalidate the old area
+                    this.video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+                }
+
+                //Blit the new rect
+                // this.video.BlitBufferToBuffer(DestRect.Left, DestRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
+            }
+            else
+            {
+                //fill out the settings for the current dest and source rects
+                SrcRect.X = 0;
+                SrcRect.Y = 0;
+                SrcRect.Width = pSlider.ubSliderWidth;
+                SrcRect.Height = pSlider.ubSliderHeight;
+
+                DestRect.X = pSlider.usCurrentSliderBoxPosition;
+                DestRect.Y = pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE;
+                DestRect.Width = DestRect.Left + pSlider.ubSliderWidth;
+                DestRect.Height = DestRect.Top + pSlider.ubSliderHeight;
+
+                //If it is not the first time to render the slider
+                if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
+                {
+                    //Restore the old rect
+                    this.video.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15);
+                }
+
+                //save the new rect
+                this.video.BlitBufferToBuffer(DestRect.Left, DestRect.Top, 8, 15);
+            }
+
+            //Save the new rect location
+            pSlider.LastRect = DestRect;
+
+            if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+            {
+                //display the slider box
+                hPixHandle = this.video.GetVideoObject(guiSliderBoxImageTag);
+                this.video.BltVideoObject(hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top, 0);
+
+                //invalidate the area
+                this.video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+            }
+            else
+            {
+                //display the slider box
+                hPixHandle = this.video.GetVideoObject(guiSliderBoxImageTag);
+                this.video.BltVideoObject(hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, 0);
+
+                //invalidate the area
+                this.video.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
+            }
+        }
+
+        private void OptDisplayLine(int usStartX, int usStartY, int EndX, int EndY, Color iColor, Image<Rgba32> image)
+        {
+            // draw the line 
+            this.video.LineDraw(usStartX, usStartY, EndX, EndY, iColor, image);
         }
 
         private void CalculateNewSliderIncrement(ref Slider pSlider, int usPos)
         {
             float dNewIncrement = 0.0f;
             int usOldIncrement;
-            bool fLastSpot  = false;
+            bool fLastSpot = false;
             bool fFirstSpot = false;
 
             usOldIncrement = pSlider.usCurrentIncrement;
@@ -176,7 +282,7 @@ namespace SharpAlliance.Core.Managers
             }
         }
 
-        public void InitSlider()
+        public void InitSliderSystem()
         {
             VOBJECT_DESC VObjectDesc = new();
 
@@ -190,16 +296,277 @@ namespace SharpAlliance.Core.Managers
 
         public Slider AddSlider(
             SliderStyle style,
-            Cursor cursor,
-            int oPT_SOUND_EFFECTS_SLIDER_X, 
-            int oPT_SOUND_EFFECTS_SLIDER_Y, 
-            int oPT_SLIDER_BAR_SIZE, 
-            int v1, 
-            MSYS_PRIORITY priority, 
-            SliderChangeCallback soundFXSliderChangeCallBack, 
-            int v2)
+            Cursor usCursor,
+            Point loc,
+            int usWidth,
+            int usNumberOfIncrements,
+            MSYS_PRIORITY sPriority,
+            SliderChangeCallback SliderChangeCallback,
+            SliderDirection uiFlags)
         {
-            return new Slider();
+            Slider? pTemp = null;
+            Slider? pNewSlider = null;
+            int iNewID = 0;
+            uint cnt = 0;
+            ushort usIncrementWidth = 0;
+
+            pNewSlider = new();
+
+            //Assign the settings to the current slider
+            pNewSlider.ubStyle = style;
+            pNewSlider.usPos = loc;
+
+            //	pNewSlider.usWidth = usWidth;
+            pNewSlider.usNumberOfIncrements = usNumberOfIncrements;
+            pNewSlider.SliderChangeCallback = SliderChangeCallback;
+            pNewSlider.usCurrentIncrement = 0;
+            pNewSlider.usBackGroundColor = Color.FromRgb(255, 255, 255);
+            pNewSlider.uiFlags = uiFlags;
+
+            //Get a new Identifier for the slider
+            //Temp just increment for now
+            pNewSlider.uiSliderID = this.Sliders.Count;
+
+            //
+            // Create the mouse regions for each increment in the slider
+            //
+
+            //add the region
+            loc = pNewSlider.usPos;
+            // usPos.X = pNewSlider.usPos.X;
+            // usPos.Y = pNewSlider.usPos.Y;
+
+            //Add the last one, the width will be whatever is left over
+            switch (style)
+            {
+                case SliderStyle.SLIDER_VERTICAL_STEEL:
+
+                    pNewSlider.uiFlags |= SliderDirection.SLIDER_VERTICAL;
+                    //                    pNewSlider.usWidth = Slider.STEEL_SLIDER_WIDTH;
+                    //                    pNewSlider.usHeight = usWidth;
+                    pNewSlider.ubSliderWidth = Slider.STEEL_SLIDER_WIDTH;
+                    pNewSlider.ubSliderHeight = Slider.STEEL_SLIDER_HEIGHT;
+
+
+                    this.inputs.Mouse.MSYS_DefineRegion(
+                        pNewSlider.ScrollAreaMouseRegion,
+                        new Rectangle(
+                            loc.X - pNewSlider.ubSliderWidth / 2,
+                            loc.Y,
+                            loc.X + pNewSlider.ubSliderWidth / 2,
+                            pNewSlider.usPos.Y + pNewSlider.ubSliderHeight),
+                        sPriority,
+                        usCursor,
+                        this.SelectedSliderMovementCallBack,
+                        this.SelectedSliderButtonCallBack);
+
+                    this.inputs.Mouse.MSYS_SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                    break;
+
+                case SliderStyle.SLIDER_DEFAULT_STYLE:
+                default:
+
+                    pNewSlider.uiFlags |= SliderDirection.SLIDER_HORIZONTAL;
+                    pNewSlider.ubSliderWidth = usWidth;
+                    pNewSlider.ubSliderHeight = Slider.DEFAULT_SLIDER_SIZE;
+
+                    this.inputs.Mouse.MSYS_DefineRegion(
+                        pNewSlider.ScrollAreaMouseRegion,
+                        new Rectangle(loc.X, loc.Y - Slider.DEFAULT_SLIDER_SIZE, pNewSlider.usPos.X + pNewSlider.ubSliderWidth, loc.Y + Slider.DEFAULT_SLIDER_SIZE),
+                        sPriority,
+                        usCursor,
+                        this.SelectedSliderMovementCallBack,
+                        this.SelectedSliderButtonCallBack);
+
+                    this.inputs.Mouse.MSYS_SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                    break;
+            }
+
+            this.Sliders.Add(pNewSlider);
+
+            this.CalculateNewSliderBoxPosition(ref pNewSlider);
+
+            return pNewSlider;
+        }
+
+        private void SelectedSliderMovementCallBack(ref MouseRegion pRegion, MouseCallbackReasons reason)
+        {
+            int uiSelectedSlider;
+            Slider? pSlider = null;
+
+            //if we already have an anchored slider bar
+            if (this.gpCurrentSlider != null)
+            {
+                return;
+            }
+
+            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            {
+                MouseRegionFlags flag = (MouseRegionFlags)ButtonFlags.BUTTON_CLICKED_ON;
+                pRegion.uiFlags &= (~flag);
+
+                if (this.inputs.gfLeftButtonState)
+                {
+                    uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
+                    pSlider = GetSliderFromID(uiSelectedSlider);
+                    if (pSlider == null)
+                    {
+                        return;
+                    }
+
+                    // set the currently selectd slider bar
+                    if (this.inputs.gfLeftButtonState)
+                    {
+                        this.gpCurrentSlider = pSlider;
+                    }
+
+
+                    if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+                    {
+                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                    }
+                    else
+                    {
+                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                    }
+                }
+            }
+            else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
+            {
+                MouseRegionFlags flag = (MouseRegionFlags)ButtonFlags.BUTTON_CLICKED_ON;
+                pRegion.uiFlags |= flag;
+
+                if (this.inputs.gfLeftButtonState)
+                {
+                    uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
+                    pSlider = GetSliderFromID(uiSelectedSlider);
+                    if (pSlider == null)
+                    {
+                        return;
+                    }
+
+                    // set the currently selectd slider bar
+                    //			gpCurrentSlider = pSlider;
+
+
+                    if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+                    {
+                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                    }
+                    else
+                    {
+                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                    }
+
+                }
+            }
+
+            else if (reason.HasFlag(MouseCallbackReasons.MOVE))
+            {
+                MouseRegionFlags flag = (MouseRegionFlags)ButtonFlags.BUTTON_CLICKED_ON;
+                pRegion.uiFlags |= flag;
+
+                if (this.inputs.gfLeftButtonState)
+                {
+                    uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
+                    pSlider = GetSliderFromID(uiSelectedSlider);
+                    if (pSlider == null)
+                    {
+                        return;
+                    }
+
+                    // set the currently selectd slider bar
+                    //			gpCurrentSlider = pSlider;
+
+                    if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+                    {
+                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                    }
+                    else
+                    {
+                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                    }
+                }
+            }
+        }
+
+
+
+        void SelectedSliderButtonCallBack(ref MouseRegion pRegion, MouseCallbackReasons iReason)
+        {
+            int uiSelectedSlider;
+            Slider? pSlider = null;
+
+            //if we already have an anchored slider bar
+            if (this.gpCurrentSlider != null)
+            {
+                return;
+            }
+
+            if (iReason.HasFlag(MouseCallbackReasons.INIT))
+            {
+            }
+            else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            {
+                uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
+
+                pSlider = GetSliderFromID(uiSelectedSlider);
+                if (pSlider == null)
+                {
+                    return;
+                }
+
+
+                /*		// set the currently selectd slider bar
+                        if( gfLeftButtonState )
+                        {
+                            gpCurrentSlider = pSlider;
+                        }
+                */
+
+                if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+                {
+                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                }
+                else
+                {
+                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                }
+            }
+            else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_REPEAT))
+            {
+                uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
+
+                pSlider = this.GetSliderFromID(uiSelectedSlider);
+                if (pSlider == null)
+                {
+                    return;
+                }
+
+                // set the currently selectd slider bar
+                /*		if( gfLeftButtonState )
+                        {
+                            gpCurrentSlider = pSlider;
+                        }
+                */
+
+                if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
+                {
+                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                }
+                else
+                {
+                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                }
+            }
+            else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            {
+            }
+        }
+
+        private Slider? GetSliderFromID(int sliderIdx)
+        {
+            return this.Sliders.FirstOrDefault(s => s.uiSliderID == sliderIdx);
         }
 
         public void SetSliderValue(ref Slider slider, int newValue)
@@ -224,22 +591,19 @@ namespace SharpAlliance.Core.Managers
 
         public int usCurrentIncrement;
 
-        Color usBackGroundColor;
+        public Color usBackGroundColor;
 
-        public MouseRegion ScrollAreaMouseRegion;
+        public MouseRegion ScrollAreaMouseRegion = new(nameof(Slider));
 
         public uint uiSliderBoxImage;
         public int usCurrentSliderBoxPosition;
 
-        Rectangle LastRect;
+        public Rectangle LastRect;
 
         public SliderDirection uiFlags;
 
         public int ubSliderWidth;
         public int ubSliderHeight;
-
-        //struct TAG_SLIDER       *pNext;
-        //struct TAG_SLIDER       *pPrev;
     }
 
     public enum SliderStyle

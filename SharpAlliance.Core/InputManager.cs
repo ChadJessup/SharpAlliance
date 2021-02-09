@@ -78,6 +78,7 @@ namespace SharpAlliance.Core
         private IntPtr hInstance;
         //private HookProcedureHandle ghKeyboardHook;
         private object ghMouseHook;
+        private System.Numerics.Vector2 lastMousePos;
 
         public bool IsInitialized { get; private set; }
 
@@ -144,13 +145,36 @@ namespace SharpAlliance.Core
         {
             try
             {
+                var enqueue = false;
                 InputSnapshot? snapshot = null;
                 snapshot = this.video.Window.PumpEvents();
                 InputTracker.UpdateFrameInput(snapshot, this.video.Window);
 
-                this.gfLeftButtonState = snapshot.IsMouseDown(MouseButton.Left);
-                this.gfRightButtonState = snapshot.IsMouseDown(MouseButton.Right);
-                this.gEventQueue.Enqueue(snapshot);
+                var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
+                var tmpRight = snapshot.IsMouseDown(MouseButton.Right);
+
+                if (tmpLeft != this.gfLeftButtonState)
+                {
+                    this.gfLeftButtonState = tmpLeft;
+                    enqueue = true;
+                }
+
+                if (tmpRight != this.gfRightButtonState)
+                {
+                    this.gfRightButtonState = tmpRight;
+                    enqueue = true;
+                }
+
+                if (this.lastMousePos != snapshot.MousePosition)
+                {
+                    this.lastMousePos = snapshot.MousePosition;
+                    enqueue = true;
+                }
+
+                if (enqueue)
+                {
+                    this.gEventQueue.Enqueue(snapshot);
+                }
             }
             catch
             {

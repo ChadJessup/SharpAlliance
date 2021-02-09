@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
+using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -32,5 +33,13 @@ namespace SharpAlliance.Core.Screens
         {
         }
 
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+        }
+
+        public ValueTask Deactivate()
+        {
+            return ValueTask.CompletedTask;
+        }
     }
 }

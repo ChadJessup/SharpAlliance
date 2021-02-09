@@ -54,6 +54,82 @@ namespace SharpAlliance.Core
             "Show 3D Cursor",
         };
 
+        public static Dictionary<GameInitOptionScreenText, string> gzGIOScreenText = new()
+        {
+            { GameInitOptionScreenText.GIO_INITIAL_GAME_SETTINGS, "INITIAL GAME SETTINGS" },
+            { GameInitOptionScreenText.GIO_GAME_STYLE_TEXT, "Game Style" },
+            { GameInitOptionScreenText.GIO_REALISTIC_TEXT, "Realistic" },
+            { GameInitOptionScreenText.GIO_SCI_FI_TEXT, "Sci Fi" },
+            { GameInitOptionScreenText.GIO_GUN_OPTIONS_TEXT, "Gun Options" },
+            { GameInitOptionScreenText.GIO_GUN_NUT_TEXT, "Tons of Guns" },
+            { GameInitOptionScreenText.GIO_REDUCED_GUNS_TEXT, "Normal" },
+            { GameInitOptionScreenText.GIO_DIF_LEVEL_TEXT, "Difficulty Level" },
+            { GameInitOptionScreenText.GIO_EASY_TEXT, "Novice" },
+            { GameInitOptionScreenText.GIO_MEDIUM_TEXT, "Experienced" },
+            { GameInitOptionScreenText.GIO_HARD_TEXT, "Expert" },
+            { GameInitOptionScreenText.GIO_OK_TEXT, "Ok" },
+            { GameInitOptionScreenText.GIO_CANCEL_TEXT, "Cancel" },
+            { GameInitOptionScreenText.GIO_GAME_SAVE_STYLE_TEXT, "Extra Difficulty" },
+            { GameInitOptionScreenText.GIO_SAVE_ANYWHERE_TEXT, "Save Anytime" },
+            { GameInitOptionScreenText.GIO_IRON_MAN_TEXT, "Iron Man" },
+            { GameInitOptionScreenText.GIO_DISABLED_FOR_THE_DEMO_TEXT, "Disabled for Demo" },
+        };
+
+        public enum TCTL_MSG__
+        {
+            RANGE_TO_TARGET,
+            ATTACH_TRANSMITTER_TO_LAPTOP,
+            CANNOT_AFFORD_MERC,
+            AIMMEMBER_FEE_TEXT,
+            AIMMEMBER_ONE_TIME_FEE,
+            FEE,
+            SOMEONE_ELSE_IN_SECTOR,
+            RANGE_TO_TARGET_AND_GUN_RANGE,
+            DISPLAY_COVER,
+            LOS,
+            INVALID_DROPOFF_SECTOR,
+            PLAYER_LOST_SHOULD_RESTART,
+            JERRY_BREAKIN_LAPTOP_ANTENA,
+            END_GAME_POPUP_TXT_1,
+            END_GAME_POPUP_TXT_2,
+            IRON_MAN_CANT_SAVE_NOW,
+            CANNOT_SAVE_DURING_COMBAT,
+            CAMPAIGN_NAME_TOO_LARGE,
+            CAMPAIGN_DOESN_T_EXIST,
+            DEFAULT_CAMPAIGN_LABEL,
+            CAMPAIGN_LABEL,
+            NEW_CAMPAIGN_CONFIRM,
+            CANT_EDIT_DEFAULT,
+        };
+
+        public static string[] zNewTacticalMessages = new string[]
+        {
+            "Range to target: %d tiles",
+            "Attaching the transmitter to your laptop computer.",
+            "You cannot afford to hire %s",
+            "For a limited time, the above fee covers the cost of the entire mission and includes the equipment listed below.",
+            "Hire %s now and take advantage of our unprecedented 'one fee covers all' pricing.  Also included in this unbelievable offer is the mercenary's personal equipment at no charge.",
+            "Fee",
+            "There is someone else in the sector...",
+            "Gun Range: %d tiles, Range to target: %d tiles",
+            "Display Cover",
+            "Line of Sight",
+            "New Recruits cannot arrive there.",
+            "Since your laptop has no transmitter, you won't be able to hire new team members.  Perhaps this would be a good time to load a saved game or start over!",
+            "%s hears the sound of crumpling metal coming from underneath Jerry's body.  It sounds disturbingly like your laptop antenna being crushed.",  //the %s is the name of a merc.  @@@  Modified
+        	"After scanning the note left behind by Deputy Commander Morris, %s senses an oppurtinity.  The note contains the coordinates for launching missiles against different towns in Arulco.  It also gives the coodinates of the origin - the missile facility.",
+            "Noticing the control panel, %s figures the numbers can be reveresed, so that the missile might destroy this very facility.  %s needs to find an escape route.  The elevator appears to offer the fastest solution...",
+            "This is an IRON MAN game and you cannot save when enemies are around.",	//	@@@  new text
+        	"(Cannot save during combat)", //@@@@ new text
+        	"The current campaign name is greater than 30 characters.",							// @@@ new text
+        	"The current campaign cannot be found.",																	// @@@ new text
+        	"Campaign: Default ( %S )",																							// @@@ new text
+        	"Campaign: %S",																													// @@@ new text
+        	"You have selected the campaign %S. This campaign is a player-modified version of the original Unfinished Business campaign. Are you sure you wish to play the %S campaign?",			// @@@ new text
+        	"In order to use the editor, please select a campaign other than the default.",		///@@new
+        };
+
+
         //This is the help text associated with the above toggles.
         public static Dictionary<TOPTION, string> zOptionsScreenHelpText = new()
         {
@@ -65,51 +141,51 @@ namespace SharpAlliance.Core
 
             //Subtitles
             { TOPTION.SUBTITLES, "Controls whether on-screen text is displayed for dialogue." },
-        
-        	//Key to advance speech
-        	{ TOPTION.KEY_ADVANCE_SPEECH, "If Subtitles are ON, turn this on also to be able to take your time reading NPC dialogue." },
-        
-        	//Toggle smoke animation
-        	{ TOPTION.ANIMATE_SMOKE, "Turn off this option if animating smoke slows down your game's framerate." },
-        
-        	//Blood n Gore
-        	{ TOPTION.BLOOD_N_GORE, "Turn this option OFF if blood offends you." },
-        
-        	//Never move my mouse
-        	{ TOPTION.DONT_MOVE_MOUSE, "Turn this option OFF to have your mouse automatically move over pop-up confirmation boxes when they appear." },
-        
-        	//Old selection method
-        	{ TOPTION.OLD_SELECTION_METHOD, "Turn this ON for character selection to work as in previous JAGGED ALLIANCE games (which is the opposite of how it works otherwise)." },
-        
-        	//Show movement path
-        	{ TOPTION.ALWAYS_SHOW_MOVEMENT_PATH, "Turn this ON to display movement paths in Real-time (or leave it off and use the SHIFT key when you do want them displayed)." },
-        
-        	//show misses
-        	{ TOPTION.SHOW_MISSES, "Turn ON to have the game show you where your bullets ended up when you \"miss\"." },
-        	
-        	//Real Time Confirmation
-        	{ TOPTION.RTCONFIRM, "When ON, an additional \"safety\" click will be required for movement in Real-time." },
-        
-        	//Sleep/Wake notification
-          { TOPTION.SLEEPWAKE_NOTIFICATION, "When ON, you will be notified when mercs on \"assignment\" go to sleep and resume work." },
-        
-        	//Use the metric system
-        	{ TOPTION.USE_METRIC_SYSTEM, "When ON, uses the metric system for measurements; otherwise it uses the Imperial system." },
-        
-        	//Merc Lighted movement
-        	{ TOPTION.MERC_ALWAYS_LIGHT_UP, "When ON, the merc will light the ground while walking.  Turn OFF for faster frame rate." },
-        
-        	//Smart cursor
-        	{ TOPTION.SMART_CURSOR, "When ON, moving the cursor near your mercs will automatically highlight them." },
-        
-        	//snap cursor to the door
-        	{ TOPTION.SNAP_CURSOR_TO_DOOR, "When ON, moving the cursor near a door will automatically position the cursor over the door." },
-        	//glow items 
-        	{ TOPTION.GLOW_ITEMS, "When ON, |Items continuously glow" },
-        	//toggle tree tops
-        	{ TOPTION.TOGGLE_TREE_TOPS, "When ON, shows the |Tree tops." },
-        	//toggle wireframe
-        	{ TOPTION.TOGGLE_WIREFRAME, "When ON, displays |Wireframes for obscured walls." },
+
+            //Key to advance speech
+            { TOPTION.KEY_ADVANCE_SPEECH, "If Subtitles are ON, turn this on also to be able to take your time reading NPC dialogue." },
+
+            //Toggle smoke animation
+            { TOPTION.ANIMATE_SMOKE, "Turn off this option if animating smoke slows down your game's framerate." },
+
+            //Blood n Gore
+            { TOPTION.BLOOD_N_GORE, "Turn this option OFF if blood offends you." },
+
+            //Never move my mouse
+            { TOPTION.DONT_MOVE_MOUSE, "Turn this option OFF to have your mouse automatically move over pop-up confirmation boxes when they appear." },
+
+            //Old selection method
+            { TOPTION.OLD_SELECTION_METHOD, "Turn this ON for character selection to work as in previous JAGGED ALLIANCE games (which is the opposite of how it works otherwise)." },
+
+            //Show movement path
+            { TOPTION.ALWAYS_SHOW_MOVEMENT_PATH, "Turn this ON to display movement paths in Real-time (or leave it off and use the SHIFT key when you do want them displayed)." },
+
+            //show misses
+            { TOPTION.SHOW_MISSES, "Turn ON to have the game show you where your bullets ended up when you \"miss\"." },
+
+            //Real Time Confirmation
+            { TOPTION.RTCONFIRM, "When ON, an additional \"safety\" click will be required for movement in Real-time." },
+
+            //Sleep/Wake notification
+            { TOPTION.SLEEPWAKE_NOTIFICATION, "When ON, you will be notified when mercs on \"assignment\" go to sleep and resume work." },
+
+            //Use the metric system
+            { TOPTION.USE_METRIC_SYSTEM, "When ON, uses the metric system for measurements; otherwise it uses the Imperial system." },
+
+            //Merc Lighted movement
+            { TOPTION.MERC_ALWAYS_LIGHT_UP, "When ON, the merc will light the ground while walking.  Turn OFF for faster frame rate." },
+
+            //Smart cursor
+            { TOPTION.SMART_CURSOR, "When ON, moving the cursor near your mercs will automatically highlight them." },
+
+            //snap cursor to the door
+            { TOPTION.SNAP_CURSOR_TO_DOOR, "When ON, moving the cursor near a door will automatically position the cursor over the door." },
+            //glow items 
+            { TOPTION.GLOW_ITEMS, "When ON, |Items continuously glow" },
+            //toggle tree tops
+            { TOPTION.TOGGLE_TREE_TOPS, "When ON, shows the |Tree tops." },
+            //toggle wireframe
+            { TOPTION.TOGGLE_WIREFRAME, "When ON, displays |Wireframes for obscured walls." },
             { TOPTION.CURSOR_3D, "When ON, the movement cursor is shown in 3D. ( |Home )" },
         };
 

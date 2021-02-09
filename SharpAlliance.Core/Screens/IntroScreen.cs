@@ -9,6 +9,7 @@ using SharpAlliance.Core.Managers.Library;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -404,6 +405,15 @@ namespace SharpAlliance.Core.Screens
 
         public void Dispose()
         {
+        }
+
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+        }
+
+        public ValueTask Deactivate()
+        {
+            return ValueTask.CompletedTask;
         }
     }
 

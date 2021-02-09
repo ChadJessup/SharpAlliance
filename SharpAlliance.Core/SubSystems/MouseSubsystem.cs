@@ -610,6 +610,11 @@ namespace SharpAlliance.Core.SubSystems
             }
         }
 
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            this.cursors.Draw(sr, gd, cl);
+        }
+
         public void Draw(
             MouseCursorBackground mouseCursorBackground,
             Rectangle region,

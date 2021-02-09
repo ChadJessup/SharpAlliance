@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +10,6 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using Vortice;
 
 namespace SharpAlliance
 {
@@ -53,9 +51,6 @@ namespace SharpAlliance
 
             return result;
         }
-
-        public Program()// : base(true) { }
-        { }
     }
 
     public static class StandardSharpAllianceExtensions
@@ -78,17 +73,19 @@ namespace SharpAlliance
             builder.AddDependency<IVideoManager, VeldridVideoManager>();
             builder.AddDependency<ISoundManager, SoundManager>();
             builder.AddDependency<IInputManager, InputManager>();
+            builder.AddDependency<IClockManager, ClockManager>();
 
-            builder.Services.AddSingleton<GuiManager>();
-            builder.Services.AddSingleton<SliderSubSystem>();
-            builder.Services.AddSingleton<MercTextBox>();
-            builder.Services.AddSingleton<TileCache>();
-            builder.Services.AddSingleton<Messages>();
-            builder.Services.AddSingleton<EventManager>();
             builder.Services.AddSingleton<Globals>();
+            builder.Services.AddSingleton<Messages>();
+            builder.Services.AddSingleton<TileCache>();
+            builder.Services.AddSingleton<GuiManager>();
+            builder.Services.AddSingleton<FadeScreen>();
             builder.Services.AddSingleton<RenderWorld>();
+            builder.Services.AddSingleton<MercTextBox>();
+            builder.Services.AddSingleton<EventManager>();
             builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<MouseSubSystem>();
+            builder.Services.AddSingleton<SliderSubSystem>();
             builder.Services.AddSingleton<ButtonSubSystem>();
             builder.Services.AddSingleton<CursorSubSystem>();
             builder.Services.AddSingleton<MessageSubSystem>();
@@ -130,7 +127,6 @@ namespace SharpAlliance
             builder.Services.AddSingleton<StructureFile>();
             builder.Services.AddSingleton<LightingSystem>();
             builder.Services.AddSingleton<GameSettings>();
-            builder.Services.AddSingleton<IClockManager, ClockManager>();
 
             return builder;
         }

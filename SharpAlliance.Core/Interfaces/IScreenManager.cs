@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
 namespace SharpAlliance.Core.Interfaces
 {
@@ -19,6 +20,7 @@ namespace SharpAlliance.Core.Interfaces
         IScreen guiPendingScreen { get; set; }
         ScreenName CurrentScreenName { get; }
 
+        void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl);
         void EndMapScreen(bool v);
         void ExitLaptop();
         ValueTask SetPendingNewScreen(ScreenName pendingScreen);

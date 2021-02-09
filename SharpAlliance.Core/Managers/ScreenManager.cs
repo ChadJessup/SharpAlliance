@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
+using Veldrid;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -87,6 +88,11 @@ namespace SharpAlliance.Core.Managers
             return screen;
         }
 
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            this.CurrentScreen.Draw(sr, gd, cl);
+        }
+
         public ValueTask<IScreen> ActivateScreen(ScreenName screenName)
         {
             if (!this.Screens.TryGetValue(screenName, out var screen))
@@ -114,6 +120,11 @@ namespace SharpAlliance.Core.Managers
             if (!screen.IsInitialized)
             {
                 screen.IsInitialized = await screen.Initialize();
+            }
+
+            if (this.CurrentScreen is not null)
+            {
+                await this.CurrentScreen.Deactivate();
             }
 
             this.currentScreenTask = screen.Activate().AsTask();
@@ -150,18 +161,6 @@ namespace SharpAlliance.Core.Managers
         {
             this.guiPendingScreen = await this.GetScreen(pendingScreen, activate: false);
         }
-    }
-
-    public interface IScreen : IDisposable
-    {
-        ValueTask<bool> Initialize();
-
-        bool IsInitialized { get; set; }
-        ValueTask Activate();
-
-        ValueTask<ScreenName> Handle();
-
-        ScreenState State { get; set; }
     }
 
     public enum ScreenState

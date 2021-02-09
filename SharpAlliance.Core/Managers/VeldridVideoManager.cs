@@ -63,7 +63,9 @@ namespace SharpAlliance.Core.Managers
         public Sdl2Window Window { get => this.window; }
         public GraphicsDevice GraphicDevice { get; private set; }
         public ResourceFactory Factory { get; private set; }
-        public SpriteRenderer SpriteRenderer { get; private set; }
+        protected SpriteRenderer SpriteRenderer { get; private set; }
+
+        protected TextRenderer TextRenderer { get; private set; }
 
         private Swapchain mainSwapchain;
         private CommandList commandList;
@@ -273,6 +275,7 @@ namespace SharpAlliance.Core.Managers
 
             this.SpriteRenderer = new SpriteRenderer(this.GraphicDevice);
             IVideoManager.DebugRenderer = new DebugRenderer(this.GraphicDevice);
+            this.TextRenderer = new TextRenderer(this.GraphicDevice);
 
             this.guiFrameBufferState = BufferState.DIRTY;
             this.guiMouseBufferState = BufferState.DISABLED;
@@ -306,10 +309,16 @@ namespace SharpAlliance.Core.Managers
                 this.clearScreen = false;
             }
 
-            //this.commandList.ClearColorTarget(0, this.clearColor);
+            this.commandList.ClearColorTarget(0, this.clearColor);
 
+            this.screenManager.Draw(this.SpriteRenderer, this.GraphicDevice, this.commandList);
+            this.mouse.Draw(this.SpriteRenderer, this.GraphicDevice, this.commandList);
+            
+            // Everything above writes to this SpriteRenderer, so draw it now.
             this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
             IVideoManager.DebugRenderer.Draw(this.GraphicDevice, this.commandList);
+
+            this.SpriteRenderer.RenderText(this.GraphicDevice, this.commandList, this.TextRenderer.TextureView, new(0, 0));
 
             this.commandList.End();
 
@@ -334,9 +343,9 @@ namespace SharpAlliance.Core.Managers
         {
             key = pVObjectDesc.ImageFile;
 
-            if (this.loadedTextures.ContainsKey(pVObjectDesc.ImageFile))
+            if (this.loadedTextures.TryGetValue(pVObjectDesc.ImageFile, out var vObject))
             {
-                return null;
+                return vObject;
             }
 
             // Create video object
@@ -405,6 +414,8 @@ namespace SharpAlliance.Core.Managers
             {
                 hVObject.Textures[i] = new ImageSharpTexture(hImage.ParsedImages[i], mipmap: false)
                     .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+
+                hVObject.Textures[i].Name = $"{hImage.ImageFile}_{i}";
             }
 
             return hVObject;
@@ -424,13 +435,14 @@ namespace SharpAlliance.Core.Managers
                 hImage.ParsedImages = hImage.iFileLoader.ApplyPalette(ref hVObject, ref hImage);
             }
 
-            for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
-            {
-                var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
-                var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile)!);
-                Directory.CreateDirectory(directory);
-                hImage.ParsedImages![i].SaveAsPng(Path.Combine(directory, fileName));
-            }
+            // If you want to output all the images to disk, uncomment this...makes startup take a lot longer.
+            //for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
+            //{
+            //    var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
+            //    var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile)!);
+            //    Directory.CreateDirectory(directory);
+            //    hImage.ParsedImages![i].SaveAsPng(Path.Combine(directory, fileName));
+            //}
 
             //  DbgMessage(TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Video Object Palette change successfull" ));
             return true;
@@ -1062,7 +1074,7 @@ namespace SharpAlliance.Core.Managers
             //var finalRect = new Rectangle(
             //    new Point(destinationPoint.X, destinationPoint.Y),
             //    new Size(sourceRegion.Width, sourceRegion.Height));
-
+            //
             // this.SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
         }
 
@@ -1486,14 +1498,6 @@ namespace SharpAlliance.Core.Managers
         {
         }
 
-        private void SaveVideoOverlaysArea(uint bACKBUFFER)
-        {
-        }
-
-        private void ExecuteVideoOverlaysToAlternateBuffer(uint bACKBUFFER)
-        {
-        }
-
         private void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
         {
             usWidth = 0;
@@ -1528,12 +1532,14 @@ namespace SharpAlliance.Core.Managers
         {
         }
 
-        public void GetVideoObject(string key, out HVOBJECT hPixHandle)
+        public HVOBJECT GetVideoObject(string key)
         {
-            if (!this.loadedTextures.TryGetValue(key, out hPixHandle))
+            if (!this.loadedTextures.TryGetValue(key, out var hPixHandle))
             {
                 this.logger.LogError("Unable to retrive VideoObject with key: " + key);
             }
+
+            return hPixHandle;
         }
 
         public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
@@ -1543,13 +1549,15 @@ namespace SharpAlliance.Core.Managers
                 throw new NullReferenceException("Texture is null for: " + hVObject.Name);
             }
 
-            int y = (int)hVObject.Textures[textureIndex].Height - Y;
-
-            this.SpriteRenderer.AddSprite(new Rectangle(X, Y, (int)hVObject.Textures[textureIndex].Width, (int)hVObject.Textures[textureIndex].Height), hVObject.Textures[textureIndex], $"{hVObject.Name}_{textureIndex}");
+            this.SpriteRenderer.AddSprite(
+                new Rectangle(X, Y, (int)hVObject.Textures[textureIndex].Width, (int)hVObject.Textures[textureIndex].Height), 
+                hVObject.Textures[textureIndex],
+                $"{hVObject.Name}_{textureIndex}");
         }
 
         public void DrawTextToScreen(string text, int usLocX, int usLocY, int width, FontStyle fontStyle, FontColor fontForegroundColor, FontColor fontBackgroundColor, bool dirty, TextJustifies justification)
         {
+            this.TextRenderer.DrawText(text);
             //TextRenderer = new TextRenderer(_gd);
             //textRenderer.DrawText("0");
 
@@ -1585,9 +1593,8 @@ namespace SharpAlliance.Core.Managers
             //this.loadedTextures.Remove(logoKey);
         }
 
-        public void LineDraw(bool v1, int v2, int v3, int v4, int v5, int v6, byte[] pDestBuf)
+        public void LineDraw(int v2, int v3, int v4, int v5, Color color, Image<Rgba32> image)
         {
-            throw new NotImplementedException();
         }
 
         public byte[] LockVideoSurface(Surfaces buttonDestBuffer, out uint uiDestPitchBYTES)
@@ -1597,65 +1604,54 @@ namespace SharpAlliance.Core.Managers
 
         public void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4)
         {
-            throw new NotImplementedException();
         }
 
         public void UnLockVideoSurface(Surfaces buttonDestBuffer)
         {
-            throw new NotImplementedException();
         }
 
         public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
         {
-            throw new NotImplementedException();
         }
 
         public void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
         {
-            throw new NotImplementedException();
         }
 
         public void ColorFillVideoSurfaceArea(Surfaces buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32)
         {
-            throw new NotImplementedException();
         }
 
         public void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
         {
-            throw new NotImplementedException();
         }
 
         public void Blt8BPPDataTo16BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
         {
-            throw new NotImplementedException();
         }
 
         public void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
         {
-            throw new NotImplementedException();
         }
 
         public void GetClippingRect(out Rectangle clipRect)
         {
-            throw new NotImplementedException();
+            clipRect = new();
         }
 
         public void SetClippingRect(ref Rectangle newClip)
         {
-            throw new NotImplementedException();
-        }
-
-        public void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
-        {
-            throw new NotImplementedException();
         }
 
         public void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color)
+            => this.ColorFillVideoSurfaceArea(rectangle, color.ToPixel<Rgba32>());
+
+        public void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32)
+        {
+
+        }
+
+        public void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
         {
         }
 
@@ -1672,6 +1668,14 @@ namespace SharpAlliance.Core.Managers
         }
 
         public void ExecuteBaseDirtyRectQueue()
+        {
+        }
+
+        public void DeleteVideoObject(HVOBJECT vobj)
+        {
+        }
+
+        public void BlitBufferToBuffer(int left, int top, int width, int height)
         {
         }
     }

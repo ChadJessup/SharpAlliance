@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using Veldrid;
@@ -24,6 +25,7 @@ namespace SharpAlliance
         private readonly ILogger<WindowsSubSystem> logger;
         private readonly IVideoManager video;
         private readonly IInputManager input;
+        private readonly FontSubSystem fonts;
         public static readonly string WndClassName = "VorticeWindow";
         public readonly IntPtr HInstance = GetModuleHandle(null);
 
@@ -35,13 +37,14 @@ namespace SharpAlliance
             ILogger<WindowsSubSystem> logger,
             GameContext context,
             IInputManager inputManager,
-            IVideoManager videoManager)
+            IVideoManager videoManager,
+            FontSubSystem fontSubSystem)
         {
             this.context = context;
             this.logger = logger;
             this.video = videoManager;
             this.input = inputManager;
-
+            this.fonts = fontSubSystem;
             this.Initialize().AsTask().Wait();
         }
 
@@ -49,6 +52,7 @@ namespace SharpAlliance
         {
             await this.video.Initialize();
             await this.input.Initialize();
+            await this.fonts.Initialize();
 
             this.PlatformConstruct();
 

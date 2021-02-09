@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpAlliance.Platform.Interfaces;
+using Veldrid;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -15,6 +11,11 @@ namespace SharpAlliance.Core.SubSystems
 
         public void Dispose()
         {
+        }
+
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+
         }
     }
 

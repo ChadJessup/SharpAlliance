@@ -84,6 +84,9 @@ namespace SharpAlliance
 
         private byte[] LoadShaderBytes(string name) => VeldridVideoManager.ReadEmbeddedAssetBytes(name);
 
+        public void AddSprite(SixLabors.ImageSharp.Point loc, Texture texture, string spriteName, RgbaByte? tint = null, float rotation = 0f)
+            => this.AddSprite(new Rectangle(loc.X, loc.Y, (int)texture.Width, (int)texture.Height), texture, spriteName, tint, rotation);
+
         public void AddSprite(Rectangle rectangle, Texture texture, string spriteName, RgbaByte? tint = null, float rotation = 0f)
         {
             if (tint is null)

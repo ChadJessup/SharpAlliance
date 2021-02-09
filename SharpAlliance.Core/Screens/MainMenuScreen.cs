@@ -150,8 +150,8 @@ namespace SharpAlliance.Core.Screens
 
                 this.introScreen.guiSplashFrameFade--;
 
-                this.video.InvalidateScreen();
-                this.video.EndFrameBufferRender();
+                // this.video.InvalidateScreen();
+                // this.video.EndFrameBufferRender();
 
                 this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
 
@@ -185,9 +185,7 @@ namespace SharpAlliance.Core.Screens
                 this.buttons.MarkAButtonDirty(this.iMenuButtons[(MainMenuItems)cnt]);
             }
 
-            this.buttons.RenderButtons();
-
-            this.video.EndFrameBufferRender();
+//            this.video.EndFrameBufferRender();
 
             this.HandleMainMenuInput();
 
@@ -313,15 +311,15 @@ namespace SharpAlliance.Core.Screens
             HVOBJECT hPixHandle;
 
             //Get and display the background image
-            this.video.GetVideoObject(this.mainMenuBackGroundImageKey, out hPixHandle);
+            hPixHandle = this.video.GetVideoObject(this.mainMenuBackGroundImageKey);
             this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
-            this.video.GetVideoObject(this.ja2LogoImageKey, out hPixHandle);
+            hPixHandle = this.video.GetVideoObject(this.ja2LogoImageKey);
             this.video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
 
             this.video.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
 
-            this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+//            this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
         public ValueTask<bool> Initialize()
@@ -346,12 +344,10 @@ namespace SharpAlliance.Core.Screens
             this.CreateDestroyMainMenuButtons(fCreate: true);
 
             // load background graphic and add it
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\MainMenuBackGround.sti");
             this.video.AddVideoObject(ref VObjectDesc, out this.mainMenuBackGroundImageKey);
 
             // load ja2 logo graphic and add it
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
             VObjectDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\Ja2Logo.sti");
             this.video.AddVideoObject(ref VObjectDesc, out this.ja2LogoImageKey);
 
@@ -495,7 +491,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {
                 // handle menu
-                this.gbHandledMainMenu = (MainMenuItems)bID;
+                this.gbHandledMainMenu = bID;
                 this.RenderMainMenu();
 
                 if (this.gbHandledMainMenu == MainMenuItems.NEW_GAME)
@@ -581,6 +577,34 @@ namespace SharpAlliance.Core.Screens
         public void ClearMainMenu()
         {
             this.video.InvalidateScreen();
+        }
+
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            //Get and display the background image
+            //            this.video.GetVideoObject(this.mainMenuBackGroundImageKey, out var background);
+            //            this.video.GetVideoObject(this.ja2LogoImageKey, out var logo);
+            VOBJECT_DESC backgroundDesc = new();
+
+            backgroundDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\MainMenuBackGround.sti");
+            var background = this.video.AddVideoObject(ref backgroundDesc, out this.mainMenuBackGroundImageKey);
+
+            // load ja2 logo graphic and add it
+            VOBJECT_DESC logoDesc = new();
+            logoDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\Ja2Logo.sti");
+            var logo = this.video.AddVideoObject(ref logoDesc, out this.ja2LogoImageKey);
+
+            sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
+            sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);
+
+            this.buttons.RenderButtons();
+
+            this.video.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
+        }
+
+        public ValueTask Deactivate()
+        {
+            return ValueTask.CompletedTask;
         }
     }
 }

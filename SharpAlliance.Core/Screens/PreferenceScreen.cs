@@ -8,6 +8,9 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
+using Veldrid;
+using Point = SixLabors.ImageSharp.Point;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -190,6 +193,26 @@ namespace SharpAlliance.Core.Screens
             return ValueTask.CompletedTask;
         }
 
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            VOBJECT_DESC VObjectDesc = new();
+            VObjectDesc.ImageFile = "INTERFACE\\OptionScreenBase.sti";
+            var background = this.video.AddVideoObject(ref VObjectDesc, out this.guiOptionBackGroundImageKey);
+
+            // load button, title graphic and add it
+            VObjectDesc.ImageFile = "INTERFACE\\optionscreenaddons.sti";
+            var options = this.video.AddVideoObject(ref VObjectDesc, out this.guiOptionsAddOnImagesKey);
+
+            sr.AddSprite(new Point(0, 0), background.Textures[0], this.guiOptionBackGroundImageKey);
+            sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
+
+            // render buttons marked dirty	
+            this.gui.Buttons.MarkButtonsDirty();
+            this.gui.RenderButtons();
+
+            this.gui.RenderSliderBars();
+        }
+
         public ValueTask<ScreenName> Handle()
         {
             if (this.gfOptionsScreenEntry)
@@ -252,6 +275,51 @@ namespace SharpAlliance.Core.Screens
 
         private void HandleOptionsScreen()
         {
+            this.HandleSliderBarMovementSounds();
+            this.HandleHighLightedText(true);
+        }
+
+        static uint uiLastSoundFxTime = 0;
+        static uint uiLastSpeechTime = 0;
+        static uint uiLastPlayingSpeechID = SoundManager.NO_SAMPLE;
+        static uint uiLastPlayingSoundID = SoundManager.NO_SAMPLE;
+        private void HandleSliderBarMovementSounds()
+        {
+            long uiCurTime = this.clock.GetJA2Clock();
+
+            if ((uiLastSoundFxTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > guiSoundFxSliderMoving)
+            {
+                guiSoundFxSliderMoving = 0xffffffff;
+
+                //The slider has stopped moving, reset the ambient sector sounds ( so it will change the volume )
+                //if (!DidGameJustStart())
+                {
+                    //HandleNewSectorAmbience(gTilesets[giCurrentTilesetID].ubAmbientID);
+                }
+
+                if (!this.sound.SoundIsPlaying(uiLastPlayingSoundID))
+                {
+                    //uiLastPlayingSoundID = PlayJA2SampleFromFile("Sounds\\Weapons\\LMG Reload.wav", RATE_11025, HIGHVOLUME, 1, MIDDLEPAN);
+                }
+            }
+            else
+            {
+                uiLastSoundFxTime = this.clock.GetJA2Clock();
+            }
+
+            if ((uiLastSpeechTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > guiSpeechSliderMoving)
+            {
+                guiSpeechSliderMoving = 0xffffffff;
+
+                if (!this.sound.SoundIsPlaying(uiLastPlayingSpeechID))
+                {
+                    //uiLastPlayingSpeechID = PlayJA2GapSample("BattleSnds\\m_cool.wav", RATE_11025, HIGHVOLUME, 1, MIDDLEPAN, NULL);
+                }
+            }
+            else
+            {
+                uiLastSpeechTime = this.clock.GetJA2Clock();
+            }
         }
 
         private void GetOptionsScreenUserInput()
@@ -266,11 +334,11 @@ namespace SharpAlliance.Core.Screens
             int usWidth = 0;
 
             //Get and display the background image
-            this.video.GetVideoObject(this.guiOptionBackGroundImageKey, out hPixHandle);
+            hPixHandle = this.video.GetVideoObject(this.guiOptionBackGroundImageKey);
             this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
             //Get and display the titla image
-            this.video.GetVideoObject(this.guiOptionsAddOnImagesKey, out hPixHandle);
+            hPixHandle = this.video.GetVideoObject(this.guiOptionsAddOnImagesKey);
             this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
             this.video.BltVideoObject(hPixHandle, 1, 0, 434, 0);
 
@@ -341,13 +409,12 @@ namespace SharpAlliance.Core.Screens
         {
             VOBJECT_DESC VObjectDesc = new();
             int usPosY;
-            TOPTION cnt;
             Size TextSize = new();
 
             this.guiOptionsScreen = ScreenName.OPTIONS_SCREEN;
 
             //Init the slider bar;
-            this.gui.Sliders.InitSlider();
+            this.gui.Sliders.InitSliderSystem();
 
 
             if (this.gfExitOptionsDueToMessageBox)
@@ -375,14 +442,18 @@ namespace SharpAlliance.Core.Screens
                 this.giOptionsButtonImages,
                 EnglishText.zOptionsText[OptionsText.OPT_SAVE_GAME],
                 OPT_BUTTON_FONT,
-                OPT_BUTTON_ON_COLOR, FontShadow.DEFAULT_SHADOW,
-                OPT_BUTTON_OFF_COLOR, FontShadow.DEFAULT_SHADOW,
+                OPT_BUTTON_ON_COLOR,
+                FontShadow.DEFAULT_SHADOW,
+                OPT_BUTTON_OFF_COLOR,
+                FontShadow.DEFAULT_SHADOW,
                 ButtonTextJustifies.BUTTON_TEXT_CENTER,
-                OPT_SAVE_BTN_X, OPT_SAVE_BTN_Y, ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGH,
+                new(OPT_SAVE_BTN_X, OPT_SAVE_BTN_Y),
+                ButtonFlags.BUTTON_TOGGLE, 
+                MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
                 this.BtnOptGotoSaveGameCallback);
 
-            this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiOptGotoSaveGameBtn, DisabledButtonStyle.DISABLED_STYLE_HATCHED);
+            this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiOptGotoSaveGameBtn, DISABLED_STYLE.HATCHED);
             if (this.guiPreviousOptionScreen == ScreenName.MAINMENU_SCREEN)// || !CanGameBeSaved())
             {
                 this.gui.Buttons.DisableButton(this.guiOptGotoSaveGameBtn);
@@ -399,8 +470,7 @@ namespace SharpAlliance.Core.Screens
                 OPT_BUTTON_OFF_COLOR,
                 FontShadow.DEFAULT_SHADOW,
                 ButtonTextJustifies.TEXT_CJUSTIFIED,
-                OPT_LOAD_BTN_X,
-                OPT_LOAD_BTN_Y,
+                new(OPT_LOAD_BTN_X, OPT_LOAD_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE,
                 MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
@@ -412,15 +482,21 @@ namespace SharpAlliance.Core.Screens
             //Quit to main menu button
             this.giQuitBtnImage = this.gui.Buttons.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
             this.guiQuitButton = this.gui.Buttons.CreateIconAndTextButton(
-                this.giQuitBtnImage, EnglishText.zOptionsText[OptionsText.OPT_MAIN_MENU], OPT_BUTTON_FONT,
-                OPT_BUTTON_ON_COLOR, FontShadow.DEFAULT_SHADOW,
-                OPT_BUTTON_OFF_COLOR, FontShadow.DEFAULT_SHADOW,
+                this.giQuitBtnImage,
+                EnglishText.zOptionsText[OptionsText.OPT_MAIN_MENU],
+                OPT_BUTTON_FONT,
+                OPT_BUTTON_ON_COLOR,
+                FontShadow.DEFAULT_SHADOW,
+                OPT_BUTTON_OFF_COLOR,
+                FontShadow.DEFAULT_SHADOW,
                 ButtonTextJustifies.TEXT_CJUSTIFIED,
-                OPT_QUIT_BTN_X, OPT_QUIT_BTN_Y, ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGH,
+                new(OPT_QUIT_BTN_X, OPT_QUIT_BTN_Y),
+                ButtonFlags.BUTTON_TOGGLE,
+                MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
                 this.BtnOptQuitCallback);
 
-            this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiQuitButton, DisabledButtonStyle.DISABLED_STYLE_HATCHED);
+            this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiQuitButton, DISABLED_STYLE.HATCHED);
             //	DisableButton( guiQuitButton );
 
             //Done button
@@ -435,8 +511,7 @@ namespace SharpAlliance.Core.Screens
                 OPT_BUTTON_OFF_COLOR,
                 FontShadow.DEFAULT_SHADOW,
                 ButtonTextJustifies.BUTTON_TEXT_CENTER,
-                OPT_DONE_BTN_X,
-                OPT_DONE_BTN_Y,
+                new(OPT_DONE_BTN_X, OPT_DONE_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE,
                 MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
@@ -453,9 +528,9 @@ namespace SharpAlliance.Core.Screens
             //Create the first column of check boxes
             usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
             this.gubFirstColOfOptions = (TOPTION)OPT_FIRST_COLUMN_TOGGLE_CUT_OFF;
-            for (cnt = 0; cnt < this.gubFirstColOfOptions; cnt++)
+            for (TOPTION cnt = 0; cnt < this.gubFirstColOfOptions; cnt++)
             {
-                var option = (TOPTION)cnt;
+                var option = cnt;
 
                 //Check box to toggle tracking mode
                 this.guiOptionsToggles[option] = this.gui.Buttons.CreateCheckBoxButton(
@@ -531,7 +606,7 @@ namespace SharpAlliance.Core.Screens
 
             //Create the 2nd column of check boxes
             usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
-            for (cnt = this.gubFirstColOfOptions; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
+            for (TOPTION cnt = this.gubFirstColOfOptions; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
             {
                 var option = (TOPTION)cnt;
 
@@ -621,8 +696,7 @@ namespace SharpAlliance.Core.Screens
             this.guiSoundEffectsSlider = this.gui.Sliders.AddSlider(
                 SliderStyle.SLIDER_VERTICAL_STEEL,
                 Cursor.NORMAL,
-                OPT_SOUND_EFFECTS_SLIDER_X,
-                OPT_SOUND_EFFECTS_SLIDER_Y,
+                new(OPT_SOUND_EFFECTS_SLIDER_X, OPT_SOUND_EFFECTS_SLIDER_Y),
                 OPT_SLIDER_BAR_SIZE,
                 127,
                 MSYS_PRIORITY.HIGH,
@@ -633,12 +707,30 @@ namespace SharpAlliance.Core.Screens
             this.gui.Sliders.SetSliderValue(ref this.guiSoundEffectsSlider, this.sound.GetSoundEffectsVolume());
 
             //Add a slider bar for the Speech
-            this.guiSpeechSlider = this.gui.Sliders.AddSlider(SliderStyle.SLIDER_VERTICAL_STEEL, Cursor.NORMAL, OPT_SPEECH_SLIDER_X, OPT_SPEECH_SLIDER_Y, OPT_SLIDER_BAR_SIZE, 127, MSYS_PRIORITY.HIGH, SpeechSliderChangeCallBack, 0);
+            this.guiSpeechSlider = this.gui.Sliders.AddSlider(
+                SliderStyle.SLIDER_VERTICAL_STEEL,
+                Cursor.NORMAL,
+                new(OPT_SPEECH_SLIDER_X, OPT_SPEECH_SLIDER_Y),
+                OPT_SLIDER_BAR_SIZE,
+                127,
+                MSYS_PRIORITY.HIGH,
+                SpeechSliderChangeCallBack,
+                0);
+
             // AssertMsg(guiSpeechSliderID, "Failed to AddSlider");
             this.gui.Sliders.SetSliderValue(ref this.guiSpeechSlider, this.sound.GetSpeechVolume());
 
             //Add a slider bar for the Music
-            this.guiMusicSlider = this.gui.Sliders.AddSlider(SliderStyle.SLIDER_VERTICAL_STEEL, Cursor.NORMAL, OPT_MUSIC_SLIDER_X, OPT_MUSIC_SLIDER_Y, OPT_SLIDER_BAR_SIZE, 127, MSYS_PRIORITY.HIGH, MusicSliderChangeCallBack, 0);
+            this.guiMusicSlider = this.gui.Sliders.AddSlider(
+                SliderStyle.SLIDER_VERTICAL_STEEL,
+                Cursor.NORMAL,
+                new(OPT_MUSIC_SLIDER_X, OPT_MUSIC_SLIDER_Y),
+                OPT_SLIDER_BAR_SIZE,
+                127,
+                MSYS_PRIORITY.HIGH,
+                MusicSliderChangeCallBack,
+                0);
+
             // AssertMsg(guiMusicSliderID, "Failed to AddSlider");
             this.gui.Sliders.SetSliderValue(ref this.guiMusicSlider, this.music.MusicGetVolume());
 
@@ -945,9 +1037,10 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void SetOptionsExitScreen(ScreenName guiPreviousOptionScreen)
+        private void SetOptionsExitScreen(ScreenName uiExitScreen)
         {
-            throw new NotImplementedException();
+            guiOptionsScreen = uiExitScreen;
+            gfOptionsScreenExit = true;
         }
 
         void BtnOptGotoSaveGameCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
@@ -1101,6 +1194,11 @@ namespace SharpAlliance.Core.Screens
 
         public void Dispose()
         {
+        }
+
+        public ValueTask Deactivate()
+        {
+            return ValueTask.CompletedTask;
         }
     }
 

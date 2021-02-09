@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
+using Veldrid;
 
 namespace SharpAlliance.Core
 {
@@ -16,8 +17,18 @@ namespace SharpAlliance.Core
             return ValueTask.CompletedTask;
         }
 
+        public ValueTask Deactivate()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Dispose()
         {
+        }
+
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            throw new System.NotImplementedException();
         }
 
         public ValueTask<ScreenName> Handle()

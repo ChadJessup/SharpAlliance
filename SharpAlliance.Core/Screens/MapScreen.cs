@@ -2,6 +2,7 @@
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
+using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -73,6 +74,16 @@ namespace SharpAlliance.Core.Screens
 
         public void Dispose()
         {
+        }
+
+        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ValueTask Deactivate()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

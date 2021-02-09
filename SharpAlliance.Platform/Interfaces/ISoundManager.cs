@@ -15,5 +15,6 @@ namespace SharpAlliance.Platform.Interfaces
         int GetSoundEffectsVolume();
         int GetSpeechVolume();
         void SetSpeechVolume(int iNewValue);
+        bool SoundIsPlaying(uint uiLastPlayingSoundID);
     }
 }

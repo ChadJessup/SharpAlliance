@@ -30,7 +30,7 @@ namespace SharpAlliance.Core.Interfaces
         void InvalidateRegion(Rectangle bounds);
         void EndFrameBufferRender();
         HVOBJECT AddVideoObject(ref VOBJECT_DESC vObjectDesc, out string key);
-        void GetVideoObject(string key, out HVOBJECT hPixHandle);
+        HVOBJECT GetVideoObject(string key);
         void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
         void DrawTextToScreen(string v1, int v2, int v3, int v4, FontStyle fONT10ARIAL, FontColor fONT_MCOLOR_WHITE, FontColor fONT_MCOLOR_BLACK, bool v5, TextJustifies cENTER_JUSTIFIED);
         void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap);
@@ -41,7 +41,7 @@ namespace SharpAlliance.Core.Interfaces
         void DeleteVideoObjectFromIndex(string logoKey);
         void RestoreBackgroundRects();
         HVOBJECT CreateVideoObject(ref VOBJECT_DESC vo_desc);
-        void LineDraw(bool v1, int v2, int v3, int v4, int v5, int v6, byte[] pDestBuf);
+        void LineDraw(int v2, int v3, int v4, int v5, Color v6, Image<Rgba32> image);
         byte[] LockVideoSurface(Surfaces buttonDestBuffer, out uint uiDestPitchBYTES);
         void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4);
         void UnLockVideoSurface(Surfaces buttonDestBuffer);
@@ -56,10 +56,12 @@ namespace SharpAlliance.Core.Interfaces
         void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
         void SetClippingRect(ref Rectangle newClip);
 
-        SpriteRenderer SpriteRenderer { get; }
+        // SpriteRenderer SpriteRenderer { get; }
         static DebugRenderer DebugRenderer { get; protected set; }
 
         void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
         void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle);
+        void DeleteVideoObject(HVOBJECT vobj);
+        void BlitBufferToBuffer(int left, int top, int v1, int v2);
     }
 }
