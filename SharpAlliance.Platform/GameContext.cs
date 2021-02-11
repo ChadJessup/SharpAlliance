@@ -35,9 +35,9 @@ namespace SharpAlliance.Platform
         public IConfiguration Configuration { get; }
         public IGameLogic GameLogic { get; set; }
         public IOSManager OSManager { get; set; }
+        public IFileManager FileManager { get; set; }
 
         public IMusicManager MusicManager { get; set; } = new NullMusicManager();
-        public IFileManager FileManager { get; set; } = new NullFileManager();
         public ISoundManager SoundManager { get; set; } = new NullSoundManager();
         public ITimerManager TimerManager { get; set; } = new TimerManager();
         public IClockManager ClockManager { get; set; }

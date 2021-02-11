@@ -102,6 +102,64 @@ namespace SharpAlliance.Core
             CANT_EDIT_DEFAULT,
         };
 
+        public static string[] gzCreditNames = new string[]
+        {
+            "Chris Camfield",
+            "Shaun Lyng",
+            "Kris Märnes",
+            "Ian Currie",
+            "Linda Currie",
+            "Eric \"WTF\" Cheng",
+            "Lynn Holowka",
+            "Norman \"NRG\" Olsen",
+            "George Brooks",
+            "Andrew Stacey",
+            "Scot Loving",
+            "Andrew \"Big Cheese\" Emmons",
+            "Dave \"The Feral\" French",
+            "Alex Meduna",
+            "Joey \"Joeker\" Whelan",
+        };
+
+
+        public static string[] gzCreditNameTitle = new string[]
+        {
+            "Game Internals Programmer", 			// Chris Camfield
+        	"Co-designer/Writer",							// Shaun Lyng
+        	"Strategic Systems & Editor Programmer",					//Kris \"The Cow Rape Man\" Marnes
+        	"Producer/Co-designer",						// Ian Currie
+        	"Co-designer/Map Designer",				// Linda Currie
+        	"Artist",													// Eric \"WTF\" Cheng
+        	"Beta Coordinator, Support",				// Lynn Holowka
+        	"Artist Extraordinaire",						// Norman \"NRG\" Olsen
+        	"Sound Guru",											// George Brooks
+        	"Screen Designer/Artist",					// Andrew Stacey
+        	"Lead Artist/Animator",						// Scot Loving
+        	"Lead Programmer",									// Andrew \"Big Cheese Doddle\" Emmons
+        	"Programmer",											// Dave French
+        	"Strategic Systems & Game Balance Programmer",					// Alex Meduna
+        	"Portraits Artist",								// Joey \"Joeker\" Whelan",
+        };
+
+        public static string[] gzCreditNameFunny = new string[]
+        {
+            "", 																			// Chris Camfield
+        	"(still learning punctuation)",					// Shaun Lyng
+        	"(\"It's done. I'm just fixing it\")",	//Kris \"The Cow Rape Man\" Marnes
+        	"(getting much too old for this)",				// Ian Currie
+        	"(and working on Wizardry 8)",						// Linda Currie
+        	"(forced at gunpoint to also do QA)",			// Eric \"WTF\" Cheng
+        	"(Left us for the CFSA - go figure...)",	// Lynn Holowka
+        	"",																			// Norman \"NRG\" Olsen
+        	"",																			// George Brooks
+        	"(Dead Head and jazz lover)",						// Andrew Stacey
+        	"(his real name is Robert)",							// Scot Loving
+        	"(the only responsible person)",					// Andrew \"Big Cheese Doddle\" Emmons
+        	"(can now get back to motocrossing)",	// Dave French
+        	"(stolen from Wizardry 8)",							// Alex Meduna
+        	"(did items and loading screens too!)",	// Joey \"Joeker\" Whelan",
+        };
+
         public static string[] zNewTacticalMessages = new string[]
         {
             "Range to target: %d tiles",

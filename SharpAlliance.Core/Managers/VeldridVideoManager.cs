@@ -313,7 +313,7 @@ namespace SharpAlliance.Core.Managers
 
             this.screenManager.Draw(this.SpriteRenderer, this.GraphicDevice, this.commandList);
             this.mouse.Draw(this.SpriteRenderer, this.GraphicDevice, this.commandList);
-            
+
             // Everything above writes to this SpriteRenderer, so draw it now.
             this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
             IVideoManager.DebugRenderer.Draw(this.GraphicDevice, this.commandList);
@@ -339,70 +339,54 @@ namespace SharpAlliance.Core.Managers
         public static Stream OpenEmbeddedAssetStream(string name)
             => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-        public HVOBJECT AddVideoObject(ref VOBJECT_DESC pVObjectDesc, out string key)
+        public HVOBJECT AddVideoObject(string assetPath, out string key)
         {
-            key = pVObjectDesc.ImageFile;
+            key = assetPath;
 
-            if (this.loadedTextures.TryGetValue(pVObjectDesc.ImageFile, out var vObject))
+            if (this.loadedTextures.TryGetValue(key, out var vObject))
             {
                 return vObject;
             }
 
             // Create video object
-            HVOBJECT hVObject = this.CreateVideoObject(ref pVObjectDesc);
-            hVObject.hImage = pVObjectDesc.hImage;
+            HVOBJECT hVObject = this.CreateVideoObject(assetPath);
 
-            this.loadedTextures.Add(pVObjectDesc.ImageFile, hVObject);
+            this.loadedTextures.Add(assetPath, hVObject);
 
             return hVObject;
         }
 
-        public HVOBJECT CreateVideoObject(ref VOBJECT_DESC VObjectDesc)
+        public HVOBJECT CreateVideoObject(string assetPath)
         {
             HVOBJECT hVObject = new();
-            hVObject.Name = VObjectDesc.ImageFile;
+            hVObject.Name = assetPath;
 
             HIMAGE hImage;
             ETRLEData TempETRLEData = new();
 
-            if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE)
-                || VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMHIMAGE))
+            // Create himage object from file
+            hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
+
+            // Get TRLE data
+            this.GetETRLEImageData(hImage, ref TempETRLEData);
+
+            // Set values
+            hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
+            hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
+            hVObject.pPixData = TempETRLEData.pPixData;
+            hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
+
+            // Set palette from himage
+            if (hImage.ubBitDepth == 8)
             {
-                if (VObjectDesc.fCreateFlags.HasFlag(VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE))
-                {
-                    // Create himage object from file
-                    hImage = HIMAGE.CreateImage(VObjectDesc.ImageFile, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
+                hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+                hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
 
-                    // Get TRLE data
-                    this.GetETRLEImageData(hImage, ref TempETRLEData);
-
-                    // Set values
-                    hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
-                    hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
-                    hVObject.pPixData = TempETRLEData.pPixData;
-                    hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
-
-                    // Set palette from himage
-                    if (hImage.ubBitDepth == 8)
-                    {
-                        hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
-                        hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
-
-                        this.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
-                    }
-                }
-                else
-                { // create video object from provided hImage
-                    hImage = VObjectDesc.hImage;
-                }
-
-                // Set values from himage
-                hVObject.ubBitDepth = hImage.ubBitDepth;
+                this.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
             }
-            else
-            {
-                throw new InvalidOperationException("hImage was null");
-            }
+
+            // Set values from himage
+            hVObject.ubBitDepth = hImage.ubBitDepth;
 
             // All is well
             //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
@@ -436,13 +420,13 @@ namespace SharpAlliance.Core.Managers
             }
 
             // If you want to output all the images to disk, uncomment this...makes startup take a lot longer.
-            //for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
-            //{
-            //    var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
-            //    var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile)!);
-            //    Directory.CreateDirectory(directory);
-            //    hImage.ParsedImages![i].SaveAsPng(Path.Combine(directory, fileName));
-            //}
+            // for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
+            // {
+            //     var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
+            //     var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile)!);
+            //     Directory.CreateDirectory(directory);
+            //     hImage.ParsedImages![i].SaveAsPng(Path.Combine(directory, fileName));
+            // }
 
             //  DbgMessage(TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Video Object Palette change successfull" ));
             return true;
@@ -1373,8 +1357,8 @@ namespace SharpAlliance.Core.Managers
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
 
-                    StripRegions[0].X =     (this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
-                    StripRegions[1].Y =     (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[0].X = (this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[1].Y = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
                     StripRegions[1].Width = (this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
                     usNumStrips = 2;
 
@@ -1550,13 +1534,14 @@ namespace SharpAlliance.Core.Managers
             }
 
             this.SpriteRenderer.AddSprite(
-                new Rectangle(X, Y, (int)hVObject.Textures[textureIndex].Width, (int)hVObject.Textures[textureIndex].Height), 
+                new Rectangle(X, Y, (int)hVObject.Textures[textureIndex].Width, (int)hVObject.Textures[textureIndex].Height),
                 hVObject.Textures[textureIndex],
                 $"{hVObject.Name}_{textureIndex}");
         }
 
         public void DrawTextToScreen(string text, int usLocX, int usLocY, int width, FontStyle fontStyle, FontColor fontForegroundColor, FontColor fontBackgroundColor, bool dirty, TextJustifies justification)
         {
+
             this.TextRenderer.DrawText(text);
             //TextRenderer = new TextRenderer(_gd);
             //textRenderer.DrawText("0");
@@ -1581,7 +1566,7 @@ namespace SharpAlliance.Core.Managers
 
         public ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public void DeleteVideoSurfaceFromIndex(uint uiTempMap)
@@ -1707,7 +1692,7 @@ namespace SharpAlliance.Core.Managers
     public static class RectangleHelpers
     {
         public static Rectangle ToVeldridRectangle(this Rectangle rectangle)
-            => new (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+            => new(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 
         public static Point ToPoint(this Rectangle rect) => new(rect.X, rect.Y);
         public static Vector2 ToVector2(this Point point) => new(point.X, point.Y);

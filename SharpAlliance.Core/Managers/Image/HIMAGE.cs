@@ -43,7 +43,7 @@ namespace SharpAlliance.Core.Managers.Image
         public List<Image<Rgba32>> ParsedImages { get; set; }
         public const ushort BLACK_SUBSTITUTE = 0x0001;
 
-        public static HIMAGE CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager, VOBJECT_DESC? vobject = null)
+        public static HIMAGE CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager)
         {
             HIMAGE hImage;
             var ext = Path.GetExtension(imageFilePath);

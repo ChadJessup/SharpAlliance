@@ -77,11 +77,11 @@ namespace SharpAlliance.Core.Managers.Image
         IMAGE_ALLDATA = 0x001C,
     }
 
-    public readonly struct SGPPaletteEntry
+    public struct SGPPaletteEntry
     {
-        public readonly byte peRed { get; init; }
-        public readonly byte peGreen { get; init; }
-        public readonly byte peBlue { get; init; }
+        public byte peRed { get; set; }
+        public byte peGreen { get; set; }
+        public byte peBlue { get; set; }
         public readonly byte peFlags { get; init; }
     }
 }

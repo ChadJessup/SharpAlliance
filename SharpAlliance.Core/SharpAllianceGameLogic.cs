@@ -231,6 +231,7 @@ namespace SharpAlliance.Core
             sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
             sm.AddScreen<IntroScreen>(ScreenName.INTRO_SCREEN);
             sm.AddScreen<LAPTOP_SCREEN>(ScreenName.LAPTOP_SCREEN);
+            sm.AddScreen<CreditsScreen>(ScreenName.CREDIT_SCREEN);
             sm.AddScreen<MSG_BOX_SCREEN>(ScreenName.MSG_BOX_SCREEN);
             sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
             sm.AddScreen<PreferenceScreen>(ScreenName.OPTIONS_SCREEN);

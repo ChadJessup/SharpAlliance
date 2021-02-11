@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -668,7 +669,7 @@ namespace SharpAlliance.Core.Managers
         public byte[] pPixData;                       // ETRLE pixel data
         public ETRLEObject[] pETRLEObject;              // Object offset data etc
         public SixteenBPPObjectInfo? p16BPPObject;
-        public int[] pShades = new int[HVOBJECT_SHADE_TABLES]; // Shading tables
+        public ushort?[] pShades = new ushort?[HVOBJECT_SHADE_TABLES]; // Shading tables
         // public ushort[] pShadeCurrent;
         public Rgba32[] ShadeCurrentPixels;
         public int? pGlow;                              // glow highlight table
@@ -679,6 +680,8 @@ namespace SharpAlliance.Core.Managers
         public int usNumberOf16BPPObjects;
         public int usNumberOfObjects;   // Total number of objects
         public int ubBitDepth;                       // BPP 
+        internal ushort? p16BPPPalette;
+        internal ushort pShadeCurrent;
 
         public string Name { get; set; } = string.Empty;
         public HIMAGE? hImage { get; set; }
@@ -711,21 +714,5 @@ namespace SharpAlliance.Core.Managers
         public int usHeight;
         public int sOffsetX;
         public int sOffsetY;
-    }
-
-    [Flags]
-    public enum VideoObjectCreateFlags
-    {
-        VOBJECT_CREATE_DEFAULT = 0x00000020,   // Creates and empty object of given width, height and BPP
-        VOBJECT_CREATE_FROMFILE = 0x00000040,  // Creates a video object from a file ( using HIMAGE )
-        VOBJECT_CREATE_FROMHIMAGE = 0x00000080,    // Creates a video object from a pre-loaded hImage
-    };
-
-    public class VOBJECT_DESC
-    {
-        public VideoObjectCreateFlags fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;                        // Specifies creation flags like from file or not
-        public string ImageFile;                          // Filename of image data to use
-        public HIMAGE hImage;
-        public byte ubBitDepth;                           // BPP, ignored if given from file
     }
 }

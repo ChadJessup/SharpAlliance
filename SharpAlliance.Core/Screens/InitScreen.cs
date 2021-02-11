@@ -93,10 +93,7 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<bool> Initialize()
         {
-            VOBJECT_DESC vs_desc = new();
-
-            vs_desc.ImageFile = "ja2_logo.STI";
-            hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
+            hVObject = this.video.AddVideoObject("ja2_logo.STI", out var key);
 
             return ValueTask.FromResult(true);
         }
@@ -106,8 +103,6 @@ namespace SharpAlliance.Core.Screens
 
         public async ValueTask<ScreenName> Handle()
         {
-            VOBJECT_DESC vs_desc = new();
-
             if (ubCurrentScreen == 255)
             {
                 // TODO: read when smacker comes in.

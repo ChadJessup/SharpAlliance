@@ -13,5 +13,6 @@ namespace SharpAlliance.Platform.Interfaces
         bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current);
         bool FileRead<T>(Stream stream, ref T[] fillArray, uint uiFileSectionSize, out uint uiBytesRead)
             where T : unmanaged;
+        bool LoadEncryptedDataFromFile(string fileName, out string destination, uint seekFrom, uint seekAmount);
     }
 }

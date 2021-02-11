@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
@@ -18,7 +19,7 @@ namespace SharpAlliance.Core.SubSystems
         private const int MAX_FONTS = 25;
         public const int INVALIDATE_TEXT = 0x00000010;
 
-        //Wont display the text.  Used if you just want to get how many lines will be displayed
+        // Wont display the text.  Used if you just want to get how many lines will be displayed
         public const int DONT_DISPLAY_TEXT = 0x00000020;
         private readonly GameContext context;
         private IVideoManager video;
@@ -147,12 +148,12 @@ namespace SharpAlliance.Core.SubSystems
             //
             //            while (pFirstWrappedString != null)
             //            {
-            //                DrawTextToScreen(pFirstWrappedString->sString, usPosX, usPosY, usWidth, uiFont, ubColor, ubBackGroundColor, fDirty, uiFlags);
+            //                DrawTextToScreen(pFirstWrappedString.sString, usPosX, usPosY, usWidth, uiFont, ubColor, ubBackGroundColor, fDirty, uiFlags);
             //
             //                pTempWrappedString = pFirstWrappedString;
-            //                pFirstWrappedString = pTempWrappedString->pNextWrappedString;
-            //                MemFree(pTempWrappedString->sString);
-            //                pTempWrappedString->sString = null;
+            //                pFirstWrappedString = pTempWrappedString.pNextWrappedString;
+            //                MemFree(pTempWrappedString.sString);
+            //                pTempWrappedString.sString = null;
             //                MemFree(pTempWrappedString);
             //                pTempWrappedString = null;
             //
@@ -176,6 +177,11 @@ namespace SharpAlliance.Core.SubSystems
         public ValueTask<bool> Initialize()
         {
             this.video = this.context.Services.GetRequiredService<IVideoManager>();
+
+            foreach (var fs in Enum.GetValues<FONT_SHADE>())
+            {
+
+            }
 
             Color color;
 
@@ -292,8 +298,60 @@ namespace SharpAlliance.Core.SubSystems
             return ValueTask.FromResult(true);
         }
 
-        private void CreateFontPaletteTables(HVOBJECT pObj)
+        private bool CreateFontPaletteTables(HVOBJECT pObj)
         {
+            SGPPaletteEntry[] Pal = new SGPPaletteEntry[256];
+
+            for (int count = 0; count < 16; count++)
+            {
+                if ((count == (int)FONT_SHADE.NEUTRAL) && (pObj.p16BPPPalette == pObj.pShades[count]))
+                {
+                    pObj.pShades[count] = null;
+                }
+                else if (pObj.pShades[count] is not null)
+                {
+                    pObj.pShades[count] = null;
+                }
+            }
+
+            // Build white palette
+            for (int count = 0; count < 256; count++)
+            {
+                Pal[count].peRed = (byte)255;
+                Pal[count].peGreen = (byte)255;
+                Pal[count].peBlue = (byte)255;
+            }
+
+            pObj.pShades[(int)FONT_SHADE.RED] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 0, 0, true);
+            pObj.pShades[(int)FONT_SHADE.BLUE] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 0, 0, 255, true);
+            pObj.pShades[(int)FONT_SHADE.GREEN] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 0, 255, 0, true);
+            pObj.pShades[(int)FONT_SHADE.YELLOW] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 255, 0, true);
+            pObj.pShades[(int)FONT_SHADE.NEUTRAL] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 255, 255, false);
+
+            pObj.pShades[(int)FONT_SHADE.WHITE] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 255, 255, true);
+
+
+            // the rest are darkening tables, right down to all-black.
+            pObj.pShades[0] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 165, 165, 165, false);
+            pObj.pShades[7] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 135, 135, 135, false);
+            pObj.pShades[8] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 105, 105, 105, false);
+            pObj.pShades[9] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 75, 75, 75, false);
+            pObj.pShades[10] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 45, 45, 45, false);
+            pObj.pShades[11] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 36, 36, 36, false);
+            pObj.pShades[12] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 27, 27, 27, false);
+            pObj.pShades[13] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 18, 18, 18, false);
+            pObj.pShades[14] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 9, 9, 9, false);
+            pObj.pShades[15] = this.video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 0, 0, 0, false);
+
+            // Set current shade table to neutral color
+            pObj.pShadeCurrent = pObj.pShades[(int)FONT_SHADE.NEUTRAL].Value;
+
+            // check to make sure every table got a palette
+            //for(count=0; (count < HVOBJECT_SHADE_TABLES) && (pObj.pShades[count]!=null); count++);
+
+            // return the result of the check
+            //return(count==HVOBJECT_SHADE_TABLES);
+            return (true);
         }
 
         private HVOBJECT GetFontObject(int iFont)
@@ -310,7 +368,6 @@ namespace SharpAlliance.Core.SubSystems
         //*****************************************************************************
         private int LoadFontFile(string filename)
         {
-            VOBJECT_DESC vo_desc = new();
             int LoadIndex;
 
             if ((LoadIndex = this.FindFreeFont()) == (-1))
@@ -319,9 +376,7 @@ namespace SharpAlliance.Core.SubSystems
                 return (-1);
             }
 
-            vo_desc.ImageFile = filename;
-
-            if ((this.FontObjs[LoadIndex] = this.video.CreateVideoObject(ref vo_desc)) == null)
+            if ((this.FontObjs[LoadIndex] = this.video.CreateVideoObject(filename)) == null)
             {
                 //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);
 
@@ -359,6 +414,16 @@ namespace SharpAlliance.Core.SubSystems
         }
     }
 
+    public enum FONT_SHADE
+    {
+        BLUE = 1,
+        GREEN = 2,
+        YELLOW = 3,
+        NEUTRAL = 4,
+        WHITE = 5,
+        RED = 6,
+    };
+
     public enum FontShadow
     {
         DEFAULT_SHADOW = 2,
@@ -395,7 +460,53 @@ namespace SharpAlliance.Core.SubSystems
     {
         None = -1,
         FONT_MCOLOR_WHITE = 73,
-        FONT_MCOLOR_BLACK
+        FONT_MCOLOR_BLACK = 0,
+        // FONT_MCOLOR_WHITE = 208,
+        FONT_MCOLOR_DKWHITE = 134,
+        FONT_MCOLOR_DKWHITE2 = 134,
+        FONT_MCOLOR_LTGRAY = 134,
+        FONT_MCOLOR_LTGRAY2 = 134,
+        FONT_MCOLOR_DKGRAY = 136,
+        FONT_MCOLOR_LTBLUE = 203,
+        FONT_MCOLOR_LTRED = 162,
+        FONT_MCOLOR_RED = 163,
+        FONT_MCOLOR_DKRED = 164,
+        FONT_MCOLOR_LTGREEN = 184,
+        FONT_MCOLOR_LTYELLOW = 144,
+
+        //Grayscale font colors
+        FONT_WHITE = 208,	//lightest color
+        FONT_GRAY1 = 133,
+        FONT_GRAY2 = 134,	//light gray
+        FONT_GRAY3 = 135,
+        FONT_GRAY4 = 136,	//gray
+        FONT_GRAY5 = 137,
+        FONT_GRAY6 = 138,
+        FONT_GRAY7 = 139,	//dark gray
+        FONT_GRAY8 = 140,
+        FONT_NEARBLACK = 141,
+        FONT_BLACK = 0,	//darkest color
+        //Color font colors
+        FONT_LTRED = 162,
+        FONT_RED = 163,
+        FONT_DKRED = 218,
+        FONT_ORANGE = 76,
+        FONT_YELLOW = 145,
+        FONT_DKYELLOW = 80,
+        FONT_LTGREEN = 184,
+        FONT_GREEN = 185,
+        FONT_DKGREEN = 186,
+        FONT_LTBLUE = 71,
+        FONT_BLUE = 203,
+        FONT_DKBLUE = 205,
+
+        FONT_BEIGE = 130,
+        FONT_METALGRAY = 94,
+        FONT_BURGUNDY = 172,
+        FONT_LTKHAKI = 88,
+        FONT_KHAKI = 198,
+        FONT_DKKHAKI = 201,
+
     }
 
     [Flags]

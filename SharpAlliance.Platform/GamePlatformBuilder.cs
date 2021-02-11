@@ -68,7 +68,6 @@ namespace SharpAlliance.Platform
             serviceCollection.TryAddSingleton(serviceCollection);
             // Null Managers for when an implementation doesn't provide one.
             // We still inject something that won't crash or cause null ref exceptions.
-            serviceCollection.TryAddSingleton<IFileManager, NullFileManager>();
             serviceCollection.TryAddSingleton<ISoundManager, NullSoundManager>();
             serviceCollection.TryAddSingleton<ISound2dManager, NullSoundManager>();
             serviceCollection.TryAddSingleton<ISound3dManager, NullSoundManager>();

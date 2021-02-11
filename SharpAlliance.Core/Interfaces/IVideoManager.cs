@@ -29,7 +29,7 @@ namespace SharpAlliance.Core.Interfaces
         void InvalidateScreen();
         void InvalidateRegion(Rectangle bounds);
         void EndFrameBufferRender();
-        HVOBJECT AddVideoObject(ref VOBJECT_DESC vObjectDesc, out string key);
+        HVOBJECT AddVideoObject(string assetPath, out string key);
         HVOBJECT GetVideoObject(string key);
         void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
         void DrawTextToScreen(string v1, int v2, int v3, int v4, FontStyle fONT10ARIAL, FontColor fONT_MCOLOR_WHITE, FontColor fONT_MCOLOR_BLACK, bool v5, TextJustifies cENTER_JUSTIFIED);
@@ -40,7 +40,7 @@ namespace SharpAlliance.Core.Interfaces
         void DeleteVideoSurfaceFromIndex(uint uiTempMap);
         void DeleteVideoObjectFromIndex(string logoKey);
         void RestoreBackgroundRects();
-        HVOBJECT CreateVideoObject(ref VOBJECT_DESC vo_desc);
+        HVOBJECT CreateVideoObject(string assetPath);
         void LineDraw(int v2, int v3, int v4, int v5, Color v6, Image<Rgba32> image);
         byte[] LockVideoSurface(Surfaces buttonDestBuffer, out uint uiDestPitchBYTES);
         void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4);

@@ -329,8 +329,6 @@ namespace SharpAlliance.Core.Screens
 
         public async ValueTask<bool> InitMainMenu()
         {
-            VOBJECT_DESC VObjectDesc = new();
-
             //	gfDoHelpScreen = 0;
 
             //Check to see whatr saved game files exist
@@ -344,12 +342,10 @@ namespace SharpAlliance.Core.Screens
             this.CreateDestroyMainMenuButtons(fCreate: true);
 
             // load background graphic and add it
-            VObjectDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\MainMenuBackGround.sti");
-            this.video.AddVideoObject(ref VObjectDesc, out this.mainMenuBackGroundImageKey);
+            this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
             // load ja2 logo graphic and add it
-            VObjectDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\Ja2Logo.sti");
-            this.video.AddVideoObject(ref VObjectDesc, out this.ja2LogoImageKey);
+            this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
             /*
                 // Gray out some buttons based on status of game!
@@ -584,15 +580,11 @@ namespace SharpAlliance.Core.Screens
             //Get and display the background image
             //            this.video.GetVideoObject(this.mainMenuBackGroundImageKey, out var background);
             //            this.video.GetVideoObject(this.ja2LogoImageKey, out var logo);
-            VOBJECT_DESC backgroundDesc = new();
 
-            backgroundDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\MainMenuBackGround.sti");
-            var background = this.video.AddVideoObject(ref backgroundDesc, out this.mainMenuBackGroundImageKey);
+            var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
             // load ja2 logo graphic and add it
-            VOBJECT_DESC logoDesc = new();
-            logoDesc.ImageFile = Utils.FilenameForBPP("LOADSCREENS\\Ja2Logo.sti");
-            var logo = this.video.AddVideoObject(ref logoDesc, out this.ja2LogoImageKey);
+            var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
             sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
             sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);

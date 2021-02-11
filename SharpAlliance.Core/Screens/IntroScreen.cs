@@ -347,7 +347,6 @@ namespace SharpAlliance.Core.Screens
         private void DisplaySirtechSplashScreen()
         {
             HVOBJECT hPixHandle;
-            VOBJECT_DESC VObjectDesc;
             string logoKey;
 
             int uiDestPitchBYTES;
@@ -357,12 +356,9 @@ namespace SharpAlliance.Core.Screens
             //return;
 
             //memset(&VObjectDesc, 0, sizeof(VOBJECT_DESC));
-            VObjectDesc = new();
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\SirtechSplash.sti");
-
+            
             //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
-            var videoObject = this.video.AddVideoObject(ref VObjectDesc, out logoKey);
+            var videoObject = this.video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
 
             //this.video.BltVideoObject(
             //    0,

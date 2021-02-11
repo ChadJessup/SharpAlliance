@@ -195,13 +195,10 @@ namespace SharpAlliance.Core.Screens
 
         public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
         {
-            VOBJECT_DESC VObjectDesc = new();
-            VObjectDesc.ImageFile = "INTERFACE\\OptionScreenBase.sti";
-            var background = this.video.AddVideoObject(ref VObjectDesc, out this.guiOptionBackGroundImageKey);
+            var background = this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
             // load button, title graphic and add it
-            VObjectDesc.ImageFile = "INTERFACE\\optionscreenaddons.sti";
-            var options = this.video.AddVideoObject(ref VObjectDesc, out this.guiOptionsAddOnImagesKey);
+            var options = this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
             sr.AddSprite(new Point(0, 0), background.Textures[0], this.guiOptionBackGroundImageKey);
             sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
@@ -407,7 +404,6 @@ namespace SharpAlliance.Core.Screens
 
         private void EnterOptionsScreen()
         {
-            VOBJECT_DESC VObjectDesc = new();
             int usPosY;
             Size TextSize = new();
 
@@ -427,14 +423,10 @@ namespace SharpAlliance.Core.Screens
             this.gfExitOptionsDueToMessageBox = false;
 
             // load the options screen background graphic and add it
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            VObjectDesc.ImageFile = "INTERFACE\\OptionScreenBase.sti";
-            this.video.AddVideoObject(ref VObjectDesc, out this.guiOptionBackGroundImageKey);
+            this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
             // load button, title graphic and add it
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            VObjectDesc.ImageFile = "INTERFACE\\optionscreenaddons.sti";
-            this.video.AddVideoObject(ref VObjectDesc, out this.guiOptionsAddOnImagesKey);
+            this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
             //Save game button
             this.giOptionsButtonImages = this.gui.Buttons.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);

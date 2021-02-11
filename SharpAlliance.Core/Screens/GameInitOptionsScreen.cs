@@ -102,14 +102,12 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask Activate()
         {
-            VOBJECT_DESC VObjectDesc = new();
             int usPosY;
 
             this.cursor.SetCurrentCursorFromDatabase(Cursor.NORMAL);
 
             // load the Main trade screen backgroiund image
-            VObjectDesc.ImageFile = Utils.FilenameForBPP("InterFace\\OptionsScreenBackGround.sti");
-            this.video.AddVideoObject(ref VObjectDesc, out guiGIOMainBackGroundImageKey);
+            this.video.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out guiGIOMainBackGroundImageKey);
 
             //Ok button
             giGIODoneBtnImage = this.gui.Buttons.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);

@@ -269,5 +269,50 @@ namespace SharpAlliance.Core.Managers
             obj = tSpan.ToArray();
             return true;
         }
+
+        public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, uint seekFrom, uint uiSeekAmount)
+        {
+            pDestString = string.Empty;
+
+            using var stream = FileOpen(pFileName, FileAccess.Read, false);
+            if (stream is null)
+            {
+                // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed to FileOpen");
+                return false;
+            }
+
+            if (FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
+            {
+                FileClose(stream);
+                // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileSeek");
+                return false;
+            }
+
+            byte[] buff = new byte[uiSeekAmount];
+            if (!FileRead(stream, ref buff, uiSeekAmount, out var uiBytesRead))
+            {
+                FileClose(stream);
+                // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileRead");
+                return false;
+            }
+
+            pDestString = MemoryMarshal.Cast<byte, char>(buff).ToString();
+
+            Span<char> span = pDestString.ToCharArray();
+            // Decrement, by 1, any value > 32
+            int i = 0;
+            for (i = 0; (i < uiSeekAmount) && (pDestString[i] != '\0'); i++)
+            {
+                if (span[i] > 33)
+                {
+                    span[i] -= (char)1;
+                }
+            }
+
+            pDestString = span.Slice(0, i).ToString();
+            FileClose(stream);
+
+            return true;
+        }
     }
 }

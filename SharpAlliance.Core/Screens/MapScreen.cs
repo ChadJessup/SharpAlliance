@@ -37,8 +37,6 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<bool> Initialize()
         {
-            VOBJECT_DESC VObjectDesc = new();
-
             this.mapScreenInterface.SetUpBadSectorsList();
 
             // setup message box system
@@ -53,16 +51,10 @@ namespace SharpAlliance.Core.Screens
             // set up leave list arrays for dismissed mercs
             this.mapScreenInterface.InitLeaveList();
 
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm.sti");
-
-            
-            this.video.AddVideoObject(ref VObjectDesc, out var idx1);
+            this.video.AddVideoObject("INTERFACE\\group_confirm.sti", out var idx1);
             this.mapScreenInterface.guiUpdatePanel = idx1;
 
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\group_confirm_tactical.sti");
-            this.video.AddVideoObject(ref VObjectDesc, out var idx2);
+            this.video.AddVideoObject("INTERFACE\\group_confirm_tactical.sti", out var idx2);
             this.mapScreenInterface.guiUpdatePanelTactical = idx2;
 
             return ValueTask.FromResult(true);

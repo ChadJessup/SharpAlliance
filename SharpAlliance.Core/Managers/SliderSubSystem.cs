@@ -284,12 +284,8 @@ namespace SharpAlliance.Core.Managers
 
         public void InitSliderSystem()
         {
-            VOBJECT_DESC VObjectDesc = new();
-
             // load Slider Box Graphic graphic and add it
-            VObjectDesc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;
-            VObjectDesc.ImageFile = Utils.FilenameForBPP("INTERFACE\\SliderBox.sti");
-            this.video.AddVideoObject(ref VObjectDesc, out this.guiSliderBoxImageTag);
+            this.video.AddVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
 
             this.gfSliderInited = true;
         }

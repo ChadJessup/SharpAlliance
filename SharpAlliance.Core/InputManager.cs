@@ -171,6 +171,11 @@ namespace SharpAlliance.Core
                     enqueue = true;
                 }
 
+                if (snapshot.KeyEvents.Any() || snapshot.KeyCharPresses.Any())
+                {
+                    enqueue = true;
+                }
+
                 if (enqueue)
                 {
                     this.gEventQueue.Enqueue(snapshot);
