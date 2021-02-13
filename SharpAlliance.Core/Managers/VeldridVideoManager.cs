@@ -1569,7 +1569,7 @@ namespace SharpAlliance.Core.Managers
             return 0;
         }
 
-        public void DeleteVideoSurfaceFromIndex(uint uiTempMap)
+        public void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap)
         {
         }
 
@@ -1662,6 +1662,31 @@ namespace SharpAlliance.Core.Managers
 
         public void BlitBufferToBuffer(int left, int top, int width, int height)
         {
+        }
+
+        public int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
+        {
+            vs_desc = new();
+            uiTempMap = Surfaces.FRAME_BUFFER;
+
+            return 0;
+        }
+
+        public void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32)
+        {
+        }
+
+        public void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color)
+        {
+        }
+
+        public void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v)
+        {
+        }
+
+        public void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
+        {
+            hSrcVSurface = new();
         }
     }
 

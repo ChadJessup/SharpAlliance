@@ -213,23 +213,29 @@ namespace SharpAlliance.Core.Managers
             byte[] pMemBlock = new byte[uiBytesToRead];
 
             fRet = this.FileRead(hFile, ref pDest, uiBytesToRead, out puiBytesRead);
-            if (fRet)
+            try
             {
-                // pMemBlock = pDest;
-                for (uiLoop = 0; uiLoop < puiBytesRead; uiLoop++)
+                if (fRet)
                 {
-                    ubLastByteForNextLoop = pMemBlock[uiLoop];
-                    pMemBlock[uiLoop] -= (byte)(ubLastByte + this.ubRotationArray[ubArrayIndex]);
-                    ubArrayIndex++;
-                    if (ubArrayIndex >= ROTATION_ARRAY_SIZE)
+                    // pMemBlock = pDest;
+                    for (uiLoop = 0; uiLoop < puiBytesRead; uiLoop++)
                     {
-                        ubArrayIndex = 0;
-                    }
+                        ubLastByteForNextLoop = pMemBlock[uiLoop];
+                        pMemBlock[uiLoop] -= (byte)(ubLastByte + this.ubRotationArray[ubArrayIndex]);
+                        ubArrayIndex++;
+                        if (ubArrayIndex >= ROTATION_ARRAY_SIZE)
+                        {
+                            ubArrayIndex = 0;
+                        }
 
-                    ubLastByte = ubLastByteForNextLoop;
+                        ubLastByte = ubLastByteForNextLoop;
+                    }
                 }
             }
+            catch (Exception e)
+            {
 
+            }
             return fRet;
         }
 
@@ -300,15 +306,23 @@ namespace SharpAlliance.Core.Managers
 
             Span<char> span = pDestString.ToCharArray();
             // Decrement, by 1, any value > 32
+
             int i = 0;
-            for (i = 0; (i < uiSeekAmount) && (pDestString[i] != '\0'); i++)
+
+            try
             {
-                if (span[i] > 33)
+                for (i = 0; (i < uiSeekAmount) && i < pDestString.Length && (pDestString[i] != '\0'); i++)
                 {
-                    span[i] -= (char)1;
+                    if (span[i] > 33)
+                    {
+                        span[i] -= (char)1;
+                    }
                 }
             }
+            catch (Exception e)
+            {
 
+            }
             pDestString = span.Slice(0, i).ToString();
             FileClose(stream);
 

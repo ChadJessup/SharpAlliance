@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 
 namespace SharpAlliance.Core.Screens
@@ -20,6 +22,7 @@ namespace SharpAlliance.Core.Screens
         private readonly IVideoManager video;
         private readonly IInputManager inputs;
         private readonly IFileManager files;
+        private readonly FontSubSystem fonts;
         private string guiCreditFacesKey;
         private string guiCreditBackGroundImageKey;
         private bool gfCreditsScreenEntry;
@@ -52,9 +55,11 @@ namespace SharpAlliance.Core.Screens
             IVideoManager videoManager,
             IInputManager inputManager,
             IClockManager clockManager,
+            FontSubSystem fontSubSystem,
             IFileManager fileManager,
             GuiManager guiManager)
         {
+            this.fonts = fontSubSystem;
             this.gui = guiManager;
             this.clock = clockManager;
             this.context = gameContext;
@@ -146,7 +151,10 @@ namespace SharpAlliance.Core.Screens
 
         private void ShutDownCreditList()
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < this.gCrdtNodes.Count; i++)
+            {
+                this.gCrdtNodes.RemoveAt(i);
+            }
         }
 
         private void HandleCreditScreen()
@@ -194,7 +202,7 @@ namespace SharpAlliance.Core.Screens
             string zCodes;
             string? pzNewCode = null;
             uint uiCodeType = 0;
-            CreditNodeType uiNodeType = 0;
+            CRDT_FLAG__ uiNodeType = 0;
             uint uiStartLoc = 0;
             CRDT_FLAG__ uiFlags = 0;
 
@@ -210,81 +218,88 @@ namespace SharpAlliance.Core.Screens
             this.guiCurrentCreditRecord++;
 
 
-            //if there are no codes in the string
-            if (zOriginalString[0] != CRDT_START_CODE)
+            try
             {
-                //copy the string
-                zString = zOriginalString;
-                uiNodeType = CreditNodeType.CRDT_NODE_DEFAULT;
-            }
-            else
-            {
-                int uiSizeOfCodes = 0;
-                int uiSizeOfSubCode = 0;
-                int pzEndCode = 0;
-                int uiDistanceIntoCodes = 0;
-
-                //Retrive all the codes from the string
-                pzEndCode = zOriginalString.IndexOf(CRDT_END_CODE, 0);
-
-
-                //Make a string for the codes
-                zCodes = zOriginalString;
-
-                //end the setence after the codes
-                // zCodes[pzEndCode - zOriginalString + 1] = '\0';
-
-                //Get the size of the codes
-                uiSizeOfCodes = pzEndCode + 1;
-
-                //
-                //check to see if there is a string, or just codes
-                //
-
-                //if the string is the same size as the codes
-                if (zOriginalString.Length == uiSizeOfCodes)
+                //if there are no codes in the string
+                if (zOriginalString.Length > 0 && zOriginalString[0] != CRDT_START_CODE)
                 {
-                    //there is no string, just codes
-                    uiNodeType = CreditNodeType.CRDT_NODE_NONE;
+                    //copy the string
+                    zString = zOriginalString;
+                    uiNodeType = CRDT_FLAG__.CRDT_NODE_DEFAULT;
                 }
-
-                //else there is a string aswell
                 else
                 {
-                    //copy the main string
-                    // zString = zOriginalString[uiSizeOfCodes];
+                    int uiSizeOfCodes = 0;
+                    int uiSizeOfSubCode = 0;
+                    int pzEndCode = 0;
+                    int uiDistanceIntoCodes = 0;
 
-                    uiNodeType = CreditNodeType.CRDT_NODE_DEFAULT;
-                }
+                    //Retrive all the codes from the string
+                    pzEndCode = zOriginalString.IndexOf(CRDT_END_CODE, 0);
 
-                //get rid of the start code delimeter
-                uiDistanceIntoCodes = 1;
 
-                uiFlags = 0;
+                    //Make a string for the codes
+                    zCodes = zOriginalString;
 
-                //loop through the string of codes to get all the control codes out
-                while (uiDistanceIntoCodes < uiSizeOfCodes)
-                {
-                    //Determine what kind of code it is, and handle it
-                    uiFlags |= this.GetAndHandleCreditCodeFromCodeString(zCodes[uiDistanceIntoCodes]);
+                    //end the setence after the codes
+                    // zCodes[pzEndCode - zOriginalString + 1] = '\0';
 
-                    //get the next code from the string of codes, returns NULL when done
-                    pzNewCode = this.GetNextCreditCode(zCodes[uiDistanceIntoCodes], out uiSizeOfSubCode);
+                    //Get the size of the codes
+                    uiSizeOfCodes = pzEndCode + 1;
 
-                    //if we are done getting the sub codes
-                    if (pzNewCode == null)
+                    //
+                    //check to see if there is a string, or just codes
+                    //
+
+                    //if the string is the same size as the codes
+                    if (zOriginalString.Length == uiSizeOfCodes)
                     {
-                        uiDistanceIntoCodes = uiSizeOfCodes;
+                        //there is no string, just codes
+                        uiNodeType = CRDT_FLAG__.CRDT_NODE_NONE;
                     }
+
+                    //else there is a string aswell
                     else
                     {
-                        //else increment by the size of the code
-                        uiDistanceIntoCodes += uiSizeOfSubCode;
+                        //copy the main string
+                        // zString = zOriginalString[uiSizeOfCodes];
+
+                        uiNodeType = CRDT_FLAG__.CRDT_NODE_DEFAULT;
+                    }
+
+                    //get rid of the start code delimeter
+                    uiDistanceIntoCodes = 1;
+
+                    uiFlags = 0;
+
+                    //loop through the string of codes to get all the control codes out
+                    while (uiDistanceIntoCodes < uiSizeOfCodes)
+                    {
+                        //Determine what kind of code it is, and handle it
+                        uiFlags |= this.GetAndHandleCreditCodeFromCodeString(zCodes.Substring(uiDistanceIntoCodes));
+
+                        //get the next code from the string of codes, returns null when done
+                        pzNewCode = this.GetNextCreditCode(zCodes.Substring(uiDistanceIntoCodes), out uiSizeOfSubCode);
+
+                        //if we are done getting the sub codes
+                        if (pzNewCode == null)
+                        {
+                            uiDistanceIntoCodes = uiSizeOfCodes;
+                        }
+                        else
+                        {
+                            //else increment by the size of the code
+                            uiDistanceIntoCodes += uiSizeOfSubCode + 1;
+                        }
                     }
                 }
             }
+            catch(Exception e)
+            {
 
-            if (uiNodeType != CreditNodeType.CRDT_NODE_NONE)
+            }
+
+            if (uiNodeType != CRDT_FLAG__.CRDT_NODE_NONE)
             {
                 //add the node to the list
                 this.AddCreditNode(uiNodeType, uiFlags, zString);
@@ -296,19 +311,280 @@ namespace SharpAlliance.Core.Screens
             return true;
         }
 
-        private CRDT_FLAG__ GetAndHandleCreditCodeFromCodeString(char v)
+        private CRDT_FLAG__ GetAndHandleCreditCodeFromCodeString(string pzCode)
         {
-            throw new NotImplementedException();
+            //if the code is to change the delay between strings
+            if (pzCode[0] == CRDT_DELAY_BN_STRINGS_CODE)
+            {
+                //Get the delay from the string
+                int uiNewDelay = int.Parse(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
+                //swscanf(pzCode[1], L"%d%*s", out int uiNewDelay);
+
+                guiGapBetweenCreditNodes = uiNewDelay;
+
+                return CRDT_FLAG__.CRDT_NODE_NONE;
+            }
+
+            //if the code is to change the delay between sections strings
+            else if (pzCode[0] == CRDT_DELAY_BN_SECTIONS_CODE)
+            {
+
+                //Get the delay from the string
+                var idx = pzCode.IndexOf(CRDT_SEPARATION_CODE);
+                if (idx == -1)
+                {
+                    idx = pzCode.IndexOf(CRDT_END_CODE);
+                }
+
+                int uiNewDelay = int.Parse(pzCode.Substring(1, idx - 1));
+                //swscanf(&pzCode[1], L"%d%*s", uiNewDelay);
+
+                // guiCrdtDelayBetweenCreditSection = uiNewDelay;
+                guiGapBetweenCreditSections = uiNewDelay;
+
+                return CRDT_FLAG__.CRDT_NODE_NONE;
+            }
+
+
+            else if (pzCode[0] == CRDT_SCROLL_SPEED)
+            {
+                int uiScrollSpeed = int.Parse(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
+
+                //Get the delay from the string
+                guiCrdtNodeScrollSpeed = uiScrollSpeed;
+
+                return CRDT_FLAG__.CRDT_NODE_NONE;
+            }
+
+            else if (pzCode[0] == CRDT_FONT_JUSTIFICATION)
+            {
+                int uiJustification = int.Parse(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
+
+                //Get the delay from the string
+                // swscanf(&pzCode[1], L"%d%*s", &uiJustification);
+
+                //get the justification
+                switch (uiJustification)
+                {
+                    case 0:
+                        gubCrdtJustification = TextJustifies.LEFT_JUSTIFIED;
+                        break;
+                    case 1:
+                        gubCrdtJustification = TextJustifies.CENTER_JUSTIFIED;
+                        break;
+                    case 2:
+                        gubCrdtJustification = TextJustifies.RIGHT_JUSTIFIED;
+                        break;
+                    default:
+                        break;
+                        // Assert(0);
+                }
+
+                return CRDT_FLAG__.CRDT_NODE_NONE;
+            }
+
+            else if (pzCode[0] == CRDT_TITLE_FONT_COLOR)
+            {
+                //Get the new color for the title
+                gubCreditScreenTitleColor = Enum.Parse<FontColor>(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
+                //swscanf(&pzCode[1], L"%d%*s", &gubCreditScreenTitleColor);
+
+                return CRDT_FLAG__.CRDT_NODE_NONE;
+            }
+
+            else if (pzCode[0] == CRDT_ACTIVE_FONT_COLOR)
+            {
+                //Get the new color for the active text
+                gubCreditScreenActiveColor = Enum.Parse<FontColor>(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
+                // swscanf(&pzCode[1], L"%d%*s", &gubCreditScreenActiveColor);
+
+                return CRDT_FLAG__.CRDT_NODE_NONE;
+            }
+
+
+            //else its the title code
+            else if (pzCode[0] == CRDT_TITLE)
+            {
+                return CRDT_FLAG__.TITLE;
+            }
+
+            //else its the title code
+            else if (pzCode[0] == CRDT_START_OF_SECTION)
+            {
+                return CRDT_FLAG__.START_SECTION;
+            }
+
+            //else its the title code
+            else if (pzCode[0] == CRDT_END_OF_SECTION)
+            {
+                return CRDT_FLAG__.END_SECTION;
+            }
+
+            //else its an error
+            else
+            {
+                // Assert(0);
+            }
+
+            return CRDT_FLAG__.CRDT_NODE_NONE;
         }
 
-        private string? GetNextCreditCode(char v, out int uiSizeOfSubCode)
+        private string? GetNextCreditCode(string pString, out int pSizeOfCode)
         {
-            throw new NotImplementedException();
+            string? pzNewCode = null;
+            char currentChar;
+            int uiSizeOfCode = 0;
+            int idx = 0;
+            //get the new subcode out
+            var codeSeparationIdx = pString.IndexOf(CRDT_SEPARATION_CODE);
+
+            if (codeSeparationIdx != -1)
+            {
+                pzNewCode = pString.Substring(codeSeparationIdx);
+                currentChar = pzNewCode[idx];
+            }
+            else
+            {
+                pzNewCode = null;
+            }
+
+
+            //if there is no separation code, then there must be an end code
+            if (pzNewCode == null)
+            {
+                //pzNewCode = wcsstr( pString, CRDT_END_CODE );
+
+                //we are done
+                pzNewCode = null;
+            }
+            else
+            {
+                //get rid of separeation code
+                currentChar = pzNewCode[++idx];
+
+
+                //calc size of sub string
+                uiSizeOfCode = pString.Length - pzNewCode.Length;
+            }
+
+            pSizeOfCode = uiSizeOfCode;
+            return pzNewCode;
         }
 
-        private void AddCreditNode(CreditNodeType uiNodeType, CRDT_FLAG__ uiFlags, string zString)
+        private bool AddCreditNode(CRDT_FLAG__ uiType, CRDT_FLAG__ uiFlags, string pString)
         {
-            throw new NotImplementedException();
+            CRDT_NODE? pNodeToAdd = null;
+            CRDT_NODE? pTemp = null;
+            int uiSizeOfString = (pString.Length + 2) * 2;
+            FontStyle uiFontToUse;
+            FontColor uiColorToUse;
+
+            //if
+            if (uiType == CRDT_FLAG__.CRDT_NODE_NONE)
+            {
+                //Assert( 0 );
+                return true;
+            }
+
+            pNodeToAdd = new();
+
+            //Determine the font and the color to use
+            if (uiFlags.HasFlag(CRDT_FLAG__.TITLE))
+            {
+                uiFontToUse = guiCreditScreenTitleFont;
+                uiColorToUse = gubCreditScreenTitleColor;
+            }
+            /*
+                else if ( uiFlags & CRDT_FLAG__START_SECTION )
+                {
+                    uiFontToUse = ;
+                    uiColorToUse = ;
+                }
+                else if ( uiFlags & CRDT_FLAG__END_SECTION )
+                {
+                    uiFontToUse = ;
+                    uiColorToUse = ;
+                }
+            */
+            else
+            {
+                uiFontToUse = guiCreditScreenActiveFont;
+                uiColorToUse = gubCreditScreenActiveColor;
+            }
+
+            //
+            // Set some default data
+            // 
+
+            //the type of the node
+            pNodeToAdd.uiType = uiType;
+
+            //any flags that are added
+            pNodeToAdd.uiFlags = uiFlags;
+
+            //the starting left position for the it
+            pNodeToAdd.sPos.X = CRDT_TEXT_START_LOC;
+
+            //copy the string into the node
+            pNodeToAdd.pString = pString;
+
+            //Calculate the height of the string
+            pNodeToAdd.sHeightOfString = this.fonts.DisplayWrappedString(
+                new(0, 0),
+                CRDT_WIDTH_OF_TEXT_AREA,
+                2,
+                uiFontToUse,
+                uiColorToUse,
+                pNodeToAdd.pString,
+                0,
+                false,
+                TextJustifies.DONT_DISPLAY_TEXT) + 1;
+
+            //starting y position on the screen
+            pNodeToAdd.sPos.Y = CRDT_START_POS_Y;
+
+            //	pNodeToAdd.uiLastTime = GetJA2Clock();
+
+            //if the node can have something to display, Create a surface for it
+            if (pNodeToAdd.uiType == CRDT_FLAG__.CRDT_NODE_DEFAULT)
+            {
+                VSURFACE_DESC vs_desc = new();
+
+                // Create a background video surface to blt the face onto
+                vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_DEFAULT | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
+                vs_desc.usWidth = CRDT_WIDTH_OF_TEXT_AREA;
+                vs_desc.usHeight = pNodeToAdd.sHeightOfString;
+                vs_desc.ubBitDepth = 16;
+
+                if (this.video.AddVideoSurface(out vs_desc, out pNodeToAdd.uiVideoSurfaceImage) == 0)
+                {
+                    return false;
+                }
+
+                //Set transparency
+                this.video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, 0);
+
+                //fill the surface with a transparent color
+
+                //set the font dest buffer to be the surface
+                this.fonts.SetFontDestBuffer(pNodeToAdd.uiVideoSurfaceImage, 0, 0, CRDT_WIDTH_OF_TEXT_AREA, pNodeToAdd.sHeightOfString, false);
+
+                //write the string onto the surface
+                this.fonts.DisplayWrappedString(new(0, 1), CRDT_WIDTH_OF_TEXT_AREA, 2, uiFontToUse, uiColorToUse, pNodeToAdd.pString, 0, false, gubCrdtJustification);
+
+                //reset the font dest buffer
+                this.fonts.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
+            }
+
+            //
+            // Insert the node into the list
+            //
+
+            //Add the new node to the list
+            gCrdtNodes.Add(pNodeToAdd);
+            gCrdtLastAddedNode = pNodeToAdd;
+
+            return true;
         }
 
         private void HandleCreditFlags(CRDT_FLAG__ uiFlags)
@@ -394,7 +670,7 @@ namespace SharpAlliance.Core.Screens
                 HVSURFACE hVSurface;
 
                 GetVideoSurface( &hVSurface, guiCreditBackGroundImage );
-                BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, 0, NULL );
+                BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, 0, null );
             */
             if (!this.gfCrdtHaveRenderedFirstFrameToSaveBuffer)
             {
@@ -688,17 +964,15 @@ namespace SharpAlliance.Core.Screens
         CRDT_RENDER_ALL,
     }
 
-    //type of credits
-    public enum CreditNodeType
-    {
-        CRDT_NODE_NONE,
-        CRDT_NODE_DEFAULT,      // scrolls up and off the screen
-    };
     //flags for the credits
     //Flags:
+
     [Flags]
     public enum CRDT_FLAG__
     {
+        CRDT_NODE_NONE = 0x00000000,
+        // scrolls up and off the screen
+        CRDT_NODE_DEFAULT = 0x00000001,
         TITLE = 0x00000001,
         START_SECTION = 0x00000002,
         END_SECTION = 0x00000004,
@@ -727,14 +1001,14 @@ namespace SharpAlliance.Core.Screens
 
     public class CRDT_NODE
     {
-        public int uiType;          //the type of node
+        public CRDT_FLAG__ uiType;          //the type of node
         public string pString;        //string for the node if the node contains a string
-        public int uiFlags;     //various flags
+        public CRDT_FLAG__ uiFlags;     //various flags
         public Point sPos;            //position of the node on the screen if the node is displaying stuff
         public Point sOldPos;         //position of the node on the screen if the node is displaying stuff
         public int sHeightOfString;      //The height of the displayed string
         public bool fDelete;        //Delete this loop
         public long uiLastTime;  // The last time the node was udated
-        public int uiVideoSurfaceImage;
+        public Surfaces uiVideoSurfaceImage;
     }
 }

@@ -171,7 +171,7 @@ namespace SharpAlliance.Core.SubSystems
             HVSURFACE hSrcVSurface;
             SGPPaletteEntry[] pPalette = new SGPPaletteEntry[256];
             VSURFACE_DESC vs_desc;
-            uint uiTempMap;
+            Surfaces uiTempMap;
 
             // load image
             vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;

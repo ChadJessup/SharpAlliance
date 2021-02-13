@@ -12,6 +12,7 @@ using Veldrid;
 using SixLabors.ImageSharp;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 using Point = SixLabors.ImageSharp.Point;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core.Screens
 {
@@ -137,7 +138,7 @@ namespace SharpAlliance.Core.Screens
                 }
                 else if (this.introScreen.guiSplashFrameFade > 1)
                 {
-                    this.video.ColorFillVideoSurfaceArea(new Rectangle(0, 0, 640, 480), Color.Black);
+                    this.video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
                 }
                 else
                 {

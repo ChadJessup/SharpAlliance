@@ -33,11 +33,11 @@ namespace SharpAlliance.Core.Interfaces
         HVOBJECT GetVideoObject(string key);
         void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
         void DrawTextToScreen(string v1, int v2, int v3, int v4, FontStyle fONT10ARIAL, FontColor fONT_MCOLOR_WHITE, FontColor fONT_MCOLOR_BLACK, bool v5, TextJustifies cENTER_JUSTIFIED);
-        void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap);
-        void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap);
+        void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);
+        int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap);
         void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette);
         ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono);
-        void DeleteVideoSurfaceFromIndex(uint uiTempMap);
+        void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap);
         void DeleteVideoObjectFromIndex(string logoKey);
         void RestoreBackgroundRects();
         HVOBJECT CreateVideoObject(string assetPath);
@@ -48,7 +48,7 @@ namespace SharpAlliance.Core.Interfaces
         void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
         void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
         void GetClippingRect(out Rectangle clipRect);
-        void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
+        void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32);
         void SaveBackgroundRects();
         void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
         void ExecuteBaseDirtyRectQueue();
@@ -59,9 +59,10 @@ namespace SharpAlliance.Core.Interfaces
         // SpriteRenderer SpriteRenderer { get; }
         static DebugRenderer DebugRenderer { get; protected set; }
 
-        void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
+        void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color);
         void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle);
         void DeleteVideoObject(HVOBJECT vobj);
         void BlitBufferToBuffer(int left, int top, int v1, int v2);
+        void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v);
     }
 }

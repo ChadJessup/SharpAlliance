@@ -461,7 +461,7 @@ namespace SharpAlliance.Core.SubSystems
         None = -1,
         FONT_MCOLOR_WHITE = 73,
         FONT_MCOLOR_BLACK = 0,
-        // FONT_MCOLOR_WHITE = 208,
+        FONT_MCOLOR_TWHITE = 208,
         FONT_MCOLOR_DKWHITE = 134,
         FONT_MCOLOR_DKWHITE2 = 134,
         FONT_MCOLOR_LTGRAY = 134,

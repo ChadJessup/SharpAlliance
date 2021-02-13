@@ -1183,7 +1183,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // Fill the button's area with the button's background color
             this.video.ColorFillVideoSurfaceArea(
-                //              ButtonDestBuffer,
+                ButtonDestBuffer,
                 b.Area.Bounds,
                 this.GenericButtonFillColors[b.ImageNum]);
 
