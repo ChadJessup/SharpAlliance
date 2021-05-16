@@ -280,24 +280,24 @@ namespace SharpAlliance.Core.Managers
         {
             pDestString = string.Empty;
 
-            using var stream = FileOpen(pFileName, FileAccess.Read, false);
+            using var stream = this.FileOpen(pFileName, FileAccess.Read, false);
             if (stream is null)
             {
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed to FileOpen");
                 return false;
             }
 
-            if (FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
+            if (this.FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
             {
-                FileClose(stream);
+                this.FileClose(stream);
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileSeek");
                 return false;
             }
 
             byte[] buff = new byte[uiSeekAmount];
-            if (!FileRead(stream, ref buff, uiSeekAmount, out var uiBytesRead))
+            if (!this.FileRead(stream, ref buff, uiSeekAmount, out var uiBytesRead))
             {
-                FileClose(stream);
+                this.FileClose(stream);
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileRead");
                 return false;
             }
@@ -324,7 +324,7 @@ namespace SharpAlliance.Core.Managers
 
             }
             pDestString = span.Slice(0, i).ToString();
-            FileClose(stream);
+            this.FileClose(stream);
 
             return true;
         }

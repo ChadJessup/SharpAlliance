@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using Veldrid;
 
@@ -40,6 +41,7 @@ namespace SharpAlliance.Core.Managers
 
         public ValueTask<bool> Initialize()
         {
+            this.context.Services.GetRequiredService<FontSubSystem>().Initialize();
             this.IsInitialized = true;
             return ValueTask.FromResult(true);
         }

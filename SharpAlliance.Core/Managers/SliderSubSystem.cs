@@ -68,9 +68,9 @@ namespace SharpAlliance.Core.Managers
             {
                 var img = new Image<Rgba32>(pSlider.ubSliderWidth, pSlider.ubSliderHeight);
                 //display the background ( the bar ) 
-                OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y - 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y - 1), pSlider.usBackGroundColor, img);
-                OptDisplayLine(pSlider.usPos.X, pSlider.usPos.Y, (pSlider.usPos.X + pSlider.ubSliderWidth), pSlider.usPos.Y, pSlider.usBackGroundColor, img);
-                OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y + 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y + 1), pSlider.usBackGroundColor, img);
+                this.OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y - 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y - 1), pSlider.usBackGroundColor, img);
+                this.OptDisplayLine(pSlider.usPos.X, pSlider.usPos.Y, (pSlider.usPos.X + pSlider.ubSliderWidth), pSlider.usPos.Y, pSlider.usBackGroundColor, img);
+                this.OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y + 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y + 1), pSlider.usBackGroundColor, img);
 
                 //invalidate the area
                 this.video.InvalidateRegion(new(
@@ -80,7 +80,7 @@ namespace SharpAlliance.Core.Managers
                     pSlider.usPos.Y + 2));
             }
 
-            RenderSliderBox(pSlider);
+            this.RenderSliderBox(pSlider);
         }
 
         private void RenderSliderBox(Slider pSlider)
@@ -147,7 +147,7 @@ namespace SharpAlliance.Core.Managers
             if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
             {
                 //display the slider box
-                hPixHandle = this.video.GetVideoObject(guiSliderBoxImageTag);
+                hPixHandle = this.video.GetVideoObject(this.guiSliderBoxImageTag);
                 this.video.BltVideoObject(hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top, 0);
 
                 //invalidate the area
@@ -156,7 +156,7 @@ namespace SharpAlliance.Core.Managers
             else
             {
                 //display the slider box
-                hPixHandle = this.video.GetVideoObject(guiSliderBoxImageTag);
+                hPixHandle = this.video.GetVideoObject(this.guiSliderBoxImageTag);
                 this.video.BltVideoObject(hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, 0);
 
                 //invalidate the area
@@ -344,7 +344,7 @@ namespace SharpAlliance.Core.Managers
                     pNewSlider.ubSliderHeight = Slider.STEEL_SLIDER_HEIGHT;
 
 
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    this.inputs.Mouse.DefineRegion(
                         pNewSlider.ScrollAreaMouseRegion,
                         new Rectangle(
                             loc.X - pNewSlider.ubSliderWidth / 2,
@@ -356,7 +356,7 @@ namespace SharpAlliance.Core.Managers
                         this.SelectedSliderMovementCallBack,
                         this.SelectedSliderButtonCallBack);
 
-                    this.inputs.Mouse.MSYS_SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                    this.inputs.Mouse.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
                     break;
 
                 case SliderStyle.SLIDER_DEFAULT_STYLE:
@@ -366,7 +366,7 @@ namespace SharpAlliance.Core.Managers
                     pNewSlider.ubSliderWidth = usWidth;
                     pNewSlider.ubSliderHeight = Slider.DEFAULT_SLIDER_SIZE;
 
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    this.inputs.Mouse.DefineRegion(
                         pNewSlider.ScrollAreaMouseRegion,
                         new Rectangle(loc.X, loc.Y - Slider.DEFAULT_SLIDER_SIZE, pNewSlider.usPos.X + pNewSlider.ubSliderWidth, loc.Y + Slider.DEFAULT_SLIDER_SIZE),
                         sPriority,
@@ -374,7 +374,7 @@ namespace SharpAlliance.Core.Managers
                         this.SelectedSliderMovementCallBack,
                         this.SelectedSliderButtonCallBack);
 
-                    this.inputs.Mouse.MSYS_SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                    this.inputs.Mouse.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
                     break;
             }
 
@@ -403,8 +403,8 @@ namespace SharpAlliance.Core.Managers
 
                 if (this.inputs.gfLeftButtonState)
                 {
-                    uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
-                    pSlider = GetSliderFromID(uiSelectedSlider);
+                    uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                    pSlider = this.GetSliderFromID(uiSelectedSlider);
                     if (pSlider == null)
                     {
                         return;
@@ -419,11 +419,11 @@ namespace SharpAlliance.Core.Managers
 
                     if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
                     {
-                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                        this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
                     }
                     else
                     {
-                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                        this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
                     }
                 }
             }
@@ -434,8 +434,8 @@ namespace SharpAlliance.Core.Managers
 
                 if (this.inputs.gfLeftButtonState)
                 {
-                    uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
-                    pSlider = GetSliderFromID(uiSelectedSlider);
+                    uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                    pSlider = this.GetSliderFromID(uiSelectedSlider);
                     if (pSlider == null)
                     {
                         return;
@@ -447,11 +447,11 @@ namespace SharpAlliance.Core.Managers
 
                     if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
                     {
-                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                        this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
                     }
                     else
                     {
-                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                        this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
                     }
 
                 }
@@ -464,8 +464,8 @@ namespace SharpAlliance.Core.Managers
 
                 if (this.inputs.gfLeftButtonState)
                 {
-                    uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
-                    pSlider = GetSliderFromID(uiSelectedSlider);
+                    uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                    pSlider = this.GetSliderFromID(uiSelectedSlider);
                     if (pSlider == null)
                     {
                         return;
@@ -476,11 +476,11 @@ namespace SharpAlliance.Core.Managers
 
                     if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
                     {
-                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                        this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
                     }
                     else
                     {
-                        CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                        this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
                     }
                 }
             }
@@ -504,9 +504,9 @@ namespace SharpAlliance.Core.Managers
             }
             else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
-                uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
+                uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
 
-                pSlider = GetSliderFromID(uiSelectedSlider);
+                pSlider = this.GetSliderFromID(uiSelectedSlider);
                 if (pSlider == null)
                 {
                     return;
@@ -522,16 +522,16 @@ namespace SharpAlliance.Core.Managers
 
                 if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
                 {
-                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                    this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
                 }
                 else
                 {
-                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                    this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
                 }
             }
             else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_REPEAT))
             {
-                uiSelectedSlider = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 1);
+                uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
 
                 pSlider = this.GetSliderFromID(uiSelectedSlider);
                 if (pSlider == null)
@@ -548,11 +548,11 @@ namespace SharpAlliance.Core.Managers
 
                 if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
                 {
-                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
+                    this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.Y);
                 }
                 else
                 {
-                    CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
+                    this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
                 }
             }
             else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))

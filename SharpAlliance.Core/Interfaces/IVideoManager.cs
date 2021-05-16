@@ -22,6 +22,8 @@ namespace SharpAlliance.Core.Interfaces
         public uint guiSAVEBUFFER { get; set; }
         public uint guiEXTRABUFFER { get; set; }
         public bool gfExtraBuffer { get; set; }
+
+        public Veldrid.GraphicsDevice GraphicDevice { get; }
         int gbPixelDepth { get; }
 
         void DrawFrame();
@@ -32,7 +34,7 @@ namespace SharpAlliance.Core.Interfaces
         HVOBJECT AddVideoObject(string assetPath, out string key);
         HVOBJECT GetVideoObject(string key);
         void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
-        void DrawTextToScreen(string v1, int v2, int v3, int v4, FontStyle fONT10ARIAL, FontColor fONT_MCOLOR_WHITE, FontColor fONT_MCOLOR_BLACK, bool v5, TextJustifies cENTER_JUSTIFIED);
+        bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
         void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);
         int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap);
         void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette);
@@ -40,19 +42,16 @@ namespace SharpAlliance.Core.Interfaces
         void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap);
         void DeleteVideoObjectFromIndex(string logoKey);
         void RestoreBackgroundRects();
+        void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
         HVOBJECT CreateVideoObject(string assetPath);
         void LineDraw(int v2, int v3, int v4, int v5, Color v6, Image<Rgba32> image);
-        byte[] LockVideoSurface(Surfaces buttonDestBuffer, out uint uiDestPitchBYTES);
         void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4);
-        void UnLockVideoSurface(Surfaces buttonDestBuffer);
         void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
-        void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
         void GetClippingRect(out Rectangle clipRect);
         void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32);
         void SaveBackgroundRects();
         void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
         void ExecuteBaseDirtyRectQueue();
-        void Blt8BPPDataTo16BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
         void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
         void SetClippingRect(ref Rectangle newClip);
 
@@ -64,5 +63,6 @@ namespace SharpAlliance.Core.Interfaces
         void DeleteVideoObject(HVOBJECT vobj);
         void BlitBufferToBuffer(int left, int top, int v1, int v2);
         void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v);
+        void ClearElements();
     }
 }

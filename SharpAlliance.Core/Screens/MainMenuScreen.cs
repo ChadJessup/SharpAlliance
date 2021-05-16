@@ -23,6 +23,7 @@ namespace SharpAlliance.Core.Screens
         private readonly RenderDirtySubSystem renderDirty;
         private readonly IScreenManager screens;
         private readonly GameOptions options;
+        private readonly FontSubSystem fonts;
         private readonly IInputManager input;
         private readonly IMusicManager music;
         private readonly MouseSubSystem mouse;
@@ -62,7 +63,7 @@ namespace SharpAlliance.Core.Screens
         private MouseRegion gBackRegion = new(nameof(gBackRegion));
         private MainMenuItems gbHandledMainMenu = MainMenuItems.Unknown;
         private bool fInitialRender = false;
-        //bool						gfDoHelpScreen = 0;
+        //bool gfDoHelpScreen = 0;
 
         private bool gfMainMenuScreenEntry = false;
         private bool gfMainMenuScreenExit = false;
@@ -80,6 +81,7 @@ namespace SharpAlliance.Core.Screens
             GameOptions gameOptions,
             ButtonSubSystem buttonSubSystem,
             CursorSubSystem cursorSubSystem,
+            FontSubSystem fontSubSystem,
             IInputManager inputManager,
             Globals globals,
             RenderDirtySubSystem renderDirtySubSystem)
@@ -93,6 +95,7 @@ namespace SharpAlliance.Core.Screens
             this.mouse = mouseSubSystem;
             this.video = videoManager;
             this.options = gameOptions;
+            this.fonts = fontSubSystem;
             this.screens = screenManager;
             this.gameInit = gameInit;
             this.renderDirty = renderDirtySubSystem;
@@ -109,10 +112,6 @@ namespace SharpAlliance.Core.Screens
         public async ValueTask Activate()
         {
             this.introScreen = await this.screens.GetScreen<IntroScreen>(ScreenName.INTRO_SCREEN, activate: false);
-        }
-
-        public void Dispose()
-        {
         }
 
         public async ValueTask<ScreenName> Handle()
@@ -312,13 +311,13 @@ namespace SharpAlliance.Core.Screens
             HVOBJECT hPixHandle;
 
             //Get and display the background image
-            hPixHandle = this.video.GetVideoObject(this.mainMenuBackGroundImageKey);
-            this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+            //hPixHandle = this.video.GetVideoObject(this.mainMenuBackGroundImageKey);
+            //this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
-            hPixHandle = this.video.GetVideoObject(this.ja2LogoImageKey);
-            this.video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
+            //hPixHandle = this.video.GetVideoObject(this.ja2LogoImageKey);
+            //this.video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
 
-            this.video.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
+            this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
 //            this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
@@ -343,10 +342,10 @@ namespace SharpAlliance.Core.Screens
             this.CreateDestroyMainMenuButtons(fCreate: true);
 
             // load background graphic and add it
-            this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+            this.background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
             // load ja2 logo graphic and add it
-            this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+            this.logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
             /*
                 // Gray out some buttons based on status of game!
@@ -514,6 +513,9 @@ namespace SharpAlliance.Core.Screens
         }
 
         private static bool fRegionCreated = false;
+        private HVOBJECT background;
+        private HVOBJECT logo;
+
         public void CreateDestroyBackGroundMouseMask(bool fCreate)
         {
             if (fCreate)
@@ -524,7 +526,7 @@ namespace SharpAlliance.Core.Screens
                 }
 
                 // Make a mouse region
-                this.mouse.MSYS_DefineRegion(
+                this.mouse.DefineRegion(
                     ref this.gBackRegion,
                     new(0, 0, 640, 480),
                     MSYS_PRIORITY.HIGHEST,
@@ -578,26 +580,26 @@ namespace SharpAlliance.Core.Screens
 
         public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
         {
-            //Get and display the background image
-            //            this.video.GetVideoObject(this.mainMenuBackGroundImageKey, out var background);
-            //            this.video.GetVideoObject(this.ja2LogoImageKey, out var logo);
-
-            var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+            //var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
             // load ja2 logo graphic and add it
-            var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+            //var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
             sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
             sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);
 
             this.buttons.RenderButtons();
 
-            this.video.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
+            this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
         }
 
         public ValueTask Deactivate()
         {
             return ValueTask.CompletedTask;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

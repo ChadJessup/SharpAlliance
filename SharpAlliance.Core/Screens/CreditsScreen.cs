@@ -187,9 +187,9 @@ namespace SharpAlliance.Core.Screens
 
             if (this.giCurrentlySelectedFace != -1)
             {
-                this.video.DrawTextToScreen(EnglishText.gzCreditNames[this.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, false, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
-                this.video.DrawTextToScreen(EnglishText.gzCreditNameTitle[this.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_TITLE_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, false, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
-                this.video.DrawTextToScreen(EnglishText.gzCreditNameFunny[this.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_FUNNY_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, false, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+                this.fonts.DrawTextToScreen(EnglishText.gzCreditNames[this.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+                this.fonts.DrawTextToScreen(EnglishText.gzCreditNameTitle[this.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_TITLE_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+                this.fonts.DrawTextToScreen(EnglishText.gzCreditNameFunny[this.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_FUNNY_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
             }
         }
 
@@ -320,7 +320,7 @@ namespace SharpAlliance.Core.Screens
                 int uiNewDelay = int.Parse(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
                 //swscanf(pzCode[1], L"%d%*s", out int uiNewDelay);
 
-                guiGapBetweenCreditNodes = uiNewDelay;
+                this.guiGapBetweenCreditNodes = uiNewDelay;
 
                 return CRDT_FLAG__.CRDT_NODE_NONE;
             }
@@ -340,7 +340,7 @@ namespace SharpAlliance.Core.Screens
                 //swscanf(&pzCode[1], L"%d%*s", uiNewDelay);
 
                 // guiCrdtDelayBetweenCreditSection = uiNewDelay;
-                guiGapBetweenCreditSections = uiNewDelay;
+                this.guiGapBetweenCreditSections = uiNewDelay;
 
                 return CRDT_FLAG__.CRDT_NODE_NONE;
             }
@@ -351,7 +351,7 @@ namespace SharpAlliance.Core.Screens
                 int uiScrollSpeed = int.Parse(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
 
                 //Get the delay from the string
-                guiCrdtNodeScrollSpeed = uiScrollSpeed;
+                this.guiCrdtNodeScrollSpeed = uiScrollSpeed;
 
                 return CRDT_FLAG__.CRDT_NODE_NONE;
             }
@@ -367,13 +367,13 @@ namespace SharpAlliance.Core.Screens
                 switch (uiJustification)
                 {
                     case 0:
-                        gubCrdtJustification = TextJustifies.LEFT_JUSTIFIED;
+                        this.gubCrdtJustification = TextJustifies.LEFT_JUSTIFIED;
                         break;
                     case 1:
-                        gubCrdtJustification = TextJustifies.CENTER_JUSTIFIED;
+                        this.gubCrdtJustification = TextJustifies.CENTER_JUSTIFIED;
                         break;
                     case 2:
-                        gubCrdtJustification = TextJustifies.RIGHT_JUSTIFIED;
+                        this.gubCrdtJustification = TextJustifies.RIGHT_JUSTIFIED;
                         break;
                     default:
                         break;
@@ -386,7 +386,7 @@ namespace SharpAlliance.Core.Screens
             else if (pzCode[0] == CRDT_TITLE_FONT_COLOR)
             {
                 //Get the new color for the title
-                gubCreditScreenTitleColor = Enum.Parse<FontColor>(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
+                this.gubCreditScreenTitleColor = Enum.Parse<FontColor>(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
                 //swscanf(&pzCode[1], L"%d%*s", &gubCreditScreenTitleColor);
 
                 return CRDT_FLAG__.CRDT_NODE_NONE;
@@ -395,7 +395,7 @@ namespace SharpAlliance.Core.Screens
             else if (pzCode[0] == CRDT_ACTIVE_FONT_COLOR)
             {
                 //Get the new color for the active text
-                gubCreditScreenActiveColor = Enum.Parse<FontColor>(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
+                this.gubCreditScreenActiveColor = Enum.Parse<FontColor>(pzCode.Substring(1, pzCode.IndexOf(CRDT_SEPARATION_CODE) - 1));
                 // swscanf(&pzCode[1], L"%d%*s", &gubCreditScreenActiveColor);
 
                 return CRDT_FLAG__.CRDT_NODE_NONE;
@@ -491,8 +491,8 @@ namespace SharpAlliance.Core.Screens
             //Determine the font and the color to use
             if (uiFlags.HasFlag(CRDT_FLAG__.TITLE))
             {
-                uiFontToUse = guiCreditScreenTitleFont;
-                uiColorToUse = gubCreditScreenTitleColor;
+                uiFontToUse = this.guiCreditScreenTitleFont;
+                uiColorToUse = this.gubCreditScreenTitleColor;
             }
             /*
                 else if ( uiFlags & CRDT_FLAG__START_SECTION )
@@ -508,8 +508,8 @@ namespace SharpAlliance.Core.Screens
             */
             else
             {
-                uiFontToUse = guiCreditScreenActiveFont;
-                uiColorToUse = gubCreditScreenActiveColor;
+                uiFontToUse = this.guiCreditScreenActiveFont;
+                uiColorToUse = this.gubCreditScreenActiveColor;
             }
 
             //
@@ -537,7 +537,6 @@ namespace SharpAlliance.Core.Screens
                 uiColorToUse,
                 pNodeToAdd.pString,
                 0,
-                false,
                 TextJustifies.DONT_DISPLAY_TEXT) + 1;
 
             //starting y position on the screen
@@ -570,7 +569,7 @@ namespace SharpAlliance.Core.Screens
                 this.fonts.SetFontDestBuffer(pNodeToAdd.uiVideoSurfaceImage, 0, 0, CRDT_WIDTH_OF_TEXT_AREA, pNodeToAdd.sHeightOfString, false);
 
                 //write the string onto the surface
-                this.fonts.DisplayWrappedString(new(0, 1), CRDT_WIDTH_OF_TEXT_AREA, 2, uiFontToUse, uiColorToUse, pNodeToAdd.pString, 0, false, gubCrdtJustification);
+                this.fonts.DisplayWrappedString(new(0, 1), CRDT_WIDTH_OF_TEXT_AREA, 2, uiFontToUse, uiColorToUse, pNodeToAdd.pString, 0, this.gubCrdtJustification);
 
                 //reset the font dest buffer
                 this.fonts.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
@@ -581,8 +580,8 @@ namespace SharpAlliance.Core.Screens
             //
 
             //Add the new node to the list
-            gCrdtNodes.Add(pNodeToAdd);
-            gCrdtLastAddedNode = pNodeToAdd;
+            this.gCrdtNodes.Add(pNodeToAdd);
+            this.gCrdtLastAddedNode = pNodeToAdd;
 
             return true;
         }
@@ -750,7 +749,7 @@ namespace SharpAlliance.Core.Screens
                     this.gCrdtMouseRegions[(int)uiCnt] = new MouseRegion(uiCnt.ToString());
                 }
 
-                this.inputs.Mouse.MSYS_DefineRegion(
+                this.inputs.Mouse.DefineRegion(
                     this.gCrdtMouseRegions[(int)uiCnt],
                      new(
                         this.gCreditFaces[(int)uiCnt].sX,
@@ -765,7 +764,7 @@ namespace SharpAlliance.Core.Screens
                 // Add region
                 //this.inputs.Mouse.MSYS_AddRegion(&gCrdtMouseRegions[uiCnt]);
 
-                this.inputs.Mouse.MSYS_SetRegionUserData(this.gCrdtMouseRegions[(int)uiCnt], 0, (int)uiCnt);
+                this.inputs.Mouse.SetRegionUserData(this.gCrdtMouseRegions[(int)uiCnt], 0, (int)uiCnt);
             }
 
 
@@ -822,7 +821,7 @@ namespace SharpAlliance.Core.Screens
             }
             else if (iReason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
             {
-                this.giCurrentlySelectedFace = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 0);
+                this.giCurrentlySelectedFace = this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
             }
             else if (iReason.HasFlag(MouseCallbackReasons.MOVE))
             {

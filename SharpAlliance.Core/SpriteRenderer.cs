@@ -147,6 +147,7 @@ namespace SharpAlliance
             {
                 writemap[i] = this.DrawCalls[i].Quad;
             }
+
             gd.Unmap(this._vertexBuffer);
 
             cl.SetPipeline(this._pipeline);
@@ -185,10 +186,12 @@ namespace SharpAlliance
             cl.SetPipeline(this._pipeline);
             cl.SetVertexBuffer(0, this._textBuffer);
             cl.SetGraphicsResourceSet(0, this._orthoSet);
+
             if (this._textSet == null)
             {
                 this._textSet = gd.ResourceFactory.CreateResourceSet(new ResourceSetDescription(this._texLayout, textureView, gd.PointSampler));
             }
+
             cl.SetGraphicsResourceSet(1, this._textSet);
             Texture target = textureView.Target;
             cl.UpdateBuffer(this._textBuffer, 0, new QuadVertex(pos, new Vector2(target.Width, target.Height)));
@@ -261,7 +264,7 @@ namespace SharpAlliance
             public override int GetHashCode() => HashCode.Combine(this.Position, this.Size, this.Tint, this.Rotation);
             public override bool Equals(object? obj)
             {
-                if(obj is not QuadVertex quad)
+                if (obj is not QuadVertex quad)
                 {
                     return false;
                 }

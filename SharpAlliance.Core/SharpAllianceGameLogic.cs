@@ -177,6 +177,7 @@ namespace SharpAlliance.Core
                     sm.guiPendingScreen = NullScreen.Instance;
                 }
 
+                this.video.ClearElements();
                 var nextScreenName = await sm.CurrentScreen.Handle();
                 nextScreen = await sm.GetScreen(nextScreenName, activate: false);
 

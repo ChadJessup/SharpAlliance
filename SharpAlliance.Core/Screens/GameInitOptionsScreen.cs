@@ -107,12 +107,12 @@ namespace SharpAlliance.Core.Screens
             this.cursor.SetCurrentCursorFromDatabase(Cursor.NORMAL);
 
             // load the Main trade screen backgroiund image
-            this.video.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out guiGIOMainBackGroundImageKey);
+            this.video.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
 
             //Ok button
-            giGIODoneBtnImage = this.gui.Buttons.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
-            guiGIODoneButton = this.gui.Buttons.CreateIconAndTextButton(
-                giGIODoneBtnImage,
+            this.giGIODoneBtnImage = this.gui.Buttons.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
+            this.guiGIODoneButton = this.gui.Buttons.CreateIconAndTextButton(
+                this.giGIODoneBtnImage,
                 EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_OK_TEXT],
                 OPT_BUTTON_FONT,
                 OPT_BUTTON_ON_COLOR,
@@ -124,18 +124,18 @@ namespace SharpAlliance.Core.Screens
                 ButtonFlags.BUTTON_TOGGLE,
                 MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
-                BtnGIODoneCallback);
+                this.BtnGIODoneCallback);
 
             this.gui.Buttons.SpecifyButtonSoundScheme(
-                guiGIODoneButton,
+                this.guiGIODoneButton,
                 BUTTON_SOUND_SCHEME.BIGSWITCH3);
 
-            this.gui.Buttons.SpecifyDisabledButtonStyle(guiGIODoneButton, DISABLED_STYLE.NONE);
+            this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiGIODoneButton, DISABLED_STYLE.NONE);
 
             //Cancel button
-            giGIOCancelBtnImage = this.gui.Buttons.UseLoadedButtonImage(giGIODoneBtnImage, -1, 1, -1, 3, -1);
-            guiGIOCancelButton = this.gui.Buttons.CreateIconAndTextButton(
-                giGIOCancelBtnImage,
+            this.giGIOCancelBtnImage = this.gui.Buttons.UseLoadedButtonImage(this.giGIODoneBtnImage, -1, 1, -1, 3, -1);
+            this.guiGIOCancelButton = this.gui.Buttons.CreateIconAndTextButton(
+                this.giGIOCancelBtnImage,
                 EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_CANCEL_TEXT],
                 OPT_BUTTON_FONT,
                 OPT_BUTTON_ON_COLOR,
@@ -147,9 +147,9 @@ namespace SharpAlliance.Core.Screens
                 ButtonFlags.BUTTON_TOGGLE,
                 MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
-                BtnGIOCancelCallback);
+                this.BtnGIOCancelCallback);
 
-            this.gui.Buttons.SpecifyButtonSoundScheme(guiGIOCancelButton, BUTTON_SOUND_SCHEME.BIGSWITCH3);
+            this.gui.Buttons.SpecifyButtonSoundScheme(this.guiGIOCancelButton, BUTTON_SOUND_SCHEME.BIGSWITCH3);
 
 
             //
@@ -159,31 +159,31 @@ namespace SharpAlliance.Core.Screens
 
             for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
             {
-                guiDifficultySettingsToggles[cnt] = this.gui.Buttons.CreateCheckBoxButton(
+                this.guiDifficultySettingsToggles[cnt] = this.gui.Buttons.CreateCheckBoxButton(
                     new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                     "INTERFACE\\OptionsCheck.sti",
                     MSYS_PRIORITY.HIGH + 10,
-                    BtnDifficultyTogglesCallback);
+                    this.BtnDifficultyTogglesCallback);
 
-                this.gui.Buttons.MSYS_SetBtnUserData(guiDifficultySettingsToggles[cnt], 0, (int)cnt);
+                this.gui.Buttons.SetButtonUserData(this.guiDifficultySettingsToggles[cnt], 0, (int)cnt);
 
                 usPosY += GIO_GAP_BN_SETTINGS;
             }
-            if (gGameOptions.DifficultyLevel == DifficultyLevel.Easy)
+            if (this.gGameOptions.DifficultyLevel == DifficultyLevel.Easy)
             {
-                guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_EASY].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_EASY].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
-            else if (gGameOptions.DifficultyLevel == DifficultyLevel.Medium)
+            else if (this.gGameOptions.DifficultyLevel == DifficultyLevel.Medium)
             {
-                guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_MED].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_MED].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
-            else if (gGameOptions.DifficultyLevel == DifficultyLevel.Hard)
+            else if (this.gGameOptions.DifficultyLevel == DifficultyLevel.Hard)
             {
-                guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_HARD].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_HARD].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
             else
             {
-                guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_MED].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_MED].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
 
 
@@ -194,45 +194,45 @@ namespace SharpAlliance.Core.Screens
             usPosY = GIO_GAME_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
             for (GameStyle gameStyle = 0; gameStyle < GameStyle.NUM_GAME_STYLES; gameStyle++)
             {
-                guiGameStyleToggles[gameStyle] = this.gui.Buttons.CreateCheckBoxButton(
+                this.guiGameStyleToggles[gameStyle] = this.gui.Buttons.CreateCheckBoxButton(
                     new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                     "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
-                    BtnGameStyleTogglesCallback);
+                    this.BtnGameStyleTogglesCallback);
 
-                this.gui.Buttons.MSYS_SetBtnUserData(guiGameStyleToggles[gameStyle], 0, (int)gameStyle);
+                this.gui.Buttons.SetButtonUserData(this.guiGameStyleToggles[gameStyle], 0, (int)gameStyle);
 
                 usPosY += GIO_GAP_BN_SETTINGS;
             }
-            if (gGameOptions.SciFi)
+            if (this.gGameOptions.SciFi)
             {
-                guiGameStyleToggles[GameStyle.GIO_SCI_FI].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiGameStyleToggles[GameStyle.GIO_SCI_FI].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
             else
             {
-                guiGameStyleToggles[GameStyle.GIO_REALISTIC].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiGameStyleToggles[GameStyle.GIO_REALISTIC].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
 
             // JA2Gold: iron man buttons
             usPosY = GIO_IRON_MAN_SETTING_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
             for (IronManMode opt = 0; opt < IronManMode.NUM_SAVE_OPTIONS; opt++)
             {
-                guiGameSaveToggles[opt] = this.gui.Buttons.CreateCheckBoxButton(
+                this.guiGameSaveToggles[opt] = this.gui.Buttons.CreateCheckBoxButton(
                     new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                     "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
-                    BtnGameSaveTogglesCallback);
+                    this.BtnGameSaveTogglesCallback);
 
-                this.gui.Buttons.MSYS_SetBtnUserData(guiGameSaveToggles[opt], 0, (int)opt);
+                this.gui.Buttons.SetButtonUserData(this.guiGameSaveToggles[opt], 0, (int)opt);
 
                 usPosY += GIO_GAP_BN_SETTINGS;
             }
 
-            if (gGameOptions.IronManMode)
+            if (this.gGameOptions.IronManMode)
             {
-                guiGameSaveToggles[IronManMode.GIO_IRON_MAN].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiGameSaveToggles[IronManMode.GIO_IRON_MAN].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
             else
             {
-                guiGameSaveToggles[IronManMode.GIO_CAN_SAVE].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiGameSaveToggles[IronManMode.GIO_CAN_SAVE].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
 
             //
@@ -242,27 +242,27 @@ namespace SharpAlliance.Core.Screens
             usPosY = GIO_GUN_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
             for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
             {
-                guiGunOptionToggles[cnt] = this.gui.Buttons.CreateCheckBoxButton(
+                this.guiGunOptionToggles[cnt] = this.gui.Buttons.CreateCheckBoxButton(
                     new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                     "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
-                    BtnGunOptionsTogglesCallback);
+                    this.BtnGunOptionsTogglesCallback);
 
-                this.gui.Buttons.MSYS_SetBtnUserData(guiGunOptionToggles[cnt], 0, (int)cnt);
+                this.gui.Buttons.SetButtonUserData(this.guiGunOptionToggles[cnt], 0, (int)cnt);
 
                 usPosY += GIO_GAP_BN_SETTINGS;
             }
 
-            if (gGameOptions.GunNut)
+            if (this.gGameOptions.GunNut)
             {
-                guiGunOptionToggles[GunOption.GIO_GUN_NUT].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiGunOptionToggles[GunOption.GIO_GUN_NUT].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
             else
             {
-                guiGunOptionToggles[GunOption.GIO_REDUCED_GUNS].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                this.guiGunOptionToggles[GunOption.GIO_REDUCED_GUNS].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
 
             //Reset the exit screen
-            gubGIOExitScreen = ScreenName.GAME_INIT_OPTIONS_SCREEN;
+            this.gubGIOExitScreen = ScreenName.GAME_INIT_OPTIONS_SCREEN;
 
             //REnder the screen once so we can blt ot to ths save buffer
             this.RenderGIOScreen();
@@ -271,17 +271,17 @@ namespace SharpAlliance.Core.Screens
 
             //this.video.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 639, 439);
 
-            gfGIOButtonsAllocated = true;
+            this.gfGIOButtonsAllocated = true;
 
             return ValueTask.CompletedTask;
         }
 
         public async ValueTask<ScreenName> Handle()
         {
-            if (gfGIOScreenEntry)
+            if (this.gfGIOScreenEntry)
             {
-                gfGIOScreenEntry = false;
-                gfGIOScreenExit = false;
+                this.gfGIOScreenEntry = false;
+                this.gfGIOScreenExit = false;
                 this.video.InvalidateRegion(new(0, 0, 640, 480));
             }
 
@@ -304,15 +304,15 @@ namespace SharpAlliance.Core.Screens
             {
                 var mm = await this.screens.GetScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN, activate: false);
                 mm.ClearMainMenu();
-                return gubGIOExitScreen;
+                return this.gubGIOExitScreen;
             }
 
-            if (this.fade.HandleBeginFadeOut(gubGIOExitScreen))
+            if (this.fade.HandleBeginFadeOut(this.gubGIOExitScreen))
             {
-                return gubGIOExitScreen;
+                return this.gubGIOExitScreen;
             }
 
-            if (gfGIOScreenExit)
+            if (this.gfGIOScreenExit)
             {
                 this.ExitGIOScreen();
             }
@@ -320,14 +320,14 @@ namespace SharpAlliance.Core.Screens
             if (this.fade.HandleFadeInCallback())
             {
                 // Re-render the scene!
-                RenderGIOScreen();
+                this.RenderGIOScreen();
             }
 
-            if (this.fade.HandleBeginFadeIn(gubGIOExitScreen))
+            if (this.fade.HandleBeginFadeIn(this.gubGIOExitScreen))
             {
             }
 
-            return gubGIOExitScreen;
+            return this.gubGIOExitScreen;
         }
 
         private void ExitGIOScreen()
@@ -347,7 +347,7 @@ namespace SharpAlliance.Core.Screens
             int usPosY;
 
             //Get the main background screen graphic and blt it
-            HVOBJECT background = this.video.GetVideoObject(guiGIOMainBackGroundImageKey);
+            HVOBJECT background = this.video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
             //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT_SRCTRANSPARENCY, NULL);
             this.video.BltVideoObject(background, 0, 0, 0, 0);
             //Shade the background
@@ -355,50 +355,56 @@ namespace SharpAlliance.Core.Screens
 
 
             //Display the title
-            this.video.DrawTextToScreen(EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_INITIAL_GAME_SETTINGS], GIO_MAIN_TITLE_X, GIO_MAIN_TITLE_Y, GIO_MAIN_TITLE_WIDTH, GIO_TITLE_FONT, GIO_TITLE_COLOR, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
-
-
+            this.fonts.DrawTextToScreen(
+                EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_INITIAL_GAME_SETTINGS],
+                GIO_MAIN_TITLE_X,
+                GIO_MAIN_TITLE_Y,
+                GIO_MAIN_TITLE_WIDTH,
+                GIO_TITLE_FONT,
+                GIO_TITLE_COLOR,
+                FontColor.FONT_MCOLOR_BLACK,
+                TextJustifies.CENTER_JUSTIFIED);
 
             //Display the Dif Settings Title Text
             //DrawTextToScreen( gzGIOScreenText[ GIO_DIF_LEVEL_TEXT ], GIO_DIF_SETTINGS_X, (GIO_DIF_SETTINGS_Y-GIO_GAP_BN_SETTINGS), GIO_DIF_SETTINGS_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X, GIO_DIF_SETTINGS_Y - GIO_GAP_BN_SETTINGS), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_DIF_LEVEL_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X, GIO_DIF_SETTINGS_Y - GIO_GAP_BN_SETTINGS), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_DIF_LEVEL_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
 
             usPosY = GIO_DIF_SETTINGS_Y + 2;
             //DrawTextToScreen( gzGIOScreenText[ GIO_EASY_TEXT ], (GIO_DIF_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_EASY_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_EASY_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             usPosY += GIO_GAP_BN_SETTINGS;
             //DrawTextToScreen( gzGIOScreenText[ GIO_MEDIUM_TEXT ], (GIO_DIF_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_MEDIUM_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_MEDIUM_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             usPosY += GIO_GAP_BN_SETTINGS;
             //DrawTextToScreen( gzGIOScreenText[ GIO_HARD_TEXT ], (GIO_DIF_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_HARD_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_HARD_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             //Display the Game Settings Title Text
             //	DrawTextToScreen( gzGIOScreenText[ GIO_GAME_STYLE_TEXT ], GIO_GAME_SETTINGS_X, (GIO_GAME_SETTINGS_Y-GIO_GAP_BN_SETTINGS), GIO_GAME_SETTINGS_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_GAME_SETTINGS_X, GIO_GAME_SETTINGS_Y - GIO_GAP_BN_SETTINGS), GIO_GAME_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GAME_STYLE_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_GAME_SETTINGS_X, GIO_GAME_SETTINGS_Y - GIO_GAP_BN_SETTINGS), GIO_GAME_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GAME_STYLE_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             usPosY = GIO_GAME_SETTINGS_Y + 2;
             //DrawTextToScreen( gzGIOScreenText[ GIO_REALISTIC_TEXT ], (GIO_GAME_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GAME_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_REALISTIC_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GAME_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_REALISTIC_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             usPosY += GIO_GAP_BN_SETTINGS;
             //DrawTextToScreen( gzGIOScreenText[ GIO_SCI_FI_TEXT ], (GIO_GAME_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GAME_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_SCI_FI_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GAME_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_SCI_FI_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             //Display the Gun Settings Title Text
             //	DrawTextToScreen( gzGIOScreenText[ GIO_GUN_OPTIONS_TEXT ], GIO_GUN_SETTINGS_X, (GIO_GUN_SETTINGS_Y-GIO_GAP_BN_SETTINGS), GIO_GUN_SETTINGS_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_GUN_SETTINGS_X, GIO_GUN_SETTINGS_Y - GIO_GAP_BN_SETTINGS), GIO_GUN_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GUN_OPTIONS_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_GUN_SETTINGS_X, GIO_GUN_SETTINGS_Y - GIO_GAP_BN_SETTINGS), GIO_GUN_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GUN_OPTIONS_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             usPosY = GIO_GUN_SETTINGS_Y + 2;
             //DrawTextToScreen( gzGIOScreenText[ GIO_REDUCED_GUNS_TEXT ], (GIO_GUN_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GUN_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_REDUCED_GUNS_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GUN_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_REDUCED_GUNS_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             usPosY += GIO_GAP_BN_SETTINGS;
             //DrawTextToScreen( gzGIOScreenText[ GIO_GUN_NUT_TEXT ], (GIO_GUN_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
-            this.fonts.DisplayWrappedString(new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GUN_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GUN_NUT_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_GUN_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GUN_NUT_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             // JA2Gold: no more timed turns setting
             /*
@@ -413,16 +419,16 @@ namespace SharpAlliance.Core.Screens
             */
 
             // JA2Gold: Display the iron man Settings Title Text
-            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X, GIO_IRON_MAN_SETTING_Y - GIO_GAP_BN_SETTINGS), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GAME_SAVE_STYLE_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X, GIO_IRON_MAN_SETTING_Y - GIO_GAP_BN_SETTINGS), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_GAME_SAVE_STYLE_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
             usPosY = GIO_IRON_MAN_SETTING_Y + 2;
 
-            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_SAVE_ANYWHERE_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_SAVE_ANYWHERE_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
             usPosY += GIO_GAP_BN_SETTINGS;
 
-            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_IRON_MAN_TEXT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TEXT, usPosY), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_IRON_MAN_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             usPosY += 20;
-            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TEXT, usPosY), 220, 2, FontStyle.FONT12ARIAL, GIO_TOGGLE_TEXT_COLOR, EnglishText.zNewTacticalMessages[(int)TCTL_MSG__.CANNOT_SAVE_DURING_COMBAT], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TEXT, usPosY), 220, 2, FontStyle.FONT12ARIAL, GIO_TOGGLE_TEXT_COLOR, EnglishText.zNewTacticalMessages[(int)TCTL_MSG__.CANNOT_SAVE_DURING_COMBAT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
 
             return true;
         }
@@ -454,7 +460,7 @@ namespace SharpAlliance.Core.Screens
                 {
                     for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
                     {
-                        guiDifficultySettingsToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+                        this.guiDifficultySettingsToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                     }
 
                     //enable the current button
@@ -467,7 +473,7 @@ namespace SharpAlliance.Core.Screens
                     //if none of the other boxes are checked, do not uncheck this box
                     for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
                     {
-                        if (guiDifficultySettingsToggles[(GameDifficulty)cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+                        if (this.guiDifficultySettingsToggles[(GameDifficulty)cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                         {
                             fAnyChecked = true;
                         }
@@ -492,7 +498,7 @@ namespace SharpAlliance.Core.Screens
                 {
                     for (GameStyle cnt = 0; cnt < GameStyle.NUM_GAME_STYLES; cnt++)
                     {
-                        guiGameStyleToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+                        this.guiGameStyleToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                     }
 
                     //enable the current button
@@ -505,7 +511,7 @@ namespace SharpAlliance.Core.Screens
                     //if none of the other boxes are checked, do not uncheck this box
                     for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
                     {
-                        if (guiGameStyleToggles[(GameStyle)cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+                        if (this.guiGameStyleToggles[(GameStyle)cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                         {
                             fAnyChecked = true;
                         }
@@ -529,7 +535,7 @@ namespace SharpAlliance.Core.Screens
                 {
                     for (IronManMode cnt = 0; cnt < IronManMode.NUM_SAVE_OPTIONS; cnt++)
                     {
-                        guiGameSaveToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+                        this.guiGameSaveToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                     }
 
                     //enable the current button
@@ -542,7 +548,7 @@ namespace SharpAlliance.Core.Screens
                     //if none of the other boxes are checked, do not uncheck this box
                     for (IronManMode cnt = 0; cnt < IronManMode.NUM_SAVE_OPTIONS; cnt++)
                     {
-                        if (guiGameSaveToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+                        if (this.guiGameSaveToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                         {
                             fAnyChecked = true;
                         }
@@ -567,7 +573,7 @@ namespace SharpAlliance.Core.Screens
                 {
                     for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
                     {
-                        guiGunOptionToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+                        this.guiGunOptionToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                     }
 
                     //enable the current button
@@ -580,7 +586,7 @@ namespace SharpAlliance.Core.Screens
                     //if none of the other boxes are checked, do not uncheck this box
                     for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
                     {
-                        if (guiGunOptionToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+                        if (this.guiGunOptionToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                         {
                             fAnyChecked = true;
                         }
@@ -600,7 +606,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {
@@ -613,7 +619,7 @@ namespace SharpAlliance.Core.Screens
                     this.DisplayMessageToUserAboutGameDifficulty();
                 }
 
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
@@ -631,16 +637,16 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
-                gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
+                this.gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
 
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 

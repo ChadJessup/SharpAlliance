@@ -216,7 +216,6 @@ namespace SharpAlliance.Core.Screens
             // Init dialog queue system
             await this.dialogs.InitalizeDialogueControl();
 
-
             if (!await this.strategicMap.InitStrategicEngine())
             {
                 return ScreenName.ERROR_SCREEN;

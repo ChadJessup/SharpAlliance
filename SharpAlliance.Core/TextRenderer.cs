@@ -5,7 +5,6 @@ using SixLabors.Fonts;
 using Veldrid;
 using System;
 using System.Runtime.CompilerServices;
-using System.IO;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp.Drawing.Processing;
 
@@ -25,27 +24,39 @@ namespace SharpAlliance.Core
         public TextRenderer(GraphicsDevice gd)
         {
             this._gd = gd;
-            uint width = 250;
-            uint height = 100;
+            int width = 640;
+            int height = 480;
             this._texture = gd.ResourceFactory.CreateTexture(
-                TextureDescription.Texture2D(width, height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
+                TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
+
             this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
 
-            FontCollection fc = new FontCollection();
-            var families = SystemFonts.Find("Arial");
-            //FontFamily family = fc.CreateFont("Arial", 10);
-            //               fc.Install(Path.Combine(AppContext.BaseDirectory, "Assets", "Fonts", "Sunflower-Medium.ttf"));
-            //this._font = family.CreateFont(28);
-            this._font = families.CreateFont(10, FontStyle.Bold);
-            this._image = new Image<Rgba32>(250, 100);
+            this._font = this.LoadFont("Arial", 10, FontStyle.Bold);
+
+            this._image = new Image<Rgba32>(width, height);
         }
 
-        public unsafe void DrawText(string text)
+        public Font LoadFont(string fontFamily, int size, FontStyle style)
+        {
+            var allFonts = SystemFonts.Collection;
+            var families = SystemFonts.Find(fontFamily);
+            return families.CreateFont(size, style);
+        }
+
+        public unsafe void ClearText()
         {
             this._image.TryGetSinglePixelSpan(out var span);
             fixed (void* data = &MemoryMarshal.GetReference(span))
             {
                 Unsafe.InitBlock(data, 0, (uint)(this._image.Width * this._image.Height * 4));
+            }
+        }
+
+        public void DrawText(string text, int x, int y, int width, HorizontalAlignment alignment, Font font, Rgba32 foreground, Rgba32 background)
+        {
+            if (text == "Save Game")
+            {
+
             }
 
             this._image.Mutate(ctx =>
@@ -55,8 +66,8 @@ namespace SharpAlliance.Core
                     {
                         TextOptions = new TextOptions()
                         {
-                            WrapTextWidth = _image.Width,
-                            HorizontalAlignment = HorizontalAlignment.Center,
+                            WrapTextWidth = width,
+                            HorizontalAlignment = alignment,
                         },
                         GraphicsOptions = new GraphicsOptions()
                         {
@@ -64,17 +75,40 @@ namespace SharpAlliance.Core
                         }
                     },
                     text,
-                    _font,
-                    White,
-                    new PointF());
+                    font,
+                    foreground,
+                    new PointF(x, y));
             });
+        }
 
+        public unsafe void RenderAllText()
+        {
             this._image.TryGetSinglePixelSpan(out var span2);
             fixed (void* data = &MemoryMarshal.GetReference(span2))
             {
                 uint size = (uint)(this._image.Width * this._image.Height * 4);
-                this._gd.UpdateTexture(this._texture, (IntPtr)data, size, 0, 0, 0, this._texture.Width, this._texture.Height, 1, 0, 0);
+
+                try
+                {
+                    this._gd.UpdateTexture(
+                        this._texture,
+                        (IntPtr)data,
+                        size,
+                        x: 0,
+                        y: 0,
+                        z: 0,
+                        this._texture.Width,
+                        this._texture.Height,
+                        depth: 1,
+                        mipLevel: 0,
+                        arrayLayer: 0);
+                }
+                catch (VeldridException e)
+                {
+
+                }
             }
+
         }
     }
 }

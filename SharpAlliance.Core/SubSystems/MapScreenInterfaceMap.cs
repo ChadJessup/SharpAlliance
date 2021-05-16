@@ -165,7 +165,7 @@ namespace SharpAlliance.Core.SubSystems
             this.sBadSectorsList[13, 14] = true;
         }
 
-        public ValueTask<bool> InitializePalettesForMap()
+        public void InitializePalettesForMap()
         {
             // init palettes
             HVSURFACE hSrcVSurface;
@@ -190,8 +190,6 @@ namespace SharpAlliance.Core.SubSystems
 
             // delete image
             this.video.DeleteVideoSurfaceFromIndex(uiTempMap);
-
-            return ValueTask.FromResult(true);
         }
 
         public void SetUpMapScreenFastHelpText()

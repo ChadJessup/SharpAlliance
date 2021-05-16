@@ -11,6 +11,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -54,6 +55,7 @@ namespace SharpAlliance.Core.Managers
         private readonly MouseSubSystem mouse;
         private readonly RenderWorld renderWorld;
         private readonly ScreenManager screenManager;
+        private readonly FontSubSystem fonts;
         private readonly GameContext context;
         private readonly IFileManager files;
         private readonly Shading shading;
@@ -64,8 +66,6 @@ namespace SharpAlliance.Core.Managers
         public GraphicsDevice GraphicDevice { get; private set; }
         public ResourceFactory Factory { get; private set; }
         protected SpriteRenderer SpriteRenderer { get; private set; }
-
-        protected TextRenderer TextRenderer { get; private set; }
 
         private Swapchain mainSwapchain;
         private CommandList commandList;
@@ -192,10 +192,12 @@ namespace SharpAlliance.Core.Managers
             MouseSubSystem mouseSubSystem,
             RenderWorld renderWorld,
             IScreenManager screenManager,
+            FontSubSystem fontManager,
             Shading shading)
         {
             this.logger = logger;
             this.context = context;
+            this.fonts = fontManager;
             this.files = fileManager;
             this.inputs = (inputManager as InputManager)!;
             this.mouse = mouseSubSystem;
@@ -227,7 +229,7 @@ namespace SharpAlliance.Core.Managers
                 syncToVerticalBlank: false,
                 resourceBindingModel: ResourceBindingModel.Improved,
                 preferDepthRangeZeroToOne: true,
-                preferStandardClipSpaceYDirection: true,
+                preferStandardClipSpaceYDirection: false,
                 swapchainSrgbFormat: this._colorSrgb);
 
 #if DEBUG
@@ -275,7 +277,6 @@ namespace SharpAlliance.Core.Managers
 
             this.SpriteRenderer = new SpriteRenderer(this.GraphicDevice);
             IVideoManager.DebugRenderer = new DebugRenderer(this.GraphicDevice);
-            this.TextRenderer = new TextRenderer(this.GraphicDevice);
 
             this.guiFrameBufferState = BufferState.DIRTY;
             this.guiMouseBufferState = BufferState.DISABLED;
@@ -318,8 +319,8 @@ namespace SharpAlliance.Core.Managers
             this.SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
             IVideoManager.DebugRenderer.Draw(this.GraphicDevice, this.commandList);
 
-            this.SpriteRenderer.RenderText(this.GraphicDevice, this.commandList, this.TextRenderer.TextureView, new(0, 0));
-
+            this.SpriteRenderer.RenderText(this.GraphicDevice, this.commandList, this.fonts.TextRenderer.TextureView, new(0, 0));
+            this.fonts.TextRenderer.RenderAllText();
             this.commandList.End();
 
             this.GraphicDevice.SubmitCommands(this.commandList);
@@ -825,6 +826,7 @@ namespace SharpAlliance.Core.Managers
                     this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = true;
                     this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight = Region.Width - Region.X;
                     this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom = Region.Height - Region.Y;
+
                     if (Region.X < 0)
                     {
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = (0 - Region.X);
@@ -836,6 +838,7 @@ namespace SharpAlliance.Core.Managers
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = MousePos.X - this.gsMouseCursorXOffset;
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = 0;
                     }
+
                     if (Region.Y < 0)
                     {
                         this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = 0;
@@ -1049,17 +1052,16 @@ namespace SharpAlliance.Core.Managers
             Rectangle sourceRegion,
             Image<Rgba32> srcImage)
         {
+            srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
 
-            //srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
-            //
-            //var newTexture = new ImageSharpTexture(srcImage)
-            //    .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
-            //
-            //var finalRect = new Rectangle(
-            //    new Point(destinationPoint.X, destinationPoint.Y),
-            //    new Size(sourceRegion.Width, sourceRegion.Height));
-            //
-            // this.SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
+            var newTexture = new ImageSharpTexture(srcImage)
+                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+
+            var finalRect = new Rectangle(
+                new Point(destinationPoint.X, destinationPoint.Y),
+                new Size(sourceRegion.Width, sourceRegion.Height));
+
+            this.SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
         }
 
         private void ScrollJA2Background(
@@ -1482,7 +1484,7 @@ namespace SharpAlliance.Core.Managers
         {
         }
 
-        private void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
+        public void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
         {
             usWidth = 0;
             usHeight = 0;
@@ -1539,14 +1541,78 @@ namespace SharpAlliance.Core.Managers
                 $"{hVObject.Name}_{textureIndex}");
         }
 
-        public void DrawTextToScreen(string text, int usLocX, int usLocY, int width, FontStyle fontStyle, FontColor fontForegroundColor, FontColor fontBackgroundColor, bool dirty, TextJustifies justification)
+        public bool DrawTextToScreen(
+            string text,
+            int usLocX,
+            int usLocY,
+            int usWidth,
+            FontStyle ulFont,
+            FontColor ubColor,
+            FontColor ubBackGroundColor,
+            TextJustifies ulFlags)
         {
+            //int usPosX = 0;
+            //int usPosY = 0;
+            //int usFontHeight = 0;
+            //int usStringWidth = 0;
+            //this.fonts.SetFont(ulFont);
+            //
+            ////if (USE_WINFONTS())
+            ////{
+            ////    COLORVAL Color = FROMRGB(255, 255, 255);
+            ////    SetWinFontForeColor(GET_WINFONT(), &Color);
+            ////}
+            ////else
+            //{
+            //    this.fonts.SetFontForeground(ubColor);
+            //    this.fonts.SetFontBackground(ubBackGroundColor);
+            //}
+            //
+            //if (ulFlags.HasFlag(TextJustifies.TEXT_SHADOWED))
+            //{
+            //    this.fonts.ShadowText(text, ulFont, usPosX - 1, usPosY - 1);
+            //}
 
-            this.TextRenderer.DrawText(text);
-            //TextRenderer = new TextRenderer(_gd);
-            //textRenderer.DrawText("0");
+            // if (USE_WINFONTS())
+            // {
+            //     if (fDirty)
+            //     {
+            //         // gprintfdirty(usPosX, usPosY, pStr);
+            //         // WinFont_mprintf(GET_WINFONT(), usPosX, usPosY, pStr);
+            //     }
+            //     else
+            //     {
+            //         // WinFont_mprintf(GET_WINFONT(), usPosX, usPosY, pStr);
+            //     }
+            // }
+            // else
+            //{
+            //    if (fDirty)
+            //    {
+            //        // gprintfdirty(usPosX, usPosY, pStr);
+            //        this.fonts.mprintf(usPosX, usPosY, text);
+            //    }
+            //    else
+            //    {
+            //         this.fonts.mprintf(usPosX, usPosY, text);
+            //    }
+            //}
+            //
+            //if ((this.fonts.IAN_WRAP_NO_SHADOW & ulFlags) != 0)
+            //{
+            //    // reset shadow
+            //    this.fonts.SetFontShadow(FontShadow.DEFAULT_SHADOW);
+            //}
+            //
+            //if (ulFlags.HasFlag(TextJustifies.INVALIDATE_TEXT))
+            //{
+            //    usFontHeight = this.fonts.WFGetFontHeight(ulFont);
+            //    usStringWidth = this.fonts.WFStringPixLength(text, ulFont);
+            //
+            //    this.InvalidateRegion(new(usPosX, usPosY, usPosX + usStringWidth, usPosY + usFontHeight));
+            //}
 
-            //this.RenderText()
+            return true;
         }
 
         public void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
@@ -1582,24 +1648,11 @@ namespace SharpAlliance.Core.Managers
         {
         }
 
-        public byte[] LockVideoSurface(Surfaces buttonDestBuffer, out uint uiDestPitchBYTES)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4)
         {
         }
 
-        public void UnLockVideoSurface(Surfaces buttonDestBuffer)
-        {
-        }
-
         public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
-        {
-        }
-
-        public void Blt16BPPBufferShadowRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
         {
         }
 
@@ -1608,10 +1661,6 @@ namespace SharpAlliance.Core.Managers
         }
 
         public void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
-        {
-        }
-
-        public void Blt8BPPDataTo16BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
         {
         }
 
@@ -1687,6 +1736,11 @@ namespace SharpAlliance.Core.Managers
         public void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
         {
             hSrcVSurface = new();
+        }
+
+        public void ClearElements()
+        {
+            this.fonts.TextRenderer.ClearText();
         }
     }
 

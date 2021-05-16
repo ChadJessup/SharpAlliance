@@ -182,7 +182,7 @@ namespace SharpAlliance.Core.Screens
             {
                 try
                 {
-                    gSelectedOptionTextRegion.Add(option, new MouseRegion(option.ToString()));
+                    this.gSelectedOptionTextRegion.Add(option, new MouseRegion(option.ToString()));
                 }
                 catch (Exception e)
                 {
@@ -234,8 +234,8 @@ namespace SharpAlliance.Core.Screens
 
             if (this.gfRedrawOptionsScreen)
             {
-                this.RenderOptionsScreen();
                 this.gui.RenderButtons();
+                this.RenderOptionsScreen();
 
                 this.gfRedrawOptionsScreen = false;
             }
@@ -284,9 +284,9 @@ namespace SharpAlliance.Core.Screens
         {
             long uiCurTime = this.clock.GetJA2Clock();
 
-            if ((uiLastSoundFxTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > guiSoundFxSliderMoving)
+            if ((uiLastSoundFxTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > this.guiSoundFxSliderMoving)
             {
-                guiSoundFxSliderMoving = 0xffffffff;
+                this.guiSoundFxSliderMoving = 0xffffffff;
 
                 //The slider has stopped moving, reset the ambient sector sounds ( so it will change the volume )
                 //if (!DidGameJustStart())
@@ -304,9 +304,9 @@ namespace SharpAlliance.Core.Screens
                 uiLastSoundFxTime = this.clock.GetJA2Clock();
             }
 
-            if ((uiLastSpeechTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > guiSpeechSliderMoving)
+            if ((uiLastSpeechTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > this.guiSpeechSliderMoving)
             {
-                guiSpeechSliderMoving = 0xffffffff;
+                this.guiSpeechSliderMoving = 0xffffffff;
 
                 if (!this.sound.SoundIsPlaying(uiLastPlayingSpeechID))
                 {
@@ -339,8 +339,6 @@ namespace SharpAlliance.Core.Screens
             this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
             this.video.BltVideoObject(hPixHandle, 1, 0, 434, 0);
 
-
-
             //
             // Text for the toggle boxes
             //
@@ -355,16 +353,30 @@ namespace SharpAlliance.Core.Screens
                 //if the string is going to wrap, move the string up a bit
                 if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
                 {
-                    this.fonts.DisplayWrappedString(new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY), OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsToggleText[(int)cnt], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+                    this.fonts.DisplayWrappedString(
+                        new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY),
+                        OPT_TOGGLE_BOX_TEXT_WIDTH,
+                        2,
+                        OPT_MAIN_FONT,
+                        OPT_MAIN_COLOR,
+                        EnglishText.zOptionsToggleText[(int)cnt],
+                        FontColor.FONT_MCOLOR_BLACK,
+                        TextJustifies.LEFT_JUSTIFIED);
                 }
                 else
                 {
-                    this.fonts.DrawTextToScreen(EnglishText.zOptionsToggleText[(int)cnt], new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY), 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+                    this.fonts.DrawTextToScreen(
+                        EnglishText.zOptionsToggleText[(int)cnt],
+                        new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY),
+                        0,
+                        OPT_MAIN_FONT,
+                        OPT_MAIN_COLOR,
+                        FontColor.FONT_MCOLOR_BLACK,
+                        TextJustifies.LEFT_JUSTIFIED);
                 }
 
                 usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
             }
-
 
             usPosY = OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y;
             //Display the 2nd column of toggles
@@ -375,11 +387,11 @@ namespace SharpAlliance.Core.Screens
                 //if the string is going to wrap, move the string up a bit
                 if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
                 {
-                    this.fonts.DisplayWrappedString(new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY), OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsToggleText[(int)cnt], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+                    this.fonts.DisplayWrappedString(new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY), OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsToggleText[(int)cnt], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
                 }
                 else
                 {
-                    this.fonts.DrawTextToScreen(EnglishText.zOptionsToggleText[(int)cnt], new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY), 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.LEFT_JUSTIFIED);
+                    this.fonts.DrawTextToScreen(EnglishText.zOptionsToggleText[(int)cnt], new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY), 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
                 }
 
                 usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
@@ -390,14 +402,13 @@ namespace SharpAlliance.Core.Screens
             //
 
             //Display the Sound Fx text
-            this.fonts.DisplayWrappedString(new(OPT_SOUND_FX_TEXT_X, OPT_SOUND_FX_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_SOUND_FX], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(OPT_SOUND_FX_TEXT_X, OPT_SOUND_FX_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_SOUND_FX], FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
             //Display the Speech text
-
-            this.fonts.DisplayWrappedString(new(OPT_SPEECH_TEXT_X, OPT_SPEECH_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_SPEECH], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(OPT_SPEECH_TEXT_X, OPT_SPEECH_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_SPEECH], FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
             //Display the Music text
-            this.fonts.DisplayWrappedString(new(OPT_MUSIC_TEXT_X, OPT_MUSIC_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_MUSIC], FontColor.FONT_MCOLOR_BLACK, false, TextJustifies.CENTER_JUSTIFIED);
+            this.fonts.DisplayWrappedString(new(OPT_MUSIC_TEXT_X, OPT_MUSIC_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_MUSIC], FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
             this.video.InvalidateRegion(new(OPTIONS__TOP_LEFT_X, OPTIONS__TOP_LEFT_Y, OPTIONS__BOTTOM_RIGHT_X, OPTIONS__BOTTOM_RIGHT_Y));
         }
@@ -411,7 +422,6 @@ namespace SharpAlliance.Core.Screens
 
             //Init the slider bar;
             this.gui.Sliders.InitSliderSystem();
-
 
             if (this.gfExitOptionsDueToMessageBox)
             {
@@ -430,6 +440,7 @@ namespace SharpAlliance.Core.Screens
 
             //Save game button
             this.giOptionsButtonImages = this.gui.Buttons.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);
+
             this.guiOptGotoSaveGameBtn = this.gui.Buttons.CreateIconAndTextButton(
                 this.giOptionsButtonImages,
                 EnglishText.zOptionsText[OptionsText.OPT_SAVE_GAME],
@@ -440,7 +451,7 @@ namespace SharpAlliance.Core.Screens
                 FontShadow.DEFAULT_SHADOW,
                 ButtonTextJustifies.BUTTON_TEXT_CENTER,
                 new(OPT_SAVE_BTN_X, OPT_SAVE_BTN_Y),
-                ButtonFlags.BUTTON_TOGGLE, 
+                ButtonFlags.BUTTON_TOGGLE,
                 MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
                 this.BtnOptGotoSaveGameCallback);
@@ -531,8 +542,7 @@ namespace SharpAlliance.Core.Screens
                     MSYS_PRIORITY.HIGH + 10,
                     this.BtnOptionsTogglesCallback);
 
-                this.gui.Buttons.MSYS_SetBtnUserData(this.guiOptionsToggles[option], 0, (int)cnt);
-
+                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, (int)cnt);
 
                 TextSize.Width = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 
@@ -547,25 +557,24 @@ namespace SharpAlliance.Core.Screens
                         OPT_HIGHLIGHT_COLOR,
                         EnglishText.zOptionsToggleText[(int)cnt],
                         FontColor.FONT_MCOLOR_BLACK,
-                        true,
                         (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
 
                     TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
                     //Create mouse regions for the option toggle text
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    this.inputs.Mouse.DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
                             OPT_TOGGLE_BOX_FIRST_COLUMN_X + 13,
-                            usPosY,
-                            (OPT_TOGGLE_BOX_FIRST_COL_TEXT_X + TextSize.Width),
-                            (usPosY + TextSize.Height * ubNumLines)),
+                            480 - usPosY,
+                            OPT_TOGGLE_BOX_FIRST_COL_TEXT_X + TextSize.Width,
+                            TextSize.Height),
                         MSYS_PRIORITY.HIGH,
                         Cursor.NORMAL,
-                        SelectedOptionTextRegionMovementCallBack,
-                        SelectedOptionTextRegionCallBack);
+                        this.SelectedOptionTextRegionMovementCallBack,
+                        this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.MSYS_SetRegionUserData(
+                    this.inputs.Mouse.SetRegionUserData(
                         this.gSelectedOptionTextRegion[cnt],
                         0,
                         (int)cnt);
@@ -573,17 +582,17 @@ namespace SharpAlliance.Core.Screens
                 else
                 {
                     //Create mouse regions for the option toggle text
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    this.inputs.Mouse.DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
                             OPT_TOGGLE_BOX_FIRST_COLUMN_X + 13,
-                            usPosY,
-                            (OPT_TOGGLE_BOX_FIRST_COL_TEXT_X + TextSize.Width),
-                            (usPosY + TextSize.Height)),
+                            480 - usPosY,
+                            OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
+                            TextSize.Height),
                         MSYS_PRIORITY.HIGH,
                         Cursor.NORMAL,
-                        SelectedOptionTextRegionMovementCallBack,
-                        SelectedOptionTextRegionCallBack);
+                        this.SelectedOptionTextRegionMovementCallBack,
+                        this.SelectedOptionTextRegionCallBack);
 
                     var textRegion = this.gSelectedOptionTextRegion[cnt];
                     this.inputs.Mouse.MSYS_SetRegionUserData(ref textRegion, 0, (int)cnt);
@@ -594,7 +603,6 @@ namespace SharpAlliance.Core.Screens
 
                 usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
             }
-
 
             //Create the 2nd column of check boxes
             usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
@@ -609,7 +617,7 @@ namespace SharpAlliance.Core.Screens
                     MSYS_PRIORITY.HIGH + 10,
                     this.BtnOptionsTogglesCallback);
 
-                this.gui.Buttons.MSYS_SetBtnUserData(this.guiOptionsToggles[option], 0, (int)cnt);
+                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, (int)cnt);
 
 
                 //
@@ -622,48 +630,56 @@ namespace SharpAlliance.Core.Screens
                 if (TextSize.Width > OPT_TOGGLE_BOX_TEXT_WIDTH)
                 {
                     //Get how many lines will be used to display the string, without displaying the string
-                    int ubNumLines = this.fonts.DisplayWrappedString(
+                    // int ubNumLines = this.fonts.DisplayWrappedString(
+                    //     new(0, 0),
+                    //     OPT_TOGGLE_BOX_TEXT_WIDTH,
+                    //     2,
+                    //     OPT_MAIN_FONT,
+                    //     OPT_HIGHLIGHT_COLOR,
+                    //     EnglishText.zOptionsToggleText[(int)cnt],
+                    //     FontColor.FONT_MCOLOR_BLACK,
+                    //     (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
+
+                    this.fonts.DrawTextToScreen(
+                        EnglishText.zOptionsToggleText[(int)cnt],
                         new(0, 0),
                         OPT_TOGGLE_BOX_TEXT_WIDTH,
-                        2,
                         OPT_MAIN_FONT,
                         OPT_HIGHLIGHT_COLOR,
-                        EnglishText.zOptionsToggleText[(int)cnt],
                         FontColor.FONT_MCOLOR_BLACK,
-                        true,
-                        (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
+                        TextJustifies.LEFT_JUSTIFIED);
 
                     TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    this.inputs.Mouse.DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new(
                             OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
-                            usPosY,
-                            (OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width),
-                            (usPosY + TextSize.Height * ubNumLines)),
+                            480 - usPosY,
+                            OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
+                            TextSize.Height),
                         MSYS_PRIORITY.HIGH,
                         Cursor.NORMAL,
-                        SelectedOptionTextRegionMovementCallBack,
-                        SelectedOptionTextRegionCallBack);
+                        this.SelectedOptionTextRegionMovementCallBack,
+                        this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.MSYS_SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, (int)cnt);
+                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, (int)cnt);
                 }
                 else
                 {
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    this.inputs.Mouse.DefineRegion(
                         this.gSelectedOptionTextRegion[option],
                         new(
                             OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
-                            usPosY,
-                            (OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width),
-                            (usPosY + TextSize.Height)),
+                            480 - usPosY,
+                            OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
+                            TextSize.Height),
                         MSYS_PRIORITY.HIGH,
                         Cursor.NORMAL,
-                        SelectedOptionTextRegionMovementCallBack,
-                        SelectedOptionTextRegionCallBack);
+                        this.SelectedOptionTextRegionMovementCallBack,
+                        this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.MSYS_SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, (int)cnt);
+                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, (int)cnt);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -673,12 +689,12 @@ namespace SharpAlliance.Core.Screens
             }
 
             //Create a mouse region so when the user leaves a togglebox text region we can detect it then unselect the region
-            this.inputs.Mouse.MSYS_DefineRegion(
-                ref gSelectedToggleBoxAreaRegion,
+            this.inputs.Mouse.DefineRegion(
+                ref this.gSelectedToggleBoxAreaRegion,
                 new Rectangle(0, 0, 640, 480),
                 MSYS_PRIORITY.NORMAL,
                 Cursor.NORMAL,
-                SelectedToggleBoxAreaRegionMovementCallBack,
+                this.SelectedToggleBoxAreaRegionMovementCallBack,
                 null);
 
             //Render the scene before adding the slider boxes
@@ -706,7 +722,7 @@ namespace SharpAlliance.Core.Screens
                 OPT_SLIDER_BAR_SIZE,
                 127,
                 MSYS_PRIORITY.HIGH,
-                SpeechSliderChangeCallBack,
+                this.SpeechSliderChangeCallBack,
                 0);
 
             // AssertMsg(guiSpeechSliderID, "Failed to AddSlider");
@@ -720,7 +736,7 @@ namespace SharpAlliance.Core.Screens
                 OPT_SLIDER_BAR_SIZE,
                 127,
                 MSYS_PRIORITY.HIGH,
-                MusicSliderChangeCallBack,
+                this.MusicSliderChangeCallBack,
                 0);
 
             // AssertMsg(guiMusicSliderID, "Failed to AddSlider");
@@ -758,11 +774,11 @@ namespace SharpAlliance.Core.Screens
             {
                 if (this.settings[cnt])
                 {
-                    guiOptionsToggles[cnt].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+                    this.guiOptionsToggles[cnt].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 }
                 else
                 {
-                    guiOptionsToggles[cnt].uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+                    this.guiOptionsToggles[cnt].uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
                 }
             }
         }
@@ -779,10 +795,10 @@ namespace SharpAlliance.Core.Screens
                 //loop through all the toggle box's and remove the in area flag
                 for (ubCnt = 0; ubCnt < TOPTION.NUM_GAME_OPTIONS; ubCnt++)
                 {
-                    guiOptionsToggles[ubCnt].Area.uiFlags &= ~MouseRegionFlags.MOUSE_IN_AREA;
+                    this.guiOptionsToggles[ubCnt].MouseRegion.HasMouse = false;
                 }
 
-                gbHighLightedOptionText = -1;
+                this.gbHighLightedOptionText = -1;
 
                 this.video.InvalidateRegion(pRegion.Bounds);
             }
@@ -795,20 +811,18 @@ namespace SharpAlliance.Core.Screens
             this.guiSpeechSliderMoving = this.clock.GetJA2Clock();
         }
 
-
         private void MusicSliderChangeCallBack(int iNewValue)
         {
             this.music.MusicSetVolume(iNewValue);
         }
 
-
         private void SelectedOptionTextRegionCallBack(ref MouseRegion pRegion, MouseCallbackReasons iReason)
         {
-            TOPTION ubButton = (TOPTION)this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 0);
+            TOPTION ubButton = (TOPTION)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
 
             if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {
-                HandleOptionToggle(ubButton, !this.settings[ubButton], false, true);
+                this.HandleOptionToggle(ubButton, !this.settings[ubButton], false, true);
 
                 this.video.InvalidateRegion(pRegion.Bounds);
             }
@@ -818,22 +832,22 @@ namespace SharpAlliance.Core.Screens
             {
                 if (this.settings[ubButton])
                 {
-                    HandleOptionToggle(ubButton, true, true, true);
+                    this.HandleOptionToggle(ubButton, true, true, true);
                 }
                 else
                 {
-                    HandleOptionToggle(ubButton, false, true, true);
+                    this.HandleOptionToggle(ubButton, false, true, true);
                 }
             }
         }
 
         private void SelectedOptionTextRegionMovementCallBack(ref MouseRegion pRegion, MouseCallbackReasons reason)
         {
-            int bButton = this.inputs.Mouse.MSYS_GetRegionUserData(ref pRegion, 0);
+            int bButton = this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
-                HandleHighLightedText(false);
+                this.HandleHighLightedText(false);
 
                 this.gbHighLightedOptionText = -1;
 
@@ -857,7 +871,7 @@ namespace SharpAlliance.Core.Screens
             int usWidth;
 
 
-            if (gbHighLightedOptionText == -1)
+            if (this.gbHighLightedOptionText == -1)
             {
                 fHighLight = false;
             }
@@ -865,23 +879,23 @@ namespace SharpAlliance.Core.Screens
             //if the user has the mouse in one of the checkboxes
             for (ubCnt = 0; ubCnt < TOPTION.NUM_GAME_OPTIONS; ubCnt++)
             {
-                if (guiOptionsToggles[ubCnt].Area.uiFlags.HasFlag(MouseRegionFlags.MOUSE_IN_AREA))
+                if (this.guiOptionsToggles[ubCnt].MouseRegion.HasMouse)
                 {
-                    gbHighLightedOptionText = (int)ubCnt;
+                    this.gbHighLightedOptionText = (int)ubCnt;
                     fHighLight = true;
                 }
             }
 
             // If there is a valid section being highlighted
-            if (gbHighLightedOptionText != -1)
+            if (this.gbHighLightedOptionText != -1)
             {
-                bLastRegion = gbHighLightedOptionText;
+                bLastRegion = this.gbHighLightedOptionText;
             }
 
-            bHighLight = gbHighLightedOptionText;
+            bHighLight = this.gbHighLightedOptionText;
 
 
-            if (bLastRegion != -1 && gbHighLightedOptionText == -1)
+            if (bLastRegion != -1 && this.gbHighLightedOptionText == -1)
             {
                 fHighLight = false;
                 bHighLight = bLastRegion;
@@ -911,24 +925,22 @@ namespace SharpAlliance.Core.Screens
                 {
                     if (fHighLight)
                     {
-                        this.fonts.DisplayWrappedString(Pos, OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_HIGHLIGHT_COLOR, EnglishText.zOptionsToggleText[bHighLight], FontColor.FONT_MCOLOR_BLACK, true, TextJustifies.LEFT_JUSTIFIED);
+                        this.fonts.DisplayWrappedString(Pos, OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_HIGHLIGHT_COLOR, EnglishText.zOptionsToggleText[bHighLight], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
                     }
-                    //				DrawTextToScreen( zOptionsToggleText[ bHighLight ], usPosX, usPosY, 0, OPT_MAIN_FONT, OPT_HIGHLIGHT_COLOR, FONT_MCOLOR_BLACK, true, LEFT_JUSTIFIED	);	
                     else
                     {
-                        this.fonts.DisplayWrappedString(Pos, OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsToggleText[bHighLight], FontColor.FONT_MCOLOR_BLACK, true, TextJustifies.LEFT_JUSTIFIED);
+                        this.fonts.DisplayWrappedString(Pos, OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsToggleText[bHighLight], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
                     }
-                    //				DrawTextToScreen( zOptionsToggleText[ bHighLight ], usPosX, usPosY, 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FONT_MCOLOR_BLACK, true, LEFT_JUSTIFIED	);	
                 }
                 else
                 {
                     if (fHighLight)
                     {
-                        this.fonts.DrawTextToScreen(EnglishText.zOptionsToggleText[bHighLight], Pos, 0, OPT_MAIN_FONT, OPT_HIGHLIGHT_COLOR, FontColor.FONT_MCOLOR_BLACK, true, TextJustifies.LEFT_JUSTIFIED);
+                        this.fonts.DrawTextToScreen(EnglishText.zOptionsToggleText[bHighLight], Pos, 0, OPT_MAIN_FONT, OPT_HIGHLIGHT_COLOR, FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
                     }
                     else
                     {
-                        this.fonts.DrawTextToScreen(EnglishText.zOptionsToggleText[bHighLight], Pos, 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FontColor.FONT_MCOLOR_BLACK, true, TextJustifies.LEFT_JUSTIFIED);
+                        this.fonts.DrawTextToScreen(EnglishText.zOptionsToggleText[bHighLight], Pos, 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
                     }
                 }
             }
@@ -939,7 +951,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
@@ -949,13 +961,13 @@ namespace SharpAlliance.Core.Screens
                 this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
                 // gfSaveGame = false;
 
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
@@ -964,7 +976,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
@@ -976,13 +988,13 @@ namespace SharpAlliance.Core.Screens
 
                 ///		SetOptionsExitScreen( MAINMENU_SCREEN );
 
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
@@ -1005,12 +1017,12 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        void BtnDoneCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnDoneCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
         {
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
@@ -1019,28 +1031,28 @@ namespace SharpAlliance.Core.Screens
 
                 this.SetOptionsExitScreen(this.guiPreviousOptionScreen);
 
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
         private void SetOptionsExitScreen(ScreenName uiExitScreen)
         {
-            guiOptionsScreen = uiExitScreen;
-            gfOptionsScreenExit = true;
+            this.guiOptionsScreen = uiExitScreen;
+            this.gfOptionsScreenExit = true;
         }
 
-        void BtnOptGotoSaveGameCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnOptGotoSaveGameCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
         {
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {
@@ -1049,12 +1061,12 @@ namespace SharpAlliance.Core.Screens
                 this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
                 //gfSaveGame = true;
 
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.Area.Bounds);
+                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
