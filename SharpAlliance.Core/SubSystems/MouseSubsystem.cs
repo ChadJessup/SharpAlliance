@@ -635,9 +635,9 @@ namespace SharpAlliance.Core.SubSystems
         }
 
         public void SetRegionUserData(MouseRegion region, int index, int userdata)
-            => this.MSYS_SetRegionUserData(ref region, index, userdata);
+            => this.SetRegionUserData(ref region, index, userdata);
 
-        public void MSYS_SetRegionUserData(ref MouseRegion region, int index, int userdata)
+        public void SetRegionUserData(ref MouseRegion region, int index, int userdata)
         {
             if (index < 0 || index > 3)
             {

@@ -64,7 +64,7 @@ namespace SharpAlliance.Core.Screens
         public const int OPT_TOGGLE_TEXT_OFFSET_Y = 2;//3
 
         public const int OPT_TOGGLE_BOX_FIRST_COLUMN_X = 265; //257 //OPT_TOGGLE_BOX_TEXT_X + OPT_SPACE_BETWEEN_TEXT_AND_TOGGLE_BOX
-        public const int OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y = 89;//OPT_TOGGLE_BOX_TEXT_Y
+        public const int OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y = 110;//OPT_TOGGLE_BOX_TEXT_Y
 
         public const int OPT_TOGGLE_BOX_SECOND_COLUMN_X = 428; //OPT_TOGGLE_BOX_TEXT_X + OPT_SPACE_BETWEEN_TEXT_AND_TOGGLE_BOX
         public const int OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
@@ -199,6 +199,8 @@ namespace SharpAlliance.Core.Screens
 
             // load button, title graphic and add it
             var options = this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
+
+            this.RenderOptionsScreen();
 
             sr.AddSprite(new Point(0, 0), background.Textures[0], this.guiOptionBackGroundImageKey);
             sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
@@ -343,9 +345,9 @@ namespace SharpAlliance.Core.Screens
             // Text for the toggle boxes
             //
 
-            usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y;
+            usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y - 15;
 
-            //Display the First column of toggles
+            // Display the First column of toggles
             for (cnt = 0; cnt < this.gubFirstColOfOptions; cnt++)
             {
                 usWidth = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
@@ -354,7 +356,7 @@ namespace SharpAlliance.Core.Screens
                 if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
                 {
                     this.fonts.DisplayWrappedString(
-                        new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY),
+                        new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY - 5),
                         OPT_TOGGLE_BOX_TEXT_WIDTH,
                         2,
                         OPT_MAIN_FONT,
@@ -378,7 +380,7 @@ namespace SharpAlliance.Core.Screens
                 usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
             }
 
-            usPosY = OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y;
+            usPosY = OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y - 15;
             //Display the 2nd column of toggles
             for (cnt = this.gubFirstColOfOptions; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
             {
@@ -387,7 +389,15 @@ namespace SharpAlliance.Core.Screens
                 //if the string is going to wrap, move the string up a bit
                 if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
                 {
-                    this.fonts.DisplayWrappedString(new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY), OPT_TOGGLE_BOX_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsToggleText[(int)cnt], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
+                    this.fonts.DisplayWrappedString(
+                        new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY - 5),
+                        OPT_TOGGLE_BOX_TEXT_WIDTH,
+                        2,
+                        OPT_MAIN_FONT,
+                        OPT_MAIN_COLOR,
+                        EnglishText.zOptionsToggleText[(int)cnt],
+                        FontColor.FONT_MCOLOR_BLACK,
+                        TextJustifies.LEFT_JUSTIFIED);
                 }
                 else
                 {
@@ -565,9 +575,9 @@ namespace SharpAlliance.Core.Screens
                     this.inputs.Mouse.DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
-                            OPT_TOGGLE_BOX_FIRST_COLUMN_X + 13,
+                            OPT_TOGGLE_BOX_FIRST_COLUMN_X,
                             480 - usPosY,
-                            OPT_TOGGLE_BOX_FIRST_COL_TEXT_X + TextSize.Width,
+                            OPT_TOGGLE_BOX_FIRST_COL_TEXT_X,
                             TextSize.Height),
                         MSYS_PRIORITY.HIGH,
                         Cursor.NORMAL,
@@ -585,9 +595,9 @@ namespace SharpAlliance.Core.Screens
                     this.inputs.Mouse.DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
-                            OPT_TOGGLE_BOX_FIRST_COLUMN_X + 13,
+                            OPT_TOGGLE_BOX_FIRST_COLUMN_X,
                             480 - usPosY,
-                            OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
+                            OPT_TOGGLE_BOX_SECOND_TEXT_X,
                             TextSize.Height),
                         MSYS_PRIORITY.HIGH,
                         Cursor.NORMAL,
@@ -595,7 +605,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionCallBack);
 
                     var textRegion = this.gSelectedOptionTextRegion[cnt];
-                    this.inputs.Mouse.MSYS_SetRegionUserData(ref textRegion, 0, (int)cnt);
+                    this.inputs.Mouse.SetRegionUserData(ref textRegion, 0, (int)cnt);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -894,7 +904,6 @@ namespace SharpAlliance.Core.Screens
 
             bHighLight = this.gbHighLightedOptionText;
 
-
             if (bLastRegion != -1 && this.gbHighLightedOptionText == -1)
             {
                 fHighLight = false;
@@ -908,13 +917,13 @@ namespace SharpAlliance.Core.Screens
                 {
                     Pos = new(
                         OPT_TOGGLE_BOX_FIRST_COL_TEXT_X,
-                        OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y + (bHighLight * OPT_GAP_BETWEEN_TOGGLE_BOXES));
+                        OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y - 15 + (bHighLight * OPT_GAP_BETWEEN_TOGGLE_BOXES));
                 }
                 else
                 {
                     Pos = new(
                         OPT_TOGGLE_BOX_SECOND_TEXT_X,
-                        OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y + ((bHighLight - OPT_FIRST_COLUMN_TOGGLE_CUT_OFF) * OPT_GAP_BETWEEN_TOGGLE_BOXES));
+                        OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y - 15 + ((bHighLight - OPT_FIRST_COLUMN_TOGGLE_CUT_OFF) * OPT_GAP_BETWEEN_TOGGLE_BOXES));
                 }
 
 

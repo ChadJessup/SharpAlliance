@@ -1840,7 +1840,7 @@ namespace SharpAlliance.Core.SubSystems
             IVideoManager.DebugRenderer.DrawRectangle(b.MouseRegion.Bounds, Color.Red);
 
             // Link the MOUSE_REGION with this QuickButton
-            this.mouse.MSYS_SetRegionUserData(ref b.MouseRegion, 0, ButtonNum);
+            this.mouse.SetRegionUserData(ref b.MouseRegion, 0, ButtonNum);
 
             // Set the flags for this button
             b.uiFlags |= ButtonFlags.BUTTON_ENABLED | BType | ButtonFlags.BUTTON_QUICK;

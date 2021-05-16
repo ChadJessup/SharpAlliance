@@ -320,9 +320,9 @@ namespace SharpAlliance.Core.Managers
             IVideoManager.DebugRenderer.Draw(this.GraphicDevice, this.commandList);
 
             this.SpriteRenderer.RenderText(this.GraphicDevice, this.commandList, this.fonts.TextRenderer.TextureView, new(0, 0));
-            this.fonts.TextRenderer.RenderAllText();
             this.commandList.End();
 
+            this.fonts.TextRenderer.RenderAllText();
             this.GraphicDevice.SubmitCommands(this.commandList);
             this.GraphicDevice.SwapBuffers(this.mainSwapchain);
         }
