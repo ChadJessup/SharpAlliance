@@ -17,5 +17,9 @@ namespace SharpAlliance.Platform.Interfaces
         void UnPauseGame();
         void PauseGame();
         void RemoveMouseRegionForPauseOfClock();
+        void InterruptTime();
+        void LockPauseState(int v);
+        void PauseTime(bool v);
+        void UnLockPauseState();
     }
 }

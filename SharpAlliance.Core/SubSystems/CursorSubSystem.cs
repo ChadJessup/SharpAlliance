@@ -17,6 +17,19 @@ namespace SharpAlliance.Core.SubSystems
         {
 
         }
+
+        public void GetRestrictedClipCursor(SixLabors.ImageSharp.Rectangle messageBoxRestrictedCursorRegion)
+        {
+        }
+
+        public void FreeMouseCursor()
+        {
+        }
+
+        public bool IsCursorRestricted()
+        {
+            return false;
+        }
     }
 
     public enum Cursor

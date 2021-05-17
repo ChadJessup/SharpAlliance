@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform.Interfaces;
@@ -31,7 +33,7 @@ namespace SharpAlliance.Core.Managers
 
         public void RenderSliderBars() => this.Sliders.RenderSliderBars();
 
-        public void RenderButtons() => this.Buttons.RenderButtons();
+        public void RenderButtons(IEnumerable<GUI_BUTTON> buttons) => this.Buttons.RenderButtons(buttons);
 
         public void Dispose()
         {

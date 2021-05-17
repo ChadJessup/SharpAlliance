@@ -64,6 +64,26 @@ namespace SharpAlliance.Core.SubSystems
         public void RenderStaticWorldRect(Rectangle rect, bool fDynamicsToo)
         {
         }
+
+        internal void SetRenderFlags(RenderingFlags fULL)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [Flags]
+    public enum RenderingFlags
+    {
+        FULL = 0x00000001,
+        SHADOWS = 0x00000002,
+        MARKED = 0x00000004,
+        SAVEOFF = 0x00000008,
+        NOZ = 0x00000010,
+        ROOMIDS = 0x00000020,
+        CHECKZ = 0x00000040,
+        ONLYLAND = 0x00000080,
+        ONLYSTRUCT = 0x00000100,
+        FOVDEBUG = 0x00000200,
     }
 
     [Flags]

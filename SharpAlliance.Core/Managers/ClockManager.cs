@@ -124,10 +124,30 @@ namespace SharpAlliance.Core.Managers
             // remove pause region
             if (this.fClockMouseRegionCreated == true)
             {
-                this.inputs.Mouse.MSYS_RemoveRegion(ref this.gClockMouseRegion);
+                this.inputs.Mouse.MSYS_RemoveRegion(this.gClockMouseRegion);
                 this.fClockMouseRegionCreated = false;
 
             }
+        }
+
+        public void InterruptTime()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LockPauseState(int v)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PauseTime(bool v)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnLockPauseState()
+        {
+            throw new NotImplementedException();
         }
     }
 }

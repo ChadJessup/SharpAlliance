@@ -24,6 +24,7 @@ namespace SharpAlliance.Core.Screens
 
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }
+        public bool fMapPanelDirty { get; set; }
 
         public ValueTask Activate()
         {

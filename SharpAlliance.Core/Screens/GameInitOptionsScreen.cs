@@ -65,10 +65,10 @@ namespace SharpAlliance.Core.Screens
         private ScreenName gubGIOExitScreen = ScreenName.GAME_INIT_OPTIONS_SCREEN;
         private string guiGIOMainBackGroundImageKey;
         private int giGioMessageBox = -1;
-        private int giGIODoneBtnImage;
-        private int guiGIODoneButton;
-        private int giGIOCancelBtnImage;
-        private int guiGIOCancelButton;
+        private ButtonPic giGIODoneBtnImage;
+        private GUI_BUTTON guiGIODoneButton;
+        private ButtonPic giGIOCancelBtnImage;
+        private GUI_BUTTON guiGIOCancelButton;
 
         private Dictionary<GunOption, GUI_BUTTON> guiGunOptionToggles = new();
         private Dictionary<IronManMode, GUI_BUTTON> guiGameSaveToggles = new();
@@ -289,8 +289,8 @@ namespace SharpAlliance.Core.Screens
             this.HandleGIOScreen();
 
             // render buttons marked dirty	
-            this.gui.Buttons.MarkButtonsDirty();
-            this.gui.Buttons.RenderButtons();
+            // this.gui.Buttons.MarkButtonsDirty();
+            //this.gui.Buttons.RenderButtons();
 
             // render help
             //	RenderFastHelp( );
@@ -436,8 +436,8 @@ namespace SharpAlliance.Core.Screens
         public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
         {
             this.RenderGIOScreen();
-            this.gui.Buttons.MarkButtonsDirty();
-            this.gui.Buttons.RenderButtons();
+            //this.gui.Buttons.MarkButtonsDirty();
+            //this.gui.Buttons.RenderButtons();
         }
 
         public ValueTask<bool> Initialize()

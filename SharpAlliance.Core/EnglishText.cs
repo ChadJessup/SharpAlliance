@@ -75,6 +75,198 @@ namespace SharpAlliance.Core
             { GameInitOptionScreenText.GIO_DISABLED_FOR_THE_DEMO_TEXT, "Disabled for Demo" },
         };
 
+        public static string[] pUpdatePanelButtons = new[]
+        {
+            "Continue",
+            "Stop",
+        };
+
+
+        public static Dictionary<MSG, string> pMessageStrings = new()
+        {
+            { MSG.EXITGAME, "Exit Game?" },
+            { MSG.OK, "OK" },
+            { MSG.YES, "YES" },
+            { MSG.NO, "NO" },
+            { MSG.CANCEL, "CANCEL" },
+            { MSG.REHIRE, "REHIRE" },
+            { MSG.LIE, "LIE" },
+            { MSG.NODESC, "No description" }, //Save slots that don't have a description.
+            { MSG.SAVESUCCESS, "Game Saved." },
+            { MSG.SAVESLOTSUCCESS, "Game Saved." },
+            { MSG.QUICKSAVE_NAME, "QuickSave" }, //The name of the quicksave file (filename, text reference)
+            { MSG.SAVE_NAME, "SaveGame" },    //The name of the normal savegame file, such as SaveGame01, SaveGame02, etc.
+            { MSG.SAVEEXTENSION, "sav" },             //The 3 character dos extension (represents sav)
+            { MSG.SAVEDIRECTORY, "..\\SavedGames" }, //The name of the directory where games are saved.
+            { MSG.DAY, "Day" },
+            { MSG.MERCS, "Mercs" },
+            { MSG.EMPTYSLOT, "Empty Slot" }, //An empty save game slot
+            { MSG.DEMOWORD, "Demo" },                //Demo of JA2
+            { MSG.DEBUGWORD, "Debug" },               //State of development of a project (JA2) that is a debug build
+            { MSG.RELEASEWORD, "Release" },         //Release build for JA2
+            { MSG.RPM, "rpm" },                 //Abbreviation for Rounds per minute -- the potential # of bullets fired in a minute.
+            { MSG.MINUTE_ABBREVIATION, "min" },                 //Abbreviation for minute.
+            { MSG.METER_ABBREVIATION, "m" },                       //One character abbreviation for meter (metric distance measurement unit).
+            { MSG.ROUNDS_ABBREVIATION, "rnds" },                //Abbreviation for rounds (# of bullets)
+            { MSG.KILOGRAM_ABBREVIATION, "kg" },                  //Abbreviation for kilogram (metric weight measurement unit)
+            { MSG.POUND_ABBREVIATION, "lb" },                  //Abbreviation for pounds (Imperial weight measurement unit)
+            { MSG.HOMEPAGE, "Home" },                //Home as in homepage on the internet.
+            { MSG.USDOLLAR_ABBREVIATION, "USD" },                 //Abbreviation to US dollars
+            { MSG.LOWERCASE_NA, "n/a" },                 //Lowercase acronym for not applicable.
+            { MSG.MEANWHILE, "Meanwhile" },       //Meanwhile
+            { MSG.ARRIVE, "%s has arrived in sector %s%s" }, //Name/Squad has arrived in sector A9.  Order must not change without notifying
+                                                             //SirTech
+            { MSG.VERSION, "Version" },
+            { MSG.EMPTY_QUICK_SAVE_SLOT, "Empty Quick Save Slot" },
+            { MSG.QUICK_SAVE_RESERVED_FOR_TACTICAL, "This slot is reserved for Quick Saves made from the tactical and map screens using ALT+S." },
+            { MSG.OPENED, "Opened" },
+            { MSG.CLOSED, "Closed" },
+            { MSG.LOWDISKSPACE_WARNING, "You are running low on disk space.  You only have %sMB free and Jagged Alliance 2 requires %sMB." },
+            { MSG.HIRED_MERC, "Hired %s from AIM" },
+            { MSG.MERC_CAUGHT_ITEM, "%s has caught %s." },       //'Merc name' has caught 'item' -- let SirTech know if name comes after item.
+            { MSG.MERC_TOOK_DRUG, "%s has taken the drug." }, //'Merc name' has taken the drug
+            { MSG.MERC_HAS_NO_MEDSKILL, "%s has no medical skill" },//'Merc name' has no medical skill.
+
+            //CDRom errors (such as ejecting CD while attempting to read the CD)
+            { MSG.INTEGRITY_WARNING, "The integrity of the game has been compromised." },
+            { MSG.CDROM_SAVE, "ERROR: Ejected CD-ROM" },
+
+            //When firing heavier weapons in close quarters, you may not have enough room to do so.
+            { MSG.CANT_FIRE_HERE, "There is no room to fire from here." },
+
+            //Can't change stance due to objects in the way...
+            { MSG.CANT_CHANGE_STANCE, "Cannot change stance at this time." },
+
+            //Simple text indications that appear in the game, when the merc can do one of these things.
+            { MSG.DROP, "Drop" },
+            { MSG.THROW, "Throw" },
+            { MSG.PASS, "Pass" },
+
+            { MSG.ITEM_PASSED_TO_MERC, "%s passed to %s." }, //"Item" passed to "merc".  Please try to keep the item %s before the merc %s, otherwise,
+                                                             //must notify SirTech.
+            { MSG.NO_ROOM_TO_PASS_ITEM, "No room to pass %s to %s." }, //pass "item" to "merc".  Same instructions as above.
+
+            //A list of attachments appear after the items.  Ex:  Kevlar vest ( Ceramic Plate 'Attached )'
+            { MSG.END_ATTACHMENT_LIST, " Attached )" },
+
+            //Cheat modes
+            { MSG.CHEAT_LEVEL_ONE, "Cheat level ONE reached" },
+            { MSG.CHEAT_LEVEL_TWO, "Cheat level TWO reached" },
+
+            //Toggling various stealth modes
+            { MSG.SQUAD_ON_STEALTHMODE, "Squad on stealth mode." },
+            { MSG.SQUAD_OFF_STEALTHMODE, "Squad off stealth mode." },
+            { MSG.MERC_ON_STEALTHMODE, "%s on stealth mode." },
+            { MSG.MERC_OFF_STEALTHMODE, "%s off stealth mode." },
+
+            //Wireframes are shown through buildings to reveal doors and windows that can't otherwise be seen in 
+            //an isometric engine.  You can toggle this mode freely in the game.
+            { MSG.WIREFRAMES_ADDED, "Extra Wireframes On" },
+            { MSG.WIREFRAMES_REMOVED, "Extra Wireframes Off" },
+
+            //These are used in the cheat modes for changing levels in the game.  Going from a basement level to
+            //an upper level, etc.  
+            { MSG.CANT_GO_UP, "Can't go up from this level..." },
+            { MSG.CANT_GO_DOWN, "There are no lower levels..." },
+            { MSG.ENTERING_LEVEL, "Entering basement level %d..." },
+            { MSG.LEAVING_BASEMENT, "Leaving basement..." },
+            { MSG.DASH_S, "'s" },      // used in the shop keeper inteface to mark the ownership of the item eg Red's gun
+            { MSG.TACKING_MODE_OFF, "Follow mode OFF." },
+            { MSG.TACKING_MODE_ON, "Follow mode ON." },
+            { MSG.ThreeDCURSOR_OFF, "3D Cursor OFF." },
+            { MSG.ThreeDCURSOR_ON, "3D Cursor ON." },
+            { MSG.SQUAD_ACTIVE, "Squad %d active." },
+            { MSG.CANT_AFFORD_TO_PAY_NPC_DAILY_SALARY_MSG, "You cannot afford to pay for %s's daily salary of %s" },    //first %s is the mercs name, the seconds is a string containing the salary
+            { MSG.SKIP, "Skip" },
+            { MSG.EPC_CANT_TRAVERSE, "%s cannot leave alone." },
+            { MSG.CDROM_SAVE_GAME, "A save has been created called, SaveGame99.sav.  If needed, rename it to SaveGame01 - SaveGame10 and then you will have access to it in the Load screen." },
+            { MSG.DRANK_SOME, "%s drank some %s" },
+            { MSG.PACKAGE_ARRIVES, "A package has arrived in Drassen." },
+            { MSG.JUST_HIRED_MERC_ARRIVAL_LOCATION_POPUP, "%s should arrive at the designated drop-off point (sector %s) on day %d, at approximately %s." },       //first %s is mercs name, next is the sector location and name where they will be arriving in, lastely is the day an the time of arrival
+            { MSG.HISTORY_UPDATED, "History log updated." },
+        };
+
+        public enum MSG
+        {
+            EXITGAME,
+            OK,
+            YES,
+            NO,
+            CANCEL,
+            REHIRE,
+            LIE,
+            NODESC,
+            SAVESUCCESS,
+            SAVESLOTSUCCESS,
+            QUICKSAVE_NAME,
+            SAVE_NAME,
+            SAVEEXTENSION,
+            SAVEDIRECTORY,
+            DAY,
+            MERCS,
+            EMPTYSLOT,
+            DEMOWORD,
+            DEBUGWORD,
+            RELEASEWORD,
+            RPM,
+            MINUTE_ABBREVIATION,
+            METER_ABBREVIATION,
+            ROUNDS_ABBREVIATION,
+            KILOGRAM_ABBREVIATION,
+            POUND_ABBREVIATION,
+            HOMEPAGE,
+            USDOLLAR_ABBREVIATION,
+            LOWERCASE_NA,
+            MEANWHILE,
+            ARRIVE,
+            VERSION,
+            EMPTY_QUICK_SAVE_SLOT,
+            QUICK_SAVE_RESERVED_FOR_TACTICAL,
+            OPENED,
+            CLOSED,
+            LOWDISKSPACE_WARNING,
+            HIRED_MERC,
+            MERC_CAUGHT_ITEM,
+            MERC_TOOK_DRUG,
+            MERC_HAS_NO_MEDSKILL,
+            INTEGRITY_WARNING,
+            CDROM_SAVE,
+            CANT_FIRE_HERE,
+            CANT_CHANGE_STANCE,
+            DROP,
+            THROW,
+            PASS,
+            ITEM_PASSED_TO_MERC,
+            NO_ROOM_TO_PASS_ITEM,
+            END_ATTACHMENT_LIST,
+            CHEAT_LEVEL_ONE,
+            CHEAT_LEVEL_TWO,
+            SQUAD_ON_STEALTHMODE,
+            SQUAD_OFF_STEALTHMODE,
+            MERC_ON_STEALTHMODE,
+            MERC_OFF_STEALTHMODE,
+            WIREFRAMES_ADDED,
+            WIREFRAMES_REMOVED,
+            CANT_GO_UP,
+            CANT_GO_DOWN,
+            ENTERING_LEVEL,
+            LEAVING_BASEMENT,
+            DASH_S,             // the old 's
+            TACKING_MODE_OFF,
+            TACKING_MODE_ON,
+            ThreeDCURSOR_OFF,
+            ThreeDCURSOR_ON,
+            SQUAD_ACTIVE,
+            CANT_AFFORD_TO_PAY_NPC_DAILY_SALARY_MSG,
+            SKIP,
+            EPC_CANT_TRAVERSE,
+            CDROM_SAVE_GAME,
+            DRANK_SOME,
+            PACKAGE_ARRIVES,
+            JUST_HIRED_MERC_ARRIVAL_LOCATION_POPUP,
+            HISTORY_UPDATED,
+        };
+
         public enum TCTL_MSG__
         {
             RANGE_TO_TARGET,

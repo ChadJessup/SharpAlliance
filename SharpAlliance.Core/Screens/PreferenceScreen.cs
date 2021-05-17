@@ -104,6 +104,7 @@ namespace SharpAlliance.Core.Screens
 
         private readonly IVideoManager video;
         private readonly IClockManager clock;
+        private readonly MessageBoxSubSystem messageBox;
         private readonly GameSettings settings;
         private readonly FontSubSystem fonts;
         private readonly GameOptions options;
@@ -114,12 +115,15 @@ namespace SharpAlliance.Core.Screens
         private readonly GameInit gameInit;
         private readonly Messages messages;
 
+        private readonly List<GUI_BUTTON> buttonList = new();
+
         private bool gfOptionsScreenEntry;
         private bool gfOptionsScreenExit;
         private bool gfRedrawOptionsScreen;
         private bool gfEnteredFromMapScreen;
         private bool gfExitOptionsAfterMessageBox;
         private bool gfExitOptionsDueToMessageBox;
+        private int giOptionsMessageBox;
         private ScreenName guiOptionsScreen = ScreenName.OPTIONS_SCREEN;
         private ScreenName guiPreviousOptionScreen = ScreenName.OPTIONS_SCREEN;
 
@@ -129,14 +133,14 @@ namespace SharpAlliance.Core.Screens
         //Mouse regions for the name of the option
         private Dictionary<TOPTION, MouseRegion> gSelectedOptionTextRegion = new((int)TOPTION.NUM_GAME_OPTIONS);
 
-        private int giOptionsButtonImages;
-        private int guiOptGotoSaveGameBtn;
-        private int giGotoLoadBtnImage;
-        private int guiOptGotoLoadGameBtn;
-        private int giQuitBtnImage;
-        private int guiQuitButton;
-        private int giDoneBtnImage;
-        private int guiDoneButton;
+        private ButtonPic giOptionsButtonImages;
+        private GUI_BUTTON guiOptGotoSaveGameBtn;
+        private ButtonPic giGotoLoadBtnImage;
+        private GUI_BUTTON guiOptGotoLoadGameBtn;
+        private ButtonPic giQuitBtnImage;
+        private GUI_BUTTON guiQuitButton;
+        private ButtonPic giDoneBtnImage;
+        private GUI_BUTTON guiDoneButton;
 
         private Slider guiSoundEffectsSlider;
         private Slider guiSpeechSlider;
@@ -158,7 +162,8 @@ namespace SharpAlliance.Core.Screens
             GameSettings gameSettings,
             GameOptions gameOptions,
             FontSubSystem fontSubSystem,
-            Messages messages)
+            Messages messages,
+            MessageBoxSubSystem messageBoxSubSystem)
         {
             this.messages = messages;
             this.gameInit = gameInit;
@@ -171,6 +176,7 @@ namespace SharpAlliance.Core.Screens
             this.inputs = inputManager;
             this.video = videoManager;
             this.clock = clockManager;
+            this.messageBox = messageBoxSubSystem;
         }
 
         public bool IsInitialized { get; set; }
@@ -206,8 +212,8 @@ namespace SharpAlliance.Core.Screens
             sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
 
             // render buttons marked dirty	
-            this.gui.Buttons.MarkButtonsDirty();
-            this.gui.RenderButtons();
+            this.gui.Buttons.MarkButtonsDirty(this.buttonList);
+            this.gui.RenderButtons(this.buttonList);
 
             this.gui.RenderSliderBars();
         }
@@ -236,7 +242,7 @@ namespace SharpAlliance.Core.Screens
 
             if (this.gfRedrawOptionsScreen)
             {
-                this.gui.RenderButtons();
+                this.gui.RenderButtons(this.buttonList);
                 this.RenderOptionsScreen();
 
                 this.gfRedrawOptionsScreen = false;
@@ -246,8 +252,8 @@ namespace SharpAlliance.Core.Screens
             this.gui.RenderSliderBars();
 
             // render buttons marked dirty	
-            this.gui.Buttons.MarkButtonsDirty();
-            this.gui.RenderButtons();
+            this.gui.Buttons.MarkButtonsDirty(this.buttonList);
+            this.gui.RenderButtons(this.buttonList);
 
             // ATE: Put here to save RECTS before any fast help being drawn...
             this.video.SaveBackgroundRects();
@@ -466,6 +472,8 @@ namespace SharpAlliance.Core.Screens
                 MouseSubSystem.DefaultMoveCallback,
                 this.BtnOptGotoSaveGameCallback);
 
+            this.buttonList.Add(guiOptGotoSaveGameBtn);
+
             this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiOptGotoSaveGameBtn, DISABLED_STYLE.HATCHED);
             if (this.guiPreviousOptionScreen == ScreenName.MAINMENU_SCREEN)// || !CanGameBeSaved())
             {
@@ -489,8 +497,9 @@ namespace SharpAlliance.Core.Screens
                 MouseSubSystem.DefaultMoveCallback,
                 this.BtnOptGotoLoadGameCallback);
 
+            this.buttonList.Add(this.guiOptGotoLoadGameBtn);
+            
             //	SpecifyDisabledButtonStyle( guiBobbyRAcceptOrder, DISABLED_STYLE_SHADED );
-
 
             //Quit to main menu button
             this.giQuitBtnImage = this.gui.Buttons.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
@@ -508,6 +517,8 @@ namespace SharpAlliance.Core.Screens
                 MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
                 this.BtnOptQuitCallback);
+
+            this.buttonList.Add(this.guiQuitButton);
 
             this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiQuitButton, DISABLED_STYLE.HATCHED);
             //	DisableButton( guiQuitButton );
@@ -529,9 +540,10 @@ namespace SharpAlliance.Core.Screens
                 MSYS_PRIORITY.HIGH,
                 MouseSubSystem.DefaultMoveCallback,
                 this.BtnDoneCallback);
+
+            this.buttonList.Add(this.guiDoneButton);
+
             //	SpecifyDisabledButtonStyle( guiBobbyRAcceptOrder, DISABLED_STYLE_SHADED );
-
-
 
             //
             // Toggle Boxes
@@ -552,7 +564,9 @@ namespace SharpAlliance.Core.Screens
                     MSYS_PRIORITY.HIGH + 10,
                     this.BtnOptionsTogglesCallback);
 
-                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, (int)cnt);
+                this.buttonList.Add(this.guiOptionsToggles[option]);
+
+                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
 
                 TextSize.Width = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 
@@ -587,7 +601,7 @@ namespace SharpAlliance.Core.Screens
                     this.inputs.Mouse.SetRegionUserData(
                         this.gSelectedOptionTextRegion[cnt],
                         0,
-                        (int)cnt);
+                        this.guiOptionsToggles[option]);
                 }
                 else
                 {
@@ -605,7 +619,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionCallBack);
 
                     var textRegion = this.gSelectedOptionTextRegion[cnt];
-                    this.inputs.Mouse.SetRegionUserData(ref textRegion, 0, (int)cnt);
+                    this.inputs.Mouse.SetRegionUserData(ref textRegion, 0, this.guiOptionsToggles[option]);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -627,7 +641,9 @@ namespace SharpAlliance.Core.Screens
                     MSYS_PRIORITY.HIGH + 10,
                     this.BtnOptionsTogglesCallback);
 
-                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, (int)cnt);
+                this.buttonList.Add(this.guiOptionsToggles[option]);
+
+                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
 
 
                 //
@@ -673,7 +689,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, (int)cnt);
+                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, this.guiOptionsToggles[option]);
                 }
                 else
                 {
@@ -689,7 +705,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, (int)cnt);
+                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, this.guiOptionsToggles[option]);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -836,8 +852,6 @@ namespace SharpAlliance.Core.Screens
 
                 this.video.InvalidateRegion(pRegion.Bounds);
             }
-
-
             else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON_LBUTTON_REPEAT || 
             {
                 if (this.settings[ubButton])
@@ -853,7 +867,7 @@ namespace SharpAlliance.Core.Screens
 
         private void SelectedOptionTextRegionMovementCallBack(ref MouseRegion pRegion, MouseCallbackReasons reason)
         {
-            int bButton = this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
+            var bButton = (GUI_BUTTON)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
@@ -865,7 +879,7 @@ namespace SharpAlliance.Core.Screens
             }
             else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
             {
-                this.gbHighLightedOptionText = bButton;
+//                this.gbHighLightedOptionText = bButton;
 
                 this.video.InvalidateRegion(pRegion.Bounds);
             }
@@ -879,7 +893,6 @@ namespace SharpAlliance.Core.Screens
             TOPTION ubCnt;
             int bHighLight = -1;
             int usWidth;
-
 
             if (this.gbHighLightedOptionText == -1)
             {
@@ -993,7 +1006,7 @@ namespace SharpAlliance.Core.Screens
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
                 //Confirm the Exit to the main menu screen
-                //DoOptionsMessageBox(MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG_YESNO, ConfirmQuitToMainMenuMessageBoxCallBack);
+                DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MessageBoxFlags.MSG_BOX_FLAG_YESNO, ConfirmQuitToMainMenuMessageBoxCallBack);
 
                 ///		SetOptionsExitScreen( MAINMENU_SCREEN );
 
@@ -1007,10 +1020,10 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void ConfirmQuitToMainMenuMessageBoxCallBack(int bExitValue)
+        private void ConfirmQuitToMainMenuMessageBoxCallBack(MessageBoxReturnCode bExitValue)
         {
             // yes, Quit to main menu
-            if (bExitValue == MessageBoxSubSystem.MSG_BOX_RETURN_YES)
+            if (bExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
             {
                 this.gfEnteredFromMapScreen = false;
                 this.gfExitOptionsAfterMessageBox = true;
@@ -1063,6 +1076,7 @@ namespace SharpAlliance.Core.Screens
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
+
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
@@ -1072,6 +1086,7 @@ namespace SharpAlliance.Core.Screens
 
                 this.video.InvalidateRegion(btn.MouseRegion.Bounds);
             }
+
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
@@ -1122,14 +1137,12 @@ namespace SharpAlliance.Core.Screens
                             this.guiOptionsToggles[ubButton].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
 
                             //Confirm the Exit to the main menu screen
-                            //DoOptionsMessageBox(MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_NEED_AT_LEAST_SPEECH_OR_SUBTITLE_OPTION_ON], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG_OK, null);
+                            this.DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_NEED_AT_LEAST_SPEECH_OR_SUBTITLE_OPTION_ON], ScreenName.OPTIONS_SCREEN, MessageBoxFlags.MSG_BOX_FLAG_OK, null);
                             this.gfExitOptionsDueToMessageBox = false;
                         }
                     }
                 }
             }
-
-
 
             //stop the sound if
             //	if( SoundIsPlaying( uiOptionToggleSound ) && !fDown )
@@ -1151,6 +1164,25 @@ namespace SharpAlliance.Core.Screens
                     // PlayJA2Sample(BIG_SWITCH3_OUT, RATE_11025, BTNVOLUME, 1, MIDDLEPAN);
                 }
             }
+        }
+
+        private bool DoOptionsMessageBox(
+            MessageBoxStyle ubStyle, 
+            string zString, 
+            ScreenName uiExitScreen, 
+            MessageBoxFlags usFlags, 
+            MSGBOX_CALLBACK ReturnCallback)
+        {
+            Rectangle? CenteringRect = new(0, 0, 639, 479);
+
+            // reset exit mode
+            gfExitOptionsDueToMessageBox = true;
+
+            // do message box and return
+            this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MessageBoxFlags.MSG_BOX_FLAG_USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
+
+            // send back return state
+            return ((giOptionsMessageBox != -1));
         }
 
         private void BtnOptionsTogglesCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)

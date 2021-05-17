@@ -80,7 +80,7 @@ namespace SharpAlliance.Core.SubSystems
             Cursor = Cursor.None,
             MovementCallback = null,
             ButtonCallback = null,
-            UserData = new[] { 0, 0, 0, 0 },
+            UserData = new object[] { 0, 0, 0, 0 },
             FastHelpTimer = 0,
             FastHelpText = string.Empty,
             FastHelpRect = -1,
@@ -149,7 +149,7 @@ namespace SharpAlliance.Core.SubSystems
 
             this.SystemBaseRegion.FastHelpRect = -1;
 
-            this.AddRegionToList(ref this.SystemBaseRegion);
+            this.AddRegionToList(this.SystemBaseRegion);
 
             this.UseMouseHandlerHook = true;
         }
@@ -173,7 +173,7 @@ namespace SharpAlliance.Core.SubSystems
                     btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                     if (btn.ubSoundSchemeID != 0)
                     {
-                        this.buttons.PlayButtonSound(btn.IdNum, ButtonSounds.BUTTON_SOUND_CLICKED_OFF);
+                        this.buttons.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_OFF);
                     }
                 }
             }
@@ -182,7 +182,7 @@ namespace SharpAlliance.Core.SubSystems
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 if (btn.ubSoundSchemeID != 0)
                 {
-                    this.buttons.PlayButtonSound(btn.IdNum, ButtonSounds.BUTTON_SOUND_CLICKED_ON);
+                    this.buttons.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_ON);
                 }
             }
         }
@@ -634,10 +634,10 @@ namespace SharpAlliance.Core.SubSystems
             this.cursors.SetCurrentCursorFromDatabase(cursor);
         }
 
-        public void SetRegionUserData(MouseRegion region, int index, int userdata)
+        public void SetRegionUserData(MouseRegion region, int index, object userdata)
             => this.SetRegionUserData(ref region, index, userdata);
 
-        public void SetRegionUserData(ref MouseRegion region, int index, int userdata)
+        public void SetRegionUserData(ref MouseRegion region, int index, object userdata)
         {
             if (index < 0 || index > 3)
             {
@@ -666,7 +666,7 @@ namespace SharpAlliance.Core.SubSystems
         //	Removes a region from the list, disables it, then calls the callback functions for
         //	de-initialization.
         //
-        public void MSYS_RemoveRegion(ref MouseRegion region)
+        public void MSYS_RemoveRegion(MouseRegion region)
         {
             region.FastHelpText = null;
 
@@ -707,7 +707,7 @@ namespace SharpAlliance.Core.SubSystems
         //	Add a region struct to the current list. The list is sorted by priority levels. If two entries
         //	have the same priority level, then the latest to enter the list gets the higher priority.
         //
-        private void AddRegionToList(ref MouseRegion region)
+        public void AddRegionToList(MouseRegion region)
         {
             // Set an ID number!
             region.IdNumber = this.GetNewId();
@@ -715,7 +715,7 @@ namespace SharpAlliance.Core.SubSystems
             this.Regions.Add(region);
         }
 
-        public int GetRegionUserData(ref MouseRegion reg, int index) => reg.UserData[index];
+        public object GetRegionUserData(ref MouseRegion reg, int index) => reg.UserData[index];
 
         //======================================================================================================
         //	GetNewID
@@ -793,7 +793,7 @@ namespace SharpAlliance.Core.SubSystems
             //Add region to system list
             region.IsEnabled = true;
             region.uiFlags |= MouseRegionFlags.REGION_EXISTS;
-            this.AddRegionToList(ref region);
+            this.AddRegionToList(region);
 
             // Dirty our update flag
             this.gfRefreshUpdate = true;
@@ -822,6 +822,14 @@ namespace SharpAlliance.Core.SubSystems
 
             return ValueTask.FromResult(true);
         }
+
+        public void SimulateMouseMovement(int x, int y)
+        {
+        }
+
+        public void RestrictMouseCursor(Rectangle messageBoxRestrictedCursorRegion)
+        {
+        }
     }
 
     public class MouseRegion
@@ -845,7 +853,7 @@ namespace SharpAlliance.Core.SubSystems
         public Cursor Cursor;                          // Cursor to use when mouse in this region (see flags)
         public MouseCallback? MovementCallback;        // Pointer to callback function if movement occured in this region
         public MouseCallback? ButtonCallback;      // Pointer to callback function if button action occured in this region
-        public int[] UserData = new int[4];        // User Data, can be set to anything!
+        public object[] UserData = new object[4];        // User Data, can be set to anything!
 
         //Fast help vars.
         public int FastHelpTimer;        // Countdown timer for FastHelp text

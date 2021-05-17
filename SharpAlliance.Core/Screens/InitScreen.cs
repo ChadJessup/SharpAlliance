@@ -43,7 +43,7 @@ namespace SharpAlliance.Core.Screens
             GameContext context,
             CursorSubSystem cursorSubSystem,
             IVideoManager videoManager,
-  //          IVideoSurfaceManager videoSurfaceManager,
+            // IVideoSurfaceManager videoSurfaceManager,
             FontSubSystem fontSubSystem,
             EventManager eventManager,
             IScreenManager sm,
@@ -67,7 +67,7 @@ namespace SharpAlliance.Core.Screens
             this.context = context;
             this.video = (videoManager as VeldridVideoManager)!;
             this.cursor = cursorSubSystem;
-    //        this.videoSurface = videoSurfaceManager;
+            // this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
             this.tileCache = tileCache;
             this.mercTextBox = mercTextBox;

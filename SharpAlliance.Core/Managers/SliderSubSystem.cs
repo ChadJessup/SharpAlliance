@@ -403,7 +403,7 @@ namespace SharpAlliance.Core.Managers
 
                 if (this.inputs.gfLeftButtonState)
                 {
-                    uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                    uiSelectedSlider = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
                     pSlider = this.GetSliderFromID(uiSelectedSlider);
                     if (pSlider == null)
                     {
@@ -434,7 +434,7 @@ namespace SharpAlliance.Core.Managers
 
                 if (this.inputs.gfLeftButtonState)
                 {
-                    uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                    uiSelectedSlider = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
                     pSlider = this.GetSliderFromID(uiSelectedSlider);
                     if (pSlider == null)
                     {
@@ -464,7 +464,7 @@ namespace SharpAlliance.Core.Managers
 
                 if (this.inputs.gfLeftButtonState)
                 {
-                    uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                    uiSelectedSlider = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
                     pSlider = this.GetSliderFromID(uiSelectedSlider);
                     if (pSlider == null)
                     {
@@ -504,7 +504,7 @@ namespace SharpAlliance.Core.Managers
             }
             else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
-                uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                uiSelectedSlider = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
 
                 pSlider = this.GetSliderFromID(uiSelectedSlider);
                 if (pSlider == null)
@@ -531,7 +531,7 @@ namespace SharpAlliance.Core.Managers
             }
             else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_REPEAT))
             {
-                uiSelectedSlider = this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
+                uiSelectedSlider = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
 
                 pSlider = this.GetSliderFromID(uiSelectedSlider);
                 if (pSlider == null)

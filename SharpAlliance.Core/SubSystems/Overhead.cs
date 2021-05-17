@@ -15,6 +15,11 @@ namespace SharpAlliance.Core.SubSystems
         {
             return ValueTask.FromResult(true);
         }
+
+        public bool InOverheadMap()
+        {
+            return false;
+        }
     }
 
     public class TacticalStatusType

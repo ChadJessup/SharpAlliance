@@ -139,7 +139,7 @@ namespace SharpAlliance.Core.Screens
 
             for (PeopleInCredits uiCnt = 0; uiCnt < PeopleInCredits.NUM_PEOPLE_IN_CREDITS; uiCnt++)
             {
-                this.inputs.Mouse.MSYS_RemoveRegion(ref this.gCrdtMouseRegions[(int)uiCnt]);
+                this.inputs.Mouse.MSYS_RemoveRegion(this.gCrdtMouseRegions[(int)uiCnt]);
             }
 
             /*
@@ -821,7 +821,7 @@ namespace SharpAlliance.Core.Screens
             }
             else if (iReason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
             {
-                this.giCurrentlySelectedFace = this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
+                this.giCurrentlySelectedFace = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
             }
             else if (iReason.HasFlag(MouseCallbackReasons.MOVE))
             {

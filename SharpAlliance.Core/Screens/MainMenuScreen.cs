@@ -52,8 +52,8 @@ namespace SharpAlliance.Core.Screens
             Unknown = 99,
         };
 
-        private Dictionary<MainMenuItems, int> iMenuImages = new();
-        private Dictionary<MainMenuItems, int> iMenuButtons = new();
+        private Dictionary<MainMenuItems, ButtonPic> iMenuImages = new();
+        private Dictionary<MainMenuItems, GUI_BUTTON> iMenuButtons = new();
 
         ushort[] gusMainMenuButtonWidths = new ushort[(int)MainMenuItems.NUM_MENU_ITEMS];
 
@@ -418,19 +418,19 @@ namespace SharpAlliance.Core.Screens
                     switch (cnt)
                     {
                         case (int)MainMenuItems.NEW_GAME:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic((ushort)this.iMenuImages[menuItem], sSlot);
+                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], sSlot);
                             break;
                         case (int)MainMenuItems.LOAD_GAME:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic((ushort)this.iMenuImages[menuItem], 3);
+                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 3);
                             break;
                         case (int)MainMenuItems.PREFERENCES:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic((ushort)this.iMenuImages[menuItem], 7);
+                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 7);
                             break;
                         case (int)MainMenuItems.CREDITS:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic((ushort)this.iMenuImages[menuItem], 10);
+                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 10);
                             break;
                         case (int)MainMenuItems.QUIT:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic((ushort)this.iMenuImages[menuItem], 15);
+                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 15);
                             break;
                     }
 
@@ -442,12 +442,12 @@ namespace SharpAlliance.Core.Screens
                         MouseSubSystem.DefaultMoveCallback,
                         this.MenuButtonCallback);
 
-                    if (this.iMenuButtons[menuItem] == -1)
+                    if (this.iMenuButtons[menuItem] is null)
                     {
                         return false;
                     }
 
-                    this.buttons.ButtonList[this.iMenuButtons[menuItem]].UserData[0] = cnt;
+                    this.iMenuButtons[menuItem].UserData[0] = cnt;
                 }
 
                 fButtonsCreated = true;
@@ -543,7 +543,7 @@ namespace SharpAlliance.Core.Screens
                     return;
                 }
 
-                this.mouse.MSYS_RemoveRegion(ref this.gBackRegion);
+                this.mouse.MSYS_RemoveRegion(this.gBackRegion);
                 fRegionCreated = false;
             }
         }
@@ -588,7 +588,7 @@ namespace SharpAlliance.Core.Screens
             sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
             sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);
 
-            this.buttons.RenderButtons();
+            this.buttons.RenderButtons(this.iMenuButtons.Values);
 
             this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
         }
