@@ -82,7 +82,7 @@ namespace SharpAlliance.Core.Managers.Image
             HIMAGE hImage = (HIMAGE)configuration.Properties[stream];
             HIMAGECreateFlags fContents = (HIMAGECreateFlags)configuration.Properties[typeof(HIMAGECreateFlags)];
 
-            Image<TPixel> image = new Image<TPixel>(configuration, pHeader.usWidth, pHeader.usHeight);
+            Image<TPixel> image = new(configuration, pHeader.usWidth, pHeader.usHeight);
 
             uint uiFileSectionSize;
             uint uiBytesRead;
@@ -195,15 +195,13 @@ namespace SharpAlliance.Core.Managers.Image
 
         public List<Image<Rgba32>> CreateIndexedImages(
             ref HIMAGE hImage,
-            ref HVOBJECT hVObject)
+            HVOBJECT hVObject)
         {
             var rgba32 = new Rgba32();
             Rgba32 color = default;
 
             //using var byteBuffer = configuration.MemoryAllocator.AllocateManagedByteBuffer(numOfPixels * image.PixelType.BitsPerPixel);
-            ReadOnlySpan<byte> indexSpan = new ReadOnlySpan<byte>(hVObject.pPixData);
-            ReadOnlySpan<Rgba32> paletteSpan = new ReadOnlySpan<Rgba32>(hVObject.Palette);
-
+            ReadOnlySpan<byte> indexSpan = new(hVObject.pPixData);
             hImage.ParsedImages = new(hImage.pETRLEObject.Length);
 
             foreach (var etrle in hImage.pETRLEObject)
@@ -214,26 +212,32 @@ namespace SharpAlliance.Core.Managers.Image
                 var imageSpan = indexSpan.Slice((int)etrle.uiDataOffset, (int)etrle.uiDataLength);
 
                 var uncompressedData = this.DecompressETRLEBytes(imageSpan.ToArray());
-                for (int y = 0; y < image.Height; y++)
+
+                image.ProcessPixelRows(p =>
                 {
-                    Span<Rgba32> pixelRow = image.GetPixelRowSpan(y);
-                    for (int x = 0; x < image.Width && idx < uncompressedData.Length; x++)
+                    ReadOnlySpan<Rgba32> paletteSpan = new(hVObject.Palette);
+
+                    for (int y = 0; y < image.Height; y++)
                     {
-                        var pixel = paletteSpan[uncompressedData[idx]];
-
-                        // This is the alpha pixel after all the conversions...so replace with
-                        // RGBA32 alpha pixel.
-                        if (uncompressedData[idx] == 0)
+                        Span<Rgba32> pixelRow = p.GetRowSpan(y);
+                        for (int x = 0; x < image.Width && idx < uncompressedData.Length; x++)
                         {
-                            pixel = IVideoManager.AlphaPixel;
+                            var pixel = paletteSpan[uncompressedData[idx]];
+
+                            // This is the alpha pixel after all the conversions...so replace with
+                            // RGBA32 alpha pixel.
+                            if (uncompressedData[idx] == 0)
+                            {
+                                pixel = IVideoManager.AlphaPixel;
+                            }
+
+                            color.FromRgba32(pixel);
+
+                            pixelRow[x] = color;
+                            idx++;
                         }
-
-                        color.FromRgba32(pixel);
-
-                        pixelRow[x] = color;
-                        idx++;
                     }
-                }
+                });
 
                 hImage.ParsedImages.Add(image);
             }
@@ -330,31 +334,36 @@ namespace SharpAlliance.Core.Managers.Image
 
             var numOfPixels = header.usHeight * header.usWidth;
 
-            using var byteBuffer = configuration.MemoryAllocator.AllocateManagedByteBuffer(numOfPixels * header.ubDepth);
-            stream.Read(byteBuffer.Array);
-            Span<ushort> pixelSpan = MemoryMarshal.Cast<byte, ushort>(byteBuffer.Memory.Span);
+            using var byteBuffer = configuration.MemoryAllocator.Allocate<byte>(numOfPixels * header.ubDepth);
+            stream.Read(byteBuffer.Memory.Span);
 
             var image = new Image<TPixel>(configuration, header.usWidth, header.usHeight);
 
             int idx = 0;
 
-            for (int y = 0; y < header.usHeight; y++)
+            image.ProcessPixelRows(p =>
             {
-                Span<TPixel> pixelRow = image.GetPixelRowSpan(y);
-                for (int x = 0; x < header.usWidth; x++)
+                Span<ushort> pixelSpan = MemoryMarshal.Cast<byte, ushort>(byteBuffer.Memory.Span);
+
+                for (int y = 0; y < header.usHeight; y++)
                 {
-                    var bgr565 = new Bgr565
+
+                    Span<TPixel> pixelRow = p.GetRowSpan(y);
+                    for (int x = 0; x < header.usWidth; x++)
                     {
-                        PackedValue = pixelSpan[idx],
-                    };
+                        var bgr565 = new Bgr565
+                        {
+                            PackedValue = pixelSpan[idx],
+                        };
 
-                    bgr565.ToRgba32(ref rgba32);
-                    color.FromRgba32(rgba32);
+                        bgr565.ToRgba32(ref rgba32);
+                        color.FromRgba32(rgba32);
 
-                    pixelRow[x] = color;
-                    idx++;
+                        pixelRow[x] = color;
+                        idx++;
+                    }
                 }
-            }
+            });
 
             return image;
         }
@@ -372,9 +381,19 @@ namespace SharpAlliance.Core.Managers.Image
 
         public List<Image<Rgba32>> ApplyPalette(ref HVOBJECT hVObject, ref HIMAGE hImage)
         {
-            var img = this.CreateIndexedImages(ref hImage, ref hVObject);
+            var img = this.CreateIndexedImages(ref hImage, hVObject);
 
             return hImage.ParsedImages;
+        }
+
+        public Image<TPixel> Decode<TPixel>(Configuration configuration, Stream stream, CancellationToken cancellationToken) where TPixel : unmanaged, IPixel<TPixel>
+        {
+            throw new NotImplementedException();
+        }
+
+        public SixLabors.ImageSharp.Image Decode(Configuration configuration, Stream stream, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

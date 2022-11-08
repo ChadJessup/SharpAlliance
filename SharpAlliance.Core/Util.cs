@@ -71,10 +71,10 @@ namespace SharpAlliance
         public static void CalculateObliqueMatrixPerspective(ref Matrix4x4 projection, Matrix4x4 view, Plane clipPlane)
         {
             Matrix4x4 invTransposeView = VdUtilities.CalculateInverseTranspose(view);
-            Vector4 clipV4 = new Vector4(clipPlane.Normal, clipPlane.D);
+            Vector4 clipV4 = new(clipPlane.Normal, clipPlane.D);
             clipV4 = Vector4.Transform(clipV4, invTransposeView);
 
-            Vector4 q = new Vector4(
+            Vector4 q = new(
                 (Math.Sign(clipV4.X) + projection.M13) / projection.M11,
                 (Math.Sign(clipV4.Y) + projection.M23) / projection.M22,
                 -1f,

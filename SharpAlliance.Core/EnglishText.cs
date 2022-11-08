@@ -32,7 +32,7 @@ namespace SharpAlliance.Core
         //option Text
         public static string[] zOptionsToggleText = new string[]
         {
-            "Speech",
+            "Hi Twitter!",
             "Mute Confirmations",
             "SubTitles",
             "Pause Text Dialogue",

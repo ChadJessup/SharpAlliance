@@ -9,7 +9,7 @@ using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
-    public class LAPTOP_SCREEN : IScreen
+    public class LaptopScreen : IScreen
     {
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }

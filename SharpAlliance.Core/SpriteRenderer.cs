@@ -10,9 +10,9 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance
 {
-    public class SpriteRenderer
+    public partial class SpriteRenderer
     {
-        private readonly List<SpriteInfo> _draws = new List<SpriteInfo>();
+        private readonly List<SpriteInfo> _draws = new();
 
         private DeviceBuffer _vertexBuffer;
         private DeviceBuffer _textBuffer;
@@ -25,7 +25,7 @@ namespace SharpAlliance
 
         public List<SpriteInfo> DrawCalls { get; protected set; }
         private Dictionary<SpriteInfo, (Texture, TextureView, ResourceSet)> _loadedImages
-            = new Dictionary<SpriteInfo, (Texture, TextureView, ResourceSet)>();
+            = new();
         private ResourceSet _textSet;
 
         public SpriteRenderer(GraphicsDevice gd)
@@ -206,41 +206,6 @@ namespace SharpAlliance
                 this._vertexBuffer = gd.ResourceFactory.CreateBuffer(
                     new BufferDescription(size, BufferUsage.VertexBuffer | BufferUsage.Dynamic));
             }
-        }
-
-        public struct SpriteInfo
-        {
-            public SpriteInfo(Texture texture, QuadVertex quad)
-            {
-                this.Texture = texture;
-                this.Quad = quad;
-                this.SpriteName = string.Empty;
-            }
-
-            public SpriteInfo(string spriteName, QuadVertex quad)
-            {
-                this.SpriteName = spriteName;
-                this.Quad = quad;
-                this.Texture = null;
-            }
-
-            public Texture? Texture { get; init; }
-            public string SpriteName { get; init; }
-            public QuadVertex Quad { get; init; }
-
-            public override bool Equals(object? obj)
-            {
-                if (obj is not SpriteInfo other)
-                {
-                    return false;
-                }
-
-                return this.SpriteName.Equals(other.SpriteName, StringComparison.OrdinalIgnoreCase)
-                    && this.Quad.Equals(other.Quad);
-            }
-
-            public override int GetHashCode() => HashCode.Combine(this.SpriteName, this.Quad);
-            public override string ToString() => $"{this.SpriteName}-{this.Quad}";
         }
 
         public struct QuadVertex

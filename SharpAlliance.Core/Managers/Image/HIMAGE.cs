@@ -145,7 +145,7 @@ namespace SharpAlliance.Core.Managers.Image
                 }
 
 
-                Bgr565 pixel = new Bgr565()
+                Bgr565 pixel = new()
                 {
                     PackedValue = usColor,
                 };

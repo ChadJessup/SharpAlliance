@@ -155,10 +155,10 @@ namespace SharpAlliance.Core
                     {
                         switch (sm.CurrentScreen)
                         {
-                            case MapScreen ms when sm.guiPendingScreen is MSG_BOX_SCREEN:
+                            case MapScreen ms when sm.guiPendingScreen is MessageBoxScreen:
                                 sm.EndMapScreen(false);
                                 break;
-                            case LAPTOP_SCREEN:
+                            case LaptopScreen:
                                 sm.ExitLaptop();
                                 break;
                         }
@@ -208,7 +208,7 @@ namespace SharpAlliance.Core
         public void HandleNewScreenChange(IScreen newScreen, IScreen oldScreen)
         {
             //if we are not going into the message box screen, and we didnt just come from it
-            if (newScreen is not MSG_BOX_SCREEN && oldScreen is not MSG_BOX_SCREEN)
+            if (newScreen is not MessageBoxScreen && oldScreen is not MessageBoxScreen)
             {
                 //reset the help screen
                 //NewScreenSoResetHelpScreen();
@@ -231,9 +231,9 @@ namespace SharpAlliance.Core
             sm.AddScreen<InitScreen>(ScreenName.InitScreen);
             sm.AddScreen<FadeScreen>(ScreenName.FADE_SCREEN);
             sm.AddScreen<IntroScreen>(ScreenName.INTRO_SCREEN);
-            sm.AddScreen<LAPTOP_SCREEN>(ScreenName.LAPTOP_SCREEN);
+            sm.AddScreen<LaptopScreen>(ScreenName.LAPTOP_SCREEN);
             sm.AddScreen<CreditsScreen>(ScreenName.CREDIT_SCREEN);
-            sm.AddScreen<MSG_BOX_SCREEN>(ScreenName.MSG_BOX_SCREEN);
+            sm.AddScreen<MessageBoxScreen>(ScreenName.MSG_BOX_SCREEN);
             sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
             sm.AddScreen<PreferenceScreen>(ScreenName.OPTIONS_SCREEN);
             sm.AddScreen<GameInitOptionsScreen>(ScreenName.GAME_INIT_OPTIONS_SCREEN);

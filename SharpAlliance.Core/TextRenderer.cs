@@ -45,8 +45,8 @@ namespace SharpAlliance.Core
 
         public unsafe void ClearText()
         {
-            this._image.TryGetSinglePixelSpan(out var span);
-            fixed (void* data = &MemoryMarshal.GetReference(span))
+            this._image.DangerousTryGetSinglePixelMemory(out var span);
+            fixed (void* data = &MemoryMarshal.GetReference<Rgba32>(span.Span))
             {
                 Unsafe.InitBlock(data, 0, (uint)(this._image.Width * this._image.Height * 4));
             }
@@ -83,8 +83,8 @@ namespace SharpAlliance.Core
 
         public unsafe void RenderAllText()
         {
-            this._image.TryGetSinglePixelSpan(out var span2);
-            fixed (void* data = &MemoryMarshal.GetReference(span2))
+            this._image.DangerousTryGetSinglePixelMemory(out var span2);
+            fixed (void* data = &MemoryMarshal.GetReference(span2.Span))
             {
                 uint size = (uint)(this._image.Width * this._image.Height * 4);
 

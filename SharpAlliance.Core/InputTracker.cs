@@ -9,11 +9,11 @@ namespace SharpAlliance.Core
 {
     public static class InputTracker
     {
-        private static HashSet<Key> _currentlyPressedKeys = new HashSet<Key>();
-        private static HashSet<Key> _newKeysThisFrame = new HashSet<Key>();
+        private static HashSet<Key> _currentlyPressedKeys = new();
+        private static HashSet<Key> _newKeysThisFrame = new();
 
-        private static HashSet<MouseButton> _currentlyPressedMouseButtons = new HashSet<MouseButton>();
-        private static HashSet<MouseButton> _newMouseButtonsThisFrame = new HashSet<MouseButton>();
+        private static HashSet<MouseButton> _currentlyPressedMouseButtons = new();
+        private static HashSet<MouseButton> _newMouseButtonsThisFrame = new();
 
         public static Vector2 MousePosition;
         public static Vector2 MouseDelta;

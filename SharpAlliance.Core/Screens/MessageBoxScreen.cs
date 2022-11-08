@@ -9,7 +9,7 @@ using Veldrid;
 
 namespace SharpAlliance.Core.Screens
 {
-    public class MSG_BOX_SCREEN : IScreen
+    public class MessageBoxScreen : IScreen
     {
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }

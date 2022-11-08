@@ -45,5 +45,4 @@ namespace SharpAlliance.Platform
         KEY_UP = 0x0002,
         KEY_REPEAT = 0x0004,
     }
-
 }
