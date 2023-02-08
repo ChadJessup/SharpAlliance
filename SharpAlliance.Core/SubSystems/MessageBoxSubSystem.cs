@@ -73,7 +73,7 @@ namespace SharpAlliance.Core.SubSystems
             this.context = context;
         }
 
-        private bool gfNewMessageBox;
+        public bool gfNewMessageBox { get; set; }
 
         public bool gfInMsgBox { get; set; } = false;
         public bool IsInitialized { get; }
@@ -791,8 +791,8 @@ namespace SharpAlliance.Core.SubSystems
         private Rectangle gOldCursorLimitRectangle;
         private bool fRestoreBackgroundForMessageBox;
         private bool gfDontOverRideSaveBuffer;
-        private bool gfStartedFromGameScreen;
-        private bool gfStartedFromMapScreen;
+        public bool gfStartedFromGameScreen { get; set; }
+        public bool gfStartedFromMapScreen { get; set; }
 
         void LieMsgBoxCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
         {

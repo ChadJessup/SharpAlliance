@@ -18,10 +18,14 @@ namespace SharpAlliance.Core.Managers
 
         private Timer? globalTimer;
         private bool gfLockPauseState = false;
+        private int guiLockPauseStateLastReasonId = 0;
         private bool fClockMouseRegionCreated;
+
+        private bool gfPauseClock = false;
 
         public bool IsInitialized { get; private set; }
         public bool gfGamePaused { get; set; }
+        public bool gfTimeInterrupt { get; set; } = false;
 
         // clock mouse region
         private MouseRegion gClockMouseRegion;
@@ -132,17 +136,22 @@ namespace SharpAlliance.Core.Managers
 
         public void InterruptTime()
         {
-            throw new NotImplementedException();
+            gfTimeInterrupt = true;
         }
 
-        public void LockPauseState(int v)
+        // call this to prevent player from changing the time compression state via the interface
+        public void LockPauseState(int uiUniqueReasonId)
         {
-            throw new NotImplementedException();
+            gfLockPauseState = true;
+
+            // if adding a new call, please choose a new uiUniqueReasonId, this helps track down the cause when it's left locked
+            // Highest # used was 21 on Feb 15 '99.
+            guiLockPauseStateLastReasonId = uiUniqueReasonId;
         }
 
-        public void PauseTime(bool v)
+        public void PauseTime(bool fPaused)
         {
-            throw new NotImplementedException();
+            gfPauseClock = fPaused;
         }
 
         public void UnLockPauseState()

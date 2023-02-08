@@ -346,9 +346,16 @@ namespace SharpAlliance.Core.SubSystems
             this.fonts.RestoreFontSettings();
         }
 
-        internal void SetButtonCursor(GUI_BUTTON gUI_BUTTON, Cursor usCursor)
+        internal bool SetButtonCursor(GUI_BUTTON? b, Cursor usCursor)
         {
-            throw new NotImplementedException();
+            if (b is null)
+            {
+                return false;
+            }
+
+            b.Cursor = usCursor;
+
+            return true;
         }
 
         private void DrawButtonFromPtr(GUI_BUTTON b, int id = 0)
@@ -406,7 +413,8 @@ namespace SharpAlliance.Core.SubSystems
 
         public void ForceButtonUnDirty(GUI_BUTTON button)
         {
-            throw new NotImplementedException();
+            button.uiFlags &= ~ButtonFlags.BUTTON_DIRTY;
+            button.uiFlags |= ButtonFlags.BUTTON_FORCE_UNDIRTY;
         }
 
         public GUI_BUTTON CreateIconAndTextButton(
@@ -1280,12 +1288,15 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Display the button image
-            this.video.BltVideoObject(
+            if (b.ButtonPicture.vobj is not null)
+            {
+                this.video.BltVideoObject(
                 b.ButtonPicture.vobj,
                 (ushort)UseImage,
                 b.Loc.X,
                 b.Loc.Y,
                 UseImage);
+            }
         }
 
 
@@ -1474,7 +1485,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (OffNormal != BUTTON_NO_IMAGE)
             {
-                pTrav = buttonPic.vobj.pETRLEObject[OffNormal];
+                pTrav = buttonPic.vobj!.pETRLEObject[OffNormal];
                 ThisHeight = pTrav.usHeight + pTrav.sOffsetY;
                 ThisWidth = pTrav.usWidth + pTrav.sOffsetX;
 
@@ -1491,7 +1502,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (OffHilite != BUTTON_NO_IMAGE)
             {
-                pTrav = buttonPic.vobj.pETRLEObject[OffHilite];
+                pTrav = buttonPic.vobj!.pETRLEObject[OffHilite];
                 ThisHeight = pTrav.usHeight + pTrav.sOffsetY;
                 ThisWidth = pTrav.usWidth + pTrav.sOffsetX;
 
@@ -1508,7 +1519,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (OnNormal != BUTTON_NO_IMAGE)
             {
-                pTrav = buttonPic.vobj.pETRLEObject[OnNormal];
+                pTrav = buttonPic.vobj!.pETRLEObject[OnNormal];
                 ThisHeight = pTrav.usHeight + pTrav.sOffsetY;
                 ThisWidth = pTrav.usWidth + pTrav.sOffsetX;
 
@@ -1525,7 +1536,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (OnHilite != BUTTON_NO_IMAGE)
             {
-                pTrav = buttonPic.vobj.pETRLEObject[OnHilite];
+                pTrav = buttonPic.vobj!.pETRLEObject[OnHilite];
                 ThisHeight = pTrav.usHeight + pTrav.sOffsetY;
                 ThisWidth = pTrav.usWidth + pTrav.sOffsetX;
 
@@ -2343,7 +2354,7 @@ namespace SharpAlliance.Core.SubSystems
         BUTTON_SELFDELETE_IMAGE = 0x00000080,
         BUTTON_DELETION_PENDING = 0x00000100,
         BUTTON_ALLOW_DISABLED_CALLBACK = 0x00000200,
-        // BUTTON_DIRTY = 0x00000400,
+        BUTTON_DIRTY = 0x00000400,
         BUTTON_SAVEBACKGROUND = 0x00000800,
         BUTTON_CHECKBOX = 0x00001000,
         BUTTON_NEWTOGGLE = 0x00002000,
