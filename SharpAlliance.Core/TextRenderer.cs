@@ -39,7 +39,7 @@ namespace SharpAlliance.Core
         public Font LoadFont(string fontFamily, int size, FontStyle style)
         {
             var allFonts = SystemFonts.Collection;
-            var families = SystemFonts.Find(fontFamily);
+            var families = SystemFonts.Get(fontFamily);
             return families.CreateFont(size, style);
         }
 
@@ -62,18 +62,6 @@ namespace SharpAlliance.Core
             this._image.Mutate(ctx =>
             {
                 ctx.DrawText(
-                    new TextGraphicsOptions
-                    {
-                        TextOptions = new TextOptions()
-                        {
-                            WrapTextWidth = width,
-                            HorizontalAlignment = alignment,
-                        },
-                        GraphicsOptions = new GraphicsOptions()
-                        {
-                            Antialias = true,
-                        }
-                    },
                     text,
                     font,
                     foreground,

@@ -392,8 +392,6 @@ namespace SharpAlliance.Core.Managers.Image
         }
 
         public SixLabors.ImageSharp.Image Decode(Configuration configuration, Stream stream, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        => Decode(configuration, stream);
     }
 }
