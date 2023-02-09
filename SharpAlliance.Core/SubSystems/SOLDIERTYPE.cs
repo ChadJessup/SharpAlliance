@@ -87,7 +87,7 @@ namespace SharpAlliance.Core.SubSystems
         int ubDesiredHeight;
         int usPendingAnimation;
         int ubPendingStanceChange;
-        int usAnimState;
+        public int usAnimState;
         bool fNoAPToFinishMove;
         bool fPausedMove;
         bool fUIdeadMerc;                // UI Flags for removing a newly dead merc

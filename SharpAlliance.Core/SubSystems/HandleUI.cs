@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Screens;
+using Veldrid.OpenGLBinding;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -40,6 +41,8 @@ public class HandleUI
 {
     private const int MAX_ON_DUTY_SOLDIERS = 6;
     // LOCAL DEFINES
+    private const int UIEVENT_SINGLEEVENT = 0x00000002;
+    private const int UIEVENT_SNAPMOUSE = 0x00000008;
 
     private const int GO_MOVE_ONE = 40;
     private const int GO_MOVE_TWO = 80;
@@ -53,97 +56,96 @@ public class HandleUI
     //extern bool gfIgnoreOnSelectedGuy;
     //extern bool gfInOpenDoorMenu;
 
+    public HandleUI()
+    {
+        gEvents = new()
+        {
+            new(0, UI_MODE.IDLE_MODE, UIHandleIDoNothing, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.IDLE_MODE, UIHandleExit, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleNewMerc, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleNewBadMerc, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleSelectMerc, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleEnterEditMode, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleEnterPalEditMode, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleEndTurn, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleTestHit, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleChangeLevel, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.IDLE_MODE, UIHandleIOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.IDLE_MODE, UIHandleIChangeToIdle, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.IDLE_MODE, UIHandleILoadLevel, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleISoldierDebug, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILOSDebug, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILevelNodeDebug, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleIGotoDemoMode, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadFirstLevel, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadSecondLevel, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadThirdLevel, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadFourthLevel, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadFifthLevel, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0,UI_MODE.ENEMYS_TURN_MODE, UIHandleIETOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT,UI_MODE.MOVE_MODE, UIHandleIETEndTurn, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0,UI_MODE.MOVE_MODE, UIHandleMOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.ACTION_MODE,                    UIHandleMChangeToAction, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.HANDCURSOR_MODE,            UIHandleMChangeToHandMode, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleMCycleMovement, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.CONFIRM_MOVE_MODE,      UIHandleMCycleMoveAll, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SNAPMOUSE, UI_MODE.ADJUST_STANCE_MODE,     UIHandleMAdjustStanceMode, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.POPUP_MODE, UIHandlePOPUPMSG, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.ACTION_MODE, UIHandleAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleAChangeToMove, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.CONFIRM_ACTION_MODE,    UIHandleAChangeToConfirmAction, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleAEndAction, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SNAPMOUSE, UI_MODE.MENU_MODE,                      UIHandleMovementMenu, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SNAPMOUSE, UI_MODE.MENU_MODE,                      UIHandlePositionMenu, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.CONFIRM_MOVE_MODE,    UIHandleCWait, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleCMoveMerc, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.CONFIRM_MOVE_MODE,      UIHandleCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.MOVE_MODE,                      UIHandlePADJAdjustStance, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.CONFIRM_ACTION_MODE,    UIHandleCAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.ACTION_MODE,                    UIHandleCAMercShoot, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.ACTION_MODE,                    UIHandleCAEndConfirmAction, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.HANDCURSOR_MODE,            UIHandleHCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.GETTINGITEM_MODE,           UIHandleHCGettingItem, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.LOOKCURSOR_MODE,            UIHandleLCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.LOOKCURSOR_MODE,            UIHandleLCChangeToLook, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleLCLook, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0,UI_MODE.TALKINGMENU_MODE,           UIHandleTATalkingMenu, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0,UI_MODE.TALKCURSOR_MODE,            UIHandleTOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT,UI_MODE.TALKCURSOR_MODE,            UIHandleTChangeToTalking, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0,UI_MODE.LOCKUI_MODE,                    UIHandleLUIOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0,UI_MODE.LOCKUI_MODE,                    UIHandleLUIBeginLock, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT,UI_MODE.MOVE_MODE,                      UIHandleLUIEndLock, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.OPENDOOR_MENU_MODE,     UIHandleOpenDoorMenu, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.LOCKOURTURN_UI_MODE,    UIHandleLAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.LOCKOURTURN_UI_MODE,    UIHandleLABeginLockOurTurn, false, false, 0, new int[] { 0, 0, 0 }),
+            new(UIEVENT_SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleLAEndLockOurTurn, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.EXITSECTORMENU_MODE,    UIHandleEXExitSectorMenu, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.RUBBERBAND_MODE,            UIHandleRubberBandOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.JUMPOVER_MODE,              UIHandleJumpOverOnTerrain, false, false, 0, new int[] { 0, 0, 0 }),
+            new(0, UI_MODE.MOVE_MODE, UIHandleJumpOver, false, false, 0, new int[] { 0, 0, 0 }),
+        };
+    }
 
-    SOLDIERTYPE* gpRequesterMerc = null;
-    SOLDIERTYPE* gpRequesterTargetMerc = null;
+    SOLDIERTYPE? gpRequesterMerc = null;
+    SOLDIERTYPE? gpRequesterTargetMerc = null;
     int gsRequesterGridNo;
-    int gsOverItemsGridNo = NOWHERE;
+    int gsOverItemsGridNo = (int)IsometricDefines.NOWHERE;
     int gsOverItemsLevel = 0;
     bool gfUIInterfaceSetBusy = false;
     uint guiUIInterfaceBusyTime = 0;
 
     bool gfTacticalForceNoCursor = false;
-    LEVELNODE* gpInvTileThatCausedMoveConfirm = null;
+    LEVELNODE? gpInvTileThatCausedMoveConfirm = null;
     bool gfResetUIMovementOptimization = false;
     bool gfResetUIItemCursorOptimization = false;
     bool gfBeginVehicleCursor = false;
-    uint gsOutOfRangeGridNo = NOWHERE;
-    byte gubOutOfRangeMerc = NOBODY;
+    uint gsOutOfRangeGridNo = (int)IsometricDefines.NOWHERE;
+    byte gubOutOfRangeMerc = OverheadTypes.NOBODY;
     bool gfOKForExchangeCursor = false;
     uint guiUIInterfaceSwapCursorsTime = 0;
     int gsJumpOverGridNo = 0;
 
-
-    UI_EVENT gEvents[NUM_UI_EVENTS] =
-    {
-    0,                                                                                                          IDLE_MODE,                      UIHandleIDoNothing, false, false, 0, 0, 0, 0,
-    0,                                                                                                          IDLE_MODE,                      UIHandleExit, false, false, 0,  0, 0,  0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleNewMerc, false, false, 0, 0, 0,  0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleNewBadMerc, false, false, 0, 0, 0,  0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleSelectMerc, false, false, 0, 0, 0,  0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleEnterEditMode, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleEnterPalEditMode, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleEndTurn, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleTestHit, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleChangeLevel, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        IDLE_MODE,                      UIHandleIOnTerrain, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        IDLE_MODE,                      UIHandleIChangeToIdle, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        IDLE_MODE,                      UIHandleILoadLevel, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleISoldierDebug, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleILOSDebug, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleILevelNodeDebug, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleIGotoDemoMode, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleILoadFirstLevel, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleILoadSecondLevel, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleILoadThirdLevel, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleILoadFourthLevel, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        DONT_CHANGEMODE,            UIHandleILoadFifthLevel, false, false, 0, 0, 0, 0,
-
-    0,                                                                                                          ENEMYS_TURN_MODE,           UIHandleIETOnTerrain, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleIETEndTurn, false, false, 0, 0, 0, 0,
-
-
-    0,                                                                                                          MOVE_MODE,                      UIHandleMOnTerrain, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        ACTION_MODE,                    UIHandleMChangeToAction, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        HANDCURSOR_MODE,            UIHandleMChangeToHandMode, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleMCycleMovement, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        CONFIRM_MOVE_MODE,      UIHandleMCycleMoveAll, false, false, 0, 0, 0, 0,
-    UIEVENT_SNAPMOUSE,                                                                          ADJUST_STANCE_MODE,     UIHandleMAdjustStanceMode, false, false, 0, 0, 0, 0,
-    0,                                                                                                          POPUP_MODE,                     UIHandlePOPUPMSG, false, false, 0, 0, 0, 0,
-    0,                                                                                                          ACTION_MODE,                    UIHandleAOnTerrain, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleAChangeToMove, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        CONFIRM_ACTION_MODE,    UIHandleAChangeToConfirmAction, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleAEndAction, false, false, 0, 0, 0, 0,
-    UIEVENT_SNAPMOUSE,                                                                          MENU_MODE,                      UIHandleMovementMenu, false, false, 0, 0, 0, 0,
-    UIEVENT_SNAPMOUSE,                                                                          MENU_MODE,                      UIHandlePositionMenu, false, false, 0, 0, 0, 0,
-    0,                                                                                                          CONFIRM_MOVE_MODE,    UIHandleCWait, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleCMoveMerc, false, false, 0, 0, 0, 0,
-    0,                                                                                                          CONFIRM_MOVE_MODE,      UIHandleCOnTerrain, false, false, 0, 0, 0, 0,
-    0,                                                                                                          MOVE_MODE,                      UIHandlePADJAdjustStance, false, false, 0, 0, 0, 0,
-    0,                                                                                                          CONFIRM_ACTION_MODE,    UIHandleCAOnTerrain, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        ACTION_MODE,                    UIHandleCAMercShoot, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        ACTION_MODE,                    UIHandleCAEndConfirmAction, false, false, 0, 0, 0, 0,
-    0,                                                                                                          HANDCURSOR_MODE,            UIHandleHCOnTerrain, false, false, 0, 0, 0, 0,
-    0,                                                                                                          GETTINGITEM_MODE,           UIHandleHCGettingItem, false, false, 0, 0, 0, 0,
-    0,                                                                                                          LOOKCURSOR_MODE,            UIHandleLCOnTerrain, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        LOOKCURSOR_MODE,            UIHandleLCChangeToLook, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleLCLook, false, false, 0, 0, 0, 0,
-    0,                                                                                                          TALKINGMENU_MODE,           UIHandleTATalkingMenu, false, false, 0, 0, 0, 0,
-    0,                                                                                                          TALKCURSOR_MODE,            UIHandleTOnTerrain, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        TALKCURSOR_MODE,            UIHandleTChangeToTalking, false, false, 0, 0, 0, 0,
-    0,                                                                                                          LOCKUI_MODE,                    UIHandleLUIOnTerrain, false, false, 0, 0, 0, 0,
-    0,                                                                                                          LOCKUI_MODE,                    UIHandleLUIBeginLock, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleLUIEndLock, false, false, 0, 0, 0, 0,
-    0,                                                                                                          OPENDOOR_MENU_MODE,     UIHandleOpenDoorMenu, false, false, 0, 0, 0, 0,
-    0,                                                                                                          LOCKOURTURN_UI_MODE,    UIHandleLAOnTerrain, false, false, 0, 0, 0, 0,
-    0,                                                                                                          LOCKOURTURN_UI_MODE,    UIHandleLABeginLockOurTurn, false, false, 0, 0, 0, 0,
-    UIEVENT_SINGLEEVENT,                                                                        MOVE_MODE,                      UIHandleLAEndLockOurTurn, false, false, 0, 0, 0, 0,
-    0,                                                                                                          EXITSECTORMENU_MODE,    UIHandleEXExitSectorMenu, false, false, 0, 0, 0, 0,
-    0,                                                                                                          RUBBERBAND_MODE,            UIHandleRubberBandOnTerrain, false, false, 0, 0, 0, 0,
-    0,                                                                                                          JUMPOVER_MODE,              UIHandleJumpOverOnTerrain, false, false, 0, 0, 0, 0,
-    0,                                                                                                          MOVE_MODE,                      UIHandleJumpOver, false, false, 0, 0, 0, 0,
-
-};
+    List<UI_EVENT> gEvents = new();
 
     UI_MODE gCurrentUIMode = IDLE_MODE;
     UI_MODE gOldUIMode = IDLE_MODE;
@@ -186,7 +188,7 @@ public class HandleUI
 
     bool gUITargetReady = false;
     bool gUITargetShotWaiting = false;
-    uint gsUITargetShotGridNo = NOWHERE;
+    uint gsUITargetShotGridNo = (int)IsometricDefines.NOWHERE;
     bool gUIUseReverse = false;
 
     SGPRect gRubberBandRect = { 0, 0, 0, 0 };
@@ -211,9 +213,9 @@ public class HandleUI
     bool gfUIHandleSelection = false;
     bool gfUIHandleSelectionAboveGuy = false;
     bool gfUIInDeadlock = false;
-    byte gUIDeadlockedSoldier = NOBODY;
+    byte gUIDeadlockedSoldier = OverheadTypes.NOBODY;
     bool gfUIHandleShowMoveGrid = false;
-    uint gsUIHandleShowMoveGridLocation = NOWHERE;
+    uint gsUIHandleShowMoveGridLocation = (int)IsometricDefines.NOWHERE;
     bool gfUIOverItemPool = false;
     int gfUIOverItemPoolGridNo = 0;
     int gsCurrentActionPoints = 1;
@@ -261,7 +263,7 @@ public class HandleUI
     bool gfUIForceReExamineCursorData = false;
 
     // MAIN TACTICAL UI HANDLER
-    static LEVELNODE* pOldIntTile = null;
+    static LEVELNODE? pOldIntTile = null;
 
     ScreenName HandleTacticalUI()
     {
@@ -515,7 +517,7 @@ public class HandleUI
         return (ReturnVal);
     }
 
-    static int sOldExitGridNo = NOWHERE;
+    static int sOldExitGridNo = (int)IsometricDefines.NOWHERE;
     static bool fOkForExit = false;
 
     void SetUIMouseCursor()
@@ -708,7 +710,7 @@ public class HandleUI
 
                 if (GetMouseMapPos(&usMapPos))
                 {
-                    if (gusSelectedSoldier != NOBODY && MercPtrs[gusSelectedSoldier].bLevel == 0)
+                    if (gusSelectedSoldier != OverheadTypes.NOBODY && MercPtrs[gusSelectedSoldier].bLevel == 0)
                     {
                         // ATE: Is this place revealed?
                         if (!InARoom(usMapPos, &ubRoomNum) || (InARoom(usMapPos, &ubRoomNum) && gpWorldLevelData[usMapPos].uiFlags & MAPELEMENT_REVEALED))
@@ -740,7 +742,7 @@ public class HandleUI
             }
             else
             {
-                sOldExitGridNo = NOWHERE;
+                sOldExitGridNo = (int)IsometricDefines.NOWHERE;
             }
 
         }
@@ -785,7 +787,7 @@ public class HandleUI
     }
 
 
-    void ClearEvent(UI_EVENT* pUIEvent)
+    void ClearEvent(UI_EVENT pUIEvent)
     {
         //memset(pUIEvent.uiParams, 0, sizeof(pUIEvent.uiParams) );
         pUIEvent.fDoneMenu = false;
@@ -801,28 +803,28 @@ public class HandleUI
 
     // HANDLER FUCNTIONS
 
-    ScreenName UIHandleIDoNothing(UI_EVENT* pUIEvent)
+    ScreenName UIHandleIDoNothing(UI_EVENT pUIEvent)
     {
         guiNewUICursor = NORMAL_SNAPUICURSOR;
 
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleExit(UI_EVENT* pUIEvent)
+    ScreenName UIHandleExit(UI_EVENT pUIEvent)
     {
         gfProgramIsRunning = false;
         return (ScreenName.GAME_SCREEN);
     }
 
     static byte ubTemp = 3;
-    static INT32 iSoldierCount = 0;
+    static int iSoldierCount = 0;
 
-    ScreenName UIHandleNewMerc(UI_EVENT* pUIEvent)
+    ScreenName UIHandleNewMerc(UI_EVENT pUIEvent)
     {
         int usMapPos;
         MERC_HIRE_STRUCT HireMercStruct;
         byte bReturnCode;
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
 
 
         // Get Grid Corrdinates of mouse
@@ -870,9 +872,9 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleNewBadMerc(UI_EVENT* pUIEvent)
+    ScreenName UIHandleNewBadMerc(UI_EVENT pUIEvent)
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
         uint usMapPos;
         uint usRandom;
 
@@ -948,20 +950,17 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleEnterEditMode(UI_EVENT* pUIEvent)
+    ScreenName UIHandleEnterEditMode(UI_EVENT pUIEvent)
     {
         return (ScreenName.EDIT_SCREEN);
     }
 
-    ScreenName UIHandleEnterPalEditMode(UI_EVENT* pUIEvent)
+    ScreenName UIHandleEnterPalEditMode(UI_EVENT pUIEvent)
     {
         return (ScreenName.PALEDIT_SCREEN);
     }
 
-
-
-
-    ScreenName UIHandleEndTurn(UI_EVENT* pUIEvent)
+    ScreenName UIHandleEndTurn(UI_EVENT pUIEvent)
     {
         // CANCEL FROM PLANNING MODE!
         if (InUIPlanMode())
@@ -994,10 +993,9 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-
-    ScreenName UIHandleTestHit(UI_EVENT* pUIEvent)
+    ScreenName UIHandleTestHit(UI_EVENT pUIEvent)
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
         byte bDamage;
 
         // CHECK IF WE'RE ON A GUY ( EITHER SELECTED, OURS, OR THEIRS
@@ -1029,7 +1027,7 @@ public class HandleUI
 
             gTacticalStatus.ubAttackBusyCount++;
 
-            EVENT_SoldierGotHit(pSoldier, 1, bDamage, 10, pSoldier.bDirection, 320, NOBODY, FIRE_WEAPON_NO_SPECIAL, pSoldier.bAimShotLocation, 0, NOWHERE);
+            EVENT_SoldierGotHit(pSoldier, 1, bDamage, 10, pSoldier.bDirection, 320, OverheadTypes.NOBODY, FIRE_WEAPON_NO_SPECIAL, pSoldier.bAimShotLocation, 0, (int)IsometricDefines.NOWHERE);
 
         }
         return ScreenName.GAME_SCREEN;
@@ -1066,7 +1064,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleChangeLevel(UI_EVENT* pUIEvent)
+    ScreenName UIHandleChangeLevel(UI_EVENT pUIEvent)
     {
         if (gsInterfaceLevel == 0)
         {
@@ -1083,9 +1081,9 @@ public class HandleUI
 
     extern void InternalSelectSoldier(uint usSoldierID, bool fAcknowledge, bool fForceReselect, bool fFromUI);
 
-    ScreenName UIHandleSelectMerc(UI_EVENT* pUIEvent)
+    ScreenName UIHandleSelectMerc(UI_EVENT pUIEvent)
     {
-        INT32 iCurrentSquad;
+        int iCurrentSquad;
 
         // Get merc index at mouse and set current selection
         if (gfUIFullTargetFound)
@@ -1104,9 +1102,14 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleMOnTerrain(UI_EVENT* pUIEvent)
+    static int sGridNoForItemsOver;
+    static byte bLevelForItemsOver;
+    static uint uiItemsOverTimer;
+    static bool fOverItems;
+
+    ScreenName UIHandleMOnTerrain(UI_EVENT pUIEvent)
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
         uint usMapPos;
         bool fSetCursor = false;
         uint uiCursorFlags;
@@ -1115,11 +1118,6 @@ public class HandleUI
         int sIntTileGridNo;
         bool fContinue = true;
         ITEM_POOL* pItemPool;
-
-        static int sGridNoForItemsOver;
-        static byte bLevelForItemsOver;
-        static uint uiItemsOverTimer;
-        static bool fOverItems;
 
         if (!GetMouseMapPos(&usMapPos))
         {
@@ -1188,7 +1186,7 @@ public class HandleUI
             if (GetSoldier(&pSoldier, gusSelectedSoldier))
             {
 
-                if (pSoldier.sGridNo == NOWHERE)
+                if (pSoldier.sGridNo == (int)IsometricDefines.NOWHERE)
                 {
                     int i = 0;
                 }
@@ -1233,7 +1231,7 @@ public class HandleUI
                     // gusSelectedSoldier = NO_SOLDIER;	
                     ubID = FindNextActiveAndAliveMerc(pSoldier, false, false);
 
-                    if (ubID != NOBODY)
+                    if (ubID != OverheadTypes.NOBODY)
                     {
                         SelectSoldier((int)ubID, false, false);
                     }
@@ -1308,9 +1306,9 @@ public class HandleUI
         return ScreenName.GAME_SCREEN;
     }
 
-    ScreenName UIHandleMovementMenu(UI_EVENT* pUIEvent)
+    ScreenName UIHandleMovementMenu(UI_EVENT pUIEvent)
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
 
 
         // Get soldier
@@ -1403,17 +1401,17 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandlePositionMenu(UI_EVENT* pUIEvent)
+    ScreenName UIHandlePositionMenu(UI_EVENT pUIEvent)
     {
 
         return (ScreenName.GAME_SCREEN);
     }
 
 
-    ScreenName UIHandleAOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleAOnTerrain(UI_EVENT pUIEvent)
     {
         uint usMapPos;
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
         //	int							sTargetXPos, sTargetYPos;
 
         if (!GetMouseMapPos(&usMapPos))
@@ -1502,10 +1500,9 @@ public class HandleUI
 
 
         return (ScreenName.GAME_SCREEN);
-
     }
 
-    ScreenName UIHandleMChangeToAction(UI_EVENT* pUIEvent)
+    ScreenName UIHandleMChangeToAction(UI_EVENT pUIEvent)
     {
         gUITargetShotWaiting = false;
 
@@ -1516,14 +1513,14 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleMChangeToHandMode(UI_EVENT* pUIEvent)
+    ScreenName UIHandleMChangeToHandMode(UI_EVENT pUIEvent)
     {
         ErasePath(false);
 
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleAChangeToMove(UI_EVENT* pUIEvent)
+    ScreenName UIHandleAChangeToMove(UI_EVENT pUIEvent)
     {
         // Set merc glow back to normal
         // ( could have been set when in target cursor )
@@ -1536,10 +1533,10 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleCWait(UI_EVENT* pUIEvent)
+    ScreenName UIHandleCWait(UI_EVENT pUIEvent)
     {
         uint usMapPos;
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
         bool fSetCursor;
         uint uiCursorFlags;
         LEVELNODE* pInvTile;
@@ -1565,7 +1562,7 @@ public class HandleUI
             if (pInvTile != null)
             {
 
-                fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, MOVEUI_TARGET_INTTILES);
+                fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, MOVEUI_TARGET.INTTILES);
 
                 //Set UI CURSOR
                 guiNewUICursor = GetInteractiveTileCursor(guiNewUICursor, true);
@@ -1606,10 +1603,10 @@ public class HandleUI
 
     // NOTE, ONCE AT THIS FUNCTION, WE HAVE ASSUMED TO HAVE CHECKED FOR ENOUGH APS THROUGH
     // SelectedMercCanAffordMove
-    ScreenName UIHandleCMoveMerc(UI_EVENT* pUIEvent)
+    ScreenName UIHandleCMoveMerc(UI_EVENT pUIEvent)
     {
         uint usMapPos;
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
         int sDestGridNo;
         int sActionGridNo;
         STRUCTURE* pStructure;
@@ -1797,9 +1794,9 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleMCycleMoveAll(UI_EVENT* pUIEvent)
+    ScreenName UIHandleMCycleMoveAll(UI_EVENT pUIEvent)
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
 
         if (!GetSoldier(&pSoldier, gusSelectedSoldier))
         {
@@ -1815,7 +1812,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleMCycleMovement(UI_EVENT* pUIEvent)
+    ScreenName UIHandleMCycleMovement(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         bool fGoodMode = false;
@@ -1879,7 +1876,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleCOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleCOnTerrain(UI_EVENT pUIEvent)
     {
 
         return (ScreenName.GAME_SCREEN);
@@ -1893,11 +1890,11 @@ public class HandleUI
     static byte ubUpHeight, ubDownDepth;
     static uint uiOldShowUPDownArrows;
 
-    ScreenName UIHandleMAdjustStanceMode(UI_EVENT* pUIEvent)
+    ScreenName UIHandleMAdjustStanceMode(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         bool fCheck = false;
-        INT32 iPosDiff;
+        int iPosDiff;
         byte bNewDirection;
 
         // Change cusror to normal
@@ -2003,7 +2000,7 @@ public class HandleUI
         }
 
         // Check if delta X has changed alot since last time
-        iPosDiff = abs((INT32)(usOldMouseY - gusMouseYPos));
+        iPosDiff = abs((int)(usOldMouseY - gusMouseYPos));
 
         //guiShowUPDownArrows = ARROWS_SHOW_DOWN_BESIDE | ARROWS_SHOW_UP_BESIDE;
         guiShowUPDownArrows = uiOldShowUPDownArrows;
@@ -2129,7 +2126,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleAChangeToConfirmAction(UI_EVENT* pUIEvent)
+    ScreenName UIHandleAChangeToConfirmAction(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
 
@@ -2145,7 +2142,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleCAOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleCAOnTerrain(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         uint usMapPos;
@@ -2170,7 +2167,7 @@ public class HandleUI
 
     void UIHandleMercAttack(SOLDIERTYPE* pSoldier, SOLDIERTYPE* pTargetSoldier, uint usMapPos)
     {
-        INT32 iHandleReturn;
+        int iHandleReturn;
         int sTargetGridNo;
         byte bTargetLevel;
         uint usItem;
@@ -2326,10 +2323,10 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleCAMercShoot(UI_EVENT* pUIEvent)
+    ScreenName UIHandleCAMercShoot(UI_EVENT pUIEvent)
     {
         uint usMapPos;
-        SOLDIERTYPE* pSoldier, *pTSoldier = null;
+        SOLDIERTYPE? pSoldier, pTSoldier = null;
         bool fDidRequester = false;
 
         if (gusSelectedSoldier != NO_SOLDIER)
@@ -2382,7 +2379,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleAEndAction(UI_EVENT* pUIEvent)
+    ScreenName UIHandleAEndAction(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         int sTargetXPos, sTargetYPos;
@@ -2416,7 +2413,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleCAEndConfirmAction(UI_EVENT* pUIEvent)
+    ScreenName UIHandleCAEndConfirmAction(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
 
@@ -2429,7 +2426,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleIOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleIOnTerrain(UI_EVENT pUIEvent)
     {
         uint usMapPos;
 
@@ -2456,12 +2453,12 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleIChangeToIdle(UI_EVENT* pUIEvent)
+    ScreenName UIHandleIChangeToIdle(UI_EVENT pUIEvent)
     {
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandlePADJAdjustStance(UI_EVENT* pUIEvent)
+    ScreenName UIHandlePADJAdjustStance(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         byte ubNewStance;
@@ -2605,7 +2602,7 @@ public class HandleUI
 
     void AdjustSoldierCreationStartValues()
     {
-        INT32 cnt;
+        int cnt;
         SOLDIERTYPE* pSoldier;
 
 
@@ -2813,13 +2810,13 @@ public class HandleUI
         ErasePath(true);
     }
 
-    ScreenName UIHandlePOPUPMSG(UI_EVENT* pUIEvent)
+    ScreenName UIHandlePOPUPMSG(UI_EVENT pUIEvent)
     {
         return (ScreenName.GAME_SCREEN);
     }
 
 
-    ScreenName UIHandleHCOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleHCOnTerrain(UI_EVENT pUIEvent)
     {
         uint usMapPos;
         SOLDIERTYPE* pSoldier;
@@ -2841,9 +2838,9 @@ public class HandleUI
         }
         else
         {
-            if (gsOverItemsGridNo != NOWHERE && (usMapPos != gsOverItemsGridNo || gsInterfaceLevel != gsOverItemsLevel))
+            if (gsOverItemsGridNo != (int)IsometricDefines.NOWHERE && (usMapPos != gsOverItemsGridNo || gsInterfaceLevel != gsOverItemsLevel))
             {
-                gsOverItemsGridNo = NOWHERE;
+                gsOverItemsGridNo = (int)IsometricDefines.NOWHERE;
                 guiPendingOverrideEvent = A_CHANGE_TO_MOVE;
             }
             else
@@ -2857,7 +2854,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleHCGettingItem(UI_EVENT* pUIEvent)
+    ScreenName UIHandleHCGettingItem(UI_EVENT pUIEvent)
     {
         guiNewUICursor = NORMAL_FREEUICURSOR;
 
@@ -2865,7 +2862,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleTATalkingMenu(UI_EVENT* pUIEvent)
+    ScreenName UIHandleTATalkingMenu(UI_EVENT pUIEvent)
     {
         guiNewUICursor = NORMAL_FREEUICURSOR;
 
@@ -2873,7 +2870,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleEXExitSectorMenu(UI_EVENT* pUIEvent)
+    ScreenName UIHandleEXExitSectorMenu(UI_EVENT pUIEvent)
     {
         guiNewUICursor = NORMAL_FREEUICURSOR;
 
@@ -2881,7 +2878,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleOpenDoorMenu(UI_EVENT* pUIEvent)
+    ScreenName UIHandleOpenDoorMenu(UI_EVENT pUIEvent)
     {
         guiNewUICursor = NORMAL_FREEUICURSOR;
 
@@ -3094,12 +3091,12 @@ public class HandleUI
         return (true);
     }
 
-    uint UIHandleILoadLevel(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILoadLevel(UI_EVENT pUIEvent)
     {
-        return (INIT_SCREEN);
+        return (ScreenName.InitScreen);
     }
 
-    uint UIHandleISoldierDebug(UI_EVENT* pUIEvent)
+    ScreenName UIHandleISoldierDebug(UI_EVENT pUIEvent)
     {
         // Use soldier display pages
         SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage1, 0);
@@ -3108,22 +3105,22 @@ public class HandleUI
         SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage4, 3);
         gCurDebugPage = 1;
 
-        return (DEBUG_SCREEN);
+        return (ScreenName.DEBUG_SCREEN);
     }
 
-    uint UIHandleILOSDebug(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILOSDebug(UI_EVENT pUIEvent)
     {
         SetDebugRenderHook((RENDER_HOOK)DebugStructurePage1, 0);
-        return (DEBUG_SCREEN);
+        return (ScreenName.DEBUG_SCREEN);
     }
 
-    uint UIHandleILevelNodeDebug(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILevelNodeDebug(UI_EVENT pUIEvent)
     {
         SetDebugRenderHook((RENDER_HOOK)DebugLevelNodePage, 0);
-        return (DEBUG_SCREEN);
+        return (ScreenName.DEBUG_SCREEN);
     }
 
-    ScreenName UIHandleIETOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleIETOnTerrain(UI_EVENT pUIEvent)
     {
         //guiNewUICursor = CANNOT_MOVE_UICURSOR;
         guiNewUICursor = NO_UICURSOR;
@@ -3136,7 +3133,7 @@ public class HandleUI
 
     void UIHandleSoldierStanceChange(byte ubSoldierID, byte bNewStance)
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
 
         pSoldier = MercPtrs[ubSoldierID];
 
@@ -3238,46 +3235,46 @@ public class HandleUI
 
     }
 
-    ScreenName UIHandleIETEndTurn(UI_EVENT* pUIEvent)
+    ScreenName UIHandleIETEndTurn(UI_EVENT pUIEvent)
     {
         return (ScreenName.GAME_SCREEN);
     }
 
 
-    ScreenName UIHandleIGotoDemoMode(UI_EVENT* pUIEvent)
+    ScreenName UIHandleIGotoDemoMode(UI_EVENT pUIEvent)
     {
         return (EnterTacticalDemoMode());
     }
 
 
-    uint UIHandleILoadFirstLevel(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILoadFirstLevel(UI_EVENT pUIEvent)
     {
         gubCurrentScene = 0;
-        return (INIT_SCREEN);
+        return (ScreenName.InitScreen);
     }
 
-    uint UIHandleILoadSecondLevel(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILoadSecondLevel(UI_EVENT pUIEvent)
     {
         gubCurrentScene = 1;
-        return (INIT_SCREEN);
+        return (ScreenName.InitScreen);
     }
 
-    uint UIHandleILoadThirdLevel(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILoadThirdLevel(UI_EVENT pUIEvent)
     {
         gubCurrentScene = 2;
-        return (INIT_SCREEN);
+        return (ScreenName.InitScreen);
     }
 
-    uint UIHandleILoadFourthLevel(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILoadFourthLevel(UI_EVENT pUIEvent)
     {
         gubCurrentScene = 3;
-        return (INIT_SCREEN);
+        return (ScreenName.InitScreen);
     }
 
-    uint UIHandleILoadFifthLevel(UI_EVENT* pUIEvent)
+    ScreenName UIHandleILoadFifthLevel(UI_EVENT pUIEvent)
     {
         gubCurrentScene = 4;
-        return (INIT_SCREEN);
+        return (ScreenName.InitScreen);
     }
 
     static bool fStationary = false;
@@ -3288,7 +3285,7 @@ public class HandleUI
     static uint uiSameFrameCursorFlags;
     static uint uiOldFrameNumber = 99999;
 
-    void GetCursorMovementFlags(uint* puiCursorFlags)
+    void GetCursorMovementFlags(uint puiCursorFlags)
     {
         uint usMapPos;
         int sXPos, sYPos;
@@ -3336,10 +3333,10 @@ public class HandleUI
         uiSameFrameCursorFlags = (*puiCursorFlags);
     }
 
-    static uint usTargetID = NOBODY;
+    static uint usTargetID = OverheadTypes.NOBODY;
     static bool fTargetFound = false;
 
-    bool HandleUIMovementCursor(SOLDIERTYPE* pSoldier, uint uiCursorFlags, uint usMapPos, uint uiFlags)
+    bool HandleUIMovementCursor(SOLDIERTYPE? pSoldier, uint uiCursorFlags, uint usMapPos, uint uiFlags)
     {
         bool fSetCursor = false;
         bool fCalculated = false;
@@ -3356,7 +3353,7 @@ public class HandleUI
         if (((gTacticalStatus.uiFlags & REALTIME) || !(gTacticalStatus.uiFlags & INCOMBAT)) || ((gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_STATIONARY) || pSoldier.fNoAPToFinishMove) || pSoldier.ubID >= MAX_NUM_SOLDIERS)
         {
             // If we are targeting a merc for some reason, don't go thorugh normal channels if we are on someone now
-            if (uiFlags == MOVEUI_TARGET_MERCS || uiFlags == MOVEUI_TARGET_MERCSFORAID)
+            if (uiFlags == MOVEUI_TARGET.MERCS || uiFlags == MOVEUI_TARGET.MERCSFORAID)
             {
                 if (gfUIFullTargetFound != fTargetFound || usTargetID != gusUIFullTargetID || gfResetUIMovementOptimization)
                 {
@@ -3379,12 +3376,12 @@ public class HandleUI
                 }
             }
 
-            if (uiFlags == MOVEUI_TARGET_ITEMS)
+            if (uiFlags == MOVEUI_TARGET.ITEMS)
             {
                 gfUIOverItemPool = true;
                 gfUIOverItemPoolGridNo = usMapPos;
             }
-            else if (uiFlags == MOVEUI_TARGET_MERCSFORAID)
+            else if (uiFlags == MOVEUI_TARGET.MERCSFORAID)
             {
                 // Set values for AP display...
                 gfUIDisplayActionPointsCenter = true;
@@ -3459,19 +3456,19 @@ public class HandleUI
                     {
                         gfUIDisplayActionPoints = true;
 
-                        if (uiFlags == MOVEUI_TARGET_INTTILES)
+                        if (uiFlags == MOVEUI_TARGET.INTTILES)
                         {
                             // Set values for AP display...
                             gUIDisplayActionPointsOffX = 22;
                             gUIDisplayActionPointsOffY = 15;
                         }
-                        if (uiFlags == MOVEUI_TARGET_BOMB)
+                        if (uiFlags == MOVEUI_TARGET.BOMB)
                         {
                             // Set values for AP display...
                             gUIDisplayActionPointsOffX = 22;
                             gUIDisplayActionPointsOffY = 15;
                         }
-                        else if (uiFlags == MOVEUI_TARGET_ITEMS)
+                        else if (uiFlags == MOVEUI_TARGET.ITEMS)
                         {
                             // Set values for AP display...
                             gUIDisplayActionPointsOffX = 22;
@@ -3513,7 +3510,7 @@ public class HandleUI
 
 
 
-    byte DrawUIMovementPath(SOLDIERTYPE* pSoldier, uint usMapPos, uint uiFlags)
+    byte DrawUIMovementPath(SOLDIERTYPE? pSoldier, uint usMapPos, uint uiFlags)
     {
         int sAPCost, sBPCost;
         int sActionGridNo;
@@ -3543,7 +3540,7 @@ public class HandleUI
         ErasePath(false);
 
         // IF WE ARE OVER AN INTERACTIVE TILE, GIVE GRIDNO OF POSITION
-        if (uiFlags == MOVEUI_TARGET_INTTILES)
+        if (uiFlags == MOVEUI_TARGET.INTTILES)
         {
             // Get structure info for in tile!
             pIntTile = GetCurInteractiveTileGridNoAndStructure(&sIntTileGridNo, &pStructure);
@@ -3574,7 +3571,7 @@ public class HandleUI
                 sAPCost += UIPlotPath(pSoldier, sActionGridNo, NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_WIREFENCE)
+        else if (uiFlags == MOVEUI_TARGET.WIREFENCE)
         {
             sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, &ubDirection, null, false, true);
             if (sActionGridNo == -1)
@@ -3594,7 +3591,7 @@ public class HandleUI
                 }
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_JAR)
+        else if (uiFlags == MOVEUI_TARGET.JAR)
         {
             sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, &ubDirection, null, false, true);
             if (sActionGridNo == -1)
@@ -3612,7 +3609,7 @@ public class HandleUI
                 gsUIHandleShowMoveGridLocation = sActionGridNo;
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_CAN)
+        else if (uiFlags == MOVEUI_TARGET.CAN)
         {
             // Get structure info for in tile!
             pIntTile = GetCurInteractiveTileGridNoAndStructure(&sIntTileGridNo, &pStructure);
@@ -3639,7 +3636,7 @@ public class HandleUI
             }
 
         }
-        else if (uiFlags == MOVEUI_TARGET_REPAIR)
+        else if (uiFlags == MOVEUI_TARGET.REPAIR)
         {
             // For repair, check if we are over a vehicle, then get gridnot to edge of that vehicle!
             if (IsRepairableStructAtGridNo(usMapPos, &ubMercID) == 2)
@@ -3649,7 +3646,7 @@ public class HandleUI
 
                 sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, &ubDirection, 0, MercPtrs[ubMercID]);
 
-                if (sNewGridNo != NOWHERE)
+                if (sNewGridNo != (int)IsometricDefines.NOWHERE)
                 {
                     usMapPos = sNewGridNo;
                 }
@@ -3671,7 +3668,7 @@ public class HandleUI
                 gsUIHandleShowMoveGridLocation = sActionGridNo;
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_REFUEL)
+        else if (uiFlags == MOVEUI_TARGET.REFUEL)
         {
             // For repair, check if we are over a vehicle, then get gridnot to edge of that vehicle!
             if (IsRefuelableStructAtGridNo(usMapPos, &ubMercID) == 2)
@@ -3681,7 +3678,7 @@ public class HandleUI
 
                 sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, &ubDirection, 0, MercPtrs[ubMercID]);
 
-                if (sNewGridNo != NOWHERE)
+                if (sNewGridNo != (int)IsometricDefines.NOWHERE)
                 {
                     usMapPos = sNewGridNo;
                 }
@@ -3703,15 +3700,15 @@ public class HandleUI
                 gsUIHandleShowMoveGridLocation = sActionGridNo;
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_MERCS)
+        else if (uiFlags == MOVEUI_TARGET.MERCS)
         {
-            int sGotLocation = NOWHERE;
+            int sGotLocation = (int)IsometricDefines.NOWHERE;
             bool fGotAdjacent = false;
 
             // Check if we are on a target
             if (gfUIFullTargetFound)
             {
-                INT32 cnt;
+                int cnt;
                 int sSpot;
                 byte ubGuyThere;
 
@@ -3740,13 +3737,13 @@ public class HandleUI
                     }
                 }
 
-                if (sGotLocation == NOWHERE)
+                if (sGotLocation == (int)IsometricDefines.NOWHERE)
                 {
                     sActionGridNo = FindAdjacentGridEx(pSoldier, MercPtrs[gusUIFullTargetID].sGridNo, &ubDirection, &sAdjustedGridNo, true, false);
 
                     if (sActionGridNo == -1)
                     {
-                        sGotLocation = NOWHERE;
+                        sGotLocation = (int)IsometricDefines.NOWHERE;
                     }
                     else
                     {
@@ -3762,7 +3759,7 @@ public class HandleUI
                 fGotAdjacent = true;
             }
 
-            if (sGotLocation != NOWHERE)
+            if (sGotLocation != (int)IsometricDefines.NOWHERE)
             {
                 sAPCost += MinAPsToAttack(pSoldier, sAdjustedGridNo, true);
                 sAPCost += UIPlotPath(pSoldier, sGotLocation, NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
@@ -3774,7 +3771,7 @@ public class HandleUI
                 }
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_STEAL)
+        else if (uiFlags == MOVEUI_TARGET.STEAL)
         {
             // Check if we are on a target
             if (gfUIFullTargetFound)
@@ -3799,7 +3796,7 @@ public class HandleUI
                 }
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_BOMB)
+        else if (uiFlags == MOVEUI_TARGET.BOMB)
         {
             sAPCost += GetAPsToDropBomb(pSoldier);
             sAPCost += UIPlotPath(pSoldier, usMapPos, NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
@@ -3807,7 +3804,7 @@ public class HandleUI
             gfUIHandleShowMoveGrid = true;
             gsUIHandleShowMoveGridLocation = usMapPos;
         }
-        else if (uiFlags == MOVEUI_TARGET_MERCSFORAID)
+        else if (uiFlags == MOVEUI_TARGET.MERCSFORAID)
         {
             if (gfUIFullTargetFound)
             {
@@ -3832,7 +3829,7 @@ public class HandleUI
                 }
             }
         }
-        else if (uiFlags == MOVEUI_TARGET_ITEMS)
+        else if (uiFlags == MOVEUI_TARGET.ITEMS)
         {
             //if ( GetItemPool( usMapPos, &pItemPool, pSoldier.bLevel ) )
             {
@@ -4284,7 +4281,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleLCOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLCOnTerrain(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE pSoldier;
         int sFacingDir, sXPos, sYPos;
@@ -4335,7 +4332,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleLCChangeToLook(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLCChangeToLook(UI_EVENT pUIEvent)
     {
         ErasePath(true);
 
@@ -4381,11 +4378,11 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleLCLook(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLCLook(UI_EVENT pUIEvent)
     {
         int sXPos, sYPos;
         SOLDIERTYPE* pSoldier;
-        INT32 cnt;
+        int cnt;
         SOLDIERTYPE* pFirstSoldier = null;
 
 
@@ -4427,7 +4424,7 @@ public class HandleUI
 
 
 
-    ScreenName UIHandleTOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleTOnTerrain(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         byte ubTargID;
@@ -4543,7 +4540,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleTChangeToTalking(UI_EVENT* pUIEvent)
+    ScreenName UIHandleTChangeToTalking(UI_EVENT pUIEvent)
     {
         ErasePath(true);
 
@@ -4551,7 +4548,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleLUIOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLUIOnTerrain(UI_EVENT pUIEvent)
     {
         //guiNewUICursor = NO_UICURSOR;
         //	SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
@@ -4560,7 +4557,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleLUIBeginLock(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLUIBeginLock(UI_EVENT pUIEvent)
     {
         // Don't let both versions of the locks to happen at the same time!
         // ( They are mutually exclusive )!
@@ -4589,7 +4586,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleLUIEndLock(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLUIEndLock(UI_EVENT pUIEvent)
     {
         if (gfDisableRegionActive)
         {
@@ -4653,7 +4650,7 @@ public class HandleUI
         }
     }
 
-    ScreenName UIHandleLAOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLAOnTerrain(UI_EVENT pUIEvent)
     {
         //guiNewUICursor = NO_UICURSOR;
         //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
@@ -4701,7 +4698,7 @@ public class HandleUI
     void EndMultiSoldierSelection(bool fAcknowledge)
     {
         SOLDIERTYPE* pSoldier;
-        INT32 cnt;
+        int cnt;
         SOLDIERTYPE* pFirstSoldier = null;
         bool fSelectedSoldierInBatch = false;
 
@@ -4754,7 +4751,7 @@ public class HandleUI
     void StopRubberBandedMercFromMoving()
     {
         SOLDIERTYPE* pSoldier;
-        INT32 cnt;
+        int cnt;
         SOLDIERTYPE* pFirstSoldier = null;
 
 
@@ -4800,7 +4797,7 @@ public class HandleUI
     bool HandleMultiSelectionMove(int sDestGridNo)
     {
         SOLDIERTYPE* pSoldier;
-        INT32 cnt;
+        int cnt;
         bool fAtLeastOneMultiSelect = false;
         bool fMoveFast = false;
 
@@ -4882,7 +4879,7 @@ public class HandleUI
     void ResetMultiSelection()
     {
         SOLDIERTYPE* pSoldier;
-        INT32 cnt;
+        int cnt;
 
         // OK, loop through all guys who are 'multi-selected' and
         // Make them move....
@@ -4904,12 +4901,12 @@ public class HandleUI
 
 
 
-    ScreenName UIHandleRubberBandOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleRubberBandOnTerrain(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
-        INT32 cnt;
+        int cnt;
         int sScreenX, sScreenY;
-        INT32 iTemp;
+        int iTemp;
         SGPRect aRect;
         bool fAtLeastOne = false;
 
@@ -5000,7 +4997,7 @@ public class HandleUI
     }
 
 
-    ScreenName UIHandleJumpOverOnTerrain(UI_EVENT* pUIEvent)
+    ScreenName UIHandleJumpOverOnTerrain(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         uint usMapPos;
@@ -5033,7 +5030,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleJumpOver(UI_EVENT* pUIEvent)
+    ScreenName UIHandleJumpOver(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE* pSoldier;
         uint usMapPos;
@@ -5076,7 +5073,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleLABeginLockOurTurn(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLABeginLockOurTurn(UI_EVENT pUIEvent)
     {
         // Don't let both versions of the locks to happen at the same time!
         // ( They are mutually exclusive )!
@@ -5109,7 +5106,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleLAEndLockOurTurn(UI_EVENT* pUIEvent)
+    ScreenName UIHandleLAEndLockOurTurn(UI_EVENT pUIEvent)
     {
         if (gfUserTurnRegionActive)
         {
@@ -5165,7 +5162,7 @@ public class HandleUI
         bool fValidGuy = false;
 
 
-        if (gusSelectedSoldier != NOBODY)
+        if (gusSelectedSoldier != OverheadTypes.NOBODY)
         {
             if (AM_A_ROBOT(MercPtrs[gusSelectedSoldier]))
             {
@@ -5256,7 +5253,8 @@ public class HandleUI
     bool HandleTalkInit()
     {
         int sAPCost;
-        SOLDIERTYPE* pSoldier, *pTSoldier;
+        SOLDIERTYPE? pSoldier;
+        SOLDIERTYPE? pTSoldier;
         uint uiRange;
         uint usMapPos;
         int sGoodGridNo;
@@ -5512,6 +5510,8 @@ public class HandleUI
     }
 
 
+    static bool fOverPool = false;
+    static bool fOverEnemy = false;
 
     byte UIHandleInteractiveTilesAndItemsOnTerrain(SOLDIERTYPE* pSoldier, int usMapPos, bool fUseOKCursor, bool fItemsOnlyIfOnIntTiles)
     {
@@ -5519,8 +5519,6 @@ public class HandleUI
         bool fSetCursor;
         uint uiCursorFlags;
         LEVELNODE* pIntTile;
-        static bool fOverPool = false;
-        static bool fOverEnemy = false;
         int sActionGridNo;
         int sIntTileGridNo;
         bool fContinue = true;
@@ -5604,7 +5602,7 @@ public class HandleUI
                         guiNewUICursor = NORMALHANDCURSOR_UICURSOR;
                     }
 
-                    fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, sActionGridNo, MOVEUI_TARGET_STEAL);
+                    fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, sActionGridNo, MOVEUI_TARGET.STEAL);
 
                     // Display action points
                     gfUIDisplayActionPoints = true;
@@ -5689,7 +5687,7 @@ public class HandleUI
                         guiNewUICursor = NORMALHANDCURSOR_UICURSOR;
                     }
 
-                    fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, sActionGridNo, MOVEUI_TARGET_ITEMS);
+                    fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, sActionGridNo, MOVEUI_TARGET.ITEMS);
 
                     // Display action points
                     gfUIDisplayActionPoints = true;
@@ -5722,7 +5720,7 @@ public class HandleUI
                     gfPlotNewMovement = true;
                 }
 
-                HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, MOVEUI_TARGET_INTTILES);
+                HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, MOVEUI_TARGET.INTTILES);
 
                 //Set UI CURSOR
                 guiNewUICursor = GetInteractiveTileCursor(guiNewUICursor, fUseOKCursor);
@@ -5738,7 +5736,7 @@ public class HandleUI
                         gfPlotNewMovement = true;
                     }
 
-                    fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, sActionGridNo, MOVEUI_TARGET_ITEMS);
+                    fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, sActionGridNo, MOVEUI_TARGET.ITEMS);
 
                     // Display action points
                     gfUIDisplayActionPoints = true;
@@ -5782,9 +5780,9 @@ public class HandleUI
 
     bool SelectedGuyInBusyAnimation()
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
 
-        if (gusSelectedSoldier != NOBODY)
+        if (gusSelectedSoldier != OverheadTypes.NOBODY)
         {
             pSoldier = MercPtrs[gusSelectedSoldier];
 
@@ -5882,10 +5880,11 @@ public class HandleUI
         }
     }
 
+    static int sOldHeight = 0;
+
     void SetInterfaceHeightLevel()
     {
         int sHeight;
-        static int sOldHeight = 0;
         int sGridNo;
 
         if (gfBasement || gfCaves)
@@ -5931,12 +5930,13 @@ public class HandleUI
         }
     }
 
+    static bool fOldOnValidGuy = false;
+
     bool ValidQuickExchangePosition()
     {
-        SOLDIERTYPE* pSoldier, *pOverSoldier;
-        int sDistVisible = false;
+        SOLDIERTYPE? pSoldier, pOverSoldier;
+        int sDistVisible = 0;
         bool fOnValidGuy = false;
-        static bool fOldOnValidGuy = false;
 
         // Check if we over a civ
         if (gfUIFullTargetFound)
@@ -6000,10 +6000,10 @@ public class HandleUI
     {
         int sFourGrids[4], sDistance = 0, sSpot, sIntSpot;
         int sDirs[4] = { NORTH, EAST, SOUTH, WEST };
-        INT32 cnt;
+        int cnt;
         byte ubGuyThere;
         byte ubMovementCost;
-        INT32 iDoorGridNo;
+        int iDoorGridNo;
 
         // First check that action point cost is zero so far
         // ie: NO PATH!
@@ -6054,7 +6054,7 @@ public class HandleUI
                         ubGuyThere = WhoIsThere2(sIntSpot, pSoldier.bLevel);
 
                         // Is there a guy and is he prone?
-                        if (ubGuyThere != NOBODY && ubGuyThere != pSoldier.ubID && gAnimControl[MercPtrs[ubGuyThere].usAnimState].ubHeight == ANIM_PRONE)
+                        if (ubGuyThere != OverheadTypes.NOBODY && ubGuyThere != pSoldier.ubID && gAnimControl[MercPtrs[ubGuyThere].usAnimState].ubHeight == ANIM_PRONE)
                         {
                             // It's a GO!
                             return (true);
@@ -6066,4 +6066,145 @@ public class HandleUI
 
         return (false);
     }
+}
+
+public enum UI_MODE
+{
+    DONT_CHANGEMODE,
+    IDLE_MODE,
+    MOVE_MODE,
+    ACTION_MODE,
+    MENU_MODE,
+    POPUP_MODE,
+    CONFIRM_MOVE_MODE,
+    ADJUST_STANCE_MODE,
+    CONFIRM_ACTION_MODE,
+    HANDCURSOR_MODE,
+    GETTINGITEM_MODE,
+    ENEMYS_TURN_MODE,
+    LOOKCURSOR_MODE,
+    TALKINGMENU_MODE,
+    TALKCURSOR_MODE,
+    LOCKUI_MODE,
+    OPENDOOR_MENU_MODE,
+    LOCKOURTURN_UI_MODE,
+    EXITSECTORMENU_MODE,
+    RUBBERBAND_MODE,
+    JUMPOVER_MODE,
+}
+
+public delegate ScreenName UI_HANDLEFNC(UI_EVENT ui_event);
+
+public record UI_EVENT(
+    int uiFlags,
+    UI_MODE ChangeToUIMode,
+    Func<UI_EVENT, ScreenName> HandleEvent,
+    bool fFirstTime,
+    bool fDoneMenu,
+    int uiMenuPreviousMode,
+    int[] uiParams);// [3];
+
+public enum UI_EVENT_DEFINES
+{
+    I_DO_NOTHING,
+    I_EXIT,
+    I_NEW_MERC,
+    I_NEW_BADMERC,
+    I_SELECT_MERC,
+    I_ENTER_EDIT_MODE,
+    I_ENTER_PALEDIT_MODE,
+    I_ENDTURN,
+    I_TESTHIT,
+    I_CHANGELEVEL,
+    I_ON_TERRAIN,
+    I_CHANGE_TO_IDLE,
+    I_LOADLEVEL,
+    I_SOLDIERDEBUG,
+    I_LOSDEBUG,
+    I_LEVELNODEDEBUG,
+    I_GOTODEMOMODE,
+    I_LOADFIRSTLEVEL,
+    I_LOADSECONDLEVEL,
+    I_LOADTHIRDLEVEL,
+    I_LOADFOURTHLEVEL,
+    I_LOADFIFTHLEVEL,
+
+    ET_ON_TERRAIN,
+    ET_ENDENEMYS_TURN,
+
+    M_ON_TERRAIN,
+    M_CHANGE_TO_ACTION,
+    M_CHANGE_TO_HANDMODE,
+    M_CYCLE_MOVEMENT,
+    M_CYCLE_MOVE_ALL,
+    M_CHANGE_TO_ADJPOS_MODE,
+
+    POPUP_DOMESSAGE,
+
+    A_ON_TERRAIN,
+    A_CHANGE_TO_MOVE,
+    A_CHANGE_TO_CONFIM_ACTION,
+    A_END_ACTION,
+    U_MOVEMENT_MENU,
+    U_POSITION_MENU,
+
+    C_WAIT_FOR_CONFIRM,
+    C_MOVE_MERC,
+    C_ON_TERRAIN,
+
+    PADJ_ADJUST_STANCE,
+
+    CA_ON_TERRAIN,
+    CA_MERC_SHOOT,
+    CA_END_CONFIRM_ACTION,
+
+    HC_ON_TERRAIN,
+
+    G_GETTINGITEM,
+
+    LC_ON_TERRAIN,
+    LC_CHANGE_TO_LOOK,
+    LC_LOOK,
+
+    TA_TALKINGMENU,
+
+    T_ON_TERRAIN,
+    T_CHANGE_TO_TALKING,
+
+    LU_ON_TERRAIN,
+    LU_BEGINUILOCK,
+    LU_ENDUILOCK,
+
+    OP_OPENDOORMENU,
+
+    LA_ON_TERRAIN,
+    LA_BEGINUIOURTURNLOCK,
+    LA_ENDUIOUTURNLOCK,
+
+    EX_EXITSECTORMENU,
+
+    RB_ON_TERRAIN,
+
+    JP_ON_TERRAIN,
+    JP_JUMP,
+
+    // Should be == 63
+    NUM_UI_EVENTS,
+}
+
+public enum MOVEUI_TARGET
+{
+    INTTILES = 1,
+    ITEMS = 2,
+    MERCS = 3,
+    MERCSFORA = 5,
+    WIREFENCE,
+    BOMB = 7,
+    STEAL = 8,
+    REPAIR = 9,
+    JAR = 10,
+    CAN = 11,
+    REFUEL = 12,
+
+    MOVEUI_RETURN_ON_TARGET_MERC = 1,
 }

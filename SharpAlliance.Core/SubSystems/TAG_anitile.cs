@@ -1,6 +1,5 @@
-﻿namespace SharpAlliance.Core.SubSystems
+﻿namespace SharpAlliance.Core.SubSystems;
+
+internal class TAG_anitile
 {
-    internal class TAG_anitile
-    {
-    }
 }
