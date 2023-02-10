@@ -1,7 +1,24 @@
 ﻿using SharpAlliance.Core.SubSystems;
 using System;
+using System.Collections.Generic;
+
 
 namespace SharpAlliance.Core;
+
+public class PROFILE
+{
+    const int PROFILE_X_SIZE = 5;
+    const int PROFILE_Y_SIZE = 5;
+    const int PROFILE_Z_SIZE = 4;
+
+    private readonly int[,] profile = new int[PROFILE_X_SIZE, PROFILE_Y_SIZE];
+
+    public int this[int x, int y]
+    {
+        get => this.profile[x, y];
+        set => this.profile[x, y] = value;
+    }
+}
 
 public enum WorldDefines
 {
@@ -56,9 +73,9 @@ public class LEVELNODE
 
     //
     int sRelativeZ;                           // Relative position values
-    byte ubShadeLevel;                     // LIGHTING INFO
-    byte ubNaturalShadeLevel;      // LIGHTING INFO
-    byte ubFakeShadeLevel;				// LIGHTING INFO
+    public int ubShadeLevel;                     // LIGHTING INFO
+    public int ubNaturalShadeLevel;      // LIGHTING INFO
+    public int ubFakeShadeLevel;				// LIGHTING INFO
 };
 
 public class ITEM_POOL
@@ -82,22 +99,22 @@ public class STRUCTURE
 {
     STRUCTURE? pPrev;
     STRUCTURE? pNext;
-    INT16 sGridNo;
-    UINT16 usStructureID;
+    short sGridNo;
+    ushort usStructureID;
     DB_STRUCTURE_REF? pDBStructureRef;
 
-    UINT8 ubHitPoints;
-    UINT8 ubLockStrength;
+    byte ubHitPoints;
+    byte ubLockStrength;
 
-    INT16 sBaseGridNo;
+    short sBaseGridNo;
 
-    INT16 sCubeOffset;// height of bottom of object in profile "cubes"
-    UINT32 fFlags; // need to have something to indicate base tile/not
+    short sCubeOffset;// height of bottom of object in profile "cubes"
+    uint fFlags; // need to have something to indicate base tile/not
     PROFILE? pShape;
-    UINT8 ubWallOrientation;
-    UINT8 ubVehicleHitLocation;
-    UINT8 ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
-    UINT8 ubUnused;
+    byte ubWallOrientation;
+    byte ubVehicleHitLocation;
+    byte ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
+    byte ubUnused;
 }
 
 
@@ -116,3 +133,21 @@ struct DB_STRUCTURE
     sbyte bZTileOffsetY;
     byte bUnused;
 } // 16 bytes
+
+struct DB_STRUCTURE_REF
+{
+    DB_STRUCTURE pDBStructure;
+    List<DB_STRUCTURE_TILE> ppTile; // dynamic array
+} // 8 bytes
+
+struct DB_STRUCTURE_TILE
+{
+    short sPosRelToBase;  // "single-axis"
+    sbyte bXPosRelToBase;
+    sbyte bYPosRelToBase;
+    PROFILE Shape;                  // 25 bytes
+    byte fFlags;
+    byte ubVehicleHitLocation;
+    byte bUnused;
+} // 32 bytes
+

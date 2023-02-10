@@ -1,26 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SharpAlliance.Core;
 
-namespace SharpAlliance.Core;
-
-public enum IsometricDefines
+public static class IsometricDefines
 {
-    MAXCOL = WorldDefines.WORLD_COLS,
-    MAXROW = WorldDefines.WORLD_ROWS,
-    GRIDSIZE = MAXCOL * MAXROW,
-    RIGHTMOSTGRID = MAXCOL - 1,
-    LASTROWSTART = GRIDSIZE - MAXCOL,
-    NOWHERE = GRIDSIZE + 1,
-    NO_MAP_POS = NOWHERE,
-    MAPWIDTH = WorldDefines.WORLD_COLS,
-    MAPHEIGHT = WorldDefines.WORLD_ROWS,
-    MAPLENGTH = MAPHEIGHT * MAPWIDTH,
-}
-
-
-public class IsometricUtils
-{
+    public const int MAXCOL = (int)WorldDefines.WORLD_COLS;
+    public const int MAXROW = (int)WorldDefines.WORLD_ROWS;
+    public const int GRIDSIZE = MAXCOL * MAXROW;
+    public const int RIGHTMOSTGRID = MAXCOL - 1;
+    public const int LASTROWSTART = GRIDSIZE - MAXCOL;
+    public const int NOWHERE = GRIDSIZE + 1;
+    public const int NO_MAP_POS = NOWHERE;
+    public const int MAPWIDTH = (int)WorldDefines.WORLD_COLS;
+    public const int MAPHEIGHT = (int)WorldDefines.WORLD_ROWS;
+    public const int MAPLENGTH = MAPHEIGHT * MAPWIDTH;
 }

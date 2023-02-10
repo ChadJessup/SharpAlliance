@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Screens;
+using SixLabors.ImageSharp;
 using Veldrid.OpenGLBinding;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -128,7 +129,7 @@ public class HandleUI
 
     SOLDIERTYPE? gpRequesterMerc = null;
     SOLDIERTYPE? gpRequesterTargetMerc = null;
-    int gsRequesterGridNo;
+    uint gsRequesterGridNo;
     int gsOverItemsGridNo = (int)IsometricDefines.NOWHERE;
     int gsOverItemsLevel = 0;
     bool gfUIInterfaceSetBusy = false;
@@ -147,13 +148,13 @@ public class HandleUI
 
     List<UI_EVENT> gEvents = new();
 
-    UI_MODE gCurrentUIMode = IDLE_MODE;
-    UI_MODE gOldUIMode = IDLE_MODE;
-    uint guiCurrentEvent = I_DO_NOTHING;
-    uint guiOldEvent = I_DO_NOTHING;
-    uint guiCurrentUICursor = NO_UICURSOR;
-    uint guiNewUICursor = NORMAL_SNAPUICURSOR;
-    uint guiPendingOverrideEvent = I_DO_NOTHING;
+    UI_MODE gCurrentUIMode = UI_MODE.IDLE_MODE;
+    UI_MODE gOldUIMode = UI_MODE.IDLE_MODE;
+    UI_EVENT_DEFINES guiCurrentEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
+    UI_EVENT_DEFINES guiOldEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
+    UICursorDefines guiCurrentUICursor = UICursorDefines.NO_UICURSOR;
+    UICursorDefines guiNewUICursor = UICursorDefines.NORMAL_SNAPUICURSOR;
+    UI_EVENT_DEFINES guiPendingOverrideEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
     uint gusSavedMouseX;
     uint gusSavedMouseY;
     UIKEYBOARD_HOOK gUIKeyboardHook = null;
@@ -165,19 +166,20 @@ public class HandleUI
     uint guiTimerCursorDelay = 0;
 
 
-    int gzLocation[20];
+    int[] gzLocation;// [20];
     bool gfLocation = false;
 
-    int gzIntTileLocation[20];
+    int[] gzIntTileLocation;// [20];
     bool gfUIIntTileLocation;
 
-    int gzIntTileLocation2[20];
+    int[] gzIntTileLocation2;// [20];
     bool gfUIIntTileLocation2;
 
-    MOUSE_REGION gDisableRegion;
+
+    MouseRegion gDisableRegion;
     bool gfDisableRegionActive = false;
 
-    MOUSE_REGION gUserTurnRegion;
+    MouseRegion gUserTurnRegion;
     bool gfUserTurnRegionActive = false;
 
 
@@ -191,7 +193,7 @@ public class HandleUI
     uint gsUITargetShotGridNo = (int)IsometricDefines.NOWHERE;
     bool gUIUseReverse = false;
 
-    SGPRect gRubberBandRect = { 0, 0, 0, 0 };
+    Rectangle gRubberBandRect = new(0, 0, 0, 0);
     bool gRubberBandActive = false;
     bool gfIgnoreOnSelectedGuy = false;
     bool gfViewPortAdjustedForSouth = false;
@@ -235,8 +237,8 @@ public class HandleUI
     bool gfUICanBeginAllMoveCycle = false;       // GEts set so we know that the next right-click is a move-call inc\stead of a movement cycle through
 
     int gsSelectedGridNo = 0;
-    int gsSelectedLevel = I_GROUND_LEVEL;
-    int gsSelectedGuy = NO_SOLDIER;
+    InterfaceLevel gsSelectedLevel = InterfaceLevel.I_GROUND_LEVEL;
+    int gsSelectedGuy = OverheadTypes.NO_SOLDIER;
 
     bool gfUIDisplayDamage = false;
     byte gbDamage = 0;
@@ -248,7 +250,7 @@ public class HandleUI
     // Thse flags are not re-set after each frame
     bool gfPlotNewMovement = false;
     bool gfPlotNewMovementNOCOST = false;
-    uint guiShowUPDownArrows = ARROWS_HIDE_UP | ARROWS_HIDE_DOWN;
+    ARROWS guiShowUPDownArrows = ARROWS.HIDE_UP | ARROWS.HIDE_DOWN;
     byte gbAdjustStanceDiff = 0;
     byte gbClimbID = 0;
 
@@ -268,9 +270,9 @@ public class HandleUI
     ScreenName HandleTacticalUI()
     {
         ScreenName ReturnVal = ScreenName.GAME_SCREEN;
-        uint uiNewEvent;
+        UI_EVENT_DEFINES uiNewEvent;
         uint usMapPos;
-        LEVELNODE* pIntTile;
+        LEVELNODE? pIntTile;
 
 
         // RESET FLAGS
@@ -282,7 +284,7 @@ public class HandleUI
         gfUIHandleSelection = NO_GUY_SELECTION;
         gfUIHandleSelectionAboveGuy = false;
         gfUIDisplayDamage = false;
-        guiShowUPDownArrows = ARROWS_HIDE_UP | ARROWS_HIDE_DOWN;
+        guiShowUPDownArrows = ARROWS.HIDE_UP | ARROWS.HIDE_DOWN;
         gfUIBodyHitLocation = false;
         gfUIIntTileLocation = false;
         gfUIIntTileLocation2 = false;
@@ -308,9 +310,9 @@ public class HandleUI
 
                 // Decrease global busy  counter...
                 gTacticalStatus.ubAttackBusyCount = 0;
-                DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Setting attack busy count to 0 due to ending AI lock"));
+                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Setting attack busy count to 0 due to ending AI lock");
 
-                guiPendingOverrideEvent = LU_ENDUILOCK;
+                guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
                 UIHandleLUIEndLock(null);
             }
         }
@@ -331,7 +333,7 @@ public class HandleUI
             pOldIntTile = pIntTile;
         }
 
-        if (guiPendingOverrideEvent == I_DO_NOTHING)
+        if (guiPendingOverrideEvent == UI_EVENT_DEFINES.I_DO_NOTHING)
         {
             // When we are here, guiCurrentEvent is set to the last event
             // Within the input gathering phase, it may change
@@ -375,12 +377,12 @@ public class HandleUI
         else
         {
             uiNewEvent = guiPendingOverrideEvent;
-            guiPendingOverrideEvent = I_DO_NOTHING;
+            guiPendingOverrideEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
         }
 
         if (HandleItemPickupMenu())
         {
-            uiNewEvent = A_CHANGE_TO_MOVE;
+            uiNewEvent = UI_EVENT_DEFINES.A_CHANGE_TO_MOVE;
         }
 
         // Set Current event to new one!
@@ -457,7 +459,7 @@ public class HandleUI
             // CHANGE MODE - DO SPECIAL THINGS IF WE ENTER THIS MODE
             switch (gCurrentUIMode)
             {
-                case ACTION_MODE:
+                case UI_MODE.ACTION_MODE:
                     ErasePath(true);
                     break;
             }
@@ -468,7 +470,7 @@ public class HandleUI
         // This is needed to hook into the interface stuff which sets the fDoneMenu flag
         if (gEvents[uiNewEvent].fDoneMenu == true)
         {
-            if (gCurrentUIMode == MENU_MODE || gCurrentUIMode == POPUP_MODE || gCurrentUIMode == LOOKCURSOR_MODE)
+            if (gCurrentUIMode == UI_MODE.MENU_MODE || gCurrentUIMode == UI_MODE.POPUP_MODE || gCurrentUIMode == UI_MODE.LOOKCURSOR_MODE)
             {
                 gCurrentUIMode = gEvents[uiNewEvent].uiMenuPreviousMode;
             }
@@ -486,9 +488,9 @@ public class HandleUI
             else
             {
                 // ATE: Check first that some modes are met....
-                if (gCurrentUIMode != HANDCURSOR_MODE && gCurrentUIMode != LOOKCURSOR_MODE && gCurrentUIMode != TALKCURSOR_MODE)
+                if (gCurrentUIMode != UI_MODE.HANDCURSOR_MODE && gCurrentUIMode != UI_MODE.LOOKCURSOR_MODE && gCurrentUIMode != UI_MODE.TALKCURSOR_MODE)
                 {
-                    guiCurrentEvent = M_ON_TERRAIN;
+                    guiCurrentEvent = UI_EVENT_DEFINES.M_ON_TERRAIN;
                 }
             }
         }
@@ -507,7 +509,12 @@ public class HandleUI
         if (gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
         {
             // If not in MOVE_MODE, CONFIRM_MOVE_MODE, RUBBERBAND_MODE, stop....
-            if (gCurrentUIMode != MOVE_MODE && gCurrentUIMode != CONFIRM_MOVE_MODE && gCurrentUIMode != RUBBERBAND_MODE && gCurrentUIMode != ADJUST_STANCE_MODE && gCurrentUIMode != TALKCURSOR_MODE && gCurrentUIMode != LOOKCURSOR_MODE)
+            if (gCurrentUIMode != UI_MODE.MOVE_MODE 
+                && gCurrentUIMode != UI_MODE.CONFIRM_MOVE_MODE
+                && gCurrentUIMode != UI_MODE.RUBBERBAND_MODE
+                && gCurrentUIMode != UI_MODE.ADJUST_STANCE_MODE
+                && gCurrentUIMode != UI_MODE.TALKCURSOR_MODE
+                && gCurrentUIMode != UI_MODE.LOOKCURSOR_MODE)
             {
                 ResetMultiSelection();
             }
@@ -529,7 +536,7 @@ public class HandleUI
 
         // Check if we moved from confirm mode on exit arrows
         // If not in move mode, return!
-        if (gCurrentUIMode == MOVE_MODE)
+        if (gCurrentUIMode == UI_MODE.MOVE_MODE)
         {
             if (gfUIConfirmExitArrows)
             {
@@ -550,16 +557,16 @@ public class HandleUI
                 {
                     if (gfUIConfirmExitArrows)
                     {
-                        guiNewUICursor = CONFIRM_EXIT_EAST_UICURSOR;
+                        guiNewUICursor = UICursorDefines.CONFIRM_EXIT_EAST_UICURSOR;
                     }
                     else
                     {
-                        guiNewUICursor = EXIT_EAST_UICURSOR;
+                        guiNewUICursor = UICursorDefines.EXIT_EAST_UICURSOR;
                     }
                 }
                 else
                 {
-                    guiNewUICursor = NOEXIT_EAST_UICURSOR;
+                    guiNewUICursor = UICursorDefines.NOEXIT_EAST_UICURSOR;
                 }
 
                 if (gusMouseXPos < 635)
@@ -577,16 +584,16 @@ public class HandleUI
                 {
                     if (gfUIConfirmExitArrows)
                     {
-                        guiNewUICursor = CONFIRM_EXIT_WEST_UICURSOR;
+                        guiNewUICursor = UICursorDefines.CONFIRM_EXIT_WEST_UICURSOR;
                     }
                     else
                     {
-                        guiNewUICursor = EXIT_WEST_UICURSOR;
+                        guiNewUICursor = UICursorDefines.EXIT_WEST_UICURSOR;
                     }
                 }
                 else
                 {
-                    guiNewUICursor = NOEXIT_WEST_UICURSOR;
+                    guiNewUICursor = UICursorDefines.NOEXIT_WEST_UICURSOR;
                 }
 
                 if (gusMouseXPos > 5)
@@ -604,16 +611,16 @@ public class HandleUI
                 {
                     if (gfUIConfirmExitArrows)
                     {
-                        guiNewUICursor = CONFIRM_EXIT_NORTH_UICURSOR;
+                        guiNewUICursor = UICursorDefines.CONFIRM_EXIT_NORTH_UICURSOR;
                     }
                     else
                     {
-                        guiNewUICursor = EXIT_NORTH_UICURSOR;
+                        guiNewUICursor = UICursorDefines.EXIT_NORTH_UICURSOR;
                     }
                 }
                 else
                 {
-                    guiNewUICursor = NOEXIT_NORTH_UICURSOR;
+                    guiNewUICursor = UICursorDefines.NOEXIT_NORTH_UICURSOR;
                 }
 
                 if (gusMouseYPos > 5)
@@ -632,16 +639,16 @@ public class HandleUI
                 {
                     if (gfUIConfirmExitArrows)
                     {
-                        guiNewUICursor = CONFIRM_EXIT_SOUTH_UICURSOR;
+                        guiNewUICursor = UICursorDefines.CONFIRM_EXIT_SOUTH_UICURSOR;
                     }
                     else
                     {
-                        guiNewUICursor = EXIT_SOUTH_UICURSOR;
+                        guiNewUICursor = UICursorDefines.EXIT_SOUTH_UICURSOR;
                     }
                 }
                 else
                 {
-                    guiNewUICursor = NOEXIT_SOUTH_UICURSOR;
+                    guiNewUICursor = UICursorDefines.NOEXIT_SOUTH_UICURSOR;
                 }
 
                 if (gusMouseYPos < 478)
@@ -651,13 +658,21 @@ public class HandleUI
                     // Define region for viewport
                     MSYS_RemoveRegion(&gViewportRegion);
 
-                    MSYS_DefineRegion(&gViewportRegion, 0, 0, gsVIEWPORT_END_X, gsVIEWPORT_WINDOW_END_Y, MSYS_PRIORITY_NORMAL,
-                                         VIDEO_NO_CURSOR, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
+                    MSYS_DefineRegion(
+                        &gViewportRegion,
+                        0,
+                        0,
+                        gsVIEWPORT_END_X,
+                        gsVIEWPORT_WINDOW_END_Y,
+                        MSYS_PRIORITY_NORMAL,
+                        VIDEO_NO_CURSOR,
+                        MSYS_NO_CALLBACK,
+                        MSYS_NO_CALLBACK);
 
 
                     // Adjust where we blit our cursor!
                     gsGlobalCursorYOffset = 0;
-                    SetCurrentCursorFromDatabase(CURSOR_NORMAL);
+                    SetCurrentCursorFromDatabase(CURSOR.NORMAL);
                 }
                 else
                 {
@@ -725,16 +740,16 @@ public class HandleUI
                             {
                                 if (gfUIConfirmExitArrows)
                                 {
-                                    guiNewUICursor = CONFIRM_EXIT_GRID_UICURSOR;
+                                    guiNewUICursor = UICursorDefines.CONFIRM_EXIT_GRID_UICURSOR;
                                 }
                                 else
                                 {
-                                    guiNewUICursor = EXIT_GRID_UICURSOR;
+                                    guiNewUICursor = UICursorDefines.EXIT_GRID_UICURSOR;
                                 }
                             }
                             else
                             {
-                                guiNewUICursor = NOEXIT_GRID_UICURSOR;
+                                guiNewUICursor = UICursorDefines.NOEXIT_GRID_UICURSOR;
                             }
                         }
                     }
@@ -1908,7 +1923,7 @@ public class HandleUI
             ubNearHeigherLevel = false;
             ubNearLowerLevel = false;
 
-            guiShowUPDownArrows = ARROWS_SHOW_DOWN_BESIDE | ARROWS_SHOW_UP_BESIDE;
+            guiShowUPDownArrows = ARROWS.SHOW_DOWN_BESIDE | ARROWS.SHOW_UP_BESIDE;
             uiOldShowUPDownArrows = guiShowUPDownArrows;
 
             gbAdjustStanceDiff = 0;
@@ -2002,7 +2017,7 @@ public class HandleUI
         // Check if delta X has changed alot since last time
         iPosDiff = abs((int)(usOldMouseY - gusMouseYPos));
 
-        //guiShowUPDownArrows = ARROWS_SHOW_DOWN_BESIDE | ARROWS_SHOW_UP_BESIDE;
+        //guiShowUPDownArrows = ARROWS.SHOW_DOWN_BESIDE | ARROWS.SHOW_UP_BESIDE;
         guiShowUPDownArrows = uiOldShowUPDownArrows;
 
         {
@@ -2014,22 +2029,22 @@ public class HandleUI
                     if (iPosDiff < GO_MOVE_ONE && ubUpHeight >= 1)
                     {
                         // Change arrows to move down arrow + show
-                        //guiShowUPDownArrows = ARROWS_SHOW_UP_ABOVE_Y;
-                        guiShowUPDownArrows = ARROWS_SHOW_DOWN_BESIDE | ARROWS_SHOW_UP_BESIDE;
+                        //guiShowUPDownArrows = ARROWS.SHOW_UP_ABOVE_Y;
+                        guiShowUPDownArrows = ARROWS.SHOW_DOWN_BESIDE | ARROWS.SHOW_UP_BESIDE;
                         gbAdjustStanceDiff = 0;
                         gbClimbID = 0;
                     }
                     else if (iPosDiff > GO_MOVE_ONE && iPosDiff < GO_MOVE_TWO && ubUpHeight >= 1)
                     {
-                        //guiShowUPDownArrows = ARROWS_SHOW_UP_ABOVE_G;
+                        //guiShowUPDownArrows = ARROWS.SHOW_UP_ABOVE_G;
                         if (ubUpHeight == 1 && ubNearHeigherLevel)
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_UP_ABOVE_CLIMB;
+                            guiShowUPDownArrows = ARROWS.SHOW_UP_ABOVE_CLIMB;
                             gbClimbID = 1;
                         }
                         else
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_UP_ABOVE_Y;
+                            guiShowUPDownArrows = ARROWS.SHOW_UP_ABOVE_Y;
                             gbClimbID = 0;
                         }
                         gbAdjustStanceDiff = 1;
@@ -2038,12 +2053,12 @@ public class HandleUI
                     {
                         if (ubUpHeight == 2 && ubNearHeigherLevel)
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_UP_ABOVE_CLIMB;
+                            guiShowUPDownArrows = ARROWS.SHOW_UP_ABOVE_CLIMB;
                             gbClimbID = 1;
                         }
                         else
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_UP_ABOVE_YY;
+                            guiShowUPDownArrows = ARROWS.SHOW_UP_ABOVE_YY;
                             gbClimbID = 0;
                         }
                         gbAdjustStanceDiff = 2;
@@ -2052,7 +2067,7 @@ public class HandleUI
                     {
                         if (ubUpHeight == 3 && ubNearHeigherLevel)
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_UP_ABOVE_CLIMB;
+                            guiShowUPDownArrows = ARROWS.SHOW_UP_ABOVE_CLIMB;
                             gbClimbID = 1;
                         }
                     }
@@ -2069,48 +2084,48 @@ public class HandleUI
                     if (iPosDiff < GO_MOVE_ONE && ubDownDepth >= 1)
                     {
                         // Change arrows to move down arrow + show
-                        //guiShowUPDownArrows = ARROWS_SHOW_DOWN_BELOW_Y;
-                        guiShowUPDownArrows = ARROWS_SHOW_DOWN_BESIDE | ARROWS_SHOW_UP_BESIDE;
+                        //guiShowUPDownArrows = ARROWS.SHOW_DOWN_BELOW_Y;
+                        guiShowUPDownArrows = ARROWS.SHOW_DOWN_BESIDE | ARROWS.SHOW_UP_BESIDE;
                         gbAdjustStanceDiff = 0;
                         gbClimbID = 0;
 
                     }
                     else if (iPosDiff >= GO_MOVE_ONE && iPosDiff < GO_MOVE_TWO && ubDownDepth >= 1)
                     {
-                        //						guiShowUPDownArrows = ARROWS_SHOW_DOWN_BELOW_G;
+                        //						guiShowUPDownArrows = ARROWS.SHOW_DOWN_BELOW_G;
                         if (ubDownDepth == 1 && ubNearLowerLevel)
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_DOWN_CLIMB;
+                            guiShowUPDownArrows = ARROWS.SHOW_DOWN_CLIMB;
                             gbClimbID = -1;
                         }
                         else
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_DOWN_BELOW_Y;
+                            guiShowUPDownArrows = ARROWS.SHOW_DOWN_BELOW_Y;
                             gbClimbID = 0;
                         }
                         gbAdjustStanceDiff = -1;
                     }
                     else if (iPosDiff > GO_MOVE_TWO && iPosDiff < GO_MOVE_THREE && ubDownDepth >= 2)
                     {
-                        //guiShowUPDownArrows = ARROWS_SHOW_DOWN_BELOW_GG;
+                        //guiShowUPDownArrows = ARROWS.SHOW_DOWN_BELOW_GG;
                         if (ubDownDepth == 2 && ubNearLowerLevel)
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_DOWN_CLIMB;
+                            guiShowUPDownArrows = ARROWS.SHOW_DOWN_CLIMB;
                             gbClimbID = -1;
                         }
                         else
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_DOWN_BELOW_YY;
+                            guiShowUPDownArrows = ARROWS.SHOW_DOWN_BELOW_YY;
                             gbClimbID = 0;
                         }
                         gbAdjustStanceDiff = -2;
                     }
                     else if (iPosDiff > GO_MOVE_THREE && ubDownDepth >= 3)
                     {
-                        //guiShowUPDownArrows = ARROWS_SHOW_DOWN_BELOW_GG;
+                        //guiShowUPDownArrows = ARROWS.SHOW_DOWN_BELOW_GG;
                         if (ubDownDepth == 3 && ubNearLowerLevel)
                         {
-                            guiShowUPDownArrows = ARROWS_SHOW_DOWN_CLIMB;
+                            guiShowUPDownArrows = ARROWS.SHOW_DOWN_CLIMB;
                             gbClimbID = -1;
                         }
                     }
@@ -2165,14 +2180,14 @@ public class HandleUI
 
 
 
-    void UIHandleMercAttack(SOLDIERTYPE* pSoldier, SOLDIERTYPE* pTargetSoldier, uint usMapPos)
+    void UIHandleMercAttack(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pTargetSoldier, uint usMapPos)
     {
         int iHandleReturn;
         int sTargetGridNo;
         byte bTargetLevel;
         uint usItem;
-        LEVELNODE* pIntNode;
-        STRUCTURE* pStructure;
+        LEVELNODE? pIntNode;
+        STRUCTURE? pStructure;
         int sGridNo, sNewGridNo;
         byte ubItemCursor;
 
@@ -2353,7 +2368,7 @@ public class HandleUI
                     // If this is one of our own guys.....pop up requiester...
                     if ((pTSoldier.bTeam == gbPlayerNum || pTSoldier.bTeam == MILITIA_TEAM) && Item[pSoldier.inv[HANDPOS].usItem].usItemClass != IC_MEDKIT && pSoldier.inv[HANDPOS].usItem != GAS_CAN && gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
                     {
-                        int zStr[200];
+                        int[] zStr = new int[200];
 
                         gpRequesterMerc = pSoldier;
                         gpRequesterTargetMerc = pTSoldier;
@@ -2464,7 +2479,7 @@ public class HandleUI
         byte ubNewStance;
         bool fChangeStance = false;
 
-        guiShowUPDownArrows = ARROWS_HIDE_UP | ARROWS_HIDE_DOWN;
+        guiShowUPDownArrows = ARROWS.HIDE_UP | ARROWS.HIDE_DOWN;
 
 
         gfIgnoreScrolling = false;
@@ -2603,7 +2618,7 @@ public class HandleUI
     void AdjustSoldierCreationStartValues()
     {
         int cnt;
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
 
 
         cnt = gTacticalStatus.Team[gbPlayerNum].bFirstID;
@@ -2634,8 +2649,8 @@ public class HandleUI
 
     bool SelectedMercCanAffordAttack()
     {
-        SOLDIERTYPE* pSoldier;
-        SOLDIERTYPE* pTargetSoldier;
+        SOLDIERTYPE? pSoldier;
+        SOLDIERTYPE? pTargetSoldier;
         uint usMapPos;
         int sTargetGridNo;
         bool fEnoughPoints = true;
@@ -2768,15 +2783,15 @@ public class HandleUI
         return (false);
     }
 
-    void GetMercClimbDirection(byte ubSoldierID, bool* pfGoDown, bool* pfGoUp)
+    void GetMercClimbDirection(byte ubSoldierID, bool pfGoDown, bool pfGoUp)
     {
         byte bNewDirection;
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
 
-        *pfGoDown = false;
-        *pfGoUp = false;
+        pfGoDown = false;
+        pfGoUp = false;
 
-        if (!GetSoldier(&pSoldier, ubSoldierID))
+        if (!GetSoldier(ref pSoldier, ubSoldierID))
         {
             return;
         }
@@ -2899,10 +2914,10 @@ public class HandleUI
         }
     }
 
-    void ToggleTalkCursorMode(uint* puiNewEvent)
+    void ToggleTalkCursorMode(ref uint puiNewEvent)
     {
         // Toggle modes			
-        if (gCurrentUIMode == TALKCURSOR_MODE)
+        if (gCurrentUIMode == UI_MODE.TALKCURSOR_MODE)
         {
             *puiNewEvent = A_CHANGE_TO_MOVE;
         }
@@ -2912,12 +2927,12 @@ public class HandleUI
         }
     }
 
-    void ToggleLookCursorMode(uint* puiNewEvent)
+    void ToggleLookCursorMode(uint puiNewEvent)
     {
         // Toggle modes			
         if (gCurrentUIMode == LOOKCURSOR_MODE)
         {
-            guiPendingOverrideEvent = A_CHANGE_TO_MOVE;
+            guiPendingOverrideEvent = UI_EVENT_DEFINES.A_CHANGE_TO_MOVE;
             HandleTacticalUI();
         }
         else
@@ -2992,7 +3007,7 @@ public class HandleUI
                                 // Check if buddy is stationary!
                                 if (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_STATIONARY || pSoldier.fNoAPToFinishMove)
                                 {
-                                    guiShowUPDownArrows = ARROWS_SHOW_DOWN_BESIDE | ARROWS_SHOW_UP_BESIDE;
+                                    guiShowUPDownArrows = ARROWS.SHOW_DOWN_BESIDE | ARROWS.SHOW_UP_BESIDE;
                                 }
                             }
 
@@ -4586,7 +4601,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleLUIEndLock(UI_EVENT pUIEvent)
+    ScreenName UIHandleLUIEndLock(UI_EVENT? pUIEvent)
     {
         if (gfDisableRegionActive)
         {
@@ -4878,7 +4893,7 @@ public class HandleUI
 
     void ResetMultiSelection()
     {
-        SOLDIERTYPE* pSoldier;
+        SOLDIERTYPE? pSoldier;
         int cnt;
 
         // OK, loop through all guys who are 'multi-selected' and
@@ -5996,10 +6011,11 @@ public class HandleUI
 
     // This function contains the logic for allowing the player
     // to jump over people.
-    bool IsValidJumpLocation(SOLDIERTYPE* pSoldier, int sGridNo, bool fCheckForPath)
+    bool IsValidJumpLocation(SOLDIERTYPE? pSoldier, int sGridNo, bool fCheckForPath)
     {
-        int sFourGrids[4], sDistance = 0, sSpot, sIntSpot;
-        int sDirs[4] = { NORTH, EAST, SOUTH, WEST };
+        int[] sFourGrids = new int[4];
+            int sDistance = 0, sSpot, sIntSpot;
+        int [] sDirs = { NORTH, EAST, SOUTH, WEST };
         int cnt;
         byte ubGuyThere;
         byte ubMovementCost;
@@ -6208,3 +6224,14 @@ public enum MOVEUI_TARGET
 
     MOVEUI_RETURN_ON_TARGET_MERC = 1,
 }
+
+public enum WallOrientation
+{
+    NO_ORIENTATION,
+    INSIDE_TOP_LEFT,
+    INSIDE_TOP_RIGHT,
+    OUTSIDE_TOP_LEFT,
+    OUTSIDE_TOP_RIGHT,
+    INSIDE_BOTTOM_CORNER,
+    OUTSIDE_BOTTOM_CORNER,
+};

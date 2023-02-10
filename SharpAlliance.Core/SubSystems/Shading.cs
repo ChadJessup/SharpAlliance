@@ -5,30 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 
-namespace SharpAlliance.Core.SubSystems
+namespace SharpAlliance.Core.SubSystems;
+
+public class Shading
 {
-    public class Shading
+    // Defines for shade levels
+    public const int DEFAULT_SHADE_LEVEL = 4;
+    public const int MIN_SHADE_LEVEL = 4;
+    public const int MAX_SHADE_LEVEL = 15;
+
+    public byte[,] ubColorTables = new byte[VideoObjectManager.HVOBJECT_SHADE_TABLES + 3, 256];
+
+    public ValueTask<bool> BuildShadeTable()
     {
-        // Defines for shade levels
-        public const int DEFAULT_SHADE_LEVEL = 4;
-        public const int MIN_SHADE_LEVEL = 4;
-        public const int MAX_SHADE_LEVEL = 15;
+        return ValueTask.FromResult(true);
+    }
 
-        public byte[,] ubColorTables = new byte[VideoObjectManager.HVOBJECT_SHADE_TABLES + 3, 256];
+    public ValueTask<bool> BuildIntensityTable()
+    {
+        return ValueTask.FromResult(true);
+    }
 
-        public ValueTask<bool> BuildShadeTable()
-        {
-            return ValueTask.FromResult(true);
-        }
-
-        public ValueTask<bool> BuildIntensityTable()
-        {
-            return ValueTask.FromResult(true);
-        }
-
-        public ValueTask<bool> DetermineRGBDistributionSettings()
-        {
-            return ValueTask.FromResult(true);
-        }
+    public ValueTask<bool> DetermineRGBDistributionSettings()
+    {
+        return ValueTask.FromResult(true);
     }
 }
