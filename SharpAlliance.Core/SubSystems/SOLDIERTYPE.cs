@@ -201,7 +201,7 @@ namespace SharpAlliance.Core.SubSystems
         int bExplosive;
         // THROW_PARAMS pThrowParams;
         bool fTurningFromPronePosition;
-        int bReverse;
+        public bool bReverse;
         //struct TAG_level_node               *pLevelNode;
         //struct TAG_level_node               *pExternShadowLevelNode;
         //struct TAG_level_node               *pRoofUILevelNode;
@@ -566,7 +566,7 @@ namespace SharpAlliance.Core.SubSystems
         int ubContractRenewalQuoteCode;
         int sPreTraversalGridNo;
         int uiXRayActivatedTime;
-        int bTurningFromUI;
+        public bool bTurningFromUI;
         int bPendingActionData5;
 
         int bDelayedStrategicMoraleMod;

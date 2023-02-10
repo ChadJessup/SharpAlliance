@@ -184,7 +184,7 @@ public enum UICursorDefines
     NUM_UI_CURSORS,
 }
 
-public enum CURSOR
+public enum CursorOld
 {
    NORMAL,
    TARGET,

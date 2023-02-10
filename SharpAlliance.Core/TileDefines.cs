@@ -2923,7 +2923,6 @@ public enum TileDefines
 // Defines for tile type identification
 public enum TileTypeDefines
 {
-
     FIRSTTEXTURE = 0,
     SECONDTEXTURE,
     THIRDTEXTURE,
@@ -3118,5 +3117,7 @@ public enum TileTypeDefines
 
     WIREFRAMES,
 
-    NUMBEROFTILETYPES
+    NUMBEROFTILETYPES,
+
+    LASTPOINTERS = (SELRING - 1),
 }
