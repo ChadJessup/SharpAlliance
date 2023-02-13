@@ -25,5 +25,10 @@ namespace SharpAlliance.Core.SubSystems
     public class TacticalStatusType
     {
         public bool fHasAGameBeenStarted { get; set; }
+        public int ubAttackBusyCount { get; set; }
+        public TacticalEngineStatus uiFlags { get; set; }
+        public bool fAtLeastOneGuyOnMultiSelect { get; set; }
+        public bool fUnLockUIAfterHiddenInterrupt { get; set; }
+        public uint uiTactialTurnLimitClock { get; set; }
     }
 }

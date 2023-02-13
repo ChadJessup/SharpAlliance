@@ -1,10 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.Image;
+using Veldrid.OpenGLBinding;
 
 namespace SharpAlliance.Core;
+
+public class TileDefine
+{
+    // Database access functions
+    public static bool GetTileType(ushort usIndex, out TileTypeDefines puiType)
+    {
+        TILE_ELEMENT TileElem;
+
+        //CHECKF(usIndex != NO_TILE);
+
+        // Get tile element
+        TileElem = gTileDatabase[usIndex];
+
+        puiType = TileElem.fType;
+
+        return true;
+    }
+}
+
+[Flags]
+public enum TileCategory
+{
+    NO_TILE = 64000,
+    ERASE_TILE = 65000,
+    REQUIRES_SMOOTHING_TILE = 19,
+    NUM_WALL_ORIENTATIONS = 40,
+    WALL_TILE = 0x00000001,
+    ANIMATED_TILE = 0x00000002,
+    DYNAMIC_TILE = 0x00000004,
+    IGNORE_WORLD_HEIGHT = 0x00000008,
+    ROAD_TILE = 0x00000010,
+    FULL3D_TILE = 0x00000020,
+    MULTI_Z_TILE = 0x00000080,
+    OBJECTLAYER_USEZHEIGHT = 0x00000100,
+    ROOFSHADOW_TILE = 0x00000200,
+    ROOF_TILE = 0x00000400,
+    TRANSLUCENT_TILE = 0x00000800,
+    HAS_SHADOW_BUDDY = 0x00001000,
+    AFRAME_TILE = 0x00002000,
+    HIDDEN_TILE = 0x00004000,
+    CLIFFHANG_TILE = 0x00008000,
+    UNDERFLOW_FILLER = 0x00010000,
+}
 
 public enum TileDefines
 {
@@ -3120,4 +3163,51 @@ public enum TileTypeDefines
     NUMBEROFTILETYPES,
 
     LASTPOINTERS = (SELRING - 1),
+}
+
+public enum WallOrientation
+{
+    NO_ORIENTATION,
+    INSIDE_TOP_LEFT,
+    INSIDE_TOP_RIGHT,
+    OUTSIDE_TOP_LEFT,
+    OUTSIDE_TOP_RIGHT,
+    INSIDE_BOTTOM_CORNER,
+    OUTSIDE_BOTTOM_CORNER,
+};
+
+// Tile data element
+public struct TILE_ELEMENT
+{
+    public TileTypeDefines fType;
+    HVOBJECT hTileSurface;
+    DB_STRUCTURE_REF? pDBStructureRef;
+    uint uiFlags;
+    RelTileLoc? pTileLocData;
+    ushort usRegionIndex;
+    short sBuddyNum;
+    byte ubTerrainID;
+    byte ubNumberOfTiles;
+
+    byte bZOffsetX;
+    byte bZOffsetY;
+
+    // This union contains different data based on tile type
+    // Land and overlay type
+    short sOffsetHeight;
+    ushort usWallOrientation;
+    byte ubFullTile;
+
+    // For animated tiles
+    TILE_ANIMATION_DATA? pAnimData;
+
+    // Reserved for added room and 32-byte boundaries
+    byte[] bReserved;// [3];
+}
+
+public struct TILE_ANIMATION_DATA
+{
+    List<uint> pusFrames;
+    short bCurrentFrame;
+    ushort ubNumFrames;
 }

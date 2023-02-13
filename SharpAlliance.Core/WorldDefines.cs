@@ -1,7 +1,7 @@
-﻿using SharpAlliance.Core.SubSystems;
+﻿using SharpAlliance.Core;
+using SharpAlliance.Core.SubSystems;
 using System;
 using System.Collections.Generic;
-
 
 namespace SharpAlliance.Core;
 
@@ -46,19 +46,19 @@ public class LEVELNODE
     int ubMaxLights;                  // MAX LIGHTING INFO
 
     LEVELNODE? pPrevNode;                    // FOR LAND, GOING BACKWARDS POINTER
-    STRUCTURE? pStructureData;      // STRUCTURE DATA
+    public STRUCTURE? pStructureData;      // STRUCTURE DATA
     public int iPhysicsObjectID;     // ID FOR PHYSICS ITEM
     public int uiAPCost;                     // FOR AP DISPLAY
     public int iExitGridInfo;
 
-    uint usIndex;                         // TILE DATABASE INDEX
+    public ushort usIndex;                         // TILE DATABASE INDEX
     int sCurrentFrame;                // Stuff for animated tiles for a given tile location ( doors, etc )
 
     SOLDIERTYPE? pSoldier;                          // POINTER TO SOLDIER
 
     // Some levelnodes can specify relative X and Y values!
-    int sRelativeX;                           // Relative position values
-    int sRelativeY;                           // Relative position values
+    public int sRelativeX;                           // Relative position values
+    public int sRelativeY;                           // Relative position values
 
     // Some can contains index values into dead corpses
     int iCorpseID;                            // Index into corpse ID
@@ -100,7 +100,7 @@ public class STRUCTURE
     STRUCTURE? pPrev;
     STRUCTURE? pNext;
     short sGridNo;
-    ushort usStructureID;
+    public ushort usStructureID;
     DB_STRUCTURE_REF? pDBStructureRef;
 
     byte ubHitPoints;
@@ -109,9 +109,9 @@ public class STRUCTURE
     short sBaseGridNo;
 
     short sCubeOffset;// height of bottom of object in profile "cubes"
-    uint fFlags; // need to have something to indicate base tile/not
+    public uint fFlags; // need to have something to indicate base tile/not
     PROFILE? pShape;
-    byte ubWallOrientation;
+    public WallOrientation ubWallOrientation;
     byte ubVehicleHitLocation;
     byte ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
     byte ubUnused;
@@ -151,3 +151,30 @@ struct DB_STRUCTURE_TILE
     byte bUnused;
 } // 32 bytes
 
+public class MAP_ELEMENT
+{
+    LEVELNODE? pLandHead;                           //0
+    LEVELNODE? pLandStart;                      //1
+    public LEVELNODE? pObjectHead;                     //2
+    LEVELNODE? pStructHead;                     //3
+    LEVELNODE? pShadowHead;                     //4
+    LEVELNODE? pMercHead;                           //5
+    LEVELNODE? pRoofHead;                           //6
+    public LEVELNODE pOnRoofHead { get; set; } = new();   //7
+    public LEVELNODE pTopmostHead { get; set; } = new();  //8
+    LEVELNODE?[] pLevelNodes;                 // [9];
+
+    STRUCTURE? pStructureHead;
+    STRUCTURE? pStructureTail;
+
+    ushort uiFlags;
+    byte[] ubExtFlags;// [2];
+    ushort[] sSumRealLights;// [1];
+    byte sHeight;
+    byte ubAdjacentSoldierCnt;
+    byte ubTerrainID;
+
+    byte ubReservedSoldierID;
+    byte ubBloodInfo;
+    byte ubSmellInfo;
+}

@@ -5,8 +5,20 @@ namespace SharpAlliance.Core.SubSystems;
 public class Interface
 {
     // this might need to be an int, we'll see.
-    public InterfaceLevel gsInterfaceLevel { get; set; }
+    public static InterfaceLevel gsInterfaceLevel { get; set; }
     public InterfacePanelDefines gsCurInterfacePanel { get; internal set; }
+}
+
+public enum MOVEMENT
+{
+    MENU_LOOK = 1,
+    MENU_ACTIONC = 2,
+    MENU_HAND = 3,
+    MENU_TALK = 4,
+    MENU_RUN = 5,
+    MENU_WALK = 6,
+    MENU_SWAT = 7,
+    MENU_PRONE = 8,
 }
 
 public enum InterfacePanelDefines

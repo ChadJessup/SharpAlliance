@@ -5,32 +5,32 @@ namespace SharpAlliance.Core.SubSystems
     public class SOLDIERTYPE
     {
         // ID
-        int ubID;
+        public int ubID;
         int bReserved1;
 
         // DESCRIPTION / STATS, ETC
-        int ubBodyType;
-        int bActionPoints;
+        public int ubBodyType;
+        public int bActionPoints;
         int bInitialActionPoints;
 
-        int uiStatusFlags;
+        public SOLDIER uiStatusFlags { get; set; }
 
-        OBJECTTYPE[] inv = new OBJECTTYPE[(int)InventorySlot.NUM_INV_SLOTS];
+        public OBJECTTYPE[] inv = new OBJECTTYPE[(int)InventorySlot.NUM_INV_SLOTS];
         OBJECTTYPE pTempObject;
         // KEY_ON_RING pKeyRing;
 
         int bOldLife;          // life at end of last turn, recorded for monster AI
                                 // attributes
-        int bInSector;
+        public int bInSector;
         int bFlashPortraitFrame;
         int sFractLife;       // fraction of life pts (in hundreths)	
-        int bBleeding;     // blood loss control variable
-        int bBreath;           // current breath value
+        public int bBleeding;     // blood loss control variable
+        public int bBreath;           // current breath value
         int bBreathMax;   // max breath, affected by fatigue/sleep
         int bStealthMode;
 
         int sBreathRed;           // current breath value
-        bool fDelayedMovement;
+        public bool fDelayedMovement;
 
         bool fReloading;
         int ubWaitActionToDo;
@@ -45,14 +45,14 @@ namespace SharpAlliance.Core.SubSystems
         int bScientific;
         // traits	
         int sWeightCarriedAtTurnStart;
-        int[] name = new int[10];
+        public int[] name = new int[10];
 
-        int bVisible;          // to render or not to render...
+        public int bVisible;          // to render or not to render...
 
 
-        int bActive;
+        public bool bActive;
 
-        int bTeam;             // Team identifier
+        public int bTeam;             // Team identifier
 
         //NEW MOVEMENT INFORMATION for Strategic Movement
         int ubGroupID;        //the movement group the merc is currently part of.
@@ -70,8 +70,8 @@ namespace SharpAlliance.Core.SubSystems
         float dOldXPos;
         float dOldYPos;
         int sInitialGridNo;
-        int sGridNo;
-        int bDirection;
+        public int sGridNo;
+        public int bDirection;
         int sHeightAdjustment;
         int sDesiredHeight;
         int sTempNewGridNo;                   // New grid no for advanced animations
@@ -79,16 +79,16 @@ namespace SharpAlliance.Core.SubSystems
         int bOverTerrainType;
         int bOldOverTerrainType;
 
-        int bCollapsed;                    // collapsed due to being out of APs
+        public bool bCollapsed;                    // collapsed due to being out of APs
         int bBreathCollapsed;                  // collapsed due to being out of APs
                                                 // 50 bytes so far
 
 
         int ubDesiredHeight;
-        int usPendingAnimation;
+        public int usPendingAnimation;
         int ubPendingStanceChange;
-        public int usAnimState;
-        bool fNoAPToFinishMove;
+        public AnimationStates usAnimState;
+        public bool fNoAPToFinishMove;
         bool fPausedMove;
         bool fUIdeadMerc;                // UI Flags for removing a newly dead merc
         bool fUInewMerc;                 // UI Flags for adding newly created merc ( panels, etc )
@@ -127,8 +127,8 @@ namespace SharpAlliance.Core.SubSystems
         // 60
         //AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
 
-        int bLife;             // current life (hit points or health)
-        int bSide;
+        public int bLife;             // current life (hit points or health)
+        public int bSide;
         int bViewRange;
         int bNewOppCnt;
         int bService;      // first aid, or other time consuming process
@@ -149,7 +149,7 @@ namespace SharpAlliance.Core.SubSystems
         bool fHoldAttackerUntilDone;
         int sTargetGridNo;
         int bTargetLevel;
-        int bTargetCubeLevel;
+        public int bTargetCubeLevel;
         int sLastTarget;
         int bTilesMoved;
         int bLeadership;
@@ -162,7 +162,7 @@ namespace SharpAlliance.Core.SubSystems
 
         bool fTurningToShoot;
         bool fTurningToFall;
-        bool fTurningUntilDone;
+        public bool fTurningUntilDone;
         bool fGettingHit;
         bool fInNonintAnim;
         bool fFlashLocator;
@@ -170,7 +170,7 @@ namespace SharpAlliance.Core.SubSystems
         bool fShowLocator;
         bool fFlashPortrait;
         int bMechanical;
-        int bLifeMax;          // maximum life for this merc
+        public int bLifeMax;          // maximum life for this merc
 
         int iFaceIndex;
 
@@ -189,10 +189,10 @@ namespace SharpAlliance.Core.SubSystems
 
         SGPPaletteEntry p8BPPPalette; // 4
         int p16BPPPalette;
-        int[] pShades = new int[OverheadTypes.NUM_SOLDIER_SHADES]; // Shading tables
+        public int[] pShades = new int[OverheadTypes.NUM_SOLDIER_SHADES]; // Shading tables
         int[] pGlowShades = new int[20]; // 
-        int pCurrentShade;
-        int bMedical;
+        public int pCurrentShade;
+        public int bMedical;
         bool fBeginFade;
         int ubFadeLevel;
         int ubServiceCount;
@@ -200,7 +200,7 @@ namespace SharpAlliance.Core.SubSystems
         int bMarksmanship;
         int bExplosive;
         // THROW_PARAMS pThrowParams;
-        bool fTurningFromPronePosition;
+        public bool fTurningFromPronePosition;
         public bool bReverse;
         //struct TAG_level_node               *pLevelNode;
         //struct TAG_level_node               *pExternShadowLevelNode;
@@ -212,20 +212,20 @@ namespace SharpAlliance.Core.SubSystems
         int sDestYPos;
         int sDesiredDest;
         int sDestination;
-        int sFinalDestination;
-        int bLevel;
+        public int sFinalDestination;
+        public int bLevel;
         int bStopped;
         int bNeedToLook;
 
 
         // PATH STUFF
         int[] usPathingData = new int[OverheadTypes.MAX_PATH_LIST_SIZE];
-        int usPathDataSize;
+        public int usPathDataSize;
         int usPathIndex;
         int sBlackList;
-        int bAimTime;
-        int bShownAimTime;
-        int bPathStored;   // good for AI to reduct redundancy
+        public int bAimTime;
+        public int bShownAimTime;
+        public int bPathStored;   // good for AI to reduct redundancy
         int bHasKeys;          // allows AI controlled dudes to open locked doors
 
 
@@ -235,9 +235,8 @@ namespace SharpAlliance.Core.SubSystems
         int usUnblitX, usUnblitY;
         int usUnblitWidth, usUnblitHeight;
 
-        int ubStrategicInsertionCode;
-        int usStrategicInsertionData;
-
+        public int ubStrategicInsertionCode;
+        public int usStrategicInsertionData;
 
         int iLight;
         int iMuzFlash;
@@ -267,7 +266,7 @@ namespace SharpAlliance.Core.SubSystems
         int bActionInProgress;
         int bAlertStatus;
         int bOppCnt;
-        int bNeutral;
+        public int bNeutral;
         int bNewSituation;
         int bNextTargetLevel;
         int bOrders;
@@ -291,9 +290,9 @@ namespace SharpAlliance.Core.SubSystems
         int bTacticalMoraleMod;
         int bStrategicMoraleMod;
         int bAIMorale;
-        int ubPendingAction;
-        int ubPendingActionAnimCount;
-        int uiPendingActionData1;
+        public int ubPendingAction;
+        public int ubPendingActionAnimCount;
+        public int uiPendingActionData1;
         int sPendingActionData2;
         int bPendingActionData3;
         int ubDoorHandleCode;
@@ -341,9 +340,9 @@ namespace SharpAlliance.Core.SubSystems
         int sDamageY;
         int bDamageDir;
         int bDoBurst;
-        int usUIMovementMode;
+        public AnimationStates usUIMovementMode;
         int bUIInterfaceLevel;
-        bool fUIMovementFast;
+        public bool fUIMovementFast;
 
         // TIMECOUNTER BlinkSelCounter;
         // TIMECOUNTER PortraitFlashCounter;
@@ -379,7 +378,7 @@ namespace SharpAlliance.Core.SubSystems
         int ubPendingDirection;
         int uiAnimSubFlags;
 
-        int bAimShotLocation;
+        public int bAimShotLocation;
         int ubHitLocation;
 
         int[] pEffectShades = new int[OverheadTypes.NUM_SOLDIER_EFFECTSHADES]; // Shading tables for effects
@@ -399,8 +398,8 @@ namespace SharpAlliance.Core.SubSystems
         int iStartContractTime;
         int iTotalContractLength;         // total time of AIM mercs contract	or the time since last paid for a M.E.R.C. merc
         int iNextActionSpecialData;       // AI special action data record for the next action
-        int ubWhatKindOfMercAmI;          //Set to the type of character it is
-        int bAssignment;                           // soldiers current assignment 
+        public int ubWhatKindOfMercAmI;          //Set to the type of character it is
+        public int bAssignment;                           // soldiers current assignment 
         int bOldAssignment;                        // old assignment, for autosleep purposes
         bool fForcedToStayAwake;             // forced by player to stay awake, reset to false, the moment they are set to rest or sleep
         int bTrainStat;                                // current stat soldier is training
@@ -430,7 +429,7 @@ namespace SharpAlliance.Core.SubSystems
         int uiLastAssignmentChangeMin;       // timestamp of last assignment change in minutes
         int iTotalLengthOfInsuranceContract;
 
-        int ubSoldierClass;                                   //admin, elite, troop (creature types?)
+        public SOLDIER_CLASS ubSoldierClass;                                   //admin, elite, troop (creature types?)
         int ubAPsLostToSuppression;
         bool fChangingStanceDueToSuppression;
         int ubSuppressorID;
@@ -469,7 +468,7 @@ namespace SharpAlliance.Core.SubSystems
         bool fBlockedByAnotherMerc;
         int bBlockedByAnotherMercDirection;
         int usAttackingWeapon;
-        int bWeaponMode;
+        public int bWeaponMode;
         int ubTargetID;
         int bAIScheduleProgress;
         int sOffWorldGridNo;
@@ -479,12 +478,12 @@ namespace SharpAlliance.Core.SubSystems
         int ubHiResDirection;
         int ubHiResDesiredDirection;
         int ubLastFootPrintSound;
-        int bVehicleID;
+        public int bVehicleID;
         int fPastXDest;
         int fPastYDest;
         int bMovementDirection;
         int sOldGridNo;
-        int usDontUpdateNewGridNoOnMoveAnimChange;
+        public int usDontUpdateNewGridNoOnMoveAnimChange;
         int sBoundingBoxWidth;
         int sBoundingBoxHeight;
         int sBoundingBoxOffsetX;
@@ -499,7 +498,7 @@ namespace SharpAlliance.Core.SubSystems
         int bSlotItemTakenFrom;
         bool fSignedAnotherContract;
         int ubAutoBandagingMedic;
-        bool fDontChargeTurningAPs;
+        public bool fDontChargeTurningAPs;
         int ubRobotRemoteHolderID;
         int uiTimeOfLastContractUpdate;
         int bTypeOfLastContract;
@@ -517,7 +516,7 @@ namespace SharpAlliance.Core.SubSystems
         int bBlindedCounter;
         bool fMercCollapsedFlag;
         bool fDoneAssignmentAndNothingToDoFlag;
-        bool fMercAsleep;
+        public bool fMercAsleep;
         bool fDontChargeAPsForStanceChange;
 
         int ubHoursOnAssignment;                      // used for assignments handled only every X hours
@@ -527,8 +526,8 @@ namespace SharpAlliance.Core.SubSystems
         int ubTurnsUntilCanSayHeardNoise;
         int usQuoteSaidExtFlags;
 
-        int sContPathLocation;
-        int bGoodContPath;
+        public int sContPathLocation;
+        public int bGoodContPath;
         int ubPendingActionInterrupted;
         int bNoiseLevel;
         int bRegenerationCounter;

@@ -91,6 +91,8 @@ namespace SharpAlliance.Core
 
         private Dictionary<TOPTION, bool> options = new();
 
+        public Dictionary<TOPTION, bool> fOptions => options;
+
         public bool this[TOPTION option]
         {
             get => this.options[option];
