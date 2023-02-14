@@ -749,7 +749,7 @@ namespace SharpAlliance.Core.Screens
                     this.gCrdtMouseRegions[(int)uiCnt] = new MouseRegion(uiCnt.ToString());
                 }
 
-                this.inputs.Mouse.DefineRegion(
+                this.inputs.Mouse.MSYS_DefineRegion(
                     this.gCrdtMouseRegions[(int)uiCnt],
                      new(
                         this.gCreditFaces[(int)uiCnt].sX,
@@ -757,7 +757,7 @@ namespace SharpAlliance.Core.Screens
                         this.gCreditFaces[(int)uiCnt].sX + this.gCreditFaces[(int)uiCnt].sWidth,
                         this.gCreditFaces[(int)uiCnt].sY + this.gCreditFaces[(int)uiCnt].sHeight),
                     MSYS_PRIORITY.NORMAL,
-                    Cursor.WWW,
+                    CURSOR.WWW,
                     this.SelectCreditFaceMovementRegionCallBack,
                     this.SelectCreditFaceRegionCallBack);
 

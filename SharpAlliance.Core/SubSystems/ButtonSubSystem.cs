@@ -346,7 +346,7 @@ namespace SharpAlliance.Core.SubSystems
             this.fonts.RestoreFontSettings();
         }
 
-        internal bool SetButtonCursor(GUI_BUTTON? b, Cursor usCursor)
+        internal bool SetButtonCursor(GUI_BUTTON? b, CURSOR usCursor)
         {
             if (b is null)
             {
@@ -509,14 +509,14 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Define a MOUSE_REGION for this QuickButton
-            this.mouse.DefineRegion(
+            this.mouse.MSYS_DefineRegion(
                 b.MouseRegion,
                 new(loc.X,
                     loc.Y,
                     b.ButtonPicture.MaxWidth,
                     b.ButtonPicture.MaxHeight),
                 Priority,
-                Cursor.NORMAL,
+                CURSOR.NORMAL,
                 this.QuickButtonCallbackMouseMove,
                 this.QuickButtonCallbackMButn);
 
@@ -1815,11 +1815,11 @@ namespace SharpAlliance.Core.SubSystems
                 Image.MaxWidth,
                 Image.MaxHeight);
 
-            this.mouse.DefineRegion(
+            this.mouse.MSYS_DefineRegion(
                 ref b.MouseRegion,
                 regionRect,
                 Priority,
-                Cursor.NORMAL,
+                CURSOR.NORMAL,
                 this.QuickButtonCallbackMouseMove,
                 this.QuickButtonCallbackMButn);
 
@@ -2244,7 +2244,7 @@ namespace SharpAlliance.Core.SubSystems
         public MouseRegion MouseRegion = new(nameof(GUI_BUTTON.MouseRegion)); // Mouse System's mouse region to use for this button
         public GuiCallback? ClickCallback;     // Button Callback when button is clicked
         public GuiCallback? MoveCallback;          // Button Callback when mouse moved on this region
-        public Cursor Cursor;                       // Cursor to use for this button
+        public CURSOR Cursor;                       // Cursor to use for this button
         public ButtonFlags uiFlags;                 // Button state flags etc.( 32-bit )
         public ButtonFlags uiOldFlags;              // Old flags from previous render loop
         public Point Loc;

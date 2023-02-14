@@ -36,11 +36,46 @@ public enum WorldDefines
     WORLD_CLIFF_HEIGHT = 80,
 }
 
+[Flags]
+public enum LEVELNODEFlags :uint
+{
+    SOLDIER = 0x00000001,
+    UNUSED2 = 0x00000002,
+    MERCPLACEHOLDER = 0x00000004,
+    SHOW_THROUGH = 0x00000008,
+    NOZBLITTER = 0x00000010,
+    CACHEDANITILE = 0x00000020,
+    ROTTINGCORPSE = 0x00000040,
+    BUDDYSHADOW = 0x00000080,
+    HIDDEN = 0x00000100,
+    USERELPOS = 0x00000200,
+    DISPLAY_AP = 0x00000400,
+    ANIMATION = 0x00000800,
+    USEABSOLUTEPOS = 0x00001000,
+    REVEAL = 0x00002000,
+    REVEALTREES = 0x00004000,
+    USEBESTTRANSTYPE = 0x00008000,
+    USEZ = 0x00010000,
+    DYNAMICZ = 0x00020000,
+    UPDATESAVEBUFFERONCE = 0x00040000,
+    ERASEZ = 0x00080000,
+    WIREFRAME = 0x00100000,
+    ITEM = 0x00200000,
+    IGNOREHEIGHT = 0x00400000,
+    DYNAMIC = 0x02000000,
+    LASTDYNAMIC = 0x04000000,
+    PHYSICSOBJECT = 0x08000000,
+    NOWRITEZ = 0x10000000,
+    MULTITILESOLDIER = 0x20000000,
+    EXITGRID = 0x40000000,
+    CAVE = 0x80000000,
+}
+
 // This was a C struct with lots of unions, but in C# you can't reference a struct inside itself.
 public class LEVELNODE
 {
     public LEVELNODE? pNext;
-    public int uiFlags;                         // flags struct
+    public LEVELNODEFlags uiFlags;                         // flags struct
 
     int ubSumLights;                  // LIGHTING INFO
     int ubMaxLights;                  // MAX LIGHTING INFO
@@ -54,7 +89,7 @@ public class LEVELNODE
     public ushort usIndex;                         // TILE DATABASE INDEX
     int sCurrentFrame;                // Stuff for animated tiles for a given tile location ( doors, etc )
 
-    SOLDIERTYPE? pSoldier;                          // POINTER TO SOLDIER
+    public SOLDIERTYPE? pSoldier;                          // POINTER TO SOLDIER
 
     // Some levelnodes can specify relative X and Y values!
     public int sRelativeX;                           // Relative position values
@@ -167,10 +202,10 @@ public class MAP_ELEMENT
     STRUCTURE? pStructureHead;
     STRUCTURE? pStructureTail;
 
-    ushort uiFlags;
+    public ushort uiFlags;
     byte[] ubExtFlags;// [2];
-    ushort[] sSumRealLights;// [1];
-    byte sHeight;
+    ushort[] sSumRealLights = new ushort[1];// [1];
+    public byte sHeight;
     byte ubAdjacentSoldierCnt;
     byte ubTerrainID;
 

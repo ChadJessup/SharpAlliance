@@ -586,7 +586,7 @@ namespace SharpAlliance.Core.Screens
                     TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
                     //Create mouse regions for the option toggle text
-                    this.inputs.Mouse.DefineRegion(
+                    this.inputs.Mouse.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
                             OPT_TOGGLE_BOX_FIRST_COLUMN_X,
@@ -594,7 +594,7 @@ namespace SharpAlliance.Core.Screens
                             OPT_TOGGLE_BOX_FIRST_COL_TEXT_X,
                             TextSize.Height),
                         MSYS_PRIORITY.HIGH,
-                        Cursor.NORMAL,
+                        CURSOR.NORMAL,
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
@@ -606,7 +606,7 @@ namespace SharpAlliance.Core.Screens
                 else
                 {
                     //Create mouse regions for the option toggle text
-                    this.inputs.Mouse.DefineRegion(
+                    this.inputs.Mouse.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
                             OPT_TOGGLE_BOX_FIRST_COLUMN_X,
@@ -614,7 +614,7 @@ namespace SharpAlliance.Core.Screens
                             OPT_TOGGLE_BOX_SECOND_TEXT_X,
                             TextSize.Height),
                         MSYS_PRIORITY.HIGH,
-                        Cursor.NORMAL,
+                        CURSOR.NORMAL,
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
@@ -677,7 +677,7 @@ namespace SharpAlliance.Core.Screens
 
                     TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
-                    this.inputs.Mouse.DefineRegion(
+                    this.inputs.Mouse.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new(
                             OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
@@ -685,7 +685,7 @@ namespace SharpAlliance.Core.Screens
                             OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
                             TextSize.Height),
                         MSYS_PRIORITY.HIGH,
-                        Cursor.NORMAL,
+                        CURSOR.NORMAL,
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
@@ -693,7 +693,7 @@ namespace SharpAlliance.Core.Screens
                 }
                 else
                 {
-                    this.inputs.Mouse.DefineRegion(
+                    this.inputs.Mouse.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[option],
                         new(
                             OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
@@ -701,7 +701,7 @@ namespace SharpAlliance.Core.Screens
                             OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
                             TextSize.Height),
                         MSYS_PRIORITY.HIGH,
-                        Cursor.NORMAL,
+                        CURSOR.NORMAL,
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
@@ -715,11 +715,11 @@ namespace SharpAlliance.Core.Screens
             }
 
             //Create a mouse region so when the user leaves a togglebox text region we can detect it then unselect the region
-            this.inputs.Mouse.DefineRegion(
+            this.inputs.Mouse.MSYS_DefineRegion(
                 ref this.gSelectedToggleBoxAreaRegion,
                 new Rectangle(0, 0, 640, 480),
                 MSYS_PRIORITY.NORMAL,
-                Cursor.NORMAL,
+                CURSOR.NORMAL,
                 this.SelectedToggleBoxAreaRegionMovementCallBack,
                 null);
 
@@ -729,7 +729,7 @@ namespace SharpAlliance.Core.Screens
             //Add a slider bar for the Sound Effects 
             this.guiSoundEffectsSlider = this.gui.Sliders.AddSlider(
                 SliderStyle.SLIDER_VERTICAL_STEEL,
-                Cursor.NORMAL,
+                CURSOR.NORMAL,
                 new(OPT_SOUND_EFFECTS_SLIDER_X, OPT_SOUND_EFFECTS_SLIDER_Y),
                 OPT_SLIDER_BAR_SIZE,
                 127,
@@ -743,7 +743,7 @@ namespace SharpAlliance.Core.Screens
             //Add a slider bar for the Speech
             this.guiSpeechSlider = this.gui.Sliders.AddSlider(
                 SliderStyle.SLIDER_VERTICAL_STEEL,
-                Cursor.NORMAL,
+                CURSOR.NORMAL,
                 new(OPT_SPEECH_SLIDER_X, OPT_SPEECH_SLIDER_Y),
                 OPT_SLIDER_BAR_SIZE,
                 127,
@@ -757,7 +757,7 @@ namespace SharpAlliance.Core.Screens
             //Add a slider bar for the Music
             this.guiMusicSlider = this.gui.Sliders.AddSlider(
                 SliderStyle.SLIDER_VERTICAL_STEEL,
-                Cursor.NORMAL,
+                CURSOR.NORMAL,
                 new(OPT_MUSIC_SLIDER_X, OPT_MUSIC_SLIDER_Y),
                 OPT_SLIDER_BAR_SIZE,
                 127,

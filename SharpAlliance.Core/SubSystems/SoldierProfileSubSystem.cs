@@ -119,7 +119,7 @@ namespace SharpAlliance.Core.SubSystems
                     {
                         usItem = this.gMercProfiles[npcId].inv[uiLoop2];
 
-                        if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN) && this.items.ExtendedGunListGun(usItem))
+                        if (this.items[usItem].usItemClass.HasFlag(IC.IC_GUN) && this.items.ExtendedGunListGun(usItem))
                         {
                             usNewGun = this.items.StandardGunListReplacement(usItem);
                             if (usNewGun != Items.NONE)
@@ -130,7 +130,7 @@ namespace SharpAlliance.Core.SubSystems
                                 for (uiLoop3 = 0; uiLoop3 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop3++)
                                 {
                                     usAmmo = this.gMercProfiles[npcId].inv[uiLoop3];
-                                    if (this.items[usAmmo].usItemClass.HasFlag(ItemSubTypes.IC_AMMO))
+                                    if (this.items[usAmmo].usItemClass.HasFlag(IC.IC_AMMO))
                                     {
                                         usNewAmmo = this.items.FindReplacementMagazineIfNecessary(usItem, usAmmo, usNewGun);
                                         if (usNewAmmo != Items.NONE)
@@ -158,13 +158,13 @@ namespace SharpAlliance.Core.SubSystems
                     if (usItem != Items.NONE)
                     {
                         // Check if it's a gun
-                        if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_GUN))
+                        if (this.items[usItem].usItemClass.HasFlag(IC.IC_GUN))
                         {
                             this.gMercProfiles[npcId].bMainGunAttractiveness = WeaponTypes.Weapon[(int)usItem].ubDeadliness;
                         }
 
                         // If it's armour
-                        if (this.items[usItem].usItemClass.HasFlag(ItemSubTypes.IC_ARMOUR))
+                        if (this.items[usItem].usItemClass.HasFlag(IC.IC_ARMOUR))
                         {
                             this.gMercProfiles[npcId].bArmourAttractiveness = WeaponTypes.Armour[this.items[usItem].ubClassIndex].ubProtection;
                         }

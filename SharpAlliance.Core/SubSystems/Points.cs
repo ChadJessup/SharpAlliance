@@ -1,13 +1,186 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SharpAlliance.Core.SubSystems;
+﻿namespace SharpAlliance.Core.SubSystems;
 
 public class Points
 {
+    public int CalcTotalAPsToAttack(SOLDIERTYPE? pSoldier, int sGridNo, int ubAddTurningCost, int bAimTime)
+    {
+        int sAPCost = 0;
+        int usItemNum;
+        int sActionGridNo;
+        int ubDirection;
+        int sAdjustedGridNo;
+        IC uiItemClass;
+
+        // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
+        usItemNum = pSoldier.inv[HANDPOS].usItem;
+        uiItemClass = Item[usItemNum].usItemClass;
+
+        if (uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
+        {
+            sAPCost = MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
+
+            if (pSoldier.bDoBurst)
+            {
+                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), &(pSoldier.inv[HANDPOS]));
+            }
+            else
+            {
+                sAPCost += bAimTime;
+            }
+        }
+
+        //ATE: HERE, need to calculate APs!
+        if (uiItemClass.HasFlag(IC.EXPLOSV))
+        {
+            sAPCost = MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
+
+            sAPCost = 5;
+        }
+
+        if (uiItemClass == IC.PUNCH || (uiItemClass == IC.BLADE && uiItemClass != IC.THROWING_KNIFE))
+        {
+            // IF we are at this gridno, calc min APs but if not, calc cost to goto this lication
+            if (pSoldier.sGridNo != sGridNo)
+            {
+                // OK, in order to avoid path calculations here all the time... save and check if it's changed!
+                if (pSoldier.sWalkToAttackGridNo == sGridNo)
+                {
+                    sAdjustedGridNo = sGridNo;
+                    sAPCost += (pSoldier.sWalkToAttackWalkToCost);
+                }
+                else
+                {
+                    //INT32		cnt;
+                    //INT16		sSpot;	
+                    int ubGuyThere;
+                    int sGotLocation = NOWHERE;
+                    bool fGotAdjacent = false;
+                    SOLDIERTYPE? pTarget;
+
+                    ubGuyThere = WhoIsThere2(sGridNo, pSoldier.bLevel);
+
+                    if (ubGuyThere != NOBODY)
+                    {
+
+                        pTarget = MercPtrs[ubGuyThere];
+
+                        if (pSoldier.ubBodyType == BLOODCAT)
+                        {
+                            sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, &ubDirection, &sAdjustedGridNo, true, false);
+                            if (sGotLocation == -1)
+                            {
+                                sGotLocation = NOWHERE;
+                            }
+                        }
+                        else
+                        {
+                            sGotLocation = FindAdjacentPunchTarget(pSoldier, pTarget, sAdjustedGridNo, ubDirection);
+                        }
+                    }
+
+                    if (sGotLocation == NOWHERE && pSoldier.ubBodyType != BLOODCAT)
+                    {
+                        sActionGridNo = FindAdjacentGridEx(pSoldier, sGridNo, ubDirection, sAdjustedGridNo, true, false);
+
+                        if (sActionGridNo == -1)
+                        {
+                            sGotLocation = NOWHERE;
+                        }
+                        else
+                        {
+                            sGotLocation = sActionGridNo;
+                        }
+                        fGotAdjacent = true;
+                    }
+
+                    if (sGotLocation != NOWHERE)
+                    {
+                        if (pSoldier.sGridNo == sGotLocation || !fGotAdjacent)
+                        {
+                            pSoldier.sWalkToAttackWalkToCost = 0;
+                        }
+                        else
+                        {
+                            // Save for next time...
+                            pSoldier.sWalkToAttackWalkToCost = PlotPath(pSoldier, sGotLocation, NO_COPYROUTE, NO.PLOT, TEMPORARY, (UINT16)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+
+                            if (pSoldier.sWalkToAttackWalkToCost == 0)
+                            {
+                                return (99);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return (0);
+                    }
+                    sAPCost += pSoldier.sWalkToAttackWalkToCost;
+                }
+
+                // Save old location!
+                pSoldier.sWalkToAttackGridNo = sGridNo;
+
+                // Add points to attack
+                sAPCost += MinAPsToAttack(pSoldier, sAdjustedGridNo, ubAddTurningCost);
+            }
+            else
+            {
+                // Add points to attack
+                // Use our gridno
+                sAPCost += MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
+            }
+
+            // Add aim time...
+            sAPCost += bAimTime;
+
+        }
+
+        return sAPCost;
+    }
+
+    public int MinAPsToAttack(SOLDIERTYPE? pSoldier, int sGridno, int ubAddTurningCost)
+    {
+        int sAPCost = 0;
+        IC uiItemClass;
+
+        if (pSoldier.bWeaponMode == WM.ATTACHED)
+        {
+            int bAttachSlot;
+            // look for an attached grenade launcher
+
+            bAttachSlot = FindAttachment((pSoldier.inv[HANDPOS]), UNDER_GLAUNCHER);
+            if (bAttachSlot == NO_SLOT)
+            {
+                // default to hand
+                // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
+                uiItemClass = Item[pSoldier.inv[HANDPOS].usItem].usItemClass;
+            }
+            else
+            {
+                uiItemClass = Item[UNDER_GLAUNCHER].usItemClass;
+            }
+        }
+        else
+        {
+            // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
+            uiItemClass = Item[pSoldier.inv[HANDPOS].usItem].usItemClass;
+        }
+
+        if (uiItemClass == IC.BLADE || uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
+        {
+            sAPCost = MinAPsToShootOrStab(pSoldier, sGridno, ubAddTurningCost);
+        }
+        else if (uiItemClass.HasFlag(IC.GRENADE | IC.THROWN))
+        {
+            sAPCost = MinAPsToThrow(pSoldier, sGridno, ubAddTurningCost);
+        }
+        else if (uiItemClass == IC.PUNCH)
+        {
+            sAPCost = MinAPsToPunch(pSoldier, sGridno, ubAddTurningCost);
+        }
+
+        return (sAPCost);
+    }
 }
 
 public enum AP
@@ -37,7 +210,7 @@ public enum AP
     MOVEMENT_BUSH = 5,
     MOVEMENT_RUBBLE = 6,
     MOVEMENT_SHORE = 7,   // shallow wade
-    MOVEMENT_LAKE = 9,   // deep wade -> slowest
+    MOVEMENT_LAKE = 9,   // deep wade . slowest
     MOVEMENT_OCEAN = 8,   // swimming is faster than deep wade
     CHANGE_FACING = 1,   // turning to face any other direction
     CHANGE_TARGET = 1,   // aiming at a new target
@@ -45,7 +218,7 @@ public enum AP
     TOSS_ITEM = 8,           // toss item from inv
     REFUEL_VEHICLE = 10,
     /*
-    MOVE_ITEM_FREE       0       // same place, pocket->pocket
+    MOVE_ITEM_FREE       0       // same place, pocket.pocket
     MOVE_ITEM_FAST       2       // hand, holster, ground only
     MOVE_ITEM_AVG        4       // everything else!
     MOVE_ITEM_SLOW       6       // vests, protective gear
@@ -151,7 +324,7 @@ public enum BP
     CLIMBOFFROOF = 250,  // BPs to climb off roof
     JUMPFENCE = 200,     // BPs to jump fence
     /*
-    MOVE_ITEM_FREE       0       // same place, pocket->pocket
+    MOVE_ITEM_FREE       0       // same place, pocket.pocket
     MOVE_ITEM_FAST       0       // hand, holster, ground only
     MOVE_ITEM_AVG        0       // everything else!
     MOVE_ITEM_SLOW       20      // vests, protective gear

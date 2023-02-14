@@ -50,7 +50,7 @@ namespace SharpAlliance.Core.Screens
                 if ((this.messageBoxSubSystem.gfStartedFromGameScreen) || (this.messageBoxSubSystem.gfStartedFromMapScreen))
                 {
                     //UINT32 uiDestPitchBYTES, uiSrcPitchBYTES;
-                    //UINT8	 *pDestBuf, *pSrcBuf;
+                    //Ubyte	 *pDestBuf, *pSrcBuf;
 
                     if (this.messageBoxSubSystem.gfStartedFromGameScreen)
                     {

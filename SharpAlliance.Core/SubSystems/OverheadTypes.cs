@@ -20,6 +20,12 @@ public class OverheadTypes
     public const int NO_SOLDIER = TOTAL_SOLDIERS; // SAME AS NOBODY
     public const int NOBODY = NO_SOLDIER;
 
+    // MODIFIERS FOR AP COST FOR MOVEMENT 
+    public const double RUNDIVISOR = 1.8;
+    public const int WALKCOST = -1;
+    public const int SWATCOST = 0;
+    public const int CRAWLCOST = 1;
+
 }
 
 

@@ -20,8 +20,8 @@ public class SaveLoadMap
     public void AddRemoveObjectToMapTempFile(int uiMapIndex, ushort usIndex)
     {
         MODIFY_MAP Map;
-        int uiType;
-        ushort usSubIndex;
+        TileTypeDefines uiType;
+        ushort? usSubIndex;
 
         if (!gfApplyChangesToTempFile)
         {
@@ -33,29 +33,32 @@ public class SaveLoadMap
             return;
         }
 
-        GetTileType(usIndex, out uiType);
-        GetSubIndexFromTileIndex(usIndex, out usSubIndex);
+        TileDefine.GetTileType(usIndex, out uiType);
+        TileDefine.GetSubIndexFromTileIndex(usIndex, out usSubIndex);
 
         //memset(&Map, 0, sizeof(MODIFY_MAP));
 
-        Map.usGridNo = (UINT16)uiMapIndex;
-        //	Map.usIndex		= usIndex;
-        Map.usImageType = (UINT16)uiType;
-        Map.usSubImageIndex = usSubIndex;
+        Map = new MODIFY_MAP
+        {
+            usGridNo = (ushort)uiMapIndex,
+            //	Map.usIndex		= usIndex;
+            usImageType = (ushort)uiType,
+            usSubImageIndex = usSubIndex,
 
-        Map.ubType = SLM_REMOVE_OBJECT;
+            ubType = SLM_REMOVE_OBJECT
+        };
 
         SaveModifiedMapStructToMapTempFile(out Map, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
     }
 }
 
-struct MODIFY_MAP
+public struct MODIFY_MAP
 {
-    ushort usGridNo;                //The gridno the graphic will be applied to
-    ushort usImageType;         //graphic index
-    ushort usSubImageIndex;     //
-                                //	UINT16	usIndex;
-    byte ubType;                       // the layer it will be applied to
+    public ushort usGridNo;                //The gridno the graphic will be applied to
+    public ushort usImageType;         //graphic index
+    public ushort usSubImageIndex;     //
+                                //	ushort	usIndex;
+    public byte ubType;                       // the layer it will be applied to
 
-    byte ubExtra;					// Misc. variable used to strore arbritary values
+    public byte ubExtra;					// Misc. variable used to strore arbritary values
 }

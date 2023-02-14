@@ -54,40 +54,32 @@ namespace SharpAlliance.Core
     //EXPLOSIVE_GUN( x ) ( x == ROCKET_LAUNCHER || x == TANK_CANNON )
 
     [Flags]
-    public enum ItemSubTypes
+    public enum IC
     {
-        IC_NONE = 0x00000001,
-        IC_GUN = 0x00000002,
-        IC_BLADE = 0x00000004,
-        IC_THROWING_KNIFE = 0x00000008,
-
-        IC_LAUNCHER = 0x00000010,
-        IC_TENTACLES = 0x00000020,
-
-        IC_THROWN = 0x00000040,
-        IC_PUNCH = 0x00000080,
-
-        IC_GRENADE = 0x00000100,
-        IC_BOMB = 0x00000200,
-        IC_AMMO = 0x00000400,
-        IC_ARMOUR = 0x00000800,
-
-        IC_MEDKIT = 0x00001000,
-        IC_KIT = 0x00002000,
-        IC_APPLIABLE = 0x00004000,
-        IC_FACE = 0x00008000,
-
-        IC_KEY = 0x00010000,
-
-        IC_MISC = 0x10000000,
-        IC_MONEY = 0x20000000,
-
+        NONE = 0x00000001,
+        GUN = 0x00000002,
+        BLADE = 0x00000004,
+        THROWING_KNIFE = 0x00000008,
+        LAUNCHER = 0x00000010,
+        TENTACLES = 0x00000020,
+        THROWN = 0x00000040,
+        PUNCH = 0x00000080,
+        GRENADE = 0x00000100,
+        BOMB = 0x00000200,
+        AMMO = 0x00000400,
+        ARMOUR = 0x00000800,
+        MEDKIT = 0x00001000,
+        KIT = 0x00002000,
+        APPLIABLE = 0x00004000,
+        FACE = 0x00008000,
+        KEY = 0x00010000,
+        MISC = 0x10000000,
+        MONEY = 0x20000000,
         // PARENT TYPES
-        IC_WEAPON = IC_GUN | IC_BLADE | IC_THROWING_KNIFE | IC_LAUNCHER | IC_TENTACLES,
-        IC_EXPLOSV = IC_GRENADE | IC_BOMB,
-
-        IC_BOBBY_GUN = IC_GUN | IC_LAUNCHER,
-        IC_BOBBY_MISC = IC_GRENADE | IC_BOMB | IC_MISC | IC_MEDKIT | IC_KIT | IC_BLADE | IC_THROWING_KNIFE | IC_PUNCH | IC_FACE,
+        WEAPON = GUN | BLADE | THROWING_KNIFE | LAUNCHER | TENTACLES,
+        EXPLOSV = GRENADE | BOMB,
+        BOBBY_GUN = GUN | LAUNCHER,
+        BOBBY_MISC = GRENADE | BOMB | MISC | MEDKIT | KIT | BLADE | THROWING_KNIFE | PUNCH | FACE,
     }
 
     public enum ParentType
@@ -97,7 +89,7 @@ namespace SharpAlliance.Core
 
     public class INVTYPE
     {
-        public ItemSubTypes usItemClass;
+        public IC usItemClass;
         public int ubClassIndex;
         public int ubCursor;
         public int bSoundType;
@@ -366,7 +358,7 @@ namespace SharpAlliance.Core
 
         SPECTRA_HELMET_18,
         SPECTRA_HELMET_Y,
-        CERAMIC_PLATES,
+        CERAMPLATES,
         CREATURE_INFANT_HIDE,
         CREATURE_YOUNG_MALE_HIDE,
         CREATURE_OLD_MALE_HIDE,

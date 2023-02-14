@@ -112,7 +112,7 @@ namespace SharpAlliance.Core.Screens
                 }
                 else
                 {
-                    this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
+                    this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
                     return ScreenName.INTRO_SCREEN;
                 }
             }
@@ -159,7 +159,7 @@ namespace SharpAlliance.Core.Screens
                 // this.videoSurface.DeleteVideoSurface(hVSurface);
                 //ATE: Set to true to reset before going into main screen!
 
-                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
                 return ScreenName.InitScreen;
             }
@@ -184,13 +184,13 @@ namespace SharpAlliance.Core.Screens
             {
                 ubCurrentScreen = 4;
 
-                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
                 return ScreenName.InitScreen;
             }
 
             if (ubCurrentScreen == 4)
             {
-                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
                 // TODO: Strategic stuff
                 await this.gameInit.InitNewGame(false);
             }

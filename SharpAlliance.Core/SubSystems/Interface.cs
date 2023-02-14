@@ -4,9 +4,13 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Interface
 {
+    public const int ROOF_LEVEL_HEIGHT = 50;
+
     // this might need to be an int, we'll see.
     public static InterfaceLevel gsInterfaceLevel { get; set; }
     public InterfacePanelDefines gsCurInterfacePanel { get; internal set; }
+    public static MouseRegion? gViewportRegion { get; set; }
+    public static bool gfUIStanceDifferent { get; set; }
 }
 
 public enum MOVEMENT

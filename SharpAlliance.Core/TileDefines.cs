@@ -2,14 +2,30 @@
 using System.Collections.Generic;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
+using SixLabors.ImageSharp.Drawing;
 using Veldrid.OpenGLBinding;
 
 namespace SharpAlliance.Core;
 
 public class TileDefine
 {
+    public static int MAX_ANIMATED_TILES = 200;
+    public static int WALL_HEIGHT = 50;
+    // Globals used
+    public static TILE_ELEMENT[] gTileDatabase = new TILE_ELEMENT[(int)TileDefines.NUMBEROFTILES];
+    int gTileDatabaseSize;
+    int[] gFullBaseTileValues;
+    int[] gNumTilesPerType = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
+    public static int[] gTileTypeStartIndex = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
+    string gTileSurfaceName;
+    int[] gTileTypeLogicalHeight = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
+
+    int gusNumAnimatedTiles;
+    int[] gusAnimatedTiles = new int[MAX_ANIMATED_TILES];
+    int[] gTileTypeMovementCost = new int[(int)TerrainTypeDefines.NUM_TERRAIN_TYPES];
+
     // Database access functions
-    public static bool GetTileType(ushort usIndex, out TileTypeDefines puiType)
+    public static bool GetTileType(int usIndex, out TileTypeDefines puiType)
     {
         TILE_ELEMENT TileElem;
 
@@ -22,7 +38,38 @@ public class TileDefine
 
         return true;
     }
+
+    public static bool GetSubIndexFromTileIndex(int usTileIndex, out int? pusSubIndex)
+    {
+        pusSubIndex = null;
+
+        TileTypeDefines uiType = 0;
+        if (GetTileType(usTileIndex, out uiType))
+        {
+            pusSubIndex = usTileIndex - gTileTypeStartIndex[(int)uiType] + 1;
+            return true;
+        }
+
+        return false;
+    }
 }
+
+public enum TerrainTypeDefines
+{
+    NO_TERRAIN,
+    FLAT_GROUND,
+    FLAT_FLOOR,
+    PAVED_ROAD,
+    DIRT_ROAD,
+    LOW_GRASS,
+    HIGH_GRASS,
+    TRAIN_TRACKS,
+    LOW_WATER,
+    MED_WATER,
+    DEEP_WATER,
+    NUM_TERRAIN_TYPES
+}
+
 
 [Flags]
 public enum TileCategory
@@ -2958,7 +3005,10 @@ public enum TileDefines
     WIREFRAMES14,
     WIREFRAMES15,
 
-    NUMBEROFTILES
+    NUMBEROFTILES,
+
+    // Add/combine new ones below the NUMBEROFTILES value
+    DISPLAY_AP_INDEX = MOCKFLOOR1,
 };
 
 //#define BLUEFLAG_GRAPHIC FIRSTSWITCHES21

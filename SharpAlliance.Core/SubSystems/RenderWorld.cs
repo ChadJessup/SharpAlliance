@@ -98,4 +98,21 @@ namespace SharpAlliance.Core.SubSystems
         SCROLL_DOWNLEFT = 0x00000080,
         SCROLL_DOWNRIGHT = 0x00000200,
     }
+
+    public enum TILES_DYNAMIC
+    {
+        // highest bit value is rendered first!
+        TILES_ALL_DYNAMICS = 0x00000fff,
+        CHECKFOR_INT_TILE = 0x00000400,
+        LAND = 0x00000200,
+        OBJECTS = 0x00000100,
+        SHADOWS = 0x00000080,
+        STRUCT_MERCS = 0x00000040,
+        MERCS = 0x00000020,
+        STRUCTURES = 0x00000010,
+        ROOF = 0x00000008,
+        HIGHMERCS = 0x00000004,
+        ONROOF = 0x00000002,
+        TOPMOST = 0x00000001,
+    }
 }

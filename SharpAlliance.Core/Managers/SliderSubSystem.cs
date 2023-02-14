@@ -292,7 +292,7 @@ namespace SharpAlliance.Core.Managers
 
         public Slider AddSlider(
             SliderStyle style,
-            Cursor usCursor,
+            CURSOR usCursor,
             Point loc,
             int usWidth,
             int usNumberOfIncrements,
@@ -344,7 +344,7 @@ namespace SharpAlliance.Core.Managers
                     pNewSlider.ubSliderHeight = Slider.STEEL_SLIDER_HEIGHT;
 
 
-                    this.inputs.Mouse.DefineRegion(
+                    this.inputs.Mouse.MSYS_DefineRegion(
                         pNewSlider.ScrollAreaMouseRegion,
                         new Rectangle(
                             loc.X - pNewSlider.ubSliderWidth / 2,
@@ -366,7 +366,7 @@ namespace SharpAlliance.Core.Managers
                     pNewSlider.ubSliderWidth = usWidth;
                     pNewSlider.ubSliderHeight = Slider.DEFAULT_SLIDER_SIZE;
 
-                    this.inputs.Mouse.DefineRegion(
+                    this.inputs.Mouse.MSYS_DefineRegion(
                         pNewSlider.ScrollAreaMouseRegion,
                         new Rectangle(loc.X, loc.Y - Slider.DEFAULT_SLIDER_SIZE, pNewSlider.usPos.X + pNewSlider.ubSliderWidth, loc.Y + Slider.DEFAULT_SLIDER_SIZE),
                         sPriority,

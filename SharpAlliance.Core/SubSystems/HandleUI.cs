@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
+using Veldrid.OpenGLBinding;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -62,19 +64,37 @@ public class HandleUI
     //extern bool gfInOpenDoorMenu;
 
     private readonly ILogger<HandleUI> logger;
+    private readonly IInputManager inputs;
     private readonly IClockManager clock;
     private readonly Overhead overhead;
+    private readonly Globals globals;
+    private readonly Points points;
     private readonly Random rnd;
+    private readonly RenderWorld renderWorld;
+    private readonly CursorSubSystem cursors;
+    private readonly PathAI pathAI;
 
     public HandleUI(
         ILogger<HandleUI> logger,
         IClockManager clock,
-        Overhead overhead)
+        Overhead overhead,
+        Globals globals,
+        IInputManager inputManager,
+        CursorSubSystem cursorSubSystem,
+        Points points,
+        PathAI pathAI,
+        RenderWorld renderWorld)
     {
         this.logger = logger;
         this.clock = clock;
         this.overhead = overhead;
         this.rnd = new Random();
+        this.globals = globals;
+        this.points = points;
+        this.inputs = inputManager;
+        this.cursors = cursorSubSystem;
+        this.pathAI = pathAI;
+        this.renderWorld = renderWorld;
 
         gEvents = new()
         {
@@ -144,141 +164,136 @@ public class HandleUI
         };
     }
 
-    SOLDIERTYPE? gpRequesterMerc = null;
-    SOLDIERTYPE? gpRequesterTargetMerc = null;
-    uint gsRequesterGridNo;
-    int gsOverItemsGridNo = (int)IsometricDefines.NOWHERE;
-    InterfaceLevel gsOverItemsLevel = 0;
-    bool gfUIInterfaceSetBusy = false;
-    uint guiUIInterfaceBusyTime = 0;
+    public static SOLDIERTYPE? gpRequesterMerc = null;
+    public static SOLDIERTYPE? gpRequesterTargetMerc = null;
+    public static uint gsRequesterGridNo;
+    public static int gsOverItemsGridNo = (int)IsometricDefines.NOWHERE;
+    public static InterfaceLevel gsOverItemsLevel = 0;
+    public static bool gfUIInterfaceSetBusy = false;
+    public static uint guiUIInterfaceBusyTime = 0;
 
-    bool gfTacticalForceNoCursor = false;
-    LEVELNODE? gpInvTileThatCausedMoveConfirm = null;
-    bool gfResetUIMovementOptimization = false;
-    bool gfResetUIItemCursorOptimization = false;
-    bool gfBeginVehicleCursor = false;
-    uint gsOutOfRangeGridNo = (int)IsometricDefines.NOWHERE;
-    byte gubOutOfRangeMerc = OverheadTypes.NOBODY;
-    bool gfOKForExchangeCursor = false;
-    uint guiUIInterfaceSwapCursorsTime = 0;
-    int gsJumpOverGridNo = 0;
-    Dictionary<UI_EVENT_DEFINES, UI_EVENT> gEvents = new();
+    public static bool gfTacticalForceNoCursor = false;
+    public static LEVELNODE? gpInvTileThatCausedMoveConfirm = null;
+    public static bool gfResetUIMovementOptimization = false;
+    public static bool gfResetUIItemCursorOptimization = false;
+    public static bool gfBeginVehicleCursor = false;
+    public static uint gsOutOfRangeGridNo = (int)IsometricDefines.NOWHERE;
+    public static byte gubOutOfRangeMerc = OverheadTypes.NOBODY;
+    public static bool gfOKForExchangeCursor = false;
+    public static uint guiUIInterfaceSwapCursorsTime = 0;
+    public static int gsJumpOverGridNo = 0;
+    public static Dictionary<UI_EVENT_DEFINES, UI_EVENT> gEvents = new();
 
-    UI_MODE gCurrentUIMode = UI_MODE.IDLE_MODE;
-    UI_MODE gOldUIMode = UI_MODE.IDLE_MODE;
-    UI_EVENT_DEFINES guiCurrentEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
-    UI_EVENT_DEFINES guiOldEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
-    UICursorDefines guiCurrentUICursor = UICursorDefines.NO_UICURSOR;
-    UICursorDefines guiNewUICursor = UICursorDefines.NORMAL_SNAPUICURSOR;
-    UI_EVENT_DEFINES guiPendingOverrideEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
-    uint gusSavedMouseX;
-    uint gusSavedMouseY;
+    public static UI_MODE gCurrentUIMode = UI_MODE.IDLE_MODE;
+    public static UI_MODE gOldUIMode = UI_MODE.IDLE_MODE;
+    public static UI_EVENT_DEFINES guiCurrentEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
+    public static UI_EVENT_DEFINES guiOldEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
+    public static UICursorDefines guiCurrentUICursor = UICursorDefines.NO_UICURSOR;
+    public static UICursorDefines guiNewUICursor = UICursorDefines.NORMAL_SNAPUICURSOR;
+    public static UI_EVENT_DEFINES guiPendingOverrideEvent = UI_EVENT_DEFINES.I_DO_NOTHING;
+    public static uint gusSavedMouseX;
+    public static uint gusSavedMouseY;
     // UIKEYBOARD_HOOK gUIKeyboardHook = null;
-    bool gUIActionModeChangeDueToMouseOver = false;
+    public static bool gUIActionModeChangeDueToMouseOver = false;
 
-    bool gfDisplayTimerCursor = false;
-    UICursorDefines guiTimerCursorID = 0;
-    uint guiTimerLastUpdate = 0;
-    uint guiTimerCursorDelay = 0;
+    public static bool gfDisplayTimerCursor = false;
+    public static UICursorDefines guiTimerCursorID = 0;
+    public static uint guiTimerLastUpdate = 0;
+    public static uint guiTimerCursorDelay = 0;
+
+    public static bool gfUISelectiveTargetFound;
+    public static ushort gusUISelectiveTargetID;
+    public static uint guiUISelectiveTargetFlags;
+    public static bool gfUIFullTargetFound;
+    public static ushort gusUIFullTargetID;
+    public static uint guiUIFullTargetFlags;
+
+    public static int[] gzLocation;// [20];
+    public static bool gfLocation = false;
+
+    public static bool gfUIBodyHitLocation = false;
+
+    public static int[] gzIntTileLocation;// [20];
+    public static bool gfUIIntTileLocation;
+
+    public static int[] gzIntTileLocation2;// [20];
+    public static bool gfUIIntTileLocation2;
 
 
-    int[] gzLocation;// [20];
-    bool gfLocation = false;
+    public static MouseRegion gDisableRegion;
+    public static bool gfDisableRegionActive = false;
 
-    int[] gzIntTileLocation;// [20];
-    bool gfUIIntTileLocation;
-
-    int[] gzIntTileLocation2;// [20];
-    bool gfUIIntTileLocation2;
-
-
-    MouseRegion gDisableRegion;
-    bool gfDisableRegionActive = false;
-
-    MouseRegion gUserTurnRegion;
-    bool gfUserTurnRegionActive = false;
+    public static MouseRegion gUserTurnRegion;
+    public static bool gfUserTurnRegionActive = false;
 
 
     // For use with mouse button query routines
-    bool fRightButtonDown = false;
-    bool fLeftButtonDown = false;
-    bool fIgnoreLeftUp = false;
+    public static bool fRightButtonDown = false;
+    public static bool fLeftButtonDown = false;
+    public static bool fIgnoreLeftUp = false;
 
-    bool gUITargetReady = false;
-    bool gUITargetShotWaiting = false;
-    uint gsUITargetShotGridNo = (int)IsometricDefines.NOWHERE;
-    bool gUIUseReverse = false;
+    public static bool gUITargetReady = false;
+    public static bool gUITargetShotWaiting = false;
+    public static uint gsUITargetShotGridNo = (int)IsometricDefines.NOWHERE;
+    public static bool gUIUseReverse = false;
 
-    Rectangle gRubberBandRect = new(0, 0, 0, 0);
-    bool gRubberBandActive = false;
-    bool gfIgnoreOnSelectedGuy = false;
-    bool gfViewPortAdjustedForSouth = false;
+    public static Rectangle gRubberBandRect = new(0, 0, 0, 0);
+    public static bool gRubberBandActive = false;
+    public static bool gfIgnoreOnSelectedGuy = false;
+    public static bool gfViewPortAdjustedForSouth = false;
 
-    int guiCreateGuyIndex = 0;
+    public static int guiCreateGuyIndex = 0;
     // Temp values for placing bad guys
-    int guiCreateBadGuyIndex = 8;
+    public static int guiCreateBadGuyIndex = 8;
 
     // FLAGS
     // These flags are set for a single frame execution and then are reset for the next iteration. 
-    bool gfUIDisplayActionPoints = false;
-    bool gfUIDisplayActionPointsInvalid = false;
-    bool gfUIDisplayActionPointsBlack = false;
-    bool gfUIDisplayActionPointsCenter = false;
+    public static bool gfUIDisplayActionPoints { get; set; } = false;
+    public static bool gfUIDisplayActionPointsInvalid { get; set; } = false;
+    public static bool gfUIDisplayActionPointsBlack { get; set; } = false;
+    public static bool gfUIDisplayActionPointsCenter { get; set; } = false;
 
-    int gUIDisplayActionPointsOffY = 0;
-    int gUIDisplayActionPointsOffX = 0;
-    bool gfUIDoNotHighlightSelMerc = false;
-    bool gfUIHandleSelection = false;
-    bool gfUIHandleSelectionAboveGuy = false;
-    bool gfUIInDeadlock = false;
-    byte gUIDeadlockedSoldier = OverheadTypes.NOBODY;
-    int gfUIHandleShowMoveGrid = 0;
-    uint gsUIHandleShowMoveGridLocation = (int)IsometricDefines.NOWHERE;
-    bool gfUIOverItemPool = false;
-    int gfUIOverItemPoolGridNo = 0;
-    AP gsCurrentActionPoints = (AP)1;
-    bool gfUIHandlePhysicsTrajectory = false;
-    bool gfUIMouseOnValidCatcher = false;
-    byte gubUIValidCatcherID = 0;
-
-
-
-    bool gfUIConfirmExitArrows = false;
-
-    bool gfUIShowCurIntTile = false;
-
-    bool gfUIWaitingForUserSpeechAdvance = false;        // Waiting for key input/mouse click to advance speech
-    bool gfUIKeyCheatModeOn = false;     // Sets cool cheat keys on
-    bool gfUIAllMoveOn = false;      // Sets to all move
-    bool gfUICanBeginAllMoveCycle = false;       // GEts set so we know that the next right-click is a move-call inc\stead of a movement cycle through
-
-    int gsSelectedGridNo = 0;
-    InterfaceLevel gsSelectedLevel = InterfaceLevel.I_GROUND_LEVEL;
-    int gsSelectedGuy = OverheadTypes.NO_SOLDIER;
-
-    bool gfUIDisplayDamage = false;
-    byte gbDamage = 0;
-    uint gsDamageGridNo = 0;
-
-    bool gfUIRefreshArrows = false;
-
-
+    public static int gUIDisplayActionPointsOffY = 0;
+    public static int gUIDisplayActionPointsOffX = 0;
+    public static bool gfUIDoNotHighlightSelMerc = false;
+    public static bool gfUIHandleSelection = false;
+    public static bool gfUIHandleSelectionAboveGuy = false;
+    public static bool gfUIInDeadlock = false;
+    public static byte gUIDeadlockedSoldier = OverheadTypes.NOBODY;
+    public static int gfUIHandleShowMoveGrid = 0;
+    public static int gsUIHandleShowMoveGridLocation = (int)IsometricDefines.NOWHERE;
+    public static bool gfUIOverItemPool = false;
+    public static int gfUIOverItemPoolGridNo = 0;
+    public static AP gsCurrentActionPoints = (AP)1;
+    public static bool gfUIHandlePhysicsTrajectory = false;
+    public static bool gfUIMouseOnValidCatcher = false;
+    public static byte gubUIValidCatcherID = 0;
+    public static bool gfUIConfirmExitArrows = false;
+    public static bool gfUIShowCurIntTile = false;
+    public static bool gfUIWaitingForUserSpeechAdvance = false;        // Waiting for key input/mouse click to advance speech
+    public static bool gfUIKeyCheatModeOn = false;     // Sets cool cheat keys on
+    public static bool gfUIAllMoveOn = false;      // Sets to all move
+    public static bool gfUICanBeginAllMoveCycle = false;       // GEts set so we know that the next right-click is a move-call inc\stead of a movement cycle through
+    public static int gsSelectedGridNo = 0;
+    public static InterfaceLevel gsSelectedLevel = InterfaceLevel.I_GROUND_LEVEL;
+    public static int gsSelectedGuy = OverheadTypes.NO_SOLDIER;
+    public static bool gfUIDisplayDamage = false;
+    public static byte gbDamage = 0;
+    public static uint gsDamageGridNo = 0;
+    public static bool gfUIRefreshArrows = false;
     // Thse flags are not re-set after each frame
-    bool gfPlotNewMovement = false;
-    bool gfPlotNewMovementNOCOST = false;
-    ARROWS guiShowUPDownArrows = ARROWS.HIDE_UP | ARROWS.HIDE_DOWN;
-    int gbAdjustStanceDiff = 0;
-    int gbClimbID = 0;
-
-    bool gfUIShowExitEast = false;
-    bool gfUIShowExitWest = false;
-    bool gfUIShowExitNorth = false;
-    bool gfUIShowExitSouth = false;
-    bool gfUIShowExitExitGrid = false;
-
-    bool gfUINewStateForIntTile = false;
-
-    bool gfUIForceReExamineCursorData = false;
+    public static bool gfPlotNewMovement = false;
+    public static bool gfPlotNewMovementNOCOST = false;
+    public static ARROWS guiShowUPDownArrows = ARROWS.HIDE_UP | ARROWS.HIDE_DOWN;
+    public static int gbAdjustStanceDiff = 0;
+    public static int gbClimbID = 0;
+    public static bool gfUIShowExitEast = false;
+    public static bool gfUIShowExitWest = false;
+    public static bool gfUIShowExitNorth = false;
+    public static bool gfUIShowExitSouth = false;
+    public static bool gfUIShowExitExitGrid = false;
+    public static bool gfUINewStateForIntTile = false;
+    public static bool gfUIForceReExamineCursorData = false;
 
     // MAIN TACTICAL UI HANDLER
     static LEVELNODE? pOldIntTile = null;
@@ -322,7 +337,7 @@ public class HandleUI
                 gfUIInterfaceSetBusy = false;
 
                 //UNLOCK UI
-                UnSetUIBusy((byte)gusSelectedSoldier);
+                UnSetUIBusy((byte)this.overhead.gusSelectedSoldier);
 
                 // Decrease global busy  counter...
                 this.overhead.gTacticalStatus.ubAttackBusyCount = 0;
@@ -367,24 +382,24 @@ public class HandleUI
             if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
                 // FROM MOUSE POSITION
-                GetRTMousePositionInput(ref uiNewEvent);
+                GetRTMousePositionInput(out uiNewEvent);
                 // FROM KEYBOARD POLLING
-                GetPolledKeyboardInput(ref uiNewEvent);
+                GetPolledKeyboardInput(out uiNewEvent);
                 // FROM MOUSE CLICKS
-                GetRTMouseButtonInput(ref uiNewEvent);
+                GetRTMouseButtonInput(out uiNewEvent);
                 // FROM KEYBOARD
-                GetKeyboardInput(ref uiNewEvent);
+                GetKeyboardInput(out uiNewEvent);
             }
             else
             {
                 // FROM MOUSE POSITION
-                GetTBMousePositionInput(ref uiNewEvent);
+                GetTBMousePositionInput(out uiNewEvent);
                 // FROM KEYBOARD POLLING
-                GetPolledKeyboardInput(ref uiNewEvent);
+                GetPolledKeyboardInput(out uiNewEvent);
                 // FROM MOUSE CLICKS
-                GetTBMouseButtonInput(ref uiNewEvent);
+                GetTBMouseButtonInput(out uiNewEvent);
                 // FROM KEYBOARD
-                GetKeyboardInput(ref uiNewEvent);
+                GetKeyboardInput(out uiNewEvent);
             }
         }
         else
@@ -405,7 +420,7 @@ public class HandleUI
         gfUIFullTargetFound = false;
         gfUISelectiveTargetFound = false;
 
-        if (GetMouseMapPos(ref usMapPos))
+        if (GetMouseMapPos(out usMapPos))
         {
             // Look for soldier full
             if (FindSoldier(usMapPos, out gusUIFullTargetID, out guiUIFullTargetFlags, (FINDSOLDIERSAMELEVEL(gsInterfaceLevel))))
@@ -414,7 +429,7 @@ public class HandleUI
             }
 
             // Look for soldier selective
-            if (FindSoldier(usMapPos, &gusUISelectiveTargetID, &guiUISelectiveTargetFlags, FINDSOLDIERSELECTIVESAMELEVEL(gsInterfaceLevel)))
+            if (FindSoldier(usMapPos, out gusUISelectiveTargetID, out guiUISelectiveTargetFlags, FINDSOLDIERSELECTIVESAMELEVEL(gsInterfaceLevel)))
             {
                 gfUISelectiveTargetFound = true;
             }
@@ -491,7 +506,7 @@ public class HandleUI
         {
             // ATE: OK - don't revert to single event if our mouse is not
             // in viewport - rather use m_on_t event
-            if ((gViewportRegion.uiFlags & MSYS_MOUSE_IN_AREA))
+            if ((Interface.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA)))
             {
                 guiCurrentEvent = guiOldEvent;
             }
@@ -561,7 +576,7 @@ public class HandleUI
                 gfUIDisplayActionPoints = false;
                 ErasePath(true);
 
-                if (OKForSectorExit(StrategicMove.EAST, 0, ref uiTraverseTimeInMinutes))
+                if (OKForSectorExit(StrategicMove.EAST, 0, out uiTraverseTimeInMinutes))
                 {
                     if (gfUIConfirmExitArrows)
                     {
@@ -615,7 +630,7 @@ public class HandleUI
                 gfUIDisplayActionPoints = false;
                 ErasePath(true);
 
-                if (OKForSectorExit(StrategicMove.NORTH, 0, ref uiTraverseTimeInMinutes))
+                if (OKForSectorExit(StrategicMove.NORTH, 0, out uiTraverseTimeInMinutes))
                 {
                     if (gfUIConfirmExitArrows)
                     {
@@ -643,7 +658,7 @@ public class HandleUI
                 gfUIDisplayActionPoints = false;
                 ErasePath(true);
 
-                if (OKForSectorExit(StrategicMove.SOUTH, 0, ref uiTraverseTimeInMinutes))
+                if (OKForSectorExit(StrategicMove.SOUTH, 0, out uiTraverseTimeInMinutes))
                 {
                     if (gfUIConfirmExitArrows)
                     {
@@ -664,23 +679,20 @@ public class HandleUI
                     gfUIShowExitSouth = false;
 
                     // Define region for viewport
-                    MSYS_RemoveRegion(ref gViewportRegion);
+                    this.inputs.Mouse.MSYS_RemoveRegion(Interface.gViewportRegion);
 
-                    MSYS_DefineRegion(
-                        &gViewportRegion,
-                        0,
-                        0,
-                        gsVIEWPORT_END_X,
-                        gsVIEWPORT_WINDOW_END_Y,
-                        MSYS_PRIORITY_NORMAL,
-                        Cursor.VIDEO_NO_CURSOR,
-                        MSYS_NO_CALLBACK,
-                        MSYS_NO_CALLBACK);
+                    this.inputs.Mouse.MSYS_DefineRegion(
+                        Interface.gViewportRegion,
+                        new(0, 0, gsVIEWPORT_END_X, gsVIEWPORT_WINDOW_END_Y),
+                        MSYS_PRIORITY.NORMAL,
+                        CURSOR.VIDEO_NO_CURSOR,
+                        MouseSubSystem.MSYS_NO_CALLBACK,
+                        MouseSubSystem.MSYS_NO_CALLBACK);
 
 
                     // Adjust where we blit our cursor!
                     gsGlobalCursorYOffset = 0;
-                    SetCurrentCursorFromDatabase(Cursor.NORMAL);
+                    SetCurrentCursorFromDatabase(CURSOR.NORMAL);
                 }
                 else
                 {
@@ -692,12 +704,12 @@ public class HandleUI
                     {
                         // Adjust viewport to edge of screen!
                         // Define region for viewport
-                        MSYS_RemoveRegion(ref gViewportRegion);
-                        MSYS_DefineRegion(ref gViewportRegion, 0, 0, gsVIEWPORT_END_X, 480, MSYS_PRIORITY_NORMAL,
-                                             Cursor.VIDEO_NO_CURSOR, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
+                        this.inputs.Mouse.MSYS_RemoveRegion(Interface.gViewportRegion);
+                        this.inputs.Mouse.MSYS_DefineRegion(Interface.gViewportRegion, new(0, 0, gsVIEWPORT_END_X, 480), MSYS_PRIORITY.NORMAL,
+                                             CURSOR.VIDEO_NO_CURSOR, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
 
                         gsGlobalCursorYOffset = (480 - gsVIEWPORT_WINDOW_END_Y);
-                        SetCurrentCursorFromDatabase(gUICursors[guiNewUICursor].usFreeCursorName);
+                        this.cursors.SetCurrentCursorFromDatabase(gUICursors[guiNewUICursor].usFreeCursorName);
 
                         gfViewPortAdjustedForSouth = true;
 
@@ -709,15 +721,19 @@ public class HandleUI
                 if (gfViewPortAdjustedForSouth)
                 {
                     // Define region for viewport
-                    MSYS_RemoveRegion(ref gViewportRegion);
+                    this.inputs.Mouse.MSYS_RemoveRegion(Interface.gViewportRegion);
 
-                    MSYS_DefineRegion(ref gViewportRegion, 0, 0, gsVIEWPORT_END_X, gsVIEWPORT_WINDOW_END_Y, MSYS_PRIORITY_NORMAL,
-                                         Cursor.VIDEO_NO_CURSOR, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
-
+                    this.inputs.Mouse.MSYS_DefineRegion(
+                        Interface.gViewportRegion,
+                        new(0, 0, gsVIEWPORT_END_X, gsVIEWPORT_WINDOW_END_Y),
+                        MSYS_PRIORITY.NORMAL,
+                        CURSOR.VIDEO_NO_CURSOR,
+                        MouseSubSystem.MSYS_NO_CALLBACK,
+                        MouseSubSystem.MSYS_NO_CALLBACK);
 
                     // Adjust where we blit our cursor!
                     gsGlobalCursorYOffset = 0;
-                    SetCurrentCursorFromDatabase(Cursor.NORMAL);
+                    this.cursors.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
                     gfViewPortAdjustedForSouth = false;
                 }
@@ -731,16 +747,16 @@ public class HandleUI
                 gfUIDisplayActionPoints = false;
                 ErasePath(true);
 
-                if (GetMouseMapPos(ref usMapPos))
+                if (GetMouseMapPos(out usMapPos))
                 {
-                    if (gusSelectedSoldier != OverheadTypes.NOBODY && MercPtrs[gusSelectedSoldier].bLevel == 0)
+                    if (this.overhead.gusSelectedSoldier != OverheadTypes.NOBODY && MercPtrs[this.overhead.gusSelectedSoldier].bLevel == 0)
                     {
                         // ATE: Is this place revealed?
-                        if (!InARoom(usMapPos, ref ubRoomNum) || (InARoom(usMapPos, ref ubRoomNum) && gpWorldLevelData[usMapPos].uiFlags & MAPELEMENT_REVEALED))
+                        if (!InARoom(usMapPos, out ubRoomNum) || (InARoom(usMapPos, out ubRoomNum) && this.globals.gpWorldLevelData[usMapPos].uiFlags & MAPELEMENT_REVEALED))
                         {
                             if (sOldExitGridNo != usMapPos)
                             {
-                                fOkForExit = OKForSectorExit((byte)-1, usMapPos, ref uiTraverseTimeInMinutes);
+                                fOkForExit = OKForSectorExit((sbyte)-1, usMapPos, out uiTraverseTimeInMinutes);
                                 sOldExitGridNo = usMapPos;
                             }
 
@@ -850,11 +866,11 @@ public class HandleUI
 
 
         // Get Grid Corrdinates of mouse
-        if (GetMouseMapPos(ref usMapPos))
+        if (GetMouseMapPos(out usMapPos))
         {
             ubTemp += 2;
 
-            //memset(ref HireMercStruct, 0, sizeof(MERC_HIRE_STRUCT));
+            //memset(out HireMercStruct, 0, sizeof(MERC_HIRE_STRUCT));
 
             HireMercStruct.ubProfileID = ubTemp;
 
@@ -871,7 +887,7 @@ public class HandleUI
             HireMercStruct.uiTimeTillMercArrives = 0;
 
             //if we succesfully hired the merc
-            bReturnCode = HireMerc(ref HireMercStruct);
+            bReturnCode = HireMerc(out HireMercStruct);
 
             if (bReturnCode == MERC_HIRE_FAILED)
             {
@@ -901,7 +917,7 @@ public class HandleUI
         uint usRandom;
 
         //Get map postion and place the enemy there.
-        if (GetMouseMapPos(ref usMapPos))
+        if (GetMouseMapPos(out usMapPos))
         {
             // Are we an OK dest?
             if (!IsLocationSittable(usMapPos, 0))
@@ -928,7 +944,7 @@ public class HandleUI
             {
                 if (!gbWorldSectorZ)
                 {
-                    SECTORINFO? pSector = SectorInfo[SECTOR(gWorldSectorX, gWorldSectorY)];
+                    SECTORINFO? pSector = SectorInfo[SECTORINFO.SECTOR(gWorldSectorX, gWorldSectorY)];
                     switch (pSoldier.ubSoldierClass)
                     {
                         case SOLDIER_CLASS.ADMINISTRATOR:
@@ -1074,14 +1090,14 @@ public class HandleUI
 
         if (Interface.gsInterfaceLevel == (InterfaceLevel)1)
         {
-            gsRenderHeight += ROOF_LEVEL_HEIGHT;
+            this.renderWorld.gsRenderHeight += Interface.ROOF_LEVEL_HEIGHT;
             this.overhead.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
             InvalidateWorldRedundency();
         }
         else if (Interface.gsInterfaceLevel == 0)
         {
-            gsRenderHeight -= ROOF_LEVEL_HEIGHT;
-            gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
+            this.renderWorld.gsRenderHeight -= Interface.ROOF_LEVEL_HEIGHT;
+            this.overhead.gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
             InvalidateWorldRedundency();
         }
 
@@ -1146,7 +1162,7 @@ public class HandleUI
         bool fContinue = true;
         ITEM_POOL? pItemPool;
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1154,7 +1170,7 @@ public class HandleUI
         gUIActionModeChangeDueToMouseOver = false;
 
         // If we are a vehicle..... just show an X
-        if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             if ((OK_ENTERABLE_VEHICLE(pSoldier)))
             {
@@ -1170,7 +1186,7 @@ public class HandleUI
         if (!UIHandleOnMerc(true))
         {
             // Are we over items...
-            if (GetItemPool(usMapPos, ref pItemPool, (byte)gsInterfaceLevel) && ITEMPOOL_VISIBLE(pItemPool))
+            if (GetItemPool(usMapPos, out pItemPool, (byte)gsInterfaceLevel) && ITEMPOOL_VISIBLE(pItemPool))
             {
                 // Are we already in...
                 if (fOverItems)
@@ -1210,7 +1226,7 @@ public class HandleUI
             }
 
 
-            if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+            if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
             {
 
                 if (pSoldier.sGridNo == (int)IsometricDefines.NOWHERE)
@@ -1224,7 +1240,7 @@ public class HandleUI
                 }
 
                 // ATE: Draw invalidc cursor if heights different
-                if (gpWorldLevelData[usMapPos].sHeight != gpWorldLevelData[pSoldier.sGridNo].sHeight)
+                if (this.globals.gpWorldLevelData[usMapPos].sHeight != this.globals.gpWorldLevelData[pSoldier.sGridNo].sHeight)
                 {
                     // ERASE PATH
                     ErasePath(true);
@@ -1238,13 +1254,13 @@ public class HandleUI
             // DO SOME CURSOR POSITION FLAGS SETTING
             GetCursorMovementFlags(out uiCursorFlags);
 
-            if (gusSelectedSoldier != NO_SOLDIER)
+            if (this.overhead.gusSelectedSoldier != OverheadTypes.NO_SOLDIER)
             {
                 // Get Soldier Pointer
-                GetSoldier(ref pSoldier, gusSelectedSoldier);
+                GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier);
 
                 // Get interactvie tile node
-                pIntNode = GetCurInteractiveTileGridNo(ref sIntTileGridNo);
+                pIntNode = GetCurInteractiveTileGridNo(out sIntTileGridNo);
 
                 // Check were we are
                 // CHECK IF WE CAN MOVE HERE
@@ -1255,7 +1271,7 @@ public class HandleUI
                     // Show reg. cursor
                     // GO INTO IDLE MODE
                     // guiPendingOverrideEvent = I_CHANGE_TO_IDLE;
-                    // gusSelectedSoldier = NO_SOLDIER;	
+                    // this.overhead.gusSelectedSoldier = NO_SOLDIER;	
                     ubID = FindNextActiveAndAliveMerc(pSoldier, false, false);
 
                     if (ubID != OverheadTypes.NOBODY)
@@ -1264,8 +1280,8 @@ public class HandleUI
                     }
                     else
                     {
-                        gusSelectedSoldier = NO_SOLDIER;
-                        // Change UI mode to reflact that we are selected
+                        this.overhead.gusSelectedSoldier = OverheadTypes.NO_SOLDIER;
+                        // Change UI mode to outlact that we are selected
                         guiPendingOverrideEvent = UI_EVENT_DEFINES.I_ON_TERRAIN;
                     }
                 }
@@ -1279,7 +1295,7 @@ public class HandleUI
                 }
                 else
                 {
-                    if (!UIHandleInteractiveTilesAndItemsOnTerrain(pSoldier, usMapPos, false, true))
+                    if (UIHandleInteractiveTilesAndItemsOnTerrain(pSoldier, usMapPos, false, true) == 0)
                     {
                         // Are we in combat?
                         if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
@@ -1339,7 +1355,7 @@ public class HandleUI
 
 
         // Get soldier
-        if (!GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1361,21 +1377,21 @@ public class HandleUI
             PopDownMovementMenu();
 
             // Excecute command, if user hit a button
-            if (pUIEvent.uiParams[1] == true)
+            if (pUIEvent.uiParams[1] > 1)
             {
-                if (pUIEvent.uiParams[2] == MOVEMENT.MENU_LOOK)
+                if (pUIEvent.uiParams[2] == (int)MOVEMENT.MENU_LOOK)
                 {
                     guiPendingOverrideEvent = UI_EVENT_DEFINES.LC_CHANGE_TO_LOOK;
                 }
-                else if (pUIEvent.uiParams[2] == MOVEMENT.MENU_HAND)
+                else if (pUIEvent.uiParams[2] == (int)MOVEMENT.MENU_HAND)
                 {
                     guiPendingOverrideEvent = UI_EVENT_DEFINES.HC_ON_TERRAIN;
                 }
-                else if (pUIEvent.uiParams[2] == MOVEMENT.MENU_ACTIONC)
+                else if (pUIEvent.uiParams[2] == (int)MOVEMENT.MENU_ACTIONC)
                 {
                     guiPendingOverrideEvent = UI_EVENT_DEFINES.M_CHANGE_TO_ACTION;
                 }
-                else if (pUIEvent.uiParams[2] == MOVEMENT.MENU_TALK)
+                else if (pUIEvent.uiParams[2] == (int)MOVEMENT.MENU_TALK)
                 {
                     guiPendingOverrideEvent = UI_EVENT_DEFINES.T_CHANGE_TO_TALKING;
                 }
@@ -1431,7 +1447,6 @@ public class HandleUI
 
     ScreenName UIHandlePositionMenu(UI_EVENT pUIEvent)
     {
-
         return (ScreenName.GAME_SCREEN);
     }
 
@@ -1453,7 +1468,7 @@ public class HandleUI
         }
 
         // Get soldier to determine range
-        if (GetSoldier(out pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             // ATE: Add stuff here to display a system message if we are targeting smeothing and
             //  are out of range.
@@ -1470,7 +1485,7 @@ public class HandleUI
                     if (gfUIFullTargetFound)
                     {
                         // No, ok display message IF this is the first time at this gridno
-                        if (gsOutOfRangeGridNo != MercPtrs[gusUIFullTargetID].sGridNo || gubOutOfRangeMerc != gusSelectedSoldier)
+                        if (gsOutOfRangeGridNo != MercPtrs[gusUIFullTargetID].sGridNo || gubOutOfRangeMerc != this.overhead.gusSelectedSoldier)
                         {
                             // Display
                             ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[OUT_OF_RANGE_STRING]);
@@ -1479,14 +1494,14 @@ public class HandleUI
 
                             // Set
                             gsOutOfRangeGridNo = MercPtrs[gusUIFullTargetID].sGridNo;
-                            gubOutOfRangeMerc = (byte)gusSelectedSoldier;
+                            gubOutOfRangeMerc = (byte)this.overhead.gusSelectedSoldier;
                         }
                     }
                 }
 
             }
 
-            guiNewUICursor = GetProperItemCursor((byte)gusSelectedSoldier, pSoldier.inv[HANDPOS].usItem, usMapPos, false);
+            guiNewUICursor = GetProperItemCursor((byte)this.overhead.gusSelectedSoldier, pSoldier.inv[HANDPOS].usItem, usMapPos, false);
 
             // Show UI ON GUY
             UIHandleOnMerc(false);
@@ -1495,7 +1510,7 @@ public class HandleUI
             if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
                 || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
-                if (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_STATIONARY && pSoldier.ubPendingAction == NO_PENDING_ACTION)
+                if (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM.STATIONARY && pSoldier.ubPendingAction == NO_PENDING_ACTION)
                 {
                     // Check if we have a shot waiting!
                     if (gUITargetShotWaiting)
@@ -1569,11 +1584,11 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (GetSoldier(out pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             pInvTile = GetCurInteractiveTile();
 
-            if (pInvTile && gpInvTileThatCausedMoveConfirm != pInvTile)
+            if (pInvTile is not null && gpInvTileThatCausedMoveConfirm != pInvTile)
             {
                 // Get out og this mode...
                 guiPendingOverrideEvent = UI_EVENT_DEFINES.A_CHANGE_TO_MOVE;
@@ -1638,12 +1653,12 @@ public class HandleUI
         int sIntTileGridNo;
         bool fOldFastMove;
 
-        if (gusSelectedSoldier != NO_SOLDIER)
+        if (this.overhead.gusSelectedSoldier != OverheadTypes.NO_SOLDIER)
         {
             fAllMove = gfUIAllMoveOn;
             gfUIAllMoveOn = false;
 
-            if (!GetMouseMapPos(ref usMapPos))
+            if (!GetMouseMapPos(out usMapPos))
             {
                 return (ScreenName.GAME_SCREEN);
             }
@@ -1720,7 +1735,7 @@ public class HandleUI
             else
             {
                 // Get soldier
-                if (GetSoldier(out pSoldier, gusSelectedSoldier))
+                if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
                 {
                     // FOR REALTIME - DO MOVEMENT BASED ON STANCE!
                     if ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.INCOMBAT))
@@ -1733,12 +1748,12 @@ public class HandleUI
 
 
                     // Get structure info for in tile!
-                    pIntTile = GetCurInteractiveTileGridNoAndStructure(ref sIntTileGridNo, ref pStructure);
+                    pIntTile = GetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure);
 
                     // We should not have null here if we are given this flag...
                     if (pIntTile != null)
                     {
-                        sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, ref ubDirection, null, false, true);
+                        sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, out ubDirection, null, false, true);
                         if (sActionGridNo != -1)
                         {
                             SetUIBusy(pSoldier.ubID);
@@ -1819,7 +1834,7 @@ public class HandleUI
     {
         SOLDIERTYPE? pSoldier;
 
-        if (!GetSoldier(out pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1838,7 +1853,7 @@ public class HandleUI
         SOLDIERTYPE pSoldier;
         bool fGoodMode = false;
 
-        if (!GetSoldier(out pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1936,7 +1951,7 @@ public class HandleUI
             gfIgnoreScrolling = true;
 
             // Get soldier current height of animation
-            if (GetSoldier(out pSoldier, gusSelectedSoldier))
+            if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
             {
                 // IF we are on a basic level...(temp)
                 if (pSoldier.bLevel == 0)
@@ -2025,7 +2040,7 @@ public class HandleUI
             if (gusAnchorMouseY > gusMouseYPos)
             {
                 // Get soldier
-                if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+                if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
                 {
                     if (iPosDiff < GO_MOVE_ONE && ubUpHeight >= 1)
                     {
@@ -2080,7 +2095,7 @@ public class HandleUI
             {
 
                 // Get soldier
-                if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+                if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
                 {
                     if (iPosDiff < GO_MOVE_ONE && ubDownDepth >= 1)
                     {
@@ -2144,7 +2159,7 @@ public class HandleUI
     {
         SOLDIERTYPE pSoldier;
 
-        if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             HandleLeftClickCursor(pSoldier);
 
@@ -2160,14 +2175,14 @@ public class HandleUI
         SOLDIERTYPE pSoldier;
         uint usMapPos;
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
-            guiNewUICursor = GetProperItemCursor((byte)gusSelectedSoldier, pSoldier.inv[HANDPOS].usItem, usMapPos, true);
+            guiNewUICursor = GetProperItemCursor((byte)this.overhead.gusSelectedSoldier, pSoldier.inv[HANDPOS].usItem, usMapPos, true);
 
             UIHandleOnMerc(false);
         }
@@ -2189,7 +2204,7 @@ public class HandleUI
         // get cursor
         ubItemCursor = GetActionModeCursor(pSoldier);
 
-        if (!(this.overhead.gTacticalStatus.uiFlags & INCOMBAT) && pTargetSoldier && Item[pSoldier.inv[HANDPOS].usItem].usItemClass & IC_WEAPON)
+        if (!(this.overhead.gTacticalStatus.uiFlags & INCOMBAT) && pTargetSoldier && Item[pSoldier.inv[HANDPOS].usItem].usItemClass & IC.WEAPON)
         {
             if (NPCFirstDraw(pSoldier, pTargetSoldier))
             {
@@ -2207,7 +2222,7 @@ public class HandleUI
         usItem = pSoldier.inv[HANDPOS].usItem;
 
         // ATE: Check if we are targeting an interactive tile, and adjust gridno accordingly...
-        pIntNode = GetCurInteractiveTileGridNoAndStructure(ref sGridNo, ref pStructure);
+        pIntNode = GetCurInteractiveTileGridNoAndStructure(out sGridNo, out pStructure);
 
         if (pTargetSoldier != null)
         {
@@ -2249,6 +2264,7 @@ public class HandleUI
 
                     default:
                         sNewGridNo = sGridNo;
+                        break;
                 }
 
                 // Set target gridno to this one...
@@ -2271,7 +2287,7 @@ public class HandleUI
 
         // Cannot be fire if we are already in a fire animation....
         // this is to stop the shooting trigger/happy duded from contiously pressing fire...
-        if (!(gTacticalStatus.uiFlags & INCOMBAT))
+        if (!(this.overhead.gTacticalStatus.uiFlags & INCOMBAT))
         {
             if (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_FIRE)
             {
@@ -2280,7 +2296,7 @@ public class HandleUI
         }
 
         // If in turn-based mode - return to movement
-        if ((gTacticalStatus.uiFlags & INCOMBAT))
+        if ((this.overhead.gTacticalStatus.uiFlags & INCOMBAT))
         {
             // Reset some flags for cont move...
             pSoldier.sFinalDestination = pSoldier.sGridNo;
@@ -2289,7 +2305,7 @@ public class HandleUI
         }
 
 
-        if (pSoldier.bWeaponMode == WM_ATTACHED)
+        if (pSoldier.bWeaponMode == WM.ATTACHED)
         {
             iHandleReturn = HandleItem(pSoldier, sTargetGridNo, bTargetLevel, UNDER_GLAUNCHER, true);
         }
@@ -2314,7 +2330,7 @@ public class HandleUI
         }
 
 
-        if (gTacticalStatus.uiFlags & TURNBASED && !(gTacticalStatus.uiFlags & INCOMBAT))
+        if (this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.TURNBASED && !(this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.INCOMBAT))
         {
             HandleUICursorRTFeedback(pSoldier);
         }
@@ -2326,7 +2342,7 @@ public class HandleUI
     {
         if (bExitValue == MSG_BOX_RETURN_YES)
         {
-            gTacticalStatus.ubLastRequesterTargetID = gpRequesterTargetMerc.ubProfile;
+            this.overhead.gTacticalStatus.ubLastRequesterTargetID = gpRequesterTargetMerc.ubProfile;
 
             UIHandleMercAttack(gpRequesterMerc, gpRequesterTargetMerc, gsRequesterGridNo);
         }
@@ -2339,16 +2355,16 @@ public class HandleUI
         SOLDIERTYPE? pSoldier, pTSoldier = null;
         bool fDidRequester = false;
 
-        if (gusSelectedSoldier != NO_SOLDIER)
+        if (this.overhead.gusSelectedSoldier != OverheadTypes.NO_SOLDIER)
         {
 
-            if (!GetMouseMapPos(ref usMapPos))
+            if (!GetMouseMapPos(out usMapPos))
             {
                 return (ScreenName.GAME_SCREEN);
             }
 
             // Get soldier
-            if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+            if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
             {
                 // Get target guy...
                 if (gfUIFullTargetFound)
@@ -2361,7 +2377,7 @@ public class HandleUI
                 if (pTSoldier != null)
                 {
                     // If this is one of our own guys.....pop up requiester...
-                    if ((pTSoldier.bTeam == gbPlayerNum || pTSoldier.bTeam == MILITIA_TEAM) && Item[pSoldier.inv[HANDPOS].usItem].usItemClass != IC_MEDKIT && pSoldier.inv[HANDPOS].usItem != GAS_CAN && gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
+                    if ((pTSoldier.bTeam == gbPlayerNum || pTSoldier.bTeam == MILITIA_TEAM) && Item[pSoldier.inv[HANDPOS].usItem].usItemClass != IC.MEDKIT && pSoldier.inv[HANDPOS].usItem != GAS_CAN && this.overhead.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
                     {
                         int[] zStr = new int[200];
 
@@ -2396,20 +2412,20 @@ public class HandleUI
         uint usMapPos;
 
         // Get gridno at this location
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
-            if ((gTacticalStatus.uiFlags & REALTIME) || !(gTacticalStatus.uiFlags & INCOMBAT))
+            if ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(this.overhead.gTacticalStatus.uiFlags & INCOMBAT))
             {
                 if (gUITargetReady)
                 {
                     // Move to proper stance + direction!
                     // Convert our grid-not into an XY
-                    ConvertGridNoToXY(usMapPos, ref sTargetXPos, ref sTargetYPos);
+                    ConvertGridNoToXY(usMapPos, out sTargetXPos, out sTargetYPos);
 
                     // UNReady weapon
                     SoldierReadyWeapon(pSoldier, sTargetXPos, sTargetYPos, true);
@@ -2426,7 +2442,7 @@ public class HandleUI
     {
         SOLDIERTYPE pSoldier;
 
-        if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             HandleEndConfirmCursor(pSoldier);
         }
@@ -2440,7 +2456,7 @@ public class HandleUI
         uint usMapPos;
 
         // Get gridno at this location
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -2478,10 +2494,10 @@ public class HandleUI
 
         gfIgnoreScrolling = false;
 
-        if (gusSelectedSoldier != NO_SOLDIER && gbAdjustStanceDiff != 0)
+        if (this.overhead.gusSelectedSoldier != OverheadTypes.NO_SOLDIER && gbAdjustStanceDiff != 0)
         {
             // Get soldier
-            if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+            if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
             {
                 ubNewStance = GetAdjustedAnimHeight(gAnimControl[pSoldier.usAnimState].ubEndHeight, gbAdjustStanceDiff);
 
@@ -2567,7 +2583,7 @@ public class HandleUI
         SOLDIERTYPE pSoldier;
         uint usMapPos;
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return;
         }
@@ -2576,7 +2592,7 @@ public class HandleUI
         if (gfUIFullTargetFound)
         {
             // Get Soldier
-            GetSoldier(ref pSoldier, gusUIFullTargetID);
+            GetSoldier(out pSoldier, gusUIFullTargetID);
 
             // If an enemy, and in a given mode, highlight
             if (guiUIFullTargetFlags & ENEMY_MERC)
@@ -2615,10 +2631,10 @@ public class HandleUI
         SOLDIERTYPE? pSoldier;
 
 
-        cnt = gTacticalStatus.Team[gbPlayerNum].bFirstID;
+        cnt = this.overhead.gTacticalStatus.Team[gbPlayerNum].bFirstID;
         guiCreateGuyIndex = (int)cnt;
 
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[gbPlayerNum].bLastID; pSoldier++, cnt++)
+        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[gbPlayerNum].bLastID; pSoldier++, cnt++)
         {
             if (!pSoldier.bActive)
             {
@@ -2627,12 +2643,12 @@ public class HandleUI
             }
         }
 
-        cnt = gTacticalStatus.Team[gbPlayerNum].bLastID + 1;
+        cnt = this.overhead.gTacticalStatus.Team[gbPlayerNum].bLastID + 1;
         guiCreateBadGuyIndex = (int)cnt;
 
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[LAST_TEAM].bLastID; pSoldier++, cnt++)
+        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[LAST_TEAM].bLastID; pSoldier++, cnt++)
         {
-            if (!pSoldier.bActive && cnt > gTacticalStatus.Team[gbPlayerNum].bLastID)
+            if (!pSoldier.bActive && cnt > this.overhead.gTacticalStatus.Team[gbPlayerNum].bLastID)
             {
                 guiCreateBadGuyIndex = (int)cnt;
                 break;
@@ -2652,16 +2668,16 @@ public class HandleUI
         byte ubItemCursor;
         uint usInHand;
 
-        if (gusSelectedSoldier != NO_SOLDIER)
+        if (this.overhead.gusSelectedSoldier != OverheadTypes.NO_SOLDIER)
         {
 
-            if (!GetMouseMapPos(ref usMapPos))
+            if (!GetMouseMapPos(out usMapPos))
             {
                 return true; // (ScreenName.GAME_SCREEN);
             }
 
             // Get soldier
-            if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+            if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
             {
                 // LOOK IN GUY'S HAND TO CHECK LOCATION
                 usInHand = pSoldier.inv[HANDPOS].usItem;
@@ -2696,7 +2712,7 @@ public class HandleUI
                     if (gfUIFullTargetFound)
                     {
                         // GetSoldier
-                        GetSoldier(ref pTargetSoldier, gusUIFullTargetID);
+                        GetSoldier(out pTargetSoldier, gusUIFullTargetID);
                         sTargetGridNo = pTargetSoldier.sGridNo;
                     }
                     else
@@ -2704,7 +2720,7 @@ public class HandleUI
                         sTargetGridNo = usMapPos;
                     }
 
-                    sAPCost = CalcTotalAPsToAttack(pSoldier, sTargetGridNo, true, (byte)(pSoldier.bShownAimTime / 2));
+                    sAPCost = this.points.CalcTotalAPsToAttack(pSoldier, sTargetGridNo, true, (byte)(pSoldier.bShownAimTime / 2));
 
                     if (EnoughPoints(pSoldier, sAPCost, 0, true))
                     {
@@ -2733,9 +2749,9 @@ public class HandleUI
         LEVELNODE? pIntTile;
 
         // Get soldier
-        if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
-            if (!GetMouseMapPos(ref usMapPos))
+            if (!GetMouseMapPos(out usMapPos))
             {
                 return true;//(ScreenName.GAME_SCREEN);
             }
@@ -2785,7 +2801,7 @@ public class HandleUI
         pfGoDown = false;
         pfGoUp = false;
 
-        if (!GetSoldier(ref pSoldier, ubSoldierID))
+        if (!GetSoldier(out pSoldier, ubSoldierID))
         {
             return;
         }
@@ -2794,7 +2810,7 @@ public class HandleUI
         if (pSoldier.bLevel == 0)
         {
             // See if we are not in a building!
-            if (FindHeigherLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, ref bNewDirection))
+            if (FindHeigherLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, out bNewDirection))
             {
                 pfGoUp = true;
             }
@@ -2803,7 +2819,7 @@ public class HandleUI
         // IF we are higher...
         if (pSoldier.bLevel > 0)
         {
-            if (FindLowerLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, ref bNewDirection))
+            if (FindLowerLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, out bNewDirection))
             {
                 pfGoDown = true;
             }
@@ -2830,12 +2846,12 @@ public class HandleUI
         uint usMapPos;
         SOLDIERTYPE pSoldier;
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -2859,9 +2875,9 @@ public class HandleUI
                 UIHandleInteractiveTilesAndItemsOnTerrain(pSoldier, usMapPos, true, false);
             }
         }
+
         return (ScreenName.GAME_SCREEN);
     }
-
 
     ScreenName UIHandleHCGettingItem(UI_EVENT pUIEvent)
     {
@@ -2870,14 +2886,12 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-
     ScreenName UIHandleTATalkingMenu(UI_EVENT pUIEvent)
     {
         guiNewUICursor = UICursorDefines.NORMAL_FREEUICURSOR;
 
         return (ScreenName.GAME_SCREEN);
     }
-
 
     ScreenName UIHandleEXExitSectorMenu(UI_EVENT pUIEvent)
     {
@@ -2886,7 +2900,6 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-
     ScreenName UIHandleOpenDoorMenu(UI_EVENT pUIEvent)
     {
         guiNewUICursor = UICursorDefines.NORMAL_FREEUICURSOR;
@@ -2894,7 +2907,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    void ToggleHandCursorMode(ref UI_EVENT_DEFINES puiNewEvent)
+    void ToggleHandCursorMode(out UI_EVENT_DEFINES puiNewEvent)
     {
         // Toggle modes			
         if (gCurrentUIMode == UI_MODE.HANDCURSOR_MODE)
@@ -2903,12 +2916,11 @@ public class HandleUI
         }
         else
         {
-
             puiNewEvent = UI_EVENT_DEFINES.M_CHANGE_TO_HANDMODE;
         }
     }
 
-    void ToggleTalkCursorMode(ref UI_EVENT_DEFINES puiNewEvent)
+    void ToggleTalkCursorMode(out UI_EVENT_DEFINES puiNewEvent)
     {
         // Toggle modes			
         if (gCurrentUIMode == UI_MODE.TALKCURSOR_MODE)
@@ -2921,7 +2933,7 @@ public class HandleUI
         }
     }
 
-    void ToggleLookCursorMode(ref UI_EVENT_DEFINES puiNewEvent)
+    void ToggleLookCursorMode(UI_EVENT_DEFINES puiNewEvent)
     {
         // Toggle modes			
         if (gCurrentUIMode == UI_MODE.LOOKCURSOR_MODE)
@@ -2936,7 +2948,6 @@ public class HandleUI
         }
     }
 
-
     bool UIHandleOnMerc(bool fMovementMode)
     {
         SOLDIERTYPE? pSoldier;
@@ -2945,7 +2956,7 @@ public class HandleUI
         uint usMapPos;
         bool fFoundMerc = false;
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return true;//(ScreenName.GAME_SCREEN);
         }
@@ -2967,7 +2978,7 @@ public class HandleUI
         if (fFoundMerc)
         {
             // Get Soldier
-            GetSoldier(ref pSoldier, usSoldierIndex);
+            GetSoldier(out pSoldier, usSoldierIndex);
 
             if (uiMercFlags & OWNED_MERC)
             {
@@ -3084,7 +3095,7 @@ public class HandleUI
             }
             else
             {
-                if (pSoldier.uiStatusFlags & SOLDIER_VEHICLE)
+                if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                 {
                     return (false);
                 }
@@ -3108,11 +3119,11 @@ public class HandleUI
     ScreenName UIHandleISoldierDebug(UI_EVENT pUIEvent)
     {
         // Use soldier display pages
-        SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage1, 0);
-        SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage2, 1);
-        SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage3, 2);
-        SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage4, 3);
-        gCurDebugPage = 1;
+        //SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage1, 0);
+        //SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage2, 1);
+        //SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage3, 2);
+        //SetDebugRenderHook((RENDER_HOOK)DebugSoldierPage4, 3);
+        //gCurDebugPage = 1;
 
         return (ScreenName.DEBUG_SCREEN);
     }
@@ -3134,7 +3145,7 @@ public class HandleUI
         //guiNewUICursor = CANNOT_MOVE_UICURSOR;
         guiNewUICursor = UICursorDefines.NO_UICURSOR;
 
-        SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
+        SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
         return (ScreenName.GAME_SCREEN);
     }
@@ -3237,7 +3248,7 @@ public class HandleUI
         // Set UI value for soldier
         SetUIbasedOnStance(pSoldier, bNewStance);
 
-        gfUIStanceDifferent = true;
+        Interface.gfUIStanceDifferent = true;
 
         // ATE: If we are being serviced...stop...
         // InternalReceivingSoldierCancelServices( pSoldier, false );
@@ -3309,7 +3320,7 @@ public class HandleUI
         }
 
         GetMouseMapPos(out usMapPos);
-        ConvertGridNoToXY(usMapPos, ref sXPos, ref sYPos);
+        ConvertGridNoToXY(usMapPos, out sXPos, out sYPos);
 
         puiCursorFlags = 0;
 
@@ -3460,7 +3471,7 @@ public class HandleUI
                 // ONLY IF GFPLOT NEW MOVEMENT IS false!
                 if (!gfPlotNewMovement)
                 {
-                    if (gsCurrentActionPoints < 0 || ((gTacticalStatus.uiFlags & REALTIME) || !(gTacticalStatus.uiFlags & INCOMBAT)))
+                    if (gsCurrentActionPoints < 0 || ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(this.overhead.gTacticalStatus.uiFlags & INCOMBAT)))
                     {
                         gfUIDisplayActionPoints = false;
                     }
@@ -3544,7 +3555,7 @@ public class HandleUI
         }
         else
         {
-            fPlot = NO_PLOT;
+            fPlot = NO.PLOT;
         }
 
         sActionGridNo = usMapPos;
@@ -3556,19 +3567,19 @@ public class HandleUI
         if (uiFlags == MOVEUI_TARGET.INTTILES)
         {
             // Get structure info for in tile!
-            pIntTile = GetCurInteractiveTileGridNoAndStructure(ref sIntTileGridNo, ref pStructure);
+            pIntTile = GetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure);
 
             // We should not have null here if we are given this flag...
             if (pIntTile != null)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, ref ubDirection, null, false, true);
+                sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, out ubDirection, null, false, true);
                 if (sActionGridNo == -1)
                 {
                     sActionGridNo = sIntTileGridNo;
                 }
-                CalcInteractiveObjectAPs(sIntTileGridNo, pStructure, ref sAPCost, ref sBPCost);
+                CalcInteractiveObjectAPs(sIntTileGridNo, pStructure, out sAPCost, out sBPCost);
                 //sAPCost += UIPlotPath( pSoldier, sActionGridNo, NO_COPYROUTE, PLOT, TEMPORARY, (uint)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
-                sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
@@ -3581,12 +3592,12 @@ public class HandleUI
             }
             else
             {
-                sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
             }
         }
         else if (uiFlags == MOVEUI_TARGET.WIREFENCE)
         {
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
+            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sAPCost = 0;
@@ -3595,7 +3606,7 @@ public class HandleUI
             {
                 sAPCost = GetAPsToCutFence(pSoldier);
 
-                sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
@@ -3606,7 +3617,7 @@ public class HandleUI
         }
         else if (uiFlags == MOVEUI_TARGET.JAR)
         {
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
+            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
@@ -3614,7 +3625,16 @@ public class HandleUI
 
             sAPCost = GetAPsToUseJar(pSoldier, sActionGridNo);
 
-            sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+            sAPCost += this.pathAI.UIPlotPath(
+                pSoldier,
+                sActionGridNo,
+                PlotPathDefines.NO_COPYROUTE,
+                fPlot,
+                PlotPathDefines.TEMPORARY,
+                (ushort)pSoldier.usUIMovementMode,
+                PlotPathDefines.NOT_STEALTH,
+                PlotPathDefines.FORWARD,
+                pSoldier.bActionPoints);
 
             if (sActionGridNo != pSoldier.sGridNo)
             {
@@ -3625,16 +3645,16 @@ public class HandleUI
         else if (uiFlags == MOVEUI_TARGET.CAN)
         {
             // Get structure info for in tile!
-            pIntTile = GetCurInteractiveTileGridNoAndStructure(ref sIntTileGridNo, ref pStructure);
+            pIntTile = GetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure);
 
             // We should not have null here if we are given this flag...
             if (pIntTile != null)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, ref ubDirection, null, false, true);
+                sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, out ubDirection, null, false, true);
                 if (sActionGridNo != -1)
                 {
                     sAPCost = AP.ATTACH_CAN;
-                    sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                    sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                     if (sActionGridNo != pSoldier.sGridNo)
                     {
@@ -3645,19 +3665,19 @@ public class HandleUI
             }
             else
             {
-                sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
             }
 
         }
         else if (uiFlags == MOVEUI_TARGET.REPAIR)
         {
             // For repair, check if we are over a vehicle, then get gridnot to edge of that vehicle!
-            if (IsRepairableStructAtGridNo(usMapPos, ref ubMercID) == 2)
+            if (IsRepairableStructAtGridNo(usMapPos, out ubMercID) == 2)
             {
                 int sNewGridNo;
                 byte ubDirection;
 
-                sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, ref ubDirection, 0, MercPtrs[ubMercID]);
+                sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, out ubDirection, 0, MercPtrs[ubMercID]);
 
                 if (sNewGridNo != (int)IsometricDefines.NOWHERE)
                 {
@@ -3665,7 +3685,7 @@ public class HandleUI
                 }
             }
 
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
+            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
@@ -3673,7 +3693,7 @@ public class HandleUI
 
             sAPCost = GetAPsToBeginRepair(pSoldier);
 
-            sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+            sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
             if (sActionGridNo != pSoldier.sGridNo)
             {
@@ -3684,12 +3704,12 @@ public class HandleUI
         else if (uiFlags == MOVEUI_TARGET.REFUEL)
         {
             // For repair, check if we are over a vehicle, then get gridnot to edge of that vehicle!
-            if (IsRefuelableStructAtGridNo(usMapPos, ref ubMercID) == 2)
+            if (IsRefuelableStructAtGridNo(usMapPos, out ubMercID) == 2)
             {
                 int sNewGridNo;
                 byte ubDirection;
 
-                sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, ref ubDirection, 0, MercPtrs[ubMercID]);
+                sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, out ubDirection, 0, MercPtrs[ubMercID]);
 
                 if (sNewGridNo != (int)IsometricDefines.NOWHERE)
                 {
@@ -3697,7 +3717,7 @@ public class HandleUI
                 }
             }
 
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
+            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
@@ -3705,7 +3725,7 @@ public class HandleUI
 
             sAPCost = GetAPsToRefuelVehicle(pSoldier);
 
-            sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+            sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
             if (sActionGridNo != pSoldier.sGridNo)
             {
@@ -3730,7 +3750,7 @@ public class HandleUI
                     sSpot = (int)NewGridNo(pSoldier.sGridNo, DirectionInc((byte)cnt));
 
                     // Make sure movement costs are OK....
-                    if (gubWorldMovementCosts[sSpot][cnt][gsInterfaceLevel] >= TRAVELCOST_BLOCKED)
+                    if (this.globals.gubWorldMovementCosts[sSpot, cnt, Interface.gsInterfaceLevel] >= TRAVELCOST.BLOCKED)
                     {
                         continue;
                     }
@@ -3752,7 +3772,7 @@ public class HandleUI
 
                 if (sGotLocation == (int)IsometricDefines.NOWHERE)
                 {
-                    sActionGridNo = FindAdjacentGridEx(pSoldier, MercPtrs[gusUIFullTargetID].sGridNo, ref ubDirection, ref sAdjustedGridNo, true, false);
+                    sActionGridNo = FindAdjacentGridEx(pSoldier, MercPtrs[gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
 
                     if (sActionGridNo == -1)
                     {
@@ -3775,7 +3795,7 @@ public class HandleUI
             if (sGotLocation != (int)IsometricDefines.NOWHERE)
             {
                 sAPCost += MinAPsToAttack(pSoldier, sAdjustedGridNo, true);
-                sAPCost += UIPlotPath(pSoldier, sGotLocation, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sAPCost += this.pathAI.UIPlotPath(pSoldier, sGotLocation, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sGotLocation != pSoldier.sGridNo && fGotAdjacent)
                 {
@@ -3789,7 +3809,7 @@ public class HandleUI
             // Check if we are on a target
             if (gfUIFullTargetFound)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, MercPtrs[gusUIFullTargetID].sGridNo, ref ubDirection, ref sAdjustedGridNo, true, false);
+                sActionGridNo = FindAdjacentGridEx(pSoldier, MercPtrs[gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
                 if (sActionGridNo == -1)
                 {
                     sActionGridNo = sAdjustedGridNo;
@@ -3800,7 +3820,7 @@ public class HandleUI
                 {
                     sAPCost += GetAPsToChangeStance(pSoldier, AnimationHeights.ANIM_STAND);
                 }
-                sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
@@ -3812,7 +3832,7 @@ public class HandleUI
         else if (uiFlags == MOVEUI_TARGET.BOMB)
         {
             sAPCost += GetAPsToDropBomb(pSoldier);
-            sAPCost += UIPlotPath(pSoldier, usMapPos, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+            sAPCost += this.pathAI.UIPlotPath(pSoldier, usMapPos, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
             gfUIHandleShowMoveGrid = true;
             gsUIHandleShowMoveGridLocation = usMapPos;
@@ -3821,12 +3841,12 @@ public class HandleUI
         {
             if (gfUIFullTargetFound)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, MercPtrs[gusUIFullTargetID].sGridNo, ref ubDirection, ref sAdjustedGridNo, true, false);
+                sActionGridNo = FindAdjacentGridEx(pSoldier, MercPtrs[gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
 
                 // Try again at another gridno...
                 if (sActionGridNo == -1)
                 {
-                    sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, ref sAdjustedGridNo, true, false);
+                    sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, out sAdjustedGridNo, true, false);
 
                     if (sActionGridNo == -1)
                     {
@@ -3834,7 +3854,7 @@ public class HandleUI
                     }
                 }
                 sAPCost += GetAPsToBeginFirstAid(pSoldier);
-                sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
                     gfUIHandleShowMoveGrid = true;
@@ -3852,7 +3872,7 @@ public class HandleUI
 
                     if (pSoldier.sGridNo != sActionGridNo)
                     {
-                        sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                        sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
                         if (sAPCost != 0)
                         {
                             sAPCost += (int)AP.PICKUP_ITEM;
@@ -3874,7 +3894,7 @@ public class HandleUI
         }
         else
         {
-            sAPCost += UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, fPlot, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+            sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
         }
 
         if (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_AP_LEFT))
@@ -3898,7 +3918,7 @@ public class HandleUI
         byte ubItemCursor;
         uint usMapPos;
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (false);
         }
@@ -3979,7 +3999,7 @@ public class HandleUI
         {
             fGuyHere = true;
 
-            if (guiUIFullTargetFlags & SELECTED_MERC && Item[usInHand].usItemClass != IC_MEDKIT)
+            if (guiUIFullTargetFlags & SELECTED_MERC && Item[usInHand].usItemClass != IC.MEDKIT)
             {
                 return (false);
             }
@@ -3998,7 +4018,7 @@ public class HandleUI
         //	}
         //}
 
-        if (Item[usInHand].usItemClass == IC_PUNCH)
+        if (Item[usInHand].usItemClass == IC.PUNCH)
         {
             if (!fGuyHere)
             {
@@ -4014,7 +4034,7 @@ public class HandleUI
         //	}
         //}
 
-        if (Item[usInHand].usItemClass == IC_MEDKIT)
+        if (Item[usInHand].usItemClass == IC.MEDKIT)
         {
             if (!fGuyHere)
             {
@@ -4025,7 +4045,7 @@ public class HandleUI
             pTSoldier = MercPtrs[gusUIFullTargetID];
 
             // If we are a vehicle...
-            if ((pTSoldier.uiStatusFlags & (SOLDIER_VEHICLE | SOLDIER_ROBOT)))
+            if ((pTSoldier.uiStatusFlags & (SOLDIER.VEHICLE | SOLDIER.ROBOT)))
             {
                 ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[CANNOT_DO_FIRST_AID_STR], pTSoldier.name);
                 return (false);
@@ -4068,7 +4088,7 @@ public class HandleUI
         }
         else
         {
-            if (GetItemPool(sGridNo, ref pItemPool, pSoldier.bLevel))
+            if (GetItemPool(sGridNo, out pItemPool, pSoldier.bLevel))
             {
                 //if ( !ITEMPOOL_VISIBLE( pItemPool ) )
                 {
@@ -4304,7 +4324,7 @@ public class HandleUI
         guiNewUICursor = UICursorDefines.LOOK_UICURSOR;
 
         // Get soldier
-        if (!GetSoldier(out pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return ScreenName.GAME_SCREEN;
         }
@@ -4316,7 +4336,7 @@ public class HandleUI
 
 
         // Get soldier
-        if (!GetSoldier(out pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4400,7 +4420,7 @@ public class HandleUI
         SOLDIERTYPE? pFirstSoldier = null;
 
 
-        if (!GetMouseXY(ref sXPos, ref sYPos))
+        if (!GetMouseXY(out sXPos, out sYPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4423,7 +4443,7 @@ public class HandleUI
         else
         {
             // Get soldier
-            if (!GetSoldier(out pSoldier, gusSelectedSoldier))
+            if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
             {
                 return (ScreenName.GAME_SCREEN);
             }
@@ -4449,12 +4469,12 @@ public class HandleUI
         int sDistVisible;
 
         // Get soldier
-        if (!GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4473,7 +4493,7 @@ public class HandleUI
 
 
         //CHECK FOR VALID TALKABLE GUY HERE
-        fValidTalkableGuy = IsValidTalkableNPCFromMouse(ref ubTargID, false, true, false);
+        fValidTalkableGuy = IsValidTalkableNPCFromMouse(ubTargID, false, true, false);
 
         // USe cursor based on distance
         // Get distance away
@@ -4584,10 +4604,10 @@ public class HandleUI
             RemoveTacticalCursor();
             //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
-            MSYS_DefineRegion(ref gDisableRegion, 0, 0, 640, 480, MSYS_PRIORITY_HIGHEST,
-                                 CURSOR_WAIT, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
+            this.inputs.Mouse.MSYS_DefineRegion(gDisableRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
+                                 CURSOR.WAIT, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
             // Add region
-            MSYS_AddRegion(ref gDisableRegion);
+            this.inputs.Mouse.MSYS_AddRegion(gDisableRegion);
 
             //guiPendingOverrideEvent = LOCKUI_MODE;
 
@@ -4607,7 +4627,7 @@ public class HandleUI
             gfDisableRegionActive = false;
 
             // Add region
-            MSYS_RemoveRegion(ref gDisableRegion);
+            this.inputs.Mouse.MSYS_RemoveRegion(gDisableRegion);
             RefreshMouseRegions();
 
             //SetCurrentCursorFromDatabase( guiCurrentUICursor );
@@ -4615,7 +4635,7 @@ public class HandleUI
             guiForceRefreshMousePositionCalculation = true;
             UIHandleMOnTerrain(null);
 
-            if (gViewportRegion.uiFlags & MSYS_MOUSE_IN_AREA)
+            if (Interface.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
                 SetCurrentCursorFromDatabase(gUICursors[guiNewUICursor].usFreeCursorName);
             }
@@ -4643,7 +4663,7 @@ public class HandleUI
             gfDisableRegionActive = false;
 
             // Remove region
-            MSYS_RemoveRegion(ref gDisableRegion);
+            this.inputs.Mouse.MSYS_RemoveRegion(gDisableRegion);
 
             UnLockPauseState();
             UnPauseGame();
@@ -4657,7 +4677,7 @@ public class HandleUI
             gfUIInterfaceSetBusy = false;
 
             // Remove region
-            MSYS_RemoveRegion(ref gUserTurnRegion);
+            this.inputs.Mouse.MSYS_RemoveRegion(gUserTurnRegion);
 
             UnLockPauseState();
             UnPauseGame();
@@ -4673,20 +4693,20 @@ public class HandleUI
     }
 
 
-    void GetGridNoScreenXY(int sGridNo, int? pScreenX, int? pScreenY)
+    void GetGridNoScreenXY(int sGridNo, out int? pScreenX, out int? pScreenY)
     {
         int sScreenX, sScreenY;
         int sOffsetX, sOffsetY;
         int? sTempX_S = null, sTempY_S = null;
         int? sXPos = null, sYPos = null;
 
-        ConvertGridNoToCellXY(sGridNo, ref sXPos, ref sYPos);
+        ConvertGridNoToCellXY(sGridNo, out sXPos, out sYPos);
 
         // Get 'true' merc position
         sOffsetX = sXPos - gsRenderCenterX;
         sOffsetY = sYPos - gsRenderCenterY;
 
-        FromCellToScreenCoordinates(sOffsetX, sOffsetY, ref sTempX_S, ref sTempY_S);
+        FromCellToScreenCoordinates(sOffsetX, sOffsetY, out sTempX_S, out sTempY_S);
 
         sScreenX = ((gsVIEWPORT_END_X - gsVIEWPORT_START_X) / 2) + (int)sTempX_S;
         sScreenY = ((gsVIEWPORT_END_Y - gsVIEWPORT_START_Y) / 2) + (int)sTempY_S;
@@ -4694,7 +4714,7 @@ public class HandleUI
         // Adjust for offset position on screen
         sScreenX -= gsRenderWorldOffsetX;
         sScreenY -= gsRenderWorldOffsetY;
-        sScreenY -= gpWorldLevelData[sGridNo].sHeight;
+        sScreenY -= this.globals.gpWorldLevelData[sGridNo].sHeight;
 
         // Adjust based on interface level
 
@@ -4707,7 +4727,6 @@ public class HandleUI
         (pScreenX) = sScreenX;
         (pScreenY) = sScreenY;
     }
-
 
     void EndMultiSoldierSelection(bool fAcknowledge)
     {
@@ -4726,21 +4745,21 @@ public class HandleUI
         {
             if (pSoldier.bActive && pSoldier.bInSector)
             {
-                if (pSoldier.uiStatusFlags & SOLDIER.MULTI_SELECTED)
+                if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTI_SELECTED))
                 {
                     this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = true;
 
-                    if (pSoldier.ubID != gusSelectedSoldier && pFirstSoldier == null)
+                    if (pSoldier.ubID != this.overhead.gusSelectedSoldier && pFirstSoldier == null)
                     {
                         pFirstSoldier = pSoldier;
                     }
 
-                    if (pSoldier.ubID == gusSelectedSoldier)
+                    if (pSoldier.ubID == this.overhead.gusSelectedSoldier)
                     {
                         fSelectedSoldierInBatch = true;
                     }
 
-                    if (!gGameSettings.fOptions[TOPTION_MUTE_CONFIRMATIONS] && fAcknowledge)
+                    if (!gGameSettings.fOptions[TOPTION.MUTE_CONFIRMATIONS] && fAcknowledge)
                     {
                         InternalDoMercBattleSound(pSoldier, BATTLE_SOUND_ATTN1, BATTLE_SND_LOWER_VOLUME);
                     }
@@ -4827,7 +4846,7 @@ public class HandleUI
             {
                 if (pSoldier.uiStatusFlags & SOLDIER.MULTI_SELECTED)
                 {
-                    if (pSoldier.ubID == gusSelectedSoldier)
+                    if (pSoldier.ubID == this.overhead.gusSelectedSoldier)
                     {
                         fMoveFast = pSoldier.fUIMovementFast;
                         break;
@@ -4904,7 +4923,7 @@ public class HandleUI
             {
                 if (pSoldier.uiStatusFlags & SOLDIER.MULTI_SELECTED)
                 {
-                    pSoldier.uiStatusFlags &= (~SOLDIER_MULTI_SELECTED);
+                    pSoldier.uiStatusFlags &= (~SOLDIER.MULTI_SELECTED);
                 }
             }
         }
@@ -4918,25 +4937,25 @@ public class HandleUI
     {
         SOLDIERTYPE? pSoldier;
         int cnt;
-        int sScreenX, sScreenY;
+        int? sScreenX, sScreenY;
         int iTemp;
-        SGPRect aRect;
+        Rectangle aRect = new Rectangle(); // gRubberBandRect when appropriate
         bool fAtLeastOne = false;
 
-        guiNewUICursor = NO_UICURSOR;
+        guiNewUICursor = UICursorDefines.NO_UICURSOR;
         //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
-        gRubberBandRect.iRight = gusMouseXPos;
-        gRubberBandRect.iBottom = gusMouseYPos;
+        gRubberBandRect.Width = gusMouseXPos;
+        gRubberBandRect.Height = gusMouseYPos;
 
         // Copy into temp rect
-        // memcpy(ref aRect, &gRubberBandRect, sizeof(gRubberBandRect));
+        // memcpy(out aRect, &gRubberBandRect, sizeof(gRubberBandRect));
 
-        if (aRect.iRight < aRect.iLeft)
+        if (aRect.Width < aRect.Left)
         {
-            iTemp = aRect.iLeft;
-            aRect.iLeft = aRect.iRight;
-            aRect.iRight = iTemp;
+            iTemp = aRect.Left;
+            aRect.Left = aRect.Right;
+            aRect.Right = iTemp;
         }
 
 
@@ -4952,10 +4971,10 @@ public class HandleUI
         for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             // Check if this guy is OK to control....
-            if (OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags & (SOLDIER_VEHICLE | SOLDIER_PASSENGER | SOLDIER_DRIVER)))
+            if (OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
             {
                 // Get screen pos of gridno......
-                GetGridNoScreenXY(pSoldier.sGridNo, ref sScreenX, ref sScreenY);
+                GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
 
                 // ATE: If we are in a hiehger interface level, subttrasct....
                 if (Interface.gsInterfaceLevel == 1)
@@ -4989,7 +5008,7 @@ public class HandleUI
                 }
 
                 // Get screen pos of gridno......
-                GetGridNoScreenXY(pSoldier.sGridNo, ref sScreenX, ref sScreenY);
+                GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
 
                 // ATE: If we are in a hiehger interface level, subttrasct....
                 if (gsInterfaceLevel == 1)
@@ -4997,7 +5016,7 @@ public class HandleUI
                     sScreenY -= 50;
                 }
 
-                if (IsPointInScreenRect(sScreenX, sScreenY, ref aRect))
+                if (IsPointInScreenRect(sScreenX, sScreenY, out aRect))
                 {
                     // Adjust this guy's flag...
                     pSoldier.uiStatusFlags |= SOLDIER.MULTI_SELECTED;
@@ -5016,12 +5035,12 @@ public class HandleUI
         uint usMapPos;
 
         // Here, first get map screen
-        if (!GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -5050,12 +5069,12 @@ public class HandleUI
         byte bDirection;
 
         // Here, first get map screen
-        if (!GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -5102,10 +5121,10 @@ public class HandleUI
             //guiNewUICursor = NO_UICURSOR;
             //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
-            MSYS_DefineRegion(ref gUserTurnRegion, 0, 0, 640, 480, MSYS_PRIORITY_HIGHEST,
-                                 CURSOR_WAIT, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
+            this.inputs.Mouse.MSYS_DefineRegion(gUserTurnRegion, new Rectangle(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
+                                 CURSOR.WAIT, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
             // Add region
-            MSYS_AddRegion(ref gUserTurnRegion);
+            this.inputs.Mouse.MSYS_AddRegion(ref gUserTurnRegion);
 
             //guiPendingOverrideEvent = LOCKOURTURN_UI_MODE;
 
@@ -5128,7 +5147,7 @@ public class HandleUI
             gfUIInterfaceSetBusy = false;
 
             // Add region
-            MSYS_RemoveRegion(ref gUserTurnRegion);
+            this.inputs.Mouse.MSYS_RemoveRegion(gUserTurnRegion);
             RefreshMouseRegions();
             //SetCurrentCursorFromDatabase( guiCurrentUICursor );
 
@@ -5137,11 +5156,11 @@ public class HandleUI
             guiForceRefreshMousePositionCalculation = true;
             UIHandleMOnTerrain(null);
 
-            if (gViewportRegion.uiFlags & MSYS_MOUSE_IN_AREA)
+            if (Interface.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
-                SetCurrentCursorFromDatabase(gUICursors[guiNewUICursor].usFreeCursorName);
+                this.cursors.SetCurrentCursorFromDatabase(gUICursors[guiNewUICursor].usFreeCursorName);
             }
-            guiPendingOverrideEvent = M_ON_TERRAIN;
+            guiPendingOverrideEvent = UI_EVENT_DEFINES.M_ON_TERRAIN;
             HandleTacticalUI();
 
             TurnOffTeamsMuzzleFlashes(gbPlayerNum);
@@ -5154,7 +5173,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    bool IsValidTalkableNPCFromMouse(ref byte pubSoldierID, bool fGive, bool fAllowMercs, bool fCheckCollapsed)
+    bool IsValidTalkableNPCFromMouse(byte pubSoldierID, bool fGive, bool fAllowMercs, bool fCheckCollapsed)
     {
         // Check if there is a guy here to talk to!
         if (gfUIFullTargetFound)
@@ -5172,9 +5191,9 @@ public class HandleUI
         SOLDIERTYPE pSoldier = MercPtrs[ubSoldierID];
         bool fValidGuy = false;
 
-        if (gusSelectedSoldier != OverheadTypes.NOBODY)
+        if (this.overhead.gusSelectedSoldier != OverheadTypes.NOBODY)
         {
-            if (AM_A_ROBOT(MercPtrs[gusSelectedSoldier]))
+            if (AM_A_ROBOT(MercPtrs[this.overhead.gusSelectedSoldier]))
             {
                 return (false);
             }
@@ -5197,7 +5216,7 @@ public class HandleUI
             return (false);
         }
 
-        if (pSoldier.uiStatusFlags & SOLDIER.VEHICLE)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
         {
             return (false);
         }
@@ -5206,19 +5225,19 @@ public class HandleUI
         // IF BAD GUY - CHECK VISIVILITY
         if (pSoldier.bTeam != gbPlayerNum)
         {
-            if (pSoldier.bVisible == -1 && !(this.overhead.gTacticalStatus.uiFlags & SHOW_ALL_MERCS))
+            if (pSoldier.bVisible == -1 && !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
             {
                 return (false);
             }
         }
 
-        if (pSoldier.ubProfile != NO_PROFILE && pSoldier.ubProfile >= FIRST_RPC && !RPC_RECRUITED(pSoldier) && !AM_AN_EPC(pSoldier))
+        if (pSoldier.ubProfile != (int)NO.PROFILE && pSoldier.ubProfile >= FIRST_RPC && !RPC_RECRUITED(pSoldier) && !AM_AN_EPC(pSoldier))
         {
             fValidGuy = true;
         }
 
         // Check for EPC...
-        if (pSoldier.ubProfile != NO_PROFILE && (gCurrentUIMode == TALKCURSOR_MODE || fGive) && AM_AN_EPC(pSoldier))
+        if (pSoldier.ubProfile != (int)NO.PROFILE && (gCurrentUIMode == TALKCURSOR_MODE || fGive) && AM_AN_EPC(pSoldier))
         {
             fValidGuy = true;
         }
@@ -5235,7 +5254,7 @@ public class HandleUI
         }
 
         // Alright, let's do something special here for robot...
-        if (pSoldier.uiStatusFlags & SOLDIER.ROBOT)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
         {
             if (fValidGuy == true && !fGive)
             {
@@ -5276,12 +5295,12 @@ public class HandleUI
         byte ubDirection;
 
         // Get soldier
-        if (!GetSoldier(ref pSoldier, gusSelectedSoldier))
+        if (!GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
             return (false);
         }
 
-        if (!GetMouseMapPos(ref usMapPos))
+        if (!GetMouseMapPos(out usMapPos))
         {
             return (false);
         }
@@ -5292,7 +5311,7 @@ public class HandleUI
             // Is he a valid NPC?
             if (IsValidTalkableNPC((byte)gusUIFullTargetID, false, true, false))
             {
-                GetSoldier(ref pTSoldier, gusUIFullTargetID);
+                GetSoldier(out pTSoldier, gusUIFullTargetID);
 
                 if (pTSoldier.ubID != pSoldier.ubID)
                 {
@@ -5410,7 +5429,7 @@ public class HandleUI
                 if (uiRange > NPC_TALK_RADIUS)
                 {
                     // First get an adjacent gridno....
-                    sActionGridNo = FindAdjacentGridEx(pSoldier, pTSoldier.sGridNo, ref ubDirection, null, false, true);
+                    sActionGridNo = FindAdjacentGridEx(pSoldier, pTSoldier.sGridNo, out ubDirection, null, false, true);
 
                     if (sActionGridNo == -1)
                     {
@@ -5418,7 +5437,7 @@ public class HandleUI
                         return (false);
                     }
 
-                    if (UIPlotPath(pSoldier, sActionGridNo, PlotPath.NO_COPYROUTE, false, TEMPORARY, (uint)pSoldier.usUIMovementMode, PlotPath.NOT_STEALTH, FORWARD, pSoldier.bActionPoints) == 0)
+                    if (this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, false, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints) == 0)
                     {
                         ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
                         return (false);
@@ -5426,7 +5445,7 @@ public class HandleUI
 
                     // Walk up and talk to buddy....
                     gfNPCCircularDistLimit = true;
-                    sGoodGridNo = FindGridNoFromSweetSpotWithStructData(pSoldier, pSoldier.usUIMovementMode, pTSoldier.sGridNo, (NPC_TALK_RADIUS - 1), ref ubNewDirection, true);
+                    sGoodGridNo = FindGridNoFromSweetSpotWithStructData(pSoldier, pSoldier.usUIMovementMode, pTSoldier.sGridNo, (NPC_TALK_RADIUS - 1), out ubNewDirection, true);
                     gfNPCCircularDistLimit = false;
 
                     // First calculate APs and validate...
@@ -5485,7 +5504,7 @@ public class HandleUI
             & (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
             && (this.overhead.gTacticalStatus.ubCurrentTeam == gbPlayerNum))
         {
-            if (gusSelectedSoldier == ubID)
+            if (this.overhead.gusSelectedSoldier == ubID)
             {
                 guiPendingOverrideEvent = UI_EVENT_DEFINES.LA_BEGINUIOURTURNLOCK;
                 HandleTacticalUI();
@@ -5495,11 +5514,11 @@ public class HandleUI
 
     void UnSetUIBusy(byte ubID)
     {
-        if ((this.overhead.gTacticalStatus.uiFlags & INCOMBAT) && (this.overhead.gTacticalStatus.uiFlags & TURNBASED) && (this.overhead.gTacticalStatus.ubCurrentTeam == gbPlayerNum))
+        if ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.INCOMBAT) && (this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.TURNBASED) && (this.overhead.gTacticalStatus.ubCurrentTeam == gbPlayerNum))
         {
             if (!this.overhead.gTacticalStatus.fUnLockUIAfterHiddenInterrupt)
             {
-                if (gusSelectedSoldier == ubID)
+                if (this.overhead.gusSelectedSoldier == ubID)
                 {
                     guiPendingOverrideEvent = UI_EVENT_DEFINES.LA_ENDUIOUTURNLOCK;
                     HandleTacticalUI();
@@ -5637,7 +5656,7 @@ public class HandleUI
         }
 
         // If we are over an interactive struct, adjust gridno to this....
-        pIntTile = ConditionalGetCurInteractiveTileGridNoAndStructure(ref sIntTileGridNo, ref pStructure, false);
+        pIntTile = ConditionalGetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure, false);
         gpInvTileThatCausedMoveConfirm = pIntTile;
 
         if (pIntTile != null)
@@ -5646,23 +5665,23 @@ public class HandleUI
         }
 
         // Check if we are over an item pool
-        if (GetItemPool(sActionGridNo, ref pItemPool, pSoldier.bLevel))
+        if (GetItemPool(sActionGridNo, out pItemPool, pSoldier.bLevel))
         {
             // If we want only on int tiles, and we have no int tiles.. ignore items!
             if (fItemsOnlyIfOnIntTiles && pIntTile == null)
             {
 
             }
-            else if (fItemsOnlyIfOnIntTiles && pIntTile != null && (pStructure.fFlags & STRUCTURE_HASITEMONTOP))
+            else if (fItemsOnlyIfOnIntTiles && pIntTile != null && (pStructure.fFlags & STRUCTUREDefines.HASITEMONTOP))
             {
                 // if in this mode, we don't want to automatically show hand cursor over items on strucutres
             }
             //else if ( pIntTile != null && ( pStructure.fFlags & ( STRUCTURE_SWITCH | STRUCTURE_ANYDOOR ) ) )
-            else if (pIntTile != null && (pStructure.fFlags & (STRUCTURE_SWITCH)))
+            else if (pIntTile != null && (pStructure.fFlags & (STRUCTUREDefines.SWITCH)))
             {
                 // We don't want switches messing around with items ever!
             }
-            else if ((pIntTile != null && (pStructure.fFlags & (STRUCTURE_ANYDOOR))) && (sActionGridNo != usMapPos || fItemsOnlyIfOnIntTiles))
+            else if ((pIntTile != null && (pStructure.fFlags & (STRUCTUREDefines.ANYDOOR))) && (sActionGridNo != usMapPos || fItemsOnlyIfOnIntTiles))
             {
                 // Next we look for if we are over a door and if the mouse position is != base door position, ignore items!
             }
@@ -5673,7 +5692,7 @@ public class HandleUI
                 // Adjust this if we have not visited this gridno yet...
                 if (fPoolContainsHiddenItems)
                 {
-                    if (!(gpWorldLevelData[sActionGridNo].uiFlags & MAPELEMENT_REVEALED))
+                    if (!(this.globals.gpWorldLevelData[sActionGridNo].uiFlags & MAPELEMENT_REVEALED))
                     {
                         fPoolContainsHiddenItems = false;
                     }
@@ -5793,9 +5812,9 @@ public class HandleUI
     {
         SOLDIERTYPE? pSoldier;
 
-        if (gusSelectedSoldier != OverheadTypes.NOBODY)
+        if (this.overhead.gusSelectedSoldier != OverheadTypes.NOBODY)
         {
-            pSoldier = MercPtrs[gusSelectedSoldier];
+            pSoldier = MercPtrs[this.overhead.gusSelectedSoldier];
 
             if (pSoldier.usAnimState == AnimationStates.LOB_ITEM
                 || pSoldier.usAnimState == AnimationStates.THROW_ITEM
@@ -5837,7 +5856,7 @@ public class HandleUI
 
                 // Nowhere
                 // Try to climb
-                GetMercClimbDirection(pSoldier.ubID, ref fNearLowerLevel, ref fNearHeigherLevel);
+                GetMercClimbDirection(pSoldier.ubID, fNearLowerLevel, fNearHeigherLevel);
 
                 if (fNearHeigherLevel)
                 {
@@ -5880,7 +5899,7 @@ public class HandleUI
 
                 // Nowhere
                 // Try to climb
-                GetMercClimbDirection(pSoldier.ubID, ref fNearLowerLevel, ref fNearHeigherLevel);
+                GetMercClimbDirection(pSoldier.ubID, fNearLowerLevel, fNearHeigherLevel);
 
                 if (fNearLowerLevel)
                 {
@@ -5922,15 +5941,15 @@ public class HandleUI
         }
 
 
-        sHeight = gpWorldLevelData[sGridNo].sHeight;
+        sHeight = this.globals.gpWorldLevelData[sGridNo].sHeight;
 
         if (sHeight != sOldHeight)
         {
-            gsRenderHeight = sHeight;
+            this.renderWorld.gsRenderHeight = sHeight;
 
             if (Interface.gsInterfaceLevel > 0)
             {
-                gsRenderHeight += ROOF_LEVEL_HEIGHT;
+                this.renderWorld.gsRenderHeight += Interface.ROOF_LEVEL_HEIGHT;
             }
 
             SetRenderFlags(RENDER_FLAG_FULL);
@@ -5961,7 +5980,7 @@ public class HandleUI
                 if (!(pOverSoldier.uiStatusFlags & (SOLDIER.ANIMAL)))
                 {
                     // OK, we have a civ , now check if they are near selected guy.....
-                    if (GetSoldier(ref pSoldier, gusSelectedSoldier))
+                    if (GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
                     {
                         if (PythSpacesAway(pSoldier.sGridNo, pOverSoldier.sGridNo) == 1)
                         {
@@ -5972,7 +5991,7 @@ public class HandleUI
                             {
                                 // ATE:
                                 // Check that the path is good!
-                                if (FindBestPath(pSoldier, pOverSoldier.sGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, PlotPath.NO_COPYROUTE, PlotPath.PATH_IGNORE_PERSON_AT_DEST) == 1)
+                                if (FindBestPath(pSoldier, pOverSoldier.sGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, PlotPathDefines.NO_COPYROUTE, PlotPathDefines.PATH_IGNORE_PERSON_AT_DEST) == 1)
                                 {
                                     fOnValidGuy = true;
                                 }
@@ -6010,10 +6029,10 @@ public class HandleUI
     {
         int[] sFourGrids = new int[4];
         int sDistance = 0, sSpot, sIntSpot;
-        int[] sDirs = { NORTH, EAST, SOUTH, WEST };
+        WorldDirections[] sDirs = { WorldDirections.NORTH, WorldDirections.EAST, WorldDirections.SOUTH, WorldDirections.WEST };
         int cnt;
         byte ubGuyThere;
-        byte ubMovementCost;
+        TRAVELCOST ubMovementCost;
         int iDoorGridNo;
 
         // First check that action point cost is zero so far
@@ -6030,14 +6049,14 @@ public class HandleUI
             sIntSpot = NewGridNo(sGridNo, DirectionInc(sDirs[cnt]));
 
             // ATE: Check our movement costs for going through walls!
-            ubMovementCost = gubWorldMovementCosts[sIntSpot][sDirs[cnt]][pSoldier.bLevel];
-            if (IS_TRAVELCOST_DOOR(ubMovementCost))
+            ubMovementCost = this.globals.gubWorldMovementCosts[sIntSpot, sDirs[cnt], pSoldier.bLevel];
+            if ((ubMovementCost.IS_TRAVELCOST_DOOR()))
             {
-                ubMovementCost = DoorTravelCost(pSoldier, sIntSpot, ubMovementCost, (bool)(pSoldier.bTeam == gbPlayerNum), ref iDoorGridNo);
+                ubMovementCost = DoorTravelCost(pSoldier, sIntSpot, ubMovementCost, (bool)(pSoldier.bTeam == gbPlayerNum), out iDoorGridNo);
             }
 
             // If we have hit an obstacle, STOP HERE
-            if (ubMovementCost >= TRAVELCOST_BLOCKED)
+            if (ubMovementCost >= TRAVELCOST.BLOCKED)
             {
                 // no good, continue
                 continue;

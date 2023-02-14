@@ -104,7 +104,7 @@ namespace SharpAlliance.Core.Screens
         {
             int usPosY;
 
-            this.cursor.SetCurrentCursorFromDatabase(Cursor.NORMAL);
+            this.cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
             // load the Main trade screen backgroiund image
             this.video.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
@@ -529,7 +529,7 @@ namespace SharpAlliance.Core.Screens
         {
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {
-                //		UINT8	ubButton = (UINT8)MSYS_GetBtnUserData( btn, 0 );
+                //		Ubyte	ubButton = (Ubyte)MSYS_GetBtnUserData( btn, 0 );
 
                 if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                 {

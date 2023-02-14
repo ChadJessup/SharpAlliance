@@ -121,7 +121,7 @@ namespace SharpAlliance.Core.Screens
 
             if (this.introScreen.guiSplashStartTime + 4000 > this.clock.GetJA2Clock())
             {
-                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
                 this.music.SetMusicMode(MusicMode.NONE);
 
                 //The splash screen hasn't been up long enough yet.
@@ -153,12 +153,12 @@ namespace SharpAlliance.Core.Screens
                 // this.video.InvalidateScreen();
                 // this.video.EndFrameBufferRender();
 
-                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
+                this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
                 return ScreenName.MAINMENU_SCREEN;
             }
 
-            this.cursor.SetCurrentCursorFromDatabase(Cursor.NORMAL);
+            this.cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
             if (this.gfMainMenuScreenEntry)
             {
@@ -526,11 +526,11 @@ namespace SharpAlliance.Core.Screens
                 }
 
                 // Make a mouse region
-                this.mouse.DefineRegion(
+                this.mouse.MSYS_DefineRegion(
                     ref this.gBackRegion,
                     new(0, 0, 640, 480),
                     MSYS_PRIORITY.HIGHEST,
-                    Cursor.NORMAL,
+                    CURSOR.NORMAL,
                     null,
                     this.SelectMainMenuBackGroundRegionCallBack);
 

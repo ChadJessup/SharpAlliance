@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace SharpAlliance.Core.SubSystems
+namespace SharpAlliance.Core.SubSystems;
+
+public class ShopKeeper
 {
-    public class ShopKeeper
+    public void ShopKeeperScreenInit()
     {
-        public void ShopKeeperScreenInit()
-        {
-        }
     }
 }

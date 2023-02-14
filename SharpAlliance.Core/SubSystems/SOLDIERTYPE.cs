@@ -21,7 +21,7 @@ namespace SharpAlliance.Core.SubSystems
 
         int bOldLife;          // life at end of last turn, recorded for monster AI
                                 // attributes
-        public int bInSector;
+        public bool bInSector { get; set; }
         int bFlashPortraitFrame;
         int sFractLife;       // fraction of life pts (in hundreths)	
         public int bBleeding;     // blood loss control variable
@@ -213,7 +213,7 @@ namespace SharpAlliance.Core.SubSystems
         int sDesiredDest;
         int sDestination;
         public int sFinalDestination;
-        public int bLevel;
+        public InterfaceLevel bLevel;
         int bStopped;
         int bNeedToLook;
 
@@ -320,8 +320,8 @@ namespace SharpAlliance.Core.SubSystems
         bool fPrevInWater;
         bool fGoBackToAimAfterHit;
 
-        int sWalkToAttackGridNo;
-        int sWalkToAttackWalkToCost;
+        public int sWalkToAttackGridNo;
+        public int sWalkToAttackWalkToCost;
 
         bool fForceRenderColor;
         bool fForceNoRenderPaletteCycle;
@@ -339,7 +339,7 @@ namespace SharpAlliance.Core.SubSystems
         int sDamageX;
         int sDamageY;
         int bDamageDir;
-        int bDoBurst;
+        public bool bDoBurst;
         public AnimationStates usUIMovementMode;
         int bUIInterfaceLevel;
         public bool fUIMovementFast;
@@ -468,7 +468,7 @@ namespace SharpAlliance.Core.SubSystems
         bool fBlockedByAnotherMerc;
         int bBlockedByAnotherMercDirection;
         int usAttackingWeapon;
-        public int bWeaponMode;
+        public WM bWeaponMode;
         int ubTargetID;
         int bAIScheduleProgress;
         int sOffWorldGridNo;

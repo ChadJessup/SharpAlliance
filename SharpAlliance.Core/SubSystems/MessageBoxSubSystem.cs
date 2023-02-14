@@ -105,7 +105,7 @@ namespace SharpAlliance.Core.SubSystems
             MercTextBoxBorder ubMercBoxBorder = MercTextBoxBorder.BASIC_MERC_POPUP_BORDER;
             FontColor ubFontColor;
             FontShadow ubFontShadowColor;
-            Cursor usCursor;
+            CURSOR usCursor;
             int iId = -1;
 
             this.inputs.GetCursorPosition(out pOldMousePosition);
@@ -113,7 +113,7 @@ namespace SharpAlliance.Core.SubSystems
             //this variable can be unset if ur in a non gamescreen and DONT want the msg box to use the save buffer
             gfDontOverRideSaveBuffer = true;
 
-            this.cursor.SetCurrentCursorFromDatabase(Cursor.NORMAL);
+            this.cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
             if (gMsgBox.BackRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
             {
@@ -133,7 +133,7 @@ namespace SharpAlliance.Core.SubSystems
                     gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
-                    usCursor = Cursor.NORMAL;
+                    usCursor = CURSOR.NORMAL;
 
                     break;
 
@@ -146,7 +146,7 @@ namespace SharpAlliance.Core.SubSystems
 
                     ubFontColor = (FontColor)2;
                     ubFontShadowColor = FontShadow.NO_SHADOW;
-                    usCursor = Cursor.LAPTOP_SCREEN;
+                    usCursor = CURSOR.LAPTOP_SCREEN;
                     break;
 
                 case MessageBoxStyle.MSG_BOX_BLUE_ON_GREY:
@@ -158,7 +158,7 @@ namespace SharpAlliance.Core.SubSystems
 
                     ubFontColor = (FontColor)2;
                     ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
-                    usCursor = Cursor.LAPTOP_SCREEN;
+                    usCursor = CURSOR.LAPTOP_SCREEN;
                     break;
                 case MessageBoxStyle.MSG_BOX_IMP_STYLE:
                     ubMercBoxBackground = MercTextBoxBackground.IMP_POPUP_BACKGROUND;
@@ -169,7 +169,7 @@ namespace SharpAlliance.Core.SubSystems
 
                     ubFontColor = (FontColor)2;
                     ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
-                    usCursor = Cursor.LAPTOP_SCREEN;
+                    usCursor = CURSOR.LAPTOP_SCREEN;
                     break;
                 case MessageBoxStyle.MSG_BOX_BASIC_SMALL_BUTTONS:
 
@@ -180,7 +180,7 @@ namespace SharpAlliance.Core.SubSystems
                     gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 2, -1, 3, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
-                    usCursor = Cursor.NORMAL;
+                    usCursor = CURSOR.NORMAL;
 
                     break;
 
@@ -192,7 +192,7 @@ namespace SharpAlliance.Core.SubSystems
                     gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
-                    usCursor = Cursor.LAPTOP_SCREEN;
+                    usCursor = CURSOR.LAPTOP_SCREEN;
                     break;
 
                 default:
@@ -203,7 +203,7 @@ namespace SharpAlliance.Core.SubSystems
                     gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxbuttons.sti", -1, 0, -1, 1, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
-                    usCursor = Cursor.NORMAL;
+                    usCursor = CURSOR.NORMAL;
                     break;
             }
 
@@ -287,7 +287,7 @@ namespace SharpAlliance.Core.SubSystems
             // UnLockVideoSurface(FRAME_BUFFER);
 
             // Create top-level mouse region
-            this.mouse.DefineRegion(gMsgBox.BackRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
+            this.mouse.MSYS_DefineRegion(gMsgBox.BackRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
                                  usCursor, null, MsgBoxClickCallback);
 
             if (gGameSettings[TOPTION.DONT_MOVE_MOUSE] == false)

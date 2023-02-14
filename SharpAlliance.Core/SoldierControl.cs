@@ -94,4 +94,12 @@ namespace SharpAlliance.Core
         NPC_SHOOTING = 0x40000000,
         LOOK_NEXT_TURNSOLDIER = 0x80000000,
     }
+
+    public enum WM
+    {
+        NORMAL = 0,
+        BURST,
+        ATTACHED,
+        NUM_WEAPON_MODES
+    }
 }

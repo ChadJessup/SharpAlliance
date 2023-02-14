@@ -5,7 +5,7 @@ namespace SharpAlliance.Core.SubSystems
 {
     public class CursorSubSystem : IDisposable
     {
-        public void SetCurrentCursorFromDatabase(Cursor cursor)
+        public void SetCurrentCursorFromDatabase(CURSOR cursor)
         {
         }
 
@@ -32,7 +32,7 @@ namespace SharpAlliance.Core.SubSystems
         }
     }
 
-    public enum Cursor
+    public enum CURSOR
     {
         NORMAL,
         TARGET,
