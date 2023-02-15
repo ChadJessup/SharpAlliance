@@ -56,6 +56,8 @@ namespace SharpAlliance.Core.SubSystems
         public float gdScaleX, gdScaleY;
         public bool fLandLayerDirty;
         public bool gfIgnoreScrollDueToCenterAdjust;
+        
+        public TILES_DYNAMIC uiLayerUsedFlags = (TILES_DYNAMIC)0xffffffff;
 
         public void Dispose()
         {
@@ -65,7 +67,13 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        internal void SetRenderFlags(RenderingFlags fULL)
+        public void ResetSpecificLayerOptimizing(TILES_DYNAMIC uiRowFlag)
+        {
+            uiLayerUsedFlags |= uiRowFlag;
+        }
+
+
+        public void SetRenderFlags(RenderingFlags full)
         {
             throw new NotImplementedException();
         }
@@ -99,7 +107,7 @@ namespace SharpAlliance.Core.SubSystems
         SCROLL_DOWNRIGHT = 0x00000200,
     }
 
-    public enum TILES_DYNAMIC
+    public enum TILES_DYNAMIC : uint
     {
         // highest bit value is rendered first!
         TILES_ALL_DYNAMICS = 0x00000fff,

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp.Drawing;
 using Veldrid.OpenGLBinding;
 
@@ -3231,7 +3232,7 @@ public struct TILE_ELEMENT
 {
     public TileTypeDefines fType;
     HVOBJECT hTileSurface;
-    DB_STRUCTURE_REF? pDBStructureRef;
+    public DB_STRUCTURE_REF? pDBStructureRef;
     uint uiFlags;
     RelTileLoc? pTileLocData;
     ushort usRegionIndex;
@@ -3253,6 +3254,21 @@ public struct TILE_ELEMENT
 
     // Reserved for added room and 32-byte boundaries
     byte[] bReserved;// [3];
+}
+
+// These structures are placed in a list and used for all tile imagery
+public struct TILE_IMAGERY
+{
+    HVOBJECT vo;
+    int fType;
+    AuxObjectData? pAuxData;
+    RelTileLoc? pTileLocData;
+    STRUCTURE_FILE_REF? pStructureFileRef;
+    int ubTerrainID;
+    int bRaisedObjectType;
+
+    // Reserved for added room and 32-byte boundaries
+    int[] bReserved;// = new int[2];
 }
 
 public struct TILE_ANIMATION_DATA

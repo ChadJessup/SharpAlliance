@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core;
@@ -37,6 +33,6 @@ public class Globals
     public List<MAP_ELEMENT> gpWorldLevelData { get; set; } = new();
 
     // World Movement Costs
-    public int[,,] gubWorldMovementCosts = new int[(int)WorldDefines.WORLD_MAX, World.MAXDIR, 2];
+    public int[,,] gubWorldMovementCosts = new int[World.WORLD_MAX, World.MAXDIR, 2];
     public int[,] gszTerrain = new int[(int)Traversability.NUM_TRAVTERRAIN_TYPES, 15];
 }

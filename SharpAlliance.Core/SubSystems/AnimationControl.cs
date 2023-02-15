@@ -1,14 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SharpAlliance.Core.SubSystems;
+﻿namespace SharpAlliance.Core.SubSystems;
 
 public class AnimationControl
 {
+    public const int MAX_ANIMATIONS = 320;
+    public const int MAX_FRAMES_PER_ANIM = 100;
+    public const int MAX_RANDOM_ANIMS_PER_BODYTYPE = 7;
 
+    public static int[,] gusAnimInst = new int[MAX_ANIMATIONS,MAX_FRAMES_PER_ANIM];
+    public static ANIMCONTROLTYPE[] gAnimControl = new ANIMCONTROLTYPE[(int)AnimationStates.NUMANIMATIONSTATES];
+
+    public static ANI_SPEED_DEF[] gubAnimWalkSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static ANI_SPEED_DEF[] gubAnimRunSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static ANI_SPEED_DEF[] gubAnimSwatSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static ANI_SPEED_DEF[] gubAnimCrawlSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static int[] gubMaxActionPoints = new int[(int)SoldierBodyTypes.TOTALBODYTYPES];
 }
 
 // Enumeration of animation states
@@ -390,4 +395,23 @@ public enum ANIM : uint
     FIRE = 0x20000000,
     BREATH = 0x40000000,
     IGNOREHITFINISH = 0x80000000,
+}
+
+
+public struct ANI_SPEED_DEF
+{
+    public int sSpeed;
+    public float dMovementChange;
+}
+
+public struct ANIMCONTROLTYPE
+{
+    public string zAnimStr;
+    public int sAP;
+    public int sSpeed;
+    public float dMovementChange;
+    public ANIM uiFlags;
+    public int ubHeight;
+    public int ubEndHeight;
+    public int bProfile;
 }

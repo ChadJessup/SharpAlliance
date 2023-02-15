@@ -81,8 +81,8 @@ namespace SharpAlliance.Core.SubSystems
             this.clock.gfGamePaused = true;
 
             //Reset the sectors
-            this.strategicMap.gWorldSectorX = this.strategicMap.gWorldSectorY = 0;
-            this.strategicMap.gbWorldSectorZ = -1;
+            StrategicMap.gWorldSectorX = StrategicMap.gWorldSectorY = 0;
+            StrategicMap.gbWorldSectorZ = -1;
 
             this.sound.SoundStopAll();
 

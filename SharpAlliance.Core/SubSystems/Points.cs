@@ -12,7 +12,7 @@ public class Points
         IC uiItemClass;
 
         // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-        usItemNum = pSoldier.inv[HANDPOS].usItem;
+        usItemNum = pSoldier.inv[(int)InventorySlot.HANDPOS].usItem;
         uiItemClass = Item[usItemNum].usItemClass;
 
         if (uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
@@ -21,7 +21,7 @@ public class Points
 
             if (pSoldier.bDoBurst)
             {
-                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), &(pSoldier.inv[HANDPOS]));
+                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), &(pSoldier.inv[(int)InventorySlot.HANDPOS]));
             }
             else
             {
@@ -53,23 +53,23 @@ public class Points
                     //INT32		cnt;
                     //INT16		sSpot;	
                     int ubGuyThere;
-                    int sGotLocation = NOWHERE;
+                    int sGotLocation = IsometricUtils.NOWHERE;
                     bool fGotAdjacent = false;
                     SOLDIERTYPE? pTarget;
 
                     ubGuyThere = WhoIsThere2(sGridNo, pSoldier.bLevel);
 
-                    if (ubGuyThere != NOBODY)
+                    if (ubGuyThere != OverheadTypes.NOBODY)
                     {
 
                         pTarget = MercPtrs[ubGuyThere];
 
                         if (pSoldier.ubBodyType == BLOODCAT)
                         {
-                            sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, &ubDirection, &sAdjustedGridNo, true, false);
+                            sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, ubDirection, sAdjustedGridNo, true, false);
                             if (sGotLocation == -1)
                             {
-                                sGotLocation = NOWHERE;
+                                sGotLocation = IsometricUtils.NOWHERE;
                             }
                         }
                         else
@@ -78,13 +78,13 @@ public class Points
                         }
                     }
 
-                    if (sGotLocation == NOWHERE && pSoldier.ubBodyType != BLOODCAT)
+                    if (sGotLocation == IsometricUtils.NOWHERE && pSoldier.ubBodyType != BLOODCAT)
                     {
                         sActionGridNo = FindAdjacentGridEx(pSoldier, sGridNo, ubDirection, sAdjustedGridNo, true, false);
 
                         if (sActionGridNo == -1)
                         {
-                            sGotLocation = NOWHERE;
+                            sGotLocation = IsometricUtils.NOWHERE;
                         }
                         else
                         {
@@ -93,7 +93,7 @@ public class Points
                         fGotAdjacent = true;
                     }
 
-                    if (sGotLocation != NOWHERE)
+                    if (sGotLocation != IsometricUtils.NOWHERE)
                     {
                         if (pSoldier.sGridNo == sGotLocation || !fGotAdjacent)
                         {
@@ -102,7 +102,7 @@ public class Points
                         else
                         {
                             // Save for next time...
-                            pSoldier.sWalkToAttackWalkToCost = PlotPath(pSoldier, sGotLocation, NO_COPYROUTE, NO.PLOT, TEMPORARY, (UINT16)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                            pSoldier.sWalkToAttackWalkToCost = PlotPath(pSoldier, sGotLocation, NO_COPYROUTE, NO.PLOT, TEMPORARY, pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
 
                             if (pSoldier.sWalkToAttackWalkToCost == 0)
                             {
@@ -148,12 +148,12 @@ public class Points
             int bAttachSlot;
             // look for an attached grenade launcher
 
-            bAttachSlot = FindAttachment((pSoldier.inv[HANDPOS]), UNDER_GLAUNCHER);
+            bAttachSlot = FindAttachment((pSoldier.inv[(int)InventorySlot.HANDPOS]), UNDER_GLAUNCHER);
             if (bAttachSlot == NO_SLOT)
             {
                 // default to hand
                 // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-                uiItemClass = Item[pSoldier.inv[HANDPOS].usItem].usItemClass;
+                uiItemClass = Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
             }
             else
             {
@@ -163,7 +163,7 @@ public class Points
         else
         {
             // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-            uiItemClass = Item[pSoldier.inv[HANDPOS].usItem].usItemClass;
+            uiItemClass = Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
         }
 
         if (uiItemClass == IC.BLADE || uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
@@ -183,110 +183,110 @@ public class Points
     }
 }
 
-public enum AP
+public class AP
 {
-    MINIMUM = 10,      // no merc can have less for his turn
-    MAXIMUM = 25,      // no merc can have more for his turn
-    MONSTER_MAXIMUM = 40,      // no monster can have more for his turn
-    VEHICLE_MAXIMUM = 50,      // no merc can have more for his turn
-    INCREASE = 10,      // optional across-the-board AP boost
-    MAX_AP_CARRIED = 5,      // APs carried from turn-to-turn
-    // monster AP bonuses, expressed in 10ths (12 = 120% normal) 
-    YOUNG_MONST_FACTOR = 15,
-    ADULT_MONST_FACTOR = 12,
-    MONST_FRENZY_FACTOR = 13,
-    // AP penalty for a phobia situation (again, in 10ths)
-    CLAUSTROPHOBE = 9,
-    AFRAID_OF_INSECTS = 8,
-    EXCHANGE_PLACES = 5,
+    public const int MINIMUM = 10;      // no merc can have less for his turn
+    public const int MAXIMUM = 25;      // no merc can have more for his turn
+    public const int MONSTER_MAXIMUM = 40;      // no monster can have more for his turn
+    public const int VEHICLE_MAXIMUM = 50;      // no merc can have more for his turn
+    public const int INCREASE = 10;      // optional across-the-board AP boost
+    public const int MAX_AP_CARRIED = 5;      // APs carried from turn-to-turn
+                                              // monster AP bonuses; expressed in 10ths (12 = 120% normal) 
+    public const int YOUNG_MONST_FACTOR = 15;
+    public const int ADULT_MONST_FACTOR = 12;
+    public const int MONST_FRENZY_FACTOR = 13;
+    // AP penalty for a phobia situation (again; in 10ths)
+    public const int CLAUSTROPHOBE = 9;
+    public const int AFRAID_OF_INSECTS = 8;
+    public const int EXCHANGE_PLACES = 5;
     // Action Point values
-    REVERSE_MODIFIER = 1,
-    STEALTH_MODIFIER = 2,
-    STEAL_ITEM = 10,         // APs to steal item....
-    TAKE_BLOOD = 10,
-    TALK = 6,
-    MOVEMENT_FLAT = 3,               // div by 2 for run, +2, for crawl, -1 for swat
-    MOVEMENT_GRASS = 4,
-    MOVEMENT_BUSH = 5,
-    MOVEMENT_RUBBLE = 6,
-    MOVEMENT_SHORE = 7,   // shallow wade
-    MOVEMENT_LAKE = 9,   // deep wade . slowest
-    MOVEMENT_OCEAN = 8,   // swimming is faster than deep wade
-    CHANGE_FACING = 1,   // turning to face any other direction
-    CHANGE_TARGET = 1,   // aiming at a new target
-    CATCH_ITEM = 5,              // turn to catch item
-    TOSS_ITEM = 8,           // toss item from inv
-    REFUEL_VEHICLE = 10,
+    public const int REVERSE_MODIFIER = 1;
+    public const int STEALTH_MODIFIER = 2;
+    public const int STEAL_ITEM = 10;         // APs to steal item....
+    public const int TAKE_BLOOD = 10;
+    public const int TALK = 6;
+    public const int MOVEMENT_FLAT = 3;               // div by 2 for run; +2; for crawl; -1 for swat
+    public const int MOVEMENT_GRASS = 4;
+    public const int MOVEMENT_BUSH = 5;
+    public const int MOVEMENT_RUBBLE = 6;
+    public const int MOVEMENT_SHORE = 7;   // shallow wade
+    public const int MOVEMENT_LAKE = 9;   // deep wade . slowest
+    public const int MOVEMENT_OCEAN = 8;   // swimming is faster than deep wade
+    public const int CHANGE_FACING = 1;   // turning to face any other direction
+    public const int CHANGE_TARGET = 1;   // aiming at a new target
+    public const int CATCH_ITEM = 5;              // turn to catch item
+    public const int TOSS_ITEM = 8;           // toss item from inv
+    public const int REFUEL_VEHICLE = 10;
     /*
-    MOVE_ITEM_FREE       0       // same place, pocket.pocket
-    MOVE_ITEM_FAST       2       // hand, holster, ground only
+    MOVE_ITEM_FREE       0       // same place; pocket.pocket
+    MOVE_ITEM_FAST       2       // hand; holster; ground only
     MOVE_ITEM_AVG        4       // everything else!
-    MOVE_ITEM_SLOW       6       // vests, protective gear
+    MOVE_ITEM_SLOW       6       // vests; protective gear
     */
-    MOVE_ITEM_FAST = 4,     // hand, holster, ground only
-    MOVE_ITEM_SLOW = 6, // vests, protective gear
-    RADIO = 5,
-    CROUCH = 2,
-    PRONE = 2,
-    LOOK_STANDING = 1,
-    LOOK_CROUCHED = 2,
-    LOOK_PRONE = 2,
-    READY_KNIFE = 0,
-    READY_PISTOL = 1,
-    READY_RIFLE = 2,
-    READY_SAW = 0,
+    public const int MOVE_ITEM_FAST = 4;     // hand; holster; ground only
+    public const int MOVE_ITEM_SLOW = 6; // vests; protective gear
+    public const int RADIO = 5;
+    public const int CROUCH = 2;
+    public const int PRONE = 2;
+    public const int LOOK_STANDING = 1;
+    public const int LOOK_CROUCHED = 2;
+    public const int LOOK_PRONE = 2;
+    public const int READY_KNIFE = 0;
+    public const int READY_PISTOL = 1;
+    public const int READY_RIFLE = 2;
+    public const int READY_SAW = 0;
     // JA2Gold: reduced dual AP cost from 3 to 1
     //READY_DUAL           3
-    READY_DUAL = 1,
-    MIN_AIM_ATTACK = 0,       // minimum permitted extra aiming
-    MAX_AIM_ATTACK = 4,       // maximum permitted extra aiming
-    BURST = 5,
-    DROP_BOMB = 3,
-    RELOAD_GUN = 5,// loading new clip/magazine
-    START_FIRST_AID = 5,// get the stuff out of medic kit
-    PER_HP_FIRST_AID = 1,// for each point healed
-    STOP_FIRST_AID = 3,// put everything away again
-    START_REPAIR = 5,    // get the stuff out of repair kit
-    GET_HIT = 2,      // struck by bullet, knife, explosion
-    GET_WOUNDED_DIVISOR = 4,  // 1 AP lost for every 'divisor' dmg
-    FALL_DOWN = 4,  // falling down (explosion, exhaustion)
-    GET_THROWN = 2,  // get thrown back (by explosion)
-    GET_UP = 5,  // getting up again
-    ROLL_OVER = 2,  // flipping from back to stomach
-    OPEN_DOOR = 3,  // whether successful, or not (locked)
-    PICKLOCK = 10,     // should really be several turns
-    EXAMINE_DOOR = 5,    // time to examine door
-    BOOT_DOOR = 8,         // time to boot door
-    USE_CROWBAR = 10,      // time to crowbar door
-    UNLOCK_DOOR = 6,       // time to unlock door
-    LOCK_DOOR = 6,             // time to lock door
-    EXPLODE_DOOR = 10,       // time to set explode charge on door
-    UNTRAP_DOOR = 10,        // time to untrap door
-    USEWIRECUTTERS = 10,     // Time to use wirecutters
-    CLIMBROOF = 10,          // APs to climb roof
-    CLIMBOFFROOF = 6,        // APs to climb off roof
-    JUMPFENCE = 6,           // time to jump over a fence
-    OPEN_SAFE = 8,       // time to use combination
-    USE_REMOTE = 2,
-    PULL_TRIGGER = 2,       // operate nearby panic trigger
-    FORCE_LID_OPEN = 10,
-    SEARCH_CONTAINER = 5,       // boxes, crates, safe, etc.
-    READ_NOTE = 10,   // reading a note's contents in inv.
-    SNAKE_BATTLE = 10,   // when first attacked
-    KILL_SNAKE = 7,   // when snake battle's been won
-    USE_SURV_CAM = 5,
-    PICKUP_ITEM = 3,
-    GIVE_ITEM = 1,
-    BURY_MINE = 10,
-    DISARM_MINE = 10,
-    DRINK = 5,
-    CAMOFLAGE = 10,
-    TAKE_PHOTOGRAPH = 5,
-    MERGE = 8,
-    OTHER_COST = 99,
-    START_RUN_COST = 1,
-    ATTACH_CAN = 5,
-    JUMP_OVER = 6,
+    public const int READY_DUAL = 1;
+    public const int MIN_AIM_ATTACK = 0;       // minimum permitted extra aiming
+    public const int MAX_AIM_ATTACK = 4;       // maximum permitted extra aiming
+    public const int BURST = 5;
+    public const int DROP_BOMB = 3;
+    public const int RELOAD_GUN = 5;// loading new clip/magazine
+    public const int START_FIRST_AID = 5;// get the stuff out of medic kit
+    public const int PER_HP_FIRST_AID = 1;// for each point healed
+    public const int STOP_FIRST_AID = 3;// put everything away again
+    public const int START_REPAIR = 5;    // get the stuff out of repair kit
+    public const int GET_HIT = 2;      // struck by bullet; knife; explosion
+    public const int GET_WOUNDED_DIVISOR = 4;  // 1 AP lost for every 'divisor' dmg
+    public const int FALL_DOWN = 4;  // falling down (explosion; exhaustion)
+    public const int GET_THROWN = 2;  // get thrown back (by explosion)
+    public const int GET_UP = 5;  // getting up again
+    public const int ROLL_OVER = 2;  // flipping from back to stomach
+    public const int OPEN_DOOR = 3;  // whether successful; or not (locked)
+    public const int PICKLOCK = 10;     // should really be several turns
+    public const int EXAMINE_DOOR = 5;    // time to examine door
+    public const int BOOT_DOOR = 8;         // time to boot door
+    public const int USE_CROWBAR = 10;      // time to crowbar door
+    public const int UNLOCK_DOOR = 6;       // time to unlock door
+    public const int LOCK_DOOR = 6;             // time to lock door
+    public const int EXPLODE_DOOR = 10;       // time to set explode charge on door
+    public const int UNTRAP_DOOR = 10;        // time to untrap door
+    public const int USEWIRECUTTERS = 10;     // Time to use wirecutters
+    public const int CLIMBROOF = 10;          // APs to climb roof
+    public const int CLIMBOFFROOF = 6;        // APs to climb off roof
+    public const int JUMPFENCE = 6;           // time to jump over a fence
+    public const int OPEN_SAFE = 8;       // time to use combination
+    public const int USE_REMOTE = 2;
+    public const int PULL_TRIGGER = 2;       // operate nearby panic trigger
+    public const int FORCE_LID_OPEN = 10;
+    public const int SEARCH_CONTAINER = 5;       // boxes; crates; safe; etc.
+    public const int READ_NOTE = 10;   // reading a note's contents in inv.
+    public const int SNAKE_BATTLE = 10;   // when first attacked
+    public const int KILL_SNAKE = 7;   // when snake battle's been won
+    public const int USE_SURV_CAM = 5;
+    public const int PICKUP_ITEM = 3;
+    public const int GIVE_ITEM = 1;
+    public const int BURY_MINE = 10;
+    public const int DISARM_MINE = 10;
+    public const int DRINK = 5;
+    public const int CAMOFLAGE = 10;
+    public const int TAKE_PHOTOGRAPH = 5;
+    public const int MERGE = 8;
+    public const int OTHER_COST = 99;
+    public const int START_RUN_COST = 1;
+    public const int ATTACH_CAN = 5;
+    public const int JUMP_OVER = 6;
 }
 
 public enum BP

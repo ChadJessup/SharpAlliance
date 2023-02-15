@@ -11,7 +11,7 @@ public class StructureInternals
 }
 
 [Flags]
-public enum STRUCTUREDefines : uint
+public enum STRUCTUREFLAGS : uint
 {
     // NOT used in DB structures!
     BASE_TILE = 0x00000001,

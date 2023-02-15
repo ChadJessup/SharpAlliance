@@ -268,7 +268,7 @@ namespace SharpAlliance.Core.Screens
                         {
                             case SmackerFiles.SMKINTRO_FIRST_VIDEO:
                                 //if Miguel is dead, play the flic with out him in it
-                                if (this.soldiers.gMercProfiles[NPCIDs.MIGUEL].bMercStatus == MercStatus.MERC_IS_DEAD)
+                                if (this.soldiers.gMercProfiles[NPCID.MIGUEL].bMercStatus == MercStatus.MERC_IS_DEAD)
                                 {
                                     iStringToUse = SmackerFiles.SMKINTRO_END_END_SPEECH_NO_MIGUEL;
                                 }
@@ -286,7 +286,7 @@ namespace SharpAlliance.Core.Screens
 
                             //if SkyRider is dead, play the flic without him
                             case SmackerFiles.SMKINTRO_END_HELI_FLYBY:
-                                if (this.soldiers.gMercProfiles[NPCIDs.SKYRIDER].bMercStatus == MercStatus.MERC_IS_DEAD)
+                                if (this.soldiers.gMercProfiles[NPCID.SKYRIDER].bMercStatus == MercStatus.MERC_IS_DEAD)
                                 {
                                     iStringToUse = SmackerFiles.SMKINTRO_END_NOSKYRIDER_HELICOPTER;
                                 }

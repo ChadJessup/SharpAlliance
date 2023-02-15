@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using Veldrid.OpenGLBinding;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -16,15 +17,21 @@ public class WorldManager
     private readonly ILogger<WorldManager> logger;
     private readonly Globals globals;
     private readonly SaveLoadMap saveLoadMap;
+    private readonly TileCache tileCache;
+    private readonly RenderWorld renderWorld;
 
     public WorldManager(
         ILogger<WorldManager> logger,
         Globals globals,
-        SaveLoadMap saveLoadMap)
+        SaveLoadMap saveLoadMap,
+        TileCache tileCache,
+        RenderWorld renderWorld)
     {
         this.logger = logger;
         this.globals = globals;
         this.saveLoadMap = saveLoadMap;
+        this.tileCache = tileCache;
+        this.renderWorld = renderWorld;
     }
 
     public int guiLevelNodes { get; set; } = 0;
@@ -86,13 +93,55 @@ public class WorldManager
                 if (fTileType >= fStartType && fTileType <= fEndType)
                 {
                     // Remove Item
-                    RemoveTopmost(iMapIndex, pOldTopmost.usIndex);
+                    RemoveTopmost(iMapIndex, (TileDefines)pOldTopmost.usIndex);
                     fRetVal = true;
                 }
             }
         }
 
         return fRetVal;
+    }
+
+    public bool RemoveOnRoof(int iMapIndex, int usIndex)
+    {
+        LEVELNODE? pOnRoof = null;
+        LEVELNODE? pOldOnRoof = null;
+
+        pOnRoof = this.globals.gpWorldLevelData[iMapIndex].pOnRoofHead;
+
+        // Look through all OnRoofs and remove index if found
+
+        while (pOnRoof is not null)
+        {
+            if (pOnRoof.usIndex == usIndex)
+            {
+                // OK, set links
+                // Check for head or tail
+                if (pOldOnRoof == null)
+                {
+                    // It's the head
+                    this.globals.gpWorldLevelData[iMapIndex].pOnRoofHead = pOnRoof.pNext;
+                }
+                else
+                {
+                    pOldOnRoof.pNext = pOnRoof.pNext;
+                }
+
+                // REMOVE ONROOF!
+                pOnRoof = null;
+                guiLevelNodes--;
+
+                return (true);
+            }
+
+            pOldOnRoof = pOnRoof;
+            pOnRoof = pOnRoof.pNext;
+
+        }
+
+        // Could not find it, return false
+
+        return (false);
     }
 
     public bool RemoveAllObjectsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
@@ -130,7 +179,7 @@ public class WorldManager
         return fRetVal;
     }
 
-    public bool RemoveObject(int iMapIndex, ushort usIndex)
+    public bool RemoveObject(int iMapIndex, int usIndex)
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pOldObject = null;
@@ -155,7 +204,7 @@ public class WorldManager
                     pOldObject.pNext = pObject.pNext;
                 }
 
-                TileCache.CheckForAndDeleteTileCacheStructInfo(pObject, usIndex);
+                this.tileCache.CheckForAndDeleteTileCacheStructInfo(pObject, usIndex);
 
                 // Delete memory assosiated with item
                 // MemFree(pObject);
@@ -238,30 +287,29 @@ public class WorldManager
         // Set head
         this.globals.gpWorldLevelData[iMapIndex].pTopmostHead = pNextTopmost;
 
-        ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
+        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
+
         return (true);
     }
 
-    public void AddUIElem(int iMapIndex, TileDefines usIndex, int sRelativeX, int sRelativeY, List<LEVELNODE>? ppNewNode)
-    => AddUIElem(iMapIndex, (ushort)usIndex, sRelativeX, sRelativeY, ppNewNode);
+    public void AddUIElem(int iMapIndex, TileDefines usIndex, int sRelativeX, int sRelativeY, out LEVELNODE ppNewNode)
+        => AddUIElem(iMapIndex, usIndex, sRelativeX, sRelativeY, out ppNewNode);
 
-    public bool AddUIElem(int iMapIndex, ushort usIndex, int sRelativeX, int sRelativeY, List<LEVELNODE>? ppNewNode)
+    public bool AddUIElem(int iMapIndex, ushort usIndex, int sRelativeX, int sRelativeY, out LEVELNODE ppNewNode)
     {
         LEVELNODE? pTopmost = AddTopmostToTail(iMapIndex, usIndex);
 
         Debug.Assert(pTopmost != null);
 
         // Set flags
-        pTopmost.uiFlags |= LEVELNODEFlags.USERELPOS;
+        pTopmost.uiFlags |= LEVELNODEFLAGS.USERELPOS;
         pTopmost.sRelativeX = sRelativeX;
         pTopmost.sRelativeY = sRelativeY;
 
-        if (ppNewNode is not null)
-        {
-            ppNewNode.Add(pTopmost);
-        }
+        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
 
-        ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
+        ppNewNode = pTopmost;
+
         return (true);
     }
 
@@ -276,17 +324,16 @@ public class WorldManager
 
     public LEVELNODE? AddTopmostToTail(int iMapIndex, ushort usIndex)
     {
-        LEVELNODE? pTopmost = null;
         LEVELNODE? pNextTopmost = null;
 
-        pTopmost = this.globals.gpWorldLevelData[iMapIndex].pTopmostHead;
+        LEVELNODE? pTopmost = this.globals.gpWorldLevelData[iMapIndex].pTopmostHead;
 
         // If we're at the head, set here
         if (pTopmost == null)
         {
-            if (CreateLevelNode(out pNextTopmost) == false)
+            if (!CreateLevelNode(out pNextTopmost))
             {
-                //was CHECKN
+                return null;
             }
 
             pNextTopmost.usIndex = usIndex;
@@ -295,14 +342,15 @@ public class WorldManager
         }
         else
         {
-            while (pTopmost != null)
+            while (pTopmost is not null)
             {
-                if (pTopmost.pNext == null)
+                if (pTopmost.pNext is null)
                 {
-                    if (CreateLevelNode(out pNextTopmost) == false)
+                    if (!CreateLevelNode(out pNextTopmost))
                     {
-                        //was checkn
+                        return null;
                     }
+
                     pTopmost.pNext = pNextTopmost;
                     pNextTopmost.pNext = null;
                     pNextTopmost.usIndex = usIndex;
@@ -311,12 +359,10 @@ public class WorldManager
                 }
 
                 pTopmost = pTopmost.pNext;
-
             }
-
         }
 
-        ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
+        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
         return (pNextTopmost);
     }
 
@@ -327,12 +373,16 @@ public class WorldManager
 
         pOnRoof = this.globals.gpWorldLevelData[iMapIndex].pOnRoofHead;
 
-        CHECKF(CreateLevelNode(out pNextOnRoof) != false);
-        if (usIndex < NUMBEROFTILES)
+        if (CreateLevelNode(out pNextOnRoof) == false)
         {
-            if (gTileDatabase[usIndex].pDBStructureRef != null)
+
+        }
+
+        if (usIndex < TileDefines.NUMBEROFTILES)
+        {
+            if (TileDefine.gTileDatabase[(int)usIndex].pDBStructureRef != null)
             {
-                if (AddStructureToWorld((short)iMapIndex, 1, gTileDatabase[usIndex].pDBStructureRef, pNextOnRoof) == FALSE)
+                if (AddStructureToWorld((short)iMapIndex, 1, TileDefine.gTileDatabase[(int)usIndex].pDBStructureRef, pNextOnRoof) == false)
                 {
                     // MemFree(pNextOnRoof);
                     guiLevelNodes--;
@@ -342,13 +392,13 @@ public class WorldManager
         }
 
         pNextOnRoof.pNext = pOnRoof;
-        pNextOnRoof.usIndex = usIndex;
+        pNextOnRoof.usIndex = (int)usIndex;
 
 
         // Set head
         this.globals.gpWorldLevelData[iMapIndex].pOnRoofHead = pNextOnRoof;
 
-        ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
+        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
         return true;
     }
 

@@ -52,7 +52,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public bool bActive;
 
-        public int bTeam;             // Team identifier
+        public TEAM bTeam;             // Team identifier
 
         //NEW MOVEMENT INFORMATION for Strategic Movement
         int ubGroupID;        //the movement group the merc is currently part of.
@@ -65,14 +65,14 @@ namespace SharpAlliance.Core.SubSystems
         // 23 bytes so far 	
 
         // WORLD POSITION STUFF
-        float dXPos;
-        float dYPos;
-        float dOldXPos;
-        float dOldYPos;
+        public float dXPos;
+        public float dYPos;
+        public float dOldXPos;
+        public float dOldYPos;
         int sInitialGridNo;
         public int sGridNo;
         public int bDirection;
-        int sHeightAdjustment;
+        public int sHeightAdjustment;
         int sDesiredHeight;
         int sTempNewGridNo;                   // New grid no for advanced animations
         int sRoomNo;
@@ -134,7 +134,7 @@ namespace SharpAlliance.Core.SubSystems
         int bService;      // first aid, or other time consuming process
 
         int usAniCode;
-        int usAniFrame;
+        public int usAniFrame;
         int sAniDelay;
 
         // MOVEMENT TO NEXT TILE HANDLING STUFF
@@ -213,7 +213,7 @@ namespace SharpAlliance.Core.SubSystems
         int sDesiredDest;
         int sDestination;
         public int sFinalDestination;
-        public InterfaceLevel bLevel;
+        public int bLevel;
         int bStopped;
         int bNeedToLook;
 
@@ -235,7 +235,7 @@ namespace SharpAlliance.Core.SubSystems
         int usUnblitX, usUnblitY;
         int usUnblitWidth, usUnblitHeight;
 
-        public int ubStrategicInsertionCode;
+        public INSERTION_CODE ubStrategicInsertionCode;
         public int usStrategicInsertionData;
 
         int iLight;
@@ -347,7 +347,7 @@ namespace SharpAlliance.Core.SubSystems
         // TIMECOUNTER BlinkSelCounter;
         // TIMECOUNTER PortraitFlashCounter;
         bool fDeadSoundPlayed;
-        public int ubProfile { get; }
+        public NPCID ubProfile { get; }
         int ubQuoteRecord;
         int ubQuoteActionID;
         int ubBattleSoundID;
@@ -484,10 +484,10 @@ namespace SharpAlliance.Core.SubSystems
         int bMovementDirection;
         int sOldGridNo;
         public int usDontUpdateNewGridNoOnMoveAnimChange;
-        int sBoundingBoxWidth;
-        int sBoundingBoxHeight;
-        int sBoundingBoxOffsetX;
-        int sBoundingBoxOffsetY;
+        public int sBoundingBoxWidth;
+        public int sBoundingBoxHeight;
+        public int sBoundingBoxOffsetX;
+        public int sBoundingBoxOffsetY;
         int uiTimeSameBattleSndDone;
         int bOldBattleSnd;
         bool fReactingFromBeingShot;

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Managers;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -9,22 +10,33 @@ public class PathAI
     private readonly GameSettings gGameSettings;
     private readonly Overhead overhead;
     private readonly Globals globals;
+    private readonly IsometricUtils isometricUtils;
+    private readonly WorldManager worldManager;
+    public int[] guiPathingData = new int[256];
+    public static int[] guiPlottedPath = new int[256];
 
     public static bool gfPlotDirectPath { get; set; } = false;
+    public static int giPlotCnt { get; set; } = 0;
+    public static bool gusPathShown { get; set; } = false;
+    public static int gusAPtsToMove { get; set; } = 0;
 
     public PathAI(
         ILogger<PathAI> logger,
         GameSettings gameSettings,
         Overhead overhead,
-        Globals globals)
+        Globals globals,
+        IsometricUtils isometricUtils,
+        WorldManager worldManager)
     {
         this.logger = logger;
         this.gGameSettings = gameSettings;
         this.overhead = overhead;
         this.globals = globals;
+        this.isometricUtils = isometricUtils;
+        this.worldManager = worldManager;
     }
 
-    public short UIPlotPath(
+    public int UIPlotPath(
         SOLDIERTYPE? pSold,
         int sDestGridno,
         PlotPathDefines bCopyRoute,
@@ -37,7 +49,7 @@ public class PathAI
     {
         // This function is specifically for UI calls to the pathing routine, to 
         // check whether the shift key is pressed, etc.
-        short sRet;
+        int sRet;
 
         if (_KeyDown(SHIFT))
         {
@@ -55,12 +67,22 @@ public class PathAI
             bPlot = true;
         }
 
-        sRet = PlotPath(pSold, sDestGridno, bCopyRoute, bPlot, bStayOn, usMovementMode, bStealth, bReverse, sAPBudget);
+        sRet = PlotPath(
+            pSold,
+            sDestGridno,
+            bCopyRoute,
+            bPlot,
+            bStayOn,
+            usMovementMode,
+            bStealth,
+            bReverse,
+            sAPBudget);
+
         gfPlotDirectPath = false;
         return (sRet);
     }
 
-    public short PlotPath(
+    public int PlotPath(
         SOLDIERTYPE? pSold,
         int sDestGridno,
         PlotPathDefines bCopyRoute,
@@ -73,20 +95,20 @@ public class PathAI
     {
         int sTileCost, sPoints = 0, sTempGrid, sAnimCost = 0;
         int sPointsWalk = 0, sPointsCrawl = 0, sPointsRun = 0, sPointsSwat = 0;
-        AP sExtraCostStand, sExtraCostSwat, sExtraCostCrawl;
+        int sExtraCostStand, sExtraCostSwat, sExtraCostCrawl;
         int iLastGrid;
         int iCnt;
         int sOldGrid = 0;
         int sFootOrderIndex;
-        TRAVELCOST sSwitchValue;
+        int sSwitchValue;
         STEPSTART[] sFootOrder = new STEPSTART[] { STEPSTART.GREEN, STEPSTART.PURPLE, STEPSTART.BLUE,
                                                     STEPSTART.ORANGE, STEPSTART.RED };
         int usTileIndex;
-        ushort usTileNum;
+        int usTileNum;
         LEVELNODE? pNode;
         AnimationStates usMovementModeToUseForAPs;
         bool bIgnoreNextCost = false;
-        short sTestGridno;
+        int sTestGridno;
 
         if (bPlot && gusPathShown)
         {
@@ -94,7 +116,7 @@ public class PathAI
         }
 
         gusAPtsToMove = 0;
-        sTempGrid = (short)pSold.sGridNo;
+        sTempGrid = pSold.sGridNo;
 
         sFootOrderIndex = 0;
 
@@ -110,7 +132,7 @@ public class PathAI
             if (pSold.usAnimState != AnimationStates.RUNNING)
             {
                 // for estimation purposes, always pay penalty
-                sPointsRun = AP.START_RUN_COST;
+                sPointsRun = (int)AP.START_RUN_COST;
             }
 
             // Add to points, those needed to start from different stance!
@@ -118,12 +140,12 @@ public class PathAI
 
 
             // We should reduce points for starting to run if first tile is a fence...
-            sTestGridno = NewGridNo(pSold.sGridNo, (short)DirectionInc((ushort)guiPathingData[0]));
-            if (this.globals.gubWorldMovementCosts[sTestGridno, (byte)guiPathingData[0], pSold.bLevel] == TRAVELCOST.FENCE)
+            sTestGridno = this.isometricUtils.NewGridNo(pSold.sGridNo, this.isometricUtils.DirectionInc(guiPathingData[0]));
+            if (this.globals.gubWorldMovementCosts[sTestGridno, guiPathingData[0], (int)pSold.bLevel] == (int)TRAVELCOST.FENCE)
             {
                 if (usMovementMode == AnimationStates.RUNNING && pSold.usAnimState != AnimationStates.RUNNING)
                 {
-                    sPoints -= AP.START_RUN_COST;
+                    sPoints -= (int)AP.START_RUN_COST;
                 }
             }
 
@@ -149,11 +171,7 @@ public class PathAI
             sPoints += sAnimCost;
             gusAPtsToMove += sAnimCost;
 
-
-
-
-
-            if (bStayOn)
+            if (bStayOn != 0)
             {
                 iLastGrid = giPathDataSize + 1;
             }
@@ -171,10 +189,10 @@ public class PathAI
                 // what is the next gridno in the path?
                 sOldGrid = sTempGrid;
 
-                sTempGrid = NewGridNo(sTempGrid, (short)DirectionInc((ushort)guiPathingData[iCnt]));
+                sTempGrid = this.isometricUtils.NewGridNo(sTempGrid, this.isometricUtils.DirectionInc(guiPathingData[iCnt]));
 
                 // Get switch value...
-                sSwitchValue = this.globals.gubWorldMovementCosts[sTempGrid, (byte)guiPathingData[iCnt], pSold.bLevel];
+                sSwitchValue = this.globals.gubWorldMovementCosts[sTempGrid, guiPathingData[iCnt], pSold.bLevel];
 
                 // get the tile cost for that tile based on WALKING
                 sTileCost = TerrainActionPoints(pSold, sTempGrid, (byte)guiPathingData[iCnt], pSold.bLevel);
@@ -182,7 +200,9 @@ public class PathAI
                 usMovementModeToUseForAPs = usMovementMode;
 
                 // ATE - MAKE MOVEMENT ALWAYS WALK IF IN WATER
-                if (gpWorldLevelData[sTempGrid].ubTerrainID == DEEP_WATER || gpWorldLevelData[sTempGrid].ubTerrainID == MED_WATER || gpWorldLevelData[sTempGrid].ubTerrainID == LOW_WATER)
+                if (this.globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.DEEP_WATER
+                    || this.globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.MED_WATER
+                    || this.globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.LOW_WATER)
                 {
                     usMovementModeToUseForAPs = AnimationStates.WALKING;
                 }
@@ -219,15 +239,15 @@ public class PathAI
                                         sExtraCostStand++;
                                     }
 
-                                    sPoints += sExtraCostStand;
+                                    sPoints += (int)sExtraCostStand;
                                 }
                                 break;
 
                             case AnimationStates.SWATTING:
 
                                 // Add cost to stand once there BEFORE....
-                                sExtraCostSwat += AP.CROUCH;
-                                sPoints += sExtraCostSwat;
+                                sExtraCostSwat += (int)AP.CROUCH;
+                                sPoints += (int)sExtraCostSwat;
                                 break;
 
                             case AnimationStates.CRAWLING:
@@ -248,7 +268,7 @@ public class PathAI
                                 case AnimationStates.RUNNING:
                                 case AnimationStates.WALKING:
                                     // charge crouch APs for ducking head!
-                                    sExtraCostStand += AP.CROUCH;
+                                    sExtraCostStand += (int)AP.CROUCH;
                                     break;
 
                                 default:
@@ -257,35 +277,25 @@ public class PathAI
                         }
 
                         // so, then we must modify it for other movement styles and accumulate
-                        switch (usMovementModeToUseForAPs)
+                        sPoints += usMovementModeToUseForAPs switch
                         {
-                            case AnimationStates.RUNNING:
-                                sPoints += (short)(double)((sTileCost / OverheadTypes.RUNDIVISOR)) + sExtraCostStand;
-                                break;
-                            case AnimationStates.WALKING:
-                                sPoints += (sTileCost + OverheadTypes.WALKCOST) + sExtraCostStand;
-                                break;
-                            case AnimationStates.SWATTING:
-                                sPoints += (sTileCost + OverheadTypes.SWATCOST) + sExtraCostSwat;
-                                break;
-                            case AnimationStates.CRAWLING:
-                                sPoints += (sTileCost + OverheadTypes.CRAWLCOST) + sExtraCostCrawl;
-                                break;
-                            default:
-                                sPoints += sTileCost;
-                                break;
-                        }
+                            AnimationStates.RUNNING => (short)(double)((sTileCost / OverheadTypes.RUNDIVISOR)) + (int)sExtraCostStand,
+                            AnimationStates.WALKING => (sTileCost + OverheadTypes.WALKCOST) + (int)sExtraCostStand,
+                            AnimationStates.SWATTING => (sTileCost + OverheadTypes.SWATCOST) + (int)sExtraCostSwat,
+                            AnimationStates.CRAWLING => (sTileCost + OverheadTypes.CRAWLCOST) + (int)sExtraCostCrawl,
+                            _ => sTileCost,
+                        };
                     }
                 }
 
                 // THIS NEXT SECTION ONLY NEEDS TO HAPPEN FOR CURSOR UI FEEDBACK, NOT ACTUAL COSTING
 
-                if (bPlot && ((this.overhead.gTacticalStatus.uiFlags & TURNBASED) && (this.overhead.gTacticalStatus.uiFlags & INCOMBAT))) // OR USER OPTION ON... ***)
+                if (bPlot && ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))) // OR USER OPTION ON... ***)
                 {
                     // ATE; TODO: Put stuff in here to allow for fact of costs other than movement ( jump fence, open door )
 
                     // store WALK cost
-                    sPointsWalk += (sTileCost + OverheadTypes.WALKCOST) + (int)sExtraCostStand;
+                    sPointsWalk += (sTileCost + OverheadTypes.WALKCOST) + sExtraCostStand;
 
                     // now get cost as if CRAWLING
                     sPointsCrawl += (sTileCost + OverheadTypes.CRAWLCOST) + sExtraCostCrawl;
@@ -315,14 +325,14 @@ public class PathAI
                         // we need a footstep graphic ENTERING the next tile
 
                         // get the direction
-                        usTileNum = (ushort)guiPathingData[iCnt] + 2;
+                        usTileNum = guiPathingData[iCnt] + 2;
                         if (usTileNum > 8)
                         {
                             usTileNum = 1;
                         }
 
                         // Are we a vehicle?
-                        if (pSold.uiStatusFlags & SOLDIER.VEHICLE)
+                        if (pSold.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                         {
                             // did we exceed WALK cost?
                             if (sPointsSwat > sAPBudget)
@@ -361,10 +371,10 @@ public class PathAI
                             }
                         }
 
-                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, (ushort)usTileNum, usTileIndex);
+                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, usTileNum, usTileIndex);
 
                         // Adjust based on what mode we are in...
-                        if ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(this.overhead.gTacticalStatus.uiFlags & INCOMBAT))
+                        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                         {
                             // find out which color we're using
                             usTileIndex += (int)sFootOrder[4];
@@ -420,7 +430,7 @@ public class PathAI
                         GetTileIndexFromTypeSubIndex(FOOTPRINTS, (ushort)usTileNum, usTileIndex);
 
                         // Adjust based on what mode we are in...
-                        if ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(this.overhead.gTacticalStatus.uiFlags & INCOMBAT))
+                        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                         {
                             // find out which color we're using
                             usTileIndex += (int)sFootOrder[4];
@@ -462,6 +472,59 @@ public class PathAI
 
         return (sPoints);
     }
+
+    public void ErasePath(bool bEraseOldOne)
+    {
+        int iCnt;
+
+        // NOTE: This routine must be called BEFORE anything happens that changes
+        //       a merc's gridno, else the....
+
+        //EraseAPCursor();
+
+        if (HandleUI.gfUIHandleShowMoveGrid > 0)
+        {
+            HandleUI.gfUIHandleShowMoveGrid = 0;
+
+            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS4);
+            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS9);
+            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS2);
+            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS13);
+            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS15);
+            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS19);
+            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS20);
+        }
+
+        if (!gusPathShown)
+        {
+            //OldPath = FALSE;
+            return;
+        }
+
+        //if (OldPath > 0 && !eraseOldOne)
+        //   return;
+
+        //OldPath = FALSE;
+
+        gusPathShown = false;
+
+        for (iCnt = 0; iCnt < giPlotCnt; iCnt++)
+        {
+            //Grid[PlottedPath[cnt]].fstep = 0;
+
+            this.worldManager.RemoveAllObjectsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
+            this.worldManager.RemoveAllOnRoofsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
+
+            //RemoveAllObjectsOfTypeRange( guiPlottedPath[iCnt], FIRSTPOINTERS, FIRSTPOINTERS );
+        }
+
+        //for (cnt=0; cnt < GRIDSIZE; cnt++)
+        //    Grid[cnt].fstep = 0;
+        //RemoveAllStructsOfTypeRange( gusEndPlotGridNo, GOODRING, GOODRING );
+
+        giPlotCnt = 0;
+        // memset(guiPlottedPath, 0, 256 * sizeof(UINT32));
+    }
 }
 
 // PLOT PATH defines
@@ -485,52 +548,62 @@ public enum PlotPathDefines
     PATH_CLOSE_RADIUS = 5,
 }
 
-public enum TRAVELCOST
+public class TRAVELCOST
 {
-    NONE = 0,
-    FLAT = 10,
-    BUMPY = 12,
-    GRASS = 12,
-    THICK = 16,
-    DEBRIS = 20,
-    SHORE = 30,
-    KNEEDEEP = 36,
-    DEEPWATER = 50,
-    FENCE = 40,
+    public const int NONE = 0;
+    public const int FLAT = 10;
+    public const int BUMPY = 12;
+    public const int GRASS = 12;
+    public const int THICK = 16;
+    public const int DEBRIS = 20;
+    public const int SHORE = 30;
+    public const int KNEEDEEP = 36;
+    public const int DEEPWATER = 50;
+    public const int FENCE = 40;
 
     // these values are used to indicate "this is an obstacle
     // if there is a door (perceived) open/closed in this tile
-    DOOR_CLOSED_HERE = 220,
-    DOOR_CLOSED_N = 221,
-    DOOR_CLOSED_W = 222,
-    DOOR_OPEN_HERE = 223,
-    DOOR_OPEN_N = 224,
-    DOOR_OPEN_NE = 225,
-    DOOR_OPEN_E = 226,
-    DOOR_OPEN_SE = 227,
-    DOOR_OPEN_S = 228,
-    DOOR_OPEN_SW = 229,
-    DOOR_OPEN_W = 230,
-    DOOR_OPEN_NW = 231,
-    DOOR_OPEN_N_N = 232,
-    DOOR_OPEN_NW_N = 233,
-    DOOR_OPEN_NE_N = 234,
-    DOOR_OPEN_W_W = 235,
-    DOOR_OPEN_SW_W = 236,
-    DOOR_OPEN_NW_W = 237,
-    NOT_STANDING = 248,
-    OFF_MAP = 249,
-    CAVEWALL = 250,
-    HIDDENOBSTACLE = 251,
-    DOOR = 252,
-    OBSTACLE = 253,
-    WALL = 254,
-    EXITGRID = 255,
-    TRAINTRACKS = 30,
-    DIRTROAD = 9,
-    PAVEDROAD = 9,
-    FLATFLOOR = 10,
-    BLOCKED = OFF_MAP,
+    public const int DOOR_CLOSED_HERE = 220;
+    public const int DOOR_CLOSED_N = 221;
+    public const int DOOR_CLOSED_W = 222;
+    public const int DOOR_OPEN_HERE = 223;
+    public const int DOOR_OPEN_N = 224;
+    public const int DOOR_OPEN_NE = 225;
+    public const int DOOR_OPEN_E = 226;
+    public const int DOOR_OPEN_SE = 227;
+    public const int DOOR_OPEN_S = 228;
+    public const int DOOR_OPEN_SW = 229;
+    public const int DOOR_OPEN_W = 230;
+    public const int DOOR_OPEN_NW = 231;
+    public const int DOOR_OPEN_N_N = 232;
+    public const int DOOR_OPEN_NW_N = 233;
+    public const int DOOR_OPEN_NE_N = 234;
+    public const int DOOR_OPEN_W_W = 235;
+    public const int DOOR_OPEN_SW_W = 236;
+    public const int DOOR_OPEN_NW_W = 237;
+    public const int NOT_STANDING = 248;
+    public const int OFF_MAP = 249;
+    public const int CAVEWALL = 250;
+    public const int HIDDENOBSTACLE = 251;
+    public const int DOOR = 252;
+    public const int OBSTACLE = 253;
+    public const int WALL = 254;
+    public const int EXITGRID = 255;
+    public const int TRAINTRACKS = 30;
+    public const int DIRTROAD = 9;
+    public const int PAVEDROAD = 9;
+    public const int FLATFLOOR = 10;
+    public const int BLOCKED = OFF_MAP;
+
+    public static bool IS_TRAVELCOST_DOOR(int x)
+    {
+        return (x >= TRAVELCOST.DOOR_CLOSED_HERE && x <= TRAVELCOST.DOOR_OPEN_NW_W);
+    }
+
+    public static bool IS_TRAVELCOST_CLOSED_DOOR(int x)
+    {
+        return (x >= TRAVELCOST.DOOR_CLOSED_HERE && ((int)x) << (int)TRAVELCOST.DOOR_CLOSED_W > 0);
+    }
 }
 
 [Flags]
@@ -541,17 +614,4 @@ public enum STEPSTART
     PURPLE = 32,
     BLUE = 48,
     ORANGE = 64,
-}
-
-public static class TRAVELCOSTExtensions
-{
-    public static bool IS_TRAVELCOST_DOOR(this TRAVELCOST x)
-    {
-        return (x >= TRAVELCOST.DOOR_CLOSED_HERE && x <= TRAVELCOST.DOOR_OPEN_NW_W);
-    }
-
-    public static bool IS_TRAVELCOST_CLOSED_DOOR(this TRAVELCOST x)
-    {
-        return (x >= TRAVELCOST.DOOR_CLOSED_HERE && ((int)x) << (int)TRAVELCOST.DOOR_CLOSED_W > 0);
-    }
 }

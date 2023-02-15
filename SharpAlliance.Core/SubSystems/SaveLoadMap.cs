@@ -17,11 +17,11 @@ public class SaveLoadMap
 
     public bool gfApplyChangesToTempFile { get; set; } = false;
 
-    public void AddRemoveObjectToMapTempFile(int uiMapIndex, ushort usIndex)
+    public void AddRemoveObjectToMapTempFile(int uiMapIndex, int usIndex)
     {
         MODIFY_MAP Map;
         TileTypeDefines uiType;
-        ushort? usSubIndex;
+        int? usSubIndex;
 
         if (!gfApplyChangesToTempFile)
         {
@@ -40,23 +40,23 @@ public class SaveLoadMap
 
         Map = new MODIFY_MAP
         {
-            usGridNo = (ushort)uiMapIndex,
+            usGridNo = uiMapIndex,
             //	Map.usIndex		= usIndex;
-            usImageType = (ushort)uiType,
-            usSubImageIndex = usSubIndex,
+            usImageType = (int)uiType,
+            usSubImageIndex = (int)usSubIndex!,
 
             ubType = SLM_REMOVE_OBJECT
         };
 
-        SaveModifiedMapStructToMapTempFile(out Map, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+        SaveModifiedMapStructToMapTempFile(out Map, StrategicMap.gWorldSectorX, StrategicMap.gWorldSectorY, StrategicMap.gbWorldSectorZ);
     }
 }
 
 public struct MODIFY_MAP
 {
-    public ushort usGridNo;                //The gridno the graphic will be applied to
-    public ushort usImageType;         //graphic index
-    public ushort usSubImageIndex;     //
+    public int usGridNo;                //The gridno the graphic will be applied to
+    public int usImageType;         //graphic index
+    public int usSubImageIndex;     //
                                 //	ushort	usIndex;
     public byte ubType;                       // the layer it will be applied to
 

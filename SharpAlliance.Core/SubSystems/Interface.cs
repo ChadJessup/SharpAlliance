@@ -7,10 +7,12 @@ public class Interface
     public const int ROOF_LEVEL_HEIGHT = 50;
 
     // this might need to be an int, we'll see.
-    public static InterfaceLevel gsInterfaceLevel { get; set; }
+    public static int gsInterfaceLevel { get; set; }
     public InterfacePanelDefines gsCurInterfacePanel { get; internal set; }
     public static MouseRegion? gViewportRegion { get; set; }
     public static bool gfUIStanceDifferent { get; set; }
+
+    public static OBJECTTYPE? gpItemPointer { get; set; } = null;
 }
 
 public enum MOVEMENT
@@ -33,11 +35,11 @@ public enum InterfacePanelDefines
 }
 
 // Interface level enums
-public enum InterfaceLevel
+public class InterfaceLevel
 {
-    I_GROUND_LEVEL,
-    I_ROOF_LEVEL,
-    I_NUMLEVELS
+    public const int I_GROUND_LEVEL = 0;
+    public const int I_ROOF_LEVEL = 1;
+    public const int I_NUMLEVELS = 2;
 };
 
 // GLOBAL DEFINES FOR SOME UI FLAGS

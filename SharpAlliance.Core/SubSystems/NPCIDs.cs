@@ -1,7 +1,7 @@
 ﻿namespace SharpAlliance.Core.SubSystems
 {
     //enums for the mercs 
-    public enum NPCIDs
+    public enum NPCID
     {
         Unknown = 0,
         BIFF = 40,

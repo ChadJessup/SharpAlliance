@@ -1,5 +1,8 @@
-﻿namespace SharpAlliance.Core.SubSystems;
+﻿using System;
 
-internal class TAG_anitile
+namespace SharpAlliance.Core.SubSystems;
+
+public class TAG_anitile
 {
+    public int uiUserData { get; set; }
 }

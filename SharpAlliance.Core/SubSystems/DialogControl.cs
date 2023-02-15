@@ -84,9 +84,9 @@ namespace SharpAlliance.Core.SubSystems
                 }
             }
             else if (ubCharacterNum >= FIRST_RPC &&
-                    (!this.soldiers.gMercProfiles[(NPCIDs)ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)
+                    (!this.soldiers.gMercProfiles[(NPCID)ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)
                     || this.interfaceDialog.ProfileCurrentlyTalkingInDialoguePanel(ubCharacterNum)
-                    || this.soldiers.gMercProfiles[(NPCIDs)ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_FORCENPCQUOTE))
+                    || this.soldiers.gMercProfiles[(NPCID)ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_FORCENPCQUOTE))
                     )
             {
                 ubFileNumID = ubCharacterNum;

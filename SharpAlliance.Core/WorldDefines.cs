@@ -7,11 +7,11 @@ namespace SharpAlliance.Core;
 
 public class PROFILE
 {
-    const int PROFILE_X_SIZE = 5;
-    const int PROFILE_Y_SIZE = 5;
-    const int PROFILE_Z_SIZE = 4;
+    public const int X_SIZE = 5;
+    public const int Y_SIZE = 5;
+    public const int Z_SIZE = 4;
 
-    private readonly int[,] profile = new int[PROFILE_X_SIZE, PROFILE_Y_SIZE];
+    private readonly int[,] profile = new int[X_SIZE, Y_SIZE];
 
     public int this[int x, int y]
     {
@@ -22,13 +22,6 @@ public class PROFILE
 
 public enum WorldDefines
 {
-    WORLD_TILE_X = 40,
-    WORLD_TILE_Y = 20,
-    WORLD_COLS = 160,
-    WORLD_ROWS = 160,
-    WORLD_COORD_COLS = 1600,
-    WORLD_COORD_ROWS = 1600,
-    WORLD_MAX = 25600,
     CELL_X_SIZE = 10,
     CELL_Y_SIZE = 10,
 
@@ -37,7 +30,7 @@ public enum WorldDefines
 }
 
 [Flags]
-public enum LEVELNODEFlags :uint
+public enum LEVELNODEFLAGS : uint
 {
     SOLDIER = 0x00000001,
     UNUSED2 = 0x00000002,
@@ -75,7 +68,7 @@ public enum LEVELNODEFlags :uint
 public class LEVELNODE
 {
     public LEVELNODE? pNext;
-    public LEVELNODEFlags uiFlags;                         // flags struct
+    public LEVELNODEFLAGS uiFlags;                         // flags struct
 
     int ubSumLights;                  // LIGHTING INFO
     int ubMaxLights;                  // MAX LIGHTING INFO
@@ -86,7 +79,7 @@ public class LEVELNODE
     public int uiAPCost;                     // FOR AP DISPLAY
     public int iExitGridInfo;
 
-    public ushort usIndex;                         // TILE DATABASE INDEX
+    public int usIndex;                         // TILE DATABASE INDEX
     int sCurrentFrame;                // Stuff for animated tiles for a given tile location ( doors, etc )
 
     public SOLDIERTYPE? pSoldier;                          // POINTER TO SOLDIER
@@ -101,7 +94,7 @@ public class LEVELNODE
     uint uiAnimHitLocationFlags;  // Animation profile flags for soldier placeholders ( prone merc hit location values )
 
     // Some can contains index values into animated tile data
-    TAG_anitile? pAniTile;
+    public TAG_anitile? pAniTile;
 
     // Can be an item pool as well...
     ITEM_POOL? pItemPool;                   // ITEM POOLS
@@ -129,39 +122,37 @@ public class ITEM_POOL
     LEVELNODE? pLevelNode;
 }
 
-
 public class STRUCTURE
 {
-    STRUCTURE? pPrev;
-    STRUCTURE? pNext;
-    short sGridNo;
-    public ushort usStructureID;
-    DB_STRUCTURE_REF? pDBStructureRef;
+    public STRUCTURE? pPrev;
+    public STRUCTURE? pNext;
+    public int sGridNo;
+    public int usStructureID;
+    public DB_STRUCTURE_REF pDBStructureRef { get; set; } = new();
 
-    byte ubHitPoints;
+    public byte ubHitPoints;
     byte ubLockStrength;
 
-    short sBaseGridNo;
+    public int sBaseGridNo { get; set; }
 
-    short sCubeOffset;// height of bottom of object in profile "cubes"
-    public uint fFlags; // need to have something to indicate base tile/not
-    PROFILE? pShape;
+    public int sCubeOffset;// height of bottom of object in profile "cubes"
+    public STRUCTUREFLAGS fFlags; // need to have something to indicate base tile/not
+    public PROFILE? pShape;
     public WallOrientation ubWallOrientation;
-    byte ubVehicleHitLocation;
+    public byte ubVehicleHitLocation;
     byte ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
     byte ubUnused;
 }
 
-
-struct DB_STRUCTURE
+public class DB_STRUCTURE
 {
     byte ubArmour;
-    byte ubHitPoints;
+    public byte ubHitPoints;
     byte ubDensity;
-    byte ubNumberOfTiles;
-    uint fFlags;
+    public byte ubNumberOfTiles;
+    public STRUCTUREFLAGS fFlags;
     ushort usStructureNumber;
-    byte ubWallOrientation;
+    public WallOrientation ubWallOrientation;
     sbyte bDestructionPartner; // >0 = debris number (bDP - 1), <0 = partner graphic 
     sbyte bPartnerDelta; // opened/closed version, etc... 0 for unused
     sbyte bZTileOffsetX;
@@ -169,20 +160,20 @@ struct DB_STRUCTURE
     byte bUnused;
 } // 16 bytes
 
-struct DB_STRUCTURE_REF
+public class DB_STRUCTURE_REF
 {
-    DB_STRUCTURE pDBStructure;
-    List<DB_STRUCTURE_TILE> ppTile; // dynamic array
+    public DB_STRUCTURE pDBStructure;
+    public List<DB_STRUCTURE_TILE> ppTile; // dynamic array
 } // 8 bytes
 
-struct DB_STRUCTURE_TILE
+public class DB_STRUCTURE_TILE
 {
-    short sPosRelToBase;  // "single-axis"
+    public short sPosRelToBase;  // "single-axis"
     sbyte bXPosRelToBase;
     sbyte bYPosRelToBase;
-    PROFILE Shape;                  // 25 bytes
-    byte fFlags;
-    byte ubVehicleHitLocation;
+    public PROFILE Shape;                  // 25 bytes
+    public TILE fFlags { get; set; }
+    public byte ubVehicleHitLocation;
     byte bUnused;
 } // 32 bytes
 
@@ -195,21 +186,50 @@ public class MAP_ELEMENT
     LEVELNODE? pShadowHead;                     //4
     LEVELNODE? pMercHead;                           //5
     LEVELNODE? pRoofHead;                           //6
-    public LEVELNODE pOnRoofHead { get; set; } = new();   //7
+    public LEVELNODE? pOnRoofHead { get; set; } = new();   //7
     public LEVELNODE pTopmostHead { get; set; } = new();  //8
-    LEVELNODE?[] pLevelNodes;                 // [9];
+    public LEVELNODE[] pLevelNodes = new LEVELNODE[9];
 
-    STRUCTURE? pStructureHead;
-    STRUCTURE? pStructureTail;
+    public STRUCTURE? pStructureHead;
+    public STRUCTURE? pStructureTail;
 
-    public ushort uiFlags;
-    byte[] ubExtFlags;// [2];
-    ushort[] sSumRealLights = new ushort[1];// [1];
+    public MAPELEMENTFLAGS uiFlags;
+    public byte[] ubExtFlags = new byte[2];
+    ushort[] sSumRealLights = new ushort[1];
     public byte sHeight;
     byte ubAdjacentSoldierCnt;
-    byte ubTerrainID;
+    public TerrainTypeDefines ubTerrainID;
 
     byte ubReservedSoldierID;
     byte ubBloodInfo;
     byte ubSmellInfo;
+}
+
+public enum MAPELEMENTFLAGS
+{
+    // THE FIRST FEW ( 4 ) bits are flags which are saved in the world
+    REDUNDENT = 0x0001,
+    REEVALUATE_REDUNDENCY = 0x0002,
+    ENEMY_MINE_PRESENT = 0x0004,
+    PLAYER_MINE_PRESENT = 0x0008,
+    STRUCTURE_DAMAGED = 0x0010,
+    REEVALUATEBLOOD = 0x0020,
+    INTERACTIVETILE = 0x0040,
+    RAISE_LAND_START = 0x0080,
+    REVEALED = 0x0100,
+    RAISE_LAND_END = 0x0200,
+    REDRAW = 0x0400,
+    REVEALED_ROOF = 0x0800,
+    MOVEMENT_RESERVED = 0x1000,
+    RECALCULATE_WIREFRAMES = 0x2000,
+    ITEMPOOL_PRESENT = 0x4000,
+    REACHABLE = 0x8000,
+    EXT_SMOKE = 0x01,
+    EXT_TEARGAS = 0x02,
+    EXT_MUSTARDGAS = 0x04,
+    EXT_DOOR_STATUS_PRESENT = 0x08,
+    EXT_RECALCULATE_MOVEMENT = 0x10,
+    EXT_NOBURN_STRUCT = 0x20,
+    EXT_ROOFCODE_VISITED = 0x40,
+    EXT_CREATUREGAS = 0x80,
 }

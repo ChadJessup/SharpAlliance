@@ -26,6 +26,8 @@ public class OverheadTypes
     public const int SWATCOST = 0;
     public const int CRAWLCOST = 1;
 
+    public const int MAXTEAMS = 6;
+    public const int MAXMERCS = MAX_NUM_SOLDIERS;
 }
 
 
@@ -69,7 +71,6 @@ public enum TacticalEngineStatus : long
 // PALETTE SUBSITUTION TYPES
 public struct PaletteSubRangeType
 {
-
     public int ubStart;
     public int ubEnd;
 }
@@ -89,4 +90,15 @@ public enum WorldDirections
     NUM_WORLD_DIRECTIONS,
     DIRECTION_IRRELEVANT,
     DIRECTION_EXITGRID = 255,
+}
+
+public enum TEAM
+{
+    OUR_TEAM = 0,
+    ENEMY_TEAM = 1,
+    CREATURE_TEAM = 2,
+    MILITIA_TEAM = 3,
+    CIV_TEAM = 4,
+    LAST_TEAM = CIV_TEAM,
+    PLAYER_PLAN = 5,
 }
