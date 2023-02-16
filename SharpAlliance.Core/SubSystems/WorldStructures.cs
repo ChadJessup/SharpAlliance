@@ -31,9 +31,27 @@ public class WorldStructures
         IsometricUtils isometricUtils)
     {
         this.logger = logger;
-        this.globals = globals;
+        Globals = globals;
         this.world = world;
         this.isometricUtils = isometricUtils;
+    }
+
+    public STRUCTURE? FindStructure(int sGridNo, STRUCTUREFLAGS fFlags)
+    { // finds a structure that matches any of the given flags
+        STRUCTURE? pCurrent;
+
+        pCurrent = Globals.gpWorldLevelData[sGridNo].pStructureHead;
+        while (pCurrent != null)
+        {
+            if ((pCurrent.fFlags & fFlags) != 0)
+            {
+                return (pCurrent);
+            }
+
+            pCurrent = pCurrent.pNext;
+        }
+     
+        return (null);
     }
 
     public bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelN)
@@ -180,27 +198,27 @@ public class WorldStructures
             sGridNo = ppStructure[ubLoop].sGridNo;
             if (ubLoop == (int)STRUCTUREFLAGS.BASE_TILE)
             {
-                sBaseTileHeight = this.globals.gpWorldLevelData[sGridNo].sHeight;
+                sBaseTileHeight = Globals.gpWorldLevelData[sGridNo].sHeight;
             }
             else
             {
-                if (this.globals.gpWorldLevelData[sGridNo].sHeight != sBaseTileHeight)
+                if (Globals.gpWorldLevelData[sGridNo].sHeight != sBaseTileHeight)
                 {
                     // not level ground! abort!
                     for (ubLoop2 = (int)STRUCTUREFLAGS.BASE_TILE; ubLoop2 < ubLoop; ubLoop2++)
                     {
-                        DeleteStructureFromTile((this.globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
+                        DeleteStructureFromTile((Globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
                     }
                     //MemFree(ppStructure);
                     return (null);
                 }
             }
-            if (AddStructureToTile((this.globals.gpWorldLevelData[sGridNo]), ppStructure[ubLoop], usStructureID) == false)
+            if (AddStructureToTile((Globals.gpWorldLevelData[sGridNo]), ppStructure[ubLoop], usStructureID) == false)
             {
                 // error! abort!
                 for (ubLoop2 = (int)STRUCTUREFLAGS.BASE_TILE; ubLoop2 < ubLoop; ubLoop2++)
                 {
-                    DeleteStructureFromTile((this.globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
+                    DeleteStructureFromTile((Globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
                 }
 
                 //MemFree(ppStructure);
@@ -350,14 +368,14 @@ public class WorldStructures
             return (false);
         }
 
-        if (this.globals.gpWorldLevelData[sBaseGridNo].sHeight != this.globals.gpWorldLevelData[sGridNo].sHeight)
+        if (Globals.gpWorldLevelData[sBaseGridNo].sHeight != Globals.gpWorldLevelData[sGridNo].sHeight)
         {
             // uneven terrain, one portion on top of cliff and another not! can't add!
             return (false);
         }
 
         pDBStructure = pDBStructureRef.pDBStructure;
-        pExistingStructure = this.globals.gpWorldLevelData[sGridNo].pStructureHead;
+        pExistingStructure = Globals.gpWorldLevelData[sGridNo].pStructureHead;
 
         /*
             // If adding a mobile structure, always allow addition if the mobile structure tile is passable
@@ -651,7 +669,7 @@ public class WorldStructures
             fRecompileExtraRadius = false;
         }
 
-        pBaseMapElement = this.globals.gpWorldLevelData[pBaseStructure.sGridNo];
+        pBaseMapElement = Globals.gpWorldLevelData[pBaseStructure.sGridNo];
         ppTile = pBaseStructure.pDBStructureRef.ppTile;
         sBaseGridNo = pBaseStructure.sGridNo;
         ubNumberOfTiles = pBaseStructure.pDBStructureRef.pDBStructure.ubNumberOfTiles;
@@ -664,10 +682,10 @@ public class WorldStructures
             pCurrent = FindStructureByID(sGridNo, usStructureID);
             if (pCurrent is not null)
             {
-                DeleteStructureFromTile(this.globals.gpWorldLevelData[sGridNo], pCurrent);
+                DeleteStructureFromTile(Globals.gpWorldLevelData[sGridNo], pCurrent);
             }
 
-            if (!this.globals.gfEditMode && (fRecompileMPs))
+            if (!Globals.gfEditMode && (fRecompileMPs))
             {
                 if (fRecompileMPs)
                 {
@@ -754,7 +772,7 @@ public class WorldStructures
         // finds a structure that matches any of the given flags
         STRUCTURE? pCurrent;
 
-        pCurrent = this.globals.gpWorldLevelData[sGridNo].pStructureHead;
+        pCurrent = Globals.gpWorldLevelData[sGridNo].pStructureHead;
         while (pCurrent is not null)
         {
             if (pCurrent.usStructureID == usStructureID)

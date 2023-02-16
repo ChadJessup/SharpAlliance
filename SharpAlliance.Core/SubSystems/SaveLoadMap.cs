@@ -28,7 +28,7 @@ public class SaveLoadMap
             return;
         }
 
-        if (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
             return;
         }

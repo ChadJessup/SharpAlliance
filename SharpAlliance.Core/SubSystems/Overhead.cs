@@ -6,8 +6,6 @@ namespace SharpAlliance.Core.SubSystems
 {
     public class Overhead
     {
-        public TacticalStatusType gTacticalStatus { get; set; } = new TacticalStatusType();
-
         public ushort gusSelectedSoldier { get; set; }
         public ushort gusOldSelectedSoldier { get; set; }
 

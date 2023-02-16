@@ -27,7 +27,7 @@ public class SoldierFind
         this.gGameSettings = gGameSettings;
         this.renderWorld = renderWorld;
         this.overhead = overhead;
-        this.globals = globals;
+        Globals = globals;
     }
 
     public static int[] gScrollSlideInertiaDirection = new int[(int)WorldDirections.NUM_WORLD_DIRECTIONS]
@@ -101,7 +101,7 @@ public class SoldierFind
         {
             MercFlags |= SELECTED_MERC;
         }
-        if (ubID >= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID && ubID <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
+        if (ubID >= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID && ubID <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
         {
             if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !GetNumberInVehicle(pSoldier.bVehicleID))
             {
@@ -149,7 +149,7 @@ public class SoldierFind
             MercFlags |= DEAD_MERC;
         }
 
-        if (pSoldier.bVisible != -1 || (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+        if (pSoldier.bVisible != -1 || (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
         {
             MercFlags |= VISIBLE_MERC;
         }
@@ -199,7 +199,7 @@ public class SoldierFind
             if (pSoldier != null)
             {
                 if (pSoldier.bActive && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD))
-                    && (pSoldier.bVisible != -1 || (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))))
+                    && (pSoldier.bVisible != -1 || (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))))
                 {
                     // OK, ignore if we are a passenger...
                     if (pSoldier.uiStatusFlags.HasFlag((SOLDIER.PASSENGER | SOLDIER.DRIVER)))
@@ -225,7 +225,7 @@ public class SoldierFind
                     }
                     else if (uiFlags.HasFlag(FIND_SOLDIER.SELECTIVE))
                     {
-                        if (pSoldier.ubID >= this.overhead.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bFirstID && pSoldier.ubID <= this.overhead.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bLastID)
+                        if (pSoldier.ubID >= Globals.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bFirstID && pSoldier.ubID <= Globals.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bLastID)
                         {
                             fDoFull = true;
                         }
@@ -268,7 +268,7 @@ public class SoldierFind
                         // ATE: If we are an enemy....
                         if (!gGameSettings.fOptions[TOPTION.SMART_CURSOR])
                         {
-                            if (pSoldier.ubID >= this.overhead.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bFirstID && pSoldier.ubID <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
+                            if (pSoldier.ubID >= Globals.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bFirstID && pSoldier.ubID <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
                             {
                                 // ATE: NOT if we are in action or comfirm action mode
                                 if (gCurrentUIMode != ACTION_MODE && gCurrentUIMode != CONFIRM_ACTION_MODE || gUIActionModeChangeDueToMouseOver)
@@ -515,7 +515,7 @@ public class SoldierFind
         // IF BAD GUY - CHECK VISIVILITY
         if (pSoldier.bTeam != this.overhead.gbPlayerNum)
         {
-            if (pSoldier.bVisible == -1 && !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+            if (pSoldier.bVisible == -1 && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
             {
                 return (false);
             }
@@ -662,7 +662,7 @@ public class SoldierFind
         // Adjust starting screen coordinates
         sMercScreenX -= this.renderWorld.gsRenderWorldOffsetX;
         sMercScreenY -= this.renderWorld.gsRenderWorldOffsetY;
-        sMercScreenY -= this.globals.gpWorldLevelData[pSoldier.sGridNo].sHeight;
+        sMercScreenY -= Globals.gpWorldLevelData[pSoldier.sGridNo].sHeight;
 
         // Adjust for render height
         sMercScreenY += this.renderWorld.gsRenderHeight;
@@ -712,7 +712,7 @@ public class SoldierFind
 
         // Adjust for render height
         sMercScreenY += this.renderWorld.gsRenderHeight;
-        sMercScreenY -= this.globals.gpWorldLevelData[pSoldier.sGridNo].sHeight;
+        sMercScreenY -= Globals.gpWorldLevelData[pSoldier.sGridNo].sHeight;
 
         sMercScreenY -= pSoldier.sHeightAdjustment;
 
@@ -962,12 +962,12 @@ public class SoldierFind
         sScreenY += this.renderWorld.gsRenderHeight;
 
         // Adjust for world height
-        sScreenY -= this.globals.gpWorldLevelData[sGridNo].sHeight;
+        sScreenY -= Globals.gpWorldLevelData[sGridNo].sHeight;
 
         // Adjust for level height
-        if (ubLevel)
+        if (ubLevel > 0)
         {
-            sScreenY -= ROOF_LEVEL_HEIGHT;
+            sScreenY -= Interface.ROOF_LEVEL_HEIGHT;
         }
 
         psScreenX = sScreenX;

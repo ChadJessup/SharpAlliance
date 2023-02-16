@@ -95,7 +95,7 @@ public class HandleUI
         this.clock = clock;
         this.overhead = overhead;
         this.rnd = new Random();
-        this.globals = globals;
+        Globals = globals;
         this.points = points;
         this.inputs = inputManager;
         this.cursors = cursorSubSystem;
@@ -349,7 +349,7 @@ public class HandleUI
                 UnSetUIBusy((byte)this.overhead.gusSelectedSoldier);
 
                 // Decrease global busy  counter...
-                this.overhead.gTacticalStatus.ubAttackBusyCount = 0;
+                Globals.gTacticalStatus.ubAttackBusyCount = 0;
                 //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Setting attack busy count to 0 due to ending AI lock");
 
                 guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
@@ -388,7 +388,7 @@ public class HandleUI
 
             // SWITCH ON INPUT GATHERING, DEPENDING ON MODE
             // IF WE ARE NOT IN COMBAT OR IN REALTIME COMBAT
-            if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
                 // FROM MOUSE POSITION
                 GetRTMousePositionInput(out uiNewEvent);
@@ -530,7 +530,7 @@ public class HandleUI
         }
 
         // Donot display APs if not in combat
-        if (!(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) || (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)))
+        if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) || (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)))
         {
             gfUIDisplayActionPoints = false;
         }
@@ -539,7 +539,7 @@ public class HandleUI
         SetUIMouseCursor();
 
         // ATE: Check to reset selected guys....
-        if (this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
+        if (Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
         {
             // If not in MOVE_MODE, CONFIRM_MOVE_MODE, RUBBERBAND_MODE, stop....
             if (gCurrentUIMode != UI_MODE.MOVE_MODE
@@ -761,7 +761,7 @@ public class HandleUI
                     if (this.overhead.gusSelectedSoldier != OverheadTypes.NOBODY && MercPtrs[this.overhead.gusSelectedSoldier].bLevel == 0)
                     {
                         // ATE: Is this place revealed?
-                        if (!InARoom(usMapPos, out ubRoomNum) || (InARoom(usMapPos, out ubRoomNum) && this.globals.gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)))
+                        if (!InARoom(usMapPos, out ubRoomNum) || (InARoom(usMapPos, out ubRoomNum) && Globals.gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)))
                         {
                             if (sOldExitGridNo != usMapPos)
                             {
@@ -859,7 +859,7 @@ public class HandleUI
 
     ScreenName UIHandleExit(UI_EVENT pUIEvent)
     {
-        this.globals.gfProgramIsRunning = false;
+        Globals.gfProgramIsRunning = false;
         return (ScreenName.GAME_SCREEN);
     }
 
@@ -1079,7 +1079,7 @@ public class HandleUI
                 }
             }
 
-            this.overhead.gTacticalStatus.ubAttackBusyCount++;
+            Globals.gTacticalStatus.ubAttackBusyCount++;
 
             EVENT_SoldierGotHit(pSoldier, 1, bDamage, 10, pSoldier.bDirection, 320, OverheadTypes.NOBODY, FIRE_WEAPON_NO_SPECIAL, pSoldier.bAimShotLocation, 0, (int)IsometricUtils.NOWHERE);
 
@@ -1101,13 +1101,13 @@ public class HandleUI
         if (Interface.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
         {
             this.renderWorld.gsRenderHeight += Interface.ROOF_LEVEL_HEIGHT;
-            this.overhead.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
+            Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
             InvalidateWorldRedundency();
         }
         else if (Interface.gsInterfaceLevel == 0)
         {
             this.renderWorld.gsRenderHeight -= Interface.ROOF_LEVEL_HEIGHT;
-            this.overhead.gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
+            Globals.gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
             InvalidateWorldRedundency();
         }
 
@@ -1250,7 +1250,7 @@ public class HandleUI
                 }
 
                 // ATE: Draw invalidc cursor if heights different
-                if (this.globals.gpWorldLevelData[usMapPos].sHeight != this.globals.gpWorldLevelData[pSoldier.sGridNo].sHeight)
+                if (Globals.gpWorldLevelData[usMapPos].sHeight != Globals.gpWorldLevelData[pSoldier.sGridNo].sHeight)
                 {
                     // ERASE PATH
                     this.pathAI.ErasePath(true);
@@ -1308,8 +1308,8 @@ public class HandleUI
                     if (UIHandleInteractiveTilesAndItemsOnTerrain(pSoldier, usMapPos, false, true) == 0)
                     {
                         // Are we in combat?
-                        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
-                            && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)))
+                        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+                            && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)))
                         {
                             // If so, draw path, etc
                             fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, 0);
@@ -1517,8 +1517,8 @@ public class HandleUI
             UIHandleOnMerc(false);
 
             // If we are in realtime, and in a stationary animation, follow!
-            if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
-                || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
+                || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
                 if (AnimationControl.gAnimControl[(int)pSoldier.usAnimState].uiFlags.HasFlag(ANIM.STATIONARY) && pSoldier.ubPendingAction == NO_PENDING_ACTION)
                 {
@@ -1635,7 +1635,7 @@ public class HandleUI
             SetConfirmMovementModeCursor(pSoldier, false);
 
             // If we are not in combat, draw path here!
-            if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
                 //DrawUIMovementPath( pSoldier, usMapPos,  0 );
                 fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, 0);
@@ -1682,7 +1682,7 @@ public class HandleUI
 
                 // Loop through all mercs and make go!
                 // TODO: Only our squad!
-                for (bLoop = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID, pSoldier = MercPtrs[bLoop]; bLoop <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; bLoop++, pSoldier++)
+                for (bLoop = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID, pSoldier = MercPtrs[bLoop]; bLoop <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; bLoop++, pSoldier++)
                 {
                     if (OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == CurrentSquad() && !pSoldier.fMercAsleep)
                     {
@@ -1748,7 +1748,7 @@ public class HandleUI
                 if (this.overhead.GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
                 {
                     // FOR REALTIME - DO MOVEMENT BASED ON STANCE!
-                    if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                    if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         pSoldier.usUIMovementMode = GetMoveStateBasedOnStance(pSoldier, gAnimControl[pSoldier.usAnimState].ubEndHeight);
                     }
@@ -1788,12 +1788,12 @@ public class HandleUI
 
                     SetUIBusy(pSoldier.ubID);
 
-                    if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                    if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         // RESET MOVE FAST FLAG
                         SetConfirmMovementModeCursor(pSoldier, true);
 
-                        if (!this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
+                        if (!Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
                         {
                             pSoldier.fUIMovementFast = false;
                         }
@@ -1801,7 +1801,7 @@ public class HandleUI
                         //StartLooseCursor( usMapPos, 0 );
                     }
 
-                    if (this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect && pIntTile == null)
+                    if (Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect && pIntTile == null)
                     {
                         HandleMultiSelectionMove(sDestGridNo);
                     }
@@ -2214,7 +2214,7 @@ public class HandleUI
         // get cursor
         ubItemCursor = GetActionModeCursor(pSoldier);
 
-        if (!(this.overhead.gTacticalStatus.uiFlags & INCOMBAT) && pTargetSoldier && Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass & IC.WEAPON)
+        if (!(Globals.gTacticalStatus.uiFlags & INCOMBAT) && pTargetSoldier && Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass & IC.WEAPON)
         {
             if (NPCFirstDraw(pSoldier, pTargetSoldier))
             {
@@ -2297,7 +2297,7 @@ public class HandleUI
 
         // Cannot be fire if we are already in a fire animation....
         // this is to stop the shooting trigger/happy duded from contiously pressing fire...
-        if (!(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             if (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM.FIRE)
             {
@@ -2306,7 +2306,7 @@ public class HandleUI
         }
 
         // If in turn-based mode - return to movement
-        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             // Reset some flags for cont move...
             pSoldier.sFinalDestination = pSoldier.sGridNo;
@@ -2340,7 +2340,7 @@ public class HandleUI
         }
 
 
-        if (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             HandleUICursorRTFeedback(pSoldier);
         }
@@ -2352,7 +2352,7 @@ public class HandleUI
     {
         if (bExitValue == MSG_BOX_RETURN_YES)
         {
-            this.overhead.gTacticalStatus.ubLastRequesterTargetID = gpRequesterTargetMerc.ubProfile;
+            Globals.gTacticalStatus.ubLastRequesterTargetID = gpRequesterTargetMerc.ubProfile;
 
             UIHandleMercAttack(gpRequesterMerc, gpRequesterTargetMerc, gsRequesterGridNo);
         }
@@ -2387,7 +2387,7 @@ public class HandleUI
                 if (pTSoldier != null)
                 {
                     // If this is one of our own guys.....pop up requiester...
-                    if ((pTSoldier.bTeam == this.overhead.gbPlayerNum || pTSoldier.bTeam == TEAM.MILITIA_TEAM) && Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT && pSoldier.inv[(int)InventorySlot.HANDPOS].usItem != GAS_CAN && this.overhead.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
+                    if ((pTSoldier.bTeam == this.overhead.gbPlayerNum || pTSoldier.bTeam == TEAM.MILITIA_TEAM) && Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT && pSoldier.inv[(int)InventorySlot.HANDPOS].usItem != GAS_CAN && Globals.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
                     {
                         int[] zStr = new int[200];
 
@@ -2429,7 +2429,7 @@ public class HandleUI
 
         if (this.overhead.GetSoldier(out pSoldier, this.overhead.gusSelectedSoldier))
         {
-            if ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(this.overhead.gTacticalStatus.uiFlags & INCOMBAT))
+            if ((Globals.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(Globals.gTacticalStatus.uiFlags & INCOMBAT))
             {
                 if (gUITargetReady)
                 {
@@ -2641,10 +2641,10 @@ public class HandleUI
         SOLDIERTYPE? pSoldier;
 
 
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
         guiCreateGuyIndex = (int)cnt;
 
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; pSoldier++, cnt++)
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; pSoldier++, cnt++)
         {
             if (!pSoldier.bActive)
             {
@@ -2653,12 +2653,12 @@ public class HandleUI
             }
         }
 
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID + 1;
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID + 1;
         guiCreateBadGuyIndex = (int)cnt;
 
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[(int)TEAM.LAST_TEAM].bLastID; pSoldier++, cnt++)
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[(int)TEAM.LAST_TEAM].bLastID; pSoldier++, cnt++)
         {
-            if (!pSoldier.bActive && cnt > this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
+            if (!pSoldier.bActive && cnt > Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
             {
                 guiCreateBadGuyIndex = (int)cnt;
                 break;
@@ -3201,8 +3201,8 @@ public class HandleUI
         }
 
         // IF turn-based - adjust stance now!
-        if (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
-            && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
+            && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             pSoldier.fTurningFromPronePosition = false;
 
@@ -3222,7 +3222,7 @@ public class HandleUI
         }
 
         // If realtime- change walking animation!
-        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
 
             // If we are stationary, do something else!
@@ -3380,8 +3380,8 @@ public class HandleUI
         }
 
         // Check if we're stationary
-        if (((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
-            || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
+            || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             || ((gAnimControl[pSoldier.usAnimState].uiFlags & ANIM.STATIONARY)
             || pSoldier.fNoAPToFinishMove)
             || pSoldier.ubID >= MAX_NUM_SOLDIERS)
@@ -3481,7 +3481,7 @@ public class HandleUI
                 // ONLY IF GFPLOT NEW MOVEMENT IS false!
                 if (!gfPlotNewMovement)
                 {
-                    if (gsCurrentActionPoints < 0 || ((this.overhead.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(this.overhead.gTacticalStatus.uiFlags & INCOMBAT)))
+                    if (gsCurrentActionPoints < 0 || ((Globals.gTacticalStatus.uiFlags & TacticalEngineStatus.REALTIME) || !(Globals.gTacticalStatus.uiFlags & INCOMBAT)))
                     {
                         gfUIDisplayActionPoints = false;
                     }
@@ -3557,8 +3557,8 @@ public class HandleUI
         bool fPlot;
         byte ubMercID;
 
-        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
-            && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+            && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
             || _KeyDown(SHIFT))
         {
             fPlot = PLOT;
@@ -3760,7 +3760,7 @@ public class HandleUI
                     sSpot = this.isometricUtils.NewGridNo(pSoldier.sGridNo, this.isometricUtils.DirectionInc(cnt));
 
                     // Make sure movement costs are OK....
-                    if (this.globals.gubWorldMovementCosts[sSpot, cnt, Interface.gsInterfaceLevel] >= TRAVELCOST.BLOCKED)
+                    if (Globals.gubWorldMovementCosts[sSpot, cnt, Interface.gsInterfaceLevel] >= TRAVELCOST.BLOCKED)
                     {
                         continue;
                     }
@@ -3907,7 +3907,7 @@ public class HandleUI
             sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
         }
 
-        if (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_AP_LEFT))
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_AP_LEFT))
         {
             gsCurrentActionPoints = pSoldier.bActionPoints - sAPCost;
         }
@@ -4179,7 +4179,7 @@ public class HandleUI
 
     void SetMovementModeCursor(SOLDIERTYPE? pSoldier)
     {
-        if (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             if ((OK_ENTERABLE_VEHICLE(pSoldier)))
             {
@@ -4209,7 +4209,7 @@ public class HandleUI
             }
         }
 
-        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             if (gfUIAllMoveOn)
             {
@@ -4234,8 +4234,8 @@ public class HandleUI
 
     void SetConfirmMovementModeCursor(SOLDIERTYPE pSoldier, bool fFromMove)
     {
-        if (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
-            && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
+            && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             if (gfUIAllMoveOn)
             {
@@ -4297,7 +4297,7 @@ public class HandleUI
             }
         }
 
-        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             if (gfUIAllMoveOn)
             {
@@ -4435,11 +4435,11 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
+        if (Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
         {
             // OK, loop through all guys who are 'multi-selected' and
-            cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-            for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+            cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+            for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
             {
                 if (pSoldier.bActive && pSoldier.bInSector)
                 {
@@ -4564,7 +4564,7 @@ public class HandleUI
             gfUIDisplayActionPointsInvalid = true;
         }
 
-        if (!(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             if (gfUIFullTargetFound)
             {
@@ -4648,7 +4648,7 @@ public class HandleUI
             HandleTacticalUI();
 
             // ATE: Only if NOT in conversation!
-            if (!(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)))
+            if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)))
             {
                 // UnPause time!
                 UnLockPauseState();
@@ -4716,7 +4716,7 @@ public class HandleUI
         // Adjust for offset position on screen
         sScreenX -= this.renderWorld.gsRenderWorldOffsetX;
         sScreenY -= this.renderWorld.gsRenderWorldOffsetY;
-        sScreenY -= this.globals.gpWorldLevelData[sGridNo].sHeight;
+        sScreenY -= Globals.gpWorldLevelData[sGridNo].sHeight;
 
         // Adjust based on interface level
 
@@ -4737,19 +4737,19 @@ public class HandleUI
         SOLDIERTYPE? pFirstSoldier = null;
         bool fSelectedSoldierInBatch = false;
 
-        this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = false;
+        Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = false;
 
         // OK, loop through all guys who are 'multi-selected' and
         // check if our currently selected guy is amoung the
         // lucky few.. if not, change to a guy who is...
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             if (pSoldier.bActive && pSoldier.bInSector)
             {
                 if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTI_SELECTED))
                 {
-                    this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = true;
+                    Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = true;
 
                     if (pSoldier.ubID != this.overhead.gusSelectedSoldier && pFirstSoldier == null)
                     {
@@ -4789,7 +4789,7 @@ public class HandleUI
         int cnt;
         SOLDIERTYPE? pFirstSoldier = null;
 
-        if (!this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
+        if (!Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
         {
             return;
         }
@@ -4797,8 +4797,8 @@ public class HandleUI
         // OK, loop through all guys who are 'multi-selected' and
         // check if our currently selected guy is amoung the
         // lucky few.. if not, change to a guy who is...
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             if (pSoldier.bActive && pSoldier.bInSector)
             {
@@ -4841,8 +4841,8 @@ public class HandleUI
         // Do a loop first to see if the selected guy is told to go fast...
         gfGetNewPathThroughPeople = true;
 
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             if (pSoldier.bActive && pSoldier.bInSector)
             {
@@ -4857,8 +4857,8 @@ public class HandleUI
             }
         }
 
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             if (pSoldier.bActive && pSoldier.bInSector)
             {
@@ -4918,8 +4918,8 @@ public class HandleUI
         // OK, loop through all guys who are 'multi-selected' and
         // Make them move....
 
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             if (pSoldier.bActive && pSoldier.bInSector)
             {
@@ -4930,7 +4930,7 @@ public class HandleUI
             }
         }
 
-        this.overhead.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = false;
+        Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = false;
     }
 
 
@@ -4969,8 +4969,8 @@ public class HandleUI
         }
 
         // ATE:Check at least for one guy that's in point!
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             // Check if this guy is OK to control....
             if (OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
@@ -4997,8 +4997,8 @@ public class HandleUI
         }
 
         // ATE: Now loop through our guys and see if any fit!
-        cnt = this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= this.overhead.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
+        cnt = Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID;
+        for (pSoldier = MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             // Check if this guy is OK to control....
             if (OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
@@ -5224,7 +5224,7 @@ public class HandleUI
         // IF BAD GUY - CHECK VISIVILITY
         if (pSoldier.bTeam != (TEAM)this.overhead.gbPlayerNum)
         {
-            if (pSoldier.bVisible == -1 && !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+            if (pSoldier.bVisible == -1 && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
             {
                 return (false);
             }
@@ -5266,7 +5266,7 @@ public class HandleUI
         // Do some checks common to all..
         if (fValidGuy)
         {
-            if ((gAnimControl[pSoldier.usAnimState].uiFlags & ANIM.MOVING) && !(this.overhead.gTacticalStatus.uiFlags & INCOMBAT))
+            if ((gAnimControl[pSoldier.usAnimState].uiFlags & ANIM.MOVING) && !(Globals.gTacticalStatus.uiFlags & INCOMBAT))
             {
                 return (false);
             }
@@ -5499,9 +5499,9 @@ public class HandleUI
 
     void SetUIBusy(int ubID)
     {
-        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
-            & (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
-            && (this.overhead.gTacticalStatus.ubCurrentTeam == this.overhead.gbPlayerNum))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+            & (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
+            && (Globals.gTacticalStatus.ubCurrentTeam == this.overhead.gbPlayerNum))
         {
             if (this.overhead.gusSelectedSoldier == ubID)
             {
@@ -5513,9 +5513,9 @@ public class HandleUI
 
     void UnSetUIBusy(byte ubID)
     {
-        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (this.overhead.gTacticalStatus.ubCurrentTeam == this.overhead.gbPlayerNum))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (Globals.gTacticalStatus.ubCurrentTeam == this.overhead.gbPlayerNum))
         {
-            if (!this.overhead.gTacticalStatus.fUnLockUIAfterHiddenInterrupt)
+            if (!Globals.gTacticalStatus.fUnLockUIAfterHiddenInterrupt)
             {
                 if (this.overhead.gusSelectedSoldier == ubID)
                 {
@@ -5523,7 +5523,7 @@ public class HandleUI
                     HandleTacticalUI();
 
                     // Set grace period...
-                    this.overhead.gTacticalStatus.uiTactialTurnLimitClock = this.clock.GetJA2Clock();
+                    Globals.gTacticalStatus.uiTactialTurnLimitClock = this.clock.GetJA2Clock();
                 }
             }
             // player getting control back so reset all muzzle flashes
@@ -5622,7 +5622,7 @@ public class HandleUI
                     }
 
                     //Set UI CURSOR
-                    if (fUseOKCursor || ((this.overhead.gTacticalStatus.uiFlags & INCOMBAT) && (this.overhead.gTacticalStatus.uiFlags & TURNBASED)))
+                    if (fUseOKCursor || ((Globals.gTacticalStatus.uiFlags & INCOMBAT) && (Globals.gTacticalStatus.uiFlags & TURNBASED)))
                     {
                         guiNewUICursor = UICursorDefines.OKHANDCURSOR_UICURSOR;
                     }
@@ -5691,7 +5691,7 @@ public class HandleUI
                 // Adjust this if we have not visited this gridno yet...
                 if (fPoolContainsHiddenItems)
                 {
-                    if (!(this.globals.gpWorldLevelData[sActionGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)))
+                    if (!(Globals.gpWorldLevelData[sActionGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)))
                     {
                         fPoolContainsHiddenItems = false;
                     }
@@ -5707,7 +5707,7 @@ public class HandleUI
                     }
 
                     //Set UI CURSOR
-                    if (fUseOKCursor || ((this.overhead.gTacticalStatus.uiFlags & INCOMBAT) && (this.overhead.gTacticalStatus.uiFlags & TURNBASED)))
+                    if (fUseOKCursor || ((Globals.gTacticalStatus.uiFlags & INCOMBAT) && (Globals.gTacticalStatus.uiFlags & TURNBASED)))
                     {
                         guiNewUICursor = UICursorDefines.OKHANDCURSOR_UICURSOR;
                     }
@@ -5940,7 +5940,7 @@ public class HandleUI
         }
 
 
-        sHeight = this.globals.gpWorldLevelData[sGridNo].sHeight;
+        sHeight = Globals.gpWorldLevelData[sGridNo].sHeight;
 
         if (sHeight != sOldHeight)
         {
@@ -6048,7 +6048,7 @@ public class HandleUI
             sIntSpot = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((int)sDirs[cnt]));
 
             // ATE: Check our movement costs for going through walls!
-            ubMovementCost = this.globals.gubWorldMovementCosts[sIntSpot, (int)sDirs[cnt], pSoldier.bLevel];
+            ubMovementCost = Globals.gubWorldMovementCosts[sIntSpot, (int)sDirs[cnt], pSoldier.bLevel];
             if ((TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost)))
             {
                 ubMovementCost = DoorTravelCost(pSoldier, sIntSpot, ubMovementCost, (bool)(pSoldier.bTeam == this.overhead.gbPlayerNum), out iDoorGridNo);

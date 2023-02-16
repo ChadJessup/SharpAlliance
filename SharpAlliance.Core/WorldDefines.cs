@@ -80,7 +80,7 @@ public class LEVELNODE
     public int iExitGridInfo;
 
     public int usIndex;                         // TILE DATABASE INDEX
-    int sCurrentFrame;                // Stuff for animated tiles for a given tile location ( doors, etc )
+    public int sCurrentFrame;                // Stuff for animated tiles for a given tile location ( doors, etc )
 
     public SOLDIERTYPE? pSoldier;                          // POINTER TO SOLDIER
 
@@ -108,10 +108,10 @@ public class LEVELNODE
 
 public class ITEM_POOL
 {
-    ITEM_POOL? pNext;
-    ITEM_POOL? pPrev;
+    public ITEM_POOL? pNext;
+    public ITEM_POOL? pPrev;
 
-    int iItemIndex;
+    public int iItemIndex;
     byte bVisible;
     byte bFlashColor;
     uint uiTimerID;
@@ -182,7 +182,7 @@ public class MAP_ELEMENT
     LEVELNODE? pLandHead;                           //0
     LEVELNODE? pLandStart;                      //1
     public LEVELNODE? pObjectHead;                     //2
-    LEVELNODE? pStructHead;                     //3
+    public LEVELNODE? pStructHead;                     //3
     LEVELNODE? pShadowHead;                     //4
     LEVELNODE? pMercHead;                           //5
     LEVELNODE? pRoofHead;                           //6

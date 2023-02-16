@@ -67,7 +67,7 @@ namespace SharpAlliance.Core
             this.video = videoManager;
             this.music = musicManager;
             this.messageBox = messageBoxSubSystem;
-            this.globals = globals;
+            Globals = globals;
             this.os = OSManager;
             this.screen = screenManager;
         }
@@ -137,7 +137,7 @@ namespace SharpAlliance.Core
                     }
                 }
 
-                if (this.globals.gfGlobalError)
+                if (Globals.gfGlobalError)
                 {
                     await sm.ActivateScreen(ScreenName.ERROR_SCREEN);
                 }
@@ -192,7 +192,7 @@ namespace SharpAlliance.Core
 
                 this.video.DrawFrame();
 
-                this.globals.guiGameCycleCounter++;
+                Globals.guiGameCycleCounter++;
 
                 this.context.ClockManager.UpdateClock();
 

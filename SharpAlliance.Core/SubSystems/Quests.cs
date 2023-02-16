@@ -1,13 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SharpAlliance.Core.SubSystems;
+﻿namespace SharpAlliance.Core.SubSystems;
 
 public class Quests
 {
+    public const int BOBBYR_SHIPPING_DEST_SECTOR_X = 13;
+    public const int BOBBYR_SHIPPING_DEST_SECTOR_Y = 2;
+    public const int BOBBYR_SHIPPING_DEST_SECTOR_Z = 0;
+    public const int BOBBYR_SHIPPING_DEST_GRIDNO = 10112;
+    public const int PABLOS_STOLEN_DEST_GRIDNO = 1;
+    public const int LOST_SHIPMENT_GRIDNO = 2;
+
+    // omerta positions
+    public const int OMERTA_LEAVE_EQUIP_SECTOR_X = 9;
+    public const int OMERTA_LEAVE_EQUIP_SECTOR_Y = 1;
+    public const int OMERTA_LEAVE_EQUIP_SECTOR_Z = 0;
+    public const int OMERTA_LEAVE_EQUIP_GRIDNO = 4868;
+
 }
 
 public enum MAP_ROW

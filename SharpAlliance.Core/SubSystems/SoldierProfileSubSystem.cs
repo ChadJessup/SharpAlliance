@@ -55,8 +55,6 @@ namespace SharpAlliance.Core.SubSystems
             this.cars = carPortraits;
         }
 
-        public Dictionary<NPCID, MERCPROFILE> gMercProfiles { get; } = new();
-
         public bool LoadMercProfiles()
         {
             //	FILE *fptr;

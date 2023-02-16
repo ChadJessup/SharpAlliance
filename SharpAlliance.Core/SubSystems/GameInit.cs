@@ -141,7 +141,7 @@ namespace SharpAlliance.Core.SubSystems
             this.gameEvents.DeleteAllStrategicEvents();
 
             //This function gets called when ur in a game a click the quit to main menu button, therefore no game is in progress
-            this.overhead.gTacticalStatus.fHasAGameBeenStarted = false;
+            Globals.gTacticalStatus.fHasAGameBeenStarted = false;
 
             // Reset timer callbacks
             // gpCustomizableTimerCallback = null;

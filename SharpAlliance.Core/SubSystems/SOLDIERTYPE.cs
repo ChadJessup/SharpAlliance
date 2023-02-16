@@ -290,11 +290,11 @@ namespace SharpAlliance.Core.SubSystems
         int bTacticalMoraleMod;
         int bStrategicMoraleMod;
         int bAIMorale;
-        public int ubPendingAction;
+        public MERC ubPendingAction;
         public int ubPendingActionAnimCount;
         public int uiPendingActionData1;
-        int sPendingActionData2;
-        int bPendingActionData3;
+        public int sPendingActionData2;
+        public int bPendingActionData3;
         int ubDoorHandleCode;
         int uiPendingActionData4;
         int bInterruptDuelPts;

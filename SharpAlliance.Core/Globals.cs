@@ -30,9 +30,13 @@ public class Globals
     public bool gfProgramIsRunning { get; set; } // Turn this to FALSE to exit program
 
     // World Data
-    public List<MAP_ELEMENT> gpWorldLevelData { get; set; } = new();
+    public static List<MAP_ELEMENT> gpWorldLevelData { get; set; } = new();
 
     // World Movement Costs
-    public int[,,] gubWorldMovementCosts = new int[World.WORLD_MAX, World.MAXDIR, 2];
-    public int[,] gszTerrain = new int[(int)Traversability.NUM_TRAVTERRAIN_TYPES, 15];
+    public static int[,,] gubWorldMovementCosts = new int[World.WORLD_MAX, World.MAXDIR, 2];
+    public static int[,] gszTerrain = new int[(int)Traversability.NUM_TRAVTERRAIN_TYPES, 15];
+
+    public static Dictionary<NPCID, MERCPROFILE> gMercProfiles { get; } = new();
+
+    public static TacticalStatusType gTacticalStatus { get; set; } = new TacticalStatusType();
 }

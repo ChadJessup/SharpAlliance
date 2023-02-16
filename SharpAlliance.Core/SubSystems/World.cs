@@ -26,7 +26,7 @@ namespace SharpAlliance.Core.SubSystems
             IsometricUtils isometricUtils)
         {
             this.logger = logger;
-            this.globals = globals;
+            Globals = globals;
             this.isometricUtils = isometricUtils;
         }
 
@@ -47,7 +47,7 @@ namespace SharpAlliance.Core.SubSystems
                 return;
             }
 
-            this.globals.gpWorldLevelData[sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT_RECALCULATE_MOVEMENT;
+            Globals.gpWorldLevelData[sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT_RECALCULATE_MOVEMENT;
 
             // check Top/Left of recompile region
             sCheckGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((int)WorldDirections.NORTHWEST));

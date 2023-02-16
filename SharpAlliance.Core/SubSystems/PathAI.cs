@@ -31,7 +31,7 @@ public class PathAI
         this.logger = logger;
         this.gGameSettings = gameSettings;
         this.overhead = overhead;
-        this.globals = globals;
+        Globals = globals;
         this.isometricUtils = isometricUtils;
         this.worldManager = worldManager;
     }
@@ -141,7 +141,7 @@ public class PathAI
 
             // We should reduce points for starting to run if first tile is a fence...
             sTestGridno = this.isometricUtils.NewGridNo(pSold.sGridNo, this.isometricUtils.DirectionInc(guiPathingData[0]));
-            if (this.globals.gubWorldMovementCosts[sTestGridno, guiPathingData[0], (int)pSold.bLevel] == (int)TRAVELCOST.FENCE)
+            if (Globals.gubWorldMovementCosts[sTestGridno, guiPathingData[0], (int)pSold.bLevel] == (int)TRAVELCOST.FENCE)
             {
                 if (usMovementMode == AnimationStates.RUNNING && pSold.usAnimState != AnimationStates.RUNNING)
                 {
@@ -192,7 +192,7 @@ public class PathAI
                 sTempGrid = this.isometricUtils.NewGridNo(sTempGrid, this.isometricUtils.DirectionInc(guiPathingData[iCnt]));
 
                 // Get switch value...
-                sSwitchValue = this.globals.gubWorldMovementCosts[sTempGrid, guiPathingData[iCnt], pSold.bLevel];
+                sSwitchValue = Globals.gubWorldMovementCosts[sTempGrid, guiPathingData[iCnt], pSold.bLevel];
 
                 // get the tile cost for that tile based on WALKING
                 sTileCost = TerrainActionPoints(pSold, sTempGrid, (byte)guiPathingData[iCnt], pSold.bLevel);
@@ -200,9 +200,9 @@ public class PathAI
                 usMovementModeToUseForAPs = usMovementMode;
 
                 // ATE - MAKE MOVEMENT ALWAYS WALK IF IN WATER
-                if (this.globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.DEEP_WATER
-                    || this.globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.MED_WATER
-                    || this.globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.LOW_WATER)
+                if (Globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.DEEP_WATER
+                    || Globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.MED_WATER
+                    || Globals.gpWorldLevelData[sTempGrid].ubTerrainID == TerrainTypeDefines.LOW_WATER)
                 {
                     usMovementModeToUseForAPs = AnimationStates.WALKING;
                 }
@@ -290,7 +290,7 @@ public class PathAI
 
                 // THIS NEXT SECTION ONLY NEEDS TO HAPPEN FOR CURSOR UI FEEDBACK, NOT ACTUAL COSTING
 
-                if (bPlot && ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))) // OR USER OPTION ON... ***)
+                if (bPlot && ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))) // OR USER OPTION ON... ***)
                 {
                     // ATE; TODO: Put stuff in here to allow for fact of costs other than movement ( jump fence, open door )
 
@@ -374,7 +374,7 @@ public class PathAI
                         GetTileIndexFromTypeSubIndex(FOOTPRINTS, usTileNum, usTileIndex);
 
                         // Adjust based on what mode we are in...
-                        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                         {
                             // find out which color we're using
                             usTileIndex += (int)sFootOrder[4];
@@ -430,7 +430,7 @@ public class PathAI
                         GetTileIndexFromTypeSubIndex(FOOTPRINTS, (ushort)usTileNum, usTileIndex);
 
                         // Adjust based on what mode we are in...
-                        if ((this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(this.overhead.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                         {
                             // find out which color we're using
                             usTileIndex += (int)sFootOrder[4];

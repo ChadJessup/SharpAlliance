@@ -31,7 +31,7 @@ public class InterfaceCursors
         IInputManager inputManager)
     {
         this.logger = logger;
-        this.globals = globals;
+        Globals = globals;
         this.clock = clock;
         this.gGameSettings = gameSettings;
         this.world = worldManager;
@@ -270,8 +270,8 @@ public class InterfaceCursors
                 {
                     // Put one on the roof as well
                     this.world.AddOnRoofToHead(gusCurMousePos, GetSnapCursorIndex(gUICursors[guiCurUICursor].usAdditionalData));
-                    this.globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                    this.globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 }
             }
 
@@ -292,8 +292,8 @@ public class InterfaceCursors
 
                     // Put tile on the floor
                     this.world.AddTopmostToTail(gusTargetDropPos, TileDefines.FIRSTPOINTERS14);
-                    this.globals.gpWorldLevelData[gusTargetDropPos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                    this.globals.gpWorldLevelData[gusTargetDropPos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusTargetDropPos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusTargetDropPos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
                 }
             }
@@ -312,7 +312,7 @@ public class InterfaceCursors
                     }
                 }
 
-                if (HandleUI.gfUIDisplayActionPointsInvalid || this.globals.gsCurrentActionPoints == 0)
+                if (HandleUI.gfUIDisplayActionPointsInvalid || Globals.gsCurrentActionPoints == 0)
                 {
                     usTileCursor = TileDefines.FIRSTPOINTERS6;
 
@@ -342,8 +342,8 @@ public class InterfaceCursors
                 {
                     // Put one on the roof as well
                     this.world.AddOnRoofToHead(gusCurMousePos, GetSnapCursorIndex(usTileCursor));
-                    this.globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                    this.globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 }
             }
 
@@ -502,8 +502,8 @@ public class InterfaceCursors
             case UICursorDefines.NORMAL_SNAPUICURSOR:
 
                 this.world.AddTopmostToHead(gusCurMousePos, TileDefines.FIRSTPOINTERS1);
-                this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 break;
 
             case UICursorDefines.ALL_MOVE_RUN_UICURSOR:
@@ -595,26 +595,26 @@ public class InterfaceCursors
                     if (gGameSettings.fOptions[TOPTION.CURSOR_3D])
                     {
                         this.world.AddTopmostToHead(gusCurMousePos, TileDefines.FIRSTPOINTERS13);
-                        this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                        this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                        Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                        Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     }
 
                     this.world.AddOnRoofToHead(gusCurMousePos, TileDefines.FIRSTPOINTERS14);
-                    this.globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                    this.globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
                 }
                 else
                 {
                     this.world.AddTopmostToHead(gusCurMousePos, TileDefines.BADMARKER1);
-                    this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                    this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                    Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
                     if (gGameSettings.fOptions[TOPTION.CURSOR_3D])
                     {
                         this.world.AddTopmostToHead(gusCurMousePos, TileDefines.FIRSTPOINTERS13);
-                        this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
-                        this.globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                        Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                        Globals.gpWorldLevelData[gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     }
                 }
 
@@ -648,7 +648,7 @@ public class InterfaceCursors
             }
 
             newUIElem.uiFlags |= LEVELNODEFLAGS.DISPLAY_AP;
-            newUIElem.uiAPCost = this.globals.gsCurrentActionPoints;
+            newUIElem.uiAPCost = Globals.gsCurrentActionPoints;
             newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
             newUIElem.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 

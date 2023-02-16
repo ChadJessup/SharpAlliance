@@ -86,7 +86,7 @@ namespace SharpAlliance.Core.Screens
             Globals globals,
             RenderDirtySubSystem renderDirtySubSystem)
         {
-            this.globals = globals;
+            Globals = globals;
             this.cursor = cursorSubSystem;
             this.clock = clockManager;
             this.buttons = buttonSubSystem;
@@ -228,7 +228,7 @@ namespace SharpAlliance.Core.Screens
                     case MainMenuItems.QUIT:
                         this.gfMainMenuScreenExit = true;
 
-                        this.globals.gfProgramIsRunning = false;
+                        Globals.gfProgramIsRunning = false;
                         break;
 
                     case MainMenuItems.NEW_GAME:
