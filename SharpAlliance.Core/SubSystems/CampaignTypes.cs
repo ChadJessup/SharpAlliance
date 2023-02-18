@@ -17,7 +17,7 @@ public class SECTORINFO
     uint uiFlags;                     //various special conditions
     sbyte ubInvestigativeState;     //When the sector is attacked by the player, the state increases by 1 permanently.
                                     //This value determines how quickly it is investigated by the enemy.
-    sbyte ubGarrisonID;                     //IF the sector has an ID for this (non 255), then the queen values this sector and it
+    public sbyte ubGarrisonID;                     //IF the sector has an ID for this (non 255), then the queen values this sector and it
                                             //indexes the garrison group.
     byte ubPendingReinforcements;   //when the enemy owns this sector, this value will keep track of HIGH priority reinforcements -- not regular.
     bool fMilitiaTrainingPaid;
@@ -43,7 +43,7 @@ public class SECTORINFO
                                             //throught the sector without entering it.
     byte bNameId;
     byte bUSUSED;
-    byte bBloodCats;
+    public byte bBloodCats { get; set; }
     byte bBloodCatPlacements;
     byte UNUSEDbSAMCondition;
 
@@ -68,7 +68,7 @@ public class SECTORINFO
 
     byte[] bPadding = new byte[41];
 
-    public static int SECTOR(int x, int y) => ((y - 1) * 16 + x - 1);
+    public static SEC SECTOR(int x, MAP_ROW y) => (SEC)(((int)y - 1) * 16 + x - 1);
     public static int SECTORX(int SectorID) => ((SectorID % 16) + 1);
     public static int SECTORY(int SectorID) => ((SectorID / 16) + 1);
 }
@@ -148,9 +148,7 @@ public enum SF : uint
 // Find a better place for this, it just makes all the NO_XXX easily usable.
 public enum NO
 {
-    PLOT = 0,
     GARRISON = 255,
-    PROFILE = 200,
 }
 
 // town militia experience categories

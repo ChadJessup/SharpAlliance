@@ -48,7 +48,7 @@ public class SaveLoadMap
             ubType = SLM_REMOVE_OBJECT
         };
 
-        SaveModifiedMapStructToMapTempFile(out Map, StrategicMap.gWorldSectorX, StrategicMap.gWorldSectorY, StrategicMap.gbWorldSectorZ);
+        SaveModifiedMapStructToMapTempFile(out Map, Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ);
     }
 }
 

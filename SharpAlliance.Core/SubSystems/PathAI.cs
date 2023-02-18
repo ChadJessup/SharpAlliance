@@ -9,7 +9,6 @@ public class PathAI
     private readonly ILogger<PathAI> logger;
     private readonly GameSettings gGameSettings;
     private readonly Overhead overhead;
-    private readonly Globals globals;
     private readonly IsometricUtils isometricUtils;
     private readonly WorldManager worldManager;
     public int[] guiPathingData = new int[256];
@@ -24,14 +23,12 @@ public class PathAI
         ILogger<PathAI> logger,
         GameSettings gameSettings,
         Overhead overhead,
-        Globals globals,
         IsometricUtils isometricUtils,
         WorldManager worldManager)
     {
         this.logger = logger;
         this.gGameSettings = gameSettings;
         this.overhead = overhead;
-        Globals = globals;
         this.isometricUtils = isometricUtils;
         this.worldManager = worldManager;
     }
@@ -279,10 +276,10 @@ public class PathAI
                         // so, then we must modify it for other movement styles and accumulate
                         sPoints += usMovementModeToUseForAPs switch
                         {
-                            AnimationStates.RUNNING => (short)(double)((sTileCost / OverheadTypes.RUNDIVISOR)) + (int)sExtraCostStand,
-                            AnimationStates.WALKING => (sTileCost + OverheadTypes.WALKCOST) + (int)sExtraCostStand,
-                            AnimationStates.SWATTING => (sTileCost + OverheadTypes.SWATCOST) + (int)sExtraCostSwat,
-                            AnimationStates.CRAWLING => (sTileCost + OverheadTypes.CRAWLCOST) + (int)sExtraCostCrawl,
+                            AnimationStates.RUNNING => (short)(double)((sTileCost / Globals.RUNDIVISOR)) + (int)sExtraCostStand,
+                            AnimationStates.WALKING => (sTileCost +  Globals.WALKCOST) + (int)sExtraCostStand,
+                            AnimationStates.SWATTING => (sTileCost + Globals.SWATCOST) + (int)sExtraCostSwat,
+                            AnimationStates.CRAWLING => (sTileCost + Globals.CRAWLCOST) + (int)sExtraCostCrawl,
                             _ => sTileCost,
                         };
                     }
@@ -295,16 +292,16 @@ public class PathAI
                     // ATE; TODO: Put stuff in here to allow for fact of costs other than movement ( jump fence, open door )
 
                     // store WALK cost
-                    sPointsWalk += (sTileCost + OverheadTypes.WALKCOST) + sExtraCostStand;
+                    sPointsWalk += (sTileCost + Globals.WALKCOST) + sExtraCostStand;
 
                     // now get cost as if CRAWLING
-                    sPointsCrawl += (sTileCost + OverheadTypes.CRAWLCOST) + sExtraCostCrawl;
+                    sPointsCrawl += (sTileCost + Globals.CRAWLCOST) + sExtraCostCrawl;
 
                     // now get cost as if SWATTING
-                    sPointsSwat += (sTileCost + OverheadTypes.SWATCOST) + sExtraCostSwat;
+                    sPointsSwat += (sTileCost + Globals.SWATCOST) + sExtraCostSwat;
 
                     // now get cost as if RUNNING
-                    sPointsRun += (short)(double)((sTileCost / OverheadTypes.RUNDIVISOR)) + sExtraCostStand;
+                    sPointsRun += (short)(double)((sTileCost / Globals.RUNDIVISOR)) + sExtraCostStand;
                 }
 
                 if (iCnt == 0 && bPlot)
@@ -318,7 +315,7 @@ public class PathAI
 
                 //if ( gTacticalStatus.uiFlags & TURNBASED && (gTacticalStatus.uiFlags & INCOMBAT) ) // OR USER OPTION "show paths" ON... ***
                 {
-                    if (bPlot && ((iCnt < (iLastGrid - 1)) || (iCnt < iLastGrid && bStayOn)))
+                    if (bPlot && ((iCnt < (iLastGrid - 1)) || (iCnt < iLastGrid && bStayOn != 0)))
                     {
                         guiPlottedPath[giPlotCnt++] = sTempGrid;
 
@@ -371,7 +368,7 @@ public class PathAI
                             }
                         }
 
-                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, usTileNum, usTileIndex);
+                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, usTileNum, out usTileIndex);
 
                         // Adjust based on what mode we are in...
                         if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -401,13 +398,13 @@ public class PathAI
 
                         if (pSold.bLevel == 0)
                         {
-                            pNode = AddObjectToTail(sTempGrid, usTileIndex);
+                            pNode = this.worldManager.AddObjectToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
                         else
                         {
-                            pNode = AddOnRoofToTail(sTempGrid, usTileIndex);
+                            pNode = this.worldManager.AddOnRoofToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
@@ -427,7 +424,7 @@ public class PathAI
                         // this is a LEAVING footstep which is always the second set of 8
                         usTileNum += 8;
 
-                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, (ushort)usTileNum, usTileIndex);
+                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, (ushort)usTileNum, out usTileIndex);
 
                         // Adjust based on what mode we are in...
                         if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -445,13 +442,13 @@ public class PathAI
 
                         if (pSold.bLevel == 0)
                         {
-                            pNode = AddObjectToTail(sTempGrid, usTileIndex);
+                            pNode = this.worldManager.AddObjectToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
                         else
                         {
-                            pNode = AddOnRoofToTail(sTempGrid, usTileIndex);
+                            pNode = this.worldManager.AddOnRoofToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
@@ -482,17 +479,17 @@ public class PathAI
 
         //EraseAPCursor();
 
-        if (HandleUI.gfUIHandleShowMoveGrid > 0)
+        if (Globals.gfUIHandleShowMoveGrid > 0)
         {
-            HandleUI.gfUIHandleShowMoveGrid = 0;
+            Globals.gfUIHandleShowMoveGrid = 0;
 
-            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS4);
-            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS9);
-            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS2);
-            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS13);
-            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS15);
-            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS19);
-            this.worldManager.RemoveTopmost(HandleUI.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS20);
+            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS4);
+            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS9);
+            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS2);
+            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS13);
+            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS15);
+            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS19);
+            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS20);
         }
 
         if (!gusPathShown)

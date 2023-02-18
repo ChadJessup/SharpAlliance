@@ -19,7 +19,6 @@ public class InteractiveTiles
     private readonly GameSettings gGameSettings;
     private readonly RenderWorld renderWorld;
     private readonly TileCache tileCache;
-    private readonly Globals globals;
     private readonly IsometricUtils isometricUtils;
     private readonly Overhead overhead;
     private readonly WorldStructures worldStructures;
@@ -28,7 +27,6 @@ public class InteractiveTiles
         ILogger<InteractiveTiles> logger,
         GameSettings gameSettings,
         RenderWorld renderWorld,
-        Globals globals,
         TileCache tileCache,
         IsometricUtils isometricUtils,
         Overhead overhead,
@@ -37,7 +35,6 @@ public class InteractiveTiles
         this.logger = logger;
         this.gGameSettings = gameSettings;
         this.renderWorld = renderWorld;
-        Globals = globals;
         this.tileCache = tileCache;
         this.isometricUtils = isometricUtils;
         this.overhead = overhead;
@@ -222,22 +219,22 @@ public class InteractiveTiles
         // ATE: Don't handle switches!
         if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH)))
         {
-            if (pSoldier.bTeam == this.overhead.gbPlayerNum)
+            if (pSoldier.bTeam == Globals.gbPlayerNum)
             {
                 if (sGridNo == Quests.BOBBYR_SHIPPING_DEST_GRIDNO
-                    && StrategicMap.gWorldSectorX == Quests.BOBBYR_SHIPPING_DEST_SECTOR_X
-                    && StrategicMap.gWorldSectorY == Quests.BOBBYR_SHIPPING_DEST_SECTOR_Y
-                    && StrategicMap.gbWorldSectorZ == Quests.BOBBYR_SHIPPING_DEST_SECTOR_Z
-                    && CheckFact(FACT.PABLOS_STOLE_FROM_LATEST_SHIPMENT, 0)
-                    && !(CheckFact(FACT.PLAYER_FOUND_ITEMS_MISSING, 0)))
+                    && Globals.gWorldSectorX == Quests.BOBBYR_SHIPPING_DEST_SECTOR_X
+                    && Globals.gWorldSectorY == Quests.BOBBYR_SHIPPING_DEST_SECTOR_Y
+                    && Globals.gbWorldSectorZ == Quests.BOBBYR_SHIPPING_DEST_SECTOR_Z
+                    && Facts.CheckFact(FACT.PABLOS_STOLE_FROM_LATEST_SHIPMENT, 0)
+                    && !(Facts.CheckFact(FACT.PLAYER_FOUND_ITEMS_MISSING, 0)))
                 {
-                    SayQuoteFromNearbyMercInSector(BOBBYR_SHIPPING_DEST_GRIDNO, 3, QUOTE_STUFF_MISSING_DRASSEN);
+                    SayQuoteFromNearbyMercInSector(BOBBYR_SHIPPING_DEST_GRIDNO, 3, QUOTE.STUFF_MISSING_DRASSEN);
                     fDidMissingQuote = true;
                 }
             }
-            else if (pSoldier.bTeam == CIV_TEAM)
+            else if (pSoldier.bTeam == TEAM.CIV_TEAM)
             {
-                if (pSoldier.ubProfile != NO_PROFILE)
+                if (pSoldier.ubProfile != NPCID.NO_PROFILE)
                 {
                     TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_OPEN_STRUCTURE, false);
                 }
@@ -253,14 +250,14 @@ public class InteractiveTiles
                     bool fDoHumm = true;
                     bool fDoLocators = true;
 
-                    if (pSoldier.bTeam != gbPlayerNum)
+                    if (pSoldier.bTeam != Globals.gbPlayerNum)
                     {
                         fDoHumm = false;
                         fDoLocators = false;
                     }
 
                     // Look for ownership here....
-                    if (gWorldItems[pItemPool.iItemIndex].o.usItem == OWNERSHIP)
+                    if (Globals.gWorldItems[pItemPool.iItemIndex].o.usItem == Items.OWNERSHIP)
                     {
                         fDoHumm = false;
                         TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DO_BATTLE_SND, BATTLE_SOUND_NOTHING, 500);
@@ -328,7 +325,7 @@ public class InteractiveTiles
 
 
 
-    int GetInteractiveTileCursor(int uiOldCursor, bool fConfirm)
+    UICursorDefines GetInteractiveTileCursor(UICursorDefines uiOldCursor, bool fConfirm)
     {
         LEVELNODE? pIntNode;
         STRUCTURE? pStructure;
@@ -345,11 +342,11 @@ public class InteractiveTiles
 
                 if (fConfirm)
                 {
-                    return (OKHANDCURSOR_UICURSOR);
+                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
                 }
                 else
                 {
-                    return (NORMALHANDCURSOR_UICURSOR);
+                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
                 }
 
             }
@@ -358,17 +355,17 @@ public class InteractiveTiles
                 if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
                 {
                     //wcscpy(gzIntTileLocation, gzLateLocalizedString[25]);
-                    gfUIIntTileLocation = true;
+                    Globals.gfUIIntTileLocation = true;
                 }
 
 
                 if (fConfirm)
                 {
-                    return (OKHANDCURSOR_UICURSOR);
+                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
                 }
                 else
                 {
-                    return (NORMALHANDCURSOR_UICURSOR);
+                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
                 }
             }
 
@@ -384,7 +381,7 @@ public class InteractiveTiles
         int sGridNo;
 
         // If we are over a merc, don't
-        if (gfUIFullTargetFound)
+        if (Globals.gfUIFullTargetFound)
         {
             return;
         }
@@ -412,8 +409,8 @@ public class InteractiveTiles
         TILE_ELEMENT? TileElem;
 
         // Get 'true' merc position
-        sOffsetX = sXPos - this.renderWorld.gsRenderCenterX;
-        sOffsetY = sYPos - this.renderWorld.gsRenderCenterY;
+        sOffsetX = sXPos - Globals.gsRenderCenterX;
+        sOffsetY = sYPos - Globals.gsRenderCenterY;
 
         FromCellToScreenCoordinates(sOffsetX, sOffsetY, out sTempX_S, out sTempY_S);
 
@@ -423,32 +420,32 @@ public class InteractiveTiles
         }
         else
         {
-            TileElem = (TileDefine.gTileDatabase[pNode.usIndex]);
+            TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
             //Adjust for current frames and animations....
             if (TileElem.uiFlags & ANIMATED_TILE)
             {
                 Debug.Assert(TileElem.pAnimData != null);
-                TileElem = TileDefine.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
+                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
             else if ((pNode.uiFlags & LEVELNODE_ANIMATION))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
                     Debug.Assert(TileElem.pAnimData != null);
-                    TileElem = TileDefine.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
+                    TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
                 }
             }
 
             pTrav = (TileElem.hTileSurface.pETRLEObject[TileElem.usRegionIndex]);
         }
 
-        sScreenX = ((this.renderWorld.gsVIEWPORT_END_X - this.renderWorld.gsVIEWPORT_START_X) / 2) + (int)sTempX_S;
-        sScreenY = ((this.renderWorld.gsVIEWPORT_END_Y - this.renderWorld.gsVIEWPORT_START_Y) / 2) + (int)sTempY_S;
+        sScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)sTempX_S;
+        sScreenY = ((Globals.gsVIEWPORT_END_Y - Globals.gsVIEWPORT_START_Y) / 2) + (int)sTempY_S;
 
         // Adjust for offset position on screen
-        sScreenX -= this.renderWorld.gsRenderWorldOffsetX;
-        sScreenY -= this.renderWorld.gsRenderWorldOffsetY;
+        sScreenX -= Globals.gsRenderWorldOffsetX;
+        sScreenY -= Globals.gsRenderWorldOffsetY;
         sScreenY -= Globals.gpWorldLevelData[sGridNo].sHeight;
 
         // Adjust based on interface level
@@ -458,7 +455,7 @@ public class InteractiveTiles
         }
 
         // Adjust for render height
-        sScreenY += this.renderWorld.gsRenderHeight;
+        sScreenY += Globals.gsRenderHeight;
 
 
 
@@ -494,17 +491,17 @@ public class InteractiveTiles
         }
 
         // Also, don't allow for mercs who are on upper level...
-        if (gusSelectedSoldier != NOBODY && MercPtrs[gusSelectedSoldier].bLevel == 1)
+        if (Globals.gusSelectedSoldier != Globals.NOBODY && Globals.MercPtrs[Globals.gusSelectedSoldier].bLevel == 1)
         {
             return;
         }
 
         // Get World XY From gridno
-        ConvertGridNoToCellXY(sGridNo, out sXMapPos, out sYMapPos);
+        IsometricUtils.ConvertGridNoToCellXY(sGridNo, out sXMapPos, out sYMapPos);
 
         // Set mouse stuff
-        sScreenX = gusMouseXPos;
-        sScreenY = gusMouseYPos;
+        sScreenX = Globals.gusMouseXPos;
+        sScreenY = Globals.gusMouseYPos;
 
         pNode = Globals.gpWorldLevelData[sGridNo].pStructHead;
 
@@ -631,7 +628,7 @@ public class InteractiveTiles
         }
         else
         {
-            psGridNo = IsometricUtils.NOWHERE;
+            psGridNo = Globals.NOWHERE;
         }
 
         return (pNode);
@@ -654,7 +651,7 @@ public class InteractiveTiles
         }
         else
         {
-            psGridNo = IsometricUtils.NOWHERE;
+            psGridNo = Globals.NOWHERE;
         }
 
         if (pNode != null)
@@ -759,7 +756,7 @@ public class InteractiveTiles
         }
 
 
-        TileElem = (TileDefine.gTileDatabase[pNode.usIndex]);
+        TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
         if (gCurIntTile.ubFlags == INTILE_CHECK_SELECTIVE)
         {
@@ -778,7 +775,7 @@ public class InteractiveTiles
                 return (false);
             }
 
-            if (gusSelectedSoldier != NOBODY && MercPtrs[gusSelectedSoldier].ubBodyType == ROBOTNOWEAPON)
+            if (Globals.gusSelectedSoldier != Globals.NOBODY && Globals.MercPtrs[Globals.gusSelectedSoldier].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON)
             {
                 return (false);
             }
@@ -795,7 +792,8 @@ public class InteractiveTiles
                 if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                 {
                     //Are we in hand cursor mode?
-                    if (gCurrentUIMode != HANDCURSOR_MODE && gCurrentUIMode != ACTION_MODE)
+                    if (Globals.gCurrentUIMode != UI_MODE.HANDCURSOR_MODE
+                        && Globals.gCurrentUIMode != UI_MODE.ACTION_MODE)
                     {
                         return (false);
                     }
@@ -804,7 +802,7 @@ public class InteractiveTiles
                 // If this option is on...
                 if (!gGameSettings.fOptions[TOPTION.SNAP_CURSOR_TO_DOOR])
                 {
-                    if (gCurrentUIMode != HANDCURSOR_MODE)
+                    if (Globals.gCurrentUIMode != UI_MODE.HANDCURSOR_MODE)
                     {
                         return (false);
                     }
@@ -816,7 +814,7 @@ public class InteractiveTiles
                 if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
                 {
                     // Find a new gridno based on switch's orientation...
-                    int sNewGridNo = IsometricUtils.NOWHERE;
+                    int sNewGridNo = Globals.NOWHERE;
 
                     switch (pStructure.pDBStructureRef.pDBStructure.ubWallOrientation)
                     {
@@ -836,7 +834,7 @@ public class InteractiveTiles
 
                     }
 
-                    if (sNewGridNo != IsometricUtils.NOWHERE)
+                    if (sNewGridNo != Globals.NOWHERE)
                     {
                         // If we are hidden by a roof, reject it!
                         if (!Environment.gfBasement && IsRoofVisible2(sNewGridNo) 
@@ -883,20 +881,20 @@ public class InteractiveTiles
         }
         else
         {
-            TileElem = (TileDefine.gTileDatabase[pNode.usIndex]);
+            TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
             //Adjust for current frames and animations....
             if (TileElem.uiFlags & ANIMATED_TILE)
             {
                 Debug.Assert(TileElem.pAnimData != null);
-                TileElem = TileDefine.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
+                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
             else if ((pNode.uiFlags & LEVELNODE_ANIMATION))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
                     Debug.Assert(TileElem.pAnimData != null);
-                    TileElem = TileDefine.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
+                    TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
                 }
             }
 
@@ -1133,20 +1131,20 @@ public class InteractiveTiles
     {
         bool fOK = false;
 
-        if (gsINTOldRenderCenterX != this.renderWorld.gsRenderCenterX
-            || gsINTOldRenderCenterY != this.renderWorld.gsRenderCenterY
-            || gusINTOldMousePosX != gusMouseXPos
-            || gusINTOldMousePosY != gusMouseYPos)
+        if (gsINTOldRenderCenterX != Globals.gsRenderCenterX
+            || gsINTOldRenderCenterY != Globals.gsRenderCenterY
+            || gusINTOldMousePosX != Globals.gusMouseXPos
+            || gusINTOldMousePosY != Globals.gusMouseYPos)
         {
             fOK = true;
         }
 
         // Set old values
-        gsINTOldRenderCenterX = this.renderWorld.gsRenderCenterX;
-        gsINTOldRenderCenterY = this.renderWorld.gsRenderCenterY;
+        gsINTOldRenderCenterX = Globals.gsRenderCenterX;
+        gsINTOldRenderCenterY = Globals.gsRenderCenterY;
 
-        gusINTOldMousePosX = gusMouseXPos;
-        gusINTOldMousePosY = gusMouseYPos;
+        gusINTOldMousePosX = Globals.gusMouseXPos;
+        gusINTOldMousePosY = Globals.gusMouseYPos;
 
         return (fOK);
     }
@@ -1160,7 +1158,7 @@ public class InteractiveTiles
         gCurIntTileStack.bCur++;
 
         //PLot new movement
-        gfPlotNewMovement = true;
+        Globals.gfPlotNewMovement = true;
 
         if (gCurIntTileStack.bCur == gCurIntTileStack.bNum)
         {

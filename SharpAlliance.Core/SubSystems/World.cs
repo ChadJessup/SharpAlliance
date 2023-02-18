@@ -17,16 +17,13 @@ namespace SharpAlliance.Core.SubSystems
         public const int WORLD_MAX = 25600;
 
         private readonly ILogger<World> logger;
-        private readonly Globals globals;
         private readonly IsometricUtils isometricUtils;
 
         public World(
             ILogger<World> logger,
-            Globals globals,
             IsometricUtils isometricUtils)
         {
             this.logger = logger;
-            Globals = globals;
             this.isometricUtils = isometricUtils;
         }
 

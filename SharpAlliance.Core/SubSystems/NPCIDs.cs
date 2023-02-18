@@ -140,6 +140,8 @@
         NPC166,
         NPC167,
         NPC168,
-        NPC169
+        NPC169,
+
+        NO_PROFILE = 200,
     }
 }

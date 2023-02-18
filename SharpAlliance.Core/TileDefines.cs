@@ -13,7 +13,6 @@ public class TileDefine
     public static int MAX_ANIMATED_TILES = 200;
     public static int WALL_HEIGHT = 50;
     // Globals used
-    public static TILE_ELEMENT[] gTileDatabase = new TILE_ELEMENT[(int)TileDefines.NUMBEROFTILES];
     int gTileDatabaseSize;
     int[] gFullBaseTileValues;
     int[] gNumTilesPerType = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
@@ -33,7 +32,7 @@ public class TileDefine
         //CHECKF(usIndex != NO_TILE);
 
         // Get tile element
-        TileElem = gTileDatabase[usIndex];
+        TileElem = Globals.gTileDatabase[usIndex];
 
         puiType = TileElem.fType;
 

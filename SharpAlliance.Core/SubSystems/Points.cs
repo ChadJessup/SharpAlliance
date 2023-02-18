@@ -21,7 +21,7 @@ public class Points
 
             if (pSoldier.bDoBurst)
             {
-                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), &(pSoldier.inv[(int)InventorySlot.HANDPOS]));
+                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), (pSoldier.inv[(int)InventorySlot.HANDPOS]));
             }
             else
             {
@@ -53,23 +53,23 @@ public class Points
                     //INT32		cnt;
                     //INT16		sSpot;	
                     int ubGuyThere;
-                    int sGotLocation = IsometricUtils.NOWHERE;
+                    int sGotLocation = Globals.NOWHERE;
                     bool fGotAdjacent = false;
                     SOLDIERTYPE? pTarget;
 
                     ubGuyThere = WhoIsThere2(sGridNo, pSoldier.bLevel);
 
-                    if (ubGuyThere != OverheadTypes.NOBODY)
+                    if (ubGuyThere != Globals.NOBODY)
                     {
 
-                        pTarget = MercPtrs[ubGuyThere];
+                        pTarget = Globals.MercPtrs[ubGuyThere];
 
                         if (pSoldier.ubBodyType == BLOODCAT)
                         {
                             sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, ubDirection, sAdjustedGridNo, true, false);
                             if (sGotLocation == -1)
                             {
-                                sGotLocation = IsometricUtils.NOWHERE;
+                                sGotLocation = Globals.NOWHERE;
                             }
                         }
                         else
@@ -78,13 +78,13 @@ public class Points
                         }
                     }
 
-                    if (sGotLocation == IsometricUtils.NOWHERE && pSoldier.ubBodyType != BLOODCAT)
+                    if (sGotLocation == Globals.NOWHERE && pSoldier.ubBodyType != BLOODCAT)
                     {
                         sActionGridNo = FindAdjacentGridEx(pSoldier, sGridNo, ubDirection, sAdjustedGridNo, true, false);
 
                         if (sActionGridNo == -1)
                         {
-                            sGotLocation = IsometricUtils.NOWHERE;
+                            sGotLocation = Globals.NOWHERE;
                         }
                         else
                         {
@@ -93,7 +93,7 @@ public class Points
                         fGotAdjacent = true;
                     }
 
-                    if (sGotLocation != IsometricUtils.NOWHERE)
+                    if (sGotLocation != Globals.NOWHERE)
                     {
                         if (pSoldier.sGridNo == sGotLocation || !fGotAdjacent)
                         {
@@ -289,90 +289,90 @@ public class AP
     public const int JUMP_OVER = 6;
 }
 
-public enum BP
+public class BP
 {
     // special Breath Point related constants
-    RATIO_RED_PTS_TO_NORMAL = 100,
-    RUN_ENERGYCOSTFACTOR = 3,// Richard thinks running is 3rd most strenous over time... tough, Mark didn't.  CJC increased it again
-    WALK_ENERGYCOSTFACTOR = 1,// walking subtracts flat terrain breath value
-    SWAT_ENERGYCOSTFACTOR = 2,// Richard thinks swatmove is 2nd most strenous over time... tough, Mark didn't
-    CRAWL_ENERGYCOSTFACTOR = 4,// Richard thinks crawling is the MOST strenuous over time	
-    RADIO = 0,// no breath cost
-    USE_DETONATOR = 0, // no breath cost
-    REVERSE_MODIFIER = 0,  // no change, a bit more challenging
-    STEALTH_MODIFIER = -20,   // slow & cautious, not too strenuous
-    MINING_MODIFIER = -30, // pretty relaxing, overall
+    public const int RATIO_RED_PTS_TO_NORMAL = 100;
+    public const int RUN_ENERGYCOSTFACTOR = 3;// Richard thinks running is 3rd most strenous over time... tough; Mark didn't.  CJC increased it again
+    public const int WALK_ENERGYCOSTFACTOR = 1;// walking subtracts flat terrain breath value
+    public const int SWAT_ENERGYCOSTFACTOR = 2;// Richard thinks swatmove is 2nd most strenous over time... tough; Mark didn't
+    public const int CRAWL_ENERGYCOSTFACTOR = 4;// Richard thinks crawling is the MOST strenuous over time	
+    public const int RADIO = 0;// no breath cost
+    public const int USE_DETONATOR = 0; // no breath cost
+    public const int REVERSE_MODIFIER = 0;  // no change; a bit more challenging
+    public const int STEALTH_MODIFIER = -20;   // slow & cautious; not too strenuous
+    public const int MINING_MODIFIER = -30; // pretty relaxing; overall
                            // end-of-turn Breath Point gain/usage rates
-    PER_AP_NO_EFFORT = -200,   // gain breath!
-    PER_AP_MIN_EFFORT = -100,    // gain breath!
-    PER_AP_LT_EFFORT = -50,     // gain breath!
-    PER_AP_MOD_EFFORT = 25,
-    PER_AP_HVY_EFFORT = 50,
-    PER_AP_MAX_EFFORT = 100,
+    public const int PER_AP_NO_EFFORT = -200;   // gain breath!
+    public const int PER_AP_MIN_EFFORT = -100;    // gain breath!
+    public const int PER_AP_LT_EFFORT = -50;     // gain breath!
+    public const int PER_AP_MOD_EFFORT = 25;
+    public const int PER_AP_HVY_EFFORT = 50;
+    public const int PER_AP_MAX_EFFORT = 100;
     // Breath Point values
-    MOVEMENT_FLAT = 5,
-    MOVEMENT_GRASS = 10,
-    MOVEMENT_BUSH = 20,
-    MOVEMENT_RUBBLE = 35,
-    MOVEMENT_SHORE = 50,      // shallow wade
-    MOVEMENT_LAKE = 75,      // deep wade
-    MOVEMENT_OCEAN = 100,     // swimming
-    CHANGE_FACING = 10,    // turning to face another direction
-    CROUCH = 10,
-    PRONE = 10,
-    CLIMBROOF = 500,     // BPs to climb roof
-    CLIMBOFFROOF = 250,  // BPs to climb off roof
-    JUMPFENCE = 200,     // BPs to jump fence
+    public const int MOVEMENT_FLAT = 5;
+    public const int MOVEMENT_GRASS = 10;
+    public const int MOVEMENT_BUSH = 20;
+    public const int MOVEMENT_RUBBLE = 35;
+    public const int MOVEMENT_SHORE = 50;      // shallow wade
+    public const int MOVEMENT_LAKE = 75;      // deep wade
+    public const int MOVEMENT_OCEAN = 100;     // swimming
+    public const int CHANGE_FACING = 10;    // turning to face another direction
+    public const int CROUCH = 10;
+    public const int PRONE = 10;
+    public const int CLIMBROOF = 500;     // BPs to climb roof
+    public const int CLIMBOFFROOF = 250;  // BPs to climb off roof
+    public const int JUMPFENCE = 200;     // BPs to jump fence
     /*
-    MOVE_ITEM_FREE       0       // same place, pocket.pocket
-    MOVE_ITEM_FAST       0       // hand, holster, ground only
+    MOVE_ITEM_FREE       0       // same place; pocket.pocket
+    MOVE_ITEM_FAST       0       // hand; holster; ground only
     MOVE_ITEM_AVG        0       // everything else!
-    MOVE_ITEM_SLOW       20      // vests, protective gear
+    MOVE_ITEM_SLOW       20      // vests; protective gear
     */
-    MOVE_ITEM_FAST = 0,// hand, holster, ground only
-    MOVE_ITEM_SLOW = 20,// vests, protective gear
-    READY_KNIFE = 0,// raise/lower knife
-    READY_PISTOL = 10,// raise/lower pistol
-    READY_RIFLE = 20,// raise/lower rifle
-    READY_SAW = 0,// raise/lower saw
-    STEAL_ITEM = 50,// BPs steal item
-    PER_AP_AIMING = 5,// breath cost while aiming
-    RELOAD_GUN = 20,// loading new clip/magazine
-    THROW_ITEM = 50,// throw grenades, fire-bombs, etc.
-    START_FIRST_AID = 0,// get the stuff out of medic kit
-    PER_HP_FIRST_AID = -25,// gain breath for each point healed
-    STOP_FIRST_AID = 0,// put everything away again
-    GET_HIT = 200,// struck by bullet, knife, explosion
-    GET_WOUNDED = 50,// per pt of GUNFIRE/EXPLOSION impact
-    FALL_DOWN = 250,// falling down (explosion, exhaustion)
-    GET_UP = 50,// getting up again
-    ROLL_OVER = 20,// flipping from back to stomach
-    OPEN_DOOR = 30,// whether successful, or not (locked)
-    PICKLOCK = -250,// gain breath, not very tiring...
-    EXAMINE_DOOR = -250,// gain breath, not very tiring...
-    BOOT_DOOR = 200,     // BP to boot door
-    USE_CROWBAR = 350,     // BP to crowbar door
-    UNLOCK_DOOR = 50,    // BP to unlock door
-    EXPLODE_DOOR = -250,     // BP to set explode charge on door
-    UNTRAP_DOOR = 150,       // BP to untrap
-    LOCK_DOOR = 50,          // BP to untrap
-    USEWIRECUTTERS = 200,    // BP to use wirecutters
-    PULL_TRIGGER = 0, // for operating panic triggers
-    FORCE_LID_OPEN = 50, // per point of strength required
-    SEARCH_CONTAINER = 0,// get some breath back (was -50)
-    OPEN_SAFE = -50,
-    READ_NOTE = -250,    // reading a note's contents in inv.
-    SNAKE_BATTLE = 500,   // when first attacked
-    KILL_SNAKE = 350,  // when snake battle's been won
-    USE_SURV_CAM = -100,
-    BURY_MINE = 250,   // involves digging & filling again
-    DISARM_MINE = 0,  // 1/2 digging, 1/2 light effort
-    FIRE_HANDGUN = 25, // preatty easy, little recoil
-    FIRE_RIFLE = 50,// heavier, nasty recoil
-    FIRE_SHOTGUN = 100, // quite tiring, must be pumped up
-    STAB_KNIFE = 200,
-    TAKE_PHOTOGRAPH = 0,
-    MERGE = 50,
-    FALLFROMROOF = 1000,
-    JUMP_OVER = 250,
+    public const int MOVE_ITEM_FAST = 0;// hand; holster; ground only
+    public const int MOVE_ITEM_SLOW = 20;// vests; protective gear
+    public const int READY_KNIFE = 0;// raise/lower knife
+    public const int READY_PISTOL = 10;// raise/lower pistol
+    public const int READY_RIFLE = 20;// raise/lower rifle
+    public const int READY_SAW = 0;// raise/lower saw
+    public const int STEAL_ITEM = 50;// BPs steal item
+    public const int PER_AP_AIMING = 5;// breath cost while aiming
+    public const int RELOAD_GUN = 20;// loading new clip/magazine
+    public const int THROW_ITEM = 50;// throw grenades; fire-bombs; etc.
+    public const int START_FIRST_AID = 0;// get the stuff out of medic kit
+    public const int PER_HP_FIRST_AID = -25;// gain breath for each point healed
+    public const int STOP_FIRST_AID = 0;// put everything away again
+    public const int GET_HIT = 200;// struck by bullet; knife; explosion
+    public const int GET_WOUNDED = 50;// per pt of GUNFIRE/EXPLOSION impact
+    public const int FALL_DOWN = 250;// falling down (explosion; exhaustion)
+    public const int GET_UP = 50;// getting up again
+    public const int ROLL_OVER = 20;// flipping from back to stomach
+    public const int OPEN_DOOR = 30;// whether successful; or not (locked)
+    public const int PICKLOCK = -250;// gain breath; not very tiring...
+    public const int EXAMINE_DOOR = -250;// gain breath; not very tiring...
+    public const int BOOT_DOOR = 200;     // BP to boot door
+    public const int USE_CROWBAR = 350;     // BP to crowbar door
+    public const int UNLOCK_DOOR = 50;    // BP to unlock door
+    public const int EXPLODE_DOOR = -250;     // BP to set explode charge on door
+    public const int UNTRAP_DOOR = 150;       // BP to untrap
+    public const int LOCK_DOOR = 50;          // BP to untrap
+    public const int USEWIRECUTTERS = 200;    // BP to use wirecutters
+    public const int PULL_TRIGGER = 0; // for operating panic triggers
+    public const int FORCE_LID_OPEN = 50; // per point of strength required
+    public const int SEARCH_CONTAINER = 0;// get some breath back (was -50)
+    public const int OPEN_SAFE = -50;
+    public const int READ_NOTE = -250;    // reading a note's contents in inv.
+    public const int SNAKE_BATTLE = 500;   // when first attacked
+    public const int KILL_SNAKE = 350;  // when snake battle's been won
+    public const int USE_SURV_CAM = -100;
+    public const int BURY_MINE = 250;   // involves digging & filling again
+    public const int DISARM_MINE = 0;  // 1/2 digging; 1/2 light effort
+    public const int FIRE_HANDGUN = 25; // preatty easy; little recoil
+    public const int FIRE_RIFLE = 50;// heavier; nasty recoil
+    public const int FIRE_SHOTGUN = 100; // quite tiring; must be pumped up
+    public const int STAB_KNIFE = 200;
+    public const int TAKE_PHOTOGRAPH = 0;
+    public const int MERGE = 50;
+    public const int FALLFROMROOF = 1000;
+    public const int JUMP_OVER = 250;
 }

@@ -203,8 +203,8 @@ namespace SharpAlliance.Core.Screens
             await this.textUtils.LoadAllExternalText();
             await this.sounds.InitSound();
 
-            this.renderWorld.gsRenderCenterX = 805;
-            this.renderWorld.gsRenderCenterY = 805;
+            Globals.gsRenderCenterX = 805;
+            Globals.gsRenderCenterY = 805;
 
             if (!await this.animationData.InitAnimationSystem())
             {

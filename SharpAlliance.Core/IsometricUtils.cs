@@ -1,31 +1,23 @@
 ﻿using System;
 using SharpAlliance.Core.SubSystems;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Veldrid.MetalBindings;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core;
 
 public class IsometricUtils
 {
-    public const int MAXCOL = World.WORLD_COLS;
-    public const int MAXROW = World.WORLD_ROWS;
-    public const int GRIDSIZE = MAXCOL * MAXROW;
-    public const int RIGHTMOSTGRID = MAXCOL - 1;
-    public const int LASTROWSTART = GRIDSIZE - MAXCOL;
-    public const int NOWHERE = GRIDSIZE + 1;
-    public const int NO_MAP_POS = NOWHERE;
-    public const int MAPWIDTH = World.WORLD_COLS;
-    public const int MAPHEIGHT = World.WORLD_ROWS;
-    public const int MAPLENGTH = MAPHEIGHT * MAPWIDTH;
-
     int[] DirIncrementer = new int[8]
     {
-        -MAPWIDTH,        //N
-	    1-MAPWIDTH,       //NE
+        -Globals.MAPWIDTH,        //N
+	    1-Globals.MAPWIDTH,       //NE
 	    1,                //E
-	    1+MAPWIDTH,       //SE
-	    MAPWIDTH,         //S
-	    MAPWIDTH-1,       //SW
+	    1+Globals.MAPWIDTH,       //SE
+	    Globals.MAPWIDTH,         //S
+	    Globals.MAPWIDTH-1,       //SW
 	    -1,               //W
-	    -MAPWIDTH-1       //NW
+	    -Globals.MAPWIDTH-1       //NW
     };
 
     public bool OutOfBounds(int sGridno, int sProposedGridno)
@@ -33,15 +25,15 @@ public class IsometricUtils
         int sMod, sPropMod;
 
         // get modulas of our origin
-        sMod = sGridno % MAXCOL;
+        sMod = sGridno % Globals.MAXCOL;
 
         if (sMod != 0)          // if we're not on leftmost grid
         {
-            if (sMod != RIGHTMOSTGRID)  // if we're not on rightmost grid
+            if (sMod != Globals.RIGHTMOSTGRID)  // if we're not on rightmost grid
             {
-                if (sGridno < LASTROWSTART) // if we're above bottom row
+                if (sGridno < Globals.LASTROWSTART) // if we're above bottom row
                 {
-                    if (sGridno > MAXCOL)   // if we're below top row
+                    if (sGridno > Globals.MAXCOL)   // if we're below top row
                     {
                         // Everything's OK - we're not on the edge of the map
                         return (false);
@@ -57,17 +49,17 @@ public class IsometricUtils
             return (true);
         }
 
-        sPropMod = sProposedGridno % MAXCOL;
+        sPropMod = sProposedGridno % Globals.MAXCOL;
 
-        if (sMod == 0 && sPropMod == RIGHTMOSTGRID)
+        if (sMod == 0 && sPropMod == Globals.RIGHTMOSTGRID)
         {
             return (true);
         }
-        else if (sMod == RIGHTMOSTGRID && sPropMod == 0)
+        else if (sMod == Globals.RIGHTMOSTGRID && sPropMod == 0)
         {
             return (true);
         }
-        else if (sGridno >= LASTROWSTART && sProposedGridno >= GRIDSIZE)
+        else if (sGridno >= Globals.LASTROWSTART && sProposedGridno >= Globals.GRIDSIZE)
         {
             return (true);
         }
@@ -76,6 +68,55 @@ public class IsometricUtils
             return (false);
         }
     }
+
+    public static void ConvertGridNoToCellXY(int sGridNo, out int sXPos, out int sYPos)
+    {
+        sYPos = (sGridNo / Globals.WORLD_COLS);
+        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
+        sYPos *= Globals.CELL_Y_SIZE;
+        sXPos *= Globals.CELL_X_SIZE;
+    }
+
+    public static bool IsPointInScreenRect(int sXPos, int sYPos, Rectangle pRect)
+    {
+        if ((sXPos >= pRect.Left) && (sXPos <= pRect.Right) && (sYPos >= pRect.Top) && (sYPos <= pRect.Bottom))
+        {
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
+    }
+
+
+    public static void FromCellToScreenCoordinates(int sCellX, int sCellY, out int psScreenX, out int psScreenY)
+    {
+        psScreenX = (2 * sCellX) - (2 * sCellY);
+        psScreenY = sCellX + sCellY;
+    }
+
+    public static void FromScreenToCellCoordinates(int sScreenX, int sScreenY, out int psCellX, out int psCellY)
+    {
+        psCellX = ((sScreenX + (2 * sScreenY)) / 4);
+        psCellY = ((2 * sScreenY) - sScreenX) / 4;
+    }
+
+    // These two functions take into account that our world is projected and attached
+    // to the screen (0,0) in a specific way, and we MUSt take that into account then
+    // determining screen coords
+
+    public void FloatFromCellToScreenCoordinates(float dCellX, float dCellY, out float pdScreenX, out float pdScreenY)
+    {
+        float dScreenX, dScreenY;
+
+        dScreenX = (2 * dCellX) - (2 * dCellY);
+        dScreenY = dCellX + dCellY;
+
+        pdScreenX = dScreenX;
+        pdScreenY = dScreenY;
+    }
+
 
     public int NewGridNo(int sGridno, int sDirInc)
     {

@@ -597,11 +597,11 @@ namespace SharpAlliance.Core.Managers
                             Region = this.gDirtyRegionsEx[uiIndex];
 
                             // Do some checks if we are in the process of scrolling!	
-                            if (this.renderWorld.gfRenderScroll)
+                            if (Globals.gfRenderScroll)
                             {
                                 // Check if we are completely out of bounds
-                                if (Region.Y <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y
-                                    && Region.Height <= this.renderWorld.gsVIEWPORT_WINDOW_END_Y)
+                                if (Region.Y <= Globals.gsVIEWPORT_WINDOW_END_Y
+                                    && Region.Height <= Globals.gsVIEWPORT_WINDOW_END_Y)
                                 {
                                     continue;
                                 }
@@ -616,19 +616,19 @@ namespace SharpAlliance.Core.Managers
                     }
                 }
 
-                if (this.renderWorld.gfRenderScroll)
+                if (Globals.gfRenderScroll)
                 {
                     this.ScrollJA2Background(
-                        this.renderWorld.guiScrollDirection,
-                        this.renderWorld.gsScrollXIncrement,
-                        this.renderWorld.gsScrollYIncrement,
+                        Globals.guiScrollDirection,
+                        Globals.gsScrollXIncrement,
+                        Globals.gsScrollYIncrement,
                         this.gpPrimarySurface,
                         this.backBuffer,
                         fRenderStrip: true,
                         Constants.PREVIOUS_MOUSE_DATA);
                 }
 
-                this.renderWorld.gfIgnoreScrollDueToCenterAdjust = false;
+                Globals.gfIgnoreScrollDueToCenterAdjust = false;
 
                 // Update the guiFrameBufferState variable to reflect that the frame buffer can now be handled
                 this.guiFrameBufferState = BufferState.READY;
@@ -919,7 +919,7 @@ namespace SharpAlliance.Core.Managers
             //    this.backBuffer);
 
             // Step (2) - Copy Primary Surface to the Back Buffer
-            if (this.renderWorld.gfRenderScroll)
+            if (Globals.gfRenderScroll)
             {
                 Region.X = 0;
                 Region.Y = 0;
@@ -934,8 +934,8 @@ namespace SharpAlliance.Core.Managers
 
                 // Get new background for mouse
                 // Ok, do the actual data save to the mouse background
-                this.renderWorld.gfRenderScroll = false;
-                this.renderWorld.gfScrollStart = false;
+                Globals.gfRenderScroll = false;
+                Globals.gfScrollStart = false;
             }
 
             // COPY MOUSE AREAS FROM PRIMARY BACK!
@@ -1014,8 +1014,8 @@ namespace SharpAlliance.Core.Managers
                 Region.Width = this.gDirtyRegionsEx[uiIndex].Width;
                 Region.Height = this.gDirtyRegionsEx[uiIndex].Height;
 
-                if ((Region.Y < this.renderWorld.gsVIEWPORT_WINDOW_END_Y)
-                    && this.renderWorld.gfRenderScroll)
+                if ((Region.Y < Globals.gsVIEWPORT_WINDOW_END_Y)
+                    && Globals.gfRenderScroll)
                 {
                     continue;
                 }
@@ -1085,17 +1085,17 @@ namespace SharpAlliance.Core.Managers
             int uiCountY;
 
             this.GetCurrentVideoSettings(out usWidth, out usHeight, out ubBitDepth);
-            usHeight = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+            usHeight = Globals.gsVIEWPORT_WINDOW_END_Y - Globals.gsVIEWPORT_WINDOW_START_Y;
 
-            StripRegions[0].X = this.renderWorld.gsVIEWPORT_START_X;
-            StripRegions[0].Width = this.renderWorld.gsVIEWPORT_END_X;
-            StripRegions[0].Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
-            StripRegions[0].Height = this.renderWorld.gsVIEWPORT_WINDOW_END_Y;
+            StripRegions[0].X = Globals.gsVIEWPORT_START_X;
+            StripRegions[0].Width = Globals.gsVIEWPORT_END_X;
+            StripRegions[0].Y = Globals.gsVIEWPORT_WINDOW_START_Y;
+            StripRegions[0].Height = Globals.gsVIEWPORT_WINDOW_END_Y;
 
-            StripRegions[1].X = this.renderWorld.gsVIEWPORT_START_X;
-            StripRegions[1].Width = this.renderWorld.gsVIEWPORT_END_X;
-            StripRegions[1].Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
-            StripRegions[1].Height = this.renderWorld.gsVIEWPORT_WINDOW_END_Y;
+            StripRegions[1].X = Globals.gsVIEWPORT_START_X;
+            StripRegions[1].Width = Globals.gsVIEWPORT_END_X;
+            StripRegions[1].Y = Globals.gsVIEWPORT_WINDOW_START_Y;
+            StripRegions[1].Height = Globals.gsVIEWPORT_WINDOW_END_Y;
 
             MouseRegion.X = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usLeft;
             MouseRegion.Y = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usTop;
@@ -1110,24 +1110,24 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_LEFT:
 
                     Region.X = 0;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y;
                     Region.Width = usWidth - sScrollXIncrement;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
                     this.DrawRegion(
                         pDest,
                         sScrollXIncrement,
-                        this.renderWorld.gsVIEWPORT_WINDOW_START_Y,
+                        Globals.gsVIEWPORT_WINDOW_START_Y,
                         Region,
                         pSource);
 
                     // memset z-buffer
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, sScrollXIncrement * 2);
                     }
 
-                    StripRegions[0].Width = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[0].Width = (int)(Globals.gsVIEWPORT_START_X + sScrollXIncrement);
                     usMouseXPos += sScrollXIncrement;
 
                     usNumStrips = 1;
@@ -1136,21 +1136,21 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_RIGHT:
 
                     Region.X = sScrollXIncrement;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y;
                     Region.Width = usWidth;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
                     this.DrawRegion(
                         pDest,
                         0,
-                        this.renderWorld.gsVIEWPORT_WINDOW_START_Y,
+                        Globals.gsVIEWPORT_WINDOW_START_Y,
                         Region,
                         pSource);
 
                     // // memset z-buffer
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
-                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
+                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((Globals.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
                     }
 
                     //for(uiCountY=0; uiCountY < usHeight; uiCountY++)
@@ -1160,7 +1160,7 @@ namespace SharpAlliance.Core.Managers
                     //					uiDestPitchBYTES-sScrollXIncrement*uiBPP);
                     //}
 
-                    StripRegions[0].X = this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement;
+                    StripRegions[0].X = Globals.gsVIEWPORT_END_X - sScrollXIncrement;
                     usMouseXPos -= sScrollXIncrement;
 
                     usNumStrips = 1;
@@ -1169,18 +1169,18 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_UP:
 
                     Region.X = 0;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y;
                     Region.Width = usWidth;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
                     this.DrawRegion(
                         pDest,
                         0,
-                        this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
+                        Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
                         Region,
                         pSource);
 
-                    for (uiCountY = sScrollYIncrement - 1 + this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY >= this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
+                    for (uiCountY = sScrollYIncrement - 1 + Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY >= Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
@@ -1191,7 +1191,7 @@ namespace SharpAlliance.Core.Managers
                     //					pSrcBuf+((uiCountY-sScrollYIncrement)*uiDestPitchBYTES),
                     //					uiDestPitchBYTES);
                     //}
-                    StripRegions[0].Height = (int)(this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
+                    StripRegions[0].Height = (int)(Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
                     usNumStrips = 1;
 
                     usMouseYPos += sScrollYIncrement;
@@ -1201,19 +1201,19 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_DOWN:
 
                     Region.X = 0;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
                     Region.Width = usWidth;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
                     this.DrawRegion(
                         pDest,
                         0,
-                        this.renderWorld.gsVIEWPORT_WINDOW_START_Y,
+                        Globals.gsVIEWPORT_WINDOW_START_Y,
                         Region,
                         pSource);
 
                     // Zero out z
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
@@ -1225,7 +1225,7 @@ namespace SharpAlliance.Core.Managers
                     //					uiDestPitchBYTES);
                     //}
 
-                    StripRegions[0].Y = (int)(this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[0].Y = (int)(Globals.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
                     usNumStrips = 1;
 
                     usMouseYPos -= sScrollYIncrement;
@@ -1235,31 +1235,31 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_UPLEFT:
 
                     Region.X = 0;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y;
                     Region.Width = usWidth - sScrollXIncrement;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
                     this.DrawRegion(
                         pDest,
                         sScrollXIncrement,
-                        this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
+                        Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
                         Region,
                         pSource);
 
                     // // memset z-buffer
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, sScrollXIncrement * 2);
 
                     }
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement - 1; uiCountY >= this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement - 1; uiCountY >= Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
 
-                    StripRegions[0].Width = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
-                    StripRegions[1].Height = (int)(this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
-                    StripRegions[1].X = (int)(this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[0].Width = (int)(Globals.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[1].Height = (int)(Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
+                    StripRegions[1].X = (int)(Globals.gsVIEWPORT_START_X + sScrollXIncrement);
                     usNumStrips = 2;
 
                     usMouseYPos += sScrollYIncrement;
@@ -1270,29 +1270,29 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_UPRIGHT:
 
                     Region.X = sScrollXIncrement;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y;
                     Region.Width = usWidth;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
                     this.BlitRegion(
                         pDest,
-                        new Point(0, this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement),
+                        new Point(0, Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement),
                         Region,
                         pSource);
 
                     // // memset z-buffer
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
-                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
+                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((Globals.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
                     }
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement - 1; uiCountY >= this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement - 1; uiCountY >= Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY--)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
 
-                    StripRegions[0].X = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
-                    StripRegions[1].Height = (int)(this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
-                    StripRegions[1].Width = (int)(this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[0].X = (int)(Globals.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[1].Height = (int)(Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement);
+                    StripRegions[1].Width = (int)(Globals.gsVIEWPORT_END_X - sScrollXIncrement);
                     usNumStrips = 2;
 
                     usMouseYPos += sScrollYIncrement;
@@ -1303,31 +1303,31 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_DOWNLEFT:
 
                     Region.X = 0;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
                     Region.Width = usWidth - sScrollXIncrement;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
                     this.BlitRegion(
                         pDest,
-                        new Point(sScrollXIncrement, this.renderWorld.gsVIEWPORT_WINDOW_START_Y),
+                        new Point(sScrollXIncrement, Globals.gsVIEWPORT_WINDOW_START_Y),
                         Region,
                         pSource);
 
                     // // memset z-buffer
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, sScrollXIncrement * 2);
 
                     }
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
 
-                    StripRegions[0].Width = (this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[0].Width = (Globals.gsVIEWPORT_START_X + sScrollXIncrement);
 
-                    StripRegions[1].Y = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
-                    StripRegions[1].X = (this.renderWorld.gsVIEWPORT_START_X + sScrollXIncrement);
+                    StripRegions[1].Y = (Globals.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[1].X = (Globals.gsVIEWPORT_START_X + sScrollXIncrement);
                     usNumStrips = 2;
 
                     usMouseYPos -= sScrollYIncrement;
@@ -1338,30 +1338,30 @@ namespace SharpAlliance.Core.Managers
                 case ScrollDirection.SCROLL_DOWNRIGHT:
 
                     Region.X = sScrollXIncrement;
-                    Region.Y = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
+                    Region.Y = Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement;
                     Region.Width = usWidth;
-                    Region.Height = this.renderWorld.gsVIEWPORT_WINDOW_START_Y + usHeight;
+                    Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
                     this.BlitRegion(
                         pDest,
-                        new Point(0, this.renderWorld.gsVIEWPORT_WINDOW_START_Y),
+                        new Point(0, Globals.gsVIEWPORT_WINDOW_START_Y),
                         Region,
                         pSource);
 
                     // // memset z-buffer
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_START_Y; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_START_Y; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
-                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
+                        // memset((int*)gpZBuffer + (uiCountY * 1280) + ((Globals.gsVIEWPORT_END_X - sScrollXIncrement) * 2), 0, sScrollXIncrement * 2);
                     }
 
-                    for (uiCountY = this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < this.renderWorld.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
+                    for (uiCountY = Globals.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement; uiCountY < Globals.gsVIEWPORT_WINDOW_END_Y; uiCountY++)
                     {
                         // memset((int*)gpZBuffer + (uiCountY * 1280), 0, 1280);
                     }
 
-                    StripRegions[0].X = (this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
-                    StripRegions[1].Y = (this.renderWorld.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
-                    StripRegions[1].Width = (this.renderWorld.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[0].X = (Globals.gsVIEWPORT_END_X - sScrollXIncrement);
+                    StripRegions[1].Y = (Globals.gsVIEWPORT_WINDOW_END_Y - sScrollYIncrement);
+                    StripRegions[1].Width = (Globals.gsVIEWPORT_END_X - sScrollXIncrement);
                     usNumStrips = 2;
 
                     usMouseYPos -= sScrollYIncrement;

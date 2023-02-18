@@ -14,24 +14,21 @@ namespace SharpAlliance.Core.SubSystems;
 public class WorldStructures
 {
     private readonly ILogger<WorldStructures> logger;
-    private readonly Globals globals;
     private readonly World world;
     private readonly IsometricUtils isometricUtils;
 
-    public const int INVALID_STRUCTURE_ID = (OverheadTypes.TOTAL_SOLDIERS + 100);
-    public const int IGNORE_PEOPLE_STRUCTURE_ID = (OverheadTypes.TOTAL_SOLDIERS + 101);
+    public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
+    public const int IGNORE_PEOPLE_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 101);
     public const int FIRST_AVAILABLE_STRUCTURE_ID = (INVALID_STRUCTURE_ID + 2);
 
     public int gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
 
     public WorldStructures(
         ILogger<WorldStructures> logger,
-        Globals globals,
         World world,
         IsometricUtils isometricUtils)
     {
         this.logger = logger;
-        Globals = globals;
         this.world = world;
         this.isometricUtils = isometricUtils;
     }
@@ -180,7 +177,7 @@ public class WorldStructures
         else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE))
         {
             // ATE: Offset IDs so they don't collide with soldiers
-            usStructureID = (OverheadTypes.TOTAL_SOLDIERS + pLevelNode.pAniTile.uiUserData);
+            usStructureID = (Globals.TOTAL_SOLDIERS + pLevelNode.pAniTile.uiUserData);
         }
         else
         {
@@ -419,7 +416,7 @@ public class WorldStructures
                     if (fIgnorePeople)
                     {
                         // If we are a person, skip!
-                        if (pExistingStructure.usStructureID < OverheadTypes.TOTAL_SOLDIERS)
+                        if (pExistingStructure.usStructureID < Globals.TOTAL_SOLDIERS)
                         {
                             // Skip!
                             pExistingStructure = pExistingStructure.pNext;
@@ -534,7 +531,7 @@ public class WorldStructures
                     if (fIgnorePeople)
                     {
                         // If we are a person, skip!
-                        if (pExistingStructure.usStructureID < OverheadTypes.TOTAL_SOLDIERS)
+                        if (pExistingStructure.usStructureID < Globals.TOTAL_SOLDIERS)
                         {
                             // Skip!
                             pExistingStructure = pExistingStructure.pNext;

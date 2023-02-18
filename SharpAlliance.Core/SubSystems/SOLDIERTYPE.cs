@@ -9,7 +9,7 @@ namespace SharpAlliance.Core.SubSystems
         int bReserved1;
 
         // DESCRIPTION / STATS, ETC
-        public int ubBodyType;
+        public SoldierBodyTypes ubBodyType;
         public int bActionPoints;
         int bInitialActionPoints;
 
@@ -27,7 +27,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bBleeding;     // blood loss control variable
         public int bBreath;           // current breath value
         int bBreathMax;   // max breath, affected by fatigue/sleep
-        int bStealthMode;
+        public bool bStealthMode { get; set; }
 
         int sBreathRed;           // current breath value
         public bool fDelayedMovement;
@@ -85,7 +85,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
         int ubDesiredHeight;
-        public int usPendingAnimation;
+        public AnimationStates usPendingAnimation;
         int ubPendingStanceChange;
         public AnimationStates usAnimState;
         public bool fNoAPToFinishMove;
@@ -128,7 +128,7 @@ namespace SharpAlliance.Core.SubSystems
         //AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
 
         public int bLife;             // current life (hit points or health)
-        public int bSide;
+        public TEAM bSide;
         int bViewRange;
         int bNewOppCnt;
         int bService;      // first aid, or other time consuming process
@@ -143,7 +143,7 @@ namespace SharpAlliance.Core.SubSystems
         int sDelayedMovementCauseGridNo;
         int sReservedMovementGridNo;
 
-        int bStrength;
+        public int bStrength;
 
         // Weapon Stuff
         bool fHoldAttackerUntilDone;
@@ -189,7 +189,7 @@ namespace SharpAlliance.Core.SubSystems
 
         SGPPaletteEntry p8BPPPalette; // 4
         int p16BPPPalette;
-        public int[] pShades = new int[OverheadTypes.NUM_SOLDIER_SHADES]; // Shading tables
+        public int[] pShades = new int[Globals.NUM_SOLDIER_SHADES]; // Shading tables
         int[] pGlowShades = new int[20]; // 
         public int pCurrentShade;
         public int bMedical;
@@ -219,7 +219,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
         // PATH STUFF
-        int[] usPathingData = new int[OverheadTypes.MAX_PATH_LIST_SIZE];
+        int[] usPathingData = new int[Globals.MAX_PATH_LIST_SIZE];
         public int usPathDataSize;
         int usPathIndex;
         int sBlackList;
@@ -257,7 +257,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
         // AI STUFF
-        int[] bOppList = new int[OverheadTypes.MAX_NUM_SOLDIERS]; // AI knowledge database
+        public int[] bOppList = new int[Globals.MAX_NUM_SOLDIERS]; // AI knowledge database
         int bLastAction;
         int bAction;
         int usActionData;
@@ -271,7 +271,7 @@ namespace SharpAlliance.Core.SubSystems
         int bNextTargetLevel;
         int bOrders;
         int bAttitude;
-        int bUnderFire;
+        public int bUnderFire;
         int bShock;
         int bUnderEscort;
         int bBypassToGreen;
@@ -381,7 +381,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bAimShotLocation;
         int ubHitLocation;
 
-        int[] pEffectShades = new int[OverheadTypes.NUM_SOLDIER_EFFECTSHADES]; // Shading tables for effects
+        int[] pEffectShades = new int[Globals.NUM_SOLDIER_EFFECTSHADES]; // Shading tables for effects
 
         int ubPlannedUIAPCost;
         int sPlannedTargetX;
@@ -398,14 +398,14 @@ namespace SharpAlliance.Core.SubSystems
         int iStartContractTime;
         int iTotalContractLength;         // total time of AIM mercs contract	or the time since last paid for a M.E.R.C. merc
         int iNextActionSpecialData;       // AI special action data record for the next action
-        public int ubWhatKindOfMercAmI;          //Set to the type of character it is
-        public int bAssignment;                           // soldiers current assignment 
+        public MERC_TYPE ubWhatKindOfMercAmI;          //Set to the type of character it is
+        public Assignments bAssignment;                           // soldiers current assignment 
         int bOldAssignment;                        // old assignment, for autosleep purposes
         bool fForcedToStayAwake;             // forced by player to stay awake, reset to false, the moment they are set to rest or sleep
         int bTrainStat;                                // current stat soldier is training
-        int sSectorX;                                 // X position on the Stategic Map
-        int sSectorY;                                 // Y position on the Stategic Map
-        int bSectorZ;                                  // Z sector location
+        public int sSectorX { get; set; }       // X position on the Stategic Map
+        public MAP_ROW sSectorY;                                 // Y position on the Stategic Map
+        public int bSectorZ;                                  // Z sector location
         int iVehicleId;                               // the id of the vehicle the char is in
         //PathStPtr pMercPath;                                //Path Structure
         int fHitByGasFlags;                       // flags 
@@ -439,7 +439,7 @@ namespace SharpAlliance.Core.SubSystems
         int ubNumTraversalsAllowedToMerge;
 
         int usPendingAnimation2;
-        int ubCivilianGroup;
+        public int ubCivilianGroup;
 
         // time changes...when a stat was changed according to GetJA2Clock();
         int uiChangeLevelTime;
@@ -555,7 +555,7 @@ namespace SharpAlliance.Core.SubSystems
 
         int bCurrentCivQuote;
         int bCurrentCivQuoteDelta;
-        int ubMiscSoldierFlags;
+        public int ubMiscSoldierFlags;
         int ubReasonCantFinishMove;
 
         int sLocationOfFadeStart;
@@ -604,36 +604,36 @@ namespace SharpAlliance.Core.SubSystems
 
     public class GROUP
     {
-        bool fDebugGroup;                    //for testing purposes -- handled differently in certain cases.
-        bool fPlayer;                            //set if this is a player controlled group.
-        bool fVehicle;                           //vehicle controlled group?
-        bool fPersistant;                    //This flag when set prevents the group from being automatically deleted when it becomes empty.
-        int ubGroupID;                            //the unique ID of the group (used for hooking into events and SOLDIERTYPE)
-        int ubGroupSize;                      //total number of individuals in the group.
-        int ubSectorX, ubSectorY;     //last/curr sector occupied
-        int ubSectorZ;
-        int ubNextX, ubNextY;             //next sector destination
-        int ubPrevX, ubPrevY;             //prev sector occupied (could be same as ubSectorX/Y)
-        int ubOriginalSector;             //sector where group was created.
-        bool fBetweenSectors;            //set only if a group is between sector.
-        int ubMoveType;                           //determines the type of movement (ONE_WAY, CIRCULAR, ENDTOEND, etc.)
-        int ubNextWaypointID;             //the ID of the next waypoint
-        int ubFatigueLevel;                   //the fatigue level of the weakest member in group
-        int ubRestAtFatigueLevel;     //when the group's fatigue level <= this level, they will rest upon arrival at next sector.
-        int ubRestToFatigueLevel;     //when resting, the group will rest until the fatigue level reaches this level.
-        int uiArrivalTime;                   //the arrival time in world minutes that the group will arrive at the next sector.
-        int uiTraverseTime;              //the total traversal time from the previous sector to the next sector.
-        bool fRestAtNight;                   //set when the group is permitted to rest between 2200 and 0600 when moving
-        bool fWaypointsCancelled;    //set when groups waypoints have been removed.
+        public bool fDebugGroup;                    //for testing purposes -- handled differently in certain cases.
+        public bool fPlayer;                            //set if this is a player controlled group.
+        public bool fVehicle;                           //vehicle controlled group?
+        public bool fPersistant;                    //This flag when set prevents the group from being automatically deleted when it becomes empty.
+        public int ubGroupID;                            //the unique ID of the group (used for hooking into events and SOLDIERTYPE)
+        public int ubGroupSize;                      //total number of individuals in the group.
+        public int ubSectorX, ubSectorY;     //last/curr sector occupied
+        public int ubSectorZ;
+        public int ubNextX, ubNextY;             //next sector destination
+        public int ubPrevX, ubPrevY;             //prev sector occupied (could be same as ubSectorX/Y)
+        public int ubOriginalSector;             //sector where group was created.
+        public bool fBetweenSectors;            //set only if a group is between sector.
+        public int ubMoveType;                           //determines the type of movement (ONE_WAY, CIRCULAR, ENDTOEND, etc.)
+        public int ubNextWaypointID;             //the ID of the next waypoint
+        public int ubFatigueLevel;                   //the fatigue level of the weakest member in group
+        public int ubRestAtFatigueLevel;     //when the group's fatigue level <= this level, they will rest upon arrival at next sector.
+        public int ubRestToFatigueLevel;     //when resting, the group will rest until the fatigue level reaches this level.
+        public int uiArrivalTime;                   //the arrival time in world minutes that the group will arrive at the next sector.
+        public int uiTraverseTime;              //the total traversal time from the previous sector to the next sector.
+        public bool fRestAtNight;                   //set when the group is permitted to rest between 2200 and 0600 when moving
+        public bool fWaypointsCancelled;    //set when groups waypoints have been removed.
         //WAYPOINT pWaypoints;                   //a list of all of the waypoints in the groups movement.
-        int ubTransportationMask;     //the mask combining all of the groups transportation methods.
-        int uiFlags;                             //various conditions that apply to the group
-        int ubCreatedSectorID;            //used for debugging strategic AI for keeping track of the sector ID a group was created in.
-        int ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.
-        int[] bPadding = new int[29];                      //***********************************************//
-
+        public int ubTransportationMask;     //the mask combining all of the groups transportation methods.
+        public int uiFlags;                             //various conditions that apply to the group
+        public int ubCreatedSectorID;            //used for debugging strategic AI for keeping track of the sector ID a group was created in.
+        public int ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.
+        public int[] bPadding = new int[29];                      //***********************************************//
+        
         //PLAYERGROUP pPlayerList;       //list of players in the group
         //ENEMYGROUP pEnemyGroup;        //a structure containing general enemy info
-        GROUP next;						//next group
+        public GROUP next;						//next group
     }
 }

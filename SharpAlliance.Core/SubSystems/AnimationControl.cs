@@ -5,15 +5,6 @@ public class AnimationControl
     public const int MAX_ANIMATIONS = 320;
     public const int MAX_FRAMES_PER_ANIM = 100;
     public const int MAX_RANDOM_ANIMS_PER_BODYTYPE = 7;
-
-    public static int[,] gusAnimInst = new int[MAX_ANIMATIONS,MAX_FRAMES_PER_ANIM];
-    public static ANIMCONTROLTYPE[] gAnimControl = new ANIMCONTROLTYPE[(int)AnimationStates.NUMANIMATIONSTATES];
-
-    public static ANI_SPEED_DEF[] gubAnimWalkSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
-    public static ANI_SPEED_DEF[] gubAnimRunSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
-    public static ANI_SPEED_DEF[] gubAnimSwatSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
-    public static ANI_SPEED_DEF[] gubAnimCrawlSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
-    public static int[] gubMaxActionPoints = new int[(int)SoldierBodyTypes.TOTALBODYTYPES];
 }
 
 // Enumeration of animation states
@@ -411,7 +402,7 @@ public struct ANIMCONTROLTYPE
     public int sSpeed;
     public float dMovementChange;
     public ANIM uiFlags;
-    public int ubHeight;
-    public int ubEndHeight;
+    public AnimationHeights ubHeight;
+    public AnimationHeights ubEndHeight;
     public int bProfile;
 }

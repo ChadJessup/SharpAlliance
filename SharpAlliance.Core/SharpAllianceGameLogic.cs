@@ -31,7 +31,6 @@ namespace SharpAlliance.Core
         private readonly IInputManager inputs;
         private readonly IMusicManager music;
         private readonly MessageBoxSubSystem messageBox;
-        private readonly Globals globals;
         private MapScreen mapScreen;
 
         public bool IsInitialized { get; private set; }
@@ -50,8 +49,7 @@ namespace SharpAlliance.Core
             IOSManager OSManager,
             IScreenManager screenManager,
             IVideoManager videoManager,
-            IMusicManager musicManager,
-            Globals globals)
+            IMusicManager musicManager)
         {
             this.context = context;
             this.strings = strings;
@@ -67,7 +65,6 @@ namespace SharpAlliance.Core
             this.video = videoManager;
             this.music = musicManager;
             this.messageBox = messageBoxSubSystem;
-            Globals = globals;
             this.os = OSManager;
             this.screen = screenManager;
         }

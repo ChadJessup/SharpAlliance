@@ -980,7 +980,7 @@ namespace SharpAlliance.Core.SubSystems
                     }
                     else
                     {
-                        this.renderWorld.SetRenderFlags(RenderingFlags.FULL);
+                        SetRenderFlags(RenderingFlags.FULL);
                     }
                     break;
                 case ScreenName.MAP_SCREEN:

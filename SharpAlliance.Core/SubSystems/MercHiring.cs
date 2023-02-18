@@ -13,9 +13,9 @@ public class MercHiring
 
 public class MERC_HIRE_STRUCT
 {
-    public int  ubProfileID;
+    public NPCID  ubProfileID;
     public int  sSectorX;
-    public int  sSectorY;
+    public MAP_ROW sSectorY;
     public int bSectorZ;
     public int  iTotalContractLength;
     public bool fCopyProfileItemsOver;

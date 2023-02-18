@@ -119,4 +119,6 @@ public enum MERC
     TAKEBLOOD,
     ATTACH_CAN,
     FUEL_VEHICLE,
+
+    NO_PENDING_ACTION = 255,
 }

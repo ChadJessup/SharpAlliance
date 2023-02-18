@@ -14,20 +14,17 @@ public class SoldierFind
     private readonly GameSettings gGameSettings;
     private readonly RenderWorld renderWorld;
     private readonly Overhead overhead;
-    private readonly Globals globals;
 
     public SoldierFind(
         ILogger<SoldierFind> logger,
         GameSettings gGameSettings,
         RenderWorld renderWorld,
-        Overhead overhead,
-        Globals globals)
+        Overhead overhead)
     {
         this.logger = logger;
         this.gGameSettings = gGameSettings;
         this.renderWorld = renderWorld;
         this.overhead = overhead;
-        Globals = globals;
     }
 
     public static int[] gScrollSlideInertiaDirection = new int[(int)WorldDirections.NUM_WORLD_DIRECTIONS]
@@ -38,16 +35,16 @@ public class SoldierFind
     SOLDIER_STACK_TYPE gSoldierStack;
     bool gfHandleStack = false;
 
-    // extern bool gUIActionModeChangeDueToMouseOver;
+    // extern bool Globals.gUIActionModeChangeDueToMouseOver;
     // extern int guiUITargetSoldierId;
 
-    bool FindSoldierFromMouse(out int pusSoldierIndex, out int pMercFlags)
+    bool FindSoldierFromMouse(out int pusSoldierIndex, out FIND_SOLDIER_RESPONSES pMercFlags)
     {
         int sMapPos;
 
         pMercFlags = 0;
 
-        if (GetMouseMapPos(sMapPos))
+        if (GetMouseMapPos(out sMapPos))
         {
             if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel)))
             {
@@ -56,7 +53,7 @@ public class SoldierFind
         }
 
         pusSoldierIndex = -1;
-        pMercFlags = -1;
+        pMercFlags = (FIND_SOLDIER_RESPONSES)(-1);
 
         return (false);
     }
@@ -67,13 +64,13 @@ public class SoldierFind
     public static FIND_SOLDIER FINDSOLDIERSELECTIVESAMELEVEL(int level)
         => (((FIND_SOLDIER.SELECTIVE | FIND_SOLDIER.SAMELEVEL) | (FIND_SOLDIER)(level << 16)));
 
-    bool SelectiveFindSoldierFromMouse(out int pusSoldierIndex, out int pMercFlags)
+    bool SelectiveFindSoldierFromMouse(out int pusSoldierIndex, out FIND_SOLDIER_RESPONSES pMercFlags)
     {
         int sMapPos;
 
         pMercFlags = 0;
 
-        if (GetMouseMapPos(sMapPos))
+        if (GetMouseMapPos(out sMapPos))
         {
             if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel)))
             {
@@ -82,26 +79,25 @@ public class SoldierFind
         }
 
         pusSoldierIndex = -1;
-        pMercFlags = -1;
+        pMercFlags = (FIND_SOLDIER_RESPONSES)(-1);
 
         return (false);
     }
 
-
-    int GetSoldierFindFlags(int ubID)
+    FIND_SOLDIER_RESPONSES GetSoldierFindFlags(int ubID)
     {
-        int MercFlags = 0;
+        FIND_SOLDIER_RESPONSES MercFlags = 0;
         SOLDIERTYPE? pSoldier;
 
         // Get pSoldier!
-        pSoldier = MercPtrs[ubID];
+        pSoldier = Globals.MercPtrs[ubID];
 
         // FInd out and set flags
-        if (ubID == gusSelectedSoldier)
+        if (ubID == Globals.gusSelectedSoldier)
         {
-            MercFlags |= SELECTED_MERC;
+            MercFlags |= FIND_SOLDIER_RESPONSES.SELECTED_MERC;
         }
-        if (ubID >= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bFirstID && ubID <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
+        if (ubID >= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID && ubID <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID)
         {
             if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !GetNumberInVehicle(pSoldier.bVehicleID))
             {
@@ -110,55 +106,55 @@ public class SoldierFind
             else
             {
                 // It's our own merc
-                MercFlags |= OWNED_MERC;
+                MercFlags |= FIND_SOLDIER_RESPONSES.OWNED_MERC;
 
-                if (pSoldier.bAssignment < ON_DUTY)
+                if (pSoldier.bAssignment < Assignments.ON_DUTY)
                 {
-                    MercFlags |= ONDUTY_MERC;
+                    MercFlags |= FIND_SOLDIER_RESPONSES.ONDUTY_MERC;
                 }
             }
         }
         else
         {
             // Check the side, etc
-            if (!pSoldier.bNeutral && (pSoldier.bSide != this.overhead.gbPlayerNum))
+            if (pSoldier.bNeutral == 0 && (pSoldier.bSide != Globals.gbPlayerNum))
             {
                 // It's an enemy merc
-                MercFlags |= ENEMY_MERC;
+                MercFlags |= FIND_SOLDIER_RESPONSES.ENEMY_MERC;
             }
             else
             {
                 // It's not an enemy merc
-                MercFlags |= NEUTRAL_MERC;
+                MercFlags |= FIND_SOLDIER_RESPONSES.NEUTRAL_MERC;
             }
         }
 
         // Check for a guy who does not have an iterrupt ( when applicable! )
         if (!OK_INTERRUPT_MERC(pSoldier))
         {
-            MercFlags |= NOINTERRUPT_MERC;
+            MercFlags |= FIND_SOLDIER_RESPONSES.NOINTERRUPT_MERC;
         }
 
-        if (pSoldier.bLife < OKLIFE)
+        if (pSoldier.bLife < Globals.OKLIFE)
         {
-            MercFlags |= UNCONSCIOUS_MERC;
+            MercFlags |= FIND_SOLDIER_RESPONSES.UNCONSCIOUS_MERC;
         }
 
         if (pSoldier.bLife == 0)
         {
-            MercFlags |= DEAD_MERC;
+            MercFlags |= FIND_SOLDIER_RESPONSES.DEAD_MERC;
         }
 
         if (pSoldier.bVisible != -1 || (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
         {
-            MercFlags |= VISIBLE_MERC;
+            MercFlags |= FIND_SOLDIER_RESPONSES.VISIBLE_MERC;
         }
 
         return (MercFlags);
     }
 
     // THIS FUNCTION IS CALLED FAIRLY REGULARLY
-    public bool FindSoldier(int sGridNo, out int pusSoldierIndex, out int pMercFlags, FIND_SOLDIER uiFlags)
+    public bool FindSoldier(int sGridNo, out int pusSoldierIndex, out FIND_SOLDIER_RESPONSES pMercFlags, FIND_SOLDIER uiFlags)
     {
         int cnt;
         SOLDIERTYPE? pSoldier;
@@ -167,13 +163,13 @@ public class SoldierFind
         int sXMapPos, sYMapPos, sScreenX, sScreenY;
         int sMaxScreenMercY, sHeighestMercScreenY = -32000;
         bool fDoFull;
-        int ubBestMerc = OverheadTypes.NOBODY;
+        int ubBestMerc = Globals.NOBODY;
         int usAnimSurface;
         int iMercScreenX, iMercScreenY;
         bool fInScreenRect = false;
         bool fInGridNo = false;
 
-        pusSoldierIndex = OverheadTypes.NOBODY;
+        pusSoldierIndex = Globals.NOBODY;
         pMercFlags = 0;
 
         if (_KeyDown(SHIFT))
@@ -190,9 +186,9 @@ public class SoldierFind
 
 
         // Loop through all mercs and make go
-        for (cnt = 0; cnt < guiNumMercSlots; cnt++)
+        for (cnt = 0; cnt < Globals.guiNumMercSlots; cnt++)
         {
-            pSoldier = MercSlots[cnt];
+            pSoldier = Globals.MercSlots[cnt];
             fInScreenRect = false;
             fInGridNo = false;
 
@@ -225,7 +221,8 @@ public class SoldierFind
                     }
                     else if (uiFlags.HasFlag(FIND_SOLDIER.SELECTIVE))
                     {
-                        if (pSoldier.ubID >= Globals.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bFirstID && pSoldier.ubID <= Globals.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bLastID)
+                        if (pSoldier.ubID >= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID
+                            && pSoldier.ubID <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID)
                         {
                             fDoFull = true;
                         }
@@ -245,15 +242,15 @@ public class SoldierFind
                         GetSoldierScreenRect(pSoldier, out aRect);
 
                         // Get XY From gridno
-                        ConvertGridNoToXY(sGridNo, sXMapPos, sYMapPos);
+                        ConvertGridNoToXY(sGridNo, out sXMapPos, out sYMapPos);
 
                         // Get screen XY pos from map XY
                         // Be carefull to convert to cell cords
                         //CellXYToScreenXY( (int)((sXMapPos*CELL_X_SIZE)), (int)((sYMapPos*CELL_Y_SIZE)), &sScreenX, &sScreenY);
 
                         // Set mouse stuff
-                        sScreenX = gusMouseXPos;
-                        sScreenY = gusMouseYPos;
+                        sScreenX = Globals.gusMouseXPos;
+                        sScreenY = Globals.gusMouseYPos;
 
                         if (IsPointInScreenRect(sScreenX, sScreenY, aRect))
                         {
@@ -268,10 +265,12 @@ public class SoldierFind
                         // ATE: If we are an enemy....
                         if (!gGameSettings.fOptions[TOPTION.SMART_CURSOR])
                         {
-                            if (pSoldier.ubID >= Globals.gTacticalStatus.Team[(int)this.overhead.gbPlayerNum].bFirstID && pSoldier.ubID <= Globals.gTacticalStatus.Team[this.overhead.gbPlayerNum].bLastID)
+                            if (pSoldier.ubID >= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID && pSoldier.ubID <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID)
                             {
                                 // ATE: NOT if we are in action or comfirm action mode
-                                if (gCurrentUIMode != ACTION_MODE && gCurrentUIMode != CONFIRM_ACTION_MODE || gUIActionModeChangeDueToMouseOver)
+                                if (Globals.gCurrentUIMode != UI_MODE.ACTION_MODE
+                                    && Globals.gCurrentUIMode != UI_MODE.CONFIRM_ACTION_MODE
+                                    || Globals.gUIActionModeChangeDueToMouseOver)
                                 {
                                     fInScreenRect = false;
                                 }
@@ -280,10 +279,11 @@ public class SoldierFind
 
                         // ATE: Refine this further....
                         // Check if this is the selected guy....
-                        if (pSoldier.ubID == gusSelectedSoldier)
+                        if (pSoldier.ubID == Globals.gusSelectedSoldier)
                         {
                             // Are we in action mode...
-                            if (gCurrentUIMode == ACTION_MODE || gCurrentUIMode == CONFIRM_ACTION_MODE)
+                            if (Globals.gCurrentUIMode == UI_MODE.ACTION_MODE
+                                || Globals.gCurrentUIMode == UI_MODE.CONFIRM_ACTION_MODE)
                             {
                                 // Are we in medic mode?
                                 if (GetActionModeCursor(pSoldier) != AIDCURS)
@@ -307,7 +307,7 @@ public class SoldierFind
                                     iMercScreenX = (int)(sScreenX - aRect.Left);
                                     iMercScreenY = (int)(-1 * (sScreenY - aRect.Bottom));
 
-                                    if (!CheckVideoObjectScreenCoordinateInData(gAnimSurfaceDatabase[usAnimSurface].hVideoObject, pSoldier.usAniFrame, iMercScreenX, iMercScreenY))
+                                    if (!CheckVideoObjectScreenCoordinateInData(Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject, pSoldier.usAniFrame, iMercScreenX, iMercScreenY))
                                     {
                                         continue;
                                     }
@@ -370,10 +370,8 @@ public class SoldierFind
 
                                 fSoldierFound = true;
                                 // Don't break here, find the rest!
-
                             }
                         }
-
                     }
                     else
                     {
@@ -394,7 +392,7 @@ public class SoldierFind
             }
         }
 
-        if (fSoldierFound && ubBestMerc != OverheadTypes.NOBODY)
+        if (fSoldierFound && ubBestMerc != Globals.NOBODY)
         {
             pusSoldierIndex = (int)ubBestMerc;
 
@@ -430,7 +428,7 @@ public class SoldierFind
         // Have we initalized for this yet?
         if (!gfHandleStack)
         {
-            if (FindSoldier(usMapPos, out int usSoldierIndex, out int uiMercFlags, FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel) | FIND_SOLDIER.BEGINSTACK))
+            if (FindSoldier(usMapPos, out int usSoldierIndex, out FIND_SOLDIER_RESPONSES uiMercFlags, FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel) | FIND_SOLDIER.BEGINSTACK))
             {
                 gfHandleStack = true;
             }
@@ -445,14 +443,14 @@ public class SoldierFind
                 gSoldierStack.bCur++;
             }
 
-            gfUIForceReExamineCursorData = true;
+            Globals.gfUIForceReExamineCursorData = true;
 
             if (gSoldierStack.bCur == gSoldierStack.bNum)
             {
                 if (!gSoldierStack.fUseGridNo)
                 {
                     gSoldierStack.fUseGridNo = true;
-                    gUIActionModeChangeDueToMouseOver = false;
+                    Globals.gUIActionModeChangeDueToMouseOver = false;
                     gSoldierStack.sUseGridNoGridNo = usMapPos;
                 }
                 else
@@ -465,14 +463,14 @@ public class SoldierFind
 
             if (!gSoldierStack.fUseGridNo)
             {
-                gusUIFullTargetID = gSoldierStack.ubIDs[gSoldierStack.bCur];
-                guiUIFullTargetFlags = GetSoldierFindFlags(gusUIFullTargetID);
-                guiUITargetSoldierId = gusUIFullTargetID;
-                gfUIFullTargetFound = true;
+                Globals.gusUIFullTargetID = gSoldierStack.ubIDs[gSoldierStack.bCur];
+                Globals.guiUIFullTargetFlags = GetSoldierFindFlags(Globals.gusUIFullTargetID);
+                Globals.guiUITargetSoldierId = Globals.gusUIFullTargetID;
+                Globals.gfUIFullTargetFound = true;
             }
             else
             {
-                gfUIFullTargetFound = false;
+                Globals.gfUIFullTargetFound = false;
             }
         }
 
@@ -485,19 +483,19 @@ public class SoldierFind
         int ubID;
 
         ubID = WhoIsThere2(sGridNo, bLevel);
-        if (ubID == OverheadTypes.NOBODY)
+        if (ubID == Globals.NOBODY)
         {
             return (null);
         }
         else
         {
-            return (MercPtrs[ubID]);
+            return (Globals.MercPtrs[ubID]);
         }
     }
 
     bool IsValidTargetMerc(int ubSoldierID)
     {
-        SOLDIERTYPE? pSoldier = MercPtrs[ubSoldierID];
+        SOLDIERTYPE? pSoldier = Globals.MercPtrs[ubSoldierID];
 
 
         // CHECK IF ACTIVE!
@@ -513,7 +511,7 @@ public class SoldierFind
         }
 
         // IF BAD GUY - CHECK VISIVILITY
-        if (pSoldier.bTeam != this.overhead.gbPlayerNum)
+        if (pSoldier.bTeam != Globals.gbPlayerNum)
         {
             if (pSoldier.bVisible == -1 && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
             {
@@ -538,7 +536,7 @@ public class SoldierFind
         {
             do
             {
-                GetScreenXYGridNo((int)iXTrav, (int)iYTrav, sMapPos);
+                GetScreenXYGridNo((int)iXTrav, (int)iYTrav, out sMapPos);
 
                 if (sMapPos == sGridNo)
                 {
@@ -604,7 +602,7 @@ public class SoldierFind
         // depending on the frame and the value returned here will vary thusly. However, for the
         // uses of this function, we should be able to use just the first frame...
 
-        if (pSoldier.usAniFrame >= gAnimSurfaceDatabase[usAnimSurface].hVideoObject.usNumberOfObjects)
+        if (pSoldier.usAniFrame >= Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject.usNumberOfObjects)
         {
             int i = 0;
         }
@@ -649,23 +647,23 @@ public class SoldierFind
         }
 
         // Get 'true' merc position
-        dOffsetX = pSoldier.dXPos - this.renderWorld.gsRenderCenterX;
-        dOffsetY = pSoldier.dYPos - this.renderWorld.gsRenderCenterY;
+        dOffsetX = pSoldier.dXPos - Globals.gsRenderCenterX;
+        dOffsetY = pSoldier.dYPos - Globals.gsRenderCenterY;
 
-        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, dTempX_S, dTempY_S);
+        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
 
         //pTrav = &(gAnimSurfaceDatabase[ usAnimSurface ].hVideoObject.pETRLEObject[ pSoldier.usAniFrame ] );
 
-        sMercScreenX = ((this.renderWorld.gsVIEWPORT_END_X - this.renderWorld.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
-        sMercScreenY = ((this.renderWorld.gsVIEWPORT_END_Y - this.renderWorld.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;
+        sMercScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
+        sMercScreenY = ((Globals.gsVIEWPORT_END_Y - Globals.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;
 
         // Adjust starting screen coordinates
-        sMercScreenX -= this.renderWorld.gsRenderWorldOffsetX;
-        sMercScreenY -= this.renderWorld.gsRenderWorldOffsetY;
+        sMercScreenX -= Globals.gsRenderWorldOffsetX;
+        sMercScreenY -= Globals.gsRenderWorldOffsetY;
         sMercScreenY -= Globals.gpWorldLevelData[pSoldier.sGridNo].sHeight;
 
         // Adjust for render height
-        sMercScreenY += this.renderWorld.gsRenderHeight;
+        sMercScreenY += Globals.gsRenderHeight;
 
         // Add to start position of dest buffer
         //sMercScreenX += pTrav.sOffsetX;
@@ -698,20 +696,20 @@ public class SoldierFind
         }
 
         // Get 'true' merc position
-        dOffsetX = pSoldier.dXPos - this.renderWorld.gsRenderCenterX;
-        dOffsetY = pSoldier.dYPos - this.renderWorld.gsRenderCenterY;
+        dOffsetX = pSoldier.dXPos - Globals.gsRenderCenterX;
+        dOffsetY = pSoldier.dYPos - Globals.gsRenderCenterY;
 
-        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, dTempX_S, dTempY_S);
+        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
 
-        sMercScreenX = ((this.renderWorld.gsVIEWPORT_END_X - this.renderWorld.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
-        sMercScreenY = ((this.renderWorld.gsVIEWPORT_END_Y - this.renderWorld.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;
+        sMercScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
+        sMercScreenY = ((Globals.gsVIEWPORT_END_Y - Globals.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;
 
         // Adjust starting screen coordinates
-        sMercScreenX -= this.renderWorld.gsRenderWorldOffsetX;
-        sMercScreenY -= this.renderWorld.gsRenderWorldOffsetY;
+        sMercScreenX -= Globals.gsRenderWorldOffsetX;
+        sMercScreenY -= Globals.gsRenderWorldOffsetY;
 
         // Adjust for render height
-        sMercScreenY += this.renderWorld.gsRenderHeight;
+        sMercScreenY += Globals.gsRenderHeight;
         sMercScreenY -= Globals.gpWorldLevelData[pSoldier.sGridNo].sHeight;
 
         sMercScreenY -= pSoldier.sHeightAdjustment;
@@ -727,21 +725,21 @@ public class SoldierFind
         int sWorldY;
         int sAllowance = 20;
 
-        if (this.renderWorld.gsVIEWPORT_WINDOW_START_Y == 20)
+        if (Globals.gsVIEWPORT_WINDOW_START_Y == 20)
         {
             sAllowance = 40;
         }
 
-        ConvertGridNoToXY(sGridNo, sNewCenterWorldX, sNewCenterWorldY);
+        ConvertGridNoToXY(sGridNo, out sNewCenterWorldX, out sNewCenterWorldY);
 
         // Get screen coordinates for current position of soldier
-        GetWorldXYAbsoluteScreenXY((int)(sNewCenterWorldX), (int)(sNewCenterWorldY), sWorldX, sWorldY);
+        GetWorldXYAbsoluteScreenXY((int)(sNewCenterWorldX), (int)(sNewCenterWorldY), out sWorldX, out sWorldY);
 
         // ATE: OK, here, adjust the top value so that it's a tile and a bit over, because of our mercs!
-        if (sWorldX >= this.renderWorld.gsTopLeftWorldX
-            && sWorldX <= this.renderWorld.gsBottomRightWorldX
-            && sWorldY >= (this.renderWorld.gsTopLeftWorldY + sAllowance)
-            && sWorldY <= (this.renderWorld.gsBottomRightWorldY + 20))
+        if (sWorldX >= Globals.gsTopLeftWorldX
+            && sWorldX <= Globals.gsBottomRightWorldX
+            && sWorldY >= (Globals.gsTopLeftWorldY + sAllowance)
+            && sWorldY <= (Globals.gsBottomRightWorldY + 20))
         {
             return (true);
         }
@@ -754,7 +752,7 @@ public class SoldierFind
         SOLDIERTYPE? pSoldier;
 
         // Get pointer of soldier
-        pSoldier = MercPtrs[usID];
+        pSoldier = Globals.MercPtrs[usID];
 
         return (GridNoOnScreen(pSoldier.sGridNo));
     }
@@ -765,7 +763,7 @@ public class SoldierFind
         return (GridNoOnVisibleWorldTile(pSoldier.sGridNo));
     }
 
-    bool SoldierLocationRelativeToScreen(int sGridNo, int usReasonID, out int pbDirection, out int puiScrollFlags)
+    bool SoldierLocationRelativeToScreen(int sGridNo, int usReasonID, out int pbDirection, out ScrollDirection puiScrollFlags)
     {
         int sWorldX;
         int sWorldY;
@@ -779,18 +777,18 @@ public class SoldierFind
         sY = CenterY(sGridNo);
 
         // Get screen coordinates for current position of soldier
-        GetWorldXYAbsoluteScreenXY((int)(sX / CELL_X_SIZE), (int)(sY / CELL_Y_SIZE), sWorldX, sWorldY);
+        GetWorldXYAbsoluteScreenXY((int)(sX / Globals.CELL_X_SIZE), (int)(sY / Globals.CELL_Y_SIZE), out sWorldX, out sWorldY);
 
         // Find the diustance from render center to true world center
-        sDistToCenterX = this.renderWorld.gsRenderCenterX - this.renderWorld.gCenterWorldX;
-        sDistToCenterY = this.renderWorld.gsRenderCenterY - this.renderWorld.gCenterWorldY;
+        sDistToCenterX = Globals.gsRenderCenterX - Globals.gCenterWorldX;
+        sDistToCenterY = Globals.gsRenderCenterY - Globals.gCenterWorldY;
 
         // From render center in world coords, convert to render center in "screen" coords
-        FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, sScreenCenterX, sScreenCenterY);
+        FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out sScreenCenterX, out sScreenCenterY);
 
         // Subtract screen center
-        sScreenCenterX += gsCX;
-        sScreenCenterY += gsCY;
+        sScreenCenterX += Globals.gsCX;
+        sScreenCenterY += Globals.gsCY;
 
         // Adjust for offset origin!
         sScreenCenterX += 0;
@@ -798,32 +796,31 @@ public class SoldierFind
 
         // Get direction
         //*pbDirection = atan8( sScreenCenterX, sScreenCenterY, sWorldX, sWorldY );
-        pbDirection = atan8(this.renderWorld.gsRenderCenterX, this.renderWorld.gsRenderCenterY, (int)(sX), (int)(sY));
+        pbDirection = atan8(Globals.gsRenderCenterX, Globals.gsRenderCenterY, (int)(sX), (int)(sY));
 
         // Check values!
         if (sWorldX > (sScreenCenterX + 20))
         {
-            (puiScrollFlags) |= SCROLL_RIGHT;
+            (puiScrollFlags) |= ScrollDirection.SCROLL_RIGHT;
         }
         if (sWorldX < (sScreenCenterX - 20))
         {
-            (puiScrollFlags) |= SCROLL_LEFT;
+            (puiScrollFlags) |= ScrollDirection.SCROLL_LEFT;
         }
         if (sWorldY > (sScreenCenterY + 20))
         {
-            (puiScrollFlags) |= SCROLL_DOWN;
+            (puiScrollFlags) |= ScrollDirection.SCROLL_DOWN;
         }
         if (sWorldY < (sScreenCenterY - 20))
         {
-            (puiScrollFlags) |= SCROLL_UP;
+            (puiScrollFlags) |= ScrollDirection.SCROLL_UP;
         }
 
-
         // If we are on screen, stop
-        if (sWorldX >= this.renderWorld.gsTopLeftWorldX
-            && sWorldX <= this.renderWorld.gsBottomRightWorldX
-            && sWorldY >= this.renderWorld.gsTopLeftWorldY
-            && sWorldY <= (this.renderWorld.gsBottomRightWorldY + 20))
+        if (sWorldX >= Globals.gsTopLeftWorldX
+            && sWorldX <= Globals.gsBottomRightWorldX
+            && sWorldY >= Globals.gsTopLeftWorldY
+            && sWorldY <= (Globals.gsBottomRightWorldY + 20))
         {
             // CHECK IF WE ARE DONE...
             if (fCountdown > gScrollSlideInertiaDirection[pbDirection])
@@ -854,7 +851,7 @@ public class SoldierFind
     }
 
 
-    bool FindRelativeSoldierPosition(SOLDIERTYPE? pSoldier, out int usFlags, int sX, int sY)
+    bool FindRelativeSoldierPosition(SOLDIERTYPE? pSoldier, out TILE_FLAG usFlags, int sX, int sY)
     {
         int sRelX, sRelY;
         float dRelPer;
@@ -863,46 +860,46 @@ public class SoldierFind
         // Get Rect contained in the soldier
         GetSoldierScreenRect(pSoldier, out Rectangle aRect);
 
-        if (IsPointInScreenRectWithRelative(sX, sY, aRect, sRelX, sRelY))
+        if (IsPointInScreenRectWithRelative(sX, sY, aRect, out sRelX, out sRelY))
         {
             dRelPer = (float)sRelY / (aRect.Bottom - aRect.Top);
 
             // Determine relative positions
-            switch (gAnimControl[pSoldier.usAnimState].ubHeight)
+            switch (Globals.gAnimControl[pSoldier.usAnimState].ubHeight)
             {
-                case ANIM_STAND:
+                case AnimationHeights.ANIM_STAND:
 
                     if (dRelPer < .2)
                     {
-                        (usFlags) = TILE_FLAG_HEAD;
+                        (usFlags) = TILE_FLAG.HEAD;
                         return (true);
                     }
                     else if (dRelPer < .6)
                     {
-                        (usFlags) = TILE_FLAG_MID;
+                        (usFlags) = TILE_FLAG.MID;
                         return (true);
                     }
                     else
                     {
-                        (usFlags) = TILE_FLAG_FEET;
+                        (usFlags) = TILE_FLAG.FEET;
                         return (true);
                     }
 
-                case ANIM_CROUCH:
+                case AnimationHeights.ANIM_CROUCH:
 
                     if (dRelPer < .2)
                     {
-                        (usFlags) = TILE_FLAG_HEAD;
+                        (usFlags) = TILE_FLAG.HEAD;
                         return (true);
                     }
                     else if (dRelPer < .7)
                     {
-                        (usFlags) = TILE_FLAG_MID;
+                        (usFlags) = TILE_FLAG.MID;
                         return (true);
                     }
                     else
                     {
-                        (usFlags) = TILE_FLAG_FEET;
+                        (usFlags) = TILE_FLAG.FEET;
                         return (true);
                     }
             }
@@ -919,9 +916,9 @@ public class SoldierFind
         SOLDIERTYPE? pSoldier = null;
 
         // Loop through all mercs and make go
-        for (cnt = 0; cnt < guiNumMercSlots; cnt++)
+        for (cnt = 0; cnt < Globals.guiNumMercSlots; cnt++)
         {
-            pSoldier = MercSlots[cnt];
+            pSoldier = Globals.MercSlots[cnt];
 
             if (pSoldier != null)
             {
@@ -933,7 +930,7 @@ public class SoldierFind
 
         }
 
-        return (OverheadTypes.NOBODY);
+        return (Globals.NOBODY);
     }
 
 
@@ -944,22 +941,22 @@ public class SoldierFind
         float dTempX_S, dTempY_S;
 
         // Get 'true' merc position
-        dOffsetX = (float)(CenterX(sGridNo) - this.renderWorld.gsRenderCenterX);
-        dOffsetY = (float)(CenterY(sGridNo) - this.renderWorld.gsRenderCenterY);
+        dOffsetX = (float)(CenterX(sGridNo) - Globals.gsRenderCenterX);
+        dOffsetY = (float)(CenterY(sGridNo) - Globals.gsRenderCenterY);
 
         // OK, DONT'T ASK... CONVERSION TO PROPER Y NEEDS THIS...
-        dOffsetX -= CELL_Y_SIZE;
+        dOffsetX -= Globals.CELL_Y_SIZE;
 
-        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, dTempX_S, dTempY_S);
+        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
 
-        sScreenX = ((this.renderWorld.gsVIEWPORT_END_X - this.renderWorld.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
-        sScreenY = ((this.renderWorld.gsVIEWPORT_END_Y - this.renderWorld.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;
+        sScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
+        sScreenY = ((Globals.gsVIEWPORT_END_Y - Globals.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;
 
         // Adjust starting screen coordinates
-        sScreenX -= this.renderWorld.gsRenderWorldOffsetX;
-        sScreenY -= this.renderWorld.gsRenderWorldOffsetY;
+        sScreenX -= Globals.gsRenderWorldOffsetX;
+        sScreenY -= Globals.gsRenderWorldOffsetY;
 
-        sScreenY += this.renderWorld.gsRenderHeight;
+        sScreenY += Globals.gsRenderHeight;
 
         // Adjust for world height
         sScreenY -= Globals.gpWorldLevelData[sGridNo].sHeight;
@@ -983,6 +980,22 @@ public struct SOLDIER_STACK_TYPE
     public int bCur;
     public bool fUseGridNo;
     public int sUseGridNoGridNo;
+}
+
+// RETURN FLAGS FOR FINDSOLDIER
+public enum FIND_SOLDIER_RESPONSES
+{
+    SELECTED_MERC = 0x000000002,
+    OWNED_MERC = 0x000000004,
+    ENEMY_MERC = 0x000000008,
+    UNCONSCIOUS_MERC = 0x000000020,
+    DEAD_MERC = 0x000000040,
+    VISIBLE_MERC = 0x000000080,
+    ONDUTY_MERC = 0x000000100,
+    NOINTERRUPT_MERC = 0x000000200,
+    NEUTRAL_MERC = 0x000000400,
+
+    NONE = -1,
 }
 
 [Flags]

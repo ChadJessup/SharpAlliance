@@ -28,7 +28,6 @@ namespace SharpAlliance.Core.Screens
         private readonly IMusicManager music;
         private readonly MouseSubSystem mouse;
         private readonly IVideoManager video;
-        private readonly Globals globals;
         private readonly CursorSubSystem cursor;
         private readonly IClockManager clock;
 
@@ -83,10 +82,8 @@ namespace SharpAlliance.Core.Screens
             CursorSubSystem cursorSubSystem,
             FontSubSystem fontSubSystem,
             IInputManager inputManager,
-            Globals globals,
             RenderDirtySubSystem renderDirtySubSystem)
         {
-            Globals = globals;
             this.cursor = cursorSubSystem;
             this.clock = clockManager;
             this.buttons = buttonSubSystem;

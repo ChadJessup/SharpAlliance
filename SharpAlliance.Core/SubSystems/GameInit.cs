@@ -81,8 +81,9 @@ namespace SharpAlliance.Core.SubSystems
             this.clock.gfGamePaused = true;
 
             //Reset the sectors
-            StrategicMap.gWorldSectorX = StrategicMap.gWorldSectorY = 0;
-            StrategicMap.gbWorldSectorZ = -1;
+            Globals.gWorldSectorY = 0;
+            Globals.gWorldSectorX = 0;
+            Globals.gbWorldSectorZ = -1;
 
             this.sound.SoundStopAll();
 
@@ -94,7 +95,7 @@ namespace SharpAlliance.Core.SubSystems
             this.tacticalSave.InitTacticalSave(fCreateTempDir: true);
 
             //Loop through all the soldier and delete them all
-            for (cnt = 0; cnt < OverheadTypes.TOTAL_SOLDIERS; cnt++)
+            for (cnt = 0; cnt < Globals.TOTAL_SOLDIERS; cnt++)
             {
                 this.soldierCreate.TacticalRemoveSoldier(usSoldierIndex: cnt);
             }

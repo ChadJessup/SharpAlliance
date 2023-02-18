@@ -2,7 +2,7 @@
 {
     public class OBJECTTYPE
     {
-        public ushort usItem;
+        public Items usItem;
         public byte ubNumberOfObjects;
         public sbyte bGunStatus;            // status % of gun
         public byte ubGunAmmoType;    // ammo type, as per weapons.h

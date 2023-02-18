@@ -10,12 +10,6 @@ namespace SharpAlliance.Core.SubSystems
     {
         // GLOBAL NPC STRUCT
         //public NPC_DIALOGUE_TYPE gTalkPanel;
-        public bool gfInTalkPanel = false;
-        public SOLDIERTYPE gpSrcSoldier = null;
-        public SOLDIERTYPE gpDestSoldier = null;
-        public int gubSrcSoldierProfile;
-        public int gubNiceNPCProfile = SoldierControl.NO_PROFILE;
-        public int gubNastyNPCProfile = SoldierControl.NO_PROFILE;
 
         public int gubTargetNPC;
         public int gubTargetRecord;
@@ -26,18 +20,16 @@ namespace SharpAlliance.Core.SubSystems
         public int iInterfaceDialogueBox = -1;
         public int ubRecordThatTriggeredLiePrompt;
         public bool gfConversationPending = false;
-        public SOLDIERTYPE gpPendingDestSoldier;
-        public SOLDIERTYPE gpPendingSrcSoldier;
         public int gbPendingApproach;
         public int guiPendingApproachData;
 
-        public bool ProfileCurrentlyTalkingInDialoguePanel(int ubProfile)
+        public bool ProfileCurrentlyTalkingInDialoguePanel(NPCID ubProfile)
         {
-            if (this.gfInTalkPanel)
+            if (Globals.gfInTalkPanel)
             {
-                if (this.gpDestSoldier != null)
+                if (Globals.gpDestSoldier != null)
                 {
-                    if (this.gpDestSoldier.ubProfile == ubProfile)
+                    if (Globals.gpDestSoldier.ubProfile == ubProfile)
                     {
                         return true;
                     }
