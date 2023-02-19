@@ -426,15 +426,15 @@ public class Facts
                 break;
 
             case FACT.PLAYER_OWNS_2_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() == 3) && IsTownUnderCompleteControlByPlayer(OMERTA));
+                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() == 3) && IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
                 break;
 
             case FACT.PLAYER_OWNS_3_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() == 5) && IsTownUnderCompleteControlByPlayer(OMERTA));
+                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() == 5) && IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
                 break;
 
             case FACT.PLAYER_OWNS_4_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() >= 6) && IsTownUnderCompleteControlByPlayer(OMERTA));
+                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() >= 6) && IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
                 break;
 
             case FACT.PLAYER_FOUGHT_THREE_TIMES_TODAY:
@@ -474,19 +474,19 @@ public class Facts
                 break;
 
             case FACT.FIRST_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 1 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && CountBartenders() == 0));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 1 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 0));
                 break;
 
             case FACT.SECOND_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 2 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && CountBartenders() == 1));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 2 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 1));
                 break;
 
             case FACT.THIRD_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 3 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && CountBartenders() == 2));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 3 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 2));
                 break;
 
             case FACT.FOURTH_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 4 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && CountBartenders() == 3));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 4 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 3));
                 break;
 
             case FACT.NPC_NOT_UNDER_FIRE:

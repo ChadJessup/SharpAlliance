@@ -42,12 +42,6 @@ public class InterfaceCursors
     static int guiLooseCursorID = 0;
     static uint guiLooseCursorTimeOfLastUpdate = 0;
 
-    UICursorDefines guiCurUICursor = UICursorDefines.NO_UICURSOR;
-    UICursorDefines guiOldUICursor = UICursorDefines.NO_UICURSOR;
-    ushort gusCurMousePos;
-    ushort gusTargetDropPos;
-    bool gfTargetDropPos = false;
-
     bool SetUICursor(UICursorDefines uiNewCursor)
     {
         guiOldUICursor = guiCurUICursor;
@@ -127,9 +121,9 @@ public class InterfaceCursors
                 if (Interface.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
                     // If we are over a target, jump to that....
-                    if (HandleUI.gfUIFullTargetFound)
+                    if (Globals.gfUIFullTargetFound)
                     {
-                        gusTargetDropPos = Globals.MercPtrs[gusUIFullTargetID].sGridNo;
+                        gusTargetDropPos = Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo;
                     }
 
                     // Put tile on the floor

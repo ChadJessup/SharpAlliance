@@ -13,11 +13,11 @@ public class QueenCommand
         Debug.Assert(sSectorY >= 1 && sSectorY <= 16);
         Debug.Assert(sSectorZ >= 0 && sSectorZ <= 3);
 
-        if (sSectorZ)
+        if (sSectorZ > 0)
         {
             UNDERGROUND_SECTORINFO? pSector;
             pSector = FindUnderGroundSector(sSectorX, sSectorY, (int)sSectorZ);
-            if (pSector)
+            if (pSector is not null)
             {
                 ubNumEnemies = (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);
             }
@@ -32,7 +32,7 @@ public class QueenCommand
             ubNumEnemies = (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);
 
             //Count mobile enemies
-            pGroup = gpGroupList;
+            pGroup = Globals.gpGroupList;
             while (pGroup)
             {
                 if (!pGroup.fPlayer && !pGroup.fVehicle && pGroup.ubSectorX == sSectorX && pGroup.ubSectorY == sSectorY)
@@ -46,20 +46,23 @@ public class QueenCommand
         return ubNumEnemies;
     }
 
-    public static int NumEnemiesInSector(int sSectorX, int sSectorY)
+    public static int NumEnemiesInSector(int sSectorX, MAP_ROW sSectorY)
     {
         SECTORINFO? pSector;
         GROUP? pGroup;
         int ubNumTroops;
-        Assert(sSectorX >= 1 && sSectorX <= 16);
-        Assert(sSectorY >= 1 && sSectorY <= 16);
-        pSector = &SectorInfo[SECTOR(sSectorX, sSectorY)];
+        Debug.Assert(sSectorX >= 1 && sSectorX <= 16);
+        Debug.Assert(sSectorY >= (MAP_ROW)1 && sSectorY <= (MAP_ROW)16);
+        pSector = SectorInfo[SECTORINFO.SECTOR(sSectorX, sSectorY)];
         ubNumTroops = (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);
 
-        pGroup = gpGroupList;
-        while (pGroup)
+        pGroup = Globals.gpGroupList;
+        while (pGroup is not null)
         {
-            if (!pGroup.fPlayer && !pGroup.fVehicle && pGroup.ubSectorX == sSectorX && pGroup.ubSectorY == sSectorY)
+            if (!pGroup.fPlayer
+                && !pGroup.fVehicle
+                && pGroup.ubSectorX == sSectorX
+                && pGroup.ubSectorY == sSectorY)
             {
                 ubNumTroops += pGroup.ubGroupSize;
             }
@@ -68,12 +71,12 @@ public class QueenCommand
         return ubNumTroops;
     }
 
-    public static int NumStationaryEnemiesInSector(int sSectorX, int sSectorY)
+    public static int NumStationaryEnemiesInSector(int sSectorX, MAP_ROW sSectorY)
     {
         SECTORINFO? pSector;
         Debug.Assert(sSectorX >= 1 && sSectorX <= 16);
-        Debug.Assert(sSectorY >= 1 && sSectorY <= 16);
-        pSector = Globals.SectorInfo[SECTOR(sSectorX, sSectorY)];
+        Debug.Assert(sSectorY >= (MAP_ROW)1 && sSectorY <= (MAP_ROW)16);
+        pSector = Globals.SectorInfo[SECTORINFO.SECTOR(sSectorX, sSectorY)];
 
         if (pSector.ubGarrisonID == NO_GARRISON)
         { //If no garrison, no stationary.
@@ -81,7 +84,7 @@ public class QueenCommand
         }
 
         // don't count roadblocks as stationary garrison, we want to see how many enemies are in them, not question marks
-        if (gGarrisonGroup[pSector.ubGarrisonID].ubComposition == ROADBLOCK)
+        if (Globals.gGarrisonGroup[pSector.ubGarrisonID].ubComposition == ROADBLOCK)
         {
             // pretend they're not stationary
             return (0);

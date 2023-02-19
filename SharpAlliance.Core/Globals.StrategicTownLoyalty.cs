@@ -5,22 +5,24 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const TOWNS FIRST_TOWN = TOWNS.OMERTA;
+
     public static Dictionary<TOWNS, TOWN_LOYALTY> gTownLoyalty = new();
-    public static bool[] gfTownUsesLoyalty = new bool[(int)TOWNS.NUM_TOWNS]
+    public static Dictionary<TOWNS, bool> gfTownUsesLoyalty = new()
     {
-        false,		// not a town - blank sector index
-    	true,		// OMERTA
-    	true,		// DRASSEN
-    	true,		// ALMA
-    	true,		// GRUMM
-    	false,		// TIXA
-    	true,		// CAMBRIA
-    	false,		// SAN_MONA
-    	false,		// ESTONI
-    	false,		// ORTA
-    	true,		// BALIME
-    	true,		// MEDUNA
-    	true,		// CHITZENA
+        { 0, false              },      // not a town - blank sector index
+    	{ TOWNS.OMERTA, true    },      // OMERTA
+    	{ TOWNS.DRASSEN, true   },      // DRASSEN
+    	{ TOWNS.ALMA, true      },      // ALMA
+    	{ TOWNS.GRUMM, true     },      // GRUMM
+    	{ TOWNS.TIXA, false     },      // TIXA
+    	{ TOWNS.CAMBRIA, true   },      // CAMBRIA
+    	{ TOWNS.SAN_MONA, false },      // SAN_MONA
+    	{ TOWNS.ESTONI, false   },      // ESTONI
+    	{ TOWNS.ORTA, false     },      // ORTA
+    	{ TOWNS.BALIME, true    },      // BALIME
+    	{ TOWNS.MEDUNA, true    },      // MEDUNA
+    	{ TOWNS.CHITZENA, true  },      // CHITZENA
     };
 }
 

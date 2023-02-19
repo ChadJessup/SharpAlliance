@@ -79,7 +79,7 @@ public class PathAI
         return (sRet);
     }
 
-    public int PlotPath(
+    public static int PlotPath(
         SOLDIERTYPE? pSold,
         int sDestGridno,
         PlotPathDefines bCopyRoute,
@@ -122,14 +122,14 @@ public class PathAI
         // distance limit to reduce the cost of plotting a path to a location we can't reach
 
         // For now, use known hight adjustment
-        if (gfRecalculatingExistingPathCost || FindBestPath(pSold, sDestGridno, (byte)pSold.bLevel, usMovementMode, bCopyRoute, 0))
+        if (Globals.gfRecalculatingExistingPathCost || FindBestPath(pSold, sDestGridno, (byte)pSold.bLevel, usMovementMode, bCopyRoute, 0))
         {
             // if soldier would be STARTING to run then he pays a penalty since it takes time to 
             // run full speed
             if (pSold.usAnimState != AnimationStates.RUNNING)
             {
                 // for estimation purposes, always pay penalty
-                sPointsRun = (int)AP.START_RUN_COST;
+                sPointsRun = AP.START_RUN_COST;
             }
 
             // Add to points, those needed to start from different stance!
@@ -137,8 +137,8 @@ public class PathAI
 
 
             // We should reduce points for starting to run if first tile is a fence...
-            sTestGridno = this.isometricUtils.NewGridNo(pSold.sGridNo, this.isometricUtils.DirectionInc(guiPathingData[0]));
-            if (Globals.gubWorldMovementCosts[sTestGridno, guiPathingData[0], (int)pSold.bLevel] == (int)TRAVELCOST.FENCE)
+            sTestGridno = IsometricUtils.NewGridNo(pSold.sGridNo, IsometricUtils.DirectionInc(Globals.guiPathingData[0]));
+            if (Globals.gubWorldMovementCosts[sTestGridno, Globals.guiPathingData[0], pSold.bLevel] == TRAVELCOST.FENCE)
             {
                 if (usMovementMode == AnimationStates.RUNNING && pSold.usAnimState != AnimationStates.RUNNING)
                 {
@@ -170,11 +170,11 @@ public class PathAI
 
             if (bStayOn != 0)
             {
-                iLastGrid = giPathDataSize + 1;
+                iLastGrid = Globals.giPathDataSize + 1;
             }
             else
             {
-                iLastGrid = giPathDataSize;
+                iLastGrid = Globals.giPathDataSize;
             }
 
 
@@ -367,8 +367,7 @@ public class PathAI
                                 sFootOrderIndex++;
                             }
                         }
-
-                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, usTileNum, out usTileIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.FOOTPRINTS, usTileNum, out usTileIndex);
 
                         // Adjust based on what mode we are in...
                         if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -424,7 +423,7 @@ public class PathAI
                         // this is a LEAVING footstep which is always the second set of 8
                         usTileNum += 8;
 
-                        GetTileIndexFromTypeSubIndex(FOOTPRINTS, (ushort)usTileNum, out usTileIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.FOOTPRINTS, usTileNum, out usTileIndex);
 
                         // Adjust based on what mode we are in...
                         if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -465,7 +464,7 @@ public class PathAI
         }   // end of found a path
 
         // reset distance limit 
-        gubNPCDistLimit = 0;
+        Globals.gubNPCDistLimit = 0;
 
         return (sPoints);
     }

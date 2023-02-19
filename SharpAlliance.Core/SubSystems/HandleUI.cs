@@ -73,6 +73,7 @@ public class HandleUI
     private readonly PathAI pathAI;
     private readonly IsometricUtils isometricUtils;
     private readonly SoldierFind soldierFind;
+    private IScreenManager screens;
 
     public HandleUI(
         ILogger<HandleUI> logger,
@@ -85,7 +86,8 @@ public class HandleUI
         PathAI pathAI,
         RenderWorld renderWorld,
         IsometricUtils isometricUtils,
-        SoldierFind soldierFind)
+        SoldierFind soldierFind,
+        IScreenManager screenManager)
     {
         this.logger = logger;
         this.clock = clock;
@@ -99,6 +101,7 @@ public class HandleUI
         this.renderWorld = renderWorld;
         this.isometricUtils = isometricUtils;
         this.soldierFind = soldierFind;
+        this.screens = screenManager;
 
         Globals.gEvents = new()
         {
@@ -698,6 +701,22 @@ public class HandleUI
         }
     }
 
+    public static void HandleTacticalUILoseCursorFromOtherScreen()
+    {
+        SetUICursor(0);
+
+        Globals.gfTacticalForceNoCursor = true;
+
+        ErasePath(true);
+
+        ((Globals.GameScreens[ScreenName.GAME_SCREEN].HandleScreen))();
+
+        Globals.gfTacticalForceNoCursor = false;
+
+        SetUICursor(Globals.guiCurrentUICursor);
+    }
+
+
     void SetUIKeyboardHook(/*UIKEYBOARD_HOOK KeyboardHookFnc*/)
     {
         //gUIKeyboardHook = KeyboardHookFnc;
@@ -1005,19 +1024,19 @@ public class HandleUI
 
     ScreenName UIHandleSelectMerc(UI_EVENT pUIEvent)
     {
-        int iCurrentSquad;
+        Squad iCurrentSquad;
 
         // Get merc index at mouse and set current selection
         if (Globals.gfUIFullTargetFound)
         {
-            iCurrentSquad = CurrentSquad();
+            iCurrentSquad = Squads.CurrentSquad();
 
             InternalSelectSoldier(Globals.gusUIFullTargetID, true, false, true);
 
             // If different, display message
-            if (CurrentSquad() != iCurrentSquad)
+            if (Squads.CurrentSquad() != iCurrentSquad)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_SQUAD_ACTIVE], (CurrentSquad() + 1));
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_SQUAD_ACTIVE], (Squads.CurrentSquad() + 1));
             }
         }
 
@@ -1065,7 +1084,8 @@ public class HandleUI
         if (!UIHandleOnMerc(true))
         {
             // Are we over items...
-            if (GetItemPool(usMapPos, out pItemPool, Interface.gsInterfaceLevel) && ITEMPOOL_VISIBLE(pItemPool))
+            if (HandleItems.GetItemPool(usMapPos, out pItemPool, Interface.gsInterfaceLevel)
+                && ITEMPOOL_VISIBLE(pItemPool))
             {
                 // Are we already in...
                 if (fOverItems)
@@ -1554,7 +1574,7 @@ public class HandleUI
                 // TODO: Only our squad!
                 for (bLoop = Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID, pSoldier = Globals.MercPtrs[bLoop]; bLoop <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; bLoop++)//, pSoldier++)
                 {
-                    if (OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == CurrentSquad() && !pSoldier.fMercAsleep)
+                    if (OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == (Assignments)Squads.CurrentSquad() && !pSoldier.fMercAsleep)
                     {
                         // If we can't be controlled, returninvalid...
                         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
@@ -2126,8 +2146,8 @@ public class HandleUI
                 // Get orientation....
                 sNewGridNo = pStructure.ubWallOrientation switch
                 {
-                    WallOrientation.OUTSIDE_TOP_LEFT or WallOrientation.INSIDE_TOP_LEFT => this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc(WorldDirections.SOUTH)),
-                    WallOrientation.OUTSIDE_TOP_RIGHT or WallOrientation.INSIDE_TOP_RIGHT => this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc(WorldDirections.EAST)),
+                    WallOrientation.OUTSIDE_TOP_LEFT or WallOrientation.INSIDE_TOP_LEFT => IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.SOUTH)),
+                    WallOrientation.OUTSIDE_TOP_RIGHT or WallOrientation.INSIDE_TOP_RIGHT => IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.EAST)),
                     _ => sGridNo,
                 };
 
@@ -2658,7 +2678,7 @@ public class HandleUI
         return (false);
     }
 
-    void GetMercClimbDirection(byte ubSoldierID, bool pfGoDown, bool pfGoUp)
+    void GetMercClimbDirection(int ubSoldierID, out bool pfGoDown, out bool pfGoUp)
     {
         byte bNewDirection;
         SOLDIERTYPE? pSoldier;
@@ -2689,9 +2709,6 @@ public class HandleUI
                 pfGoDown = true;
             }
         }
-
-
-
     }
 
     void RemoveTacticalCursor()
@@ -3619,7 +3636,7 @@ public class HandleUI
 
                 for (cnt = 0; cnt < (int)WorldDirections.NUM_WORLD_DIRECTIONS; cnt++)
                 {
-                    sSpot = this.isometricUtils.NewGridNo(pSoldier.sGridNo, this.isometricUtils.DirectionInc(cnt));
+                    sSpot = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(cnt));
 
                     // Make sure movement costs are OK....
                     if (Globals.gubWorldMovementCosts[sSpot, cnt, Interface.gsInterfaceLevel] >= TRAVELCOST.BLOCKED)
@@ -3959,7 +3976,6 @@ public class HandleUI
     bool UIOkForItemPickup(SOLDIERTYPE? pSoldier, int sGridNo)
     {
         int sAPCost;
-        ITEM_POOL? pItemPool;
 
         sAPCost = GetAPsToPickupItem(pSoldier, sGridNo);
 
@@ -3969,7 +3985,7 @@ public class HandleUI
         }
         else
         {
-            if (GetItemPool(sGridNo, out pItemPool, pSoldier.bLevel))
+            if (HandleItems.GetItemPool(sGridNo, out ITEM_POOL? pItemPool, pSoldier.bLevel))
             {
                 //if ( !ITEMPOOL_VISIBLE( pItemPool ) )
                 {
@@ -5544,23 +5560,28 @@ public class HandleUI
         }
 
         // Check if we are over an item pool
-        if (GetItemPool(sActionGridNo, out pItemPool, pSoldier.bLevel))
+        if (HandleItems.GetItemPool(sActionGridNo, out pItemPool, pSoldier.bLevel))
         {
             // If we want only on int tiles, and we have no int tiles.. ignore items!
             if (fItemsOnlyIfOnIntTiles && pIntTile == null)
             {
 
             }
-            else if (fItemsOnlyIfOnIntTiles && pIntTile != null && (pStructure.fFlags & STRUCTUREFLAGS.HASITEMONTOP))
+            else if (fItemsOnlyIfOnIntTiles
+                && pIntTile != null
+                && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.HASITEMONTOP)))
             {
                 // if in this mode, we don't want to automatically show hand cursor over items on strucutres
             }
             //else if ( pIntTile != null && ( pStructure.fFlags & ( STRUCTURE_SWITCH | STRUCTURE_ANYDOOR ) ) )
-            else if (pIntTile != null && (pStructure.fFlags & (STRUCTUREFLAGS.SWITCH)))
+            else if (pIntTile != null
+                && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH)))
             {
                 // We don't want switches messing around with items ever!
             }
-            else if ((pIntTile != null && (pStructure.fFlags & (STRUCTUREFLAGS.ANYDOOR))) && (sActionGridNo != usMapPos || fItemsOnlyIfOnIntTiles))
+            else if ((pIntTile != null
+                && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)))
+                && (sActionGridNo != usMapPos || fItemsOnlyIfOnIntTiles))
             {
                 // Next we look for if we are over a door and if the mouse position is != base door position, ignore items!
             }
@@ -5654,7 +5675,7 @@ public class HandleUI
                     // Determine if we can afford!
                     if (!EnoughPoints(pSoldier, Globals.gsCurrentActionPoints, 0, false))
                     {
-                        gfUIDisplayActionPointsInvalid = true;
+                        Globals.gfUIDisplayActionPointsInvalid = true;
                     }
                 }
             }
@@ -5670,23 +5691,6 @@ public class HandleUI
             return (1);
         }
     }
-
-
-    void HandleTacticalUILoseCursorFromOtherScreen()
-    {
-        SetUICursor(0);
-
-        gfTacticalForceNoCursor = true;
-
-        this.pathAI.ErasePath(true);
-
-        ((GameScreens[ScreenName.GAME_SCREEN].HandleScreen))();
-
-        gfTacticalForceNoCursor = false;
-
-        SetUICursor(Globals.guiCurrentUICursor);
-    }
-
 
     bool SelectedGuyInBusyAnimation()
     {
@@ -5736,7 +5740,7 @@ public class HandleUI
 
                 // Nowhere
                 // Try to climb
-                GetMercClimbDirection(pSoldier.ubID, fNearLowerLevel, fNearHeigherLevel);
+                GetMercClimbDirection(pSoldier.ubID, out fNearLowerLevel, out fNearHeigherLevel);
 
                 if (fNearHeigherLevel)
                 {
@@ -5796,9 +5800,9 @@ public class HandleUI
         int sHeight;
         int sGridNo;
 
-        if (gfBasement || gfCaves)
+        if (Globals.gfBasement || Globals.gfCaves)
         {
-            gsRenderHeight = 0;
+            Globals.gsRenderHeight = 0;
             sOldHeight = 0;
 
             return;
@@ -5806,14 +5810,14 @@ public class HandleUI
 
 
         // ATE: Use an entry point to determine what height to use....
-        if (gMapInformation.sNorthGridNo != -1)
-            sGridNo = gMapInformation.sNorthGridNo;
-        else if (gMapInformation.sEastGridNo != -1)
-            sGridNo = gMapInformation.sEastGridNo;
-        else if (gMapInformation.sSouthGridNo != -1)
-            sGridNo = gMapInformation.sSouthGridNo;
-        else if (gMapInformation.sWestGridNo != -1)
-            sGridNo = gMapInformation.sWestGridNo;
+        if (Globals.gMapInformation.sNorthGridNo != -1)
+            sGridNo = Globals.gMapInformation.sNorthGridNo;
+        else if (Globals.gMapInformation.sEastGridNo != -1)
+            sGridNo = Globals.gMapInformation.sEastGridNo;
+        else if (Globals.gMapInformation.sSouthGridNo != -1)
+            sGridNo = Globals.gMapInformation.sSouthGridNo;
+        else if (Globals.gMapInformation.sWestGridNo != -1)
+            sGridNo = Globals.gMapInformation.sWestGridNo;
         else
         {
             //Assert(0);
@@ -5848,13 +5852,13 @@ public class HandleUI
         bool fOnValidGuy = false;
 
         // Check if we over a civ
-        if (gfUIFullTargetFound)
+        if (Globals.gfUIFullTargetFound)
         {
-            pOverSoldier = Globals.MercPtrs[gusUIFullTargetID];
+            pOverSoldier = Globals.MercPtrs[Globals.gusUIFullTargetID];
 
             //KM: Replaced this older if statement for the new one which allows exchanging with militia
             //if ( ( pOverSoldier.bSide != gbPlayerNum ) && pOverSoldier.bNeutral  )
-            if ((pOverSoldier.bTeam != Globals.gbPlayerNum && pOverSoldier.bNeutral) || (pOverSoldier.bTeam == TEAM.MILITIA_TEAM && pOverSoldier.bSide == 0))
+            if ((pOverSoldier.bTeam != Globals.gbPlayerNum && pOverSoldier.bNeutral > 0) || (pOverSoldier.bTeam == TEAM.MILITIA_TEAM && pOverSoldier.bSide == 0))
             {
                 // hehe - don't allow animals to exchange places
                 if (!(pOverSoldier.uiStatusFlags.HasFlag(SOLDIER.ANIMAL)))
@@ -5926,7 +5930,7 @@ public class HandleUI
         for (cnt = 0; cnt < 4; cnt++)
         {
             // MOVE OUT TWO DIRECTIONS
-            sIntSpot = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((int)sDirs[cnt]));
+            sIntSpot = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)sDirs[cnt]));
 
             // ATE: Check our movement costs for going through walls!
             ubMovementCost = Globals.gubWorldMovementCosts[sIntSpot, (int)sDirs[cnt], pSoldier.bLevel];
@@ -5944,7 +5948,7 @@ public class HandleUI
 
 
             // TWICE AS FAR!
-            sFourGrids[cnt] = sSpot = this.isometricUtils.NewGridNo(sIntSpot, this.isometricUtils.DirectionInc((int)sDirs[cnt]));
+            sFourGrids[cnt] = sSpot = IsometricUtils.NewGridNo(sIntSpot, IsometricUtils.DirectionInc((int)sDirs[cnt]));
 
             // Is the soldier we're looking at here?
             ubGuyThere = WhoIsThere2(sSpot, pSoldier.bLevel);

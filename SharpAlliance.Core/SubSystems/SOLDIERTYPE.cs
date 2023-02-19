@@ -467,7 +467,7 @@ namespace SharpAlliance.Core.SubSystems
         //TIMECOUNTER NextTileCounter;
         bool fBlockedByAnotherMerc;
         int bBlockedByAnotherMercDirection;
-        int usAttackingWeapon;
+        public Items usAttackingWeapon;
         public WM bWeaponMode;
         int ubTargetID;
         int bAIScheduleProgress;
@@ -610,7 +610,8 @@ namespace SharpAlliance.Core.SubSystems
         public bool fPersistant;                    //This flag when set prevents the group from being automatically deleted when it becomes empty.
         public int ubGroupID;                            //the unique ID of the group (used for hooking into events and SOLDIERTYPE)
         public int ubGroupSize;                      //total number of individuals in the group.
-        public int ubSectorX, ubSectorY;     //last/curr sector occupied
+        public int ubSectorX;
+        public MAP_ROW ubSectorY;     //last/curr sector occupied
         public int ubSectorZ;
         public int ubNextX, ubNextY;             //next sector destination
         public int ubPrevX, ubPrevY;             //prev sector occupied (could be same as ubSectorX/Y)

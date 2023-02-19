@@ -54,7 +54,7 @@ namespace SharpAlliance.Core.Screens
 
                     if (this.messageBoxSubSystem.gfStartedFromGameScreen)
                     {
-                        HandleTacticalUILoseCursorFromOtherScreen();
+                        HandleUI.HandleTacticalUILoseCursorFromOtherScreen();
                     }
                     else
                     {

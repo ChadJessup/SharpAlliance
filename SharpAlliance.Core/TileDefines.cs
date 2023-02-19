@@ -5,6 +5,7 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp.Drawing;
 using Veldrid.OpenGLBinding;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core;
 
@@ -23,6 +24,21 @@ public class TileDefine
     int gusNumAnimatedTiles;
     int[] gusAnimatedTiles = new int[MAX_ANIMATED_TILES];
     int[] gTileTypeMovementCost = new int[(int)TerrainTypeDefines.NUM_TERRAIN_TYPES];
+
+    public static bool GetTileIndexFromTypeSubIndex(TileTypeDefines uiCheckType, int usSubIndex, out int pusTileIndex)
+    {
+        // Tile database is zero-based, Type indecies are 1-based!
+
+        if (uiCheckType > TileTypeDefines.NUMBEROFTILETYPES)
+        {
+            pusTileIndex = -1;
+            return false;
+        }
+
+        pusTileIndex = usSubIndex + gTileTypeStartIndex[(int)uiCheckType] - 1;
+
+        return (true);
+    }
 
     // Database access functions
     public static bool GetTileType(int usIndex, out TileTypeDefines puiType)

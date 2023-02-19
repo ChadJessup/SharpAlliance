@@ -97,7 +97,7 @@ public class LEVELNODE
     public TAG_anitile? pAniTile;
 
     // Can be an item pool as well...
-    ITEM_POOL? pItemPool;                   // ITEM POOLS
+    public ITEM_POOL? pItemPool;                   // ITEM POOLS
 
     //
     int sRelativeZ;                           // Relative position values

@@ -242,7 +242,7 @@ public class InteractiveTiles
 
 
             // LOOK for item pool here...
-            if (GetItemPool(sGridNo, out pItemPool, pSoldier.bLevel))
+            if (HandleItems.GetItemPool(sGridNo, out pItemPool, pSoldier.bLevel))
             {
                 // Update visiblity....
                 if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
@@ -822,14 +822,14 @@ public class InteractiveTiles
                         case WallOrientation.INSIDE_TOP_LEFT:
 
                             // Move south...
-                            sNewGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc(WorldDirections.SOUTH));
+                            sNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.SOUTH));
                             break;
 
                         case WallOrientation.OUTSIDE_TOP_RIGHT:
                         case WallOrientation.INSIDE_TOP_RIGHT:
 
                             // Move east...
-                            sNewGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc(WorldDirections.EAST));
+                            sNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.EAST));
                             break;
 
                     }

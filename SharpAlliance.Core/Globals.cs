@@ -371,6 +371,15 @@ public partial class Globals
     public static bool gfExitDebugScreen { get; internal set; }
     public static bool gfInOpenDoorMenu { get; internal set; }
     public static bool gfNPCCircularDistLimit { get; internal set; }
+    public static bool fMapPanelDirty { get; internal set; }
+    public static bool fInMapMode { get; internal set; }
+    public static bool gfMapPanelWasRedrawn { get; internal set; }
+    public static bool fShowMapInventoryPool { get; internal set; }
+    public static int ghTownMineBox { get; internal set; }
+    public static int ghAttributeBox { get; internal set; }
+    public static bool fSkyRiderAvailable { get; internal set; }
+    public static int gubNPCDistLimit { get; internal set; }
+    public static bool gfRecalculatingExistingPathCost { get; internal set; }
 
     public static int gsFoodQuestSectorX;
     public static int gsFoodQuestSectorY;
@@ -408,6 +417,22 @@ public partial class Globals
     public static AnimationStructureType[,] gAnimStructureDatabase = new AnimationStructureType[(int)SoldierBodyTypes.TOTALBODYTYPES, (int)StructData.NUM_STRUCT_IDS];
 
     public static GameOptions gGameOptions = new();
+
+    public static MAPCREATE_STRUCT gMapInformation;
+
+    public const Items NOTHING = Items.NONE;
+    public const Items ITEM_NOT_FOUND = (Items)(-1);
+
+    public const int DIRTYLEVEL0 = 0;
+    public const int DIRTYLEVEL1 = 1;
+    public const int DIRTYLEVEL2 = 2;
+
+    public static UICursorDefines guiCurUICursor = UICursorDefines.NO_UICURSOR;
+    public static UICursorDefines guiOldUICursor = UICursorDefines.NO_UICURSOR;
+    public static int gusCurMousePos;
+    public static int gusTargetDropPos;
+    public static bool gfTargetDropPos = false;
+
 
     public static Dictionary<UICursorDefines, UICursor> gUICursors = new()
     {

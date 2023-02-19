@@ -8,7 +8,7 @@ namespace SharpAlliance.Core;
 
 public class IsometricUtils
 {
-    int[] DirIncrementer = new int[8]
+    static int[] DirIncrementer = new int[8]
     {
         -Globals.MAPWIDTH,        //N
 	    1-Globals.MAPWIDTH,       //NE
@@ -20,7 +20,7 @@ public class IsometricUtils
 	    -Globals.MAPWIDTH-1       //NW
     };
 
-    public bool OutOfBounds(int sGridno, int sProposedGridno)
+    public static bool OutOfBounds(int sGridno, int sProposedGridno)
     {
         int sMod, sPropMod;
 
@@ -118,7 +118,7 @@ public class IsometricUtils
     }
 
 
-    public int NewGridNo(int sGridno, int sDirInc)
+    public static int NewGridNo(int sGridno, int sDirInc)
     {
         int sProposedGridno = sGridno + sDirInc;
 
@@ -133,9 +133,9 @@ public class IsometricUtils
     }
 
 
-    public int DirectionInc(WorldDirections sDirection) => DirectionInc((int)sDirection);
+    public static int DirectionInc(WorldDirections sDirection) => DirectionInc((int)sDirection);
 
-    public int DirectionInc(int sDirection)
+    public static int DirectionInc(int sDirection)
     {
         if ((sDirection < 0) || (sDirection > 7))
         {

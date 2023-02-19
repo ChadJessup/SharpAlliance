@@ -69,6 +69,64 @@ public class MapScreen : IScreen
     {
     }
 
+    public static void RenderMapRegionBackground()
+    {
+        // renders to save buffer when dirty flag set
+
+        if (Globals.fMapPanelDirty == false)
+        {
+            Globals.gfMapPanelWasRedrawn = false;
+
+            // not dirty, leave
+            return;
+        }
+
+        // don't bother if showing sector inventory instead of the map!!!
+        if (!Globals.fShowMapInventoryPool)
+        {
+            // draw map
+            DrawMap();
+        }
+
+
+        // blit in border
+        RenderMapBorder();
+
+        if (Globals.ghAttributeBox != -1)
+        {
+            ForceUpDateOfBox(Globals.ghAttributeBox);
+        }
+
+        if (Globals.ghTownMineBox != -1)
+        {
+            // force update of town mine info boxes
+            ForceUpDateOfBox(Globals.ghTownMineBox);
+        }
+
+
+        MapscreenMarkButtonsDirty();
+
+        RestoreExternBackgroundRect(261, 0, 640 - 261, 359);
+
+        // don't bother if showing sector inventory instead of the map!!!
+        if (!Globals.fShowMapInventoryPool)
+        {
+            // if Skyrider can and wants to talk to us
+            if (MapScreenHelicopter.IsHelicopterPilotAvailable())
+            {
+                // see if Skyrider has anything new to tell us
+                CheckAndHandleSkyriderMonologues();
+            }
+        }
+
+        // reset dirty flag
+        Globals.fMapPanelDirty = false;
+
+        Globals.gfMapPanelWasRedrawn = true;
+
+        return;
+    }
+
     public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
     {
         throw new System.NotImplementedException();

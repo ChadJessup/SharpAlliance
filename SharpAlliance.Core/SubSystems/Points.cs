@@ -1,11 +1,171 @@
-﻿namespace SharpAlliance.Core.SubSystems;
+﻿using System;
+
+namespace SharpAlliance.Core.SubSystems;
 
 public class Points
 {
+    public static int MinAPsToStartMovement(SOLDIERTYPE? pSoldier, AnimationStates usMovementMode)
+    {
+        int bAPs = 0;
+
+        switch (usMovementMode)
+        {
+            case AnimationStates.RUNNING:
+            case AnimationStates.WALKING:
+                if (Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_PRONE)
+                {
+                    bAPs += AP.CROUCH + AP.PRONE;
+                }
+                else if (Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_CROUCH)
+                {
+                    bAPs += AP.CROUCH;
+                }
+                break;
+            case AnimationStates.SWATTING:
+                if (Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_PRONE)
+                {
+                    bAPs += AP.PRONE;
+                }
+                else if (Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND)
+                {
+                    bAPs += AP.CROUCH;
+                }
+                break;
+            case AnimationStates.CRAWLING:
+                if (Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND)
+                {
+                    bAPs += AP.CROUCH + AP.PRONE;
+                }
+                else if (Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_CROUCH)
+                {
+                    bAPs += AP.CROUCH;
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (usMovementMode == AnimationStates.RUNNING && pSoldier.usAnimState != AnimationStates.RUNNING)
+        {
+            bAPs += AP.START_RUN_COST;
+        }
+        return (bAPs);
+    }
+
+    public static bool EnoughAmmo(SOLDIERTYPE? pSoldier, bool fDisplay, int bInvPos)
+    {
+        if (pSoldier.inv[bInvPos].usItem != Globals.NOTHING)
+        {
+            if (pSoldier.bWeaponMode == WM.ATTACHED)
+            {
+                return (true);
+            }
+            else
+            {
+                if (pSoldier.inv[bInvPos].usItem == Items.ROCKET_LAUNCHER)
+                {
+                    // hack... they turn empty afterwards anyways
+                    return (true);
+                }
+
+                if (Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.LAUNCHER || pSoldier.inv[bInvPos].usItem == Items.TANK_CANNON)
+                {
+                    if (FindAttachmentByClass((pSoldier.inv[bInvPos]), IC.GRENADE) != Globals.ITEM_NOT_FOUND)
+                    {
+                        return (true);
+                    }
+
+                    // ATE: Did an else if here...
+                    if (FindAttachmentByClass(&(pSoldier.inv[bInvPos]), IC.BOMB) != ITEM_NOT_FOUND)
+                    {
+                        return (true);
+                    }
+
+                    if (fDisplay)
+                    {
+                        TacticalCharacterDialogue(pSoldier, QUOTE_OUT_OF_AMMO);
+                    }
+
+                    return (false);
+                }
+                else if (Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.GUN)
+                {
+                    if (pSoldier.inv[bInvPos].ubGunShotsLeft == 0)
+                    {
+                        if (fDisplay)
+                        {
+                            TacticalCharacterDialogue(pSoldier, QUOTE_OUT_OF_AMMO);
+                        }
+                        return (false);
+                    }
+                }
+            }
+
+            return (true);
+        }
+
+        return (false);
+
+    }
+
+
+    public static void DeductAmmo(SOLDIERTYPE? pSoldier, int bInvPos)
+    {
+        OBJECTTYPE? pObj;
+
+        // tanks never run out of MG ammo!
+        // unlimited cannon ammo is handled in AI
+        if (TANK(pSoldier) && pSoldier.inv[bInvPos].usItem != Items.TANK_CANNON)
+        {
+            return;
+        }
+
+        pObj = (pSoldier.inv[bInvPos]);
+        if (pObj.usItem != Globals.NOTHING)
+        {
+            if (pObj.usItem == Items.TANK_CANNON)
+            {
+            }
+            else if (Item[pObj.usItem].usItemClass == IC.GUN && pObj.usItem != Items.TANK_CANNON)
+            {
+                if (pSoldier.usAttackingWeapon == pObj.usItem)
+                {
+                    // OK, let's see, don't overrun...
+                    if (pObj.ubGunShotsLeft != 0)
+                    {
+                        pObj.ubGunShotsLeft--;
+                    }
+                }
+                else
+                {
+                    // firing an attachment?
+                }
+            }
+            else if (Item[pObj.usItem].usItemClass == IC.LAUNCHER || pObj.usItem == Items.TANK_CANNON)
+            {
+                int bAttachPos;
+
+                bAttachPos = FindAttachmentByClass(pObj, IC.GRENADE);
+                if (bAttachPos == Globals.ITEM_NOT_FOUND)
+                {
+                    bAttachPos = FindAttachmentByClass(pObj, IC.BOMB);
+                }
+
+                if (bAttachPos != Globals.ITEM_NOT_FOUND)
+                {
+                    RemoveAttachment(pObj, bAttachPos, null);
+                }
+            }
+
+            // Dirty Bars
+            DirtyMercPanelInterface(pSoldier, Globals.DIRTYLEVEL1);
+        }
+    }
+
     public int CalcTotalAPsToAttack(SOLDIERTYPE? pSoldier, int sGridNo, int ubAddTurningCost, int bAimTime)
     {
         int sAPCost = 0;
-        int usItemNum;
+        Items usItemNum;
         int sActionGridNo;
         int ubDirection;
         int sAdjustedGridNo;
@@ -64,9 +224,9 @@ public class Points
 
                         pTarget = Globals.MercPtrs[ubGuyThere];
 
-                        if (pSoldier.ubBodyType == BLOODCAT)
+                        if (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
                         {
-                            sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, ubDirection, sAdjustedGridNo, true, false);
+                            sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
                             if (sGotLocation == -1)
                             {
                                 sGotLocation = Globals.NOWHERE;
@@ -74,13 +234,13 @@ public class Points
                         }
                         else
                         {
-                            sGotLocation = FindAdjacentPunchTarget(pSoldier, pTarget, sAdjustedGridNo, ubDirection);
+                            sGotLocation = FindAdjacentPunchTarget(pSoldier, pTarget, out sAdjustedGridNo, out ubDirection);
                         }
                     }
 
-                    if (sGotLocation == Globals.NOWHERE && pSoldier.ubBodyType != BLOODCAT)
+                    if (sGotLocation == Globals.NOWHERE && pSoldier.ubBodyType != SoldierBodyTypes.BLOODCAT)
                     {
-                        sActionGridNo = FindAdjacentGridEx(pSoldier, sGridNo, ubDirection, sAdjustedGridNo, true, false);
+                        sActionGridNo = FindAdjacentGridEx(pSoldier, sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
 
                         if (sActionGridNo == -1)
                         {
@@ -102,7 +262,16 @@ public class Points
                         else
                         {
                             // Save for next time...
-                            pSoldier.sWalkToAttackWalkToCost = PlotPath(pSoldier, sGotLocation, NO_COPYROUTE, NO.PLOT, TEMPORARY, pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                            pSoldier.sWalkToAttackWalkToCost = PathAI.PlotPath(
+                                pSoldier, 
+                                sGotLocation, 
+                                PlotPathDefines.NO_COPYROUTE, 
+                                Globals.NO_PLOT,
+                                PlotPathDefines.TEMPORARY, 
+                                pSoldier.usUIMovementMode,
+                                PlotPathDefines.NOT_STEALTH,
+                                PlotPathDefines.FORWARD, 
+                                pSoldier.bActionPoints);
 
                             if (pSoldier.sWalkToAttackWalkToCost == 0)
                             {

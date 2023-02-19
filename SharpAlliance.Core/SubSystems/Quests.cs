@@ -38,7 +38,7 @@ public class Quests
 
         if ((Globals.gWorldSectorX == BOBBYR_SHIPPING_DEST_SECTOR_X) && (Globals.gWorldSectorY == BOBBYR_SHIPPING_DEST_SECTOR_Y) && (Globals.gbWorldSectorZ == BOBBYR_SHIPPING_DEST_SECTOR_Z))
         {
-            if (GetItemPool(BOBBYR_SHIPPING_DEST_GRIDNO, pItemPool, 0))
+            if (HandleItems.GetItemPool(BOBBYR_SHIPPING_DEST_GRIDNO, out pItemPool, 0))
             {
                 return (!(ITEMPOOL_VISIBLE(pItemPool)));
             }
@@ -326,7 +326,7 @@ public class Quests
         {
             return (Globals.gpSrcSoldier.bStrength >= 84);
         }
-        else if (Globals.gpDestSoldier && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum)
+        else if (Globals.gpDestSoldier is not null && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum)
         {
             return (Globals.gpDestSoldier.bStrength >= 84);
         }
@@ -335,11 +335,11 @@ public class Quests
 
     public static bool CheckTalkerFemale()
     {
-        if (Globals.gpSrcSoldier && Globals.gpSrcSoldier.bTeam == Globals.gbPlayerNum && Globals.gpSrcSoldier.ubProfile != NPCID.NO_PROFILE)
+        if (Globals.gpSrcSoldier is not null && Globals.gpSrcSoldier.bTeam == Globals.gbPlayerNum && Globals.gpSrcSoldier.ubProfile != NPCID.NO_PROFILE)
         {
             return (Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].bSex == Sexes.FEMALE);
         }
-        else if (Globals.gpDestSoldier && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum && Globals.gpDestSoldier.ubProfile != NPCID.NO_PROFILE)
+        else if (Globals.gpDestSoldier is not null && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum && Globals.gpDestSoldier.ubProfile != NPCID.NO_PROFILE)
         {
             return (Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].bSex == Sexes.FEMALE);
         }
