@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Managers;
 using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -302,7 +303,7 @@ public class SoldierFind
                             {
                                 usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
-                                if (usAnimSurface != INVALID_ANIMATION_SURFACE)
+                                if (usAnimSurface != Globals.INVALID_ANIMATION_SURFACE)
                                 {
                                     iMercScreenX = (int)(sScreenX - aRect.Left);
                                     iMercScreenY = (int)(-1 * (sScreenY - aRect.Bottom));
@@ -482,7 +483,7 @@ public class SoldierFind
     {
         int ubID;
 
-        ubID = WhoIsThere2(sGridNo, bLevel);
+        ubID = WorldManager.WhoIsThere2(sGridNo, bLevel);
         if (ubID == Globals.NOBODY)
         {
             return (null);
@@ -565,7 +566,7 @@ public class SoldierFind
         GetSoldierScreenPos(pSoldier, out int sMercScreenX, out int sMercScreenY);
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
-        if (usAnimSurface == INVALID_ANIMATION_SURFACE)
+        if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
             pRect = new(sMercScreenX, sMercScreenY, sMercScreenX + 5, sMercScreenY + 5);
 
@@ -590,7 +591,7 @@ public class SoldierFind
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
-        if (usAnimSurface == INVALID_ANIMATION_SURFACE)
+        if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
             psHeight = (int)5;
             psWidth = (int)5;
@@ -617,7 +618,7 @@ public class SoldierFind
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
-        if (usAnimSurface == INVALID_ANIMATION_SURFACE)
+        if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
             sOffsetX = (int)0;
             sOffsetY = (int)0;
@@ -639,7 +640,7 @@ public class SoldierFind
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
-        if (usAnimSurface == INVALID_ANIMATION_SURFACE)
+        if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
             psScreenX = 0;
             psScreenY = 0;
@@ -688,7 +689,7 @@ public class SoldierFind
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
-        if (usAnimSurface == INVALID_ANIMATION_SURFACE)
+        if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
             psScreenX = 0;
             psScreenY = 0;

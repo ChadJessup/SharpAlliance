@@ -220,7 +220,7 @@ public class Quests
         {
             pSoldier = Globals.MercSlots[uiLoop];
 
-            if (pSoldier is not null && pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.bLife > 0 && pSoldier.bLife < pSoldier.bLifeMax && pSoldier.bAssignment != ASSIGNMENT_HOSPITAL)
+            if (pSoldier is not null && pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.bLife > 0 && pSoldier.bLife < pSoldier.bLifeMax && pSoldier.bAssignment != Assignments.ASSIGNMENT_HOSPITAL)
             {
                 if (PythSpacesAway(sGridNo, pSoldier.sGridNo) <= HOSPITAL_PATIENT_DISTANCE)
                 {
@@ -558,7 +558,7 @@ public class Quests
         TOWNS ubTown;
 
         ubTown = GetTownIdForSector(sSectorX, sSectorY);
-        if ((ubTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[ubTown].fStarted && Globals.gfTownUsesLoyalty[(int)ubTown])
+        if ((ubTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[ubTown].fStarted && Globals.gfTownUsesLoyalty[ubTown])
         {
             return (Globals.gTownLoyalty[ubTown].ubRating >= Globals.MIN_RATING_TO_TRAIN_TOWN);
         }

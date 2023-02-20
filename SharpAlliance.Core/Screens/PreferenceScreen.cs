@@ -318,7 +318,7 @@ namespace SharpAlliance.Core.Screens
 
                 if (!this.sound.SoundIsPlaying(uiLastPlayingSpeechID))
                 {
-                    //uiLastPlayingSpeechID = PlayJA2GapSample("BattleSnds\\m_cool.wav", RATE_11025, HIGHVOLUME, 1, MIDDLEPAN, NULL);
+                    //uiLastPlayingSpeechID = PlayJA2GapSample("BattleSnds\\m_cool.wav", RATE_11025, HIGHVOLUME, 1, MIDDLEPAN, null);
                 }
             }
             else

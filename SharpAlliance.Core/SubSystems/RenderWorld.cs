@@ -14,7 +14,7 @@ namespace SharpAlliance.Core.SubSystems
     {
         public int fSelectMode;
         
-        public TILES_DYNAMIC uiLayerUsedFlags = (TILES_DYNAMIC)0xffffffff;
+        public static TILES_DYNAMIC uiLayerUsedFlags = (TILES_DYNAMIC)0xffffffff;
 
         public void Dispose()
         {
@@ -24,7 +24,7 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        public void ResetSpecificLayerOptimizing(TILES_DYNAMIC uiRowFlag)
+        public static void ResetSpecificLayerOptimizing(TILES_DYNAMIC uiRowFlag)
         {
             uiLayerUsedFlags |= uiRowFlag;
         }

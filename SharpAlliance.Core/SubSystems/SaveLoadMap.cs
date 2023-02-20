@@ -17,13 +17,13 @@ public class SaveLoadMap
 
     public bool gfApplyChangesToTempFile { get; set; } = false;
 
-    public void AddRemoveObjectToMapTempFile(int uiMapIndex, int usIndex)
+    public static void AddRemoveObjectToMapTempFile(int uiMapIndex, int usIndex)
     {
         MODIFY_MAP Map;
         TileTypeDefines uiType;
         int? usSubIndex;
 
-        if (!gfApplyChangesToTempFile)
+        if (!Globals.gfApplyChangesToTempFile)
         {
             return;
         }

@@ -3248,7 +3248,7 @@ public struct TILE_ELEMENT
     public TileTypeDefines fType;
     HVOBJECT hTileSurface;
     public DB_STRUCTURE_REF? pDBStructureRef;
-    uint uiFlags;
+    public uint uiFlags;
     RelTileLoc? pTileLocData;
     ushort usRegionIndex;
     short sBuddyNum;
@@ -3265,7 +3265,7 @@ public struct TILE_ELEMENT
     byte ubFullTile;
 
     // For animated tiles
-    TILE_ANIMATION_DATA? pAnimData;
+    public TILE_ANIMATION_DATA? pAnimData;
 
     // Reserved for added room and 32-byte boundaries
     byte[] bReserved;// [3];

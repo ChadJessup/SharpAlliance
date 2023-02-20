@@ -1,79 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
-using Veldrid;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class MapScreenInterfaceMap
 {
-    private static class Constants
-    {
-        // size of squares on the map
-        public const int MAP_GRID_X = 21;
-        public const int MAP_GRID_Y = 18;
-
-        // the number of help region messages
-        public const int NUMBER_OF_MAPSCREEN_HELP_MESSAGES = 5;
-        public const int MAX_MAPSCREEN_FAST_HELP = 100;
-
-        // scroll bounds
-        public const int EAST_ZOOM_BOUND = 378;
-        public const int WEST_ZOOM_BOUND = 42;
-        public const int SOUTH_ZOOM_BOUND = 324;
-        public const int NORTH_ZOOM_BOUND = 36;
-
-        // map view region
-        public const int MAP_VIEW_START_X = 270;
-        public const int MAP_VIEW_START_Y = 10;
-        public const int MAP_VIEW_WIDTH = 336;
-        public const int MAP_VIEW_HEIGHT = 298;
-
-        // zoomed in grid sizes
-        public const int MAP_GRID_ZOOM_X = MAP_GRID_X * 2;
-        public const int MAP_GRID_ZOOM_Y = MAP_GRID_Y * 2;
-
-        // number of units wide
-        public const int WORLD_MAP_X = 18;
-
-        // dirty regions for the map
-        public const int DMAP_GRID_X = MAP_GRID_X + 1;
-        public const int DMAP_GRID_Y = MAP_GRID_Y + 1;
-        public const int DMAP_GRID_ZOOM_X = MAP_GRID_ZOOM_X + 1;
-        public const int DMAP_GRID_ZOOM_Y = MAP_GRID_ZOOM_Y + 1;
-
-        // Orta position on the map
-        public const int ORTA_SECTOR_X = 4;
-        public const int ORTA_SECTOR_Y = 11;
-
-        public const int TIXA_SECTOR_X = 9;
-        public const int TIXA_SECTOR_Y = 10;
-
-        // what are we showing?..teams/vehicles
-        // Show values
-        public const int SHOW_TEAMMATES = 1;
-        public const int SHOW_VEHICLES = 2;
-
-        // wait time until temp path is drawn, from placing cursor on a map grid
-        public const int MIN_WAIT_TIME_FOR_TEMP_PATH = 200;
-
-        // number of LINKED LISTS for sets of leave items (each slot holds an unlimited # of items)
-        public const int NUM_LEAVE_LIST_SLOTS = 20;
-    }
-
-    private FASTHELPREGION[] pFastHelpMapScreenList = new FASTHELPREGION[Constants.MAX_MAPSCREEN_FAST_HELP];
+    private FASTHELPREGION[] pFastHelpMapScreenList = new FASTHELPREGION[Globals.MAX_MAPSCREEN_FAST_HELP];
 
     // the leave item list
-    private List<MERC_LEAVE_ITEM?> gpLeaveList = new(Constants.NUM_LEAVE_LIST_SLOTS);
+    private List<MERC_LEAVE_ITEM?> gpLeaveList = new(Globals.NUM_LEAVE_LIST_SLOTS);
 
     // holds ids of mercs who left stuff behind
-    private int[] guiLeaveListOwnerProfileId = new int[Constants.NUM_LEAVE_LIST_SLOTS];
+    private int[] guiLeaveListOwnerProfileId = new int[Globals.NUM_LEAVE_LIST_SLOTS];
 
     // the palettes
     private ushort pMapLTRedPalette;
@@ -120,7 +62,7 @@ public class MapScreenInterfaceMap
     };
     
     // list of map sectors that player isn't allowed to even highlight
-    private bool[,] sBadSectorsList = new bool[Constants.WORLD_MAP_X, Constants.WORLD_MAP_X];
+    private bool[,] sBadSectorsList = new bool[Globals.WORLD_MAP_X, Globals.WORLD_MAP_X];
     private readonly IVideoManager video;
 
     public void SetUpBadSectorsList()
@@ -131,12 +73,12 @@ public class MapScreenInterfaceMap
         //memset(&sBadSectorsList, 0, sizeof(sBadSectorsList));
 
         // the border regions
-        for (bY = 0; bY < Constants.WORLD_MAP_X; bY++)
+        for (bY = 0; bY < Globals.WORLD_MAP_X; bY++)
         {
             this.sBadSectorsList[0, bY]
-                = this.sBadSectorsList[Constants.WORLD_MAP_X - 1, bY]
+                = this.sBadSectorsList[Globals.WORLD_MAP_X - 1, bY]
                 = this.sBadSectorsList[bY, 0]
-                = this.sBadSectorsList[bY, Constants.WORLD_MAP_X - 1]
+                = this.sBadSectorsList[bY, Globals.WORLD_MAP_X - 1]
                 = true;
         }
 
@@ -193,6 +135,238 @@ public class MapScreenInterfaceMap
         this.video.DeleteVideoSurfaceFromIndex(uiTempMap);
     }
 
+    public static bool DrawMap()
+    {
+        HVSURFACE hSrcVSurface;
+        int uiDestPitchBYTES;
+        int uiSrcPitchBYTES;
+        int  pDestBuf;
+        int pSrcBuf;
+        Rectangle clip;
+        int cnt, cnt2;
+        int iCounter = 0;
+
+        if (!iCurrentMapSectorZ)
+        {
+            pDestBuf = LockVideoSurface(Globals.guiSAVEBUFFER, out uiDestPitchBYTES);
+
+            CHECKF(GetVideoSurface(hSrcVSurface, Globals.guiBIGMAP));
+            pSrcBuf = LockVideoSurface(Globals.guiBIGMAP, out uiSrcPitchBYTES);
+
+            // clip blits to mapscreen region
+            //ClipBlitsToMapViewRegion( );
+
+            if (fZoomFlag)
+            {
+                // set up bounds
+                if (iZoomX < WEST_ZOOM_BOUND)
+                {
+                    iZoomX = WEST_ZOOM_BOUND;
+                }
+
+                if (iZoomX > EAST_ZOOM_BOUND)
+                {
+                    iZoomX = EAST_ZOOM_BOUND;
+                }
+
+                if (iZoomY < NORTH_ZOOM_BOUND + 1)
+                {
+                    iZoomY = NORTH_ZOOM_BOUND;
+                }
+
+                if (iZoomY > SOUTH_ZOOM_BOUND)
+                {
+                    iZoomY = SOUTH_ZOOM_BOUND;
+                }
+
+                clip.Left = iZoomX - 2;
+                clip.Right = clip.Left + Globals.MAP_VIEW_WIDTH + 2;
+                clip.Top = iZoomY - 3;
+                clip.Bottom = clip.Top + Globals.MAP_VIEW_HEIGHT - 1;
+
+                /*
+                clip.iLeft=clip.iLeft - 1;
+                clip.iRight=clip.iLeft + MapScreenRect.iRight - MapScreenRect.iLeft;
+                clip.iTop=iZoomY - 1;
+                clip.iBottom=clip.iTop + MapScreenRect.iBottom - MapScreenRect.iTop;
+                */
+
+                if (clip.Bottom > hSrcVSurface.usHeight)
+                {
+                    clip.Bottom = hSrcVSurface.usHeight;
+                }
+
+                if (clip.Right > hSrcVSurface.usWidth)
+                {
+                    clip.Right = hSrcVSurface.usWidth;
+                }
+
+                Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + Globals.MAP_GRID_X, Globals.MAP_VIEW_START_Y + Globals.MAP_GRID_Y - 2, out clip);
+            }
+            else
+            {
+                Blt8BPPDataTo16BPPBufferHalf(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + 1, Globals.MAP_VIEW_START_Y);
+            }
+
+            UnLockVideoSurface(Globals.guiBIGMAP);
+            UnLockVideoSurface(Globals.guiSAVEBUFFER);
+
+
+            // shade map sectors (must be done after Tixa/Orta/Mine icons have been blitted, but before icons!)		
+            for (cnt = 1; cnt < Globals.MAP_WORLD_X - 1; cnt++)
+            {
+                for (cnt2 = 1; cnt2 < Globals.MAP_WORLD_Y - 1; cnt2++)
+                {
+                    // LATE DESIGN CHANGE: darken sectors not yet visited, instead of those under known enemy control
+                    if (GetSectorFlagStatus(cnt, cnt2, iCurrentMapSectorZ, SF.ALREADY_VISITED) == false)
+                    //				if ( IsTheSectorPerceivedToBeUnderEnemyControl( cnt, cnt2, ( INT8 )( iCurrentMapSectorZ ) ) )
+                    {
+                        if (fShowAircraftFlag && !iCurrentMapSectorZ)
+                        {
+                            if (!StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
+                            {
+                                // sector not visited, not air controlled
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE_DK_GREEN);
+                            }
+                            else
+                            {
+                                // sector not visited, controlled and air not
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE_DK_RED);
+                            }
+                        }
+                        else
+                        {
+                            // not visited
+                            ShadeMapElem(cnt, cnt2, MAP_SHADE_BLACK);
+                        }
+                    }
+                    else
+                    {
+                        if (fShowAircraftFlag && !iCurrentMapSectorZ)
+                        {
+                            if (!StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
+                            {
+                                // sector visited and air controlled
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE_LT_GREEN);
+                            }
+                            else
+                            {
+                                // sector visited but not air controlled
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE_LT_RED);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            // UNFORTUNATELY, WE CAN'T SHADE THESE ICONS AS PART OF SHADING THE MAP, BECAUSE FOR AIRSPACE, THE SHADE FUNCTION
+            // DOESN'T MERELY SHADE THE EXISTING MAP SURFACE, BUT INSTEAD GRABS THE ORIGINAL GRAPHICS FROM BIGMAP, AND CHANGES
+            // THEIR PALETTE.  BLITTING ICONS PRIOR TO SHADING WOULD MEAN THEY DON'T SHOW UP IN AIRSPACE VIEW AT ALL.
+
+            // if Orta found
+            if (fFoundOrta)
+            {
+                DrawOrta();
+            }
+
+            // if Tixa found
+            if (fFoundTixa)
+            {
+                DrawTixa();
+            }
+
+            // draw SAM sites
+            ShowSAMSitesOnStrategicMap();
+
+            // draw mine icons
+            for (iCounter = 0; iCounter < (int)MINE.MAX_NUMBER_OF_MINES; iCounter++)
+            {
+                BlitMineIcon(Globals.gMineLocation[iCounter].sSectorX, Globals.gMineLocation[iCounter].sSectorY);
+            }
+
+
+            // if mine details filter is set
+            if (fShowMineFlag)
+            {
+                // show mine name/production text
+                for (iCounter = 0; iCounter < (int)MINE.MAX_NUMBER_OF_MINES; iCounter++)
+                {
+                    BlitMineText(Globals.gMineLocation[iCounter].sSectorX, Globals.gMineLocation[iCounter].sSectorY);
+                }
+            }
+
+            // draw towns names & loyalty ratings, and grey town limit borders
+            if (fShowTownFlag)
+            {
+                BlitTownGridMarkers();
+                ShowTownText();
+            }
+
+            // draw militia icons
+            if (fShowMilitia)
+            {
+                DrawTownMilitiaForcesOnMap();
+            }
+
+            if (fShowAircraftFlag && !Globals.gfInChangeArrivalSectorMode)
+            {
+                DrawBullseye();
+            }
+        }
+        else
+        {
+            HandleLowerLevelMapBlit();
+        }
+
+
+        // show mine outlines even when viewing underground sublevels - they indicate where the mine entrances are
+        if (fShowMineFlag)
+        {
+            // draw grey mine sector borders
+            BlitMineGridMarkers();
+        }
+
+
+        // do not show mercs/vehicles when airspace is ON
+        // commented out on a trial basis!
+        //	if( !fShowAircraftFlag )
+        {
+            if (fShowTeamFlag)
+            {
+                ShowTeamAndVehicles(Globals.SHOW_TEAMMATES | Globals.SHOW_VEHICLES);
+            }
+            else
+            {
+                HandleShowingOfEnemiesWithMilitiaOn();
+            }
+
+            /*
+                    if((fShowTeamFlag)&&(fShowVehicleFlag))
+                     ShowTeamAndVehicles(SHOW_TEAMMATES | SHOW_VEHICLES);
+                    else if(fShowTeamFlag)
+                        ShowTeamAndVehicles(SHOW_TEAMMATES);
+                    else if(fShowVehicleFlag)
+                        ShowTeamAndVehicles(SHOW_VEHICLES);
+                    else
+                    {
+                        HandleShowingOfEnemiesWithMilitiaOn( );
+                    }
+            */
+        }
+
+        if (fShowItemsFlag)
+        {
+            ShowItemsOnMap();
+        }
+
+        DisplayLevelString();
+
+        //RestoreClipRegionToFullScreen( );
+
+        return (true);
+    }
+
     public static void HandleMAPUILoseCursorFromOtherScreen()
     {
         // rerender map without cursors
@@ -209,7 +383,7 @@ public class MapScreenInterfaceMap
     public void SetUpMapScreenFastHelpText()
     {
         // now run through and display all the fast help text for the mapscreen functional regions
-        for (int iCounter = 0; iCounter < Constants.NUMBER_OF_MAPSCREEN_HELP_MESSAGES; iCounter++)
+        for (int iCounter = 0; iCounter < Globals.NUMBER_OF_MAPSCREEN_HELP_MESSAGES; iCounter++)
         {
             this.pFastHelpMapScreenList[iCounter].iX = this.pMapScreenFastHelpLocationList[iCounter].X;
             this.pFastHelpMapScreenList[iCounter].iY = this.pMapScreenFastHelpLocationList[iCounter].Y;
@@ -221,7 +395,7 @@ public class MapScreenInterfaceMap
     public void InitLeaveList()
     {
         // init leave list with nullS/zeroes
-        for (int iCounter = 0; iCounter < Constants.NUM_LEAVE_LIST_SLOTS; iCounter++)
+        for (int iCounter = 0; iCounter < Globals.NUM_LEAVE_LIST_SLOTS; iCounter++)
         {
             this.gpLeaveList[iCounter] = null;
             this.guiLeaveListOwnerProfileId[iCounter] = SoldierControl.NO_PROFILE;

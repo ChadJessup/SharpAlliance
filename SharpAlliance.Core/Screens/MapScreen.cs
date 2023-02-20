@@ -85,7 +85,7 @@ public class MapScreen : IScreen
         if (!Globals.fShowMapInventoryPool)
         {
             // draw map
-            DrawMap();
+            MapScreenInterfaceMap.DrawMap();
         }
 
 
@@ -94,15 +94,14 @@ public class MapScreen : IScreen
 
         if (Globals.ghAttributeBox != -1)
         {
-            ForceUpDateOfBox(Globals.ghAttributeBox);
+            PopUpBox.ForceUpDateOfBox(Globals.ghAttributeBox);
         }
 
         if (Globals.ghTownMineBox != -1)
         {
             // force update of town mine info boxes
-            ForceUpDateOfBox(Globals.ghTownMineBox);
+            PopUpBox.ForceUpDateOfBox(Globals.ghTownMineBox);
         }
-
 
         MapscreenMarkButtonsDirty();
 

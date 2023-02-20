@@ -147,7 +147,7 @@ namespace SharpAlliance.Core.Screens
 
 
                 RenderMercPopUpBoxFromIndex(this.messageBoxSubSystem.gMsgBox.iBoxId, this.messageBoxSubSystem.gMsgBox.sX, this.messageBoxSubSystem.gMsgBox.sY, FRAME_BUFFER);
-                //this.messageBoxSubSystem.gMsgBox.fRenderBox = FALSE;
+                //this.messageBoxSubSystem.gMsgBox.fRenderBox = false;
                 // ATE: Render each frame...
             }
 

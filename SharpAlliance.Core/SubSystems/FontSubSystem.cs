@@ -558,7 +558,7 @@ namespace SharpAlliance.Core.SubSystems
         //*****************************************************************************
         // CreateEnglishTransTable
         //
-        // Creates the English text->font map table.
+        // Creates the English text.font map table.
         //*****************************************************************************
         private FontTranslationTable CreateEnglishTransTable()
         {

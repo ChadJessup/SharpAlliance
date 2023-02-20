@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
@@ -99,7 +100,7 @@ public class HandleUI
         this.pathAI = pathAI;
         this.gGameSettings = gameSettings;
         this.renderWorld = renderWorld;
-        this.isometricUtils = isometricUtils;
+        IsometricUtils = isometricUtils;
         this.soldierFind = soldierFind;
         this.screens = screenManager;
 
@@ -362,7 +363,7 @@ public class HandleUI
             switch (Globals.gCurrentUIMode)
             {
                 case UI_MODE.ACTION_MODE:
-                    this.pathAI.ErasePath(true);
+                    PathAI.ErasePath(true);
                     break;
             }
         }
@@ -455,7 +456,7 @@ public class HandleUI
             if (Globals.gfUIShowExitEast)
             {
                 Globals.gfUIDisplayActionPoints = false;
-                this.pathAI.ErasePath(true);
+                PathAI.ErasePath(true);
 
                 if (OKForSectorExit(StrategicMove.EAST, 0, out uiTraverseTimeInMinutes))
                 {
@@ -482,7 +483,7 @@ public class HandleUI
             if (Globals.gfUIShowExitWest)
             {
                 Globals.gfUIDisplayActionPoints = false;
-                this.pathAI.ErasePath(true);
+                PathAI.ErasePath(true);
 
                 if (OKForSectorExit(StrategicMove.WEST, 0, out uiTraverseTimeInMinutes))
                 {
@@ -509,7 +510,7 @@ public class HandleUI
             if (Globals.gfUIShowExitNorth)
             {
                 Globals.gfUIDisplayActionPoints = false;
-                this.pathAI.ErasePath(true);
+                PathAI.ErasePath(true);
 
                 if (OKForSectorExit(StrategicMove.NORTH, 0, out uiTraverseTimeInMinutes))
                 {
@@ -537,7 +538,7 @@ public class HandleUI
             if (Globals.gfUIShowExitSouth)
             {
                 Globals.gfUIDisplayActionPoints = false;
-                this.pathAI.ErasePath(true);
+                PathAI.ErasePath(true);
 
                 if (OKForSectorExit(StrategicMove.SOUTH, 0, out uiTraverseTimeInMinutes))
                 {
@@ -626,7 +627,7 @@ public class HandleUI
                 byte ubRoomNum;
 
                 Globals.gfUIDisplayActionPoints = false;
-                this.pathAI.ErasePath(true);
+                PathAI.ErasePath(true);
 
                 if (GetMouseMapPos(out usMapPos))
                 {
@@ -707,7 +708,7 @@ public class HandleUI
 
         Globals.gfTacticalForceNoCursor = true;
 
-        ErasePath(true);
+        PathAI.ErasePath(true);
 
         ((Globals.GameScreens[ScreenName.GAME_SCREEN].HandleScreen))();
 
@@ -1003,7 +1004,7 @@ public class HandleUI
         // Remove any interactive tiles we could be over!
         BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
         Globals.gfPlotNewMovement = true;
-        this.pathAI.ErasePath(false);
+        PathAI.ErasePath(false);
     }
 
     ScreenName UIHandleChangeLevel(UI_EVENT pUIEvent)
@@ -1142,7 +1143,7 @@ public class HandleUI
                 if (Globals.gpWorldLevelData[usMapPos].sHeight != Globals.gpWorldLevelData[pSoldier.sGridNo].sHeight)
                 {
                     // ERASE PATH
-                    this.pathAI.ErasePath(true);
+                    PathAI.ErasePath(true);
 
                     Globals.guiNewUICursor = UICursorDefines.FLOATING_X_UICURSOR;
 
@@ -1187,7 +1188,7 @@ public class HandleUI
                 else if ((UIOKMoveDestination(pSoldier, usMapPos) != 1) && pIntNode == null)
                 {
                     // ERASE PATH
-                    this.pathAI.ErasePath(true);
+                    PathAI.ErasePath(true);
 
                     Globals.guiNewUICursor = UICursorDefines.CANNOT_MOVE_UICURSOR;
 
@@ -1453,7 +1454,7 @@ public class HandleUI
 
     ScreenName UIHandleMChangeToHandMode(UI_EVENT pUIEvent)
     {
-        this.pathAI.ErasePath(false);
+        PathAI.ErasePath(false);
 
         return (ScreenName.GAME_SCREEN);
     }
@@ -1564,7 +1565,7 @@ public class HandleUI
             }
 
             // ERASE PATH
-            this.pathAI.ErasePath(true);
+            PathAI.ErasePath(true);
 
             if (fAllMove > 0)
             {
@@ -2089,7 +2090,7 @@ public class HandleUI
         ITEM_HANDLE iHandleReturn;
         int sTargetGridNo;
         int bTargetLevel;
-        uint usItem;
+        Items usItem;
         LEVELNODE? pIntNode;
         STRUCTURE? pStructure;
         int sGridNo, sNewGridNo;
@@ -2551,7 +2552,7 @@ public class HandleUI
         bool fEnoughPoints = true;
         int sAPCost;
         byte ubItemCursor;
-        uint usInHand;
+        Items usInHand;
 
         if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
         {
@@ -2714,7 +2715,7 @@ public class HandleUI
     void RemoveTacticalCursor()
     {
         Globals.guiNewUICursor = UICursorDefines.NO_UICURSOR;
-        this.pathAI.ErasePath(true);
+        PathAI.ErasePath(true);
     }
 
     ScreenName UIHandlePOPUPMSG(UI_EVENT pUIEvent)
@@ -2878,7 +2879,7 @@ public class HandleUI
                     if (fMovementMode)
                     {
                         // ERASE PATH
-                        this.pathAI.ErasePath(true);
+                        PathAI.ErasePath(true);
 
                         // Show cursor with highlight on selected merc
                         Globals.guiNewUICursor = UICursorDefines.NO_UICURSOR;
@@ -2925,7 +2926,7 @@ public class HandleUI
                     if (fMovementMode)
                     {
                         // ERASE PATH
-                        this.pathAI.ErasePath(true);
+                        PathAI.ErasePath(true);
 
                         // Show cursor with highlight on selected merc
                         Globals.guiNewUICursor = UICursorDefines.NO_UICURSOR;
@@ -2965,7 +2966,7 @@ public class HandleUI
                         else
                         {
                             // ERASE PATH
-                            this.pathAI.ErasePath(true);
+                            PathAI.ErasePath(true);
 
                             // Show cursor with highlight on selected merc
                             Globals.guiNewUICursor = UICursorDefines.NO_UICURSOR;
@@ -3273,7 +3274,7 @@ public class HandleUI
                     Globals.gfResetUIMovementOptimization = false;
 
                     // ERASE PATH
-                    this.pathAI.ErasePath(true);
+                    PathAI.ErasePath(true);
 
                     // Try and get a path right away
                     DrawUIMovementPath(pSoldier, usMapPos, uiFlags);
@@ -3311,7 +3312,7 @@ public class HandleUI
                     || Globals.gfUINewStateForIntTile)
                 {
                     // ERASE PATH
-                    this.pathAI.ErasePath(true);
+                    PathAI.ErasePath(true);
 
                     // Reset counter
                     RESETCOUNTER(PATHFINDCOUNTER);
@@ -3413,7 +3414,7 @@ public class HandleUI
         {
             // THE MERC IS MOVING
             // We're moving, erase path, change cursor
-            this.pathAI.ErasePath(true);
+            PathAI.ErasePath(true);
 
             fSetCursor = true;
 
@@ -3452,7 +3453,7 @@ public class HandleUI
         sActionGridNo = usMapPos;
         sAPCost = 0;
 
-        this.pathAI.ErasePath(false);
+        PathAI.ErasePath(false);
 
         // IF WE ARE OVER AN INTERACTIVE TILE, GIVE GRIDNO OF POSITION
         if (uiFlags == MOVEUI_TARGET.INTTILES)
@@ -3632,7 +3633,7 @@ public class HandleUI
             {
                 int cnt;
                 int sSpot;
-                byte ubGuyThere;
+                int ubGuyThere;
 
                 for (cnt = 0; cnt < (int)WorldDirections.NUM_WORLD_DIRECTIONS; cnt++)
                 {
@@ -3646,7 +3647,7 @@ public class HandleUI
 
 
                     // Check for who is there...
-                    ubGuyThere = WhoIsThere2(sSpot, pSoldier.bLevel);
+                    ubGuyThere = WorldManager.WhoIsThere2(sSpot, pSoldier.bLevel);
 
                     if (ubGuyThere == Globals.MercPtrs[Globals.gusUIFullTargetID].ubID)
                     {
@@ -3810,7 +3811,7 @@ public class HandleUI
 
     bool UIMouseOnValidAttackLocation(SOLDIERTYPE? pSoldier)
     {
-        uint usInHand;
+        Items usInHand;
         bool fGuyHere = false;
         SOLDIERTYPE pTSoldier;
         byte ubItemCursor;
@@ -3957,7 +3958,7 @@ public class HandleUI
 
             if (pTSoldier.bBleeding == 0 && pTSoldier.bLife != pTSoldier.bLifeMax)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, gzLateLocalizedString[19], pTSoldier.name);
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.gzLateLocalizedString[19], pTSoldier.name);
                 return (false);
             }
 
@@ -4265,7 +4266,7 @@ public class HandleUI
 
     ScreenName UIHandleLCChangeToLook(UI_EVENT pUIEvent)
     {
-        this.pathAI.ErasePath(true);
+        PathAI.ErasePath(true);
 
         return (ScreenName.GAME_SCREEN);
     }
@@ -4470,7 +4471,7 @@ public class HandleUI
 
     ScreenName UIHandleTChangeToTalking(UI_EVENT pUIEvent)
     {
-        this.pathAI.ErasePath(true);
+        PathAI.ErasePath(true);
 
         return (ScreenName.GAME_SCREEN);
     }
@@ -4608,10 +4609,10 @@ public class HandleUI
         // Adjust based on interface level
 
         // Adjust for render height
-        sScreenY += gsRenderHeight;
+        sScreenY += Globals.gsRenderHeight;
 
         // Adjust y offset!
-        sScreenY += (WORLD_TILE_Y / 2);
+        sScreenY += (Globals.WORLD_TILE_Y / 2);
 
         (pScreenX) = sScreenX;
         (pScreenY) = sScreenY;
@@ -5020,7 +5021,7 @@ public class HandleUI
 
             //Globals.guiPendingOverrideEvent = LOCKOURTURN_UI_MODE;
 
-            this.pathAI.ErasePath(true);
+            PathAI.ErasePath(true);
 
             // Pause time!
             PauseGame();
@@ -5426,10 +5427,10 @@ public class HandleUI
 
     public void BeginDisplayTimedCursor(UICursorDefines uiCursorID, uint uiDelay)
     {
-        gfDisplayTimerCursor = true;
-        guiTimerCursorID = uiCursorID;
-        guiTimerLastUpdate = this.clock.GetJA2Clock();
-        guiTimerCursorDelay = uiDelay;
+        Globals.gfDisplayTimerCursor = true;
+        Globals.guiTimerCursorID = uiCursorID;
+        Globals.guiTimerLastUpdate = this.clock.GetJA2Clock();
+        Globals.guiTimerCursorDelay = uiDelay;
     }
 
 
@@ -5545,14 +5546,14 @@ public class HandleUI
 
         if (fOverEnemy)
         {
-            this.pathAI.ErasePath(true);
+            PathAI.ErasePath(true);
             fOverEnemy = false;
-            gfPlotNewMovement = true;
+            Globals.gfPlotNewMovement = true;
         }
 
         // If we are over an interactive struct, adjust gridno to this....
         pIntTile = ConditionalGetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure, false);
-        gpInvTileThatCausedMoveConfirm = pIntTile;
+        Globals.gpInvTileThatCausedMoveConfirm = pIntTile;
 
         if (pIntTile != null)
         {
@@ -5646,7 +5647,7 @@ public class HandleUI
             {
                 if (fOverPool)
                 {
-                    this.pathAI.ErasePath(true);
+                    PathAI.ErasePath(true);
                     fOverPool = false;
                     Globals.gfPlotNewMovement = true;
                 }
@@ -5750,12 +5751,12 @@ public class HandleUI
 
             case AnimationHeights.ANIM_CROUCH:
 
-                HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_STAND);
+                TurnBasedInput.HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_STAND);
                 break;
 
             case AnimationHeights.ANIM_PRONE:
 
-                HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_CROUCH);
+                TurnBasedInput.HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_CROUCH);
                 break;
         }
     }
@@ -5771,19 +5772,19 @@ public class HandleUI
         {
             case AnimationHeights.ANIM_STAND:
 
-                HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_CROUCH);
+                TurnBasedInput.HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_CROUCH);
                 break;
 
             case AnimationHeights.ANIM_CROUCH:
 
-                HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_PRONE);
+                TurnBasedInput.HandleStanceChangeFromUIKeys(AnimationHeights.ANIM_PRONE);
                 break;
 
             case AnimationHeights.ANIM_PRONE:
 
                 // Nowhere
                 // Try to climb
-                GetMercClimbDirection(pSoldier.ubID, fNearLowerLevel, fNearHeigherLevel);
+                GetMercClimbDirection(pSoldier.ubID, out fNearLowerLevel, out fNearHeigherLevel);
 
                 if (fNearLowerLevel)
                 {
@@ -5837,7 +5838,7 @@ public class HandleUI
             }
 
             SetRenderFlags(RENDER_FLAG_FULL);
-            this.pathAI.ErasePath(false);
+            PathAI.ErasePath(false);
 
             sOldHeight = sHeight;
         }
@@ -5915,7 +5916,7 @@ public class HandleUI
         int sDistance = 0, sSpot, sIntSpot;
         WorldDirections[] sDirs = { WorldDirections.NORTH, WorldDirections.EAST, WorldDirections.SOUTH, WorldDirections.WEST };
         int cnt;
-        byte ubGuyThere;
+        int ubGuyThere;
         int ubMovementCost;
         int iDoorGridNo;
 
@@ -5951,7 +5952,7 @@ public class HandleUI
             sFourGrids[cnt] = sSpot = IsometricUtils.NewGridNo(sIntSpot, IsometricUtils.DirectionInc((int)sDirs[cnt]));
 
             // Is the soldier we're looking at here?
-            ubGuyThere = WhoIsThere2(sSpot, pSoldier.bLevel);
+            ubGuyThere = WorldManager.WhoIsThere2(sSpot, pSoldier.bLevel);
 
             // Alright folks, here we are!
             if (ubGuyThere == pSoldier.ubID)
@@ -5965,7 +5966,7 @@ public class HandleUI
                         // OK, NOW check if there is a guy in between us
                         // 
                         // 
-                        ubGuyThere = WhoIsThere2(sIntSpot, pSoldier.bLevel);
+                        ubGuyThere = WorldManager.WhoIsThere2(sIntSpot, pSoldier.bLevel);
 
                         // Is there a guy and is he prone?
                         if (ubGuyThere != Globals.NOBODY && ubGuyThere != pSoldier.ubID && Globals.gAnimControl[Globals.MercPtrs[ubGuyThere].usAnimState].ubHeight == AnimationHeights.ANIM_PRONE)

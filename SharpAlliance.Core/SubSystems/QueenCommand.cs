@@ -5,12 +5,12 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class QueenCommand
 {
-    public static int NumEnemiesInAnySector(int sSectorX, int sSectorY, int sSectorZ)
+    public static int NumEnemiesInAnySector(int sSectorX, MAP_ROW sSectorY, int sSectorZ)
     {
         int ubNumEnemies = 0;
 
         Debug.Assert(sSectorX >= 1 && sSectorX <= 16);
-        Debug.Assert(sSectorY >= 1 && sSectorY <= 16);
+        Debug.Assert(sSectorY >= (MAP_ROW)1 && sSectorY <= (MAP_ROW)16);
         Debug.Assert(sSectorZ >= 0 && sSectorZ <= 3);
 
         if (sSectorZ > 0)
@@ -28,12 +28,12 @@ public class QueenCommand
             GROUP? pGroup;
 
             //Count stationary enemies
-            pSector = Globals.SectorInfo[SECTOR(sSectorX, sSectorY)];
+            pSector = Globals.SectorInfo[SECTORINFO.SECTOR(sSectorX, sSectorY)];
             ubNumEnemies = (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);
 
             //Count mobile enemies
             pGroup = Globals.gpGroupList;
-            while (pGroup)
+            while (pGroup is not null)
             {
                 if (!pGroup.fPlayer && !pGroup.fVehicle && pGroup.ubSectorX == sSectorX && pGroup.ubSectorY == sSectorY)
                 {

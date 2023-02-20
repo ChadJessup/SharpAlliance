@@ -109,7 +109,7 @@ namespace SharpAlliance.Core.Managers
                 }
 
                 this.gfGamePaused = false;
-                // fMapScreenBottomDirty = TRUE;
+                // fMapScreenBottomDirty = true;
             }
         }
 

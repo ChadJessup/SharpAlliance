@@ -28,9 +28,7 @@ public class WorldManager
         this.worldStructures = worldStructures;
     }
 
-    public int guiLevelNodes { get; set; } = 0;
-
-    public bool RemoveAllOnRoofsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
+    public static bool RemoveAllOnRoofsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
     {
         LEVELNODE? pOnRoof = null;
         LEVELNODE? pOldOnRoof = null;
@@ -66,7 +64,7 @@ public class WorldManager
     // First for object layer
     // #################################################################
 
-    public LEVELNODE? AddObjectToTail(int iMapIndex, int usIndex)
+    public static LEVELNODE? AddObjectToTail(int iMapIndex, int usIndex)
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pNextObject = null;
@@ -113,7 +111,7 @@ public class WorldManager
 
         //CheckForAndAddTileCacheStructInfo( pNextObject, (INT16)iMapIndex, usIndex );
 
-        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.OBJECTS);
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.OBJECTS);
         return (pNextObject);
 
     }
@@ -121,7 +119,7 @@ public class WorldManager
     // OnRoof layer
     // #################################################################
 
-    public LEVELNODE? AddOnRoofToTail(int iMapIndex, int usIndex)
+    public static LEVELNODE? AddOnRoofToTail(int iMapIndex, int usIndex)
     {
         LEVELNODE? pOnRoof = null;
         LEVELNODE? pNextOnRoof = null;
@@ -140,10 +138,10 @@ public class WorldManager
             {
                 if (Globals.gTileDatabase[usIndex].pDBStructureRef != null)
                 {
-                    if (this.worldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pOnRoof) == false)
+                    if (WorldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pOnRoof) == false)
                     {
                         // MemFree(pOnRoof);
-                        guiLevelNodes--;
+                        Globals.guiLevelNodes--;
                         return (null);
                     }
                 }
@@ -152,7 +150,7 @@ public class WorldManager
 
             Globals.gpWorldLevelData[iMapIndex].pOnRoofHead = pOnRoof;
 
-            this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
+            RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
             return (pOnRoof);
 
         }
@@ -172,10 +170,10 @@ public class WorldManager
                     {
                         if (Globals.gTileDatabase[usIndex].pDBStructureRef != null)
                         {
-                            if (this.worldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pNextOnRoof) == false)
+                            if (WorldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pNextOnRoof) == false)
                             {
                                 // MemFree(pNextOnRoof);
-                                guiLevelNodes--;
+                                Globals.guiLevelNodes--;
                                 return (null);
                             }
                         }
@@ -194,7 +192,7 @@ public class WorldManager
 
         }
 
-        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
         return (pNextOnRoof);
     }
 
@@ -231,7 +229,7 @@ public class WorldManager
         return fRetVal;
     }
 
-    public bool RemoveOnRoof(int iMapIndex, int usIndex)
+    public static bool RemoveOnRoof(int iMapIndex, int usIndex)
     {
         LEVELNODE? pOnRoof = null;
         LEVELNODE? pOldOnRoof = null;
@@ -258,7 +256,7 @@ public class WorldManager
 
                 // REMOVE ONROOF!
                 pOnRoof = null;
-                guiLevelNodes--;
+                Globals.guiLevelNodes--;
 
                 return (true);
             }
@@ -273,7 +271,7 @@ public class WorldManager
         return (false);
     }
 
-    public bool RemoveAllObjectsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
+    public static bool RemoveAllObjectsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pOldObject = null;
@@ -308,7 +306,7 @@ public class WorldManager
         return fRetVal;
     }
 
-    public bool RemoveObject(int iMapIndex, int usIndex)
+    public static bool RemoveObject(int iMapIndex, int usIndex)
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pOldObject = null;
@@ -333,14 +331,14 @@ public class WorldManager
                     pOldObject.pNext = pObject.pNext;
                 }
 
-                this.tileCache.CheckForAndDeleteTileCacheStructInfo(pObject, usIndex);
+                TileCache.CheckForAndDeleteTileCacheStructInfo(pObject, usIndex);
 
                 // Delete memory assosiated with item
                 // MemFree(pObject);
-                guiLevelNodes--;
+                Globals.guiLevelNodes--;
 
                 //Add the index to the maps temp file so we can remove it after reloading the map
-                this.saveLoadMap.AddRemoveObjectToMapTempFile(iMapIndex, usIndex);
+                SaveLoadMap.AddRemoveObjectToMapTempFile(iMapIndex, usIndex);
 
                 return true;
             }
@@ -353,10 +351,46 @@ public class WorldManager
         return (false);
     }
 
-    public bool RemoveTopmost(int iMapIndex, TileDefines usIndex)
+    public static int WhoIsThere2(int sGridNo, int bLevel)
+    {
+        STRUCTURE? pStructure;
+
+        if (!GridNoOnVisibleWorldTile(sGridNo))
+        {
+            return (Globals.NOBODY);
+        }
+
+        if (Globals.gpWorldLevelData[sGridNo].pStructureHead != null)
+        {
+
+            pStructure = Globals.gpWorldLevelData[sGridNo].pStructureHead;
+
+            while (pStructure is not null)
+            {
+                // person must either have their pSoldier.sGridNo here or be non-passable
+                if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PERSON))
+                    && (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
+                    || Globals.MercPtrs[pStructure.usStructureID].sGridNo == sGridNo))
+                {
+                    if ((bLevel == 0 && pStructure.sCubeOffset == 0) || (bLevel > 0 && pStructure.sCubeOffset > 0))
+                    {
+                        // found a person, on the right level!
+                        // structure ID and merc ID are identical for merc structures
+                        return (pStructure.usStructureID);
+                    }
+                }
+
+                pStructure = pStructure.pNext;
+            }
+        }
+
+        return (Globals.NOBODY);
+    }
+
+    public static bool RemoveTopmost(int iMapIndex, TileDefines usIndex)
         => RemoveTopmost(iMapIndex, (ushort)usIndex);
 
-    public bool RemoveTopmost(int iMapIndex, ushort usIndex)
+    public static bool RemoveTopmost(int iMapIndex, ushort usIndex)
     {
         LEVELNODE? pTopmost = null;
         LEVELNODE? pOldTopmost = null;
@@ -383,7 +417,7 @@ public class WorldManager
 
                 // Delete memory assosiated with item
                 //MemFree(pTopmost);
-                guiLevelNodes--;
+                Globals.guiLevelNodes--;
 
                 return (true);
             }
@@ -416,7 +450,7 @@ public class WorldManager
         // Set head
         Globals.gpWorldLevelData[iMapIndex].pTopmostHead = pNextTopmost;
 
-        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
 
         return (true);
     }
@@ -435,7 +469,7 @@ public class WorldManager
         pTopmost.sRelativeX = sRelativeX;
         pTopmost.sRelativeY = sRelativeY;
 
-        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
 
         ppNewNode = pTopmost;
 
@@ -491,7 +525,7 @@ public class WorldManager
             }
         }
 
-        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
         return (pNextTopmost);
     }
 
@@ -511,10 +545,10 @@ public class WorldManager
         {
             if (Globals.gTileDatabase[(int)usIndex].pDBStructureRef != null)
             {
-                if (this.worldStructures.AddStructureToWorld((short)iMapIndex, 1, Globals.gTileDatabase[(int)usIndex].pDBStructureRef, pNextOnRoof) == false)
+                if (WorldStructures.AddStructureToWorld((short)iMapIndex, 1, Globals.gTileDatabase[(int)usIndex].pDBStructureRef, pNextOnRoof) == false)
                 {
                     // MemFree(pNextOnRoof);
-                    guiLevelNodes--;
+                    Globals.guiLevelNodes--;
                     return (false);
                 }
             }
@@ -527,11 +561,11 @@ public class WorldManager
         // Set head
         Globals.gpWorldLevelData[iMapIndex].pOnRoofHead = pNextOnRoof;
 
-        this.renderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
         return true;
     }
 
-    public bool CreateLevelNode(out LEVELNODE ppNode)
+    public static bool CreateLevelNode(out LEVELNODE ppNode)
     {
         ppNode = new LEVELNODE
         {
@@ -543,7 +577,7 @@ public class WorldManager
             sRelativeY = 0,
         };
 
-        guiLevelNodes++;
+        Globals.guiLevelNodes++;
 
         return (true);
     }

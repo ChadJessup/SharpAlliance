@@ -348,7 +348,7 @@ namespace SharpAlliance.Core.Screens
 
             //Get the main background screen graphic and blt it
             HVOBJECT background = this.video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
-            //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT_SRCTRANSPARENCY, NULL);
+            //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT_SRCTRANSPARENCY, null);
             this.video.BltVideoObject(background, 0, 0, 0, 0);
             //Shade the background
             // this.video.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358

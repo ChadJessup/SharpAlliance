@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -15,7 +14,6 @@ public class WorldStructures
 {
     private readonly ILogger<WorldStructures> logger;
     private readonly World world;
-    private readonly IsometricUtils isometricUtils;
 
     public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
     public const int IGNORE_PEOPLE_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 101);
@@ -25,12 +23,10 @@ public class WorldStructures
 
     public WorldStructures(
         ILogger<WorldStructures> logger,
-        World world,
-        IsometricUtils isometricUtils)
+        World world)
     {
         this.logger = logger;
         this.world = world;
-        this.isometricUtils = isometricUtils;
     }
 
     public STRUCTURE? FindStructure(int sGridNo, STRUCTUREFLAGS fFlags)
@@ -51,7 +47,7 @@ public class WorldStructures
         return (null);
     }
 
-    public bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelN)
+    public static bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelN)
     {
         STRUCTURE? pStructure;
 
@@ -65,7 +61,7 @@ public class WorldStructures
         return true;
     }
 
-    private STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelNode)
+    private static STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelNode)
     { // Adds a complete structure to the world at a location plus all other locations covered by the structure
         int sGridNo;
         List<STRUCTURE> ppStructure = new();
@@ -181,13 +177,13 @@ public class WorldStructures
         }
         else
         {
-            gusNextAvailableStructureID++;
-            if (gusNextAvailableStructureID == 0)
+            Globals.gusNextAvailableStructureID++;
+            if (Globals.gusNextAvailableStructureID == 0)
             {
                 // skip past the #s for soldiers' structures and the invalid structure #
-                gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
+                Globals.gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
             }
-            usStructureID = gusNextAvailableStructureID;
+            usStructureID = Globals.gusNextAvailableStructureID;
         }
         // now add all these to the world!
         for (ubLoop = (int)STRUCTUREFLAGS.BASE_TILE; ubLoop < pDBStructure.ubNumberOfTiles; ubLoop++)
@@ -232,7 +228,7 @@ public class WorldStructures
         return (pBaseStructure);
     }
 
-    public bool AddStructureToTile(MAP_ELEMENT? pMapElement, STRUCTURE? pStructure, int usStructureID)
+    public static bool AddStructureToTile(MAP_ELEMENT? pMapElement, STRUCTURE? pStructure, int usStructureID)
     {
         // adds a STRUCTURE to a MAP_ELEMENT (adds part of a structure to a location on the map)
         STRUCTURE? pStructureTail;
@@ -264,7 +260,7 @@ public class WorldStructures
         return (true);
     }
 
-    public STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF? pDBStructureRef, int ubTileNum)
+    public static STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF? pDBStructureRef, int ubTileNum)
     {
         // Creates a STRUCTURE struct for one tile of a structure
         STRUCTURE? pStructure;
@@ -325,7 +321,7 @@ public class WorldStructures
         return (pStructure);
     }
 
-    public bool OkayToAddStructureToWorld(
+    public static bool OkayToAddStructureToWorld(
         int sBaseGridNo,
         int bLevel,
         DB_STRUCTURE_REF? pDBStructureRef,
@@ -339,7 +335,7 @@ public class WorldStructures
             sExclusionID == IGNORE_PEOPLE_STRUCTURE_ID));
     }
 
-    public bool OkayToAddStructureToTile(
+    public static bool OkayToAddStructureToTile(
         int sBaseGridNo,
         int sCubeOffset,
         DB_STRUCTURE_REF? pDBStructureRef,
@@ -451,15 +447,15 @@ public class WorldStructures
                                 {
                                     case WallOrientation.OUTSIDE_TOP_LEFT:
                                     case WallOrientation.INSIDE_TOP_LEFT:
-                                        sOtherGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((bLoop + 2)));
+                                        sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((bLoop + 2)));
                                         break;
                                     case WallOrientation.OUTSIDE_TOP_RIGHT:
                                     case WallOrientation.INSIDE_TOP_RIGHT:
-                                        sOtherGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc(bLoop));
+                                        sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bLoop));
                                         break;
                                     default:
                                         // @%?@#%?@%
-                                        sOtherGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((int)WorldDirections.SOUTHEAST));
+                                        sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)WorldDirections.SOUTHEAST));
                                         break;
                                 }
                                 for (bLoop2 = 0; bLoop2 < pDBStructure.ubNumberOfTiles; bLoop2++)
@@ -491,15 +487,15 @@ public class WorldStructures
                             {
                                 case WallOrientation.OUTSIDE_TOP_LEFT:
                                 case WallOrientation.INSIDE_TOP_LEFT:
-                                    sOtherGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((bLoop + 2)));
+                                    sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((bLoop + 2)));
                                     break;
                                 case WallOrientation.OUTSIDE_TOP_RIGHT:
                                 case WallOrientation.INSIDE_TOP_RIGHT:
-                                    sOtherGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc(bLoop));
+                                    sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bLoop));
                                     break;
                                 default:
                                     // @%?@#%?@%
-                                    sOtherGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((int)WorldDirections.SOUTHEAST));
+                                    sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)WorldDirections.SOUTHEAST));
                                     break;
                             }
                             for (ubTileIndex = 0; ubTileIndex < pDBStructure.ubNumberOfTiles; ubTileIndex++)
@@ -580,7 +576,7 @@ public class WorldStructures
         return (true);
     }
 
-    private bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID, bool fIgnorePeople)
+    private static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID, bool fIgnorePeople)
     {
         int ubLoop;
         int sCubeOffset;
@@ -625,7 +621,7 @@ public class WorldStructures
         return (true);
     }
 
-    public bool DeleteStructureFromWorld(STRUCTURE? pStructure)
+    public static bool DeleteStructureFromWorld(STRUCTURE? pStructure)
     {
         if (pStructure is null)
         {
@@ -655,7 +651,7 @@ public class WorldStructures
 
         usStructureID = pBaseStructure.usStructureID;
         fMultiStructure = ((pBaseStructure.fFlags & STRUCTUREFLAGS.MULTI) != 0);
-        fRecompileMPs = ((this.world.gsRecompileAreaLeft != 0) && !(pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) != false));
+        fRecompileMPs = ((Globals.gsRecompileAreaLeft != 0) && !(pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) != false));
 
         if (fRecompileMPs)
         {
@@ -686,16 +682,16 @@ public class WorldStructures
             {
                 if (fRecompileMPs)
                 {
-                    this.world.AddTileToRecompileArea(sGridNo);
+                    World.AddTileToRecompileArea(sGridNo);
                     if (fRecompileExtraRadius)
                     {
                         // add adjacent tiles too
                         for (ubLoop2 = 0; ubLoop2 < (int)WorldDirections.NUM_WORLD_DIRECTIONS; ubLoop2++)
                         {
-                            sCheckGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc(ubLoop2));
+                            sCheckGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(ubLoop2));
                             if (sCheckGridNo != sGridNo)
                             {
-                                this.world.AddTileToRecompileArea(sCheckGridNo);
+                                World.AddTileToRecompileArea(sCheckGridNo);
                             }
                         }
                     }
@@ -706,7 +702,7 @@ public class WorldStructures
         return (true);
     }
 
-    public void DeleteStructureFromTile(MAP_ELEMENT pMapElement, STRUCTURE pStructure)
+    public static void DeleteStructureFromTile(MAP_ELEMENT pMapElement, STRUCTURE? pStructure)
     {
         // removes a STRUCTURE element at a particular location from the world
         // put location pointer in tile
@@ -748,7 +744,7 @@ public class WorldStructures
         pStructure = null;
     }
 
-    public STRUCTURE? FindBaseStructure(STRUCTURE? pStructure)
+    public static STRUCTURE? FindBaseStructure(STRUCTURE? pStructure)
     {
         // finds the base structure for any structure
         if (pStructure is null)
@@ -764,7 +760,7 @@ public class WorldStructures
         return (FindStructureByID(pStructure.sBaseGridNo, pStructure.usStructureID));
     }
 
-    public STRUCTURE? FindStructureByID(int sGridNo, int usStructureID)
+    public static STRUCTURE? FindStructureByID(int sGridNo, int usStructureID)
     {
         // finds a structure that matches any of the given flags
         STRUCTURE? pCurrent;

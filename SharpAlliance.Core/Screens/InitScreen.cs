@@ -131,7 +131,7 @@ namespace SharpAlliance.Core.Screens
                 //     return ScreenName.ERROR_SCREEN;
                 // }
 
-                //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, NULL );
+                //BltVideoSurfaceToVideoSurface( ghFrameBuffer, hVSurface, 0, 0, 0, VS_BLT_FAST, null );
                 ubCurrentScreen = 1;
 
                 // Init screen

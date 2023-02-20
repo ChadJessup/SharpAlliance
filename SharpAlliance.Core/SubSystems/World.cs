@@ -17,22 +17,13 @@ namespace SharpAlliance.Core.SubSystems
         public const int WORLD_MAX = 25600;
 
         private readonly ILogger<World> logger;
-        private readonly IsometricUtils isometricUtils;
 
-        public World(
-            ILogger<World> logger,
-            IsometricUtils isometricUtils)
+        public World(ILogger<World> logger)
         {
             this.logger = logger;
-            this.isometricUtils = isometricUtils;
         }
 
-        public int gsRecompileAreaTop { get; set; } = 0;
-        public int gsRecompileAreaLeft { get; set; } = 0;
-        public int gsRecompileAreaRight { get; set; } = 0;
-        public int gsRecompileAreaBottom { get; set; } = 0;
-
-        public void AddTileToRecompileArea(int sGridNo)
+        public static void AddTileToRecompileArea(int sGridNo)
         {
             int sCheckGridNo;
             int sCheckX;
@@ -47,7 +38,7 @@ namespace SharpAlliance.Core.SubSystems
             Globals.gpWorldLevelData[sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT_RECALCULATE_MOVEMENT;
 
             // check Top/Left of recompile region
-            sCheckGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((int)WorldDirections.NORTHWEST));
+            sCheckGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)WorldDirections.NORTHWEST));
             sCheckX = sCheckGridNo % WORLD_COLS;
             sCheckY = sCheckGridNo / WORLD_COLS;
             if (sCheckX < gsRecompileAreaLeft)
@@ -60,7 +51,7 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // check Bottom/Right
-            sCheckGridNo = this.isometricUtils.NewGridNo(sGridNo, this.isometricUtils.DirectionInc((int)WorldDirections.SOUTHEAST));
+            sCheckGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)WorldDirections.SOUTHEAST));
             sCheckX = sCheckGridNo % WORLD_COLS;
             sCheckY = sCheckGridNo / WORLD_COLS;
             if (sCheckX > gsRecompileAreaRight)

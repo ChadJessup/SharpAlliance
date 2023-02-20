@@ -51,7 +51,7 @@ public class SECTORINFO
                             //the more people go near it.  A travel rating of 0 means there are never people
                             //around.  This value is used for determining how often items would "vanish" from
                             //a sector (nice theory, except it isn't being used that way.  Stealing is only in towns.  ARM)
-    sbyte[] ubNumberOfCivsAtLevel = new sbyte[MAX_MILITIA_LEVELS]; // town militia per experience class, 0/1/2 is GREEN/REGULAR/ELITE
+    sbyte[] ubNumberOfCivsAtLevel = new sbyte[(int)MilitiaExperience.MAX_MILITIA_LEVELS]; // town militia per experience class, 0/1/2 is GREEN/REGULAR/ELITE
     ushort usUNUSEDMilitiaLevels;               // unused (ARM)
     sbyte ubUNUSEDNumberOfJoeBlowCivilians;     // unused (ARM)
     uint uiTimeCurrentSectorWasLastLoaded;        //Specifies the last time the player was in the sector

@@ -369,7 +369,7 @@ public class Facts
 
             case FACT.LOYALTY_OKAY:
                 bTown = Globals.gMercProfiles[ubProfileID].bTown;
-                if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted && Globals.gfTownUsesLoyalty[(int)bTown])
+                if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted && Globals.gfTownUsesLoyalty[bTown])
                 {
                     gubFact[usFact] = ((Globals.gTownLoyalty[bTown].ubRating >= Globals.LOYALTY_LOW_THRESHOLD) && (Globals.gTownLoyalty[bTown].ubRating < Globals.LOYALTY_OK_THRESHOLD));
                 }
@@ -381,7 +381,7 @@ public class Facts
 
             case FACT.LOYALTY_LOW:
                 bTown = Globals.gMercProfiles[ubProfileID].bTown;
-                if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted && Globals.gfTownUsesLoyalty[(int)bTown])
+                if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted && Globals.gfTownUsesLoyalty[bTown])
                 {
                     // if Skyrider, ignore low loyalty until he has monologues, and wait at least a day since the latest monologue to avoid a hot/cold attitude
                     if ((ubProfileID == NPCID.SKYRIDER)
@@ -403,7 +403,8 @@ public class Facts
 
             case FACT.LOYALTY_HIGH:
                 bTown = Globals.gMercProfiles[ubProfileID].bTown;
-                if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted && Globals.gfTownUsesLoyalty[(int)bTown])
+                if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted
+                    && Globals.gfTownUsesLoyalty[bTown])
                 {
                     gubFact[usFact] = (Globals.gTownLoyalty[Globals.gMercProfiles[ubProfileID].bTown].ubRating >= Globals.LOYALTY_HIGH_THRESHOLD);
                 }
@@ -458,7 +459,8 @@ public class Facts
                 break;
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:
-                gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED) && (GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
+                gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED)
+                    && (GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
                 break;
 
             case FACT.NOTHING_REPAIRED_YET:
@@ -470,23 +472,32 @@ public class Facts
                 break;
 
             case FACT.TOP_AND_BOTTOM_LEVELS_CLEARED:
-                gubFact[usFact] = (gubFact[FACT.TOP_LEVEL_CLEARED] && gubFact[FACT.BOTTOM_LEVEL_CLEARED]);
+                gubFact[usFact] = (gubFact[FACT.TOP_LEVEL_CLEARED]
+                    & gubFact[FACT.BOTTOM_LEVEL_CLEARED]);
                 break;
 
             case FACT.FIRST_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 1 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 0));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 1
+                    || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
+                    & Quests.CountBartenders() == 0));
                 break;
 
             case FACT.SECOND_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 2 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 1));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 2
+                    || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
+                    && Quests.CountBartenders() == 1));
                 break;
 
             case FACT.THIRD_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 3 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 2));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 3
+                    || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
+                    && Quests.CountBartenders() == 2));
                 break;
 
             case FACT.FOURTH_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 4 || (Globals.gMercProfiles[ubProfileID].bNPCData == 0 && Quests.CountBartenders() == 3));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 4
+                    || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
+                    && Quests.CountBartenders() == 3));
                 break;
 
             case FACT.NPC_NOT_UNDER_FIRE:

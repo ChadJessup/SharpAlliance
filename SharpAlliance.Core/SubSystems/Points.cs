@@ -1,4 +1,5 @@
 ﻿using System;
+using SharpAlliance.Core.Managers;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -143,7 +144,7 @@ public class Points
             }
             else if (Item[pObj.usItem].usItemClass == IC.LAUNCHER || pObj.usItem == Items.TANK_CANNON)
             {
-                int bAttachPos;
+                Items bAttachPos;
 
                 bAttachPos = FindAttachmentByClass(pObj, IC.GRENADE);
                 if (bAttachPos == Globals.ITEM_NOT_FOUND)
@@ -217,7 +218,7 @@ public class Points
                     bool fGotAdjacent = false;
                     SOLDIERTYPE? pTarget;
 
-                    ubGuyThere = WhoIsThere2(sGridNo, pSoldier.bLevel);
+                    ubGuyThere = WorldManager.WhoIsThere2(sGridNo, pSoldier.bLevel);
 
                     if (ubGuyThere != Globals.NOBODY)
                     {

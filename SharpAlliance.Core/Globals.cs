@@ -36,11 +36,23 @@ public partial class Globals
     public const int CELL_X_SIZE = 10;
     public const int CELL_Y_SIZE = 10;
 
+    // what are we showing?..teams/vehicles
+    // Show values
+    public const int SHOW_TEAMMATES = 1;
+    public const int SHOW_VEHICLES = 2;
+
     public const int WORLD_BASE_HEIGHT = 0;
     public const int WORLD_CLIFF_HEIGHT = 80;
 
     public const int NO_ROOM = 0;
     public const int MAX_ROOMS = 250;
+
+    public static int guiLevelNodes { get; set; } = 0;
+
+    public static int gsRecompileAreaTop { get; set; } = 0;
+    public static int gsRecompileAreaLeft { get; set; } = 0;
+    public static int gsRecompileAreaRight { get; set; } = 0;
+    public static int gsRecompileAreaBottom { get; set; } = 0;
 
     // Room Information
     public static int[] gubWorldRoomInfo = new int[WORLD_MAX];
@@ -64,10 +76,13 @@ public partial class Globals
 
     public static int guiGameCycleCounter;
 
+    public const int MAX_POPUP_BOX_COUNT = 20;
+    public const int MAX_POPUP_BOX_STRING_COUNT = 50;		// worst case = 45: move menu with 20 soldiers, each on different squad + overhead
+
     // VIDEO OVERLAYS 
     public int giFPSOverlay;
     public int giCounterPeriodOverlay;
-    public static bool gfProgramIsRunning { get; set; } // Turn this to FALSE to exit program
+    public static bool gfProgramIsRunning { get; set; } // Turn this to false to exit program
 
     // World Data
     public static List<MAP_ELEMENT> gpWorldLevelData { get; set; } = new();
@@ -433,6 +448,71 @@ public partial class Globals
     public static int gusTargetDropPos;
     public static bool gfTargetDropPos = false;
 
+    public static POPUPBOX[] PopUpBoxList = new POPUPBOX[MAX_POPUP_BOX_COUNT];
+
+    // PopUpBox Flags
+    public const int POPUP_BOX_FLAG_CLIP_TEXT = 1;
+    public const int POPUP_BOX_FLAG_CENTER_TEXT = 2;
+    public const int POPUP_BOX_FLAG_RESIZE = 4;
+    public const int POPUP_BOX_FLAG_CAN_HIGHLIGHT_SHADED_LINES = 8;
+
+    // size of squares on the map
+    public const int MAP_GRID_X = 21;
+    public const int MAP_GRID_Y = 18;
+
+    // the number of help region messages
+    public const int NUMBER_OF_MAPSCREEN_HELP_MESSAGES = 5;
+    public const int MAX_MAPSCREEN_FAST_HELP = 100;
+
+    // scroll bounds
+    public const int EAST_ZOOM_BOUND = 378;
+    public const int WEST_ZOOM_BOUND = 42;
+    public const int SOUTH_ZOOM_BOUND = 324;
+    public const int NORTH_ZOOM_BOUND = 36;
+
+    // map view region
+    public const int MAP_VIEW_START_X = 270;
+    public const int MAP_VIEW_START_Y = 10;
+    public const int MAP_VIEW_WIDTH = 336;
+    public const int MAP_VIEW_HEIGHT = 298;
+
+    // zoomed in grid sizes
+    public const int MAP_GRID_ZOOM_X = MAP_GRID_X * 2;
+    public const int MAP_GRID_ZOOM_Y = MAP_GRID_Y * 2;
+
+    // number of units wide
+    public const int WORLD_MAP_X = 18;
+    // dirty regions for the map
+    public const int DMAP_GRID_X = MAP_GRID_X + 1;
+    public const int DMAP_GRID_Y = MAP_GRID_Y + 1;
+    public const int DMAP_GRID_ZOOM_X = MAP_GRID_ZOOM_X + 1;
+    public const int DMAP_GRID_ZOOM_Y = MAP_GRID_ZOOM_Y + 1;
+
+    // Orta position on the map
+    public const int ORTA_SECTOR_X = 4;
+    public const int ORTA_SECTOR_Y = 11;
+
+    public const int TIXA_SECTOR_X = 9;
+    public const int TIXA_SECTOR_Y = 10;
+    public const int INVALID_ANIMATION_SURFACE = 32000;
+
+    public int gubCheatLevel { get; internal set; }
+
+    // wait time until temp path is drawn, from placing cursor on a map grid
+    public const int MIN_WAIT_TIME_FOR_TEMP_PATH = 200;
+
+    // number of LINKED LISTS for sets of leave items (each slot holds an unlimited # of items)
+    public const int NUM_LEAVE_LIST_SLOTS = 20;
+    // this table holds mine values that never change and don't need to be saved
+    public static MINE_LOCATION_TYPE[] gMineLocation = new MINE_LOCATION_TYPE[(int)MINE.MAX_NUMBER_OF_MINES]
+    {
+        new(4, 4, TOWNS.SAN_MONA),
+        new(13, 4, TOWNS.DRASSEN ),
+        new(14, 9, TOWNS.ALMA),
+        new(8, 8, TOWNS.CAMBRIA ),
+        new(2, 2, TOWNS.CHITZENA),
+        new(3, 8, TOWNS.GRUMM),
+    };
 
     public static Dictionary<UICursorDefines, UICursor> gUICursors = new()
     {

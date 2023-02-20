@@ -30,7 +30,7 @@ public class TileCache
         return ValueTask.FromResult(true);
     }
 
-    public void CheckForAndDeleteTileCacheStructInfo(LEVELNODE? pNode, int usIndex)
+    public static void CheckForAndDeleteTileCacheStructInfo(LEVELNODE? pNode, int usIndex)
     {
         ArgumentNullException.ThrowIfNull(pNode);
 
@@ -42,24 +42,24 @@ public class TileCache
 
             if (pStructureFileRef != null)
             {
-                this.worldStructures.DeleteStructureFromWorld(pNode.pStructureData);
+                WorldStructures.DeleteStructureFromWorld(pNode.pStructureData);
             }
         }
     }
 
-    private STRUCTURE_FILE_REF? GetCachedTileStructureRef(int iIndex)
+    public static STRUCTURE_FILE_REF? GetCachedTileStructureRef(int iIndex)
     {
         if (iIndex == -1)
         {
             return null;
         }
 
-        if (gpTileCache[iIndex].sStructRefID == -1)
+        if (Globals.gpTileCache[iIndex].sStructRefID == -1)
         {
             return null;
         }
 
-        return (gpTileCacheStructInfo[gpTileCache[iIndex].sStructRefID].pStructureFileRef);
+        return (Globals.gpTileCacheStructInfo[Globals.gpTileCache[iIndex].sStructRefID].pStructureFileRef);
     }
 
     private STRUCTURE_FILE_REF? GetCachedTileStructureRefFromFilename(string cFilename)

@@ -269,9 +269,9 @@ namespace SharpAlliance.Core
             //            //    wprintf(zText, pMessageStrings[MSG_LOWDISKSPACE_WARNING], zSpaceOnDrive, zSizeNeeded);
             //            //
             //            //    if (guiPreviousOptionScreen == MAP_SCREEN)
-            //            //        DoMapMessageBox(MSG_BOX_BASIC_STYLE, zText, MAP_SCREEN, MSG_BOX_FLAG_OK, NULL);
+            //            //        DoMapMessageBox(MSG_BOX_BASIC_STYLE, zText, MAP_SCREEN, MSG_BOX_FLAG_OK, null);
             //            //    else
-            //            //        DoMessageBox(MSG_BOX_BASIC_STYLE, zText, GAME_SCREEN, MSG_BOX_FLAG_OK, NULL, NULL);
+            //            //        DoMessageBox(MSG_BOX_BASIC_STYLE, zText, GAME_SCREEN, MSG_BOX_FLAG_OK, null, null);
             //            //}
             //            //gubCheckForFreeSpaceOnHardDriveCount = DONT_CHECK_FOR_FREE_SPACE;
             //        }

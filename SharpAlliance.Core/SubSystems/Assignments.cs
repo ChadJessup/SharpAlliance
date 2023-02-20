@@ -37,7 +37,7 @@ public enum Assignments
     ASSIGNMENT_POW,
     ASSIGNMENT_HOSPITAL,
     ASSIGNMENT_EMPTY,
-    NO_ASSIGNMENT = 127, //used when no pSoldier->ubDesiredSquad
+    NO_ASSIGNMENT = 127, //used when no pSoldier.ubDesiredSquad
 };
 
 

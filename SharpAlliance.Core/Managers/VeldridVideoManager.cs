@@ -1452,7 +1452,7 @@ namespace SharpAlliance.Core.Managers
 #if false
 
 		// Erase mouse from old position
-		if (gMouseCursorBackground[ uiCurrentMouseBackbuffer ].fRestore == TRUE )
+		if (gMouseCursorBackground[ uiCurrentMouseBackbuffer ].fRestore == true )
 		{
 
 			do

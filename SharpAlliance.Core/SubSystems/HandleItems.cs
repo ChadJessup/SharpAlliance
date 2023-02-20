@@ -51,7 +51,7 @@ public class HandleItems
             {
                 (ppItemPool) = pObject.pItemPool;
 
-                //DEF added the check because pObject->pItemPool was NULL which was causing problems
+                //DEF added the check because pObject.pItemPool was null which was causing problems
                 if (ppItemPool is not null)
                 {
                     return (true);

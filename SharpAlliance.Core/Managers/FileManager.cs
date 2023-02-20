@@ -148,7 +148,7 @@ namespace SharpAlliance.Core.Managers
             //     {
             //         //UINT32 uiLastError = GetLastError();
             //         string zString;
-            //         // FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, NULL);
+            //         // FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, null);
             // 
             //         return Stream.Null;
             //     }

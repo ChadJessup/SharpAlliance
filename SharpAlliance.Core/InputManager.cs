@@ -25,12 +25,12 @@ namespace SharpAlliance.Core
         private VeldridVideoManager video;
         private int[] gsKeyTranslationTable = new int[1024];
         private bool gfApplicationActive;
-        private bool[] gfKeyState = new bool[256];            // TRUE = Pressed, FALSE = Not Pressed
+        private bool[] gfKeyState = new bool[256];            // true = Pressed, false = Not Pressed
         private bool fCursorWasClipped = false;
         private Rectangle gCursorClipRect;
-        private int gfShiftState;                    // TRUE = Pressed, FALSE = Not Pressed
-        private int gfAltState;                      // TRUE = Pressed, FALSE = Not Pressed
-        private int gfCtrlState;                     // TRUE = Pressed, FALSE = Not Pressed
+        private int gfShiftState;                    // true = Pressed, false = Not Pressed
+        private int gfAltState;                      // true = Pressed, false = Not Pressed
+        private int gfCtrlState;                     // true = Pressed, false = Not Pressed
 
         private const int WH_MOUSE = 7;
         private const int WH_KEYBOARD = 2;
@@ -48,9 +48,9 @@ namespace SharpAlliance.Core
         private long guiLeftButtonRepeatTimer;
         private long guiRightButtonRepeatTimer;
 
-        private bool gfTrackMousePos;            // TRUE = queue mouse movement events, FALSE = don't
-        public bool gfLeftButtonState { get; set; }      // TRUE = Pressed, FALSE = Not Pressed
-        public bool gfRightButtonState { get; set; }     // TRUE = Pressed, FALSE = Not Pressed
+        private bool gfTrackMousePos;            // true = queue mouse movement events, false = don't
+        public bool gfLeftButtonState { get; set; }      // true = Pressed, false = Not Pressed
+        public bool gfRightButtonState { get; set; }     // true = Pressed, false = Not Pressed
         public Point gusMousePos { get; set; }                    // position of the mouse on screen
 
         private const int DBL_CLK_TIME = 300;     // Increased by Alex, Jun-10-97, 200 felt too short
@@ -71,7 +71,7 @@ namespace SharpAlliance.Core
         //HHOOK ghKeyboardHook;
         //HHOOK ghMouseHook;
 
-        // If the following pointer is non NULL then input characters are redirected to
+        // If the following pointer is non null then input characters are redirected to
         // the related string
 
         private bool gfCurrentStringInputState;
@@ -249,7 +249,7 @@ namespace SharpAlliance.Core
                 // We have an event, so we dequeue it
                 inputSnapshot = this.gEventQueue.Dequeue();
 
-                // dequeued an event, return TRUE
+                // dequeued an event, return true
                 return true;
             }
             else

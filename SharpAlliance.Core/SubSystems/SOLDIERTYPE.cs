@@ -279,7 +279,7 @@ namespace SharpAlliance.Core.SubSystems
         int bDominantDir;              // AI main direction to face...
         int bPatrolCnt;                    // number of patrol gridnos
         int bNextPatrolPnt;            // index to next patrol gridno
-        int[] usPatrolGrid = new int[SoldierControl.MAXPATROLGRIDS];// AI list for ptr->orders==PATROL
+        int[] usPatrolGrid = new int[SoldierControl.MAXPATROLGRIDS];// AI list for ptr.orders==PATROL
         int sNoiseGridno;
         int ubNoiseVolume;
         int bLastAttackHit;

@@ -775,10 +775,10 @@ namespace SharpAlliance.Core.Screens
 
             /*
                 //open the credit text file
-                ghFile = FileOpen( CRDT_NAME_OF_CREDIT_FILE, FILE_ACCESS_READ | FILE_OPEN_EXISTING, FALSE );
+                ghFile = FileOpen( CRDT_NAME_OF_CREDIT_FILE, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false );
                 if( !ghFile )
                 { 
-                    return( FALSE );
+                    return( false );
                 }
             */
 

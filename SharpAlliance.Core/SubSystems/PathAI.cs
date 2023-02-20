@@ -29,7 +29,7 @@ public class PathAI
         this.logger = logger;
         this.gGameSettings = gameSettings;
         this.overhead = overhead;
-        this.isometricUtils = isometricUtils;
+        IsometricUtils = isometricUtils;
         this.worldManager = worldManager;
     }
 
@@ -109,7 +109,7 @@ public class PathAI
 
         if (bPlot && gusPathShown)
         {
-            ErasePath(false);
+            PathAI.ErasePath(false);
         }
 
         gusAPtsToMove = 0;
@@ -186,13 +186,13 @@ public class PathAI
                 // what is the next gridno in the path?
                 sOldGrid = sTempGrid;
 
-                sTempGrid = this.isometricUtils.NewGridNo(sTempGrid, this.isometricUtils.DirectionInc(guiPathingData[iCnt]));
+                sTempGrid = IsometricUtils.NewGridNo(sTempGrid, IsometricUtils.DirectionInc(Globals.guiPathingData[iCnt]));
 
                 // Get switch value...
-                sSwitchValue = Globals.gubWorldMovementCosts[sTempGrid, guiPathingData[iCnt], pSold.bLevel];
+                sSwitchValue = Globals.gubWorldMovementCosts[sTempGrid, Globals.guiPathingData[iCnt], pSold.bLevel];
 
                 // get the tile cost for that tile based on WALKING
-                sTileCost = TerrainActionPoints(pSold, sTempGrid, (byte)guiPathingData[iCnt], pSold.bLevel);
+                sTileCost = TerrainActionPoints(pSold, sTempGrid, Globals.guiPathingData[iCnt], pSold.bLevel);
 
                 usMovementModeToUseForAPs = usMovementMode;
 
@@ -322,7 +322,7 @@ public class PathAI
                         // we need a footstep graphic ENTERING the next tile
 
                         // get the direction
-                        usTileNum = guiPathingData[iCnt] + 2;
+                        usTileNum = Globals.guiPathingData[iCnt] + 2;
                         if (usTileNum > 8)
                         {
                             usTileNum = 1;
@@ -397,13 +397,13 @@ public class PathAI
 
                         if (pSold.bLevel == 0)
                         {
-                            pNode = this.worldManager.AddObjectToTail(sTempGrid, usTileIndex);
+                            pNode = WorldManager.AddObjectToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
                         else
                         {
-                            pNode = this.worldManager.AddOnRoofToTail(sTempGrid, usTileIndex);
+                            pNode = WorldManager.AddOnRoofToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
@@ -413,7 +413,7 @@ public class PathAI
                         // we need a footstep graphic LEAVING this tile
 
                         // get the direction using the NEXT tile (thus iCnt+1 as index)
-                        usTileNum = (ushort)guiPathingData[iCnt + 1] + 2;
+                        usTileNum = Globals.guiPathingData[iCnt + 1] + 2;
                         if (usTileNum > 8)
                         {
                             usTileNum = 1;
@@ -441,13 +441,13 @@ public class PathAI
 
                         if (pSold.bLevel == 0)
                         {
-                            pNode = this.worldManager.AddObjectToTail(sTempGrid, usTileIndex);
+                            pNode = WorldManager.AddObjectToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
                         else
                         {
-                            pNode = this.worldManager.AddOnRoofToTail(sTempGrid, usTileIndex);
+                            pNode = WorldManager.AddOnRoofToTail(sTempGrid, usTileIndex);
                             pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                             pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         }
@@ -469,7 +469,7 @@ public class PathAI
         return (sPoints);
     }
 
-    public void ErasePath(bool bEraseOldOne)
+    public static void ErasePath(bool bEraseOldOne)
     {
         int iCnt;
 
@@ -482,25 +482,25 @@ public class PathAI
         {
             Globals.gfUIHandleShowMoveGrid = 0;
 
-            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS4);
-            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS9);
-            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS2);
-            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS13);
-            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS15);
-            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS19);
-            this.worldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS20);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS4);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS9);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS2);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS13);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS15);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS19);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS20);
         }
 
         if (!gusPathShown)
         {
-            //OldPath = FALSE;
+            //OldPath = false;
             return;
         }
 
         //if (OldPath > 0 && !eraseOldOne)
         //   return;
 
-        //OldPath = FALSE;
+        //OldPath = false;
 
         gusPathShown = false;
 
@@ -508,8 +508,8 @@ public class PathAI
         {
             //Grid[PlottedPath[cnt]].fstep = 0;
 
-            this.worldManager.RemoveAllObjectsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
-            this.worldManager.RemoveAllOnRoofsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
+            WorldManager.RemoveAllObjectsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
+            WorldManager.RemoveAllOnRoofsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
 
             //RemoveAllObjectsOfTypeRange( guiPlottedPath[iCnt], FIRSTPOINTERS, FIRSTPOINTERS );
         }

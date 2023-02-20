@@ -36,7 +36,7 @@ public class InteractiveTiles
         this.gGameSettings = gameSettings;
         this.renderWorld = renderWorld;
         this.tileCache = tileCache;
-        this.isometricUtils = isometricUtils;
+        IsometricUtils = isometricUtils;
         this.overhead = overhead;
         this.worldStructures = worldStructures;
     }
@@ -428,7 +428,7 @@ public class InteractiveTiles
                 Debug.Assert(TileElem.pAnimData != null);
                 TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
-            else if ((pNode.uiFlags & LEVELNODE_ANIMATION))
+            else if ((pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION)))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
@@ -451,7 +451,7 @@ public class InteractiveTiles
         // Adjust based on interface level
         if (Interface.gsInterfaceLevel > 0)
         {
-            sScreenY += ROOF_LEVEL_HEIGHT;
+            sScreenY += Interface.ROOF_LEVEL_HEIGHT;
         }
 
         // Adjust for render height
@@ -847,7 +847,8 @@ public class InteractiveTiles
                 else
                 {
                     // If we are hidden by a roof, reject it!
-                    if (!Environment.gfBasement && IsRoofVisible(sGridNo) && !(Globals.gTacticalStatus.uiFlags & SHOW_ALL_ITEMS))
+                    if (!Environment.gfBasement && IsRoofVisible(sGridNo)
+                        && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)))
                     {
                         return (false);
                     }
@@ -889,7 +890,7 @@ public class InteractiveTiles
                 Debug.Assert(TileElem.pAnimData != null);
                 TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
-            else if ((pNode.uiFlags & LEVELNODE_ANIMATION))
+            else if ((pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION)))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
