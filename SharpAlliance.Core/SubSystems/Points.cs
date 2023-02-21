@@ -69,15 +69,15 @@ public class Points
                     return (true);
                 }
 
-                if (Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.LAUNCHER || pSoldier.inv[bInvPos].usItem == Items.TANK_CANNON)
+                if (Globals.Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.LAUNCHER || pSoldier.inv[bInvPos].usItem == Items.TANK_CANNON)
                 {
-                    if (FindAttachmentByClass((pSoldier.inv[bInvPos]), IC.GRENADE) != Globals.ITEM_NOT_FOUND)
+                    if (ItemSubSystem.FindAttachmentByClass((pSoldier.inv[bInvPos]), IC.GRENADE) != Globals.ITEM_NOT_FOUND)
                     {
                         return (true);
                     }
 
                     // ATE: Did an else if here...
-                    if (FindAttachmentByClass(&(pSoldier.inv[bInvPos]), IC.BOMB) != ITEM_NOT_FOUND)
+                    if (ItemSubSystem.FindAttachmentByClass((pSoldier.inv[bInvPos]), IC.BOMB) != Globals.ITEM_NOT_FOUND)
                     {
                         return (true);
                     }
@@ -89,7 +89,7 @@ public class Points
 
                     return (false);
                 }
-                else if (Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.GUN)
+                else if (Globals.Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.GUN)
                 {
                     if (pSoldier.inv[bInvPos].ubGunShotsLeft == 0)
                     {
@@ -127,7 +127,7 @@ public class Points
             if (pObj.usItem == Items.TANK_CANNON)
             {
             }
-            else if (Item[pObj.usItem].usItemClass == IC.GUN && pObj.usItem != Items.TANK_CANNON)
+            else if (Globals.Item[pObj.usItem].usItemClass == IC.GUN && pObj.usItem != Items.TANK_CANNON)
             {
                 if (pSoldier.usAttackingWeapon == pObj.usItem)
                 {
@@ -142,19 +142,19 @@ public class Points
                     // firing an attachment?
                 }
             }
-            else if (Item[pObj.usItem].usItemClass == IC.LAUNCHER || pObj.usItem == Items.TANK_CANNON)
+            else if (Globals.Item[pObj.usItem].usItemClass == IC.LAUNCHER || pObj.usItem == Items.TANK_CANNON)
             {
-                Items bAttachPos;
+                INVTYPE? bAttachPos;
 
-                bAttachPos = FindAttachmentByClass(pObj, IC.GRENADE);
-                if (bAttachPos == Globals.ITEM_NOT_FOUND)
+                bAttachPos = ItemSubSystem.FindAttachmentByClass(pObj, IC.GRENADE);
+                if (bAttachPos is null)
                 {
-                    bAttachPos = FindAttachmentByClass(pObj, IC.BOMB);
+                    bAttachPos = ItemSubSystem.FindAttachmentByClass(pObj, IC.BOMB);
                 }
 
-                if (bAttachPos != Globals.ITEM_NOT_FOUND)
+                if (bAttachPos is not null)
                 {
-                    RemoveAttachment(pObj, bAttachPos, null);
+                    ItemSubSystem.RemoveAttachment(pObj, bAttachPos, null);
                 }
             }
 

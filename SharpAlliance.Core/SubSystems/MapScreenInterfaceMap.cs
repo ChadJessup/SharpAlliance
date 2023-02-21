@@ -223,7 +223,7 @@ public class MapScreenInterfaceMap
                     {
                         if (fShowAircraftFlag && !iCurrentMapSectorZ)
                         {
-                            if (!StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
+                            if (!Globals.StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
                             {
                                 // sector not visited, not air controlled
                                 ShadeMapElem(cnt, cnt2, MAP_SHADE_DK_GREEN);
@@ -244,7 +244,7 @@ public class MapScreenInterfaceMap
                     {
                         if (fShowAircraftFlag && !iCurrentMapSectorZ)
                         {
-                            if (!StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
+                            if (!Globals.StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
                             {
                                 // sector visited and air controlled
                                 ShadeMapElem(cnt, cnt2, MAP_SHADE_LT_GREEN);

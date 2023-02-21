@@ -824,6 +824,8 @@ namespace SharpAlliance.Core.Managers
         CATCH_OBJECT,
         FENCE_OPEN,
 
-        NUM_SAMPLES
+        NUM_SAMPLES,
+
+        NO_WEAPON_SOUND = 0,
     };
 }

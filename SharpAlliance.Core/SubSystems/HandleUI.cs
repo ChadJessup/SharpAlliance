@@ -2101,7 +2101,7 @@ public class HandleUI
 
         if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             && pTargetSoldier is not null
-            && Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass & IC.WEAPON)
+            && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass & IC.WEAPON)
         {
             if (NPCFirstDraw(pSoldier, pTargetSoldier))
             {
@@ -2262,7 +2262,7 @@ public class HandleUI
                 if (pTSoldier != null)
                 {
                     // If this is one of our own guys.....pop up requiester...
-                    if ((pTSoldier.bTeam == Globals.gbPlayerNum || pTSoldier.bTeam == TEAM.MILITIA_TEAM) && Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT && pSoldier.inv[(int)InventorySlot.HANDPOS].usItem != GAS_CAN && Globals.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
+                    if ((pTSoldier.bTeam == Globals.gbPlayerNum || pTSoldier.bTeam == TEAM.MILITIA_TEAM) && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT && pSoldier.inv[(int)InventorySlot.HANDPOS].usItem != GAS_CAN && Globals.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
                     {
                         int[] zStr = new int[200];
 
@@ -3898,7 +3898,7 @@ public class HandleUI
         {
             fGuyHere = true;
 
-            if (Globals.guiUIFullTargetFlags.HasFlag(FIND_SOLDIER_RESPONSES.SELECTED_MERC) && Item[usInHand].usItemClass != IC.MEDKIT)
+            if (Globals.guiUIFullTargetFlags.HasFlag(FIND_SOLDIER_RESPONSES.SELECTED_MERC) && Globals.Item[usInHand].usItemClass != IC.MEDKIT)
             {
                 return (false);
             }
@@ -3917,7 +3917,7 @@ public class HandleUI
         //	}
         //}
 
-        if (Item[usInHand].usItemClass == IC.PUNCH)
+        if (Globals.Item[usInHand].usItemClass == IC.PUNCH)
         {
             if (!fGuyHere)
             {
@@ -3933,7 +3933,7 @@ public class HandleUI
         //	}
         //}
 
-        if (Item[usInHand].usItemClass == IC.MEDKIT)
+        if (Globals.Item[usInHand].usItemClass == IC.MEDKIT)
         {
             if (!fGuyHere)
             {

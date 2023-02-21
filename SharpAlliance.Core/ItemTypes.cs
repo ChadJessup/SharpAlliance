@@ -114,10 +114,6 @@ namespace SharpAlliance.Core
 
     public class OBJECTTYPE
     {
-        public const int MAX_OBJECTS_PER_SLOT = 8;
-        public const int MAX_ATTACHMENTS = 4;
-        public const int MAX_MONEY_PER_SLOT = 20000;
-
         int usItem;
         int ubNumberOfObjects;
         int bGunStatus;            // status % of gun
@@ -125,12 +121,12 @@ namespace SharpAlliance.Core
         int ubGunShotsLeft;   // duh, amount of ammo left
         int usGunAmmoItem;   // the item # for the item table
         int bGunAmmoStatus; // only for "attached ammo" - grenades, mortar shells
-        int[] ubGunUnused = new int[MAX_OBJECTS_PER_SLOT - 6];
-        int[] ubShotsLeft = new int[MAX_OBJECTS_PER_SLOT];
-        int[] bStatus = new int[MAX_OBJECTS_PER_SLOT];
+        int[] ubGunUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 6];
+        int[] ubShotsLeft = new int[Globals.MAX_OBJECTS_PER_SLOT];
+        int[] bStatus = new int[Globals.MAX_OBJECTS_PER_SLOT];
         int bMoneyStatus;
         int uiMoneyAmount;
-        int[] ubMoneyUnused = new int[MAX_OBJECTS_PER_SLOT - 5];
+        int[] ubMoneyUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 5];
         // this is used by placed bombs, switches, and the action item
         int bBombStatus;           // % status
         int bDetonatorType;        // timed, remote, or pressure-activated
@@ -148,8 +144,8 @@ namespace SharpAlliance.Core
         int ubOwnerCivGroup;
         int[] ubOwnershipUnused = new int[6];
         // attached objects
-        int[] usAttachItem = new int[MAX_ATTACHMENTS];
-        int[] bAttachStatus = new int[MAX_ATTACHMENTS];
+        int[] usAttachItem = new int[Globals.MAX_ATTACHMENTS];
+        int[] bAttachStatus = new int[Globals.MAX_ATTACHMENTS];
 
         int fFlags;
         int ubMission;

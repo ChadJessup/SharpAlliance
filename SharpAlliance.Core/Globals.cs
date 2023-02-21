@@ -54,9 +54,18 @@ public partial class Globals
     public static int gsRecompileAreaRight { get; set; } = 0;
     public static int gsRecompileAreaBottom { get; set; } = 0;
 
+    public const int MAX_OBJECTS_PER_SLOT = 8;
+    public const int MAX_ATTACHMENTS = 4;
+    public const int MAX_MONEY_PER_SLOT = 20000;
+
+    public static Dictionary<Items, INVTYPE> Item = new();
+
     // Room Information
     public static int[] gubWorldRoomInfo = new int[WORLD_MAX];
     public static int[] gubWorldRoomHidden = new int[MAX_ROOMS];
+
+    public static StrategicMapElement[] StrategicMap = new StrategicMapElement[Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y];
+
 
     public string? gubErrorText;
     public bool gfAniEditMode;
@@ -437,6 +446,8 @@ public partial class Globals
 
     public const Items NOTHING = Items.NONE;
     public const Items ITEM_NOT_FOUND = (Items)(-1);
+
+    public const int USABLE = 10;      // minimum work% of items to still be usable
 
     public const int DIRTYLEVEL0 = 0;
     public const int DIRTYLEVEL1 = 1;

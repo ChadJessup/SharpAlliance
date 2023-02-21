@@ -587,31 +587,31 @@ public class Facts
                 gubFact[usFact] = SpokenToHeadMiner(MINE.DRASSEN);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_DRASSEN_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !(StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_CAMBRIA_MINER:
                 gubFact[usFact] = SpokenToHeadMiner(MINE.CAMBRIA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CAMBRIA_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !(StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_CHITZENA_MINER:
                 gubFact[usFact] = SpokenToHeadMiner(MINE.CHITZENA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CHITZENA_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !(StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_ALMA_MINER:
                 gubFact[usFact] = SpokenToHeadMiner(MINE.ALMA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_ALMA_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !(StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_GRUMM_MINER:
                 gubFact[usFact] = SpokenToHeadMiner(MINE.GRUMM);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_GRUMM_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !(StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
 
             case FACT.ENOUGH_LOYALTY_TO_TRAIN_MILITIA:

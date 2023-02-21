@@ -16,7 +16,7 @@ public class MapScreenHelicopter
             else if (Globals.guiHelicopterSkyriderTalkState == 1)
             {
                 // if enemy still controls the Cambria hospital sector
-                if (StrategicMap[CALCULATE_STRATEGIC_INDEX(HOSPITAL_SECTOR_X, HOSPITAL_SECTOR_Y)].fEnemyControlled)
+                if (Globals.StrategicMap[CALCULATE_STRATEGIC_INDEX(HOSPITAL_SECTOR_X, HOSPITAL_SECTOR_Y)].fEnemyControlled)
                 {
                     HandleSkyRiderMonologueEvent(SKYRIDER_MONOLOGUE_EVENT_CAMBRIA_HOSPITAL, 0);
                 }
