@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core;
 
@@ -56,10 +57,10 @@ public class WeaponTypes
             // NB blade distances will be = strength + dexterity /2
 	        BLADE(  /* Combat knife    */								18,                 12,                                 5,                       40,        2,                      SoundDefine.NO_WEAPON_SOUND ),
             THROWINGBLADE(  /* Throwing knife  */				15,                 12,                               4,                        150,        2,                      SoundDefine.S_THROWKNIFE        ),
-            { 0 },//rock
+            ROCK(),//rock
 	        LAUNCHER( /* grenade launcher*/					30,             3,       5,                                 80,     0,          500,        20,     10,         SoundDefine.S_GLAUNCHER ),
             LAUNCHER( /* mortar */									30,             0,       5,                                 100,    0,          550,        20,     10,         SoundDefine.S_MORTAR_SHOT   ),
-            { 0 },// another rock
+            ROCK(),// another rock
 	        BLADE( /* yng male claws */									14,                 10,                                  1,                      10,        2,                      SoundDefine.NO_WEAPON_SOUND ),
             BLADE( /* yng fem claws */									18,                 10,                                  1,                      10,        2,                      SoundDefine.NO_WEAPON_SOUND ),
             BLADE( /* old male claws */									20,                 10,                                  1,                      10,        2,                      SoundDefine.NO_WEAPON_SOUND ),
@@ -85,45 +86,48 @@ public class WeaponTypes
             ASRIFLE(/* auto rckt rifle */CaliberType.AMMOROCKET,20, 38,     2,      12,   5,            10,     97,     0,   5, 600,        80,     10,         SoundDefine.S_SMALL_ROCKET_LAUNCHER,    SoundDefine.S_BURSTTYPE1     ),
     };
 
+    private static WEAPONTYPE ROCK()
+        => new(WeaponClass.NOGUNCLASS, GUN.NOT_GUN, CaliberType.NOAMMO, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
+
     private static WEAPONTYPE CANNON(int update, int rt, int rof,
         int deadl, int acc, int range, int av, int hv, SoundDefine sd)
-    => new(WeaponClass.RIFLECLASS, GUN.NOT_GUN, CaliberType.NOAMMO, rt, rof, 0,  0, update, 80,
+    => new(WeaponClass.RIFLECLASS, GUN.NOT_GUN, CaliberType.NOAMMO, rt, rof, 0, 0, update, 80,
             deadl, acc, 1, range, 200, av, hv, sd, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
 
-    private static WEAPONTYPE LAW(int v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8, SoundDefine s_ROCKET_LAUNCHER)
-    {
-        throw new NotImplementedException();
-    }
+    private static WEAPONTYPE LAW(int update, int rt, int rof,
+        int deadl, int acc, int range, int av, int hv, SoundDefine sd)
+    => new(WeaponClass.RIFLECLASS, GUN.NOT_GUN, CaliberType.NOAMMO, rt, rof, 0, 0, update, 80,
+        deadl, acc, 1, range, 200, av, hv, sd, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
 
-    private static WEAPONTYPE PUNCHWEAPON(int v1, int v2, int v3, int v4, int v5)
-    {
-        throw new NotImplementedException();
-    }
+    private static WEAPONTYPE PUNCHWEAPON(int impact, int rof, int deadl, int av, SoundDefine sd)
+    => new(WeaponClass.KNIFECLASS, GUN.NOT_GUN, 0, 0, rof, 0, 0, 0, impact,
+            deadl, 0, 0, 10, 200, av, 0, sd, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
 
-    private static WEAPONTYPE MONSTSPIT(int v1, int v2, int v3, int v4, int v5, int v6, int v7, SoundDefine aCR_SPIT)
-    {
-        throw new NotImplementedException();
-    }
+    private static WEAPONTYPE MONSTSPIT(int impact, int rof,
+        int deadl, int clip, int range, int av, int hv, SoundDefine sd)
+        => new(WeaponClass.MONSTERCLASS, GUN.NOT_GUN, CaliberType.AMMOMONST, AP.READY_KNIFE, rof, 0, 0, 250, impact,
+            deadl, 0, clip, range, 200, av, hv, sd, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
 
-    private static WEAPONTYPE LAUNCHER(int v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8, SoundDefine s_GLAUNCHER)
-    {
-        throw new NotImplementedException();
-    }
+    private static WEAPONTYPE LAUNCHER(int update, int rt, int rof,
+        int deadl, int acc, int range, int av, int hv, SoundDefine sd)
+        => new(WeaponClass.RIFLECLASS, GUN.NOT_GUN, CaliberType.NOAMMO, rt, rof, 0, 0, update, 1,
+            deadl, acc, 0, range, 200, av, hv, sd, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
 
-    private static WEAPONTYPE THROWINGBLADE(int v1, int v2, int v3, int v4, int v5, SoundDefine s_THROWKNIFE)
-    {
-        throw new NotImplementedException();
-    }
+    private static WEAPONTYPE THROWINGBLADE(int impact, int rof,
+        int deadl, int range, int av, SoundDefine sd)
+        => new(WeaponClass.KNIFECLASS, GUN.NOT_GUN, 0, AP.READY_KNIFE, rof, 0, 0, 0, impact,
+            deadl, 0, 0, range, 200, av, 0, sd, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
 
-    private static WEAPONTYPE BLADE(int v1, int v2, int v3, int v4, int v5, SoundDefine nO_WEAPON_SOUND)
-    {
-        throw new NotImplementedException();
-    }
+    private static WEAPONTYPE BLADE(int impact, int rof,
+        int deadl, int range, int av, SoundDefine sd)
+        => new(WeaponClass.KNIFECLASS, GUN.NOT_GUN, 0, AP.READY_KNIFE, rof, 0, 0, 0, impact,
+            deadl, 0, 0, range, 200, av, 0, sd, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND, SoundDefine.NO_WEAPON_SOUND);
 
-    private static WEAPONTYPE LMG(CaliberType aMMO556, int v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8, int v9, int v10, int v11, int v12, SoundDefine s_FNMINI, SoundDefine s_BURSTTYPE1)
-    {
-        throw new NotImplementedException();
-    }
+    private static WEAPONTYPE LMG(CaliberType ammo, int update, int impact, int rt, int rof, int burstrof, int burstpenal,
+        int deadl, int acc, int clip, int range, int av, int hv, SoundDefine sd, SoundDefine bsd)
+        => new(WeaponClass.MGCLASS, GUN.LMG, ammo, rt, rof, burstrof, burstpenal, update, impact,
+            deadl, acc, clip, range, 200, av, hv, sd, bsd, SoundDefine.S_RELOAD_LMG, SoundDefine.S_LNL_LMG);
 
     private static WEAPONTYPE SHOTGUN(CaliberType ammo, int update, int impact, int rt, int rof, int burstrof, int burstpenal,
         int deadl, int acc, int clip, int range, int av, int hv, SoundDefine sd, SoundDefine bsd)
