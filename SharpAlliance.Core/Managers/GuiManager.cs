@@ -9,17 +9,13 @@ namespace SharpAlliance.Core.Managers
 {
     public class GuiManager : ISharpAllianceManager
     {
-        public ButtonSubSystem Buttons { get; private set; }
-        public SliderSubSystem Sliders { get; private set; }
+        public static SliderSubSystem Sliders { get; private set; }
 
         public bool IsInitialized { get; }
 
-        public GuiManager(
-            ButtonSubSystem buttons,
-            SliderSubSystem sliders)
+        public GuiManager(SliderSubSystem sliders)
         {
-            this.Buttons = buttons;
-            this.Sliders = sliders;
+            Sliders = sliders;
         }
 
         public ValueTask<bool> Initialize()
@@ -27,13 +23,15 @@ namespace SharpAlliance.Core.Managers
             return ValueTask.FromResult(true);
         }
 
-        public void RenderButtonsFastHelp()
+        public static void RenderButtonsFastHelp()
         {
         }
 
-        public void RenderSliderBars() => this.Sliders.RenderSliderBars();
+        public static void RenderSliderBars()
+            => Sliders.RenderSliderBars();
 
-        public void RenderButtons(IEnumerable<GUI_BUTTON> buttons) => this.Buttons.RenderButtons(buttons);
+        public static void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
+            => ButtonSubSystem.RenderButtons(buttons);
 
         public void Dispose()
         {

@@ -26,7 +26,6 @@ public class MouseSubSystem : ISharpAllianceManager
     public static GuiCallback DefaultMoveCallback { get; private set; }
     private readonly ILogger<MouseSubSystem> logger;
     private readonly IClockManager clock;
-    private readonly ButtonSubSystem buttons;
     private readonly CursorSubSystem cursors;
     private readonly GameContext gameContext;
     private const int MSYS_DOUBLECLICK_DELAY = 400;
@@ -101,7 +100,6 @@ public class MouseSubSystem : ISharpAllianceManager
         ILogger<MouseSubSystem> logger,
         GameContext gameContext,
         IClockManager clockManager,
-        ButtonSubSystem buttonManager,
         CursorSubSystem cursorSubSystem)
     {
         this.logger = logger;
@@ -109,7 +107,6 @@ public class MouseSubSystem : ISharpAllianceManager
         DefaultMoveCallback = this.BtnGenericMouseMoveButtonCallback;
         this.logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
         this.clock = clockManager;
-        this.buttons = buttonManager;
         this.cursors = cursorSubSystem;
         this.gameContext = gameContext;
 
@@ -164,19 +161,19 @@ public class MouseSubSystem : ISharpAllianceManager
         MouseCallbackReasons reason = reasonValue;
 
         //If the button isn't the anchored button, then we don't want to modify the button state.
-        if (btn != ButtonSubSystem.gpAnchoredButton)
+        if (btn != Globals.gpAnchoredButton)
         {
             return;
         }
 
         if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
         {
-            if (!ButtonSubSystem.gfAnchoredState)
+            if (!Globals.gfAnchoredState)
             {
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 if (btn.ubSoundSchemeID != 0)
                 {
-                    this.buttons.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_OFF);
+                    ButtonSubSystem.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_OFF);
                 }
             }
         }
@@ -185,7 +182,7 @@ public class MouseSubSystem : ISharpAllianceManager
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             if (btn.ubSoundSchemeID != 0)
             {
-                this.buttons.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_ON);
+                ButtonSubSystem.PlayButtonSound(btn, ButtonSounds.BUTTON_SOUND_CLICKED_ON);
             }
         }
     }
@@ -235,7 +232,7 @@ public class MouseSubSystem : ISharpAllianceManager
                     //NOTE:  It has to be here, because the mouse can be released anywhere regardless of
                     //regions, buttons, etc.
 
-                    this.buttons.ReleaseAnchorMode(coord);
+                    ButtonSubSystem.ReleaseAnchorMode(coord);
                 }
                 else if (mouseEvent == MouseEvents.RIGHT_BUTTON_DOWN)
                 {

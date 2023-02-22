@@ -122,3 +122,13 @@ public enum MERC
 
     NO_PENDING_ACTION = 255,
 }
+
+[Flags]
+public enum SOLDIER_MISC
+{
+    HEARD_GUNSHOT = 0x01,
+    // make sure soldiers (esp tanks) are not hurt multiple times by explosions
+    HURT_BY_EXPLOSION = 0x02,
+    // should be revealed due to xrays
+    XRAYED = 0x04,
+}

@@ -7,6 +7,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using Veldrid.OpenGLBinding;
+using static SharpAlliance.Core.EnglishText;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -72,7 +73,6 @@ public class HandleUI
     private readonly RenderWorld renderWorld;
     private readonly CursorSubSystem cursors;
     private readonly PathAI pathAI;
-    private readonly IsometricUtils isometricUtils;
     private readonly SoldierFind soldierFind;
     private IScreenManager screens;
 
@@ -86,7 +86,6 @@ public class HandleUI
         Points points,
         PathAI pathAI,
         RenderWorld renderWorld,
-        IsometricUtils isometricUtils,
         SoldierFind soldierFind,
         IScreenManager screenManager)
     {
@@ -100,7 +99,6 @@ public class HandleUI
         this.pathAI = pathAI;
         this.gGameSettings = gameSettings;
         this.renderWorld = renderWorld;
-        IsometricUtils = isometricUtils;
         this.soldierFind = soldierFind;
         this.screens = screenManager;
 
@@ -297,16 +295,16 @@ public class HandleUI
         Globals.gfUIFullTargetFound = false;
         Globals.gfUISelectiveTargetFound = false;
 
-        if (GetMouseMapPos(out usMapPos))
+        if (IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             // Look for soldier full
-            if (this.soldierFind.FindSoldier(usMapPos, out Globals.gusUIFullTargetID, out Globals.guiUIFullTargetFlags, (SoldierFind.FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel))))
+            if (this.soldierFind.FindSoldier(usMapPos, out Globals.gusUIFullTargetID, out Globals.guiUIFullTargetFlags, (SoldierFind.FINDSOLDIERSAMELEVEL(Globals.gsInterfaceLevel))))
             {
                 Globals.gfUIFullTargetFound = true;
             }
 
             // Look for soldier selective
-            if (this.soldierFind.FindSoldier(usMapPos, out Globals.gusUISelectiveTargetID, out Globals.guiUISelectiveTargetFlags, SoldierFind.FINDSOLDIERSELECTIVESAMELEVEL(Interface.gsInterfaceLevel)))
+            if (this.soldierFind.FindSoldier(usMapPos, out Globals.gusUISelectiveTargetID, out Globals.guiUISelectiveTargetFlags, SoldierFind.FINDSOLDIERSELECTIVESAMELEVEL(Globals.gsInterfaceLevel)))
             {
                 Globals.gfUISelectiveTargetFound = true;
             }
@@ -385,7 +383,7 @@ public class HandleUI
         {
             // ATE: OK - don't revert to single event if our mouse is not
             // in viewport - rather use m_on_t event
-            if ((Interface.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA)))
+            if ((Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA)))
             {
                 Globals.guiCurrentEvent = Globals.guiOldEvent;
             }
@@ -561,10 +559,10 @@ public class HandleUI
                     Globals.gfUIShowExitSouth = false;
 
                     // Define region for viewport
-                    this.inputs.Mouse.MSYS_RemoveRegion(Interface.gViewportRegion);
+                    this.inputs.Mouse.MSYS_RemoveRegion(Globals.gViewportRegion);
 
                     this.inputs.Mouse.MSYS_DefineRegion(
-                        Interface.gViewportRegion,
+                        Globals.gViewportRegion,
                         new(0, 0, Globals.gsVIEWPORT_END_X, Globals.gsVIEWPORT_WINDOW_END_Y),
                         MSYS_PRIORITY.NORMAL,
                         CURSOR.VIDEO_NO_CURSOR,
@@ -586,8 +584,8 @@ public class HandleUI
                     {
                         // Adjust viewport to edge of screen!
                         // Define region for viewport
-                        this.inputs.Mouse.MSYS_RemoveRegion(Interface.gViewportRegion);
-                        this.inputs.Mouse.MSYS_DefineRegion(Interface.gViewportRegion, new(0, 0, Globals.gsVIEWPORT_END_X, 480), MSYS_PRIORITY.NORMAL,
+                        this.inputs.Mouse.MSYS_RemoveRegion(Globals.gViewportRegion);
+                        this.inputs.Mouse.MSYS_DefineRegion(Globals.gViewportRegion, new(0, 0, Globals.gsVIEWPORT_END_X, 480), MSYS_PRIORITY.NORMAL,
                                              CURSOR.VIDEO_NO_CURSOR, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
 
                         Globals.gsGlobalCursorYOffset = (480 - Globals.gsVIEWPORT_WINDOW_END_Y);
@@ -603,10 +601,10 @@ public class HandleUI
                 if (Globals.gfViewPortAdjustedForSouth)
                 {
                     // Define region for viewport
-                    this.inputs.Mouse.MSYS_RemoveRegion(Interface.gViewportRegion);
+                    this.inputs.Mouse.MSYS_RemoveRegion(Globals.gViewportRegion);
 
                     this.inputs.Mouse.MSYS_DefineRegion(
-                        Interface.gViewportRegion,
+                        Globals.gViewportRegion,
                         new(0, 0, Globals.gsVIEWPORT_END_X, Globals.gsVIEWPORT_WINDOW_END_Y),
                         MSYS_PRIORITY.NORMAL,
                         CURSOR.VIDEO_NO_CURSOR,
@@ -674,7 +672,7 @@ public class HandleUI
 
         if (Globals.gfDisplayTimerCursor)
         {
-            SetUICursor(Globals.guiTimerCursorID);
+            InterfaceCursors.SetUICursor(Globals.guiTimerCursorID);
 
             fUpdateNewCursor = false;
 
@@ -694,7 +692,7 @@ public class HandleUI
             {
                 if (Globals.guiNewUICursor != Globals.guiCurrentUICursor || fForceUpdateNewCursor)
                 {
-                    SetUICursor(Globals.guiNewUICursor);
+                    InterfaceCursors.SetUICursor(Globals.guiNewUICursor);
 
                     Globals.guiCurrentUICursor = Globals.guiNewUICursor;
                 }
@@ -704,17 +702,17 @@ public class HandleUI
 
     public static void HandleTacticalUILoseCursorFromOtherScreen()
     {
-        SetUICursor(0);
+        InterfaceCursors.SetUICursor(0);
 
         Globals.gfTacticalForceNoCursor = true;
 
         PathAI.ErasePath(true);
 
-        ((Globals.GameScreens[ScreenName.GAME_SCREEN].HandleScreen))();
+        //((Globals.GameScreens[ScreenName.GAME_SCREEN].HandleScreen))();
 
         Globals.gfTacticalForceNoCursor = false;
 
-        SetUICursor(Globals.guiCurrentUICursor);
+        InterfaceCursors.SetUICursor(Globals.guiCurrentUICursor);
     }
 
 
@@ -762,7 +760,7 @@ public class HandleUI
         SOLDIERTYPE? pSoldier;
 
         // Get Grid Corrdinates of mouse
-        if (GetMouseMapPos(out usMapPos))
+        if (IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             ubTemp += 2;
 
@@ -816,7 +814,7 @@ public class HandleUI
         uint usRandom;
 
         //Get map postion and place the enemy there.
-        if (GetMouseMapPos(out usMapPos))
+        if (IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             // Are we an OK dest?
             if (!IsLocationSittable(usMapPos, 0))
@@ -914,7 +912,7 @@ public class HandleUI
         // ATE: If we have an item pointer end it!
         CancelItemPointer();
 
-        //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[ ENDING_TURN ] );
+        //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[ ENDING_TURN ] );
 
         if (CheckForEndOfCombatMode(false))
         {
@@ -980,27 +978,27 @@ public class HandleUI
     void ChangeInterfaceLevel(int sLevel)
     {
         // Only if different!
-        if (sLevel == Interface.gsInterfaceLevel)
+        if (sLevel == Globals.gsInterfaceLevel)
         {
             return;
         }
 
-        Interface.gsInterfaceLevel = sLevel;
+        Globals.gsInterfaceLevel = sLevel;
 
-        if (Interface.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
+        if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
         {
-            Globals.gsRenderHeight += Interface.ROOF_LEVEL_HEIGHT;
+            Globals.gsRenderHeight += Globals.ROOF_LEVEL_HEIGHT;
             Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
             InvalidateWorldRedundency();
         }
-        else if (Interface.gsInterfaceLevel == 0)
+        else if (Globals.gsInterfaceLevel == 0)
         {
-            Globals.gsRenderHeight -= Interface.ROOF_LEVEL_HEIGHT;
+            Globals.gsRenderHeight -= Globals.ROOF_LEVEL_HEIGHT;
             Globals.gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
             InvalidateWorldRedundency();
         }
 
-        SetRenderFlags(RENDER_FLAG_FULL);
+        RenderWorld.SetRenderFlags(RenderingFlags.FULL);
         // Remove any interactive tiles we could be over!
         BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
         Globals.gfPlotNewMovement = true;
@@ -1009,11 +1007,11 @@ public class HandleUI
 
     ScreenName UIHandleChangeLevel(UI_EVENT pUIEvent)
     {
-        if (Interface.gsInterfaceLevel == 0)
+        if (Globals.gsInterfaceLevel == 0)
         {
             ChangeInterfaceLevel(1);
         }
-        else if (Interface.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
+        else if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
         {
             ChangeInterfaceLevel(0);
         }
@@ -1061,7 +1059,7 @@ public class HandleUI
         bool fContinue = true;
         ITEM_POOL? pItemPool;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1085,14 +1083,14 @@ public class HandleUI
         if (!UIHandleOnMerc(true))
         {
             // Are we over items...
-            if (HandleItems.GetItemPool(usMapPos, out pItemPool, Interface.gsInterfaceLevel)
+            if (HandleItems.GetItemPool(usMapPos, out pItemPool, Globals.gsInterfaceLevel)
                 && ITEMPOOL_VISIBLE(pItemPool))
             {
                 // Are we already in...
                 if (fOverItems)
                 {
                     // Is this the same level & gridno...
-                    if (Interface.gsInterfaceLevel == bLevelForItemsOver && usMapPos == sGridNoForItemsOver)
+                    if (Globals.gsInterfaceLevel == bLevelForItemsOver && usMapPos == sGridNoForItemsOver)
                     {
                         // Check timer...
                         if ((this.clock.GetJA2Clock() - uiItemsOverTimer) > 1500)
@@ -1100,14 +1098,14 @@ public class HandleUI
                             // Change to hand curso mode
                             Globals.guiPendingOverrideEvent = UI_EVENT_DEFINES.M_CHANGE_TO_HANDMODE;
                             Globals.gsOverItemsGridNo = usMapPos;
-                            Globals.gsOverItemsLevel = Interface.gsInterfaceLevel;
+                            Globals.gsOverItemsLevel = Globals.gsInterfaceLevel;
                             fOverItems = false;
                         }
                     }
                     else
                     {
                         uiItemsOverTimer = this.clock.GetJA2Clock();
-                        bLevelForItemsOver = Interface.gsInterfaceLevel;
+                        bLevelForItemsOver = Globals.gsInterfaceLevel;
                         sGridNoForItemsOver = usMapPos;
                     }
                 }
@@ -1116,7 +1114,7 @@ public class HandleUI
                     fOverItems = true;
 
                     uiItemsOverTimer = this.clock.GetJA2Clock();
-                    bLevelForItemsOver = Interface.gsInterfaceLevel;
+                    bLevelForItemsOver = Globals.gsInterfaceLevel;
                     sGridNoForItemsOver = usMapPos;
                 }
             }
@@ -1361,7 +1359,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (Interface.gpItemPointer != null)
+        if (Globals.gpItemPointer != null)
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1388,7 +1386,7 @@ public class HandleUI
                             || Globals.gubOutOfRangeMerc != Globals.gusSelectedSoldier)
                         {
                             // Display
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[OUT_OF_RANGE_STRING]);
+                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[(int)STR.OUT_OF_RANGE_STRING]);
 
                             //PlayJA2Sample( TARGET_OUT_OF_RANGE, RATE_11025, MIDVOLUME, 1, MIDDLEPAN );			              
 
@@ -1480,7 +1478,7 @@ public class HandleUI
         MOUSE uiCursorFlags;
         LEVELNODE? pInvTile;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1559,7 +1557,7 @@ public class HandleUI
             fAllMove = Globals.gfUIAllMoveOn;
             Globals.gfUIAllMoveOn = 0;
 
-            if (!GetMouseMapPos(out usMapPos))
+            if (!IsometricUtils.GetMouseMapPos(out usMapPos))
             {
                 return (ScreenName.GAME_SCREEN);
             }
@@ -1617,7 +1615,7 @@ public class HandleUI
                         }
                         else
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
+                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
                         }
 
                         pSoldier.fUIMovementFast = fOldFastMove;
@@ -1672,7 +1670,7 @@ public class HandleUI
                         }
                         else
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
+                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                             return (ScreenName.GAME_SCREEN);
                         }
                     }
@@ -2068,9 +2066,9 @@ public class HandleUI
     ScreenName UIHandleCAOnTerrain(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE pSoldier;
-        uint usMapPos;
+        int usMapPos;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -2101,7 +2099,7 @@ public class HandleUI
 
         if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             && pTargetSoldier is not null
-            && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass & IC.WEAPON)
+            && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
         {
             if (NPCFirstDraw(pSoldier, pTargetSoldier))
             {
@@ -2129,7 +2127,7 @@ public class HandleUI
         else
         {
             sTargetGridNo = usMapPos;
-            bTargetLevel = Interface.gsInterfaceLevel;
+            bTargetLevel = Globals.gsInterfaceLevel;
 
             if (pIntNode != null)
             {
@@ -2243,7 +2241,7 @@ public class HandleUI
         if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
         {
 
-            if (!GetMouseMapPos(out usMapPos))
+            if (!IsometricUtils.GetMouseMapPos(out usMapPos))
             {
                 return (ScreenName.GAME_SCREEN);
             }
@@ -2262,7 +2260,11 @@ public class HandleUI
                 if (pTSoldier != null)
                 {
                     // If this is one of our own guys.....pop up requiester...
-                    if ((pTSoldier.bTeam == Globals.gbPlayerNum || pTSoldier.bTeam == TEAM.MILITIA_TEAM) && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT && pSoldier.inv[(int)InventorySlot.HANDPOS].usItem != GAS_CAN && Globals.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile && (pTSoldier.ubID != pSoldier.ubID))
+                    if ((pTSoldier.bTeam == Globals.gbPlayerNum || pTSoldier.bTeam == TEAM.MILITIA_TEAM)
+                        && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT
+                        && pSoldier.inv[(int)InventorySlot.HANDPOS].usItem != Items.GAS_CAN
+                        && Globals.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile
+                        && (pTSoldier.ubID != pSoldier.ubID))
                     {
                         int[] zStr = new int[200];
 
@@ -2272,7 +2274,7 @@ public class HandleUI
 
                         fDidRequester = true;
 
-                        // wprintf(zStr, TacticalStr[ATTACK_OWN_GUY_PROMPT], pTSoldier.name);
+                        // wprintf(zStr, Globals.TacticalStr[ATTACK_OWN_GUY_PROMPT], pTSoldier.name);
 
                         DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, GAME_SCREEN, (byte)MSG_BOX_FLAG_YESNO, AttackRequesterCallback, null);
 
@@ -2294,10 +2296,10 @@ public class HandleUI
     {
         SOLDIERTYPE? pSoldier;
         int sTargetXPos, sTargetYPos;
-        uint usMapPos;
+        int usMapPos;
 
         // Get gridno at this location
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -2339,10 +2341,10 @@ public class HandleUI
 
     ScreenName UIHandleIOnTerrain(UI_EVENT pUIEvent)
     {
-        uint usMapPos;
+        int usMapPos;
 
         // Get gridno at this location
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -2467,9 +2469,9 @@ public class HandleUI
     void HandleObjectHighlighting()
     {
         SOLDIERTYPE? pSoldier;
-        uint usMapPos;
+        int usMapPos;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return;
         }
@@ -2557,7 +2559,7 @@ public class HandleUI
         if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
         {
 
-            if (!GetMouseMapPos(out usMapPos))
+            if (!IsometricUtils.GetMouseMapPos(out usMapPos))
             {
                 return true; // (ScreenName.GAME_SCREEN);
             }
@@ -2637,7 +2639,7 @@ public class HandleUI
         // Get soldier
         if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
-            if (!GetMouseMapPos(out usMapPos))
+            if (!IsometricUtils.GetMouseMapPos(out usMapPos))
             {
                 return true;//(ScreenName.GAME_SCREEN);
             }
@@ -2729,7 +2731,7 @@ public class HandleUI
         int usMapPos;
         SOLDIERTYPE? pSoldier;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -2748,7 +2750,7 @@ public class HandleUI
         {
             if (Globals.gsOverItemsGridNo != Globals.NOWHERE
                 && (usMapPos != Globals.gsOverItemsGridNo
-                || Interface.gsInterfaceLevel != Globals.gsOverItemsLevel))
+                || Globals.gsInterfaceLevel != Globals.gsOverItemsLevel))
             {
                 Globals.gsOverItemsGridNo = Globals.NOWHERE;
                 Globals.guiPendingOverrideEvent = UI_EVENT_DEFINES.A_CHANGE_TO_MOVE;
@@ -2838,10 +2840,10 @@ public class HandleUI
         SOLDIERTYPE? pSoldier;
         int usSoldierIndex;
         FIND_SOLDIER_RESPONSES uiMercFlags;
-        uint usMapPos;
+        int usMapPos;
         bool fFoundMerc = false;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return true;//(ScreenName.GAME_SCREEN);
         }
@@ -2890,7 +2892,7 @@ public class HandleUI
                             // Add highlight to guy in interface.c
                             Globals.gfUIHandleSelection = Globals.SELECTED_GUY_SELECTION;
 
-                            if (Interface.gpItemPointer == null)
+                            if (Globals.gpItemPointer == null)
                             {
                                 // Don't do this unless we want to
 
@@ -3056,11 +3058,11 @@ public class HandleUI
             {
                 if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                 {
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[VEHICLES_NO_STANCE_CHANGE_STR]);
+                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[VEHICLES_NO_STANCE_CHANGE_STR]);
                 }
                 else if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                 {
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[ROBOT_NO_STANCE_CHANGE_STR]);
+                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[ROBOT_NO_STANCE_CHANGE_STR]);
                 }
                 else
                 {
@@ -3070,7 +3072,7 @@ public class HandleUI
                     }
                     else
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[CANNOT_STANCE_CHANGE_STR], pSoldier.name);
+                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_STANCE_CHANGE_STR], pSoldier.name);
                     }
                 }
             }
@@ -3136,7 +3138,7 @@ public class HandleUI
         // Set UI value for soldier
         SetUIbasedOnStance(pSoldier, bNewStance);
 
-        Interface.gfUIStanceDifferent = true;
+        Globals.gfUIStanceDifferent = true;
 
         // ATE: If we are being serviced...stop...
         // InternalReceivingSoldierCancelServices( pSoldier, false );
@@ -3207,7 +3209,7 @@ public class HandleUI
             return;
         }
 
-        GetMouseMapPos(out usMapPos);
+        IsometricUtils.GetMouseMapPos(out usMapPos);
         ConvertGridNoToXY(usMapPos, out sXPos, out sYPos);
 
         puiCursorFlags = 0;
@@ -3640,7 +3642,7 @@ public class HandleUI
                     sSpot = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(cnt));
 
                     // Make sure movement costs are OK....
-                    if (Globals.gubWorldMovementCosts[sSpot, cnt, Interface.gsInterfaceLevel] >= TRAVELCOST.BLOCKED)
+                    if (Globals.gubWorldMovementCosts[sSpot, cnt, Globals.gsInterfaceLevel] >= TRAVELCOST.BLOCKED)
                     {
                         continue;
                     }
@@ -3817,7 +3819,7 @@ public class HandleUI
         byte ubItemCursor;
         int usMapPos;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (false);
         }
@@ -3946,7 +3948,7 @@ public class HandleUI
             // If we are a vehicle...
             if ((pTSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.ROBOT)))
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[CANNOT_DO_FIRST_AID_STR], pTSoldier.name);
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_DO_FIRST_AID_STR], pTSoldier.name);
                 return (false);
             }
 
@@ -3964,7 +3966,7 @@ public class HandleUI
 
             if (pTSoldier.bBleeding == 0 && pTSoldier.bLife >= Globals.OKLIFE)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[CANNOT_NO_NEED_FIRST_AID_STR], pTSoldier.name);
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_NO_NEED_FIRST_AID_STR], pTSoldier.name);
                 return (false);
             }
 
@@ -3982,7 +3984,7 @@ public class HandleUI
 
         if (sAPCost == 0)
         {
-            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
+            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
         }
         else
         {
@@ -4527,7 +4529,7 @@ public class HandleUI
             Globals.guiForceRefreshMousePositionCalculation = true;
             UIHandleMOnTerrain(null);
 
-            if (Interface.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
+            if (Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
                 SetCurrentCursorFromDatabase(Globals.gUICursors[Globals.guiNewUICursor].usFreeCursorName);
             }
@@ -4704,14 +4706,14 @@ public class HandleUI
 
     void EndRubberBanding()
     {
-        if (gRubberBandActive)
+        if (Globals.gRubberBandActive)
         {
             FreeMouseCursor();
-            gfIgnoreScrolling = false;
+            Globals.gfIgnoreScrolling = false;
 
             EndMultiSoldierSelection(true);
 
-            gRubberBandActive = false;
+            Globals.gRubberBandActive = false;
         }
     }
 
@@ -4727,7 +4729,7 @@ public class HandleUI
         // Make them move....
 
         // Do a loop first to see if the selected guy is told to go fast...
-        gfGetNewPathThroughPeople = true;
+        Globals.gfGetNewPathThroughPeople = true;
 
         cnt = Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID;
         for (pSoldier = Globals.MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; cnt++)//, pSoldier++)
@@ -4785,7 +4787,7 @@ public class HandleUI
                     }
                     else
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
+                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
                     }
 
                     fAtLeastOneMultiSelect = true;
@@ -4873,7 +4875,7 @@ public class HandleUI
                 GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
 
                 // ATE: If we are in a hiehger interface level, subttrasct....
-                if (Interface.gsInterfaceLevel == 1)
+                if (Globals.gsInterfaceLevel == 1)
                 {
                     sScreenY -= 50;
                 }
@@ -4906,7 +4908,7 @@ public class HandleUI
                 GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
 
                 // ATE: If we are in a hiehger interface level, subttrasct....
-                if (Interface.gsInterfaceLevel == 1)
+                if (Globals.gsInterfaceLevel == 1)
                 {
                     sScreenY -= 50;
                 }
@@ -4933,7 +4935,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -5049,7 +5051,7 @@ public class HandleUI
             Globals.guiForceRefreshMousePositionCalculation = true;
             UIHandleMOnTerrain(null);
 
-            if (Interface.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
+            if (Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
                 this.cursors.SetCurrentCursorFromDatabase(Globals.gUICursors[Globals.guiNewUICursor].usFreeCursorName);
             }
@@ -5218,7 +5220,7 @@ public class HandleUI
                     {
                         if (pTSoldier.ubProfile != NPCID.NO_PROFILE)
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_LOS_TO_TALK_TARGET], pSoldier.name, pTSoldier.name);
+                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_LOS_TO_TALK_TARGET], pSoldier.name, pTSoldier.name);
                         }
                         else
                         {
@@ -5327,13 +5329,13 @@ public class HandleUI
 
                     if (sActionGridNo == -1)
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
+                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                         return (false);
                     }
 
                     if (this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, false, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints) == 0)
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
+                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                         return (false);
                     }
 
@@ -5353,7 +5355,7 @@ public class HandleUI
                     }
 
                     // Now walkup to talk....
-                    pSoldier.ubPendingAction = MERC_TALK;
+                    pSoldier.ubPendingAction = MERC.TALK;
                     pSoldier.uiPendingActionData1 = pTSoldier.ubID;
                     pSoldier.ubPendingActionAnimCount = 0;
 
@@ -5832,12 +5834,12 @@ public class HandleUI
         {
             Globals.gsRenderHeight = sHeight;
 
-            if (Interface.gsInterfaceLevel > 0)
+            if (Globals.gsInterfaceLevel > 0)
             {
-                Globals.gsRenderHeight += Interface.ROOF_LEVEL_HEIGHT;
+                Globals.gsRenderHeight += Globals.ROOF_LEVEL_HEIGHT;
             }
 
-            SetRenderFlags(RENDER_FLAG_FULL);
+            RenderWorld.SetRenderFlags(RENDER_FLAG_FULL);
             PathAI.ErasePath(false);
 
             sOldHeight = sHeight;
@@ -5958,7 +5960,7 @@ public class HandleUI
             if (ubGuyThere == pSoldier.ubID)
             {
                 // Double check OK destination......
-                if (NewOKDestination(pSoldier, sGridNo, true, Interface.gsInterfaceLevel))
+                if (NewOKDestination(pSoldier, sGridNo, true, Globals.gsInterfaceLevel))
                 {
                     // If the soldier in the middle of doing stuff?
                     if (!pSoldier.fTurningUntilDone)

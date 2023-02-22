@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
@@ -46,7 +47,7 @@ public class MapScreenInterfaceMap
         new(150,200),
         new(100,100),
     };
-    
+
     private int[] pMapScreenFastHelpWidthList = new int[]
     {
         100,
@@ -60,7 +61,7 @@ public class MapScreenInterfaceMap
         100,
         300,
     };
-    
+
     // list of map sectors that player isn't allowed to even highlight
     private bool[,] sBadSectorsList = new bool[Globals.WORLD_MAP_X, Globals.WORLD_MAP_X];
     private readonly IVideoManager video;
@@ -126,8 +127,8 @@ public class MapScreenInterfaceMap
         this.video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
 
         // set up various palettes
-        this.pMapLTRedPalette = this.video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0,   blueScale: 0, mono: true);
-        this.pMapDKRedPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0,   blueScale: 0, mono: true);
+        this.pMapLTRedPalette = this.video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapDKRedPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
         this.pMapLTGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
         this.pMapDKGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
 
@@ -140,7 +141,7 @@ public class MapScreenInterfaceMap
         HVSURFACE hSrcVSurface;
         int uiDestPitchBYTES;
         int uiSrcPitchBYTES;
-        int  pDestBuf;
+        int pDestBuf;
         int pSrcBuf;
         Rectangle clip;
         int cnt, cnt2;
@@ -150,7 +151,11 @@ public class MapScreenInterfaceMap
         {
             pDestBuf = LockVideoSurface(Globals.guiSAVEBUFFER, out uiDestPitchBYTES);
 
-            CHECKF(GetVideoSurface(hSrcVSurface, Globals.guiBIGMAP));
+            if (!GetVideoSurface(hSrcVSurface, Globals.guiBIGMAP))
+            {
+                return false;
+            }
+
             pSrcBuf = LockVideoSurface(Globals.guiBIGMAP, out uiSrcPitchBYTES);
 
             // clip blits to mapscreen region
@@ -179,10 +184,13 @@ public class MapScreenInterfaceMap
                     iZoomY = SOUTH_ZOOM_BOUND;
                 }
 
-                clip.Left = iZoomX - 2;
-                clip.Right = clip.Left + Globals.MAP_VIEW_WIDTH + 2;
-                clip.Top = iZoomY - 3;
-                clip.Bottom = clip.Top + Globals.MAP_VIEW_HEIGHT - 1;
+                clip = new()
+                {
+                    X = iZoomX - 2,
+                    Width = iZoomX - 2 + Globals.MAP_VIEW_WIDTH + 2,
+                    Y = iZoomY - 3,
+                    Height = iZoomY - 3 + Globals.MAP_VIEW_HEIGHT - 1,
+                };
 
                 /*
                 clip.iLeft=clip.iLeft - 1;
@@ -208,8 +216,8 @@ public class MapScreenInterfaceMap
                 Blt8BPPDataTo16BPPBufferHalf(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + 1, Globals.MAP_VIEW_START_Y);
             }
 
-            UnLockVideoSurface(Globals.guiBIGMAP);
-            UnLockVideoSurface(Globals.guiSAVEBUFFER);
+            //UnLockVideoSurface(Globals.guiBIGMAP);
+            //UnLockVideoSurface(Globals.guiSAVEBUFFER);
 
 
             // shade map sectors (must be done after Tixa/Orta/Mine icons have been blitted, but before icons!)		
@@ -226,18 +234,18 @@ public class MapScreenInterfaceMap
                             if (!Globals.StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
                             {
                                 // sector not visited, not air controlled
-                                ShadeMapElem(cnt, cnt2, MAP_SHADE_DK_GREEN);
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE.DK_GREEN);
                             }
                             else
                             {
                                 // sector not visited, controlled and air not
-                                ShadeMapElem(cnt, cnt2, MAP_SHADE_DK_RED);
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE.DK_RED);
                             }
                         }
                         else
                         {
                             // not visited
-                            ShadeMapElem(cnt, cnt2, MAP_SHADE_BLACK);
+                            ShadeMapElem(cnt, cnt2, MAP_SHADE.BLACK);
                         }
                     }
                     else
@@ -247,12 +255,12 @@ public class MapScreenInterfaceMap
                             if (!Globals.StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
                             {
                                 // sector visited and air controlled
-                                ShadeMapElem(cnt, cnt2, MAP_SHADE_LT_GREEN);
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE.LT_GREEN);
                             }
                             else
                             {
                                 // sector visited but not air controlled
-                                ShadeMapElem(cnt, cnt2, MAP_SHADE_LT_RED);
+                                ShadeMapElem(cnt, cnt2, MAP_SHADE.LT_RED);
                             }
                         }
                     }
@@ -401,6 +409,36 @@ public class MapScreenInterfaceMap
             this.guiLeaveListOwnerProfileId[iCounter] = SoldierControl.NO_PROFILE;
         }
     }
+
+    public static void RenderMapBorder()
+    {
+        // renders the actual border to the guiSAVEBUFFER
+        HVOBJECT hHandle;
+
+        /*	
+            if( fDisabledMapBorder )
+            {
+                return;
+            }
+        */
+
+        if (fShowMapInventoryPool)
+        {
+            // render background, then leave
+            BlitInventoryPoolGraphic();
+            return;
+        }
+
+        // get and blt border
+        GetVideoObject(hHandle, Globals.guiMapBorder);
+        BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT_SRCTRANSPARENCY, null);
+
+        // show the level marker
+        DisplayCurrentLevelMarker();
+
+
+        return;
+    }
 }
 
 public struct MERC_LEAVE_ITEM
@@ -417,4 +455,13 @@ public struct FASTHELPREGION
     public int iX;
     public int iY;
     public int iW;
+}
+
+public enum MAP_SHADE
+{
+    BLACK = 0,
+    LT_GREEN,
+    DK_GREEN,
+    LT_RED,
+    DK_RED,
 }

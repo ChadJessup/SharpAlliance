@@ -15,8 +15,6 @@ public class SaveLoadMap
         this.overhead = overhead;
     }
 
-    public bool gfApplyChangesToTempFile { get; set; } = false;
-
     public static void AddRemoveObjectToMapTempFile(int uiMapIndex, int usIndex)
     {
         MODIFY_MAP Map;
@@ -45,7 +43,7 @@ public class SaveLoadMap
             usImageType = (int)uiType,
             usSubImageIndex = (int)usSubIndex!,
 
-            ubType = SLM_REMOVE_OBJECT
+            ubType = SLM.REMOVE_OBJECT
         };
 
         SaveModifiedMapStructToMapTempFile(out Map, Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ);
@@ -58,7 +56,48 @@ public struct MODIFY_MAP
     public int usImageType;         //graphic index
     public int usSubImageIndex;     //
                                 //	ushort	usIndex;
-    public byte ubType;                       // the layer it will be applied to
+    public SLM ubType;                       // the layer it will be applied to
 
     public byte ubExtra;					// Misc. variable used to strore arbritary values
+}
+
+//Used for the ubType in the MODIFY_MAP struct  
+public enum SLM
+{
+    NONE,
+
+    //Adding a map graphic
+    LAND,
+    OBJECT,
+    STRUCT,
+    SHADOW,
+    MERC,                                       //Should never be used
+    ROOF,
+    ONROOF,
+    TOPMOST,                                //Should never be used
+
+    // For Removing
+    REMOVE_LAND,
+    REMOVE_OBJECT,
+    REMOVE_STRUCT,
+    REMOVE_SHADOW,
+    REMOVE_MERC,                                        //Should never be used
+    REMOVE_ROOF,
+    REMOVE_ONROOF,
+    REMOVE_TOPMOST,                             //Should never be used
+
+    //Smell, or Blood is used
+    BLOOD_SMELL,
+
+    // Damage a particular struct
+    DAMAGED_STRUCT,
+
+    //Exit Grids
+    EXIT_GRIDS,
+
+    // State of Openable structs
+    OPENABLE_STRUCT,
+
+    // Modify window graphic & structure 
+    WINDOW_HIT,
 }

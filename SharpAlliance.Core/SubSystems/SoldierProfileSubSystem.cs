@@ -26,7 +26,6 @@ public class SoldierProfileSubSystem
     private readonly IFileManager fileManager;
     private readonly DialogControl dialogs;
 
-    private readonly ItemSubSystem items;
     private readonly TownReputations townReputations;
     private readonly Cars cars;
     private int gubNumTerrorists = 0;
@@ -35,14 +34,12 @@ public class SoldierProfileSubSystem
     public SoldierProfileSubSystem(
         ILogger<SoldierProfileSubSystem> logger,
         IFileManager fileManager,
-        ItemSubSystem itemSubSystem,
         TownReputations townRep,
         Cars carPortraits)
     {
         this.logger = logger;
         this.fileManager = fileManager;
         this.rnd = new Random(DateTime.UtcNow.Millisecond);
-        this.items = itemSubSystem;
         this.townReputations = townRep;
         this.cars = carPortraits;
     }
@@ -133,9 +130,9 @@ public class SoldierProfileSubSystem
                 {
                     usItem = Globals.gMercProfiles[npcId].inv[uiLoop2];
 
-                    if (this.items[usItem].usItemClass.HasFlag(IC.GUN) && this.items.ExtendedGunListGun(usItem))
+                    if (Globals.Item[usItem].usItemClass.HasFlag(IC.GUN) && ItemSubSystem.ExtendedGunListGun(usItem))
                     {
-                        usNewGun = this.items.StandardGunListReplacement(usItem);
+                        usNewGun = ItemSubSystem.StandardGunListReplacement(usItem);
                         if (usNewGun != Items.NONE)
                         {
                             Globals.gMercProfiles[npcId].inv[uiLoop2] = usNewGun;
@@ -144,9 +141,9 @@ public class SoldierProfileSubSystem
                             for (uiLoop3 = 0; uiLoop3 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop3++)
                             {
                                 usAmmo = Globals.gMercProfiles[npcId].inv[uiLoop3];
-                                if (this.items[usAmmo].usItemClass.HasFlag(IC.AMMO))
+                                if (Globals.Item[usAmmo].usItemClass.HasFlag(IC.AMMO))
                                 {
-                                    usNewAmmo = this.items.FindReplacementMagazineIfNecessary(usItem, usAmmo, usNewGun);
+                                    usNewAmmo = ItemSubSystem.FindReplacementMagazineIfNecessary(usItem, usAmmo, usNewGun);
                                     if (usNewAmmo != Items.NONE)
                                     {
                                         // found a new magazine, replace...
@@ -172,15 +169,15 @@ public class SoldierProfileSubSystem
                 if (usItem != Items.NONE)
                 {
                     // Check if it's a gun
-                    if (this.items[usItem].usItemClass.HasFlag(IC.GUN))
+                    if (Globals.Item[usItem].usItemClass.HasFlag(IC.GUN))
                     {
                         Globals.gMercProfiles[npcId].bMainGunAttractiveness = WeaponTypes.Weapon[(int)usItem].ubDeadliness;
                     }
 
                     // If it's armour
-                    if (this.items[usItem].usItemClass.HasFlag(IC.ARMOUR))
+                    if (Globals.Item[usItem].usItemClass.HasFlag(IC.ARMOUR))
                     {
-                        Globals.gMercProfiles[npcId].bArmourAttractiveness = WeaponTypes.Armour[this.items[usItem].ubClassIndex].ubProtection;
+                        Globals.gMercProfiles[npcId].bArmourAttractiveness = WeaponTypes.Armour[Globals.Item[usItem].ubClassIndex].ubProtection;
                     }
                 }
             }
@@ -198,7 +195,7 @@ public class SoldierProfileSubSystem
                     usItem = Globals.gMercProfiles[npcId].inv[uiLoop2];
 
                     //add the cost
-                    Globals.gMercProfiles[npcId].usOptionalGearCost += this.items[usItem].usPrice;
+                    Globals.gMercProfiles[npcId].usOptionalGearCost += Globals.Item[usItem].usPrice;
                 }
             }
 

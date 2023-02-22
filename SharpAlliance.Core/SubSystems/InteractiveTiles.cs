@@ -19,7 +19,6 @@ public class InteractiveTiles
     private readonly GameSettings gGameSettings;
     private readonly RenderWorld renderWorld;
     private readonly TileCache tileCache;
-    private readonly IsometricUtils isometricUtils;
     private readonly Overhead overhead;
     private readonly WorldStructures worldStructures;
 
@@ -28,7 +27,6 @@ public class InteractiveTiles
         GameSettings gameSettings,
         RenderWorld renderWorld,
         TileCache tileCache,
-        IsometricUtils isometricUtils,
         Overhead overhead,
         WorldStructures worldStructures)
     {
@@ -36,7 +34,6 @@ public class InteractiveTiles
         this.gGameSettings = gameSettings;
         this.renderWorld = renderWorld;
         this.tileCache = tileCache;
-        IsometricUtils = isometricUtils;
         this.overhead = overhead;
         this.worldStructures = worldStructures;
     }
@@ -313,7 +310,7 @@ public class InteractiveTiles
         if (pNewStructure != null)
         {
             RecompileLocalMovementCosts(sGridNo);
-            SetRenderFlags(RENDER_FLAG_FULL);
+            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             if (pNewStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
             {
                 // just turned a switch on!
@@ -416,7 +413,7 @@ public class InteractiveTiles
 
         if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.CACHEDANITILE))
         {
-            pTrav = (this.tileCache.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo.pETRLEObject[pNode.pAniTile.sCurrentFrame]);
+            pTrav = (Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo.pETRLEObject[pNode.pAniTile.sCurrentFrame]);
         }
         else
         {
@@ -449,9 +446,9 @@ public class InteractiveTiles
         sScreenY -= Globals.gpWorldLevelData[sGridNo].sHeight;
 
         // Adjust based on interface level
-        if (Interface.gsInterfaceLevel > 0)
+        if (Globals.gsInterfaceLevel > 0)
         {
-            sScreenY += Interface.ROOF_LEVEL_HEIGHT;
+            sScreenY += Globals.ROOF_LEVEL_HEIGHT;
         }
 
         // Adjust for render height
@@ -485,7 +482,7 @@ public class InteractiveTiles
         LEVELNODE? pNode;
 
         // OK, for now, don't allow any interactive tiles on higher interface level!
-        if (Interface.gsInterfaceLevel > 0)
+        if (Globals.gsInterfaceLevel > 0)
         {
             return;
         }
@@ -877,7 +874,7 @@ public class InteractiveTiles
         if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.CACHEDANITILE))
         {
             //Check it!
-            return (CheckVideoObjectScreenCoordinateInData(this.tileCache.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo, pNode.pAniTile.sCurrentFrame, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
+            return (CheckVideoObjectScreenCoordinateInData(Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo, pNode.pAniTile.sCurrentFrame, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
 
         }
         else

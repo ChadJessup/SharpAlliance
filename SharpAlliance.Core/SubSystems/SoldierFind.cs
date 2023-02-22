@@ -45,9 +45,9 @@ public class SoldierFind
 
         pMercFlags = 0;
 
-        if (GetMouseMapPos(out sMapPos))
+        if (IsometricUtils.GetMouseMapPos(out sMapPos))
         {
-            if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel)))
+            if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Globals.gsInterfaceLevel)))
             {
                 return (true);
             }
@@ -71,9 +71,9 @@ public class SoldierFind
 
         pMercFlags = 0;
 
-        if (GetMouseMapPos(out sMapPos))
+        if (IsometricUtils.GetMouseMapPos(out sMapPos))
         {
-            if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel)))
+            if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Globals.gsInterfaceLevel)))
             {
                 return (true);
             }
@@ -380,7 +380,7 @@ public class SoldierFind
                         // Selective means don't give out enemy mercs if they are not visible
 
                         ///&& !NewOKDestination( pSoldier, sGridNo, true, (int)gsInterfaceLevel )
-                        if (pSoldier.sGridNo == sGridNo && !NewOKDestination(pSoldier, sGridNo, true, (int)Interface.gsInterfaceLevel))
+                        if (pSoldier.sGridNo == sGridNo && !NewOKDestination(pSoldier, sGridNo, true, (int)Globals.gsInterfaceLevel))
                         {
                             // Set it!
                             ubBestMerc = pSoldier.ubID;
@@ -429,7 +429,7 @@ public class SoldierFind
         // Have we initalized for this yet?
         if (!gfHandleStack)
         {
-            if (FindSoldier(usMapPos, out int usSoldierIndex, out FIND_SOLDIER_RESPONSES uiMercFlags, FINDSOLDIERSAMELEVEL(Interface.gsInterfaceLevel) | FIND_SOLDIER.BEGINSTACK))
+            if (FindSoldier(usMapPos, out int usSoldierIndex, out FIND_SOLDIER_RESPONSES uiMercFlags, FINDSOLDIERSAMELEVEL(Globals.gsInterfaceLevel) | FIND_SOLDIER.BEGINSTACK))
             {
                 gfHandleStack = true;
             }
@@ -965,7 +965,7 @@ public class SoldierFind
         // Adjust for level height
         if (ubLevel > 0)
         {
-            sScreenY -= Interface.ROOF_LEVEL_HEIGHT;
+            sScreenY -= Globals.ROOF_LEVEL_HEIGHT;
         }
 
         psScreenX = sScreenX;

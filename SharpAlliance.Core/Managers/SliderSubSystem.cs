@@ -73,7 +73,7 @@ namespace SharpAlliance.Core.Managers
                 this.OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y + 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y + 1), pSlider.usBackGroundColor, img);
 
                 //invalidate the area
-                this.video.InvalidateRegion(new(
+                VeldridVideoManager.InvalidateRegion(new(
                     pSlider.usPos.X,
                     pSlider.usPos.Y - 2,
                     pSlider.usPos.X + pSlider.ubSliderWidth + 1,
@@ -111,7 +111,7 @@ namespace SharpAlliance.Core.Managers
                     //this.video.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
 
                     //invalidate the old area
-                    this.video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+                    VeldridVideoManager.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
                 }
 
                 //Blit the new rect
@@ -147,27 +147,27 @@ namespace SharpAlliance.Core.Managers
             if (pSlider.uiFlags.HasFlag(SliderDirection.SLIDER_VERTICAL))
             {
                 //display the slider box
-                hPixHandle = this.video.GetVideoObject(this.guiSliderBoxImageTag);
-                this.video.BltVideoObject(hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top, 0);
+                hPixHandle = VeldridVideoManager.GetVideoObject(this.guiSliderBoxImageTag);
+                VeldridVideoManager.BltVideoObject(hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top, 0);
 
                 //invalidate the area
-                this.video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+                VeldridVideoManager.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
             }
             else
             {
                 //display the slider box
-                hPixHandle = this.video.GetVideoObject(this.guiSliderBoxImageTag);
-                this.video.BltVideoObject(hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, 0);
+                hPixHandle = VeldridVideoManager.GetVideoObject(this.guiSliderBoxImageTag);
+                VeldridVideoManager.BltVideoObject(hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, 0);
 
                 //invalidate the area
-                this.video.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
+                VeldridVideoManager.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
             }
         }
 
         private void OptDisplayLine(int usStartX, int usStartY, int EndX, int EndY, Color iColor, Image<Rgba32> image)
         {
             // draw the line 
-            this.video.LineDraw(usStartX, usStartY, EndX, EndY, iColor, image);
+            VeldridVideoManager.LineDraw(usStartX, usStartY, EndX, EndY, iColor, image);
         }
 
         private void CalculateNewSliderIncrement(ref Slider pSlider, int usPos)

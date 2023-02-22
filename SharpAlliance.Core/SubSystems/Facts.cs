@@ -306,7 +306,7 @@ public class Facts
                 gubFact[usFact] = IsHisMineAtMaxProduction(ubProfileID);
                 break;
             case FACT.DYNAMO_IN_J9:
-                gubFact[usFact] = Quests.CheckNPCSector(NPCID.DYNAMO, 9, MAP_ROW.J, 0) && QueenCommand.NumEnemiesInAnySector(9, 10, 0) > 0;
+                gubFact[usFact] = Quests.CheckNPCSector(NPCID.DYNAMO, 9, MAP_ROW.J, 0) && QueenCommand.NumEnemiesInAnySector(9, (MAP_ROW)10, 0) > 0;
                 break;
             case FACT.DYNAMO_ALIVE:
                 gubFact[usFact] = (Globals.gMercProfiles[NPCID.DYNAMO].bMercStatus != MercStatus.MERC_IS_DEAD);

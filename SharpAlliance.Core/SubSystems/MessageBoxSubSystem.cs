@@ -28,7 +28,6 @@ namespace SharpAlliance.Core.SubSystems
         private readonly MercTextBox mercTextBox;
         private readonly IScreenManager screens;
         private readonly Overhead overhead;
-        private readonly ButtonSubSystem buttons;
         private readonly RenderWorld renderWorld;
         private readonly CursorSubSystem cursor;
         private readonly IInputManager inputs;
@@ -51,7 +50,6 @@ namespace SharpAlliance.Core.SubSystems
             GameContext context,
             MouseSubSystem mouseSubSystem,
             CursorSubSystem cursorSubSystem,
-            ButtonSubSystem buttonSubSystem,
             MercTextBox mercTextBox,
             RenderWorld renderWorld,
             IInputManager inputManager,
@@ -62,7 +60,6 @@ namespace SharpAlliance.Core.SubSystems
         {
             this.gGameSettings = gameSettings;
             this.mercTextBox = mercTextBox;
-            this.buttons = buttonSubSystem;
             this.renderWorld = renderWorld;
             this.cursor = cursorSubSystem;
             this.screens = screenManager;
@@ -130,7 +127,7 @@ namespace SharpAlliance.Core.SubSystems
                     ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                     // Add button images
-                    gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
+                    gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                     usCursor = CURSOR.NORMAL;
@@ -142,7 +139,7 @@ namespace SharpAlliance.Core.SubSystems
                     ubMercBoxBorder = MercTextBoxBorder.RED_MERC_POPUP_BORDER;
 
                     // Add button images
-                    gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxRedButtons.sti", -1, 0, -1, 1, -1);
+                    gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxRedButtons.sti", -1, 0, -1, 1, -1);
 
                     ubFontColor = (FontColor)2;
                     ubFontShadowColor = FontShadow.NO_SHADOW;
@@ -154,7 +151,7 @@ namespace SharpAlliance.Core.SubSystems
                     ubMercBoxBorder = MercTextBoxBorder.BLUE_MERC_POPUP_BORDER;
 
                     // Add button images
-                    gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
+                    gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
 
                     ubFontColor = (FontColor)2;
                     ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
@@ -165,7 +162,7 @@ namespace SharpAlliance.Core.SubSystems
                     ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                     // Add button images
-                    gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
+                    gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
 
                     ubFontColor = (FontColor)2;
                     ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
@@ -177,7 +174,7 @@ namespace SharpAlliance.Core.SubSystems
                     ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                     // Add button images
-                    gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 2, -1, 3, -1);
+                    gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 2, -1, 3, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                     usCursor = CURSOR.NORMAL;
@@ -189,7 +186,7 @@ namespace SharpAlliance.Core.SubSystems
                     ubMercBoxBorder = MercTextBoxBorder.LAPTOP_POP_BORDER;
 
                     // Add button images
-                    gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
+                    gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                     usCursor = CURSOR.LAPTOP_SCREEN;
@@ -200,7 +197,7 @@ namespace SharpAlliance.Core.SubSystems
                     ubMercBoxBorder = MercTextBoxBorder.BASIC_MERC_POPUP_BORDER;
 
                     // Add button images
-                    gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxbuttons.sti", -1, 0, -1, 1, -1);
+                    gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxbuttons.sti", -1, 0, -1, 1, -1);
                     ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                     ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                     usCursor = CURSOR.NORMAL;
@@ -322,7 +319,7 @@ namespace SharpAlliance.Core.SubSystems
                 sButtonX = sBlankSpace / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                gMsgBox.uiButton[0] = this.buttons.CreateIconAndTextButton(
+                gMsgBox.uiButton[0] = ButtonSubSystem.CreateIconAndTextButton(
                     gMsgBox.iButtonImages,
                     "1",
                     FontStyle.FONT12ARIAL,
@@ -333,43 +330,43 @@ namespace SharpAlliance.Core.SubSystems
                     ButtonFlags.BUTTON_TOGGLE,
                     MSYS_PRIORITY.HIGHEST,
                     null, NumberedMsgBoxCallback);
-                this.buttons.SetButtonUserData(gMsgBox.uiButton[0], 0, 1);
-                this.buttons.SetButtonCursor(gMsgBox.uiButton[0], usCursor);
+                ButtonSubSystem.SetButtonUserData(gMsgBox.uiButton[0], 0, 1);
+                ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[0], usCursor);
 
                 sButtonX += MSGBOX_SMALL_BUTTON_WIDTH + MSGBOX_SMALL_BUTTON_X_SEP;
-                gMsgBox.uiButton[1] = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, "2", FontStyle.FONT12ARIAL,
+                gMsgBox.uiButton[1] = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, "2", FontStyle.FONT12ARIAL,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                  new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)),
                                                                  ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NumberedMsgBoxCallback);
-                this.buttons.SetButtonUserData(gMsgBox.uiButton[1], 0, 2);
-                this.buttons.SetButtonCursor(gMsgBox.uiButton[1], usCursor);
+                ButtonSubSystem.SetButtonUserData(gMsgBox.uiButton[1], 0, 2);
+                ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[1], usCursor);
 
                 sButtonX += MSGBOX_SMALL_BUTTON_WIDTH + MSGBOX_SMALL_BUTTON_X_SEP;
-                gMsgBox.uiButton[2] = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, "3", FontStyle.FONT12ARIAL,
+                gMsgBox.uiButton[2] = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, "3", FontStyle.FONT12ARIAL,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                  new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NumberedMsgBoxCallback);
-                this.buttons.SetButtonUserData(gMsgBox.uiButton[2], 0, 3);
-                this.buttons.SetButtonCursor(gMsgBox.uiButton[2], usCursor);
+                ButtonSubSystem.SetButtonUserData(gMsgBox.uiButton[2], 0, 3);
+                ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[2], usCursor);
 
                 sButtonX += MSGBOX_SMALL_BUTTON_WIDTH + MSGBOX_SMALL_BUTTON_X_SEP;
-                gMsgBox.uiButton[3] = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, "4", FontStyle.FONT12ARIAL,
+                gMsgBox.uiButton[3] = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, "4", FontStyle.FONT12ARIAL,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ubFontColor, ubFontShadowColor,
                                                                  ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                  new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  null, NumberedMsgBoxCallback);
-                this.buttons.SetButtonUserData(gMsgBox.uiButton[3], 0, 4);
-                this.buttons.SetButtonCursor(gMsgBox.uiButton[3], usCursor);
-                this.buttons.ForceButtonUnDirty(gMsgBox.uiButton[3]);
-                this.buttons.ForceButtonUnDirty(gMsgBox.uiButton[2]);
-                this.buttons.ForceButtonUnDirty(gMsgBox.uiButton[1]);
-                this.buttons.ForceButtonUnDirty(gMsgBox.uiButton[0]);
+                ButtonSubSystem.SetButtonUserData(gMsgBox.uiButton[3], 0, 4);
+                ButtonSubSystem.SetButtonCursor(gMsgBox.uiButton[3], usCursor);
+                ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiButton[3]);
+                ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiButton[2]);
+                ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiButton[1]);
+                ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiButton[0]);
 
             }
             else
@@ -385,14 +382,14 @@ namespace SharpAlliance.Core.SubSystems
 
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiOKButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, EnglishText.pMessageStrings[MSG.OK], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiOKButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, EnglishText.pMessageStrings[MSG.OK], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, OKMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiOKButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
                 }
 
 
@@ -403,14 +400,14 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - GetMSgBoxButtonWidth(gMsgBox.iButtonImages)) / 2;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiOKButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, EnglishText.pMessageStrings[MSG.CANCEL], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiOKButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, EnglishText.pMessageStrings[MSG.CANCEL], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, OKMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiOKButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
 
                 }
 
@@ -419,24 +416,24 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.YES], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.YES], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, YESMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
 
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.NO], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.NO], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, NOMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
 
                 }
 
@@ -445,24 +442,24 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pUpdatePanelButtons[0], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pUpdatePanelButtons[0], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, YESMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
 
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pUpdatePanelButtons[1], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pUpdatePanelButtons[1], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, NOMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
 
                 }
 
@@ -471,24 +468,24 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.OK], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.OK], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, OKMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
 
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.REHIRE], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.REHIRE], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, ContractMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
 
                 }
 
@@ -497,33 +494,33 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 3;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.YES], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.YES], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, YESMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.NO], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.NO], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, NOMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
 
-                    gMsgBox.uiOKButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.REHIRE], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiOKButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.REHIRE], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, ContractMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiOKButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
 
                 }
 
@@ -533,33 +530,33 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 3;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton1, FontStyle.FONT12ARIAL,
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton1, FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, YESMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton2, FontStyle.FONT12ARIAL,
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton2, FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, NOMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
 
-                    gMsgBox.uiOKButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.REHIRE], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiOKButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.REHIRE], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, ContractMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiOKButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
 
                 }
 
@@ -568,25 +565,25 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton1, FontStyle.FONT12ARIAL,
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton1, FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, YESMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton2, FontStyle.FONT12ARIAL,
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, gzUserDefinedButton2, FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)),
                                                                      ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, NOMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
                 }
 
                 if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
@@ -594,33 +591,33 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 3;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.YES], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.YES], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, YESMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.NO], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.NO], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, NOMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
 
-                    gMsgBox.uiOKButton = this.buttons.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.LIE], FontStyle.FONT12ARIAL,
+                    gMsgBox.uiOKButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.LIE], FontStyle.FONT12ARIAL,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ubFontColor, ubFontShadowColor,
                                                                      ButtonTextJustifies.TEXT_CJUSTIFIED,
                                                                      new((gMsgBox.sX + sButtonX + 2 * (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      null, LieMsgBoxCallback);
-                    this.buttons.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiOKButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiOKButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiOKButton);
 
                 }
 
@@ -629,7 +626,7 @@ namespace SharpAlliance.Core.SubSystems
                     sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                     sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                    gMsgBox.uiYESButton = this.buttons.CreateIconAndTextButton(
+                    gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(
                         gMsgBox.iButtonImages,
                         pMessageStrings[MSG.OK],
                         FontStyle.FONT12ARIAL,
@@ -639,11 +636,11 @@ namespace SharpAlliance.Core.SubSystems
                         new((gMsgBox.sX + sButtonX), (gMsgBox.sY + sButtonY)), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                         null, YESMsgBoxCallback);
 
-                    this.buttons.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
 
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiYESButton);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
-                    gMsgBox.uiNOButton = this.buttons.CreateIconAndTextButton(
+                    gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(
                         gMsgBox.iButtonImages,
                         EnglishText.pMessageStrings[MSG.SKIP],
                         FontStyle.FONT12ARIAL,
@@ -658,8 +655,8 @@ namespace SharpAlliance.Core.SubSystems
                         null,
                         NOMsgBoxCallback);
 
-                    this.buttons.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
-                    this.buttons.ForceButtonUnDirty(gMsgBox.uiNOButton);
+                    ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
+                    ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
                 }
 
             }
@@ -683,7 +680,7 @@ namespace SharpAlliance.Core.SubSystems
 
         private int GetMSgBoxButtonWidth(ButtonPic iButtonImage)
         {
-            return this.buttons.GetWidthOfButtonPic(iButtonImage, iButtonImage.OnNormal);
+            return ButtonSubSystem.GetWidthOfButtonPic(iButtonImage, iButtonImage.OnNormal);
         }
 
         void MsgBoxClickCallback(ref MouseRegion pRegion, MouseCallbackReasons iReason)
@@ -827,7 +824,7 @@ namespace SharpAlliance.Core.SubSystems
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
                 // OK, exit
-                gMsgBox.bHandled = (MessageBoxReturnCode)this.buttons.GetButtonnUserData(btn, 0);
+                gMsgBox.bHandled = (MessageBoxReturnCode)ButtonSubSystem.GetButtonnUserData(btn, 0);
             }
 
         }
@@ -845,73 +842,73 @@ namespace SharpAlliance.Core.SubSystems
             //Delete buttons!
             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
             {
-                this.buttons.RemoveButton(gMsgBox.uiButton[0]);
-                this.buttons.RemoveButton(gMsgBox.uiButton[1]);
-                this.buttons.RemoveButton(gMsgBox.uiButton[2]);
-                this.buttons.RemoveButton(gMsgBox.uiButton[3]);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiButton[0]);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiButton[1]);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiButton[2]);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiButton[3]);
             }
             else
             {
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiOKButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
-                    this.buttons.RemoveButton(gMsgBox.uiOKButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
-                    this.buttons.RemoveButton(gMsgBox.uiOKButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
-                    this.buttons.RemoveButton(gMsgBox.uiOKButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 }
 
                 if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
                 {
-                    this.buttons.RemoveButton(gMsgBox.uiYESButton);
-                    this.buttons.RemoveButton(gMsgBox.uiNOButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                    ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 }
 
             }
 
             // Delete button images
-            this.buttons.UnloadButtonImage(gMsgBox.iButtonImages);
+            ButtonSubSystem.UnloadButtonImage(gMsgBox.iButtonImages);
 
             // Unpause game....
             this.clock.UnLockPauseState();
@@ -980,7 +977,7 @@ namespace SharpAlliance.Core.SubSystems
                     }
                     else
                     {
-                        SetRenderFlags(RenderingFlags.FULL);
+                        RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                     }
                     break;
                 case ScreenName.MAP_SCREEN:
@@ -1048,8 +1045,8 @@ namespace SharpAlliance.Core.SubSystems
 
     public enum MessageBoxStyle
     {
-        MSG_BOX_BASIC_STYLE = 0,                                                        // We'll have other styles, like in laptop, etc
-                                                                                        // Graphics are all that are required here...
+        MSG_BOX_BASIC_STYLE = 0,    // We'll have other styles, like in laptop, etc
+                                    // Graphics are all that are required here...
         MSG_BOX_RED_ON_WHITE,
         MSG_BOX_BLUE_ON_GREY,
         MSG_BOX_BASIC_SMALL_BUTTONS,

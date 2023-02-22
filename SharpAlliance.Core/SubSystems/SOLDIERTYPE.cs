@@ -555,7 +555,7 @@ namespace SharpAlliance.Core.SubSystems
 
         int bCurrentCivQuote;
         int bCurrentCivQuoteDelta;
-        public int ubMiscSoldierFlags;
+        public SOLDIER_MISC ubMiscSoldierFlags;
         int ubReasonCantFinishMove;
 
         int sLocationOfFadeStart;

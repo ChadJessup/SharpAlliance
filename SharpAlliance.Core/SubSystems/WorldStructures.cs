@@ -15,12 +15,6 @@ public class WorldStructures
     private readonly ILogger<WorldStructures> logger;
     private readonly World world;
 
-    public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
-    public const int IGNORE_PEOPLE_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 101);
-    public const int FIRST_AVAILABLE_STRUCTURE_ID = (INVALID_STRUCTURE_ID + 2);
-
-    public int gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
-
     public WorldStructures(
         ILogger<WorldStructures> logger,
         World world)
@@ -97,7 +91,7 @@ public class WorldStructures
         }
 
         // first check to see if the structure will be blocked
-        if (!OkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, INVALID_STRUCTURE_ID))
+        if (!OkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, Globals.INVALID_STRUCTURE_ID))
         {
             return (null);
         }
@@ -181,7 +175,7 @@ public class WorldStructures
             if (Globals.gusNextAvailableStructureID == 0)
             {
                 // skip past the #s for soldiers' structures and the invalid structure #
-                Globals.gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
+                Globals.gusNextAvailableStructureID = Globals.FIRST_AVAILABLE_STRUCTURE_ID;
             }
             usStructureID = Globals.gusNextAvailableStructureID;
         }
@@ -332,7 +326,7 @@ public class WorldStructures
             bLevel,
             pDBStructureRef,
             sExclusionID,
-            sExclusionID == IGNORE_PEOPLE_STRUCTURE_ID));
+            sExclusionID == Globals.IGNORE_PEOPLE_STRUCTURE_ID));
     }
 
     public static bool OkayToAddStructureToTile(
@@ -399,7 +393,7 @@ public class WorldStructures
 
                     // ATE:
                     // ignore this one if it has the same ID num as exclusion
-                    if (sExclusionID != INVALID_STRUCTURE_ID)
+                    if (sExclusionID != Globals.INVALID_STRUCTURE_ID)
                     {
                         if (pExistingStructure.usStructureID == sExclusionID)
                         {
@@ -514,7 +508,7 @@ public class WorldStructures
                 {
                     // ATE:
                     // ignore this one if it has the same ID num as exclusion
-                    if (sExclusionID != INVALID_STRUCTURE_ID)
+                    if (sExclusionID != Globals.INVALID_STRUCTURE_ID)
                     {
                         if (pExistingStructure.usStructureID == sExclusionID)
                         {

@@ -663,8 +663,8 @@ namespace SharpAlliance.Core.Screens
 
         private void RenderCreditScreen()
         {
-            HVOBJECT hPixHandle = this.video.GetVideoObject(this.guiCreditBackGroundImageKey);
-            this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+            HVOBJECT hPixHandle = VeldridVideoManager.GetVideoObject(this.guiCreditBackGroundImageKey);
+            VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
             /*
                 HVSURFACE hVSurface;
 
@@ -678,7 +678,7 @@ namespace SharpAlliance.Core.Screens
                 //blit everything to the save buffer ( cause the save buffer can bleed through )
                 this.video.BlitBufferToBuffer(0, 0, 640, 480);
 
-                this.gui.Buttons.UnmarkButtonsDirty();
+                ButtonSubSystem.UnmarkButtonsDirty();
             }
 
             this.video.InvalidateScreen();

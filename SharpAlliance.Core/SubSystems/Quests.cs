@@ -550,7 +550,7 @@ public class Quests
         {
             return (false);
         }
-        return (pNPC.ubMiscSoldierFlags & SOLDIER_MISC_HEARD_GUNSHOT);
+        return (pNPC.ubMiscSoldierFlags.HasFlag(SOLDIER_MISC.HEARD_GUNSHOT));
     }
 
     public static bool InTownSectorWithTrainingLoyalty(int sSectorX, int sSectorY)

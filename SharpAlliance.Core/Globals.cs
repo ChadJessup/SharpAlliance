@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
@@ -65,6 +66,9 @@ public partial class Globals
     public static int[] gubWorldRoomHidden = new int[MAX_ROOMS];
 
     public static StrategicMapElement[] StrategicMap = new StrategicMapElement[Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y];
+    public static List<GARRISON_GROUP> gGarrisonGroup = new();
+
+    public static bool gfApplyChangesToTempFile { get; set; } = false;
 
 
     public string? gubErrorText;
@@ -449,9 +453,52 @@ public partial class Globals
 
     public const int USABLE = 10;      // minimum work% of items to still be usable
 
+    // border and bottom buttons
+    public static GUI_BUTTON[] giMapBorderButtons = new GUI_BUTTON[6];
+    public static int[] guiMapButtonInventory = { -1, -1, -1, -1, -1, -1 };
+
+    public static List<TILE_CACHE_STRUCT> gpTileCacheStructInfo = new();
+    public static List<TILE_CACHE_ELEMENT> gpTileCache = new();
+
+    public const int TILE_CACHE_START_INDEX = 36000;
+    public static int guiNumTileCacheStructs = 0;
+
+    public static DISABLED_STYLE gbDisabledButtonStyle;
+    public static GUI_BUTTON gpCurrentFastHelpButton;
+
+    public const int MAX_GENERIC_PICS = 40;
+    public const int MAX_BUTTON_ICONS = 40;
+    public const int MAX_BUTTON_PICS = 256;
+    public const int MAX_BUTTONS = 400;
+
+    public const Surfaces BUTTON_USE_DEFAULT = Surfaces.Unknown;
+    public static readonly int? BUTTON_NO_FILENAME = null;
+    public static readonly GuiCallback BUTTON_NO_CALLBACK = (ref GUI_BUTTON o, MouseCallbackReasons r) => { };
+    public const int BUTTON_NO_IMAGE = -1;
+    public const int BUTTON_NO_SLOT = -1;
+
+    public const int BUTTON_INIT = 1;
+    public const int BUTTON_WAS_CLICKED = 2;
+    public static bool gfDelayButtonDeletion = false;
+    public static bool gfPendingButtonDeletion = false;
+    public const string DEFAULT_GENERIC_BUTTON_OFF = "GENBUTN.STI";
+    public const string DEFAULT_GENERIC_BUTTON_ON = "GENBUTN2.STI";
+    public const string DEFAULT_GENERIC_BUTTON_OFF_HI = "GENBUTN3.STI";
+    public const string DEFAULT_GENERIC_BUTTON_ON_HI = "GENBUTN4.STI";
+
     public const int DIRTYLEVEL0 = 0;
     public const int DIRTYLEVEL1 = 1;
     public const int DIRTYLEVEL2 = 2;
+
+    public static bool gfRenderHilights = true;
+
+    public static GUI_BUTTON? gpAnchoredButton;
+    public static GUI_BUTTON? gpPrevAnchoredButton;
+    public static bool gfAnchoredState;
+
+    public static GROUP? gpGroupList;
+    public static GROUP? gpPendingSimultaneousGroup = null;
+
 
     public static UICursorDefines guiCurUICursor = UICursorDefines.NO_UICURSOR;
     public static UICursorDefines guiOldUICursor = UICursorDefines.NO_UICURSOR;
@@ -507,7 +554,10 @@ public partial class Globals
     public const int TIXA_SECTOR_Y = 10;
     public const int INVALID_ANIMATION_SURFACE = 32000;
 
-    public int gubCheatLevel { get; internal set; }
+    public static int gubCheatLevel { get; internal set; }
+    public static bool fShowAttributeMenu { get; internal set; }
+    public static bool fPausedMarkButtonsDirtyFlag { get; internal set; }
+    public static bool fDisableHelpTextRestoreFlag { get; internal set; }
 
     // wait time until temp path is drawn, from placing cursor on a map grid
     public const int MIN_WAIT_TIME_FOR_TEMP_PATH = 200;
@@ -673,5 +723,239 @@ public partial class Globals
         { UICursorDefines.JUMP_OVER_UICURSOR, new (UICursorDefines.JUMP_OVER_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.JUMP_OVER, 0) },
         { UICursorDefines.REFUEL_GREY_UICURSOR, new (UICursorDefines.REFUEL_GREY_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.FUEL, 0) },
         { UICursorDefines.REFUEL_RED_UICURSOR, new(UICursorDefines.REFUEL_RED_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.FUEL_RED, 0) },
+};
+
+    public static int gsInterfaceLevel { get; set; }
+    public InterfacePanelDefines gsCurInterfacePanel { get; internal set; }
+    public static MouseRegion? gViewportRegion { get; set; }
+    public static bool gfUIStanceDifferent { get; set; }
+
+    public const int ROOF_LEVEL_HEIGHT = 50;
+
+    // the big map .pcx
+    public static int guiBIGMAP = 0;
+
+    public static uint guiBOTTOMPANEL { get; set; }
+    public static uint guiRIGHTPANEL { get; set; }
+    public static uint guiRENDERBUFFER { get; set; }
+    public static uint guiSAVEBUFFER { get; set; }
+    public static uint guiEXTRABUFFER { get; set; }
+    public static bool gfExtraBuffer { get; set; }
+
+    public static OBJECTTYPE? gpItemPointer { get; set; } = null;
+
+    // graphics
+    public static int guiMapBorder;
+    //UINT32 guiMapBorderCorner;
+
+
+    // scroll direction
+    public static int giScrollButtonState = -1;
+
+    public static int gbPixelDepth { get; set; }
+
+    public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
+    public const int IGNORE_PEOPLE_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 101);
+    public const int FIRST_AVAILABLE_STRUCTURE_ID = (INVALID_STRUCTURE_ID + 2);
+
+    public static int gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
+
+
+    public static string[] TacticalStr = new string[]
+{
+    "Air Raid",
+    "Apply first aid automatically?",
+	
+	// CAMFIELD NUKE THIS and add quote #66.
+	
+	"%s notices that items are missing from the shipment.",
+	
+	// The %s is a string from pDoorTrapStrings
+	
+	"The lock has %s.",
+    "There's no lock.",
+    "Success!",
+    "Failure.",
+    "Success!",
+    "Failure.",
+    "The lock isn't trapped.",
+    "Success!",
+	// The %s is a merc name
+	"%s doesn't have the right key.",
+    "The lock is untrapped.",
+    "The lock isn't trapped.",
+    "Locked.",
+    "DOOR",
+    "TRAPPED",
+    "LOCKED",
+    "UNLOCKED",
+    "SMASHED",
+    "There's a switch here.  Activate it?",
+    "Disarm trap?",
+    "Prev...",
+    "Next...",
+    "More...",
+
+	// In the next 2 strings, %s is an item name
+
+	"The %s has been placed on the ground.",
+    "The %s has been given to %s.",
+
+	// In the next 2 strings, %s is a name
+
+	"%s has been paid in full.",
+    "%s is still owed %d.",
+    "Choose detonation frequency:",  	//in this case, frequency refers to a radio signal
+	"How many turns 'til she blows:",	//how much time, in turns, until the bomb blows
+	"Set remote detonator frequency:", 	//in this case, frequency refers to a radio signal
+	"Disarm boobytrap?",
+    "Remove blue flag?",
+    "Put blue flag here?",
+    "Ending Turn",
+
+	// In the next string, %s is a name. Stance refers to way they are standing.
+
+	"You sure you want to attack %s ?",
+    "Ah, vehicles can't change stance.",
+    "The robot can't change its stance.",
+
+	// In the next 3 strings, %s is a name
+
+	"%s can't change to that stance here.",
+    "%s can't have first aid done here.",
+    "%s doesn't need first aid.",
+    "Can't move there.",
+    "Your team's full. No room for a recruit.",	//there's no room for a recruit on the player's team
+
+	// In the next string, %s is a name
+
+	"%s has been recruited.",
+
+	// Here %s is a name and %d is a number
+
+	"%s is owed $%d.",
+
+	// In the next string, %s is a name
+
+	"Escort %s?",
+
+	// In the next string, the first %s is a name and the second %s is an amount of money (including $ sign)
+
+	"Hire %s for %s per day?",
+
+	// This line is used repeatedly to ask player if they wish to participate in a boxing match. 
+
+	"You want to fight?",
+
+	// In the next string, the first %s is an item name and the 
+	// second %s is an amount of money (including $ sign)
+
+	"Buy %s for %s?",
+
+	// In the next string, %s is a name
+
+	"%s is being escorted on squad %d.",
+
+	// These messages are displayed during play to alert the player to a particular situation
+
+	"JAMMED",					//weapon is jammed.
+	"Robot needs %s caliber ammo.",		//Robot is out of ammo
+	"Throw there? Not gonna happen.",		//Merc can't throw to the destination he selected
+
+	// These are different buttons that the player can turn on and off.
+
+	"Stealth Mode (|Z)",
+    "|Map Screen",
+    "|Done (End Turn)",
+    "Talk",
+    "Mute",
+    "Stance Up (|P|g|U|p)",
+    "Cursor Level (|T|a|b)",
+    "Climb / Jump",
+    "Stance Down (|P|g|D|n)",
+    "Examine (|C|t|r|l)",
+    "Previous Merc",
+    "Next Merc (|S|p|a|c|e)",
+    "|Options",
+    "|Burst Mode",
+    "|Look/Turn",
+    "Health: %d/%d\nEnergy: %d/%d\nMorale: %s",
+    "Heh?",					//this means "what?" 
+	"Cont",					//an abbrieviation for "Continued" 
+	"Mute off for %s.",
+    "Mute on for %s.",
+    "Health: %d/%d\nFuel: %d/%d",
+    "Exit Vehicle" ,
+    "Change Squad ( |S|h|i|f|t |S|p|a|c|e )",
+    "Drive",
+    "N/A",						//this is an acronym for "Not Applicable." 
+	"Use ( Hand To Hand )",
+    "Use ( Firearm )",
+    "Use ( Blade )",
+    "Use ( Explosive )",
+    "Use ( Medkit )",
+    "(Catch)",
+    "(Reload)",
+    "(Give)",
+    "%s has been set off.",
+    "%s has arrived.",
+    "%s ran out of Action Points.",
+    "%s isn't available.",
+    "%s is all bandaged.",
+    "%s is out of bandages.",
+    "Enemy in sector!",
+    "No enemies in sight.",
+    "Not enough Action Points.",
+    "Nobody's using the remote.",
+    "Burst fire emptied the clip!",
+    "SOLDIER",
+    "CREPITUS",
+    "MILITIA",
+    "CIVILIAN",
+    "Exiting Sector",
+    "OK",
+    "Cancel",
+    "Selected Merc",
+    "All Mercs in Squad",
+    "Go to Sector",
+    "Go to Map",
+    "You can't leave the sector from this side.",
+    "%s is too far away.",
+    "Removing Treetops",
+    "Showing Treetops",
+    "CROW",				//Crow, as in the large black bird
+	"NECK",
+    "HEAD",
+    "TORSO",
+    "LEGS",
+    "Tell the Queen what she wants to know?",
+    "Fingerprint ID aquired",
+    "Invalid fingerprint ID. Weapon non-functional",
+    "Target aquired",
+    "Path Blocked",
+    "Deposit/Withdraw Money",		//Help text over the $ button on the Single Merc Panel 
+	"No one needs first aid.",
+    "Jam.",											// Short form of JAMMED, for small inv slots
+	"Can't get there.",					// used ( now ) for when we click on a cliff
+	"Path is blocked. Do you want to switch places with this person?",
+    "The person refuses to move.",
+	// In the following message, '%s' would be replaced with a quantity of money (e.g. $200)
+	"Do you agree to pay %s?",
+    "Accept free medical treatment?",
+    "Agree to marry Daryl?",
+    "Key Ring Panel",
+    "You cannot do that with an EPC.",
+    "Spare Krott?",
+    "Out of effective weapon range.",
+    "Miner",
+    "Vehicle can only travel between sectors",
+    "Can't autobandage right now",
+    "Path Blocked for %s",
+    "Your mercs, who were captured by Deidranna's army are imprisoned here!",
+    "Lock hit",
+    "Lock destroyed",
+    "Somebody else is trying to use this door.",
+    "Health: %d/%d\nFuel: %d/%d",
+  "%s cannot see %s.",  // Cannot see person trying to talk to
 };
 }

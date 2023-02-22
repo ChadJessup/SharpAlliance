@@ -108,7 +108,6 @@ namespace SharpAlliance.Core.Screens
         private readonly GameSettings settings;
         private readonly FontSubSystem fonts;
         private readonly GameOptions options;
-        private readonly GuiManager gui;
         private readonly ISoundManager sound;
         private readonly IInputManager inputs;
         private readonly IMusicManager music;
@@ -158,7 +157,6 @@ namespace SharpAlliance.Core.Screens
             IInputManager inputManager,
             IMusicManager musicManager,
             GameInit gameInit,
-            GuiManager guiManager,
             GameSettings gameSettings,
             GameOptions gameOptions,
             FontSubSystem fontSubSystem,
@@ -171,7 +169,6 @@ namespace SharpAlliance.Core.Screens
             this.fonts = fontSubSystem;
             this.options = gameOptions;
             this.settings = gameSettings;
-            this.gui = guiManager;
             this.sound = soundManager;
             this.inputs = inputManager;
             this.video = videoManager;
@@ -212,10 +209,10 @@ namespace SharpAlliance.Core.Screens
             sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
 
             // render buttons marked dirty	
-            this.gui.Buttons.MarkButtonsDirty(this.buttonList);
-            this.gui.RenderButtons(this.buttonList);
+            ButtonSubSystem.MarkButtonsDirty(this.buttonList);
+            ButtonSubSystem.RenderButtons(this.buttonList);
 
-            this.gui.RenderSliderBars();
+            GuiManager.RenderSliderBars();
         }
 
         public ValueTask<ScreenName> Handle()
@@ -231,10 +228,10 @@ namespace SharpAlliance.Core.Screens
 
                 //Blit the background to the save buffer
                 //this.video.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 640, 480);
-                this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+                VeldridVideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
             }
 
-            this.video.RestoreBackgroundRects();
+            VeldridVideoManager.RestoreBackgroundRects();
 
             this.GetOptionsScreenUserInput();
 
@@ -242,22 +239,22 @@ namespace SharpAlliance.Core.Screens
 
             if (this.gfRedrawOptionsScreen)
             {
-                this.gui.RenderButtons(this.buttonList);
+                GuiManager.RenderButtons(this.buttonList);
                 this.RenderOptionsScreen();
 
                 this.gfRedrawOptionsScreen = false;
             }
 
             //Render the active slider bars
-            this.gui.RenderSliderBars();
+            GuiManager.RenderSliderBars();
 
             // render buttons marked dirty	
-            this.gui.Buttons.MarkButtonsDirty(this.buttonList);
-            this.gui.RenderButtons(this.buttonList);
+            ButtonSubSystem.MarkButtonsDirty(this.buttonList);
+            GuiManager.RenderButtons(this.buttonList);
 
             // ATE: Put here to save RECTS before any fast help being drawn...
-            this.video.SaveBackgroundRects();
-            this.gui.RenderButtonsFastHelp();
+            VeldridVideoManager.SaveBackgroundRects();
+            GuiManager.RenderButtonsFastHelp();
 
             this.video.ExecuteBaseDirtyRectQueue();
             // EndFrameBufferRender();
@@ -339,13 +336,13 @@ namespace SharpAlliance.Core.Screens
             int usWidth = 0;
 
             //Get and display the background image
-            hPixHandle = this.video.GetVideoObject(this.guiOptionBackGroundImageKey);
-            this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+            hPixHandle = VeldridVideoManager.GetVideoObject(this.guiOptionBackGroundImageKey);
+            VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
             //Get and display the titla image
-            hPixHandle = this.video.GetVideoObject(this.guiOptionsAddOnImagesKey);
-            this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
-            this.video.BltVideoObject(hPixHandle, 1, 0, 434, 0);
+            hPixHandle = VeldridVideoManager.GetVideoObject(this.guiOptionsAddOnImagesKey);
+            VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+            VeldridVideoManager.BltVideoObject(hPixHandle, 1, 0, 434, 0);
 
             //
             // Text for the toggle boxes
@@ -426,7 +423,7 @@ namespace SharpAlliance.Core.Screens
             //Display the Music text
             this.fonts.DisplayWrappedString(new(OPT_MUSIC_TEXT_X, OPT_MUSIC_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_MUSIC], FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
-            this.video.InvalidateRegion(new(OPTIONS__TOP_LEFT_X, OPTIONS__TOP_LEFT_Y, OPTIONS__BOTTOM_RIGHT_X, OPTIONS__BOTTOM_RIGHT_Y));
+            VeldridVideoManager.InvalidateRegion(new(OPTIONS__TOP_LEFT_X, OPTIONS__TOP_LEFT_Y, OPTIONS__BOTTOM_RIGHT_X, OPTIONS__BOTTOM_RIGHT_Y));
         }
 
         private void EnterOptionsScreen()
@@ -437,7 +434,7 @@ namespace SharpAlliance.Core.Screens
             this.guiOptionsScreen = ScreenName.OPTIONS_SCREEN;
 
             //Init the slider bar;
-            this.gui.Sliders.InitSliderSystem();
+            GuiManager.Sliders.InitSliderSystem();
 
             if (this.gfExitOptionsDueToMessageBox)
             {
@@ -455,9 +452,9 @@ namespace SharpAlliance.Core.Screens
             this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
             //Save game button
-            this.giOptionsButtonImages = this.gui.Buttons.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);
+            this.giOptionsButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);
 
-            this.guiOptGotoSaveGameBtn = this.gui.Buttons.CreateIconAndTextButton(
+            this.guiOptGotoSaveGameBtn = ButtonSubSystem.CreateIconAndTextButton(
                 this.giOptionsButtonImages,
                 EnglishText.zOptionsText[OptionsText.OPT_SAVE_GAME],
                 OPT_BUTTON_FONT,
@@ -474,15 +471,15 @@ namespace SharpAlliance.Core.Screens
 
             this.buttonList.Add(guiOptGotoSaveGameBtn);
 
-            this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiOptGotoSaveGameBtn, DISABLED_STYLE.HATCHED);
+            ButtonSubSystem.SpecifyDisabledButtonStyle(this.guiOptGotoSaveGameBtn, DISABLED_STYLE.HATCHED);
             if (this.guiPreviousOptionScreen == ScreenName.MAINMENU_SCREEN)// || !CanGameBeSaved())
             {
-                this.gui.Buttons.DisableButton(this.guiOptGotoSaveGameBtn);
+                ButtonSubSystem.DisableButton(this.guiOptGotoSaveGameBtn);
             }
 
             //Load game button
-            this.giGotoLoadBtnImage = this.gui.Buttons.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
-            this.guiOptGotoLoadGameBtn = this.gui.Buttons.CreateIconAndTextButton(
+            this.giGotoLoadBtnImage = ButtonSubSystem.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
+            this.guiOptGotoLoadGameBtn = ButtonSubSystem.CreateIconAndTextButton(
                 this.giGotoLoadBtnImage,
                 EnglishText.zOptionsText[OptionsText.OPT_LOAD_GAME],
                 OPT_BUTTON_FONT,
@@ -502,8 +499,8 @@ namespace SharpAlliance.Core.Screens
             //	SpecifyDisabledButtonStyle( guiBobbyRAcceptOrder, DISABLED_STYLE_SHADED );
 
             //Quit to main menu button
-            this.giQuitBtnImage = this.gui.Buttons.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
-            this.guiQuitButton = this.gui.Buttons.CreateIconAndTextButton(
+            this.giQuitBtnImage = ButtonSubSystem.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
+            this.guiQuitButton = ButtonSubSystem.CreateIconAndTextButton(
                 this.giQuitBtnImage,
                 EnglishText.zOptionsText[OptionsText.OPT_MAIN_MENU],
                 OPT_BUTTON_FONT,
@@ -520,13 +517,13 @@ namespace SharpAlliance.Core.Screens
 
             this.buttonList.Add(this.guiQuitButton);
 
-            this.gui.Buttons.SpecifyDisabledButtonStyle(this.guiQuitButton, DISABLED_STYLE.HATCHED);
+            ButtonSubSystem.SpecifyDisabledButtonStyle(this.guiQuitButton, DISABLED_STYLE.HATCHED);
             //	DisableButton( guiQuitButton );
 
             //Done button
 
-            this.giDoneBtnImage = this.gui.Buttons.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
-            this.guiDoneButton = this.gui.Buttons.CreateIconAndTextButton(
+            this.giDoneBtnImage = ButtonSubSystem.UseLoadedButtonImage(this.giOptionsButtonImages, -1, 2, -1, 3, -1);
+            this.guiDoneButton = ButtonSubSystem.CreateIconAndTextButton(
                 this.giDoneBtnImage,
                 EnglishText.zOptionsText[OptionsText.OPT_DONE],
                 OPT_BUTTON_FONT,
@@ -558,7 +555,7 @@ namespace SharpAlliance.Core.Screens
                 var option = cnt;
 
                 //Check box to toggle tracking mode
-                this.guiOptionsToggles[option] = this.gui.Buttons.CreateCheckBoxButton(
+                this.guiOptionsToggles[option] = ButtonSubSystem.CreateCheckBoxButton(
                     new(OPT_TOGGLE_BOX_FIRST_COLUMN_X, usPosY),
                     "INTERFACE\\OptionsCheckBoxes.sti",
                     MSYS_PRIORITY.HIGH + 10,
@@ -566,7 +563,7 @@ namespace SharpAlliance.Core.Screens
 
                 this.buttonList.Add(this.guiOptionsToggles[option]);
 
-                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
+                ButtonSubSystem.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
 
                 TextSize.Width = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 
@@ -623,7 +620,7 @@ namespace SharpAlliance.Core.Screens
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
-                this.gui.Buttons.SetButtonFastHelpText(this.guiOptionsToggles[option], EnglishText.zOptionsScreenHelpText[cnt]);
+                ButtonSubSystem.SetButtonFastHelpText(this.guiOptionsToggles[option], EnglishText.zOptionsScreenHelpText[cnt]);
 
                 usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
             }
@@ -635,7 +632,7 @@ namespace SharpAlliance.Core.Screens
                 var option = (TOPTION)cnt;
 
                 //Check box to toggle tracking mode
-                this.guiOptionsToggles[option] = this.gui.Buttons.CreateCheckBoxButton(
+                this.guiOptionsToggles[option] = ButtonSubSystem.CreateCheckBoxButton(
                     new(OPT_TOGGLE_BOX_SECOND_COLUMN_X, usPosY),
                     "INTERFACE\\OptionsCheckBoxes.sti",
                     MSYS_PRIORITY.HIGH + 10,
@@ -643,7 +640,7 @@ namespace SharpAlliance.Core.Screens
 
                 this.buttonList.Add(this.guiOptionsToggles[option]);
 
-                this.gui.Buttons.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
+                ButtonSubSystem.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
 
 
                 //
@@ -709,7 +706,7 @@ namespace SharpAlliance.Core.Screens
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
-                this.gui.Buttons.SetButtonFastHelpText(this.guiOptionsToggles[option], EnglishText.zOptionsScreenHelpText[cnt]);
+                ButtonSubSystem.SetButtonFastHelpText(this.guiOptionsToggles[option], EnglishText.zOptionsScreenHelpText[cnt]);
 
                 usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
             }
@@ -727,7 +724,7 @@ namespace SharpAlliance.Core.Screens
             this.RenderOptionsScreen();
 
             //Add a slider bar for the Sound Effects 
-            this.guiSoundEffectsSlider = this.gui.Sliders.AddSlider(
+            this.guiSoundEffectsSlider = GuiManager.Sliders.AddSlider(
                 SliderStyle.SLIDER_VERTICAL_STEEL,
                 CURSOR.NORMAL,
                 new(OPT_SOUND_EFFECTS_SLIDER_X, OPT_SOUND_EFFECTS_SLIDER_Y),
@@ -738,10 +735,10 @@ namespace SharpAlliance.Core.Screens
                 0);
 
             // AssertMsg(guiSoundEffectsSliderID, "Failed to AddSlider");
-            this.gui.Sliders.SetSliderValue(ref this.guiSoundEffectsSlider, this.sound.GetSoundEffectsVolume());
+            GuiManager.Sliders.SetSliderValue(ref this.guiSoundEffectsSlider, this.sound.GetSoundEffectsVolume());
 
             //Add a slider bar for the Speech
-            this.guiSpeechSlider = this.gui.Sliders.AddSlider(
+            this.guiSpeechSlider = GuiManager.Sliders.AddSlider(
                 SliderStyle.SLIDER_VERTICAL_STEEL,
                 CURSOR.NORMAL,
                 new(OPT_SPEECH_SLIDER_X, OPT_SPEECH_SLIDER_Y),
@@ -752,10 +749,10 @@ namespace SharpAlliance.Core.Screens
                 0);
 
             // AssertMsg(guiSpeechSliderID, "Failed to AddSlider");
-            this.gui.Sliders.SetSliderValue(ref this.guiSpeechSlider, this.sound.GetSpeechVolume());
+            GuiManager.Sliders.SetSliderValue(ref this.guiSpeechSlider, this.sound.GetSpeechVolume());
 
             //Add a slider bar for the Music
-            this.guiMusicSlider = this.gui.Sliders.AddSlider(
+            this.guiMusicSlider = GuiManager.Sliders.AddSlider(
                 SliderStyle.SLIDER_VERTICAL_STEEL,
                 CURSOR.NORMAL,
                 new(OPT_MUSIC_SLIDER_X, OPT_MUSIC_SLIDER_Y),
@@ -766,7 +763,7 @@ namespace SharpAlliance.Core.Screens
                 0);
 
             // AssertMsg(guiMusicSliderID, "Failed to AddSlider");
-            this.gui.Sliders.SetSliderValue(ref this.guiMusicSlider, this.music.MusicGetVolume());
+            GuiManager.Sliders.SetSliderValue(ref this.guiMusicSlider, this.music.MusicGetVolume());
 
             //Remove the mouse region over the clock
             this.clock.RemoveMouseRegionForPauseOfClock();
@@ -826,7 +823,7 @@ namespace SharpAlliance.Core.Screens
 
                 this.gbHighLightedOptionText = -1;
 
-                this.video.InvalidateRegion(pRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
             }
         }
 
@@ -850,7 +847,7 @@ namespace SharpAlliance.Core.Screens
             {
                 this.HandleOptionToggle(ubButton, !this.settings[ubButton], false, true);
 
-                this.video.InvalidateRegion(pRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
             }
             else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON_LBUTTON_REPEAT || 
             {
@@ -875,13 +872,13 @@ namespace SharpAlliance.Core.Screens
 
                 this.gbHighLightedOptionText = -1;
 
-                this.video.InvalidateRegion(pRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
             }
             else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
             {
-//                this.gbHighLightedOptionText = bButton;
+                //                this.gbHighLightedOptionText = bButton;
 
-                this.video.InvalidateRegion(pRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
             }
         }
 
@@ -973,7 +970,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
@@ -983,13 +980,13 @@ namespace SharpAlliance.Core.Screens
                 this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
                 // gfSaveGame = false;
 
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
@@ -998,7 +995,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
@@ -1010,13 +1007,13 @@ namespace SharpAlliance.Core.Screens
 
                 ///		SetOptionsExitScreen( MAINMENU_SCREEN );
 
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
@@ -1044,7 +1041,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
@@ -1053,13 +1050,13 @@ namespace SharpAlliance.Core.Screens
 
                 this.SetOptionsExitScreen(this.guiPreviousOptionScreen);
 
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
@@ -1074,7 +1071,7 @@ namespace SharpAlliance.Core.Screens
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
@@ -1084,13 +1081,13 @@ namespace SharpAlliance.Core.Screens
                 this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
                 //gfSaveGame = true;
 
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-                this.video.InvalidateRegion(btn.MouseRegion.Bounds);
+                VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
@@ -1111,7 +1108,7 @@ namespace SharpAlliance.Core.Screens
 
                 if (fDown)
                 {
-                    this.gui.Buttons.DrawCheckBoxButtonOn(this.guiOptionsToggles[ubButton]);
+                    ButtonSubSystem.DrawCheckBoxButtonOn(this.guiOptionsToggles[ubButton]);
                 }
             }
             else
@@ -1122,7 +1119,7 @@ namespace SharpAlliance.Core.Screens
 
                 if (fDown)
                 {
-                    this.gui.Buttons.DrawCheckBoxButtonOff(this.guiOptionsToggles[ubButton]);
+                    ButtonSubSystem.DrawCheckBoxButtonOff(this.guiOptionsToggles[ubButton]);
                 }
 
                 //check to see if the user is unselecting either the spech or subtitles toggle
@@ -1187,7 +1184,7 @@ namespace SharpAlliance.Core.Screens
 
         private void BtnOptionsTogglesCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
         {
-            var ubButton = (TOPTION)this.gui.Buttons.MSYS_GetBtnUserData(btn, 0);
+            var ubButton = (TOPTION)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
             if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
             {

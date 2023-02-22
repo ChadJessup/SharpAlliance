@@ -196,7 +196,7 @@ public class WorldManager
         return (pNextOnRoof);
     }
 
-    public bool RemoveAllTopmostsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
+    public static bool RemoveAllTopmostsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
     {
         LEVELNODE? pTopmost = null;
         LEVELNODE? pOldTopmost = null;

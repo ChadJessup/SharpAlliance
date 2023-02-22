@@ -9,7 +9,6 @@ public class PathAI
     private readonly ILogger<PathAI> logger;
     private readonly GameSettings gGameSettings;
     private readonly Overhead overhead;
-    private readonly IsometricUtils isometricUtils;
     private readonly WorldManager worldManager;
     public int[] guiPathingData = new int[256];
     public static int[] guiPlottedPath = new int[256];
@@ -23,13 +22,11 @@ public class PathAI
         ILogger<PathAI> logger,
         GameSettings gameSettings,
         Overhead overhead,
-        IsometricUtils isometricUtils,
         WorldManager worldManager)
     {
         this.logger = logger;
         this.gGameSettings = gameSettings;
         this.overhead = overhead;
-        IsometricUtils = isometricUtils;
         this.worldManager = worldManager;
     }
 
@@ -54,7 +51,7 @@ public class PathAI
         }
 
         // If we are on the same level as the interface level, continue, else return
-        if (pSold.bLevel != Interface.gsInterfaceLevel)
+        if (pSold.bLevel != Globals.gsInterfaceLevel)
         {
             return (0);
         }

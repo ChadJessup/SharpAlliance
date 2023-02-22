@@ -20,7 +20,6 @@ namespace SharpAlliance.Core
         private readonly GameContext context;
         private readonly IStringLocalizer<string> strings;
         private readonly HelpScreenSubSystem helpScreen;
-        private readonly ButtonSubSystem buttons;
         private readonly CursorSubSystem cursors;
         private readonly SaveGameSubSystem saves;
         private readonly IVideoManager video;
@@ -39,7 +38,6 @@ namespace SharpAlliance.Core
             GameContext context,
             IStringLocalizer<string> strings,
             MouseSubSystem mouseSubSystem,
-            ButtonSubSystem buttonSubSystem,
             CursorSubSystem cursorSubSystem,
             FontSubSystem fontSubSystem,
             HelpScreenSubSystem helpScreenSubSystem,
@@ -56,7 +54,6 @@ namespace SharpAlliance.Core
 
             // These should be initialized already
             this.mouse = mouseSubSystem;
-            this.buttons = buttonSubSystem;
             this.cursors = cursorSubSystem;
             this.fonts = fontSubSystem;
             this.helpScreen = helpScreenSubSystem;

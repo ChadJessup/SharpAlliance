@@ -19,12 +19,6 @@ public class TileCache
         this.worldStructures = worldStructure;
     }
 
-    public const int TILE_CACHE_START_INDEX = 36000;
-    public static int guiNumTileCacheStructs = 0;
-
-    public List<TILE_CACHE_STRUCT> gpTileCacheStructInfo = new();
-    public List<TILE_CACHE_ELEMENT> gpTileCache = new();
-
     public ValueTask<bool> InitTileCache()
     {
         return ValueTask.FromResult(true);
@@ -36,9 +30,9 @@ public class TileCache
 
         STRUCTURE_FILE_REF? pStructureFileRef;
 
-        if (usIndex >= TILE_CACHE_START_INDEX)
+        if (usIndex >= Globals.TILE_CACHE_START_INDEX)
         {
-            pStructureFileRef = GetCachedTileStructureRef((usIndex - TILE_CACHE_START_INDEX));
+            pStructureFileRef = GetCachedTileStructureRef((usIndex - Globals.TILE_CACHE_START_INDEX));
 
             if (pStructureFileRef != null)
             {
@@ -74,16 +68,16 @@ public class TileCache
             return null;
         }
 
-        return (gpTileCacheStructInfo[sStructDataIndex].pStructureFileRef);
+        return (Globals.gpTileCacheStructInfo[sStructDataIndex].pStructureFileRef);
     }
 
     public int FindCacheStructDataIndex(string cFilename)
     {
         int cnt;
 
-        for (cnt = 0; cnt < guiNumTileCacheStructs; cnt++)
+        for (cnt = 0; cnt < Globals.guiNumTileCacheStructs; cnt++)
         {
-            if (gpTileCacheStructInfo[cnt].zRootName.Equals(cFilename, StringComparison.OrdinalIgnoreCase))
+            if (Globals.gpTileCacheStructInfo[cnt].zRootName.Equals(cFilename, StringComparison.OrdinalIgnoreCase))
             {
                 return cnt;
             }

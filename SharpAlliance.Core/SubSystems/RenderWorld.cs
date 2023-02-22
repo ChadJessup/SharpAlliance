@@ -30,7 +30,7 @@ namespace SharpAlliance.Core.SubSystems
         }
 
 
-        public void SetRenderFlags(RenderingFlags full)
+        public static void SetRenderFlags(RenderingFlags full)
         {
             throw new NotImplementedException();
         }

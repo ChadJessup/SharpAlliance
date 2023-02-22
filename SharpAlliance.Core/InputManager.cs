@@ -22,7 +22,7 @@ namespace SharpAlliance.Core
         public MouseSubSystem Mouse { get; init; }
         public ButtonSubSystem buttonSystem { get; init; }
         private readonly GameContext context;
-        private VeldridVideoManager video;
+        //private VeldridVideoManager video;
         private int[] gsKeyTranslationTable = new int[1024];
         private bool gfApplicationActive;
         private bool[] gfKeyState = new bool[256];            // true = Pressed, false = Not Pressed
@@ -109,7 +109,7 @@ namespace SharpAlliance.Core
                 return true;
             }
 
-            this.video = (this.context.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
+            //this.video = (this.context.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
 
             // By default, we will not queue mousemove events
             this.gfTrackMousePos = false;
@@ -147,8 +147,8 @@ namespace SharpAlliance.Core
             {
                 var enqueue = false;
                 InputSnapshot? snapshot = null;
-                snapshot = this.video.Window.PumpEvents();
-                InputTracker.UpdateFrameInput(snapshot, this.video.Window);
+                snapshot = VeldridVideoManager.Window.PumpEvents();
+                InputTracker.UpdateFrameInput(snapshot, VeldridVideoManager.Window);
 
                 var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
                 var tmpRight = snapshot.IsMouseDown(MouseButton.Right);

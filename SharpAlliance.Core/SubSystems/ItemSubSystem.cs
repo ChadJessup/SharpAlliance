@@ -199,9 +199,9 @@ public class ItemSubSystem
             else
             {
                 pObj.usGunAmmoItem = usAmmo;
-                pObj.ubGunAmmoType = Magazine[Item[usAmmo].ubClassIndex].ubAmmoType;
+                pObj.ubGunAmmoType = Magazine[Globals.Item[usAmmo].ubClassIndex].ubAmmoType;
                 pObj.bGunAmmoStatus = 100;
-                pObj.ubGunShotsLeft = Magazine[Item[usAmmo].ubClassIndex].ubMagSize;
+                pObj.ubGunShotsLeft = Magazine[Globals.Item[usAmmo].ubClassIndex].ubMagSize;
                 /*
                 if (usItem == CAWS)
                 {
@@ -227,7 +227,7 @@ public class ItemSubSystem
         {
             usItem = usItem,
             ubNumberOfObjects = 1,
-            ubShotsLeft[0] = Weapons.Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize,
+            ubShotsLeft[0] = Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize,
             ubWeight = CalculateObjectWeight(pObj)
         };
 
@@ -335,7 +335,7 @@ public class ItemSubSystem
             return Items.NONE;
         }
     }
-    public Items FindReplacementMagazineIfNecessary(Items usOldGun, Items usOldAmmo, Items usNewGun)
+    public static Items FindReplacementMagazineIfNecessary(Items usOldGun, Items usOldAmmo, Items usNewGun)
     {
         Items usNewAmmo = Items.NONE;
         int oldGunIdx = (int)usOldGun;
@@ -344,13 +344,13 @@ public class ItemSubSystem
             && (WeaponTypes.Magazines[Globals.Item[usOldAmmo].ubClassIndex].ubMagSize == WeaponTypes.Weapon[oldGunIdx].ubMagSize))
         {
             // must replace this!
-            usNewAmmo = this.FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazines[Globals.Item[usOldAmmo].ubClassIndex].ubAmmoType);
+            usNewAmmo = FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazines[Globals.Item[usOldAmmo].ubClassIndex].ubAmmoType);
         }
 
         return usNewAmmo;
     }
 
-    public Items FindReplacementMagazine(CaliberType ubCalibre, int ubMagSize, AMMO ubAmmoType)
+    public static Items FindReplacementMagazine(CaliberType ubCalibre, int ubMagSize, AMMO ubAmmoType)
     {
         int ubLoop;
         Items usDefault;
@@ -365,12 +365,12 @@ public class ItemSubSystem
             {
                 if (WeaponTypes.Magazines[ubLoop].ubAmmoType == ubAmmoType)
                 {
-                    return this.MagazineClassIndexToItemType(ubLoop);
+                    return MagazineClassIndexToItemType(ubLoop);
                 }
                 else if (usDefault == Items.NONE)
                 {
                     // store this one to use if all else fails
-                    usDefault = this.MagazineClassIndexToItemType(ubLoop);
+                    usDefault = MagazineClassIndexToItemType(ubLoop);
                 }
             }
 
@@ -380,7 +380,7 @@ public class ItemSubSystem
         return usDefault;
     }
 
-    public Items MagazineClassIndexToItemType(int usMagIndex)
+    public static Items MagazineClassIndexToItemType(int usMagIndex)
     {
         Items usLoop;
 

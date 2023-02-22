@@ -17,18 +17,15 @@ namespace SharpAlliance.Core.Screens
     public class MessageBoxScreen : IScreen
     {
         private readonly ILogger<MessageBoxScreen> logger;
-        private readonly ButtonSubSystem buttons;
         private readonly MessageBoxSubSystem messageBoxSubSystem;
 
         public MessageBoxScreen(
             ILogger<MessageBoxScreen> logger,
             IClockManager clockManager,
             IInputManager inputs,
-            ButtonSubSystem buttons,
             MessageBoxSubSystem messageBoxSubSystem)
         {
             this.logger = logger;
-            this.buttons = buttons;
             this.messageBoxSubSystem = messageBoxSubSystem;
         }
 
@@ -70,79 +67,79 @@ namespace SharpAlliance.Core.Screens
                 return ValueTask.FromResult(ScreenName.MSG_BOX_SCREEN);
             }
 
-            this.buttons.UnmarkButtonsDirty();
+            ButtonSubSystem.UnmarkButtonsDirty();
 
             // Render the box!
             if (this.messageBoxSubSystem.gMsgBox.fRenderBox)
             {
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[0]);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[1]);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[2]);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[3]);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[0]);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[1]);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[2]);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[3]);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CANCEL))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
                 {
                     // Exit messagebox
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
                 }
 
                 if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
                 {
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    this.buttons.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
+                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
                 }
 
 
@@ -154,7 +151,7 @@ namespace SharpAlliance.Core.Screens
             // Render buttons
             RenderButtons();
 
-            EndFrameBufferRender();
+            VeldridVideoManager.EndFrameBufferRender();
 
             // carter, need key shortcuts for clearing up message boxes
             // Check for esc 
@@ -243,7 +240,7 @@ namespace SharpAlliance.Core.Screens
 
             if (this.messageBoxSubSystem.gMsgBox.bHandled != 0)
             {
-                SetRenderFlags(RENDER_FLAG_FULL);
+                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 return (ExitMsgBox(this.messageBoxSubSystem.gMsgBox.bHandled));
             }
 

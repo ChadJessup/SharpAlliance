@@ -88,9 +88,8 @@ public class MapScreen : IScreen
             MapScreenInterfaceMap.DrawMap();
         }
 
-
         // blit in border
-        RenderMapBorder();
+        MapScreenInterfaceMap.RenderMapBorder();
 
         if (Globals.ghAttributeBox != -1)
         {
@@ -103,7 +102,7 @@ public class MapScreen : IScreen
             PopUpBox.ForceUpDateOfBox(Globals.ghTownMineBox);
         }
 
-        MapscreenMarkButtonsDirty();
+        MapScreen.MapscreenMarkButtonsDirty();
 
         RestoreExternBackgroundRect(261, 0, 640 - 261, 359);
 
@@ -135,7 +134,35 @@ public class MapScreen : IScreen
     {
         throw new System.NotImplementedException();
     }
+
+    public static void MapscreenMarkButtonsDirty()
+    {
+        // redraw buttons
+        ButtonSubSystem.MarkButtonsDirty();
+
+        // if border buttons are created
+        if (!Globals.fShowMapInventoryPool)
+        {
+            // if the attribute assignment menu is showing
+            if (Globals.fShowAttributeMenu)
+            {
+                // don't redraw the town button, it would wipe out a chunk of the attribute menu
+                ButtonSubSystem.UnMarkButtonDirty(Globals.giMapBorderButtons[(int)MAP_BORDER.TOWN_BTN]);
+            }
+        }
+    }
 }
+
+public enum MAP_BORDER
+{
+    TOWN_BTN = 0,
+    MINE_BTN,
+    TEAMS_BTN,
+    AIRSPACE_BTN,
+    ITEM_BTN,
+    MILITIA_BTN,
+}
+
 
 public enum TOWNS
 {

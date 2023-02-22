@@ -64,6 +64,19 @@ public enum LEVELNODEFLAGS : uint
     CAVE = 0x80000000,
 }
 
+[Flags]
+public enum MAPELEMENT_EXT
+{
+    EXT_SMOKE = 0x01,
+    TEARGAS = 0x02,
+    MUSTARDGAS = 0x04,
+    DOOR_STATUS_PRESENT = 0x08,
+    RECALCULATE_MOVEMENT = 0x10,
+    NOBURN_STRUCT = 0x20,
+    ROOFCODE_VISITED = 0x40,
+    CREATUREGAS = 0x80,
+}
+
 // This was a C struct with lots of unions, but in C# you can't reference a struct inside itself.
 public class LEVELNODE
 {
@@ -194,7 +207,7 @@ public class MAP_ELEMENT
     public STRUCTURE? pStructureTail;
 
     public MAPELEMENTFLAGS uiFlags;
-    public byte[] ubExtFlags = new byte[2];
+    public MAPELEMENT_EXT[] ubExtFlags = new MAPELEMENT_EXT[2];
     ushort[] sSumRealLights = new ushort[1];
     public byte sHeight;
     byte ubAdjacentSoldierCnt;

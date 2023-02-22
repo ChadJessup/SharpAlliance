@@ -35,32 +35,32 @@ namespace SharpAlliance.Core.SubSystems
                 return;
             }
 
-            Globals.gpWorldLevelData[sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT_RECALCULATE_MOVEMENT;
+            Globals.gpWorldLevelData[sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.RECALCULATE_MOVEMENT;
 
             // check Top/Left of recompile region
             sCheckGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)WorldDirections.NORTHWEST));
             sCheckX = sCheckGridNo % WORLD_COLS;
             sCheckY = sCheckGridNo / WORLD_COLS;
-            if (sCheckX < gsRecompileAreaLeft)
+            if (sCheckX < Globals.gsRecompileAreaLeft)
             {
-                gsRecompileAreaLeft = sCheckX;
+                Globals.gsRecompileAreaLeft = sCheckX;
             }
-            if (sCheckY < gsRecompileAreaTop)
+            if (sCheckY < Globals.gsRecompileAreaTop)
             {
-                gsRecompileAreaTop = sCheckY;
+                Globals.gsRecompileAreaTop = sCheckY;
             }
 
             // check Bottom/Right
             sCheckGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)WorldDirections.SOUTHEAST));
             sCheckX = sCheckGridNo % WORLD_COLS;
             sCheckY = sCheckGridNo / WORLD_COLS;
-            if (sCheckX > gsRecompileAreaRight)
+            if (sCheckX > Globals.gsRecompileAreaRight)
             {
-                gsRecompileAreaRight = sCheckX;
+                Globals.gsRecompileAreaRight = sCheckX;
             }
-            if (sCheckY > gsRecompileAreaBottom)
+            if (sCheckY > Globals.gsRecompileAreaBottom)
             {
-                gsRecompileAreaBottom = sCheckY;
+                Globals.gsRecompileAreaBottom = sCheckY;
             }
         }
 

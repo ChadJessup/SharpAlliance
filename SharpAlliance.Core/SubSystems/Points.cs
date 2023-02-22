@@ -144,7 +144,7 @@ public class Points
             }
             else if (Globals.Item[pObj.usItem].usItemClass == IC.LAUNCHER || pObj.usItem == Items.TANK_CANNON)
             {
-                INVTYPE? bAttachPos;
+                Items? bAttachPos;
 
                 bAttachPos = ItemSubSystem.FindAttachmentByClass(pObj, IC.GRENADE);
                 if (bAttachPos is null)
@@ -174,7 +174,7 @@ public class Points
 
         // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
         usItemNum = pSoldier.inv[(int)InventorySlot.HANDPOS].usItem;
-        uiItemClass = Item[usItemNum].usItemClass;
+        uiItemClass = Globals.Item[usItemNum].usItemClass;
 
         if (uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
         {
@@ -323,17 +323,17 @@ public class Points
             {
                 // default to hand
                 // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-                uiItemClass = Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
+                uiItemClass = Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
             }
             else
             {
-                uiItemClass = Item[UNDER_GLAUNCHER].usItemClass;
+                uiItemClass = Globals.Item[Items.UNDER_GLAUNCHER].usItemClass;
             }
         }
         else
         {
             // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-            uiItemClass = Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
+            uiItemClass = Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
         }
 
         if (uiItemClass == IC.BLADE || uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)

@@ -19,7 +19,6 @@ namespace SharpAlliance.Core.SubSystems
         private readonly Emails emails;
         private readonly Laptop laptop;
         private readonly SoldierProfileSubSystem soldierProfile;
-        private readonly Interface ui;
         private readonly World world;
         private readonly NPC npc;
         private readonly HelpScreenSubSystem helpScreen;
@@ -40,7 +39,6 @@ namespace SharpAlliance.Core.SubSystems
             Emails emails,
             Laptop laptop,
             SoldierProfileSubSystem soldierProfile,
-            Interface ui,
             TurnBasedInput tbi,
             Cheats cheats,
             GameEvents gameEvents,
@@ -60,7 +58,6 @@ namespace SharpAlliance.Core.SubSystems
             this.emails = emails;
             this.laptop = laptop;
             this.soldierProfile = soldierProfile;
-            this.ui = ui;
             this.world = world;
             this.npc = npc;
             this.helpScreen = helpScreen;
@@ -147,7 +144,7 @@ namespace SharpAlliance.Core.SubSystems
             // Reset timer callbacks
             // gpCustomizableTimerCallback = null;
 
-            this.turnBasedInput.gubCheatLevel = Cheats.STARTING_CHEAT_LEVEL;
+            Globals.gubCheatLevel = Cheats.STARTING_CHEAT_LEVEL;
         }
 
         public ValueTask<bool> InitNewGame(bool fReset)
