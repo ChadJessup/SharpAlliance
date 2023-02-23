@@ -1573,7 +1573,7 @@ public class HandleUI
                 // TODO: Only our squad!
                 for (bLoop = Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID, pSoldier = Globals.MercPtrs[bLoop]; bLoop <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; bLoop++)//, pSoldier++)
                 {
-                    if (OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == (Assignments)Squads.CurrentSquad() && !pSoldier.fMercAsleep)
+                    if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == (Assignments)Squads.CurrentSquad() && !pSoldier.fMercAsleep)
                     {
                         // If we can't be controlled, returninvalid...
                         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
@@ -2277,7 +2277,6 @@ public class HandleUI
                         // wprintf(zStr, Globals.TacticalStr[ATTACK_OWN_GUY_PROMPT], pTSoldier.name);
 
                         DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, GAME_SCREEN, (byte)MSG_BOX_FLAG_YESNO, AttackRequesterCallback, null);
-
                     }
                 }
 
@@ -2313,7 +2312,7 @@ public class HandleUI
                 {
                     // Move to proper stance + direction!
                     // Convert our grid-not into an XY
-                    ConvertGridNoToXY(usMapPos, out sTargetXPos, out sTargetYPos);
+                    IsometricUtils.ConvertGridNoToXY(usMapPos, out sTargetXPos, out sTargetYPos);
 
                     // UNReady weapon
                     SoldierReadyWeapon(pSoldier, sTargetXPos, sTargetYPos, true);
@@ -3110,7 +3109,6 @@ public class HandleUI
             {
                 // Change stance normally
                 SendChangeSoldierStanceEvent(pSoldier, bNewStance);
-
             }
             else
             {
@@ -3121,7 +3119,7 @@ public class HandleUI
 
                 if (pSoldier.usUIMovementMode == AnimationStates.CRAWLING && Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight != AnimationHeights.ANIM_PRONE)
                 {
-                    pSoldier.usDontUpdateNewGridNoOnMoveAnimChange = LOCKED_NO_NEWGRIDNO;
+                    pSoldier.usDontUpdateNewGridNoOnMoveAnimChange = Globals.LOCKED_NO_NEWGRIDNO;
                     pSoldier.bPathStored = 0;
                 }
                 else
@@ -3210,7 +3208,7 @@ public class HandleUI
         }
 
         IsometricUtils.GetMouseMapPos(out usMapPos);
-        ConvertGridNoToXY(usMapPos, out sXPos, out sYPos);
+        IsometricUtils.ConvertGridNoToXY(usMapPos, out sXPos, out sYPos);
 
         puiCursorFlags = 0;
 
@@ -4869,7 +4867,7 @@ public class HandleUI
         for (pSoldier = Globals.MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; cnt++)//, pSoldier++)
         {
             // Check if this guy is OK to control....
-            if (OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
+            if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
             {
                 // Get screen pos of gridno......
                 GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
@@ -4897,7 +4895,7 @@ public class HandleUI
         for (pSoldier = Globals.MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; cnt++)//, pSoldier++)
         {
             // Check if this guy is OK to control....
-            if (OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
+            if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
             {
                 if (!_KeyDown(ALT))
                 {

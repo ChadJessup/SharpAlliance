@@ -171,7 +171,7 @@ namespace SharpAlliance.Core.Screens
             this.settings = gameSettings;
             this.sound = soundManager;
             this.inputs = inputManager;
-            this.video = videoManager;
+            VeldridVideoManager = videoManager;
             this.clock = clockManager;
             this.messageBox = messageBoxSubSystem;
         }
@@ -198,10 +198,10 @@ namespace SharpAlliance.Core.Screens
 
         public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
         {
-            var background = this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
+            var background = VeldridVideoManager.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
             // load button, title graphic and add it
-            var options = this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
+            var options = VeldridVideoManager.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
             this.RenderOptionsScreen();
 
@@ -227,7 +227,7 @@ namespace SharpAlliance.Core.Screens
                 this.RenderOptionsScreen();
 
                 //Blit the background to the save buffer
-                //this.video.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 640, 480);
+                //VeldridVideoManager.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 640, 480);
                 VeldridVideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
             }
 
@@ -256,7 +256,7 @@ namespace SharpAlliance.Core.Screens
             VeldridVideoManager.SaveBackgroundRects();
             GuiManager.RenderButtonsFastHelp();
 
-            this.video.ExecuteBaseDirtyRectQueue();
+            VeldridVideoManager.ExecuteBaseDirtyRectQueue();
             // EndFrameBufferRender();
 
             if (this.gfOptionsScreenExit)
@@ -446,10 +446,10 @@ namespace SharpAlliance.Core.Screens
             this.gfExitOptionsDueToMessageBox = false;
 
             // load the options screen background graphic and add it
-            this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
+            VeldridVideoManager.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
             // load button, title graphic and add it
-            this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
+            VeldridVideoManager.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
             //Save game button
             this.giOptionsButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);

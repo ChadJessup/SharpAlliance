@@ -43,7 +43,7 @@
 //        {
 //            this.logger = logger;
 
-//            this.video = (videoManager as VeldridVideoManager)!;
+//            VeldridVideoManager = (videoManager as VeldridVideoManager)!;
 
 //            this.IsInitialized = this.Initialize().AsTask().Result;
 //        }
@@ -77,7 +77,7 @@
 //            //
 //            // Get Primary surface
 //            //
-//            //pSurface = this.video.GetPrimarySurfaceObject();
+//            //pSurface = VeldridVideoManager.GetPrimarySurfaceObject();
 //            // CHECKF(pSurface != null);
 
 //            //ghPrimary = CreateVideoSurfaceFromDDSurface(pSurface);
@@ -205,7 +205,7 @@
 
 ////                ETRLEData TempETRLEData = new();
 ////                // Get TRLE data
-////                this.video.GetETRLEImageData(hImage, ref TempETRLEData);
+////                VeldridVideoManager.GetETRLEImageData(hImage, ref TempETRLEData);
 ////
 ////                // Set values
 ////                //hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
@@ -219,7 +219,7 @@
 ////                    hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
 ////                    hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
 ////
-////                    this.video.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+////                    VeldridVideoManager.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
 ////                }
 
 //                hImage = tmpHIMAGE;
@@ -240,7 +240,7 @@
 
 //            hVSurface.usHeight = usHeight;
 //            hVSurface.usWidth = usWidth;
-//            hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false).CreateDeviceTexture(this.video.GraphicDevice, this.video.GraphicDevice.ResourceFactory);
+//            hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false).CreateDeviceTexture(VeldridVideoManager.GraphicDevice, VeldridVideoManager.GraphicDevice.ResourceFactory);
 //            hVSurface.TransparentColor = 0;// FROMRGB(0, 0, 0);
 //            hVSurface.RegionList = new List<VSurfaceRegion>(DEFAULT_NUM_REGIONS);
 
@@ -308,12 +308,12 @@
 //            {
 //                hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false)
 //                    .CreateDeviceTexture(
-//                        this.video.GraphicDevice,
-//                        this.video.GraphicDevice.ResourceFactory);
+//                        VeldridVideoManager.GraphicDevice,
+//                        VeldridVideoManager.GraphicDevice.ResourceFactory);
 //            }
 //            else
 //            {
-//                this.video.GraphicDevice.UpdateTexture<Rgba32>(
+//                VeldridVideoManager.GraphicDevice.UpdateTexture<Rgba32>(
 //                    hVSurface.Texture,
 //                    pixelSpan.ToArray(),
 //                    (uint)usX,

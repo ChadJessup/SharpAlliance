@@ -243,7 +243,7 @@ public class SoldierFind
                         GetSoldierScreenRect(pSoldier, out aRect);
 
                         // Get XY From gridno
-                        ConvertGridNoToXY(sGridNo, out sXMapPos, out sYMapPos);
+                        IsometricUtils.ConvertGridNoToXY(sGridNo, out sXMapPos, out sYMapPos);
 
                         // Get screen XY pos from map XY
                         // Be carefull to convert to cell cords
@@ -589,7 +589,7 @@ public class SoldierFind
     {
         int usAnimSurface;
 
-        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+        usAnimSurface = AnimationControl.GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
@@ -620,14 +620,14 @@ public class SoldierFind
 
         if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
-            sOffsetX = (int)0;
-            sOffsetY = (int)0;
+            sOffsetX = 0;
+            sOffsetY = 0;
 
             return;
         }
 
-        sOffsetX = (int)pSoldier.sBoundingBoxOffsetX;
-        sOffsetY = (int)pSoldier.sBoundingBoxOffsetY;
+        sOffsetX = pSoldier.sBoundingBoxOffsetX;
+        sOffsetY = pSoldier.sBoundingBoxOffsetY;
     }
 
     void GetSoldierScreenPos(SOLDIERTYPE? pSoldier, out int psScreenX, out int psScreenY)
@@ -651,7 +651,7 @@ public class SoldierFind
         dOffsetX = pSoldier.dXPos - Globals.gsRenderCenterX;
         dOffsetY = pSoldier.dYPos - Globals.gsRenderCenterY;
 
-        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
+        IsometricUtils.FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
 
         //pTrav = &(gAnimSurfaceDatabase[ usAnimSurface ].hVideoObject.pETRLEObject[ pSoldier.usAniFrame ] );
 
@@ -700,7 +700,7 @@ public class SoldierFind
         dOffsetX = pSoldier.dXPos - Globals.gsRenderCenterX;
         dOffsetY = pSoldier.dYPos - Globals.gsRenderCenterY;
 
-        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
+        IsometricUtils.FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
 
         sMercScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
         sMercScreenY = ((Globals.gsVIEWPORT_END_Y - Globals.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;
@@ -731,10 +731,10 @@ public class SoldierFind
             sAllowance = 40;
         }
 
-        ConvertGridNoToXY(sGridNo, out sNewCenterWorldX, out sNewCenterWorldY);
+        IsometricUtils.ConvertGridNoToXY(sGridNo, out sNewCenterWorldX, out sNewCenterWorldY);
 
         // Get screen coordinates for current position of soldier
-        GetWorldXYAbsoluteScreenXY((int)(sNewCenterWorldX), (int)(sNewCenterWorldY), out sWorldX, out sWorldY);
+        IsometricUtils.GetWorldXYAbsoluteScreenXY((int)(sNewCenterWorldX), (int)(sNewCenterWorldY), out sWorldX, out sWorldY);
 
         // ATE: OK, here, adjust the top value so that it's a tile and a bit over, because of our mercs!
         if (sWorldX >= Globals.gsTopLeftWorldX
@@ -761,7 +761,7 @@ public class SoldierFind
 
     bool SoldierOnVisibleWorldTile(SOLDIERTYPE? pSoldier)
     {
-        return (GridNoOnVisibleWorldTile(pSoldier.sGridNo));
+        return (IsometricUtils.GridNoOnVisibleWorldTile(pSoldier.sGridNo));
     }
 
     bool SoldierLocationRelativeToScreen(int sGridNo, int usReasonID, out int pbDirection, out ScrollDirection puiScrollFlags)
@@ -774,18 +774,18 @@ public class SoldierFind
 
         puiScrollFlags = 0;
 
-        sX = CenterX(sGridNo);
-        sY = CenterY(sGridNo);
+        sX = IsometricUtils.CenterX(sGridNo);
+        sY = IsometricUtils.CenterY(sGridNo);
 
         // Get screen coordinates for current position of soldier
-        GetWorldXYAbsoluteScreenXY((int)(sX / Globals.CELL_X_SIZE), (int)(sY / Globals.CELL_Y_SIZE), out sWorldX, out sWorldY);
+        IsometricUtils.GetWorldXYAbsoluteScreenXY((int)(sX / Globals.CELL_X_SIZE), (int)(sY / Globals.CELL_Y_SIZE), out sWorldX, out sWorldY);
 
         // Find the diustance from render center to true world center
         sDistToCenterX = Globals.gsRenderCenterX - Globals.gCenterWorldX;
         sDistToCenterY = Globals.gsRenderCenterY - Globals.gCenterWorldY;
 
         // From render center in world coords, convert to render center in "screen" coords
-        FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out sScreenCenterX, out sScreenCenterY);
+        IsometricUtils.FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out sScreenCenterX, out sScreenCenterY);
 
         // Subtract screen center
         sScreenCenterX += Globals.gsCX;
@@ -843,7 +843,7 @@ public class SoldierFind
         // Get Rect contained in the soldier
         GetSoldierScreenRect(pSoldier, out Rectangle aRect);
 
-        if (IsPointInScreenRect(sX, sY, aRect))
+        if (IsometricUtils.IsPointInScreenRect(sX, sY, aRect))
         {
             return (true);
         }
@@ -861,7 +861,7 @@ public class SoldierFind
         // Get Rect contained in the soldier
         GetSoldierScreenRect(pSoldier, out Rectangle aRect);
 
-        if (IsPointInScreenRectWithRelative(sX, sY, aRect, out sRelX, out sRelY))
+        if (IsometricUtils.IsPointInScreenRectWithRelative(sX, sY, aRect, out sRelX, out sRelY))
         {
             dRelPer = (float)sRelY / (aRect.Bottom - aRect.Top);
 
@@ -942,13 +942,13 @@ public class SoldierFind
         float dTempX_S, dTempY_S;
 
         // Get 'true' merc position
-        dOffsetX = (float)(CenterX(sGridNo) - Globals.gsRenderCenterX);
-        dOffsetY = (float)(CenterY(sGridNo) - Globals.gsRenderCenterY);
+        dOffsetX = (IsometricUtils.CenterX(sGridNo) - Globals.gsRenderCenterX);
+        dOffsetY = (IsometricUtils.CenterY(sGridNo) - Globals.gsRenderCenterY);
 
         // OK, DONT'T ASK... CONVERSION TO PROPER Y NEEDS THIS...
         dOffsetX -= Globals.CELL_Y_SIZE;
 
-        FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
+        IsometricUtils.FloatFromCellToScreenCoordinates(dOffsetX, dOffsetY, out dTempX_S, out dTempY_S);
 
         sScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)dTempX_S;
         sScreenY = ((Globals.gsVIEWPORT_END_Y - Globals.gsVIEWPORT_START_Y) / 2) + (int)dTempY_S;

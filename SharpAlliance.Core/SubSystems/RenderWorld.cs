@@ -20,7 +20,7 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        public void RenderStaticWorldRect(Rectangle rect, bool fDynamicsToo)
+        public static void RenderStaticWorldRect(Rectangle rect, bool fDynamicsToo)
         {
         }
 

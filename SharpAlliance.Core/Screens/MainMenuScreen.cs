@@ -87,7 +87,7 @@ public class MainMenuScreen : IScreen
         this.input = inputManager;
         this.music = musicManager;
         this.mouse = mouseSubSystem;
-        this.video = videoManager;
+        VeldridVideoManager = videoManager;
         this.options = gameOptions;
         this.fonts = fontSubSystem;
         this.screens = screenManager;
@@ -144,8 +144,8 @@ public class MainMenuScreen : IScreen
 
             this.introScreen.guiSplashFrameFade--;
 
-            // this.video.InvalidateScreen();
-            // this.video.EndFrameBufferRender();
+            // VeldridVideoManager.InvalidateScreen();
+            // VeldridVideoManager.EndFrameBufferRender();
 
             this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
@@ -179,7 +179,7 @@ public class MainMenuScreen : IScreen
             ButtonSubSystem.MarkAButtonDirty(this.iMenuButtons[(MainMenuItems)cnt]);
         }
 
-//            this.video.EndFrameBufferRender();
+//            VeldridVideoManager.EndFrameBufferRender();
 
         this.HandleMainMenuInput();
 
@@ -305,15 +305,15 @@ public class MainMenuScreen : IScreen
         HVOBJECT hPixHandle;
 
         //Get and display the background image
-        //hPixHandle = this.video.GetVideoObject(this.mainMenuBackGroundImageKey);
-        //this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        //hPixHandle = VeldridVideoManager.GetVideoObject(this.mainMenuBackGroundImageKey);
+        //VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
-        //hPixHandle = this.video.GetVideoObject(this.ja2LogoImageKey);
-        //this.video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
+        //hPixHandle = VeldridVideoManager.GetVideoObject(this.ja2LogoImageKey);
+        //VeldridVideoManager.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
 
         this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
-//            this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+//            VeldridVideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
 
     public ValueTask<bool> Initialize()
@@ -336,10 +336,10 @@ public class MainMenuScreen : IScreen
         this.CreateDestroyMainMenuButtons(fCreate: true);
 
         // load background graphic and add it
-        this.background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+        this.background = VeldridVideoManager.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
         // load ja2 logo graphic and add it
-        this.logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+        this.logo = VeldridVideoManager.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
         /*
             // Gray out some buttons based on status of game!
@@ -569,15 +569,15 @@ public class MainMenuScreen : IScreen
 
     public void ClearMainMenu()
     {
-        this.video.InvalidateScreen();
+        VeldridVideoManager.InvalidateScreen();
     }
 
     public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
     {
-        //var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+        //var background = VeldridVideoManager.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
         // load ja2 logo graphic and add it
-        //var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+        //var logo = VeldridVideoManager.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
         sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
         sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);

@@ -15,12 +15,7 @@ namespace SharpAlliance.Core.Managers
         // GLOBAL FOR PAL EDITOR 
         // TODO: Move out of global scope once pieces are all in place.
         public static byte CurrentPalette = 0;
-        public static int guiBackgroundRect;
-        public static bool gfExitPalEditScreen = false;
-        public static bool gfExitDebugScreen = false;
-        public static bool gfInitRect = true;
         public static bool FirstTime = true;
-        public static bool gfDoneWithSplashScreen = false;
 
         private Dictionary<ScreenName, Type> ScreenTypes { get; set; } = new();
         private readonly GameContext context;
@@ -34,7 +29,7 @@ namespace SharpAlliance.Core.Managers
         public Dictionary<ScreenName, IScreen> Screens { get; set; } = new();
         public Dictionary<Type, ScreenName> ScreenNames { get; set; } = new();
 
-        public IScreen CurrentScreen { get; private set; }
+        public static IScreen CurrentScreen { get; private set; }
         public ScreenName CurrentScreenName { get; private set; }
         public bool IsInitialized { get; private set; }
         public IScreen guiPendingScreen { get; set; } = NullScreen.Instance;
@@ -90,9 +85,9 @@ namespace SharpAlliance.Core.Managers
             return screen;
         }
 
-        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        public static void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
         {
-            this.CurrentScreen.Draw(sr, gd, cl);
+            CurrentScreen.Draw(sr, gd, cl);
         }
 
         public ValueTask<IScreen> ActivateScreen(ScreenName screenName)
@@ -124,15 +119,15 @@ namespace SharpAlliance.Core.Managers
                 screen.IsInitialized = await screen.Initialize();
             }
 
-            if (this.CurrentScreen is not null)
+            if (CurrentScreen is not null)
             {
-                await this.CurrentScreen.Deactivate();
+                await CurrentScreen.Deactivate();
             }
 
-            this.currentScreenTask = screen.Activate().AsTask();
-            this.CurrentScreen = screen;
+            currentScreenTask = screen.Activate().AsTask();
+            CurrentScreen = screen;
 
-            return this.CurrentScreen;
+            return CurrentScreen;
         }
 
         public IScreenManager AddScreen<TScreen>(ScreenName screenName)

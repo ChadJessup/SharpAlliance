@@ -234,7 +234,7 @@ public class SoldierProfileSubSystem
     private void StartSomeMercsOnAssignment()
     {
         NPCID uiCnt;
-        MERCPROFILE pProfile;
+        MERCPROFILESTRUCT pProfile;
         int uiChance;
 
         // some randomly picked A.I.M. mercs will start off "on assignment" at the beginning of each new game
@@ -263,7 +263,7 @@ public class SoldierProfileSubSystem
         }
     }
 
-    private int CalcMedicalDeposit(ref MERCPROFILE profile)
+    private int CalcMedicalDeposit(ref MERCPROFILESTRUCT profile)
     {
         int usDeposit;
 
@@ -273,7 +273,7 @@ public class SoldierProfileSubSystem
         return usDeposit;
     }
 
-    private int CalcCompetence(ref MERCPROFILE profile)
+    private int CalcCompetence(ref MERCPROFILESTRUCT profile)
     {
         int uiStats, uiSkills, uiActionPoints, uiSpecialSkills;
         int usCompetence;

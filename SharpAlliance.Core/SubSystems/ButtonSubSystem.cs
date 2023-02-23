@@ -102,7 +102,7 @@ namespace SharpAlliance.Core.SubSystems
             return IsInitialized;
         }
 
-        public void SpecifyButtonSoundScheme(GUI_BUTTON buttonId, BUTTON_SOUND_SCHEME soundScheme)
+        public static void SpecifyButtonSoundScheme(GUI_BUTTON buttonId, BUTTON_SOUND_SCHEME soundScheme)
         {
         }
 
@@ -183,14 +183,14 @@ namespace SharpAlliance.Core.SubSystems
             // }
 
             // Load the default generic button images
-            GenericButtonOffNormal.Add(bp, video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF));
+            GenericButtonOffNormal.Add(bp, VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF));
             if (GenericButtonOffNormal[bp] == null)
             {
                 //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_OFF);
                 return false;
             }
 
-            if ((GenericButtonOnNormal[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON)) == null)
+            if ((GenericButtonOnNormal[bp] = VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON)) == null)
             {
                 //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_ON);
                 return false;
@@ -199,9 +199,9 @@ namespace SharpAlliance.Core.SubSystems
             // Load up the off hilite and on hilite images. We won't check for errors because if the file
             // doesn't exists, the system simply ignores that file. These are only here as extra images, they
             // aren't required for operation (only OFF Normal and ON Normal are required).
-            GenericButtonOffHilite[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
+            GenericButtonOffHilite[bp] = VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
 
-            GenericButtonOnHilite[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
+            GenericButtonOnHilite[bp] = VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
 
             Pix = 0;
             if (!GetETRLEPixelValue(ref Pix, GenericButtonOffNormal[bp], 8, 0, 0))
@@ -226,6 +226,10 @@ namespace SharpAlliance.Core.SubSystems
         public static void PlayButtonSound(GUI_BUTTON iDNum, ButtonSounds bUTTON_SOUND_CLICKED_ON)
         {
         }
+
+
+        public static void RenderButtons()
+            => RenderButtons(ButtonList);
 
         public static void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
         {
@@ -1569,7 +1573,7 @@ namespace SharpAlliance.Core.SubSystems
             // }
 
             // Load the image
-            if ((buttonPic.vobj = video.CreateVideoObject(filename)) == null)
+            if ((buttonPic.vobj = VeldridVideoManager.CreateVideoObject(filename)) == null)
             {
                 //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, String("Couldn't create VOBJECT for %s", filename));
                 return null;
@@ -2208,7 +2212,7 @@ namespace SharpAlliance.Core.SubSystems
             // If image slot isn't empty, delete the image
             if (buttonPic.vobj is not null)
             {
-                video.DeleteVideoObject(buttonPic.vobj);
+                VeldridVideoManager.DeleteVideoObject(buttonPic.vobj);
                 buttonPic.vobj = null;
                 ButtonPicsLoaded--;
             }

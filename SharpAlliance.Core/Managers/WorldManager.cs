@@ -355,7 +355,7 @@ public class WorldManager
     {
         STRUCTURE? pStructure;
 
-        if (!GridNoOnVisibleWorldTile(sGridNo))
+        if (!IsometricUtils.GridNoOnVisibleWorldTile(sGridNo))
         {
             return (Globals.NOBODY);
         }

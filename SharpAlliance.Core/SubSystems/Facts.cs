@@ -288,22 +288,22 @@ public class Facts
                 gubFact[usFact] = (Globals.gMercProfiles[NPCID.QUEEN].bMercStatus == MercStatus.MERC_IS_DEAD);
                 break;
             case FACT.MINE_EMPTY:
-                gubFact[usFact] = IsHisMineEmpty(ubProfileID);
+                gubFact[usFact] = StrategicMines.IsHisMineEmpty(ubProfileID);
                 break;
             case FACT.MINE_RUNNING_OUT:
-                gubFact[usFact] = IsHisMineRunningOut(ubProfileID);
+                gubFact[usFact] = StrategicMines.IsHisMineRunningOut(ubProfileID);
                 break;
             case FACT.MINE_PRODUCING_BUT_LOYALTY_LOW:
-                gubFact[usFact] = HasHisMineBeenProducingForPlayerForSomeTime(ubProfileID) && IsHisMineDisloyal(ubProfileID);
+                gubFact[usFact] = StrategicMines.HasHisMineBeenProducingForPlayerForSomeTime(ubProfileID) && IsHisMineDisloyal(ubProfileID);
                 break;
             case FACT.CREATURES_IN_MINE:
-                gubFact[usFact] = IsHisMineInfested(ubProfileID);
+                gubFact[usFact] = StrategicMines.IsHisMineInfested(ubProfileID);
                 break;
             case FACT.PLAYER_LOST_MINE:
-                gubFact[usFact] = IsHisMineLostAndRegained(ubProfileID);
+                gubFact[usFact] = StrategicMines.IsHisMineLostAndRegained(ubProfileID);
                 break;
             case FACT.MINE_AT_FULL_PRODUCTION:
-                gubFact[usFact] = IsHisMineAtMaxProduction(ubProfileID);
+                gubFact[usFact] = StrategicMines.IsHisMineAtMaxProduction(ubProfileID);
                 break;
             case FACT.DYNAMO_IN_J9:
                 gubFact[usFact] = Quests.CheckNPCSector(NPCID.DYNAMO, 9, MAP_ROW.J, 0) && QueenCommand.NumEnemiesInAnySector(9, (MAP_ROW)10, 0) > 0;
@@ -427,15 +427,15 @@ public class Facts
                 break;
 
             case FACT.PLAYER_OWNS_2_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() == 3) && IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
+                gubFact[usFact] = ((StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() == 3) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
                 break;
 
             case FACT.PLAYER_OWNS_3_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() == 5) && IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
+                gubFact[usFact] = ((StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() == 5) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
                 break;
 
             case FACT.PLAYER_OWNS_4_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((GetNumberOfWholeTownsUnderControl() >= 6) && IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
+                gubFact[usFact] = ((StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() >= 6) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
                 break;
 
             case FACT.PLAYER_FOUGHT_THREE_TIMES_TODAY:
@@ -584,38 +584,38 @@ public class Facts
                 break;
 
             case FACT.PLAYER_SPOKE_TO_DRASSEN_MINER:
-                gubFact[usFact] = SpokenToHeadMiner(MINE.DRASSEN);
+                gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.DRASSEN);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_DRASSEN_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_CAMBRIA_MINER:
-                gubFact[usFact] = SpokenToHeadMiner(MINE.CAMBRIA);
+                gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.CAMBRIA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CAMBRIA_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_CHITZENA_MINER:
-                gubFact[usFact] = SpokenToHeadMiner(MINE.CHITZENA);
+                gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.CHITZENA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CHITZENA_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_ALMA_MINER:
-                gubFact[usFact] = SpokenToHeadMiner(MINE.ALMA);
+                gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.ALMA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_ALMA_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_GRUMM_MINER:
-                gubFact[usFact] = SpokenToHeadMiner(MINE.GRUMM);
+                gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.GRUMM);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_GRUMM_MINE:
-                gubFact[usFact] = (GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
 
             case FACT.ENOUGH_LOYALTY_TO_TRAIN_MILITIA:
-                gubFact[usFact] = InTownSectorWithTrainingLoyalty(Globals.gWorldSectorX, Globals.gWorldSectorY);
+                gubFact[usFact] = Quests.InTownSectorWithTrainingLoyalty(Globals.gWorldSectorX, Globals.gWorldSectorY);
                 break;
             case FACT.WALKER_AT_BAR:
                 gubFact[usFact] = (Globals.gMercProfiles[NPCID.FATHER].sSectorX == 13 && Globals.gMercProfiles[NPCID.FATHER].sSectorY == MAP_ROW.C);

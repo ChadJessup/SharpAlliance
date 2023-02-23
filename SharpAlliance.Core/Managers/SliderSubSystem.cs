@@ -22,7 +22,7 @@ namespace SharpAlliance.Core.Managers
             IVideoManager videoManager)
         {
             this.inputs = inputManager;
-            this.video = videoManager;
+            VeldridVideoManager = videoManager;
         }
 
         public List<Slider> Sliders { get; } = new();
@@ -108,14 +108,14 @@ namespace SharpAlliance.Core.Managers
                 if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
                 {
                     //Restore the old rect
-                    //this.video.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
+                    //VeldridVideoManager.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
 
                     //invalidate the old area
                     VeldridVideoManager.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
                 }
 
                 //Blit the new rect
-                // this.video.BlitBufferToBuffer(DestRect.Left, DestRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
+                // VeldridVideoManager.BlitBufferToBuffer(DestRect.Left, DestRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
             }
             else
             {
@@ -134,11 +134,11 @@ namespace SharpAlliance.Core.Managers
                 if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
                 {
                     //Restore the old rect
-                    this.video.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15);
+                    VeldridVideoManager.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15);
                 }
 
                 //save the new rect
-                this.video.BlitBufferToBuffer(DestRect.Left, DestRect.Top, 8, 15);
+                VeldridVideoManager.BlitBufferToBuffer(DestRect.Left, DestRect.Top, 8, 15);
             }
 
             //Save the new rect location
@@ -285,7 +285,7 @@ namespace SharpAlliance.Core.Managers
         public void InitSliderSystem()
         {
             // load Slider Box Graphic graphic and add it
-            this.video.AddVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
+            VeldridVideoManager.AddVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
 
             this.gfSliderInited = true;
         }

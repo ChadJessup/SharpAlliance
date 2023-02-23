@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using SharpAlliance.Core.Screens;
 
 namespace SharpAlliance.Core.SubSystems;
 
-public class MERCPROFILE
+public class MERCPROFILESTRUCT
 {
     public string zName;
     public string zNickname;
@@ -91,7 +92,7 @@ public class MERCPROFILE
     public int sSalary;
     public int bLife;
     public int bDexterity;        // dexterity (hand coord) value
-    public int bPersonalityTrait;
+    public PersonalityTrait bPersonalityTrait;
     public int bSkillTrait;
 
     public int bReputationTolerance;
@@ -126,8 +127,8 @@ public class MERCPROFILE
     public Items[] inv = new Items[19];
     public int[] bMercTownReputation = new int[20];
 
-    public int[] usStatChangeChances = new int[12];     // used strictly for balancing, never shown!
-    public int[] usStatChangeSuccesses = new int[12];   // used strictly for balancing, never shown!
+    public Dictionary<Stat, int> usStatChangeChances = new();     // used strictly for balancing, never shown!
+    public Dictionary<Stat, int> usStatChangeSuccesses = new();   // used strictly for balancing, never shown!
 
     public int ubStrategicInsertionCode;
 

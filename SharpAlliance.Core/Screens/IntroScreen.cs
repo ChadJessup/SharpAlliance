@@ -16,11 +16,9 @@ namespace SharpAlliance.Core.Screens
     // intro.c
     public class IntroScreen : IScreen
     {
-        private IntroScreenType gbIntroScreenMode = IntroScreenType.Unknown;
         private readonly GameInit gameInit;
         private readonly GameContext context;
         private readonly IScreenManager screens;
-        private readonly IVideoManager video;
         private readonly MouseSubSystem mouse;
         private readonly CursorSubSystem cursor;
         private readonly RenderDirtySubSystem renderDirty;
@@ -29,12 +27,7 @@ namespace SharpAlliance.Core.Screens
         private readonly CinematicsSubSystem cinematics;
         private readonly SoldierProfileSubSystem soldiers;
         private readonly IVideoObjectManager videoObject;
-        private bool gfIntroScreenEntry;
-        private bool gfIntroScreenExit;
-        public long guiSplashStartTime { get; set; } = 0;
-        public int guiSplashFrameFade { get; set; } = 10;
 
-        private SMKFLIC? gpSmackFlic = null;
         private string[] gpzSmackerFileNames = new string[]
         {
         	//begining of the game
@@ -63,13 +56,11 @@ namespace SharpAlliance.Core.Screens
             CinematicsSubSystem cinematics,
             SoldierProfileSubSystem soldierSubSystem,
             IScreenManager screenManager,
-            GameInit gameInit,
-            IVideoManager videoManager)
+            GameInit gameInit)
         {
             this.gameInit = gameInit;
             this.context = context;
             this.screens = screenManager;
-            this.video = videoManager;
             this.mouse = mouseSubSystem;
             this.cursor = cursorSubSystem;
             this.renderDirty = renderDirtySubSystem;
@@ -81,8 +72,6 @@ namespace SharpAlliance.Core.Screens
 
         public bool IsInitialized { get; set; }
         public ScreenState State { get; set; }
-        public ScreenName guiIntroExitScreen { get; private set; } = ScreenName.INTRO_SCREEN;
-        public SmackerFiles giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
 
         public ValueTask Activate()
         {
@@ -91,13 +80,13 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<ScreenName> Handle()
         {
-            if (this.gfIntroScreenEntry)
+            if (Globals.gfIntroScreenEntry)
             {
                 this.EnterIntroScreen();
-                this.gfIntroScreenEntry = false;
-                this.gfIntroScreenExit = false;
+                Globals.gfIntroScreenEntry = false;
+                Globals.gfIntroScreenExit = false;
 
-                this.video.InvalidateRegion(new(0, 0, 640, 480));
+                VeldridVideoManager.InvalidateRegion(new(0, 0, 640, 480));
             }
 
             this.renderDirty.RestoreBackgroundRects();
@@ -108,16 +97,16 @@ namespace SharpAlliance.Core.Screens
             this.HandleIntroScreen();
 
             this.renderDirty.ExecuteBaseDirtyRectQueue();
-            this.video.EndFrameBufferRender();
+            VeldridVideoManager.EndFrameBufferRender();
 
-            if (this.gfIntroScreenExit)
+            if (Globals.gfIntroScreenExit)
             {
-                this.ExitIntroScreen();
-                this.gfIntroScreenExit = false;
-                this.gfIntroScreenEntry = true;
+                ExitIntroScreen();
+                Globals.gfIntroScreenExit = false;
+                Globals.gfIntroScreenEntry = true;
             }
 
-            return ValueTask.FromResult(this.guiIntroExitScreen);
+            return ValueTask.FromResult(Globals.guiIntroExitScreen);
         }
 
         private void ExitIntroScreen()
@@ -129,7 +118,7 @@ namespace SharpAlliance.Core.Screens
             bool fFlicStillPlaying = false;
 
             //if we are exiting this screen, this frame, dont update the screen
-            if (this.gfIntroScreenExit)
+            if (Globals.gfIntroScreenExit)
             {
                 return;
             }
@@ -140,7 +129,7 @@ namespace SharpAlliance.Core.Screens
             //if the flic is not playing
             if (!fFlicStillPlaying)
             {
-                var iNextVideoToPlay = this.GetNextIntroVideo(this.giCurrentIntroBeingPlayed);
+                var iNextVideoToPlay = this.GetNextIntroVideo(Globals.giCurrentIntroBeingPlayed);
 
                 if (iNextVideoToPlay != SmackerFiles.SMKINTRO_NO_VIDEO)
                 {
@@ -149,11 +138,11 @@ namespace SharpAlliance.Core.Screens
                 else
                 {
                     this.PrepareToExitIntroScreen();
-                    this.giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
+                    Globals.giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
                 }
             }
 
-            this.video.InvalidateScreen();
+            VeldridVideoManager.InvalidateScreen();
         }
 
         private bool SmkPollFlics()
@@ -185,7 +174,7 @@ namespace SharpAlliance.Core.Screens
             }
 
             //initialize smacker
-            this.cinematics.SmkInitialize(this.video, 640, 480);
+            //this.cinematics.SmkInitialize(640, 480);
 
             //get the index opf the first video to watch
             iFirstVideoID = this.GetNextIntroVideo(SmackerFiles.SMKINTRO_FIRST_VIDEO);
@@ -194,7 +183,7 @@ namespace SharpAlliance.Core.Screens
             {
                 this.StartPlayingIntroFlic(iFirstVideoID);
 
-                this.guiIntroExitScreen = ScreenName.INTRO_SCREEN;
+                Globals.guiIntroExitScreen = ScreenName.INTRO_SCREEN;
             }
             else
             {
@@ -213,11 +202,11 @@ namespace SharpAlliance.Core.Screens
                 // TODO: port libsmacker
                 //gpSmackFlic = SmkPlayFlic(gpzSmackerFileNames[(int)iIndexOfFlicToPlay], 0, 0, true);
 
-                this.gpSmackFlic = null;
+                Globals.gpSmackFlic = null;
 
-                if (this.gpSmackFlic != null)
+                if (Globals.gpSmackFlic != null)
                 {
-                    this.giCurrentIntroBeingPlayed = iIndexOfFlicToPlay;
+                    Globals.giCurrentIntroBeingPlayed = iIndexOfFlicToPlay;
                 }
                 else
                 {
@@ -232,7 +221,7 @@ namespace SharpAlliance.Core.Screens
             SmackerFiles iStringToUse = SmackerFiles.SMKINTRO_NO_VIDEO;
 
             //switch on whether it is the beginging or the end game video
-            switch (this.gbIntroScreenMode)
+            switch (Globals.gbIntroScreenMode)
             {
                 //the video at the begining of the game
                 case IntroScreenType.INTRO_BEGINING:
@@ -319,18 +308,18 @@ namespace SharpAlliance.Core.Screens
         private void PrepareToExitIntroScreen()
         {
             //if its the intro at the begining of the game
-            if (this.gbIntroScreenMode == IntroScreenType.INTRO_BEGINING)
+            if (Globals.gbIntroScreenMode == IntroScreenType.INTRO_BEGINING)
             {
                 //go to the init screen
-                this.guiIntroExitScreen = ScreenName.InitScreen;
+                Globals.guiIntroExitScreen = ScreenName.InitScreen;
             }
-            else if (this.gbIntroScreenMode == IntroScreenType.INTRO_SPLASH)
+            else if (Globals.gbIntroScreenMode == IntroScreenType.INTRO_SPLASH)
             {
                 //display a logo when exiting
                 this.DisplaySirtechSplashScreen();
 
-                ScreenManager.gfDoneWithSplashScreen = true;
-                this.guiIntroExitScreen = ScreenName.InitScreen;
+                Globals.gfDoneWithSplashScreen = true;
+                Globals.guiIntroExitScreen = ScreenName.InitScreen;
             }
             else
             {
@@ -338,10 +327,10 @@ namespace SharpAlliance.Core.Screens
                 this.gameInit.ReStartingGame();
 
                 //		guiIntroExitScreen = MAINMENU_SCREEN;
-                this.guiIntroExitScreen = ScreenName.CREDIT_SCREEN;
+                Globals.guiIntroExitScreen = ScreenName.CREDIT_SCREEN;
             }
 
-            this.gfIntroScreenExit = true;
+            Globals.gfIntroScreenExit = true;
         }
 
         private void DisplaySirtechSplashScreen()
@@ -358,9 +347,9 @@ namespace SharpAlliance.Core.Screens
             //memset(&VObjectDesc, 0, sizeof(VOBJECT_DESC));
             
             //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
-            var videoObject = this.video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
+            var videoObject = VeldridVideoManager.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
 
-            //this.video.BltVideoObject(
+            //VeldridVideoManager.BltVideoObject(
             //    0,
             //    videoObject,
             //    0,
@@ -369,16 +358,16 @@ namespace SharpAlliance.Core.Screens
             //    VideoObjectManager.VO_BLT_SRCTRANSPARENCY,
             //    null);
 
-            this.video.DeleteVideoObjectFromIndex(logoKey);
+            VeldridVideoManager.DeleteVideoObjectFromIndex(logoKey);
 
-            this.video.InvalidateScreen();
-            this.video.RefreshScreen();
+            VeldridVideoManager.InvalidateScreen();
+            VeldridVideoManager.RefreshScreen();
         }
 
         public ValueTask<bool> Initialize()
         {
             //Set so next time we come in, we can set up
-            this.gfIntroScreenEntry = true;
+            Globals.gfIntroScreenEntry = true;
 
             return ValueTask.FromResult(true);
         }
@@ -387,15 +376,15 @@ namespace SharpAlliance.Core.Screens
         {
             if (introType == IntroScreenType.INTRO_BEGINING)
             {
-                this.gbIntroScreenMode = IntroScreenType.INTRO_BEGINING;
+                Globals.gbIntroScreenMode = IntroScreenType.INTRO_BEGINING;
             }
             else if (introType == IntroScreenType.INTRO_ENDING)
             {
-                this.gbIntroScreenMode = IntroScreenType.INTRO_ENDING;
+                Globals.gbIntroScreenMode = IntroScreenType.INTRO_ENDING;
             }
             else if (introType == IntroScreenType.INTRO_SPLASH)
             {
-                this.gbIntroScreenMode = IntroScreenType.INTRO_SPLASH;
+                Globals.gbIntroScreenMode = IntroScreenType.INTRO_SPLASH;
             }
         }
 

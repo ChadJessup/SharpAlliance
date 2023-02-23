@@ -45,7 +45,7 @@ namespace SharpAlliance.Core.SubSystems
         int bScientific;
         // traits	
         int sWeightCarriedAtTurnStart;
-        public int[] name = new int[10];
+        public string name; // max 10 chars?
 
         public int bVisible;          // to render or not to render...
 
@@ -55,7 +55,7 @@ namespace SharpAlliance.Core.SubSystems
         public TEAM bTeam;             // Team identifier
 
         //NEW MOVEMENT INFORMATION for Strategic Movement
-        int ubGroupID;        //the movement group the merc is currently part of.
+        public int ubGroupID;        //the movement group the merc is currently part of.
         bool fBetweenSectors;    //set when the group isn't actually in a sector.
                                     //sSectorX and sSectorY will reflect the sector the
                                     //merc was at last.
@@ -105,22 +105,21 @@ namespace SharpAlliance.Core.SubSystems
         // TIMECOUNTER AICounter;
         // TIMECOUNTER FadeCounter;
 
-        int ubSkillTrait1;
-        int ubSkillTrait2;
+        public int ubSkillTrait1;
+        public int ubSkillTrait2;
+        public int uiAIDelay;
+        public int bDexterity;        // dexterity (hand coord) value
+        public int bWisdom;
+        public int sReloadDelay;
+        public int ubAttackerID;
+        public int ubPreviousAttackerID;
+        public bool fTurnInProgress;
 
-        int uiAIDelay;
-        int bDexterity;        // dexterity (hand coord) value
-        int bWisdom;
-        int sReloadDelay;
-        int ubAttackerID;
-        int ubPreviousAttackerID;
-        bool fTurnInProgress;
+        public bool fIntendedTarget; // intentionally shot?
+        public bool fPauseAllAnimation;
 
-        bool fIntendedTarget; // intentionally shot?
-        bool fPauseAllAnimation;
-
-        int bExpLevel;     // general experience level
-        int sInsertionGridNo;
+        public int bExpLevel;     // general experience level
+        public int sInsertionGridNo;
 
         bool fContinueMoveAfterStanceChange;
 
@@ -129,33 +128,33 @@ namespace SharpAlliance.Core.SubSystems
 
         public int bLife;             // current life (hit points or health)
         public TEAM bSide;
-        int bViewRange;
-        int bNewOppCnt;
-        int bService;      // first aid, or other time consuming process
+        public int bViewRange;
+        public int bNewOppCnt;
+        public int bService;      // first aid, or other time consuming process
 
         int usAniCode;
         public int usAniFrame;
         int sAniDelay;
 
         // MOVEMENT TO NEXT TILE HANDLING STUFF
-        int bAgility;          // agility (speed) value
-        int ubDelayedMovementCauseMerc;
-        int sDelayedMovementCauseGridNo;
-        int sReservedMovementGridNo;
+        public int bAgility;          // agility (speed) value
+        public int ubDelayedMovementCauseMerc;
+        public int sDelayedMovementCauseGridNo;
+        public int sReservedMovementGridNo;
 
         public int bStrength;
 
         // Weapon Stuff
-        bool fHoldAttackerUntilDone;
-        int sTargetGridNo;
-        int bTargetLevel;
+        public bool fHoldAttackerUntilDone;
+        public int sTargetGridNo;
+        public int bTargetLevel;
         public int bTargetCubeLevel;
-        int sLastTarget;
-        int bTilesMoved;
-        int bLeadership;
-        float dNextBleed;
-        bool fWarnedAboutBleeding;
-        bool fDyingComment;
+        public int sLastTarget;
+        public int bTilesMoved;
+        public int bLeadership;
+        public float dNextBleed;
+        public bool fWarnedAboutBleeding;
+        public bool fDyingComment;
 
         int ubTilesMovedPerRTBreathUpdate;
         int usLastMovementAnimPerRTBreathUpdate;
@@ -163,13 +162,13 @@ namespace SharpAlliance.Core.SubSystems
         bool fTurningToShoot;
         bool fTurningToFall;
         public bool fTurningUntilDone;
-        bool fGettingHit;
-        bool fInNonintAnim;
-        bool fFlashLocator;
-        int sLocatorFrame;
-        bool fShowLocator;
-        bool fFlashPortrait;
-        int bMechanical;
+        public bool fGettingHit;
+        public bool fInNonintAnim;
+        public bool fFlashLocator;
+        public int sLocatorFrame;
+        public bool fShowLocator;
+        public bool fFlashPortrait;
+        public int bMechanical;
         public int bLifeMax;          // maximum life for this merc
 
         int iFaceIndex;
@@ -193,12 +192,12 @@ namespace SharpAlliance.Core.SubSystems
         int[] pGlowShades = new int[20]; // 
         public int pCurrentShade;
         public int bMedical;
-        bool fBeginFade;
-        int ubFadeLevel;
-        int ubServiceCount;
-        int ubServicePartner;
-        int bMarksmanship;
-        int bExplosive;
+        public bool fBeginFade;
+        public int ubFadeLevel;
+        public int ubServiceCount;
+        public int ubServicePartner;
+        public int bMarksmanship;
+        public int bExplosive;
         // THROW_PARAMS pThrowParams;
         public bool fTurningFromPronePosition;
         public bool bReverse;
@@ -315,7 +314,7 @@ namespace SharpAlliance.Core.SubSystems
         int fAIFlags;
 
         bool fDontChargeReadyAPs;
-        int usAnimSurface;
+        public int usAnimSurface;
         int sZLevel;
         bool fPrevInWater;
         bool fGoBackToAimAfterHit;
@@ -442,28 +441,25 @@ namespace SharpAlliance.Core.SubSystems
         public int ubCivilianGroup;
 
         // time changes...when a stat was changed according to GetJA2Clock();
-        int uiChangeLevelTime;
-        int uiChangeHealthTime;
-        int uiChangeStrengthTime;
-        int uiChangeDexterityTime;
-        int uiChangeAgilityTime;
-        int uiChangeWisdomTime;
-        int uiChangeLeadershipTime;
-        int uiChangeMarksmanshipTime;
-        int uiChangeExplosivesTime;
-        int uiChangeMedicalTime;
-        int uiChangeMechanicalTime;
-
-        int uiUniqueSoldierIdValue; // the unique value every instance of a soldier gets - 1 is the first valid value
-        int bBeingAttackedCount;       // Being attacked counter
-
-        int[] bNewItemCount = new int[(int)InventorySlot.NUM_INV_SLOTS];
-        int[] bNewItemCycleCount = new int[(int)InventorySlot.NUM_INV_SLOTS];
-        bool fCheckForNewlyAddedItems;
-        int bEndDoorOpenCode;
-
-        int ubScheduleID;
-        int sEndDoorOpenCodeData;
+        public int uiChangeLevelTime;
+        public int uiChangeHealthTime;
+        public int uiChangeStrengthTime;
+        public int uiChangeDexterityTime;
+        public int uiChangeAgilityTime;
+        public int uiChangeWisdomTime;
+        public int uiChangeLeadershipTime;
+        public int uiChangeMarksmanshipTime;
+        public int uiChangeExplosivesTime;
+        public int uiChangeMedicalTime;
+        public int uiChangeMechanicalTime;
+        public int uiUniqueSoldierIdValue; // the unique value every instance of a soldier gets - 1 is the first valid value
+        public int bBeingAttackedCount;       // Being attacked counter
+        public int[] bNewItemCount = new int[(int)InventorySlot.NUM_INV_SLOTS];
+        public int[] bNewItemCycleCount = new int[(int)InventorySlot.NUM_INV_SLOTS];
+        public bool fCheckForNewlyAddedItems;
+        public int bEndDoorOpenCode;
+        public int ubScheduleID;
+        public int sEndDoorOpenCodeData;
         //TIMECOUNTER NextTileCounter;
         bool fBlockedByAnotherMerc;
         int bBlockedByAnotherMercDirection;
@@ -543,7 +539,7 @@ namespace SharpAlliance.Core.SubSystems
 
         bool fSoldierWasMoving;
         bool fSayAmmoQuotePending;
-        int usValueGoneUp;
+        public int usValueGoneUp;
 
         int ubNumLocateCycles;
         int ubDelayedMovementFlags;

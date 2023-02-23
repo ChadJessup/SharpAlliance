@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using SharpAlliance.Core;
+using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
+using static SharpAlliance.Core.EnglishText;
+using SixLabors.ImageSharp.PixelFormats;
+using Veldrid;
 
 namespace SharpAlliance.Core;
 
@@ -104,7 +110,7 @@ public partial class Globals
     public static int[,,] gubWorldMovementCosts = new int[World.WORLD_MAX, World.MAXDIR, 2];
     public static int[,] gszTerrain = new int[(int)Traversability.NUM_TRAVTERRAIN_TYPES, 15];
 
-    public static Dictionary<NPCID, MERCPROFILE> gMercProfiles { get; } = new();
+    public static Dictionary<NPCID, MERCPROFILESTRUCT> gMercProfiles { get; } = new();
 
     public static TacticalStatusType gTacticalStatus { get; set; } = new TacticalStatusType();
     public static TILE_ELEMENT[] gTileDatabase = new TILE_ELEMENT[(int)TileDefines.NUMBEROFTILES];
@@ -115,6 +121,11 @@ public partial class Globals
     // MERC SLOTS - A LIST OF ALL ACTIVE MERCS
     public static SOLDIERTYPE[] MercSlots = new SOLDIERTYPE[TOTAL_SOLDIERS];
     public static int guiNumMercSlots { get; set; }
+
+    // These HAVE to total 100% at all times!!!
+    public const int PROGRESS_PORTION_KILLS = 25;
+    public const int PROGRESS_PORTION_CONTROL = 25;
+    public const int PROGRESS_PORTION_INCOME = 50;
 
     public static int gusSelectedSoldier { get; set; }
     public static int gusOldSelectedSoldier { get; set; }
@@ -250,7 +261,7 @@ public partial class Globals
     public static uint gsUITargetShotGridNo = Globals.NOWHERE;
     public static bool gUIUseReverse = false;
 
-    public static Rectangle gRubberBandRect = new(0, 0, 0, 0);
+    public static SixLabors.ImageSharp.Rectangle gRubberBandRect = new(0, 0, 0, 0);
     public static bool gRubberBandActive = false;
     public static bool gfIgnoreOnSelectedGuy = false;
     public static bool gfViewPortAdjustedForSouth = false;
@@ -363,8 +374,8 @@ public partial class Globals
     public static int gsBottomLeftWorldX, gsBottomLeftWorldY;
     public static int gsBottomRightWorldX, gsBottomRightWorldY;
 
-    public static Rectangle gSelectRegion;
-    public static Point gSelectAnchor;
+    public static SixLabors.ImageSharp.Rectangle gSelectRegion;
+    public static SixLabors.ImageSharp.Point gSelectAnchor;
 
     // GLOBAL COORDINATES
     public static int gTopLeftWorldLimitX, gTopLeftWorldLimitY;
@@ -474,6 +485,7 @@ public partial class Globals
     public const Surfaces BUTTON_USE_DEFAULT = Surfaces.Unknown;
     public static readonly int? BUTTON_NO_FILENAME = null;
     public static readonly GuiCallback BUTTON_NO_CALLBACK = (ref GUI_BUTTON o, MouseCallbackReasons r) => { };
+    //public const int MAX_NUMBER_OF_MINES = (int)MINE.MAX_NUMBER_OF_MINES;
     public const int BUTTON_NO_IMAGE = -1;
     public const int BUTTON_NO_SLOT = -1;
 
@@ -565,14 +577,20 @@ public partial class Globals
     // number of LINKED LISTS for sets of leave items (each slot holds an unlimited # of items)
     public const int NUM_LEAVE_LIST_SLOTS = 20;
     // this table holds mine values that never change and don't need to be saved
-    public static MINE_LOCATION_TYPE[] gMineLocation = new MINE_LOCATION_TYPE[(int)MINE.MAX_NUMBER_OF_MINES]
+
+    public static int guiBackgroundRect;
+    public static bool gfExitPalEditScreen = false;
+    public static bool gfInitRect = true;
+    public static bool gfDoneWithSplashScreen = false;
+
+    public static Dictionary<MINE, MINE_LOCATION_TYPE> gMineLocation = new()
     {
-        new(4, 4, TOWNS.SAN_MONA),
-        new(13, 4, TOWNS.DRASSEN ),
-        new(14, 9, TOWNS.ALMA),
-        new(8, 8, TOWNS.CAMBRIA ),
-        new(2, 2, TOWNS.CHITZENA),
-        new(3, 8, TOWNS.GRUMM),
+        { MINE.SAN_MONA, new(4, (MAP_ROW)4, TOWNS.SAN_MONA) },
+        { MINE.DRASSEN, new(13, (MAP_ROW)4, TOWNS.DRASSEN ) },
+        { MINE.ALMA, new(14, (MAP_ROW)9, TOWNS.ALMA) },
+        { MINE.CAMBRIA, new(8,  (MAP_ROW)8, TOWNS.CAMBRIA ) },
+        { MINE.CHITZENA, new(2,  (MAP_ROW)2, TOWNS.CHITZENA) },
+        { MINE.GRUMM, new(3, (MAP_ROW)8, TOWNS.GRUMM) },
     };
 
     public static Dictionary<UICursorDefines, UICursor> gUICursors = new()
@@ -753,6 +771,11 @@ public partial class Globals
     public static int giScrollButtonState = -1;
 
     public static int gbPixelDepth { get; set; }
+    public static bool gfInvalidTraversal { get; internal set; }
+    public static bool gfLoneEPCAttemptingTraversal { get; internal set; }
+    public static int gubLoneMercAttemptingToAbandonEPCs { get; internal set; }
+    public static int gbPotentiallyAbandonedEPCSlotID { get; internal set; }
+    public static bool gfRobotWithoutControllerAttemptingTraversal { get; internal set; }
 
     public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
     public const int IGNORE_PEOPLE_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 101);
@@ -760,6 +783,149 @@ public partial class Globals
 
     public static int gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
 
+
+    public static string[] gzLateLocalizedString = new[]
+{
+    "%S loadscreen data file not found...",
+
+	//1-5
+	"The robot cannot leave this sector when nobody is using the controller.",
+
+	//This message comes up if you have pending bombs waiting to explode in tactical.
+	"You can't compress time right now.  Wait for the fireworks!",  
+
+	//'Name' refuses to move.
+	"%s refuses to move.",
+
+	//%s a merc name
+	"%s does not have enough energy to change stance.",
+
+	//A message that pops up when a vehicle runs out of gas.
+	"The %s has run out of gas and is now stranded in %c%d.",
+
+	//6-10
+
+	// the following two strings are combined with the pNewNoise[] strings above to report noises
+	// heard above or below the merc
+	"above",
+    "below",
+
+	//The following strings are used in autoresolve for autobandaging related feedback.
+	"None of your mercs have any medical ability.",
+    "There are no medical supplies to perform bandaging.",
+    "There weren't enough medical supplies to bandage everybody.",
+    "None of your mercs need bandaging.",
+    "Bandages mercs automatically.",
+    "All your mercs are bandaged.",
+
+	//14
+	"Arulco",
+
+  "(roof)",
+
+    "Health: %d/%d",
+
+	//In autoresolve if there were 5 mercs fighting 8 enemies the text would be "5 vs. 8"
+	//"vs." is the abbreviation of versus.
+	"%d vs. %d",
+
+    "The %s is full!",  //(ex "The ice cream truck is full")
+
+  "%s does not need immediate first aid or bandaging but rather more serious medical attention and/or rest.",
+
+	//20
+	//Happens when you get shot in the legs, and you fall down.
+	"%s is hit in the leg and collapses!",
+	//Name can't speak right now.
+	"%s can't speak right now.",
+
+	//22-24 plural versions 
+	"%d green militia have been promoted to veteran militia.",
+    "%d green militia have been promoted to regular militia.",
+    "%d regular militia have been promoted to veteran militia.",
+
+	//25
+	"Switch",
+
+	//26
+	//Name has gone psycho -- when the game forces the player into burstmode (certain unstable characters)
+	"%s goes psycho!",
+
+	//27-28
+	//Messages why a player can't time compress.
+	"It is currently unsafe to compress time because you have mercs in sector %s.",
+    "It is currently unsafe to compress time when mercs are in the creature infested mines.",
+
+	//29-31 singular versions 
+	"1 green militia has been promoted to a veteran militia.",
+    "1 green militia has been promoted to a regular militia.",
+    "1 regular militia has been promoted to a veteran militia.",
+
+	//32-34
+	"%s doesn't say anything.",
+    "Travel to surface?",
+    "(Squad %d)",
+
+	//35
+	//Ex: "Red has repaired Scope's MP5K".  Careful to maintain the proper order (Red before Scope, Scope before MP5K)
+	"%s has repaired %s's %s",
+
+	//36
+	"BLOODCAT",
+
+	//37-38 "Name trips and falls"
+	"%s trips and falls",
+    "This item can't be picked up from here.",
+
+	//39
+	"None of your remaining mercs are able to fight.  The militia will fight the creatures on their own.",
+
+	//40-43
+	//%s is the name of merc.
+	"%s ran out of medical kits!",
+    "%s lacks the necessary skill to doctor anyone!",
+    "%s ran out of tool kits!",
+    "%s lacks the necessary skill to repair anything!",
+
+	//44-45
+	"Repair Time",
+    "%s cannot see this person.",
+
+	//46-48
+	"%s's gun barrel extender falls off!",
+    "No more than %d militia trainers are permitted per sector.",
+  "Are you sure?",
+
+	//49-50
+	"Time Compression",
+    "The vehicle's gas tank is now full.",
+
+	//51-52 Fast help text in mapscreen.
+	"Continue Time Compression (|S|p|a|c|e)",
+    "Stop Time Compression (|E|s|c)",
+
+	//53-54 "Magic has unjammed the Glock 18" or "Magic has unjammed Raven's H&K G11" 
+	"%s has unjammed the %s",
+    "%s has unjammed %s's %s",
+
+	//55 
+	"Can't compress time while viewing sector inventory.",
+
+    "The Jagged Alliance 2 PLAY DISK was not found. Program will now exit.",
+
+    "Items successfully combined.",
+	
+	//58
+	//Displayed with the version information when cheats are enabled.
+	"Current/Max Progress: %d%%/%d%%",
+
+    "Escort John and Mary?",
+	
+	// 60
+  "Switch Activated.",
+
+    "%s's ceramic plates have been smashed!",
+};
 
     public static string[] TacticalStr = new string[]
 {
@@ -958,4 +1124,196 @@ public partial class Globals
     "Health: %d/%d\nFuel: %d/%d",
   "%s cannot see %s.",  // Cannot see person trying to talk to
 };
+
+    public const int MAXLOCKDESCLENGTH = 40;
+
+    public int KEY_USED = 0x01;
+    public int LOCK_UNOPENABLE = 255;
+    public int NO_KEY = 255;
+    public int MAX_KEYS_PER_LOCK = 4;
+    public int LOCK_REGULAR = 1;
+    public int LOCK_PADLOCK = 2;
+    public int LOCK_CARD = 3;
+    public int LOCK_ELECTRONIC = 4;
+    public int LOCK_SPECIAL = 5;
+
+    public const int DONTSETDOORSTATUS = 2;
+
+    public const int MAX_DIRTY_REGIONS = 128;
+
+    public const int CURRENT_MOUSE_DATA = 0;
+    public const int PREVIOUS_MOUSE_DATA = 1;
+    public const int MAX_NUM_FRAMES = 25;
+
+    // 8-bit palette stuff
+    public static SGPPaletteEntry[] gSgpPalette = new SGPPaletteEntry[256];
+    public static BufferState guiFrameBufferState;    // BUFFER_READY, BUFFER_DIRTY
+    public static BufferState guiMouseBufferState;    // BUFFER_READY, BUFFER_DIRTY, BUFFER_DISABLED
+    public static VideoManagerState guiVideoManagerState;   // VIDEO_ON, VIDEO_OFF, VIDEO_SUSPENDED, VIDEO_SHUTTING_DOWN
+    public static ThreadState guiRefreshThreadState;  // THREAD_ON, THREAD_OFF, THREAD_SUSPENDED
+
+    public static bool gfPrintFrameBuffer;
+    public static int guiPrintFrameBufferIndex;
+
+    public static Image<Rgba32> gpFrameBuffer;
+    public static Image<Rgba32> gpPrimarySurface;
+
+    public static int gusScreenWidth = 640;
+    public static int gusScreenHeight = 480;
+    public static int gubScreenPixelDepth;
+    public static bool gfVideoCapture = false;
+    public static int guiFramePeriod = 1000 / 15;
+    public static long guiLastFrame;
+    public static int[] gpFrameData = new int[MAX_NUM_FRAMES];
+    public static int giNumFrames = 0;
+    public static int gusMouseCursorWidth;
+    public static int gusMouseCursorHeight;
+    public static int gsMouseCursorXOffset;
+    public static int gsMouseCursorYOffset;
+    public static bool gfFatalError = false;
+    public static string gFatalErrorString;
+
+    public static SixLabors.ImageSharp.Rectangle gScrollRegion;
+    public static Action? gpFrameBufferRefreshOverride;
+
+    public static Texture gpMouseCursor { get; set; }
+    public static Image<Rgba32> gpMouseCursorOriginal { get; set; }
+
+    public static ScreenName guiIntroExitScreen { get; set; } = ScreenName.INTRO_SCREEN;
+    public static SmackerFiles giCurrentIntroBeingPlayed = SmackerFiles.SMKINTRO_NO_VIDEO;
+
+    public static SixLabors.ImageSharp.Rectangle[] gListOfDirtyRegions = new SixLabors.ImageSharp.Rectangle[MAX_DIRTY_REGIONS];
+    public static int guiDirtyRegionCount;
+    public static bool gfForceFullScreenRefresh;
+    public static SixLabors.ImageSharp.Rectangle[] gDirtyRegionsEx = new SixLabors.ImageSharp.Rectangle[MAX_DIRTY_REGIONS];
+    public static int[] gDirtyRegionsFlagsEx = new int[MAX_DIRTY_REGIONS];
+    public static int guiDirtyRegionExCount;
+    public static SixLabors.ImageSharp.Rectangle[] gBACKUPListOfDirtyRegions = new SixLabors.ImageSharp.Rectangle[MAX_DIRTY_REGIONS];
+    public static int gBACKUPuiDirtyRegionCount;
+    public static bool gBACKUPfForceFullScreenRefresh;
+
+    public static IntroScreenType gbIntroScreenMode = IntroScreenType.Unknown;
+
+    public const int LOCKED_NO_NEWGRIDNO = 2;
+
+    //Current number of doors in world.
+    public static int gubNumDoors = 0;
+
+    //Dynamic array of Doors.  For general game purposes, the doors that are locked and/or trapped
+    //are permanently saved within the map, and are loaded and allocated when the map is loaded.  Because
+    //the editor allows more doors to be added, or removed, the actual size of the DoorTable may change.
+    public static List<DOOR> DoorTable = new();
+
+    //Current max number of doors.  This is only used by the editor.  When adding doors to the 
+    //world, we may run out of space in the DoorTable, so we will allocate a new array with extra slots,
+    //then copy everything over again.  gubMaxDoors holds the arrays actual number of slots, even though
+    //the current number (gubNumDoors) will be <= to it.
+    public static int gubMaxDoors = 0;
+
+
+    public static bool gfIntroScreenEntry;
+    public static bool gfIntroScreenExit;
+    public static long guiSplashStartTime { get; set; } = 0;
+    public static int guiSplashFrameFade { get; set; } = 10;
+
+    public static SMKFLIC? gpSmackFlic = null;
+
+    public const int REMOVAL_RATE_INCREMENT = 250;      // the smallest increment by which removal rate change during depletion (use round #s)
+
+    public const int LOW_MINE_LOYALTY_THRESHOLD = 50;   // below this the head miner considers his town's population disloyal
+                                                        // Mine production is being processed 4x daily: 9am ,noon, 3pm, and 6pm.
+                                                        // This is loosely based on a 6am-6pm working day of 4 "shifts".
+    public const int MINE_PRODUCTION_NUMBER_OF_PERIODS = 4;                     // how many times a day mine production is processed
+    public const int MINE_PRODUCTION_START_TIME = (9 * 60);       // hour of first daily mine production event (in minutes)
+    public const int MINE_PRODUCTION_PERIOD = (3 * 60);     // time seperating daily mine production events (in minutes)
+
+    // this table holds mine values that change during the course of the game and must be saved
+    public static Dictionary<MINE, MINE_STATUS_TYPE> gMineStatus = new();
+
+    // the are not being randomized at all at this time
+    public static Dictionary<MINE, MINE_TYPE> gubMineTypes = new()
+    {
+        { MINE.SAN_MONA,    MINE_TYPE.GOLD_MINE },			// SAN MONA
+        { MINE.DRASSEN,     MINE_TYPE.SILVER_MINE },		// DRASSEN
+        { MINE.ALMA,        MINE_TYPE.SILVER_MINE },		// ALMA
+        { MINE.CAMBRIA,     MINE_TYPE.SILVER_MINE },		// CAMBRIA
+        { MINE.CHITZENA,    MINE_TYPE.SILVER_MINE },		// CHITZENA
+        { MINE.GRUMM,       MINE_TYPE.GOLD_MINE },            // GRUMM
+    };
+
+    // These values also determine the most likely ratios of mine sizes after random production increases are done
+    public static Dictionary<MINE, int> guiMinimumMineProduction = new()
+    {
+        { MINE.SAN_MONA,       0 } ,		// SAN MONA
+        { MINE.DRASSEN,     1000 } ,		// DRASSEN
+        { MINE.ALMA,        1500 } ,		// ALMA
+        { MINE.CAMBRIA,     1500 } ,		// CAMBRIA
+        { MINE.CHITZENA,     500 } ,		// CHITZENA
+        { MINE.GRUMM,       2000 } ,		// GRUMM
+    };
+
+    public static HEAD_MINER_TYPE[] gHeadMinerData = new HEAD_MINER_TYPE[(int)MINER.NUM_HEAD_MINERS]
+    {
+    	//	Profile #		running out		creatures!		all dead!		creatures again!		external face graphic
+    	new(NPCID.FRED, new[] { 17, 18, 27,26 }, ExternalFaces.MINER_FRED_EXTERNAL_FACE),
+        new(NPCID.MATT, new[] { -1, 18, 32, 31 }, ExternalFaces.MINER_MATT_EXTERNAL_FACE),
+        new(NPCID.OSWALD, new[] { 14, 15, 24, 23 }, ExternalFaces.MINER_OSWALD_EXTERNAL_FACE),
+        new(NPCID.CALVIN, new[] { 14, 15, 24, 23 }, ExternalFaces.MINER_CALVIN_EXTERNAL_FACE),
+        new(NPCID.CARL, new[] { 14, 15, 24, 23 }, ExternalFaces.MINER_CARL_EXTERNAL_FACE),
+    };
+
+
+    public const int DEFAULT_EXTERN_PANEL_X_POS = 320;
+    public const int DEFAULT_EXTERN_PANEL_Y_POS = 40;
+
+
+    public const int DIALOGUE_TACTICAL_UI = 1;
+    public const int DIALOGUE_CONTACTPAGE_UI = 2;
+    public const int DIALOGUE_NPC_UI = 3;
+    public const int DIALOGUE_SPECK_CONTACT_PAGE_UI = 4;
+    public const int DIALOGUE_EXTERNAL_NPC_UI = 5;
+    public const int DIALOGUE_SHOPKEEPER_UI = 6;
+
+    public const double SALARY_CHANGE_PER_LEVEL = 1.25;        // Mercs salary is multiplied by this
+    public const int MAX_DAILY_SALARY = 30000;// must fit into an INT16 (32k)
+    public const int MAX_LARGE_SALARY = 500000; // no limit, really
+
+    public const Stat FIRST_CHANGEABLE_STAT = Stat.HEALTHAMT;
+    public const Stat LAST_CHANGEABLE_STAT = Stat.LDRAMT;
+    public const Stat CHANGEABLE_STAT_COUNT = (Stat)(Stat.LDRAMT - Stat.HEALTHAMT + 1);
+    public const int MAX_STAT_VALUE = 100;			// for stats and skills
+    public const int MAXEXPLEVEL = 10;    // maximum merc experience level
+    public const int SKILLS_SUBPOINTS_TO_IMPROVE = 25;
+    public const int ATTRIBS_SUBPOINTS_TO_IMPROVE = 50;
+    public const int LEVEL_SUBPOINTS_TO_IMPROVE = 350;    // per current level!	(Can't go over 6500, 10x must fit in USHORT!)
+    public const int WORKIMPROVERATE  =2;      // increase to make working  mercs improve more
+    public const int TRAINIMPROVERATE = 2;      // increase to make training mercs improve more
+
+    public const int ARMY_GUN_LEVELS = 11;
+
+
+    public static readonly STRATEGIC_STATUS gStrategicStatus = new();
+}
+
+public enum Stat
+{
+    SALARYAMT = 0,
+    HEALTHAMT = 1,
+    AGILAMT = 2,
+    DEXTAMT = 3,
+    WISDOMAMT = 4,
+    MEDICALAMT = 5,
+    EXPLODEAMT = 6,
+    MECHANAMT = 7,
+    MARKAMT = 8,
+    EXPERAMT = 9,
+    STRAMT = 10,
+    LDRAMT = 11, // leadership
+    ASSIGNAMT = 12,
+    NAMEAMT = 13,
+
+    FIRST_CHANGEABLE_STAT = HEALTHAMT,
+    LAST_CHANGEABLE_STAT = LDRAMT,
+    CHANGEABLE_STAT_COUNT = (LDRAMT - HEALTHAMT + 1),
+
 }

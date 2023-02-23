@@ -26,7 +26,7 @@ public class MouseSubSystem : ISharpAllianceManager
     public static GuiCallback DefaultMoveCallback { get; private set; }
     private readonly ILogger<MouseSubSystem> logger;
     private readonly IClockManager clock;
-    private readonly CursorSubSystem cursors;
+    private static readonly CursorSubSystem cursors;
     private readonly GameContext gameContext;
     private const int MSYS_DOUBLECLICK_DELAY = 400;
 
@@ -92,8 +92,6 @@ public class MouseSubSystem : ISharpAllianceManager
     public bool gfRefreshUpdate = false;
 
     public List<MouseRegion> Regions { get; set; } = new(100);
-    public Texture gpMouseCursor { get; set; }
-    public Image<Rgba32> gpMouseCursorOriginal { get; set; }
     public bool IsInitialized { get; }
 
     public MouseSubSystem(
@@ -610,12 +608,12 @@ public class MouseSubSystem : ISharpAllianceManager
         }
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public static void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
     {
-        this.cursors.Draw(sr, gd, cl);
+        cursors.Draw(sr, gd, cl);
     }
 
-    public void Draw(
+    public static void Draw(
         MouseCursorBackground mouseCursorBackground,
         Rectangle region,
         GraphicsDevice graphicDevice,
@@ -823,7 +821,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public ValueTask<bool> Initialize()
     {
-        // this.video = this.gameContext.Services.GetRequiredService<IVideoManager>();
+        // VeldridVideoManager = this.gameContext.Services.GetRequiredService<IVideoManager>();
 
         return ValueTask.FromResult(true);
     }

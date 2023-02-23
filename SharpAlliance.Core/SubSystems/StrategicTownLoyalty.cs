@@ -29,7 +29,7 @@ public class StrategicTownLoyalty
     }
 
     // is the ENTIRE town under player control?
-    bool IsTownUnderCompleteControlByPlayer(TOWNS bTownId)
+    public static bool IsTownUnderCompleteControlByPlayer(TOWNS bTownId)
     {
         if (GetTownSectorSize(bTownId) == GetTownSectorsUnderControl(bTownId))
         {
@@ -51,7 +51,7 @@ public class StrategicTownLoyalty
     }
 
     // return number of sectors under player control for this town
-    int GetTownSectorsUnderControl(TOWNS bTownId)
+    public static int GetTownSectorsUnderControl(TOWNS bTownId)
     {
         int ubSectorsControlled = 0;
         int iCounterA = 0;

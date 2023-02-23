@@ -109,7 +109,7 @@ namespace SharpAlliance.Core
                 return true;
             }
 
-            //this.video = (this.context.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
+            //VeldridVideoManager = (this.context.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
 
             // By default, we will not queue mousemove events
             this.gfTrackMousePos = false;

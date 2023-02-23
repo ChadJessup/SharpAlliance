@@ -59,7 +59,7 @@ namespace SharpAlliance.Core
             this.helpScreen = helpScreenSubSystem;
             this.inputs = inputManager;
             this.saves = saveGameSubSystem;
-            this.video = videoManager;
+            VeldridVideoManager = videoManager;
             this.music = musicManager;
             this.messageBox = messageBoxSubSystem;
             this.os = OSManager;
@@ -171,7 +171,7 @@ namespace SharpAlliance.Core
                     sm.guiPendingScreen = NullScreen.Instance;
                 }
 
-                this.video.ClearElements();
+                VeldridVideoManager.ClearElements();
                 var nextScreenName = await sm.CurrentScreen.Handle();
                 nextScreen = await sm.GetScreen(nextScreenName, activate: false);
 
@@ -182,9 +182,9 @@ namespace SharpAlliance.Core
                     await sm.ActivateScreen(nextScreen);
                 }
 
-                this.video.RefreshScreen();
+                VeldridVideoManager.RefreshScreen();
 
-                this.video.DrawFrame();
+                VeldridVideoManager.DrawFrame();
 
                 Globals.guiGameCycleCounter++;
 

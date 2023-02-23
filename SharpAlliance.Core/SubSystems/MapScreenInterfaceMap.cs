@@ -27,7 +27,7 @@ public class MapScreenInterfaceMap
 
     public MapScreenInterfaceMap(IVideoManager videoManager)
     {
-        this.video = videoManager;
+        //VeldridVideoManager = videoManager;
     }
 
     public object guiUpdatePanelTactical { get; internal set; }
@@ -120,20 +120,20 @@ public class MapScreenInterfaceMap
         // load image
         vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
         vs_desc.ImageFile = "INTERFACE\\b_map.pcx";
-        this.video.AddVideoSurface(out vs_desc, out uiTempMap);
+        VeldridVideoManager.AddVideoSurface(out vs_desc, out uiTempMap);
 
         // get video surface
-        this.video.GetVideoSurface(out hSrcVSurface, uiTempMap);
-        this.video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
+        VeldridVideoManager.GetVideoSurface(out hSrcVSurface, uiTempMap);
+        VeldridVideoManager.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
 
         // set up various palettes
-        this.pMapLTRedPalette = this.video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapDKRedPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapLTGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
-        this.pMapDKGreenPalette = this.video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
+        this.pMapLTRedPalette = VeldridVideoManager.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapDKRedPalette = VeldridVideoManager.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapLTGreenPalette = VeldridVideoManager.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
+        this.pMapDKGreenPalette = VeldridVideoManager.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
 
         // delete image
-        this.video.DeleteVideoSurfaceFromIndex(uiTempMap);
+        VeldridVideoManager.DeleteVideoSurfaceFromIndex(uiTempMap);
     }
 
     public static bool DrawMap()
@@ -149,7 +149,7 @@ public class MapScreenInterfaceMap
 
         if (!iCurrentMapSectorZ)
         {
-            pDestBuf = LockVideoSurface(Globals.guiSAVEBUFFER, out uiDestPitchBYTES);
+            // pDestBuf = LockVideoSurface(Globals.guiSAVEBUFFER, out uiDestPitchBYTES);
 
             if (!GetVideoSurface(hSrcVSurface, Globals.guiBIGMAP))
             {

@@ -65,7 +65,7 @@ namespace SharpAlliance.Core.Screens
             this.strategicMap = strategicMap;
             this.world = world;
             this.context = context;
-            this.video = (videoManager as VeldridVideoManager)!;
+            VeldridVideoManager = (videoManager as VeldridVideoManager)!;
             this.cursor = cursorSubSystem;
             // this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
@@ -93,7 +93,7 @@ namespace SharpAlliance.Core.Screens
 
         public ValueTask<bool> Initialize()
         {
-            hVObject = this.video.AddVideoObject("ja2_logo.STI", out var key);
+            hVObject = VeldridVideoManager.AddVideoObject("ja2_logo.STI", out var key);
 
             return ValueTask.FromResult(true);
         }
@@ -123,7 +123,7 @@ namespace SharpAlliance.Core.Screens
                 //vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
                 // vs_desc.ImageFile = "ja2_logo.STI";
-                // hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
+                // hVObject = VeldridVideoManager.AddVideoObject(ref vs_desc, out var key);
                 // 
                 // if (hVObject is null)
                 // {
@@ -153,7 +153,7 @@ namespace SharpAlliance.Core.Screens
                 //  //  mprintf(10, 450, L"SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
                 //}
 
-                this.video.InvalidateScreen();
+                VeldridVideoManager.InvalidateScreen();
 
                 // Delete video Surface
                 // this.videoSurface.DeleteVideoSurface(hVSurface);

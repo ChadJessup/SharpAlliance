@@ -42,7 +42,7 @@ namespace SharpAlliance
         {
             this.context = context;
             this.logger = logger;
-            this.video = videoManager;
+            VeldridVideoManager = videoManager;
             this.input = inputManager;
             this.fonts = fontSubSystem;
             this.Initialize().AsTask().Wait();
@@ -50,7 +50,7 @@ namespace SharpAlliance
 
         public async ValueTask<bool> Initialize()
         {
-            await this.video.Initialize();
+            await VeldridVideoManager.Initialize();
             await this.input.Initialize();
             await this.fonts.Initialize();
 

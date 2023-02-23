@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
@@ -322,55 +323,6 @@ public class InteractiveTiles
 
 
 
-    UICursorDefines GetInteractiveTileCursor(UICursorDefines uiOldCursor, bool fConfirm)
-    {
-        LEVELNODE? pIntNode;
-        STRUCTURE? pStructure;
-        int sGridNo;
-
-        // OK, first see if we have an in tile...
-        pIntNode = GetCurInteractiveTileGridNoAndStructure(out sGridNo, out pStructure);
-
-        if (pIntNode != null && pStructure != null)
-        {
-            if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
-            {
-                SetDoorString(sGridNo);
-
-                if (fConfirm)
-                {
-                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
-                }
-                else
-                {
-                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
-                }
-
-            }
-            else
-            {
-                if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
-                {
-                    //wcscpy(gzIntTileLocation, gzLateLocalizedString[25]);
-                    Globals.gfUIIntTileLocation = true;
-                }
-
-
-                if (fConfirm)
-                {
-                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
-                }
-                else
-                {
-                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
-                }
-            }
-
-        }
-
-        return (uiOldCursor);
-    }
-
     void SetActionModeDoorCursorText()
     {
         LEVELNODE? pIntNode;
@@ -390,11 +342,60 @@ public class InteractiveTiles
         {
             if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
             {
-                SetDoorString(sGridNo);
+                HandleDoors.SetDoorString(sGridNo);
             }
         }
     }
 
+    public static UICursorDefines GetInteractiveTileCursor(UICursorDefines uiOldCursor, bool fConfirm)
+    {
+        LEVELNODE? pIntNode;
+        STRUCTURE? pStructure;
+        int sGridNo;
+
+        // OK, first see if we have an in tile...
+        pIntNode = GetCurInteractiveTileGridNoAndStructure(out sGridNo, out pStructure);
+
+        if (pIntNode != null && pStructure != null)
+        {
+            if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
+            {
+                HandleDoors.SetDoorString(sGridNo);
+
+                if (fConfirm)
+                {
+                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
+                }
+                else
+                {
+                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
+                }
+
+            }
+            else
+            {
+                if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
+                {
+                    // chad: not sure what's happening here, wait until it's called
+                    // Globals.gzIntTileLocation = int.Parse(Globals.gzLateLocalizedString[25]);
+                    Globals.gfUIIntTileLocation = true;
+                }
+
+
+                if (fConfirm)
+                {
+                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
+                }
+                else
+                {
+                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
+                }
+            }
+
+        }
+
+        return (uiOldCursor);
+    }
 
     void GetLevelNodeScreenRect(LEVELNODE? pNode, out Rectangle pRect, int sXPos, int sYPos, int sGridNo)
     {
@@ -553,7 +554,7 @@ public class InteractiveTiles
     }
 
 
-    LEVELNODE? InternalGetCurInteractiveTile(bool fRejectItemsOnTop)
+    static LEVELNODE? InternalGetCurInteractiveTile(bool fRejectItemsOnTop)
     {
         LEVELNODE? pNode = null;
         STRUCTURE? pStructure = null;
@@ -633,7 +634,7 @@ public class InteractiveTiles
 
 
 
-    LEVELNODE? ConditionalGetCurInteractiveTileGridNoAndStructure(out int psGridNo, out STRUCTURE? ppStructure, bool fRejectOnTopItems)
+    static LEVELNODE? ConditionalGetCurInteractiveTileGridNoAndStructure(out int psGridNo, out STRUCTURE? ppStructure, bool fRejectOnTopItems)
     {
         LEVELNODE? pNode;
         STRUCTURE? pStructure;
@@ -672,7 +673,7 @@ public class InteractiveTiles
     }
 
 
-    LEVELNODE? GetCurInteractiveTileGridNoAndStructure(out int psGridNo, out STRUCTURE? ppStructure)
+    public static LEVELNODE? GetCurInteractiveTileGridNoAndStructure(out int psGridNo, out STRUCTURE? ppStructure)
     {
         return (ConditionalGetCurInteractiveTileGridNoAndStructure(out psGridNo, out ppStructure, true));
     }

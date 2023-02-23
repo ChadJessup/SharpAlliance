@@ -28,15 +28,6 @@ namespace SharpAlliance.Core.Managers;
 
 public class VeldridVideoManager : IVideoManager
 {
-    public static class Constants
-    {
-        public const int MAX_DIRTY_REGIONS = 128;
-
-        public const int CURRENT_MOUSE_DATA = 0;
-        public const int PREVIOUS_MOUSE_DATA = 1;
-        public const int MAX_NUM_FRAMES = 25;
-    }
-
     // TODO: These are temporary...
     const int DD_OK = 0;
     const int DDBLTFAST_NOCOLORKEY = 0x00000000;
@@ -46,29 +37,29 @@ public class VeldridVideoManager : IVideoManager
     const int DDERR_WASSTILLDRAWING = 0x8700000; // not real value
     const int DDERR_SURFACELOST = 0x9700000;
 
-    private readonly ILogger<VeldridVideoManager> logger;
+    private static readonly ILogger<VeldridVideoManager> logger;
+
+    private static bool clearScreen;
 
     private static Dictionary<string, HVOBJECT> loadedTextures = new();
 
     // private readonly WindowsSubSystem windows;
     private readonly IInputManager inputs;
-    private readonly MouseSubSystem mouse;
     private readonly RenderWorld renderWorld;
     private readonly ScreenManager screenManager;
-    private readonly FontSubSystem fonts;
-    private readonly GameContext context;
-    private readonly IFileManager files;
-    private readonly Shading shading;
-    private readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
+    private static GameContext context;
+    private static IFileManager files;
+    private static Shading shading;
+    private static readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
 
     private static Sdl2Window window;
     public static Sdl2Window Window { get => window; }
-    public GraphicsDevice GraphicDevice { get; private set; }
+    public static GraphicsDevice GraphicDevice { get; private set; }
     public ResourceFactory Factory { get; private set; }
     protected static SpriteRenderer SpriteRenderer { get; private set; }
 
-    private Swapchain mainSwapchain;
-    private CommandList commandList;
+    private static Swapchain mainSwapchain;
+    private static CommandList commandList;
     private DeviceBuffer _screenSizeBuffer;
     private DeviceBuffer _shiftBuffer;
     private DeviceBuffer _vertexBuffer;
@@ -87,53 +78,13 @@ public class VeldridVideoManager : IVideoManager
 
     private bool _colorSrgb = true;
 
-    private FadeScreen? fadeScreen;
-    private Action? gpFrameBufferRefreshOverride;
+    private static FadeScreen? fadeScreen;
 
-    private int gusScreenWidth = 640;
-    private int gusScreenHeight = 480;
-    private int gubScreenPixelDepth;
+    private static RgbaFloat clearColor = new(1.0f, 0, 0.2f, 1f);
 
-    private RgbaFloat clearColor = new(1.0f, 0, 0.2f, 1f);
-
-    private Rectangle gScrollRegion;
-
-    private bool gfVideoCapture = false;
-    private int guiFramePeriod = 1000 / 15;
-    private long guiLastFrame;
-    private int[] gpFrameData = new int[Constants.MAX_NUM_FRAMES];
-    private int giNumFrames = 0;
     private Rectangle rcWindow;
 
-    private int gusMouseCursorWidth;
-    private int gusMouseCursorHeight;
-    private int gsMouseCursorXOffset;
-    private int gsMouseCursorYOffset;
-    private bool gfFatalError = false;
-    private string gFatalErrorString;
-
-    // 8-bit palette stuff
-    private SGPPaletteEntry[] gSgpPalette = new SGPPaletteEntry[256];
-    private BufferState guiFrameBufferState;    // BUFFER_READY, BUFFER_DIRTY
-    private BufferState guiMouseBufferState;    // BUFFER_READY, BUFFER_DIRTY, BUFFER_DISABLED
-    private VideoManagerState guiVideoManagerState;   // VIDEO_ON, VIDEO_OFF, VIDEO_SUSPENDED, VIDEO_SHUTTING_DOWN
-    private ThreadState guiRefreshThreadState;  // THREAD_ON, THREAD_OFF, THREAD_SUSPENDED
-
     //void (* gpFrameBufferRefreshOverride) (void);
-    private Rectangle[] gListOfDirtyRegions = new Rectangle[Constants.MAX_DIRTY_REGIONS];
-    private int guiDirtyRegionCount;
-    private bool gfForceFullScreenRefresh;
-
-    private Rectangle[] gDirtyRegionsEx = new Rectangle[Constants.MAX_DIRTY_REGIONS];
-    private int[] gDirtyRegionsFlagsEx = new int[Constants.MAX_DIRTY_REGIONS];
-    private int guiDirtyRegionExCount;
-
-    private Rectangle[] gBACKUPListOfDirtyRegions = new Rectangle[Constants.MAX_DIRTY_REGIONS];
-    private int gBACKUPuiDirtyRegionCount;
-    private bool gBACKUPfForceFullScreenRefresh;
-
-    private bool gfPrintFrameBuffer;
-    private int guiPrintFrameBufferIndex;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -180,33 +131,26 @@ public class VeldridVideoManager : IVideoManager
     static bool fFirstTime = true;
     private bool windowResized;
 
-    private Texture backBuffer;
-    private Image<Rgba32> gpFrameBuffer;
-    private Image<Rgba32> gpPrimarySurface;
-
+    private static Texture backBuffer;
     public VeldridVideoManager(
         ILogger<VeldridVideoManager> logger,
         GameContext context,
         IInputManager inputManager,
         IFileManager fileManager,
-        MouseSubSystem mouseSubSystem,
         RenderWorld renderWorld,
         IScreenManager screenManager,
-        FontSubSystem fontManager,
         Shading shading)
     {
-        this.logger = logger;
-        this.context = context;
-        this.fonts = fontManager;
-        this.files = fileManager;
-        this.inputs = (inputManager as InputManager)!;
-        this.mouse = mouseSubSystem;
-        this.renderWorld = renderWorld;
-        this.screenManager = (screenManager as ScreenManager)!;
-        this.shading = shading;
+        logger = logger;
+        context = context;
+        files = fileManager;
+        inputs = (inputManager as InputManager)!;
+        renderWorld = renderWorld;
+        screenManager = (screenManager as ScreenManager)!;
+        shading = shading;
 
-        this.gpPrimarySurface = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-        this.gpFrameBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+        Globals.gpPrimarySurface = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+        Globals.gpFrameBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
@@ -230,7 +174,7 @@ public class VeldridVideoManager : IVideoManager
             resourceBindingModel: ResourceBindingModel.Improved,
             preferDepthRangeZeroToOne: true,
             preferStandardClipSpaceYDirection: false,
-            swapchainSrgbFormat: this._colorSrgb);
+            swapchainSrgbFormat: _colorSrgb);
 
 #if DEBUG
         gdOptions.Debug = true;
@@ -265,66 +209,66 @@ public class VeldridVideoManager : IVideoManager
             flags,
             threadedProcessing: true);
 
-        this.GraphicDevice = VeldridStartup.CreateGraphicsDevice(
+        GraphicDevice = VeldridStartup.CreateGraphicsDevice(
             Window,
             gdOptions);
 
-        Window.Resized += () => this.windowResized = true;
-        //this.Window.PollIntervalInMs = 1000 / 30;
-        this.Factory = new DisposeCollectorResourceFactory(this.GraphicDevice.ResourceFactory);
-        this.mainSwapchain = this.GraphicDevice.MainSwapchain;
-        this.commandList = this.GraphicDevice.ResourceFactory.CreateCommandList();
+        Window.Resized += () => windowResized = true;
+        //Window.PollIntervalInMs = 1000 / 30;
+        Factory = new DisposeCollectorResourceFactory(GraphicDevice.ResourceFactory);
+        mainSwapchain = GraphicDevice.MainSwapchain;
+        commandList = GraphicDevice.ResourceFactory.CreateCommandList();
 
-        SpriteRenderer = new SpriteRenderer(this.GraphicDevice);
-        IVideoManager.DebugRenderer = new DebugRenderer(this.GraphicDevice);
+        SpriteRenderer = new SpriteRenderer(GraphicDevice);
+        IVideoManager.DebugRenderer = new DebugRenderer(GraphicDevice);
 
-        this.guiFrameBufferState = BufferState.DIRTY;
-        this.guiMouseBufferState = BufferState.DISABLED;
-        this.guiVideoManagerState = VideoManagerState.On;
-        this.guiRefreshThreadState = ThreadState.Off;
-        this.guiDirtyRegionCount = 0;
-        this.gfForceFullScreenRefresh = true;
-        this.gpFrameBufferRefreshOverride = null;
+        Globals.guiFrameBufferState = BufferState.DIRTY;
+        Globals.guiMouseBufferState = BufferState.DISABLED;
+        Globals.guiVideoManagerState = VideoManagerState.On;
+        Globals.guiRefreshThreadState = ThreadState.Off;
+        Globals.guiDirtyRegionCount = 0;
+        Globals.gfForceFullScreenRefresh = true;
+        Globals.gpFrameBufferRefreshOverride = null;
         //gpCursorStore = null;
-        this.gfPrintFrameBuffer = false;
-        this.guiPrintFrameBufferIndex = 0;
+        Globals.gfPrintFrameBuffer = false;
+        Globals.guiPrintFrameBufferIndex = 0;
 
-        this.backBuffer = new ImageSharpTexture(new Image<Rgba32>(SCREEN_WIDTH, SCREEN_HEIGHT), mipmap: false)
-            .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+        backBuffer = new ImageSharpTexture(new Image<Rgba32>(SCREEN_WIDTH, SCREEN_HEIGHT), mipmap: false)
+            .CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
 
-        // this.fadeScreen = (screenManager.GetScreen(ScreenNames.FADE_SCREEN, activate: true).AsTask().Result as FadeScreen)!;
-        this.IsInitialized = await this.files.Initialize();
+        // fadeScreen = (screenManager.GetScreen(ScreenNames.FADE_SCREEN, activate: true).AsTask().Result as FadeScreen)!;
+        IsInitialized = await files.Initialize();
 
-        return this.IsInitialized;
+        return IsInitialized;
     }
 
-    public void DrawFrame()
+    public static void DrawFrame()
     {
-        this.commandList.Begin();
+        commandList.Begin();
 
-        this.commandList.SetFramebuffer(this.mainSwapchain.Framebuffer);
+        commandList.SetFramebuffer(mainSwapchain.Framebuffer);
 
-        if (this.gfForceFullScreenRefresh || this.clearScreen)
+        if (Globals.gfForceFullScreenRefresh || clearScreen)
         {
-            this.commandList.ClearColorTarget(0, this.clearColor);
-            this.clearScreen = false;
+            commandList.ClearColorTarget(0, clearColor);
+            clearScreen = false;
         }
 
-        this.commandList.ClearColorTarget(0, this.clearColor);
+        commandList.ClearColorTarget(0, clearColor);
 
-        this.screenManager.Draw(SpriteRenderer, this.GraphicDevice, this.commandList);
-        this.mouse.Draw(SpriteRenderer, this.GraphicDevice, this.commandList);
+        ScreenManager.Draw(SpriteRenderer, GraphicDevice, commandList);
+        MouseSubSystem.Draw(SpriteRenderer, GraphicDevice, commandList);
 
         // Everything above writes to this SpriteRenderer, so draw it now.
-        SpriteRenderer.Draw(this.GraphicDevice, this.commandList);
-        IVideoManager.DebugRenderer.Draw(this.GraphicDevice, this.commandList);
+        SpriteRenderer.Draw(GraphicDevice, commandList);
+        IVideoManager.DebugRenderer.Draw(GraphicDevice, commandList);
 
-        SpriteRenderer.RenderText(this.GraphicDevice, this.commandList, this.fonts.TextRenderer.TextureView, new(0, 0));
-        this.commandList.End();
+        SpriteRenderer.RenderText(GraphicDevice, commandList, FontSubSystem.TextRenderer.TextureView, new Vector2(0, 0));
+        commandList.End();
 
-        this.fonts.TextRenderer.RenderAllText();
-        this.GraphicDevice.SubmitCommands(this.commandList);
-        this.GraphicDevice.SwapBuffers(this.mainSwapchain);
+        FontSubSystem.TextRenderer.RenderAllText();
+        GraphicDevice.SubmitCommands(commandList);
+        GraphicDevice.SwapBuffers(mainSwapchain);
     }
 
     public static byte[] ReadEmbeddedAssetBytes(string name)
@@ -340,7 +284,7 @@ public class VeldridVideoManager : IVideoManager
     public static Stream OpenEmbeddedAssetStream(string name)
         => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-    public HVOBJECT AddVideoObject(string assetPath, out string key)
+    public static HVOBJECT AddVideoObject(string assetPath, out string key)
     {
         key = assetPath;
 
@@ -350,14 +294,14 @@ public class VeldridVideoManager : IVideoManager
         }
 
         // Create video object
-        HVOBJECT hVObject = this.CreateVideoObject(assetPath);
+        HVOBJECT hVObject = CreateVideoObject(assetPath);
 
         loadedTextures.Add(assetPath, hVObject);
 
         return hVObject;
     }
 
-    public HVOBJECT CreateVideoObject(string assetPath)
+    public static HVOBJECT CreateVideoObject(string assetPath)
     {
         HVOBJECT hVObject = new();
         hVObject.Name = assetPath;
@@ -366,10 +310,10 @@ public class VeldridVideoManager : IVideoManager
         ETRLEData TempETRLEData = new();
 
         // Create himage object from file
-        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
+        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, files);
 
         // Get TRLE data
-        this.GetETRLEImageData(hImage, ref TempETRLEData);
+        GetETRLEImageData(hImage, ref TempETRLEData);
 
         // Set values
         hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
@@ -380,10 +324,10 @@ public class VeldridVideoManager : IVideoManager
         // Set palette from himage
         if (hImage.ubBitDepth == 8)
         {
-            hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
-            hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
+            hVObject.pShade8 = shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+            hVObject.pGlow8 = shading.ubColorTables[0, 0];
 
-            this.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+            SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
         }
 
         // Set values from himage
@@ -398,7 +342,7 @@ public class VeldridVideoManager : IVideoManager
         for (int i = 0; i < hImage.ParsedImages.Count; i++)
         {
             hVObject.Textures[i] = new ImageSharpTexture(hImage.ParsedImages[i], mipmap: false)
-                .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+                .CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
 
             hVObject.Textures[i].Name = $"{hImage.ImageFile}_{i}";
         }
@@ -406,7 +350,7 @@ public class VeldridVideoManager : IVideoManager
         return hVObject;
     }
 
-    public bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
+    public static bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
     {
         // Create palette object if not already done so
         hVObject.pPaletteEntry = pSrcPalette;
@@ -420,7 +364,7 @@ public class VeldridVideoManager : IVideoManager
             hImage.ParsedImages = hImage.iFileLoader.ApplyPalette(ref hVObject, ref hImage);
         }
 
-        // If you want to output all the images to disk, uncomment this...makes startup take a lot longer.
+        // If you want to output all the images to disk, uncomment ..makes startup take a lot longer.
         // for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
         // {
         //     var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
@@ -433,7 +377,7 @@ public class VeldridVideoManager : IVideoManager
         return true;
     }
 
-    public bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
+    public static bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
     {
         if (hImage is null)
         {
@@ -462,7 +406,7 @@ public class VeldridVideoManager : IVideoManager
         return true;
     }
 
-    public void RefreshScreen()
+    public static void RefreshScreen()
     {
         int usScreenWidth;
         int usScreenHeight;
@@ -475,7 +419,7 @@ public class VeldridVideoManager : IVideoManager
             fShowMouse = false;
         }
 
-        this.logger.LogDebug(LoggingEventId.VIDEO, "Looping in refresh");
+        logger.LogDebug(LoggingEventId.VIDEO, "Looping in refresh");
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // 
@@ -483,29 +427,29 @@ public class VeldridVideoManager : IVideoManager
         //
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
-        switch (this.guiVideoManagerState)
+        switch (Globals.guiVideoManagerState)
         {
             case VideoManagerState.On:
                 // Excellent, everything is cosher, we continue on
                 uiRefreshThreadState = ThreadState.On;
-                this.guiRefreshThreadState = ThreadState.On;
-                usScreenWidth = this.gusScreenWidth;
-                usScreenHeight = this.gusScreenHeight;
+                Globals.guiRefreshThreadState = ThreadState.On;
+                usScreenWidth =  Globals.gusScreenWidth;
+                usScreenHeight = Globals.gusScreenHeight;
                 break;
             case VideoManagerState.Off:
                 // Hot damn, the video manager is suddenly off. We have to bugger out of here. Don't forget to
                 // leave the critical section
-                this.guiRefreshThreadState = ThreadState.Off;
+                Globals.guiRefreshThreadState = ThreadState.Off;
                 return;
             case VideoManagerState.Suspended:
                 // This are suspended. Make sure the refresh function does try to access any of the direct
                 // draw surfaces
-                uiRefreshThreadState = this.guiRefreshThreadState = ThreadState.Suspended;
+                uiRefreshThreadState = Globals.guiRefreshThreadState = ThreadState.Suspended;
                 break;
             case VideoManagerState.ShuttingDown:
                 // Well things are shutting down. So we need to bugger out of there. Don't forget to leave the
                 // critical section before returning
-                this.guiRefreshThreadState = ThreadState.Off;
+                Globals.guiRefreshThreadState = ThreadState.Off;
                 return;
         }
 
@@ -513,7 +457,7 @@ public class VeldridVideoManager : IVideoManager
         // Get the current mouse position
         //
 
-        // this.inputs.GetCursorPosition(out var tmpMousePos);
+        // inputs.GetCursorPosition(out var tmpMousePos);
         // MousePos = new Point(tmpMousePos.X, tmpMousePos.Y);
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -523,45 +467,45 @@ public class VeldridVideoManager : IVideoManager
         /////////////////////////////////////////////////////////////////////////////////////////////
 
         // RESTORE OLD POSITION OF MOUSE
-        if (this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore == true)
+        if (mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore == true)
         {
-            Region.X = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft;
-            Region.Y = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop;
-            Region.Width = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
-            Region.Height = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
+            Region.X = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft;
+            Region.Y = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop;
+            Region.Width = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight;
+            Region.Height = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom;
 
-            this.mouse.Draw(
-                this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA],
+            MouseSubSystem.Draw(
+                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA],
                 Region,
-                this.GraphicDevice,
-                this.commandList);
+                GraphicDevice,
+                commandList);
 
             // Save position into other background region
-            this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA] = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA];
+            mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA] = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA];
         }
 
         // Ok we were able to get a hold of the frame buffer stuff. Check to see if it needs updating
         // if not, release the frame buffer stuff right away
-        if (this.guiFrameBufferState == BufferState.DIRTY)
+        if (Globals.guiFrameBufferState == BufferState.DIRTY)
         {
             // Well the frame buffer is dirty.
-            if (this.gpFrameBufferRefreshOverride != null)
+            if (Globals.gpFrameBufferRefreshOverride != null)
             {
                 // Method (3) - We are using a function override to refresh the frame buffer. First we
                 // call the override function then we must set the override pointer to null
-                this.gpFrameBufferRefreshOverride();
-                this.gpFrameBufferRefreshOverride = null;
+                Globals.gpFrameBufferRefreshOverride();
+                Globals.gpFrameBufferRefreshOverride = null;
             }
 
-            if (this.fadeScreen?.gfFadeInitialized ?? false
-                && this.fadeScreen.gfFadeInVideo)
+            if (fadeScreen?.gfFadeInitialized ?? false
+                && fadeScreen.gfFadeInVideo)
             {
-                this.fadeScreen!.gFadeFunction();
+                fadeScreen!.gFadeFunction();
             }
             else
             {
                 // Either Method (1) or (2)
-                if (this.gfForceFullScreenRefresh == true)
+                if (Globals.gfForceFullScreenRefresh == true)
                 {
                     // Method (1) - We will be refreshing the entire screen
                     Region.X = 0;
@@ -569,32 +513,32 @@ public class VeldridVideoManager : IVideoManager
                     Region.Width = usScreenWidth;
                     Region.Height = usScreenHeight;
 
-                    // this.BlitRegion(
-                    //     this.backBuffer,
+                    // BlitRegion(
+                    //     backBuffer,
                     //     new Point(0, 0),
                     //     Region,
-                    //     this.gpFrameBuffer);
+                    //     gpFrameBuffer);
                 }
                 else
                 {
-                    for (uiIndex = 0; uiIndex < this.guiDirtyRegionCount; uiIndex++)
+                    for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionCount; uiIndex++)
                     {
-                        Region.X = this.gListOfDirtyRegions[uiIndex].Left;
-                        Region.Y = this.gListOfDirtyRegions[uiIndex].Top;
-                        Region.Width = this.gListOfDirtyRegions[uiIndex].Width;
-                        Region.Height = this.gListOfDirtyRegions[uiIndex].Height;
+                        Region.X = Globals.gListOfDirtyRegions[uiIndex].Left;
+                        Region.Y = Globals.gListOfDirtyRegions[uiIndex].Top;
+                        Region.Width = Globals.gListOfDirtyRegions[uiIndex].Width;
+                        Region.Height = Globals.gListOfDirtyRegions[uiIndex].Height;
 
-                        this.BlitRegion(
-                            this.backBuffer,
+                        BlitRegion(
+                            backBuffer,
                             new Point(Region.X, Region.Y),
                             Region,
-                            this.gpPrimarySurface);
+                            Globals.gpPrimarySurface);
                     }
 
                     // Now do new, extended dirty regions
-                    for (uiIndex = 0; uiIndex < this.guiDirtyRegionExCount; uiIndex++)
+                    for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionExCount; uiIndex++)
                     {
-                        Region = this.gDirtyRegionsEx[uiIndex];
+                        Region = Globals.gDirtyRegionsEx[uiIndex];
 
                         // Do some checks if we are in the process of scrolling!	
                         if (Globals.gfRenderScroll)
@@ -607,45 +551,45 @@ public class VeldridVideoManager : IVideoManager
                             }
                         }
 
-                        this.BlitRegion(
-                            this.backBuffer,
+                        BlitRegion(
+                            backBuffer,
                             Region.ToPoint(),
                             Region,
-                            this.gpFrameBuffer);
+                            Globals.gpFrameBuffer);
                     }
                 }
             }
 
             if (Globals.gfRenderScroll)
             {
-                this.ScrollJA2Background(
+                ScrollJA2Background(
                     Globals.guiScrollDirection,
                     Globals.gsScrollXIncrement,
                     Globals.gsScrollYIncrement,
-                    this.gpPrimarySurface,
-                    this.backBuffer,
+                    Globals.gpPrimarySurface,
+                    backBuffer,
                     fRenderStrip: true,
-                    Constants.PREVIOUS_MOUSE_DATA);
+                    Globals.PREVIOUS_MOUSE_DATA);
             }
 
             Globals.gfIgnoreScrollDueToCenterAdjust = false;
 
             // Update the guiFrameBufferState variable to reflect that the frame buffer can now be handled
-            this.guiFrameBufferState = BufferState.READY;
+            Globals.guiFrameBufferState = BufferState.READY;
         }
 
         // Do we want to print the frame stuff ??
-        if (this.gfVideoCapture)
+        if (Globals.gfVideoCapture)
         {
-            uiTime = this.context.ClockManager.GetTickCount();
-            if ((uiTime < this.guiLastFrame) || (uiTime > (this.guiLastFrame + this.guiFramePeriod)))
+            uiTime = context.ClockManager.GetTickCount();
+            if ((uiTime < Globals.guiLastFrame) || (uiTime > (Globals.guiLastFrame + Globals.guiFramePeriod)))
             {
                 //SnapshotSmall();
-                this.guiLastFrame = uiTime;
+                Globals.guiLastFrame = uiTime;
             }
         }
 
-        if (this.gfPrintFrameBuffer == true)
+        if (Globals.gfPrintFrameBuffer == true)
         {
             //FileStream? OutputFile;
             //string? FileName;
@@ -668,11 +612,11 @@ public class VeldridVideoManager : IVideoManager
             //Region.Width = usScreenWidth;
             //Region.Height = usScreenHeight;
             //
-            //this.BlitRegion(
+            //BlitRegion(
             //    pTmpBuffer,
             //    new Point(0, 0),
             //    Region,
-            //    this.gpPrimarySurface);
+            //    gpPrimarySurface);
 
             // Ok now that temp surface has contents of backbuffer, copy temp surface to disk
             //sprintf(FileName, "SCREEN%03d.TGA", guiPrintFrameBufferIndex++);
@@ -747,7 +691,7 @@ public class VeldridVideoManager : IVideoManager
             //}
 
             // Release temp surface
-            this.gfPrintFrameBuffer = false;
+            Globals.gfPrintFrameBuffer = false;
 
             //_pTmpBuffer?.Dispose();
             //pTmpBuffer?.Dispose();
@@ -758,31 +702,31 @@ public class VeldridVideoManager : IVideoManager
 
         // Ok we were able to get a hold of the frame buffer stuff. Check to see if it needs updating
         // if not, release the frame buffer stuff right away
-        if (this.guiMouseBufferState == BufferState.DIRTY)
+        if (Globals.guiMouseBufferState == BufferState.DIRTY)
         {
             // Well the mouse buffer is dirty. Upload the whole thing
             Region.X = 0;
             Region.Y = 0;
-            Region.Width = this.gusMouseCursorWidth;
-            Region.Height = this.gusMouseCursorHeight;
+            Region.Width =  Globals.gusMouseCursorWidth;
+            Region.Height = Globals.gusMouseCursorHeight;
 
-            this.BlitRegion(
-                this.mouse.gpMouseCursor,
+            BlitRegion(
+                Globals.gpMouseCursor,
                 new Point(0, 0),
                 Region,
-                this.mouse.gpMouseCursorOriginal);
+                Globals.gpMouseCursorOriginal);
 
-            this.guiMouseBufferState = BufferState.READY;
+            Globals.guiMouseBufferState = BufferState.READY;
         }
 
         // Check current state of the mouse cursor
         if (fShowMouse == false)
         {
-            fShowMouse = this.guiMouseBufferState == BufferState.READY;
+            fShowMouse = Globals.guiMouseBufferState == BufferState.READY;
         }
         else
         {
-            fShowMouse = this.guiMouseBufferState == BufferState.DISABLED;
+            fShowMouse = Globals.guiMouseBufferState == BufferState.DISABLED;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -804,10 +748,10 @@ public class VeldridVideoManager : IVideoManager
         if (fShowMouse == true)
         {
             // Step (1) - Save mouse background
-            Region.X = MousePos.X - this.gsMouseCursorXOffset;
-            Region.Y = MousePos.Y - this.gsMouseCursorYOffset;
-            Region.Width = Region.X + this.gusMouseCursorWidth;
-            Region.Height = Region.Y + this.gusMouseCursorHeight;
+            Region.X = MousePos.X -    Globals.gsMouseCursorXOffset;
+            Region.Y = MousePos.Y -    Globals.gsMouseCursorYOffset;
+            Region.Width = Region.X +  Globals.gusMouseCursorWidth;
+            Region.Height = Region.Y + Globals.gusMouseCursorHeight;
 
             if (Region.Width > usScreenWidth)
             {
@@ -823,78 +767,78 @@ public class VeldridVideoManager : IVideoManager
             {
                 // Make sure the mouse background is marked for restore and coordinates are saved for the
                 // future restore
-                this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = true;
-                this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight = Region.Width - Region.X;
-                this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom = Region.Height - Region.Y;
+                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = true;
+                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight = Region.Width - Region.X;
+                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom = Region.Height - Region.Y;
 
                 if (Region.X < 0)
                 {
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = (0 - Region.X);
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = 0;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft = (0 - Region.X);
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos = 0;
                     Region.X = 0;
                 }
                 else
                 {
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos = MousePos.X - this.gsMouseCursorXOffset;
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft = 0;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos = MousePos.X - Globals.gsMouseCursorXOffset;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft = 0;
                 }
 
                 if (Region.Y < 0)
                 {
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = 0;
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = (0 - Region.Y);
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos = 0;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop = (0 - Region.Y);
                     Region.Y = 0;
                 }
                 else
                 {
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos = MousePos.Y - this.gsMouseCursorYOffset;
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop = 0;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos = MousePos.Y - Globals.gsMouseCursorYOffset;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop = 0;
                 }
 
                 if ((Region.Width > Region.X) && (Region.Height > Region.Y))
                 {
                     // Save clipped region
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region = Region;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].Region = Region;
 
                     // Ok, do the actual data save to the mouse background
-                    //this.BlitRegion(
-                    //    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].pSurface,
+                    //BlitRegion(
+                    //    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].pSurface,
                     //    new Point(
-                    //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft,
-                    //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop),
+                    //        mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft,
+                    //        mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop),
                     //    Region,
-                    //    this.backBuffer);
+                    //    backBuffer);
 
                     // Step (2) - Blit mouse cursor to back buffer
-                    Region.X = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usLeft;
-                    Region.Y = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usTop;
-                    Region.Width = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usRight;
-                    Region.Height = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usBottom;
+                    Region.X = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft;
+                    Region.Y = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop;
+                    Region.Width = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight;
+                    Region.Height = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom;
 
-                    //this.BlitRegion(
-                    //    this.backBuffer,
+                    //BlitRegion(
+                    //    backBuffer,
                     //    new Point(
-                    //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
-                    //        this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos),
+                    //        mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
+                    //        mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
                     //    Region,
-                    //    this.mouse.gpMouseCursor);
+                    //    mouse.gpMouseCursor);
                 }
                 else
                 {
                     // Hum, the mouse was not blitted this round. Henceforth we will flag fRestore as false
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
                 }
             }
             else
             {
                 // Hum, the mouse was not blitted this round. Henceforth we will flag fRestore as false
-                this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
+                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
             }
         }
         else
         {
             // Well since there was no mouse handling this round, we disable the mouse restore
-            this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore = false;
+            mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -912,11 +856,11 @@ public class VeldridVideoManager : IVideoManager
         //
         var fullRect = new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        //this.BlitRegion(
-        //    this.gpPrimarySurface,
-        //    this.rcWindow.ToPoint(),
+        //BlitRegion(
+        //    gpPrimarySurface,
+        //    rcWindow.ToPoint(),
         //    fullRect,
-        //    this.backBuffer);
+        //    backBuffer);
 
         // Step (2) - Copy Primary Surface to the Back Buffer
         if (Globals.gfRenderScroll)
@@ -926,11 +870,11 @@ public class VeldridVideoManager : IVideoManager
             Region.Width = 640;
             Region.Height = 360;
 
-            this.BlitRegion(
-                this.backBuffer,
+            BlitRegion(
+                backBuffer,
                 new Point(0, 0),
                 Region,
-                this.gpPrimarySurface);
+                Globals.gpPrimarySurface);
 
             // Get new background for mouse
             // Ok, do the actual data save to the mouse background
@@ -941,34 +885,34 @@ public class VeldridVideoManager : IVideoManager
         // COPY MOUSE AREAS FROM PRIMARY BACK!
 
         // FIRST OLD ERASED POSITION
-        if (this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].fRestore == true)
+        if (mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].fRestore == true)
         {
-            Region = this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].Region;
+            Region = mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].Region;
 
-            this.BlitRegion(
-                this.backBuffer,
+            BlitRegion(
+                backBuffer,
                 new Point(
-                    this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].usMouseXPos,
-                    this.mouseCursorBackground[Constants.PREVIOUS_MOUSE_DATA].usMouseYPos),
+                    mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseXPos,
+                    mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseYPos),
                 Region,
-                this.gpPrimarySurface);
+                Globals.gpPrimarySurface);
         }
 
         // NOW NEW MOUSE AREA
-        if (this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].fRestore == true)
+        if (mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore == true)
         {
-            Region = this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].Region;
+            Region = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].Region;
 
-            this.BlitRegion(
-                this.backBuffer,
+            BlitRegion(
+                backBuffer,
                 new Point(
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseXPos,
-                    this.mouseCursorBackground[Constants.CURRENT_MOUSE_DATA].usMouseYPos),
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
+                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
                 Region,
-                this.gpPrimarySurface);
+                Globals.gpPrimarySurface);
         }
 
-        if (this.gfForceFullScreenRefresh == true)
+        if (Globals.gfForceFullScreenRefresh == true)
         {
             // Method (1) - We will be refreshing the entire screen
             Region.X = 0;
@@ -976,43 +920,43 @@ public class VeldridVideoManager : IVideoManager
             Region.Width = SCREEN_WIDTH;
             Region.Height = SCREEN_HEIGHT;
 
-            this.BlitRegion(
-                this.backBuffer,
+            BlitRegion(
+                backBuffer,
                 new Point(0, 0),
                 Region,
-                this.gpPrimarySurface);
+                Globals.gpPrimarySurface);
 
-            this.guiDirtyRegionCount = 0;
-            this.guiDirtyRegionExCount = 0;
-            this.gfForceFullScreenRefresh = false;
+            Globals.guiDirtyRegionCount = 0;
+            Globals.guiDirtyRegionExCount = 0;
+            Globals.gfForceFullScreenRefresh = false;
         }
         else
         {
-            for (uiIndex = 0; uiIndex < this.guiDirtyRegionCount; uiIndex++)
+            for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionCount; uiIndex++)
             {
-                Region.X = this.gListOfDirtyRegions[uiIndex].Left;
-                Region.Y = this.gListOfDirtyRegions[uiIndex].Top;
-                Region.Width = this.gListOfDirtyRegions[uiIndex].Width;
-                Region.Height = this.gListOfDirtyRegions[uiIndex].Height;
+                Region.X = Globals.gListOfDirtyRegions[uiIndex].Left;
+                Region.Y = Globals.gListOfDirtyRegions[uiIndex].Top;
+                Region.Width = Globals.gListOfDirtyRegions[uiIndex].Width;
+                Region.Height = Globals.gListOfDirtyRegions[uiIndex].Height;
 
-                this.BlitRegion(
-                    this.backBuffer,
+                BlitRegion(
+                    backBuffer,
                     new Point(Region.X, Region.Y),
                     Region,
-                    this.gpPrimarySurface);
+                    Globals.gpPrimarySurface);
             }
 
-            this.guiDirtyRegionCount = 0;
-            this.gfForceFullScreenRefresh = false;
+            Globals.guiDirtyRegionCount = 0;
+            Globals.gfForceFullScreenRefresh = false;
         }
 
         // Do extended dirty regions!
-        for (uiIndex = 0; uiIndex < this.guiDirtyRegionExCount; uiIndex++)
+        for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionExCount; uiIndex++)
         {
-            Region.X = this.gDirtyRegionsEx[uiIndex].Left;
-            Region.Y = this.gDirtyRegionsEx[uiIndex].Top;
-            Region.Width = this.gDirtyRegionsEx[uiIndex].Width;
-            Region.Height = this.gDirtyRegionsEx[uiIndex].Height;
+            Region.X = Globals.gDirtyRegionsEx[uiIndex].Left;
+            Region.Y = Globals.gDirtyRegionsEx[uiIndex].Top;
+            Region.Width = Globals.gDirtyRegionsEx[uiIndex].Width;
+            Region.Height = Globals.gDirtyRegionsEx[uiIndex].Height;
 
             if ((Region.Y < Globals.gsVIEWPORT_WINDOW_END_Y)
                 && Globals.gfRenderScroll)
@@ -1020,33 +964,31 @@ public class VeldridVideoManager : IVideoManager
                 continue;
             }
 
-            this.BlitRegion(
-                this.backBuffer,
+            BlitRegion(
+                backBuffer,
                 new Point(Region.X, Region.Y),
                 Region,
-                this.gpPrimarySurface);
+                Globals.gpPrimarySurface);
         }
 
-        this.guiDirtyRegionExCount = 0;
+        Globals.guiDirtyRegionExCount = 0;
 
         fFirstTime = false;
     }
 
-    private void DrawRegion(
+    private static void DrawRegion(
         Texture destinationTexture,
         int destinationPointX,
         int destinationPointY,
         Rectangle sourceRegion,
         Image<Rgba32> sourceTexture)
-        => this.BlitRegion(
+        => BlitRegion(
             destinationTexture,
             new Point(destinationPointX, destinationPointY),
             sourceRegion,
             sourceTexture);
 
-    private bool clearScreen;
-
-    private void BlitRegion(
+    private static void BlitRegion(
         Texture texture,
         Point destinationPoint,
         Rectangle sourceRegion,
@@ -1055,7 +997,7 @@ public class VeldridVideoManager : IVideoManager
         srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
 
         var newTexture = new ImageSharpTexture(srcImage)
-            .CreateDeviceTexture(this.GraphicDevice, this.GraphicDevice.ResourceFactory);
+            .CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
 
         var finalRect = new Rectangle(
             new Point(destinationPoint.X, destinationPoint.Y),
@@ -1064,7 +1006,7 @@ public class VeldridVideoManager : IVideoManager
         SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
     }
 
-    private void ScrollJA2Background(
+    private static void ScrollJA2Background(
         ScrollDirection uiDirection,
         int sScrollXIncrement,
         int sScrollYIncrement,
@@ -1084,7 +1026,7 @@ public class VeldridVideoManager : IVideoManager
         int sShiftX, sShiftY;
         int uiCountY;
 
-        this.GetCurrentVideoSettings(out usWidth, out usHeight, out ubBitDepth);
+        GetCurrentVideoSettings(out usWidth, out usHeight, out ubBitDepth);
         usHeight = Globals.gsVIEWPORT_WINDOW_END_Y - Globals.gsVIEWPORT_WINDOW_START_Y;
 
         StripRegions[0].X = Globals.gsVIEWPORT_START_X;
@@ -1097,13 +1039,13 @@ public class VeldridVideoManager : IVideoManager
         StripRegions[1].Y = Globals.gsVIEWPORT_WINDOW_START_Y;
         StripRegions[1].Height = Globals.gsVIEWPORT_WINDOW_END_Y;
 
-        MouseRegion.X = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usLeft;
-        MouseRegion.Y = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usTop;
-        MouseRegion.Width = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usRight;
-        MouseRegion.Height = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usBottom;
+        MouseRegion.X = mouseCursorBackground[uiCurrentMouseBackbuffer].usLeft;
+        MouseRegion.Y = mouseCursorBackground[uiCurrentMouseBackbuffer].usTop;
+        MouseRegion.Width = mouseCursorBackground[uiCurrentMouseBackbuffer].usRight;
+        MouseRegion.Height = mouseCursorBackground[uiCurrentMouseBackbuffer].usBottom;
 
-        usMouseXPos = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseXPos;
-        usMouseYPos = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseYPos;
+        usMouseXPos = mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseXPos;
+        usMouseYPos = mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseYPos;
 
         switch (uiDirection)
         {
@@ -1114,7 +1056,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth - sScrollXIncrement;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                this.DrawRegion(
+                DrawRegion(
                     pDest,
                     sScrollXIncrement,
                     Globals.gsVIEWPORT_WINDOW_START_Y,
@@ -1140,7 +1082,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                this.DrawRegion(
+                DrawRegion(
                     pDest,
                     0,
                     Globals.gsVIEWPORT_WINDOW_START_Y,
@@ -1173,7 +1115,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
-                this.DrawRegion(
+                DrawRegion(
                     pDest,
                     0,
                     Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
@@ -1205,7 +1147,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                this.DrawRegion(
+                DrawRegion(
                     pDest,
                     0,
                     Globals.gsVIEWPORT_WINDOW_START_Y,
@@ -1239,7 +1181,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth - sScrollXIncrement;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
-                this.DrawRegion(
+                DrawRegion(
                     pDest,
                     sScrollXIncrement,
                     Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
@@ -1274,7 +1216,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
-                this.BlitRegion(
+                BlitRegion(
                     pDest,
                     new Point(0, Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement),
                     Region,
@@ -1307,7 +1249,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth - sScrollXIncrement;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                this.BlitRegion(
+                BlitRegion(
                     pDest,
                     new Point(sScrollXIncrement, Globals.gsVIEWPORT_WINDOW_START_Y),
                     Region,
@@ -1342,7 +1284,7 @@ public class VeldridVideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                this.BlitRegion(
+                BlitRegion(
                     pDest,
                     new Point(0, Globals.gsVIEWPORT_WINDOW_START_Y),
                     Region,
@@ -1374,15 +1316,15 @@ public class VeldridVideoManager : IVideoManager
         {
             for (cnt = 0; cnt < usNumStrips; cnt++)
             {
-                this.renderWorld.RenderStaticWorldRect(StripRegions[cnt], true);
+                RenderWorld.RenderStaticWorldRect(StripRegions[cnt], true);
                 // Optimize Redundent tiles too!
                 //ExamineZBufferRect( (int)StripRegions[ cnt ].X, (int)StripRegions[ cnt ].Y, (int)StripRegions[ cnt ].Width, (int)StripRegions[ cnt ].Height );
 
-                this.BlitRegion(
+                BlitRegion(
                     pDest,
                     new Point(StripRegions[cnt].X, StripRegions[cnt].Y),
                     StripRegions[cnt],
-                    this.gpFrameBuffer);
+                    Globals.gpFrameBuffer);
             }
 
             sShiftX = 0;
@@ -1440,13 +1382,13 @@ public class VeldridVideoManager : IVideoManager
             }
 
             // RESTORE SHIFTED
-            this.RestoreShiftedVideoOverlays(sShiftX, sShiftY);
+            RestoreShiftedVideoOverlays(sShiftX, sShiftY);
 
             // SAVE NEW
-            //this.SaveVideoOverlaysArea(VideoSurfaceManager.BACKBUFFER);
+            //SaveVideoOverlaysArea(VideoSurfaceManager.BACKBUFFER);
 
             // BLIT NEW
-            //this.ExecuteVideoOverlaysToAlternateBuffer(VideoSurfaceManager.BACKBUFFER);
+            //ExecuteVideoOverlaysToAlternateBuffer(VideoSurfaceManager.BACKBUFFER);
 
 
 #if false
@@ -1480,32 +1422,32 @@ public class VeldridVideoManager : IVideoManager
         //SaveBackgroundRects();
     }
 
-    private void RestoreShiftedVideoOverlays(int sShiftX, int sShiftY)
+    private static void RestoreShiftedVideoOverlays(int sShiftX, int sShiftY)
     {
     }
 
-    public void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
+    public static void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
     {
         usWidth = 0;
         usHeight = 0;
         ubBitDepth = 0;
     }
 
-    public void InvalidateScreen()
+    public static void InvalidateScreen()
     {
-        this.clearScreen = true;
+        clearScreen = true;
 
-        this.guiDirtyRegionCount = 0;
-        this.guiDirtyRegionExCount = 0;
-        this.gfForceFullScreenRefresh = true;
-        this.guiFrameBufferState = BufferState.DIRTY;
+        Globals.guiDirtyRegionCount = 0;
+        Globals.guiDirtyRegionExCount = 0;
+        Globals.gfForceFullScreenRefresh = true;
+        Globals.guiFrameBufferState = BufferState.DIRTY;
     }
 
     public void Dispose()
     {
-        this.GraphicDevice.WaitForIdle();
-        (this.Factory as DisposeCollectorResourceFactory)!.DisposeCollector.DisposeAll();
-        this.GraphicDevice.Dispose();
+        GraphicDevice.WaitForIdle();
+        (Factory as DisposeCollectorResourceFactory)!.DisposeCollector.DisposeAll();
+        GraphicDevice.Dispose();
 
         GC.SuppressFinalize(this);
     }
@@ -1541,7 +1483,7 @@ public class VeldridVideoManager : IVideoManager
             $"{hVObject.Name}_{textureIndex}");
     }
 
-    public bool DrawTextToScreen(
+    public static bool DrawTextToScreen(
         string text,
         int usLocX,
         int usLocY,
@@ -1555,7 +1497,7 @@ public class VeldridVideoManager : IVideoManager
         //int usPosY = 0;
         //int usFontHeight = 0;
         //int usStringWidth = 0;
-        //this.fonts.SetFont(ulFont);
+        //fonts.SetFont(ulFont);
         //
         ////if (USE_WINFONTS())
         ////{
@@ -1564,13 +1506,13 @@ public class VeldridVideoManager : IVideoManager
         ////}
         ////else
         //{
-        //    this.fonts.SetFontForeground(ubColor);
-        //    this.fonts.SetFontBackground(ubBackGroundColor);
+        //    fonts.SetFontForeground(ubColor);
+        //    fonts.SetFontBackground(ubBackGroundColor);
         //}
         //
         //if (ulFlags.HasFlag(TextJustifies.TEXT_SHADOWED))
         //{
-        //    this.fonts.ShadowText(text, ulFont, usPosX - 1, usPosY - 1);
+        //    fonts.ShadowText(text, ulFont, usPosX - 1, usPosY - 1);
         //}
 
         // if (USE_WINFONTS())
@@ -1590,58 +1532,58 @@ public class VeldridVideoManager : IVideoManager
         //    if (fDirty)
         //    {
         //        // gprintfdirty(usPosX, usPosY, pStr);
-        //        this.fonts.mprintf(usPosX, usPosY, text);
+        //        fonts.mprintf(usPosX, usPosY, text);
         //    }
         //    else
         //    {
-        //         this.fonts.mprintf(usPosX, usPosY, text);
+        //         fonts.mprintf(usPosX, usPosY, text);
         //    }
         //}
         //
-        //if ((this.fonts.IAN_WRAP_NO_SHADOW & ulFlags) != 0)
+        //if ((fonts.IAN_WRAP_NO_SHADOW & ulFlags) != 0)
         //{
         //    // reset shadow
-        //    this.fonts.SetFontShadow(FontShadow.DEFAULT_SHADOW);
+        //    fonts.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         //}
         //
         //if (ulFlags.HasFlag(TextJustifies.INVALIDATE_TEXT))
         //{
-        //    usFontHeight = this.fonts.WFGetFontHeight(ulFont);
-        //    usStringWidth = this.fonts.WFStringPixLength(text, ulFont);
+        //    usFontHeight = fonts.WFGetFontHeight(ulFont);
+        //    usStringWidth = fonts.WFStringPixLength(text, ulFont);
         //
-        //    this.InvalidateRegion(new(usPosX, usPosY, usPosX + usStringWidth, usPosY + usFontHeight));
+        //    InvalidateRegion(new(usPosX, usPosY, usPosX + usStringWidth, usPosY + usFontHeight));
         //}
 
         return true;
     }
 
-    public void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
+    public static void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
     {
         throw new NotImplementedException();
     }
 
-    public void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap)
+    public static void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap)
     {
         vs_desc = new();
         uiTempMap = 0;
     }
 
-    public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette)
+    public static void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette)
     {
     }
 
-    public ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
+    public static ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
     {
         return 0;
     }
 
-    public void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap)
+    public static void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap)
     {
     }
 
     public static void DeleteVideoObjectFromIndex(string key)
     {
-        //this.loadedTextures.Remove(logoKey);
+        //loadedTextures.Remove(logoKey);
     }
 
     public static void LineDraw(int v2, int v3, int v4, int v5, Color color, Image<Rgba32> image)
@@ -1652,7 +1594,7 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
+    public static void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
     {
     }
 
@@ -1660,11 +1602,11 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
+    public static void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
     {
     }
 
-    public void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
+    public static void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
     {
     }
 
@@ -1701,19 +1643,19 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public void ExecuteBaseDirtyRectQueue()
+    public static void ExecuteBaseDirtyRectQueue()
     {
     }
 
-    public void DeleteVideoObject(HVOBJECT vobj)
+    public static void DeleteVideoObject(HVOBJECT vobj)
     {
     }
 
-    public void BlitBufferToBuffer(int left, int top, int width, int height)
+    public static void BlitBufferToBuffer(int left, int top, int width, int height)
     {
     }
 
-    public int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
+    public static int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
     {
         vs_desc = new();
         uiTempMap = Surfaces.FRAME_BUFFER;
@@ -1729,18 +1671,18 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v)
+    public static void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v)
     {
     }
 
-    public void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
+    public static void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
     {
         hSrcVSurface = new();
     }
 
-    public void ClearElements()
+    public static void ClearElements()
     {
-        this.fonts.TextRenderer.ClearText();
+        FontSubSystem.TextRenderer.ClearText();
     }
 }
 

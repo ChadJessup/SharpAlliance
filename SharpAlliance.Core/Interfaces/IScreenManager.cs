@@ -16,11 +16,11 @@ namespace SharpAlliance.Core.Interfaces
         ValueTask<TScreen> GetScreen<TScreen>(ScreenName screenName, bool activate) where TScreen : IScreen;
         ValueTask<IScreen> GetScreen(ScreenName screenName, bool activate);
         IScreenManager AddScreen<TScreen>(ScreenName screenName) where TScreen : IScreen;
-        IScreen CurrentScreen { get; }
+        static abstract IScreen CurrentScreen { get; }
         IScreen guiPendingScreen { get; set; }
         ScreenName CurrentScreenName { get; }
 
-        void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl);
+        static abstract void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl);
         void EndMapScreen(bool v);
         void ExitLaptop();
         ValueTask SetPendingNewScreen(ScreenName pendingScreen);

@@ -149,7 +149,7 @@ namespace SharpAlliance.Core.Screens
             }
 
             // Render buttons
-            RenderButtons();
+            ButtonSubSystem.RenderButtons();
 
             VeldridVideoManager.EndFrameBufferRender();
 

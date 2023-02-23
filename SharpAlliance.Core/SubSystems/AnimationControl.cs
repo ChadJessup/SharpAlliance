@@ -5,6 +5,27 @@ public class AnimationControl
     public const int MAX_ANIMATIONS = 320;
     public const int MAX_FRAMES_PER_ANIM = 100;
     public const int MAX_RANDOM_ANIMS_PER_BODYTYPE = 7;
+
+    public static int GetSoldierAnimationSurface(SOLDIERTYPE? pSoldier, AnimationStates usAnimState)
+    {
+        int usAnimSurface;
+
+        usAnimSurface = pSoldier.usAnimSurface;
+
+        if (usAnimSurface != Globals.INVALID_ANIMATION_SURFACE)
+        {
+            // Ensure that it's loaded!
+            if (Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
+            {
+                ScreenMsg(FONT_MCOLOR_RED, MSG_BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType,
+                    Globals.gAnimControl[usAnimState].zAnimStr, usAnimSurface);
+                AnimDebugMsg("Surface Database: PROBLEMS!!!!!!");
+                usAnimSurface = Globals.INVALID_ANIMATION_SURFACE;
+            }
+        }
+
+        return (usAnimSurface);
+    }
 }
 
 // Enumeration of animation states

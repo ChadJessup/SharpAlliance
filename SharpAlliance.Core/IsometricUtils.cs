@@ -1,7 +1,5 @@
 ﻿using System;
 using SharpAlliance.Core.SubSystems;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Veldrid.MetalBindings;
 using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core;
@@ -71,6 +69,62 @@ public class IsometricUtils
 
     static int sSameCursorPos;
     static int uiOldFrameNumber = 99999;
+
+    public static void GetWorldXYAbsoluteScreenXY(int sWorldCellX, int sWorldCellY, out int psWorldScreenX, out int psWorldScreenY)
+    {
+        int sScreenCenterX, sScreenCenterY;
+        int sDistToCenterY, sDistToCenterX;
+
+        // Find the diustance from render center to true world center
+        sDistToCenterX = (sWorldCellX * Globals.CELL_X_SIZE) - Globals.gCenterWorldX;
+        sDistToCenterY = (sWorldCellY * Globals.CELL_Y_SIZE) - Globals.gCenterWorldY;
+
+
+        // From render center in world coords, convert to render center in "screen" coords
+
+        // ATE: We should call the fowllowing function but I'm putting it here verbatim for speed
+        //FromCellToScreenCoordinates( sDistToCenterX , sDistToCenterY, &sScreenCenterX, &sScreenCenterY );
+        sScreenCenterX = (2 * sDistToCenterX) - (2 * sDistToCenterY);
+        sScreenCenterY = sDistToCenterX + sDistToCenterY;
+
+        // Subtract screen center
+        psWorldScreenX = sScreenCenterX + Globals.gsCX - Globals.gsTLX;
+        psWorldScreenY = sScreenCenterY + Globals.gsCY - Globals.gsTLY;
+    }
+
+    public static bool GridNoOnVisibleWorldTile(int sGridNo)
+    {
+
+        // Check for valid gridno...
+        ConvertGridNoToXY(sGridNo, out int sXMapPos, out int sYMapPos);
+
+        // Get screen coordinates for current position of soldier
+        GetWorldXYAbsoluteScreenXY(sXMapPos, sYMapPos, out int sWorldX, out int sWorldY);
+
+        if (sWorldX > 0 && sWorldX < (Globals.gsTRX - Globals.gsTLX - 20) &&
+                 sWorldY > 20 && sWorldY < (Globals.gsBLY - Globals.gsTLY - 20))
+        {
+            return (true);
+        }
+
+        return (false);
+    }
+
+    public static void ConvertGridNoToXY(int sGridNo, out int sXPos, out int sYPos)
+    {
+        sYPos = sGridNo / Globals.WORLD_COLS;
+        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+    }
+
+    public static void ConvertGridNoToCenterCellXY(int sGridNo, out int sXPos, out int sYPos)
+    {
+        sYPos = (sGridNo / Globals.WORLD_COLS);
+        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+
+        sYPos = (sYPos * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2);
+        sXPos = (sXPos * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2);
+    }
+
     public static bool GetMouseMapPos(out int psMapPos)
     {
         int sWorldX, sWorldY;
@@ -149,7 +203,7 @@ public class IsometricUtils
     // to the screen (0,0) in a specific way, and we MUSt take that into account then
     // determining screen coords
 
-    public void FloatFromCellToScreenCoordinates(float dCellX, float dCellY, out float pdScreenX, out float pdScreenY)
+    public static void FloatFromCellToScreenCoordinates(float dCellX, float dCellY, out float pdScreenX, out float pdScreenY)
     {
         float dScreenX, dScreenY;
 
@@ -160,6 +214,50 @@ public class IsometricUtils
         pdScreenY = dScreenY;
     }
 
+    // Returns the (center ) cell coordinates in X
+    public static int CenterX(int sGridNo)
+    {
+        int sYPos, sXPos;
+
+        sYPos = sGridNo / Globals.WORLD_COLS;
+        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+
+        return ((sXPos * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2));
+    }
+
+
+    // Returns the (center ) cell coordinates in Y
+    public static int CenterY(int sGridNo)
+    {
+        int sYPos, sXPos;
+
+        sYPos = sGridNo / Globals.WORLD_COLS;
+        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+
+        return ((sYPos * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2));
+    }
+
+
+    public static int MapX(int sGridNo)
+    {
+        int sYPos, sXPos;
+
+        sYPos = sGridNo / Globals.WORLD_COLS;
+        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+
+        return (sXPos);
+    }
+
+
+    public static int MapY(int sGridNo)
+    {
+        int sYPos, sXPos;
+
+        sYPos = sGridNo / Globals.WORLD_COLS;
+        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+
+        return (sYPos);
+    }
 
     public static int NewGridNo(int sGridno, int sDirInc)
     {

@@ -63,7 +63,7 @@ namespace SharpAlliance.Core.Screens
             this.gui = guiManager;
             this.clock = clockManager;
             this.context = gameContext;
-            this.video = videoManager;
+            VeldridVideoManager = videoManager;
             this.inputs = inputManager;
             this.files = fileManager;
 
@@ -555,13 +555,13 @@ namespace SharpAlliance.Core.Screens
                 vs_desc.usHeight = pNodeToAdd.sHeightOfString;
                 vs_desc.ubBitDepth = 16;
 
-                if (this.video.AddVideoSurface(out vs_desc, out pNodeToAdd.uiVideoSurfaceImage) == 0)
+                if (VeldridVideoManager.AddVideoSurface(out vs_desc, out pNodeToAdd.uiVideoSurfaceImage) == 0)
                 {
                     return false;
                 }
 
                 //Set transparency
-                this.video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, 0);
+                VeldridVideoManager.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, 0);
 
                 //fill the surface with a transparent color
 
@@ -676,12 +676,12 @@ namespace SharpAlliance.Core.Screens
                 this.gfCrdtHaveRenderedFirstFrameToSaveBuffer = true;
 
                 //blit everything to the save buffer ( cause the save buffer can bleed through )
-                this.video.BlitBufferToBuffer(0, 0, 640, 480);
+                VeldridVideoManager.BlitBufferToBuffer(0, 0, 640, 480);
 
                 ButtonSubSystem.UnmarkButtonsDirty();
             }
 
-            this.video.InvalidateScreen();
+            VeldridVideoManager.InvalidateScreen();
         }
 
         private void GetCreditScreenUserInput()
@@ -712,8 +712,8 @@ namespace SharpAlliance.Core.Screens
 
         private bool EnterCreditsScreen()
         {
-            this.video.AddVideoObject("INTERFACE\\Credits.sti", out this.guiCreditBackGroundImageKey);
-            this.video.AddVideoObject("INTERFACE\\Credit Faces.sti", out this.guiCreditFacesKey);
+            VeldridVideoManager.AddVideoObject("INTERFACE\\Credits.sti", out this.guiCreditBackGroundImageKey);
+            VeldridVideoManager.AddVideoObject("INTERFACE\\Credit Faces.sti", out this.guiCreditFacesKey);
 
             //Initialize the root credit node
 
@@ -832,8 +832,8 @@ namespace SharpAlliance.Core.Screens
         {
             this.gfCreditsScreenEntry = true;
 
-            this.video.AddVideoObject("INTERFACE\\Credits.sti", out this.guiCreditBackGroundImageKey);
-            this.video.AddVideoObject("INTERFACE\\Credit Faces.sti", out this.guiCreditFacesKey);
+            VeldridVideoManager.AddVideoObject("INTERFACE\\Credits.sti", out this.guiCreditBackGroundImageKey);
+            VeldridVideoManager.AddVideoObject("INTERFACE\\Credit Faces.sti", out this.guiCreditFacesKey);
 
             return ValueTask.FromResult(true);
         }
