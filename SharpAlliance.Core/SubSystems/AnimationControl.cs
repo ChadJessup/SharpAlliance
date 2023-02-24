@@ -17,9 +17,9 @@ public class AnimationControl
             // Ensure that it's loaded!
             if (Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
             {
-                ScreenMsg(FONT_MCOLOR_RED, MSG_BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType,
+                ScreenMsg(FontColor.FONT_MCOLOR_RED, Globals.MSG_BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType,
                     Globals.gAnimControl[usAnimState].zAnimStr, usAnimSurface);
-                AnimDebugMsg("Surface Database: PROBLEMS!!!!!!");
+                //AnimDebugMsg("Surface Database: PROBLEMS!!!!!!");
                 usAnimSurface = Globals.INVALID_ANIMATION_SURFACE;
             }
         }

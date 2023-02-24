@@ -472,6 +472,15 @@ public class SoldierProfileSubSystem
     };
 }
 
+
+// training defines for evolution, no stat increase, stat decrease( de-evolve )
+public enum CharacterEvolution
+{
+    NORMAL_EVOLUTION = 0,
+    NO_EVOLUTION,
+    DEVOLVE,
+}
+
 public enum ATT
 {
     NORMAL = 0,
@@ -515,10 +524,23 @@ public enum SexistLevels
     GENTLEMAN
 }
 
-// training defines for evolution, no stat increase, stat decrease( de-evolve )
-public enum CharacterEvolution
+public enum SkillTrait
 {
-    NORMAL_EVOLUTION = 0,
-    NO_EVOLUTION,
-    DEVOLVE,
+    NO_SKILLTRAIT = 0,
+    LOCKPICKING,
+    HANDTOHAND,
+    ELECTRONICS,
+    NIGHTOPS,
+    THROWING,
+    TEACHING,
+    HEAVY_WEAPS,
+    AUTO_WEAPS,
+    STEALTHY,
+    AMBIDEXT,
+    THIEF,
+    MARTIALARTS,
+    KNIFING,
+    ONROOF,
+    CAMOUFLAGED,
+    NUM_SKILLTRAITS
 }

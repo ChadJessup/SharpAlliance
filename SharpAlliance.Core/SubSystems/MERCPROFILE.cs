@@ -22,7 +22,7 @@ public class MERCPROFILESTRUCT
     public PaletteRepID HAIR;
     public Sexes bSex;
     public int bArmourAttractiveness;
-    public int bEvolution;
+    public CharacterEvolution bEvolution;
     public ProfileMiscFlags1 ubMiscFlags;
     public ProfileMiscFlags2 ubMiscFlags2;
     public int bSexist;
@@ -93,15 +93,15 @@ public class MERCPROFILESTRUCT
     public int bLife;
     public int bDexterity;        // dexterity (hand coord) value
     public PersonalityTrait bPersonalityTrait;
-    public int bSkillTrait;
+    public SkillTrait bSkillTrait;
 
     public int bReputationTolerance;
     public int bExplosive;
-    public int bSkillTrait2;
+    public SkillTrait bSkillTrait2;
     public int bLeadership;
 
-    public int[] bBuddy = new int[5];
-    public int[] bHated = new int[5];
+    public MERCPROFILESTRUCT[] bBuddy = new MERCPROFILESTRUCT[5];
+    public MERCPROFILESTRUCT[] bHated = new MERCPROFILESTRUCT[5];
     public int bExpLevel;     // general experience level
 
     public int bMarksmanship;

@@ -456,7 +456,7 @@ public class HandleUI
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
 
-                if (OKForSectorExit(StrategicMove.EAST, 0, out uiTraverseTimeInMinutes))
+                if (StrategicMap.OKForSectorExit(StrategicMove.EAST, 0, out uiTraverseTimeInMinutes))
                 {
                     if (Globals.gfUIConfirmExitArrows)
                     {
@@ -483,7 +483,7 @@ public class HandleUI
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
 
-                if (OKForSectorExit(StrategicMove.WEST, 0, out uiTraverseTimeInMinutes))
+                if (StrategicMap.OKForSectorExit(StrategicMove.WEST, 0, out uiTraverseTimeInMinutes) > 0)
                 {
                     if (Globals.gfUIConfirmExitArrows)
                     {
@@ -510,7 +510,7 @@ public class HandleUI
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
 
-                if (OKForSectorExit(StrategicMove.NORTH, 0, out uiTraverseTimeInMinutes))
+                if (StrategicMap.OKForSectorExit(StrategicMove.NORTH, 0, out uiTraverseTimeInMinutes) > 0)
                 {
                     if (Globals.gfUIConfirmExitArrows)
                     {
@@ -538,7 +538,7 @@ public class HandleUI
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
 
-                if (OKForSectorExit(StrategicMove.SOUTH, 0, out uiTraverseTimeInMinutes))
+                if (StrategicMap.OKForSectorExit(StrategicMove.SOUTH, 0, out uiTraverseTimeInMinutes))
                 {
                     if (Globals.gfUIConfirmExitArrows)
                     {
@@ -636,7 +636,7 @@ public class HandleUI
                         {
                             if (sOldExitGridNo != usMapPos)
                             {
-                                fOkForExit = OKForSectorExit((sbyte)-1, usMapPos, out uiTraverseTimeInMinutes);
+                                fOkForExit = StrategicMap.OKForSectorExit((sbyte)-1, usMapPos, out uiTraverseTimeInMinutes);
                                 sOldExitGridNo = usMapPos;
                             }
 
@@ -788,11 +788,11 @@ public class HandleUI
 
             if (bReturnCode == Globals.MERC_HIRE_FAILED)
             {
-                ScreenMsg(FONT_ORANGE, MSG_BETAVERSION, "Merc hire failed:  Either already hired or dislikes you.");
+                ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Merc hire failed:  Either already hired or dislikes you.");
             }
             else if (bReturnCode == Globals.MERC_HIRE_OVER_20_MERCS_HIRED)
             {
-                ScreenMsg(FONT_ORANGE, MSG_BETAVERSION, "Can't hire more than 20 mercs.");
+                ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Can't hire more than 20 mercs.");
             }
             else
             {
@@ -1035,7 +1035,7 @@ public class HandleUI
             // If different, display message
             if (Squads.CurrentSquad() != iCurrentSquad)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_SQUAD_ACTIVE], (Squads.CurrentSquad() + 1));
+                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.SQUAD_ACTIVE], (Squads.CurrentSquad() + 1));
             }
         }
 
@@ -1386,7 +1386,7 @@ public class HandleUI
                             || Globals.gubOutOfRangeMerc != Globals.gusSelectedSoldier)
                         {
                             // Display
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[(int)STR.OUT_OF_RANGE_STRING]);
+                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[(int)STR.OUT_OF_RANGE_STRING]);
 
                             //PlayJA2Sample( TARGET_OUT_OF_RANGE, RATE_11025, MIDVOLUME, 1, MIDDLEPAN );			              
 
@@ -1615,7 +1615,7 @@ public class HandleUI
                         }
                         else
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
+                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
                         }
 
                         pSoldier.fUIMovementFast = fOldFastMove;
@@ -1670,7 +1670,7 @@ public class HandleUI
                         }
                         else
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                             return (ScreenName.GAME_SCREEN);
                         }
                     }
@@ -2207,7 +2207,7 @@ public class HandleUI
 
             if (iHandleReturn == ITEM_HANDLE.NOROOM)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, pMessageStrings[MSG_CANT_FIRE_HERE]);
+                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG.CANT_FIRE_HERE]);
                 return;
             }
         }
@@ -3051,27 +3051,27 @@ public class HandleUI
         {
             if (pSoldier.bCollapsed && pSoldier.bBreath < Globals.OKBREATH)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, gzLateLocalizedString[4], pSoldier.name);
+                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[4], pSoldier.name);
             }
             else
             {
                 if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                 {
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[VEHICLES_NO_STANCE_CHANGE_STR]);
+                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.VEHICLES_NO_STANCE_CHANGE_STR]);
                 }
                 else if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                 {
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[ROBOT_NO_STANCE_CHANGE_STR]);
+                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.ROBOT_NO_STANCE_CHANGE_STR]);
                 }
                 else
                 {
                     if (pSoldier.bCollapsed)
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, pMessageStrings[MSG_CANT_CHANGE_STANCE], pSoldier.name);
+                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG_CANT_CHANGE_STANCE], pSoldier.name);
                     }
                     else
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_STANCE_CHANGE_STR], pSoldier.name);
+                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.CANNOT_STANCE_CHANGE_STR], pSoldier.name);
                     }
                 }
             }
@@ -3946,25 +3946,25 @@ public class HandleUI
             // If we are a vehicle...
             if ((pTSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.ROBOT)))
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_DO_FIRST_AID_STR], pTSoldier.name);
+                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_DO_FIRST_AID_STR], pTSoldier.name);
                 return (false);
             }
 
             if (pSoldier.bMedical == 0)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, pMessageStrings[MSG_MERC_HAS_NO_MEDSKILL], pSoldier.name);
+                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG_MERC_HAS_NO_MEDSKILL], pSoldier.name);
                 return (false);
             }
 
             if (pTSoldier.bBleeding == 0 && pTSoldier.bLife != pTSoldier.bLifeMax)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.gzLateLocalizedString[19], pTSoldier.name);
+                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.gzLateLocalizedString[19], pTSoldier.name);
                 return (false);
             }
 
             if (pTSoldier.bBleeding == 0 && pTSoldier.bLife >= Globals.OKLIFE)
             {
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_NO_NEED_FIRST_AID_STR], pTSoldier.name);
+                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_NO_NEED_FIRST_AID_STR], pTSoldier.name);
                 return (false);
             }
 
@@ -3982,7 +3982,7 @@ public class HandleUI
 
         if (sAPCost == 0)
         {
-            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
         }
         else
         {
@@ -4785,7 +4785,7 @@ public class HandleUI
                     }
                     else
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
+                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
                     }
 
                     fAtLeastOneMultiSelect = true;
@@ -5218,11 +5218,11 @@ public class HandleUI
                     {
                         if (pTSoldier.ubProfile != NPCID.NO_PROFILE)
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_LOS_TO_TALK_TARGET], pSoldier.name, pTSoldier.name);
+                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_LOS_TO_TALK_TARGET], pSoldier.name, pTSoldier.name);
                         }
                         else
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, gzLateLocalizedString[45], pSoldier.name);
+                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[45], pSoldier.name);
                         }
                         return (false);
                     }
@@ -5230,7 +5230,7 @@ public class HandleUI
 
                 if (pTSoldier.bCollapsed)
                 {
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, gzLateLocalizedString[21], pTSoldier.name);
+                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[21], pTSoldier.name);
                     return (false);
                 }
 
@@ -5245,7 +5245,7 @@ public class HandleUI
                 {
                     if (pTSoldier.ubProfile == NPCID.DIMITRI)
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, gzLateLocalizedString[32], pTSoldier.name);
+                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[32], pTSoldier.name);
                         return (false);
                     }
 
@@ -5327,13 +5327,13 @@ public class HandleUI
 
                     if (sActionGridNo == -1)
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                         return (false);
                     }
 
                     if (this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, false, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints) == 0)
                     {
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                         return (false);
                     }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using SharpAlliance.Core.Screens;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -553,7 +552,7 @@ public class Quests
         return (pNPC.ubMiscSoldierFlags.HasFlag(SOLDIER_MISC.HEARD_GUNSHOT));
     }
 
-    public static bool InTownSectorWithTrainingLoyalty(int sSectorX, int sSectorY)
+    public static bool InTownSectorWithTrainingLoyalty(int sSectorX, MAP_ROW sSectorY)
     {
         TOWNS ubTown;
 
@@ -565,6 +564,53 @@ public class Quests
         else
         {
             return (false);
+        }
+    }
+
+    void InternalStartQuest(QUEST ubQuest, int sSectorX, int sSectorY, bool fUpdateHistory)
+    {
+        if (Globals.gubQuest[ubQuest] == Globals.QUESTNOTSTARTED)
+        {
+            Globals.gubQuest[ubQuest] = Globals.QUESTINPROGRESS;
+
+            if (fUpdateHistory)
+            {
+                Facts.SetHistoryFact(HISTORY.QUEST_STARTED, ubQuest, GetWorldTotalMin(), sSectorX, sSectorY);
+            }
+        }
+        else
+        {
+            Globals.gubQuest[ubQuest] = Globals.QUESTINPROGRESS;
+        }
+    }
+
+    void EndQuest(QUEST ubQuest, int sSectorX, int sSectorY)
+    {
+        InternalEndQuest(ubQuest, sSectorX, sSectorY, true);
+    }
+
+    private static void InternalEndQuest(QUEST ubQuest, int sSectorX, int sSectorY, bool fUpdateHistory)
+    {
+        if (Globals.gubQuest[ubQuest] == Globals.QUESTINPROGRESS)
+        {
+            Globals.gubQuest[ubQuest] = Globals.QUESTDONE;
+
+            if (fUpdateHistory)
+            {
+                ResetHistoryFact(ubQuest, sSectorX, sSectorY);
+            }
+        }
+        else
+        {
+            Globals.gubQuest[ubQuest] = Globals.QUESTDONE;
+        }
+
+        if (ubQuest == QUEST.RESCUE_MARIA)
+        {
+            // cheap hack to try to prevent Madame Layla from thinking that you are
+            // still in the brothel with Maria...
+            Globals.gMercProfiles[NPCID.MADAME].bNPCData = 0;
+            Globals.gMercProfiles[NPCID.MADAME].bNPCData2 = 0;
         }
     }
 }

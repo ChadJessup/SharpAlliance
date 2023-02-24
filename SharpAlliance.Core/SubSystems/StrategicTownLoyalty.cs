@@ -62,7 +62,7 @@ public class StrategicTownLoyalty
         {
             for (iCounterB = 0; (int)iCounterB < (Globals.MAP_WORLD_Y - 1); iCounterB++)
             {
-                usSector = CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB);
+                usSector = StrategicMap.CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB);
 
                 if ((Globals.StrategicMap[usSector].bNameId == bTownId) &&
                         (Globals.StrategicMap[usSector].fEnemyControlled == false) &&

@@ -487,7 +487,7 @@ namespace SharpAlliance.Core.SubSystems
         int uiTimeSameBattleSndDone;
         int bOldBattleSnd;
         bool fReactingFromBeingShot;
-        bool fContractPriceHasIncreased;
+        public bool fContractPriceHasIncreased;
         int iBurstSoundID;
         bool fFixingSAMSite;
         bool fFixingRobot;

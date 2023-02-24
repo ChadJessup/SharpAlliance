@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Screens;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -17,8 +16,28 @@ public class StrategicMap
         return ValueTask.FromResult(true);
     }
 
+    // return number of sectors this town takes up
+    public static int GetTownSectorSize(TOWNS bTownId)
+    {
+        int ubSectorSize = 0;
+        int iCounterA = 0, iCounterB = 0;
+
+        for (iCounterA = 0; iCounterA < (Globals.MAP_WORLD_X - 1); iCounterA++)
+        {
+            for (iCounterB = 0; iCounterB < (Globals.MAP_WORLD_Y - 1); iCounterB++)
+            {
+                if (Globals.StrategicMap[CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB)].bNameId == bTownId)
+                {
+                    ubSectorSize++;
+                }
+            }
+        }
+
+        return (ubSectorSize);
+    }
+
     //ATE: Returns false if NOBODY is close enough, 1 if ONLY selected guy is and 2 if all on squad are...
-    public static int OKForSectorExit(int bExitDirection, int usAdditionalData, out uint puiTraverseTimeInMinutes)
+    public static int OKForSectorExit(StrategicMove bExitDirection, int usAdditionalData, out uint puiTraverseTimeInMinutes)
     {
         puiTraverseTimeInMinutes = 0;
 
@@ -221,14 +240,25 @@ public class StrategicMap
 
         return (ubReturnVal);
     }
+
+    // get index into array
+    public static int CALCULATE_STRATEGIC_INDEX(int x, MAP_ROW y) => (x + ((int)y * Globals.MAP_WORLD_X));
+    public static int GET_X_FROM_STRATEGIC_INDEX(int i) => (i % Globals.MAP_WORLD_X);
+    public static MAP_ROW GET_Y_FROM_STRATEGIC_INDEX(int i) => (MAP_ROW)(i / Globals.MAP_WORLD_X);
+
+    // macros to convert between the 2 different sector numbering systems
+    public static int SECTOR_INFO_TO_STRATEGIC_INDEX(int i) => (CALCULATE_STRATEGIC_INDEX(SECTORINFO.SECTORX(i), SECTORINFO.SECTORY(i)));
+    public static SEC STRATEGIC_INDEX_TO_SECTOR_INFO(int i) => (SECTORINFO.SECTOR(GET_X_FROM_STRATEGIC_INDEX(i), GET_Y_FROM_STRATEGIC_INDEX(i)));
+
+
 }
 
 public class StrategicMapElement
 {
-    public int [] UNUSEDuiFootEta = new int[4];          // eta/mvt costs for feet 
-    public int [] UNUSEDuiVehicleEta = new int[4];       // eta/mvt costs for vehicles 
-    public int [] uiBadFootSector = new int[4];    // blocking mvt for foot
-    public int [] uiBadVehicleSector = new int[4]; // blocking mvt from vehicles
+    public int[] UNUSEDuiFootEta = new int[4];          // eta/mvt costs for feet 
+    public int[] UNUSEDuiVehicleEta = new int[4];       // eta/mvt costs for vehicles 
+    public int[] uiBadFootSector = new int[4];    // blocking mvt for foot
+    public int[] uiBadVehicleSector = new int[4]; // blocking mvt from vehicles
     public TOWNS bNameId;
     public bool fEnemyControlled;   // enemy controlled or not
     public bool fEnemyAirControlled;

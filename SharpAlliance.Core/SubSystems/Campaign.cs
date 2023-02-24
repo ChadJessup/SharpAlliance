@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using SixLabors.Fonts;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -31,7 +32,7 @@ public class Campaign
 
         if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
         {
-            ScreenMsg(FONT_ORANGE, MSG_BETAVERSION, "ERROR: StatChange: %s improving stats while POW! ubStat %d", pSoldier.name, ubStat);
+            ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: StatChange: %s improving stats while POW! ubStat %d", pSoldier.name, ubStat);
             return;
         }
 
@@ -91,13 +92,13 @@ public class Campaign
 
         Debug.Assert(pProfile != null);
 
-        if (pProfile.bEvolution == NO_EVOLUTION)
+        if (pProfile.bEvolution == CharacterEvolution.NO_EVOLUTION)
         {
             return;     // No change possible, quit right away
         }
 
         // if this is a Reverse-Evolving merc who attempting to train
-        if ((ubReason == FROM_TRAINING) && (pProfile.bEvolution == DEVOLVE))
+        if ((ubReason == Globals.FROM_TRAINING) && (pProfile.bEvolution == CharacterEvolution.DEVOLVE))
         {
             return; // he doesn't get any benefit, but isn't penalized either
         }
@@ -174,12 +175,12 @@ public class Campaign
 
             default:
                 // BETA message
-                ScreenMsg(FONT_ORANGE, MSG_BETAVERSION, "ERROR: ProcessStatChange: Rcvd unknown ubStat %d", ubStat);
+                ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: ProcessStatChange: Rcvd unknown ubStat %d", ubStat);
                 return;
         }
 
 
-        if (ubReason == FROM_TRAINING)
+        if (ubReason == Globals.FROM_TRAINING)
         {
             // training always affected by wisdom
             fAffectedByWisdom = true;
@@ -196,10 +197,10 @@ public class Campaign
         // loop once for each chance to improve
         for (uiCnt = 0; uiCnt < usNumChances; uiCnt++)
         {
-            if (pProfile.bEvolution == NORMAL_EVOLUTION)               // Evolves!
+            if (pProfile.bEvolution == CharacterEvolution.NORMAL_EVOLUTION)               // Evolves!
             {
                 // if this is improving from a failure, and a successful roll would give us enough to go up a point
-                if ((ubReason == FROM_FAILURE) && ((psStatGainPtr + 1) >= usSubpointsPerPoint))
+                if ((ubReason == Globals.FROM_FAILURE) && ((psStatGainPtr + 1) >= usSubpointsPerPoint))
                 {
                     // can't improve any more from this statchange, because Ian don't want failures causin increases!
                     break;
@@ -212,7 +213,7 @@ public class Campaign
                     usChance = 100 - (bCurrentRating + (psStatGainPtr / usSubpointsPerPoint));
 
                     // prevent training beyond the training cap
-                    if ((ubReason == FROM_TRAINING) && (bCurrentRating + (psStatGainPtr / usSubpointsPerPoint) >= TRAINING_RATING_CAP))
+                    if ((ubReason == Globals.FROM_TRAINING) && (bCurrentRating + (psStatGainPtr / usSubpointsPerPoint) >= Globals.TRAINING_RATING_CAP))
                     {
                         usChance = 0;
                     }
@@ -251,15 +252,15 @@ public class Campaign
 
                     // as long as we're not dealing with exp_level changes (already added above!)
                     // and it's not from training, and the exp level isn't max'ed out already
-                    if ((ubStat != Stat.EXPERAMT) && (ubReason != FROM_TRAINING))
+                    if ((ubStat != Stat.EXPERAMT) && (ubReason != Globals.FROM_TRAINING))
                     {
                         uiEffLevel = pProfile.bExpLevel + (pProfile.sExpLevelGain / usSubpointsPerLevel);
 
                         // if level is not at maximum
-                        if (uiEffLevel < MAXEXPLEVEL)
+                        if (uiEffLevel < Globals.MAXEXPLEVEL)
                         {
                             // if this is NOT improving from a failure, OR it would NOT give us enough to go up a level
-                            if ((ubReason != FROM_FAILURE) || ((pProfile.sExpLevelGain + 1) < usSubpointsPerLevel))
+                            if ((ubReason != Globals.FROM_FAILURE) || ((pProfile.sExpLevelGain + 1) < usSubpointsPerLevel))
                             {
                                 // all other stat changes count towards experience level changes (1 for 1 basis)
                                 pProfile.sExpLevelGain++;
@@ -322,7 +323,7 @@ public class Campaign
 
                     // as long as we're not dealing with exp_level changes (already added above!)
                     // and it's not from training, and the exp level isn't max'ed out already
-                    if ((ubStat != Stat.EXPERAMT) && (ubReason != FROM_TRAINING))
+                    if ((ubStat != Stat.EXPERAMT) && (ubReason != Globals.FROM_TRAINING))
                     {
                         uiEffLevel = pProfile.bExpLevel + (pProfile.sExpLevelGain / usSubpointsPerLevel);
 
@@ -347,7 +348,7 @@ public class Campaign
 
 
         // exclude training, that's not under our control
-        if (ubReason != FROM_TRAINING)
+        if (ubReason != Globals.FROM_TRAINING)
         {
             // increment counters that track how often stat changes are being awarded
             pProfile.usStatChangeChances[ubStat] += usNumChances;
@@ -381,7 +382,7 @@ public class Campaign
         bool fChangeTypeIncrease;
         bool fChangeSalary;
         int uiLevelCnt;
-        int ubMercMercIdValue = 0;
+        NPCID ubMercMercIdValue = 0;
         int usIncreaseValue = 0;
         int usSubpointsPerPoint;
 
@@ -467,67 +468,67 @@ public class Campaign
                 case Stat.HEALTHAMT:
                     pbSoldierStatPtr = (pSoldier.bLifeMax);
                     puiStatTimerPtr = (pSoldier.uiChangeHealthTime);
-                    usIncreaseValue = HEALTH_INCREASE;
+                    usIncreaseValue = Globals.HEALTH_INCREASE;
                     break;
 
                 case Stat.AGILAMT:
                     pbSoldierStatPtr = (pSoldier.bAgility);
                     puiStatTimerPtr = (pSoldier.uiChangeAgilityTime);
-                    usIncreaseValue = AGIL_INCREASE;
+                    usIncreaseValue = Globals.AGIL_INCREASE;
                     break;
 
                 case Stat.DEXTAMT:
                     pbSoldierStatPtr = (pSoldier.bDexterity);
                     puiStatTimerPtr = (pSoldier.uiChangeDexterityTime);
-                    usIncreaseValue = DEX_INCREASE;
+                    usIncreaseValue = Globals.DEX_INCREASE;
                     break;
 
                 case Stat.WISDOMAMT:
                     pbSoldierStatPtr = (pSoldier.bWisdom);
                     puiStatTimerPtr = (pSoldier.uiChangeWisdomTime);
-                    usIncreaseValue = WIS_INCREASE;
+                    usIncreaseValue = Globals.WIS_INCREASE;
                     break;
 
                 case Stat.MEDICALAMT:
                     pbSoldierStatPtr = (pSoldier.bMedical);
                     puiStatTimerPtr = (pSoldier.uiChangeMedicalTime);
-                    usIncreaseValue = MED_INCREASE;
+                    usIncreaseValue = Globals.MED_INCREASE;
                     break;
 
                 case Stat.EXPLODEAMT:
                     pbSoldierStatPtr = (pSoldier.bExplosive);
                     puiStatTimerPtr = (pSoldier.uiChangeExplosivesTime);
-                    usIncreaseValue = EXP_INCREASE;
+                    usIncreaseValue = Globals.EXP_INCREASE;
                     break;
 
                 case Stat.MECHANAMT:
                     pbSoldierStatPtr = (pSoldier.bMechanical);
                     puiStatTimerPtr = (pSoldier.uiChangeMechanicalTime);
-                    usIncreaseValue = MECH_INCREASE;
+                    usIncreaseValue = Globals.MECH_INCREASE;
                     break;
 
                 case Stat.MARKAMT:
                     pbSoldierStatPtr = (pSoldier.bMarksmanship);
                     puiStatTimerPtr = (pSoldier.uiChangeMarksmanshipTime);
-                    usIncreaseValue = MRK_INCREASE;
+                    usIncreaseValue = Globals.MRK_INCREASE;
                     break;
 
                 case Stat.EXPERAMT:
                     pbSoldierStatPtr = (pSoldier.bExpLevel);
                     puiStatTimerPtr = (pSoldier.uiChangeLevelTime);
-                    usIncreaseValue = LVL_INCREASE;
+                    usIncreaseValue = Globals.LVL_INCREASE;
                     break;
 
                 case Stat.STRAMT:
                     pbSoldierStatPtr = (pSoldier.bStrength);
                     puiStatTimerPtr = (pSoldier.uiChangeStrengthTime);
-                    usIncreaseValue = STRENGTH_INCREASE;
+                    usIncreaseValue = Globals.STRENGTH_INCREASE;
                     break;
 
                 case Stat.LDRAMT:
                     pbSoldierStatPtr = (pSoldier.bLeadership);
                     puiStatTimerPtr = (pSoldier.uiChangeLeadershipTime);
-                    usIncreaseValue = LDR_INCREASE;
+                    usIncreaseValue = Globals.LDR_INCREASE;
                     break;
             }
         }
@@ -575,7 +576,7 @@ public class Campaign
                 {
                     // Pipe up with "I'm getting better at this!"
                     TacticalCharacterDialogueWithSpecialEventEx(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DISPLAY_STAT_CHANGE, fChangeTypeIncrease, sPtsChanged, ubStat);
-                    TacticalCharacterDialogue(pSoldier, QUOTE_EXPERIENCE_GAIN);
+                    TacticalCharacterDialogue(pSoldier, QUOTE.EXPERIENCE_GAIN);
                 }
                 else
                 {
@@ -583,7 +584,7 @@ public class Campaign
 
                     // tell player about it
                     BuildStatChangeString(wTempString, pSoldier.name, fChangeTypeIncrease, sPtsChanged, ubStat);
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, wTempString);
+                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, wTempString);
                 }
 
                 // update mapscreen soldier info panel
@@ -612,9 +613,9 @@ public class Campaign
                 pProfile.bLife += sPtsChanged;
 
                 // don't let this kill a guy or knock him out!!!
-                if (pProfile.bLife < OKLIFE)
+                if (pProfile.bLife < Globals.OKLIFE)
                 {
-                    pProfile.bLife = OKLIFE;
+                    pProfile.bLife = Globals.OKLIFE;
                 }
 
                 // if the guy is employed by player
@@ -624,9 +625,9 @@ public class Campaign
                     pSoldier.bLife += sPtsChanged;
 
                     // don't let this kill a guy or knock him out!!!
-                    if (pSoldier.bLife < OKLIFE)
+                    if (pSoldier.bLife < Globals.OKLIFE)
                     {
-                        pSoldier.bLife = OKLIFE;
+                        pSoldier.bLife = Globals.OKLIFE;
                     }
                 }
             }
@@ -640,21 +641,21 @@ public class Campaign
                 {
                     switch (pSoldier.ubWhatKindOfMercAmI)
                     {
-                        case MERC_TYPE__AIM_MERC:
+                        case MERC_TYPE.AIM_MERC:
                             // A.I.M.
                             pSoldier.fContractPriceHasIncreased = true;
                             fChangeSalary = true;
                             break;
 
-                        case MERC_TYPE__MERC:
+                        case MERC_TYPE.MERC:
                             // M.E.R.C.
                             ubMercMercIdValue = pSoldier.ubProfile;
 
                             // Biff's profile id ( 40 ) is the base
-                            ubMercMercIdValue -= BIFF;
+                            ubMercMercIdValue -= NPCID.BIFF;
 
                             // offset for the 2 profiles of Larry (we only have one email for Larry..but 2 profile entries
-                            if (ubMercMercIdValue >= (LARRY_DRUNK - BIFF))
+                            if (ubMercMercIdValue >= (NPCID)(NPCID.LARRY_DRUNK - NPCID.BIFF))
                             {
                                 ubMercMercIdValue--;
                             }
@@ -686,13 +687,13 @@ public class Campaign
                 if (fChangeSalary)
                 {
                     // increase all salaries and medical deposits, once for each level gained
-                    for (uiLevelCnt = 0; uiLevelCnt < (int)sPtsChanged; uiLevelCnt++)
+                    for (uiLevelCnt = 0; uiLevelCnt < sPtsChanged; uiLevelCnt++)
                     {
-                        pProfile.sSalary = (int)CalcNewSalary(pProfile.sSalary, fChangeTypeIncrease, Globals.MAX_DAILY_SALARY);
+                        pProfile.sSalary = CalcNewSalary(pProfile.sSalary, fChangeTypeIncrease, Globals.MAX_DAILY_SALARY);
                         pProfile.uiWeeklySalary = CalcNewSalary(pProfile.uiWeeklySalary, fChangeTypeIncrease, Globals.MAX_LARGE_SALARY);
                         pProfile.uiBiWeeklySalary = CalcNewSalary(pProfile.uiBiWeeklySalary, fChangeTypeIncrease, Globals.MAX_LARGE_SALARY);
-                        pProfile.sTrueSalary = (int)CalcNewSalary(pProfile.sTrueSalary, fChangeTypeIncrease, Globals.MAX_DAILY_SALARY);
-                        pProfile.sMedicalDepositAmount = (int)CalcNewSalary(pProfile.sMedicalDepositAmount, fChangeTypeIncrease, Globals.MAX_DAILY_SALARY);
+                        pProfile.sTrueSalary = CalcNewSalary(pProfile.sTrueSalary, fChangeTypeIncrease, Globals.MAX_DAILY_SALARY);
+                        pProfile.sMedicalDepositAmount = CalcNewSalary(pProfile.sMedicalDepositAmount, fChangeTypeIncrease, Globals.MAX_DAILY_SALARY);
 
                         //if (pSoldier != null)
                         // DON'T increase the *effective* medical deposit, it's already been paid out
@@ -781,7 +782,7 @@ public class Campaign
         {
             // set default min & max, subpoints/pt.
             bMinStatValue = 1;
-            bMaxStatValue = MAX_STAT_VALUE;
+            bMaxStatValue = Globals.MAX_STAT_VALUE;
             usSubpointsPerPoint = SubpointsPerPoint(ubStat, pProfile.bExpLevel);
 
             // build ptrs to appropriate profiletype stat fields
@@ -841,7 +842,7 @@ public class Campaign
                     psStatGainPtr = (pProfile.sExpLevelGain);
                     pbStatPtr = (pProfile.bExpLevel);
 
-                    bMaxStatValue = MAXEXPLEVEL;
+                    bMaxStatValue = Globals.MAXEXPLEVEL;
                     break;
 
                 case Stat.STRAMT:
@@ -1041,7 +1042,7 @@ public class Campaign
 
 
         // if the salary doesn't divide evenly by the multiple
-        if (uiSalary % uiMultiple)
+        if (uiSalary % uiMultiple > 0)
         {
             // then we have to make it so, as Picard would say <- We have to wonder how much Alex gets out
             // and while we're at it, we round up to next higher multiple if halfway
@@ -1065,7 +1066,7 @@ public class Campaign
             case Stat.WISDOMAMT:
             case Stat.STRAMT:
                 // attributes
-                usSubpointsPerPoint = ATTRIBS_SUBPOINTS_TO_IMPROVE;
+                usSubpointsPerPoint = Globals.ATTRIBS_SUBPOINTS_TO_IMPROVE;
                 break;
 
             case Stat.MEDICALAMT:
@@ -1074,16 +1075,16 @@ public class Campaign
             case Stat.MARKAMT:
             case Stat.LDRAMT:
                 // skills
-                usSubpointsPerPoint = SKILLS_SUBPOINTS_TO_IMPROVE;
+                usSubpointsPerPoint = Globals.SKILLS_SUBPOINTS_TO_IMPROVE;
                 break;
 
             case Stat.EXPERAMT:
-                usSubpointsPerPoint = LEVEL_SUBPOINTS_TO_IMPROVE * bExpLevel;
+                usSubpointsPerPoint = Globals.LEVEL_SUBPOINTS_TO_IMPROVE * bExpLevel;
                 break;
 
             default:
                 // BETA message
-                ScreenMsg(FONT_ORANGE, MSG_BETAVERSION, "SubpointsPerPoint: ERROR - Unknown ubStat %d", ubStat);
+                ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "SubpointsPerPoint: ERROR - Unknown ubStat %d", ubStat);
                 return (100);
         }
 
@@ -1117,9 +1118,9 @@ public class Campaign
             // so about 10 working days to hit lvl 2.  This seems high, but mercs don't actually "work" that often, and it's twice
             // as long to hit level 3.  If we go lower, attribs & skills will barely move.
             usNumChances = (pProfile.bWisdom / 10);
-            for (ubStat = FIRST_CHANGEABLE_STAT; ubStat <= LAST_CHANGEABLE_STAT; ubStat++)
+            for (ubStat = Globals.FIRST_CHANGEABLE_STAT; ubStat <= Globals.LAST_CHANGEABLE_STAT; ubStat++)
             {
-                ProfileStatChange(pProfile, ubStat, usNumChances, false);
+                ProfileStatChange(pProfile, ubStat, usNumChances, 0);
             }
         }
         else
@@ -1140,7 +1141,7 @@ public class Campaign
             } while (ubStat == Stat.EXPERAMT);
 
             // try to improve that one stat
-            ProfileStatChange(pProfile, ubStat, (int)(pProfile.bWisdom / 2), FROM_TRAINING);
+            ProfileStatChange(pProfile, ubStat, (int)(pProfile.bWisdom / 2), Globals.FROM_TRAINING);
         }
 
         ProfileUpdateStats(pProfile);
@@ -1201,11 +1202,11 @@ public class Campaign
         }
 
         // stealthy guys are slightly less likely to get killed (they're careful)
-        if (pProfile.bSkillTrait == STEALTHY)
+        if (pProfile.bSkillTrait == SkillTrait.STEALTHY)
         {
             sChance -= 1;
         }
-        if (pProfile.bSkillTrait2 == STEALTHY)
+        if (pProfile.bSkillTrait2 == SkillTrait.STEALTHY)
         {
             sChance -= 1;
         }
@@ -1355,7 +1356,7 @@ public class Campaign
             Globals.gStrategicStatus.ubHighestProgress = ubCurrentProgress;
 
             // debug message
-            ScreenMsg(MSG_FONT_RED, MSG_DEBUG, "New player progress record: %d%%", Globals.gStrategicStatus.ubHighestProgress);
+            ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "New player progress record: %d%%", Globals.gStrategicStatus.ubHighestProgress);
         }
     }
 
@@ -1539,16 +1540,17 @@ public class Campaign
 
     int CalcImportantSectorControl()
     {
-        int ubMapX, ubMapY;
+        int ubMapX;
+        MAP_ROW ubMapY;
         int ubSectorControlPts = 0;
 
 
         for (ubMapX = 1; ubMapX < Globals.MAP_WORLD_X - 1; ubMapX++)
         {
-            for (ubMapY = 1; ubMapY < Globals.MAP_WORLD_Y - 1; ubMapY++)
+            for (ubMapY = (MAP_ROW)1; (int)ubMapY < Globals.MAP_WORLD_Y - 1; ubMapY++)
             {
                 // if player controlled
-                if (Globals.StrategicMap[CALCULATE_STRATEGIC_INDEX(ubMapX, ubMapY)].fEnemyControlled == false)
+                if (Globals.StrategicMap[StrategicMap.CALCULATE_STRATEGIC_INDEX(ubMapX, ubMapY)].fEnemyControlled == false)
                 {
                     // towns where militia can be trained and SAM sites are important sectors
                     if (MilitiaTrainingAllowedInSector(ubMapX, ubMapY, 0))

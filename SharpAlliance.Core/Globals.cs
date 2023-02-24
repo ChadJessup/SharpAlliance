@@ -1286,13 +1286,133 @@ public partial class Globals
     public const int SKILLS_SUBPOINTS_TO_IMPROVE = 25;
     public const int ATTRIBS_SUBPOINTS_TO_IMPROVE = 50;
     public const int LEVEL_SUBPOINTS_TO_IMPROVE = 350;    // per current level!	(Can't go over 6500, 10x must fit in USHORT!)
-    public const int WORKIMPROVERATE  =2;      // increase to make working  mercs improve more
+    public const int WORKIMPROVERATE = 2;      // increase to make working  mercs improve more
     public const int TRAINIMPROVERATE = 2;      // increase to make training mercs improve more
 
     public const int ARMY_GUN_LEVELS = 11;
 
-
     public static readonly STRATEGIC_STATUS gStrategicStatus = new();
+
+    public const int MSG_INTERFACE = 0;
+    public const int MSG_DIALOG = 1;
+    public const int MSG_CHAT = 2;
+    public const int MSG_DEBUG = 3;
+    public const int MSG_UI_FEEDBACK = 4;
+    public const int MSG_ERROR = 5;
+    public const int MSG_BETAVERSION = 6;
+    public const int MSG_TESTVERSION = 7;
+    public const int MSG_MAP_UI_POSITION_MIDDLE = 8;
+    public const int MSG_MAP_UI_POSITION_UPPER = 9;
+    public const int MSG_MAP_UI_POSITION_LOWER = 10;
+    public const int MSG_SKULL_UI_FEEDBACK = 11;
+
+    // stat change causes
+    public const int FROM_SUCCESS = 0;
+    public const int FROM_TRAINING = 1;
+    public const int FROM_FAILURE = 2;
+
+    public int BUDDY_OPINION = +25;
+    public int HATED_OPINION = -25;
+
+
+    public static bool BUDDY_MERC(MERCPROFILESTRUCT prof, MERCPROFILESTRUCT bud)
+        => prof.bBuddy[0] == bud
+        || prof.bBuddy[1] == bud
+        || prof.bBuddy[2] == bud;
+
+    public static bool HATED_MERC(MERCPROFILESTRUCT prof, MERCPROFILESTRUCT hat)
+        => prof.bHated[0] == hat
+        || prof.bHated[1] == hat
+        || prof.bHated[2] == hat;
+
+    public const int TIME_BETWEEN_HATED_COMPLAINTS = 24;
+    public const int SUSPICIOUS_DEATH = 1;
+    public const int VERY_SUSPICIOUS_DEATH = 2;
+
+    // training cap: you can't train any stat/skill beyond this value
+    public const int TRAINING_RATING_CAP = 85;
+
+
+    public const int HEALTH_INCREASE = 0x0001;
+    public const int STRENGTH_INCREASE = 0x0002;
+    public const int DEX_INCREASE = 0x0004;
+    public const int AGIL_INCREASE = 0x0008;
+    public const int WIS_INCREASE = 0x0010;
+    public const int LDR_INCREASE = 0x0020;
+    public const int MRK_INCREASE = 0x0040;
+    public const int MED_INCREASE = 0x0080;
+    public const int EXP_INCREASE = 0x0100;
+    public const int MECH_INCREASE = 0x0200;
+    public const int LVL_INCREASE = 0x0400;
+
+    public const string HISTORY_DATA_FILE = "TEMP\\History.dat";
+
+    public const int TOP_X = 0 + LAPTOP_SCREEN_UL_X;
+    public const int TOP_Y = LAPTOP_SCREEN_UL_Y;
+    public const int BLOCK_HIST_HEIGHT = 10;
+    public const int BOX_HEIGHT = 14;
+    public const int TOP_DIVLINE_Y = 101;
+    public const int DIVLINE_X = 130;
+    public const int MID_DIVLINE_Y = 155;
+    public const int BOT_DIVLINE_Y = 204;
+    public const int TITLE_X = 140;
+    public const int TITLE_Y = 33;
+    public const int TEXT_X = 140;
+    public const int PAGE_SIZE = 22;
+    public const int RECORD_Y = TOP_DIVLINE_Y;
+    public const int RECORD_HISTORY_WIDTH = 200;
+    public const int PAGE_NUMBER_X = TOP_X + 20;
+    public const int PAGE_NUMBER_Y = TOP_Y + 33;
+    public const int HISTORY_DATE_X = PAGE_NUMBER_X + 85;
+    public const int HISTORY_DATE_Y = PAGE_NUMBER_Y;
+    public const int RECORD_LOCATION_WIDTH = 142;//95
+    public const FontStyle HISTORY_HEADER_FONT = FontStyle.FONT14ARIAL;
+    public const FontStyle HISTORY_TEXT_FONT = FontStyle.FONT12ARIAL;
+    public const int RECORD_DATE_X = TOP_X + 10;
+    public const int RECORD_DATE_WIDTH = 31;//68
+    public const int RECORD_HEADER_Y = 90;
+
+
+    public const int NUM_RECORDS_PER_PAGE = PAGE_SIZE;
+    //static int SIZE_OF_HISTORY_FILE_RECORD( sizeof(UINT8 ) + sizeof(UINT8 ) + sizeof(UINT32 ) + sizeof(UINT16 ) + sizeof(UINT16 ) + sizeof(UINT8 ) + sizeof(UINT8 ) )
+
+    // button positions
+    public const int NEXT_BTN_X = 577;
+    public const int PREV_BTN_X = 553;
+    public const int BTN_Y = 53;
+
+    public static int guiTITLE;
+    public static int guiTOP;
+    public static int guiLONGLINE;
+    public static int guiSHADELINE;
+
+    public const int LAPTOP_SIDE_PANEL_X = 0;
+    public const int LAPTOP_SIDE_PANEL_Y = 0;
+    public const int LAPTOP_SIDE_PANEL_WIDTH = 640;
+    public const int LAPTOP_SIDE_PANEL_HEIGHT = 480;
+    public const int LAPTOP_X = 0;
+    public const int LAPTOP_Y = 0;
+    public const int LAPTOP_SCREEN_UL_X = 111;
+    public const int LAPTOP_SCREEN_UL_Y = 27;
+    public const int LAPTOP_SCREEN_LR_X = 613;
+    public const int LAPTOP_SCREEN_LR_Y = 427;
+    public const int LAPTOP_UL_X = 24;
+    public const int LAPTOP_UL_Y = 27;
+    public const int LAPTOP_SCREEN_WIDTH = LAPTOP_SCREEN_LR_X - LAPTOP_SCREEN_UL_X;
+    public const int LAPTOP_SCREEN_HEIGHT = LAPTOP_SCREEN_LR_Y - LAPTOP_SCREEN_UL_Y;
+
+    // new positions for web browser
+
+    public const int LAPTOP_SCREEN_WEB_UL_Y = LAPTOP_SCREEN_UL_Y + 19;
+    public const int LAPTOP_SCREEN_WEB_LR_Y = LAPTOP_SCREEN_WEB_UL_Y + LAPTOP_SCREEN_HEIGHT;
+    public const int LAPTOP_SCREEN_WEB_DELTA_Y = LAPTOP_SCREEN_WEB_UL_Y - LAPTOP_SCREEN_UL_Y;
+
+    // the laptop on/off button 
+    public const int ON_X = 113;
+    public const int ON_Y = 445;
+
+    public const int PREV_PAGE_BUTTON = 0;
+    public const int NEXT_PAGE_BUTTON = 1;
 }
 
 public enum Stat
@@ -1315,5 +1435,4 @@ public enum Stat
     FIRST_CHANGEABLE_STAT = HEALTHAMT,
     LAST_CHANGEABLE_STAT = LDRAMT,
     CHANGEABLE_STAT_COUNT = (LDRAMT - HEALTHAMT + 1),
-
 }

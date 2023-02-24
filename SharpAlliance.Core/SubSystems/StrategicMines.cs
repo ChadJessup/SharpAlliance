@@ -137,7 +137,7 @@ public class StrategicMines
 
     void HourlyMinesUpdate()
     {
-        int ubMineIndex;
+        MINE ubMineIndex;
         MINE_STATUS_TYPE pMineStatus;
         int ubQuoteType;
 
@@ -195,10 +195,10 @@ public class StrategicMines
                             ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE_CREATURES_ATTACK;
                             pMineStatus.fPrevInvadedByMonsters = true;
 
-                            if (gubQuest[QUEST_CREATURES] == QUESTNOTSTARTED)
+                            if (Globals.gubQuest[QUEST.CREATURES] == Globals.QUESTNOTSTARTED)
                             {
                                 // start it now!
-                                StartQuest(QUEST_CREATURES, gMineLocation[ubMineIndex].sSectorX, gMineLocation[ubMineIndex].sSectorY);
+                                Quests.StartQuest(QUEST.CREATURES, Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
                             }
                         }
 
@@ -332,7 +332,7 @@ public class StrategicMines
             GetMineSector(bMineIndex, out sSectorX, out sSectorY);
             StrategicHandleMineThatRanOut(SECTORINFO.SECTOR(sSectorX, sSectorY));
 
-            AddHistoryToPlayersLog(HISTORY_MINE_RAN_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown,
+            AddHistoryToPlayersLog(HISTORY.MINE_RAN_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown,
                 GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
         }
         else    // still some left after this extraction
@@ -363,7 +363,7 @@ public class StrategicMines
                         // that mine's head miner tells player that the mine is running out
                         IssueHeadMinerQuote(bMineIndex, HEAD_MINER_STRATEGIC_QUOTE_RUNNING_OUT);
                         mineStatus.fWarnedOfRunningOut = true;
-                        AddHistoryToPlayersLog(HISTORY_MINE_RUNNING_OUT, gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
+                        AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
                     }
                 }
             }
@@ -474,8 +474,6 @@ public class StrategicMines
 
         return (iWorkRate);
     }
-
-
 
     int MineAMine(MINE bMineIndex)
     {
@@ -625,7 +623,7 @@ public class StrategicMines
 
 
     // get index of this mine, return -1 if no mine found
-    MINE GetMineIndexForSector(int sX, MAP_ROW sY)
+    static MINE GetMineIndexForSector(int sX, MAP_ROW sY)
     {
         MINE ubMineIndex = 0;
 
@@ -767,7 +765,7 @@ public class StrategicMines
         {
             var mineStatus = Globals.gMineStatus[bMineIndex];
             mineStatus.fShutDown = true;
-            AddHistoryToPlayersLog(HISTORY_MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
+            AddHistoryToPlayersLog(HISTORY.MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
         }
     }
 
@@ -782,7 +780,7 @@ public class StrategicMines
             {
                 var mineStatus = Globals.gMineStatus[bMineIndex];
                 mineStatus.fShutDown = false;
-                AddHistoryToPlayersLog(HISTORY_MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
+                AddHistoryToPlayersLog(HISTORY.MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
             }
         }
     }
@@ -809,7 +807,6 @@ public class StrategicMines
     {
         int ubMinerIndex = 0;
         NPCID usProfileId = 0;
-
 
         Debug.Assert((bMineIndex >= 0) && (bMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
@@ -856,7 +853,7 @@ public class StrategicMines
         if (Globals.gMercProfiles[usHeadMinerProfileId].bLife < Globals.OKLIFE)
         {
             // debug message
-            ScreenMsg(MSG_FONT_RED, MSG_DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
+            ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
             return;
         }
 
@@ -944,7 +941,7 @@ public class StrategicMines
         // if this is our first time set a history fact 
         if (mineStatus.fSpokeToHeadMiner == false)
         {
-            AddHistoryToPlayersLog(HISTORY_TALKED_TO_MINER, Globals.gMineLocation[ubMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
+            AddHistoryToPlayersLog(HISTORY.TALKED_TO_MINER, Globals.gMineLocation[ubMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
             mineStatus.fSpokeToHeadMiner = true;
         }
     }
@@ -1139,28 +1136,28 @@ public class StrategicMines
                     bMineIndex = MINE.GRUMM;
                     break;
                 // cambria
-                case (SEC_H8):
-                case (SEC_H9):
-                    bMineIndex = MINE_CAMBRIA;
+                case (SEC.H8):
+                case (SEC.H9):
+                    bMineIndex = MINE.CAMBRIA;
                     break;
                 // alma
-                case (SEC_I14):
-                case (SEC_J14):
-                    bMineIndex = MINE_ALMA;
+                case (SEC.I14):
+                case (SEC.J14):
+                    bMineIndex = MINE.ALMA;
                     break;
                 // drassen
-                case (SEC_D13):
-                case (SEC_E13):
-                    bMineIndex = MINE_DRASSEN;
+                case (SEC.D13):
+                case (SEC.E13):
+                    bMineIndex = MINE.DRASSEN;
                     break;
                 // chitzena
-                case (SEC_B2):
-                    bMineIndex = MINE_CHITZENA;
+                case (SEC.B2):
+                    bMineIndex = MINE.CHITZENA;
                     break;
                 // san mona
-                case (SEC_D4):
-                case (SEC_D5):
-                    bMineIndex = MINE_SAN_MONA;
+                case (SEC.D4):
+                case (SEC.D5):
+                    bMineIndex = MINE.SAN_MONA;
                     break;
             }
         }
