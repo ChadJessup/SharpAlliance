@@ -145,7 +145,6 @@ public class MapScreenInterfaceMap
         int pSrcBuf;
         Rectangle clip;
         int cnt, cnt2;
-        int iCounter = 0;
 
         if (!iCurrentMapSectorZ)
         {
@@ -156,7 +155,7 @@ public class MapScreenInterfaceMap
                 return false;
             }
 
-            pSrcBuf = LockVideoSurface(Globals.guiBIGMAP, out uiSrcPitchBYTES);
+            // pSrcBuf = LockVideoSurface(Globals.guiBIGMAP, out uiSrcPitchBYTES);
 
             // clip blits to mapscreen region
             //ClipBlitsToMapViewRegion( );
@@ -288,7 +287,7 @@ public class MapScreenInterfaceMap
             ShowSAMSitesOnStrategicMap();
 
             // draw mine icons
-            for (iCounter = 0; iCounter < (int)MINE.MAX_NUMBER_OF_MINES; iCounter++)
+            for (MINE iCounter = 0; iCounter < MINE.MAX_NUMBER_OF_MINES; iCounter++)
             {
                 BlitMineIcon(Globals.gMineLocation[iCounter].sSectorX, Globals.gMineLocation[iCounter].sSectorY);
             }
@@ -298,7 +297,7 @@ public class MapScreenInterfaceMap
             if (fShowMineFlag)
             {
                 // show mine name/production text
-                for (iCounter = 0; iCounter < (int)MINE.MAX_NUMBER_OF_MINES; iCounter++)
+                for (MINE iCounter = 0; iCounter < MINE.MAX_NUMBER_OF_MINES; iCounter++)
                 {
                     BlitMineText(Globals.gMineLocation[iCounter].sSectorX, Globals.gMineLocation[iCounter].sSectorY);
                 }
@@ -430,8 +429,8 @@ public class MapScreenInterfaceMap
         }
 
         // get and blt border
-        GetVideoObject(hHandle, Globals.guiMapBorder);
-        BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT_SRCTRANSPARENCY, null);
+        VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiMapBorder);
+        VeldridVideoManager.BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT_SRCTRANSPARENCY, null);
 
         // show the level marker
         DisplayCurrentLevelMarker();

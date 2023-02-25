@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Image;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -40,20 +34,12 @@ namespace SharpAlliance.Core.Managers
         public const int VO_BLT_UNCOMPRESSED = 0x000004000;
 
         private readonly ILogger<VideoObjectManager> logger;
-        private List<int> ghVideoObjects;
-        private bool gfVideoObjectsInit = false;
-        public VOBJECT_NODE gpVObjectHead { get; set; } = new VOBJECT_NODE();
-        public VOBJECT_NODE gpVObjectTail { get; set; } = new VOBJECT_NODE();
-        public int guiVObjectIndex { get; set; } = 1;
-        public int guiVObjectSize { get; set; } = 0;
-        public int guiVObjectTotalAdded { get; set; } = 0;
-
         public VideoObjectManager(ILogger<VideoObjectManager> logger)
         {
             this.logger = logger;
 
-            this.gpVObjectTail = this.gpVObjectHead;
-            this.gfVideoObjectsInit = true;
+             Globals.gpVObjectTail = Globals.gpVObjectHead;
+             Globals.gfVideoObjectsInit = true;
 
             this.IsInitialized = true;
         }
@@ -63,8 +49,8 @@ namespace SharpAlliance.Core.Managers
         public ValueTask<bool> Initialize()
         {
             this.logger.LogDebug(LoggingEventId.VIDEOOBJECT, "Video Object Manager");
-            this.gpVObjectHead = this.gpVObjectTail = null;
-            this.gfVideoObjectsInit = true;
+            Globals.gpVObjectHead = Globals.gpVObjectTail = null;
+            Globals.gfVideoObjectsInit = true;
             return ValueTask.FromResult(true);
         }
 
@@ -631,7 +617,7 @@ namespace SharpAlliance.Core.Managers
 
         public int CountVideoObjectNodes()
         {
-            VOBJECT_NODE? curr = this.gpVObjectHead;
+            VOBJECT_NODE? curr = Globals.gpVObjectHead;
             int i = 0;
 
             while (curr is not null)

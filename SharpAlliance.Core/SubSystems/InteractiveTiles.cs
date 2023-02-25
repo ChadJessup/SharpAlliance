@@ -39,19 +39,6 @@ public class InteractiveTiles
         this.worldStructures = worldStructures;
     }
 
-    INTERACTIVE_TILE_STACK_TYPE? gCurIntTileStack;
-    bool gfCycleIntTile = false;
-
-
-    CUR_INTERACTIVE_TILE gCurIntTile;
-    bool gfOverIntTile = false;
-
-    // Values to determine if we should check or not
-    int gsINTOldRenderCenterX = 0;
-    int gsINTOldRenderCenterY = 0;
-    int gusINTOldMousePosX = 0;
-    int gusINTOldMousePosY = 0;
-
     bool InitInteractiveTileManagement()
     {
         return (true);
@@ -79,7 +66,7 @@ public class InteractiveTiles
             return (false);
         }
 
-        pStructure = this.worldStructures.FindStructureByID(sGridNo, usStructureID);
+        pStructure = WorldStructures.FindStructureByID(sGridNo, usStructureID);
         if (pStructure == null)
         {
             return (false);
@@ -175,7 +162,7 @@ public class InteractiveTiles
         usStructureID = (int)pSoldier.uiPendingActionData1;
 
         // HANDLE SOLDIER ACTIONS
-        pStructure = this.worldStructures.FindStructureByID(sGridNo, usStructureID);
+        pStructure = WorldStructures.FindStructureByID(sGridNo, usStructureID);
         if (pStructure == null)
         {
             //DEBUG MSG!
@@ -197,7 +184,7 @@ public class InteractiveTiles
         if (pStructure == null)
         {
             //# ifdef JA2TESTVERSION
-            //            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, L"ERROR: Told to handle struct that does not exist at %d.", sGridNo);
+            //            Messages.ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "ERROR: Told to handle struct that does not exist at %d.", sGridNo);
             //#endif
             return;
         }
@@ -206,12 +193,12 @@ public class InteractiveTiles
         if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
         {
             // Play Opening sound...
-            PlayJA2Sample(GetStructureOpenSound(pStructure, false), RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
+            //PlayJA2Sample(GetStructureOpenSound(pStructure, false), RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
         }
         else
         {
             // Play Opening sound...
-            PlayJA2Sample((GetStructureOpenSound(pStructure, true)), RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
+            //PlayJA2Sample((GetStructureOpenSound(pStructure, true)), RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
         }
 
         // ATE: Don't handle switches!
@@ -258,7 +245,7 @@ public class InteractiveTiles
                     if (Globals.gWorldItems[pItemPool.iItemIndex].o.usItem == Items.OWNERSHIP)
                     {
                         fDoHumm = false;
-                        TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DO_BATTLE_SND, BATTLE_SOUND_NOTHING, 500);
+                        TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_NOTHING, 500);
                     }
 
                     // If now open, set visible...
@@ -276,14 +263,14 @@ public class InteractiveTiles
                             {
                                 fDoHumm = false;
 
-                                TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DO_BATTLE_SND, BATTLE_SOUND_COOL1, 500);
+                                TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_COOL1, 500);
 
                             }
                         }
 
                         if (fDoHumm)
                         {
-                            TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DO_BATTLE_SND, BATTLE_SOUND_HUMM, 500);
+                            TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_HUMM, 500);
                         }
                     }
                 }
@@ -296,7 +283,7 @@ public class InteractiveTiles
             {
                 if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
                 {
-                    TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DO_BATTLE_SND, BATTLE_SOUND_NOTHING, 500);
+                    TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_NOTHING, 500);
                 }
             }
         }
@@ -421,7 +408,7 @@ public class InteractiveTiles
             TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
             //Adjust for current frames and animations....
-            if (TileElem.uiFlags & ANIMATED_TILE)
+            if (TileElem.uiFlags & ANIMATEDTILE)
             {
                 Debug.Assert(TileElem.pAnimData != null);
                 TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
@@ -518,29 +505,29 @@ public class InteractiveTiles
                         if (RefineLogicOnStruct(sGridNo, pNode))
                         {
 
-                            gCurIntTile.fFound = true;
+                            Globals.gCurIntTile.fFound = true;
 
                             // Only if we are not currently cycling....
-                            if (!gfCycleIntTile)
+                            if (!Globals.gfCycleIntTile)
                             {
                                 // Accumulate them!
-                                gCurIntTileStack.bTiles[gCurIntTileStack.bNum].pFoundNode = pNode;
-                                gCurIntTileStack.bTiles[gCurIntTileStack.bNum].sFoundGridNo = sGridNo;
-                                gCurIntTileStack.bNum++;
+                                Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bNum].pFoundNode = pNode;
+                                Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bNum].sFoundGridNo = sGridNo;
+                                Globals.gCurIntTileStack.bNum++;
 
 
                                 // Determine if it's the best one
-                                if (aRect.Bottom > gCurIntTile.sHeighestScreenY)
+                                if (aRect.Bottom > Globals.gCurIntTile.sHeighestScreenY)
                                 {
-                                    gCurIntTile.sMaxScreenY = (int)aRect.Bottom;
-                                    gCurIntTile.sHeighestScreenY = gCurIntTile.sMaxScreenY;
+                                    Globals.gCurIntTile.sMaxScreenY = (int)aRect.Bottom;
+                                    Globals.gCurIntTile.sHeighestScreenY = Globals.gCurIntTile.sMaxScreenY;
 
                                     // Set it!
-                                    gCurIntTile.pFoundNode = pNode;
-                                    gCurIntTile.sFoundGridNo = sGridNo;
+                                    Globals.gCurIntTile.pFoundNode = pNode;
+                                    Globals.gCurIntTile.sFoundGridNo = sGridNo;
 
                                     // Set stack current one...
-                                    gCurIntTileStack.bCur = gCurIntTileStack.bNum - 1;
+                                    Globals.gCurIntTileStack.bCur = Globals.gCurIntTileStack.bNum - 1;
                                 }
                             }
                         }
@@ -568,20 +555,20 @@ public class InteractiveTiles
         }
 
 
-        if (gfOverIntTile)
+        if (Globals.gfOverIntTile)
         {
-            pNode = Globals.gpWorldLevelData[gCurIntTile.sGridNo].pStructHead;
+            pNode = Globals.gpWorldLevelData[Globals.gCurIntTile.sGridNo].pStructHead;
 
             while (pNode != null)
             {
-                if (pNode.usIndex == gCurIntTile.sTileIndex)
+                if (pNode.usIndex == Globals.gCurIntTile.sTileIndex)
                 {
                     if (fRejectItemsOnTop)
                     {
                         // get strucuture here...
-                        if (gCurIntTile.fStructure)
+                        if (Globals.gCurIntTile.fStructure)
                         {
-                            pStructure = this.worldStructures.FindStructureByID(gCurIntTile.sGridNo, gCurIntTile.usStructureID);
+                            pStructure = WorldStructures.FindStructureByID(Globals.gCurIntTile.sGridNo, Globals.gCurIntTile.usStructureID);
                             if (pStructure != null)
                             {
                                 if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.HASITEMONTOP))
@@ -622,7 +609,7 @@ public class InteractiveTiles
 
         if (pNode != null)
         {
-            psGridNo = gCurIntTile.sGridNo;
+            psGridNo = Globals.gCurIntTile.sGridNo;
         }
         else
         {
@@ -645,7 +632,7 @@ public class InteractiveTiles
 
         if (pNode != null)
         {
-            psGridNo = gCurIntTile.sGridNo;
+            psGridNo = Globals.gCurIntTile.sGridNo;
         }
         else
         {
@@ -654,9 +641,9 @@ public class InteractiveTiles
 
         if (pNode != null)
         {
-            if (gCurIntTile.fStructure)
+            if (Globals.gCurIntTile.fStructure)
             {
-                pStructure = this.worldStructures.FindStructureByID(gCurIntTile.sGridNo, gCurIntTile.usStructureID);
+                pStructure = WorldStructures.FindStructureByID(Globals.gCurIntTile.sGridNo, Globals.gCurIntTile.usStructureID);
                 if (pStructure == null)
                 {
                     ppStructure = null;
@@ -681,18 +668,18 @@ public class InteractiveTiles
 
     void BeginCurInteractiveTileCheck(int bCheckFlags)
     {
-        gfOverIntTile = false;
+        Globals.gfOverIntTile = false;
 
         // OK, release our stack, stuff could be different!
-        gfCycleIntTile = false;
+        Globals.gfCycleIntTile = false;
 
         // Reset some highest values
-        gCurIntTile.sHeighestScreenY = 0;
-        gCurIntTile.fFound = false;
-        gCurIntTile.ubFlags = bCheckFlags;
+        Globals.gCurIntTile.sHeighestScreenY = 0;
+        Globals.gCurIntTile.fFound = false;
+        Globals.gCurIntTile.ubFlags = bCheckFlags;
 
         // Reset stack values
-        gCurIntTileStack.bNum = 0;
+        Globals.gCurIntTileStack.bNum = 0;
 
     }
 
@@ -700,43 +687,43 @@ public class InteractiveTiles
     {
         CUR_INTERACTIVE_TILE? pCurIntTile;
 
-        if (gCurIntTile.fFound)
+        if (Globals.gCurIntTile.fFound)
         {
             // Set our currently cycled guy.....
-            if (gfCycleIntTile)
+            if (Globals.gfCycleIntTile)
             {
                 // OK, we're over this cycled node
-                pCurIntTile = (gCurIntTileStack.bTiles[gCurIntTileStack.bCur]);
+                pCurIntTile = (Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bCur]);
             }
             else
             {
                 // OK, we're over this levelnode,
-                pCurIntTile = gCurIntTile;
+                pCurIntTile = Globals.gCurIntTile;
             }
 
-            gCurIntTile.sGridNo = pCurIntTile.sFoundGridNo;
-            gCurIntTile.sTileIndex = pCurIntTile.pFoundNode.usIndex;
+            Globals.gCurIntTile.sGridNo = pCurIntTile.sFoundGridNo;
+            Globals.gCurIntTile.sTileIndex = pCurIntTile.pFoundNode.usIndex;
 
             if (pCurIntTile.pFoundNode.pStructureData != null)
             {
-                gCurIntTile.usStructureID = pCurIntTile.pFoundNode.pStructureData.usStructureID;
-                gCurIntTile.fStructure = true;
+                Globals.gCurIntTile.usStructureID = pCurIntTile.pFoundNode.pStructureData.usStructureID;
+                Globals.gCurIntTile.fStructure = true;
             }
             else
             {
-                gCurIntTile.fStructure = false;
+                Globals.gCurIntTile.fStructure = false;
             }
 
 
-            gfOverIntTile = true;
+            Globals.gfOverIntTile = true;
 
         }
         else
         {
             // If we are in cycle mode, end it
-            if (gfCycleIntTile)
+            if (Globals.gfCycleIntTile)
             {
-                gfCycleIntTile = false;
+                Globals.gfCycleIntTile = false;
             }
         }
     }
@@ -756,7 +743,7 @@ public class InteractiveTiles
 
         TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
-        if (gCurIntTile.ubFlags == INTILE_CHECK_SELECTIVE)
+        if (Globals.gCurIntTile.ubFlags == INTILE_CHECK_SELECTIVE)
         {
             // See if we are on an interactable tile!
             // Try and get struct data from levelnode pointer
@@ -907,7 +894,7 @@ public class InteractiveTiles
     // will return true if data found, else false
     bool CheckVideoObjectScreenCoordinateInData(HVOBJECT hSrcVObject, int usIndex, int iTestX, int iTestY)
     {
-        int uiOffset;
+        uint uiOffset;
         int usHeight, usWidth;
         int SrcPtr;
         int LineSkip;
@@ -1130,20 +1117,20 @@ public class InteractiveTiles
     {
         bool fOK = false;
 
-        if (gsINTOldRenderCenterX != Globals.gsRenderCenterX
-            || gsINTOldRenderCenterY != Globals.gsRenderCenterY
-            || gusINTOldMousePosX != Globals.gusMouseXPos
-            || gusINTOldMousePosY != Globals.gusMouseYPos)
+        if (Globals.gsINTOldRenderCenterX != Globals.gsRenderCenterX
+            || Globals.gsINTOldRenderCenterY != Globals.gsRenderCenterY
+            || Globals.gusINTOldMousePosX != Globals.gusMouseXPos
+            || Globals.gusINTOldMousePosY != Globals.gusMouseYPos)
         {
             fOK = true;
         }
 
         // Set old values
-        gsINTOldRenderCenterX = Globals.gsRenderCenterX;
-        gsINTOldRenderCenterY = Globals.gsRenderCenterY;
+        Globals.gsINTOldRenderCenterX = Globals.gsRenderCenterX;
+        Globals.gsINTOldRenderCenterY = Globals.gsRenderCenterY;
 
-        gusINTOldMousePosX = Globals.gusMouseXPos;
-        gusINTOldMousePosY = Globals.gusMouseYPos;
+        Globals.gusINTOldMousePosX = Globals.gusMouseXPos;
+        Globals.gusINTOldMousePosY = Globals.gusMouseYPos;
 
         return (fOK);
     }
@@ -1151,17 +1138,17 @@ public class InteractiveTiles
 
     void CycleIntTileFindStack(int usMapPos)
     {
-        gfCycleIntTile = true;
+        Globals.gfCycleIntTile = true;
 
         // Cycle around!
-        gCurIntTileStack.bCur++;
+        Globals.gCurIntTileStack.bCur++;
 
         //PLot new movement
         Globals.gfPlotNewMovement = true;
 
-        if (gCurIntTileStack.bCur == gCurIntTileStack.bNum)
+        if (Globals.gCurIntTileStack.bCur == Globals.gCurIntTileStack.bNum)
         {
-            gCurIntTileStack.bCur = 0;
+            Globals.gCurIntTileStack.bCur = 0;
         }
     }
 

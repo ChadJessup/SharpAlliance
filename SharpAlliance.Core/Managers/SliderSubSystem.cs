@@ -382,7 +382,7 @@ public class SliderSubSystem
         return pNewSlider;
     }
 
-    private void SelectedSliderMovementCallBack(ref MouseRegion pRegion, MouseCallbackReasons reason)
+    private void SelectedSliderMovementCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons reason)
     {
         int uiSelectedSlider;
         Slider? pSlider = null;
@@ -485,7 +485,7 @@ public class SliderSubSystem
 
 
 
-    void SelectedSliderButtonCallBack(ref MouseRegion pRegion, MouseCallbackReasons iReason)
+    void SelectedSliderButtonCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
     {
         int uiSelectedSlider;
         Slider? pSlider = null;
@@ -586,7 +586,7 @@ public class Slider
 
     public Color usBackGroundColor;
 
-    public MouseRegion ScrollAreaMouseRegion = new(nameof(Slider));
+    public MOUSE_REGION ScrollAreaMouseRegion = new(nameof(Slider));
 
     public uint uiSliderBoxImage;
     public int usCurrentSliderBoxPosition;

@@ -19,7 +19,7 @@ namespace SharpAlliance.Core.Screens;
 public class MainMenuScreen : IScreen
 {
     private readonly GameInit gameInit;
-    private readonly RenderDirtySubSystem renderDirty;
+    private readonly RenderDirty renderDirty;
     private readonly IScreenManager screens;
     private readonly GameOptions options;
     private readonly FontSubSystem fonts;
@@ -30,49 +30,20 @@ public class MainMenuScreen : IScreen
     private readonly CursorSubSystem cursor;
     private readonly IClockManager clock;
 
-    public const string MAINMENU_TEXT_FILE = "LoadScreens\\MainMenu.edt";
-    public const int MAINMENU_RECORD_SIZE = 80 * 2;
-    public const int MAINMENU_X = (640 - 214) / 2;
-    public const int MAINMENU_TITLE_Y = 75;
-    public const int MAINMENU_Y_SPACE = 37;
-    public const int MAINMENU_Y = 480 - 187;
-
-    // MENU ITEMS
-    private enum MainMenuItems
-    {
-        //	TITLE,
-        NEW_GAME,
-        LOAD_GAME,
-        PREFERENCES,
-        CREDITS,
-        QUIT,
-        NUM_MENU_ITEMS,
-        Unknown = 99,
-    };
-
     private Dictionary<MainMenuItems, ButtonPic> iMenuImages = new();
     private Dictionary<MainMenuItems, GUI_BUTTON> iMenuButtons = new();
-
-    ushort[] gusMainMenuButtonWidths = new ushort[(int)MainMenuItems.NUM_MENU_ITEMS];
 
     string mainMenuBackGroundImageKey;
     string ja2LogoImageKey;
 
-    private MouseRegion gBackRegion = new(nameof(gBackRegion));
-    private MainMenuItems gbHandledMainMenu = MainMenuItems.Unknown;
     private bool fInitialRender = false;
     //bool gfDoHelpScreen = 0;
 
-    private bool gfMainMenuScreenEntry = false;
-    private bool gfMainMenuScreenExit = false;
     private IntroScreen introScreen;
-
-    ScreenName guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
 
     public MainMenuScreen(
         MouseSubSystem mouseSubSystem,
         IScreenManager screenManager,
-        IVideoManager videoManager,
         GameInit gameInit,
         IClockManager clockManager,
         IMusicManager musicManager,
@@ -80,14 +51,13 @@ public class MainMenuScreen : IScreen
         CursorSubSystem cursorSubSystem,
         FontSubSystem fontSubSystem,
         IInputManager inputManager,
-        RenderDirtySubSystem renderDirtySubSystem)
+        RenderDirty renderDirtySubSystem)
     {
         this.cursor = cursorSubSystem;
         this.clock = clockManager;
         this.input = inputManager;
         this.music = musicManager;
         this.mouse = mouseSubSystem;
-        VeldridVideoManager = videoManager;
         this.options = gameOptions;
         this.fonts = fontSubSystem;
         this.screens = screenManager;
@@ -113,7 +83,7 @@ public class MainMenuScreen : IScreen
         uint cnt;
         uint uiTime;
 
-        if (this.introScreen.guiSplashStartTime + 4000 > this.clock.GetJA2Clock())
+        if (Globals.guiSplashStartTime + 4000 > Globals.GetJA2Clock())
         {
             this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
             this.music.SetMusicMode(MusicMode.NONE);
@@ -122,27 +92,27 @@ public class MainMenuScreen : IScreen
             return ScreenName.MAINMENU_SCREEN;
         }
 
-        if (this.introScreen.guiSplashFrameFade != 0)
+        if (Globals.guiSplashFrameFade != 0)
         { //Fade the splash screen.
-            uiTime = this.clock.GetJA2Clock();
-            if (this.introScreen.guiSplashFrameFade > 2)
+            uiTime = Globals.GetJA2Clock();
+            if (Globals.guiSplashFrameFade > 2)
             {
                 VeldridVideoManager.ShadowVideoSurfaceRectUsingLowPercentTable(new Rectangle(0, 0, 640, 480));
             }
-            else if (this.introScreen.guiSplashFrameFade > 1)
+            else if (Globals.guiSplashFrameFade > 1)
             {
                 VeldridVideoManager.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
             }
             else
             {
-                uiTime = this.clock.GetJA2Clock();
+                uiTime = Globals.GetJA2Clock();
                 //while( GetJA2Clock() < uiTime + 375 );
                 this.music.SetMusicMode(MusicMode.MAIN_MENU);
             }
 
             //while( uiTime + 100 > GetJA2Clock() );
 
-            this.introScreen.guiSplashFrameFade--;
+            Globals.guiSplashFrameFade--;
 
             // VeldridVideoManager.InvalidateScreen();
             // VeldridVideoManager.EndFrameBufferRender();
@@ -154,12 +124,12 @@ public class MainMenuScreen : IScreen
 
         this.cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
-        if (this.gfMainMenuScreenEntry)
+        if (Globals.gfMainMenuScreenEntry)
         {
             await this.InitMainMenu();
-            this.gfMainMenuScreenEntry = false;
-            this.gfMainMenuScreenExit = false;
-            this.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+            Globals.gfMainMenuScreenEntry = false;
+            Globals.gfMainMenuScreenExit = false;
+            Globals.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
             this.music.SetMusicMode(MusicMode.MAIN_MENU);
         }
 
@@ -185,19 +155,19 @@ public class MainMenuScreen : IScreen
 
         this.HandleMainMenuScreen();
 
-        if (this.gfMainMenuScreenExit)
+        if (Globals.gfMainMenuScreenExit)
         {
             this.ExitMainMenu();
-            this.gfMainMenuScreenExit = false;
-            this.gfMainMenuScreenEntry = true;
+            Globals.gfMainMenuScreenExit = false;
+            Globals.gfMainMenuScreenEntry = true;
         }
 
-        if (this.guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
+        if (Globals.guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
         {
-            this.gfMainMenuScreenEntry = true;
+            Globals.gfMainMenuScreenEntry = true;
         }
 
-        return this.guiMainMenuExitScreen;
+        return Globals.guiMainMenuExitScreen;
     }
 
     private void ExitMainMenu()
@@ -214,13 +184,13 @@ public class MainMenuScreen : IScreen
 
     private void HandleMainMenuScreen()
     {
-        if (this.gbHandledMainMenu != MainMenuItems.Unknown)
+        if (Globals.gbHandledMainMenu != MainMenuItems.Unknown)
         {
             // Exit according to handled value!
-            switch (this.gbHandledMainMenu)
+            switch (Globals.gbHandledMainMenu)
             {
                 case MainMenuItems.QUIT:
-                    this.gfMainMenuScreenExit = true;
+                    Globals.gfMainMenuScreenExit = true;
 
                     Globals.gfProgramIsRunning = false;
                     break;
@@ -236,24 +206,24 @@ public class MainMenuScreen : IScreen
                 case MainMenuItems.LOAD_GAME:
                     // Select the game which is to be restored
                     // guiPreviousOptionScreen = guiCurrentScreen;
-                    this.guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
-                    this.gbHandledMainMenu = 0;
+                    Globals.guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
+                    Globals.gbHandledMainMenu = 0;
                     // gfSaveGame = false;
-                    this.gfMainMenuScreenExit = true;
+                    Globals.gfMainMenuScreenExit = true;
 
                     break;
 
                 case MainMenuItems.PREFERENCES:
                     //this.optionsScreen.guiPreviousOptionScreen = guiCurrentScreen;
-                    this.guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
-                    this.gbHandledMainMenu = 0;
-                    this.gfMainMenuScreenExit = true;
+                    Globals.guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
+                    Globals.gbHandledMainMenu = 0;
+                    Globals.gfMainMenuScreenExit = true;
                     break;
 
                 case MainMenuItems.CREDITS:
-                    this.guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
-                    this.gbHandledMainMenu = 0;
-                    this.gfMainMenuScreenExit = true;
+                    Globals.guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
+                    Globals.gbHandledMainMenu = 0;
+                    Globals.gfMainMenuScreenExit = true;
                     break;
             }
         }
@@ -275,12 +245,12 @@ public class MainMenuScreen : IScreen
 
     private void SetMainMenuExitScreen(ScreenName screen)
     {
-        this.guiMainMenuExitScreen = screen;
+        Globals.guiMainMenuExitScreen = screen;
 
         //Remove the background region
         this.CreateDestroyBackGroundMouseMask(false);
 
-        this.gfMainMenuScreenExit = true;
+        Globals.gfMainMenuScreenExit = true;
     }
 
     private void RestoreButtonBackGrounds()
@@ -292,10 +262,10 @@ public class MainMenuScreen : IScreen
 
         for (cnt = 0; cnt < (byte)MainMenuItems.NUM_MENU_ITEMS; cnt++)
         {
-            this.renderDirty.RestoreExternBackgroundRect(
-                (ushort)(320 - this.gusMainMenuButtonWidths[cnt] / 2),
-                (short)(MAINMENU_Y + (cnt * MAINMENU_Y_SPACE) - 1),
-                (ushort)(this.gusMainMenuButtonWidths[cnt] + 1),
+            RenderDirty.RestoreExternBackgroundRect(
+                (ushort)(320 - Globals.gusMainMenuButtonWidths[cnt] / 2),
+                (short)(Globals.MAINMENU_Y + (cnt * Globals.MAINMENU_Y_SPACE) - 1),
+                (ushort)(Globals.gusMainMenuButtonWidths[cnt] + 1),
                 23);
         }
     }
@@ -362,11 +332,11 @@ public class MainMenuScreen : IScreen
         //	DisableButton( iMenuButtons[ CREDITS ] );
         //	DisableButton( iMenuButtons[ TITLE ] );
 
-        this.gbHandledMainMenu = 0;
+        Globals.gbHandledMainMenu = 0;
         this.fInitialRender = true;
 
         await this.screens.SetPendingNewScreen(ScreenName.MAINMENU_SCREEN);
-        this.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+        Globals.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
 
         this.options.InitGameOptions();
 
@@ -412,25 +382,25 @@ public class MainMenuScreen : IScreen
                 switch (cnt)
                 {
                     case (int)MainMenuItems.NEW_GAME:
-                        this.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], sSlot);
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], sSlot);
                         break;
                     case (int)MainMenuItems.LOAD_GAME:
-                        this.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 3);
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 3);
                         break;
                     case (int)MainMenuItems.PREFERENCES:
-                        this.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 7);
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 7);
                         break;
                     case (int)MainMenuItems.CREDITS:
-                        this.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 10);
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 10);
                         break;
                     case (int)MainMenuItems.QUIT:
-                        this.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 15);
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 15);
                         break;
                 }
 
                 this.iMenuButtons[menuItem] = ButtonSubSystem.QuickCreateButton(
                     this.iMenuImages[menuItem],
-                    new Point(320 - this.gusMainMenuButtonWidths[cnt] / 2, MAINMENU_Y + (cnt * MAINMENU_Y_SPACE)),
+                    new Point(320 - Globals.gusMainMenuButtonWidths[cnt] / 2, Globals.MAINMENU_Y + (cnt * Globals.MAINMENU_Y_SPACE)),
                     ButtonFlags.BUTTON_TOGGLE,
                     MSYS_PRIORITY.HIGHEST,
                     MouseSubSystem.DefaultMoveCallback,
@@ -481,14 +451,14 @@ public class MainMenuScreen : IScreen
         if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
         {
             // handle menu
-            this.gbHandledMainMenu = bID;
+            Globals.gbHandledMainMenu = bID;
             this.RenderMainMenu();
 
-            if (this.gbHandledMainMenu == MainMenuItems.NEW_GAME)
+            if (Globals.gbHandledMainMenu == MainMenuItems.NEW_GAME)
             {
                 this.SetMainMenuExitScreen(ScreenName.GAME_INIT_OPTIONS_SCREEN);
             }
-            else if (this.gbHandledMainMenu == MainMenuItems.LOAD_GAME)
+            else if (Globals.gbHandledMainMenu == MainMenuItems.LOAD_GAME)
             {
                 // if (gfKeyState[ALT])
                 // {
@@ -520,8 +490,8 @@ public class MainMenuScreen : IScreen
             }
 
             // Make a mouse region
-            this.mouse.MSYS_DefineRegion(
-                ref this.gBackRegion,
+            MouseSubSystem.MSYS_DefineRegion(
+                ref Globals.gBackRegion,
                 new(0, 0, 640, 480),
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.NORMAL,
@@ -537,12 +507,12 @@ public class MainMenuScreen : IScreen
                 return;
             }
 
-            this.mouse.MSYS_RemoveRegion(this.gBackRegion);
+            MouseSubSystem.MSYS_RemoveRegion(Globals.gBackRegion);
             fRegionCreated = false;
         }
     }
 
-    private void SelectMainMenuBackGroundRegionCallBack(ref MouseRegion region, MouseCallbackReasons iReason)
+    private void SelectMainMenuBackGroundRegionCallBack(ref MOUSE_REGION region, MouseCallbackReasons iReason)
     {
         if (iReason.HasFlag(MouseCallbackReasons.INIT))
         {
@@ -596,3 +566,16 @@ public class MainMenuScreen : IScreen
     {
     }
 }
+
+// MENU ITEMS
+public enum MainMenuItems
+{
+    //	TITLE,
+    NEW_GAME,
+    LOAD_GAME,
+    PREFERENCES,
+    CREDITS,
+    QUIT,
+    NUM_MENU_ITEMS,
+    Unknown = 99,
+};

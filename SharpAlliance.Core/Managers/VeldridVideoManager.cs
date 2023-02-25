@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ using Veldrid.ImageSharp;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
@@ -240,6 +242,82 @@ public class VeldridVideoManager : IVideoManager
         IsInitialized = await files.Initialize();
 
         return IsInitialized;
+    }
+
+    /**********************************************************************************************
+	Blt16BPPTo16BPP
+
+	Copies a rect of 16 bit data from a video buffer to a buffer position of the brush
+	in the data area, for later blitting. Used to copy background information for mercs
+	etc. to their unblit buffer, for later reblitting. Does NOT clip.
+
+**********************************************************************************************/
+    public static bool Blt16BPPTo16BPP(int pDest, int uiDestPitch, int pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight)
+    {
+        int pSrcPtr, pDestPtr;
+        int uiLineSkipDest, uiLineSkipSrc;
+
+        pSrcPtr = pSrc + (iSrcYPos * uiSrcPitch) + (iSrcXPos * 2);
+        pDestPtr = pDest + (iDestYPos * uiDestPitch) + (iDestXPos * 2);
+        uiLineSkipDest = uiDestPitch - (uiWidth * 2);
+        uiLineSkipSrc = uiSrcPitch - (uiWidth * 2);
+
+//        __asm {
+//            mov esi, pSrcPtr
+//        
+//    mov edi, pDestPtr
+//        
+//    mov ebx, uiHeight
+//        
+//    cld
+//
+//    mov     ecx, uiWidth
+//    test    ecx, 1
+//        
+//    jz BlitDwords
+//        
+//BlitNewLine:
+//
+//            mov ecx, uiWidth
+//        
+//    shr ecx, 1
+//        
+//    movsw
+//
+//    //BlitNL2:
+//
+//    rep     movsd
+//
+//    add     edi, uiLineSkipDest
+//    add     esi, uiLineSkipSrc
+//    dec     ebx
+//    jnz     BlitNewLine
+//
+//    jmp     BlitDone
+//
+//
+//BlitDwords:
+//	mov ecx, uiWidth
+//        
+//    shr ecx, 1
+//        
+//    rep movsd
+//        
+//
+//    add edi, uiLineSkipDest
+//        
+//    add esi, uiLineSkipSrc
+//        
+//    dec ebx
+//        
+//    jnz BlitDwords
+//        
+//BlitDone:
+//
+//
+//    }
+
+        return true;
     }
 
     public static void DrawFrame()
@@ -1460,6 +1538,26 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
+    public static bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex)
+    {
+        hVObject = null;
+        VOBJECT_NODE? curr;
+
+        curr = Globals.gpVObjectHead;
+        while (curr is not null)
+        {
+            if (curr.uiIndex == uiIndex)
+            {
+                hVObject = curr.hVObject;
+                return true;
+            }
+        
+            curr = curr.next;
+        }
+
+        return false;
+    }
+
     public static HVOBJECT GetVideoObject(string key)
     {
         if (!loadedTextures.TryGetValue(key, out var hPixHandle))
@@ -1557,7 +1655,7 @@ public class VeldridVideoManager : IVideoManager
         return true;
     }
 
-    public static void GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
+    public static bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
     {
         throw new NotImplementedException();
     }
@@ -1675,14 +1773,36 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public static void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
+    public static bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
     {
         hSrcVSurface = new();
+
+        return true;
     }
 
     public static void ClearElements()
     {
         FontSubSystem.TextRenderer.ClearText();
+    }
+
+    internal static int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void UnLockVideoSurface(Surfaces buffer)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
+    {
+        throw new NotImplementedException();
     }
 }
 

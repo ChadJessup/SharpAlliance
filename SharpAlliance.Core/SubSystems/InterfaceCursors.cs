@@ -509,13 +509,13 @@ public class InterfaceCursors
     {
         gfLooseCursorOn = true;
         guiLooseCursorID = uiCursorID;
-        guiLooseCursorTimeOfLastUpdate = this.clock.GetJA2Clock();
+        guiLooseCursorTimeOfLastUpdate = Globals.GetJA2Clock();
         gsLooseCursorGridNo = sGridNo;
     }
 
     void HandleLooseCursorDraw()
     {
-        if ((this.clock.GetJA2Clock() - guiLooseCursorTimeOfLastUpdate) > LOOSE_CURSOR_DELAY)
+        if ((Globals.GetJA2Clock() - guiLooseCursorTimeOfLastUpdate) > LOOSE_CURSOR_DELAY)
         {
             gfLooseCursorOn = false;
         }

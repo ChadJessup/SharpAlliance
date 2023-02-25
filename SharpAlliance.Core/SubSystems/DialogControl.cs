@@ -46,6 +46,22 @@ public class DialogControl
         158,
     };
 
+    public static void ShutDownLastQuoteTacticalTextBox()
+    {
+        if (Globals.fDialogueBoxDueToLastMessage)
+        {
+            RenderDirty.RemoveVideoOverlay(Globals.giTextBoxOverlay);
+            Globals.giTextBoxOverlay = -1;
+
+            if (Globals.fTextBoxMouseRegionCreated)
+            {
+                MSYS_RemoveRegion(Globals.gTextBoxMouseRegion);
+                Globals.fTextBoxMouseRegionCreated = false;
+            }
+
+            Globals.fDialogueBoxDueToLastMessage = false;
+        }
+    }
 
     // Used to see if the dialog text file exists
     public bool DialogueDataFileExistsForProfile(NPCID ubCharacterNum, int usQuoteNum, bool fWavFile, out string ppStr)

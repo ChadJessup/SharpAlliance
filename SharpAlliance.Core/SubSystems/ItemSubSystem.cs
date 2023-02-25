@@ -85,10 +85,10 @@ public class ItemSubSystem
             bGrenade = FindAttachmentByClass(pObj, IC.GRENADE);
             if (bGrenade != Globals.ITEM_NOT_FOUND)
             {
-                pNewObj.usAttachItem[0] = pObj.usAttachItem[bGrenade];
-                pNewObj.bAttachStatus[0] = pObj.bAttachStatus[bGrenade];
-                pObj.usAttachItem[bGrenade] = Globals.NOTHING;
-                pObj.bAttachStatus[bGrenade] = 0;
+                pNewObj.usAttachItem[0] = pObj.usAttachItem[(int)bGrenade];
+                pNewObj.bAttachStatus[0] = pObj.bAttachStatus[(int)bGrenade];
+                pObj.usAttachItem[(int)bGrenade] = Globals.NOTHING;
+                pObj.bAttachStatus[(int)bGrenade] = 0;
                 pNewObj.ubWeight = CalculateObjectWeight(pNewObj);
             }
         }

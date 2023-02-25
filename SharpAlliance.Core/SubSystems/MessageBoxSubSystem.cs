@@ -683,7 +683,7 @@ namespace SharpAlliance.Core.SubSystems
             return ButtonSubSystem.GetWidthOfButtonPic(iButtonImage, iButtonImage.OnNormal);
         }
 
-        void MsgBoxClickCallback(ref MouseRegion pRegion, MouseCallbackReasons iReason)
+        void MsgBoxClickCallback(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
         {
             // if (iReason & MouseCallbackReasons.RBUTTON_UP)
             // {
@@ -1003,7 +1003,7 @@ namespace SharpAlliance.Core.SubSystems
         public int sX;
         public int sY;
         public int uiSaveBuffer;
-        public MouseRegion BackRegion { get; } = new(nameof(MessageBox));
+        public MOUSE_REGION BackRegion { get; } = new(nameof(MessageBox));
         public int usWidth;
         public int usHeight;
         public ButtonPic iButtonImages;

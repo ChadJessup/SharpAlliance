@@ -90,11 +90,11 @@ public class TileCache
 
 public struct TILE_CACHE_ELEMENT
 {
-    string zName;           // Name of tile ( filename and directory here )
-    string zRootName;    // Root name
-    TILE_IMAGERY? pImagery;             // Tile imagery
-    int sHits;
-    int ubNumFrames;
+    public string zName;           // Name of tile ( filename and directory here )
+    public string zRootName;    // Root name
+    public TILE_IMAGERY? pImagery;             // Tile imagery
+    public int sHits;
+    public int ubNumFrames;
     public int sStructRefID;
 }
 

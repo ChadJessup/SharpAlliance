@@ -21,7 +21,7 @@ namespace SharpAlliance.Core.Screens
         private readonly IScreenManager screens;
         private readonly MouseSubSystem mouse;
         private readonly CursorSubSystem cursor;
-        private readonly RenderDirtySubSystem renderDirty;
+        private readonly RenderDirty renderDirty;
         private readonly IMusicManager music;
         private readonly ILibraryManager library;
         private readonly CinematicsSubSystem cinematics;
@@ -50,7 +50,7 @@ namespace SharpAlliance.Core.Screens
         public IntroScreen(GameContext context,
             MouseSubSystem mouseSubSystem,
             CursorSubSystem cursorSubSystem,
-            RenderDirtySubSystem renderDirtySubSystem,
+            RenderDirty renderDirtySubSystem,
             IMusicManager musicManager,
             ILibraryManager libraryManager,
             CinematicsSubSystem cinematics,

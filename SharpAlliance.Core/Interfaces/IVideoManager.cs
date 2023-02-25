@@ -27,7 +27,7 @@ namespace SharpAlliance.Core.Interfaces
         static abstract HVOBJECT GetVideoObject(string key);
         static abstract void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
         static abstract bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
-        static abstract void GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);
+        static abstract bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);
         static abstract int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap);
         static abstract void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette);
         static abstract ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono);

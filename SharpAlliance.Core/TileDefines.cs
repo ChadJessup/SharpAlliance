@@ -3243,26 +3243,26 @@ public enum WallOrientation
 };
 
 // Tile data element
-public struct TILE_ELEMENT
+public class TILE_ELEMENT
 {
     public TileTypeDefines fType;
-    HVOBJECT hTileSurface;
+    public HVOBJECT hTileSurface;
     public DB_STRUCTURE_REF? pDBStructureRef;
     public uint uiFlags;
-    RelTileLoc? pTileLocData;
-    ushort usRegionIndex;
-    short sBuddyNum;
-    byte ubTerrainID;
-    byte ubNumberOfTiles;
+    public RelTileLoc? pTileLocData;
+    public ushort usRegionIndex;
+    public short sBuddyNum;
+    public byte ubTerrainID;
+    public byte ubNumberOfTiles;
 
-    byte bZOffsetX;
-    byte bZOffsetY;
+    public byte bZOffsetX;
+    public byte bZOffsetY;
 
     // This union contains different data based on tile type
     // Land and overlay type
-    short sOffsetHeight;
-    ushort usWallOrientation;
-    byte ubFullTile;
+    public short sOffsetHeight;
+    public ushort usWallOrientation;
+    public byte ubFullTile;
 
     // For animated tiles
     public TILE_ANIMATION_DATA? pAnimData;
@@ -3272,9 +3272,9 @@ public struct TILE_ELEMENT
 }
 
 // These structures are placed in a list and used for all tile imagery
-public struct TILE_IMAGERY
+public class TILE_IMAGERY
 {
-    HVOBJECT vo;
+    public HVOBJECT vo;
     int fType;
     AuxObjectData? pAuxData;
     RelTileLoc? pTileLocData;

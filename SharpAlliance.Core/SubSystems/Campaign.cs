@@ -32,7 +32,7 @@ public class Campaign
 
         if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
         {
-            ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: StatChange: %s improving stats while POW! ubStat %d", pSoldier.name, ubStat);
+            Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: StatChange: %s improving stats while POW! ubStat %d", pSoldier.name, ubStat);
             return;
         }
 
@@ -175,7 +175,7 @@ public class Campaign
 
             default:
                 // BETA message
-                ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: ProcessStatChange: Rcvd unknown ubStat %d", ubStat);
+                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: ProcessStatChange: Rcvd unknown ubStat %d", ubStat);
                 return;
         }
 
@@ -342,7 +342,7 @@ public class Campaign
 //        if (sSubPointChange != 0)
 //        {
 //            // debug message
-//            ScreenMsg(MSG_FONT_RED, MSG_DEBUG, "%s's %s changed by %d", pProfile.zNickname, wDebugStatStrings[ubStat], sSubPointChange);
+//            Messages.ScreenMsg(MSG_FONT_RED, MSG_DEBUG, "%s's %s changed by %d", pProfile.zNickname, wDebugStatStrings[ubStat], sSubPointChange);
 //        }
 //#endif
 
@@ -378,7 +378,7 @@ public class Campaign
         int? pbStatPtr = null;
         int? pbSoldierStatPtr = null;
         int? pbStatDeltaPtr = null;
-        int? puiStatTimerPtr = null;
+        uint? puiStatTimerPtr = null;
         bool fChangeTypeIncrease;
         bool fChangeSalary;
         int uiLevelCnt;
@@ -584,14 +584,14 @@ public class Campaign
 
                     // tell player about it
                     BuildStatChangeString(wTempString, pSoldier.name, fChangeTypeIncrease, sPtsChanged, ubStat);
-                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, wTempString);
+                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, wTempString);
                 }
 
                 // update mapscreen soldier info panel
                 fCharacterInfoPanelDirty = true;
 
                 // remember what time it changed at, it's displayed in a different color for a while afterwards
-                puiStatTimerPtr = GetJA2Clock();
+                puiStatTimerPtr = Globals.GetJA2Clock();
 
                 if (fChangeTypeIncrease)
                 {
@@ -1084,7 +1084,7 @@ public class Campaign
 
             default:
                 // BETA message
-                ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "SubpointsPerPoint: ERROR - Unknown ubStat %d", ubStat);
+                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "SubpointsPerPoint: ERROR - Unknown ubStat %d", ubStat);
                 return (100);
         }
 
@@ -1356,7 +1356,7 @@ public class Campaign
             Globals.gStrategicStatus.ubHighestProgress = ubCurrentProgress;
 
             // debug message
-            ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "New player progress record: %d%%", Globals.gStrategicStatus.ubHighestProgress);
+            Messages.ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "New player progress record: %d%%", Globals.gStrategicStatus.ubHighestProgress);
         }
     }
 

@@ -207,7 +207,7 @@ public class HandleUI
 
         if (Globals.gfUIInterfaceSetBusy)
         {
-            if ((this.clock.GetJA2Clock() - Globals.guiUIInterfaceBusyTime) > 25000)
+            if ((Globals.GetJA2Clock() - Globals.guiUIInterfaceBusyTime) > 25000)
             {
                 Globals.gfUIInterfaceSetBusy = false;
 
@@ -223,10 +223,10 @@ public class HandleUI
             }
         }
 
-        if ((this.clock.GetJA2Clock() - Globals.guiUIInterfaceSwapCursorsTime) > 1000)
+        if ((Globals.GetJA2Clock() - Globals.guiUIInterfaceSwapCursorsTime) > 1000)
         {
             Globals.gfOKForExchangeCursor = !Globals.gfOKForExchangeCursor;
-            Globals.guiUIInterfaceSwapCursorsTime = this.clock.GetJA2Clock();
+            Globals.guiUIInterfaceSwapCursorsTime = Globals.GetJA2Clock();
         }
 
         // OK, do a check for on an int tile...
@@ -456,7 +456,7 @@ public class HandleUI
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
 
-                if (StrategicMap.OKForSectorExit(StrategicMove.EAST, 0, out uiTraverseTimeInMinutes))
+                if (StrategicMap.OKForSectorExit(StrategicMove.EAST, 0, out uiTraverseTimeInMinutes) > 0)
                 {
                     if (Globals.gfUIConfirmExitArrows)
                     {
@@ -538,7 +538,7 @@ public class HandleUI
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
 
-                if (StrategicMap.OKForSectorExit(StrategicMove.SOUTH, 0, out uiTraverseTimeInMinutes))
+                if (StrategicMap.OKForSectorExit(StrategicMove.SOUTH, 0, out uiTraverseTimeInMinutes) > 0)
                 {
                     if (Globals.gfUIConfirmExitArrows)
                     {
@@ -559,9 +559,9 @@ public class HandleUI
                     Globals.gfUIShowExitSouth = false;
 
                     // Define region for viewport
-                    this.inputs.Mouse.MSYS_RemoveRegion(Globals.gViewportRegion);
+                    MouseSubSystem.MSYS_RemoveRegion(Globals.gViewportRegion);
 
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    MouseSubSystem.MSYS_DefineRegion(
                         Globals.gViewportRegion,
                         new(0, 0, Globals.gsVIEWPORT_END_X, Globals.gsVIEWPORT_WINDOW_END_Y),
                         MSYS_PRIORITY.NORMAL,
@@ -584,8 +584,8 @@ public class HandleUI
                     {
                         // Adjust viewport to edge of screen!
                         // Define region for viewport
-                        this.inputs.Mouse.MSYS_RemoveRegion(Globals.gViewportRegion);
-                        this.inputs.Mouse.MSYS_DefineRegion(Globals.gViewportRegion, new(0, 0, Globals.gsVIEWPORT_END_X, 480), MSYS_PRIORITY.NORMAL,
+                        MouseSubSystem.MSYS_RemoveRegion(Globals.gViewportRegion);
+                        MouseSubSystem.MSYS_DefineRegion(Globals.gViewportRegion, new(0, 0, Globals.gsVIEWPORT_END_X, 480), MSYS_PRIORITY.NORMAL,
                                              CURSOR.VIDEO_NO_CURSOR, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
 
                         Globals.gsGlobalCursorYOffset = (480 - Globals.gsVIEWPORT_WINDOW_END_Y);
@@ -601,9 +601,9 @@ public class HandleUI
                 if (Globals.gfViewPortAdjustedForSouth)
                 {
                     // Define region for viewport
-                    this.inputs.Mouse.MSYS_RemoveRegion(Globals.gViewportRegion);
+                    MouseSubSystem.MSYS_RemoveRegion(Globals.gViewportRegion);
 
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    MouseSubSystem.MSYS_DefineRegion(
                         Globals.gViewportRegion,
                         new(0, 0, Globals.gsVIEWPORT_END_X, Globals.gsVIEWPORT_WINDOW_END_Y),
                         MSYS_PRIORITY.NORMAL,
@@ -676,7 +676,7 @@ public class HandleUI
 
             fUpdateNewCursor = false;
 
-            if ((this.clock.GetJA2Clock() - Globals.guiTimerLastUpdate) > Globals.guiTimerCursorDelay)
+            if ((Globals.GetJA2Clock() - Globals.guiTimerLastUpdate) > Globals.guiTimerCursorDelay)
             {
                 Globals.gfDisplayTimerCursor = false;
 
@@ -788,11 +788,11 @@ public class HandleUI
 
             if (bReturnCode == Globals.MERC_HIRE_FAILED)
             {
-                ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Merc hire failed:  Either already hired or dislikes you.");
+                Messages.ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Merc hire failed:  Either already hired or dislikes you.");
             }
             else if (bReturnCode == Globals.MERC_HIRE_OVER_20_MERCS_HIRED)
             {
-                ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Can't hire more than 20 mercs.");
+                Messages.ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Can't hire more than 20 mercs.");
             }
             else
             {
@@ -912,7 +912,7 @@ public class HandleUI
         // ATE: If we have an item pointer end it!
         CancelItemPointer();
 
-        //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[ ENDING_TURN ] );
+        //Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, Globals.TacticalStr[ ENDING_TURN ] );
 
         if (CheckForEndOfCombatMode(false))
         {
@@ -1035,7 +1035,7 @@ public class HandleUI
             // If different, display message
             if (Squads.CurrentSquad() != iCurrentSquad)
             {
-                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.SQUAD_ACTIVE], (Squads.CurrentSquad() + 1));
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.SQUAD_ACTIVE], (Squads.CurrentSquad() + 1));
             }
         }
 
@@ -1093,7 +1093,7 @@ public class HandleUI
                     if (Globals.gsInterfaceLevel == bLevelForItemsOver && usMapPos == sGridNoForItemsOver)
                     {
                         // Check timer...
-                        if ((this.clock.GetJA2Clock() - uiItemsOverTimer) > 1500)
+                        if ((Globals.GetJA2Clock() - uiItemsOverTimer) > 1500)
                         {
                             // Change to hand curso mode
                             Globals.guiPendingOverrideEvent = UI_EVENT_DEFINES.M_CHANGE_TO_HANDMODE;
@@ -1104,7 +1104,7 @@ public class HandleUI
                     }
                     else
                     {
-                        uiItemsOverTimer = this.clock.GetJA2Clock();
+                        uiItemsOverTimer = Globals.GetJA2Clock();
                         bLevelForItemsOver = Globals.gsInterfaceLevel;
                         sGridNoForItemsOver = usMapPos;
                     }
@@ -1113,7 +1113,7 @@ public class HandleUI
                 {
                     fOverItems = true;
 
-                    uiItemsOverTimer = this.clock.GetJA2Clock();
+                    uiItemsOverTimer = Globals.GetJA2Clock();
                     bLevelForItemsOver = Globals.gsInterfaceLevel;
                     sGridNoForItemsOver = usMapPos;
                 }
@@ -1386,7 +1386,7 @@ public class HandleUI
                             || Globals.gubOutOfRangeMerc != Globals.gusSelectedSoldier)
                         {
                             // Display
-                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[(int)STR.OUT_OF_RANGE_STRING]);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[(int)STR.OUT_OF_RANGE_STRING]);
 
                             //PlayJA2Sample( TARGET_OUT_OF_RANGE, RATE_11025, MIDVOLUME, 1, MIDDLEPAN );			              
 
@@ -1615,7 +1615,7 @@ public class HandleUI
                         }
                         else
                         {
-                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
                         }
 
                         pSoldier.fUIMovementFast = fOldFastMove;
@@ -1670,7 +1670,7 @@ public class HandleUI
                         }
                         else
                         {
-                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                             return (ScreenName.GAME_SCREEN);
                         }
                     }
@@ -2207,7 +2207,7 @@ public class HandleUI
 
             if (iHandleReturn == ITEM_HANDLE.NOROOM)
             {
-                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG.CANT_FIRE_HERE]);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG.CANT_FIRE_HERE]);
                 return;
             }
         }
@@ -3051,27 +3051,27 @@ public class HandleUI
         {
             if (pSoldier.bCollapsed && pSoldier.bBreath < Globals.OKBREATH)
             {
-                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[4], pSoldier.name);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[4], pSoldier.name);
             }
             else
             {
                 if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                 {
-                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.VEHICLES_NO_STANCE_CHANGE_STR]);
+                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.VEHICLES_NO_STANCE_CHANGE_STR]);
                 }
                 else if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                 {
-                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.ROBOT_NO_STANCE_CHANGE_STR]);
+                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.ROBOT_NO_STANCE_CHANGE_STR]);
                 }
                 else
                 {
                     if (pSoldier.bCollapsed)
                     {
-                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG_CANT_CHANGE_STANCE], pSoldier.name);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG_CANT_CHANGE_STANCE], pSoldier.name);
                     }
                     else
                     {
-                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.CANNOT_STANCE_CHANGE_STR], pSoldier.name);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[(int)STR.CANNOT_STANCE_CHANGE_STR], pSoldier.name);
                     }
                 }
             }
@@ -3946,25 +3946,25 @@ public class HandleUI
             // If we are a vehicle...
             if ((pTSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.ROBOT)))
             {
-                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_DO_FIRST_AID_STR], pTSoldier.name);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_DO_FIRST_AID_STR], pTSoldier.name);
                 return (false);
             }
 
             if (pSoldier.bMedical == 0)
             {
-                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG_MERC_HAS_NO_MEDSKILL], pSoldier.name);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, pMessageStrings[MSG_MERC_HAS_NO_MEDSKILL], pSoldier.name);
                 return (false);
             }
 
             if (pTSoldier.bBleeding == 0 && pTSoldier.bLife != pTSoldier.bLifeMax)
             {
-                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.gzLateLocalizedString[19], pTSoldier.name);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.gzLateLocalizedString[19], pTSoldier.name);
                 return (false);
             }
 
             if (pTSoldier.bBleeding == 0 && pTSoldier.bLife >= Globals.OKLIFE)
             {
-                ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_NO_NEED_FIRST_AID_STR], pTSoldier.name);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[CANNOT_NO_NEED_FIRST_AID_STR], pTSoldier.name);
                 return (false);
             }
 
@@ -3982,7 +3982,7 @@ public class HandleUI
 
         if (sAPCost == 0)
         {
-            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
         }
         else
         {
@@ -4497,10 +4497,10 @@ public class HandleUI
             RemoveTacticalCursor();
             //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
-            this.inputs.Mouse.MSYS_DefineRegion(Globals.gDisableRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
+            MouseSubSystem.MSYS_DefineRegion(Globals.gDisableRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
                                  CURSOR.WAIT, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
             // Add region
-            this.inputs.Mouse.MSYS_AddRegion(ref Globals.gDisableRegion);
+            MouseSubSystem.MSYS_AddRegion(ref Globals.gDisableRegion);
 
             //Globals.guiPendingOverrideEvent = LOCKUI_MODE;
 
@@ -4519,7 +4519,7 @@ public class HandleUI
             Globals.gfDisableRegionActive = false;
 
             // Add region
-            this.inputs.Mouse.MSYS_RemoveRegion(Globals.gDisableRegion);
+            MouseSubSystem.MSYS_RemoveRegion(Globals.gDisableRegion);
             RefreshMouseRegions();
 
             //SetCurrentCursorFromDatabase( guiCurrentUICursor );
@@ -4554,7 +4554,7 @@ public class HandleUI
             Globals.gfDisableRegionActive = false;
 
             // Remove region
-            this.inputs.Mouse.MSYS_RemoveRegion(Globals.gDisableRegion);
+            MouseSubSystem.MSYS_RemoveRegion(Globals.gDisableRegion);
 
             UnLockPauseState();
             UnPauseGame();
@@ -4568,7 +4568,7 @@ public class HandleUI
             Globals.gfUIInterfaceSetBusy = false;
 
             // Remove region
-            this.inputs.Mouse.MSYS_RemoveRegion(Globals.gUserTurnRegion);
+            MouseSubSystem.MSYS_RemoveRegion(Globals.gUserTurnRegion);
 
             UnLockPauseState();
             UnPauseGame();
@@ -4785,7 +4785,7 @@ public class HandleUI
                     }
                     else
                     {
-                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, Globals.TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
                     }
 
                     fAtLeastOneMultiSelect = true;
@@ -5009,15 +5009,15 @@ public class HandleUI
             Globals.gfUserTurnRegionActive = true;
 
             Globals.gfUIInterfaceSetBusy = true;
-            Globals.guiUIInterfaceBusyTime = this.clock.GetJA2Clock();
+            Globals.guiUIInterfaceBusyTime = Globals.GetJA2Clock();
 
             //guiNewUICursor = NO_UICURSOR;
             //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
-            this.inputs.Mouse.MSYS_DefineRegion(Globals.gUserTurnRegion, new Rectangle(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
+            MouseSubSystem.MSYS_DefineRegion(Globals.gUserTurnRegion, new Rectangle(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
                                  CURSOR.WAIT, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
             // Add region
-            this.inputs.Mouse.MSYS_AddRegion(ref Globals.gUserTurnRegion);
+            MouseSubSystem.MSYS_AddRegion(ref Globals.gUserTurnRegion);
 
             //Globals.guiPendingOverrideEvent = LOCKOURTURN_UI_MODE;
 
@@ -5040,7 +5040,7 @@ public class HandleUI
             Globals.gfUIInterfaceSetBusy = false;
 
             // Add region
-            this.inputs.Mouse.MSYS_RemoveRegion(Globals.gUserTurnRegion);
+            MouseSubSystem.MSYS_RemoveRegion(Globals.gUserTurnRegion);
             RefreshMouseRegions();
             //SetCurrentCursorFromDatabase( guiCurrentUICursor );
 
@@ -5218,11 +5218,11 @@ public class HandleUI
                     {
                         if (pTSoldier.ubProfile != NPCID.NO_PROFILE)
                         {
-                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_LOS_TO_TALK_TARGET], pSoldier.name, pTSoldier.name);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_LOS_TO_TALK_TARGET], pSoldier.name, pTSoldier.name);
                         }
                         else
                         {
-                            ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[45], pSoldier.name);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[45], pSoldier.name);
                         }
                         return (false);
                     }
@@ -5230,7 +5230,7 @@ public class HandleUI
 
                 if (pTSoldier.bCollapsed)
                 {
-                    ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[21], pTSoldier.name);
+                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[21], pTSoldier.name);
                     return (false);
                 }
 
@@ -5245,7 +5245,7 @@ public class HandleUI
                 {
                     if (pTSoldier.ubProfile == NPCID.DIMITRI)
                     {
-                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[32], pTSoldier.name);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, gzLateLocalizedString[32], pTSoldier.name);
                         return (false);
                     }
 
@@ -5327,13 +5327,13 @@ public class HandleUI
 
                     if (sActionGridNo == -1)
                     {
-                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                         return (false);
                     }
 
                     if (this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, false, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints) == 0)
                     {
-                        ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                         return (false);
                     }
 
@@ -5418,7 +5418,7 @@ public class HandleUI
                     HandleTacticalUI();
 
                     // Set grace period...
-                    Globals.gTacticalStatus.uiTactialTurnLimitClock = this.clock.GetJA2Clock();
+                    Globals.gTacticalStatus.uiTactialTurnLimitClock = Globals.GetJA2Clock();
                 }
             }
             // player getting control back so reset all muzzle flashes
@@ -5429,7 +5429,7 @@ public class HandleUI
     {
         Globals.gfDisplayTimerCursor = true;
         Globals.guiTimerCursorID = uiCursorID;
-        Globals.guiTimerLastUpdate = this.clock.GetJA2Clock();
+        Globals.guiTimerLastUpdate = Globals.GetJA2Clock();
         Globals.guiTimerCursorDelay = uiDelay;
     }
 
@@ -5891,7 +5891,7 @@ public class HandleUI
         {
             // Update timer....
             // ATE: Adjust clock for automatic swapping so that the 'feel' is there....
-            Globals.guiUIInterfaceSwapCursorsTime = this.clock.GetJA2Clock();
+            Globals.guiUIInterfaceSwapCursorsTime = Globals.GetJA2Clock();
             // Default it!
             Globals.gfOKForExchangeCursor = true;
         }

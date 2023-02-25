@@ -28,7 +28,7 @@ namespace SharpAlliance.Core.SubSystems
 
     public class FontSubSystem : ISharpAllianceManager
     {
-        private FontManager FontManager { get; } = new FontManager();
+        private static FontManager FontManager { get; } = new FontManager();
 
         private const int PALETTE_SIZE = 768;
         private const int STRING_DELIMITER = 0;
@@ -43,17 +43,17 @@ namespace SharpAlliance.Core.SubSystems
         //private IVideoManager video;
         private FontStyle gpLargeFontType1;
         private HVOBJECT gvoLargeFontType1;
-        private FontStyle FontDefault;
+        private static FontStyle FontDefault;
         //private int FontDestBuffer = BACKBUFFER;
-        private int FontDestPitch = 640 * 2;
-        private int FontDestBPP = 16;
-        private FontColor FontForeground16 = 0;
-        private FontColor FontBackground16 = 0;
-        private FontShadow FontShadow16 = FontShadow.DEFAULT_SHADOW;
-        private FontColor FontForeground8 = 0;
-        private FontColor FontBackground8 = 0;
+        private static int FontDestPitch = 640 * 2;
+        private static int FontDestBPP = 16;
+        private static FontColor FontForeground16 = 0;
+        private static FontColor FontBackground16 = 0;
+        private static FontShadow FontShadow16 = FontShadow.DEFAULT_SHADOW;
+        private static FontColor FontForeground8 = 0;
+        private static FontColor FontBackground8 = 0;
 
-        private HVOBJECT[] FontObjs = new HVOBJECT[MAX_FONTS];
+        private static HVOBJECT[] FontObjs = new HVOBJECT[MAX_FONTS];
         private FontStyle gpSmallFontType1;
         private HVOBJECT gvoSmallFontType1;
         private FontStyle gpTinyFontType1;
@@ -109,16 +109,16 @@ namespace SharpAlliance.Core.SubSystems
             this.context = gameContext;
         }
 
-        public void SetFont(FontStyle fontStyle)
+        public static void SetFont(FontStyle fontStyle)
         {
-            this.FontDefault = fontStyle;
+            FontDefault = fontStyle;
         }
 
-        public void SetFontBackground(FontColor fontColor)
+        public static void SetFontBackground(FontColor fontColor)
         {
         }
 
-        public void SetFontForeground(FontColor ubForeground)
+        public static void SetFontForeground(FontColor ubForeground)
         {
             int uiRed, uiGreen, uiBlue;
 
@@ -144,12 +144,12 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        public int GetFontHeight(FontStyle usFont)
+        public static int GetFontHeight(FontStyle usFont)
         {
-            return this.GetHeight(this.FontObjs[(int)usFont], 0);
+            return GetHeight(FontObjs[(int)usFont], 0);
         }
 
-        private int GetHeight(HVOBJECT hSrcVObject, int ssIndex)
+        private static int GetHeight(HVOBJECT hSrcVObject, int ssIndex)
         {
             ETRLEObject pTrav;
 
@@ -158,11 +158,11 @@ namespace SharpAlliance.Core.SubSystems
             return pTrav.usHeight + pTrav.sOffsetY;
         }
 
-        public void SetFontDestBuffer(Surfaces buttonDestBuffer, int y1, int y2, int width, int height, bool v)
+        public static void SetFontDestBuffer(Surfaces buttonDestBuffer, int y1, int y2, int width, int height, bool v)
         {
         }
 
-        public int StringPixLength(string stringText, FontStyle UseFont)
+        public static int StringPixLength(string stringText, FontStyle UseFont)
         {
             if (string.IsNullOrWhiteSpace(stringText))
             {
@@ -176,8 +176,8 @@ namespace SharpAlliance.Core.SubSystems
             var idx = 0;
             while (idx < curletter.Length)
             {
-                transletter = this.GetIndex(curletter[idx++]);
-                Cur += this.GetWidth(this.FontObjs[(int)UseFont], transletter);
+                transletter = GetIndex(curletter[idx++]);
+                Cur += GetWidth(FontObjs[(int)UseFont], transletter);
             }
 
             return Cur;
@@ -191,14 +191,14 @@ namespace SharpAlliance.Core.SubSystems
         //	CreateEnglishTransTable()
         //
         //*****************************************************************************
-        private char GetIndex(char siChar)
+        private static char GetIndex(char siChar)
         {
             char ssCount = (char)0;
-            int usNumberOfSymbols = this.FontManager.FontTranslationTable.usNumberOfSymbols;
+            int usNumberOfSymbols = FontManager.FontTranslationTable.usNumberOfSymbols;
 
             // search the Translation Table and return the index for the font
             int idx = 0;
-            int pTrav = this.FontManager.FontTranslationTable.DynamicArrayOf16BitValues[idx];
+            int pTrav = FontManager.FontTranslationTable.DynamicArrayOf16BitValues[idx];
 
             while (ssCount < usNumberOfSymbols)
             {
@@ -207,7 +207,7 @@ namespace SharpAlliance.Core.SubSystems
                     return ssCount;
                 }
                 ssCount++;
-                pTrav = this.FontManager.FontTranslationTable.DynamicArrayOf16BitValues[++idx];
+                pTrav = FontManager.FontTranslationTable.DynamicArrayOf16BitValues[++idx];
             }
 
             // If here, present warning and give the first index
@@ -223,7 +223,7 @@ namespace SharpAlliance.Core.SubSystems
         //	Returns the width of a given character in the font.
         //
         //*****************************************************************************
-        private int GetWidth(HVOBJECT hSrcVObject, char ssIndex)
+        private static int GetWidth(HVOBJECT hSrcVObject, char ssIndex)
         {
             ETRLEObject pTrav;
 
@@ -240,7 +240,7 @@ namespace SharpAlliance.Core.SubSystems
             return pTrav.usWidth + pTrav.sOffsetX;
         }
 
-        public void SetFontShadow(FontShadow sShadowColor)
+        public static void SetFontShadow(FontShadow sShadowColor)
         {
         }
 
@@ -481,7 +481,7 @@ namespace SharpAlliance.Core.SubSystems
             int uiRight, uiBottom;
             int uiPixelDepth = 16;
 
-            this.FontDefault = FontStyle.BLOCKFONT;
+            FontDefault = FontStyle.BLOCKFONT;
             //FontDestBuffer = Font.BACKBUFFER;
             //FontDestPitch = 0;
 
@@ -495,8 +495,8 @@ namespace SharpAlliance.Core.SubSystems
             // FontDestBPP = uiPixelDepth;
 
             this.FontDestWrap = false;
-            this.FontManager.FontTranslationTable = translationTable;
-            this.FontManager.usDefaultPixelDepth = uiPixelDepth;
+            FontManager.FontTranslationTable = translationTable;
+            FontManager.usDefaultPixelDepth = uiPixelDepth;
         }
 
         private bool CreateFontPaletteTables(HVOBJECT pObj)
@@ -921,7 +921,7 @@ namespace SharpAlliance.Core.SubSystems
 
         private HVOBJECT GetFontObject(FontStyle iFont)
         {
-            return this.FontObjs[(int)iFont];
+            return FontObjs[(int)iFont];
         }
 
         //*****************************************************************************
@@ -941,16 +941,16 @@ namespace SharpAlliance.Core.SubSystems
                 return FontStyle.None;
             }
 
-            if ((this.FontObjs[(int)LoadIndex] = VeldridVideoManager.CreateVideoObject(filename)) == null)
+            if ((FontObjs[(int)LoadIndex] = VeldridVideoManager.CreateVideoObject(filename)) == null)
             {
                 //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);
 
                 return FontStyle.None;
             }
 
-            if (this.FontDefault == FontStyle.None)
+            if (FontDefault == FontStyle.None)
             {
-                this.FontDefault = LoadIndex;
+                FontDefault = LoadIndex;
             }
 
             return (LoadIndex);
@@ -968,7 +968,7 @@ namespace SharpAlliance.Core.SubSystems
 
             for (count = 0; count < MAX_FONTS; count++)
             {
-                if (this.FontObjs[count] == null)
+                if (FontObjs[count] == null)
                 {
                     return (FontStyle)count;
                 }
@@ -980,7 +980,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public int WFGetFontHeight(FontStyle font)
         {
-            return this.GetFontHeight(font);
+            return GetFontHeight(font);
         }
 
         public void VarFindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, FontStyle iFontIndex, out int psNewX, out int psNewY, string pFontString)

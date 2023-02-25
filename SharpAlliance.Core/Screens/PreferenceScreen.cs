@@ -102,7 +102,6 @@ namespace SharpAlliance.Core.Screens
 
         public const int OPT_FIRST_COLUMN_TOGGLE_CUT_OFF = 10;//8
 
-        private readonly IVideoManager video;
         private readonly IClockManager clock;
         private readonly MessageBoxSubSystem messageBox;
         private readonly GameSettings settings;
@@ -130,7 +129,7 @@ namespace SharpAlliance.Core.Screens
         private string guiOptionsAddOnImagesKey;
         private Dictionary<TOPTION, GUI_BUTTON> guiOptionsToggles = new((int)TOPTION.NUM_GAME_OPTIONS);
         //Mouse regions for the name of the option
-        private Dictionary<TOPTION, MouseRegion> gSelectedOptionTextRegion = new((int)TOPTION.NUM_GAME_OPTIONS);
+        private Dictionary<TOPTION, MOUSE_REGION> gSelectedOptionTextRegion = new((int)TOPTION.NUM_GAME_OPTIONS);
 
         private ButtonPic giOptionsButtonImages;
         private GUI_BUTTON guiOptGotoSaveGameBtn;
@@ -171,7 +170,6 @@ namespace SharpAlliance.Core.Screens
             this.settings = gameSettings;
             this.sound = soundManager;
             this.inputs = inputManager;
-            VeldridVideoManager = videoManager;
             this.clock = clockManager;
             this.messageBox = messageBoxSubSystem;
         }
@@ -185,7 +183,7 @@ namespace SharpAlliance.Core.Screens
             {
                 try
                 {
-                    this.gSelectedOptionTextRegion.Add(option, new MouseRegion(option.ToString()));
+                    this.gSelectedOptionTextRegion.Add(option, new MOUSE_REGION(option.ToString()));
                 }
                 catch (Exception e)
                 {
@@ -287,7 +285,7 @@ namespace SharpAlliance.Core.Screens
         static uint uiLastPlayingSoundID = SoundManager.NO_SAMPLE;
         private void HandleSliderBarMovementSounds()
         {
-            long uiCurTime = this.clock.GetJA2Clock();
+            long uiCurTime = Globals.GetJA2Clock();
 
             if ((uiLastSoundFxTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > this.guiSoundFxSliderMoving)
             {
@@ -306,7 +304,7 @@ namespace SharpAlliance.Core.Screens
             }
             else
             {
-                uiLastSoundFxTime = this.clock.GetJA2Clock();
+                uiLastSoundFxTime = Globals.GetJA2Clock();
             }
 
             if ((uiLastSpeechTime - OPT_MUSIC_SLIDER_PLAY_SOUND_DELAY) > this.guiSpeechSliderMoving)
@@ -320,7 +318,7 @@ namespace SharpAlliance.Core.Screens
             }
             else
             {
-                uiLastSpeechTime = this.clock.GetJA2Clock();
+                uiLastSpeechTime = Globals.GetJA2Clock();
             }
         }
 
@@ -353,7 +351,7 @@ namespace SharpAlliance.Core.Screens
             // Display the First column of toggles
             for (cnt = 0; cnt < this.gubFirstColOfOptions; cnt++)
             {
-                usWidth = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
+                usWidth = FontSubSystem.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 
                 //if the string is going to wrap, move the string up a bit
                 if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
@@ -387,7 +385,7 @@ namespace SharpAlliance.Core.Screens
             //Display the 2nd column of toggles
             for (cnt = this.gubFirstColOfOptions; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
             {
-                usWidth = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
+                usWidth = FontSubSystem.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 
                 //if the string is going to wrap, move the string up a bit
                 if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
@@ -545,7 +543,7 @@ namespace SharpAlliance.Core.Screens
             //
             // Toggle Boxes
             //
-            TextSize.Height = this.fonts.GetFontHeight(OPT_MAIN_FONT);
+            TextSize.Height = FontSubSystem.GetFontHeight(OPT_MAIN_FONT);
 
             //Create the first column of check boxes
             usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
@@ -565,7 +563,7 @@ namespace SharpAlliance.Core.Screens
 
                 ButtonSubSystem.SetButtonUserData(this.guiOptionsToggles[option], 0, option);
 
-                TextSize.Width = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
+                TextSize.Width = FontSubSystem.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 
                 if (TextSize.Width > OPT_TOGGLE_BOX_TEXT_WIDTH)
                 {
@@ -578,12 +576,12 @@ namespace SharpAlliance.Core.Screens
                         OPT_HIGHLIGHT_COLOR,
                         EnglishText.zOptionsToggleText[(int)cnt],
                         FontColor.FONT_MCOLOR_BLACK,
-                        (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
+                        (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / FontSubSystem.GetFontHeight(OPT_MAIN_FONT)));
 
                     TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
                     //Create mouse regions for the option toggle text
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    MouseSubSystem.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
                             OPT_TOGGLE_BOX_FIRST_COLUMN_X,
@@ -603,7 +601,7 @@ namespace SharpAlliance.Core.Screens
                 else
                 {
                     //Create mouse regions for the option toggle text
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    MouseSubSystem.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new Rectangle(
                             OPT_TOGGLE_BOX_FIRST_COLUMN_X,
@@ -648,7 +646,7 @@ namespace SharpAlliance.Core.Screens
                 //
 
 
-                TextSize.Width = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
+                TextSize.Width = FontSubSystem.StringPixLength(EnglishText.zOptionsToggleText[(int)cnt], OPT_MAIN_FONT);
 
                 if (TextSize.Width > OPT_TOGGLE_BOX_TEXT_WIDTH)
                 {
@@ -674,7 +672,7 @@ namespace SharpAlliance.Core.Screens
 
                     TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    MouseSubSystem.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[cnt],
                         new(
                             OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
@@ -690,7 +688,7 @@ namespace SharpAlliance.Core.Screens
                 }
                 else
                 {
-                    this.inputs.Mouse.MSYS_DefineRegion(
+                    MouseSubSystem.MSYS_DefineRegion(
                         this.gSelectedOptionTextRegion[option],
                         new(
                             OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
@@ -712,7 +710,7 @@ namespace SharpAlliance.Core.Screens
             }
 
             //Create a mouse region so when the user leaves a togglebox text region we can detect it then unselect the region
-            this.inputs.Mouse.MSYS_DefineRegion(
+            MouseSubSystem.MSYS_DefineRegion(
                 ref this.gSelectedToggleBoxAreaRegion,
                 new Rectangle(0, 0, 640, 480),
                 MSYS_PRIORITY.NORMAL,
@@ -774,7 +772,7 @@ namespace SharpAlliance.Core.Screens
             //Set the option screen toggle boxes
             this.SetOptionsScreenToggleBoxes();
 
-            this.messages.DisableScrollMessages();
+            Messages.DisableScrollMessages();
 
             //reset
             this.gbHighLightedOptionText = -1;
@@ -806,7 +804,7 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void SelectedToggleBoxAreaRegionMovementCallBack(ref MouseRegion pRegion, MouseCallbackReasons reason)
+        private void SelectedToggleBoxAreaRegionMovementCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons reason)
         {
             if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
             {
@@ -831,7 +829,7 @@ namespace SharpAlliance.Core.Screens
         {
             this.sound.SetSpeechVolume(iNewValue);
 
-            this.guiSpeechSliderMoving = this.clock.GetJA2Clock();
+            this.guiSpeechSliderMoving = Globals.GetJA2Clock();
         }
 
         private void MusicSliderChangeCallBack(int iNewValue)
@@ -839,7 +837,7 @@ namespace SharpAlliance.Core.Screens
             this.music.MusicSetVolume(iNewValue);
         }
 
-        private void SelectedOptionTextRegionCallBack(ref MouseRegion pRegion, MouseCallbackReasons iReason)
+        private void SelectedOptionTextRegionCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
         {
             TOPTION ubButton = (TOPTION)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
 
@@ -862,7 +860,7 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void SelectedOptionTextRegionMovementCallBack(ref MouseRegion pRegion, MouseCallbackReasons reason)
+        private void SelectedOptionTextRegionMovementCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons reason)
         {
             var bButton = (GUI_BUTTON)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
 
@@ -937,7 +935,7 @@ namespace SharpAlliance.Core.Screens
                 }
 
 
-                usWidth = this.fonts.StringPixLength(EnglishText.zOptionsToggleText[bHighLight], OPT_MAIN_FONT);
+                usWidth = FontSubSystem.StringPixLength(EnglishText.zOptionsToggleText[bHighLight], OPT_MAIN_FONT);
 
                 //if the string is going to wrap, move the string up a bit
                 if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
@@ -1092,7 +1090,7 @@ namespace SharpAlliance.Core.Screens
         }
 
         private static uint uiOptionToggleSound = SoundManager.NO_SAMPLE;
-        private MouseRegion gSelectedToggleBoxAreaRegion = new(nameof(gSelectedToggleBoxAreaRegion));
+        private MOUSE_REGION gSelectedToggleBoxAreaRegion = new(nameof(gSelectedToggleBoxAreaRegion));
         private uint guiSpeechSliderMoving;
 
         private void HandleOptionToggle(TOPTION ubButton, bool fState, bool fDown, bool fPlaySound)
@@ -1223,7 +1221,7 @@ namespace SharpAlliance.Core.Screens
         {
             this.sound.SetSoundEffectsVolume(iNewValue);
 
-            this.guiSoundFxSliderMoving = this.clock.GetJA2Clock();
+            this.guiSoundFxSliderMoving = Globals.GetJA2Clock();
         }
 
         public ValueTask<bool> Initialize()

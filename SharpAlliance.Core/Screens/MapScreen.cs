@@ -101,7 +101,7 @@ public class MapScreen : IScreen
 
         MapScreen.MapscreenMarkButtonsDirty();
 
-        RestoreExternBackgroundRect(261, 0, 640 - 261, 359);
+        RenderDirty.RestoreExternBackgroundRect(261, 0, 640 - 261, 359);
 
         // don't bother if showing sector inventory instead of the map!!!
         if (!Globals.fShowMapInventoryPool)
@@ -110,7 +110,7 @@ public class MapScreen : IScreen
             if (MapScreenHelicopter.IsHelicopterPilotAvailable())
             {
                 // see if Skyrider has anything new to tell us
-                CheckAndHandleSkyriderMonologues();
+                MapScreenHelicopter.CheckAndHandleSkyriderMonologues();
             }
         }
 

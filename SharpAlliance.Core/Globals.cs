@@ -10,6 +10,10 @@ using SixLabors.ImageSharp;
 using static SharpAlliance.Core.EnglishText;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using static SharpAlliance.Core.Screens.CreditsScreen;
+using Veldrid.MetalBindings;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static SharpAlliance.Core.SubSystems.InteractiveTiles;
 
 namespace SharpAlliance.Core;
 
@@ -244,10 +248,10 @@ public partial class Globals
     public static bool gfUIIntTileLocation2;
 
 
-    public static MouseRegion gDisableRegion;
+    public static MOUSE_REGION gDisableRegion;
     public static bool gfDisableRegionActive = false;
 
-    public static MouseRegion gUserTurnRegion;
+    public static MOUSE_REGION gUserTurnRegion;
     public static bool gfUserTurnRegionActive = false;
 
 
@@ -744,8 +748,8 @@ public partial class Globals
 };
 
     public static int gsInterfaceLevel { get; set; }
-    public InterfacePanelDefines gsCurInterfacePanel { get; internal set; }
-    public static MouseRegion? gViewportRegion { get; set; }
+    public static InterfacePanelDefines gsCurInterfacePanel { get; internal set; }
+    public static MOUSE_REGION? gViewportRegion { get; set; }
     public static bool gfUIStanceDifferent { get; set; }
 
     public const int ROOF_LEVEL_HEIGHT = 50;
@@ -755,9 +759,9 @@ public partial class Globals
 
     public static uint guiBOTTOMPANEL { get; set; }
     public static uint guiRIGHTPANEL { get; set; }
-    public static uint guiRENDERBUFFER { get; set; }
-    public static uint guiSAVEBUFFER { get; set; }
-    public static uint guiEXTRABUFFER { get; set; }
+    public static Surfaces guiRENDERBUFFER { get; set; }
+    public static Surfaces guiSAVEBUFFER { get; set; }
+    public static Surfaces guiEXTRABUFFER { get; set; }
     public static bool gfExtraBuffer { get; set; }
 
     public static OBJECTTYPE? gpItemPointer { get; set; } = null;
@@ -1215,6 +1219,7 @@ public partial class Globals
     public static bool gfIntroScreenExit;
     public static long guiSplashStartTime { get; set; } = 0;
     public static int guiSplashFrameFade { get; set; } = 10;
+    public static bool gfFacePanelActive { get; internal set; }
 
     public static SMKFLIC? gpSmackFlic = null;
 
@@ -1413,6 +1418,272 @@ public partial class Globals
 
     public const int PREV_PAGE_BUTTON = 0;
     public const int NEXT_PAGE_BUTTON = 1;
+
+    public const string MAINMENU_TEXT_FILE = "LoadScreens\\MainMenu.edt";
+    public const int MAINMENU_RECORD_SIZE = 80 * 2;
+    public const int MAINMENU_X = (640 - 214) / 2;
+    public const int MAINMENU_TITLE_Y = 75;
+    public const int MAINMENU_Y_SPACE = 37;
+    public const int MAINMENU_Y = 480 - 187;
+
+    public static ushort[] gusMainMenuButtonWidths = new ushort[(int)MainMenuItems.NUM_MENU_ITEMS];
+    public static MOUSE_REGION gBackRegion = new(nameof(gBackRegion));
+    public static MainMenuItems gbHandledMainMenu = MainMenuItems.Unknown;
+
+    public static bool gfMainMenuScreenEntry = false;
+    public static bool gfMainMenuScreenExit = false;
+
+    public static ScreenName guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+
+    public static string guiCreditFacesKey;
+    public static string guiCreditBackGroundImageKey;
+    public static bool gfCreditsScreenEntry;
+    public static bool gfCreditsScreenExit;
+    public static ScreenName guiCreditsExitScreen;
+    public static bool gfCrdtHaveRenderedFirstFrameToSaveBuffer;
+    public static FontStyle guiCreditScreenActiveFont;
+    public static FontColor gubCreditScreenActiveColor;
+    public static FontStyle guiCreditScreenTitleFont;
+    public static FontColor gubCreditScreenTitleColor;
+    public static int guiCrdtNodeScrollSpeed;
+    public static CreditRenderFlag gubCreditScreenRenderFlags;
+    public static int giCurrentlySelectedFace;
+    public static bool gfPauseCreditScreen;
+    public static TextJustifies gubCrdtJustification;
+    public static int guiCurrentCreditRecord;
+    public static uint guiCrdtLastTimeUpdatingNode;
+    public static int guiGapBetweenCreditSections;
+    public static int guiGapBetweenCreditNodes;
+    public static int guiGapTillReadNextCredit;
+    public static MOUSE_REGION[] gCrdtMouseRegions = new MOUSE_REGION[(int)PeopleInCredits.NUM_PEOPLE_IN_CREDITS];
+
+    public static List<CRDT_NODE> gCrdtNodes = new();
+
+    public static readonly CDRT_FACE[] gCreditFaces = new CDRT_FACE[]
+    {
+        //  x	    y	    		w		h			
+	    new(298, 137,           37, 49, 310, 157,       304, 170,   2500, 0, 0),											//Camfield
+	    new(348, 137,           43, 47, 354, 153,       354, 153,   3700, 0, 0),											//Shawn
+	    new(407, 132,           30, 50, 408, 151,       410, 164,   3000, 0, 0),											//Kris
+	    new(443, 131,           30, 50, 447, 151,       446, 161,   4000, 0, 0),											//Ian
+	    new(487, 136,           43, 50, 493, 155,       493, 155,   3500, 0, 0),											//Linda
+	    new(529, 145,           43, 50, 536, 164,       536, 164,   4000, 0, 0),											//Eric
+	    new(581, 132,           43, 48, 584, 150,       583, 161,   3500, 0, 0),											//Lynn
+	    new(278, 211,           36, 51, 283, 232,       283, 241,   3700, 0, 0),											//Norm
+	    new(319, 210,           34, 49, 323, 227,       320, 339,   4000, 0, 0),											//George
+	    new(358, 211,           38, 49, 364, 226,       361, 239,   3600, 0, 0),											//Andrew Stacey
+	    new(396, 200,           42, 50, 406, 220,       403, 230,   4600, 0, 0),											//Scott
+	    new(444, 202,           43, 51, 452, 220,       452, 231,   2800, 0, 0),											//Emmons
+	    new(493, 188,           36, 51, 501, 207,       499, 217,   4500, 0, 0),											//Dave
+	    new(531, 199,           47, 56, 541, 221,       540, 232,   4000, 0, 0),											//Alex
+	    new(585, 196,           39, 49, 593, 218,       593, 228,   3500, 0, 0),                                            //Joey
+    };
+
+    public static CRDT_NODE? gCrdtLastAddedNode;
+
+    // the pop up box structure
+    public static MercPopUpBox gBasicPopUpTextBox;
+
+    // the current pop up box
+    public static MercPopUpBox? gPopUpTextBox;
+
+
+    // the old one
+    public static MercPopUpBox? gOldPopUpTextBox;
+
+
+    // the list of boxes
+    public static MercPopUpBox?[] gpPopUpBoxList = new MercPopUpBox?[MAX_NUMBER_OF_POPUP_BOXES];
+
+    // the flags
+    public static int guiFlags = 0;
+    public static int guiBoxIcons;
+    public static int guiSkullIcons;
+
+    public const int TEXT_POPUP_WINDOW_TEXT_OFFSET_X = 8;
+    public const int TEXT_POPUP_WINDOW_TEXT_OFFSET_Y = 8;
+    public const int TEXT_POPUP_STRING_WIDTH = 296;
+    public const int TEXT_POPUP_GAP_BN_LINES = 10;
+    public const FontStyle TEXT_POPUP_FONT = FontStyle.FONT12ARIAL;
+    public const FontColor TEXT_POPUP_COLOR = FontColor.FONT_MCOLOR_WHITE;
+    public const FontStyle MERC_TEXT_FONT = FontStyle.FONT12ARIAL;
+    public const FontColor MERC_TEXT_COLOR = FontColor.FONT_MCOLOR_WHITE;
+    public const int MERC_TEXT_MIN_WIDTH = 10;
+    public const int MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X = 10;
+    public const int MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_Y = 10;
+    public const int MERC_BACKGROUND_WIDTH = 350;
+    public const int MERC_BACKGROUND_HEIGHT = 200;
+
+    // the max number of pop up boxes availiable to user
+    public const int MAX_NUMBER_OF_POPUP_BOXES = 10;
+
+    public const int DIRTY_QUEUES = 200;
+    public const int BACKGROUND_BUFFERS = 500;
+    public const int VIDEO_OVERLAYS = 100;
+
+
+    public static BACKGROUND_SAVE[] gBackSaves = new BACKGROUND_SAVE[BACKGROUND_BUFFERS];
+    public static int guiNumBackSaves = 0;
+
+    public static VIDEO_OVERLAY[] gVideoOverlays = new VIDEO_OVERLAY[VIDEO_OVERLAYS];
+    public static int guiNumVideoOverlays = 0;
+
+    public static SixLabors.ImageSharp.Rectangle gDirtyClipRect = new(0, 0, 640, 480);
+
+    public const int MAX_LINE_COUNT = 6;
+    public const int MAX_AGE = 10000;
+    public const int X_START = 2;
+    public const int Y_START = 330;
+    public const int LINE_WIDTH = 320;
+    public const int MAP_LINE_WIDTH = 300;
+    public const int WIDTH_BETWEEN_NEW_STRINGS = 5;
+
+    public static ScrollStringStPtr?[] gpDisplayList = new ScrollStringStPtr?[MAX_LINE_COUNT];
+    public static ScrollStringStPtr?[] gMapScreenMessageList = new ScrollStringStPtr?[256];
+    public static int gubStartOfMapScreenMessageList = 0;
+    public static int gubEndOfMapScreenMessageList = 0;
+    public static int gubCurrentMapMessageString = 0;
+
+    public static FontStyle MAP_SCREEN_MESSAGE_FONT = FontStyle.TINYFONT1;
+    public const int MAX_MESSAGES_ON_MAP_BOTTOM = 9;
+
+    // exit states
+    public static int gbExitingMapScreenToWhere = -1;
+    public static int gubFirstMapscreenMessageIndex = 0;
+    public static int guiCompressionStringBaseTime = 0;
+
+    // graphics
+    public static int guiMAPBOTTOMPANEL;
+    public static int guiSliderBar;
+
+    // buttons
+    public static int[] guiMapMessageScrollButtons = new int[2];
+    public static int[] guiMapBottomExitButtons = new int[3];
+    public static int[] guiMapBottomTimeButtons = new int[2];
+
+    // buttons images
+    public static int[] guiMapMessageScrollButtonsImage = new int[2];
+    public static int[] guiMapBottomExitButtonsImage = new int[3];
+    public static int[] guiMapBottomTimeButtonsImage = new int[2];
+
+    // mouse regions
+    public static MOUSE_REGION gMapMessageScrollBarRegion;
+    public static MOUSE_REGION gMapPauseRegion;
+
+    public static MOUSE_REGION[] gTimeCompressionMask = new MOUSE_REGION[3];
+
+    public const FontColor BETAVERSION_COLOR = FontColor.FONT_ORANGE;
+    public const FontColor TESTVERSION_COLOR = FontColor.FONT_GREEN;
+    public const FontColor DEBUG_COLOR = FontColor.FONT_RED;
+    public const FontColor DIALOGUE_COLOR = FontColor.FONT_WHITE;
+    public const FontColor INTERFACE_COLOR = FontColor.FONT_YELLOW;
+
+
+    // the next said quote will pause time
+    public static bool fPausedTimeDuringQuote = false;
+    public static bool fWasPausedDuringDialogue = false;
+    public static bool gfLockPauseState = false;
+
+    public static bool gubLogForMeTooBleeds = false;
+
+    // has the text region been created?
+    public static bool fTextBoxMouseRegionCreated = false;
+    public static bool fExternFaceBoxRegionCreated = false;
+
+    // due to last quote system?
+    public static bool fDialogueBoxDueToLastMessage = false;
+
+    // last quote timers
+    public static int guiDialogueLastQuoteTime = 0;
+    public static int guiDialogueLastQuoteDelay = 0;
+
+    public static MOUSE_REGION gTextBoxMouseRegion;
+    public static MOUSE_REGION gFacePopupMouseRegion;
+    public static bool gfUseAlternateDialogueFile = false;
+
+    public static bool gfDialogueQueuePaused = false;
+    public static int gusSubtitleBoxWidth;
+    public static int gusSubtitleBoxHeight;
+    public static int giTextBoxOverlay = -1;
+    public static int guiScreenIDUsedWhenUICreated;
+    public static int[] gzQuoteStr = new int[QUOTE_MESSAGE_SIZE];
+
+    // set the top position value for merc dialogue pop up boxes
+    public const int gsTopPosition = 20;
+
+    public const int DIALOGUESIZE = 480;
+    public const int QUOTE_MESSAGE_SIZE = 520;
+    public const int TALK_PANEL_FACE_X = 6;
+    public const int TALK_PANEL_FACE_Y = 9;
+    public const int TALK_PANEL_NAME_X = 5;
+    public const int TALK_PANEL_NAME_Y = 114;
+    public const int TALK_PANEL_NAME_WIDTH = 92;
+    public const int TALK_PANEL_NAME_HEIGHT = 15;
+    public const int TALK_PANEL_MENU_STARTY = 8;
+    public const int TALK_PANEL_MENU_HEIGHT = 24;
+    public const int TALK_MENU_WIDTH = 96;
+    public const int TALK_MENU_HEIGHT = 16;
+    public const int DIALOGUE_DEFAULT_SUBTITLE_WIDTH = 200;
+    public const int TEXT_DELAY_MODIFIER = 60;
+
+
+    //When set, the fast help text will be instantaneous, if consecutive regions with help text are
+    //hilighted.  It is set, whenever the timer for the first help button expires, and the mode is
+    //cleared as soon as the cursor moves into no region or a region with no helptext.
+    public static bool gfPersistantFastHelpMode;
+    public static int gsFastHelpDelay = 600; // In timer ticks
+    public static bool gfShowFastHelp = true;
+    public static int gusClickedIDNumber;
+    public static bool gfClickedModeOn = false;
+
+
+    //Records and stores the last place the user clicked.  These values are compared to the current
+    //click to determine if a double click event has been detected.
+    public static MOUSE_REGION? gpRegionLastLButtonDown = null;
+    public static MOUSE_REGION? gpRegionLastLButtonUp = null;
+    public static long guiRegionLastLButtonDownTime = 0;
+    public static bool gfRefreshUpdate = false;
+    public static bool fDisableJustForIan;
+
+
+    public static long guiStartupTime;
+    public static long guiCurrentTime;
+    public static int guiLockPauseStateLastReasonId = 0;
+    public static bool fClockMouseRegionCreated;
+    public static bool gfPauseClock = false;
+    public static bool gfGamePaused { get; set; }
+    public static bool gfTimeInterrupt { get; set; } = false;
+
+    // clock mouse region
+    public static MOUSE_REGION gClockMouseRegion;
+    public static MOUSE_REGION gClockScreenMaskMouseRegion;
+
+    public static uint GetJA2Clock() => ClockManager.GetJA2Clock();
+
+    public static Random Random { get; set; } = new Random();
+
+    public static INTERACTIVE_TILE_STACK_TYPE? gCurIntTileStack;
+    public static bool gfCycleIntTile = false;
+    public static CUR_INTERACTIVE_TILE gCurIntTile;
+    public static bool gfOverIntTile = false;
+    // Values to determine if we should check or not
+    public static int gsINTOldRenderCenterX = 0;
+    public static int gsINTOldRenderCenterY = 0;
+    public static int gusINTOldMousePosX = 0;
+    public static int gusINTOldMousePosY = 0;
+
+    public const int MAP_BORDER_X = 261;
+    public const int MAP_BORDER_Y = 0;
+    public const int MAP_BORDER_CORNER_X = 584;
+    public const int MAP_BORDER_CORNER_Y = 279;
+
+    public static List<int> ghVideoObjects = new();
+    public static bool gfVideoObjectsInit = false;
+    public static VOBJECT_NODE gpVObjectHead { get; set; } = new VOBJECT_NODE();
+    public static VOBJECT_NODE gpVObjectTail { get; set; } = new VOBJECT_NODE();
+    public static int guiVObjectIndex { get; set; } = 1;
+    public static int guiVObjectSize { get; set; } = 0;
+    public static int guiVObjectTotalAdded { get; set; } = 0;
 }
 
 public enum Stat

@@ -18,7 +18,7 @@ namespace SharpAlliance.Core.Screens
     {
         public string cFilename;
         //		HFILE										hFileHandle;
-        // HWFILE hFileHandle;
+        // Stream hFileHandle;
         // Smack SmackHandle;
         // SmackBuf SmackBuffer;
         public int uiFlags;

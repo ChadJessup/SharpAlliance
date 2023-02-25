@@ -471,7 +471,7 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Define a MOUSE_REGION for this QuickButton
-            mouse.MSYS_DefineRegion(
+            MouseSubSystem.MSYS_DefineRegion(
                 b.MouseRegion,
                 new(loc.X,
                     loc.Y,
@@ -619,15 +619,15 @@ namespace SharpAlliance.Core.SubSystems
                 //xp = b.MouseRegion.Bounds.X + b.bTextOffset.X;
 
                 // Set the printing font to the button text font
-                fonts.SetFont(b.usFont);
+                FontSubSystem.SetFont(b.usFont);
 
                 // print the text
-                fonts.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
-                fonts.SetFontForeground(b.sForeColor);
+                FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+                FontSubSystem.SetFontForeground(b.sForeColor);
                 sForeColor = b.sForeColor;
                 if (b.sShadowColor != FontShadow.NO_SHADOW)
                 {
-                    fonts.SetFontShadow(b.sShadowColor);
+                    FontSubSystem.SetFontShadow(b.sShadowColor);
                 }
 
                 //Override the colors if necessary.
@@ -635,12 +635,12 @@ namespace SharpAlliance.Core.SubSystems
                     && b.MouseRegion.HasMouse
                     && b.sForeColorHilited != FontColor.None)
                 {
-                    fonts.SetFontForeground(b.sForeColorHilited);
+                    FontSubSystem.SetFontForeground(b.sForeColorHilited);
                     sForeColor = b.sForeColorHilited;
                 }
                 else if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON) && b.sForeColorDown != FontColor.None)
                 {
-                    fonts.SetFontForeground(b.sForeColorDown);
+                    FontSubSystem.SetFontForeground(b.sForeColorDown);
                     sForeColor = b.sForeColorDown;
                 }
 
@@ -648,11 +648,11 @@ namespace SharpAlliance.Core.SubSystems
                     && b.MouseRegion.HasMouse
                     && b.sShadowColorHilited != FontShadow.NO_SHADOW)
                 {
-                    fonts.SetFontShadow(b.sShadowColorHilited);
+                    FontSubSystem.SetFontShadow(b.sShadowColorHilited);
                 }
                 else if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON) && b.sShadowColorDown != FontShadow.NO_SHADOW)
                 {
-                    fonts.SetFontShadow(b.sShadowColorDown);
+                    FontSubSystem.SetFontShadow(b.sShadowColorDown);
                 }
 
                 int x = b.MouseRegion.Bounds.X;
@@ -1802,7 +1802,7 @@ namespace SharpAlliance.Core.SubSystems
                 Image.MaxWidth,
                 Image.MaxHeight);
 
-            mouse.MSYS_DefineRegion(
+            MouseSubSystem.MSYS_DefineRegion(
                 ref b.MouseRegion,
                 regionRect,
                 Priority,
@@ -1831,7 +1831,7 @@ namespace SharpAlliance.Core.SubSystems
         //	Dispatches all button callbacks for mouse movement. This function gets
         //	called by the Mouse System. *DO NOT CALL DIRECTLY*
         //
-        private static void QuickButtonCallbackMouseMove(ref MouseRegion reg, MouseCallbackReasons reason)
+        private static void QuickButtonCallbackMouseMove(ref MOUSE_REGION reg, MouseCallbackReasons reason)
         {
             GUI_BUTTON b = (GUI_BUTTON)mouse.GetRegionUserData(ref reg, 0);
 
@@ -1856,7 +1856,7 @@ namespace SharpAlliance.Core.SubSystems
                 //check for sound playing stuff
                 if (b.ubSoundSchemeID != 0)
                 {
-                    if (b.MouseRegion == mouse.PreviousRegion && Globals.gpAnchoredButton is null)
+                    if (b.MouseRegion == MouseSubSystem.PreviousRegion && Globals.gpAnchoredButton is null)
                     {
                         if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
                         {
@@ -1876,7 +1876,7 @@ namespace SharpAlliance.Core.SubSystems
                 {
                     if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
                     {
-                        if (b.MouseRegion == mouse.PreviousRegion && Globals.gpAnchoredButton is null)
+                        if (b.MouseRegion == MouseSubSystem.PreviousRegion && Globals.gpAnchoredButton is null)
                         {
                             PlayButtonSound(b, ButtonSounds.BUTTON_SOUND_MOVED_OFF_OF);
                         }
@@ -1926,7 +1926,7 @@ namespace SharpAlliance.Core.SubSystems
         //	Dispatches all button callbacks for button presses. This function is
         //	called by the Mouse System. *DO NOT CALL DIRECTLY*
         //
-        private static void QuickButtonCallbackMButn(ref MouseRegion reg, MouseCallbackReasons reason)
+        private static void QuickButtonCallbackMButn(ref MOUSE_REGION reg, MouseCallbackReasons reason)
         {
             GUI_BUTTON b;
             int iButtonID;
@@ -2153,7 +2153,7 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // ...kill it!!!
-            mouse.MSYS_RemoveRegion(b.MouseRegion);
+            MouseSubSystem.MSYS_RemoveRegion(b.MouseRegion);
 
             if (b == Globals.gpAnchoredButton)
             {
@@ -2228,7 +2228,7 @@ namespace SharpAlliance.Core.SubSystems
     {
         // public int IdNum;                        // ID Number, contains it's own button number
         public ButtonPic ButtonPicture;                    // Image number to use (see DOCs for details)
-        public MouseRegion MouseRegion = new(nameof(GUI_BUTTON.MouseRegion)); // Mouse System's mouse region to use for this button
+        public MOUSE_REGION MouseRegion = new(nameof(GUI_BUTTON.MouseRegion)); // Mouse System's mouse region to use for this button
         public GuiCallback? ClickCallback;     // Button Callback when button is clicked
         public GuiCallback? MoveCallback;          // Button Callback when mouse moved on this region
         public CURSOR Cursor;                       // Cursor to use for this button

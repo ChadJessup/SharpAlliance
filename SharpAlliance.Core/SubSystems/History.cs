@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -14,19 +16,17 @@ public class History
     // current page displayed
     int iCurrentHistoryPage = 1;
 
-
-
     // the History record list
-    history pHistoryListHead = null;
+    history? pHistoryListHead = null;
 
     // current History record (the one at the top of the current page)
-    history pCurrentHistory = null;
+    history? pCurrentHistory = null;
 
 
     // last page in list
     int guiLastPageInHistoryRecordsList = 0;
 
-    int SetHistoryFact(int ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
+    int SetHistoryFact(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -47,7 +47,7 @@ public class History
             ubColor = 1;
         }
         uiId = ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, 0, ubColor);
-        ScreenMsg(FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
+        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
 
         // history list head
         pHistory = pHistoryListHead;
@@ -71,19 +71,19 @@ public class History
     }
 
 
-    int AddHistoryToPlayersLog(int ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
+    int AddHistoryToPlayersLog(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
         int uiId = 0;
-        history pHistory = pHistoryListHead;
+        history? pHistory = pHistoryListHead;
 
         // clear the list
         ClearHistoryList();
 
         // process the actual data
         uiId = ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, 0, 0);
-        ScreenMsg(FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
+        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
 
         // history list head
         pHistory = pHistoryListHead;
@@ -267,19 +267,18 @@ public class History
     void RenderHistoryBackGround()
     {
         // render generic background for history system
-        HVOBJECT hHandle;
+        HVOBJECT? hHandle;
         int iCounter = 0;
 
         // get title bar object
-        GetVideoObject(out hHandle, Globals.guiTITLE);
+        VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiTITLE);
 
         // blt title bar to screen
-        BltVideoObject(FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT_SRCTRANSPARENCY, null);
-
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT_SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
-        GetVideoObject(out hHandle, Globals.guiTOP);
-        BltVideoObject(FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT_SRCTRANSPARENCY, null);
+        VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiTOP);
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT_SRCTRANSPARENCY, null);
 
         // display background for history list
         DisplayHistoryListBackground();
@@ -289,10 +288,10 @@ public class History
     void DrawHistoryTitleText()
     {
         // setup the font stuff
-        SetFont(HISTORY.HEADER_FONT);
-        SetFontForeground(FontColor.FONT_WHITE);
-        SetFontBackground(FontColor.FONT_BLACK);
-        SetFontShadow(FontShadow.DEFAULT_SHADOW);
+        FontSubSystem.SetFont(Globals.HISTORY_HEADER_FONT);
+        FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         // draw the pages title
         //mprintf(Globals.TITLE_X, Globals.TITLE_Y, pHistoryTitle[0]);
@@ -306,13 +305,13 @@ public class History
         // the prev page button
         Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
         Globals.giHistoryButton[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = QuickCreateButton(Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON], Globals.PREV_BTN_X, Globals.BTN_Y,
-                                            BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST - 1,
+                                            BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                             (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayPrevPageCallBack);
 
         // the next page button
         Globals.giHistoryButtonImage[NEXT_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 6, -1, 7, -1);
         Globals.giHistoryButton[NEXT_PAGE_BUTTON] = QuickCreateButton(giHistoryButtonImage[NEXT_PAGE_BUTTON], NEXT_BTN_X, BTN_Y,
-                                            BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST - 1,
+                                            BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
                                                 (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayNextPageCallBack);
 
 
@@ -340,20 +339,20 @@ public class History
         return;
     }
 
-    void BtnHistoryDisplayPrevPageCallBack(GUI_BUTTON? btn, int reason)
+    void BtnHistoryDisplayPrevPageCallBack(GUI_BUTTON? btn, MouseCallbackReasons reason)
     {
         // force redraw
-        if (reason & MouseCallbackReasons.LBUTTON_DWN)
+        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
         {
             fReDrawScreenFlag = true;
         }
 
 
         // force redraw
-        if (reason & MouseCallbackReasons.LBUTTON_UP)
+        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
         {
             fReDrawScreenFlag = true;
-            btn.uiFlags &= ~(BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
             // this page is > 0, there are pages before it, decrement
 
             if (iCurrentHistoryPage > 0)
@@ -373,17 +372,17 @@ public class History
     void BtnHistoryDisplayNextPageCallBack(GUI_BUTTON? btn, MouseCallbackReasons reason)
     {
 
-        if (reason & MouseCallbackReasons.LBUTTON_DWN)
+        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
         {
             fReDrawScreenFlag = true;
         }
 
 
         // force redraw
-        if (reason & MouseCallbackReasons.LBUTTON_UP)
+        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
         {
             // increment currentPage
-            btn.uiFlags &= ~(BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
             LoadNextHistoryPage();
             // set new state
             SetHistoryButtonStates();
@@ -400,7 +399,7 @@ public class History
         history pTempHistory = pCurrentHistory;
         bool fOkToIncrementPage = false;
         int iCounter = 0;
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         int uiFileSize = 0;
         int uiSizeOfRecordsOnEachPage = 0;
 
@@ -464,20 +463,22 @@ public class History
     }
 
 
-    int ProcessAndEnterAHistoryRecord(int ubCode, int uiDate, int ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
+    int ProcessAndEnterAHistoryRecord(HISTORY ubCode, int uiDate, int ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
     {
         int uiId = 0;
         history pHistory = pHistoryListHead;
 
         // add to History list
-        if (pHistory)
+        if (pHistory is not null)
         {
             // go to end of list
-            while (pHistory.Next)
+            while (pHistory.Next is not null)
+            {
                 pHistory = pHistory.Next;
+            }
 
             // alloc space
-            pHistory.Next = MemAlloc(sizeof(HistoryUnit));
+            pHistory.Next = new history();
 
             // increment id number
             uiId = pHistory.uiIdNumber + 1;
@@ -498,7 +499,7 @@ public class History
         else
         {
             // alloc space
-            pHistory = MemAlloc(sizeof(HistoryUnit));
+            pHistory = new history();
 
             // setup info passed
             pHistory.Next = null;
@@ -511,7 +512,6 @@ public class History
             pHistory.sSectorY = sSectorY;
             pHistory.bSectorZ = bSectorZ;
             pHistory.ubColor = ubColor;
-
         }
 
         return uiId;
@@ -522,8 +522,9 @@ public class History
     {
         // this procedure will open and read in data to the History list
 
-        //HWFILE hFileHandle;
-        int ubCode, ubSecondCode;
+        //Stream hFileHandle;
+        HISTORY ubCode;
+        int ubSecondCode;
         int uiDate;
         int sSectorX, sSectorY;
         int bSectorZ = 0;
@@ -583,9 +584,9 @@ public class History
     {
         // this procedure will open and write out data from the History list
 
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         int iBytesWritten = 0;
-        history pHistoryList = pHistoryListHead;
+        history? pHistoryList = pHistoryListHead;
 
 
         // open file
@@ -597,16 +598,16 @@ public class History
             return (false);
         }
         // write info, while there are elements left in the list
-        while (pHistoryList)
+        while (pHistoryList is not null)
         {
             // now write date and amount, and code
-            FileWrite(hFileHandle, &(pHistoryList.ubCode), sizeof(int), null);
-            FileWrite(hFileHandle, &(pHistoryList.ubSecondCode), sizeof(int), null);
-            FileWrite(hFileHandle, &(pHistoryList.uiDate), sizeof(int), null);
-            FileWrite(hFileHandle, &(pHistoryList.sSectorX), sizeof(int), null);
-            FileWrite(hFileHandle, &(pHistoryList.sSectorY), sizeof(int), null);
-            FileWrite(hFileHandle, &(pHistoryList.bSectorZ), sizeof(int), null);
-            FileWrite(hFileHandle, &(pHistoryList.ubColor), sizeof(int), null);
+            FileWrite(hFileHandle, out (pHistoryList.ubCode), sizeof(int), null);
+            FileWrite(hFileHandle, out (pHistoryList.ubSecondCode), sizeof(int), null);
+            FileWrite(hFileHandle, out (pHistoryList.uiDate), sizeof(int), null);
+            FileWrite(hFileHandle, out (pHistoryList.sSectorX), sizeof(int), null);
+            FileWrite(hFileHandle, out (pHistoryList.sSectorY), sizeof(int), null);
+            FileWrite(hFileHandle, out (pHistoryList.bSectorZ), sizeof(int), null);
+            FileWrite(hFileHandle, out (pHistoryList.ubColor), sizeof(int), null);
 
             // next element in list
             pHistoryList = pHistoryList.Next;
@@ -626,11 +627,11 @@ public class History
     {
         // remove each element from list of transactions
 
-        history pHistoryList = pHistoryListHead;
-        history pHistoryNode = pHistoryList;
+        history? pHistoryList = pHistoryListHead;
+        history? pHistoryNode = pHistoryList;
 
         // while there are elements in the list left, delete them
-        while (pHistoryList)
+        while (pHistoryList is not null)
         {
             // set node to list head
             pHistoryNode = pHistoryList;
@@ -639,8 +640,9 @@ public class History
             pHistoryList = pHistoryList.Next;
 
             // delete current node
-            MemFree(pHistoryNode);
+            pHistoryNode = null;
         }
+
         pHistoryListHead = null;
 
         return;
@@ -652,24 +654,24 @@ public class History
         int usX, usY;
 
         // font stuff
-        SetFont(HISTORY.TEXT_FONT);
-        SetFontForeground(FONT_BLACK);
-        SetFontBackground(FONT_BLACK);
-        SetFontShadow(NO_SHADOW);
+        FontSubSystem.SetFont(Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // the date header
-        FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], HISTORY.TEXT_FONT, &usX, &usY);
+        FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[0]);
 
         // the date header
-        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], HISTORY.TEXT_FONT, &usX, &usY);
+        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[3]);
 
         // event header
-        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], HISTORY.TEXT_FONT, &usX, &usY);
+        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, usX, usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[4]);
         // reset shadow
-        SetFontShadow(DEFAULT_SHADOW);
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         return;
     }
 
@@ -677,24 +679,21 @@ public class History
     void DisplayHistoryListBackground()
     {
         // this function will display the History list display background
-        HVOBJECT hHandle;
+        HVOBJECT? hHandle;
         int iCounter = 0;
 
-
-
         // get shaded line object
-        GetVideoObject(hHandle, Globals.guiSHADELINE);
+        VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiSHADELINE);
         for (iCounter = 0; iCounter < 11; iCounter++)
         {
             // blt title bar to screen
-            BltVideoObject(FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT_SRCTRANSPARENCY, null);
+            VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT_SRCTRANSPARENCY, null);
         }
 
         // the long hortizontal line int he records list display region
-        GetVideoObject(out hHandle, Globals.guiLONGLINE);
-        BltVideoObject(FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT_SRCTRANSPARENCY, null);
-        BltVideoObject(FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT_SRCTRANSPARENCY, null);
-
+        VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiLONGLINE);
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT_SRCTRANSPARENCY, null);
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT_SRCTRANSPARENCY, null);
 
         return;
     }
@@ -702,8 +701,8 @@ public class History
     void DrawHistoryRecordsText()
     {
         // draws the text of the records
-        history pCurHistory = pHistoryListHead;
-        history pTempHistory = pHistoryListHead;
+        history? pCurHistory = pHistoryListHead;
+        history? pTempHistory = pHistoryListHead;
         string sString;
         int iCounter = 0;
         int usX, usY;
@@ -711,10 +710,10 @@ public class History
         int sX = 0, sY = 0;
 
         // setup the font stuff
-        SetFont(HISTORY.TEXT_FONT);
-        SetFontForeground(FONT_BLACK);
-        SetFontBackground(FONT_BLACK);
-        SetFontShadow(NO_SHADOW);
+        FontSubSystem.SetFont(Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // error check
         if (!pCurHistory)
@@ -726,11 +725,11 @@ public class History
         {
             if (pCurHistory.ubColor == 0)
             {
-                SetFontForeground(FONT_BLACK);
+                FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             }
             else
             {
-                SetFontForeground(FONT_RED);
+                FontSubSystem.SetFontForeground(FontColor.FONT_RED);
             }
             // get and write the date
             wprintf(sString, "%d", (pCurHistory.uiDate / (24 * 60)));
@@ -747,21 +746,21 @@ public class History
             // no location
             if ((pCurHistory.sSectorX == -1) || (pCurHistory.sSectorY == -1))
             {
-                FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY.TEXT_FONT, out sX, out sY);
+                FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
                 mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, pHistoryLocations[0]);
             }
             else
             {
                 GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, sString, true);
-                FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, HISTORY.TEXT_FONT, &sX, &sY);
+                FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, sX, sY);
 
-                ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, HISTORY.TEXT_FONT);
+                ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
 
                 mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, sString);
             }
 
             // restore font color
-            SetFontForeground(FONT_BLACK);
+            FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
 
             // next History
             pCurHistory = pCurHistory.Next;
@@ -771,14 +770,14 @@ public class History
             {
 
                 // restore shadow
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
                 return;
             }
 
         }
 
         // restore shadow
-        SetFontShadow(DEFAULT_SHADOW);
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         return;
     }
 
@@ -831,10 +830,10 @@ public class History
 
 
         // setup the font stuff
-        SetFont(HISTORY_TEXT_FONT);
-        SetFontForeground(FONT_BLACK);
-        SetFontBackground(FONT_BLACK);
-        SetFontShadow(NO_SHADOW);
+        FontSubSystem.SetFont(Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+        FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         if (!pCurrentHistory)
         {
@@ -845,7 +844,7 @@ public class History
             mprintf(Globals.HISTORY_DATE_X, Globals.HISTORY_DATE_Y, sString);
 
             // reset shadow
-            SetFontShadow(DEFAULT_SHADOW);
+            FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
             return;
         }
@@ -889,11 +888,11 @@ public class History
         mprintf(Globals.PAGE_NUMBER_X, Globals.PAGE_NUMBER_Y, sString);
 
         wprintf(sString, "%s %d - %d", pHistoryHeaders[2], pCurrentHistory.uiDate / (24 * 60), uiLastDate / (24 * 60));
-        mprintf(Globals.HISTORY.DATE_X, Globals.HISTORY.DATE_Y, sString);
+        mprintf(Globals.HISTORY_DATE_X, Globals.HISTORY_DATE_Y, sString);
 
 
         // reset shadow
-        SetFontShadow(DEFAULT_SHADOW);
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         return;
     }
@@ -905,8 +904,8 @@ public class History
 
         switch (pHistory.ubCode)
         {
-            case HISTORY.ENTERED_HISTORY.MODE:
-                wprintf(pString, pHistoryStrings[HISTORY.ENTERED_HISTORY.MODE]);
+            case HISTORY.ENTERED_HISTORY_MODE:
+                wprintf(pString, pHistoryStrings[HISTORY.ENTERED_HISTORY_MODE]);
                 break;
 
             case HISTORY.HIRED_MERC_FROM_AIM:
@@ -986,13 +985,13 @@ public class History
                 wprintf(pString, pHistoryStrings[HISTORY.TALKED_TO_FATHER_WALKER]);
                 break;
             case HISTORY.MERC_MARRIED_OFF:
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_MARRIED_OFF], gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_MARRIED_OFF], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
             case HISTORY.MERC_CONTRACT_EXPIRED:
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_CONTRACT_EXPIRED], gMercProfiles[pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_CONTRACT_EXPIRED], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
                 break;
             case HISTORY.RPC_JOINED_TEAM:
-                wprintf(pString, pHistoryStrings[HISTORY.RPC_JOINED_TEAM], gMercProfiles[pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.RPC_JOINED_TEAM], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
                 break;
             case HISTORY.ENRICO_COMPLAINED:
                 wprintf(pString, pHistoryStrings[HISTORY.ENRICO_COMPLAINED]);
@@ -1009,7 +1008,7 @@ public class History
             case HISTORY.DISQUALIFIED_BOXING:
             case HISTORY.NPC_KILLED:
             case HISTORY.MERC_KILLED_CHARACTER:
-                wprintf(pString, pHistoryStrings[pHistory.ubCode], gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[pHistory.ubCode], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             // ALL SIMPLE HISTORY LOG MSGS, NO PARAMS
@@ -1113,7 +1112,7 @@ public class History
         // no file, return
         bool fOkToContinue = true;
         int iCount = 0;
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         int ubCode, ubSecondCode;
         int sSectorX, sSectorY;
         int bSectorZ;
@@ -1164,16 +1163,16 @@ public class History
         {
 
             // read in other data
-            FileRead(hFileHandle, out ubCode, sizeof(int), &iBytesRead);
-            FileRead(hFileHandle, out ubSecondCode, sizeof(int), &iBytesRead);
-            FileRead(hFileHandle, out uiDate, sizeof(int), &iBytesRead);
-            FileRead(hFileHandle, out sSectorX, sizeof(int), &iBytesRead);
-            FileRead(hFileHandle, out sSectorY, sizeof(int), &iBytesRead);
-            FileRead(hFileHandle, out bSectorZ, sizeof(int), &iBytesRead);
-            FileRead(hFileHandle, out ubColor, sizeof(int), &iBytesRead);
+            FileRead(hFileHandle, out ubCode, sizeof(int), iBytesRead);
+            FileRead(hFileHandle, out ubSecondCode, sizeof(int), iBytesRead);
+            FileRead(hFileHandle, out uiDate, sizeof(int), iBytesRead);
+            FileRead(hFileHandle, out sSectorX, sizeof(int), iBytesRead);
+            FileRead(hFileHandle, out sSectorY, sizeof(int), iBytesRead);
+            FileRead(hFileHandle, out bSectorZ, sizeof(int), iBytesRead);
+            FileRead(hFileHandle, out ubColor, sizeof(int), iBytesRead);
 
             // add transaction
-            ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
+            ProcessAndEnterAHistoryRecord((HISTORY)ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
 
             // increment byte counter
             uiByteCount += SIZE_OF_HISTORY_FILE_RECORD;
@@ -1211,7 +1210,7 @@ public class History
         // no file, return
         bool fOkToContinue = true;
         int iCount = 0;
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         history pList;
         int iBytesRead = 0;
         int uiByteCount = 0;
@@ -1344,7 +1343,7 @@ public class History
     void SetLastPageInHistoryRecords()
     {
         // grabs the size of the file and interprets number of pages it will take up
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         int iBytesRead = 0;
 
         // no file, return
@@ -1355,7 +1354,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (!hFileHandle)
+        if (hFileHandle.Position < 0)
         {
             guiLastPageInHistoryRecordsList = 1;
             return;
@@ -1383,7 +1382,7 @@ public class History
         // this function will read in the last unit in the history list, to grab it's id number
 
 
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         int iBytesRead = 0;
         int iFileSize = 0;
 
@@ -1419,10 +1418,10 @@ public class History
     }
 
 
-    bool AppendHistoryToEndOfFile(history pHistory)
+    bool AppendHistoryToEndOfFile(history? pHistory)
     {
         // will write the current finance to disk
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         int iBytesWritten = 0;
         history pHistoryList = pHistoryListHead;
 
@@ -1567,7 +1566,7 @@ public class History
 
     int GetNumberOfHistoryPages()
     {
-        HWFILE hFileHandle;
+        Stream hFileHandle;
         int uiFileSize = 0;
         int uiSizeOfRecordsOnEachPage = 0;
         int iNumberOfHistoryPages = 0;

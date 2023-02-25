@@ -87,12 +87,12 @@ namespace SharpAlliance.Core
 
         public async Task<int> GameLoop(CancellationToken token = default)
         {
-            IScreen nextScreen = this.screen.CurrentScreen;
+            IScreen nextScreen = ScreenManager.CurrentScreen;
             var sm = this.screen;
 
             while (this.context.State == GameState.Running && !token.IsCancellationRequested)
             {
-                nextScreen = sm.CurrentScreen;
+                nextScreen = ScreenManager.CurrentScreen;
 
                 this.inputs.ProcessEvents();
 
@@ -145,9 +145,9 @@ namespace SharpAlliance.Core
                 if (sm.guiPendingScreen != NullScreen.Instance)
                 {
                     // Based on active screen, deinit!
-                    if (sm.guiPendingScreen != sm.CurrentScreen)
+                    if (sm.guiPendingScreen != ScreenManager.CurrentScreen)
                     {
-                        switch (sm.CurrentScreen)
+                        switch (ScreenManager.CurrentScreen)
                         {
                             case MapScreen ms when sm.guiPendingScreen is MessageBoxScreen:
                                 sm.EndMapScreen(false);
@@ -164,7 +164,7 @@ namespace SharpAlliance.Core
                         // Set the fact that the screen has changed
                         nextScreen = sm.guiPendingScreen;
 
-                        this.HandleNewScreenChange(sm.guiPendingScreen, sm.CurrentScreen);
+                        this.HandleNewScreenChange(sm.guiPendingScreen, ScreenManager.CurrentScreen);
                     }
 
                     await sm.ActivateScreen(sm.guiPendingScreen);
@@ -172,13 +172,13 @@ namespace SharpAlliance.Core
                 }
 
                 VeldridVideoManager.ClearElements();
-                var nextScreenName = await sm.CurrentScreen.Handle();
+                var nextScreenName = await ScreenManager.CurrentScreen.Handle();
                 nextScreen = await sm.GetScreen(nextScreenName, activate: false);
 
                 // if the screen has chnaged
-                if (nextScreen != sm.CurrentScreen)
+                if (nextScreen != ScreenManager.CurrentScreen)
                 {
-                    this.HandleNewScreenChange(nextScreen, sm.CurrentScreen);
+                    this.HandleNewScreenChange(nextScreen, ScreenManager.CurrentScreen);
                     await sm.ActivateScreen(nextScreen);
                 }
 
@@ -256,12 +256,12 @@ namespace SharpAlliance.Core
             //            //    UINT32 uiSpaceOnDrive;
             //            //    CHAR16 zSizeNeeded[512];
             //            //
-            //            //    wprintf(zSizeNeeded, L"%d", REQUIRED_FREE_SPACE / BYTESINMEGABYTE);
+            //            //    wprintf(zSizeNeeded, "%d", REQUIRED_FREE_SPACE / BYTESINMEGABYTE);
             //            //    InsertCommasForDollarFigure(zSizeNeeded);
             //            //
             //            //    uiSpaceOnDrive = GetFreeSpaceOnHardDriveWhereGameIsRunningFrom();
             //            //
-            //            //    wprintf(zSpaceOnDrive, L"%.2f", uiSpaceOnDrive / (FLOAT)BYTESINMEGABYTE);
+            //            //    wprintf(zSpaceOnDrive, "%.2f", uiSpaceOnDrive / (FLOAT)BYTESINMEGABYTE);
             //            //
             //            //    wprintf(zText, pMessageStrings[MSG_LOWDISKSPACE_WARNING], zSpaceOnDrive, zSizeNeeded);
             //            //

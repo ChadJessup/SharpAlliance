@@ -14,9 +14,7 @@ namespace SharpAlliance.Core.Screens
     {
         private readonly Overhead overhead;
         private readonly GameContext context;
-        private readonly VeldridVideoManager video;
         private readonly CursorSubSystem cursor;
-//        private readonly IVideoSurfaceManager videoSurface;
         private readonly FontSubSystem font;
         private readonly TileCache tileCache;
         private readonly MercTextBox mercTextBox;
@@ -42,8 +40,6 @@ namespace SharpAlliance.Core.Screens
             World world,
             GameContext context,
             CursorSubSystem cursorSubSystem,
-            IVideoManager videoManager,
-            // IVideoSurfaceManager videoSurfaceManager,
             FontSubSystem fontSubSystem,
             EventManager eventManager,
             IScreenManager sm,
@@ -65,7 +61,6 @@ namespace SharpAlliance.Core.Screens
             this.strategicMap = strategicMap;
             this.world = world;
             this.context = context;
-            VeldridVideoManager = (videoManager as VeldridVideoManager)!;
             this.cursor = cursorSubSystem;
             // this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
@@ -106,7 +101,7 @@ namespace SharpAlliance.Core.Screens
             if (ubCurrentScreen == 255)
             {
                 // TODO: read when smacker comes in.
-                if (ScreenManager.gfDoneWithSplashScreen)
+                if (Globals.gfDoneWithSplashScreen)
                 {
                     ubCurrentScreen = 0;
                 }
@@ -143,14 +138,14 @@ namespace SharpAlliance.Core.Screens
 
                 //mprintf( 10, 420, zVersionLabel );
 
-                //mprintf(10, 430, L"%s: %s (Debug %S)", pMessageStrings[MSG_VERSION], zVersionLabel, czVersionNumber);
+                //mprintf(10, 430, "%s: %s (Debug %S)", pMessageStrings[MSG_VERSION], zVersionLabel, czVersionNumber);
 
 
-                //mprintf(10, 440, L"SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
+                //mprintf(10, 440, "SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
 
                 //if (gfDontUseDDBlits)
                 //{
-                //  //  mprintf(10, 450, L"SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
+                //  //  mprintf(10, 450, "SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
                 //}
 
                 VeldridVideoManager.InvalidateScreen();

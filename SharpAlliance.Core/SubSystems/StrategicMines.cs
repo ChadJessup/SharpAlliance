@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -79,7 +80,7 @@ public class StrategicMines
             // pick a producing mine at random and increase its production
             do
             {
-                ubMineIndex = (int)Random(MINE.MAX_NUMBER_OF_MINES);
+                ubMineIndex = (MINE)Globals.Random.Next((int)MINE.MAX_NUMBER_OF_MINES);
             } while (Globals.gMineStatus[ubMineIndex].fEmpty);
 
             // increase mine production by 20% of the base (minimum) rate
@@ -92,9 +93,9 @@ public class StrategicMines
         // choose which mine will run out of production.  This will never be the Alma mine or an empty mine (San Mona)...
         do
         {
-            ubDepletedMineIndex = (int)Random(MINE.MAX_NUMBER_OF_MINES);
+            ubDepletedMineIndex = (MINE)Globals.Random.Next((int)MINE.MAX_NUMBER_OF_MINES);
             // Alma mine can't run out for quest-related reasons (see Ian)
-        } while (Globals.gMineStatus[ubDepletedMineIndex].fEmpty || (ubDepletedMineIndex == MINE_ALMA));
+        } while (Globals.gMineStatus[ubDepletedMineIndex].fEmpty || (ubDepletedMineIndex == MINE.ALMA));
 
 
         for (ubMineIndex = 0; ubMineIndex < MINE.MAX_NUMBER_OF_MINES; ubMineIndex++)
@@ -113,7 +114,7 @@ public class StrategicMines
                 }
 
                 // the mine that runs out has only enough ore for this many days of full production
-                pMineStatus.uiRemainingOreSupply = ubMinDaysBeforeDepletion * (MINE_PRODUCTION_NUMBER_OF_PERIODS * pMineStatus.uiMaxRemovalRate);
+                pMineStatus.uiRemainingOreSupply = ubMinDaysBeforeDepletion * (Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * pMineStatus.uiMaxRemovalRate);
 
                 // ore starts running out when reserves drop to less than 25% of the initial supply
                 pMineStatus.uiOreRunningOutPoint = pMineStatus.uiRemainingOreSupply / 4;
@@ -139,7 +140,7 @@ public class StrategicMines
     {
         MINE ubMineIndex;
         MINE_STATUS_TYPE pMineStatus;
-        int ubQuoteType;
+        HEAD_MINER_STRATEGIC_QUOTE ubQuoteType;
 
 
         // check every non-empty mine
@@ -188,11 +189,11 @@ public class StrategicMines
                         // 2 different quotes, depends whether or not it's the first time this has happened
                         if (pMineStatus.fPrevInvadedByMonsters)
                         {
-                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE_CREATURES_AGAIN;
+                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE.CREATURES_AGAIN;
                         }
                         else
                         {
-                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE_CREATURES_ATTACK;
+                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE.CREATURES_ATTACK;
                             pMineStatus.fPrevInvadedByMonsters = true;
 
                             if (Globals.gubQuest[QUEST.CREATURES] == Globals.QUESTNOTSTARTED)
@@ -253,7 +254,7 @@ public class StrategicMines
             return (0);
         }
 
-        uiAmtExtracted = MINE_PRODUCTION_NUMBER_OF_PERIODS * Globals.gMineStatus[bMineIndex].uiMaxRemovalRate;
+        uiAmtExtracted = Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * Globals.gMineStatus[bMineIndex].uiMaxRemovalRate;
 
         // check if we will take more than there is
         if (uiAmtExtracted > Globals.gMineStatus[bMineIndex].uiRemainingOreSupply)
@@ -363,7 +364,7 @@ public class StrategicMines
                         // that mine's head miner tells player that the mine is running out
                         IssueHeadMinerQuote(bMineIndex, HEAD_MINER_STRATEGIC_QUOTE_RUNNING_OUT);
                         mineStatus.fWarnedOfRunningOut = true;
-                        AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
+                        AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
                     }
                 }
             }
@@ -478,7 +479,7 @@ public class StrategicMines
     int MineAMine(MINE bMineIndex)
     {
         // will extract ore based on available workforce, and increment players income based on amount
-        int bMineType = 0;
+        MINE_TYPE bMineType = 0;
         int iAmtExtracted = 0;
 
 
@@ -507,7 +508,7 @@ public class StrategicMines
             if (iAmtExtracted > 0)
             {
                 // debug message
-                //			ScreenMsg( MSG_FONT_RED, MSG_DEBUG, L"%s - Mine income from %s = $%d", WORLDTIMESTR, pTownNames[ GetTownAssociatedWithMine( bMineIndex ) ], iAmtExtracted );
+                //			Messages.ScreenMsg( MSG_FONT_RED, MSG_DEBUG, "%s - Mine income from %s = $%d", WORLDTIMESTR, pTownNames[ GetTownAssociatedWithMine( bMineIndex ) ], iAmtExtracted );
 
                 // check type of mine
                 bMineType = Globals.gMineStatus[bMineIndex].ubMineType;
@@ -543,9 +544,9 @@ public class StrategicMines
     {
         int ubShift;
 
-        for (ubShift = 0; ubShift < MINE_PRODUCTION_NUMBER_OF_PERIODS; ubShift++)
+        for (ubShift = 0; ubShift < Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS; ubShift++)
         {
-            AddStrategicEvent(EVENT_HANDLE_MINE_INCOME, GetWorldDayInMinutes() + MINE_PRODUCTION_START_TIME + (ubShift * MINE_PRODUCTION_PERIOD), 0);
+            AddStrategicEvent(EVENT_HANDLE_MINE_INCOME, GetWorldDayInMinutes() + Globals.MINE_PRODUCTION_START_TIME + (ubShift * Globals.MINE_PRODUCTION_PERIOD), 0);
         }
     }
 
@@ -577,7 +578,7 @@ public class StrategicMines
         if (PlayerControlsMine(bMineIndex))
         {
             // get daily income for this mine (regardless of what time of day it currently is)
-            uiAmtExtracted = MINE_PRODUCTION_NUMBER_OF_PERIODS * GetCurrentWorkRateOfMineForPlayer(bMineIndex);
+            uiAmtExtracted = Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * GetCurrentWorkRateOfMineForPlayer(bMineIndex);
 
             // check if we will take more than there is
             if (uiAmtExtracted > Globals.gMineStatus[bMineIndex].uiRemainingOreSupply)
@@ -615,7 +616,7 @@ public class StrategicMines
         for (bCounter = 0; bCounter < MINE.MAX_NUMBER_OF_MINES; bCounter++)
         {
             // add up the total
-            iTotal += (MINE_PRODUCTION_NUMBER_OF_PERIODS * Globals.gMineStatus[bCounter].uiMaxRemovalRate);
+            iTotal += (Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * Globals.gMineStatus[bCounter].uiMaxRemovalRate);
         }
 
         return (iTotal);
@@ -727,7 +728,7 @@ public class StrategicMines
     }
 
 
-    bool SaveMineStatusToSaveGameFile()//HWFILE hFile)
+    bool SaveMineStatusToSaveGameFile()//Stream hFile)
     {
         int uiNumBytesWritten;
 
@@ -742,7 +743,7 @@ public class StrategicMines
     }
 
 
-    bool LoadMineStatusFromSavedGameFile()//HWFILE hFile)
+    bool LoadMineStatusFromSavedGameFile()//Stream hFile)
     {
         int uiNumBytesRead;
 
@@ -765,7 +766,7 @@ public class StrategicMines
         {
             var mineStatus = Globals.gMineStatus[bMineIndex];
             mineStatus.fShutDown = true;
-            AddHistoryToPlayersLog(HISTORY.MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
+            AddHistoryToPlayersLog(HISTORY.MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
         }
     }
 
@@ -780,7 +781,7 @@ public class StrategicMines
             {
                 var mineStatus = Globals.gMineStatus[bMineIndex];
                 mineStatus.fShutDown = false;
-                AddHistoryToPlayersLog(HISTORY.MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), gMineLocation[bMineIndex].sSectorX, gMineLocation[bMineIndex].sSectorY);
+                AddHistoryToPlayersLog(HISTORY.MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
             }
         }
     }
@@ -853,7 +854,7 @@ public class StrategicMines
         if (Globals.gMercProfiles[usHeadMinerProfileId].bLife < Globals.OKLIFE)
         {
             // debug message
-            ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
+            Messages.ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
             return;
         }
 
@@ -1278,9 +1279,9 @@ public enum MINE_TYPE
     NUM_MINE_TYPES,
 }
 
-public struct MINE_STATUS_TYPE
+public class MINE_STATUS_TYPE
 {
-    public int ubMineType;                               // type of mine (silver or gold)
+    public MINE_TYPE ubMineType;                               // type of mine (silver or gold)
     byte[] filler1;// [3];
     public int uiMaxRemovalRate;                    // fastest rate we can move ore from this mine in period
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
@@ -75,7 +76,7 @@ namespace SharpAlliance.Core.SubSystems
             int cnt;
 
             //Pause the game
-            this.clock.gfGamePaused = true;
+            Globals.gfGamePaused = true;
 
             //Reset the sectors
             Globals.gWorldSectorY = 0;
@@ -133,7 +134,7 @@ namespace SharpAlliance.Core.SubSystems
             //TempHiringOfMercs(0, true);
 
             //Make sure the game starts in the TEAM panel ( it wasnt being reset )
-            this.ui.gsCurInterfacePanel = InterfacePanelDefines.TEAM_PANEL;
+            Globals.gsCurInterfacePanel = InterfacePanelDefines.TEAM_PANEL;
 
             //Delete all the strategic events
             this.gameEvents.DeleteAllStrategicEvents();

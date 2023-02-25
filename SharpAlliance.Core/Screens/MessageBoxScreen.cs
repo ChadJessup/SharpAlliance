@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
@@ -55,7 +56,7 @@ namespace SharpAlliance.Core.Screens
                     }
                     else
                     {
-                        HandleMAPUILoseCursorFromOtherScreen();
+                        MapScreenInterfaceMap.HandleMAPUILoseCursorFromOtherScreen();
                     }
 
                     this.messageBoxSubSystem.gfStartedFromGameScreen = false;
@@ -142,8 +143,7 @@ namespace SharpAlliance.Core.Screens
                     ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
                 }
 
-
-                RenderMercPopUpBoxFromIndex(this.messageBoxSubSystem.gMsgBox.iBoxId, this.messageBoxSubSystem.gMsgBox.sX, this.messageBoxSubSystem.gMsgBox.sY, FRAME_BUFFER);
+                MercTextBox.RenderMercPopUpBoxFromIndex(this.messageBoxSubSystem.gMsgBox.iBoxId, this.messageBoxSubSystem.gMsgBox.sX, this.messageBoxSubSystem.gMsgBox.sY, Surfaces.FRAME_BUFFER);
                 //this.messageBoxSubSystem.gMsgBox.fRenderBox = false;
                 // ATE: Render each frame...
             }

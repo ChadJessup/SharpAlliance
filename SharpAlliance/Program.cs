@@ -94,7 +94,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<MessageBoxSubSystem>();
             builder.Services.AddSingleton<CinematicsSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
-            builder.Services.AddSingleton<RenderDirtySubSystem>();
+            builder.Services.AddSingleton<RenderDirty>();
             builder.Services.AddSingleton<MapScreenInterfaceMap>();
             builder.Services.AddSingleton<SoldierProfileSubSystem>();
             builder.Services.AddSingleton<DialogControl>();
