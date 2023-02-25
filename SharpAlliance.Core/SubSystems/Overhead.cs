@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -87,7 +88,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public int sSlideTarget;
         public int sSlideReason;
-        public int uiTimeSinceMercAIStart;
+        public uint uiTimeSinceMercAIStart;
         public int fPanicFlags;
         public int sPanicTriggerGridnoUnused;
         public int sHandGrid;
@@ -182,7 +183,7 @@ public struct TacticalTeamType
     public int RadarColor;
     public int bFirstID;
     public int bLastID;
-    public int bSide;
+    public TEAM bSide;
     public int bMenInSector;
     public int ubLastMercToRadio;
     public int bTeamActive;

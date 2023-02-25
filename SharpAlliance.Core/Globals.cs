@@ -12,7 +12,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 using static SharpAlliance.Core.Screens.CreditsScreen;
 using Veldrid.MetalBindings;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.SubSystems.InteractiveTiles;
 
 namespace SharpAlliance.Core;
@@ -1684,6 +1683,75 @@ public partial class Globals
     public static int guiVObjectIndex { get; set; } = 1;
     public static int guiVObjectSize { get; set; } = 0;
     public static int guiVObjectTotalAdded { get; set; } = 0;
+
+    public static int[] gubOutOfTurnOrder = new int[Globals.MAXMERCS];
+    //gubOutOfTurnOrder[0] = END_OF_INTERRUPTS;
+    //    gubOutOfTurnOrder[1] = 0;
+
+    public const int END_OF_INTERRUPTS = 255;
+    public static int gubOutOfTurnPersons = 0;
+
+    public static bool gfHiddenInterrupt = false;
+    public static int gubLastInterruptedGuy = 0;
+
+    public const int MIN_APS_TO_INTERRUPT = 4;
+
+    public const int EVERYBODY = MAXMERCS;
+
+    public const int MAX_MISC_NOISE_DURATION = 12;      // max dur for VERY loud NOBODY noises
+
+    public const int DOOR_NOISE_VOLUME = 2;
+    public const int WINDOW_CRACK_VOLUME = 4;
+    public const int WINDOW_SMASH_VOLUME = 8;
+    public const int MACHETE_VOLUME = 9;
+    public const int TRIMMER_VOLUME = 18;
+    public const int CHAINSAW_VOLUME = 30;
+    public const int SMASHING_DOOR_VOLUME = 6;
+    public const int CROWBAR_DOOR_VOLUME = 4;
+    public const int ITEM_THROWN_VOLUME = 2;
+
+    public const int TIME_BETWEEN_RT_OPPLIST_DECAYS = 20;
+
+    // this is a fake "level" value (0 on ground, 1 on roof) for
+    // HearNoise to ignore the effects of lighting(?)
+    public const int LIGHT_IRRELEVANT = 127;
+
+    public const int AUTOMATIC_INTERRUPT = 100;
+    public const int NO_INTERRUPT = 127;
+
+    public const int MOVEINTERRUPT = 0;
+    public const int SIGHTINTERRUPT = 1;
+    public const int NOISEINTERRUPT = 2;
+
+    public const int NUM_WATCHED_LOCS = 3;
+
+    public static int[,] gbPublicOpplist = new int[MAXTEAMS, TOTAL_SOLDIERS];
+    public static int[,] gbSeenOpponents = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
+    public static int[,] gsLastKnownOppLoc = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];		// merc vs. merc
+    public static int[,] gbLastKnownOppLevel = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
+    public static int[,] gsPublicLastKnownOppLoc = new int[MAXTEAMS, TOTAL_SOLDIERS];	// team vs. merc
+    public static int[,] gbPublicLastKnownOppLevel = new int[MAXTEAMS, TOTAL_SOLDIERS];
+    public static int[] gubPublicNoiseVolume = new int[MAXTEAMS];
+    public static int[] gsPublicNoiseGridno = new int[MAXTEAMS];
+    public static int[] gbPublicNoiseLevel = new int[MAXTEAMS];
+    public static int[,] gubKnowledgeValue = new int[10, 10];
+    public static int[,] gbLookDistance = new int[8, 8];
+    public static int gfKnowAboutOpponents;
+
+    public static bool gfPlayerTeamSawJoey;
+    public static bool gfMikeShouldSayHi;
+
+
+    public static int[,] gsWatchedLoc = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
+    public static int[,] gbWatchedLocLevel = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
+    public static int[,] gubWatchedLocPoints = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
+    public static bool[,] gfWatchedLocReset = new bool[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
+
+    public const int BEST_SIGHTING_ARRAY_SIZE = 6;
+    public const int BEST_SIGHTING_ARRAY_SIZE_ALL_TEAMS_LOOK_FOR_ALL = 6;
+    public const int BEST_SIGHTING_ARRAY_SIZE_NONCOMBAT = 3;
+    public const int BEST_SIGHTING_ARRAY_SIZE_INCOMBAT = 0;
+
 }
 
 public enum Stat

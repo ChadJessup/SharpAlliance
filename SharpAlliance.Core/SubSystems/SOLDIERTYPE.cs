@@ -19,7 +19,7 @@ namespace SharpAlliance.Core.SubSystems
         OBJECTTYPE pTempObject;
         // KEY_ON_RING pKeyRing;
 
-        int bOldLife;          // life at end of last turn, recorded for monster AI
+        public int bOldLife;          // life at end of last turn, recorded for monster AI
                                 // attributes
         public bool bInSector { get; set; }
         int bFlashPortraitFrame;
@@ -206,15 +206,15 @@ namespace SharpAlliance.Core.SubSystems
         //struct TAG_level_node               *pRoofUILevelNode;
 
         // WALKING STUFF
-        int bDesiredDirection;
-        int sDestXPos;
-        int sDestYPos;
-        int sDesiredDest;
-        int sDestination;
+        public int bDesiredDirection;
+        public int sDestXPos;
+        public int sDestYPos;
+        public int sDesiredDest;
+        public int sDestination;
         public int sFinalDestination;
         public int bLevel;
-        int bStopped;
-        int bNeedToLook;
+        public int bStopped;
+        public int bNeedToLook;
 
 
         // PATH STUFF
@@ -241,8 +241,8 @@ namespace SharpAlliance.Core.SubSystems
         int iMuzFlash;
         int bMuzFlashCount;
 
-        int sX;
-        int sY;
+        public int sX;
+        public int sY;
 
         int usOldAniState;
         int sOldAniCode;
@@ -294,44 +294,41 @@ namespace SharpAlliance.Core.SubSystems
         public int uiPendingActionData1;
         public int sPendingActionData2;
         public int bPendingActionData3;
-        int ubDoorHandleCode;
-        int uiPendingActionData4;
-        int bInterruptDuelPts;
-        int bPassedLastInterrupt;
-        int bIntStartAPs;
-        int bMoved;
-        int bHunting;
-        int ubLastCall;
-        int ubCaller;
-        int sCallerGridNo;
-        int bCallPriority;
-        int bCallActedUpon;
-        int bFrenzied;
-        int bNormalSmell;
-        int bMonsterSmell;
-        int bMobility;
-        int bRTPCombat;
-        int fAIFlags;
+        public int ubDoorHandleCode;
+        public int uiPendingActionData4;
+        public int bInterruptDuelPts;
+        public int bPassedLastInterrupt;
+        public int bIntStartAPs;
+        public int bMoved;
+        public int bHunting;
+        public int ubLastCall;
+        public int ubCaller;
+        public int sCallerGridNo;
+        public int bCallPriority;
+        public int bCallActedUpon;
+        public int bFrenzied;
+        public int bNormalSmell;
+        public int bMonsterSmell;
+        public int bMobility;
+        public int bRTPCombat;
+        public int fAIFlags;
 
-        bool fDontChargeReadyAPs;
+        public bool fDontChargeReadyAPs;
         public int usAnimSurface;
-        int sZLevel;
-        bool fPrevInWater;
-        bool fGoBackToAimAfterHit;
+        public int sZLevel;
+        public bool fPrevInWater;
+        public bool fGoBackToAimAfterHit;
 
         public int sWalkToAttackGridNo;
         public int sWalkToAttackWalkToCost;
 
         bool fForceRenderColor;
         bool fForceNoRenderPaletteCycle;
-
         int sLocatorOffX;
         int sLocatorOffY;
         bool fStopPendingNextTile;
-
         bool fForceShade;
         int pForcedShade;
-
         int bDisplayDamageCount;
         int fDisplayDamage;
         int sDamage;
@@ -340,63 +337,53 @@ namespace SharpAlliance.Core.SubSystems
         int bDamageDir;
         public bool bDoBurst;
         public AnimationStates usUIMovementMode;
-        int bUIInterfaceLevel;
+        public int bUIInterfaceLevel;
         public bool fUIMovementFast;
 
         // TIMECOUNTER BlinkSelCounter;
         // TIMECOUNTER PortraitFlashCounter;
-        bool fDeadSoundPlayed;
+        public bool fDeadSoundPlayed;
         public NPCID ubProfile { get; }
-        int ubQuoteRecord;
-        int ubQuoteActionID;
-        int ubBattleSoundID;
-
-        bool fClosePanel;
-        bool fClosePanelToDie;
-        int ubClosePanelFrame;
-        bool fDeadPanel;
-        int ubDeadPanelFrame;
-        bool fOpenPanel;
-        int bOpenPanelFrame;
-
-        int sPanelFaceX;
-        int sPanelFaceY;
-
+        public int ubQuoteRecord;
+        public int ubQuoteActionID;
+        public int ubBattleSoundID;
+        public bool fClosePanel;
+        public bool fClosePanelToDie;
+        public int ubClosePanelFrame;
+        public bool fDeadPanel;
+        public int ubDeadPanelFrame;
+        public bool fOpenPanel;
+        public int bOpenPanelFrame;
+        public int sPanelFaceX;
+        public int sPanelFaceY;
         // QUOTE STUFF
-        int bNumHitsThisTurn;
-        int usQuoteSaidFlags;
-        int fCloseCall;
-        int bLastSkillCheck;
-        int ubSkillCheckAttempts;
-
-        int bVocalVolume;  // verbal sounds need to differ in volume
-
-        int bStartFallDir;
-        int fTryingToFall;
-
-        int ubPendingDirection;
-        int uiAnimSubFlags;
-
+        public int bNumHitsThisTurn;
+        public int usQuoteSaidFlags;
+        public int fCloseCall;
+        public int bLastSkillCheck;
+        public int ubSkillCheckAttempts;
+        public int bVocalVolume;  // verbal sounds need to differ in volume
+        public int bStartFallDir;
+        public int fTryingToFall;
+        public int ubPendingDirection;
+        public int uiAnimSubFlags;
         public int bAimShotLocation;
-        int ubHitLocation;
-
-        int[] pEffectShades = new int[Globals.NUM_SOLDIER_EFFECTSHADES]; // Shading tables for effects
-
-        int ubPlannedUIAPCost;
-        int sPlannedTargetX;
-        int sPlannedTargetY;
-
-        int[] sSpreadLocations = new int[6];
-        bool fDoSpread;
-        int sStartGridNo;
-        int sEndGridNo;
-        int sForcastGridno;
-        int sZLevelOverride;
-        int bMovedPriorToInterrupt;
-        int iEndofContractTime;               // time, in global time(resolution, minutes) that merc will leave, or if its a M.E.R.C. merc it will be set to -1.  -2 for NPC and player generated
-        int iStartContractTime;
-        int iTotalContractLength;         // total time of AIM mercs contract	or the time since last paid for a M.E.R.C. merc
-        int iNextActionSpecialData;       // AI special action data record for the next action
+        public int ubHitLocation;
+        public int[] pEffectShades = new int[Globals.NUM_SOLDIER_EFFECTSHADES]; // Shading tables for effects
+        public int ubPlannedUIAPCost;
+        public int sPlannedTargetX;
+        public int sPlannedTargetY;
+        public int[] sSpreadLocations = new int[6];
+        public bool fDoSpread;
+        public int sStartGridNo;
+        public int sEndGridNo;
+        public int sForcastGridno;
+        public int sZLevelOverride;
+        public int bMovedPriorToInterrupt;
+        public int iEndofContractTime;               // time, in global time(resolution, minutes) that merc will leave, or if its a M.E.R.C. merc it will be set to -1.  -2 for NPC and player generated
+        public int iStartContractTime;
+        public int iTotalContractLength;         // total time of AIM mercs contract	or the time since last paid for a M.E.R.C. merc
+        public int iNextActionSpecialData;       // AI special action data record for the next action
         public MERC_TYPE ubWhatKindOfMercAmI;          //Set to the type of character it is
         public Assignments bAssignment;                           // soldiers current assignment 
         int bOldAssignment;                        // old assignment, for autosleep purposes
@@ -410,8 +397,6 @@ namespace SharpAlliance.Core.SubSystems
         int fHitByGasFlags;                       // flags 
         int usMedicalDeposit;         // is there a medical deposit on merc 
         int usLifeInsurance;          // is there life insurance taken out on merc  
-
-
         //DEF:  Used for the communications
         int uiStartMovementTime;             // the time since the merc first started moving 
         int uiOptimumMovementTime;           // everytime in ececute overhead the time for the current ani will be added to this total
@@ -423,23 +408,18 @@ namespace SharpAlliance.Core.SubSystems
         int uiSoldierUpdateNumber;
         byte ubSoldierUpdateType;
         //END
-
         int iStartOfInsuranceContract;
         int uiLastAssignmentChangeMin;       // timestamp of last assignment change in minutes
         int iTotalLengthOfInsuranceContract;
-
         public SOLDIER_CLASS ubSoldierClass;                                   //admin, elite, troop (creature types?)
         int ubAPsLostToSuppression;
         bool fChangingStanceDueToSuppression;
         int ubSuppressorID;
-
         //Squad merging vars
         int ubDesiredSquadAssignment;
         int ubNumTraversalsAllowedToMerge;
-
         int usPendingAnimation2;
         public int ubCivilianGroup;
-
         // time changes...when a stat was changed according to GetJA2Clock();
         public int uiChangeLevelTime;
         public int uiChangeHealthTime;
@@ -475,10 +455,10 @@ namespace SharpAlliance.Core.SubSystems
         int ubHiResDesiredDirection;
         int ubLastFootPrintSound;
         public int bVehicleID;
-        int fPastXDest;
-        int fPastYDest;
-        int bMovementDirection;
-        int sOldGridNo;
+        public int fPastXDest;
+        public int fPastYDest;
+        public int bMovementDirection;
+        public int sOldGridNo;
         public int usDontUpdateNewGridNoOnMoveAnimChange;
         public int sBoundingBoxWidth;
         public int sBoundingBoxHeight;
