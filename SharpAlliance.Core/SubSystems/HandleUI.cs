@@ -5574,7 +5574,7 @@ public class HandleUI
             {
                 // if in this mode, we don't want to automatically show hand cursor over items on strucutres
             }
-            //else if ( pIntTile != null && ( pStructure.fFlags & ( STRUCTURE_SWITCH | STRUCTURE_ANYDOOR ) ) )
+            //else if ( pIntTile != null && ( pStructure.fFlags & ( STRUCTUREFLAGS.SWITCH | STRUCTUREFLAGS.ANYDOOR ) ) )
             else if (pIntTile != null
                 && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH)))
             {
@@ -5937,7 +5937,7 @@ public class HandleUI
             ubMovementCost = Globals.gubWorldMovementCosts[sIntSpot, (int)sDirs[cnt], pSoldier.bLevel];
             if ((TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost)))
             {
-                ubMovementCost = DoorTravelCost(pSoldier, sIntSpot, ubMovementCost, (bool)(pSoldier.bTeam == Globals.gbPlayerNum), out iDoorGridNo);
+                ubMovementCost = PathAI.DoorTravelCost(pSoldier, sIntSpot, ubMovementCost, (bool)(pSoldier.bTeam == Globals.gbPlayerNum), out iDoorGridNo);
             }
 
             // If we have hit an obstacle, STOP HERE

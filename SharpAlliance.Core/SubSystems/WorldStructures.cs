@@ -23,7 +23,7 @@ public class WorldStructures
         this.world = world;
     }
 
-    public STRUCTURE? FindStructure(int sGridNo, STRUCTUREFLAGS fFlags)
+    public static STRUCTURE? FindStructure(int sGridNo, STRUCTUREFLAGS fFlags)
     { // finds a structure that matches any of the given flags
         STRUCTURE? pCurrent;
 
@@ -38,6 +38,61 @@ public class WorldStructures
             pCurrent = pCurrent.pNext;
         }
      
+        return (null);
+    }
+
+    public static LEVELNODE? FindLevelNodeBasedOnStructure(int sGridNo, STRUCTURE? pStructure)
+    {
+        LEVELNODE? pLevelNode;
+
+        //ATE: First look on the struct layer.....
+        pLevelNode = Globals.gpWorldLevelData[sGridNo].pStructHead;
+        while (pLevelNode != null)
+        {
+            if (pLevelNode.pStructureData == pStructure)
+            {
+                return (pLevelNode);
+            }
+            pLevelNode = pLevelNode.pNext;
+        }
+
+        // Next the roof layer....
+        pLevelNode = Globals.gpWorldLevelData[sGridNo].pRoofHead;
+        while (pLevelNode != null)
+        {
+            if (pLevelNode.pStructureData == pStructure)
+            {
+                return (pLevelNode);
+            }
+            pLevelNode = pLevelNode.pNext;
+        }
+
+        // Then the object layer....
+        pLevelNode = Globals.gpWorldLevelData[sGridNo].pObjectHead;
+        while (pLevelNode != null)
+        {
+            if (pLevelNode.pStructureData == pStructure)
+            {
+                return (pLevelNode);
+            }
+            pLevelNode = pLevelNode.pNext;
+        }
+
+        // Finally the onroof layer....
+        pLevelNode = Globals.gpWorldLevelData[sGridNo].pOnRoofHead;
+        while (pLevelNode != null)
+        {
+            if (pLevelNode.pStructureData == pStructure)
+            {
+                return (pLevelNode);
+            }
+            pLevelNode = pLevelNode.pNext;
+        }
+
+        // Assert here if it cannot be found....
+        //AssertMsg(0, "FindLevelNodeBasedOnStruct failed.");
+
+
         return (null);
     }
 
@@ -366,7 +421,7 @@ public class WorldStructures
 
         /*
             // If adding a mobile structure, always allow addition if the mobile structure tile is passable
-            if ( (pDBStructure.fFlags & STRUCTURE_MOBILE) && (ppTile[ubTileIndex].fFlags & TILE_PASSABLE) )
+            if ( (pDBStructure.fFlags & STRUCTUREFLAGS.MOBILE) && (ppTile[ubTileIndex].fFlags & TILE_PASSABLE) )
             {
                 return( true );
             }

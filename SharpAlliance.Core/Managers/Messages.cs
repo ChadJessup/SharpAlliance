@@ -9,8 +9,8 @@ namespace SharpAlliance.Core.Managers;
 public class Messages
 {
     public static ScrollStringStPtr? pStringS = null;
-    private bool fScrollMessagesHidden;
-    private bool fOkToBeepNewMessage;
+    private static bool fScrollMessagesHidden;
+    private static bool fOkToBeepNewMessage;
 
     public static void DisableScrollMessages()
     {
@@ -33,8 +33,7 @@ public class Messages
         return pStringSt.uiFont;
     }
 
-
-    ScrollStringStPtr AddString(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, int ubPriority)
+    private static ScrollStringStPtr AddString(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, int ubPriority)
     {
         // add a new string to the list of strings
         ScrollStringStPtr pStringSt = new();
@@ -55,8 +54,7 @@ public class Messages
         return (pStringSt);
     }
 
-
-    void SetString(ScrollStringStPtr pStringSt, string pString)
+    private static void SetString(ScrollStringStPtr pStringSt, string pString)
     {
         // ARM: Why x2 + 4 ???
         //pStringSt.pString16 = MemAlloc((wcslen(pString) * 2) + 4);
@@ -72,12 +70,12 @@ public class Messages
 
 
 
-    void SetStringColor(ScrollStringStPtr pStringSt, FontColor usColor)
+    private static void SetStringColor(ScrollStringStPtr pStringSt, FontColor usColor)
     {
         pStringSt.usColor = usColor;
     }
 
-    ScrollStringStPtr? GetNextString(ScrollStringStPtr? pStringSt)
+    private static ScrollStringStPtr? GetNextString(ScrollStringStPtr? pStringSt)
     {
         // returns pointer to next string line
         if (pStringSt == null)
@@ -105,14 +103,14 @@ public class Messages
     }
 
 
-    ScrollStringStPtr SetStringNext(ScrollStringStPtr pStringSt, ScrollStringStPtr? pNext)
+    private static ScrollStringStPtr SetStringNext(ScrollStringStPtr pStringSt, ScrollStringStPtr? pNext)
     {
         pStringSt.pNext = pNext;
         return pStringSt;
     }
 
 
-    ScrollStringStPtr SetStringPrev(ScrollStringStPtr pStringSt, ScrollStringStPtr? pPrev)
+    private static ScrollStringStPtr SetStringPrev(ScrollStringStPtr pStringSt, ScrollStringStPtr? pPrev)
     {
         pStringSt.pPrev = pPrev;
         return pStringSt;
@@ -504,7 +502,7 @@ public class Messages
         return;
     }
 
-    void ClearWrappedStrings(WRAPPED_STRING? pStringWrapperHead)
+    private static void ClearWrappedStrings(WRAPPED_STRING? pStringWrapperHead)
     {
         WRAPPED_STRING? pNode = pStringWrapperHead;
         WRAPPED_STRING? pDeleteNode = null;
@@ -540,7 +538,7 @@ public class Messages
 
 
     // new tactical and mapscreen message system
-    void TacticalScreenMsg(FontColor usColor, int ubPriority, params string[] pStringA)
+    private static void TacticalScreenMsg(FontColor usColor, int ubPriority, params string[] pStringA)
     {
         // this function sets up the string into several single line structures
 
@@ -682,8 +680,7 @@ public class Messages
         return;
     }
 
-
-    void MapScreenMessage(FontColor usColor, int ubPriority, params string[] pStringA)
+    private static void MapScreenMessage(FontColor usColor, int ubPriority, params string[] pStringA)
     {
         // this function sets up the string into several single line structures
 
@@ -855,7 +852,7 @@ public class Messages
 
 
     // add string to the map screen message list
-    void AddStringToMapScreenMessageList(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, int ubPriority)
+    private static void AddStringToMapScreenMessageList(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, int ubPriority)
     {
         int ubSlotIndex = 0;
         ScrollStringStPtr? pStringSt = null;
@@ -953,9 +950,9 @@ public class Messages
 
 
     private static uint uiSoundId = SoundManager.NO_SAMPLE;
-    private bool fFirstTimeInMessageSystem;
+    private static bool fFirstTimeInMessageSystem;
 
-    void PlayNewMessageSound()
+    private static void PlayNewMessageSound()
     {
         // play a new message sound, if there is one playing, do nothing
 
@@ -1249,7 +1246,7 @@ public class Messages
         return;
     }
 
-    void WriteMessageToFile(string pString)
+    private static void WriteMessageToFile(string pString)
     {
         //# ifdef JA2BETAVERSION
         //

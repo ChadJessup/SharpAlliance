@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 
@@ -10,13 +11,19 @@ public class PathAI
     private readonly GameSettings gGameSettings;
     private readonly Overhead overhead;
     private readonly WorldManager worldManager;
-    public int[] guiPathingData = new int[256];
-    public static int[] guiPlottedPath = new int[256];
 
-    public static bool gfPlotDirectPath { get; set; } = false;
-    public static int giPlotCnt { get; set; } = 0;
-    public static bool gusPathShown { get; set; } = false;
-    public static int gusAPtsToMove { get; set; } = 0;
+    private static Dictionary<WorldDirections, int> dirDelta = new()
+    {
+        { WorldDirections.NORTH , -Globals.MAPWIDTH } ,     //N
+    	{ WorldDirections.NORTHEAST , 1-Globals.MAPWIDTH },      //NE
+    	{ WorldDirections.EAST , 1                  },      //E
+    	{ WorldDirections.SOUTHEAST , 1+Globals.MAPWIDTH },      //SE
+    	{ WorldDirections.SOUTH , Globals.MAPWIDTH   },      //S
+    	{ WorldDirections.SOUTHWEST , Globals.MAPWIDTH-1 },      //SW
+    	{ WorldDirections.WEST , -1                 },      //W
+    	{ WorldDirections.NORTHWEST , -Globals.MAPWIDTH-1 },      //NW
+    };
+
 
     public PathAI(
         ILogger<PathAI> logger,
@@ -28,6 +35,11 @@ public class PathAI
         this.gGameSettings = gameSettings;
         this.overhead = overhead;
         this.worldManager = worldManager;
+    }
+
+    public static int DoorTravelCost(SOLDIERTYPE? pSoldier, int iGridNo, int ubMovementCost, bool fReturnPerceivedValue, out int piDoorGridNo)
+    {
+        return (InternalDoorTravelCost(pSoldier, iGridNo, ubMovementCost, fReturnPerceivedValue, out piDoorGridNo, false));
     }
 
     public int UIPlotPath(
@@ -47,7 +59,7 @@ public class PathAI
 
         if (_KeyDown(SHIFT))
         {
-            gfPlotDirectPath = true;
+            Globals.gfPlotDirectPath = true;
         }
 
         // If we are on the same level as the interface level, continue, else return
@@ -72,7 +84,7 @@ public class PathAI
             bReverse,
             sAPBudget);
 
-        gfPlotDirectPath = false;
+        Globals.gfPlotDirectPath = false;
         return (sRet);
     }
 
@@ -104,12 +116,12 @@ public class PathAI
         bool bIgnoreNextCost = false;
         int sTestGridno;
 
-        if (bPlot && gusPathShown)
+        if (bPlot && Globals.gusPathShown)
         {
             PathAI.ErasePath(false);
         }
 
-        gusAPtsToMove = 0;
+        Globals.gusAPtsToMove = 0;
         sTempGrid = pSold.sGridNo;
 
         sFootOrderIndex = 0;
@@ -163,7 +175,7 @@ public class PathAI
 
 
             sPoints += sAnimCost;
-            gusAPtsToMove += sAnimCost;
+            Globals.gusAPtsToMove += sAnimCost;
 
             if (bStayOn != 0)
             {
@@ -303,9 +315,9 @@ public class PathAI
 
                 if (iCnt == 0 && bPlot)
                 {
-                    gusAPtsToMove = sPoints;
+                    Globals.gusAPtsToMove = sPoints;
 
-                    giPlotCnt = 0;
+                    Globals.giPlotCnt = 0;
 
                 }
 
@@ -314,7 +326,7 @@ public class PathAI
                 {
                     if (bPlot && ((iCnt < (iLastGrid - 1)) || (iCnt < iLastGrid && bStayOn != 0)))
                     {
-                        guiPlottedPath[giPlotCnt++] = sTempGrid;
+                        Globals.guiPlottedPath[Globals.giPlotCnt++] = sTempGrid;
 
                         // we need a footstep graphic ENTERING the next tile
 
@@ -455,7 +467,7 @@ public class PathAI
 
             if (bPlot)
             {
-                gusPathShown = true;
+                Globals.gusPathShown = true;
             }
 
         }   // end of found a path
@@ -488,7 +500,7 @@ public class PathAI
             WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS20);
         }
 
-        if (!gusPathShown)
+        if (!Globals.gusPathShown)
         {
             //OldPath = false;
             return;
@@ -499,14 +511,14 @@ public class PathAI
 
         //OldPath = false;
 
-        gusPathShown = false;
+        Globals.gusPathShown = false;
 
-        for (iCnt = 0; iCnt < giPlotCnt; iCnt++)
+        for (iCnt = 0; iCnt < Globals.giPlotCnt; iCnt++)
         {
             //Grid[PlottedPath[cnt]].fstep = 0;
 
-            WorldManager.RemoveAllObjectsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
-            WorldManager.RemoveAllOnRoofsOfTypeRange(guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
+            WorldManager.RemoveAllObjectsOfTypeRange(Globals.guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
+            WorldManager.RemoveAllOnRoofsOfTypeRange(Globals.guiPlottedPath[iCnt], TileTypeDefines.FOOTPRINTS, TileTypeDefines.FOOTPRINTS);
 
             //RemoveAllObjectsOfTypeRange( guiPlottedPath[iCnt], FIRSTPOINTERS, FIRSTPOINTERS );
         }
@@ -515,8 +527,207 @@ public class PathAI
         //    Grid[cnt].fstep = 0;
         //RemoveAllStructsOfTypeRange( gusEndPlotGridNo, GOODRING, GOODRING );
 
-        giPlotCnt = 0;
+        Globals.giPlotCnt = 0;
         // memset(guiPlottedPath, 0, 256 * sizeof(UINT32));
+    }
+
+    private static int InternalDoorTravelCost(SOLDIERTYPE? pSoldier, int iGridNo, int ubMovementCost, bool fReturnPerceivedValue, out int? piDoorGridNo, bool fReturnDoorCost)
+    {
+        // This function will return either TRAVELCOST.DOOR (in place of closed door cost),
+        // TRAVELCOST.OBSTACLE, or the base ground terrain
+        // travel cost, depending on whether or not the door is open or closed etc.
+        bool fDoorIsObstacleIfClosed = false;
+        int iDoorGridNo = -1;
+        DOOR_STATUS? pDoorStatus;
+        DOOR? pDoor;
+        STRUCTURE? pDoorStructure;
+        bool fDoorIsOpen;
+        int ubReplacementCost;
+
+        if (IS_TRAVELCOST_DOOR(ubMovementCost))
+        {
+            ubReplacementCost = TRAVELCOST.OBSTACLE;
+
+            switch (ubMovementCost)
+            {
+                case TRAVELCOST.DOOR_CLOSED_HERE:
+                    fDoorIsObstacleIfClosed = true;
+                    iDoorGridNo = iGridNo;
+                    ubReplacementCost = TRAVELCOST.DOOR;
+                    break;
+                case TRAVELCOST.DOOR_CLOSED_N:
+                    fDoorIsObstacleIfClosed = true;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTH];
+                    ubReplacementCost = TRAVELCOST.DOOR;
+                    break;
+                case TRAVELCOST.DOOR_CLOSED_W:
+                    fDoorIsObstacleIfClosed = true;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.WEST];
+                    ubReplacementCost = TRAVELCOST.DOOR;
+                    break;
+                case TRAVELCOST.DOOR_OPEN_HERE:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo;
+                    break;
+                case TRAVELCOST.DOOR_OPEN_N:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTH];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_NE:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTHEAST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_E:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.EAST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_SE:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.SOUTHEAST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_S:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.SOUTH];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_SW:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.SOUTHWEST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_W:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.WEST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_NW:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTHWEST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_N_N:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTH] + dirDelta[WorldDirections.NORTH];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_NW_N:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTHWEST] + dirDelta[WorldDirections.NORTH];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_NE_N:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTHEAST] + dirDelta[WorldDirections.NORTH];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_W_W:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.WEST] + dirDelta[WorldDirections.WEST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_SW_W:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.SOUTHWEST] + dirDelta[WorldDirections.WEST];
+                    break;
+                case TRAVELCOST.DOOR_OPEN_NW_W:
+                    fDoorIsObstacleIfClosed = false;
+                    iDoorGridNo = iGridNo + dirDelta[WorldDirections.NORTHWEST] + dirDelta[WorldDirections.WEST];
+                    break;
+                default:
+                    break;
+            }
+
+            if (pSoldier is not null
+                && (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER)
+                || pSoldier.uiStatusFlags.HasFlag(SOLDIER.ANIMAL)))
+            {
+                // can't open doors!
+                ubReplacementCost = TRAVELCOST.OBSTACLE;
+            }
+
+            if (piDoorGridNo is not null)
+            {
+                // return gridno of door through pointer
+                piDoorGridNo = iDoorGridNo;
+            }
+
+            if (fReturnPerceivedValue && Globals.gpWorldLevelData[iDoorGridNo].ubExtFlags[0].HasFlag(MAPELEMENT_EXT.DOOR_STATUS_PRESENT))
+            {
+                // check door status
+                pDoorStatus = Keys.GetDoorStatus((int)iDoorGridNo);
+                if (pDoorStatus is not null)
+                {
+                    fDoorIsOpen = (pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN));
+                }
+                else
+                {
+                    // abort!
+                    return (ubMovementCost);
+                }
+            }
+            else
+            {
+                // check door structure
+                pDoorStructure = WorldStructures.FindStructure(iDoorGridNo, STRUCTUREFLAGS.ANYDOOR);
+                if (pDoorStructure is not null)
+                {
+                    fDoorIsOpen = (pDoorStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN));
+                }
+                else
+                {
+                    // abort!
+                    return (ubMovementCost);
+                }
+            }
+            // now determine movement cost
+            if (fDoorIsOpen)
+            {
+                if (fDoorIsObstacleIfClosed)
+                {
+                    ubMovementCost = Globals.gTileTypeMovementCost[(int)Globals.gpWorldLevelData[iGridNo].ubTerrainID];
+                }
+                else
+                {
+                    ubMovementCost = ubReplacementCost;
+                }
+            }
+            else
+            {
+                if (fDoorIsObstacleIfClosed)
+                {
+                    // door is closed and this should be an obstacle, EXCEPT if we are calculating
+                    // a path for an enemy or NPC with keys
+
+                    // creatures and animals can't open doors!
+                    if (fReturnPerceivedValue
+                        || (pSoldier is not null && (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER)
+                        || pSoldier.uiStatusFlags.HasFlag(SOLDIER.ANIMAL))))
+                    {
+                        ubMovementCost = ubReplacementCost;
+                    }
+                    else
+                    {
+                        // have to check if door is locked and NPC does not have keys!
+                        pDoor = FindDoorInfoAtGridNo(iDoorGridNo);
+                        if (pDoor is not null)
+                        {
+                            if ((!pDoor.fLocked
+                                || (pSoldier is not null && pSoldier.bHasKeys > 0)) && !fReturnDoorCost)
+                            {
+                                ubMovementCost = Globals.gTileTypeMovementCost[(int)Globals.gpWorldLevelData[iGridNo].ubTerrainID];
+                            }
+                            else
+                            {
+                                ubMovementCost = ubReplacementCost;
+                            }
+                        }
+                        else
+                        {
+                            ubMovementCost = ubReplacementCost;
+                        }
+                    }
+                }
+                else
+                {
+                    ubMovementCost = Globals.gTileTypeMovementCost[(int)Globals.gpWorldLevelData[iGridNo].ubTerrainID];
+                }
+            }
+
+        }
+        return (ubMovementCost);
+
     }
 }
 

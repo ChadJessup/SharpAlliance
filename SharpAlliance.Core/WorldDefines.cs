@@ -192,13 +192,13 @@ public class DB_STRUCTURE_TILE
 
 public class MAP_ELEMENT
 {
-    LEVELNODE? pLandHead;                           //0
-    LEVELNODE? pLandStart;                      //1
+    public LEVELNODE? pLandHead;                           //0
+    public LEVELNODE? pLandStart;                      //1
     public LEVELNODE? pObjectHead;                     //2
     public LEVELNODE? pStructHead;                     //3
-    LEVELNODE? pShadowHead;                     //4
-    LEVELNODE? pMercHead;                           //5
-    LEVELNODE? pRoofHead;                           //6
+    public LEVELNODE? pShadowHead;                     //4
+    public LEVELNODE? pMercHead;                           //5
+    public LEVELNODE? pRoofHead;                           //6
     public LEVELNODE? pOnRoofHead { get; set; } = new();   //7
     public LEVELNODE pTopmostHead { get; set; } = new();  //8
     public LEVELNODE[] pLevelNodes = new LEVELNODE[9];
@@ -225,7 +225,7 @@ public enum MAPELEMENTFLAGS
     REEVALUATE_REDUNDENCY = 0x0002,
     ENEMY_MINE_PRESENT = 0x0004,
     PLAYER_MINE_PRESENT = 0x0008,
-    STRUCTURE_DAMAGED = 0x0010,
+    STRUCTUREFLAGS_DAMAGED = 0x0010,
     REEVALUATEBLOOD = 0x0020,
     INTERACTIVETILE = 0x0040,
     RAISE_LAND_START = 0x0080,

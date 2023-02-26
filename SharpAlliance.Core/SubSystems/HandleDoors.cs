@@ -18,7 +18,7 @@ public class HandleDoors
         bool fTrapped = false;
 
         // Try and get a door if one exists here
-        pDoor = FindDoorInfoAtGridNo(sGridNo);
+        pDoor = Keys.FindDoorInfoAtGridNo(sGridNo);
 
         if (Globals.gfUIIntTileLocation == false)
         {
@@ -80,11 +80,11 @@ public class HandleDoors
         if (Globals.gfUIIntTileLocation2 == false)
         {
             // Try to get doors status here...
-            pDoorStatus = GetDoorStatus(sGridNo);
+            pDoorStatus = Keys.GetDoorStatus(sGridNo);
             if (pDoorStatus == null || (pDoorStatus?.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_NOTSET) ?? false))
             {
                 // OK, get status based on graphic.....
-                pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
+                pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
                 if (pStructure is not null)
                 {
                     if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
@@ -132,7 +132,7 @@ public enum DOOR_PERCEIVED
     UNTRAPPED = 2,
 }
 
-public struct DOOR
+public class DOOR
 {
     public int sGridNo;
     public bool fLocked;                            // is the door locked

@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
-using SixLabors.ImageSharp.Drawing;
-using Veldrid.OpenGLBinding;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core;
 
@@ -14,17 +11,7 @@ public class TileDefine
     public static int MAX_ANIMATED_TILES = 200;
     public static int WALL_HEIGHT = 50;
     // Globals used
-    int gTileDatabaseSize;
-    int[] gFullBaseTileValues;
-    int[] gNumTilesPerType = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
-    public static int[] gTileTypeStartIndex = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
-    string gTileSurfaceName;
-    int[] gTileTypeLogicalHeight = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
-
-    int gusNumAnimatedTiles;
-    int[] gusAnimatedTiles = new int[MAX_ANIMATED_TILES];
-    int[] gTileTypeMovementCost = new int[(int)TerrainTypeDefines.NUM_TERRAIN_TYPES];
-
+    
     public static bool GetTileIndexFromTypeSubIndex(TileTypeDefines uiCheckType, int usSubIndex, out int pusTileIndex)
     {
         // Tile database is zero-based, Type indecies are 1-based!

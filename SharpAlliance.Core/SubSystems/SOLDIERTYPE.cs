@@ -225,7 +225,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bAimTime;
         public int bShownAimTime;
         public int bPathStored;   // good for AI to reduct redundancy
-        int bHasKeys;          // allows AI controlled dudes to open locked doors
+        public int bHasKeys;          // allows AI controlled dudes to open locked doors
 
 
         // UNBLIT BACKGROUND

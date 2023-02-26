@@ -258,7 +258,7 @@ public class Facts
                 gubFact[usFact] = (NumMercsNear(ubProfileID, 5) > 0);
                 break;
             case FACT.REBELS_HATE_PLAYER:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE);
+                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE);
                 break;
             case FACT.CURRENT_SECTOR_G9:
                 gubFact[usFact] = (Globals.gWorldSectorX == 9 && Globals.gWorldSectorY == MAP_ROW.G && Globals.gbWorldSectorZ == 0);

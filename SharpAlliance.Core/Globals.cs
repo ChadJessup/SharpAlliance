@@ -13,6 +13,7 @@ using Veldrid;
 using static SharpAlliance.Core.Screens.CreditsScreen;
 using Veldrid.MetalBindings;
 using static SharpAlliance.Core.SubSystems.InteractiveTiles;
+using static SharpAlliance.Core.SubSystems.Keys;
 
 namespace SharpAlliance.Core;
 
@@ -1752,6 +1753,12 @@ public partial class Globals
     public const int BEST_SIGHTING_ARRAY_SIZE_NONCOMBAT = 3;
     public const int BEST_SIGHTING_ARRAY_SIZE_INCOMBAT = 0;
 
+    public static List<DOOR_STATUS> gpDoorStatus = new();
+    public static int gubNumDoorStatus = 0;
+    public static int[] gbMercIsNewInThisSector = new int[MAX_NUM_SOLDIERS];
+    public static bool gfPlotDirectPath { get; set; } = false;
+    public static bool gusPathShown { get; set; } = false;
+    public static int gusAPtsToMove { get; set; } = 0;
 }
 
 public enum Stat
