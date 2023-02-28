@@ -180,7 +180,7 @@ namespace SharpAlliance.Core.Managers
                     //     }
                     // }
                     // Use default blitter here
-                    //Blt8BPPDataTo16BPPBuffer( hDestVObject, hSrcVObject, (UINT16)iDestX, (UINT16)iDestY, (SGPRect*)&SrcRect );
+                    //Blt8BPPDataTo16BPPBuffer( hDestVObject, hSrcVObject, (int)iDestX, (int)iDestY, (SGPRect*)&SrcRect );
 
                     break;
             }

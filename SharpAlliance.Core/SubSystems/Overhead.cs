@@ -100,7 +100,7 @@ namespace SharpAlliance.Core.SubSystems
         public bool fGoingToEnterDemo;
         public bool fNOTDOLASTDEMO;
         public bool fMultiplayer;
-        public bool[] fCivGroupHostile = new bool[(int)CIV_GROUP.NUM_CIV_GROUPS];
+        public Dictionary<CIV_GROUP, int> fCivGroupHostile = new();
         public int ubLastBattleSectorX;
         public int ubLastBattleSectorY;
         public bool fLastBattleWon;
@@ -124,7 +124,7 @@ namespace SharpAlliance.Core.SubSystems
         public int[] zTopMessageString = new int[20];
         public int usTactialTurnLimitMax;
         public bool fTactialTurnLimitStartedBeep;
-        public int bBoxingState;
+        public BoxingStates bBoxingState;
         public int bConsNumTurnsNotSeen;
         public int ubArmyGuysKilled;
         public int []sPanicTriggerGridNo = new int[Globals.NUM_PANIC_TRIGGERS];
@@ -178,7 +178,7 @@ namespace SharpAlliance.Core.SubSystems
 }
 
 // TACTICAL ENGINE STATUS FLAGS
-public struct TacticalTeamType
+public class TacticalTeamType
 {
     public int RadarColor;
     public int bFirstID;

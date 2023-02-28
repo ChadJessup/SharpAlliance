@@ -253,7 +253,7 @@ namespace SharpAlliance.Core
             //            //{
             //            //    CHAR16 zText[512];
             //            //    CHAR16 zSpaceOnDrive[512];
-            //            //    UINT32 uiSpaceOnDrive;
+            //            //    int uiSpaceOnDrive;
             //            //    CHAR16 zSizeNeeded[512];
             //            //
             //            //    wprintf(zSizeNeeded, "%d", REQUIRED_FREE_SPACE / BYTESINMEGABYTE);

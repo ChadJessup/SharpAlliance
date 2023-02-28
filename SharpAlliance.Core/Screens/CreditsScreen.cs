@@ -155,7 +155,7 @@ public class CreditsScreen : IScreen
             }
         }
 
-        // RestoreExternBackgroundRect(CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, (INT16)CRDT_NAME_LOC_HEIGHT);
+        // RestoreExternBackgroundRect(CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, (int)CRDT_NAME_LOC_HEIGHT);
 
         if (Globals.giCurrentlySelectedFace != -1)
         {
@@ -466,12 +466,12 @@ public class CreditsScreen : IScreen
             uiColorToUse = Globals.gubCreditScreenTitleColor;
         }
         /*
-            else if ( uiFlags & CRDT_FLAG__START_SECTION )
+            else if (.uiFlags.HasFlag(CRDT_FLAG__START_SECTION ))
             {
                 uiFontToUse = ;
                 uiColorToUse = ;
             }
-            else if ( uiFlags & CRDT_FLAG__END_SECTION )
+            else if (.uiFlags.HasFlag(CRDT_FLAG__END_SECTION ))
             {
                 uiFontToUse = ;
                 uiColorToUse = ;

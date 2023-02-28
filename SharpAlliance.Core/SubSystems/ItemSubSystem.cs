@@ -263,7 +263,7 @@ public class ItemSubSystem
             }
         }
 
-        // make sure it really fits into that UINT8, in case we ever add anything real heavy with attachments/ammo
+        // make sure it really fits into that int, in case we ever add anything real heavy with attachments/ammo
         Debug.Assert(usWeight <= 255);
 
         return (usWeight);

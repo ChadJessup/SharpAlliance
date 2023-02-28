@@ -408,7 +408,7 @@ public class InteractiveTiles
             TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
             //Adjust for current frames and animations....
-            if (TileElem.uiFlags & ANIMATEDTILE)
+            if (TileElem.uiFlags.HasFlag(ANIMATEDTILE))
             {
                 Debug.Assert(TileElem.pAnimData != null);
                 TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
@@ -841,7 +841,7 @@ public class InteractiveTiles
             }
 
             // Check if it's a hidden struct and we have not revealed anything!
-            if (TileElem.uiFlags & HIDDEN_TILE)
+            if (TileElem.uiFlags.HasFlag(HIDDEN_TILE))
             {
                 if (!IsHiddenStructureVisible(sGridNo, pNode.usIndex))
                 {
@@ -870,7 +870,7 @@ public class InteractiveTiles
             TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
             //Adjust for current frames and animations....
-            if (TileElem.uiFlags & ANIMATED_TILE)
+            if (TileElem.uiFlags.HasFlag(ANIMATED_TILE))
             {
                 Debug.Assert(TileElem.pAnimData != null);
                 TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];

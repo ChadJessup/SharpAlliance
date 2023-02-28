@@ -1,24 +1,39 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
-using System;
-using System.Collections.Generic;
-using Veldrid;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Facts
 {
-    public const int MAX_FACTS = 65536;
-    public const int NUM_FACTS = 500;	//If you increase this number, add entries to the fact text list in QuestText.c
-
     public static Dictionary<FACT, bool> gubFact = new(); // this has to be updated when we figure out how many facts we have
     private readonly ILogger<Facts> logger;
 
     public Facts(ILogger<Facts> logger)
     {
         this.logger = logger;
+    }
+
+    public static void SetFactTrue(FACT usFact)
+    {
+        // This function is here just for control flow purposes (debug breakpoints)
+        // and code is more readable that way
+
+        // must intercept when Jake is first trigered to start selling fuel
+        if ((usFact == FACT.ESTONI_REFUELLING_POSSIBLE) && (CheckFact(usFact, 0) == false))
+        {
+            // give him some gas...
+            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER_JAKE, Items.GAS_CAN, (int)(4 + Globals.Random.Next(3)));
+        }
+
+        gubFact[usFact] = true;
+    }
+
+    public static void SetFactFalse(FACT usFact)
+    {
+        gubFact[usFact] = false;
     }
 
     public static bool CheckNPCInOkayHealth(NPCID ubProfileID)
@@ -455,7 +470,7 @@ public class Facts
                 break;
 
             case FACT.FATHER_DRUNK_AND_SCIFI_OPTION_ON:
-                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameOptions.SciFi);
+                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameSettings.SciFi);
                 break;
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:

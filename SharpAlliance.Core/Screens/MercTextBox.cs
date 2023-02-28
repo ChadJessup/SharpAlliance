@@ -79,8 +79,8 @@ public class MercTextBox
     {
         //	int  uiDestPitchBYTES;
         //	int  uiSrcPitchBYTES;
-        //  UINT16  *pDestBuf;
-        //	UINT16  *pSrcBuf;
+        //  int  *pDestBuf;
+        //	int  *pSrcBuf;
 
         // chad, is me - might mess up flow, we'll see
         if (Globals.gPopUpTextBox is null)
@@ -92,10 +92,10 @@ public class MercTextBox
         bool fReturnValue = true;
 
         // grab the destination buffer
-        //	pDestBuf = ( UINT16* )LockVideoSurface( uiBuffer, &uiDestPitchBYTES );
+        //	pDestBuf = ( int* )LockVideoSurface( uiBuffer, &uiDestPitchBYTES );
 
         // now lock it
-        //	pSrcBuf = ( UINT16* )LockVideoSurface( gPopUpTextBox.uiSourceBufferIndex, &uiSrcPitchBYTES);
+        //	pSrcBuf = ( int* )LockVideoSurface( gPopUpTextBox.uiSourceBufferIndex, &uiSrcPitchBYTES);
 
 
         //check to see if we are wanting to blit a transparent background

@@ -61,7 +61,7 @@ public class StrategicMines
         // but some mines will produce more in one game than another, while others produce less
 
         // adjust for game difficulty
-        switch (Globals.gGameOptions.DifficultyLevel)
+        switch (Globals.gGameSettings.DifficultyLevel)
         {
             case DifficultyLevel.Easy:
             case DifficultyLevel.Medium:

@@ -322,7 +322,7 @@ public class PathAI
                 }
 
 
-                //if ( gTacticalStatus.uiFlags & TURNBASED && (gTacticalStatus.uiFlags & INCOMBAT) ) // OR USER OPTION "show paths" ON... ***
+                //if ( gTacticalStatus.uiFlags.HasFlag(TURNBASED && (gTacticalStatus.uiFlags & INCOMBAT)) ) // OR USER OPTION "show paths" ON... ***
                 {
                     if (bPlot && ((iCnt < (iLastGrid - 1)) || (iCnt < iLastGrid && bStayOn != 0)))
                     {
@@ -528,7 +528,7 @@ public class PathAI
         //RemoveAllStructsOfTypeRange( gusEndPlotGridNo, GOODRING, GOODRING );
 
         Globals.giPlotCnt = 0;
-        // memset(guiPlottedPath, 0, 256 * sizeof(UINT32));
+        // memset(guiPlottedPath, 0, 256 * sizeof(int));
     }
 
     private static int InternalDoorTravelCost(SOLDIERTYPE? pSoldier, int iGridNo, int ubMovementCost, bool fReturnPerceivedValue, out int? piDoorGridNo, bool fReturnDoorCost)

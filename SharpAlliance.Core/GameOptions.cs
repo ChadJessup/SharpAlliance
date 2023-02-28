@@ -7,7 +7,7 @@ namespace SharpAlliance.Core
     {
         public bool GunNut { get; set; } = false;
         public bool SciFi { get; set; } = true;
-        public DifficultyLevel DifficultyLevel { get; set; } = DifficultyLevel.Easy;
+        public DifficultyLevel ubDifficultyLevel { get; set; } = DifficultyLevel.Easy;
         public bool TurnTimeLimit { get; set; } = false;
         public bool IronManMode { get; set; } = false;
 
@@ -71,7 +71,7 @@ namespace SharpAlliance.Core
         {
             foreach (var option in Enum.GetValues<TOPTION>())
             {
-                this.options.TryAdd(option, false);
+                GameSettings.fOptions.TryAdd(option, false);
             }
         }
 
@@ -89,14 +89,14 @@ namespace SharpAlliance.Core
         public int ubSizeOfDisplayCover { get; set; }
         public int ubSizeOfLOS { get; set; }
 
-        private Dictionary<TOPTION, bool> options = new();
+        private static Dictionary<TOPTION, bool> options = new();
 
-        public Dictionary<TOPTION, bool> fOptions => options;
+        public static Dictionary<TOPTION, bool> fOptions => options;
 
         public bool this[TOPTION option]
         {
-            get => this.options[option];
-            set => this.options[option] = value;
+            get => options[option];
+            set => options[option] = value;
         }
     }
 }

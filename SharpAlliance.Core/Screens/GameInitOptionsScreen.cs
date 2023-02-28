@@ -166,15 +166,15 @@ namespace SharpAlliance.Core.Screens
 
                 usPosY += GIO_GAP_BN_SETTINGS;
             }
-            if (this.gGameOptions.DifficultyLevel == DifficultyLevel.Easy)
+            if (this.gGameOptions.ubDifficultyLevel == DifficultyLevel.Easy)
             {
                 this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_EASY].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
-            else if (this.gGameOptions.DifficultyLevel == DifficultyLevel.Medium)
+            else if (this.gGameOptions.ubDifficultyLevel == DifficultyLevel.Medium)
             {
                 this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_MED].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
-            else if (this.gGameOptions.DifficultyLevel == DifficultyLevel.Hard)
+            else if (this.gGameOptions.ubDifficultyLevel == DifficultyLevel.Hard)
             {
                 this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_HARD].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }

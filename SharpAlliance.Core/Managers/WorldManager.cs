@@ -109,7 +109,7 @@ public class WorldManager
 
         }
 
-        //CheckForAndAddTileCacheStructInfo( pNextObject, (INT16)iMapIndex, usIndex );
+        //CheckForAndAddTileCacheStructInfo( pNextObject, (int)iMapIndex, usIndex );
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.OBJECTS);
         return (pNextObject);
@@ -602,7 +602,7 @@ public class WorldManager
         {
             //if ( InARoom( sMapPos, &ubRoom ) )
             {
-                //if ( !( gpWorldLevelData[ sMapPos ].uiFlags & MAPELEMENT_REVEALED ) )
+                //if ( !( gpWorldLevelData[ sMapPos ].uiFlags.HasFlag(MAPELEMENT_REVEALED )) )
                 {
                     return (true);
                 }

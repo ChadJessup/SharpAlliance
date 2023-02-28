@@ -213,9 +213,9 @@ public class MAP_ELEMENT
     byte ubAdjacentSoldierCnt;
     public TerrainTypeDefines ubTerrainID;
 
-    byte ubReservedSoldierID;
-    byte ubBloodInfo;
-    byte ubSmellInfo;
+    public int ubReservedSoldierID;
+    public int ubBloodInfo;
+    public int ubSmellInfo;
 }
 
 public enum MAPELEMENTFLAGS

@@ -27,7 +27,7 @@ namespace SharpAlliance.Core.Screens
         public int  uiFrame;
         public int  uiLeft, uiTop;
         //		LPDIRECTDRAW2						lpDD;
-        //		UINT32									uiNumFrames;
+        //		int									uiNumFrames;
         //		Ubyte										*pAudioData;
         //		Ubyte										*pCueData;
     }

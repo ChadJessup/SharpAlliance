@@ -226,7 +226,7 @@ public class MapScreenInterfaceMap
                 {
                     // LATE DESIGN CHANGE: darken sectors not yet visited, instead of those under known enemy control
                     if (GetSectorFlagStatus(cnt, cnt2, iCurrentMapSectorZ, SF.ALREADY_VISITED) == false)
-                    //				if ( IsTheSectorPerceivedToBeUnderEnemyControl( cnt, cnt2, ( INT8 )( iCurrentMapSectorZ ) ) )
+                    //				if ( IsTheSectorPerceivedToBeUnderEnemyControl( cnt, cnt2, ( int )( iCurrentMapSectorZ ) ) )
                     {
                         if (fShowAircraftFlag && !iCurrentMapSectorZ)
                         {

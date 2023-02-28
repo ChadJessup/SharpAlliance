@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
-using Veldrid.OpenGLBinding;
 using static SharpAlliance.Core.EnglishText;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -54,8 +53,6 @@ public class HandleUI
     private const int GO_MOVE_ONE = 40;
     private const int GO_MOVE_TWO = 80;
     private const int GO_MOVE_THREE = 100;
-
-    int gsTreeRevealXPos, gsTreeRevealYPos;
 
     //extern bool gfExitDebugScreen;
     //extern byte gCurDebugPage;
@@ -636,7 +633,7 @@ public class HandleUI
                         {
                             if (sOldExitGridNo != usMapPos)
                             {
-                                fOkForExit = StrategicMap.OKForSectorExit((sbyte)-1, usMapPos, out uiTraverseTimeInMinutes);
+                                fOkForExit = StrategicMap.OKForSectorExit((StrategicMove)(-1), usMapPos, out uiTraverseTimeInMinutes) > 0;
                                 sOldExitGridNo = usMapPos;
                             }
 
@@ -1603,7 +1600,7 @@ public class HandleUI
                         pSoldier.ubPendingAction = MERC.NO_PENDING_ACTION;
 
 
-                        //if ( !( gTacticalStatus.uiFlags & INCOMBAT ) && ( Globals.gAnimControl[ pSoldier.usAnimState ].uiFlags & ANIM_MOVING ) )
+                        //if ( !( gTacticalStatus.uiFlags.HasFlag(INCOMBAT )) && ( Globals.gAnimControl[ pSoldier.usAnimState ].uiFlags.HasFlag(ANIM_MOVING )) )
                         //{
                         //	pSoldier.sRTPendingMovementGridNo = usMapPos;
                         //	pSoldier.usRTPendingMovementAnim  = pSoldier.usUIMovementMode;

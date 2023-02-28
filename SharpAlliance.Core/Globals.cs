@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using SharpAlliance.Core;
-using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
-using static SharpAlliance.Core.EnglishText;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 using static SharpAlliance.Core.Screens.CreditsScreen;
-using Veldrid.MetalBindings;
 using static SharpAlliance.Core.SubSystems.InteractiveTiles;
-using static SharpAlliance.Core.SubSystems.Keys;
 
 namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const int MAX_MOVEMENT_NOISE = 9;
+    public const FontColor COLOR1 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGREEN;
+    public const FontColor COLOR2 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGRAY2;
+    public const int LINE_HEIGHT = 15;
+
     public const int SHOW_MIN_FPS = 0;
     public const int SHOW_FULL_FPS = 1;
     // ENUMERATION OF SOLDIER POSIITONS IN GLOBAL SOLDIER LIST
@@ -288,8 +289,13 @@ public partial class Globals
     public static SOLDIERTYPE? gpPendingSrcSoldier;
 
     public static NPCID gubSrcSoldierProfile;
-    public static int gubNiceNPCProfile = SoldierControl.NO_PROFILE;
-    public static int gubNastyNPCProfile = SoldierControl.NO_PROFILE;
+    public static NPCID gubNiceNPCProfile = NO_PROFILE;
+    public static NPCID gubNastyNPCProfile = NO_PROFILE;
+
+    public const int DELAYED_MOVEMENT_FLAG_PATH_THROUGH_PEOPLE = 0x01;
+
+    public static GameOptions gGameOptions = new();
+    public static GameSettings gGameSettings = new();
 
     public static ScreenName guiCurrentScreen;
 
@@ -435,9 +441,6 @@ public partial class Globals
     public const int MAX_PATH_LIST_SIZE = 30;
     public const int NUM_SOLDIER_SHADES = 48;
     public const int NUM_SOLDIER_EFFECTSHADES = 2;
-    //TACTICAL OVERHEAD STUFF
-    public const int NO_SOLDIER = TOTAL_SOLDIERS; // SAME AS NOBODY
-    public const int NOBODY = NO_SOLDIER;
 
     // MODIFIERS FOR AP COST FOR MOVEMENT 
     public const double RUNDIVISOR = 1.8;
@@ -458,8 +461,6 @@ public partial class Globals
 
     public static AnimationSurfaceType[] gAnimSurfaceDatabase = new AnimationSurfaceType[(int)AnimationSurfaceTypes.NUMANIMATIONSURFACETYPES];
     public static AnimationStructureType[,] gAnimStructureDatabase = new AnimationStructureType[(int)SoldierBodyTypes.TOTALBODYTYPES, (int)StructData.NUM_STRUCT_IDS];
-
-    public static GameOptions gGameOptions = new();
 
     public static MAPCREATE_STRUCT gMapInformation;
 
@@ -506,7 +507,17 @@ public partial class Globals
     public const int DIRTYLEVEL1 = 1;
     public const int DIRTYLEVEL2 = 2;
 
+    public static int fInterfacePanelDirty;
     public static bool gfRenderHilights = true;
+
+    public int[] gbFirstApproachFlags = new int[4] { 0x01, 0x02, 0x04, 0x08 };
+    public int[] gubAlternateNPCFileNumsForQueenMeanwhiles = new int[] { 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176 };
+    public int[] gubAlternateNPCFileNumsForElliotMeanwhiles = new int[] { 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196 };
+
+    public static int gusUIOldSelectedSoldier;
+    public static int giUIMessageOverlay;
+    public static int guiUIMessageTime;
+
 
     public static GUI_BUTTON? gpAnchoredButton;
     public static GUI_BUTTON? gpPrevAnchoredButton;
@@ -768,7 +779,7 @@ public partial class Globals
 
     // graphics
     public static int guiMapBorder;
-    //UINT32 guiMapBorderCorner;
+    //int guiMapBorderCorner;
 
 
     // scroll direction
@@ -1280,7 +1291,7 @@ public partial class Globals
     public const int DIALOGUE_SHOPKEEPER_UI = 6;
 
     public const double SALARY_CHANGE_PER_LEVEL = 1.25;        // Mercs salary is multiplied by this
-    public const int MAX_DAILY_SALARY = 30000;// must fit into an INT16 (32k)
+    public const int MAX_DAILY_SALARY = 30000;// must fit into an int (32k)
     public const int MAX_LARGE_SALARY = 500000; // no limit, really
 
     public const Stat FIRST_CHANGEABLE_STAT = Stat.HEALTHAMT;
@@ -1379,7 +1390,7 @@ public partial class Globals
 
 
     public const int NUM_RECORDS_PER_PAGE = PAGE_SIZE;
-    //static int SIZE_OF_HISTORY_FILE_RECORD( sizeof(UINT8 ) + sizeof(UINT8 ) + sizeof(UINT32 ) + sizeof(UINT16 ) + sizeof(UINT16 ) + sizeof(UINT8 ) + sizeof(UINT8 ) )
+    //static int SIZE_OF_HISTORY_FILE_RECORD( sizeof(int ) + sizeof(int ) + sizeof(int ) + sizeof(int ) + sizeof(int ) + sizeof(int ) + sizeof(int ) )
 
     // button positions
     public const int NEXT_BTN_X = 577;
@@ -1699,6 +1710,8 @@ public partial class Globals
 
     public const int EVERYBODY = MAXMERCS;
 
+    public static bool gfWaitingForTriggerTimer;
+
     public const int MAX_MISC_NOISE_DURATION = 12;      // max dur for VERY loud NOBODY noises
 
     public const int DOOR_NOISE_VOLUME = 2;
@@ -1726,7 +1739,10 @@ public partial class Globals
 
     public const int NUM_WATCHED_LOCS = 3;
 
-    public static int[,] gbPublicOpplist = new int[MAXTEAMS, TOTAL_SOLDIERS];
+    public const NPCID NO_PROFILE = NPCID.NO_PROFILE;
+
+    public static Dictionary<TEAM, int[]> gbPublicOpplist = new();
+    //public static int[,] gbPublicOpplist = new int[MAXTEAMS, TOTAL_SOLDIERS];
     public static int[,] gbSeenOpponents = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
     public static int[,] gsLastKnownOppLoc = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];		// merc vs. merc
     public static int[,] gbLastKnownOppLevel = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
@@ -1735,8 +1751,6 @@ public partial class Globals
     public static int[] gubPublicNoiseVolume = new int[MAXTEAMS];
     public static int[] gsPublicNoiseGridno = new int[MAXTEAMS];
     public static int[] gbPublicNoiseLevel = new int[MAXTEAMS];
-    public static int[,] gubKnowledgeValue = new int[10, 10];
-    public static int[,] gbLookDistance = new int[8, 8];
     public static int gfKnowAboutOpponents;
 
     public static bool gfPlayerTeamSawJoey;
@@ -1759,6 +1773,145 @@ public partial class Globals
     public static bool gfPlotDirectPath { get; set; } = false;
     public static bool gusPathShown { get; set; } = false;
     public static int gusAPtsToMove { get; set; } = 0;
+
+    public const int MANLOOKSFORMAN = 0;
+    public const int HEARNOISE = 1;
+    public const int NOTICEUNSEENATTACKER = 2;
+
+    // for ManLooksForMan()
+    public const int MANLOOKSFOROTHERTEAMS = 0;
+    public const int OTHERTEAMSLOOKFORMAN = 1;
+    public const int VERIFYANDDECAYOPPLIST = 2;
+    public const int HANDLESTEPPEDLOOKAT = 3;
+    public const int LOOKANDLISTEN = 4;
+    public const int UPDATEPUBLIC = 5;
+    public const int CALLER_UNKNOWN = 6;
+
+    // this variable is a flag used in HandleSight to determine whether (while in non-combat RT)
+    // someone has just been seen, EITHER THE MOVER OR SOMEONE THE MOVER SEES
+    public static bool gfPlayerTeamSawCreatures = false;
+
+    public static int[] gubBestToMakeSighting = new int[BEST_SIGHTING_ARRAY_SIZE];
+    public static int gubBestToMakeSightingSize = 0;
+    //BOOLEAN		gfHumanSawSomeoneInRealtime;
+
+    public static bool gfDelayResolvingBestSightingDueToDoor = false;
+
+    public const int SHOULD_BECOME_HOSTILE_SIZE = 32;
+
+    public static int[] gubShouldBecomeHostileOrSayQuote = new int[SHOULD_BECOME_HOSTILE_SIZE];
+    public static int gubNumShouldBecomeHostileOrSayQuote;
+
+    // NB this ID is set for someone opening a door
+    public static int gubInterruptProvoker = NOBODY;
+    public static int[,] gubKnowledgeValue = new int[10, 10]
+    {
+       //   P E R S O N A L   O P P L I S T  //
+       // -4   -3   -2   -1   0   1   2   3   4   5   //
+       {   0,   1,   2,   3,  0,  5,  4,  3,  2,  1}, // -4
+       {   0,   0,   1,   2,  0,  4,  3,  2,  1,  0}, // -3    O
+       {   0,   0,   0,   1,  0,  3,  2,  1,  0,  0}, // -2  P P
+       {   0,   0,   0,   0,  0,  2,  1,  0,  0,  0}, // -1  U P
+       {   0,   1,   2,   3,  0,  5,  4,  3,  2,  1}, //  0  B L
+       {   0,   0,   0,   0,  0,  0,  0,  0,  0,  0}, //  1  L I
+       {   0,   0,   0,   0,  0,  1,  0,  0,  0,  0}, //  2  I S
+       {   0,   0,   0,   1,  0,  2,  1,  0,  0,  0}, //  3  C T
+       {   0,   0,   1,   2,  0,  3,  2,  1,  0,  0}, //  4
+       {   0,   1,   2,   3,  0,  4,  3,  2,  1,  0}  //  5
+    
+    /*
+       //   P E R S O N A L   O P P L I S T  //
+       // -3   -2   -1   0   1   2   3   4   //
+       {   0,   1,   2,  0,  4,  3,  2,  1   }, // -3    O
+       {   0,   0,   1,  0,  3,  2,  1,  0   }, // -2  P P
+       {   0,   0,   0,  0,  2,  1,  0,  0   }, // -1  U P
+       {   1,   2,   3,  0,  5,  4,  3,  2   }, //  0  B L
+       {   0,   0,   0,  0,  0,  0,  0,  0   }, //  1  L I
+       {   0,   0,   0,  0,  1,  0,  0,  0   }, //  2  I S
+       {   0,   0,   1,  0,  2,  1,  0,  0   }, //  3  C T
+       {   0,   1,   2,  0,  3,  2,  1,  0   }  //  4
+    	 */
+     };
+
+    public const int MAX_WATCHED_LOC_POINTS = 4;
+    public const int WATCHED_LOC_RADIUS = 1;
+
+    public static bool[,] gfWatchedLocHasBeenIncremented = new bool[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
+
+    public static bool gfBasement = false;
+    public static bool gfCaves = false;
+
+    public int[,] gbLookDistance =
+    {
+        //  LOOKER DIR       LOOKEE DIR
+        //                   NORTH    | NORTHEAST  |   EAST   |  SOUTHEAST  |   SOUTH  |  SOUTHWEST  |   WEST    |  NORTHWEST
+        {/* NORTH      */     STRAIGHT,     ANGLE,       SIDE,     SBEHIND,     BEHIND,     SBEHIND,       SIDE,       ANGLE },
+        {/* NORTHEAST  */     ANGLE,     STRAIGHT,      ANGLE,        SIDE,    SBEHIND,      BEHIND,    SBEHIND,        SIDE },
+        {/* EAST       */     SIDE,         ANGLE,   STRAIGHT,       ANGLE,       SIDE,     SBEHIND,     BEHIND,     SBEHIND },
+        {/* SOUTHEAST  */     SBEHIND,       SIDE,      ANGLE,    STRAIGHT,      ANGLE,        SIDE,    SBEHIND,      BEHIND },
+        {/* SOUTH      */     BEHIND,     SBEHIND,       SIDE,       ANGLE,   STRAIGHT,       ANGLE,       SIDE,     SBEHIND },
+        {/* SOUTHWEST  */     SBEHIND,     BEHIND,    SBEHIND,        SIDE,      ANGLE,    STRAIGHT,      ANGLE,        SIDE },
+        {/* WEST       */     SIDE,       SBEHIND,     BEHIND,     SBEHIND,       SIDE,       ANGLE,   STRAIGHT,       ANGLE },
+        {/* NORTHWEST  */     ANGLE,         SIDE,     SBEHIND,     BEHIND,    SBEHIND,        SIDE,      ANGLE,    STRAIGHT },
+    };
+
+    public const int SMELL_STRENGTH_MAX = 63;
+    public const int BLOOD_STRENGTH_MAX = 7;
+    public const int BLOOD_DELAY_MAX = 3;
+
+    public static int[] gbSmellStrength =
+    {
+        NORMAL_HUMAN_SMELL_STRENGTH, // normal 
+    	NORMAL_HUMAN_SMELL_STRENGTH + 2, // slob
+    	NORMAL_HUMAN_SMELL_STRENGTH - 1  // snob
+    };
+
+    public const int HUMAN = 0;
+    public const int CREATURE_ON_FLOOR = 0x01;
+    public const int CREATURE_ON_ROOF = 0x02;
+    public const int NORMAL_HUMAN_SMELL_STRENGTH = 10;
+    public const int COW_SMELL_STRENGTH = 15;
+    public const int NORMAL_CREATURE_SMELL_STRENGTH = 20;
+    public const int MAXBLOODQUANTITY = 7;
+    public const int BLOODDIVISOR = 10;
+    public const int SMELL_TYPE_NUM_BITS = 2;
+
+    public static int gsTreeRevealXPos;
+    public static int gsTreeRevealYPos;
+
+    public const int MAX_HUMAN_CREATURE_SMELL = (NORMAL_HUMAN_SMELL_STRENGTH - 1);
+
+    public static int gsWhoThrewRock = NOBODY;
+
+    public const int NIGHTSIGHTGOGGLES_BONUS = 2;
+    public const int UVGOGGLES_BONUS = 4;
+
+    // % values of sighting distance at various light levels
+
+    public static int[,] gbLightSighting = new int[1, 16]
+    {
+    { // human
+    	 80, // brightest
+    	 86,
+         93,
+        100, // normal daylight, 3
+    	 94,
+         88,
+         82,
+         76,
+         70, // mid-dawn, 8
+    	 64,
+         58,
+         51,
+         43, // normal nighttime, 12 (11 tiles)
+    	 30,
+         17,
+          9
+    }
+    };
+
+    public static SIGHT gubSightFlags = 0;
+
 }
 
 public enum Stat

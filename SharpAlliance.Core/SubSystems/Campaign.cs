@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using SixLabors.Fonts;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -571,7 +572,7 @@ public class Campaign
                 // ( except health; not only will it sound silly, but
                 // also we give points for health on sector traversal and this would
                 // probaby mess up battle handling too )
-                if ((ubStat != Stat.HEALTHAMT) && ((ubStat == Stat.EXPERAMT) || Random(100) < 25))
+                if ((ubStat != Stat.HEALTHAMT) && ((ubStat == Stat.EXPERAMT) || Globals.Random.Next(100) < 25))
                 //if ( (ubStat != EXPERAMT) && (ubStat != HEALTHAMT) && ( Random( 100 ) < 25 ) )
                 {
                     // Pipe up with "I'm getting better at this!"
@@ -667,7 +668,7 @@ public class Campaign
                             //	DEF: 03/06/99 Now sets an event that will be processed later in the day
                             //						ubEmailOffset = MERC_UP_LEVEL_BIFF + MERC_UP_LEVEL_LENGTH_BIFF * ( ubMercMercIdValue ); 
                             //						AddEmail( ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, SPECK_FROM_MERC, GetWorldTotalMin() );
-                            AddStrategicEvent(EVENT_MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, GetWorldTotalMin() + 60 + Random(60), ubMercMercIdValue);
+                            AddStrategicEvent(EVENT_MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, GetWorldTotalMin() + 60 + Globals.Random.Next(60), ubMercMercIdValue);
 
                             fChangeSalary = true;
                             break;
@@ -1105,7 +1106,7 @@ public class Campaign
         if (pProfile.bMercStatus == MercStatus.MERC_WORKING_ELSEWHERE)
         {
             // if he did't do anything interesting today
-            if (Random(100) < 20)
+            if (Globals.Random.Next(100) < 20)
             {
                 // no chance to change today
                 return;
@@ -1126,7 +1127,7 @@ public class Campaign
         else
         {
             // if the merc just takes it easy (high level or stupid mercs are more likely to)
-            if (((int)Random(10) < pProfile.bExpLevel) || ((int)Random(100) > pProfile.bWisdom))
+            if (((int)Globals.Random.Next(10) < pProfile.bExpLevel) || ((int)Globals.Random.Next(100) > pProfile.bWisdom))
             {
                 // no chance to change today
                 return;
@@ -1136,7 +1137,7 @@ public class Campaign
             do
             {
                 // pick ONE stat at random to focus on (it may be beyond training cap, but so what, too hard to weed those out)
-                ubStat = (int)(Stat.FIRST_CHANGEABLE_STAT + Random(ubNumStats));
+                ubStat = (int)(Stat.FIRST_CHANGEABLE_STAT + Globals.Random.Next(ubNumStats));
                 // except experience - can't practise that!
             } while (ubStat == Stat.EXPERAMT);
 
@@ -1164,7 +1165,7 @@ public class Campaign
         }
 
         // how many in total can be killed like this depends on player's difficulty setting
-        switch (Globals.gGameOptions.DifficultyLevel)
+        switch (Globals.gGameSettings.DifficultyLevel)
         {
             case DifficultyLevel.Easy:
                 ubMaxDeaths = 1;
@@ -1269,7 +1270,7 @@ public class Campaign
         }
 
         // kills per point depends on difficulty, and should match the ratios of starting enemy populations (730/1050/1500)
-        switch (Globals.gGameOptions.DifficultyLevel)
+        switch (Globals.gGameSettings.DifficultyLevel)
         {
             case DifficultyLevel.Easy:
                 ubKillsPerPoint = 7;

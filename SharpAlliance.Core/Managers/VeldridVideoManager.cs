@@ -86,7 +86,7 @@ public class VeldridVideoManager : IVideoManager
 
     private Rectangle rcWindow;
 
-    //void (* gpFrameBufferRefreshOverride) (void);
+    //void (* gpFrameBufferRefreshOverride) ();
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     //

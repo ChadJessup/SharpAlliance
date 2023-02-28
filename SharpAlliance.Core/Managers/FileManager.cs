@@ -146,7 +146,7 @@ namespace SharpAlliance.Core.Managers
             //                                     dwFlagsAndAttributes, null);
             //     if (hRealFile == INVALID_HANDLE_VALUE)
             //     {
-            //         //UINT32 uiLastError = GetLastError();
+            //         //int uiLastError = GetLastError();
             //         string zString;
             //         // FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, null);
             // 

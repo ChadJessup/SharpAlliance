@@ -211,8 +211,8 @@ public class Points
                 }
                 else
                 {
-                    //INT32		cnt;
-                    //INT16		sSpot;	
+                    //int		cnt;
+                    //int		sSpot;	
                     int ubGuyThere;
                     int sGotLocation = Globals.NOWHERE;
                     bool fGotAdjacent = false;

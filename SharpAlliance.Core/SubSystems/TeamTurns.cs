@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using SharpAlliance.Core.Managers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -16,13 +12,13 @@ public class TeamTurns
 
     void ClearIntList()
     {
-        memset(&gubOutOfTurnOrder, 0, MAXMERCS);
+        gubOutOfTurnOrder = new int[MAXMERCS];
         gubOutOfTurnOrder[0] = END_OF_INTERRUPTS;
         gubOutOfTurnPersons = 0;
     }
 
     public static int LATEST_INTERRUPT_GUY() => (Globals.gubOutOfTurnOrder[Globals.gubOutOfTurnPersons]);
-    public static int REMOVE_LATEST_INTERRUPT_GUY() => (DeleteFromIntList((int)(Globals.gubOutOfTurnPersons), true));
+    public static void REMOVE_LATEST_INTERRUPT_GUY() => DeleteFromIntList(gubOutOfTurnPersons, true);
     public static bool INTERRUPTS_OVER() => (Globals.gubOutOfTurnPersons == 1);
 
     bool BloodcatsPresent()
@@ -30,16 +26,16 @@ public class TeamTurns
         int iLoop;
         SOLDIERTYPE? pSoldier;
 
-        if (Globals.gTacticalStatus.Team[CREATURE_TEAM].bTeamActive == false)
+        if (Globals.gTacticalStatus.Team[TEAM.CREATURE_TEAM].bTeamActive == 0)
         {
             return (false);
         }
 
-        for (iLoop = Globals.gTacticalStatus.Team[CREATURE_TEAM].bFirstID; iLoop <= Globals.gTacticalStatus.Team[CREATURE_TEAM].bLastID; iLoop++)
+        for (iLoop = Globals.gTacticalStatus.Team[TEAM.CREATURE_TEAM].bFirstID; iLoop <= Globals.gTacticalStatus.Team[TEAM.CREATURE_TEAM].bLastID; iLoop++)
         {
             pSoldier = Globals.MercPtrs[iLoop];
 
-            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife > 0 && pSoldier.ubBodyType == BLOODCAT)
+            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife > 0 && pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
             {
                 return (true);
             }
@@ -66,12 +62,12 @@ public class TeamTurns
 
         InitPlayerUIBar(false);
 
-        if (Globals.gTacticalStatus.uiFlags & TURNBASED)
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
         {
             // Are we in combat already?
-            if (Globals.gTacticalStatus.uiFlags & INCOMBAT)
+            if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             {
-                PlayJA2Sample(ENDTURN_1, RATE_11025, MIDVOLUME, 1, MIDDLEPAN);
+                //PlayJA2Sample(ENDTURN_1, RATE_11025, MIDVOLUME, 1, MIDDLEPAN);
             }
 
             // Remove deadlock message
@@ -85,13 +81,13 @@ public class TeamTurns
             //{	
             //	if ( pSoldier.bActive && pSoldier.bLife > 0 )
             //	{
-            //		SBeginTurn.usSoldierID		= (UINT16)cnt;
+            //		SBeginTurn.usSoldierID		= (int)cnt;
             //		AddGameEvent( S_BEGINTURN, 0, &SBeginTurn );
             //	}
             //}
 
             // Are we in combat already?
-            if (Globals.gTacticalStatus.uiFlags & INCOMBAT)
+            if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             {
                 if (gusSelectedSoldier != NO_SOLDIER)
                 {
@@ -114,7 +110,7 @@ public class TeamTurns
 
                         if (gsInterfaceLevel == 1)
                         {
-                            Globals.gTacticalStatus.uiFlags |= SHOW_ALL_ROOFS;
+                            Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
                             InvalidateWorldRedundency();
                             SetRenderFlags(RENDER_FLAG_FULL);
                             ErasePath(false);
@@ -136,7 +132,7 @@ public class TeamTurns
 
         }
         // Signal UI done enemy's turn
-        guiPendingOverrideEvent = LU_ENDUILOCK;
+        guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
 
         // ATE: Reset killed on attack variable.. this is because sometimes timing is such
         /// that a baddie can die and still maintain it's attacker ID
@@ -154,7 +150,7 @@ public class TeamTurns
         ErasePath(true);
 
         // Setup locked UI
-        guiPendingOverrideEvent = LU_BEGINUILOCK;
+        guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_BEGINUILOCK;
 
         // Remove any UI messages!
         if (giUIMessageOverlay != -1)
@@ -164,7 +160,7 @@ public class TeamTurns
     }
 
 
-    void EndTurn(int ubNextTeam)
+    void EndTurn(TEAM ubNextTeam)
     {
         SOLDIERTYPE? pSoldier;
         int cnt;
@@ -181,7 +177,7 @@ public class TeamTurns
             }
             */
 
-        if (INTERRUPT_QUEUED)
+        if (INTERRUPT_QUEUED())
         {
             EndInterrupt(false);
         }
@@ -261,8 +257,8 @@ public class TeamTurns
             {
                 if (pSoldier.bActive)
                 {
-                    pSoldier.bMoved = true;
-                    pSoldier.uiStatusFlags &= (~SOLDIER_UNDERAICONTROL);
+                    pSoldier.bMoved = 1;
+                    pSoldier.uiStatusFlags &= (~SOLDIER.UNDERAICONTROL);
                     // record old life value... for creature AI; the human AI might
                     // want to use this too at some point
                     pSoldier.bOldLife = pSoldier.bLife;
@@ -280,7 +276,7 @@ public class TeamTurns
         // handle team services like healing
         HandleTeamServices(Globals.gbPlayerNum);
         // handle smell and blood decay
-        DecaySmells();
+        Smell.DecaySmells();
         // decay bomb timers and maybe set some off!
         DecayBombTimers();
 
@@ -299,7 +295,7 @@ public class TeamTurns
 
         while (true)
         {
-            if (ubTeam > LAST_TEAM)
+            if (ubTeam > TEAM.LAST_TEAM)
             {
                 if (HandleAirRaidEndTurn(ubTeam))
                 {
@@ -322,7 +318,7 @@ public class TeamTurns
                 continue;
             }
 
-            if (Globals.gTacticalStatus.uiFlags & TURNBASED)
+            if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
             {
                 BeginLoggingForBleedMeToos(true);
 
@@ -330,7 +326,8 @@ public class TeamTurns
                 DecayPublicOpplist(ubTeam);
 
                 cnt = Globals.gTacticalStatus.Team[ubTeam].bFirstID;
-                for (pSoldier = Globals.MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[ubTeam].bLastID; cnt++) ;//, pSoldier++)
+                for (pSoldier = Globals.MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[ubTeam].bLastID; cnt++)
+                    ;//, pSoldier++)
                 {
                     if (pSoldier.bActive && pSoldier.bLife > 0)
                     {
@@ -339,7 +336,9 @@ public class TeamTurns
                     }
                 }
 
-                if (Globals.gTacticalStatus.bBoxingState == LOST_ROUND || Globals.gTacticalStatus.bBoxingState == WON_ROUND || Globals.gTacticalStatus.bBoxingState == DISQUALIFIED)
+                if (Globals.gTacticalStatus.bBoxingState == BoxingStates.LOST_ROUND
+                    || Globals.gTacticalStatus.bBoxingState == BoxingStates.WON_ROUND
+                    || Globals.gTacticalStatus.bBoxingState == BoxingStates.DISQUALIFIED)
                 {
                     // we have no business being in here any more!
                     return;
@@ -353,7 +352,7 @@ public class TeamTurns
             {
                 // ATE: Check if we are still in a valid battle...
                 // ( they could have blead to death above )
-                if ((Globals.gTacticalStatus.uiFlags & INCOMBAT))
+                if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
                     StartPlayerTeamTurn(true, false);
                 }
@@ -407,7 +406,7 @@ public class TeamTurns
             SlideTo(Globals.NOWHERE, pSoldier.ubID, Globals.NOBODY, SETLOCATOR);
         }
 
-        Globals.guiPendingOverrideEvent = LU_BEGINUILOCK;
+        Globals.guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_BEGINUILOCK;
 
         // Dirty panel interface!
         Globals.fInterfacePanelDirty = DIRTYLEVEL2;
@@ -447,7 +446,8 @@ public class TeamTurns
             return;
         }
 
-        if (Globals.gTacticalStatus.uiFlags & REALTIME || Globals.gTacticalStatus.uiFlags & INCOMBAT)
+        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)
+            || Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
             // pointless call here; do nothing
             return;
@@ -461,7 +461,7 @@ public class TeamTurns
         //JA2Gold: use function to make sure flags turned off everywhere else
         //pActingSoldier.uiStatusFlags |= SOLDIER_UNDERAICONTROL;
         SetSoldierAsUnderAiControl(pActingSoldier);
-        DebugAI(string.Format("Giving AI control to %d", pActingSoldier.ubID));
+        //DebugAI(string.Format("Giving AI control to %d", pActingSoldier.ubID));
         pActingSoldier.fTurnInProgress = true;
         Globals.gTacticalStatus.uiTimeSinceMercAIStart = Globals.GetJA2Clock();
 
@@ -568,14 +568,14 @@ public class TeamTurns
                 }
             }
 
-            wcscpy(sTemp, Message[STR_INTERRUPT_FOR]);
+            sTemp = Message[STR_INTERRUPT_FOR];
 
             // build string in separate loop here, want to linearly process squads...
-            for (iSquad = 0; iSquad < Globals.NUMBER_OF_SQUADS; iSquad++)
+            for (iSquad = 0; iSquad < (int)Squad.NUMBER_OF_SQUADS; iSquad++)
             {
                 for (iCounter = 0; iCounter < Globals.NUMBER_OF_SOLDIERS_PER_SQUAD; iCounter++)
                 {
-                    pTempSoldier = Squad[iSquad,iCounter];
+                    pTempSoldier = Squad[iSquad, iCounter];
                     if (pTempSoldier is not null && pTempSoldier.bActive && pTempSoldier.bInSector && pTempSoldier.bMoved == 0)
                     {
                         // then this guy got an interrupt...
@@ -592,9 +592,10 @@ public class TeamTurns
 
                         if (ubInterrupters > 1)
                         {
-                            wcscat(sTemp, ", ");
+                            sTemp += ", ";
                         }
-                        wcscat(sTemp, pTempSoldier.name);
+                        
+                        sTemp += pTempSoldier.name;
                     }
                 }
             }
@@ -619,28 +620,28 @@ public class TeamTurns
             Globals.gTacticalStatus.ubCurrentTeam = pSoldier.bTeam;
 
             // Signal UI done enemy's turn
-            guiPendingOverrideEvent = LU_ENDUILOCK;
+            guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
             HandleTacticalUI();
 
             InitPlayerUIBar(true);
             //AddTopMessage( PLAYER_INTERRUPT_MESSAGE, Message[STR_INTERRUPT] );
 
-            PlayJA2Sample(ENDTURN_1, RATE_11025, MIDVOLUME, 1, MIDDLEPAN);
+            //PlayJA2Sample(ENDTURN_1, RATE_11025, MIDVOLUME, 1, MIDDLEPAN);
 
             // report any close call quotes for us here
             for (iCounter = Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID; iCounter <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; iCounter++)
             {
                 if (OK_INSECTOR_MERC(Globals.MercPtrs[iCounter]))
                 {
-                    if (Globals.MercPtrs[iCounter].fCloseCall)
+                    if (Globals.MercPtrs[iCounter].fCloseCall > 0)
                     {
-                        if (Globals.MercPtrs[iCounter].bNumHitsThisTurn == 0 && !(Globals.MercPtrs[iCounter].usQuoteSaidExtFlags & SOLDIER_QUOTE_SAID_EXT_CLOSE_CALL) && Random(3) == 0)
+                        if (Globals.MercPtrs[iCounter].bNumHitsThisTurn == 0 && !(Globals.MercPtrs[iCounter].usQuoteSaidExtFlags & SOLDIER_QUOTE_SAID_EXT_CLOSE_CALL) && Random.Next(3) == 0)
                         {
                             // say close call quote!
                             TacticalCharacterDialogue(Globals.MercPtrs[iCounter], QUOTE_CLOSE_CALL);
                             Globals.MercPtrs[iCounter].usQuoteSaidExtFlags |= SOLDIER_QUOTE_SAID_EXT_CLOSE_CALL;
                         }
-                        Globals.MercPtrs[iCounter].fCloseCall = false;
+                        Globals.MercPtrs[iCounter].fCloseCall = 0;
                     }
                 }
             }
@@ -663,16 +664,16 @@ public class TeamTurns
             }
             */
 
-            while (1)
+            while (true)
             {
 
-                Globals.MercPtrs[ubInterrupter].bMoved = false;
+                Globals.MercPtrs[ubInterrupter].bMoved = 0;
 
-                DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: popping %d off of the interrupt queue", ubInterrupter));
+                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: popping %d off of the interrupt queue", ubInterrupter));
 
                 REMOVE_LATEST_INTERRUPT_GUY();
                 // now LATEST_INTERRUPT_GUY is the guy before the previous
-                ubInterrupter = LATEST_INTERRUPT_GUY;
+                ubInterrupter = LATEST_INTERRUPT_GUY();
                 if (ubInterrupter == Globals.NOBODY) // previously emptied slot!
                 {
                     continue;
@@ -716,8 +717,8 @@ public class TeamTurns
         if (!gfHiddenInterrupt)
         {
             // Stop this guy....
-            AdjustNoAPToFinishMove(Globals.MercPtrs[LATEST_INTERRUPT_GUY], true);
-            Globals.MercPtrs[LATEST_INTERRUPT_GUY].fTurningFromPronePosition = false;
+            AdjustNoAPToFinishMove(Globals.MercPtrs[LATEST_INTERRUPT_GUY()], true);
+            Globals.MercPtrs[LATEST_INTERRUPT_GUY()].fTurningFromPronePosition = false;
         }
     }
 
@@ -732,7 +733,7 @@ public class TeamTurns
 
         for (cnt = gubOutOfTurnPersons; cnt > 0; cnt--)
         {
-            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("ENDINT:  Q position %d: %d", cnt, gubOutOfTurnOrder[cnt]));
+            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("ENDINT:  Q position %d: %d", cnt, gubOutOfTurnOrder[cnt]));
         }
 
         // ATE: OK, now if this all happended on one frame, we may not have to stop
@@ -756,7 +757,7 @@ public class TeamTurns
                 ubMinAPsToAttack = MinAPsToAttack(pTempSoldier, pTempSoldier.sLastTarget, false);
                 if ((ubMinAPsToAttack <= pTempSoldier.bActionPoints) && (ubMinAPsToAttack > 0))
                 {
-                    pTempSoldier.bPassedLastInterrupt = true;
+                    pTempSoldier.bPassedLastInterrupt = 1;
                 }
             }
         }
@@ -770,25 +771,25 @@ public class TeamTurns
         }
         else
         {
-            ubInterruptedSoldier = LATEST_INTERRUPT_GUY;
+            ubInterruptedSoldier = LATEST_INTERRUPT_GUY();
 
-            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: interrupt over, %d's team regains control", ubInterruptedSoldier));
+            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: interrupt over, %d's team regains control", ubInterruptedSoldier));
 
             pSoldier = Globals.MercPtrs[ubInterruptedSoldier];
 
             cnt = 0;
-            for (pTempSoldier = Globals.MercPtrs[cnt]; cnt <= MAX_NUM_SOLDIERS; cnt++, pTempSoldier++)
+            for (pTempSoldier = Globals.MercPtrs[cnt]; cnt <= MAX_NUM_SOLDIERS; cnt++)//, pTempSoldier++)
             {
                 if (pTempSoldier.bActive)
                 {
                     // AI guys only here...
                     if (pTempSoldier.bActionPoints == 0)
                     {
-                        pTempSoldier.bMoved = true;
+                        pTempSoldier.bMoved = 1;
                     }
                     else if (pTempSoldier.bTeam != Globals.gbPlayerNum && pTempSoldier.bNewSituation == IS_NEW_SITUATION)
                     {
-                        pTempSoldier.bMoved = false;
+                        pTempSoldier.bMoved = 0;
                     }
                     else
                     {
@@ -834,7 +835,7 @@ public class TeamTurns
                     gfHiddenInterrupt = false;
 
                     // If we can continue a move, do so!
-                    if (Globals.MercPtrs[gusSelectedSoldier].fNoAPToFinishMove && pSoldier.ubReasonCantFinishMove != REASON_STOPPED_SIGHT)
+                    if (Globals.MercPtrs[gusSelectedSoldier].fNoAPToFinishMove && pSoldier.ubReasonCantFinishMove != REASON_STOPPED.SIGHT)
                     {
                         // Continue
                         AdjustNoAPToFinishMove(Globals.MercPtrs[gusSelectedSoldier], false);
@@ -865,7 +866,7 @@ public class TeamTurns
                     /// ATE: This used to be ablow so it would get done for
                     // both hidden interrupts as well - NOT good because
                     // hidden interrupts should leave it locked if it was already...
-                    guiPendingOverrideEvent = LU_ENDUILOCK;
+                    guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
                     HandleTacticalUI();
 
                     if (gusSelectedSoldier != NO_SOLDIER)
@@ -877,7 +878,7 @@ public class TeamTurns
 
                         if (gsInterfaceLevel == 1)
                         {
-                            Globals.gTacticalStatus.uiFlags |= SHOW_ALL_ROOFS;
+                            Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
                             InvalidateWorldRedundency();
                             SetRenderFlags(RENDER_FLAG_FULL);
                             ErasePath(false);
@@ -945,7 +946,8 @@ public class TeamTurns
                 if (fFound)
                 {
                     // back to the computer!
-                    if (Globals.gTacticalStatus.ubCurrentTeam == CREATURE_TEAM && BloodcatsPresent())
+                    if (Globals.gTacticalStatus.ubCurrentTeam == TEAM.CREATURE_TEAM
+                        && BloodcatsPresent())
                     {
                         AddTopMessage(COMPUTER_TURN_MESSAGE, Message[STR_BLOODCATS_TURN]);
                     }
@@ -955,14 +957,14 @@ public class TeamTurns
                     }
 
                     // Signal UI done enemy's turn
-                    guiPendingOverrideEvent = LU_BEGINUILOCK;
+                    guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_BEGINUILOCK;
 
                     ClearIntList();
                 }
                 else
                 {
                     // back to the computer!
-                    if (Globals.gTacticalStatus.ubCurrentTeam == CREATURE_TEAM && BloodcatsPresent())
+                    if (Globals.gTacticalStatus.ubCurrentTeam == TEAM.CREATURE_TEAM && BloodcatsPresent())
                     {
                         AddTopMessage(COMPUTER_TURN_MESSAGE, Message[STR_BLOODCATS_TURN]);
                     }
@@ -972,7 +974,7 @@ public class TeamTurns
                     }
 
                     // Signal UI done enemy's turn
-                    guiPendingOverrideEvent = LU_BEGINUILOCK;
+                    guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_BEGINUILOCK;
 
                     // must clear int list before ending turn
                     ClearIntList();
@@ -994,7 +996,7 @@ public class TeamTurns
         int bDir;
         SOLDIERTYPE? pOpponent;
 
-        if ((Globals.gTacticalStatus.uiFlags & TURNBASED) && (Globals.gTacticalStatus.uiFlags & INCOMBAT) && !(gubSightFlags & SIGHT_INTERRUPT))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && !(gubSightFlags & SIGHT_INTERRUPT))
         {
             return (false);
         }
@@ -1047,7 +1049,7 @@ public class TeamTurns
 
         // in non-combat allow interrupt points to be calculated freely (everyone's in control!)
         // also allow calculation for storing in AllTeamsLookForAll
-        if ((Globals.gTacticalStatus.uiFlags & INCOMBAT) && (gubBestToMakeSightingSize != BEST_SIGHTING_ARRAY_SIZE_ALL_TEAMS_LOOK_FOR_ALL))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (gubBestToMakeSightingSize != BEST_SIGHTING_ARRAY_SIZE_ALL_TEAMS_LOOK_FOR_ALL))
         {
             // if his team's already in control
             if (pSoldier.bTeam == Globals.gTacticalStatus.ubCurrentTeam)
@@ -1071,7 +1073,7 @@ public class TeamTurns
                 // NO ONE EVER interrupts his own team
                 //return( false );
             }
-            else if (Globals.gTacticalStatus.bBoxingState != NOT_BOXING)
+            else if (Globals.gTacticalStatus.bBoxingState != BoxingStates.NOT_BOXING)
             {
                 // while anything to do with boxing is going on, skip interrupts!
                 return (false);
@@ -1249,7 +1251,7 @@ public class TeamTurns
         }
 
         // soldier passed on the chance to react during previous interrupt this turn
-        if (pSoldier.bPassedLastInterrupt)
+        if (pSoldier.bPassedLastInterrupt > 0)
         {
             return (false);
         }
@@ -1265,7 +1267,7 @@ public class TeamTurns
         int ubDistance;
 
         // extra check to make sure neutral folks never get interrupts
-        if (pSoldier.bNeutral)
+        if (pSoldier.bNeutral > 0)
         {
             return (NO_INTERRUPT);
         }
@@ -1285,8 +1287,8 @@ public class TeamTurns
             if ( pSoldier.bTeam == ENEMY_TEAM )
             {
                 // modify by the difficulty level setting
-                bPoints += gbDiff[ DIFF_ENEMY_INTERRUPT_MOD ][ SoldierDifficultyLevel( pSoldier ) ];
-                bPoints = __max( bPoints, 9 );
+                bPoints += gbDiff[ DIFF_ENEMY_INTERRUPT_MOD ,  SoldierDifficultyLevel( pSoldier ) ];
+                bPoints = Math.Max( bPoints, 9 );
             }
             */
 
@@ -1322,7 +1324,7 @@ public class TeamTurns
 
         // if we are in combat mode - thus doing an interrupt rather than determine who gets first turn - 
         // then give bonus 
-        if ((Globals.gTacticalStatus.uiFlags & INCOMBAT) && (pSoldier.bTeam != Globals.gTacticalStatus.ubCurrentTeam))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (pSoldier.bTeam != Globals.gTacticalStatus.ubCurrentTeam))
         {
             // passive player gets penalty due to range
             bPoints -= (ubDistance / 10);
@@ -1334,21 +1336,21 @@ public class TeamTurns
             // the opplist has been updated to seen.  But we can use gbSeenOpponents ...
 
             // this soldier is moving, so give them a bonus for crawling or swatting at long distances
-            if (!gbSeenOpponents[ubOpponentID][pSoldier.ubID])
+            if (gbSeenOpponents[ubOpponentID, pSoldier.ubID] == 0)
             {
-                if (pSoldier.usAnimState == SWATTING && ubDistance > (MaxDistanceVisible() / 2)) // more than 1/2 sight distance
+                if (pSoldier.usAnimState == AnimationStates.SWATTING && ubDistance > (MaxDistanceVisible() / 2)) // more than 1/2 sight distance
                 {
                     bPoints++;
                 }
-                else if (pSoldier.usAnimState == CRAWLING && ubDistance > (MaxDistanceVisible() / 4)) // more than 1/4 sight distance
+                else if (pSoldier.usAnimState == AnimationStates.CRAWLING && ubDistance > (MaxDistanceVisible() / 4)) // more than 1/4 sight distance
                 {
-                    bPoints += ubDistance / STRAIGHT;
+                    bPoints += ubDistance / Globals.STRAIGHT;
                 }
             }
         }
 
         // whether active or not, penalize people who are running
-        if (pSoldier.usAnimState == RUNNING && !gbSeenOpponents[pSoldier.ubID][ubOpponentID])
+        if (pSoldier.usAnimState == AnimationStates.RUNNING && gbSeenOpponents[pSoldier.ubID, ubOpponentID] == 0)
         {
             bPoints -= 2;
         }
@@ -1373,9 +1375,9 @@ public class TeamTurns
 
         // CJC note: this will affect friendly AI as well...
 
-        if (pSoldier.uiStatusFlags & SOLDIER_PC)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
         {
-            if (pSoldier.bAssignment >= ON_DUTY)
+            if (pSoldier.bAssignment >= Assignments.ON_DUTY)
             {
                 // make sure don't get interrupts!
                 bPoints = -10;
@@ -1383,7 +1385,7 @@ public class TeamTurns
 
             // GAIN one point if he's previously seen the opponent
             // check for true because -1 means we JUST saw him (always so here)
-            if (gbSeenOpponents[pSoldier.ubID][ubOpponentID] == true)
+            if (gbSeenOpponents[pSoldier.ubID, ubOpponentID] > 0)
             {
                 bPoints++;  // seen him before, easier to react to him
             }
@@ -1392,7 +1394,7 @@ public class TeamTurns
         {
             // GAIN one point if he's previously seen the opponent
             // check for true because -1 means we JUST saw him (always so here)
-            if (gbSeenOpponents[pSoldier.ubID][ubOpponentID] == true)
+            if (gbSeenOpponents[pSoldier.ubID, ubOpponentID] > 0)
             {
                 bPoints++;  // seen him before, easier to react to him
             }
@@ -1439,7 +1441,7 @@ public class TeamTurns
                 fResult = true;
             }
         }
-        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, L"Interrupt duel %d (%d pts) vs %d (%d pts)", pSoldier.ubID, pSoldier.bInterruptDuelPts, pOpponent.ubID, pOpponent.bInterruptDuelPts );
+        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "Interrupt duel %d (%d pts) vs %d (%d pts)", pSoldier.ubID, pSoldier.bInterruptDuelPts, pOpponent.ubID, pOpponent.bInterruptDuelPts );
         return (fResult);
     }
 
@@ -1457,7 +1459,7 @@ public class TeamTurns
         // remember who we're getting rid of
         ubID = Globals.gubOutOfTurnOrder[ubIndex];
 
-        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, L"%d removed from int list", ubID );
+        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "%d removed from int list", ubID );
         // if we're NOT deleting the LAST entry in the int list
         if (ubIndex < Globals.gubOutOfTurnPersons)
         {
@@ -1486,7 +1488,7 @@ public class TeamTurns
     {
         int ubLoop;
 
-        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, L"%d added to int list", ubID );
+        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "%d added to int list", ubID );
         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: adding ID %d who %s", ubID, fGainControl ? "gains control" : "loses control"));
 
         // check whether 'who' is already anywhere on the queue after the first index
@@ -1534,10 +1536,10 @@ public class TeamTurns
         {
             gubLastInterruptedGuy = ubID;
             // turn off AI control flag if they lost control
-            if (Menptr[ubID].uiStatusFlags & SOLDIER_UNDERAICONTROL)
+            if (Menptr[ubID].uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL))
             {
-                DebugAI(String("Taking away AI control from %d", ubID));
-                Menptr[ubID].uiStatusFlags &= (~SOLDIER_UNDERAICONTROL);
+                //DebugAI(string.Format("Taking away AI control from %d", ubID));
+                Menptr[ubID].uiStatusFlags &= (~SOLDIER.UNDERAICONTROL);
             }
         }
     }
@@ -1559,7 +1561,7 @@ public class TeamTurns
             {
                 // check the other teams to see if any of them are between our last team's mention in
                 // the array and this
-                for (ubLoop2 = 0; ubLoop2 < Globals.MAXTEAMS; ubLoop2++)
+                for (ubLoop2 = 0; ubLoop2 < (TEAM)Globals.MAXTEAMS; ubLoop2++)
                 {
                     if (ubLoop2 == ubTeam)
                     {
@@ -1725,7 +1727,7 @@ public class TeamTurns
                                     break;
 
                                 default:        // interrupt is possible, run a duel
-                                    DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Calculating int duel pts for onlooker in ResolveInterruptsVs");
+                                    //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Calculating int duel pts for onlooker in ResolveInterruptsVs");
                                     pSoldier.bInterruptDuelPts = CalcInterruptDuelPts(pSoldier, pOpponent.ubID, true);
                                     fIntOccurs = InterruptDuel(pOpponent, pSoldier);
 
@@ -1748,7 +1750,7 @@ public class TeamTurns
                                 /*
                                     if (pOpponent.bInterruptDuelPts != NO_INTERRUPT)
                                     {
-                                        Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, L"%d fails to interrupt %d (%d vs %d pts)", pOpponent.ubID, pSoldier.ubID, pOpponent.bInterruptDuelPts, pSoldier.bInterruptDuelPts);
+                                        Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "%d fails to interrupt %d (%d vs %d pts)", pOpponent.ubID, pSoldier.ubID, pOpponent.bInterruptDuelPts, pSoldier.bInterruptDuelPts);
                                     }
                                     */
                             }
@@ -1764,7 +1766,7 @@ public class TeamTurns
             }
 
             // if any interrupts are scheduled to occur (ie. I lost at least once)
-            if (ubIntCnt)
+            if (ubIntCnt > 0)
             {
                 // First add currently active character to the interrupt queue.  This is
                 // USUALLY pSoldier.guynum, but NOT always, because one enemy can
@@ -1772,16 +1774,16 @@ public class TeamTurns
                 // victim's screaming...  the guy screaming is pSoldier here, it's not his turn!
                 //AddToIntList( (int) gusSelectedSoldier, false, true);
 
-                if ((Globals.gTacticalStatus.ubCurrentTeam != pSoldier.bTeam) && !(Globals.gTacticalStatus.Team[Globals.gTacticalStatus.ubCurrentTeam].bHuman))
+                if ((Globals.gTacticalStatus.ubCurrentTeam != pSoldier.bTeam) && (Globals.gTacticalStatus.Team[Globals.gTacticalStatus.ubCurrentTeam].bHuman == 0))
                 {
                     // if anyone on this team is under AI control, remove 
                     // their AI control flag and put them on the queue instead of this guy
                     for (ubLoop = Globals.gTacticalStatus.Team[Globals.gTacticalStatus.ubCurrentTeam].bFirstID; ubLoop <= Globals.gTacticalStatus.Team[Globals.gTacticalStatus.ubCurrentTeam].bLastID; ubLoop++)
                     {
-                        if ((Globals.MercPtrs[ubLoop].uiStatusFlags & SOLDIER_UNDERAICONTROL))
+                        if ((Globals.MercPtrs[ubLoop].uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL)))
                         {
                             // this guy lost control
-                            Globals.MercPtrs[ubLoop].uiStatusFlags &= (~SOLDIER_UNDERAICONTROL);
+                            Globals.MercPtrs[ubLoop].uiStatusFlags &= (~SOLDIER.UNDERAICONTROL);
                             AddToIntList(ubLoop, false, true);
                             break;
                         }
@@ -1814,7 +1816,7 @@ public class TeamTurns
                     {
                         // add this guy to everyone's interrupt queue
                         AddToIntList(ubIntList[ubSmallestSlot], true, true);
-                        if (INTERRUPTS_OVER)
+                        if (INTERRUPTS_OVER())
                         {
                             // a loop was created which removed all the people in the interrupt queue!
                             EndInterrupt(true);
@@ -1837,11 +1839,11 @@ public class TeamTurns
 
     bool SaveTeamTurnsToTheSaveGameFile(Stream hFile)
     {
-        UINT32 uiNumBytesWritten;
+        int uiNumBytesWritten;
         TEAM_TURN_SAVE_STRUCT TeamTurnStruct;
 
         //Save the gubTurn Order Array
-        FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, &uiNumBytesWritten);
+        FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * MAXMERCS)
         {
             return (false);
@@ -1858,7 +1860,7 @@ public class TeamTurns
 
 
         //Save the Team turn save structure
-        FileWrite(hFile, &TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), &uiNumBytesWritten);
+        FileWrite(hFile, TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(TEAM_TURN_SAVE_STRUCT))
         {
             return (false);
@@ -1869,11 +1871,11 @@ public class TeamTurns
 
     bool LoadTeamTurnsFromTheSavedGameFile(Stream hFile)
     {
-        UINT32 uiNumBytesRead;
+        int uiNumBytesRead;
         TEAM_TURN_SAVE_STRUCT TeamTurnStruct;
 
         //Load the gubTurn Order Array
-        FileRead(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, &uiNumBytesRead);
+        FileRead(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int) * MAXMERCS)
         {
             return (false);
@@ -1881,7 +1883,7 @@ public class TeamTurns
 
 
         //Load the Team turn save structure
-        FileRead(hFile, &TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), &uiNumBytesRead);
+        FileRead(hFile, out TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(TEAM_TURN_SAVE_STRUCT))
         {
             return (false);
@@ -1915,13 +1917,13 @@ public class TeamTurns
 
             ubTargetSmallerHalf = EffectiveExpLevel(pTargetSoldier) / 2;
             ubTargetLargerHalf = EffectiveExpLevel(pTargetSoldier) - ubTargetSmallerHalf;
-            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached & gbFirstApproachFlags[APPROACH_THREATEN - 1])
+            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached & gbFirstApproachFlags[(int)Approaches.APPROACH_THREATEN - 1])
             {
                 // gains 1 to 2 points
                 ubTargetSmallerHalf += 1;
                 ubTargetLargerHalf += 1;
             }
-            if (Random(ubTargetSmallerHalf + 1) + ubTargetLargerHalf > Random(ubSmallerHalf + 1) + ubLargerHalf)
+            if (Random.Next(ubTargetSmallerHalf + 1) + ubTargetLargerHalf > Random.Next(ubSmallerHalf + 1) + ubLargerHalf)
             {
                 return (true);
             }

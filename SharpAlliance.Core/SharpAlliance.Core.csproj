@@ -22,10 +22,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Globals.OverheadTypes.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Assets\Shaders\Compute.glsl" />
     <None Remove="Assets\Shaders\Fragment.glsl" />
     <None Remove="Assets\Shaders\sprite.frag" />
@@ -66,10 +62,6 @@
 
   <ItemGroup>
     <Folder Include="ImageManager\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Globals.OverheadTypes.cs" />
   </ItemGroup>
 
   <ItemGroup>

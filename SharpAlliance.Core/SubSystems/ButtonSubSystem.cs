@@ -324,7 +324,7 @@ namespace SharpAlliance.Core.SubSystems
         {
             // Draw the appropriate button according to button type
             Globals.gbDisabledButtonStyle = DISABLED_STYLE.NONE;
-            switch (b.uiFlags & ButtonFlags.BUTTON_TYPES)
+            switch (b.uiFlags.HasFlag(ButtonFlags.BUTTON_TYPES))
             {
                 case ButtonFlags.BUTTON_QUICK:
                     ButtonSubSystem.DrawQuickButton(ref b);

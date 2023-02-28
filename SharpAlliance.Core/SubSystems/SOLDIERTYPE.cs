@@ -32,11 +32,11 @@ namespace SharpAlliance.Core.SubSystems
         int sBreathRed;           // current breath value
         public bool fDelayedMovement;
 
-        bool fReloading;
-        int ubWaitActionToDo;
-        bool fPauseAim;
-        int ubInsertionDirection;
-        int bGunType;
+        public bool fReloading;
+        public int ubWaitActionToDo;
+        public bool fPauseAim;
+        public int ubInsertionDirection;
+        public int bGunType;
         // skills
         int ubOppNum;
         int bLastRenderVisibleValue;
@@ -56,11 +56,11 @@ namespace SharpAlliance.Core.SubSystems
 
         //NEW MOVEMENT INFORMATION for Strategic Movement
         public int ubGroupID;        //the movement group the merc is currently part of.
-        bool fBetweenSectors;    //set when the group isn't actually in a sector.
-                                    //sSectorX and sSectorY will reflect the sector the
-                                    //merc was at last.
+        public bool fBetweenSectors;    //set when the group isn't actually in a sector.
+                                 //sSectorX and sSectorY will reflect the sector the
+                                 //merc was at last.
 
-        int ubMovementNoiseHeard;// 8 flags by direction
+        public int ubMovementNoiseHeard;// 8 flags by direction
 
         // 23 bytes so far 	
 
@@ -73,11 +73,11 @@ namespace SharpAlliance.Core.SubSystems
         public int sGridNo;
         public int bDirection;
         public int sHeightAdjustment;
-        int sDesiredHeight;
-        int sTempNewGridNo;                   // New grid no for advanced animations
-        int sRoomNo;
-        int bOverTerrainType;
-        int bOldOverTerrainType;
+        public int sDesiredHeight;
+        public int sTempNewGridNo;                   // New grid no for advanced animations
+        public int sRoomNo;
+        public int bOverTerrainType;
+        public int bOldOverTerrainType;
 
         public bool bCollapsed;                    // collapsed due to being out of APs
         int bBreathCollapsed;                  // collapsed due to being out of APs
@@ -132,9 +132,9 @@ namespace SharpAlliance.Core.SubSystems
         public int bNewOppCnt;
         public int bService;      // first aid, or other time consuming process
 
-        int usAniCode;
+        public int usAniCode;
         public int usAniFrame;
-        int sAniDelay;
+        public int sAniDelay;
 
         // MOVEMENT TO NEXT TILE HANDLING STUFF
         public int bAgility;          // agility (speed) value
@@ -218,10 +218,10 @@ namespace SharpAlliance.Core.SubSystems
 
 
         // PATH STUFF
-        int[] usPathingData = new int[Globals.MAX_PATH_LIST_SIZE];
+        public int[] usPathingData = new int[Globals.MAX_PATH_LIST_SIZE];
         public int usPathDataSize;
-        int usPathIndex;
-        int sBlackList;
+        public int usPathIndex;
+        public int sBlackList;
         public int bAimTime;
         public int bShownAimTime;
         public int bPathStored;   // good for AI to reduct redundancy
@@ -237,58 +237,58 @@ namespace SharpAlliance.Core.SubSystems
         public INSERTION_CODE ubStrategicInsertionCode;
         public int usStrategicInsertionData;
 
-        int iLight;
-        int iMuzFlash;
-        int bMuzFlashCount;
+        public int iLight;
+        public int iMuzFlash;
+        public int bMuzFlashCount;
 
         public int sX;
         public int sY;
 
-        int usOldAniState;
-        int sOldAniCode;
+        public int usOldAniState;
+        public int sOldAniCode;
 
-        int bBulletsLeft;
-        int ubSuppressionPoints;
+        public int bBulletsLeft;
+        public int ubSuppressionPoints;
 
         // STUFF FOR RANDOM ANIMATIONS
-        int uiTimeOfLastRandomAction;
-        int usLastRandomAnim;
+        public int uiTimeOfLastRandomAction;
+        public int usLastRandomAnim;
 
 
         // AI STUFF
         public int[] bOppList = new int[Globals.MAX_NUM_SOLDIERS]; // AI knowledge database
-        int bLastAction;
-        int bAction;
-        int usActionData;
-        int bNextAction;
-        int usNextActionData;
-        int bActionInProgress;
-        int bAlertStatus;
-        int bOppCnt;
+        public int bLastAction;
+        public int bAction;
+        public int usActionData;
+        public int bNextAction;
+        public int usNextActionData;
+        public int bActionInProgress;
+        public int bAlertStatus;
+        public int bOppCnt;
         public int bNeutral;
-        int bNewSituation;
-        int bNextTargetLevel;
-        int bOrders;
-        int bAttitude;
+        public int bNewSituation;
+        public int bNextTargetLevel;
+        public int bOrders;
+        public int bAttitude;
         public int bUnderFire;
-        int bShock;
-        int bUnderEscort;
-        int bBypassToGreen;
-        int ubLastMercToRadio;
-        int bDominantDir;              // AI main direction to face...
-        int bPatrolCnt;                    // number of patrol gridnos
-        int bNextPatrolPnt;            // index to next patrol gridno
-        int[] usPatrolGrid = new int[SoldierControl.MAXPATROLGRIDS];// AI list for ptr.orders==PATROL
-        int sNoiseGridno;
-        int ubNoiseVolume;
-        int bLastAttackHit;
-        int ubXRayedBy;
-        float dHeightAdjustment;
-        int bMorale;
-        int bTeamMoraleMod;
-        int bTacticalMoraleMod;
-        int bStrategicMoraleMod;
-        int bAIMorale;
+        public int bShock;
+        public int bUnderEscort;
+        public int bBypassToGreen;
+        public int ubLastMercToRadio;
+        public int bDominantDir;              // AI main direction to face...
+        public int bPatrolCnt;                    // number of patrol gridnos
+        public int bNextPatrolPnt;            // index to next patrol gridno
+        public int[] usPatrolGrid = new int[SoldierControl.MAXPATROLGRIDS];// AI list for ptr.orders==PATROL
+        public int sNoiseGridno;
+        public int ubNoiseVolume;
+        public int bLastAttackHit;
+        public int ubXRayedBy;
+        public float dHeightAdjustment;
+        public int bMorale;
+        public int bTeamMoraleMod;
+        public int bTacticalMoraleMod;
+        public int bStrategicMoraleMod;
+        public int bAIMorale;
         public MERC ubPendingAction;
         public int ubPendingActionAnimCount;
         public int uiPendingActionData1;
@@ -419,7 +419,7 @@ namespace SharpAlliance.Core.SubSystems
         int ubDesiredSquadAssignment;
         int ubNumTraversalsAllowedToMerge;
         int usPendingAnimation2;
-        public int ubCivilianGroup;
+        public CIV_GROUP ubCivilianGroup;
         // time changes...when a stat was changed according to GetJA2Clock();
         public int uiChangeLevelTime;
         public int uiChangeHealthTime;
@@ -449,11 +449,11 @@ namespace SharpAlliance.Core.SubSystems
         int bAIScheduleProgress;
         int sOffWorldGridNo;
         //TAG_anitile                 pAniTile;	
-        int bCamo;
-        int sAbsoluteFinalDestination;
-        int ubHiResDirection;
-        int ubHiResDesiredDirection;
-        int ubLastFootPrintSound;
+        public int bCamo;
+        public int sAbsoluteFinalDestination;
+        public int ubHiResDirection;
+        public int ubHiResDesiredDirection;
+        public int ubLastFootPrintSound;
         public int bVehicleID;
         public int fPastXDest;
         public int fPastYDest;
@@ -475,23 +475,22 @@ namespace SharpAlliance.Core.SubSystems
         bool fSignedAnotherContract;
         int ubAutoBandagingMedic;
         public bool fDontChargeTurningAPs;
-        int ubRobotRemoteHolderID;
-        int uiTimeOfLastContractUpdate;
-        int bTypeOfLastContract;
-        int bTurnsCollapsed;
-        int bSleepDrugCounter;
-        int ubMilitiaKills;
+        public int ubRobotRemoteHolderID;
+        public int uiTimeOfLastContractUpdate;
+        public int bTypeOfLastContract;
+        public int bTurnsCollapsed;
+        public int bSleepDrugCounter;
+        public int ubMilitiaKills;
+        public int[] bFutureDrugEffect = new int[2];                      // value to represent effect of a needle
+        public int[] bDrugEffectRate = new int[2];                            // represents rate of increase and decrease of effect  
+        public int[] bDrugEffect = new int[2];                                    // value that affects AP & morale calc ( -ve is poorly )
+        public int[] bDrugSideEffectRate = new int[2];                    // duration of negative AP and morale effect
+        public int[] bDrugSideEffect = new int[2];                            // duration of negative AP and morale effect
+        public int[] bTimesDrugUsedSinceSleep = new int[2];
 
-        int[] bFutureDrugEffect = new int[2];                      // value to represent effect of a needle
-        int[] bDrugEffectRate = new int[2];                            // represents rate of increase and decrease of effect  
-        int[] bDrugEffect = new int[2];                                    // value that affects AP & morale calc ( -ve is poorly )
-        int[] bDrugSideEffectRate = new int[2];                    // duration of negative AP and morale effect
-        int[] bDrugSideEffect = new int[2];                            // duration of negative AP and morale effect
-        int[] bTimesDrugUsedSinceSleep = new int[2];
-
-        int bBlindedCounter;
-        bool fMercCollapsedFlag;
-        bool fDoneAssignmentAndNothingToDoFlag;
+        public int bBlindedCounter;
+        public bool fMercCollapsedFlag;
+        public bool fDoneAssignmentAndNothingToDoFlag;
         public bool fMercAsleep;
         bool fDontChargeAPsForStanceChange;
 
@@ -499,32 +498,32 @@ namespace SharpAlliance.Core.SubSystems
 
         int ubMercJustFired;   // the merc was just fired..there may be dialogue events occuring, this flag will prevent any interaction with contracts
                                  // until after the merc leaves	
-        int ubTurnsUntilCanSayHeardNoise;
-        int usQuoteSaidExtFlags;
+        public int ubTurnsUntilCanSayHeardNoise;
+        public int usQuoteSaidExtFlags;
 
         public int sContPathLocation;
         public int bGoodContPath;
-        int ubPendingActionInterrupted;
-        int bNoiseLevel;
-        int bRegenerationCounter;
-        int bRegenBoostersUsedToday;
-        int bNumPelletsHitBy;
-        int sSkillCheckGridNo;
-        int ubLastEnemyCycledID;
+        public int ubPendingActionInterrupted;
+        public int bNoiseLevel;
+        public int bRegenerationCounter;
+        public int bRegenBoostersUsedToday;
+        public int bNumPelletsHitBy;
+        public int sSkillCheckGridNo;
+        public int ubLastEnemyCycledID;
 
-        int ubPrevSectorID;
-        int ubNumTilesMovesSinceLastForget;
-        int bTurningIncrement;
-        int uiBattleSoundID;
+        public int ubPrevSectorID;
+        public int ubNumTilesMovesSinceLastForget;
+        public int bTurningIncrement;
+        public int uiBattleSoundID;
 
         bool fSoldierWasMoving;
         bool fSayAmmoQuotePending;
         public int usValueGoneUp;
 
-        int ubNumLocateCycles;
-        int ubDelayedMovementFlags;
-        bool fMuzzleFlash;
-        int ubCTGTTargetID;
+        public int ubNumLocateCycles;
+        public int ubDelayedMovementFlags;
+        public bool fMuzzleFlash;
+        public int ubCTGTTargetID;
 
         //TIMECOUNTER PanelAnimateCounter;
         int uiMercChecksum;
@@ -532,7 +531,7 @@ namespace SharpAlliance.Core.SubSystems
         int bCurrentCivQuote;
         int bCurrentCivQuoteDelta;
         public SOLDIER_MISC ubMiscSoldierFlags;
-        int ubReasonCantFinishMove;
+        public REASON_STOPPED ubReasonCantFinishMove;
 
         int sLocationOfFadeStart;
         int bUseExitGridForReentryDirection;
@@ -553,27 +552,27 @@ namespace SharpAlliance.Core.SubSystems
         int bOverrideMoveSpeed;
         bool fUseMoverrideMoveSpeed;
 
-        int uiTimeSoldierWillArrive;
-        bool fDieSoundUsed;
-        bool fUseLandingZoneForArrival;
-        bool fFallClockwise;
-        int bVehicleUnderRepairID;
-        int iTimeCanSignElsewhere;
-        int bHospitalPriceModifier;
-        int[] bFillerBytes = new int[3];
-        int uiStartTimeOfInsuranceContract;
-        bool fRTInNonintAnim;
-        bool fDoingExternalDeath;
-        int bCorpseQuoteTolerance;
-        int bYetAnotherPaddingSpace;
-        int iPositionSndID;
-        int iTuringSoundID;
-        int ubLastDamageReason;
-        bool fComplainedThatTired;
-        int[] sLastTwoLocations = new int[2];
-        int bFillerDude;
-        int uiTimeSinceLastBleedGrunt;
-        int ubNextToPreviousAttackerID;
+        public int uiTimeSoldierWillArrive;
+        public bool fDieSoundUsed;
+        public bool fUseLandingZoneForArrival;
+        public bool fFallClockwise;
+        public int bVehicleUnderRepairID;
+        public int iTimeCanSignElsewhere;
+        public int bHospitalPriceModifier;
+        public int[] bFillerBytes = new int[3];
+        public int uiStartTimeOfInsuranceContract;
+        public bool fRTInNonintAnim;
+        public bool fDoingExternalDeath;
+        public int bCorpseQuoteTolerance;
+        public int bYetAnotherPaddingSpace;
+        public int iPositionSndID;
+        public int iTuringSoundID;
+        public int ubLastDamageReason;
+        public bool fComplainedThatTired;
+        public int[] sLastTwoLocations = new int[2];
+        public int bFillerDude;
+        public int uiTimeSinceLastBleedGrunt;
+        public int ubNextToPreviousAttackerID;
 
         int[] bFiller = new int[39];
     }

@@ -330,7 +330,7 @@ namespace SharpAlliance.Core.Managers
             if (uiBytesToRead != uiNumBytesRead)
             {
                 //		Gets the reason why the function failed
-                //		UINT32 uiLastError = GetLastError();
+                //		int uiLastError = GetLastError();
                 //		char zString[1024];
                 //		FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, null);
                 pBytesRead = 0;

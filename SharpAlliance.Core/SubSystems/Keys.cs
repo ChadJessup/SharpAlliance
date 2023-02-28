@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using SharpAlliance.Core.Screens;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class Keys
@@ -235,14 +237,14 @@ public class Keys
 
         if (pBaseStructure == null)
         {
-		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Door structure data at %d was not found", pDoorStatus.sGridNo );
+		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Door structure data at %d was not found", pDoorStatus.sGridNo );
             return;
         }
 
         pNode = WorldStructures.FindLevelNodeBasedOnStructure(sBaseGridNo, pBaseStructure);
         if (pNode is null)
         {
-            // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
+            // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
             return;
         }
 
@@ -274,12 +276,12 @@ public class Keys
 
     void UpdateDoorGraphicsFromStatus(bool fUsePerceivedStatus, bool fDirty)
     {
-        INT32 cnt;
+        int cnt;
         DOOR_STATUS? pDoorStatus;
 
         for (cnt = 0; cnt < gubNumDoorStatus; cnt++)
         {
-            pDoorStatus = &(gpDoorStatus[cnt]);
+            pDoorStatus = (gpDoorStatus[cnt]);
 
             // ATE: Make sure door status flag and struct info are syncronized....
             SyncronizeDoorStatusToStructureData(pDoorStatus);
@@ -315,14 +317,14 @@ public class Keys
 
         if (pBaseStructure == null)
         {
-		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Door structure data at %d was not found", pDoorStatus.sGridNo );
+		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Door structure data at %d was not found", pDoorStatus.sGridNo );
             return;
         }
 
         pNode = WorldStructures.FindLevelNodeBasedOnStructure(sBaseGridNo, pBaseStructure);
         if (pNode is null)
         {
-            //ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
+            //ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
             return;
         }
 
@@ -527,7 +529,7 @@ public class Keys
         {
             if (pDoorStatus is null)
             {
-                // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, L"WARNING! Failed to find the Perceived Open Door Status on Gridno %s", sGridNo);
+                // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "WARNING! Failed to find the Perceived Open Door Status on Gridno %s", sGridNo);
             }
 
             return (false);
@@ -596,7 +598,7 @@ public class Keys
     {
         string zMapName;
         Stream hFile;
-        UINT32 uiNumBytesWritten;
+        int uiNumBytesWritten;
         int ubCnt;
 
         // Turn off any DOOR BUSY flags....
@@ -625,7 +627,7 @@ public class Keys
 
 
         //Save the number of elements in the door array
-        FileWrite(hFile, gubNumDoorStatus, sizeof(int), &uiNumBytesWritten);
+        FileWrite(hFile, gubNumDoorStatus, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of array to disk
@@ -637,7 +639,7 @@ public class Keys
         if (gubNumDoorStatus != 0)
         {
             //Save the door array
-            FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), &uiNumBytesWritten);
+            FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesWritten);
             if (uiNumBytesWritten != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
             {
                 //Error Writing size of array to disk
@@ -659,7 +661,7 @@ public class Keys
     {
         string zMapName;
         Stream hFile;
-        UINT32 uiNumBytesRead;
+        int uiNumBytesRead;
         int ubLoop;
 
         //Convert the current sector location into a file name
@@ -683,7 +685,7 @@ public class Keys
 
 
         // Load the number of elements in the door status array
-        FileRead(hFile, &gubNumDoorStatus, sizeof(int), &uiNumBytesRead);
+        FileRead(hFile, out gubNumDoorStatus, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             FileClose(hFile);
@@ -705,7 +707,7 @@ public class Keys
 
 
         // Load the number of elements in the door status array
-        FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), &uiNumBytesRead);
+        FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesRead);
         if (uiNumBytesRead != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
         {
             FileClose(hFile);
@@ -730,11 +732,11 @@ public class Keys
 
     bool SaveKeyTableToSaveGameFile(Stream hFile)
     {
-        UINT32 uiNumBytesWritten = 0;
+        int uiNumBytesWritten = 0;
 
 
         // Save the KeyTable
-        FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, &uiNumBytesWritten);
+        FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(KEY) * NUM_KEYS)
         {
             return (false);
@@ -745,11 +747,11 @@ public class Keys
 
     bool LoadKeyTableFromSaveedGameFile(Stream hFile)
     {
-        UINT32 uiNumBytesRead = 0;
+        int uiNumBytesRead = 0;
 
 
         // Load the KeyTable
-        FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, &uiNumBytesRead);
+        FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(KEY) * NUM_KEYS)
         {
             return (false);
@@ -762,7 +764,7 @@ public class Keys
 
     void ExamineDoorsOnEnteringSector()
     {
-        INT32 cnt;
+        int cnt;
         DOOR_STATUS? pDoorStatus;
         SOLDIERTYPE? pSoldier;
         bool fOK = false;
@@ -818,11 +820,11 @@ public class Keys
 
     void HandleDoorsChangeWhenEnteringSectorCurrentlyLoaded()
     {
-        INT32 cnt;
+        int cnt;
         DOOR_STATUS? pDoorStatus;
         SOLDIERTYPE? pSoldier;
         bool fOK = false;
-        INT32 iNumNewMercs = 0;
+        int iNumNewMercs = 0;
         TOWNS bTownId;
 
         // OK, only do this if conditions are met....
@@ -898,7 +900,7 @@ public class Keys
     }
 
 
-    void DropKeysInKeyRing(SOLDIERTYPE? pSoldier, int sGridNo, int bLevel, int bVisible, bool fAddToDropList, INT32 iDropListSlot, bool fUseUnLoaded)
+    void DropKeysInKeyRing(SOLDIERTYPE? pSoldier, int sGridNo, int bLevel, int bVisible, bool fAddToDropList, int iDropListSlot, bool fUseUnLoaded)
     {
         int ubLoop;
         int ubItem;
@@ -915,7 +917,7 @@ public class Keys
 
             if (pSoldier.pKeyRing[ubLoop].ubNumber > 0)
             {
-                CreateKeyObject(&Object, pSoldier.pKeyRing[ubLoop].ubNumber, ubItem);
+                CreateKeyObject(out Object, pSoldier.pKeyRing[ubLoop].ubNumber, ubItem);
 
                 // Zero out entry
                 pSoldier.pKeyRing[ubLoop].ubNumber = 0;
@@ -923,19 +925,19 @@ public class Keys
 
                 if (fAddToDropList)
                 {
-                    AddItemToLeaveIndex(&Object, iDropListSlot);
+                    AddItemToLeaveIndex(out Object, iDropListSlot);
                 }
                 else
                 {
                     if (pSoldier.sSectorX != gWorldSectorX || pSoldier.sSectorY != gWorldSectorY || pSoldier.bSectorZ != gbWorldSectorZ || fUseUnLoaded)
                     {
                         // Set flag for item...
-                        AddItemsToUnLoadedSector(pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ, sGridNo, 1, &Object, bLevel, WOLRD_ITEM_FIND_SWEETSPOT_FROM_GRIDNO | WORLD_ITEM_REACHABLE, 0, bVisible, false);
+                        AddItemsToUnLoadedSector(pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ, sGridNo, 1, out Object, bLevel, WOLRD_ITEM_FIND_SWEETSPOT_FROM_GRIDNO | WORLD_ITEM_REACHABLE, 0, bVisible, false);
                     }
                     else
                     {
                         // Add to pool
-                        AddItemToPool(sGridNo, &Object, bVisible, bLevel, 0, 0);
+                        AddItemToPool(sGridNo, out Object, bVisible, bLevel, 0, 0);
                     }
                 }
             }

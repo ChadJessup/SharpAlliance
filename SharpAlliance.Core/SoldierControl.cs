@@ -7,8 +7,6 @@ public class SoldierControl
     //Kris:  November 10, 1997
     //Please don't change this value from 10.  It will invalidate all of the maps and soldiers.
     public const int MAXPATROLGRIDS = 10;  // *** THIS IS A DUPLICATION - MUST BE MOVED !
-
-    public const int NO_PROFILE = 200;
     public const int MAX_FULLTILE_DIRECTIONS = 3;
 }
 
@@ -131,4 +129,20 @@ public enum SOLDIER_MISC
     HURT_BY_EXPLOSION = 0x02,
     // should be revealed due to xrays
     XRAYED = 0x04,
+}
+
+// reasons for being unable to continue movement
+public enum REASON_STOPPED
+{
+    NO_APS,
+    SIGHT,
+};
+
+
+[Flags]
+public enum HIT_BY
+{
+    HIT_BY_TEARGAS = 0x01,
+    HIT_BY_MUSTARDGAS = 0x02,
+    HIT_BY_CREATUREGAS = 0x04,
 }

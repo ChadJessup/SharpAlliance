@@ -43,3 +43,5 @@ start.
 
 Nothing, if you don't own the game, you won't be able to use this to get around purchasing it, this still
 needs all the assets from the original game. It's often only $3 bucks or on GoG or Steam, so pay for it.
+
+using static SharpAlliance.Core.Globals;

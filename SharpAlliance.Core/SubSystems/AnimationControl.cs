@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core.SubSystems;
+﻿using SharpAlliance.Core.Managers;
+
+namespace SharpAlliance.Core.SubSystems;
 
 public class AnimationControl
 {
@@ -17,8 +19,8 @@ public class AnimationControl
             // Ensure that it's loaded!
             if (Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
             {
-                Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, Globals.MSG_BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType,
-                    Globals.gAnimControl[usAnimState].zAnimStr, usAnimSurface);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, Globals.MSG_BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType.ToString(),
+                    Globals.gAnimControl[usAnimState].zAnimStr, usAnimSurface.ToString());
                 //AnimDebugMsg("Surface Database: PROBLEMS!!!!!!");
                 usAnimSurface = Globals.INVALID_ANIMATION_SURFACE;
             }
