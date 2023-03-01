@@ -79,7 +79,7 @@ public class Facts
         {
             return (false);
         }
-        return (PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
+        return (IsometricUtils.PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
     }
 
     public static bool CheckFact(FACT usFact, NPCID ubProfileID)

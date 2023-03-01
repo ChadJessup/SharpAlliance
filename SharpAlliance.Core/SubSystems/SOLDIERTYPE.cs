@@ -1,5 +1,7 @@
 ﻿using SharpAlliance.Core.Managers.Image;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems
 {
     public class SOLDIERTYPE
@@ -26,7 +28,7 @@ namespace SharpAlliance.Core.SubSystems
         int sFractLife;       // fraction of life pts (in hundreths)	
         public int bBleeding;     // blood loss control variable
         public int bBreath;           // current breath value
-        int bBreathMax;   // max breath, affected by fatigue/sleep
+        public int bBreathMax;   // max breath, affected by fatigue/sleep
         public bool bStealthMode { get; set; }
 
         int sBreathRed;           // current breath value
@@ -38,13 +40,13 @@ namespace SharpAlliance.Core.SubSystems
         public int ubInsertionDirection;
         public int bGunType;
         // skills
-        int ubOppNum;
-        int bLastRenderVisibleValue;
-        bool fInMissionExitNode;
-        int ubAttackingHand;
-        int bScientific;
+        public int ubOppNum;
+        public int bLastRenderVisibleValue;
+        public bool fInMissionExitNode;
+        public int ubAttackingHand;
+        public int bScientific;
         // traits	
-        int sWeightCarriedAtTurnStart;
+        public int sWeightCarriedAtTurnStart;
         public string name; // max 10 chars?
 
         public int bVisible;          // to render or not to render...
@@ -182,8 +184,8 @@ namespace SharpAlliance.Core.SubSystems
         PaletteRepID MiscPal;   // 30
 
         // FULL 3-d TILE STUFF ( keep records of three tiles infront )
-        int[] usFrontArcFullTileList = new int[SoldierControl.MAX_FULLTILE_DIRECTIONS];
-        int[] usFrontArcFullTileGridNos = new int[SoldierControl.MAX_FULLTILE_DIRECTIONS];
+        int[] usFrontArcFullTileList = new int[MAX_FULLTILE_DIRECTIONS];
+        int[] usFrontArcFullTileGridNos = new int[MAX_FULLTILE_DIRECTIONS];
 
 
         SGPPaletteEntry p8BPPPalette; // 4
@@ -278,7 +280,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bDominantDir;              // AI main direction to face...
         public int bPatrolCnt;                    // number of patrol gridnos
         public int bNextPatrolPnt;            // index to next patrol gridno
-        public int[] usPatrolGrid = new int[SoldierControl.MAXPATROLGRIDS];// AI list for ptr.orders==PATROL
+        public int[] usPatrolGrid = new int[MAXPATROLGRIDS];// AI list for ptr.orders==PATROL
         public int sNoiseGridno;
         public int ubNoiseVolume;
         public int bLastAttackHit;
@@ -358,9 +360,9 @@ namespace SharpAlliance.Core.SubSystems
         public int sPanelFaceY;
         // QUOTE STUFF
         public int bNumHitsThisTurn;
-        public int usQuoteSaidFlags;
+        public SOLDIER_QUOTE usQuoteSaidFlags;
         public int fCloseCall;
-        public int bLastSkillCheck;
+        public SKILLCHECKS bLastSkillCheck;
         public int ubSkillCheckAttempts;
         public int bVocalVolume;  // verbal sounds need to differ in volume
         public int bStartFallDir;
@@ -499,7 +501,7 @@ namespace SharpAlliance.Core.SubSystems
         int ubMercJustFired;   // the merc was just fired..there may be dialogue events occuring, this flag will prevent any interaction with contracts
                                  // until after the merc leaves	
         public int ubTurnsUntilCanSayHeardNoise;
-        public int usQuoteSaidExtFlags;
+        public SOLDIER_QUOTE usQuoteSaidExtFlags;
 
         public int sContPathLocation;
         public int bGoodContPath;

@@ -2,6 +2,8 @@
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core;
 
 public class IsometricUtils
@@ -91,6 +93,21 @@ public class IsometricUtils
         psWorldScreenX = sScreenCenterX + Globals.gsCX - Globals.gsTLX;
         psWorldScreenY = sScreenCenterY + Globals.gsCY - Globals.gsTLY;
     }
+
+    public static int PythSpacesAway(int sOrigin, int sDest)
+    {
+        int sRows, sCols, sResult;
+
+        sRows = Math.Abs((sOrigin / MAXCOL) - (sDest / MAXCOL));
+        sCols = Math.Abs((sOrigin % MAXROW) - (sDest % MAXROW));
+
+        // apply Pythagoras's theorem for right-handed triangle:
+        // dist^2 = rows^2 + cols^2, so use the square root to get the distance
+        sResult = (int)Math.Sqrt((sRows * sRows) + (sCols * sCols));
+
+        return (sResult);
+    }
+
 
     public static bool GridNoOnVisibleWorldTile(int sGridNo)
     {

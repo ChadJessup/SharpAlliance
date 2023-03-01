@@ -205,8 +205,8 @@ public class ItemSubSystem
                 /*
                 if (usItem == CAWS)
                 {
-                    pObj->usAttachItem[0] = DUCKBILL;
-                    pObj->bAttachStatus[0] = 100;
+                    pObj.usAttachItem[0] = DUCKBILL;
+                    pObj.bAttachStatus[0] = 100;
                 }
                 */
             }

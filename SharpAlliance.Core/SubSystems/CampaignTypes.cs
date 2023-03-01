@@ -70,7 +70,7 @@ public class SECTORINFO
 
     public static SEC SECTOR(int x, MAP_ROW y) => (SEC)(((int)y - 1) * 16 + x - 1);
     public static int SECTORX(int SectorID) => ((SectorID % 16) + 1);
-    public static int SECTORY(int SectorID) => ((SectorID / 16) + 1);
+    public static MAP_ROW SECTORY(int SectorID) => (MAP_ROW)((SectorID / 16) + 1);
 }
 
 public enum GroupTypes//group types

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpAlliance.Core.Screens;
+﻿using SharpAlliance.Core.Screens;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -75,4 +70,22 @@ public class StrategicTownLoyalty
 
         return (ubSectorsControlled);
     }
+}
+
+public enum GLOBAL_LOYALTY
+{
+    // There are only for distance-adjusted global loyalty effects.  Others go into list above instead!
+    BATTLE_WON,
+    BATTLE_LOST,
+    ENEMY_KILLED,
+    NATIVE_KILLED,
+    GAIN_TOWN_SECTOR,
+    LOSE_TOWN_SECTOR,
+    LIBERATE_WHOLE_TOWN,     // awarded only the first time it happens
+    ABANDON_MILITIA,
+    GAIN_MINE,
+    LOSE_MINE,
+    GAIN_SAM,
+    LOSE_SAM,
+    QUEEN_BATTLE_WON,
 }

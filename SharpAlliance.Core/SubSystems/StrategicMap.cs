@@ -20,11 +20,12 @@ public class StrategicMap
     public static int GetTownSectorSize(TOWNS bTownId)
     {
         int ubSectorSize = 0;
-        int iCounterA = 0, iCounterB = 0;
+        int iCounterA = 0;
+        MAP_ROW iCounterB = 0;
 
         for (iCounterA = 0; iCounterA < (Globals.MAP_WORLD_X - 1); iCounterA++)
         {
-            for (iCounterB = 0; iCounterB < (Globals.MAP_WORLD_Y - 1); iCounterB++)
+            for (iCounterB = 0; (int)iCounterB < (Globals.MAP_WORLD_Y - 1); iCounterB++)
             {
                 if (Globals.StrategicMap[CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB)].bNameId == bTownId)
                 {
@@ -127,7 +128,7 @@ public class StrategicMap
                     GROUP? pGroup;
 
                     // ATE: Dont's assume exit grids here...
-                    if (bExitDirection != -1)
+                    if (bExitDirection != (StrategicMove)(-1))
                     {
                         //Now, determine if this is a valid path.
                         pGroup = GetGroup(pValidSoldier.ubGroupID);
@@ -186,7 +187,7 @@ public class StrategicMap
                     }
                 }
             }
-            if (bExitDirection != -1)
+            if (bExitDirection != (StrategicMove)(-1))
             {
                 GROUP? pGroup;
                 //Now, determine if this is a valid path.

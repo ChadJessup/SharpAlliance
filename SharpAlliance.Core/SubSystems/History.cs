@@ -3,36 +3,31 @@ using System.IO;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 
+using static SharpAlliance.Core.EnglishText;
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class History
 {
-    // the page flipping buttons
-    int[] giHistoryButton = new int[2];
-    int[] giHistoryButtonImage = new int[2];
     bool fInHistoryMode = false;
-
 
     // current page displayed
     int iCurrentHistoryPage = 1;
 
     // the History record list
-    history? pHistoryListHead = null;
+    static history? pHistoryListHead = null;
 
     // current History record (the one at the top of the current page)
-    history? pCurrentHistory = null;
+    static history? pCurrentHistory = null;
 
-
-    // last page in list
-    int guiLastPageInHistoryRecordsList = 0;
-
-    int SetHistoryFact(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
+    public static int SetHistoryFact(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
         int uiId = 0;
         int ubColor = 0;
-        history pHistory = pHistoryListHead;
+        history? pHistory = pHistoryListHead;
 
         // clear the list
         ClearHistoryList();
@@ -71,7 +66,7 @@ public class History
     }
 
 
-    int AddHistoryToPlayersLog(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
+    public static int AddHistoryToPlayersLog(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -463,10 +458,10 @@ public class History
     }
 
 
-    int ProcessAndEnterAHistoryRecord(HISTORY ubCode, int uiDate, int ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
+    public static int ProcessAndEnterAHistoryRecord(HISTORY ubCode, int uiDate, int ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
     {
         int uiId = 0;
-        history pHistory = pHistoryListHead;
+        history? pHistory = pHistoryListHead;
 
         // add to History list
         if (pHistory is not null)
@@ -623,7 +618,7 @@ public class History
     }
 
 
-    void ClearHistoryList()
+    public static void ClearHistoryList()
     {
         // remove each element from list of transactions
 
@@ -1418,12 +1413,12 @@ public class History
     }
 
 
-    bool AppendHistoryToEndOfFile(history? pHistory)
+    public static bool AppendHistoryToEndOfFile(history? pHistory)
     {
         // will write the current finance to disk
         Stream hFileHandle;
         int iBytesWritten = 0;
-        history pHistoryList = pHistoryListHead;
+        history? pHistoryList = pHistoryListHead;
 
 
         // open file

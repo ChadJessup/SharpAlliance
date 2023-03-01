@@ -1,5 +1,6 @@
 ﻿using System;
 using SharpAlliance.Core.Screens;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -156,7 +157,7 @@ public class Quests
         }
         if (pNPC.bSide == Globals.gbPlayerNum || pNPC.bNeutral > 0)
         {
-            if (pNPC.ubCivilianGroup != NON_CIV_GROUP)
+            if (pNPC.ubCivilianGroup != CIV_GROUP.NON_CIV_GROUP)
             {
                 // although the soldier is NOW the same side, this civ group could be set to "will become hostile"
                 return (Globals.gTacticalStatus.fCivGroupHostile[pNPC.ubCivilianGroup] >= CIV_GROUP_WILL_BECOME_HOSTILE);
@@ -199,6 +200,28 @@ public class Quests
         return (false);
     }
 
+    public static void StartQuest(QUEST ubQuest, int sSectorX, MAP_ROW sSectorY)
+    {
+        InternalStartQuest(ubQuest, sSectorX, sSectorY, true);
+    }
+
+
+    private static void InternalStartQuest(QUEST ubQuest, int sSectorX, MAP_ROW sSectorY, bool fUpdateHistory)
+    {
+        if (gubQuest[ubQuest] == QUESTNOTSTARTED)
+        {
+            gubQuest[ubQuest] = QUESTINPROGRESS;
+
+            if (fUpdateHistory)
+            {
+                History.SetHistoryFact(HISTORY.QUEST_STARTED, ubQuest, GetWorldTotalMin(), sSectorX, sSectorY);
+            }
+        }
+        else
+        {
+            gubQuest[ubQuest] = QUESTINPROGRESS;
+        }
+    }
 
     public static int NumWoundedMercsNearby(NPCID ubProfileID)
     {

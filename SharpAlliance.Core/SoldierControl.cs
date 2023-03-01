@@ -1,13 +1,12 @@
 ﻿using System;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core;
 
 public class SoldierControl
 {
-    //Kris:  November 10, 1997
-    //Please don't change this value from 10.  It will invalidate all of the maps and soldiers.
-    public const int MAXPATROLGRIDS = 10;  // *** THIS IS A DUPLICATION - MUST BE MOVED !
-    public const int MAX_FULLTILE_DIRECTIONS = 3;
+
 }
 
 public enum InventorySlot
@@ -145,4 +144,33 @@ public enum HIT_BY
     HIT_BY_TEARGAS = 0x01,
     HIT_BY_MUSTARDGAS = 0x02,
     HIT_BY_CREATUREGAS = 0x04,
+}
+
+public enum SOLDIER_QUOTE
+{
+    SAID_IN_SHIT = 0x0001,
+    SAID_LOW_BREATH = 0x0002,
+    SAID_BEING_PUMMELED = 0x0004,
+    SAID_NEED_SLEEP = 0x0008,
+    SAID_LOW_MORAL = 0x0010,
+    SAID_MULTIPLE_CREATURES = 0x0020,
+    SAID_ANNOYING_MERC = 0x0040,
+    SAID_LIKESGUN = 0x0080,
+    SAID_DROWNING = 0x0100,
+    SAID_ROTTINGCORPSE = 0x0200,
+    SAID_SPOTTING_CREATURE_ATTACK = 0x0400,
+    SAID_SMELLED_CREATURE = 0x0800,
+    SAID_ANTICIPATING_DANGER = 0x1000,
+    SAID_WORRIED_ABOUT_CREATURES = 0x2000,
+    SAID_PERSONALITY = 0x4000,
+    SAID_FOUND_SOMETHING_NICE = 0x8000,
+    SAID_EXT_HEARD_SOMETHING = 0x0001,
+    SAID_EXT_SEEN_CREATURE_ATTACK = 0x0002,
+    SAID_EXT_USED_BATTLESOUND_HIT = 0x0004,
+    SAID_EXT_CLOSE_CALL = 0x0008,
+    SAID_EXT_MIKE = 0x0010,
+    SAID_DONE_ASSIGNMENT = 0x0020,
+    SAID_BUDDY_1_WITNESSED = 0x0040,
+    SAID_BUDDY_2_WITNESSED = 0x0080,
+    SAID_BUDDY_3_WITNESSED = 0x0100,
 }

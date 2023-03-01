@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class MapScreenInterfaceBottom
 {
-    private static bool fMapScreenBottomDirty;
-
     public static void MoveToEndOfMapScreenMessageList()
     {
         int ubDesiredMessageIndex;

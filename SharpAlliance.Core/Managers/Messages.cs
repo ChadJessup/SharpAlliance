@@ -562,7 +562,7 @@ public class Messages
         int usLineWidthIfWordIsWiderThenWidth = 0;
 
 
-        if (Globals.giTimeCompressMode > Globals.TIME_COMPRESS_X1)
+        if (Globals.giTimeCompressMode > TIME_COMPRESS.TIME_COMPRESS_X1)
         {
             return;
         }

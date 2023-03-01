@@ -46,7 +46,7 @@ namespace SharpAlliance.Core.Managers.Image
     }// relative tile location
 
     // TRLE subimage structure, mirroring that of ST(C)I
-    public class ETRLEObject
+    public struct ETRLEObject
     {
         public uint uiDataOffset;
         public uint uiDataLength;

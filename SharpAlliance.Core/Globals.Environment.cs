@@ -139,8 +139,6 @@ public partial class Globals
     public const int GLOBAL_WARM_END = (17 * 60);
     public const int HOT_DAY_LIGHTLEVEL = 2;
 
-    public static int guiEnvTime = 0;
-    public static int guiEnvDay = 0;
     public static int gubEnvLightValue = 0;
     public static int gubDesertTemperature = 0;
     public static int gubGlobalTemperature = 0;

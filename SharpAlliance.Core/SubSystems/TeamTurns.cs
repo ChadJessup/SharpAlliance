@@ -2,6 +2,7 @@
 using SharpAlliance.Core.Managers;
 
 using static SharpAlliance.Core.Globals;
+using static SharpAlliance.Core.IsometricUtils;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -635,12 +636,13 @@ public class TeamTurns
                 {
                     if (Globals.MercPtrs[iCounter].fCloseCall > 0)
                     {
-                        if (Globals.MercPtrs[iCounter].bNumHitsThisTurn == 0 && !(Globals.MercPtrs[iCounter].usQuoteSaidExtFlags & SOLDIER_QUOTE_SAID_EXT_CLOSE_CALL) && Random.Next(3) == 0)
+                        if (Globals.MercPtrs[iCounter].bNumHitsThisTurn == 0 && !(Globals.MercPtrs[iCounter].usQuoteSaidExtFlags.HasFlag(SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL)) && Random.Next(3) == 0)
                         {
                             // say close call quote!
-                            TacticalCharacterDialogue(Globals.MercPtrs[iCounter], QUOTE_CLOSE_CALL);
-                            Globals.MercPtrs[iCounter].usQuoteSaidExtFlags |= SOLDIER_QUOTE_SAID_EXT_CLOSE_CALL;
+                            TacticalCharacterDialogue(Globals.MercPtrs[iCounter], QUOTE.CLOSE_CALL);
+                            Globals.MercPtrs[iCounter].usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL;
                         }
+
                         Globals.MercPtrs[iCounter].fCloseCall = 0;
                     }
                 }
@@ -1276,7 +1278,7 @@ public class TeamTurns
 
         // Robot has interrupt points based on the controller...
         // Controller's interrupt points are reduced by 2 for being distracted...
-        if (pSoldier.uiStatusFlags & SOLDIER_ROBOT && CanRobotBeControlled(pSoldier))
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT) && CanRobotBeControlled(pSoldier))
         {
             bPoints = EffectiveExpLevel(Globals.MercPtrs[pSoldier.ubRobotRemoteHolderID]) - 2;
         }
@@ -1338,11 +1340,11 @@ public class TeamTurns
             // this soldier is moving, so give them a bonus for crawling or swatting at long distances
             if (gbSeenOpponents[ubOpponentID, pSoldier.ubID] == 0)
             {
-                if (pSoldier.usAnimState == AnimationStates.SWATTING && ubDistance > (MaxDistanceVisible() / 2)) // more than 1/2 sight distance
+                if (pSoldier.usAnimState == AnimationStates.SWATTING && ubDistance > (OppList.MaxDistanceVisible() / 2)) // more than 1/2 sight distance
                 {
                     bPoints++;
                 }
-                else if (pSoldier.usAnimState == AnimationStates.CRAWLING && ubDistance > (MaxDistanceVisible() / 4)) // more than 1/4 sight distance
+                else if (pSoldier.usAnimState == AnimationStates.CRAWLING && ubDistance > (OppList.MaxDistanceVisible() / 4)) // more than 1/4 sight distance
                 {
                     bPoints += ubDistance / Globals.STRAIGHT;
                 }
@@ -1702,7 +1704,7 @@ public class TeamTurns
                             if (ubInterruptType == NOISEINTERRUPT)
                             {
                                 // don't grant noise interrupts at greater than max. visible distance 
-                                if (PythSpacesAway(pSoldier.sGridNo, pOpponent.sGridNo) > MaxDistanceVisible())
+                                if (PythSpacesAway(pSoldier.sGridNo, pOpponent.sGridNo) > OppList.MaxDistanceVisible())
                                 {
                                     pOpponent.bInterruptDuelPts = NO_INTERRUPT;
                                     continue;
@@ -1840,7 +1842,6 @@ public class TeamTurns
     bool SaveTeamTurnsToTheSaveGameFile(Stream hFile)
     {
         int uiNumBytesWritten;
-        TEAM_TURN_SAVE_STRUCT TeamTurnStruct;
 
         //Save the gubTurn Order Array
         FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesWritten);
@@ -1849,14 +1850,16 @@ public class TeamTurns
             return (false);
         }
 
+        TEAM_TURN_SAVE_STRUCT TeamTurnStruct = new()
+        {
+            ubOutOfTurnPersons = gubOutOfTurnPersons,
 
-        TeamTurnStruct.ubOutOfTurnPersons = gubOutOfTurnPersons;
-
-        TeamTurnStruct.InterruptOnlyGuynum = InterruptOnlyGuynum;
-        TeamTurnStruct.sWhoThrewRock = gsWhoThrewRock;
-        TeamTurnStruct.InterruptsAllowed = InterruptsAllowed;
-        TeamTurnStruct.fHiddenInterrupt = gfHiddenInterrupt;
-        TeamTurnStruct.ubLastInterruptedGuy = gubLastInterruptedGuy;
+            InterruptOnlyGuynum = InterruptOnlyGuynum,
+            sWhoThrewRock = gsWhoThrewRock,
+            InterruptsAllowed = InterruptsAllowed,
+            fHiddenInterrupt = gfHiddenInterrupt,
+            ubLastInterruptedGuy = gubLastInterruptedGuy
+        };
 
 
         //Save the Team turn save structure
@@ -1905,7 +1908,11 @@ public class TeamTurns
     {
         // if attacking an NPC check to see who draws first!
 
-        if (pTargetSoldier.ubProfile != NO_PROFILE && pTargetSoldier.ubProfile != SLAY && pTargetSoldier.bNeutral && pTargetSoldier.bOppList[pSoldier.ubID] == SEEN_CURRENTLY && (FindAIUsableObjClass(pTargetSoldier, IC_WEAPON) != NO_SLOT))
+        if (pTargetSoldier.ubProfile != NO_PROFILE
+            && pTargetSoldier.ubProfile != NPCID.SLAY
+            && pTargetSoldier.bNeutral > 0
+            && pTargetSoldier.bOppList[pSoldier.ubID] == SEEN_CURRENTLY
+            && (FindAIUsableObjClass(pTargetSoldier, IC.WEAPON) != NO_SLOT))
         {
             int ubLargerHalf, ubSmallerHalf, ubTargetLargerHalf, ubTargetSmallerHalf;
 
@@ -1917,7 +1924,7 @@ public class TeamTurns
 
             ubTargetSmallerHalf = EffectiveExpLevel(pTargetSoldier) / 2;
             ubTargetLargerHalf = EffectiveExpLevel(pTargetSoldier) - ubTargetSmallerHalf;
-            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached & gbFirstApproachFlags[(int)Approaches.APPROACH_THREATEN - 1])
+            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached > 0 & gbFirstApproachFlags[(int)Approaches.APPROACH_THREATEN - 1] == 1)
             {
                 // gains 1 to 2 points
                 ubTargetSmallerHalf += 1;
@@ -1928,6 +1935,7 @@ public class TeamTurns
                 return (true);
             }
         }
+
         return (false);
     }
 }

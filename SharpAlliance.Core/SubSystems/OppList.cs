@@ -757,12 +757,12 @@ public class OppList
         return (sDistVisible);
     }
 
-    int MaxDistanceVisible()
+    public static int MaxDistanceVisible()
     {
         return (STRAIGHT * 2);
     }
 
-    int DistanceVisible(SOLDIERTYPE? pSoldier, int bFacingDir, int bSubjectDir, int sSubjectGridNo, int bLevel)
+    public static int DistanceVisible(SOLDIERTYPE? pSoldier, int bFacingDir, int bSubjectDir, int sSubjectGridNo, int bLevel)
     {
         int sDistVisible;
         int bLightLevel;
@@ -1819,18 +1819,18 @@ public class OppList
                 }
                 else if (pSoldier.bTeam == gbPlayerNum)
                 {
-                    if ((pOpponent.ubProfile == MIKE) && (pSoldier.ubWhatKindOfMercAmI == MERC_TYPE__AIM_MERC) && !(pSoldier.usQuoteSaidExtFlags & SOLDIER_QUOTE_SAID_EXT_MIKE))
+                    if ((pOpponent.ubProfile == NPCID.MIKE) && (pSoldier.ubWhatKindOfMercAmI == MERC_TYPE.AIM_MERC) && !(pSoldier.usQuoteSaidExtFlags.HasFlag(SOLDIER_QUOTE.SAID_EXT_MIKE)))
                     {
                         if (gfMikeShouldSayHi == false)
                         {
                             gfMikeShouldSayHi = true;
                         }
-                        TacticalCharacterDialogue(pSoldier, QUOTE_AIM_SEEN_MIKE);
-                        pSoldier.usQuoteSaidExtFlags |= SOLDIER_QUOTE_SAID_EXT_MIKE;
+                        TacticalCharacterDialogue(pSoldier, QUOTE.AIM_SEEN_MIKE);
+                        pSoldier.usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_MIKE;
                     }
-                    else if (pOpponent.ubProfile == JOEY && gfPlayerTeamSawJoey == false)
+                    else if (pOpponent.ubProfile == NPCID.JOEY && gfPlayerTeamSawJoey == false)
                     {
-                        TacticalCharacterDialogue(pSoldier, QUOTE_SPOTTED_JOEY);
+                        TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_JOEY);
                         gfPlayerTeamSawJoey = true;
                     }
                 }
@@ -2534,7 +2534,7 @@ public class OppList
 
             for (uiLoop = 0; uiLoop < guiNumMercSlots; uiLoop++)
             {
-                if (MercSlots[uiLoop])
+                if (MercSlots[uiLoop] is not null)
                 {
                     gsLastKnownOppLoc[pSoldier.ubID, MercSlots[uiLoop].ubID] = NOWHERE;
 
@@ -2660,7 +2660,7 @@ public class OppList
             }
 
             // Check out for our under large fire quote
-            if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_IN_SHIT))
+            if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_IN_SHIT)))
             {
                 // Get total enemies.
                 // Loop through all mercs in sector and count # of enemies
@@ -2698,9 +2698,9 @@ public class OppList
                 if ((pSoldier.bOppCnt - ubNumAllies) > 2)
                 {
                     // Say quote!
-                    TacticalCharacterDialogue(pSoldier, QUOTE_IN_TROUBLE_SLASH_IN_BATTLE);
+                    TacticalCharacterDialogue(pSoldier, QUOTE.IN_TROUBLE_SLASH_IN_BATTLE);
 
-                    pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_IN_SHIT;
+                    pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_IN_SHIT;
 
                     return;
                 }
@@ -2708,14 +2708,13 @@ public class OppList
             }
 
 
-            if (fSeenCreature == 1)
+            if (fSeenCreature == true)
             {
-
                 // Is this our first time seeing them?
-                if (gMercProfiles[pSoldier.ubProfile].ubMiscFlags & PROFILE_MISC_FLAG_HAVESEENCREATURE)
+                if (gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE))
                 {
                     // Are there multiplaes and we have not said this quote during this battle?
-                    if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_MULTIPLE_CREATURES))
+                    if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_MULTIPLE_CREATURES)))
                     {
                         // Check for multiples!
                         ubNumEnemies = 0;
@@ -2741,40 +2740,40 @@ public class OppList
                         if (ubNumEnemies > 2)
                         {
                             // Yes, set flag
-                            pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_MULTIPLE_CREATURES;
+                            pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_MULTIPLE_CREATURES;
 
                             // Say quote
-                            TacticalCharacterDialogue(pSoldier, QUOTE_ATTACKED_BY_MULTIPLE_CREATURES);
+                            TacticalCharacterDialogue(pSoldier, QUOTE.ATTACKED_BY_MULTIPLE_CREATURES);
                         }
                         else
                         {
-                            TacticalCharacterDialogue(pSoldier, QUOTE_SEE_CREATURE);
+                            TacticalCharacterDialogue(pSoldier, QUOTE.SEE_CREATURE);
                         }
                     }
                     else
                     {
-                        TacticalCharacterDialogue(pSoldier, QUOTE_SEE_CREATURE);
+                        TacticalCharacterDialogue(pSoldier, QUOTE.SEE_CREATURE);
                     }
                 }
                 else
                 {
                     // Yes, set flag
-                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= PROFILE_MISC_FLAG_HAVESEENCREATURE;
+                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE;
 
-                    TacticalCharacterDialogue(pSoldier, QUOTE_FIRSTTIME_GAME_SEE_CREATURE);
+                    TacticalCharacterDialogue(pSoldier, QUOTE.FIRSTTIME_GAME_SEE_CREATURE);
                 }
             }
             // 2 is for bloodcat...
             else if (fSeenCreature == 2)
             {
-                TacticalCharacterDialogue(pSoldier, QUOTE_SPOTTED_BLOODCAT);
+                TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_BLOODCAT);
             }
             else
             {
                 if (fVirginSector)
                 {
                     // First time we've seen a guy this sector
-                    TacticalCharacterDialogue(pSoldier, QUOTE_SEE_ENEMY_VARIATION);
+                    TacticalCharacterDialogue(pSoldier, QUOTE.SEE_ENEMY_VARIATION);
                 }
                 else
                 {
@@ -2784,7 +2783,7 @@ public class OppList
                     }
                     else
                     {
-                        TacticalCharacterDialogue(pSoldier, QUOTE_SEE_ENEMY);
+                        TacticalCharacterDialogue(pSoldier, QUOTE.SEE_ENEMY);
                     }
                 }
             }
@@ -5627,9 +5626,9 @@ public class OppList
                 // if the quote was faint, say something
                 if (ubVolumeIndex == 0)
                 {
-                    if (!AreInMeanwhile() && !(gTacticalStatus.uiFlags.HasFlag(ENGAGED_IN_CONV)) && pSoldier.ubTurnsUntilCanSayHeardNoise == 0)
+                    if (!AreInMeanwhile() && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)) && pSoldier.ubTurnsUntilCanSayHeardNoise == 0)
                     {
-                        TacticalCharacterDialogue(pSoldier, QUOTE_HEARD_SOMETHING);
+                        TacticalCharacterDialogue(pSoldier, QUOTE.HEARD_SOMETHING);
                         if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                         {
                             pSoldier.ubTurnsUntilCanSayHeardNoise = 2;
@@ -6097,7 +6096,7 @@ public class OppList
                 if (pAttacker.usAttackingWeapon == DART_GUN)
                 {
                     // rarely noticed
-                    if (SkillCheck(pDefender, NOTICE_DART_CHECK, 0) < 0)
+                    if (SkillChecks(pDefender, NOTICE_DART_CHECK, 0) < 0)
                     {
                         return;
                     }

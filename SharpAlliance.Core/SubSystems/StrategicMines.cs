@@ -3,16 +3,12 @@ using System.Diagnostics;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicMines
 {
-
-
-
-
-
-
     /* gradual monster infestation concept was ditched, now simply IN PRODUCTION or SHUT DOWN
 
     // percentage of workers working depends on level of mine infestation
@@ -35,33 +31,31 @@ public class StrategicMines
         MINE ubDepletedMineIndex;
         int ubMinDaysBeforeDepletion = 20;
 
-
         // set up initial mine status
         for (ubMineIndex = 0; ubMineIndex < MINE.MAX_NUMBER_OF_MINES; ubMineIndex++)
         {
-            pMineStatus = (Globals.gMineStatus[ubMineIndex]);
-
-            //memset(pMineStatus, 0, sizeof( *pMineStatus) );
-
-            pMineStatus.ubMineType = Globals.gubMineTypes[ubMineIndex];
-            pMineStatus.uiMaxRemovalRate = Globals.guiMinimumMineProduction[ubMineIndex];
-            pMineStatus.fEmpty = (pMineStatus.uiMaxRemovalRate == 0) ? true : false;
-            pMineStatus.fRunningOut = false;
-            pMineStatus.fWarnedOfRunningOut = false;
-            //		pMineStatus.bMonsters = MINES_NO_MONSTERS;
-            pMineStatus.fShutDown = false;
-            pMineStatus.fPrevInvadedByMonsters = false;
-            pMineStatus.fSpokeToHeadMiner = false;
-            pMineStatus.fMineHasProducedForPlayer = false;
-            pMineStatus.fQueenRetookProducingMine = false;
-            Globals.gMineStatus.fShutDownIsPermanent = false;
+            Globals.gMineStatus[ubMineIndex] = new MINE_STATUS_TYPE
+            {
+                ubMineType = Globals.gubMineTypes[ubMineIndex],
+                uiMaxRemovalRate = Globals.guiMinimumMineProduction[ubMineIndex],
+                fEmpty = (Globals.guiMinimumMineProduction[ubMineIndex] == 0) ? true : false,
+                fRunningOut = false,
+                fWarnedOfRunningOut = false,
+                //		pMineStatus.bMonsters = MINES_NO_MONSTERS;
+                fShutDown = false,
+                fPrevInvadedByMonsters = false,
+                fSpokeToHeadMiner = false,
+                fMineHasProducedForPlayer = false,
+                fQueenRetookProducingMine = false,
+                fShutDownIsPermanent = false, // this was gMineStatus - which feels like a bug.
+            };
         }
 
         // randomize the exact size each mine.  The total production is always the same and depends on the game difficulty,
         // but some mines will produce more in one game than another, while others produce less
 
         // adjust for game difficulty
-        switch (Globals.gGameSettings.DifficultyLevel)
+        switch (Globals.gGameOptions.ubDifficultyLevel)
         {
             case DifficultyLevel.Easy:
             case DifficultyLevel.Medium:
@@ -333,15 +327,19 @@ public class StrategicMines
             GetMineSector(bMineIndex, out sSectorX, out sSectorY);
             StrategicHandleMineThatRanOut(SECTORINFO.SECTOR(sSectorX, sSectorY));
 
-            AddHistoryToPlayersLog(HISTORY.MINE_RAN_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown,
-                GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
+            History.AddHistoryToPlayersLog(
+                HISTORY.MINE_RAN_OUT,
+                Globals.gMineLocation[bMineIndex].bAssociatedTown,
+                GetWorldTotalMin(),
+                Globals.gMineLocation[bMineIndex].sSectorX,
+                Globals.gMineLocation[bMineIndex].sSectorY);
         }
         else    // still some left after this extraction
         {
             // set amount used, and decrement ore remaining in mine	
             uiAmountExtracted = uiAmount;
             var mineStatus = Globals.gMineStatus[bMineIndex];
-            
+
             mineStatus.uiRemainingOreSupply -= uiAmount;
 
             // one of the mines (randomly chosen) will start running out eventually, check if we're there yet
@@ -362,7 +360,7 @@ public class StrategicMines
                         mineStatus = Globals.gMineStatus[bMineIndex];
 
                         // that mine's head miner tells player that the mine is running out
-                        IssueHeadMinerQuote(bMineIndex, HEAD_MINER_STRATEGIC_QUOTE_RUNNING_OUT);
+                        IssueHeadMinerQuote(bMineIndex, HEAD_MINER_STRATEGIC_QUOTE.RUNNING_OUT);
                         mineStatus.fWarnedOfRunningOut = true;
                         AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
                     }
@@ -1006,9 +1004,9 @@ public class StrategicMines
         }
     }
 
-    void ResetQueenRetookMine(int ubMinerProfileId)
+    void ResetQueenRetookMine(NPCID ubMinerProfileId)
     {
-        int ubMineIndex;
+        MINE ubMineIndex;
 
         ubMineIndex = GetHeadMinersMineIndex(ubMinerProfileId);
 
@@ -1034,7 +1032,7 @@ public class StrategicMines
     }
 
 
-    void QueenHasRegainedMineSector(int bMineIndex)
+    void QueenHasRegainedMineSector(MINE bMineIndex)
     {
         Debug.Assert((bMineIndex >= 0) && (bMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
@@ -1047,7 +1045,7 @@ public class StrategicMines
 
     bool HasAnyMineBeenAttackedByMonsters()
     {
-        int ubMineIndex;
+        MINE ubMineIndex;
 
         // find which mine this guy represents
         for (ubMineIndex = 0; ubMineIndex < MINE.MAX_NUMBER_OF_MINES; ubMineIndex++)

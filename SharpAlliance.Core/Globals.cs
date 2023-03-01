@@ -209,10 +209,6 @@ public partial class Globals
 
     public const int MIN_RATING_TO_TRAIN_TOWN = 20;
 
-    public const int NUM_SEC_IN_DAY = 86400;
-    public const int NUM_SEC_IN_HOUR = 3600;
-    public const int NUM_SEC_IN_MIN = 60;
-
     public const int OKBREATH = 10;
     public const int OKLIFE = 15;
     public const int CONSCIOUSNESS = 10;
@@ -230,11 +226,16 @@ public partial class Globals
     public const int NONSELECTED_GUY_SELECTION = 2;
     public const int ENEMY_GUY_SELECTION = 3;
 
+    public static bool fMapScreenBottomDirty;
 
     public const int QUESTNOTSTARTED = 0;
     public const int QUESTINPROGRESS = 1;
     public const int QUESTDONE = 2;
 
+    //Kris:  November 10, 1997
+    //Please don't change this value from 10.  It will invalidate all of the maps and soldiers.
+    public const int MAXPATROLGRIDS = 10;  // *** THIS IS A DUPLICATION - MUST BE MOVED !
+    public const int MAX_FULLTILE_DIRECTIONS = 3;
 
 
     public static int[] gzLocation;// [20];
@@ -249,11 +250,15 @@ public partial class Globals
     public static bool gfUIIntTileLocation2;
 
 
-    public static MOUSE_REGION gDisableRegion;
+    public static MOUSE_REGION? gDisableRegion;
     public static bool gfDisableRegionActive = false;
 
-    public static MOUSE_REGION gUserTurnRegion;
+    public static MOUSE_REGION? gUserTurnRegion;
     public static bool gfUserTurnRegionActive = false;
+
+    public static int[] gbFirstApproachFlags = { 0x01, 0x02, 0x04, 0x08 };
+    public static int[] gubAlternateNPCFileNumsForQueenMeanwhiles = { 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176 };
+    public static int[] gubAlternateNPCFileNumsForElliotMeanwhiles = { 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196 };
 
 
     // For use with mouse button query routines
@@ -400,6 +405,11 @@ public partial class Globals
     public static bool fLandLayerDirty;
     public static bool gfIgnoreScrollDueToCenterAdjust;
 
+    public static int guiLastPageInHistoryRecordsList = 0;    // last page in list
+                                                              // the page flipping buttons
+    public static int[] giHistoryButton = new int[2];
+    public static int[] giHistoryButtonImage = new int[2];
+
     public static int gusAnchorMouseY;
     public static int usOldMouseY;
     public static bool ubNearHeigherLevel;
@@ -509,10 +519,6 @@ public partial class Globals
 
     public static int fInterfacePanelDirty;
     public static bool gfRenderHilights = true;
-
-    public int[] gbFirstApproachFlags = new int[4] { 0x01, 0x02, 0x04, 0x08 };
-    public int[] gubAlternateNPCFileNumsForQueenMeanwhiles = new int[] { 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176 };
-    public int[] gubAlternateNPCFileNumsForElliotMeanwhiles = new int[] { 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196 };
 
     public static int gusUIOldSelectedSoldier;
     public static int giUIMessageOverlay;
@@ -1593,7 +1599,6 @@ public partial class Globals
     // the next said quote will pause time
     public static bool fPausedTimeDuringQuote = false;
     public static bool fWasPausedDuringDialogue = false;
-    public static bool gfLockPauseState = false;
 
     public static bool gubLogForMeTooBleeds = false;
 
@@ -1656,18 +1661,14 @@ public partial class Globals
     public static bool gfRefreshUpdate = false;
     public static bool fDisableJustForIan;
 
-
     public static long guiStartupTime;
     public static long guiCurrentTime;
-    public static int guiLockPauseStateLastReasonId = 0;
     public static bool fClockMouseRegionCreated;
     public static bool gfPauseClock = false;
-    public static bool gfGamePaused { get; set; }
-    public static bool gfTimeInterrupt { get; set; } = false;
 
     // clock mouse region
-    public static MOUSE_REGION gClockMouseRegion;
-    public static MOUSE_REGION gClockScreenMaskMouseRegion;
+    public static MOUSE_REGION? gClockMouseRegion;
+    public static MOUSE_REGION? gClockScreenMaskMouseRegion;
 
     public static uint GetJA2Clock() => ClockManager.GetJA2Clock();
 

@@ -136,11 +136,6 @@ public class ClockManager : IClockManager
         Globals.guiLockPauseStateLastReasonId = uiUniqueReasonId;
     }
 
-    public void PauseTime(bool fPaused)
-    {
-        Globals.gfPauseClock = fPaused;
-    }
-
     public void UnLockPauseState()
     {
         throw new NotImplementedException();
