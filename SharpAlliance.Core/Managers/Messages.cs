@@ -245,7 +245,7 @@ public class Messages
         int cnt;
         int iNumberOfNewStrings = 0; // the count of new strings, so we can update position by WIDTH_BETWEEN_NEW_STRINGS pixels in the y
         int iNumberOfMessagesOnQueue = 0;
-        int iMaxAge = 0;
+        uint iMaxAge = 0;
         bool fDitchLastMessage = false;
 
         // UPDATE TIMER
@@ -413,7 +413,7 @@ public class Messages
         {
             if (Globals.gpDisplayList[cnt] != null)
             {
-                RestoreExternBackgroundRectGivenID(Globals.gVideoOverlays[Globals.gpDisplayList[cnt].iVideoOverlay].uiBackground);
+                RenderDirty.RestoreExternBackgroundRectGivenID(Globals.gVideoOverlays[Globals.gpDisplayList[cnt].iVideoOverlay].uiBackground);
                 RenderDirty.UpdateVideoOverlay(VideoOverlayDesc, Globals.gpDisplayList[cnt].iVideoOverlay, false);
             }
         }

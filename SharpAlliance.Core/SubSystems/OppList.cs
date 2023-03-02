@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using static SharpAlliance.Core.Globals;
+using static SharpAlliance.Core.IsometricUtils;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -39,7 +40,7 @@ public class OppList
         sNewDist = sDistVisible * gbLightSighting[0, bLightLevel] / 100;
 
         // Adjust it based on weather...
-        if (guiEnvWeather & (WEATHER_FORECAST_SHOWERS | WEATHER_FORECAST_THUNDERSHOWERS))
+        if (guiEnvWeather.HasFlag(WEATHER_FORECAST.SHOWERS | WEATHER_FORECAST.THUNDERSHOWERS))
         {
             sNewDist = sNewDist * 70 / 100;
         }
@@ -433,7 +434,7 @@ public class OppList
                 if (Globals.MercPtrs[ubSpeaker].bVisible == 0)
                 {
                     gbPublicOpplist[gbPlayerNum][ubSpeaker] = HEARD_THIS_TURN;
-                    HandleSight(Globals.MercPtrs[ubSpeaker], SIGHT_LOOK | SIGHT_RADIO);
+                    HandleSight(Globals.MercPtrs[ubSpeaker], SIGHT.LOOK | SIGHT.RADIO);
                 }
 
                 // trigger hater
@@ -515,7 +516,9 @@ public class OppList
         } // end of SIGHT_LOOK
 
         // if we've been told that interrupts are possible as a result of sighting
-        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (ubSightFlags & SIGHT_INTERRUPT))
+        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
+           && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+           && (ubSightFlags.HasFlag(SIGHT.INTERRUPT)))
         {
             ResolveInterruptsVs(pSoldier, SIGHTINTERRUPT);
         }
@@ -770,7 +773,7 @@ public class OppList
         return (STRAIGHT * 2);
     }
 
-    public static int DistanceVisible(SOLDIERTYPE? pSoldier, int bFacingDir, int bSubjectDir, int sSubjectGridNo, int bLevel)
+    public static int DistanceVisible(SOLDIERTYPE? pSoldier, WorldDirections bFacingDir, WorldDirections bSubjectDir, int sSubjectGridNo, int bLevel)
     {
         int sDistVisible;
         int bLightLevel;
@@ -778,12 +781,13 @@ public class OppList
 
         pSubject = SimpleFindSoldier(sSubjectGridNo, bLevel);
 
-        if (pSoldier.uiStatusFlags & SOLDIER.MONSTER)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
         {
             if (!pSubject)
             {
                 return (false);
             }
+
             return (DistanceSmellable(pSoldier, pSubject));
         }
 
@@ -793,7 +797,7 @@ public class OppList
             return (0);
         }
 
-        if (bFacingDir == DIRECTION_IRRELEVANT && TANK(pSoldier))
+        if (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT && TANK(pSoldier))
         {
             // always calculate direction for tanks so we have something to work with
             bFacingDir = pSoldier.bDesiredDirection;
@@ -801,7 +805,7 @@ public class OppList
             //bSubjectDir = atan8(pSoldier.sX,pSoldier.sY,pOpponent.sX,pOpponent.sY);
         }
 
-        if (!TANK(pSoldier) && (bFacingDir == DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags & SOLDIER_ROBOT) || (pSubject && pSubject.fMuzzleFlash)))
+        if (!TANK(pSoldier) && (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags & SOLDIER_ROBOT) || (pSubject && pSubject.fMuzzleFlash)))
         {
             sDistVisible = MaxDistanceVisible();
         }
@@ -817,14 +821,14 @@ public class OppList
             {
                 sDistVisible = gbLookDistance[bFacingDir, bSubjectDir];
 
-                if (sDistVisible == ANGLE && (pSoldier.bTeam == OUR_TEAM || pSoldier.bAlertStatus >= STATUS_RED))
+                if (sDistVisible == ANGLE && (pSoldier.bTeam == OUR_TEAM || pSoldier.bAlertStatus >= STATUS.RED))
                 {
                     sDistVisible = STRAIGHT;
                 }
 
                 sDistVisible *= 2;
 
-                if (pSoldier.usAnimState == RUNNING)
+                if (pSoldier.usAnimState == AnimationStates.RUNNING)
                 {
                     if (gbLookDistance[bFacingDir, bSubjectDir] != STRAIGHT)
                     {
@@ -858,7 +862,7 @@ public class OppList
         if (bLightLevel < NORMAL_LIGHTLEVEL_DAY)
         {
             // greater than normal daylight level; check for sun goggles
-            if (pSoldier.inv[HEAD1POS].usItem == SUNGOGGLES || pSoldier.inv[HEAD2POS].usItem == SUNGOGGLES)
+            if (pSoldier.inv[HEAD1POS].usItem == Items.SUNGOGGLES || pSoldier.inv[HEAD2POS].usItem == Items.SUNGOGGLES)
             {
                 // increase sighting distance by up to 2 tiles
                 sDistVisible++;
@@ -871,9 +875,14 @@ public class OppList
         }
         else if (bLightLevel > NORMAL_LIGHTLEVEL_DAY + 5)
         {
-            if ((pSoldier.inv[HEAD1POS].usItem == NIGHTGOGGLES || pSoldier.inv[HEAD2POS].usItem == NIGHTGOGGLES || pSoldier.inv[HEAD1POS].usItem == UVGOGGLES || pSoldier.inv[HEAD2POS].usItem == UVGOGGLES) || (pSoldier.ubBodyType == BLOODCAT || AM_A_ROBOT(pSoldier)))
+            if ((pSoldier.inv[HEAD1POS].usItem == Items.NIGHTGOGGLES
+                || pSoldier.inv[HEAD2POS].usItem == Items.NIGHTGOGGLES
+                || pSoldier.inv[HEAD1POS].usItem == Items.UVGOGGLES
+                || pSoldier.inv[HEAD2POS].usItem == Items.UVGOGGLES)
+                || (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT
+                || AM_A_ROBOT(pSoldier)))
             {
-                if (pSoldier.inv[HEAD1POS].usItem == NIGHTGOGGLES || pSoldier.inv[HEAD2POS].usItem == NIGHTGOGGLES || AM_A_ROBOT(pSoldier))
+                if (pSoldier.inv[HEAD1POS].usItem == Items.NIGHTGOGGLES || pSoldier.inv[HEAD2POS].usItem == Items.NIGHTGOGGLES || AM_A_ROBOT(pSoldier))
                 {
                     if (bLightLevel > NORMAL_LIGHTLEVEL_NIGHT)
                     {
@@ -913,12 +922,12 @@ public class OppList
             sDistVisible = Math.Max(sDistVisible + 5, MaxDistanceVisible());
         }
 
-        if (gpWorldLevelData[pSoldier.sGridNo].ubExtFlags[bLevel] & (MAPELEMENT_EXT_TEARGAS | MAPELEMENT_EXT_MUSTARDGAS))
+        if (gpWorldLevelData[pSoldier.sGridNo].ubExtFlags[bLevel] & (MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS))
         {
-            if (pSoldier.inv[HEAD1POS].usItem != GASMASK && pSoldier.inv[HEAD2POS].usItem != GASMASK)
+            if (pSoldier.inv[HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[HEAD2POS].usItem != Items.GASMASK)
             {
                 // in gas without a gas mask; reduce max distance visible to 2 tiles at most
-                sDistVisible = __min(sDistVisible, 2);
+                sDistVisible = Math.Min(sDistVisible, 2);
             }
         }
 
@@ -953,7 +962,7 @@ public class OppList
                         if (PythSpacesAway(pOtherSoldier.sGridNo, pSoldier.sGridNo) > DistanceVisible(pOtherSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, pSoldier.sGridNo, pSoldier.bLevel))
                         {
                             // if this guy can no longer see us, change to seen this turn
-                            HandleManNoLongerSeen(pOtherSoldier, pSoldier, &(pOtherSoldier.bOppList[pSoldier.ubID]), (gbPublicOpplist[pOtherSoldier.bTeam][pSoldier.ubID]));
+                            HandleManNoLongerSeen(pOtherSoldier, pSoldier, (pOtherSoldier.bOppList[pSoldier.ubID]), (gbPublicOpplist[pOtherSoldier.bTeam][pSoldier.ubID]));
                         }
                         // else this person is still seen, if the looker is on our side or the militia the person should stay visible
                         //# ifdef WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA

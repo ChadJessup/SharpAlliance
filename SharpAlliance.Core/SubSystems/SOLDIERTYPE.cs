@@ -32,7 +32,7 @@ namespace SharpAlliance.Core.SubSystems
         public bool bStealthMode { get; set; }
 
         int sBreathRed;           // current breath value
-        public bool fDelayedMovement;
+        public int fDelayedMovement;
 
         public bool fReloading;
         public int ubWaitActionToDo;
@@ -83,8 +83,14 @@ namespace SharpAlliance.Core.SubSystems
 
         public bool bCollapsed;                    // collapsed due to being out of APs
         int bBreathCollapsed;                  // collapsed due to being out of APs
-                                                // 50 bytes so far
+                                               // 50 bytes so far
 
+        public uint UpdateCounter;
+        public uint DamageCounter;
+        public uint ReloadCounter;
+        public uint FlashSelCounter;
+        public uint AICounter;
+        public uint FadeCounter;
 
         int ubDesiredHeight;
         public AnimationStates usPendingAnimation;
@@ -123,7 +129,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bExpLevel;     // general experience level
         public int sInsertionGridNo;
 
-        bool fContinueMoveAfterStanceChange;
+        public bool fContinueMoveAfterStanceChange;
 
         // 60
         //AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
@@ -158,11 +164,11 @@ namespace SharpAlliance.Core.SubSystems
         public bool fWarnedAboutBleeding;
         public bool fDyingComment;
 
-        int ubTilesMovedPerRTBreathUpdate;
-        int usLastMovementAnimPerRTBreathUpdate;
+        public int ubTilesMovedPerRTBreathUpdate;
+        public int usLastMovementAnimPerRTBreathUpdate;
 
-        bool fTurningToShoot;
-        bool fTurningToFall;
+        public bool fTurningToShoot;
+        public bool fTurningToFall;
         public bool fTurningUntilDone;
         public bool fGettingHit;
         public bool fInNonintAnim;
@@ -208,7 +214,7 @@ namespace SharpAlliance.Core.SubSystems
         //struct TAG_level_node               *pRoofUILevelNode;
 
         // WALKING STUFF
-        public int bDesiredDirection;
+        public WorldDirections bDesiredDirection;
         public int sDestXPos;
         public int sDestYPos;
         public int sDesiredDest;
@@ -259,19 +265,19 @@ namespace SharpAlliance.Core.SubSystems
 
         // AI STUFF
         public int[] bOppList = new int[Globals.MAX_NUM_SOLDIERS]; // AI knowledge database
-        public int bLastAction;
-        public int bAction;
+        public AI_ACTION bLastAction;
+        public AI_ACTION bAction;
         public int usActionData;
-        public int bNextAction;
+        public AI_ACTION bNextAction;
         public int usNextActionData;
         public int bActionInProgress;
-        public int bAlertStatus;
+        public STATUS bAlertStatus;
         public int bOppCnt;
         public int bNeutral;
         public int bNewSituation;
         public int bNextTargetLevel;
         public int bOrders;
-        public int bAttitude;
+        public Attitudes bAttitude;
         public int bUnderFire;
         public int bShock;
         public int bUnderEscort;
@@ -313,7 +319,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bMonsterSmell;
         public int bMobility;
         public int bRTPCombat;
-        public int fAIFlags;
+        public AIDEFINES fAIFlags;
 
         public bool fDontChargeReadyAPs;
         public int usAnimSurface;
@@ -324,19 +330,19 @@ namespace SharpAlliance.Core.SubSystems
         public int sWalkToAttackGridNo;
         public int sWalkToAttackWalkToCost;
 
-        bool fForceRenderColor;
-        bool fForceNoRenderPaletteCycle;
-        int sLocatorOffX;
-        int sLocatorOffY;
-        bool fStopPendingNextTile;
-        bool fForceShade;
-        int pForcedShade;
-        int bDisplayDamageCount;
-        int fDisplayDamage;
-        int sDamage;
-        int sDamageX;
-        int sDamageY;
-        int bDamageDir;
+        public bool fForceRenderColor;
+        public bool fForceNoRenderPaletteCycle;
+        public int sLocatorOffX;
+        public int sLocatorOffY;
+        public bool fStopPendingNextTile;
+        public bool fForceShade;
+        public int pForcedShade;
+        public int bDisplayDamageCount;
+        public int fDisplayDamage;
+        public int sDamage;
+        public int sDamageX;
+        public int sDamageY;
+        public int bDamageDir;
         public bool bDoBurst;
         public AnimationStates usUIMovementMode;
         public int bUIInterfaceLevel;
@@ -347,7 +353,7 @@ namespace SharpAlliance.Core.SubSystems
         public bool fDeadSoundPlayed;
         public NPCID ubProfile { get; }
         public int ubQuoteRecord;
-        public int ubQuoteActionID;
+        public QUOTE_ACTION_ID ubQuoteActionID;
         public int ubBattleSoundID;
         public bool fClosePanel;
         public bool fClosePanelToDie;
@@ -420,7 +426,7 @@ namespace SharpAlliance.Core.SubSystems
         //Squad merging vars
         int ubDesiredSquadAssignment;
         int ubNumTraversalsAllowedToMerge;
-        int usPendingAnimation2;
+        public AnimationStates usPendingAnimation2;
         public CIV_GROUP ubCivilianGroup;
         // time changes...when a stat was changed according to GetJA2Clock();
         public int uiChangeLevelTime;
@@ -443,13 +449,13 @@ namespace SharpAlliance.Core.SubSystems
         public int ubScheduleID;
         public int sEndDoorOpenCodeData;
         //TIMECOUNTER NextTileCounter;
-        bool fBlockedByAnotherMerc;
-        int bBlockedByAnotherMercDirection;
+        public bool fBlockedByAnotherMerc;
+        public int bBlockedByAnotherMercDirection;
         public Items usAttackingWeapon;
         public WM bWeaponMode;
-        int ubTargetID;
-        int bAIScheduleProgress;
-        int sOffWorldGridNo;
+        public int ubTargetID;
+        public int bAIScheduleProgress;
+        public int sOffWorldGridNo;
         //TAG_anitile                 pAniTile;	
         public int bCamo;
         public int sAbsoluteFinalDestination;
@@ -538,21 +544,21 @@ namespace SharpAlliance.Core.SubSystems
         int sLocationOfFadeStart;
         int bUseExitGridForReentryDirection;
 
-        int uiTimeSinceLastSpoke;
-        int ubContractRenewalQuoteCode;
-        int sPreTraversalGridNo;
-        int uiXRayActivatedTime;
+        public int uiTimeSinceLastSpoke;
+        public int ubContractRenewalQuoteCode;
+        public int sPreTraversalGridNo;
+        public int uiXRayActivatedTime;
         public bool bTurningFromUI;
-        int bPendingActionData5;
+        public int bPendingActionData5;
 
-        int bDelayedStrategicMoraleMod;
-        int ubDoorOpeningNoise;
+        public int bDelayedStrategicMoraleMod;
+        public int ubDoorOpeningNoise;
 
-        GROUP                                pGroup;
-	int ubLeaveHistoryCode;
-        bool fDontUnsetLastTargetFromTurn;
-        int bOverrideMoveSpeed;
-        bool fUseMoverrideMoveSpeed;
+        public GROUP                                pGroup;
+	    public int ubLeaveHistoryCode;
+        public bool fDontUnsetLastTargetFromTurn;
+        public int bOverrideMoveSpeed;
+        public bool fUseMoverrideMoveSpeed;
 
         public int uiTimeSoldierWillArrive;
         public bool fDieSoundUsed;

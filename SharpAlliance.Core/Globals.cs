@@ -1735,6 +1735,55 @@ public partial class Globals
     public const int AUTOMATIC_INTERRUPT = 100;
     public const int NO_INTERRUPT = 127;
 
+    public const int NEXT_TILE_CHECK_DELAY = 700;
+
+    public const int MOVE_TILE_CLEAR = 1;
+    public const int MOVE_TILE_TEMP_BLOCKED = -1;
+    public const int MOVE_TILE_STATIONARY_BLOCKED = -2;
+
+    public static bool gfFadeIn = false;
+    public static bool gfFadeOut = false;
+    public static bool gfFadeOutDone = false;
+    public static bool gfFadeInDone = false;
+
+    public static int gubElementsOnExplosionQueue;
+    public static int gubAICounter;
+
+    public static STRUCTURE? gStruct;
+
+
+    //
+    // Commented out/ to fix:
+    // lots of other stuff, I think
+    //
+
+    public const int DEADLOCK_DELAY = 15000;
+
+    // Very representing if this computer is the host, therefore controlling the ai
+    public static byte gfAmIHost;
+
+    // Defines
+    public const int NUM_BULLET_SLOTS = 50;
+
+    // GLOBAL FOR FACES LISTING
+    public static BULLET[] gBullets = new BULLET[NUM_BULLET_SLOTS];
+    public static int guiNumBullets = 0;
+
+    public const int NOSCORE = 99;
+
+    public const int DONTFORCE = 0;
+    public const int FORCE = 1;
+
+    // ANY NEW ACTIONS ADDED - UPDATE OVERHEAD.C ARRAY WITH ACTION'S STRING VALUE
+    public const AI_ACTION FIRST_MOVEMENT_ACTION = AI_ACTION.RANDOM_PATROL;
+    public const AI_ACTION LAST_MOVEMENT_ACTION = AI_ACTION.MOVE_TO_CLIMB;
+
+    public const int NO_PENDING_ACTION = 255;
+    public const AnimationStates NO_PENDING_ANIMATION = (AnimationStates)32001;
+    public const int NO_PENDING_DIRECTION = 253;
+    public const int NO_PENDING_STANCE = 254;
+    public const int NO_DESIRED_HEIGHT = 255;
+
     public const int MOVEINTERRUPT = 0;
     public const int SIGHTINTERRUPT = 1;
     public const int NOISEINTERRUPT = 2;
@@ -1757,7 +1806,6 @@ public partial class Globals
 
     public static bool gfPlayerTeamSawJoey;
     public static bool gfMikeShouldSayHi;
-
 
     public static int[,] gsWatchedLoc = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
     public static int[,] gbWatchedLocLevel = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
@@ -1850,7 +1898,66 @@ public partial class Globals
     public const int MAX_WATCHED_LOC_POINTS = 4;
     public const int WATCHED_LOC_RADIUS = 1;
 
+    public const int RTP_COMBAT_AGGRESSIVE = 1;
+    public const int RTP_COMBAT_CONSERVE = 2;
+    public const int RTP_COMBAT_REFRAIN = 3;
+
+    public const int NOT_NEW_SITUATION = 0;
+    public const int WAS_NEW_SITUATION = 1;
+    public const int IS_NEW_SITUATION = 2;
+
+    public const int DIFF_ENEMY_EQUIP_MOD = 0;
+    public const int DIFF_ENEMY_TO_HIT_MOD = 1;
+    public const int DIFF_ENEMY_INTERRUPT_MOD = 2;
+    public const int DIFF_RADIO_RED_ALERT = 3;
+    public const int DIFF_MAX_COVER_RANGE = 4;
+    public const int MAX_DIFF_PARMS = 5;      // how many different difficulty variable=s?;
+
     public static bool[,] gfWatchedLocHasBeenIncremented = new bool[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
+
+    public const int AI_LIMIT_PER_UPDATE = 1;
+    public static bool gfTurnBasedAI;
+
+    public static int[,] gbDiff =
+    {
+     //       AI DIFFICULTY SETTING
+     // WIMPY  EASY  NORMAL  TOUGH  ELITE
+      {  -20,  -10,     0,    10,     20  },     // DIFF_ENEMY_EQUIP_MOD
+      {  -10,   -5,     0,     5,     10  },     // DIFF_ENEMY_TO_HIT_MOD
+      {   -2,   -1,     0,     1,      2  },     // DIFF_ENEMY_INTERRUPT_MOD
+      {   50,   65,    80,    90,     95  },     // DIFF_RADIO_RED_ALERT
+      {    4,    6,     8,    10,     13  }      // DIFF_MAX_COVER_RANGE
+    };
+
+    public static int BOMB_QUEUE_DELAY { get; } = (1000 + Random.Next(500));
+
+    public const int MAX_BOMB_QUEUE = 40;
+    public static ExplosionQueueElement[] gExplosionQueue = new ExplosionQueueElement[MAX_BOMB_QUEUE];
+    public static bool gfExplosionQueueActive = false;
+
+    public const int ERASE_SPREAD_EFFECT = 2;
+    public const int BLOOD_SPREAD_EFFECT = 3;
+    public const int REDO_SPREAD_EFFECT = 4;
+
+    public static bool gfExplosionQueueMayHaveChangedSight = false;
+    public static int gubPersonToSetOffExplosions = NOBODY;
+
+    public static int gsTempActionGridNo = NOWHERE;
+
+    public const int NUM_EXPLOSION_SLOTS = 100;
+
+    public const int MAX_DISTANCE_EXPLOSIVE_CAN_DESTROY_STRUCTURES = 2;
+    public const int EXPLOSION_FLAG_USEABSPOS = 0x00000001;
+    public const int EXPLOSION_FLAG_DISPLAYONLY = 0x00000002;
+
+    public const int STRUCTURE_DAMAGE_EXPLOSION = 1;
+    public const int STRUCTURE_DAMAGE_GUNFIRE = 2;
+
+
+    // GLOBAL FOR SMOKE LISTING
+    public static EXPLOSIONTYPE[] gExplosionData = new EXPLOSIONTYPE[NUM_EXPLOSION_SLOTS];
+    public static int guiNumExplosions = 0;
+
 
     public static bool gfBasement = false;
     public static bool gfCaves = false;

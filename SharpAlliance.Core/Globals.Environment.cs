@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core;
+﻿using SharpAlliance.Core.SubSystems;
+
+namespace SharpAlliance.Core;
 
 public partial class Globals
 {
@@ -51,7 +53,7 @@ public partial class Globals
     public const int DUSK_TO_NIGHT = (NIGHT_START - DUSK_START);
     public const int NIGHT_TO_DAWN = (24 * 60 - NIGHT_START + DAWN_START);
 
-    public static int guiEnvWeather = 0;
+    public static WEATHER_FORECAST guiEnvWeather = 0;
     public static int guiRainLoop = NO_SAMPLE;
 
     // Sound error values (they're all the same)

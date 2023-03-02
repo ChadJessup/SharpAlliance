@@ -3,8 +3,8 @@ using System.Diagnostics;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
-using Veldrid;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -96,6 +96,54 @@ public class RenderDirty
             }
 
         }
+
+        return (true);
+    }
+
+    public static bool RestoreExternBackgroundRectGivenID(int iBack)
+    {
+        int uiDestPitchBYTES, uiSrcPitchBYTES;
+        int sLeft, sTop, sWidth, sHeight;
+        int pDestBuf, pSrcBuf;
+
+
+        if (!gBackSaves[iBack].fAllocated)
+        {
+            return (false);
+        }
+
+        sLeft = gBackSaves[iBack].sLeft;
+        sTop = gBackSaves[iBack].sTop;
+        sWidth = gBackSaves[iBack].sWidth;
+        sHeight = gBackSaves[iBack].sHeight;
+
+        Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
+
+        pDestBuf = VeldridVideoManager.LockVideoSurface(guiRENDERBUFFER, out uiDestPitchBYTES);
+        pSrcBuf = VeldridVideoManager.LockVideoSurface(guiSAVEBUFFER, out uiSrcPitchBYTES);
+
+        if (gbPixelDepth == 16)
+        {
+            VeldridVideoManager.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+                        pSrcBuf, uiSrcPitchBYTES,
+                        sLeft, sTop,
+                        sLeft, sTop,
+                        sWidth, sHeight);
+        }
+        else if (gbPixelDepth == 8)
+        {
+            VeldridVideoManager.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
+                        pSrcBuf, uiSrcPitchBYTES,
+                        sLeft, sTop,
+                        sLeft, sTop,
+                        sWidth, sHeight);
+        }
+
+        VeldridVideoManager.UnLockVideoSurface(guiRENDERBUFFER);
+        VeldridVideoManager.UnLockVideoSurface(guiSAVEBUFFER);
+
+        // Add rect to frame buffer queue
+        VeldridVideoManager.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
 
         return (true);
     }
@@ -369,7 +417,7 @@ public class RenderDirty
         if (Globals.gbPixelDepth == 16)
         {
             VeldridVideoManager.Blt16BPPTo16BPP(
-                pDestBuf, 
+                pDestBuf,
                 uiDestPitchBYTES,
                 pSrcBuf, uiSrcPitchBYTES,
                 sLeft, sTop,

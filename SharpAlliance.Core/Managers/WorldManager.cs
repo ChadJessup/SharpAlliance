@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Managers;
 
 public class WorldManager
@@ -586,9 +588,9 @@ public class WorldManager
     {
         STRUCTURE? pStructure;
 
-        if (!SubSystems.Environment.gfBasement)
+        if (!gfBasement)
         {
-            pStructure = this.worldStructures.FindStructure(sMapPos, STRUCTUREFLAGS.ROOF);
+            pStructure = WorldStructures.FindStructure(sMapPos, STRUCTUREFLAGS.ROOF);
 
             if (pStructure != null)
             {

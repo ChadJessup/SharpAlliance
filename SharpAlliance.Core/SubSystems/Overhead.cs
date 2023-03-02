@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems
 {
     public class Overhead
@@ -19,6 +21,26 @@ namespace SharpAlliance.Core.SubSystems
         public bool InOverheadMap()
         {
             return false;
+        }
+
+        public static void CencelAllActionsForTimeCompression()
+        {
+            int cnt;
+
+            foreach(var pSoldier in Menptr)
+            {
+                if (pSoldier.bActive)
+                {
+                    if (pSoldier.bInSector)
+                    {
+                        // Hault!
+                        SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
+
+                        // END AI actions
+                        CancelAIAction(pSoldier, true);
+                    }
+                }
+            }
         }
 
         public bool GetSoldier(out SOLDIERTYPE? ppSoldier, int usSoldierIndex)
@@ -89,7 +111,7 @@ namespace SharpAlliance.Core.SubSystems
         public int sSlideTarget;
         public int sSlideReason;
         public uint uiTimeSinceMercAIStart;
-        public int fPanicFlags;
+        public PANIC fPanicFlags;
         public int sPanicTriggerGridnoUnused;
         public int sHandGrid;
         public int ubSpottersCalledForBy;
@@ -189,4 +211,12 @@ public class TacticalTeamType
     public int bTeamActive;
     public int bAwareOfOpposition;
     public int bHuman;
+}
+
+[Flags]
+public enum PANIC
+{
+    BOMBS_HERE = 0x01,
+    TRIGGERS_HERE = 0x02,
+    NUM_PANIC_TRIGGERS = 3,
 }

@@ -6,6 +6,12 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public static string[] gpGameClockString =
+    {
+    	//This is the day represented in the game clock.  Must be very short, 4 characters max.
+    	"Day",
+    };
+
     // where the time string itself is rendered
     public const int CLOCK_X = 554;
     public const int CLOCK_Y = 459;

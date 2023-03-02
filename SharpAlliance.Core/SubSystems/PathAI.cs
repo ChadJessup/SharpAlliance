@@ -91,12 +91,12 @@ public class PathAI
     public static int PlotPath(
         SOLDIERTYPE? pSold,
         int sDestGridno,
-        PlotPathDefines bCopyRoute,
+        PlotPathDefines? bCopyRoute,
         bool bPlot,
-        PlotPathDefines bStayOn,
+        PlotPathDefines? bStayOn,
         AnimationStates usMovementMode,
-        PlotPathDefines bStealth,
-        PlotPathDefines bReverse,
+        PlotPathDefines? bStealth,
+        PlotPathDefines? bReverse,
         int sAPBudget)
     {
         int sTileCost, sPoints = 0, sTempGrid, sAnimCost = 0;

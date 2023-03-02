@@ -94,6 +94,16 @@ public class IsometricUtils
         psWorldScreenY = sScreenCenterY + Globals.gsCY - Globals.gsTLY;
     }
 
+    public static int SpacesAway(int sOrigin, int sDest)
+    {
+        int sRows, sCols;
+
+        sRows = Math.Abs((sOrigin / MAXCOL) - (sDest / MAXCOL));
+        sCols = Math.Abs((sOrigin % MAXROW) - (sDest % MAXROW));
+
+        return (Math.Max(sRows, sCols));
+    }
+
     public static int PythSpacesAway(int sOrigin, int sDest)
     {
         int sRows, sCols, sResult;

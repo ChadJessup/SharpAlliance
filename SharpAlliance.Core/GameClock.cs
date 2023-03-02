@@ -4,6 +4,7 @@ using System.IO;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
+
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -148,7 +149,7 @@ public class GameClock
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
 
-        wprintf(WORLDTIMESTR, "%s %d, %02d:%02d", gpGameClockString[STR_GAMECLOCK_DAY_NAME], guiDay, guiHour, guiMin);
+        wprintf(WORLDTIMESTR, "%s %d, %02d:%02d", gpGameClockString[(int)STR_GAMECLOCK.DAY_NAME], guiDay, guiHour, guiMin);
 
         if (gfResetAllPlayerKnowsEnemiesFlags && !gTacticalStatus.fEnemyInSector)
         {
@@ -213,7 +214,7 @@ public class GameClock
         }
 
         // Erase first!
-        RestoreExternBackgroundRect(sX, sY, CLOCK_STRING_WIDTH, CLOCK_STRING_HEIGHT);
+        RenderDirty.RestoreExternBackgroundRect(sX, sY, CLOCK_STRING_WIDTH, CLOCK_STRING_HEIGHT);
 
         if ((gfPauseDueToPlayerGamePause == false))
         {
@@ -654,14 +655,15 @@ public class GameClock
             return;
         }
 
-        if (gfGamePaused || gfTimeInterruptPause || (gubClockResolution == 0) || !guiGameSecondsPerRealSecond || ARE_IN_FADE_IN() || gfFadeOut)
+        if (gfGamePaused || gfTimeInterruptPause || (gubClockResolution == 0) || guiGameSecondsPerRealSecond == 0 || ARE_IN_FADE_IN() || gfFadeOut)
         {
             uiLastSecondTime = GetJA2Clock();
             gfTimeInterruptPause = false;
             return;
         }
 
-        if ((gTacticalStatus.uiFlags & TURNBASED && gTacticalStatus.uiFlags & INCOMBAT))
+        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
+            && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             return; //time is currently stopped!
         }
@@ -1181,3 +1183,8 @@ public class GameClock
         }
     }
 }
+
+public enum STR_GAMECLOCK
+{
+    DAY_NAME,
+};

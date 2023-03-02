@@ -83,8 +83,8 @@ public class LEVELNODE
     public LEVELNODE? pNext;
     public LEVELNODEFLAGS uiFlags;                         // flags struct
 
-    int ubSumLights;                  // LIGHTING INFO
-    int ubMaxLights;                  // MAX LIGHTING INFO
+    public int ubSumLights;                  // LIGHTING INFO
+    public int ubMaxLights;                  // MAX LIGHTING INFO
 
     LEVELNODE? pPrevNode;                    // FOR LAND, GOING BACKWARDS POINTER
     public STRUCTURE? pStructureData;      // STRUCTURE DATA
@@ -102,9 +102,9 @@ public class LEVELNODE
     public int sRelativeY;                           // Relative position values
 
     // Some can contains index values into dead corpses
-    int iCorpseID;                            // Index into corpse ID
+    public int iCorpseID;                            // Index into corpse ID
 
-    uint uiAnimHitLocationFlags;  // Animation profile flags for soldier placeholders ( prone merc hit location values )
+    public uint uiAnimHitLocationFlags;  // Animation profile flags for soldier placeholders ( prone merc hit location values )
 
     // Some can contains index values into animated tile data
     public TAG_anitile? pAniTile;
@@ -113,7 +113,7 @@ public class LEVELNODE
     public ITEM_POOL? pItemPool;                   // ITEM POOLS
 
     //
-    int sRelativeZ;                           // Relative position values
+    public int sRelativeZ;                           // Relative position values
     public int ubShadeLevel;                     // LIGHTING INFO
     public int ubNaturalShadeLevel;      // LIGHTING INFO
     public int ubFakeShadeLevel;				// LIGHTING INFO
@@ -159,18 +159,18 @@ public class STRUCTURE
 
 public class DB_STRUCTURE
 {
-    byte ubArmour;
+    public byte ubArmour;
+    public byte ubDensity;
     public byte ubHitPoints;
-    byte ubDensity;
     public byte ubNumberOfTiles;
     public STRUCTUREFLAGS fFlags;
     ushort usStructureNumber;
     public WallOrientation ubWallOrientation;
-    sbyte bDestructionPartner; // >0 = debris number (bDP - 1), <0 = partner graphic 
-    sbyte bPartnerDelta; // opened/closed version, etc... 0 for unused
-    sbyte bZTileOffsetX;
-    sbyte bZTileOffsetY;
-    byte bUnused;
+    public sbyte bDestructionPartner; // >0 = debris number (bDP - 1), <0 = partner graphic 
+    public sbyte bPartnerDelta; // opened/closed version, etc... 0 for unused
+    public sbyte bZTileOffsetX;
+    public sbyte bZTileOffsetY;
+    public byte bUnused;
 } // 16 bytes
 
 public class DB_STRUCTURE_REF
@@ -208,9 +208,9 @@ public class MAP_ELEMENT
 
     public MAPELEMENTFLAGS uiFlags;
     public MAPELEMENT_EXT[] ubExtFlags = new MAPELEMENT_EXT[2];
-    ushort[] sSumRealLights = new ushort[1];
+    public ushort[] sSumRealLights = new ushort[1];
     public byte sHeight;
-    byte ubAdjacentSoldierCnt;
+    public byte ubAdjacentSoldierCnt;
     public TerrainTypeDefines ubTerrainID;
 
     public int ubReservedSoldierID;

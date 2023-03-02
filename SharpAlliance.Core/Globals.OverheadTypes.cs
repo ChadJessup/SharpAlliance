@@ -136,7 +136,7 @@ public partial class Globals
     public const int OUR_TEAM = 0;
     public const TEAM ENEMY_TEAM = TEAM.ENEMY_TEAM;
     public const int CREATURE_TEAM = 2;
-    public const int MILITIA_TEAM = 3;
+    public const TEAM MILITIA_TEAM = TEAM.MILITIA_TEAM;
     public const int CIV_TEAM = 4;
     public const TEAM LAST_TEAM = TEAM.CIV_TEAM;
     public const int PLAYER_PLAN = 5;
