@@ -44,7 +44,7 @@ public partial class Globals
     public static uint guiGameSecondsPerRealSecond;
     public static uint guiTimesThisSecondProcessed = 0;
     public static int iPausedPopUpBox = -1;
-    public static Dictionary<TIME_COMPRESS, int> giTimeCompressSpeeds = new()
+    public static Dictionary<TIME_COMPRESS, uint> giTimeCompressSpeeds = new()
     {
         { TIME_COMPRESS.TIME_COMPRESS_X0, 0},
         { TIME_COMPRESS.TIME_COMPRESS_X1, 1 },
@@ -73,7 +73,7 @@ public partial class Globals
     //Advanced function used by certain event callbacks.  In the case where time is warped, certain event
     //need to know how much time was warped since the last query to the event list.  
     //This function returns that value
-    public static int guiTimeOfLastEventQuery;
+    public static uint guiTimeOfLastEventQuery;
 
     //This value represents the time that the sector was loaded.  If you are in sector A9, and leave
     //the game clock at that moment will get saved into the temp file associated with it.  The next time you

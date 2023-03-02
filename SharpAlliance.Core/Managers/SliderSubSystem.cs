@@ -341,7 +341,7 @@ public class SliderSubSystem
                 pNewSlider.ubSliderHeight = Slider.STEEL_SLIDER_HEIGHT;
 
 
-                this.inputs.Mouse.MSYS_DefineRegion(
+                MouseSubSystem.MSYS_DefineRegion(
                     pNewSlider.ScrollAreaMouseRegion,
                     new Rectangle(
                         loc.X - pNewSlider.ubSliderWidth / 2,
@@ -353,7 +353,7 @@ public class SliderSubSystem
                     this.SelectedSliderMovementCallBack,
                     this.SelectedSliderButtonCallBack);
 
-                this.inputs.Mouse.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                MouseSubSystem.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
                 break;
 
             case SliderStyle.SLIDER_DEFAULT_STYLE:
@@ -363,7 +363,7 @@ public class SliderSubSystem
                 pNewSlider.ubSliderWidth = usWidth;
                 pNewSlider.ubSliderHeight = Slider.DEFAULT_SLIDER_SIZE;
 
-                this.inputs.Mouse.MSYS_DefineRegion(
+                MouseSubSystem.MSYS_DefineRegion(
                     pNewSlider.ScrollAreaMouseRegion,
                     new Rectangle(loc.X, loc.Y - Slider.DEFAULT_SLIDER_SIZE, pNewSlider.usPos.X + pNewSlider.ubSliderWidth, loc.Y + Slider.DEFAULT_SLIDER_SIZE),
                     sPriority,
@@ -371,7 +371,7 @@ public class SliderSubSystem
                     this.SelectedSliderMovementCallBack,
                     this.SelectedSliderButtonCallBack);
 
-                this.inputs.Mouse.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                MouseSubSystem.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
                 break;
         }
 

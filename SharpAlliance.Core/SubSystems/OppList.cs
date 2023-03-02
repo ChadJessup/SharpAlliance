@@ -541,8 +541,10 @@ public class OppList
 
                 // if it's our local player's merc
                 if (PTR_OURTEAM(pSoldier))
+                {
                     // revealing roofs and looking for items handled here, too
                     RevealRoofsAndItems(pSoldier, true, true, pSoldier.bLevel, false);
+                }
             }
             // unless in easy mode allow alerted enemies to radio
             else if (gGameOptions.ubDifficultyLevel >= DifficultyLevel.Medium)
@@ -571,7 +573,9 @@ public class OppList
                 {
                     // if this merc is on the same team as the target soldier
                     if (pThem.bTeam == pSoldier.bTeam)
+                    {
                         continue;        // he doesn't look (he ALWAYS knows about him)
+                    }
 
                     // other human team's merc report sightings to their teams now
                     if (pThem.uiStatusFlags.HasFlag(SOLDIER.PC))
@@ -640,8 +644,10 @@ public class OppList
         {
             // if this merc is active, in this sector, and well enough to look
             if (pSoldier.bActive && pSoldier.bInSector && (pSoldier.bLife >= OKLIFE))
+            {
                 // put him on our list, and increment the counter
                 radioMan[radioCnt++] = (int)iLoop;
+            }
         }
 
 
@@ -661,8 +667,10 @@ public class OppList
 
             // unless it WAS the last used slot that we happened to pick
             if (iLoop != (radioCnt - 1))
+            {
                 // move the contents of the last slot into the one just handled
                 radioMan[iLoop] = radioMan[radioCnt - 1];
+            }
 
             radioCnt--;
         }
@@ -1981,11 +1989,15 @@ public class OppList
 
             // if this man has never seen this opponent before in this sector
             if (gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] == false)
+            {
                 // remember that he is just seeing him now for the first time (-1)
                 gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] = -1;
+            }
             else
+            {
                 // man is seeing an opponent AGAIN whom he has seen at least once before
                 gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] = true;
+            }
 
 
 
@@ -2121,8 +2133,10 @@ public class OppList
                          //if (pSoldier.side != gTacticalStatus.Team[gbPlayerNum].side && ConfigOptions[FOLLOWMODE])
                          //if (Status.stopSlidingAt == Globals.NOBODY)
                                 if (gTacticalStatus.uiFlags.HasFlag(TURNBASED && (gTacticalStatus.uiFlags & INCOMBAT)))
+                    {
                         //LocateSoldier(pSoldier.ubID,DONTSETLOCATOR);
                         SlideTo(0, pSoldier.ubID, Globals.NOBODY, DONTSETLOCATOR);
+                    }
 
                     // follow his movement on our screen as he moves around...
                     //LocateMember(ptr.guynum,DONTSETLOCATOR);
@@ -2270,7 +2284,9 @@ public class OppList
 
             // if no opponents remain in sight, drop status to RED (but NOT newSit.!)
             if (!pSoldier.bOppCnt)
+            {
                 pSoldier.bAlertStatus = STATUS_RED;
+            }
         }
 
 
@@ -2287,8 +2303,10 @@ public class OppList
 
             // clean up the public opponent lists and locations
             for (ubLoop = 0; ubLoop < MAXTEAMS; ubLoop++)
+            {
                 // never causes any additional looks
                 UpdatePublic(ubLoop, ubTarget, NOT_HEARD_OR_SEEN, NOWHERE, 0);
+            }
 
             /*
 
@@ -2347,9 +2365,9 @@ public class OppList
             ResetLastKnownLocs(pSoldier);
 
             if (gTacticalStatus.Team[pSoldier.bTeam].ubLastMercToRadio == ubTarget)
+            {
                 gTacticalStatus.Team[pSoldier.bTeam].ubLastMercToRadio = Globals.NOBODY;
-
-
+            }
         }
 
         void UpdatePublic(TEAM ubTeam, int ubID, int bNewOpplist, int sGridno, int bLevel)
@@ -2368,7 +2386,9 @@ public class OppList
             {
                 // if this team is becoming aware of a soldier it wasn't previously aware of
                 if ((bNewOpplist != NOT_HEARD_OR_SEEN) && (*pbPublOL == NOT_HEARD_OR_SEEN))
+                {
                     ubTeamMustLookAgain = true;
+                }
 
                 // change the public opplist *BEFORE* anyone looks again or we'll recurse!
                 *pbPublOL = bNewOpplist;
@@ -2394,8 +2414,10 @@ public class OppList
                         if (pSoldier.bOppList[ubID] == NOT_HEARD_OR_SEEN)
                         {
                             if (ManLooksForMan(pSoldier, Globals.MercPtrs[ubID], UPDATEPUBLIC))
+                            {
                                 // then he actually saw guynum because of our new public knowledge
                                 ubMadeDifference = true;
+                            }
 
                             // whether successful or not, whack newOppCnt.  Since this is a
                             // delayed reaction to a radio call, there's no chance of interrupt!
@@ -2454,11 +2476,15 @@ public class OppList
 
                 // if this merc is inactive, at base, on assignment, or dead
                 if (!pSoldier || !pSoldier.bLife)
+                {
                     continue;       // next merc
+                }
 
                 // if this man is NEUTRAL / on our side, he's not an opponent
                 if (pSoldier.bNeutral || (gTacticalStatus.Team[gbPlayerNum].bSide == Menptr[pSoldier.ubID].bSide))
+                {
                     continue;       // next merc
+                }
 
                 // opponent, check our public opplist value for him
                 ubOppValue = gubKnowledgeValue[0 - OLDEST_HEARD_VALUE, gbPublicOpplist[gbPlayerNum][pSoldier.ubID] - OLDEST_HEARD_VALUE];
@@ -2942,7 +2968,9 @@ public class OppList
                 {
                     // and he can see us, then gotta figure we KNOW that he can see us
                     if (pOpponent.bOppList[pSoldier.ubID] == SEEN_CURRENTLY)
+                    {
                         stillUnseen = false;
+                    }
                 }
 
 
@@ -2996,7 +3024,9 @@ public class OppList
                     // used by QueueDayMessage() to scroll to one of the new enemies
                     // scroll to the last guy seen, unless we see a hated guy, then use him!
                     if (!sightedHatedOpponent)
+                    {
                         scrollToGuynum = pOpponent.ubID;
+                    }
 
                     // don't care whether and how many new enemies are seen if everyone visible
                     // and he's healthy enough to be a threat (so is worth talking about)
@@ -3945,7 +3975,9 @@ public class OppList
             //100%  Attach:
             //100%
             if (!pObject.usItem)
+            {
                 return;
+            }
             //Build attachment string
             fAttachments = false;
             if (pObject.usAttachItem[0] || pObject.usAttachItem[1] ||
@@ -3977,7 +4009,10 @@ public class OppList
                     gprintf(320, yp, str);
                 }
                 else
+                {
                     gprintf(320, yp, "%d rounds", pObject.bStatus[0]);
+                }
+
                 return;
             }
             if (pObject.ubNumberOfObjects > 1 && fAttachments)
@@ -4115,7 +4150,10 @@ public class OppList
                     while (pNode)
                     {
                         if (pNode.pSoldier == pSoldier)
+                        {
                             break;
+                        }
+
                         pNode = pNode.next;
                     }
                     SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
@@ -4142,7 +4180,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "HELMETPOS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[HELMETPOS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HELMETPOS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[HELMETPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4150,7 +4191,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "VESTPOS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[VESTPOS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[VESTPOS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[VESTPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4158,7 +4202,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "LEGPOS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[LEGPOS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[LEGPOS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[LEGPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4166,7 +4213,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "HEAD1POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[HEAD1POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HEAD1POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[HEAD1POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4174,7 +4224,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "HEAD2POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[HEAD2POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HEAD2POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[HEAD2POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4182,7 +4235,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "HANDPOS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[HANDPOS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HANDPOS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[HANDPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4190,7 +4246,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SECONDHANDPOS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SECONDHANDPOS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SECONDHANDPOS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SECONDHANDPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4198,7 +4257,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK1POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[BIGPOCK1POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK1POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK1POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4206,7 +4268,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK2POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[BIGPOCK2POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK2POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK2POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4214,7 +4279,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK3POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[BIGPOCK3POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK3POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK3POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4222,7 +4290,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK4POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[BIGPOCK4POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK4POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK4POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4230,7 +4301,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK1POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK1POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK1POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK1POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4238,7 +4312,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK2POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK2POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK2POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK2POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4246,7 +4323,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK3POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK3POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK3POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK3POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4254,7 +4334,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK4POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK4POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK4POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK4POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4262,7 +4345,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK5POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK5POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK5POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK5POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4270,7 +4356,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK6POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK6POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK6POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK6POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4278,7 +4367,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK7POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK7POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK7POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK7POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
@@ -4286,7 +4378,10 @@ public class OppList
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK8POS:");
                 SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK8POS].usItem)
+                {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK8POS].usItem]);
+                }
+
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK8POS], LINE_HEIGHT * ubLine);
                 ubLine++;
             }
@@ -4696,7 +4791,9 @@ public class OppList
 
             // if the base volume itself was negligible
             if (!ubBaseVolume)
+            {
                 return;
+            }
 
 
             // EXPLOSIONs are special, because they COULD be caused by a merc who is
@@ -5756,7 +5853,9 @@ public class OppList
                     // #endif
 
                     if (pSoldier.uiStatusFlags & SOLDIER_PC)
+                    {
                         RadioSightings(pSoldier, EVERYBODY, pSoldier.bTeam);
+                    }
 
                     pSoldier.bNewOppCnt = 0;
                 }

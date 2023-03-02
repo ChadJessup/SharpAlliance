@@ -593,7 +593,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.SetRegionUserData(
+                    MouseSubSystem.SetRegionUserData(
                         this.gSelectedOptionTextRegion[cnt],
                         0,
                         this.guiOptionsToggles[option]);
@@ -614,7 +614,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionCallBack);
 
                     var textRegion = this.gSelectedOptionTextRegion[cnt];
-                    this.inputs.Mouse.SetRegionUserData(ref textRegion, 0, this.guiOptionsToggles[option]);
+                    MouseSubSystem.SetRegionUserData(ref textRegion, 0, this.guiOptionsToggles[option]);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -684,7 +684,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, this.guiOptionsToggles[option]);
+                    MouseSubSystem.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, this.guiOptionsToggles[option]);
                 }
                 else
                 {
@@ -700,7 +700,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, this.guiOptionsToggles[option]);
+                    MouseSubSystem.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, this.guiOptionsToggles[option]);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);

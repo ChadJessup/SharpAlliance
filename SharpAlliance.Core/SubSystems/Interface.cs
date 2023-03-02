@@ -2,6 +2,14 @@
 
 namespace SharpAlliance.Core.SubSystems;
 
+public enum INTERFACE
+{
+    MAPSCREEN = 0x00000001,
+    NORENDERBUTTONS = 0x00000002,
+    LOCKEDLEVEL1 = 0x00000004,
+    SHOPKEEP_INTERFACE = 0x00000008,
+}
+
 public enum MOVEMENT
 {
     MENU_LOOK = 1,

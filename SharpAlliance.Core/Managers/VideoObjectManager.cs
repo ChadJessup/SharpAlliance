@@ -2,266 +2,258 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
-namespace SharpAlliance.Core.Managers
+namespace SharpAlliance.Core.Managers;
+
+public class VideoObjectManager
 {
-    public class VideoObjectManager
+    public const int DEFAULT_VIDEO_OBJECT_LIST_SIZE = 10;
+
+    public const int COMPRESS_TRANSPARENT = 0x80;
+    public const int COMPRESS_RUN_MASK = 0x7F;
+
+    public const int HVOBJECT_SHADE_TABLES = 48;
+
+    public const int HVOBJECT_GLOW_GREEN = 0;
+    public const int HVOBJECT_GLOW_BLUE = 1;
+    public const int HVOBJECT_GLOW_YELLOW = 2;
+    public const int HVOBJECT_GLOW_RED = 3;
+
+    private readonly ILogger<VideoObjectManager> logger;
+    public VideoObjectManager(ILogger<VideoObjectManager> logger)
     {
-        public const int DEFAULT_VIDEO_OBJECT_LIST_SIZE = 10;
+        this.logger = logger;
 
-        public const int COMPRESS_TRANSPARENT = 0x80;
-        public const int COMPRESS_RUN_MASK = 0x7F;
+         Globals.gpVObjectTail = Globals.gpVObjectHead;
+         Globals.gfVideoObjectsInit = true;
 
-        public const int HVOBJECT_SHADE_TABLES = 48;
+        this.IsInitialized = true;
+    }
 
-        public const int HVOBJECT_GLOW_GREEN = 0;
-        public const int HVOBJECT_GLOW_BLUE = 1;
-        public const int HVOBJECT_GLOW_YELLOW = 2;
-        public const int HVOBJECT_GLOW_RED = 3;
+    public bool IsInitialized { get; }
 
-        // Defines for blitting
-        public const int VO_BLT_CLIP = 0x000000001;
-        public const int VO_BLT_SRCTRANSPARENCY = 0x000000002;
-        public const int VO_BLT_TRANSSHADOW = 0x000000003;
-        public const int VO_BLT_DESTTRANSPARENCY = 0x000000120;
-        public const int VO_BLT_SHADOW = 0x000000200;
-        public const int VO_BLT_MIRROR_Y = 0x000001000; // must be the same as VS_BLT_MIRROR_Y for Wiz!!!
-        public const int VO_BLT_UNCOMPRESSED = 0x000004000;
+    public ValueTask<bool> Initialize()
+    {
+        this.logger.LogDebug(LoggingEventId.VIDEOOBJECT, "Video Object Manager");
+        Globals.gpVObjectHead = Globals.gpVObjectTail = null;
+        Globals.gfVideoObjectsInit = true;
+        return ValueTask.FromResult(true);
+    }
 
-        private readonly ILogger<VideoObjectManager> logger;
-        public VideoObjectManager(ILogger<VideoObjectManager> logger)
+    public void Dispose()
+    {
+    }
+
+    public static bool BltVideoObject(
+        Surfaces uiDestVSurface,
+        HVOBJECT hSrcVObject,
+        ushort usRegionIndex,
+        int iDestX,
+        int iDestY,
+        VO_BLT fBltFlags,
+        blt_fx? pBltFx)
+    {
+        Image<Rgba32> pBuffer;
+        uint uiPitch;
+
+        // Now we have the video object and surface, call the VO blitter function
+        if (!BltVideoObjectToBuffer(
+            out pBuffer,
+            16,
+            hSrcVObject,
+            usRegionIndex,
+            iDestX,
+            iDestY,
+            fBltFlags,
+            pBltFx))
         {
-            this.logger = logger;
-
-             Globals.gpVObjectTail = Globals.gpVObjectHead;
-             Globals.gfVideoObjectsInit = true;
-
-            this.IsInitialized = true;
-        }
-
-        public bool IsInitialized { get; }
-
-        public ValueTask<bool> Initialize()
-        {
-            this.logger.LogDebug(LoggingEventId.VIDEOOBJECT, "Video Object Manager");
-            Globals.gpVObjectHead = Globals.gpVObjectTail = null;
-            Globals.gfVideoObjectsInit = true;
-            return ValueTask.FromResult(true);
-        }
-
-        public void Dispose()
-        {
-        }
-
-        public bool BltVideoObject(
-            uint uiDestVSurface,
-            HVOBJECT hSrcVObject,
-            ushort usRegionIndex,
-            int iDestX,
-            int iDestY,
-            int fBltFlags,
-            blt_fx? pBltFx)
-        {
-            Image<Rgba32> pBuffer;
-            uint uiPitch;
-
-            // Now we have the video object and surface, call the VO blitter function
-            if (!this.BltVideoObjectToBuffer(
-                out pBuffer,
-                16,
-                hSrcVObject,
-                usRegionIndex,
-                iDestX,
-                iDestY,
-                fBltFlags,
-                pBltFx))
-            {
-                // UnLockVideoSurface(uiDestVSurface);
-                // VO Blitter will set debug messages for error conditions
-                return false;
-            }
-
             // UnLockVideoSurface(uiDestVSurface);
-
-            return true;
+            // VO Blitter will set debug messages for error conditions
+            return false;
         }
 
-        Rectangle? ClippingRect = new(0, 0, 640, 480);
+        // UnLockVideoSurface(uiDestVSurface);
 
-        private bool BltVideoObjectToBuffer(
-            out Image<Rgba32> pBuffer,
-            uint uiDestPitchBYTES,
-            HVOBJECT hSrcVObject,
-            ushort usIndex,
-            int iDestX,
-            int iDestY,
-            int fBltFlags,
-            blt_fx? pBltFx)
+        return true;
+    }
+
+    private static Rectangle? ClippingRect = new(0, 0, 640, 480);
+
+    private static bool BltVideoObjectToBuffer(
+        out Image<Rgba32> pBuffer,
+        uint uiDestPitchBYTES,
+        HVOBJECT hSrcVObject,
+        ushort usIndex,
+        int iDestX,
+        int iDestY,
+        VO_BLT fBltFlags,
+        blt_fx? pBltFx)
+    {
+        pBuffer = new(1, 1);
+
+        if (hSrcVObject == null)
         {
-            pBuffer = new(1, 1);
+            int i = 0;
+        }
 
-            if (hSrcVObject == null)
-            {
-                int i = 0;
-            }
+        // Check For Flags and bit depths
+        switch (hSrcVObject.ubBitDepth)
+        {
+            case 16:
+                break;
 
-            // Check For Flags and bit depths
-            switch (hSrcVObject.ubBitDepth)
-            {
-                case 16:
-                    break;
+            case 8:
 
-                case 8:
+                // Switch based on flags given
+                if (16 == 16)
+                {
 
-                    // Switch based on flags given
-                    if (16 == 16)
+                    if ((fBltFlags & VO_BLT.SRCTRANSPARENCY) == 0)
                     {
-
-                        if ((fBltFlags & VideoObjectManager.VO_BLT_SRCTRANSPARENCY) == 0)
+                        if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect))
                         {
-                            if (this.BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect))
-                            {
-                                this.Blt8BPPDataTo16BPPBufferTransparentClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect);
-                            }
-                            else
-                            {
-                                this.Blt8BPPDataTo16BPPBufferTransparent(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
-                            }
-
-                            break;
+                            Blt8BPPDataTo16BPPBufferTransparentClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect);
                         }
-                        else if ((fBltFlags & VideoObjectManager.VO_BLT_SHADOW) == 0)
+                        else
                         {
-                            if (this.BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect))
-                            {
-                                this.Blt8BPPDataTo16BPPBufferShadowClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref this.ClippingRect);
-                            }
-                            else
-                            {
-                                this.Blt8BPPDataTo16BPPBufferShadow(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
-                            }
-
-                            break;
+                            Blt8BPPDataTo16BPPBufferTransparent(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
                         }
 
+                        break;
                     }
-                    // else if (gbPixelDepth == 8)
-                    // {
-                    //     if (fBltFlags & VO_BLT_SRCTRANSPARENCY)
-                    //     {
-                    //         if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect))
-                    //         {
-                    //             Blt8BPPDataTo8BPPBufferTransparentClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect);
-                    //         }
-                    //         else
-                    //         {
-                    //             Blt8BPPDataTo8BPPBufferTransparent(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
-                    //         }
-                    // 
-                    //         break;
-                    //     }
-                    //     else if (fBltFlags & VO_BLT_SHADOW)
-                    //     {
-                    //         if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect))
-                    //         {
-                    //             Blt8BPPDataTo8BPPBufferShadowClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect);
-                    //         }
-                    //         else
-                    //         {
-                    //             Blt8BPPDataTo8BPPBufferShadow(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
-                    //         }
-                    // 
-                    //         break;
-                    //     }
-                    // }
-                    // Use default blitter here
-                    //Blt8BPPDataTo16BPPBuffer( hDestVObject, hSrcVObject, (int)iDestX, (int)iDestY, (SGPRect*)&SrcRect );
+                    else if ((fBltFlags & VO_BLT.SHADOW) == 0)
+                    {
+                        if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect))
+                        {
+                            Blt8BPPDataTo16BPPBufferShadowClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, ref ClippingRect);
+                        }
+                        else
+                        {
+                            Blt8BPPDataTo16BPPBufferShadow(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
+                        }
 
-                    break;
-            }
+                        break;
+                    }
 
+                }
+                // else if (gbPixelDepth == 8)
+                // {
+                //     if (fBltFlags & VO_BLT.SRCTRANSPARENCY)
+                //     {
+                //         if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect))
+                //         {
+                //             Blt8BPPDataTo8BPPBufferTransparentClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect);
+                //         }
+                //         else
+                //         {
+                //             Blt8BPPDataTo8BPPBufferTransparent(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
+                //         }
+                // 
+                //         break;
+                //     }
+                //     else if (fBltFlags & VO_BLT.SHADOW)
+                //     {
+                //         if (BltIsClipped(hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect))
+                //         {
+                //             Blt8BPPDataTo8BPPBufferShadowClip(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex, &ClippingRect);
+                //         }
+                //         else
+                //         {
+                //             Blt8BPPDataTo8BPPBufferShadow(pBuffer, uiDestPitchBYTES, hSrcVObject, iDestX, iDestY, usIndex);
+                //         }
+                // 
+                //         break;
+                //     }
+                // }
+                // Use default blitter here
+                //Blt8BPPDataTo16BPPBuffer( hDestVObject, hSrcVObject, (int)iDestX, (int)iDestY, (SGPRect*)&SrcRect );
+
+                break;
+        }
+
+        return true;
+    }
+
+    private static void Blt8BPPDataTo16BPPBufferShadow(Image<Rgba32> pBuffer, uint uiDestPitchBYTES, HVOBJECT hSrcVObject, int iDestX, int iDestY, ushort usIndex)
+    {
+    }
+
+    private static bool Blt8BPPDataTo16BPPBufferShadowClip(
+        Image<Rgba32> pBuffer, 
+        uint uiDestPitchBYTES, 
+        HVOBJECT hSrcVObject, 
+        int iX, 
+        int iY, 
+        ushort usIndex, 
+        ref Rectangle? clipregion)
+    {
+        ushort p16BPPPalette;
+        uint uiOffset;
+        uint usHeight, usWidth, Unblitted;
+        ushort SrcPtr, DestPtr;
+        uint LineSkip;
+        ETRLEObject pTrav;
+        int iTempX, iTempY, LeftSkip, RightSkip, TopSkip, BottomSkip, BlitLength, BlitHeight;
+        int ClipX1, ClipY1, ClipX2, ClipY2;
+
+        // Get Offsets from Index into structure
+        pTrav = hSrcVObject.pETRLEObject[usIndex];
+        usHeight = (uint)pTrav.usHeight;
+        usWidth = (uint)pTrav.usWidth;
+        uiOffset = pTrav.uiDataOffset;
+
+        // Add to start position of dest buffer
+        iTempX = iX + pTrav.sOffsetX;
+        iTempY = iY + pTrav.sOffsetY;
+
+        if (clipregion == null)
+        {
+            ClipX1 = ClippingRect.Value.Left;
+            ClipY1 = ClippingRect.Value.Top;
+            ClipX2 = ClippingRect.Value.Right;
+            ClipY2 = ClippingRect.Value.Bottom;
+        }
+        else
+        {
+            ClipX1 = clipregion.Value.Left;
+            ClipY1 = clipregion.Value.Top;
+            ClipX2 = clipregion.Value.Right;
+            ClipY2 = clipregion.Value.Bottom;
+        }
+
+        // Calculate rows hanging off each side of the screen
+        LeftSkip = Math.Min(ClipX1 - Math.Min(ClipX1, iTempX), (int)usWidth);
+        RightSkip = Math.Min(Math.Max(ClipX2, iTempX + (int)usWidth) - ClipX2, (int)usWidth);
+        TopSkip = Math.Min(ClipY1 - Math.Min(ClipY1, iTempY), (int)usHeight);
+        BottomSkip = Math.Min(Math.Max(ClipY2, iTempY + (int)usHeight) - ClipY2, (int)usHeight);
+
+        // calculate the remaining rows and columns to blit
+        BlitLength = (int)usWidth - LeftSkip - RightSkip;
+        BlitHeight = (int)usHeight - TopSkip - BottomSkip;
+
+        // whole thing is clipped
+        if ((LeftSkip >= (int)usWidth) || (RightSkip >= (int)usWidth))
+        {
             return true;
         }
 
-        private void Blt8BPPDataTo16BPPBufferShadow(Image<Rgba32> pBuffer, uint uiDestPitchBYTES, HVOBJECT hSrcVObject, int iDestX, int iDestY, ushort usIndex)
+        // whole thing is clipped
+        if ((TopSkip >= (int)usHeight) || (BottomSkip >= (int)usHeight))
         {
+            return true;
         }
 
-        private bool Blt8BPPDataTo16BPPBufferShadowClip(
-            Image<Rgba32> pBuffer, 
-            uint uiDestPitchBYTES, 
-            HVOBJECT hSrcVObject, 
-            int iX, 
-            int iY, 
-            ushort usIndex, 
-            ref Rectangle? clipregion)
-        {
-            ushort p16BPPPalette;
-            uint uiOffset;
-            uint usHeight, usWidth, Unblitted;
-            ushort SrcPtr, DestPtr;
-            uint LineSkip;
-            ETRLEObject pTrav;
-            int iTempX, iTempY, LeftSkip, RightSkip, TopSkip, BottomSkip, BlitLength, BlitHeight;
-            int ClipX1, ClipY1, ClipX2, ClipY2;
 
-            // Get Offsets from Index into structure
-            pTrav = hSrcVObject.pETRLEObject[usIndex];
-            usHeight = (uint)pTrav.usHeight;
-            usWidth = (uint)pTrav.usWidth;
-            uiOffset = pTrav.uiDataOffset;
-
-            // Add to start position of dest buffer
-            iTempX = iX + pTrav.sOffsetX;
-            iTempY = iY + pTrav.sOffsetY;
-
-            if (clipregion == null)
-            {
-                ClipX1 = this.ClippingRect.Value.Left;
-                ClipY1 = this.ClippingRect.Value.Top;
-                ClipX2 = this.ClippingRect.Value.Right;
-                ClipY2 = this.ClippingRect.Value.Bottom;
-            }
-            else
-            {
-                ClipX1 = clipregion.Value.Left;
-                ClipY1 = clipregion.Value.Top;
-                ClipX2 = clipregion.Value.Right;
-                ClipY2 = clipregion.Value.Bottom;
-            }
-
-            // Calculate rows hanging off each side of the screen
-            LeftSkip = Math.Min(ClipX1 - Math.Min(ClipX1, iTempX), (int)usWidth);
-            RightSkip = Math.Min(Math.Max(ClipX2, iTempX + (int)usWidth) - ClipX2, (int)usWidth);
-            TopSkip = Math.Min(ClipY1 - Math.Min(ClipY1, iTempY), (int)usHeight);
-            BottomSkip = Math.Min(Math.Max(ClipY2, iTempY + (int)usHeight) - ClipY2, (int)usHeight);
-
-            // calculate the remaining rows and columns to blit
-            BlitLength = (int)usWidth - LeftSkip - RightSkip;
-            BlitHeight = (int)usHeight - TopSkip - BottomSkip;
-
-            // whole thing is clipped
-            if ((LeftSkip >= (int)usWidth) || (RightSkip >= (int)usWidth))
-            {
-                return true;
-            }
-
-            // whole thing is clipped
-            if ((TopSkip >= (int)usHeight) || (BottomSkip >= (int)usHeight))
-            {
-                return true;
-            }
-
-
-            // SrcPtr = (ushort)hSrcVObject.pPixData + uiOffset;
-            // DestPtr = (ushort)pBuffer + (uiDestPitchBYTES * (iTempY + TopSkip)) + ((iTempX + LeftSkip) * 2);
-            // p16BPPPalette = hSrcVObject.pShadeCurrent;
-            // LineSkip = uiDestPitchBYTES - (BlitLength * 2);
+        // SrcPtr = (ushort)hSrcVObject.pPixData + uiOffset;
+        // DestPtr = (ushort)pBuffer + (uiDestPitchBYTES * (iTempY + TopSkip)) + ((iTempX + LeftSkip) * 2);
+        // p16BPPPalette = hSrcVObject.pShadeCurrent;
+        // LineSkip = uiDestPitchBYTES - (BlitLength * 2);
 
 //             __asm {
 // 
@@ -536,169 +528,180 @@ namespace SharpAlliance.Core.Managers
 // 
 //     }
 
-            return true;
-        }
+        return true;
+    }
 
-        private void Blt8BPPDataTo16BPPBufferTransparent(Image<Rgba32> pBuffer, uint uiDestPitchBYTES, HVOBJECT hSrcVObject, int iDestX, int iDestY, ushort usIndex)
+    private static void Blt8BPPDataTo16BPPBufferTransparent(Image<Rgba32> pBuffer, uint uiDestPitchBYTES, HVOBJECT hSrcVObject, int iDestX, int iDestY, ushort usIndex)
+    {
+    }
+
+    private static void Blt8BPPDataTo16BPPBufferTransparentClip(Image<Rgba32> pBuffer, uint uiDestPitchBYTES, HVOBJECT hSrcVObject, int iDestX, int iDestY, ushort usIndex, ref Rectangle? clipRegion)
+    {
+
+    }
+
+
+    /**********************************************************************************************
+     BltIsClipped
+
+        DeterMath.Mines whether a given blit will need clipping or not. Returns true/false.
+
+    **********************************************************************************************/
+    private static bool BltIsClipped(HVOBJECT hSrcVObject, int iX, int iY, ushort usIndex, ref Rectangle? clipregion)
+    {
+        uint usHeight, usWidth;
+        ETRLEObject pTrav;
+        int iTempX, iTempY;
+        int ClipX1, ClipY1, ClipX2, ClipY2;
+
+        // Get Offsets from Index into structure
+        pTrav = hSrcVObject.pETRLEObject[usIndex];
+        usHeight = (uint)pTrav.usHeight;
+        usWidth = (uint)pTrav.usWidth;
+
+        // Add to start position of dest buffer
+        iTempX = iX + pTrav.sOffsetX;
+        iTempY = iY + pTrav.sOffsetY;
+
+        if (clipregion == null)
         {
+            ClipX1 = ClippingRect!.Value.Left;
+            ClipY1 = ClippingRect!.Value.Top;
+            ClipX2 = ClippingRect!.Value.Right;
+            ClipY2 = ClippingRect!.Value.Bottom;
         }
-
-        private void Blt8BPPDataTo16BPPBufferTransparentClip(Image<Rgba32> pBuffer, uint uiDestPitchBYTES, HVOBJECT hSrcVObject, int iDestX, int iDestY, ushort usIndex, ref Rectangle? clipRegion)
+        else
         {
-
+            ClipX1 = clipregion.Value.Left;
+            ClipY1 = clipregion.Value.Top;
+            ClipX2 = clipregion.Value.Right;
+            ClipY2 = clipregion.Value.Bottom;
         }
 
-
-        /**********************************************************************************************
-         BltIsClipped
-
-            DeterMath.Mines whether a given blit will need clipping or not. Returns true/false.
-
-        **********************************************************************************************/
-        private bool BltIsClipped(HVOBJECT hSrcVObject, int iX, int iY, ushort usIndex, ref Rectangle? clipregion)
-        {
-            uint usHeight, usWidth;
-            ETRLEObject pTrav;
-            int iTempX, iTempY;
-            int ClipX1, ClipY1, ClipX2, ClipY2;
-
-            // Get Offsets from Index into structure
-            pTrav = hSrcVObject.pETRLEObject[usIndex];
-            usHeight = (uint)pTrav.usHeight;
-            usWidth = (uint)pTrav.usWidth;
-
-            // Add to start position of dest buffer
-            iTempX = iX + pTrav.sOffsetX;
-            iTempY = iY + pTrav.sOffsetY;
-
-            if (clipregion == null)
-            {
-                ClipX1 = this.ClippingRect!.Value.Left;
-                ClipY1 = this.ClippingRect!.Value.Top;
-                ClipX2 = this.ClippingRect!.Value.Right;
-                ClipY2 = this.ClippingRect!.Value.Bottom;
-            }
-            else
-            {
-                ClipX1 = clipregion.Value.Left;
-                ClipY1 = clipregion.Value.Top;
-                ClipX2 = clipregion.Value.Right;
-                ClipY2 = clipregion.Value.Bottom;
-            }
-
-            // Calculate rows hanging off each side of the screen
-            if (Math.Max(ClipX1 - Math.Min(ClipX1, iTempX), (int)usWidth) != 0)
-            {
-                return true;
-            }
-
-            if (Math.Max(Math.Max(ClipX2, iTempX + (int)usWidth) - ClipX2, (int)usWidth) != 0)
-            {
-                return true;
-            }
-
-            if (Math.Max(ClipY1 - Math.Max(ClipY1, iTempY), (int)usHeight) != 0)
-            {
-                return true;
-            }
-
-            if (Math.Max(Math.Max(ClipY2, iTempY + (int)usHeight) - ClipY2, (int)usHeight) != 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool DeleteVideoObjectFromIndex(int uiLogoID)
+        // Calculate rows hanging off each side of the screen
+        if (Math.Max(ClipX1 - Math.Min(ClipX1, iTempX), (int)usWidth) != 0)
         {
             return true;
         }
 
-        public int CountVideoObjectNodes()
+        if (Math.Max(Math.Max(ClipX2, iTempX + (int)usWidth) - ClipX2, (int)usWidth) != 0)
         {
-            VOBJECT_NODE? curr = Globals.gpVObjectHead;
-            int i = 0;
-
-            while (curr is not null)
-            {
-                i++;
-                curr = curr.next;
-            }
-
-            return i;
+            return true;
         }
+
+        if (Math.Max(ClipY1 - Math.Max(ClipY1, iTempY), (int)usHeight) != 0)
+        {
+            return true;
+        }
+
+        if (Math.Max(Math.Max(ClipY2, iTempY + (int)usHeight) - ClipY2, (int)usHeight) != 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 
-    public class VOBJECT_NODE
+    public bool DeleteVideoObjectFromIndex(int uiLogoID)
     {
-        public HVOBJECT hVObject;
-        public int uiIndex;
-        public VOBJECT_NODE? next;
-        public VOBJECT_NODE? prev;
-
-        public int? pName;
-        public int? pCode;
+        return true;
     }
 
-    public class HVOBJECT
+    public int CountVideoObjectNodes()
     {
-        public const int HVOBJECT_SHADE_TABLES = 48;
+        VOBJECT_NODE? curr = Globals.gpVObjectHead;
+        int i = 0;
 
-        public int fFlags;                              // Special flags
-        public uint uiSizePixData;           // ETRLE data size
-        public SGPPaletteEntry[] pPaletteEntry;             // 8BPP Palette						  
-        public int TransparentColor;          // Defaults to 0,0,0
-        //public ushort[] p16BPPPalette;              // A 16BPP palette used for 8.16 blits
-        public Rgba32[] Palette;
+        while (curr is not null)
+        {
+            i++;
+            curr = curr.next;
+        }
 
-        public byte[] pPixData;                       // ETRLE pixel data
-        public ETRLEObject[] pETRLEObject;              // Object offset data etc
-        public SixteenBPPObjectInfo? p16BPPObject;
-        public ushort?[] pShades = new ushort?[HVOBJECT_SHADE_TABLES]; // Shading tables
-        // public ushort[] pShadeCurrent;
-        public Rgba32[] ShadeCurrentPixels;
-        public int? pGlow;                              // glow highlight table
-        public byte? pShade8;                         // 8-bit shading index table
-        public byte? pGlow8;                          // 8-bit glow table
-        public ZStripInfo ppZStripInfo;              // Z-value strip info arrays
-
-        public int usNumberOf16BPPObjects;
-        public int usNumberOfObjects;   // Total number of objects
-        public int ubBitDepth;                       // BPP 
-        internal ushort? p16BPPPalette;
-        internal ushort pShadeCurrent;
-
-        public string Name { get; set; } = string.Empty;
-        public HIMAGE? hImage { get; set; }
-        public Texture[] Textures { get; set; }
+        return i;
     }
+}
 
-    // Effects structure for specialized blitting
-    public struct blt_fx
-    {
-        public int uiShadowLevel;
-        public Rectangle ClipRect;
-    }
+public class VOBJECT_NODE
+{
+    public HVOBJECT hVObject;
+    public int uiIndex;
+    public VOBJECT_NODE? next;
+    public VOBJECT_NODE? prev;
+
+    public int? pName;
+    public int? pCode;
+}
+
+public class HVOBJECT
+{
+    public const int HVOBJECT_SHADE_TABLES = 48;
+
+    public int fFlags;                              // Special flags
+    public uint uiSizePixData;           // ETRLE data size
+    public SGPPaletteEntry[] pPaletteEntry;             // 8BPP Palette						  
+    public int TransparentColor;          // Defaults to 0,0,0
+    //public ushort[] p16BPPPalette;              // A 16BPP palette used for 8.16 blits
+    public Rgba32[] Palette;
+
+    public byte[] pPixData;                       // ETRLE pixel data
+    public ETRLEObject[] pETRLEObject;              // Object offset data etc
+    public SixteenBPPObjectInfo? p16BPPObject;
+    public ushort?[] pShades = new ushort?[HVOBJECT_SHADE_TABLES]; // Shading tables
+    // public ushort[] pShadeCurrent;
+    public Rgba32[] ShadeCurrentPixels;
+    public int? pGlow;                              // glow highlight table
+    public byte? pShade8;                         // 8-bit shading index table
+    public byte? pGlow8;                          // 8-bit glow table
+    public ZStripInfo ppZStripInfo;              // Z-value strip info arrays
+
+    public int usNumberOf16BPPObjects;
+    public int usNumberOfObjects;   // Total number of objects
+    public int ubBitDepth;                       // BPP 
+    internal ushort? p16BPPPalette;
+    internal ushort pShadeCurrent;
+
+    public string Name { get; set; } = string.Empty;
+    public HIMAGE? hImage { get; set; }
+    public Texture[] Textures { get; set; }
+}
+
+// Effects structure for specialized blitting
+public struct blt_fx
+{
+    public int uiShadowLevel;
+    public Rectangle ClipRect;
+}
 
 
-    // Z-buffer info structure for properly assigning Z values
-    public struct ZStripInfo
-    {
-        public int bInitialZChange;       // difference in Z value between the leftmost and base strips
-        public int ubFirstZStripWidth;   // # of pixels in the leftmost strip
-        public int ubNumberOfZChanges;   // number of strips (after the first)
-        public int pbZChange;            // change to the Z value in each strip (after the first)
-    }
+// Z-buffer info structure for properly assigning Z values
+public struct ZStripInfo
+{
+    public int bInitialZChange;       // difference in Z value between the leftmost and base strips
+    public int ubFirstZStripWidth;   // # of pixels in the leftmost strip
+    public int ubNumberOfZChanges;   // number of strips (after the first)
+    public int pbZChange;            // change to the Z value in each strip (after the first)
+}
 
-    public struct SixteenBPPObjectInfo
-    {
-        public int p16BPPData;
-        public int usRegionIndex;
-        public int ubShadeLevel;
-        public int usWidth;
-        public int usHeight;
-        public int sOffsetX;
-        public int sOffsetY;
-    }
+public struct SixteenBPPObjectInfo
+{
+    public int p16BPPData;
+    public int usRegionIndex;
+    public int ubShadeLevel;
+    public int usWidth;
+    public int usHeight;
+    public int sOffsetX;
+    public int sOffsetY;
+}
+
+// Defines for blitting
+public enum VO_BLT
+{
+    CLIP = 0x000000001,
+    SRCTRANSPARENCY = 0x000000002,
+    TRANSSHADOW = 0x000000003,
+    DESTTRANSPARENCY = 0x000000120,
+    SHADOW = 0x000000200,
+    MIRROR_Y = 0x000001000, // must be the same as VS_BLT_MIRROR_Y for Wiz!!!
+    UNCOMPRESSED = 0x000004000,
 }

@@ -355,7 +355,7 @@ namespace SharpAlliance.Core.Screens
             //    0,
             //    0,
             //    0,
-            //    VideoObjectManager.VO_BLT_SRCTRANSPARENCY,
+            //    VideoObjectManager.VO_BLT.SRCTRANSPARENCY,
             //    null);
 
             VeldridVideoManager.DeleteVideoObjectFromIndex(logoKey);

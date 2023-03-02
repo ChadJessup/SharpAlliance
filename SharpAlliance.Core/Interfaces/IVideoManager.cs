@@ -23,8 +23,8 @@ namespace SharpAlliance.Core.Interfaces
         static abstract void InvalidateScreen();
         static abstract void InvalidateRegion(Rectangle bounds);
         static abstract void EndFrameBufferRender();
-        static abstract HVOBJECT AddVideoObject(string assetPath, out string key);
-        static abstract HVOBJECT GetVideoObject(string key);
+        static abstract HVOBJECT? AddVideoObject(string assetPath, out string key);
+        static abstract HVOBJECT? GetVideoObject(string key);
         static abstract void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
         static abstract bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
         static abstract bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);

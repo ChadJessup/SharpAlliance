@@ -612,10 +612,10 @@ public class MouseSubSystem : ISharpAllianceManager
         cursors.SetCurrentCursorFromDatabase(cursor);
     }
 
-    public void SetRegionUserData(MOUSE_REGION region, int index, object userdata)
-        => this.SetRegionUserData(ref region, index, userdata);
+    public static void SetRegionUserData(MOUSE_REGION region, int index, object userdata)
+        => SetRegionUserData(ref region, index, userdata);
 
-    public void SetRegionUserData(ref MOUSE_REGION region, int index, object userdata)
+    public static void SetRegionUserData(ref MOUSE_REGION region, int index, object userdata)
     {
         if (index < 0 || index > 3)
         {

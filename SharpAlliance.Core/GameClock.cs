@@ -29,7 +29,7 @@ public class GameClock
         memset(gubUnusedTimePadding, 0, TIME_PADDINGBYTES);
     }
 
-    uint GetWorldTotalMin()
+    public static uint GetWorldTotalMin()
     {
         return (guiGameClock / NUM_SEC_IN_MIN);
     }
@@ -40,27 +40,27 @@ public class GameClock
     }
 
 
-    int GetWorldHour()
+    uint GetWorldHour()
     {
         return (guiHour);
     }
 
-    int GetWorldMinutesInDay()
+    uint GetWorldMinutesInDay()
     {
         return ((guiHour * 60) + guiMin);
     }
 
-    int GetWorldDay()
+    uint GetWorldDay()
     {
         return (guiDay);
     }
 
-    int GetWorldDayInSeconds()
+    uint GetWorldDayInSeconds()
     {
         return (guiDay * NUM_SEC_IN_DAY);
     }
 
-    int GetWorldDayInMinutes()
+    uint GetWorldDayInMinutes()
     {
         return ((guiDay * NUM_SEC_IN_DAY) / NUM_SEC_IN_MIN);
     }
@@ -71,7 +71,7 @@ public class GameClock
     }
 
     //this function returns the amount of minutes there has been from start of game to midnight of the uiDay.  
-    int GetMidnightOfFutureDayInMinutes(int uiDay)
+    uint GetMidnightOfFutureDayInMinutes(uint uiDay)
     {
         return (GetWorldTotalMin() + (uiDay * 1440) - GetWorldMinutesInDay());
     }
@@ -205,7 +205,7 @@ public class GameClock
         // Are we in combat?
         if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
-            FontSubSystem.SetFontForeground(FONT_FCOLOR_NICERED);
+            FontSubSystem.SetFontForeground(FontColor.FONT_FCOLOR_NICERED);
         }
         else
         {
@@ -364,7 +364,7 @@ public class GameClock
             giTimeCompressMode++;
 
             // in map screen, we wanna have to skip over x1 compression and go straight to 5x
-            if ((guiCurrentScreen == MAP_SCREEN) && (giTimeCompressMode == TIME_COMPRESS.TIME_COMPRESS_X1))
+            if ((guiCurrentScreen == ScreenName.MAP_SCREEN) && (giTimeCompressMode == TIME_COMPRESS.TIME_COMPRESS_X1))
             {
                 giTimeCompressMode++;
             }
@@ -484,11 +484,11 @@ public class GameClock
         }
     }
 
-    void SetGameMinutesPerSecond(int uiGameMinutesPerSecond)
+    void SetGameMinutesPerSecond(uint uiGameMinutesPerSecond)
     {
         giTimeCompressMode = TIME_COMPRESS.NOT_USING_TIME_COMPRESSION;
         guiGameSecondsPerRealSecond = uiGameMinutesPerSecond * 60;
-        SetClockResolutionPerSecond((int)uiGameMinutesPerSecond);
+        SetClockResolutionPerSecond(uiGameMinutesPerSecond);
     }
 
     void SetGameSecondsPerSecond(int uiGameSecondsPerSecond)
@@ -601,14 +601,14 @@ public class GameClock
     }
 
     //Valid range is 0 - 60 times per second.
-    void SetClockResolutionPerSecond(int ubNumTimesPerSecond)
+    void SetClockResolutionPerSecond(uint ubNumTimesPerSecond)
     {
-        ubNumTimesPerSecond = (int)(Math.Max(0, Math.Min(60, ubNumTimesPerSecond)));
+        ubNumTimesPerSecond = Math.Max(0, Math.Min(60, ubNumTimesPerSecond));
         gubClockResolution = ubNumTimesPerSecond;
     }
 
     //Function for accessing the current rate
-    int ClockResolution()
+    uint ClockResolution()
     {
         return gubClockResolution;
     }
@@ -620,7 +620,7 @@ public class GameClock
     //-Resolution:  The higher the resolution, the more often per second the clock is actually updated.
     //				 This value doesn't affect how much game time passes per real second, but allows for
     //				 a more accurate representation of faster time flows.
-    static int ubLastResolution = 1;
+    static uint ubLastResolution = 1;
     static uint uiLastSecondTime = 0;
     static uint uiLastTimeProcessed = 0;
 
@@ -646,7 +646,7 @@ public class GameClock
         if (guiCurrentScreen != GAME_SCREEN && guiCurrentScreen != MAP_SCREEN && guiCurrentScreen != AIVIEWER_SCREEN && guiCurrentScreen != GAME_SCREEN)
         {
 #else
-        if (guiCurrentScreen != GAME_SCREEN && guiCurrentScreen != MAP_SCREEN && guiCurrentScreen != GAME_SCREEN)
+        if (guiCurrentScreen != ScreenName.GAME_SCREEN && guiCurrentScreen != ScreenName.MAP_SCREEN && guiCurrentScreen != ScreenName.GAME_SCREEN)
 #endif
         {
             uiLastSecondTime = GetJA2Clock();
@@ -1005,8 +1005,8 @@ public class GameClock
         if (fClockMouseRegionCreated == false)
         {
             // create a mouse region for pausing of game clock
-            MouseSubSystem.MSYS_DefineRegion(gClockMouseRegion, (int)(sX), (int)(sY), (int)(sX + CLOCK_REGION_WIDTH), (int)(sY + CLOCK_REGION_HEIGHT), MSYS_PRIORITY_HIGHEST,
-                                 MSYS_NO_CURSOR, MSYS_NO_CALLBACK, PauseOfClockBtnCallback);
+            MouseSubSystem.MSYS_DefineRegion(gClockMouseRegion, new((sX), (int)(sY), (int)(sX + CLOCK_REGION_WIDTH), (int)(sY + CLOCK_REGION_HEIGHT)), MSYS_PRIORITY.HIGHEST,
+                                 CURSOR.MSYS_NO_CURSOR, MouseSubSystem.MSYS_NO_CALLBACK, PauseOfClockBtnCallback);
 
             fClockMouseRegionCreated = true;
 
@@ -1034,9 +1034,9 @@ public class GameClock
     }
 
 
-    void PauseOfClockBtnCallback(MOUSE_REGION? pRegion, int iReason)
+    void PauseOfClockBtnCallback(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
     {
-        if (iReason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
         {
             HandlePlayerPauseUnPauseOfGame();
         }
@@ -1045,7 +1045,7 @@ public class GameClock
 
     void HandlePlayerPauseUnPauseOfGame()
     {
-        if (gTacticalStatus.uiFlags & ENGAGED_IN_CONV)
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV))
         {
             return;
         }
@@ -1054,9 +1054,9 @@ public class GameClock
         if (gfGamePaused && gfPauseDueToPlayerGamePause)
         {
             // If in game screen...
-            if (guiCurrentScreen == GAME_SCREEN)
+            if (guiCurrentScreen == ScreenName.GAME_SCREEN)
             {
-                if (giTimeCompressMode == TIME_COMPRESS_X0)
+                if (giTimeCompressMode == TIME_COMPRESS.TIME_COMPRESS_X0)
                 {
                     giTimeCompressMode++;
                 }
@@ -1066,7 +1066,7 @@ public class GameClock
             }
 
             UnPauseGame();
-            PauseTime(false);
+            TimerControl.PauseTime(false);
             gfIgnoreScrolling = false;
             gfPauseDueToPlayerGamePause = false;
         }
@@ -1074,7 +1074,7 @@ public class GameClock
         {
             // pause game
             PauseGame();
-            PauseTime(true);
+            TimerControl.PauseTime(true);
             gfIgnoreScrolling = true;
             gfPauseDueToPlayerGamePause = true;
         }
@@ -1091,7 +1091,7 @@ public class GameClock
         if (((fClockMouseRegionCreated == false) || (gfGamePaused == false) || (gfPauseDueToPlayerGamePause == false)) && (fCreated == true))
         {
             fCreated = false;
-            MSYS_RemoveRegion(gClockScreenMaskMouseRegion);
+            MouseSubSystem.MSYS_RemoveRegion(gClockScreenMaskMouseRegion);
             RemoveMercPopupBoxFromIndex(iPausedPopUpBox);
             iPausedPopUpBox = -1;
             SetRenderFlags(RENDER_FLAG_FULL);
@@ -1105,8 +1105,8 @@ public class GameClock
         else if ((gfPauseDueToPlayerGamePause == true) && (fCreated == false))
         {
             // create a mouse region for pausing of game clock
-            MSYS_DefineRegion(gClockScreenMaskMouseRegion, 0, 0, 640, 480, MSYS_PRIORITY_HIGHEST,
-                                 0, MSYS_NO_CALLBACK, ScreenMaskForGamePauseBtnCallBack);
+            MouseSubSystem.MSYS_DefineRegion(gClockScreenMaskMouseRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
+                                 0, MouseSubSystem.MSYS_NO_CALLBACK, ScreenMaskForGamePauseBtnCallBack);
             fCreated = true;
 
             // get region x and y values
@@ -1129,9 +1129,9 @@ public class GameClock
     }
 
 
-    void ScreenMaskForGamePauseBtnCallBack(MOUSE_REGION? pRegion, int iReason)
+    void ScreenMaskForGamePauseBtnCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
     {
-        if (iReason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
         {
             // unpause the game
             HandlePlayerPauseUnPauseOfGame();
@@ -1165,7 +1165,7 @@ public class GameClock
     void ClearTacticalStuffDueToTimeCompression()
     {
         // is this test the right thing?  ARM
-        if (guiTacticalInterfaceFlags & INTERFACE_MAPSCREEN)
+        if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))
         {
             // clear tactical event queue
             ClearEventQueue();

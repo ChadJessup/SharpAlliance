@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core;
 
@@ -75,6 +76,94 @@ public static class EnglishText
     {
         "Continue",
         "Stop",
+    };
+
+    // various history events
+    // THESE STRINGS ARE "HISTORY LOG" STRINGS AND THEIR LENGTH IS VERY LIMITED.
+    // PLEASE BE MINDFUL OF THE LENGTH OF THESE STRINGS. ONE WAY TO "TEST" THIS
+    // IS TO TURN "CHEAT MODE" ON AND USE CONTROL-R IN THE TACTICAL SCREEN, THEN
+    // GO INTO THE LAPTOP/HISTORY LOG AND CHECK OUT THE STRINGS. CONTROL-R INSERTS
+    // MANY (NOT ALL) OF THE STRINGS IN THE FOLLOWING LIST INTO THE GAME.
+    public static Dictionary<HISTORY, string> pHistoryStrings = new()
+    {
+        { HISTORY.ENTERED_HISTORY_MODE,"" },																						// leave this line blank
+    	{ HISTORY.HIRED_MERC_FROM_AIM,"%s was hired from A.I.M." }, 										// merc was hired from the aim site
+    	{ HISTORY.HIRED_MERC_FROM_MERC,"%s was hired from M.E.R.C." }, 									// merc was hired from the aim site
+    	{ HISTORY.MERC_KILLED,"%s died." }, 															// merc was killed
+    	{ HISTORY.SETTLED_ACCOUNTS_AT_MERC,"Settled Accounts at M.E.R.C." },								// paid outstanding bills at MERC
+    	{ HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO,"Accepted Assignment From Enrico Chivaldori" },
+        { HISTORY.CHARACTER_GENERATED,"IMP Profile Generated" },
+        { HISTORY.PURCHASED_INSURANCE,"Purchased Insurance Contract for %s." }, 				// insurance contract purchased
+    	{ HISTORY.CANCELLED_INSURANCE,"Canceled Insurance Contract for %s." }, 				// insurance contract canceled
+    	{ HISTORY.INSURANCE_CLAIM_PAYOUT,"Insurance Claim Payout for %s." }, 							// insurance claim payout for merc
+    	{ HISTORY.EXTENDED_CONTRACT_1_DAY,"Extended %s's contract by a day." }, 						// Extented "mercs name"'s for a day
+    	{ HISTORY.EXTENDED_CONTRACT_1_WEEK,"Extended %s's contract by 1 week." }, 					// Extented "mercs name"'s for a week
+    	{ HISTORY.EXTENDED_CONTRACT_2_WEEK,"Extended %s's contract by 2 weeks." }, 					// Extented "mercs name"'s 2 weeks
+    	{ HISTORY.MERC_FIRED,"%s was dismissed." }, 													// "merc's name" was dismissed.
+    	{ HISTORY.MERC_QUIT,"%s quit." }, 																		// "merc's name" quit.
+    	{ HISTORY.QUEST_STARTED,"quest started." }, 															// a particular quest started
+    	{ HISTORY.QUEST_FINISHED,"quest completed." },
+        { HISTORY.TALKED_TO_MINER,"Talked to head miner of %s" },									// talked to head miner of town
+    	{ HISTORY.LIBERATED_TOWN,"Liberated %s" },
+        { HISTORY.CHEAT_ENABLED,"Cheat Used" },
+        { HISTORY.TALKED_TO_FATHER_WALKER,"Food should be in Omerta by tomorrow" },
+        { HISTORY.MERC_MARRIED_OFF,"%s left team to become Daryl Hick's wife" },
+        { HISTORY.MERC_CONTRACT_EXPIRED,"%s's contract expired." },
+        { HISTORY.RPC_JOINED_TEAM,"%s was recruited." },
+        { HISTORY.ENRICO_COMPLAINED,"Enrico complained about lack of progress" },
+        { HISTORY.WONBATTLE,"Battle won" },
+        { HISTORY.MINE_RUNNING_OUT,"%s mine started running out of ore" },
+        { HISTORY.MINE_RAN_OUT,"%s mine ran out of ore" },
+        { HISTORY.MINE_SHUTDOWN,"%s mine was shut down" },
+        { HISTORY.MINE_REOPENED,"%s mine was reopened" },
+        { HISTORY.DISCOVERED_TIXA,"Found out about a prison called Tixa." },
+        { HISTORY.DISCOVERED_ORTA,"Heard about a secret weapons plant called Orta." },
+        { HISTORY.GOT_ROCKET_RIFLES,"Scientist in Orta donated a slew of rocket rifles." },
+        { HISTORY.DEIDRANNA_DEAD_BODIES,"Queen Deidranna has a use for dead bodies." },
+        { HISTORY.BOXING_MATCHES,"Frank talked about fighting matches in San Mona." },
+        { HISTORY.SOMETHING_IN_MINES,"A patient thinks he saw something in the mines." },
+        { HISTORY.DEVIN,"Met someone named Devin - he sells explosives." },
+        { HISTORY.MIKE,"Ran into the famous ex-AIM merc Mike!" },
+        { HISTORY.TONY,"Met Tony - he deals in arms." },
+        { HISTORY.KROTT,"Got a rocket rifle from Sergeant Krott." },
+        { HISTORY.KYLE,"Gave Kyle the deed to Angel's leather shop." },
+        { HISTORY.MADLAB,"Madlab offered to build a robot." },
+        { HISTORY.GABBY,"Gabby can make stealth concoction for bugs." },
+        { HISTORY.KEITH_OUT_OF_BUSINESS,"Keith is out of business." },
+        { HISTORY.HOWARD_CYANIDE,"Howard provided cyanide to Queen Deidranna." },
+        { HISTORY.KEITH,"Met Keith - all purpose dealer in Cambria." },
+        { HISTORY.HOWARD,"Met Howard - deals pharmaceuticals in Balime" },
+        { HISTORY.PERKO,"Met Perko - runs a small repair business." },
+        { HISTORY.SAM,"Met Sam of Balime - runs a hardware shop." },
+        { HISTORY.FRANZ,"Franz deals in electronics and other goods." },
+        { HISTORY.ARNOLD,"Arnold runs a repair shop in Grumm." },
+        { HISTORY.FREDO,"Fredo repairs electronics in Grumm." },
+        { HISTORY.RICHGUY_BALIME,"Received donation from rich guy in Balime." },
+        { HISTORY.JAKE,"Met a junkyard dealer named Jake." },
+        { HISTORY.BUM_KEYCARD,"Some bum gave us an electronic keycard." },
+        { HISTORY.WALTER,"Bribed Walter to unlock the door to the basement." },
+        { HISTORY.DAVE,"If Dave has gas, he'll provide free fillups." },
+        { HISTORY.PABLO,"Greased Pablo's palms." },
+        { HISTORY.KINGPIN_MONEY,"Kingpin keeps money in San Mona mine." },
+        { HISTORY.WON_BOXING,"%s won Extreme Fighting match" },
+        { HISTORY.LOST_BOXING,"%s lost Extreme Fighting match" },
+        { HISTORY.DISQUALIFIED_BOXING,"%s was disqualified in Extreme Fighting" },
+        { HISTORY.FOUND_MONEY,"Found a lot of money stashed in the abandoned mine." },
+        { HISTORY.ASSASSIN,"Encountered assassin sent by Kingpin." },
+        { HISTORY.LOSTTOWNSECTOR,"Lost control of sector" },				//ENEMY_INVASION_CODE
+    	{ HISTORY.DEFENDEDTOWNSECTOR,"Defended sector" },
+        { HISTORY.LOSTBATTLE,"Lost battle" },							//ENEMY_ENCOUNTER_CODE
+    	{ HISTORY.FATALAMBUSH,"Fatal ambush" },						//ENEMY_AMBUSH_CODE
+    	{ HISTORY.WIPEDOUTENEMYAMBUSH,"Wiped out enemy ambush" },
+        { HISTORY.UNSUCCESSFULATTACK,"Unsuccessful attack" },			//ENTERING_ENEMY_SECTOR_CODE
+    	{ HISTORY.SUCCESSFULATTACK,"Successful attack!" },
+        { HISTORY.CREATURESATTACKED,"Creatures attacked" },			//CREATURE_ATTACK_CODE
+    	{ HISTORY.KILLEDBYBLOODCATS,"Killed by bloodcats" },			//BLOODCAT_AMBUSH_CODE
+    	{ HISTORY.SLAUGHTEREDBLOODCATS,"Slaughtered bloodcats" },
+        { HISTORY.NPC_KILLED,"%s was killed" },
+        { HISTORY.GAVE_CARMEN_HEAD,"Gave Carmen a terrorist's head" },
+        { HISTORY.SLAY_MYSTERIOUSLY_LEFT,"Slay left" },
+        { HISTORY.MERC_KILLED_CHARACTER,"Killed %s" },
     };
 
 
@@ -390,6 +479,42 @@ public static class EnglishText
         "Sci Fi style",
 
         "Difficulty",
+    };
+
+
+    // Text having to do with the History Log
+
+    public static string[] pHistoryTitle =
+    {
+        "History Log",
+    };
+
+    public static string[] pHistoryHeaders =
+    {
+        "Day", 			// the day the history event occurred
+        "Page", 			// the current page in the history report we are in
+        "Day", 			// the days the history report occurs over
+        "Location", 			// location (in sector) the event occurred
+        "Event", 			// the event label
+    };
+
+    // the names of the towns in the game
+
+    public static Dictionary<TOWNS, string> pTownNames = new()
+    {
+        { TOWNS.BLANK_SECTOR , "" },
+        { TOWNS.OMERTA , "Omerta" },
+        { TOWNS.DRASSEN , "Drassen" },
+        { TOWNS.ALMA , "Alma" },
+        { TOWNS.GRUMM , "Grumm" },
+        { TOWNS.TIXA , "Tixa" },
+        { TOWNS.CAMBRIA , "Cambria" },
+        { TOWNS.SAN_MONA , "San Mona" },
+        { TOWNS.ESTONI , "Estoni" },
+        { TOWNS.ORTA , "Orta" },
+        { TOWNS.BALIME , "Balime" },
+        { TOWNS.MEDUNA , "Meduna" },
+        { TOWNS.CHITZENA , "Chitzena" },
     };
 }
 public enum MSG

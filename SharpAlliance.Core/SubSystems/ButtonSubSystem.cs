@@ -11,10 +11,14 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -308,7 +312,7 @@ namespace SharpAlliance.Core.SubSystems
             fonts.RestoreFontSettings();
         }
 
-        internal static bool SetButtonCursor(GUI_BUTTON? b, CURSOR usCursor)
+        public static bool SetButtonCursor(GUI_BUTTON? b, CURSOR usCursor)
         {
             if (b is null)
             {
@@ -324,7 +328,7 @@ namespace SharpAlliance.Core.SubSystems
         {
             // Draw the appropriate button according to button type
             Globals.gbDisabledButtonStyle = DISABLED_STYLE.NONE;
-            switch (b.uiFlags.HasFlag(ButtonFlags.BUTTON_TYPES))
+            switch (b.uiFlags & ButtonFlags.BUTTON_TYPES)
             {
                 case ButtonFlags.BUTTON_QUICK:
                     ButtonSubSystem.DrawQuickButton(ref b);
@@ -483,7 +487,7 @@ namespace SharpAlliance.Core.SubSystems
                 QuickButtonCallbackMButn);
 
             // Link the MOUSE_REGION with this QuickButton
-            mouse.SetRegionUserData(b.MouseRegion, 0, b);
+            MouseSubSystem.SetRegionUserData(b.MouseRegion, 0, b);
 
             // Set the flags for this button
             b.uiFlags |= ButtonFlags.BUTTON_ENABLED | BType | ButtonFlags.BUTTON_QUICK;
@@ -1306,6 +1310,40 @@ namespace SharpAlliance.Core.SubSystems
             button.IsDirty = true;
         }
 
+        public static bool EnableButton(GUI_BUTTON b)
+        {
+            ButtonFlags OldState;
+
+            // If button exists, set the ENABLED flag
+            if (b is not null)
+            {
+                OldState = b.uiFlags & ButtonFlags.BUTTON_ENABLED;
+                b.uiFlags |= (ButtonFlags.BUTTON_ENABLED | ButtonFlags.BUTTON_DIRTY);
+            }
+            else
+            {
+                OldState = 0;
+            }
+
+
+            // Return previous ENABLED state of this button
+            return ((OldState == ButtonFlags.BUTTON_ENABLED) ? true : false);
+        }
+
+        public static bool EnableButton(int iButtonID)
+        {
+            GUI_BUTTON? b;
+
+            b = ButtonList[iButtonID];
+
+            if (b is not null)
+            {
+                return EnableButton(b);
+            }
+
+            return false;
+        }
+
         public static bool DisableButton(GUI_BUTTON button)
         {
             return false;
@@ -1814,7 +1852,7 @@ namespace SharpAlliance.Core.SubSystems
             IVideoManager.DebugRenderer.DrawRectangle(b.MouseRegion.Bounds, Color.Red);
 
             // Link the MOUSE_REGION with this QuickButton
-            mouse.SetRegionUserData(ref b.MouseRegion, 0, b);
+            MouseSubSystem.SetRegionUserData(ref b.MouseRegion, 0, b);
 
             // Set the flags for this button
             b.uiFlags |= ButtonFlags.BUTTON_ENABLED | BType | ButtonFlags.BUTTON_QUICK;

@@ -430,7 +430,9 @@ public class RenderDirty
 
         // Get next free topmost blitter index
         if ((iBlitterIndex = GetFreeVideoOverlay()) == (-1))
+        {
             return (-1);
+        }
 
         // Init new blitter
         Globals.gVideoOverlays[iBlitterIndex] = new();

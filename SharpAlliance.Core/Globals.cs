@@ -8,6 +8,7 @@ using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Screens.CreditsScreen;
 using static SharpAlliance.Core.SubSystems.InteractiveTiles;
 
@@ -407,8 +408,8 @@ public partial class Globals
 
     public static int guiLastPageInHistoryRecordsList = 0;    // last page in list
                                                               // the page flipping buttons
-    public static int[] giHistoryButton = new int[2];
-    public static int[] giHistoryButtonImage = new int[2];
+    public static GUI_BUTTON[] giHistoryButton = new GUI_BUTTON[2];
+    public static ButtonPic[] giHistoryButtonImage = new ButtonPic[2];
 
     public static int gusAnchorMouseY;
     public static int usOldMouseY;
@@ -1774,10 +1775,22 @@ public partial class Globals
     public static bool gfPlotDirectPath { get; set; } = false;
     public static bool gusPathShown { get; set; } = false;
     public static int gusAPtsToMove { get; set; } = 0;
+    public static bool fReDrawScreenFlag { get; set; }
+    public static INTERFACE guiTacticalInterfaceFlags { get; set; }
+    public static bool fTeamPanelDirty { get; internal set; }
 
     public const int MANLOOKSFORMAN = 0;
     public const int HEARNOISE = 1;
     public const int NOTICEUNSEENATTACKER = 2;
+
+    public const double MAJOR_MAP_VERSION = 5.00;
+
+    public static double gdMajorMapVersion = MAJOR_MAP_VERSION;
+    public static bool gfWorldLoaded;
+
+    //Current minor map version updater.
+    public const int MINOR_MAP_VERSION = 25;
+    public static int gubMinorMapVersion = MINOR_MAP_VERSION;
 
     // for ManLooksForMan()
     public const int MANLOOKSFOROTHERTEAMS = 0;

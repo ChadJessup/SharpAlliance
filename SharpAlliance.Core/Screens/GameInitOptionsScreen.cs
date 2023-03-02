@@ -345,7 +345,7 @@ namespace SharpAlliance.Core.Screens
 
             //Get the main background screen graphic and blt it
             HVOBJECT background = VeldridVideoManager.GetVideoObject(this.guiGIOMainBackGroundImageKey);
-            //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT_SRCTRANSPARENCY, null);
+            //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY, null);
             VeldridVideoManager.BltVideoObject(background, 0, 0, 0, 0);
             //Shade the background
             // VeldridVideoManager.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358

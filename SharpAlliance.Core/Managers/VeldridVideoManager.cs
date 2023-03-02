@@ -362,7 +362,7 @@ public class VeldridVideoManager : IVideoManager
     public static Stream OpenEmbeddedAssetStream(string name)
         => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-    public static HVOBJECT AddVideoObject(string assetPath, out string key)
+    public static HVOBJECT? AddVideoObject(string assetPath, out string key)
     {
         key = assetPath;
 
@@ -1785,22 +1785,27 @@ public class VeldridVideoManager : IVideoManager
         FontSubSystem.TextRenderer.ClearText();
     }
 
-    internal static int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
+    public static int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
     {
         throw new NotImplementedException();
     }
 
-    internal static void UnLockVideoSurface(Surfaces buffer)
+    public static void UnLockVideoSurface(Surfaces buffer)
     {
         throw new NotImplementedException();
     }
 
-    internal static void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
+    public static void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
     {
         throw new NotImplementedException();
     }
 
-    internal static void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
+    public static void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void DeleteVideoObjectFromIndex(int guiSHADELINE)
     {
         throw new NotImplementedException();
     }

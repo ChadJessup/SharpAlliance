@@ -328,7 +328,10 @@ public class TeamTurns
 
                 cnt = Globals.gTacticalStatus.Team[ubTeam].bFirstID;
                 for (pSoldier = Globals.MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[ubTeam].bLastID; cnt++)
+                {
                     ;//, pSoldier++)
+                }
+
                 {
                     if (pSoldier.bActive && pSoldier.bLife > 0)
                     {

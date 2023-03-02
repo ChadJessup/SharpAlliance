@@ -11,6 +11,5 @@ public interface IClockManager : ISharpAllianceManager
     void RemoveMouseRegionForPauseOfClock();
     void InterruptTime();
     void LockPauseState(int v);
-    void PauseTime(bool v);
     void UnLockPauseState();
 }

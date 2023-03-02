@@ -1009,7 +1009,9 @@ public class Messages
                 uiSizeOfString = (Globals.gMapScreenMessageList[uiCount].pString16.Length) + 1 * 2;
             }
             else
+            {
                 uiSizeOfString = 0;
+            }
 
             //	write to the file the size of the message
             //FileWrite(hFile, &uiSizeOfString, sizeof(int), &uiNumBytesWritten);
@@ -1341,7 +1343,7 @@ public class ScrollStringStPtr
 public struct StringSaveStruct
 {
     public FontStyle uiFont;
-    public int uiTimeOfLastUpdate;
+    public uint uiTimeOfLastUpdate;
     public int uiFlags;
     public int[] uiPadding;// [3];
     public FontColor usColor;

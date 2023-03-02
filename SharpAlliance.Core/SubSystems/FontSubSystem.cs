@@ -319,7 +319,7 @@ namespace SharpAlliance.Core.SubSystems
                     this.fontColorLookup[foregroundColor],
                     this.fontColorLookup[foregroundColor]);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 
             }
@@ -997,7 +997,7 @@ namespace SharpAlliance.Core.SubSystems
             FindFontCenterCoordinates(sLeft, sTop, sWidth, sHeight, pFontString, iFontIndex, out psNewX, out psNewY);
         }
 
-        private void FindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
+        public static void FindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
         {
             int xp, yp;
 
@@ -1108,6 +1108,28 @@ namespace SharpAlliance.Core.SubSystems
         FONT_LTKHAKI = 88,
         FONT_KHAKI = 198,
         FONT_DKKHAKI = 201,
+
+        // these are bogus! No palette is set yet!
+        // font foreground color symbols
+        FONT_FCOLOR_WHITE = 208,
+        FONT_FCOLOR_RED = 162,
+        FONT_FCOLOR_NICERED = 164,
+        FONT_FCOLOR_BLUE = 203,
+        FONT_FCOLOR_GREEN = 184,
+        FONT_FCOLOR_YELLOW = 144,
+        FONT_FCOLOR_BROWN = 184,
+        FONT_FCOLOR_ORANGE = 76,
+        FONT_FCOLOR_PURPLE = 160,
+
+        // font background color symbols
+        FONT_BCOLOR_WHITE = 208,
+        FONT_BCOLOR_RED = 162,
+        FONT_BCOLOR_BLUE = 203,
+        FONT_BCOLOR_GREEN = 184,
+        FONT_BCOLOR_YELLOW = 144,
+        FONT_BCOLOR_BROWN = 80,
+        FONT_BCOLOR_ORANGE = 76,
+        FONT_BCOLOR_PURPLE = 160,
     }
 
     [Flags]
