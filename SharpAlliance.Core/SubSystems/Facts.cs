@@ -25,7 +25,7 @@ public class Facts
         if ((usFact == FACT.ESTONI_REFUELLING_POSSIBLE) && (CheckFact(usFact, 0) == false))
         {
             // give him some gas...
-            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER_JAKE, Items.GAS_CAN, (int)(4 + Globals.Random.Next(3)));
+            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.JAKE, Items.GAS_CAN, (int)(4 + Globals.Random.Next(3)));
         }
 
         gubFact[usFact] = true;
