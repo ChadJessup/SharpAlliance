@@ -220,7 +220,7 @@ public class GameEvents
         return (AddStrategicEventUsingSeconds(ubCallbackID, uiSecondStamp + GameClock.GetFutureDayInMinutes(uiDay + uiNumDaysFromPresent) * 60, uiParam));
     }
 
-    public static STRATEGICEVENT? AddAdvancedStrategicEvent(EVENTPERIOD ubEventType, EVENT ubCallbackID, uint uiTimeStamp, int uiParam)
+    public static STRATEGICEVENT? AddAdvancedStrategicEvent(EVENTPERIOD ubEventType, EVENT ubCallbackID, uint uiTimeStamp, object uiParam)
     {
         STRATEGICEVENT? pNode, pNewNode, pPrevNode;
 
@@ -287,7 +287,7 @@ public class GameEvents
         return pNewNode;
     }
 
-    public static bool AddStrategicEvent(EVENT ubCallbackID, uint uiMinStamp, int uiParam)
+    public static bool AddStrategicEvent(EVENT ubCallbackID, uint uiMinStamp, object uiParam)
     {
         if (AddAdvancedStrategicEvent(EVENTPERIOD.ONETIME_EVENT, ubCallbackID, uiMinStamp * 60, uiParam) is not null)
         {
@@ -479,7 +479,7 @@ public class GameEvents
     //Searches for and removes the first event matching the supplied information.  There may very well be a need
     //for more specific event removal, so let me know (Kris), of any support needs.  Function returns false if
     //no events were found or if the event wasn't deleted due to delete lock,
-    public static bool DeleteStrategicEvent(EVENT ubCallbackID, int uiParam)
+    public static bool DeleteStrategicEvent(EVENT ubCallbackID, object uiParam)
     {
         STRATEGICEVENT? curr, prev;
         curr = gpEventList;
@@ -662,7 +662,7 @@ public class STRATEGICEVENT
 {
     public STRATEGICEVENT? next;
     public uint uiTimeStamp;
-    public int uiParam;
+    public object uiParam;
     public uint uiTimeOffset;
     public EVENTPERIOD ubEventType;
     public EVENT ubCallbackID;

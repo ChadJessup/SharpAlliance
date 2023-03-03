@@ -135,7 +135,7 @@ public class GameClock
 
         if (guiGameClock < guiPreviousGameClock)
         {
-            AssertMsg(false, string.Format("AdvanceClock: TIME FLOWING BACKWARDS!!! guiPreviousGameClock %d, now %d", guiPreviousGameClock, guiGameClock));
+            //AssertMsg(false, string.Format("AdvanceClock: TIME FLOWING BACKWARDS!!! guiPreviousGameClock %d, now %d", guiPreviousGameClock, guiGameClock));
 
             // fix it if assertions are disabled
             guiGameClock = guiPreviousGameClock;
@@ -269,9 +269,7 @@ public class GameClock
             return (false);
         }
     }
-
-
-    void StopTimeCompression()
+    public static void StopTimeCompression()
     {
         if (gfTimeCompressionOn)
         {
@@ -299,7 +297,7 @@ public class GameClock
 
 
             // check that we can start compressing
-            if (!AllowedToTimeCompress())
+            if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
                 TellPlayerWhyHeCantCompressTime();
@@ -355,7 +353,7 @@ public class GameClock
         if (giTimeCompressMode < TIME_COMPRESS.TIME_COMPRESS_60MINS)
         {
             // check that we can
-            if (!AllowedToTimeCompress())
+            if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
                 TellPlayerWhyHeCantCompressTime();
@@ -382,7 +380,7 @@ public class GameClock
         if (giTimeCompressMode > TIME_COMPRESS.TIME_COMPRESS_X0)
         {
             // check that we can
-            if (!AllowedToTimeCompress())
+            if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
                 TellPlayerWhyHeCantCompressTime();
@@ -426,7 +424,7 @@ public class GameClock
         if (uiCompressionRate >= TIME_COMPRESS.TIME_COMPRESS_5MINS)
         {
             // check that we can
-            if (!AllowedToTimeCompress())
+            if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
                 TellPlayerWhyHeCantCompressTime();
@@ -437,9 +435,7 @@ public class GameClock
         giTimeCompressMode = uiCompressionRate;
         SetClockResolutionToCompressMode(giTimeCompressMode);
     }
-
-
-    void SetClockResolutionToCompressMode(TIME_COMPRESS iCompressMode)
+    public static void SetClockResolutionToCompressMode(TIME_COMPRESS iCompressMode)
     {
         guiGameSecondsPerRealSecond = giTimeCompressSpeeds[iCompressMode] * SECONDS_PER_COMPRESSION;
 
@@ -512,7 +508,7 @@ public class GameClock
 
     // call this to prevent player from changing the time compression state via the interface
 
-    void LockPauseState(int uiUniqueReasonId)
+    public static void LockPauseState(int uiUniqueReasonId)
     {
         gfLockPauseState = true;
 
@@ -522,19 +518,19 @@ public class GameClock
     }
 
     // call this to allow player to change the time compression state via the interface once again
-    void UnLockPauseState()
+    public static void UnLockPauseState()
     {
         gfLockPauseState = false;
     }
 
     // tells you whether the player is currently locked out from messing with the time compression state
-    bool PauseStateLocked()
+    public static bool PauseStateLocked()
     {
         return gfLockPauseState;
     }
 
 
-    void PauseGame()
+    public static void PauseGame()
     {
         // always allow pausing, even if "locked".  Locking applies only to trying to compress time, not to pausing it
         if (!gfGamePaused)
@@ -544,7 +540,7 @@ public class GameClock
         }
     }
 
-    void UnPauseGame()
+    public static void UnPauseGame()
     {
         // if we're paused
         if (gfGamePaused)
@@ -603,7 +599,7 @@ public class GameClock
     }
 
     //Valid range is 0 - 60 times per second.
-    void SetClockResolutionPerSecond(uint ubNumTimesPerSecond)
+    public static void SetClockResolutionPerSecond(uint ubNumTimesPerSecond)
     {
         ubNumTimesPerSecond = Math.Max(0, Math.Min(60, ubNumTimesPerSecond));
         gubClockResolution = ubNumTimesPerSecond;

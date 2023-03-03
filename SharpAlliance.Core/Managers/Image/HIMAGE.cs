@@ -11,14 +11,6 @@ namespace SharpAlliance.Core.Managers.Image
     // Image header structure
     public class HIMAGE
     {
-        public ushort gusAlphaMask;// = 0;
-        public ushort gusRedMask;// = 0;
-        public ushort gusGreenMask;// = 0;
-        public ushort gusBlueMask;// = 0;
-        public short gusRedShift;// = 0;
-        public short gusBlueShift;// = 0;
-        public short gusGreenShift;// = 0;
-
         public int usWidth;
         public int usHeight;
         public int ubBitDepth;

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
@@ -8,7 +11,7 @@ namespace SharpAlliance.Core;
 public class SoldierControl
 {
     // HUALT EVENT IS USED TO STOP A MERC - NETWORKING SHOULD CHECK / ADJUST TO GRIDNO?
-    public static void EVENT_StopMerc(SOLDIERTYPE? pSoldier, int sGridNo, int bDirection)
+    public static void EVENT_StopMerc(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections bDirection)
     {
         int sX, sY;
 
@@ -220,7 +223,7 @@ public class SoldierControl
 
 
     // THIS IS CALLED FROM AN EVENT ( S_CHANGESTATE )!
-    bool EVENT_InitNewSoldierAnim(SOLDIERTYPE? pSoldier, int usNewState, int usStartingAniCode, bool fForce)
+    bool EVENT_InitNewSoldierAnim(SOLDIERTYPE? pSoldier, AnimationStates usNewState, int usStartingAniCode, bool fForce)
     {
         int usNewGridNo = 0;
         int sAPCost = 0;
@@ -228,10 +231,10 @@ public class SoldierControl
         int uiOldAnimFlags;
         int uiNewAnimFlags;
         int usSubState;
-        int usItem;
+        Items usItem;
         bool fTryingToRestart = false;
 
-        CHECKF(usNewState < NUMANIMATIONSTATES);
+        CHECKF(usNewState < AnimationStates.NUMANIMATIONSTATES);
 
 
         ///////////////////////////////////////////////////////////////////////
@@ -239,7 +242,7 @@ public class SoldierControl
         /////////////////////////////////////////////////////////////////////
 
         // If we are NOT loading a game, continue normally
-        if (!(gTacticalStatus.uiFlags & LOADING_SAVED_GAME))
+        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
         {
             // CHECK IF WE ARE TRYING TO INTURRUPT A SCRIPT WHICH WE DO NOT WANT INTERRUPTED!
             if (pSoldier.fInNonintAnim)
@@ -249,7 +252,7 @@ public class SoldierControl
 
             if (pSoldier.fRTInNonintAnim)
             {
-                if (!(gTacticalStatus.uiFlags & INCOMBAT))
+                if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
                     return (false);
                 }
@@ -263,7 +266,8 @@ public class SoldierControl
             // Check if we can restart this animation if it's the same as our current!
             if (usNewState == pSoldier.usAnimState)
             {
-                if ((gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_NORESTART) && !fForce)
+                if ((gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.NORESTART))
+                    && !fForce)
                 {
                     fTryingToRestart = true;
                 }
@@ -275,12 +279,12 @@ public class SoldierControl
             if (usStartingAniCode == 0)
             {
                 if (gAnimControl[usNewState].ubHeight != gAnimControl[pSoldier.usAnimState].ubEndHeight &&
-                         !(gAnimControl[usNewState].uiFlags & (ANIM_STANCECHANGEANIM | ANIM_IGNORE_AUTOSTANCE)))
+                         !(gAnimControl[usNewState].uiFlags.HasFlag(ANIM.STANCECHANGEANIM | ANIM.IGNORE_AUTOSTANCE)))
                 {
 
                     // Check if we are going from crouched height to prone height, and adjust fast turning accordingly
                     // Make guy turn while crouched THEN go into prone
-                    if ((gAnimControl[usNewState].ubEndHeight == ANIM_PRONE && gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_CROUCH) && !(gTacticalStatus.uiFlags & INCOMBAT))
+                    if ((gAnimControl[usNewState].ubEndHeight == AnimationHeights.ANIM_PRONE && gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_CROUCH) && !(gTacticalStatus.uiFlags & INCOMBAT))
                     {
                         pSoldier.fTurningUntilDone = true;
                         pSoldier.ubPendingStanceChange = gAnimControl[usNewState].ubEndHeight;
@@ -288,13 +292,22 @@ public class SoldierControl
                         return (true);
                     }
                     // Check if we are in realtime and we are going from stand to crouch
-                    else if (gAnimControl[usNewState].ubEndHeight == ANIM_CROUCH && gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_STAND && (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_MOVING) && ((gTacticalStatus.uiFlags & REALTIME) || !(gTacticalStatus.uiFlags & INCOMBAT)))
+                    else if (gAnimControl[usNewState].ubEndHeight == AnimationHeights.ANIM_CROUCH
+                        && gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND
+                        && (gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(AnimationHeights.ANIM_MOVING))
+                        && ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
+                        || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))))
                     {
                         pSoldier.ubDesiredHeight = gAnimControl[usNewState].ubEndHeight;
                         // Continue with this course of action IE: Do animation and skip from stand to crouch
                     }
                     // Check if we are in realtime and we are going from crouch to stand
-                    else if (gAnimControl[usNewState].ubEndHeight == ANIM_STAND && gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_CROUCH && (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_MOVING) && ((gTacticalStatus.uiFlags & REALTIME) || !(gTacticalStatus.uiFlags & INCOMBAT)) && pSoldier.usAnimState != HELIDROP)
+                    else if (gAnimControl[usNewState].ubEndHeight == AnimationHeights.ANIM_STAND
+                        && gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_CROUCH
+                        && (gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.MOVING))
+                        && ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
+                        || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                        && pSoldier.usAnimState != AnimationStates.HELIDROP)
                     {
                         pSoldier.ubDesiredHeight = gAnimControl[usNewState].ubEndHeight;
                         // Continue with this course of action IE: Do animation and skip from stand to crouch
@@ -314,13 +327,13 @@ public class SoldierControl
                 }
             }
 
-            if (usNewState == ADJACENT_GET_ITEM)
+            if (usNewState == AnimationStates.ADJACENT_GET_ITEM)
             {
                 if (pSoldier.ubPendingDirection != NO_PENDING_DIRECTION)
                 {
                     EVENT_InternalSetSoldierDesiredDirection(pSoldier, pSoldier.ubPendingDirection, false, pSoldier.usAnimState);
                     pSoldier.ubPendingDirection = NO_PENDING_DIRECTION;
-                    pSoldier.usPendingAnimation = ADJACENT_GET_ITEM;
+                    pSoldier.usPendingAnimation = AnimationStates.ADJACENT_GET_ITEM;
                     pSoldier.fTurningUntilDone = true;
                     SoldierGotoStationaryStance(pSoldier);
                     return (true);
@@ -328,26 +341,26 @@ public class SoldierControl
             }
 
 
-            if (usNewState == CLIMBUPROOF)
+            if (usNewState == AnimationStates.CLIMBUPROOF)
             {
                 if (pSoldier.ubPendingDirection != NO_PENDING_DIRECTION)
                 {
                     EVENT_SetSoldierDesiredDirection(pSoldier, pSoldier.ubPendingDirection);
                     pSoldier.ubPendingDirection = NO_PENDING_DIRECTION;
-                    pSoldier.usPendingAnimation = CLIMBUPROOF;
+                    pSoldier.usPendingAnimation = AnimationStates.CLIMBUPROOF;
                     pSoldier.fTurningUntilDone = true;
                     SoldierGotoStationaryStance(pSoldier);
                     return (true);
                 }
             }
 
-            if (usNewState == CLIMBDOWNROOF)
+            if (usNewState == AnimationStates.CLIMBDOWNROOF)
             {
                 if (pSoldier.ubPendingDirection != NO_PENDING_DIRECTION)
                 {
                     EVENT_SetSoldierDesiredDirection(pSoldier, pSoldier.ubPendingDirection);
                     pSoldier.ubPendingDirection = NO_PENDING_DIRECTION;
-                    pSoldier.usPendingAnimation = CLIMBDOWNROOF;
+                    pSoldier.usPendingAnimation = AnimationStates.CLIMBDOWNROOF;
                     pSoldier.fTurningFromPronePosition = false;
                     pSoldier.fTurningUntilDone = true;
                     SoldierGotoStationaryStance(pSoldier);
@@ -361,10 +374,13 @@ public class SoldierControl
             {
                 // Don't do some of this if we are a monster!
                 // ATE: LOWER AIMATION IS GOOD, RAISE ONE HOWEVER MAY CAUSE PROBLEMS FOR AI....
-                if (!(pSoldier.uiStatusFlags & SOLDIER_MONSTER) && pSoldier.ubBodyType != ROBOTNOWEAPON && pSoldier.bTeam == gbPlayerNum)
+                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
+                    && pSoldier.ubBodyType != SoldierBodyTypes.ROBOTNOWEAPON
+                    && pSoldier.bTeam == gbPlayerNum)
                 {
                     // If this animation is a raise_weapon animation
-                    if ((gAnimControl[usNewState].uiFlags & ANIM_RAISE_WEAPON) && !(gAnimControl[pSoldier.usAnimState].uiFlags & (ANIM_RAISE_WEAPON | ANIM_NOCHANGE_WEAPON)))
+                    if ((gAnimControl[usNewState].uiFlags.HasFlag(ANIM.RAISE_WEAPON))
+                        && !(gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.RAISE_WEAPON | ANIM.NOCHANGE_WEAPON)))
                     {
                         // We are told that we need to rasie weapon
                         // Do so only if
@@ -1689,7 +1705,7 @@ public class SoldierControl
             {
                 // Set the TOTAL number of bullets to be fired
                 // Can't shoot more bullets than we have in our magazine!
-                pSoldier.bBulletsLeft = __min(Weapon[pSoldier.inv[pSoldier.ubAttackingHand].usItem].ubShotsPerBurst, pSoldier.inv[pSoldier.ubAttackingHand].ubGunShotsLeft);
+                pSoldier.bBulletsLeft = Math.Min(Weapon[pSoldier.inv[pSoldier.ubAttackingHand].usItem].ubShotsPerBurst, pSoldier.inv[pSoldier.ubAttackingHand].ubGunShotsLeft);
             }
             else if (IsValidSecondHandShot(pSoldier))
             {
@@ -2113,7 +2129,7 @@ public class SoldierControl
             return (INVALID_ANIMATION);
         }
 
-        if (pSoldier.bOverTerrainType == DEEP_WATER)
+        if (pSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
         {
             return (INVALID_ANIMATION);
         }
@@ -2124,12 +2140,12 @@ public class SoldierControl
         }
 
         // Check if we have a gun.....
-        if (Item[pSoldier.inv[HANDPOS].usItem].usItemClass != IC_GUN && pSoldier.inv[HANDPOS].usItem != GLAUNCHER)
+        if (Item[pSoldier.inv[HANDPOS].usItem].usItemClass != IC.GUN && pSoldier.inv[HANDPOS].usItem != Items.GLAUNCHER)
         {
             return (INVALID_ANIMATION);
         }
 
-        if (pSoldier.inv[HANDPOS].usItem == ROCKET_LAUNCHER)
+        if (pSoldier.inv[HANDPOS].usItem == Items.ROCKET_LAUNCHER)
         {
             return (INVALID_ANIMATION);
         }
@@ -2142,12 +2158,12 @@ public class SoldierControl
         if (fEndReady)
         {
             // IF our gun is already drawn, do not change animation, just direction
-            if (gAnimControl[pSoldier.usAnimState].uiFlags & (ANIM_FIREREADY | ANIM_FIRE))
+            if (gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.FIREREADY | ANIM.FIRE))
             {
 
                 switch (gAnimControl[pSoldier.usAnimState].ubEndHeight)
                 {
-                    case ANIM_STAND:
+                    case AnimationHeights.ANIM_STAND:
 
                         // CHECK 2ND HAND!
                         if (IsValidSecondHandShot(pSoldier))
@@ -2160,7 +2176,7 @@ public class SoldierControl
                         }
                         break;
 
-                    case ANIM_PRONE:
+                    case AnimationHeights.ANIM_PRONE:
 
                         if (IsValidSecondHandShot(pSoldier))
                         {
@@ -2172,7 +2188,7 @@ public class SoldierControl
                         }
                         break;
 
-                    case ANIM_CROUCH:
+                    case AnimationHeights.ANIM_CROUCH:
 
                         // CHECK 2ND HAND!
                         if (IsValidSecondHandShot(pSoldier))
@@ -2193,13 +2209,13 @@ public class SoldierControl
         {
 
             // IF our gun is already drawn, do not change animation, just direction
-            if (!(gAnimControl[pSoldier.usAnimState].uiFlags & (ANIM_FIREREADY | ANIM_FIRE)))
+            if (!(gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.FIREREADY | ANIM.FIRE)))
             {
 
                 {
                     switch (gAnimControl[pSoldier.usAnimState].ubEndHeight)
                     {
-                        case ANIM_STAND:
+                        case AnimationHeights.ANIM_STAND:
 
                             // CHECK 2ND HAND!
                             if (IsValidSecondHandShot(pSoldier))
@@ -2212,7 +2228,7 @@ public class SoldierControl
                             }
                             break;
 
-                        case ANIM_PRONE:
+                        case AnimationHeights.ANIM_PRONE:
                             // Go into crouch, turn, then go into prone again
                             //ChangeSoldierStance( pSoldier, ANIM_CROUCH );
                             //pSoldier.ubDesiredHeight = ANIM_PRONE;
@@ -2227,7 +2243,7 @@ public class SoldierControl
                             }
                             break;
 
-                        case ANIM_CROUCH:
+                        case AnimationHeights.ANIM_CROUCH:
 
                             // CHECK 2ND HAND!
                             if (IsValidSecondHandShot(pSoldier))
@@ -2260,12 +2276,12 @@ public class SoldierControl
         // ATE: If we have gotten hit, but are still in our attack animation, reduce count!
         switch (pSoldier.usAnimState)
         {
-            case SHOOT_ROCKET:
-            case SHOOT_MORTAR:
-            case THROW_ITEM:
-            case LOB_ITEM:
+            case AnimationStates.SHOOT_ROCKET:
+            case AnimationStates.SHOOT_MORTAR:
+            case AnimationStates.THROW_ITEM:
+            case AnimationStates.LOB_ITEM:
 
-                DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("@@@@@@@ Freeing up attacker - ATTACK ANIMATION %s ENDED BY HIT ANIMATION, Now %d", gAnimControl[pSoldier.usAnimState].zAnimStr, gTacticalStatus.ubAttackBusyCount));
+                // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("@@@@@@@ Freeing up attacker - ATTACK ANIMATION %s ENDED BY HIT ANIMATION, Now %d", gAnimControl[pSoldier.usAnimState].zAnimStr, gTacticalStatus.ubAttackBusyCount));
                 ReduceAttackBusyCount(pSoldier.ubID, false);
                 break;
         }
@@ -2273,24 +2289,24 @@ public class SoldierControl
         // DO STUFF COMMON FOR ALL TYPES
         if (ubAttackerID != NOBODY)
         {
-            MercPtrs[ubAttackerID].bLastAttackHit = true;
+            MercPtrs[ubAttackerID].bLastAttackHit = 1;
         }
 
         // Set attacker's ID
         pSoldier.ubAttackerID = ubAttackerID;
 
-        if (!(pSoldier.uiStatusFlags & SOLDIER_VEHICLE))
+        if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
         {
             // Increment  being attacked count
             pSoldier.bBeingAttackedCount++;
         }
 
         // if defender is a vehicle, there will be no hit animation played!
-        if (!(pSoldier.uiStatusFlags & SOLDIER_VEHICLE))
+        if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
         {
             // Increment the number of people busy doing stuff because of an attack (busy doing hit anim!)
             gTacticalStatus.ubAttackBusyCount++;
-            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Person got hit, attack count now %d", gTacticalStatus.ubAttackBusyCount));
+            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Person got hit, attack count now %d", gTacticalStatus.ubAttackBusyCount));
         }
 
         // ATE; Save hit location info...( for later anim determination stuff )
@@ -3256,7 +3272,7 @@ public class SoldierControl
 
     }
 
-    void SoldierGotoStationaryStance(SOLDIERTYPE? pSoldier)
+    public static void SoldierGotoStationaryStance(SOLDIERTYPE? pSoldier)
     {
         // ATE: This is to turn off fast movement, that us used to change movement mode
         // for ui display on stance changes....
@@ -3266,11 +3282,11 @@ public class SoldierControl
         }
 
         // The queen, if she sees anybody, goes to ready, not normal breath....
-        if (pSoldier.ubBodyType == QUEENMONSTER)
+        if (pSoldier.ubBodyType == SoldierBodyTypes.QUEENMONSTER)
         {
             if (pSoldier.bOppCnt > 0 || pSoldier.bTeam == gbPlayerNum)
             {
-                EVENT_InitNewSoldierAnim(pSoldier, QUEEN_READY, 0, true);
+                EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.QUEEN_READY, 0, true);
                 return;
             }
         }
@@ -3326,7 +3342,7 @@ public class SoldierControl
     }
 
 
-    void ChangeSoldierStance(SOLDIERTYPE? pSoldier, int ubDesiredStance)
+    void ChangeSoldierStance(SOLDIERTYPE? pSoldier, AnimationHeights ubDesiredStance)
     {
         int usNewState;
 
@@ -3342,9 +3358,9 @@ public class SoldierControl
         SetUIBusy(pSoldier.ubID);
 
         // ATE: If we are an NPC, cower....
-        if (pSoldier.ubBodyType >= FATCIV && pSoldier.ubBodyType <= KIDCIV)
+        if (pSoldier.ubBodyType >= SoldierBodyTypes.FATCIV && pSoldier.ubBodyType <= SoldierBodyTypes.KIDCIV)
         {
-            if (ubDesiredStance == ANIM_STAND)
+            if (ubDesiredStance == AnimationHeights.ANIM_STAND)
             {
                 SetSoldierCowerState(pSoldier, false);
             }
@@ -3489,7 +3505,7 @@ public class SoldierControl
 
 
 
-    void EVENT_InternalSetSoldierDesiredDirection(SOLDIERTYPE? pSoldier, int usNewDirection, bool fInitalMove, int usAnimState)
+    void EVENT_InternalSetSoldierDesiredDirection(SOLDIERTYPE? pSoldier, WorldDirections usNewDirection, bool fInitalMove, int usAnimState)
     {
         //if ( usAnimState == WALK_BACKWARDS )
         if (pSoldier.bReverse && usAnimState != SIDE_STEP)
@@ -3600,18 +3616,17 @@ public class SoldierControl
     }
 
 
-    void EVENT_SetSoldierDesiredDirection(SOLDIERTYPE? pSoldier, int usNewDirection)
+    void EVENT_SetSoldierDesiredDirection(SOLDIERTYPE? pSoldier, WorldDirections usNewDirection)
     {
         EVENT_InternalSetSoldierDesiredDirection(pSoldier, usNewDirection, false, pSoldier.usAnimState);
     }
 
-
-    void EVENT_SetSoldierDirection(SOLDIERTYPE? pSoldier, int usNewDirection)
+    public static void EVENT_SetSoldierDirection(SOLDIERTYPE? pSoldier, WorldDirections usNewDirection)
     {
         // Remove old location data
         HandleAnimationProfile(pSoldier, pSoldier.usAnimState, true);
 
-        pSoldier.bDirection = (int)usNewDirection;
+        pSoldier.bDirection = usNewDirection;
 
         // Updated extended direction.....
         pSoldier.ubHiResDirection = ubExtDirection[pSoldier.bDirection];
@@ -3936,7 +3951,7 @@ public class SoldierControl
         if (pSoldier.usAniFrame >= gAnimSurfaceDatabase[usAnimSurface].hVideoObject.usNumberOfObjects)
         {
             // Debug msg here....
-            //		ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Soldier Animation: Wrong Number of frames per number of objects: %d vs %d, %S",  gAnimSurfaceDatabase[ usAnimSurface ].uiNumFramesPerDir, gAnimSurfaceDatabase[ usAnimSurface ].hVideoObject.usNumberOfObjects, gAnimControl[ pSoldier.usAnimState ].zAnimStr );	
+            //		ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Soldier Animation: Wrong Number of frames per number of objects: %d vs %d, %S",  gAnimSurfaceDatabase[ usAnimSurface ].uiNumFramesPerDir, gAnimSurfaceDatabase[ usAnimSurface ].hVideoObject.usNumberOfObjects, gAnimControl[ pSoldier.usAnimState ].zAnimStr );	
 
             pSoldier.usAniFrame = 0;
         }
@@ -4128,7 +4143,7 @@ public class SoldierControl
 
         // IF WE ARE HERE, WE ARE IN THE PROCESS OF TURNING
 
-        // DOUBLE CHECK TO UNSET fNOAPs...
+        // double CHECK TO UNSET fNOAPs...
         if (pSoldier.fNoAPToFinishMove)
         {
             AdjustNoAPToFinishMove(pSoldier, false);
@@ -4228,10 +4243,10 @@ public class SoldierControl
             else
             {
                 // Are we prone crawling?
-                if (pSoldier.usAnimState == CRAWLING)
+                if (pSoldier.usAnimState == AnimationStates.CRAWLING)
                 {
                     // OK, we want to getup, turn and go prone again....
-                    SendChangeSoldierStanceEvent(pSoldier, ANIM_CROUCH);
+                    SendChangeSoldierStanceEvent(pSoldier, AnimationHeights.ANIM_CROUCH);
                     pSoldier.fTurningFromPronePosition = TURNING_FROM_PRONE_ENDING_UP_FROM_MOVE;
                 }
                 // If we are a creature, or multi-tiled, cancel AI action.....?
@@ -4270,34 +4285,6 @@ public class SoldierControl
     225,
 
 };
-
-
-#if false
-int	gOrangeGlowR[]=
-{
-	0,			// Normal shades
-	20,
-	40,
-	60,
-	80,
-	100,
-	120,
-	140,
-	160,
-	180,
-
-	0,		// For gray palettes
-	20,
-	40,
-	60,
-	80,
-	100,
-	120,
-	140,
-	160,
-	180,
-};
-#endif
 
     int[] gOrangeGlowR =
     {
@@ -4767,7 +4754,7 @@ int	gOrangeGlowG[]=
         hFile = FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, FALSE);
 
         // Read # of types
-        if (!FileRead(hFile, &guiNumPaletteSubRanges, sizeof(guiNumPaletteSubRanges), NULL))
+        if (!FileRead(hFile, &guiNumPaletteSubRanges, sizeof(guiNumPaletteSubRanges), null))
         {
             return (FALSE);
         }
@@ -4779,7 +4766,7 @@ int	gOrangeGlowG[]=
         // Read # of types for each!
         for (cnt = 0; cnt < guiNumPaletteSubRanges; cnt++)
         {
-            if (!FileRead(hFile, &gubpNumReplacementsPerRange[cnt], sizeof(UINT8), NULL))
+            if (!FileRead(hFile, &gubpNumReplacementsPerRange[cnt], sizeof(UINT8), null))
             {
                 return (FALSE);
             }
@@ -4788,11 +4775,11 @@ int	gOrangeGlowG[]=
         // Loop for each one, read in data
         for (cnt = 0; cnt < guiNumPaletteSubRanges; cnt++)
         {
-            if (!FileRead(hFile, &gpPaletteSubRanges[cnt].ubStart, sizeof(UINT8), NULL))
+            if (!FileRead(hFile, &gpPaletteSubRanges[cnt].ubStart, sizeof(UINT8), null))
             {
                 return (FALSE);
             }
-            if (!FileRead(hFile, &gpPaletteSubRanges[cnt].ubEnd, sizeof(UINT8), NULL))
+            if (!FileRead(hFile, &gpPaletteSubRanges[cnt].ubEnd, sizeof(UINT8), null))
             {
                 return (FALSE);
             }
@@ -4800,7 +4787,7 @@ int	gOrangeGlowG[]=
 
 
         // Read # of palettes
-        if (!FileRead(hFile, &guiNumReplacements, sizeof(guiNumReplacements), NULL))
+        if (!FileRead(hFile, &guiNumReplacements, sizeof(guiNumReplacements), null))
         {
             return (FALSE);
         }
@@ -4947,9 +4934,9 @@ int	gOrangeGlowG[]=
         return (false);
     }
 
-    int GetNewSoldierStateFromNewStance(SOLDIERTYPE? pSoldier, int ubDesiredStance)
+    AnimationStates GetNewSoldierStateFromNewStance(SOLDIERTYPE? pSoldier, AnimationHeights ubDesiredStance)
     {
-        int usNewState;
+        AnimationStates usNewState;
         int bCurrentHeight;
 
         bCurrentHeight = (ubDesiredStance - gAnimControl[pSoldier.usAnimState].ubEndHeight);
@@ -4958,33 +4945,33 @@ int	gOrangeGlowG[]=
 
         switch (bCurrentHeight)
         {
-            case ANIM_STAND - ANIM_CROUCH:
-                usNewState = KNEEL_UP;
+            case AnimationHeights.ANIM_STAND - AnimationHeights.ANIM_CROUCH:
+                usNewState = AnimationStates.KNEEL_UP;
                 break;
-            case ANIM_CROUCH - ANIM_STAND:
-                usNewState = KNEEL_DOWN;
-                break;
-
-            case ANIM_STAND - ANIM_PRONE:
-                usNewState = PRONE_UP;
-                break;
-            case ANIM_PRONE - ANIM_STAND:
-                usNewState = KNEEL_DOWN;
+            case AnimationHeights.ANIM_CROUCH - AnimationHeights.ANIM_STAND:
+                usNewState = AnimationStates.KNEEL_DOWN;
                 break;
 
-            case ANIM_CROUCH - ANIM_PRONE:
-                usNewState = PRONE_UP;
+            case AnimationHeights.ANIM_STAND - AnimationHeights.ANIM_PRONE:
+                usNewState = AnimationStates.PRONE_UP;
                 break;
-            case ANIM_PRONE - ANIM_CROUCH:
-                usNewState = PRONE_DOWN;
+            case AnimationHeights.ANIM_PRONE - AnimationHeights.ANIM_STAND:
+                usNewState = AnimationStates.KNEEL_DOWN;
+                break;
+
+            case AnimationHeights.ANIM_CROUCH - AnimationHeights.ANIM_PRONE:
+                usNewState = AnimationStates.PRONE_UP;
+                break;
+            case AnimationHeights.ANIM_PRONE - AnimationHeights.ANIM_CROUCH:
+                usNewState = AnimationStates.PRONE_DOWN;
                 break;
 
             default:
 
                 // Cannot get here unless ub desired stance is bogus
-                DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("GetNewSoldierStateFromNewStance bogus ubDesiredStance value %d", ubDesiredStance));
+                // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("GetNewSoldierStateFromNewStance bogus ubDesiredStance value %d", ubDesiredStance));
                 usNewState = pSoldier.usAnimState;
-
+                break;
         }
 
         return (usNewState);
@@ -4998,37 +4985,37 @@ int	gOrangeGlowG[]=
         // Determine which direction we are in 
         switch (pSoldier.bDirection)
         {
-            case NORTH:
-                dAngle = (double)(-1 * PI);
+            case WorldDirections.NORTH:
+                dAngle = (double)(-1 * Math.PI);
                 break;
 
-            case NORTHEAST:
-                dAngle = (double)(PI * .75);
+            case WorldDirections.NORTHEAST:
+                dAngle = (double)(Math.PI * .75);
                 break;
 
-            case EAST:
-                dAngle = (double)(PI / 2);
+            case WorldDirections.EAST:
+                dAngle = (double)(Math.PI / 2);
                 break;
 
-            case SOUTHEAST:
-                dAngle = (double)(PI / 4);
+            case WorldDirections.SOUTHEAST:
+                dAngle = (double)(Math.PI / 4);
                 break;
 
-            case SOUTH:
+            case WorldDirections.SOUTH:
                 dAngle = (double)0;
                 break;
 
-            case SOUTHWEST:
+            case WorldDirections.SOUTHWEST:
                 //dAngle = (double)(  PI * -.25 );
                 dAngle = (double)-0.786;
                 break;
 
-            case WEST:
-                dAngle = (double)(PI * -.5);
+            case WorldDirections.WEST:
+                dAngle = (double)(Math.PI * -.5);
                 break;
 
-            case NORTHWEST:
-                dAngle = (double)(PI * -.75);
+            case WorldDirections.NORTHWEST:
+                dAngle = (double)(Math.PI * -.75);
                 break;
 
         }
@@ -5060,7 +5047,7 @@ int	gOrangeGlowG[]=
 
                 pSoldier.ubPendingDirection = bNewDirection;
                 //pSoldier.usPendingAnimation = CLIMBUPROOF;
-                EVENT_InitNewSoldierAnim(pSoldier, CLIMBUPROOF, 0, false);
+                EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.CLIMBUPROOF, 0, false);
 
                 InternalReceivingSoldierCancelServices(pSoldier, false);
                 InternalGivingSoldierCancelServices(pSoldier, false);
@@ -5433,7 +5420,7 @@ int	gOrangeGlowG[]=
             if (pSoldier.ubBodyType == QUEENMONSTER)
             {
                 // in fact, reduce breath loss by MORE!
-                sReductionFactor = __min(sReductionFactor, 8);
+                sReductionFactor = Math.Min(sReductionFactor, 8);
                 sReductionFactor *= 2;
             }
             else
@@ -5576,7 +5563,7 @@ int	gOrangeGlowG[]=
             int bVisible = -1;
 
             sTestOne = EffectiveStrength(pSoldier);
-            sTestTwo = (2 * (__max(sLifeDeduct, (sBreathLoss / 100))));
+            sTestTwo = (2 * (Math.Max(sLifeDeduct, (sBreathLoss / 100))));
 
 
             if (pSoldier.ubAttackerID != NOBODY && MercPtrs[pSoldier.ubAttackerID].ubBodyType == BLOODCAT)
@@ -5586,7 +5573,7 @@ int	gOrangeGlowG[]=
             }
 
             // If damage > effective strength....
-            sChanceToDrop = (__max(0, (sTestTwo - sTestOne)));
+            sChanceToDrop = (Math.Max(0, (sTestTwo - sTestOne)));
 
             // ATE: Increase odds of NOT dropping an UNDROPPABLE OBJECT
             if ((pSoldier.inv[HANDPOS].fFlags & OBJECT_UNDROPPABLE))
@@ -5595,7 +5582,7 @@ int	gOrangeGlowG[]=
             }
 
 #if JA2TESTVERSION
-        //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, L"Chance To Drop Weapon: str: %d Dam: %d Chance: %d", sTestOne, sTestTwo, sChanceToDrop );
+        //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "Chance To Drop Weapon: str: %d Dam: %d Chance: %d", sTestOne, sTestTwo, sChanceToDrop );
 #endif
 
             if (Random(100) < (int)sChanceToDrop)
@@ -5745,7 +5732,7 @@ int	gOrangeGlowG[]=
         int uiSubSoundID = 0;
         bool fSpeechSound = false;
 
-        // DOUBLECHECK RANGE
+        // doubleCHECK RANGE
         CHECKF(ubBattleSoundID < NUM_MERC_BATTLE_SOUNDS);
 
         if ((pSoldier.uiStatusFlags & SOLDIER_VEHICLE))
@@ -6456,11 +6443,11 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     //#if 0
     int atan8(int sXPos, int sYPos, int sXPos2, int sYPos2)
     {
-        DOUBLE test_x = sXPos2 - sXPos;
-        DOUBLE test_y = sYPos2 - sYPos;
+        double test_x = sXPos2 - sXPos;
+        double test_y = sYPos2 - sYPos;
         int mFacing = WEST;
         int dDegAngle;
-        DOUBLE angle;
+        double angle;
 
         if (test_x == 0)
         {
@@ -6522,60 +6509,60 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    int atan8FromAngle(DOUBLE angle)
+    WorldDirections atan8FromAngle(double angle)
     {
-        int mFacing = WEST;
+        WorldDirections mFacing = WorldDirections.WEST;
 
-        if (angle > PI)
+        if (angle > Math.PI)
         {
-            angle = (angle - PI) - PI;
+            angle = (angle - Math.PI) - Math.PI;
         }
-        if (angle < -PI)
+        if (angle < -Math.PI)
         {
-            angle = (PI - (fabs(angle) - PI));
+            angle = (Math.PI - (Math.Abs(angle) - Math.PI));
         }
 
         do
         {
-            if (angle >= -PI * .375 && angle <= -PI * .125)
+            if (angle >= -Math.PI * .375 && angle <= -Math.PI * .125)
             {
-                mFacing = SOUTHWEST;
+                mFacing = WorldDirections.SOUTHWEST;
                 break;
             }
 
-            if (angle <= PI * .375 && angle >= PI * .125)
+            if (angle <= Math.PI * .375 && angle >= Math.PI * .125)
             {
-                mFacing = SOUTHEAST;
+                mFacing = WorldDirections.SOUTHEAST;
                 break;
             }
 
-            if (angle >= PI * .623 && angle <= PI * .875)
+            if (angle >= Math.PI * .623 && angle <= Math.PI * .875)
             {
-                mFacing = NORTHEAST;
+                mFacing = WorldDirections.NORTHEAST;
                 break;
             }
 
-            if (angle <= -PI * .623 && angle >= -PI * .875)
+            if (angle <= -Math.PI * .623 && angle >= -Math.PI * .875)
             {
-                mFacing = NORTHWEST;
+                mFacing = WorldDirections.NORTHWEST;
                 break;
             }
 
-            if (angle > -PI * 0.125 && angle < PI * 0.125)
+            if (angle > -Math.PI * 0.125 && angle < Math.PI * 0.125)
             {
-                mFacing = SOUTH;
+                mFacing = WorldDirections.SOUTH;
             }
-            if (angle > PI * 0.375 && angle < PI * 0.623)
+            if (angle > Math.PI * 0.375 && angle < Math.PI * 0.623)
             {
-                mFacing = EAST;
+                mFacing = WorldDirections.EAST;
             }
-            if ((angle > PI * 0.875 && angle <= PI) || (angle > -PI && angle < -PI * 0.875))
+            if ((angle > Math.PI * 0.875 && angle <= Math.PI) || (angle > -Math.PI && angle < -Math.PI * 0.875))
             {
-                mFacing = NORTH;
+                mFacing = WorldDirections.NORTH;
             }
-            if (angle > -PI * 0.623 && angle < -PI * 0.375)
+            if (angle > -Math.PI * 0.623 && angle < -Math.PI * 0.375)
             {
-                mFacing = WEST;
+                mFacing = WorldDirections.WEST;
             }
 
         } while (false);
@@ -6621,8 +6608,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     bool CheckForFullStruct(int sGridNo, int* pusIndex)
     {
-        LEVELNODE* pStruct = null;
-        LEVELNODE* pOldStruct = null;
+        LEVELNODE? pStruct = null;
+        LEVELNODE? pOldStruct = null;
         int fTileFlags;
 
         pStruct = gpWorldLevelData[sGridNo].pStructHead;
@@ -6815,25 +6802,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void SendChangeSoldierStanceEvent(SOLDIERTYPE? pSoldier, int ubNewStance)
+    void SendChangeSoldierStanceEvent(SOLDIERTYPE? pSoldier, AnimationHeights ubNewStance)
     {
-#if false
-	EV_S_CHANGESTANCE			SChangeStance;
-
-#if NETWORKED
-	if( !IsTheSolderUnderMyControl( pSoldier.ubID) )
-		return;
-#endif
-
-    SChangeStance.ubNewStance = ubNewStance;
-    SChangeStance.usSoldierID = pSoldier.ubID;
-    SChangeStance.sXPos = pSoldier.sX;
-    SChangeStance.sYPos = pSoldier.sY;
-    SChangeStance.uiUniqueId = pSoldier.uiUniqueSoldierIdValue;
-
-    AddGameEvent(S_CHANGESTANCE, 0, &SChangeStance);
-#endif
-
         ChangeSoldierStance(pSoldier, ubNewStance);
     }
 
@@ -6961,13 +6931,12 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     }
 
-
-    void HandleAnimationProfile(SOLDIERTYPE? pSoldier, int usAnimState, bool fRemove)
+    public static void HandleAnimationProfile(SOLDIERTYPE? pSoldier, AnimationStates usAnimState, bool fRemove)
     {
         //#if 0
-        ANIM_PROF* pProfile;
-        ANIM_PROF_DIR* pProfileDir;
-        ANIM_PROF_TILE* pProfileTile;
+        ANIM_PROF? pProfile;
+        ANIM_PROF_DIR? pProfileDir;
+        ANIM_PROF_TILE? pProfileTile;
         int bProfileID;
         int iTileCount;
         int sGridNo;
@@ -6994,7 +6963,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             // Loop tiles and set accordingly into world
             for (iTileCount = 0; iTileCount < pProfileDir.ubNumTiles; iTileCount++)
             {
-                pProfileTile = &(pProfileDir.pTiles[iTileCount]);
+                pProfileTile = (pProfileDir.pTiles[iTileCount]);
 
                 sGridNo = pSoldier.sGridNo + ((WORLD_COLS * pProfileTile.bTileY) + pProfileTile.bTileX);
 
@@ -7012,7 +6981,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                         AddMercToHead(sGridNo, pSoldier, false);
                         //if ( pProfileTile.bTileY != 0 || pProfileTile.bTileX != 0 )
                         {
-                            gpWorldLevelData[sGridNo].pMercHead.uiFlags |= LEVELNODE_MERCPLACEHOLDER;
+                            gpWorldLevelData[sGridNo].pMercHead.uiFlags |= LEVELNODEFLAGS.MERCPLACEHOLDER;
                             gpWorldLevelData[sGridNo].pMercHead.uiAnimHitLocationFlags = pProfileTile.usTileFlags;
                         }
                     }
@@ -7026,9 +6995,9 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    LEVELNODE* GetAnimProfileFlags(int sGridNo, int* usFlags, SOLDIERTYPE?* ppTargSoldier, LEVELNODE* pGivenNode)
+    LEVELNODE? GetAnimProfileFlags(int sGridNo, int usFlags, SOLDIERTYPE? ppTargSoldier, LEVELNODE? pGivenNode)
     {
-        LEVELNODE* pNode;
+        LEVELNODE? pNode;
 
         (*ppTargSoldier) = null;
         (*usFlags) = 0;
@@ -7046,10 +7015,10 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
         if (pNode != null)
         {
-            if (pNode.uiFlags & LEVELNODE_MERCPLACEHOLDER)
+            if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.MERCPLACEHOLDER))
             {
-                (*usFlags) = (int)pNode.uiAnimHitLocationFlags;
-                (*ppTargSoldier) = pNode.pSoldier;
+                (usFlags) = (int)pNode.uiAnimHitLocationFlags;
+                (ppTargSoldier) = pNode.pSoldier;
             }
         }
 
@@ -7950,7 +7919,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             // Pause this guy from no APS
             AdjustNoAPToFinishMove(pSoldier, true);
 
-            pSoldier.ubReasonCantFinishMove = REASON_STOPPED_SIGHT;
+            pSoldier.ubReasonCantFinishMove = REASON_STOPPED.SIGHT;
 
             // ATE; IF turning to shoot, stop!
             // ATE: We want to do this only for enemies, not items....
@@ -7964,7 +7933,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 // after turn is done - so set flag here to tell it not to...
                 pSoldier.fDontUnsetLastTargetFromTurn = true;
 
-                DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("@@@@@@@ Reducing attacker busy count..., ending fire because saw something"));
+                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("@@@@@@@ Reducing attacker busy count..., ending fire because saw something"));
                 ReduceAttackBusyCount(pSoldier.ubID, false);
             }
 
@@ -7996,71 +7965,6 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         pSoldier.bTurningFromUI = false;
 
         UnSetEngagedInConvFromPCAction(pSoldier);
-    }
-
-
-    // HUALT EVENT IS USED TO STOP A MERC - NETWORKING SHOULD CHECK / ADJUST TO GRIDNO?
-    void EVENT_StopMerc(SOLDIERTYPE? pSoldier, int sGridNo, int bDirection)
-    {
-        int sX, sY;
-
-        // MOVE GUY TO GRIDNO--- SHOULD BE THE SAME UNLESS IN MULTIPLAYER
-        // Makesure center of tile
-        sX = CenterX(sGridNo);
-        sY = CenterY(sGridNo);
-
-
-        //Cancel pending events
-        if (!pSoldier.fDelayedMovement)
-        {
-            pSoldier.usPendingAnimation = NO_PENDING_ANIMATION;
-            pSoldier.usPendingAnimation2 = NO_PENDING_ANIMATION;
-            pSoldier.ubPendingDirection = NO_PENDING_DIRECTION;
-            pSoldier.ubPendingAction = NO_PENDING_ACTION;
-        }
-
-        pSoldier.bEndDoorOpenCode = 0;
-        pSoldier.fTurningFromPronePosition = 0;
-
-        // Cancel path data!
-        pSoldier.usPathIndex = pSoldier.usPathDataSize = 0;
-
-        // Set ext tile waiting flag off!
-        pSoldier.fDelayedMovement = false;
-
-        // Turn off reverse...
-        pSoldier.bReverse = false;
-
-        EVENT_SetSoldierPosition(pSoldier, (double)sX, (double)sY);
-        pSoldier.sDestXPos = (int)pSoldier.dXPos;
-        pSoldier.sDestYPos = (int)pSoldier.dYPos;
-        EVENT_SetSoldierDirection(pSoldier, bDirection);
-
-        if (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_MOVING)
-        {
-            SoldierGotoStationaryStance(pSoldier);
-        }
-
-        // ATE; IF turning to shoot, stop!
-        if (pSoldier.fTurningToShoot)
-        {
-            pSoldier.fTurningToShoot = false;
-            // Release attacker
-            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("@@@@@@@ Reducing attacker busy count..., ending fire because saw something"));
-            ReduceAttackBusyCount(pSoldier.ubID, false);
-        }
-
-        // Turn off multi-move speed override....
-        if (pSoldier.sGridNo == pSoldier.sFinalDestination)
-        {
-            pSoldier.fUseMoverrideMoveSpeed = false;
-        }
-
-        // Unset UI!
-        UnSetUIBusy(pSoldier.ubID);
-
-        UnMarkMovementReserved(pSoldier);
-
     }
 
 
@@ -8115,7 +8019,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // Switch on stance!
         switch (gAnimControl[pSoldier.usAnimState].ubEndHeight)
         {
-            case ANIM_STAND:
+            case AnimationHeights.ANIM_STAND:
 
                 if (fOldRifle && !fNewRifle)
                 {
@@ -8133,8 +8037,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 }
                 break;
 
-            case ANIM_CROUCH:
-            case ANIM_PRONE:
+            case AnimationHeights.ANIM_CROUCH:
+            case AnimationHeights.ANIM_PRONE:
 
                 SetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
                 break;
@@ -8144,32 +8048,31 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
 
 
-    int* CreateEnemyGlow16BPPPalette(SGPPaletteEntry* pPalette, int rscale, int gscale, bool fAdjustGreen)
+    int CreateEnemyGlow16BPPPalette(List<SGPPaletteEntry> pPalette, int rscale, int gscale, bool fAdjustGreen)
     {
-        int* p16BPPPalette, r16, g16, b16, usColor;
+        int? r16, g16, b16, usColor;
+        int[] p16BPPPalette = new int[sizeof(int) * 256];
         int cnt;
         int rmod, gmod, bmod;
         int r, g, b;
 
-        Assert(pPalette != null);
-
-        p16BPPPalette = MemAlloc(sizeof(int) * 256);
+        Debug.Assert(pPalette != null);
 
         for (cnt = 0; cnt < 256; cnt++)
         {
             gmod = (pPalette[cnt].peGreen);
             bmod = (pPalette[cnt].peBlue);
 
-            rmod = __max(rscale, (pPalette[cnt].peRed));
+            rmod = Math.Max(rscale, (pPalette[cnt].peRed));
 
             if (fAdjustGreen)
             {
-                gmod = __max(gscale, (pPalette[cnt].peGreen));
+                gmod = Math.Max(gscale, (pPalette[cnt].peGreen));
             }
 
-            r = (int)__min(rmod, 255);
-            g = (int)__min(gmod, 255);
-            b = (int)__min(bmod, 255);
+            r = (int)Math.Min(rmod, 255);
+            g = (int)Math.Min(gmod, 255);
+            b = (int)Math.Min(bmod, 255);
 
             if (gusRedShift < 0)
             {
@@ -8212,16 +8115,16 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    int* CreateEnemyGreyGlow16BPPPalette(SGPPaletteEntry* pPalette, int rscale, int gscale, bool fAdjustGreen)
+    int? CreateEnemyGreyGlow16BPPPalette(List<SGPPaletteEntry> pPalette, int rscale, int gscale, bool fAdjustGreen)
     {
-        int* p16BPPPalette, r16, g16, b16, usColor;
+        int? p16BPPPalette, r16, g16, b16, usColor;
         int cnt, lumin;
         int rmod, gmod, bmod;
         int r, g, b;
 
-        Assert(pPalette != null);
+        Debug.Assert(pPalette != null);
 
-        p16BPPPalette = MemAlloc(sizeof(int) * 256);
+        //p16BPPPalette = MemAlloc(sizeof(int) * 256);
 
         for (cnt = 0; cnt < 256; cnt++)
         {
@@ -8232,17 +8135,17 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
 
 
-            rmod = __max(rscale, rmod);
+            rmod = Math.Max(rscale, rmod);
 
             if (fAdjustGreen)
             {
-                gmod = __max(gscale, gmod);
+                gmod = Math.Max(gscale, gmod);
             }
 
 
-            r = (int)__min(rmod, 255);
-            g = (int)__min(gmod, 255);
-            b = (int)__min(bmod, 255);
+            r = (int)Math.Min(rmod, 255);
+            g = (int)Math.Min(gmod, 255);
+            b = (int)Math.Min(bmod, 255);
 
             if (gusRedShift < 0)
             {
@@ -8281,6 +8184,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
             p16BPPPalette[cnt] = usColor;
         }
+
         return (p16BPPPalette);
     }
 
@@ -8377,17 +8281,18 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    bool InternalIsValidStance(SOLDIERTYPE? pSoldier, int bDirection, int bNewStance)
+    bool InternalIsValidStance(SOLDIERTYPE? pSoldier, int bDirection, AnimationHeights bNewStance)
     {
         int usOKToAddStructID = 0;
-        STRUCTURE_FILE_REF* pStructureFileRef;
+        STRUCTURE_FILE_REF? pStructureFileRef;
         int usAnimSurface = 0;
-        int usAnimState;
+        AnimationStates usAnimState;
 
         // Check, if dest is prone, we can actually do this!
 
         // If we are a vehicle, we can only 'stand'
-        if ((pSoldier.uiStatusFlags & SOLDIER_VEHICLE) && bNewStance != ANIM_STAND)
+        if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
+            && bNewStance != AnimationHeights.ANIM_STAND)
         {
             return (false);
         }
@@ -8395,13 +8300,14 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // Check if we are in water?
         if (MercInWater(pSoldier))
         {
-            if (bNewStance == ANIM_PRONE || bNewStance == ANIM_CROUCH)
+            if (bNewStance == AnimationHeights.ANIM_PRONE || bNewStance == AnimationHegiths.ANIM_CROUCH)
             {
                 return (false);
             }
         }
 
-        if (pSoldier.ubBodyType == ROBOTNOWEAPON && bNewStance != ANIM_STAND)
+        if (pSoldier.ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON
+            && bNewStance != AnimationHeights.ANIM_STAND)
         {
             return (false);
         }
@@ -8409,7 +8315,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // Check if we are in water?
         if (AM_AN_EPC(pSoldier))
         {
-            if (bNewStance == ANIM_PRONE)
+            if (bNewStance == AnimationHeights.ANIM_PRONE)
             {
                 return (false);
             }
@@ -8422,7 +8328,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
         if (pSoldier.bCollapsed)
         {
-            if (bNewStance == ANIM_STAND || bNewStance == ANIM_CROUCH)
+            if (bNewStance == AnimationHeights.ANIM_STAND
+                || bNewStance == AnimationHeights.ANIM_CROUCH)
             {
                 return (false);
             }
@@ -8440,27 +8347,28 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
         switch (bNewStance)
         {
-            case ANIM_STAND:
+            case AnimationHeights.ANIM_STAND:
 
-                usAnimState = STANDING;
+                usAnimState = AnimationStates.STANDING;
                 break;
 
-            case ANIM_CROUCH:
+            case AnimationHeights.ANIM_CROUCH:
 
-                usAnimState = CROUCHING;
+                usAnimState = AnimationStates.CROUCHING;
                 break;
 
 
-            case ANIM_PRONE:
+            case AnimationHeights.ANIM_PRONE:
 
-                usAnimState = PRONE;
+                usAnimState = AnimationStates.PRONE;
                 break;
 
             default:
 
                 // Something gone funny here....
                 usAnimState = pSoldier.usAnimState;
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Wrong desired stance given: %d, %d.", bNewStance, pSoldier.usAnimState);
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Wrong desired stance given: %d, %d.", bNewStance, pSoldier.usAnimState);
+                break;
         }
 
         usAnimSurface = DetermineSoldierAnimationSurface(pSoldier, usAnimState);
@@ -8559,36 +8467,36 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
         pTrav = &(gAnimSurfaceDatabase[usAnimSurface].hVideoObject.pETRLEObject[pSoldier.usAniFrame]);
 
-        *psHeight = (int)pTrav.usHeight;
-        *psWidth = (int)pTrav.usWidth;
+        psHeight = (int)pTrav.usHeight;
+        psWidth = (int)pTrav.usWidth;
     }
 
-    void GetActualSoldierAnimOffsets(SOLDIERTYPE? pSoldier, int* sOffsetX, int* sOffsetY)
+    void GetActualSoldierAnimOffsets(SOLDIERTYPE? pSoldier, out int sOffsetX, out int sOffsetY)
     {
         int usAnimSurface;
-        ETRLEObject* pTrav;
+        ETRLEObject? pTrav;
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == INVALID_ANIMATION_SURFACE)
         {
-            *sOffsetX = (int)0;
-            *sOffsetY = (int)0;
+            sOffsetX = (int)0;
+            sOffsetY = (int)0;
 
             return;
         }
 
         if (gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
         {
-            *sOffsetX = (int)0;
-            *sOffsetY = (int)0;
+            sOffsetX = (int)0;
+            sOffsetY = (int)0;
             return;
         }
 
-        pTrav = &(gAnimSurfaceDatabase[usAnimSurface].hVideoObject.pETRLEObject[pSoldier.usAniFrame]);
+        pTrav = (gAnimSurfaceDatabase[usAnimSurface].hVideoObject.pETRLEObject[pSoldier.usAniFrame]);
 
-        *sOffsetX = (int)pTrav.sOffsetX;
-        *sOffsetY = (int)pTrav.sOffsetY;
+        sOffsetX = (int)pTrav.sOffsetX;
+        sOffsetY = (int)pTrav.sOffsetY;
     }
 
 
@@ -8775,13 +8683,13 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // If we are an animal, etc, don't do anything....
         switch (pSoldier.ubBodyType)
         {
-            case ADULTFEMALEMONSTER:
-            case AM_MONSTER:
-            case YAF_MONSTER:
-            case YAM_MONSTER:
-            case LARVAE_MONSTER:
-            case INFANT_MONSTER:
-            case QUEENMONSTER:
+            case SoldierBodyTypes.ADULTFEMALEMONSTER:
+            case SoldierBodyTypes.AM_MONSTER:
+            case SoldierBodyTypes.YAF_MONSTER:
+            case SoldierBodyTypes.YAM_MONSTER:
+            case SoldierBodyTypes.LARVAE_MONSTER:
+            case SoldierBodyTypes.INFANT_MONSTER:
+            case SoldierBodyTypes.QUEENMONSTER:
 
                 // Give breath back....
                 DeductPoints(pSoldier, 0, (int)-5000);
@@ -8913,8 +8821,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     void HandlePlacingRoofMarker(SOLDIERTYPE? pSoldier, int sGridNo, bool fSet, bool fForce)
     {
-        LEVELNODE* pRoofNode;
-        LEVELNODE* pNode;
+        LEVELNODE? pRoofNode;
+        LEVELNODE? pNode;
 
         if (pSoldier.bVisible == -1 && fSet)
         {
@@ -8933,7 +8841,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             pRoofNode = gpWorldLevelData[sGridNo].pRoofHead;
 
             // Return if we are still climbing roof....
-            if (pSoldier.usAnimState == CLIMBUPROOF && !fForce)
+            if (pSoldier.usAnimState == AnimationStates.CLIMBUPROOF && !fForce)
             {
                 return;
             }
@@ -8942,7 +8850,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             {
                 if (fSet)
                 {
-                    if (gpWorldLevelData[sGridNo].uiFlags & MAPELEMENT_REVEALED)
+                    if (gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED))
                     {
                         // Set some flags on this poor thing
                         //pRoofNode.uiFlags |= ( LEVELNODE_USEBESTTRANSTYPE | LEVELNODE_REVEAL | LEVELNODE_DYNAMIC  );
@@ -8953,7 +8861,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 }
                 else
                 {
-                    if (gpWorldLevelData[sGridNo].uiFlags & MAPELEMENT_REVEALED)
+                    if (gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED))
                     {
                         // Remove some flags on this poor thing
                         //pRoofNode.uiFlags &= ~( LEVELNODE_USEBESTTRANSTYPE | LEVELNODE_REVEAL | LEVELNODE_DYNAMIC );
@@ -8965,16 +8873,16 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 if (fSet)
                 {
                     // If it does not exist already....
-                    if (!IndexExistsInRoofLayer(sGridNo, FIRSTPOINTERS11))
+                    if (!IndexExistsInRoofLayer(sGridNo, TileDefines.FIRSTPOINTERS11))
                     {
-                        pNode = AddRoofToTail(sGridNo, FIRSTPOINTERS11);
-                        pNode.ubShadeLevel = DEFAULT_SHADE_LEVEL;
-                        pNode.ubNaturalShadeLevel = DEFAULT_SHADE_LEVEL;
+                        pNode = AddRoofToTail(sGridNo, TileDefines.FIRSTPOINTERS11);
+                        pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
+                        pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     }
                 }
                 else
                 {
-                    RemoveRoof(sGridNo, FIRSTPOINTERS11);
+                    RemoveRoof(sGridNo, TileDefines.FIRSTPOINTERS11);
                 }
             }
         }
@@ -9004,7 +8912,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         }
 
         //if the player DOESNT want the merc to cast light
-        if (!gGameSettings.fOptions[TOPTION_MERC_CASTS_LIGHT])
+        if (!GameSettings.fOptions[TOPTION.MERC_CASTS_LIGHT])
         {
             return;
         }
@@ -9033,7 +8941,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     void PickPickupAnimation(SOLDIERTYPE? pSoldier, int iItemIndex, int sGridNo, int bZLevel)
     {
         int bDirection;
-        STRUCTURE* pStructure;
+        STRUCTURE? pStructure;
         bool fDoNormalPickup = true;
 
 
@@ -9187,13 +9095,13 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void EVENT_SoldierBeginRepair(SOLDIERTYPE? pSoldier, int sGridNo, int ubDirection)
+    void EVENT_SoldierBeginRepair(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections ubDirection)
     {
         int bRepairItem;
         int ubID;
 
         // Make sure we have a structure here....
-        bRepairItem = IsRepairableStructAtGridNo(sGridNo, &ubID);
+        bRepairItem = IsRepairableStructAtGridNo(sGridNo, out ubID);
 
         if (bRepairItem)
         {
@@ -9223,13 +9131,13 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         }
     }
 
-    void EVENT_SoldierBeginRefuel(SOLDIERTYPE? pSoldier, int sGridNo, int ubDirection)
+    void EVENT_SoldierBeginRefuel(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections ubDirection)
     {
         int bRefuelItem;
         int ubID;
 
         // Make sure we have a structure here....
-        bRefuelItem = IsRefuelableStructAtGridNo(sGridNo, &ubID);
+        bRefuelItem = IsRefuelableStructAtGridNo(sGridNo, out ubID);
 
         if (bRefuelItem)
         {
@@ -9277,7 +9185,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     void EVENT_SoldierBeginAttachCan(SOLDIERTYPE? pSoldier, int sGridNo, int ubDirection)
     {
-        STRUCTURE* pStructure;
+        STRUCTURE? pStructure;
         DOOR_STATUS* pDoorStatus;
 
         // OK, find door, attach to door, do animation...., remove item....
@@ -10016,13 +9924,13 @@ void DebugValidateSoldierData()
                 if (pSoldier.ubGroupID == 0 && pSoldier.bAssignment != IN_TRANSIT && pSoldier.bAssignment != ASSIGNMENT_POW && !(pSoldier.uiStatusFlags & (SOLDIER_DRIVER | SOLDIER_PASSENGER)))
                 {
                     // This is bad!
-                    wprintf(sString, L"Soldier Data Error: Soldier %d is alive but has a zero group ID.", cnt);
+                    wprintf(sString, "Soldier Data Error: Soldier %d is alive but has a zero group ID.", cnt);
                     fProblemDetected = true;
                 }
                 else if ((pSoldier.ubGroupID != 0) && (GetGroup(pSoldier.ubGroupID) == null))
                 {
                     // This is bad!
-                    wprintf(sString, L"Soldier Data Error: Soldier %d has an invalid group ID of %d.", cnt, pSoldier.ubGroupID);
+                    wprintf(sString, "Soldier Data Error: Soldier %d has an invalid group ID of %d.", cnt, pSoldier.ubGroupID);
                     fProblemDetected = true;
                 }
             }
@@ -10031,7 +9939,7 @@ void DebugValidateSoldierData()
                 if (pSoldier.ubGroupID != 0 && (pSoldier.uiStatusFlags & SOLDIER_DEAD))
                 {
                     // Dead guys should have 0 group IDs
-                    //wprintf( sString, L"GroupID Error: Soldier %d is dead but has a non-zero group ID.", cnt );
+                    //wprintf( sString, "GroupID Error: Soldier %d is dead but has a non-zero group ID.", cnt );
                     //fProblemDetected = true;
                 }
             }
@@ -10042,7 +9950,7 @@ void DebugValidateSoldierData()
                          (pSoldier.sSectorY <= 0) || (pSoldier.sSectorY >= 17) ||
                          (pSoldier.bSectorZ < 0) || (pSoldier.bSectorZ > 3)))
             {
-                wprintf(sString, L"Soldier Data Error: Soldier %d is located at %d/%d/%d.", cnt, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+                wprintf(sString, "Soldier Data Error: Soldier %d is located at %d/%d/%d.", cnt, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
                 fProblemDetected = true;
             }
         }
@@ -10304,9 +10212,9 @@ public enum REASON_STOPPED
 [Flags]
 public enum HIT_BY
 {
-    HIT_BY_TEARGAS = 0x01,
-    HIT_BY_MUSTARDGAS = 0x02,
-    HIT_BY_CREATUREGAS = 0x04,
+    TEARGAS = 0x01,
+    MUSTARDGAS = 0x02,
+    CREATUREGAS = 0x04,
 }
 
 public enum SOLDIER_QUOTE

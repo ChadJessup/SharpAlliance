@@ -372,7 +372,7 @@ public class Smell
                 if (BLOOD_FLOOR_TYPE(pMapElement.ubBloodInfo) == ubType)
                 {
                     // combine blood strengths!
-                    ubNewStrength = __min((ubOldStrength + ubStrength), BLOOD_STRENGTH_MAX);
+                    ubNewStrength = Math.Min((ubOldStrength + ubStrength), BLOOD_STRENGTH_MAX);
 
                     SET_BLOOD_FLOOR_STRENGTH(pMapElement.ubBloodInfo, ubNewStrength);
                 }

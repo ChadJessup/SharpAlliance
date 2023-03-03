@@ -20,7 +20,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public Dictionary<InventorySlot, OBJECTTYPE> inv = new();
 
-        OBJECTTYPE pTempObject;
+        public OBJECTTYPE? pTempObject;
         // KEY_ON_RING pKeyRing;
 
         public int bOldLife;          // life at end of last turn, recorded for monster AI
@@ -75,12 +75,12 @@ namespace SharpAlliance.Core.SubSystems
         public float dOldYPos;
         int sInitialGridNo;
         public int sGridNo;
-        public int bDirection;
+        public WorldDirections bDirection;
         public int sHeightAdjustment;
         public int sDesiredHeight;
         public int sTempNewGridNo;                   // New grid no for advanced animations
         public int sRoomNo;
-        public int bOverTerrainType;
+        public TerrainTypeDefines bOverTerrainType;
         public int bOldOverTerrainType;
 
         public bool bCollapsed;                    // collapsed due to being out of APs
@@ -94,19 +94,17 @@ namespace SharpAlliance.Core.SubSystems
         public uint AICounter;
         public uint FadeCounter;
 
-        int ubDesiredHeight;
+        public AnimationHeights ubDesiredHeight;
         public AnimationStates usPendingAnimation;
-        int ubPendingStanceChange;
+        public AnimationHeights ubPendingStanceChange;
         public AnimationStates usAnimState;
         public bool fNoAPToFinishMove;
-        bool fPausedMove;
-        bool fUIdeadMerc;                // UI Flags for removing a newly dead merc
-        bool fUInewMerc;                 // UI Flags for adding newly created merc ( panels, etc )
-        bool fUICloseMerc;               // UI Flags for closing panels
-        bool fUIFirstTimeNOAP;       // UI Flag for diming guys when no APs ( dirty flags )
-        bool fUIFirstTimeUNCON;  // UI FLAG For unconscious dirty		
-
-
+        public bool fPausedMove;
+        public bool fUIdeadMerc;                // UI Flags for removing a newly dead merc
+        public bool fUInewMerc;                 // UI Flags for adding newly created merc ( panels, etc )
+        public bool fUICloseMerc;               // UI Flags for closing panels
+        public bool fUIFirstTimeNOAP;       // UI Flag for diming guys when no APs ( dirty flags )
+        public bool fUIFirstTimeUNCON;  // UI FLAG For unconscious dirty		
 
         // TIMECOUNTER UpdateCounter;
         // TIMECOUNTER DamageCounter;
@@ -298,7 +296,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bTeamMoraleMod;
         public int bTacticalMoraleMod;
         public int bStrategicMoraleMod;
-        public int bAIMorale;
+        public MORALE bAIMorale;
         public MERC ubPendingAction;
         public int ubPendingActionAnimCount;
         public int uiPendingActionData1;
@@ -404,7 +402,7 @@ namespace SharpAlliance.Core.SubSystems
         public int bSectorZ;                                  // Z sector location
         int iVehicleId;                               // the id of the vehicle the char is in
         //PathStPtr pMercPath;                                //Path Structure
-        int fHitByGasFlags;                       // flags 
+        public HIT_BY fHitByGasFlags;                       // flags 
         int usMedicalDeposit;         // is there a medical deposit on merc 
         CIV_GROUP usLifeInsurance;          // is there life insurance taken out on merc  
         //DEF:  Used for the communications

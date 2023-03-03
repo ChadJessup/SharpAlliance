@@ -21,6 +21,28 @@ public partial class Globals
     public const FontColor COLOR2 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGRAY2;
     public const int LINE_HEIGHT = 15;
 
+    public const int STRUCTURE_ON_GROUND = 0;
+
+    public const int FIRST_LEVEL = 0;
+    public const int SECOND_LEVEL = 1;
+
+    public static ushort gusAlphaMask;// = 0;
+    public static ushort gusRedMask;// = 0;
+    public static ushort gusGreenMask;// = 0;
+    public static ushort gusBlueMask;// = 0;
+    public static short gusRedShift;// = 0;
+    public static short gusBlueShift;// = 0;
+    public static short gusGreenShift;// = 0;
+
+    public const int DEFAULT_MORALE = 50;
+
+    public const int MORALE_MOD_MAX = 50;       // morale *mod* range is -50 to 50, if you change this, check the decay formulas!
+    public const int DRUG_EFFECT_MORALE_MOD = 150;
+    public const int ALCOHOL_EFFECT_MORALE_MOD = 160;
+    public const int HOURS_BETWEEN_STRATEGIC_DECAY = 3;
+    public const int PHOBIC_LIMIT = -20;
+
+
     public const int SHOW_MIN_FPS = 0;
     public const int SHOW_FULL_FPS = 1;
     // ENUMERATION OF SOLDIER POSIITONS IN GLOBAL SOLDIER LIST
@@ -1530,6 +1552,37 @@ public partial class Globals
     public static bool gfEventDeletionPending = false;
     public static bool gfProcessingGameEvents = false;
     public static uint guiTimeStampOfCurrentlyExecutingEvent = 0;
+
+    public static bool gfRenderPBInterface;
+    public static bool gfPBButtonsHidden;
+    public static bool fDisableMapInterfaceDueToBattle = false;
+
+    public static int ubCurrentContractRenewal = 0;
+    public static int ubCurrentContractRenewalInProgress = 0;
+    public static bool gfContractRenewalSquenceOn = false;
+    public static bool gfInContractMenuFromRenewSequence = false;
+
+    // These defines correlate to defines in font.h
+    public const FontColor MSG_FONT_RED = FontColor.FONT_MCOLOR_RED;
+    public const FontColor MSG_FONT_YELLOW = FontColor.FONT_MCOLOR_LTYELLOW;
+    public const FontColor MSG_FONT_WHITE = FontColor.FONT_MCOLOR_WHITE;
+
+
+    // the dirty state of the mapscreen interface bottom
+    public static bool fMapBottomDirtied = false;
+    //Used to flag the transition animation from mapscreen to laptop.
+    public static bool gfStartMapScreenToLaptopTransition = false;
+    // leaving map screen
+    public static bool fLeavingMapScreen = false;
+    // don't start transition from laptop to tactical stuff
+    public static bool gfDontStartTransitionFromLaptop = false;
+    // exiting to laptop?
+    public static bool fLapTop = false;
+    public static bool gfOneFramePauseOnExit = false;
+
+    // disable team info panels due to battle roster
+    public static bool fDisableDueToBattleRoster = false;
+
 
     public const int HOSPITAL_PATIENT_DISTANCE = 9;
 

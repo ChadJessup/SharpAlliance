@@ -114,45 +114,44 @@ namespace SharpAlliance.Core
 
     public class OBJECTTYPE
     {
-        int usItem;
-        int ubNumberOfObjects;
-        int bGunStatus;            // status % of gun
-        int ubGunAmmoType;    // ammo type, as per weapons.h
-        int ubGunShotsLeft;   // duh, amount of ammo left
-        int usGunAmmoItem;   // the item # for the item table
-        int bGunAmmoStatus; // only for "attached ammo" - grenades, mortar shells
-        int[] ubGunUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 6];
-        int[] ubShotsLeft = new int[Globals.MAX_OBJECTS_PER_SLOT];
-        int[] bStatus = new int[Globals.MAX_OBJECTS_PER_SLOT];
-        int bMoneyStatus;
-        int uiMoneyAmount;
-        int[] ubMoneyUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 5];
+        public int usItem;
+        public int ubNumberOfObjects;
+        public int bGunStatus;            // status % of gun
+        public int ubGunAmmoType;    // ammo type, as per weapons.h
+        public int ubGunShotsLeft;   // duh, amount of ammo left
+        public int usGunAmmoItem;   // the item # for the item table
+        public int bGunAmmoStatus; // only for "attached ammo" - grenades, mortar shells
+        public int[] ubGunUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 6];
+        public int[] ubShotsLeft = new int[Globals.MAX_OBJECTS_PER_SLOT];
+        public int[] bStatus = new int[Globals.MAX_OBJECTS_PER_SLOT];
+        public int bMoneyStatus;
+        public int uiMoneyAmount;
+        public int[] ubMoneyUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 5];
         // this is used by placed bombs, switches, and the action item
-        int bBombStatus;           // % status
-        int bDetonatorType;        // timed, remote, or pressure-activated
-        int usBombItem;              // the usItem of the bomb.
-        int bDelay;                // >=0 values used only
-        int bFrequency;        // >=0 values used only
-        int ubBombOwner; // side which placed the bomb
-        int bActionValue;// this is used by the ACTION_ITEM fake item
-        int ubTolerance; // tolerance value for panic triggers
-        int ubLocationID; // location value for remote non-bomb (special!) triggers
-        int[] bKeyStatus = new int[6];
-        int ubKeyID;
-        int[] ubKeyUnused = new int[1];
-        int ubOwnerProfile;
-        int ubOwnerCivGroup;
-        int[] ubOwnershipUnused = new int[6];
+        public int bBombStatus;           // % status
+        public int bDetonatorType;        // timed, remote, or pressure-activated
+        public int usBombItem;              // the usItem of the bomb.
+        public int bDelay;                // >=0 values used only
+        public int bFrequency;        // >=0 values used only
+        public int ubBombOwner; // side which placed the bomb
+        public int bActionValue;// this is used by the ACTION_ITEM fake item
+        public int ubTolerance; // tolerance value for panic triggers
+        public int ubLocationID; // location value for remote non-bomb (special!) triggers
+        public int[] bKeyStatus = new int[6];
+        public int ubKeyID;
+        public int[] ubKeyUnused = new int[1];
+        public int ubOwnerProfile;
+        public int ubOwnerCivGroup;
+        public int[] ubOwnershipUnused = new int[6];
         // attached objects
-        int[] usAttachItem = new int[Globals.MAX_ATTACHMENTS];
-        int[] bAttachStatus = new int[Globals.MAX_ATTACHMENTS];
-
-        int fFlags;
-        int ubMission;
-        int bTrap;        // 1-10 exp_lvl to detect
-        int ubImprintID;  // ID of merc that item is imprinted on
-        int ubWeight;
-        int fUsed;                // flags for whether the item is used or not
+        public int[] usAttachItem = new int[Globals.MAX_ATTACHMENTS];
+        public int[] bAttachStatus = new int[Globals.MAX_ATTACHMENTS];
+        public int fFlags;
+        public int ubMission;
+        public int bTrap;        // 1-10 exp_lvl to detect
+        public int ubImprintID;  // ID of merc that item is imprinted on
+        public int ubWeight;
+        public int fUsed;                // flags for whether the item is used or not
     }
 
     internal class ItemIndexes

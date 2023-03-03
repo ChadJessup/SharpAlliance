@@ -259,18 +259,6 @@ public class SoldierTile
             }
             else
             {
-#if 0
-				// Check if there is a reserved marker here at least....
-				sNewGridNo = NewGridNo( sGridNo, DirectionInc( bDirection ) );
-
-				if ( ( gpWorldLevelData[ sNewGridNo ].uiFlags & MAPELEMENT_MOVEMENT_RESERVED ) )
-				{
-					if ( gpWorldLevelData[ sNewGridNo ].ubReservedSoldierID != pSoldier.ubID )
-					{
-						return( MOVE_TILE_TEMP_BLOCKED );
-					}
-				}
-#endif
             }
         }
 
@@ -278,10 +266,7 @@ public class SoldierTile
         pSoldier.fBlockedByAnotherMerc = false;
 
         return (MOVE_TILE_CLEAR);
-
     }
-
-
 
     bool HandleNextTile(SOLDIERTYPE? pSoldier, int bDirection, int sGridNo, int sFinalDestTile)
     {

@@ -907,7 +907,7 @@ public class StrategicMines
         HandleMinerEvent(Globals.gHeadMinerData[ubHeadMinerIndex].ubExternalFace, Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY, (int)bQuoteNum, fForceMapscreen);
 
         // stop time compression with any miner quote - these are important events.
-        StopTimeCompression();
+        GameClock.StopTimeCompression();
     }
 
     public static MINE GetHeadMinersMineIndex(NPCID ubMinerProfileId)
