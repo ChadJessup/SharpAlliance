@@ -1250,7 +1250,7 @@ public class Messages
 
     private static void WriteMessageToFile(string pString)
     {
-        //# ifdef JA2BETAVERSION
+        //# if JA2BETAVERSION
         //
         //        FILE* fp;
         //

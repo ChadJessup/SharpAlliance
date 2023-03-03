@@ -83,12 +83,22 @@ public partial class Globals
 
     public static Dictionary<Items, INVTYPE> Item = new();
 
+    public static bool EXPLOSIVE_GUN(Items x) => (x == Items.ROCKET_LAUNCHER || x == Items.TANK_CANNON);
+
+    public static UNDERGROUND_SECTORINFO? gpUndergroundSectorInfoHead = null;
+    public static UNDERGROUND_SECTORINFO? gpUndergroundSectorInfoTail = null;
+    public static bool gfPendingEnemies = false;
+
+    //Used by ubGarrisonID when a sector doesn't point to a garrison.  Used by strategic AI only.
+    public const Garrisons NO_GARRISON = (Garrisons)255;
+
+
     // Room Information
     public static int[] gubWorldRoomInfo = new int[WORLD_MAX];
     public static int[] gubWorldRoomHidden = new int[MAX_ROOMS];
 
     public static StrategicMapElement[] StrategicMap = new StrategicMapElement[Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y];
-    public static List<GARRISON_GROUP> gGarrisonGroup = new();
+    public static Dictionary<Garrisons, GARRISON_GROUP> gGarrisonGroup = new();
 
     public static bool gfApplyChangesToTempFile { get; set; } = false;
 
@@ -1514,6 +1524,18 @@ public partial class Globals
 
     // the current pop up box
     public static MercPopUpBox? gPopUpTextBox;
+
+    public static STRATEGICEVENT? gpEventList = null;
+    public static bool gfPreventDeletionOfAnyEvent = false;
+    public static bool gfEventDeletionPending = false;
+    public static bool gfProcessingGameEvents = false;
+    public static uint guiTimeStampOfCurrentlyExecutingEvent = 0;
+
+    public const int HOSPITAL_PATIENT_DISTANCE = 9;
+
+    public static int giHospitalTempBalance;
+    public static int giHospitalRefund;
+    public static int gbHospitalPriceModifier;
 
 
     // the old one

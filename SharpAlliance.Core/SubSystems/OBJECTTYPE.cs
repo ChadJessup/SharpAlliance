@@ -8,11 +8,11 @@ public class OBJECTTYPE
     public byte ubNumberOfObjects;
     public int bGunStatus;            // status % of gun
     public AMMO ubGunAmmoType;    // ammo type, as per weapons.h
-    public byte ubGunShotsLeft;   // duh, amount of ammo left
+    public int ubGunShotsLeft;   // duh, amount of ammo left
     public Items usGunAmmoItem;   // the item # for the item table
     public sbyte bGunAmmoStatus; // only for "attached ammo" - grenades, mortar shells
     public byte[] ubGunUnused = new byte[Globals.MAX_OBJECTS_PER_SLOT - 6];
-    public byte[] ubShotsLeft = new byte[Globals.MAX_OBJECTS_PER_SLOT];
+    public int[] ubShotsLeft = new int[Globals.MAX_OBJECTS_PER_SLOT];
     public int[] bStatus = new int[Globals.MAX_OBJECTS_PER_SLOT];
     public sbyte bMoneyStatus;
     public int uiMoneyAmount;
@@ -41,7 +41,7 @@ public class OBJECTTYPE
     public OBJECT fFlags;
     public byte ubMission;
     public sbyte bTrap;        // 1-10 exp_lvl to detect
-    public byte ubImprintID;  // ID of merc that item is imprinted on
+    public NPCID ubImprintID;  // ID of merc that item is imprinted on
     public int ubWeight;
     public byte fUsed;                // flags for whether the item is used or not
 }

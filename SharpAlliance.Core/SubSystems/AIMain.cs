@@ -812,7 +812,9 @@ public class AIMain
             if (pOurTeam.bActive)
             {
                 if (pOurTeam.sGridNo == sGridno || pOurTeam.usActionData == sGridno)
+                {
                     return (false);
+                }
             }
         }
 
@@ -889,7 +891,9 @@ public class AIMain
             }
 
             if (pSoldier.bOppList[pTargetSoldier.ubID] != SEEN_CURRENTLY)
+            {
                 continue;
+            }
 
             // Special stuff for Carmen the bounty hunter
             if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pTargetSoldier.ubProfile != (NPCID)64)
@@ -1235,7 +1239,9 @@ public class AIMain
 
         // NPCs getting escorted do NOT react to new situations, unless forced!
         if (pSoldier.bUnderEscort > 0 && ubForce == 0)
+        {
             return;
+        }
 
         // turn off RED/YELLOW status "bypass to Green", to re-check all actions
         pSoldier.bBypassToGreen = 0;
@@ -1862,7 +1868,9 @@ public class AIMain
         DecideAlertStatus(pSoldier);
 
         if (pSoldier.bAlertStatus == STATUS.YELLOW)
+        {
             SkipCoverCheck = 0;
+        }
 
         // if he's in battle or knows opponents are here
         if (gfTurnBasedAI)
@@ -2672,11 +2680,15 @@ public class AIMain
 
             // if this man is neutral / NOT on my side, he's not my friend
             if (pFriend.bNeutral > 0 || (pSoldier.bSide != pFriend.bSide))
+            {
                 continue;  // next merc
+            }
 
             // if this merc is actually ME
             if (pFriend.ubID == pSoldier.ubID)
+            {
                 continue;  // next merc
+            }
 
             sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pFriend.sGridNo, pFriend.bLevel);
             // if we can see far enough to see this friend

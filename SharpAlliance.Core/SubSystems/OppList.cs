@@ -492,7 +492,7 @@ public class OppList
             if (pSoldier.bLife >= OKLIFE)
             {
                 /*
-       #ifdef RECORDOPPLIST
+       #if RECORDOPPLIST
             fprintf(OpplistFile,"ManLooksForOtherTeams (HandleSight/Look) for %d\n",pSoldier.guynum);
        #endif
                */
@@ -506,7 +506,7 @@ public class OppList
 
 
             /*
-       #ifdef RECORDOPPLIST
+       #if RECORDOPPLIST
           fprintf(OpplistFile,"OtherTeamsLookForMan (HandleSight/Look) for %d\n",ptr.guynum);
        #endif
             */
@@ -624,7 +624,7 @@ public class OppList
 
 
         // Temporary for opplist synching - disable random order radioing
-        // # ifdef RECORDOPPLIST
+        // # if RECORDOPPLIST
         //         for (iLoop = Status.team[Net.pnum].guystart, ourPtr = Globals.MercPtrs[iLoop]; iLoop < Status.team[Net.pnum].guyend; iLoop++, ourPtr++)
         //         {
         //             // if this merc is active, in this sector, and well enough to look
@@ -715,7 +715,7 @@ public class OppList
             }
         }
 
-        // # ifdef WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
+        // # if WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
         //         if (bIteration == 0)
         //         {
         //             if (ubTeam == gbPlayerNum && gTacticalStatus.Team[MILITIA_TEAM].bTeamActive)
@@ -941,7 +941,7 @@ public class OppList
 
         pSoldier.fMuzzleFlash = false;
 
-        //# ifdef WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
+        //# if WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
         //        if (pSoldier.bTeam != gbPlayerNum && pSoldier.bTeam != MILITIA_TEAM)
         //#else
         if (pSoldier.bTeam != gbPlayerNum)
@@ -965,7 +965,7 @@ public class OppList
                             HandleManNoLongerSeen(pOtherSoldier, pSoldier, (pOtherSoldier.bOppList[pSoldier.ubID]), (gbPublicOpplist[pOtherSoldier.bTeam][pSoldier.ubID]));
                         }
                         // else this person is still seen, if the looker is on our side or the militia the person should stay visible
-                        //# ifdef WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
+                        //# if WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
                         //                        else if (pOtherSoldier.bTeam == gbPlayerNum || pOtherSoldier.bTeam == MILITIA_TEAM)
                         //			  #else
                         else if (pOtherSoldier.bTeam == gbPlayerNum)
@@ -1253,7 +1253,7 @@ public class OppList
             // opplist value (which UpdatePersonal ignores) and we're not updating
             // the lastKnown gridno at all, we're keeping it at its previous value
             /*
-        #ifdef RECORDOPPLIST
+        #if RECORDOPPLIST
           fprintf(OpplistFile,"ManLooksForMan: changing personalOpplist to %d for guynum %d, opp %d\n",SEEN_THIS_TURN,ptr.guynum,oppPtr.guynum);
         #endif
             */
@@ -1319,7 +1319,7 @@ public class OppList
             /*
             if (ptr.guynum >= Globals.NOBODY)
              {
-           #ifdef BETAVERSION
+           #if BETAVERSION
               NumMessage("ManLooksForMan: ERROR - ptr.guynum = ",ptr.guynum);
            #endif
               return(success);
@@ -1327,7 +1327,7 @@ public class OppList
 
             if (oppPtr.guynum >= Globals.NOBODY)
              {
-           #ifdef BETAVERSION
+           #if BETAVERSION
               NumMessage("ManLooksForMan: ERROR - oppPtr.guynum = ",oppPtr.guynum);
            #endif
               return(success);
@@ -1339,11 +1339,11 @@ public class OppList
             if (!pSoldier.bActive || !pSoldier.bInSector || (pSoldier.bLife < Globals.OKLIFE))
             {
                 /*
-                #ifdef BETAVERSION
+                #if BETAVERSION
                    sprintf(tempstr,"ManLooksForMan: ERROR - %s is looking while inactive/at base/dead/dying.  Caller %s",
                             ExtMen[ptr.guynum].name,LastCaller2Text[caller]);
 
-                #ifdef RECORDNET
+                #if RECORDNET
                    fprintf(NetDebugFile,"\n\t%s\n\n",tempstr);
                 #endif
 
@@ -1351,7 +1351,7 @@ public class OppList
                 #endif
                 */
 
-                // # ifdef TESTOPPLIST
+                // # if TESTOPPLIST
                 //                 DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                 //                         String("ERROR: ManLooksForMan - WE are inactive/dead etc ID %d(%S)to ID %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
                 // #endif
@@ -1365,11 +1365,11 @@ public class OppList
             if (!pOpponent.bActive || !pOpponent.bInSector || pOpponent.bLife <= 0 || pOpponent.sGridNo == NOWHERE)
             {
                 /*
-                #ifdef BETAVERSION
+                #if BETAVERSION
                    sprintf(tempstr,"ManLooksForMan: ERROR - %s looks for %s, who is inactive/at base/dead.  Caller %s",
                     ExtMen[ptr.guynum].name,ExtMen[oppPtr.guynum].name,LastCaller2Text[caller]);
 
-                #ifdef RECORDNET
+                #if RECORDNET
                    fprintf(NetDebugFile,"\n\t%s\n\n",tempstr);
                 #endif
 
@@ -1377,7 +1377,7 @@ public class OppList
                 #endif
                 */
 
-                // # ifdef TESTOPPLIST
+                // # if TESTOPPLIST
                 //                 DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                 //                        String("ERROR: ManLooksForMan - TARGET is inactive etc ID %d(%S)to ID %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
                 // #endif
@@ -1390,10 +1390,10 @@ public class OppList
             if (pSoldier.bTeam == pOpponent.bTeam)
             {
                 /*
-                #ifdef BETAVERSION
+                #if BETAVERSION
                    sprintf(tempstr,"ManLooksFormMan: ERROR - on SAME TEAM.  ptr.guynum = %d, oppPtr.guynum = %d",
                                     ptr.guynum,oppPtr.guynum);
-                #ifdef RECORDNET
+                #if RECORDNET
                    fprintf(NetDebugFile,"\n\t%s\n\n",tempstr);
                 #endif
 
@@ -1401,7 +1401,7 @@ public class OppList
                 #endif
                 */
 
-                // # ifdef TESTOPPLIST
+                // # if TESTOPPLIST
                 //                 DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                 //                         String("ERROR: ManLooksForMan - SAME TEAM ID %d(%S)to ID %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
                 // #endif
@@ -1492,7 +1492,7 @@ public class OppList
             // calculate how many spaces away soldier is (using Pythagoras' theorem)
             sDistAway = PythSpacesAway(pSoldier.sGridNo, pOpponent.sGridNo);
 
-            // # ifdef TESTOPPLIST
+            // # if TESTOPPLIST
             //             DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("MANLOOKSFORMAN: ID %d(%S) to ID %d: sDistAway %d sDistVisible %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID, sDistAway, sDistVisible));
             // #endif
 
@@ -1507,7 +1507,7 @@ public class OppList
                     ManSeesMan(pSoldier, pOpponent, pOpponent.sGridNo, pOpponent.bLevel, MANLOOKSFORMAN, ubCaller);
                     bSuccess = true;
                 }
-                // # ifdef TESTOPPLIST
+                // # if TESTOPPLIST
                 //                 else
                 //                     DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("FAILED LINEOFSIGHT: ID %d (%S)to ID %d Personally %d, public %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID, *pPersOL, *pbPublOL));
                 // #endif
@@ -1526,7 +1526,7 @@ public class OppList
 
 
             /*
-            #ifdef RECORDOPPLIST
+            #if RECORDOPPLIST
              fprintf(OpplistFile,"MLFM: %s by %2d(g%4d,x%3d,y%3d,%s) at %2d(g%4d,x%3d,y%3d,%s), aware %d, dA=%d,dV=%d, desDir=%d, %s\n",
                     (success) ? "SCS" : "FLR",
                     ptr.guynum,fromGridno,fromX,fromY,(ptrProjected)?"PROJ":"REG.",
@@ -1545,7 +1545,7 @@ public class OppList
             {
                 if (!bSuccess)
                 {
-                    // # ifdef TESTOPPLIST
+                    // # if TESTOPPLIST
                     //                     DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("NO LONGER VISIBLE ID %d (%S)to ID %d Personally %d, public %d success: %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID, *pPersOL, *pbPublOL, bSuccess));
                     // #endif
 
@@ -1554,7 +1554,7 @@ public class OppList
                     //if (*pbPublOL)
                     //pOpponent.bVisible = true;
                 }
-                // # ifdef TESTOPPLIST
+                // # if TESTOPPLIST
                 //                 else
                 //                     DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("COOL. STILL VISIBLE ID %d (%S)to ID %d Personally %d, public %d success: %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID, *pPersOL, *pbPublOL, bSuccess));
                 // #endif
@@ -1572,7 +1572,7 @@ public class OppList
             if (pSoldier.ubID >= Globals.NOBODY)
             {
                 /*
-           #ifdef BETAVERSION
+           #if BETAVERSION
               NumMessage("ManSeesMan: ERROR - ptr.guynum = ",ptr.guynum);
            #endif
                 */
@@ -1582,7 +1582,7 @@ public class OppList
             if (pOpponent.ubID >= Globals.NOBODY)
             {
                 /*
-           #ifdef BETAVERSION
+           #if BETAVERSION
               NumMessage("ManSeesMan: ERROR - oppPtr.guynum = ",oppPtr.guynum);
            #endif
                 */
@@ -1593,7 +1593,7 @@ public class OppList
             if (!pSoldier.bActive || !pSoldier.bInSector || (pSoldier.bLife < OKLIFE))
             {
                 /*
-           #ifdef BETAVERSION
+           #if BETAVERSION
               sprintf(tempstr,"ManSeesMan: ERROR - %s is SEEING ManSeesMan while inactive/at base/dead/dying",ExtMen[ptr.guynum].name);
               PopMessage(tempstr);
            #endif
@@ -1605,7 +1605,7 @@ public class OppList
             if (!pOpponent.bActive || !pOpponent.bInSector || pOpponent.bLife <= 0)
             {
                 /*
-           #ifdef BETAVERSION
+           #if BETAVERSION
               sprintf(tempstr,"ManSeesMan: ERROR - %s sees %s, ManSeesMan, who is inactive/at base/dead",ExtMen[ptr.guynum].name,ExtMen[oppPtr.guynum].name);
               PopMessage(tempstr);
            #endif
@@ -1618,7 +1618,7 @@ public class OppList
             if (pSoldier.bTeam == pOpponent.bTeam)
             {
                 /*
-           #ifdef BETAVERSION
+           #if BETAVERSION
               sprintf(tempstr,"ManSeesMan: ERROR - on SAME TEAM.  ptr.guynum = %d, oppPtr.guynum = %d",
                                ptr.guynum,oppPtr.guynum);
               PopMessage(tempstr);
@@ -1901,7 +1901,7 @@ public class OppList
                 {
                     AddOneOpponent(pSoldier);
 
-                    // # ifdef TESTOPPLIST
+                    // # if TESTOPPLIST
                     //                     DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("ManSeesMan: ID %d(%S) to ID %d NEW TO ME", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
                     // #endif
 
@@ -1963,7 +1963,7 @@ public class OppList
                 }
 
             }
-            // # ifdef TESTOPPLIST
+            // # if TESTOPPLIST
             //             else
             //                 DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("ManSeesMan: ID %d(%S) to ID %d ALREADYSEENCURRENTLY", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
             // #endif
@@ -2012,7 +2012,7 @@ public class OppList
 
             // if looker is on local team, and the enemy was invisible or "maybe"
             // visible just prior to this
-            //# ifdef WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
+            //# if WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
             //            if ((PTR_OURTEAM || (pSoldier.bTeam == MILITIA_TEAM)) && (pOpponent.bVisible <= 0))
             //#else
             if (PTR_OURTEAM && (pOpponent.bVisible <= 0))
@@ -2052,7 +2052,7 @@ public class OppList
                 }
 
 
-                //# ifdef TESTOPPLIST
+                //# if TESTOPPLIST
                 //                    DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("!!! ID %d (%S) MAKING %d VISIBLE", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
                 //#endif
 
@@ -2078,7 +2078,7 @@ public class OppList
                     //LastOpponentLocatedTo = oppPtr.guynum;
 
                     /*
-           #ifdef RECORDNET
+           #if RECORDNET
                 fprintf(NetDebugFile,"\tManSeesMan - LOCATE\n");
            #endif
                     */
@@ -2128,7 +2128,7 @@ public class OppList
                 if ((pSoldier.bVisible >= 0) || gbShowEnemies)
                 {
                     /*
-           #ifdef RECORDNET
+           #if RECORDNET
                 fprintf(NetDebugFile,"\tDecideTrueVisibility - LOCATE\n");
            #endif
                */
@@ -2163,7 +2163,7 @@ public class OppList
             //NumMessage("OtherTeamsLookForMan, guy#",oppPtr.guynum);
 
             // if the guy we're looking for is NOT on our team AND is currently visible
-            // # ifdef WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
+            // # if WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
             //             if ((pOpponent.bTeam != gbPlayerNum && pOpponent.bTeam != MILITIA_TEAM) && (pOpponent.bVisible >= 0 && pOpponent.bVisible < 2) && pOpponent.bLife)
             // #else
             if ((pOpponent.bTeam != gbPlayerNum) && (pOpponent.bVisible >= 0 && pOpponent.bVisible < 2) && pOpponent.bLife)
@@ -2173,7 +2173,7 @@ public class OppList
                 pOpponent.bVisible = 0;
             }
 
-            // # ifdef TESTOPPLIST
+            // # if TESTOPPLIST
             //             DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
             //                     String("OTHERTEAMSLOOKFORMAN ID %d(%S) team %d side %d", pOpponent.ubID, pOpponent.name, pOpponent.bTeam, pOpponent.bSide));
             // #endif
@@ -2285,7 +2285,7 @@ public class OppList
             if (pSoldier.bOppCnt < 0)
             {
                 //             DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Oppcnt for %d (%s) tried to go below 0", pSoldier.ubID, pSoldier.name));
-                // # ifdef JA2BETAVERSION
+                // # if JA2BETAVERSION
                 //                 ScreenMsg(MSG_FONT_YELLOW, MSG_UI_FEEDBACK, "Opponent counter dropped below 0 for person %d (%s).  Please inform Sir-tech of this, and what has just been happening in the game.", pSoldier.ubID, pSoldier.name);
                 // #endif
                 pSoldier.bOppCnt = 0;
@@ -2447,7 +2447,7 @@ public class OppList
         void UpdatePersonal(SOLDIERTYPE? pSoldier, int ubID, int bNewOpplist, int sGridno, int bLevel)
         {
             /*
-        #ifdef RECORDOPPLIST
+        #if RECORDOPPLIST
          fprintf(OpplistFile,"UpdatePersonal - for %d about %d to %d (was %d) at g%d\n",
                 ptr.guynum,guynum,newOpplist,ptr.opplist[guynum],gridno);
         #endif
@@ -2901,14 +2901,14 @@ public class OppList
             bool fSawCreatureForFirstTime = false;
 
 
-            //# ifdef TESTOPPLIST
+            //# if TESTOPPLIST
             //            DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
             //                         String("RADIO SIGHTINGS: for %d about %d", pSoldier.ubID, ubAbout));
             //#endif
 
 
 
-            //# ifdef RECORDNET
+            //# if RECORDNET
             //            if (!ptr.human)
             //                fprintf(NetDebugFile, "\tNPC %d(%s) radios his sightings to his team\n", ptr.guynum, ExtMen[ptr.guynum].name);
             //#endif
@@ -2941,7 +2941,7 @@ public class OppList
             {
                 fContactSeen = false;
 
-                //# ifdef TESTOPPLIST
+                //# if TESTOPPLIST
                 //                DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                 //                         String("RS: checking %d", pOpponent.ubID));
                 //#endif
@@ -2950,7 +2950,7 @@ public class OppList
                 // make sure this merc is active, here & still alive (unconscious OK)
                 if (!pOpponent.bActive || !pOpponent.bInSector || !pOpponent.bLife)
                 {
-                    //# ifdef TESTOPPLIST
+                    //# if TESTOPPLIST
                     //                    DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                     //                        String("RS: inactive/notInSector/life %d", pOpponent.ubID));
                     //#endif
@@ -2963,7 +2963,7 @@ public class OppList
                 // NEW: Apr. 21 '96: must allow ALL non-humans to get radioed about
                 if ((pSoldier.bSide == pOpponent.bSide) && (pOpponent.uiStatusFlags & SOLDIER_PC))
                 {
-                    //# ifdef TESTOPPLIST
+                    //# if TESTOPPLIST
                     //                    DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                     //                     String("RS: same side %d", pSoldier.bSide));
                     //#endif
@@ -2986,11 +2986,11 @@ public class OppList
                 // if we personally don't know a thing about this opponent
                 if (pPersOL == Globals.NOT_HEARD_OR_SEEN)
                 {
-                    //# ifdef RECORDOPPLIST
+                    //# if RECORDOPPLIST
                     //                    //fprintf(OpplistFile,"not heard or seen\n");
                     //#endif
 
-                    //# ifdef TESTOPPLIST
+                    //# if TESTOPPLIST
                     //                    DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                     //                     String("RS: not heard or seen"));
                     //#endif
@@ -3002,11 +3002,11 @@ public class OppList
                 if ((!gubKnowledgeValue[*pbPublOL - OLDEST_HEARD_VALUE, *pPersOL - OLDEST_HEARD_VALUE]) &&
                     (*pbPublOL != *pPersOL))
                 {
-                    //# ifdef RECORDOPPLIST
+                    //# if RECORDOPPLIST
                     //                    //fprintf(OpplistFile,"no new knowledge (per %d, pub %d)\n",*pPersOL,*pbPublOL);
                     //#endif
 
-                    // # ifdef TESTOPPLIST
+                    // # if TESTOPPLIST
                     //                     DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                     //                       String("RS: no new knowledge per %d pub %d", *pPersOL, *pbPublOL));
                     // #endif
@@ -3016,11 +3016,11 @@ public class OppList
                     continue;                          // skip to the next opponent
                 }
 
-                //# ifdef RECORDOPPLIST
+                //# if RECORDOPPLIST
                 //                //fprintf(OpplistFile,"made it!\n");
                 //#endif
 
-                // # ifdef TESTOPPLIST
+                // # if TESTOPPLIST
                 //                 DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                 //                      String("RS: made it!"));
                 // #endif
@@ -3145,12 +3145,12 @@ public class OppList
 
                 // IF WE'RE HERE, OUR PERSONAL INFORMATION IS AT LEAST AS UP-TO-DATE
                 // AS THE PUBLIC KNOWLEDGE, SO WE WILL REPLACE THE PUBLIC KNOWLEDGE
-                //# ifdef RECORDOPPLIST
+                //# if RECORDOPPLIST
                 //                fprintf(OpplistFile, "UpdatePublic (RadioSightings) for team %d about %d\n", ptr.team, oppPtr.guynum);
                 //#endif
 
 
-                // # ifdef TESTOPPLIST
+                // # if TESTOPPLIST
                 //                 DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
                 //                          String("...............UPDATE PUBLIC: soldier %d SEEING soldier %d", pSoldier.ubID, pOpponent.ubID));
                 // #endif
@@ -4685,18 +4685,18 @@ public class OppList
             SOLDIERTYPE? pSoldier;
 
 
-            // # ifdef BYPASSNOISE
+            // # if BYPASSNOISE
             //             return;
             // #endif
 
 
-            // # ifdef BETAVERSION
+            // # if BETAVERSION
             //             sprintf(tempstr, "OurNoise: ubNoiseType = %s, ubNoiseMaker = %d, ubNoiseMode = %d, sGridNo = %d, ubVolume = %d",
             //                      NoiseTypeStr[ubNoiseType], ubNoiseMaker, ubNoiseMode, sGridNo, ubVolume);
-            // # ifdef RECORDNET
+            // # if RECORDNET
             //             fprintf(NetDebugFile, "\t%s\n", tempstr);
             // #endif
-            // # ifdef TESTNOISE
+            // # if TESTNOISE
             //             PopMessage(tempstr);
             // #endif
             // #endif
@@ -4724,19 +4724,19 @@ public class OppList
             //	SOLDIERTYPE *pSoldier;
 
 
-            //# ifdef BYPASSNOISE
+            //# if BYPASSNOISE
             //            return;
             //#endif
 
 
-            // # ifdef BETAVERSION
+            // # if BETAVERSION
             //             sprintf(tempstr, "TheirNoise: ubNoiseType = %s, ubNoiseMaker = %d, ubNoiseMode = %d, sGridNo = %d, ubVolume = %d",
             //                      NoiseTypeStr[ubNoiseType], ubNoiseMaker, ubNoiseMode, sGridNo, ubVolume);
-            // # ifdef RECORDNET
+            // # if RECORDNET
             //             fprintf(NetDebugFile, "\t%s\n", tempstr);
             // #endif
             // 
-            // # ifdef TESTNOISE
+            // # if TESTNOISE
             //             PopMessage(tempstr);
             // #endif
             // #endif
@@ -4793,7 +4793,7 @@ public class OppList
             int ubHeardLoudestBy, ubNoiseDir, ubLoudestNoiseDir;
 
 
-            // # ifdef RECORDOPPLIST
+            // # if RECORDOPPLIST
             //             fprintf(OpplistFile, "PN: nType=%s, nMaker=%d, g=%d, tType=%d, bVol=%d\n",
             //                 NoiseTypeStr[noiseType], ubNoiseMaker, sGridNo, ubTerrType, baseVolume);
             // #endif
@@ -4817,7 +4817,7 @@ public class OppList
                 if (!Menptr[ubNoiseMaker].bActive || !Menptr[ubNoiseMaker].bInSector ||
                 Menptr[ubNoiseMaker].uiStatusFlags & SOLDIER_DEAD)
                 {
-                    // # ifdef BETAVERSION
+                    // # if BETAVERSION
                     //                     NumMessage("ProcessNoise: ERROR - Noisemaker is inactive/not in sector/dead, Guy #", ubNoiseMaker);
                     // #endif
                     return;
@@ -4826,7 +4826,7 @@ public class OppList
                 // if he's out of life, and this isn't just his "dying scream" which is OK
                 if (!Menptr[ubNoiseMaker].bLife && (ubNoiseType != NOISE_SCREAM))
                 {
-                    // # ifdef BETAVERSION
+                    // # if BETAVERSION
                     //                     NumMessage("ProcessNoise: ERROR - Noisemaker is lifeless, Guy #", ubNoiseMaker);
                     // #endif
                     return;
@@ -4912,7 +4912,7 @@ public class OppList
                     }
                 }
 
-                // # ifdef REPORTTHEIRNOISE
+                // # if REPORTTHEIRNOISE
                 //                 // if this is any team
                 //                 if (true)
                 // #else
@@ -5086,7 +5086,7 @@ public class OppList
                         // Can the listener hear noise of that volume given his circumstances?
                         ubEffVolume = CalcEffVolume(pSoldier, sGridNo, bLevel, ubNoiseType, ubBaseVolume, bCheckTerrain, pSoldier.bOverTerrainType, ubSourceTerrType);
 
-                        // # ifdef RECORDOPPLIST
+                        // # if RECORDOPPLIST
                         //                     fprintf(OpplistFile, "PN: guy %d - effVol=%d,chkTer=%d,pSoldier.tType=%d,srcTType=%d\n",
                         //                      bLoop, effVolume, bCheckTerrain, pSoldier.terrtype, ubSourceTerrType);
                         // #endif
@@ -5145,7 +5145,7 @@ public class OppList
                             }
                             //if ( !(pSoldier.ubMovementNoiseHeard & (1 << ubNoiseDir) ) )
                         }
-                        // # ifdef REPORTTHEIRNOISE
+                        // # if REPORTTHEIRNOISE
                         //                     else   // debugging: report noise heard by other team's soldiers
                         //                     {
                         //                         if (bTellPlayer)
@@ -5165,7 +5165,7 @@ public class OppList
                         if (bSeen)
                         {
                             // Temporary for opplist synching - disable random order radioing
-                            //# ifdef RECORDOPPLIST
+                            //# if RECORDOPPLIST
                             //                        // insure all machines radio in synch to keep logs the same
                             //                        for (bLoop = Status.team[team].guystart, pSoldier = Menptr + bLoop; bLoop < Status.team[team].guyend; bLoop++, pSoldier++)
                             //                        {
@@ -5195,7 +5195,7 @@ public class OppList
                         {
                             if (bHeard)
                             {
-                                // # ifdef RECORDOPPLIST
+                                // # if RECORDOPPLIST
                                 //                             fprintf(OpplistFile, "UpdatePublic (ProcessNoise/heard) for team %d about %d\n", team, ubSource);
                                 // #endif
 
@@ -5440,7 +5440,7 @@ public class OppList
                         }
                     }
 
-                    // # ifdef RECORDOPPLIST
+                    // # if RECORDOPPLIST
                     //                 fprintf(OpplistFile, "HN: %s by %2d(g%4d,x%3d,y%3d) at %2d(g%4d,x%3d,y%3d), hTT=%d\n",
                     //                     (bSourceSeen) ? "SCS" : "FLR",
                     //                     pSoldier.guynum, pSoldier.sGridNo, pSoldier.sX, pSoldier.sY,
@@ -5708,7 +5708,7 @@ public class OppList
 
                 if (ubNoiseMaker != Globals.NOBODY && pSoldier.bTeam == gbPlayerNum && pSoldier.bTeam == Menptr[ubNoiseMaker].bTeam)
                 {
-                    // # ifdef JA2BETAVERSION
+                    // # if JA2BETAVERSION
                     //                 ScreenMsg(MSG_FONT_RED, MSG_ERROR, "ERROR! TAKE SCREEN CAPTURE AND TELL CAMFIELD NOW!");
                     //                 ScreenMsg(MSG_FONT_RED, MSG_ERROR, "%s (%d) heard noise from %s (%d), noise at %dL%d, type %d", pSoldier.name, pSoldier.ubID, Menptr[ubNoiseMaker].name, ubNoiseMaker, sGridNo, bLevel, ubNoiseType);
                     // #endif
@@ -5772,17 +5772,17 @@ public class OppList
                 // if any new opponents were seen earlier and not yet radioed
                 if (pSoldier.bNewOppCnt)
                 {
-                    // # ifdef BETAVERSION
+                    // # if BETAVERSION
                     //                 sprintf(tempstr, "VerifyAndDecayOpplist: WARNING - %d(%s) still has %d NEW OPPONENTS - lastCaller %s/%s",
                     //                     pSoldier.guynum, ExtMen[pSoldier.guynum].name, pSoldier.newOppCnt,
                     //                     LastCallerText[ExtMen[pSoldier.guynum].lastCaller],
                     //                     LastCaller2Text[ExtMen[pSoldier.guynum].lastCaller2]);
                     // 
-                    // # ifdef TESTVERSION	// make this ERROR/BETA again when it's fixed!
+                    // # if TESTVERSION	// make this ERROR/BETA again when it's fixed!
                     //                 PopMessage(tempstr);
                     // #endif
                     // 
-                    // # ifdef RECORDNET
+                    // # if RECORDNET
                     //                 fprintf(NetDebugFile, "\n\t%s\n\n", tempstr);
                     // #endif
                     // 
@@ -5856,7 +5856,7 @@ public class OppList
                     // looked, his sight limit was 2 tiles, and now he may no longer be gassed
                     // and thus he sees opponents much further away for the first time!
                     // - Always happens if you STUNGRENADE an opponent by surprise...
-                    // # ifdef RECORDNET
+                    // # if RECORDNET
                     //                 fprintf(NetDebugFile, "\tVerifyAndDecayOpplist: d(%s) saw %d new opponents\n",
                     //                         pSoldier.guynum, ExtMen[pSoldier.guynum].name, pSoldier.newOppCnt);
                     // #endif

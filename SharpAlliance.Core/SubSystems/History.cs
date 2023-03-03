@@ -21,7 +21,7 @@ public class History
     // current History record (the one at the top of the current page)
     private static history? pCurrentHistory = null;
 
-    public static int SetHistoryFact(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
+    public static int SetHistoryFact(HISTORY ubCode, object ubSecondCode, uint uiDate, int sSectorX, MAP_ROW sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -66,7 +66,7 @@ public class History
     }
 
 
-    public static int AddHistoryToPlayersLog(HISTORY ubCode, int ubSecondCode, uint uiDate, int sSectorX, int sSectorY)
+    public static int AddHistoryToPlayersLog(HISTORY ubCode, object ubSecondCode, uint uiDate, int sSectorX, int sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -474,7 +474,7 @@ public class History
     }
 
 
-    public static int ProcessAndEnterAHistoryRecord(HISTORY ubCode, uint uiDate, int ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
+    public static int ProcessAndEnterAHistoryRecord(HISTORY ubCode, uint uiDate, object ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
     {
         int uiId = 0;
         history? pHistory = pHistoryListHead;
@@ -1482,7 +1482,7 @@ public class History
         return (true);
     }
 
-    void ResetHistoryFact(int ubCode, int sSectorX, int sSectorY)
+    public static void ResetHistoryFact(QUEST ubCode, int sSectorX, MAP_ROW sSectorY)
     {
         // run through history list
         int iOldHistoryPage = iCurrentHistoryPage;
@@ -1525,7 +1525,7 @@ public class History
             LoadNextHistoryPage();
         }
 
-        SetHistoryFact(HISTORY.QUEST_FINISHED, ubCode, GetWorldTotalMin(), sSectorX, sSectorY);
+        SetHistoryFact(HISTORY.QUEST_FINISHED, ubCode, GameClock.GetWorldTotalMin(), sSectorX, sSectorY);
         return;
     }
 
@@ -1631,8 +1631,8 @@ public class history
 {
     public HISTORY ubCode; // the code index in the finance code table
     public int uiIdNumber; // unique id number
-    public int ubSecondCode; // secondary code 
-    public int uiDate; // time in the world in global time
+    public object ubSecondCode; // secondary code 
+    public uint uiDate; // time in the world in global time
     public int sSectorX; // sector X this took place in
     public int sSectorY; // sector Y this took place in
     public int bSectorZ;

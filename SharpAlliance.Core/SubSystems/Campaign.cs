@@ -44,7 +44,7 @@ public class Campaign
         }
 
 
-        //# ifdef TESTVERSION
+        //# if TESTVERSION
         //        if (gTacticalStatus.fStatChangeCheatOn)
         //        {
         //            usNumChances = 100;
@@ -339,7 +339,7 @@ public class Campaign
             }
         }
 
-//# ifdef STAT_CHANGE_DEBUG
+//# if STAT_CHANGE_DEBUG
 //        if (sSubPointChange != 0)
 //        {
 //            // debug message
@@ -1363,7 +1363,7 @@ public class Campaign
 
 
 
-    // # ifdef JA2TESTVERSION
+    // # if JA2TESTVERSION
     //    void TestDumpStatChanges()
     //    {
     //        int uiProfileId;

@@ -16,11 +16,15 @@ public class ExplosionControl
         for (uiCount = 0; uiCount < guiNumExplosions; uiCount++)
         {
             if ((gExplosionData[uiCount].fAllocated == false))
+            {
                 return ((int)uiCount);
+            }
         }
 
         if (guiNumExplosions < NUM_EXPLOSION_SLOTS)
+        {
             return ((int)guiNumExplosions++);
+        }
 
         return (-1);
     }
@@ -1117,7 +1121,9 @@ public class ExplosionControl
         pSoldier = MercPtrs[ubPerson];   // someone is here, and they're gonna get hurt
 
         if (!pSoldier.bActive || !pSoldier.bInSector || !pSoldier.bLife)
+        {
             return (false);
+        }
 
         if (pSoldier.ubMiscSoldierFlags & SOLDIER_MISC_HURT_BY_EXPLOSION)
         {
@@ -1403,10 +1409,14 @@ public class ExplosionControl
             }
 
             if (sWoundAmt < 0)
+            {
                 sWoundAmt = 0;
+            }
 
             if (sBreathAmt < 0)
+            {
                 sBreathAmt = 0;
+            }
 
             // damage structures
             if (uiDist <= __max(1, (int)(pExplosive.ubDamage / 30)))

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -40,10 +42,61 @@ public class ItemSubSystem
         { 0, 0 },
     };
 
+    public static Items DefaultMagazine(Items usItem)
+    {
+        WEAPONTYPE? pWeapon;
+        int usLoop;
+
+        if (!(Item[usItem].usItemClass.HasFlag(IC.GUN)))
+        {
+            return (0);
+        }
+
+        pWeapon = (WeaponTypes.Weapon[(int)usItem]);
+        usLoop = 0;
+        while (WeaponTypes.Magazine[usLoop].ubCalibre != CaliberType.NOAMMO)
+        {
+            if (WeaponTypes.Magazine[usLoop].ubCalibre == pWeapon.ubCalibre
+                && WeaponTypes.Magazine[usLoop].ubMagSize == pWeapon.ubMagSize)
+            {
+                return (ItemSubSystem.MagazineClassIndexToItemType(usLoop));
+            }
+
+            usLoop++;
+        }
+
+        return (0);
+    }
+
     // also used for ammo
     public static bool ExtendedGunListGun(Items usGun)
     {
         return Globals.Item[usGun].fFlags.HasFlag(ItemAttributes.ITEM_BIGGUNLIST);
+    }
+
+    public static Items FindObjInObjRange(SOLDIERTYPE? pSoldier, Items usItem1, Items usItem2)
+    {
+        InventorySlot bLoop;
+        Items usTemp;
+
+        if (usItem1 > usItem2)
+        {
+            // swap the two...
+            usTemp = usItem2;
+            usItem2 = usItem1;
+            usItem1 = usTemp;
+        }
+
+        for (bLoop = 0; bLoop < InventorySlot.NUM_INV_SLOTS; bLoop++)
+        {
+            usTemp = pSoldier.inv[bLoop].usItem;
+            if (usTemp >= usItem1 && usTemp <= usItem2)
+            {
+                return (Items)bLoop;
+            }
+        }
+
+        return (ITEM_NOT_FOUND);
     }
 
     public static bool RemoveAttachment(OBJECTTYPE? pObj, int bAttachPos, OBJECTTYPE? pNewObj)
@@ -99,6 +152,49 @@ public class ItemSubSystem
         return (true);
     }
 
+    public static void RenumberAttachments(OBJECTTYPE? pObj)
+    {
+        // loop through attachment positions and make sure we don't have any empty
+        // attachment slots before filled ones
+        int bAttachPos;
+        int bFirstSpace;
+        bool fDone = false;
+
+        while (!fDone)
+        {
+            bFirstSpace = -1;
+            for (bAttachPos = 0; bAttachPos < MAX_ATTACHMENTS; bAttachPos++)
+            {
+                if (pObj.usAttachItem[bAttachPos] == NOTHING)
+                {
+                    if (bFirstSpace == -1)
+                    {
+                        bFirstSpace = bAttachPos;
+                    }
+                }
+                else
+                {
+                    if (bFirstSpace != -1)
+                    {
+                        // move the attachment!
+                        pObj.usAttachItem[bFirstSpace] = pObj.usAttachItem[bAttachPos];
+                        pObj.bAttachStatus[bFirstSpace] = pObj.bAttachStatus[bAttachPos];
+                        pObj.usAttachItem[bAttachPos] = NOTHING;
+                        pObj.bAttachStatus[bAttachPos] = 0;
+                        // restart loop at beginning, or quit if we reached the end of the
+                        // attachments
+                        break;
+                    }
+                }
+            }
+            if (bAttachPos == MAX_ATTACHMENTS)
+            {
+                // done!!
+                fDone = true;
+            }
+        }
+    }
+
     public static bool CreateItem(Items usItem, int bStatus, OBJECTTYPE? pObj)
     {
         bool fRet;
@@ -149,7 +245,7 @@ public class ItemSubSystem
 
     public static bool CreateGun(Items usItem, int bStatus, OBJECTTYPE? pObj)
     {
-        int usAmmo;
+        Items usAmmo;
 
 
         Debug.Assert(pObj != null);
@@ -164,18 +260,18 @@ public class ItemSubSystem
             usItem = usItem,
             ubNumberOfObjects = 1,
             bGunStatus = bStatus,
-            ubImprintID = SoldierControl.NO_PROFILE,
+            ubImprintID = NO_PROFILE,
             ubWeight = CalculateObjectWeight(pObj),
         };
 
-        if (Weapon[usItem].ubWeaponClass == WeaponClass.MONSTERCLASS)
+        if (WeaponTypes.Weapon[(int)usItem].ubWeaponClass == WeaponClass.MONSTERCLASS)
         {
-            pObj.ubGunShotsLeft = Weapon[usItem].ubMagSize;
+            pObj.ubGunShotsLeft = WeaponTypes.Weapon[(int)usItem].ubMagSize;
             pObj.ubGunAmmoType = AMMO.MONSTER;
         }
         else if (EXPLOSIVE_GUN(usItem))
         {
-            if (usItem == ROCKET_LAUNCHER)
+            if (usItem == Items.ROCKET_LAUNCHER)
             {
                 pObj.ubGunShotsLeft = 1;
             }
@@ -189,7 +285,7 @@ public class ItemSubSystem
         }
         else
         {
-            usAmmo = DefaultMagazine(usItem);
+            usAmmo = ItemSubSystem.DefaultMagazine(usItem);
             Debug.Assert(usAmmo != 0);
             if (usAmmo == 0)
             {
@@ -199,9 +295,9 @@ public class ItemSubSystem
             else
             {
                 pObj.usGunAmmoItem = usAmmo;
-                pObj.ubGunAmmoType = Magazine[Globals.Item[usAmmo].ubClassIndex].ubAmmoType;
+                pObj.ubGunAmmoType = WeaponTypes.Magazine[Globals.Item[usAmmo].ubClassIndex].ubAmmoType;
                 pObj.bGunAmmoStatus = 100;
-                pObj.ubGunShotsLeft = Magazine[Globals.Item[usAmmo].ubClassIndex].ubMagSize;
+                pObj.ubGunShotsLeft = WeaponTypes.Magazine[Globals.Item[usAmmo].ubClassIndex].ubMagSize;
                 /*
                 if (usItem == CAWS)
                 {
@@ -227,7 +323,7 @@ public class ItemSubSystem
         {
             usItem = usItem,
             ubNumberOfObjects = 1,
-            ubShotsLeft[0] = Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize,
+            ubShotsLeft = new [] { WeaponTypes.Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize },
             ubWeight = CalculateObjectWeight(pObj)
         };
 
@@ -340,11 +436,11 @@ public class ItemSubSystem
         Items usNewAmmo = Items.NONE;
         int oldGunIdx = (int)usOldGun;
 
-        if ((WeaponTypes.Magazines[Globals.Item[usOldAmmo].ubClassIndex].ubCalibre == WeaponTypes.Weapon[oldGunIdx].ubCalibre)
-            && (WeaponTypes.Magazines[Globals.Item[usOldAmmo].ubClassIndex].ubMagSize == WeaponTypes.Weapon[oldGunIdx].ubMagSize))
+        if ((WeaponTypes.Magazine[Globals.Item[usOldAmmo].ubClassIndex].ubCalibre == WeaponTypes.Weapon[oldGunIdx].ubCalibre)
+            && (WeaponTypes.Magazine[Globals.Item[usOldAmmo].ubClassIndex].ubMagSize == WeaponTypes.Weapon[oldGunIdx].ubMagSize))
         {
             // must replace this!
-            usNewAmmo = FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazines[Globals.Item[usOldAmmo].ubClassIndex].ubAmmoType);
+            usNewAmmo = FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazine[Globals.Item[usOldAmmo].ubClassIndex].ubAmmoType);
         }
 
         return usNewAmmo;
@@ -358,12 +454,12 @@ public class ItemSubSystem
         ubLoop = 0;
         usDefault = Items.NONE;
 
-        while (WeaponTypes.Magazines[ubLoop].ubCalibre != CaliberType.NOAMMO)
+        while (WeaponTypes.Magazine[ubLoop].ubCalibre != CaliberType.NOAMMO)
         {
-            if (WeaponTypes.Magazines[ubLoop].ubCalibre == ubCalibre
-                && WeaponTypes.Magazines[ubLoop].ubMagSize == ubMagSize)
+            if (WeaponTypes.Magazine[ubLoop].ubCalibre == ubCalibre
+                && WeaponTypes.Magazine[ubLoop].ubMagSize == ubMagSize)
             {
-                if (WeaponTypes.Magazines[ubLoop].ubAmmoType == ubAmmoType)
+                if (WeaponTypes.Magazine[ubLoop].ubAmmoType == ubAmmoType)
                 {
                     return MagazineClassIndexToItemType(ubLoop);
                 }

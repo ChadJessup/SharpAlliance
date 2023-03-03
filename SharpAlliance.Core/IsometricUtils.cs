@@ -307,7 +307,7 @@ public class IsometricUtils
     {
         if ((sDirection < 0) || (sDirection > 7))
         {
-            //#ifdef BETAVERSION
+            //#if BETAVERSION
             //   NumMessage("DirectionInc: Invalid direction received, = ",direction);
             //#endif
 

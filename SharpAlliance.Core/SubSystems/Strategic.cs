@@ -74,7 +74,7 @@ public struct PATROL_GROUP
 public struct GARRISON_GROUP
 {
     public int ubSectorID;
-    public int ubComposition;
+    public Garrisons ubComposition;
     public int bWeight;
     public int ubPendingGroupID;
     public int[] bPadding;// [10];

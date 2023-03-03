@@ -17,7 +17,7 @@ public class SECTORINFO
     uint uiFlags;                     //various special conditions
     sbyte ubInvestigativeState;     //When the sector is attacked by the player, the state increases by 1 permanently.
                                     //This value determines how quickly it is investigated by the enemy.
-    public sbyte ubGarrisonID;                     //IF the sector has an ID for this (non 255), then the queen values this sector and it
+    public Garrisons ubGarrisonID;                     //IF the sector has an ID for this (non 255), then the queen values this sector and it
                                             //indexes the garrison group.
     byte ubPendingReinforcements;   //when the enemy owns this sector, this value will keep track of HIGH priority reinforcements -- not regular.
     bool fMilitiaTrainingPaid;
@@ -69,8 +69,8 @@ public class SECTORINFO
     byte[] bPadding = new byte[41];
 
     public static SEC SECTOR(int x, MAP_ROW y) => (SEC)(((int)y - 1) * 16 + x - 1);
-    public static int SECTORX(int SectorID) => ((SectorID % 16) + 1);
-    public static MAP_ROW SECTORY(int SectorID) => (MAP_ROW)((SectorID / 16) + 1);
+    public static int SECTORX(SEC SectorID) => (((int)SectorID % 16) + 1);
+    public static MAP_ROW SECTORY(SEC SectorID) => (MAP_ROW)(((int)SectorID / 16) + 1);
 }
 
 public enum GroupTypes//group types
@@ -175,9 +175,10 @@ public enum SFCF
 public class UNDERGROUND_SECTORINFO
 {
     public uint uiFlags;
-    public byte ubSectorX, ubSectorY, ubSectorZ;
-    public byte ubNumElites, ubNumTroops, ubNumAdmins, ubNumCreatures;
-    public byte fVisited;
+    public byte ubSectorX, ubSectorZ;
+    public MAP_ROW ubSectorY;
+    public int ubNumElites, ubNumTroops, ubNumAdmins, ubNumCreatures;
+    public int fVisited;
     public sbyte ubTravelRating;    //Represents how travelled a sector is.  Typically, the higher the travel rating,
                                     //the more people go near it.  A travel rating of 0 means there are never people
                                     //around.  This value is used for determining how often items would "vanish" from

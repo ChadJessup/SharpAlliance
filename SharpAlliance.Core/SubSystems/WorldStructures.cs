@@ -167,7 +167,7 @@ public class WorldStructures
             ppStructure[ubLoop].sGridNo = sBaseGridNo + ppTile[ubLoop].sPosRelToBase;
             if (ubLoop != (int)STRUCTUREFLAGS.BASE_TILE)
             {
-                //# ifdef JA2EDITOR
+                //# if JA2EDITOR
                 //                //Kris: 
                 //                //Added this undo code if in the editor.
                 //                //It is important to save tiles effected by multitiles.  If the structure placement

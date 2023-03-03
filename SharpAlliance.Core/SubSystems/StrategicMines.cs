@@ -330,7 +330,7 @@ public class StrategicMines
             History.AddHistoryToPlayersLog(
                 HISTORY.MINE_RAN_OUT,
                 Globals.gMineLocation[bMineIndex].bAssociatedTown,
-                GetWorldTotalMin(),
+                GameClock.GetWorldTotalMin(),
                 Globals.gMineLocation[bMineIndex].sSectorX,
                 Globals.gMineLocation[bMineIndex].sSectorY);
         }
@@ -362,7 +362,7 @@ public class StrategicMines
                         // that mine's head miner tells player that the mine is running out
                         IssueHeadMinerQuote(bMineIndex, HEAD_MINER_STRATEGIC_QUOTE.RUNNING_OUT);
                         mineStatus.fWarnedOfRunningOut = true;
-                        AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
+                        AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
                     }
                 }
             }
@@ -518,7 +518,7 @@ public class StrategicMines
                     // remember that we've earned income from this mine during the game
                     mineStatus.fMineHasProducedForPlayer = true;
                     // and when we started to do so...
-                    mineStatus.uiTimePlayerProductionStarted = GetWorldTotalMin();
+                    mineStatus.uiTimePlayerProductionStarted = GameClock.GetWorldTotalMin();
                 }
             }
         }
@@ -544,7 +544,7 @@ public class StrategicMines
 
         for (ubShift = 0; ubShift < Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS; ubShift++)
         {
-            AddStrategicEvent(EVENT_HANDLE_MINE_INCOME, GetWorldDayInMinutes() + Globals.MINE_PRODUCTION_START_TIME + (ubShift * Globals.MINE_PRODUCTION_PERIOD), 0);
+            GameEvents.AddStrategicEvent(EVENT_HANDLE_MINE_INCOME, GameClock.GetWorldDayInMinutes() + Globals.MINE_PRODUCTION_START_TIME + (ubShift * Globals.MINE_PRODUCTION_PERIOD), 0);
         }
     }
 
@@ -562,7 +562,7 @@ public class StrategicMines
         }
         if (iIncome > 0)
         {
-            AddTransactionToPlayersBook(DEPOSIT_FROM_SILVER_MINE, 0, GetWorldTotalMin(), iIncome);
+            AddTransactionToPlayersBook(DEPOSIT_FROM_SILVER_MINE, 0, GameClock.GetWorldTotalMin(), iIncome);
         }
     }
 
@@ -764,7 +764,7 @@ public class StrategicMines
         {
             var mineStatus = Globals.gMineStatus[bMineIndex];
             mineStatus.fShutDown = true;
-            AddHistoryToPlayersLog(HISTORY.MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
+            AddHistoryToPlayersLog(HISTORY.MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
         }
     }
 
@@ -779,7 +779,7 @@ public class StrategicMines
             {
                 var mineStatus = Globals.gMineStatus[bMineIndex];
                 mineStatus.fShutDown = false;
-                AddHistoryToPlayersLog(HISTORY.MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
+                AddHistoryToPlayersLog(HISTORY.MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
             }
         }
     }
@@ -940,7 +940,7 @@ public class StrategicMines
         // if this is our first time set a history fact 
         if (mineStatus.fSpokeToHeadMiner == false)
         {
-            AddHistoryToPlayersLog(HISTORY.TALKED_TO_MINER, Globals.gMineLocation[ubMineIndex].bAssociatedTown, GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
+            History.AddHistoryToPlayersLog(HISTORY.TALKED_TO_MINER, gMineLocation[ubMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
             mineStatus.fSpokeToHeadMiner = true;
         }
     }
@@ -1094,7 +1094,7 @@ public class StrategicMines
         ubMineIndex = GetHeadMinersMineIndex(ubMinerProfileId);
 
         if (Globals.gMineStatus[ubMineIndex].fMineHasProducedForPlayer &&
-                ((GetWorldTotalMin() - Globals.gMineStatus[ubMineIndex].uiTimePlayerProductionStarted) >= (24 * 60)))
+                ((GameClock.GetWorldTotalMin() - Globals.gMineStatus[ubMineIndex].uiTimePlayerProductionStarted) >= (24 * 60)))
         {
             return (true);
         }

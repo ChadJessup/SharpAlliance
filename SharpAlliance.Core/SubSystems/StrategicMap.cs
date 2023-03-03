@@ -37,6 +37,14 @@ public class StrategicMap
         return (ubSectorSize);
     }
 
+    public static TOWNS GetTownIdForSector(int sMapX, MAP_ROW sMapY)
+    {
+        // return the name value of the town in this sector
+
+        return (Globals.StrategicMap[CALCULATE_STRATEGIC_INDEX(sMapX, sMapY)].bNameId);
+    }
+
+
     //ATE: Returns false if NOBODY is close enough, 1 if ONLY selected guy is and 2 if all on squad are...
     public static int OKForSectorExit(StrategicMove bExitDirection, int usAdditionalData, out uint puiTraverseTimeInMinutes)
     {

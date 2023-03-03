@@ -29,7 +29,7 @@ public class Quests
         {
             return (false);
         }
-        return (PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
+        return (IsometricUtils.PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
     }
 
     public static bool CheckForNewShipment()
@@ -192,7 +192,7 @@ public class Quests
         sGridNo = pNPC.sGridNo;
 
         // is the merc and NPC close enough?
-        if (PythSpacesAway(sGridNo, pMerc.sGridNo) <= 9)
+        if (IsometricUtils.PythSpacesAway(sGridNo, pMerc.sGridNo) <= 9)
         {
             return (true);
         }
@@ -214,7 +214,7 @@ public class Quests
 
             if (fUpdateHistory)
             {
-                History.SetHistoryFact(HISTORY.QUEST_STARTED, ubQuest, GetWorldTotalMin(), sSectorX, sSectorY);
+                History.SetHistoryFact(HISTORY.QUEST_STARTED, ubQuest, GameClock.GetWorldTotalMin(), sSectorX, sSectorY);
             }
         }
         else
@@ -244,7 +244,7 @@ public class Quests
 
             if (pSoldier is not null && pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.bLife > 0 && pSoldier.bLife < pSoldier.bLifeMax && pSoldier.bAssignment != Assignments.ASSIGNMENT_HOSPITAL)
             {
-                if (PythSpacesAway(sGridNo, pSoldier.sGridNo) <= HOSPITAL_PATIENT_DISTANCE)
+                if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= HOSPITAL_PATIENT_DISTANCE)
                 {
                     bNumber++;
                 }
@@ -252,6 +252,24 @@ public class Quests
         }
 
         return (bNumber);
+    }
+
+    public static void CheckForQuests(uint uiDay)
+    {
+        // This function gets called at 8:00 AM time of the day
+
+        // -------------------------------------------------------------------------------
+        // QUEST 0 : DELIVER LETTER
+        // -------------------------------------------------------------------------------
+        // The game always starts with DELIVER LETTER quest, so turn it on if it hasn't
+        // already started
+        if (gubQuest[QUEST.DELIVER_LETTER] == QUESTNOTSTARTED)
+        {
+            StartQuest(QUEST.DELIVER_LETTER, -1, (MAP_ROW)(-1));
+        }
+
+        // This quest gets turned OFF through conversation with Miguel - when user hands
+        // Miguel the letter
     }
 
     public static int NumMercsNear(NPCID ubProfileID, int ubMaxDist)
@@ -277,7 +295,7 @@ public class Quests
                 && pSoldier.bTeam == Globals.gbPlayerNum
                 && pSoldier.bLife >= Globals.OKLIFE)
             {
-                if (PythSpacesAway(sGridNo, pSoldier.sGridNo) <= ubMaxDist)
+                if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= ubMaxDist)
                 {
                     bNumber++;
                 }
@@ -410,7 +428,7 @@ public class Quests
             {
                 if (pSoldier.ubProfile != NPCID.NO_PROFILE && Globals.gMercProfiles[pSoldier.ubProfile].bSex == Sexes.MALE)
                 {
-                    if (PythSpacesAway(sGridNo, pSoldier.sGridNo) <= 8)
+                    if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= 8)
                     {
                         bNumber++;
                     }
@@ -444,7 +462,7 @@ public class Quests
             {
                 if (pSoldier.ubProfile != NPCID.NO_PROFILE && Globals.gMercProfiles[pSoldier.ubProfile].bSex == Sexes.FEMALE)
                 {
-                    if (PythSpacesAway(sGridNo, pSoldier.sGridNo) <= 10)
+                    if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= 10)
                     {
                         return (true);
                     }
@@ -467,7 +485,7 @@ public class Quests
 
             if (pSoldier.bActive && pSoldier.bLife > 0)
             {
-                if (FindObjInObjRange(pSoldier, HEAD_2, HEAD_7) != NO_SLOT)
+                if (ItemSubSystem.FindObjInObjRange(pSoldier, HEAD_2, HEAD_7) != NO_SLOT)
                 {
                     return (true);
                 }
@@ -514,7 +532,7 @@ public class Quests
                 && (pSoldier.bLife >= Globals.OKLIFE)
                 && (pSoldier.ubWhatKindOfMercAmI == MERC_TYPE.AIM_MERC))
             {
-                if (PythSpacesAway(sGridNo, pSoldier.sGridNo) <= sDistance)
+                if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= sDistance)
                 {
                     return (true);
                 }
@@ -579,7 +597,7 @@ public class Quests
     {
         TOWNS ubTown;
 
-        ubTown = GetTownIdForSector(sSectorX, sSectorY);
+        ubTown = StrategicMap.GetTownIdForSector(sSectorX, sSectorY);
         if ((ubTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[ubTown].fStarted && Globals.gfTownUsesLoyalty[ubTown])
         {
             return (Globals.gTownLoyalty[ubTown].ubRating >= Globals.MIN_RATING_TO_TRAIN_TOWN);
@@ -590,29 +608,12 @@ public class Quests
         }
     }
 
-    void InternalStartQuest(QUEST ubQuest, int sSectorX, int sSectorY, bool fUpdateHistory)
-    {
-        if (Globals.gubQuest[ubQuest] == Globals.QUESTNOTSTARTED)
-        {
-            Globals.gubQuest[ubQuest] = Globals.QUESTINPROGRESS;
-
-            if (fUpdateHistory)
-            {
-                Facts.SetHistoryFact(HISTORY.QUEST_STARTED, ubQuest, GetWorldTotalMin(), sSectorX, sSectorY);
-            }
-        }
-        else
-        {
-            Globals.gubQuest[ubQuest] = Globals.QUESTINPROGRESS;
-        }
-    }
-
-    void EndQuest(QUEST ubQuest, int sSectorX, int sSectorY)
+    void EndQuest(QUEST ubQuest, int sSectorX, MAP_ROW sSectorY)
     {
         InternalEndQuest(ubQuest, sSectorX, sSectorY, true);
     }
 
-    private static void InternalEndQuest(QUEST ubQuest, int sSectorX, int sSectorY, bool fUpdateHistory)
+    private static void InternalEndQuest(QUEST ubQuest, int sSectorX, MAP_ROW sSectorY, bool fUpdateHistory)
     {
         if (Globals.gubQuest[ubQuest] == Globals.QUESTINPROGRESS)
         {
@@ -620,7 +621,7 @@ public class Quests
 
             if (fUpdateHistory)
             {
-                ResetHistoryFact(ubQuest, sSectorX, sSectorY);
+                History.ResetHistoryFact(ubQuest, sSectorX, sSectorY);
             }
         }
         else

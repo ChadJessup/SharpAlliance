@@ -164,7 +164,7 @@ public class WeaponTypes
     => new(WeaponClass.HANDGUNCLASS, GUN.PISTOL, ammo, rt, rof, burstrof, burstpenal, update, impact,
             deadl, acc, clip, range, 200, av, hv, sd, bsd, SoundDefine.S_RELOAD_PISTOL, SoundDefine.S_LNL_PISTOL);
 
-    public static List<MAGTYPE> Magazines = new()
+    public static List<MAGTYPE> Magazine = new()
     {
         // calibre,			 mag size,			ammo type
         new(CaliberType.AMMO9, 15, AMMO.REGULAR),
@@ -257,7 +257,7 @@ public enum GUN
     SHOTGUN
 };
 
-public struct WEAPONTYPE
+public class WEAPONTYPE
 {
     public WEAPONTYPE(
         WeaponClass ubWeaponClass,          // handgun/shotgun/rifle/knife

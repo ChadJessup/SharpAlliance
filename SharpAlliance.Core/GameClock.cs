@@ -6,6 +6,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 
 using static SharpAlliance.Core.Globals;
+using static SharpAlliance.Core.EnglishText;
 
 namespace SharpAlliance.Core;
 
@@ -35,50 +36,50 @@ public class GameClock
         return (guiGameClock / NUM_SEC_IN_MIN);
     }
 
-    uint GetWorldTotalSeconds()
+    public static uint GetWorldTotalSeconds()
     {
         return (guiGameClock);
     }
 
 
-    uint GetWorldHour()
+    public static uint GetWorldHour()
     {
         return (guiHour);
     }
 
-    uint GetWorldMinutesInDay()
+    public static uint GetWorldMinutesInDay()
     {
         return ((guiHour * 60) + guiMin);
     }
 
-    uint GetWorldDay()
+    public static uint GetWorldDay()
     {
         return (guiDay);
     }
 
-    uint GetWorldDayInSeconds()
+    public static uint GetWorldDayInSeconds()
     {
         return (guiDay * NUM_SEC_IN_DAY);
     }
 
-    uint GetWorldDayInMinutes()
+    public static uint GetWorldDayInMinutes()
     {
         return ((guiDay * NUM_SEC_IN_DAY) / NUM_SEC_IN_MIN);
     }
 
-    int GetFutureDayInMinutes(int uiDay)
+    public static uint GetFutureDayInMinutes(uint uiDay)
     {
         return ((uiDay * NUM_SEC_IN_DAY) / NUM_SEC_IN_MIN);
     }
 
     //this function returns the amount of minutes there has been from start of game to midnight of the uiDay.  
-    uint GetMidnightOfFutureDayInMinutes(uint uiDay)
+    public static uint GetMidnightOfFutureDayInMinutes(uint uiDay)
     {
         return (GetWorldTotalMin() + (uiDay * 1440) - GetWorldMinutesInDay());
     }
 
     // Not to be used too often by things other than internally
-    void WarpGameTime(uint uiAdjustment, WARPTIME ubWarpCode)
+    private static void WarpGameTime(uint uiAdjustment, WARPTIME ubWarpCode)
     {
         uint uiSaveTimeRate;
         uiSaveTimeRate = guiGameSecondsPerRealSecond;
@@ -88,7 +89,7 @@ public class GameClock
     }
 
 
-    void AdvanceClock(WARPTIME ubWarpCode)
+    private static void AdvanceClock(WARPTIME ubWarpCode)
     {
         uint uiGameSecondsPerRealSecond = guiGameSecondsPerRealSecond;
 
@@ -112,13 +113,13 @@ public class GameClock
             //First of all, events are posted for movements, pending attacks, equipment arrivals, etc.  This time 
             //adjustment using time compression can possibly pass one or more events in a single pass.  So, this list
             //is looked at and processed in sequential order, until the uiAdjustment is fully applied.
-            if (GameEventsPending(guiGameSecondsPerRealSecond))
+            if (GameEvents.GameEventsPending(guiGameSecondsPerRealSecond))
             {
                 //If a special event, justifying the cancellation of time compression is reached, the adjustment
                 //will be shortened to the time of that event, and will stop processing events, otherwise, all
                 //of the events in the time slice will be processed.  The time is adjusted internally as events
                 //are processed.
-                ProcessPendingGameEvents(guiGameSecondsPerRealSecond, ubWarpCode);
+                GameEvents.ProcessPendingGameEvents(guiGameSecondsPerRealSecond, ubWarpCode);
             }
             else
             {
@@ -450,7 +451,7 @@ public class GameClock
         }
         else
         {
-            SetClockResolutionPerSecond((int)Math.Max(1, (int)(guiGameSecondsPerRealSecond / 60)));
+            SetClockResolutionPerSecond((uint)Math.Max(1, (int)(guiGameSecondsPerRealSecond / 60)));
         }
 
         // if the compress mode is X0 or X1
@@ -492,7 +493,7 @@ public class GameClock
         SetClockResolutionPerSecond(uiGameMinutesPerSecond);
     }
 
-    void SetGameSecondsPerSecond(int uiGameSecondsPerSecond)
+    void SetGameSecondsPerSecond(uint uiGameSecondsPerSecond)
     {
         giTimeCompressMode = TIME_COMPRESS.NOT_USING_TIME_COMPRESSION;
         guiGameSecondsPerRealSecond = uiGameSecondsPerSecond;
@@ -503,7 +504,7 @@ public class GameClock
         }
         else
         {
-            SetClockResolutionPerSecond((int)Math.Max(1, (int)(guiGameSecondsPerRealSecond / 60)));
+            SetClockResolutionPerSecond((uint)Math.Max(1, (int)(guiGameSecondsPerRealSecond / 60)));
         }
 
     }
@@ -749,115 +750,115 @@ public class GameClock
     {
         int uiNumBytesWritten = 0;
 
-        FileWrite(hFile, giTimeCompressMode, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, giTimeCompressMode, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, gubClockResolution, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, gubClockResolution, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, fGamePaused, sizeof(bool), uiNumBytesWritten);
+        //FileWrite(hFile, fGamePaused, sizeof(bool), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(bool))
         {
             return (false);
         }
 
-        FileWrite(hFile, gfTimeInterrupt, sizeof(bool), uiNumBytesWritten);
+        //FileWrite(hFile, gfTimeInterrupt, sizeof(bool), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(bool))
         {
             return (false);
         }
 
-        FileWrite(hFile, fSuperCompression, sizeof(bool), uiNumBytesWritten);
+        //FileWrite(hFile, fSuperCompression, sizeof(bool), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(bool))
         {
             return (false);
         }
 
-        FileWrite(hFile, guiGameClock, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, guiGameClock, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, guiGameSecondsPerRealSecond, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, guiGameSecondsPerRealSecond, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, ubAmbientLightLevel, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, ubAmbientLightLevel, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, guiEnvTime, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, guiEnvTime, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, guiEnvDay, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, guiEnvDay, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, gubEnvLightValue, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, gubEnvLightValue, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, guiTimeOfLastEventQuery, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, guiTimeOfLastEventQuery, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, fLockPauseState, sizeof(bool), uiNumBytesWritten);
+        //FileWrite(hFile, fLockPauseState, sizeof(bool), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(bool))
         {
             return (false);
         }
 
-        FileWrite(hFile, gfPauseDueToPlayerGamePause, sizeof(bool), uiNumBytesWritten);
+        //FileWrite(hFile, gfPauseDueToPlayerGamePause, sizeof(bool), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(bool))
         {
             return (false);
         }
 
-        FileWrite(hFile, gfResetAllPlayerKnowsEnemiesFlags, sizeof(bool), uiNumBytesWritten);
+        //FileWrite(hFile, gfResetAllPlayerKnowsEnemiesFlags, sizeof(bool), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(bool))
         {
             return (false);
         }
 
-        FileWrite(hFile, gfTimeCompressionOn, sizeof(bool), uiNumBytesWritten);
+        //FileWrite(hFile, gfTimeCompressionOn, sizeof(bool), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(bool))
         {
             return (false);
         }
 
-        FileWrite(hFile, guiPreviousGameClock, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, guiPreviousGameClock, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, guiLockPauseStateLastReasonId, sizeof(int), uiNumBytesWritten);
+        //FileWrite(hFile, guiLockPauseStateLastReasonId, sizeof(int), uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
-        FileWrite(hFile, gubUnusedTimePadding, TIME_PADDINGBYTES, uiNumBytesWritten);
+        //FileWrite(hFile, gubUnusedTimePadding, TIME_PADDINGBYTES, uiNumBytesWritten);
         if (uiNumBytesWritten != TIME_PADDINGBYTES)
         {
             return (false);
@@ -869,117 +870,117 @@ public class GameClock
 
     bool LoadGameClock(Stream hFile)
     {
-        int uiNumBytesRead;
+        int uiNumBytesRead = sizeof(int);
 
-        FileRead(hFile, giTimeCompressMode, sizeof(int), out uiNumBytesRead);
+        //FileRead(hFile, giTimeCompressMode, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, gubClockResolution, sizeof(int), out uiNumBytesRead);
+        //FileRead(hFile, gubClockResolution, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, gfGamePaused, sizeof(bool), uiNumBytesRead);
+        //FileRead(hFile, gfGamePaused, sizeof(bool), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(bool))
         {
             return (false);
         }
 
-        FileRead(hFile, gfTimeInterrupt, sizeof(bool), uiNumBytesRead);
+        //FileRead(hFile, gfTimeInterrupt, sizeof(bool), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(bool))
         {
             return (false);
         }
 
-        FileRead(hFile, fSuperCompression, sizeof(bool), uiNumBytesRead);
+        //FileRead(hFile, fSuperCompression, sizeof(bool), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(bool))
         {
             return (false);
         }
 
-        FileRead(hFile, guiGameClock, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, guiGameClock, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, guiGameSecondsPerRealSecond, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, guiGameSecondsPerRealSecond, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, ubAmbientLightLevel, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, ubAmbientLightLevel, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, guiEnvTime, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, guiEnvTime, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, guiEnvDay, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, guiEnvDay, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, gubEnvLightValue, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, gubEnvLightValue, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, guiTimeOfLastEventQuery, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, guiTimeOfLastEventQuery, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, gfLockPauseState, sizeof(bool), uiNumBytesRead);
+        //FileRead(hFile, gfLockPauseState, sizeof(bool), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(bool))
         {
             return (false);
         }
 
-        FileRead(hFile, gfPauseDueToPlayerGamePause, sizeof(bool), uiNumBytesRead);
+        //FileRead(hFile, gfPauseDueToPlayerGamePause, sizeof(bool), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(bool))
         {
             return (false);
         }
 
-        FileRead(hFile, gfResetAllPlayerKnowsEnemiesFlags, sizeof(bool), uiNumBytesRead);
+        //FileRead(hFile, gfResetAllPlayerKnowsEnemiesFlags, sizeof(bool), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(bool))
         {
             return (false);
         }
 
-        FileRead(hFile, gfTimeCompressionOn, sizeof(bool), uiNumBytesRead);
+        //FileRead(hFile, gfTimeCompressionOn, sizeof(bool), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(bool))
         {
             return (false);
         }
 
-        FileRead(hFile, guiPreviousGameClock, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, guiPreviousGameClock, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, guiLockPauseStateLastReasonId, sizeof(int), uiNumBytesRead);
+        //FileRead(hFile, guiLockPauseStateLastReasonId, sizeof(int), uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
         }
 
-        FileRead(hFile, gubUnusedTimePadding, TIME_PADDINGBYTES, uiNumBytesRead);
+        //FileRead(hFile, gubUnusedTimePadding, TIME_PADDINGBYTES, uiNumBytesRead);
         if (uiNumBytesRead != TIME_PADDINGBYTES)
         {
             return (false);
@@ -991,7 +992,7 @@ public class GameClock
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
 
-        wprintf(WORLDTIMESTR, "%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
+        //wprintf(WORLDTIMESTR, "%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
 
         if (!gfBasement && !gfCaves)
         {

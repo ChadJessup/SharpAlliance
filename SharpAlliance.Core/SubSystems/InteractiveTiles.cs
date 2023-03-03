@@ -183,7 +183,7 @@ public class InteractiveTiles
 
         if (pStructure == null)
         {
-            //# ifdef JA2TESTVERSION
+            //# if JA2TESTVERSION
             //            Messages.ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "ERROR: Told to handle struct that does not exist at %d.", sGridNo);
             //#endif
             return;

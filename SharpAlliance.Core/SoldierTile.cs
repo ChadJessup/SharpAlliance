@@ -668,12 +668,16 @@ public class SoldierTile
             if (pSoldier.bLevel == 0)
             {
                 if (pSoldier.iLight != (-1))
+                {
                     LightSpriteRoofStatus(pSoldier.iLight, false);
+                }
             }
             else
             {
                 if (pSoldier.iLight != (-1))
+                {
                     LightSpriteRoofStatus(pSoldier.iLight, true);
+                }
             }
             return (true);
         }

@@ -182,8 +182,8 @@ public class DB_STRUCTURE_REF
 public class DB_STRUCTURE_TILE
 {
     public short sPosRelToBase;  // "single-axis"
-    sbyte bXPosRelToBase;
-    sbyte bYPosRelToBase;
+    public sbyte bXPosRelToBase;
+    public sbyte bYPosRelToBase;
     public PROFILE Shape;                  // 25 bytes
     public TILE fFlags { get; set; }
     public byte ubVehicleHitLocation;

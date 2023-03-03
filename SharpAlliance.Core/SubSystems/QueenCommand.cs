@@ -1,10 +1,33 @@
 ﻿using System;
 using System.Diagnostics;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class QueenCommand
 {
+    public static UNDERGROUND_SECTORINFO? FindUnderGroundSector(int sMapX, MAP_ROW sMapY, int bMapZ)
+    {
+        UNDERGROUND_SECTORINFO? pUnderground;
+        pUnderground = gpUndergroundSectorInfoHead;
+
+        //Loop through all the underground sectors looking for specified sector
+        while (pUnderground is not null)
+        {
+            //If the sector is the right one
+            if (pUnderground.ubSectorX == sMapX
+                && pUnderground.ubSectorY == sMapY
+                && pUnderground.ubSectorZ == bMapZ)
+            {
+                return (pUnderground);
+            }
+            pUnderground = pUnderground.next;
+        }
+
+        return (null);
+    }
+
     public static int NumEnemiesInAnySector(int sSectorX, MAP_ROW sSectorY, int sSectorZ)
     {
         int ubNumEnemies = 0;
@@ -84,7 +107,7 @@ public class QueenCommand
         }
 
         // don't count roadblocks as stationary garrison, we want to see how many enemies are in them, not question marks
-        if (Globals.gGarrisonGroup[pSector.ubGarrisonID].ubComposition == ROADBLOCK)
+        if (gGarrisonGroup[pSector.ubGarrisonID].ubComposition == Garrisons.ROADBLOCK)
         {
             // pretend they're not stationary
             return (0);

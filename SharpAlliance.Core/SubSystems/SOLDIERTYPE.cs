@@ -1,4 +1,5 @@
-﻿using SharpAlliance.Core.Managers.Image;
+﻿using System.Collections.Generic;
+using SharpAlliance.Core.Managers.Image;
 
 using static SharpAlliance.Core.Globals;
 
@@ -17,7 +18,8 @@ namespace SharpAlliance.Core.SubSystems
 
         public SOLDIER uiStatusFlags { get; set; }
 
-        public OBJECTTYPE[] inv = new OBJECTTYPE[(int)InventorySlot.NUM_INV_SLOTS];
+        public Dictionary<InventorySlot, OBJECTTYPE> inv = new();
+
         OBJECTTYPE pTempObject;
         // KEY_ON_RING pKeyRing;
 
@@ -404,7 +406,7 @@ namespace SharpAlliance.Core.SubSystems
         //PathStPtr pMercPath;                                //Path Structure
         int fHitByGasFlags;                       // flags 
         int usMedicalDeposit;         // is there a medical deposit on merc 
-        int usLifeInsurance;          // is there life insurance taken out on merc  
+        CIV_GROUP usLifeInsurance;          // is there life insurance taken out on merc  
         //DEF:  Used for the communications
         int uiStartMovementTime;             // the time since the merc first started moving 
         int uiOptimumMovementTime;           // everytime in ececute overhead the time for the current ani will be added to this total
