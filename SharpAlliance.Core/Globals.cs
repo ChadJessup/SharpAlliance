@@ -105,6 +105,28 @@ public partial class Globals
 
     public static Dictionary<Items, INVTYPE> Item = new();
 
+    public static bool gfHiddenInterrupt;
+    public static bool gfHiddenTurnbased;
+
+    public static bool INTERRUPT_QUEUED => (gubOutOfTurnPersons > 0);
+
+
+    public static bool RPC_RECRUITED(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)));
+    public static bool AM_AN_EPC(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE)));
+    public static bool AM_A_ROBOT(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON));
+
+    public static bool OK_ENEMY_MERC(SOLDIERTYPE p) => (p.bNeutral == 0 && (p.bSide != gbPlayerNum) && p.bLife >= OKLIFE);
+    // Checks if our guy can be controllable .... checks bInSector, team, on duty, etc...
+    public static bool OK_CONTROLLABLE_MERC(SOLDIERTYPE p) => (p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY);
+    // Checks if our guy can be controllable .... checks bInSector, team, on duty, etc...
+    public static bool OK_INSECTOR_MERC(SOLDIERTYPE p) => (p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY);
+    // Checkf if our guy can be selected and is not in a position where our team has an interupt and he does not have one...
+    public static bool OK_INTERRUPT_MERC(SOLDIERTYPE p) => ((INTERRUPT_QUEUED) ? ((p.bMoved > 0) ? false : true) : true);
+    public static bool CREATURE_OR_BLOODCAT(SOLDIERTYPE p) => ((p.uiStatusFlags.HasFlag(SOLDIER.MONSTER)) || p.ubBodyType == SoldierBodyTypes.BLOODCAT);
+    public static bool TANK(SOLDIERTYPE p) => (p.ubBodyType == SoldierBodyTypes.TANK_NE || p.ubBodyType == SoldierBodyTypes.TANK_NW);
+    public static bool OK_ENTERABLE_VEHICLE(SOLDIERTYPE p) => ((p.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !TANK(p) && p.bLife >= OKLIFE);
+
+
     public static bool EXPLOSIVE_GUN(Items x) => (x == Items.ROCKET_LAUNCHER || x == Items.TANK_CANNON);
 
     public static UNDERGROUND_SECTORINFO? gpUndergroundSectorInfoHead = null;
@@ -1376,9 +1398,8 @@ public partial class Globals
     public const int FROM_TRAINING = 1;
     public const int FROM_FAILURE = 2;
 
-    public int BUDDY_OPINION = +25;
-    public int HATED_OPINION = -25;
-
+    public const int BUDDY_OPINION = +25;
+    public const int HATED_OPINION = -25;
 
     public static bool BUDDY_MERC(MERCPROFILESTRUCT prof, MERCPROFILESTRUCT bud)
         => prof.bBuddy[0] == bud

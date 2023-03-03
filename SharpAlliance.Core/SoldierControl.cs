@@ -3769,11 +3769,11 @@ public class SoldierControl
             // Set flag back to normal, after reaching a certain statge
             if (pSoldier.bBreath > 80)
             {
-                pSoldier.usQuoteSaidFlags &= (~SOLDIER_QUOTE_SAID_LOW_BREATH);
+                pSoldier.usQuoteSaidFlags &= (~SOLDIER_QUOTE.SAID_LOW_BREATH);
             }
             if (pSoldier.bBreath > 50)
             {
-                pSoldier.usQuoteSaidFlags &= (~SOLDIER_QUOTE_SAID_DROWNING);
+                pSoldier.usQuoteSaidFlags &= (~SOLDIER_QUOTE.SAID_DROWNING);
             }
 
 
@@ -3815,10 +3815,10 @@ public class SoldierControl
                             if (MercSeesCreature(pSoldier))
                             {
                                 HandleMoraleEvent(pSoldier, MORALE_INSECT_PHOBIC_SEES_CREATURE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
-                                if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_PERSONALITY))
+                                if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE.SAID_PERSONALITY))
                                 {
                                     TacticalCharacterDialogue(pSoldier, QUOTE_PERSONALITY_TRAIT);
-                                    pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_PERSONALITY;
+                                    pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
                                 }
                             }
                             break;
@@ -3827,10 +3827,10 @@ public class SoldierControl
                             {
                                 // underground!
                                 HandleMoraleEvent(pSoldier, MORALE_CLAUSTROPHOBE_UNDERGROUND, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
-                                if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_PERSONALITY))
+                                if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE.SAID_PERSONALITY))
                                 {
                                     TacticalCharacterDialogue(pSoldier, QUOTE_PERSONALITY_TRAIT);
-                                    pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_PERSONALITY;
+                                    pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
                                 }
 
                             }
@@ -3842,10 +3842,10 @@ public class SoldierControl
                                 if (pSoldier.bMorale < 50)
                                 {
                                     HandleMoraleEvent(pSoldier, MORALE_NERVOUS_ALONE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
-                                    if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_PERSONALITY))
+                                    if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE.SAID_PERSONALITY))
                                     {
                                         TacticalCharacterDialogue(pSoldier, QUOTE_PERSONALITY_TRAIT);
-                                        pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_PERSONALITY;
+                                        pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
                                     }
                                 }
                             }
@@ -3854,7 +3854,7 @@ public class SoldierControl
                                 if (pSoldier.bMorale > 45)
                                 {
                                     // turn flag off, so that we say it every two turns
-                                    pSoldier.usQuoteSaidFlags &= ~SOLDIER_QUOTE_SAID_PERSONALITY;
+                                    pSoldier.usQuoteSaidFlags &= ~SOLDIER_QUOTE.SAID_PERSONALITY;
                                 }
                             }
                             break;
@@ -3863,8 +3863,8 @@ public class SoldierControl
             }
 
             // Reset quote flags for under heavy fire and close call!
-            pSoldier.usQuoteSaidFlags &= (~SOLDIER_QUOTE_SAID_BEING_PUMMELED);
-            pSoldier.usQuoteSaidExtFlags &= (~SOLDIER_QUOTE_SAID_EXT_CLOSE_CALL);
+            pSoldier.usQuoteSaidFlags &= (~SOLDIER_QUOTE.SAID_BEING_PUMMELED);
+            pSoldier.usQuoteSaidExtFlags &= (~SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL);
             pSoldier.bNumHitsThisTurn = 0;
             pSoldier.ubSuppressionPoints = 0;
             pSoldier.fCloseCall = false;
@@ -5671,7 +5671,7 @@ int	gOrangeGlowG[]=
             StatChange(pSoldier, EXPERAMT, (int)(5 * ubCombinedLoss), FROM_FAILURE);
 
             // Check for quote
-            if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_BEING_PUMMELED))
+            if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE.SAID_BEING_PUMMELED))
             {
                 // Check attacker!
                 if (ubAttacker != NOBODY && ubAttacker != pSoldier.ubID)
@@ -5683,7 +5683,7 @@ int	gOrangeGlowG[]=
                         if (Random(100) < (int)((40 * (pSoldier.bNumHitsThisTurn - 2))))
                         {
                             DelayedTacticalCharacterDialogue(pSoldier, QUOTE_TAKEN_A_BREATING);
-                            pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_BEING_PUMMELED;
+                            pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_BEING_PUMMELED;
                             pSoldier.bNumHitsThisTurn = 0;
                         }
                     }
@@ -8243,25 +8243,25 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // Only check if > 70
         if (pSoldier.bBreathMax > 70)
         {
-            if (pSoldier.bBreath < 20 && !(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_LOW_BREATH) &&
+            if (pSoldier.bBreath < 20 && !(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE.SAID_LOW_BREATH) &&
                     gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_STAND)
             {
                 // WARN!
                 TacticalCharacterDialogue(pSoldier, QUOTE_OUT_OF_BREATH);
 
                 // Set flag indicating we were warned!
-                pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_LOW_BREATH;
+                pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_LOW_BREATH;
             }
         }
 
         // Check for drowing.....
-        //if ( pSoldier.bBreath < 10 && !(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_DROWNING ) && pSoldier.bOverTerrainType == DEEP_WATER )
+        //if ( pSoldier.bBreath < 10 && !(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE.SAID_DROWNING ) && pSoldier.bOverTerrainType == DEEP_WATER )
         //{
         // WARN!
         //	TacticalCharacterDialogue( pSoldier, QUOTE_DROWNING );			
 
         // Set flag indicating we were warned!
-        //	pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE_SAID_DROWNING;
+        //	pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_DROWNING;
 
         // WISDOM GAIN (25):  Starting to drown
         //  StatChange( pSoldier, WISDOMAMT, 25, false );

@@ -34,7 +34,7 @@ public class Campaign
 
         if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
         {
-            Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: StatChange: %s improving stats while POW! ubStat %d", pSoldier.name, ubStat);
+            Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: StatChange: %s improving stats while POW! ubStat %d", pSoldier.name, ubStat.ToString());
             return;
         }
 
@@ -177,7 +177,7 @@ public class Campaign
 
             default:
                 // BETA message
-                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: ProcessStatChange: Rcvd unknown ubStat %d", ubStat);
+                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "ERROR: ProcessStatChange: Rcvd unknown ubStat %d", ubStat.ToString());
                 return;
         }
 
@@ -1086,7 +1086,7 @@ public class Campaign
 
             default:
                 // BETA message
-                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "SubpointsPerPoint: ERROR - Unknown ubStat %d", ubStat);
+                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "SubpointsPerPoint: ERROR - Unknown ubStat %d", ubStat.ToString());
                 return (100);
         }
 
@@ -1233,7 +1233,7 @@ public class Campaign
     }
 
     // returns a number between 0-100, this is an estimate of how far a player has progressed through the game
-    int CurrentPlayerProgressPercentage()
+    public static int CurrentPlayerProgressPercentage()
     {
         int uiCurrentIncome;
         int uiPossibleIncome;

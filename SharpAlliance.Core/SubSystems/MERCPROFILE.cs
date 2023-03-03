@@ -25,7 +25,7 @@ public class MERCPROFILESTRUCT
     public CharacterEvolution bEvolution;
     public ProfileMiscFlags1 ubMiscFlags;
     public ProfileMiscFlags2 ubMiscFlags2;
-    public int bSexist;
+    public SexistLevels bSexist;
     public int bLearnToHate;
 
     // skills
@@ -45,7 +45,7 @@ public class MERCPROFILESTRUCT
     public int sMechanicGain;
     public int sExplosivesGain;
 
-    public int ubBodyType;
+    public SoldierBodyTypes ubBodyType;
     public int bMedical;
 
     public int usEyesX;
@@ -160,7 +160,7 @@ public class MERCPROFILESTRUCT
     public TOWNS bTown;
     public int bTownAttachment;
     public int usOptionalGearCost;
-    public int[] bMercOpinion = new int[75];
+    public Dictionary<NPCID, int> bMercOpinion = new();
     public int bApproached;
 
     //The status of the merc.  If negative, see flags at the top of this file.  Positive:  The number of days the merc is away for.  0:  Not hired but ready to be.
