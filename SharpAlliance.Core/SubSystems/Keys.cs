@@ -702,7 +702,10 @@ public class Keys
         //Allocate space for the door status array
         gpDoorStatus = MemAlloc(sizeof(DOOR_STATUS) * gubNumDoorStatus);
         if (gpDoorStatus == null)
+        {
             AssertMsg(0, "Error Allocating memory for the gpDoorStatus");
+        }
+
         memset(gpDoorStatus, 0, sizeof(DOOR_STATUS) * gubNumDoorStatus);
 
 

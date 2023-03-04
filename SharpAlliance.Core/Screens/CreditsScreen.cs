@@ -762,15 +762,15 @@ public class CreditsScreen : IScreen
         return true;
     }
 
-    private void SelectCreditFaceRegionCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
+    private void SelectCreditFaceRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-        if (iReason.HasFlag(MouseCallbackReasons.INIT))
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.RBUTTON_UP))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
         }
     }
@@ -785,17 +785,17 @@ public class CreditsScreen : IScreen
 
     }
 
-    private void SelectCreditFaceMovementRegionCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
+    private void SelectCreditFaceMovementRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-        if (iReason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             Globals.giCurrentlySelectedFace = -1;
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
             Globals.giCurrentlySelectedFace = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.MOVE))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.MOVE))
         {
         }
     }

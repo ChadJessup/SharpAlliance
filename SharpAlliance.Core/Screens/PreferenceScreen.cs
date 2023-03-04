@@ -593,7 +593,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    MouseSubSystem.SetRegionUserData(
+                    this.inputs.Mouse.SetRegionUserData(
                         this.gSelectedOptionTextRegion[cnt],
                         0,
                         this.guiOptionsToggles[option]);
@@ -614,7 +614,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionCallBack);
 
                     var textRegion = this.gSelectedOptionTextRegion[cnt];
-                    MouseSubSystem.SetRegionUserData(ref textRegion, 0, this.guiOptionsToggles[option]);
+                    this.inputs.Mouse.SetRegionUserData(ref textRegion, 0, this.guiOptionsToggles[option]);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -684,7 +684,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    MouseSubSystem.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, this.guiOptionsToggles[option]);
+                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, this.guiOptionsToggles[option]);
                 }
                 else
                 {
@@ -700,7 +700,7 @@ namespace SharpAlliance.Core.Screens
                         this.SelectedOptionTextRegionMovementCallBack,
                         this.SelectedOptionTextRegionCallBack);
 
-                    MouseSubSystem.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, this.guiOptionsToggles[option]);
+                    this.inputs.Mouse.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, this.guiOptionsToggles[option]);
                 }
 
                 this.inputs.Mouse.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -804,12 +804,12 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void SelectedToggleBoxAreaRegionMovementCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons reason)
+        private void SelectedToggleBoxAreaRegionMovementCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
             }
-            else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
             {
                 TOPTION ubCnt;
 
@@ -837,17 +837,17 @@ namespace SharpAlliance.Core.Screens
             this.music.MusicSetVolume(iNewValue);
         }
 
-        private void SelectedOptionTextRegionCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
+        private void SelectedOptionTextRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
         {
             TOPTION ubButton = (TOPTION)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
 
-            if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 this.HandleOptionToggle(ubButton, !this.settings[ubButton], false, true);
 
                 VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
             }
-            else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON_LBUTTON_REPEAT || 
+            else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON_LBUTTON_REPEAT || 
             {
                 if (this.settings[ubButton])
                 {
@@ -860,11 +860,11 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void SelectedOptionTextRegionMovementCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons reason)
+        private void SelectedOptionTextRegionMovementCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON reason)
         {
             var bButton = (GUI_BUTTON)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
 
-            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 this.HandleHighLightedText(false);
 
@@ -872,7 +872,7 @@ namespace SharpAlliance.Core.Screens
 
                 VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
             }
-            else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
             {
                 //                this.gbHighLightedOptionText = bButton;
 
@@ -963,15 +963,15 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void BtnOptGotoLoadGameCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnOptGotoLoadGameCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
@@ -981,22 +981,22 @@ namespace SharpAlliance.Core.Screens
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
         }
 
-        private void BtnOptQuitCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnOptQuitCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
@@ -1008,7 +1008,7 @@ namespace SharpAlliance.Core.Screens
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
@@ -1034,15 +1034,15 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void BtnDoneCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnDoneCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
@@ -1051,7 +1051,7 @@ namespace SharpAlliance.Core.Screens
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
@@ -1064,15 +1064,15 @@ namespace SharpAlliance.Core.Screens
             this.gfOptionsScreenExit = true;
         }
 
-        private void BtnOptGotoSaveGameCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnOptGotoSaveGameCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
@@ -1082,7 +1082,7 @@ namespace SharpAlliance.Core.Screens
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
@@ -1180,11 +1180,11 @@ namespace SharpAlliance.Core.Screens
             return ((giOptionsMessageBox != -1));
         }
 
-        private void BtnOptionsTogglesCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnOptionsTogglesCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
             var ubButton = (TOPTION)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                 {
@@ -1200,7 +1200,7 @@ namespace SharpAlliance.Core.Screens
                     this.HandleOptionToggle(ubButton, false, false, false);
                 }
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                 {

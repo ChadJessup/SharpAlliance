@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,80 +10,78 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicStatus
 {
-    void InitStrategicStatus(void)
+    void InitStrategicStatus()
     {
-        memset(&gStrategicStatus, 0, sizeof(STRATEGIC_STATUS));
+        gStrategicStatus = new STRATEGIC_STATUS();
         //Add special non-zero start conditions here...
 
         InitArmyGunTypes();
     }
 
-    BOOLEAN SaveStrategicStatusToSaveGameFile(HWFILE hFile)
+    bool SaveStrategicStatusToSaveGameFile(Stream hFile)
     {
-        UINT32 uiNumBytesWritten;
+        int uiNumBytesWritten = 10;
 
         //Save the Strategic Status structure to the saved game file
-        FileWrite(hFile, &gStrategicStatus, sizeof(STRATEGIC_STATUS), &uiNumBytesWritten);
-        if (uiNumBytesWritten != sizeof(STRATEGIC_STATUS))
+        //FileWrite(hFile, &gStrategicStatus, sizeof(STRATEGIC_STATUS), &uiNumBytesWritten);
+        if (uiNumBytesWritten != 10)//sizeof(STRATEGIC_STATUS))
         {
-            return (FALSE);
+            return (false);
         }
 
-        return (TRUE);
+        return (true);
     }
 
 
 
-    BOOLEAN LoadStrategicStatusFromSaveGameFile(HWFILE hFile)
+    bool LoadStrategicStatusFromSaveGameFile(Stream hFile)
     {
-        UINT32 uiNumBytesRead;
+        int uiNumBytesRead = 10;
 
         //Load the Strategic Status structure from the saved game file
-        FileRead(hFile, &gStrategicStatus, sizeof(STRATEGIC_STATUS), &uiNumBytesRead);
-        if (uiNumBytesRead != sizeof(STRATEGIC_STATUS))
+        //FileRead(hFile, &gStrategicStatus, sizeof(STRATEGIC_STATUS), &uiNumBytesRead);
+        if (uiNumBytesRead != 10)//sizeof(STRATEGIC_STATUS))
         {
-            return (FALSE);
+            return (false);
         }
 
-        return (TRUE);
+        return (true);
     }
 
 
-#define DEATH_RATE_SEVERITY 1.0f			// increase to make death rates higher for same # of deaths/time
-
-    UINT8 CalcDeathRate(void)
+    int CalcDeathRate()
     {
-        UINT32 uiDeathRate = 0;
+        int uiDeathRate = 0;
 
         // give the player a grace period of 1 day
         if (gStrategicStatus.uiManDaysPlayed > 0)
         {
             // calculates the player's current death rate
-            uiDeathRate = (UINT32)((gStrategicStatus.ubMercDeaths * DEATH_RATE_SEVERITY * 100) / gStrategicStatus.uiManDaysPlayed);
+            uiDeathRate = (int)((gStrategicStatus.ubMercDeaths * DEATH_RATE_SEVERITY * 100) / gStrategicStatus.uiManDaysPlayed);
         }
 
-        return ((UINT8)uiDeathRate);
+        return ((int)uiDeathRate);
     }
 
 
-    void ModifyPlayerReputation(INT8 bRepChange)
+    void ModifyPlayerReputation(int bRepChange)
     {
-        INT32 iNewBadRep;
+        int iNewBadRep;
 
         // subtract, so that a negative reputation change results in an increase in bad reputation
-        iNewBadRep = (INT32)gStrategicStatus.ubBadReputation - bRepChange;
+        iNewBadRep = (int)gStrategicStatus.ubBadReputation - bRepChange;
 
         // keep within a 0-100 range (0 = Saint, 100 = Satan)
-        iNewBadRep = __max(0, iNewBadRep);
-        iNewBadRep = __min(100, iNewBadRep);
+        iNewBadRep = Math.Max(0, iNewBadRep);
+        iNewBadRep = Math.Min(100, iNewBadRep);
 
-        gStrategicStatus.ubBadReputation = (UINT8)iNewBadRep;
+        gStrategicStatus.ubBadReputation = (int)iNewBadRep;
     }
 
 
-    BOOLEAN MercThinksDeathRateTooHigh(UINT8 ubProfileID)
+    bool MercThinksDeathRateTooHigh(NPCID ubProfileID)
     {
-        INT8 bDeathRateTolerance;
+        int bDeathRateTolerance;
 
         bDeathRateTolerance = gMercProfiles[ubProfileID].bDeathRate;
 
@@ -90,25 +89,25 @@ public class StrategicStatus
         if (bDeathRateTolerance == 101)
         {
             // then obviously it CAN'T be too high...
-            return (FALSE);
+            return (false);
         }
 
         if (CalcDeathRate() > bDeathRateTolerance)
         {
             // too high - sorry
-            return (TRUE);
+            return (true);
         }
         else
         {
             // within tolerance
-            return (FALSE);
+            return (false);
         }
     }
 
 
-    BOOLEAN MercThinksBadReputationTooHigh(UINT8 ubProfileID)
+    bool MercThinksBadReputationTooHigh(NPCID ubProfileID)
     {
-        INT8 bRepTolerance;
+        int bRepTolerance;
 
         bRepTolerance = gMercProfiles[ubProfileID].bReputationTolerance;
 
@@ -116,35 +115,35 @@ public class StrategicStatus
         if (bRepTolerance == 101)
         {
             // then obviously it CAN'T be too high...
-            return (FALSE);
+            return (false);
         }
 
         if (gStrategicStatus.ubBadReputation > bRepTolerance)
         {
             // too high - sorry
-            return (TRUE);
+            return (true);
         }
         else
         {
             // within tolerance
-            return (FALSE);
+            return (false);
         }
     }
 
 
     // only meaningful for already hired mercs
-    BOOLEAN MercThinksHisMoraleIsTooLow(SOLDIERTYPE* pSoldier)
+    bool MercThinksHisMoraleIsTooLow(SOLDIERTYPE? pSoldier)
     {
-        INT8 bRepTolerance;
-        INT8 bMoraleTolerance;
+        int bRepTolerance;
+        int bMoraleTolerance;
 
-        bRepTolerance = gMercProfiles[pSoldier->ubProfile].bReputationTolerance;
+        bRepTolerance = gMercProfiles[pSoldier.ubProfile].bReputationTolerance;
 
         // if he couldn't care less what it is
         if (bRepTolerance == 101)
         {
             // that obviously it CAN'T be too low...
-            return (FALSE);
+            return (false);
         }
 
 
@@ -152,19 +151,19 @@ public class StrategicStatus
         // above 50, morale is GOOD, never below tolerance then
         bMoraleTolerance = (100 - bRepTolerance) / 2;
 
-        if (pSoldier->bMorale < bMoraleTolerance)
+        if (pSoldier.bMorale < bMoraleTolerance)
         {
             // too low - sorry
-            return (TRUE);
+            return (true);
         }
         else
         {
             // within tolerance
-            return (FALSE);
+            return (false);
         }
     }
 
-    void UpdateLastDayOfPlayerActivity(UINT16 usDay)
+    void UpdateLastDayOfPlayerActivity(int usDay)
     {
         if (usDay > gStrategicStatus.usLastDayOfPlayerActivity)
         {
@@ -173,54 +172,54 @@ public class StrategicStatus
         }
     }
 
-    UINT8 LackOfProgressTolerance(void )
+    int LackOfProgressTolerance()
     {
-        if (gGameOptions.ubDifficultyLevel >= DIF_LEVEL_HARD)
+        if (gGameOptions.ubDifficultyLevel >= DifficultyLevel.Hard)
         {
             // give an EXTRA day over normal
-            return (7 - DIF_LEVEL_MEDIUM + gStrategicStatus.ubHighestProgress / 42);
+            return (7 - (int)DifficultyLevel.Medium + gStrategicStatus.ubHighestProgress / 42);
         }
         else
         {
-            return (6 - gGameOptions.ubDifficultyLevel + gStrategicStatus.ubHighestProgress / 42);
+            return (6 - (int)gGameOptions.ubDifficultyLevel + gStrategicStatus.ubHighestProgress / 42);
         }
 
     }
 
 
     // called once per day in the morning, decides whether Enrico should send any new E-mails to the player
-    void HandleEnricoEmail(void)
+    void HandleEnricoEmail()
     {
-        UINT8 ubCurrentProgress = CurrentPlayerProgressPercentage();
-        UINT8 ubHighestProgress = HighestPlayerProgressPercentage();
+        int ubCurrentProgress = Campaign.CurrentPlayerProgressPercentage();
+        int ubHighestProgress = Campaign.HighestPlayerProgressPercentage();
 
         // if creatures have attacked a mine (doesn't care if they're still there or not at the moment)
-        if (HasAnyMineBeenAttackedByMonsters() && !(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_CREATURES))
+        if (StrategicMines.HasAnyMineBeenAttackedByMonsters() && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_CREATURES)))
         {
-            AddEmail(ENRICO_CREATURES, ENRICO_CREATURES_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_CREATURES;
+            Emails.AddEmail(ENRICO_CREATURES, ENRICO_CREATURES_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_CREATURES;
             return; // avoid any other E-mail at the same time
         }
 
 
-        if ((ubCurrentProgress >= SOME_PROGRESS_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_SOME_PROGRESS))
+        if ((ubCurrentProgress >= SOME_PROGRESS_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_SOME_PROGRESS)))
         {
-            AddEmail(ENRICO_PROG_20, ENRICO_PROG_20_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_SOME_PROGRESS;
+            AddEmail(ENRICO_PROG_20, ENRICO_PROG_20_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_SOME_PROGRESS;
             return; // avoid any setback E-mail at the same time
         }
 
-        if ((ubCurrentProgress >= ABOUT_HALFWAY_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_ABOUT_HALFWAY))
+        if ((ubCurrentProgress >= ABOUT_HALFWAY_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_ABOUT_HALFWAY)))
         {
-            AddEmail(ENRICO_PROG_55, ENRICO_PROG_55_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_ABOUT_HALFWAY;
+            AddEmail(ENRICO_PROG_55, ENRICO_PROG_55_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_ABOUT_HALFWAY;
             return; // avoid any setback E-mail at the same time
         }
 
-        if ((ubCurrentProgress >= NEARLY_DONE_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_NEARLY_DONE))
+        if ((ubCurrentProgress >= NEARLY_DONE_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_NEARLY_DONE)))
         {
-            AddEmail(ENRICO_PROG_80, ENRICO_PROG_80_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_NEARLY_DONE;
+            AddEmail(ENRICO_PROG_80, ENRICO_PROG_80_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_NEARLY_DONE;
             return; // avoid any setback E-mail at the same time
         }
 
@@ -247,10 +246,10 @@ public class StrategicStatus
             // remember that the original setback has been overcome, so another one can generate another E-mail
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_FLAG_SETBACK_OVER;
         }
-        else if (GetWorldDay() > (UINT32)(gStrategicStatus.usLastDayOfPlayerActivity))
+        else if (GetWorldDay() > (int)(gStrategicStatus.usLastDayOfPlayerActivity))
         {
-            INT8 bComplaint = 0;
-            UINT8 ubTolerance;
+            int bComplaint = 0;
+            int ubTolerance;
 
             gStrategicStatus.ubNumberOfDaysOfInactivity++;
             ubTolerance = LackOfProgressTolerance();
@@ -273,7 +272,7 @@ public class StrategicStatus
                         bComplaint = 3;
                     }
                 }
-                else if (gStrategicStatus.ubNumberOfDaysOfInactivity == (UINT32)ubTolerance * 2)
+                else if (gStrategicStatus.ubNumberOfDaysOfInactivity == (int)ubTolerance * 2)
                 {
                     // six days? send 2nd or 3rd message possibly
                     if (!(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS2))
@@ -333,13 +332,13 @@ public class StrategicStatus
         // reset # of new sectors visited 'today' 
         // grant some leeway for the next day, could have started moving
         // at night...
-        gStrategicStatus.ubNumNewSectorsVisitedToday = __min(gStrategicStatus.ubNumNewSectorsVisitedToday, NEW_SECTORS_EQUAL_TO_ACTIVITY) / 3;
+        gStrategicStatus.ubNumNewSectorsVisitedToday = Math.Min(gStrategicStatus.ubNumNewSectorsVisitedToday, NEW_SECTORS_EQUAL_TO_ACTIVITY) / 3;
     }
 
 
-    void TrackEnemiesKilled(UINT8 ubKilledHow, UINT8 ubSoldierClass)
+    void TrackEnemiesKilled(int ubKilledHow, int ubSoldierClass)
     {
-        INT8 bRankIndex;
+        int bRankIndex;
 
         bRankIndex = SoldierClassToRankIndex(ubSoldierClass);
 
@@ -359,9 +358,9 @@ public class StrategicStatus
     }
 
 
-    INT8 SoldierClassToRankIndex(UINT8 ubSoldierClass)
+    int SoldierClassToRankIndex(int ubSoldierClass)
     {
-        INT8 bRankIndex = -1;
+        int bRankIndex = -1;
 
         // the soldier class defines are not in natural ascending order, elite comes before army!
         switch (ubSoldierClass)
@@ -386,9 +385,9 @@ public class StrategicStatus
 
 
 
-    UINT8 RankIndexToSoldierClass(UINT8 ubRankIndex)
+    int RankIndexToSoldierClass(int ubRankIndex)
     {
-        UINT8 ubSoldierClass = 0;
+        int ubSoldierClass = 0;
 
         Assert(ubRankIndex < NUM_ENEMY_RANKS);
 
@@ -426,4 +425,20 @@ public enum REPUTATION
     EARLY_FIRING = -3,
     KILLED_MONSTER_QUEEN = +15,
     KILLED_DEIDRANNA = +25,
+}
+
+// flags to remember whether a certain E-mail has already been sent out
+[Flags]
+public enum ENRICO_EMAIL
+{
+    SENT_SOME_PROGRESS = 0x0001,
+    SENT_ABOUT_HALFWAY = 0x0002,
+    SENT_NEARLY_DONE = 0x0004,
+    SENT_MINOR_SETBACK = 0x0008,
+    SENT_MAJOR_SETBACK = 0x0010,
+    SENT_CREATURES = 0x0020,
+    FLAG_SETBACK_OVER = 0x0040,
+    SENT_LACK_PROGRESS1 = 0x0080,
+    SENT_LACK_PROGRESS2 = 0x0100,
+    SENT_LACK_PROGRESS3 = 0x0200,
 }

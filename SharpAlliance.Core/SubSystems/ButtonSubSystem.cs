@@ -14,11 +14,9 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
-
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -100,10 +98,31 @@ namespace SharpAlliance.Core.SubSystems
 
             IsInitialized = await InitializeButtonImageManager(
                 Surfaces.Unknown,
-                -1,
+            -1,
                 -1);
 
             return IsInitialized;
+        }
+
+        public static bool EnableButton(GUI_BUTTON iButtonID)
+        {
+            GUI_BUTTON? b = iButtonID;
+            bool OldState;
+
+            // If button exists, set the ENABLED flag
+            if (b is not null)
+            {
+                OldState = b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED);
+                b.uiFlags |= (ButtonFlags.BUTTON_ENABLED | ButtonFlags.BUTTON_DIRTY);
+            }
+            else
+            {
+                OldState = false;
+            }
+
+
+            // Return previous ENABLED state of this button
+            return OldState;
         }
 
         public static void SpecifyButtonSoundScheme(GUI_BUTTON buttonId, BUTTON_SOUND_SCHEME soundScheme)
@@ -312,7 +331,7 @@ namespace SharpAlliance.Core.SubSystems
             fonts.RestoreFontSettings();
         }
 
-        public static bool SetButtonCursor(GUI_BUTTON? b, CURSOR usCursor)
+        internal static bool SetButtonCursor(GUI_BUTTON? b, CURSOR usCursor)
         {
             if (b is null)
             {
@@ -672,7 +691,7 @@ namespace SharpAlliance.Core.SubSystems
                 // yp += b.bTextSubOffSet.Y;
                 // xp += b.bTextSubOffSet.X;
 
-                fonts.DrawTextToScreen(
+                FontSubSystem.DrawTextToScreen(
                     b.stringText,
                     x,
                     y,
@@ -1310,40 +1329,6 @@ namespace SharpAlliance.Core.SubSystems
             button.IsDirty = true;
         }
 
-        public static bool EnableButton(GUI_BUTTON b)
-        {
-            ButtonFlags OldState;
-
-            // If button exists, set the ENABLED flag
-            if (b is not null)
-            {
-                OldState = b.uiFlags & ButtonFlags.BUTTON_ENABLED;
-                b.uiFlags |= (ButtonFlags.BUTTON_ENABLED | ButtonFlags.BUTTON_DIRTY);
-            }
-            else
-            {
-                OldState = 0;
-            }
-
-
-            // Return previous ENABLED state of this button
-            return ((OldState == ButtonFlags.BUTTON_ENABLED) ? true : false);
-        }
-
-        public static bool EnableButton(int iButtonID)
-        {
-            GUI_BUTTON? b;
-
-            b = ButtonList[iButtonID];
-
-            if (b is not null)
-            {
-                return EnableButton(b);
-            }
-
-            return false;
-        }
-
         public static bool DisableButton(GUI_BUTTON button)
         {
             return false;
@@ -1869,9 +1854,9 @@ namespace SharpAlliance.Core.SubSystems
         //	Dispatches all button callbacks for mouse movement. This function gets
         //	called by the Mouse System. *DO NOT CALL DIRECTLY*
         //
-        private static void QuickButtonCallbackMouseMove(ref MOUSE_REGION reg, MouseCallbackReasons reason)
+        private static void QuickButtonCallbackMouseMove(ref MOUSE_REGION reg, MSYS_CALLBACK_REASON reason)
         {
-            GUI_BUTTON b = (GUI_BUTTON)mouse.GetRegionUserData(ref reg, 0);
+            GUI_BUTTON b = (GUI_BUTTON)MouseSubSystem.GetRegionUserData(ref reg, 0);
 
             // sprintf(str, "QuickButtonCallbackMMove: Mouse Region #%d (%d,%d to %d,%d) has invalid buttonID %d",
             //                     reg.IDNumber, reg.Bounds.X, reg.Bounds.Y, reg.Bounds.Width, reg.Bounds.Height, iButtonID);
@@ -1883,13 +1868,13 @@ namespace SharpAlliance.Core.SubSystems
 
 
             if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED) &&
-                  (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE) || reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE)))
+                  (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE) || reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE)))
             {
                 b.IsDirty = true;
             }
 
             // Mouse moved on the button, so reset it's timer to maximum.
-            if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
             {
                 //check for sound playing stuff
                 if (b.ubSoundSchemeID != 0)
@@ -1929,7 +1914,7 @@ namespace SharpAlliance.Core.SubSystems
             // ATE: New stuff for toggle buttons that work with new Win95 paridigm
             if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_NEWTOGGLE))
             {
-                if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+                if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
                 {
                     if (b.ubToggleButtonActivated != 0)
                     {
@@ -1964,7 +1949,7 @@ namespace SharpAlliance.Core.SubSystems
         //	Dispatches all button callbacks for button presses. This function is
         //	called by the Mouse System. *DO NOT CALL DIRECTLY*
         //
-        private static void QuickButtonCallbackMButn(ref MOUSE_REGION reg, MouseCallbackReasons reason)
+        private static void QuickButtonCallbackMButn(ref MOUSE_REGION reg, MSYS_CALLBACK_REASON reason)
         {
             GUI_BUTTON b;
             int iButtonID;
@@ -1973,7 +1958,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // Assert(reg != null);
 
-            b = (GUI_BUTTON)mouse.GetRegionUserData(ref reg, index: 0);
+            b = (GUI_BUTTON)MouseSubSystem.GetRegionUserData(ref reg, index: 0);
 
             //      sprintf(str, "QuickButtonCallbackMButn: Mouse Region #%d (%d,%d to %d,%d) has invalid buttonID %d",
             //                          reg.IDNumber, reg.Bounds.X, reg.Bounds.Y, reg.Bounds.Width, reg.Bounds.Height, iButtonID);
@@ -1983,8 +1968,8 @@ namespace SharpAlliance.Core.SubSystems
                 return;
             }
 
-            MouseBtnDown = reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN)
-                || reason.HasFlag(MouseCallbackReasons.RBUTTON_DWN);
+            MouseBtnDown = reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN)
+                || reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_DWN);
 
             StateBefore = b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON) ? true : false;
 
@@ -1992,7 +1977,7 @@ namespace SharpAlliance.Core.SubSystems
             if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_NEWTOGGLE)
                 && b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
             {
-                if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+                if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
                 {
                     if (b.ubToggleButtonActivated == 0)
                     {
@@ -2009,7 +1994,7 @@ namespace SharpAlliance.Core.SubSystems
                         b.ubToggleButtonActivated = 1;
                     }
                 }
-                else if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+                else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
                 {
                     b.ubToggleButtonActivated = 0;
                 }
@@ -2024,20 +2009,20 @@ namespace SharpAlliance.Core.SubSystems
             if (b.MoveCallback == MouseSubSystem.DefaultMoveCallback
                 && b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
             {
-                if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+                if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
                 {
                     Globals.gpAnchoredButton = b;
                     Globals.gfAnchoredState = StateBefore;
                     b.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 }
-                else if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP) && b.uiFlags.HasFlag(ButtonFlags.BUTTON_NO_TOGGLE))
+                else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP) && b.uiFlags.HasFlag(ButtonFlags.BUTTON_NO_TOGGLE))
                 {
                     b.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 }
             }
             else if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_CHECKBOX))
             {
-                if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+                if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
                 {   //the check box button gets anchored, though it doesn't actually use the anchoring move callback.
                     //The effect is different, we don't want to toggle the button state, but we do want to anchor this
                     //button so that we don't effect any other buttons while we move the mouse around in anchor mode.
@@ -2049,7 +2034,7 @@ namespace SharpAlliance.Core.SubSystems
                     StateBefore = b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON) ? false : true;
                     StateAfter = !StateBefore;
                 }
-                else if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+                else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
                 {
                     b.uiFlags ^= ButtonFlags.BUTTON_CLICKED_ON; //toggle the checkbox state upon release inside button area.
                                                                 //Trick the before state of the button to be different so the sound will play properly as checkbox buttons 
@@ -2089,7 +2074,7 @@ namespace SharpAlliance.Core.SubSystems
                 //Added these checks to avoid a case where it was possible to process a leftbuttonup message when
                 //the button wasn't anchored, and should have been.
                 Globals.gfDelayButtonDeletion = true;
-                if ((reason & MouseCallbackReasons.LBUTTON_UP) == 0
+                if ((reason & MSYS_CALLBACK_REASON.LBUTTON_UP) == 0
                     || b.MoveCallback is not null
                     && Globals.gpPrevAnchoredButton == b)
                 {
@@ -2098,7 +2083,7 @@ namespace SharpAlliance.Core.SubSystems
 
                 Globals.gfDelayButtonDeletion = false;
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN) && !b.uiFlags.HasFlag(ButtonFlags.BUTTON_IGNORE_CLICKS))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN) && !b.uiFlags.HasFlag(ButtonFlags.BUTTON_IGNORE_CLICKS))
             {
                 // Otherwise, do default action with this button.
                 b.uiFlags ^= ButtonFlags.BUTTON_CLICKED_ON;
@@ -2112,14 +2097,14 @@ namespace SharpAlliance.Core.SubSystems
             // Play sounds for this enabled button (disabled sounds have already been done)
             if (b.ubSoundSchemeID != 0 && b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
             {
-                if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+                if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
                 {
                     if (b.ubSoundSchemeID != 0 && StateBefore && !StateAfter)
                     {
                         PlayButtonSound(b, ButtonSounds.BUTTON_SOUND_CLICKED_OFF);
                     }
                 }
-                else if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+                else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
                 {
                     if (b.ubSoundSchemeID != 0 && !StateBefore && StateAfter)
                     {
@@ -2260,7 +2245,7 @@ namespace SharpAlliance.Core.SubSystems
     }
 
     // GUI_BUTTON callback function type
-    public delegate void GuiCallback(ref GUI_BUTTON button, MouseCallbackReasons reason);
+    public delegate void GuiCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason);
 
     public class GUI_BUTTON
     {

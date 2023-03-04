@@ -15,7 +15,7 @@ public class STRATEGIC_STATUS
     public int ubMercDeaths;                     // how many soldiers have bit it while in the player's employ (0-100)
     public int uiManDaysPlayed;             // once per day, # living mercs on player's team is added to this running total
     public int ubBadReputation;              // how bad a reputation player has earned through his actions, performance, etc. (0-100)
-    public int usEnricoEmailFlags;      // bit flags that control progress-related E-mails from Enrico
+    public ENRICO_EMAIL usEnricoEmailFlags;      // bit flags that control progress-related E-mails from Enrico
     public int ubInsuranceInvestigationsCnt;     // how many times merc has been investigated for possible insurance fraud
     public int ubUnhiredMercDeaths;      // how many mercs have died while NOT working for the player
     public int usPlayerKills;                   // kills achieved by all mercs controlled by player together.  *Excludes* militia kills!

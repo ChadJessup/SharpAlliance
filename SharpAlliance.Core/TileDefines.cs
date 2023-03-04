@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
-
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -56,6 +55,18 @@ public class TileDefine
         }
 
         return false;
+    }
+
+    public static bool GetTileFlags(int usIndex, out uint puiFlags)
+    {
+        TILE_ELEMENT TileElem;
+
+        // Get tile element
+        TileElem = gTileDatabase[usIndex];
+
+        puiFlags = TileElem.uiFlags;
+
+        return (true);
     }
 }
 

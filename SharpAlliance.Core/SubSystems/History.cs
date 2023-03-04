@@ -2,7 +2,7 @@
 using System.IO;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Core.Screens;
+
 using static SharpAlliance.Core.EnglishText;
 using static SharpAlliance.Core.Globals;
 
@@ -10,18 +10,18 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class History
 {
-    private static bool fInHistoryMode = false;
+    bool fInHistoryMode = false;
 
     // current page displayed
-    private static int iCurrentHistoryPage = 1;
+    int iCurrentHistoryPage = 1;
 
     // the History record list
-    private static history? pHistoryListHead = null;
+    static history? pHistoryListHead = null;
 
     // current History record (the one at the top of the current page)
-    private static history? pCurrentHistory = null;
+    static history? pCurrentHistory = null;
 
-    public static int SetHistoryFact(HISTORY ubCode, object ubSecondCode, uint uiDate, int sSectorX, MAP_ROW sSectorY)
+    public static int SetHistoryFact(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -66,7 +66,7 @@ public class History
     }
 
 
-    public static int AddHistoryToPlayersLog(HISTORY ubCode, object ubSecondCode, uint uiDate, int sSectorX, int sSectorY)
+    public static int AddHistoryToPlayersLog(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -111,7 +111,7 @@ public class History
             FileDelete(HISTORY_DATA_FILE);
         }
 
-        AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GameClock.GetWorldTotalMin(), -1, -1);
+        AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GetWorldTotalMin(), -1, -1);
 
     }
 
@@ -222,24 +222,18 @@ public class History
         // title bar
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, out guiTITLE));
+        CHECKF(AddVideoObject(&VObjectDesc, &guiTITLE));
 
         // top portion of the screen background
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
-        if(VeldridVideoManager.AddVideoObject(VObjectDesc, out guiTOP))
-        {
-            return false;
-        }
+        CHECKF(AddVideoObject(&VObjectDesc, &guiTOP));
 
 
         // shaded line
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
-        if(VeldridVideoManager.AddVideoObject(VObjectDesc, out guiSHADELINE) is null)
-        {
-            return false;
-        }
+        CHECKF(AddVideoObject(&VObjectDesc, &guiSHADELINE));
 
         /*
         Not being used???  DF commented out	
@@ -251,11 +245,7 @@ public class History
         // black divider line - long ( 480 length)
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
-
-        if(VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiLONGLINE) is null)
-        {
-            return false;
-        }
+        CHECKF(AddVideoObject(&VObjectDesc, &guiLONGLINE));
 
         return (true);
     }
@@ -264,10 +254,10 @@ public class History
     {
 
         // delete history video objects from memory
-        VeldridVideoManager.DeleteVideoObjectFromIndex(Globals.guiLONGLINE);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(Globals.guiTOP);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(Globals.guiTITLE);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(Globals.guiSHADELINE);
+        DeleteVideoObjectFromIndex(Globals.guiLONGLINE);
+        DeleteVideoObjectFromIndex(Globals.guiTOP);
+        DeleteVideoObjectFromIndex(Globals.guiTITLE);
+        DeleteVideoObjectFromIndex(Globals.guiSHADELINE);
 
         return;
     }
@@ -283,11 +273,11 @@ public class History
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiTITLE);
 
         // blt title bar to screen
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT_SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiTOP);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT_SRCTRANSPARENCY, null);
 
         // display background for history list
         DisplayHistoryListBackground();
@@ -312,21 +302,21 @@ public class History
     {
 
         // the prev page button
-        Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = ButtonSubSystem.LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
-        Globals.giHistoryButton[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = ButtonSubSystem.QuickCreateButton(Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON], Globals.PREV_BTN_X, Globals.BTN_Y,
+        Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
+        Globals.giHistoryButton[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = QuickCreateButton(Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON], Globals.PREV_BTN_X, Globals.BTN_Y,
                                             BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GuiCallback)BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnHistoryDisplayPrevPageCallBack);
+                                            (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayPrevPageCallBack);
 
         // the next page button
-        Globals.giHistoryButtonImage[NEXT_PAGE_BUTTON] = ButtonSubSystem.LoadButtonImage("LAPTOP\\arrows.sti", -1, 6, -1, 7, -1);
-        Globals.giHistoryButton[NEXT_PAGE_BUTTON] = ButtonSubSystem.QuickCreateButton(giHistoryButtonImage[NEXT_PAGE_BUTTON], NEXT_BTN_X, BTN_Y,
+        Globals.giHistoryButtonImage[NEXT_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 6, -1, 7, -1);
+        Globals.giHistoryButton[NEXT_PAGE_BUTTON] = QuickCreateButton(giHistoryButtonImage[NEXT_PAGE_BUTTON], NEXT_BTN_X, BTN_Y,
                                             BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                                (GuiCallback)BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnHistoryDisplayNextPageCallBack);
+                                                (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayNextPageCallBack);
 
 
         // set buttons
-        ButtonSubSystem.SetButtonCursor(giHistoryButton[0], Globals.CURSOR_LAPTOP_SCREEN);
-        ButtonSubSystem.SetButtonCursor(giHistoryButton[1], Globals.CURSOR_LAPTOP_SCREEN);
+        SetButtonCursor(giHistoryButton[0], Globals.CURSOR_LAPTOP_SCREEN);
+        SetButtonCursor(giHistoryButton[1], Globals.CURSOR_LAPTOP_SCREEN);
 
         return;
     }
@@ -338,27 +328,27 @@ public class History
         // remove History buttons and images from memory
 
         // next page button
-        ButtonSubSystem.RemoveButton(giHistoryButton[1]);
-        ButtonSubSystem.UnloadButtonImage(giHistoryButtonImage[1]);
+        RemoveButton(giHistoryButton[1]);
+        UnloadButtonImage(giHistoryButtonImage[1]);
 
         // prev page button
-        ButtonSubSystem.RemoveButton(giHistoryButton[0]);
-        ButtonSubSystem.UnloadButtonImage(giHistoryButtonImage[0]);
+        RemoveButton(giHistoryButton[0]);
+        UnloadButtonImage(giHistoryButtonImage[0]);
 
         return;
     }
 
-    void BtnHistoryDisplayPrevPageCallBack(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+    void BtnHistoryDisplayPrevPageCallBack(GUI_BUTTON? btn, MSYS_CALLBACK_REASON reason)
     {
         // force redraw
-        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             fReDrawScreenFlag = true;
         }
 
 
         // force redraw
-        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             fReDrawScreenFlag = true;
             btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
@@ -378,17 +368,17 @@ public class History
 
     }
 
-    void BtnHistoryDisplayNextPageCallBack(GUI_BUTTON? btn, MouseCallbackReasons reason)
+    void BtnHistoryDisplayNextPageCallBack(GUI_BUTTON? btn, MSYS_CALLBACK_REASON reason)
     {
 
-        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             fReDrawScreenFlag = true;
         }
 
 
         // force redraw
-        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             // increment currentPage
             btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
@@ -421,7 +411,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return (false);
         }
@@ -474,7 +464,7 @@ public class History
     }
 
 
-    public static int ProcessAndEnterAHistoryRecord(HISTORY ubCode, uint uiDate, object ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
+    public static int ProcessAndEnterAHistoryRecord(HISTORY ubCode, int uiDate, int ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
     {
         int uiId = 0;
         history? pHistory = pHistoryListHead;
@@ -556,7 +546,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return;
         }
@@ -606,7 +596,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_CREATE_ALWAYS, false);
 
         // if no file exits, do nothing
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return (false);
         }
@@ -673,15 +663,15 @@ public class History
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // the date header
-        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[0]);
 
         // the date header
-        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[3]);
 
         // event header
-        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, usX, usY);
+        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, usX, usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[4]);
         // reset shadow
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -700,13 +690,13 @@ public class History
         for (iCounter = 0; iCounter < 11; iCounter++)
         {
             // blt title bar to screen
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT.SRCTRANSPARENCY, null);
+            VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT_SRCTRANSPARENCY, null);
         }
 
         // the long hortizontal line int he records list display region
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiLONGLINE);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT.SRCTRANSPARENCY, null);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT.SRCTRANSPARENCY, null);
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT_SRCTRANSPARENCY, null);
+        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT_SRCTRANSPARENCY, null);
 
         return;
     }
@@ -729,7 +719,7 @@ public class History
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // error check
-        if (pCurHistory is null)
+        if (!pCurHistory)
         {
             return;
         }
@@ -748,11 +738,11 @@ public class History
             }
             // get and write the date
             wprintf(sString, "%d", (pCurHistory.uiDate / (24 * 60)));
-            FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, Globals.HISTORY_TEXT_FONT, out usX, out usY);
+            FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, Globals.HISTORY.TEXT_FONT, out usX, out usY);
             mprintf(usX, Globals.RECORD_Y + (iCounter * (Globals.BOX_HEIGHT)) + 3, sString);
 
             // now the actual history text
-            //FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH,0,RECORD_HISTORY.WIDTH,0,  pHistoryStrings[pCurHistory.ubCode], HISTORY_TEXT_FONT,&usX, &usY);
+            //FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH,0,RECORD_HISTORY.WIDTH,0,  pHistoryStrings[pCurHistory.ubCode], HISTORY.TEXT_FONT,&usX, &usY);
             ProcessHistoryTransactionString(sString, pCurHistory);
             //	mprintf(RECORD_DATE_X + RECORD_DATE_WIDTH + 25, RECORD_Y + ( iCounter * ( BOX_HEIGHT ) ) + 3, pHistoryStrings[pCurHistory.ubCode] );
             mprintf(Globals.RECORD_DATE_X + Globals.RECORD_LOCATION_WIDTH + Globals.RECORD_DATE_WIDTH + 15, Globals.RECORD_Y + (iCounter * (Globals.BOX_HEIGHT)) + 3, sString);
@@ -761,13 +751,13 @@ public class History
             // no location
             if ((pCurHistory.sSectorX == -1) || (pCurHistory.sSectorY == -1))
             {
-                FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
+                FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
                 mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, pHistoryLocations[0]);
             }
             else
             {
                 GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, sString, true);
-                FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, out sX, out sY);
+                FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, sX, sY);
 
                 ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
 
@@ -781,7 +771,7 @@ public class History
             pCurHistory = pCurHistory.Next;
 
             // last page, no Historys left, return
-            if (pCurHistory is null)
+            if (!pCurHistory)
             {
 
                 // restore shadow
@@ -850,7 +840,7 @@ public class History
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
-        if (pCurrentHistory is null)
+        if (!pCurrentHistory)
         {
             wprintf(sString, "%s  %d / %d", pHistoryHeaders[1], 1, 1);
             mprintf(Globals.PAGE_NUMBER_X, Globals.PAGE_NUMBER_Y, sString);
@@ -924,18 +914,18 @@ public class History
                 break;
 
             case HISTORY.HIRED_MERC_FROM_AIM:
-                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_AIM], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_AIM], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
                 break;
 
             case HISTORY.MERC_KILLED:
-                if (pHistory.ubSecondCode != (int)NPCID.NO_PROFILE)
+                if (pHistory.ubSecondCode != NO_PROFILE)
                 {
-                    wprintf(pString, pHistoryStrings[HISTORY.MERC_KILLED], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zName);
+                    wprintf(pString, pHistoryStrings[HISTORY.MERC_KILLED], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
                 }
                 break;
 
             case HISTORY.HIRED_MERC_FROM_MERC:
-                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_MERC], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_MERC], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
                 break;
 
             case HISTORY.SETTLED_ACCOUNTS_AT_MERC:
@@ -948,50 +938,50 @@ public class History
                 wprintf(pString, pHistoryStrings[HISTORY.CHARACTER_GENERATED]);
                 break;
             case (HISTORY.PURCHASED_INSURANCE):
-                wprintf(pString, pHistoryStrings[HISTORY.PURCHASED_INSURANCE], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.PURCHASED_INSURANCE], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
             case (HISTORY.CANCELLED_INSURANCE):
-                wprintf(pString, pHistoryStrings[HISTORY.CANCELLED_INSURANCE], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.CANCELLED_INSURANCE], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
             case (HISTORY.INSURANCE_CLAIM_PAYOUT):
-                wprintf(pString, pHistoryStrings[HISTORY.INSURANCE_CLAIM_PAYOUT], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.INSURANCE_CLAIM_PAYOUT], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             case HISTORY.EXTENDED_CONTRACT_1_DAY:
-                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_DAY], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_DAY], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             case HISTORY.EXTENDED_CONTRACT_1_WEEK:
-                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_WEEK], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_WEEK], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             case HISTORY.EXTENDED_CONTRACT_2_WEEK:
-                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_2_WEEK], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_2_WEEK], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             case (HISTORY.MERC_FIRED):
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_FIRED], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_FIRED], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             case (HISTORY.MERC_QUIT):
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_QUIT], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_QUIT], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             case (HISTORY.QUEST_STARTED):
-                GetQuestStartedString(pHistory.ubSecondCode, out sString);
+                GetQuestStartedString(pHistory.ubSecondCode, sString);
                 wprintf(pString, sString);
 
                 break;
             case (HISTORY.QUEST_FINISHED):
-                GetQuestEndedString(pHistory.ubSecondCode, out sString);
+                GetQuestEndedString(pHistory.ubSecondCode, sString);
                 wprintf(pString, sString);
 
                 break;
             case (HISTORY.TALKED_TO_MINER):
-                wprintf(pString, pHistoryStrings[HISTORY.TALKED_TO_MINER], pTownNames[(TOWNS)pHistory.ubSecondCode]);
+                wprintf(pString, pHistoryStrings[HISTORY.TALKED_TO_MINER], pTownNames[pHistory.ubSecondCode]);
                 break;
             case (HISTORY.LIBERATED_TOWN):
-                wprintf(pString, pHistoryStrings[HISTORY.LIBERATED_TOWN], pTownNames[(TOWNS)pHistory.ubSecondCode]);
+                wprintf(pString, pHistoryStrings[HISTORY.LIBERATED_TOWN], pTownNames[pHistory.ubSecondCode]);
                 break;
             case (HISTORY.CHEAT_ENABLED):
                 wprintf(pString, pHistoryStrings[HISTORY.CHEAT_ENABLED]);
@@ -1000,13 +990,13 @@ public class History
                 wprintf(pString, pHistoryStrings[HISTORY.TALKED_TO_FATHER_WALKER]);
                 break;
             case HISTORY.MERC_MARRIED_OFF:
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_MARRIED_OFF], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_MARRIED_OFF], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
             case HISTORY.MERC_CONTRACT_EXPIRED:
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_CONTRACT_EXPIRED], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_CONTRACT_EXPIRED], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
                 break;
             case HISTORY.RPC_JOINED_TEAM:
-                wprintf(pString, pHistoryStrings[HISTORY.RPC_JOINED_TEAM], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.RPC_JOINED_TEAM], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
                 break;
             case HISTORY.ENRICO_COMPLAINED:
                 wprintf(pString, pHistoryStrings[HISTORY.ENRICO_COMPLAINED]);
@@ -1016,14 +1006,14 @@ public class History
             case HISTORY.MINE_SHUTDOWN:
             case HISTORY.MINE_REOPENED:
                 // all the same format
-                wprintf(pString, pHistoryStrings[pHistory.ubCode], pTownNames[(TOWNS)pHistory.ubSecondCode]);
+                wprintf(pString, pHistoryStrings[pHistory.ubCode], pTownNames[pHistory.ubSecondCode]);
                 break;
             case HISTORY.LOST_BOXING:
             case HISTORY.WON_BOXING:
             case HISTORY.DISQUALIFIED_BOXING:
             case HISTORY.NPC_KILLED:
             case HISTORY.MERC_KILLED_CHARACTER:
-                wprintf(pString, pHistoryStrings[pHistory.ubCode], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[pHistory.ubCode], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
                 break;
 
             // ALL SIMPLE HISTORY LOG MSGS, NO PARAMS
@@ -1094,13 +1084,13 @@ public class History
         if (iCurrentHistoryPage == 1)
         {
             // first page, disable left buttons
-            ButtonSubSystem.DisableButton(giHistoryButton[PREV_PAGE_BUTTON]);
+            DisableButton(giHistoryButton[PREV_PAGE_BUTTON]);
 
         }
         else
         {
             // enable buttons
-            ButtonSubSystem.EnableButton(giHistoryButton[PREV_PAGE_BUTTON]);
+            EnableButton(giHistoryButton[PREV_PAGE_BUTTON]);
 
         }
 
@@ -1111,12 +1101,12 @@ public class History
             DrawAPageofHistoryRecords();
 
             // enable buttons
-            ButtonSubSystem.EnableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
+            EnableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
 
         }
         else
         {
-            ButtonSubSystem.DisableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
+            DisableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
         }
     }
 
@@ -1152,7 +1142,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return (false);
         }
@@ -1248,7 +1238,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_WRITE), false);
 
         // failed to get file, return
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return (false);
         }
@@ -1310,7 +1300,7 @@ public class History
         return (true);
     }
 
-    private static bool LoadNextHistoryPage()
+    bool LoadNextHistoryPage()
     {
 
         // clear out old list of records, and load in previous page worth of records
@@ -1417,7 +1407,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return 0;
         }
@@ -1453,7 +1443,7 @@ public class History
         hFileHandle = FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
 
         // if no file exits, do nothing
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return (false);
         }
@@ -1482,7 +1472,7 @@ public class History
         return (true);
     }
 
-    public static void ResetHistoryFact(QUEST ubCode, int sSectorX, MAP_ROW sSectorY)
+    void ResetHistoryFact(int ubCode, int sSectorX, int sSectorY)
     {
         // run through history list
         int iOldHistoryPage = iCurrentHistoryPage;
@@ -1525,7 +1515,7 @@ public class History
             LoadNextHistoryPage();
         }
 
-        SetHistoryFact(HISTORY.QUEST_FINISHED, ubCode, GameClock.GetWorldTotalMin(), sSectorX, sSectorY);
+        SetHistoryFact(HISTORY.QUEST_FINISHED, ubCode, GetWorldTotalMin(), sSectorX, sSectorY);
         return;
     }
 
@@ -1574,17 +1564,17 @@ public class History
         return (uiTime);
     }
 
-    public static void GetQuestStartedString(int ubQuestValue, out string sQuestString)
+    void GetQuestStartedString(int ubQuestValue, string sQuestString)
     {
         // open the file and copy the string
-        LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, 160 * (ubQuestValue * 2), 160);
+        LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", sQuestString, 160 * (ubQuestValue * 2), 160);
     }
 
 
-    public static void GetQuestEndedString(int ubQuestValue, out string sQuestString)
+    void GetQuestEndedString(int ubQuestValue, string sQuestString)
     {
         // open the file and copy the string
-        LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, 160 * ((ubQuestValue * 2) + 1), 160);
+        LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", sQuestString, 160 * ((ubQuestValue * 2) + 1), 160);
     }
 
     int GetNumberOfHistoryPages()
@@ -1603,7 +1593,7 @@ public class History
         hFileHandle = FileOpen(Globals.HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (hFileHandle is null)
+        if (!hFileHandle)
         {
             return (0);
         }
@@ -1631,8 +1621,8 @@ public class history
 {
     public HISTORY ubCode; // the code index in the finance code table
     public int uiIdNumber; // unique id number
-    public object ubSecondCode; // secondary code 
-    public uint uiDate; // time in the world in global time
+    public int ubSecondCode; // secondary code 
+    public int uiDate; // time in the world in global time
     public int sSectorX; // sector X this took place in
     public int sSectorY; // sector Y this took place in
     public int bSectorZ;

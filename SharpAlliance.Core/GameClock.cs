@@ -1033,9 +1033,9 @@ public class GameClock
     }
 
 
-    void PauseOfClockBtnCallback(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
+    void PauseOfClockBtnCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-        if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             HandlePlayerPauseUnPauseOfGame();
         }
@@ -1128,9 +1128,9 @@ public class GameClock
     }
 
 
-    void ScreenMaskForGamePauseBtnCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
+    void ScreenMaskForGamePauseBtnCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-        if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             // unpause the game
             HandlePlayerPauseUnPauseOfGame();

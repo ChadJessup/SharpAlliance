@@ -345,7 +345,7 @@ namespace SharpAlliance.Core.Screens
 
             //Get the main background screen graphic and blt it
             HVOBJECT background = VeldridVideoManager.GetVideoObject(this.guiGIOMainBackGroundImageKey);
-            //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY, null);
+            //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT_SRCTRANSPARENCY, null);
             VeldridVideoManager.BltVideoObject(background, 0, 0, 0, 0);
             //Shade the background
             // VeldridVideoManager.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358
@@ -447,9 +447,9 @@ namespace SharpAlliance.Core.Screens
         {
         }
 
-        private void BtnDifficultyTogglesCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnDifficultyTogglesCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 var ubButton = ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
@@ -485,9 +485,9 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void BtnGameStyleTogglesCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnGameStyleTogglesCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 var ubButton = ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
@@ -522,9 +522,9 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void BtnGameSaveTogglesCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnGameSaveTogglesCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 //		Ubyte	ubButton = (Ubyte)MSYS_GetBtnUserData( btn, 0 );
 
@@ -560,9 +560,9 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void BtnGunOptionsTogglesCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnGunOptionsTogglesCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 var ubButton = ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
@@ -598,14 +598,14 @@ namespace SharpAlliance.Core.Screens
             }
         }
 
-        private void BtnGIODoneCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnGIODoneCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
@@ -629,15 +629,15 @@ namespace SharpAlliance.Core.Screens
         {
         }
 
-        private void BtnGIOCancelCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        private void BtnGIOCancelCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 

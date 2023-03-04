@@ -44,6 +44,9 @@ public partial class Globals
     public static bool gfGamePaused { get; set; }
     public static bool gfTimeInterrupt { get; set; } = false;
     public static bool gfAtLeastOneMercWasHired { get; internal set; }
+    public static bool fDisplayMessageFlag { get; internal set; }
+    public static bool gfPageButtonsWereCreated { get; internal set; }
+    public static int gubVideoConferencingMode { get; internal set; }
 
     public static bool gfTimeInterruptPause = false;
     public static bool fSuperCompression = false;
@@ -96,6 +99,12 @@ public partial class Globals
 
     public static bool gfResetAllPlayerKnowsEnemiesFlags;
 
+    internal static void MemFree(object pSubject)
+    {
+        // this is here because the original C code calls it a lot, nop
+    }
+
+    internal static int wcslen(string src) => src.Length;
 }
 
 public enum WARPTIME

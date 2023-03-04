@@ -95,8 +95,8 @@ namespace SharpAlliance.Core.SubSystems
         private FontStyle gpHugeFont;
         private HVOBJECT gvoHugeFont;
 
-        private Dictionary<FontStyle, Font> fontLookup = new();
-        private Dictionary<FontColor, Rgba32> fontColorLookup = new();
+        private static Dictionary<FontStyle, Font> fontLookup = new();
+        private static Dictionary<FontColor, Rgba32> fontColorLookup = new();
 
         public bool IsInitialized { get; }
         public bool FontDestWrap { get; private set; }
@@ -244,7 +244,7 @@ namespace SharpAlliance.Core.SubSystems
         {
         }
 
-        public int DisplayWrappedString(
+        public static int DisplayWrappedString(
             Point pos,
             int sWrappedWidth,
             int gap,
@@ -254,7 +254,7 @@ namespace SharpAlliance.Core.SubSystems
             FontColor sBackgroundColor,
             TextJustifies bJustified)
         {
-            this.DrawTextToScreen(
+            DrawTextToScreen(
                 stringText,
                 pos,
                 sWrappedWidth,
@@ -266,7 +266,7 @@ namespace SharpAlliance.Core.SubSystems
             return 0;
         }
 
-        public void DrawTextToScreen(
+        public static void DrawTextToScreen(
             string text,
             Point pos,
             int width,
@@ -274,7 +274,7 @@ namespace SharpAlliance.Core.SubSystems
             FontColor foregroundColor,
             FontColor backgroundColor,
             TextJustifies justification)
-            => this.DrawTextToScreen(
+            => DrawTextToScreen(
                 text,
                 pos.X,
                 pos.Y,
@@ -284,7 +284,7 @@ namespace SharpAlliance.Core.SubSystems
                 backgroundColor,
                 justification);
 
-        public void DrawTextToScreen(
+        public static void DrawTextToScreen(
             string text,
             int x,
             int y,
@@ -315,9 +315,9 @@ namespace SharpAlliance.Core.SubSystems
                     y,
                     width,
                     alignment,
-                    this.fontLookup[font],
-                    this.fontColorLookup[foregroundColor],
-                    this.fontColorLookup[foregroundColor]);
+                    fontLookup[font],
+                    fontColorLookup[foregroundColor],
+                    fontColorLookup[foregroundColor]);
             }
             catch (Exception e)
             {
@@ -344,34 +344,34 @@ namespace SharpAlliance.Core.SubSystems
 
             Color color;
 
-            this.fontColorLookup.Add(FontColor.FONT_YELLOW, Color.Yellow);
-            this.fontColorLookup.Add(FontColor.FONT_WHITE, Color.White);
-            this.fontColorLookup.Add(FontColor.FONT_MCOLOR_WHITE, Color.White);
+            fontColorLookup.Add(FontColor.FONT_YELLOW, Color.Yellow);
+            fontColorLookup.Add(FontColor.FONT_WHITE, Color.White);
+            fontColorLookup.Add(FontColor.FONT_MCOLOR_WHITE, Color.White);
 
             // Initialize fonts
             // gpLargeFontType1  = this.LoadFontFile( "FONTS\\lfont1.sti" );
             this.gpLargeFontType1 = this.LoadFontFile("FONTS\\LARGEFONT1.sti");
             this.gvoLargeFontType1 = this.GetFontObject(this.gpLargeFontType1);
             this.CreateFontPaletteTables(this.gvoLargeFontType1);
-            this.fontLookup.TryAdd(FontStyle.LARGEFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 15, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.LARGEFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 15, SixLabors.Fonts.FontStyle.Regular));
             // 
             // //	gpSmallFontType1  = LoadFontFile( "FONTS\\6b-font.sti" );
             this.gpSmallFontType1 = this.LoadFontFile("FONTS\\SMALLFONT1.sti");
             this.gvoSmallFontType1 = this.GetFontObject(this.gpSmallFontType1);
             this.CreateFontPaletteTables(this.gvoSmallFontType1);
-            this.fontLookup.TryAdd(FontStyle.SMALLFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.SMALLFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Regular));
 
             //	gpTinyFontType1  = LoadFontFile( "FONTS\\tfont1.sti" );
             this.gpTinyFontType1 = this.LoadFontFile("FONTS\\TINYFONT1.sti");
             this.gvoTinyFontType1 = this.GetFontObject(this.gpTinyFontType1);
             this.CreateFontPaletteTables(this.gvoTinyFontType1);
-            this.fontLookup.TryAdd(FontStyle.TINYFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 5, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.TINYFONT1, FontSubSystem.TextRenderer.LoadFont("Arial", 5, SixLabors.Fonts.FontStyle.Regular));
 
             //	gp12PointFont1	= LoadFontFile( "FONTS\\font-12.sti" );
             this.gp12PointFont1 = this.LoadFontFile("FONTS\\FONT12POINT1.sti");
             this.gvo12PointFont1 = this.GetFontObject(this.gp12PointFont1);
             this.CreateFontPaletteTables(this.gvo12PointFont1);
-            this.fontLookup.TryAdd(FontStyle.FONT12POINT1, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Bold));
+            fontLookup.TryAdd(FontStyle.FONT12POINT1, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Bold));
 
             //  gpClockFont  = LoadFontFile( "FONTS\\DIGI.sti" );
             this.gpClockFont = this.LoadFontFile("FONTS\\CLOCKFONT.sti");
@@ -392,19 +392,19 @@ namespace SharpAlliance.Core.SubSystems
             this.gp10PointRoman = this.LoadFontFile("FONTS\\FONT10ROMAN.sti");
             this.gvo10PointRoman = this.GetFontObject(this.gp10PointRoman);
             this.CreateFontPaletteTables(this.gvo10PointRoman);
-            this.fontLookup.TryAdd(FontStyle.FONT10ROMAN, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 10, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT10ROMAN, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 10, SixLabors.Fonts.FontStyle.Regular));
 
             //  gp12PointRoman  = LoadFontFile( "FONTS\\Roman12.sti" );
             this.gp12PointRoman = this.LoadFontFile("FONTS\\FONT12ROMAN.sti");
             this.gvo12PointRoman = this.GetFontObject(this.gp12PointRoman);
             this.CreateFontPaletteTables(this.gvo12PointRoman);
-            this.fontLookup.TryAdd(FontStyle.FONT12ROMAN, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 12, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT12ROMAN, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 12, SixLabors.Fonts.FontStyle.Regular));
 
             //  gp14PointSansSerif  = LoadFontFile( "FONTS\\SansSerif14.sti" );
             this.gp14PointSansSerif = this.LoadFontFile("FONTS\\FONT14SANSERIF.sti");
             this.gvo14PointSansSerif = this.GetFontObject(this.gp14PointSansSerif);
             this.CreateFontPaletteTables(this.gvo14PointSansSerif);
-            this.fontLookup.TryAdd(FontStyle.FONT14SANSERIF, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 14, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT14SANSERIF, FontSubSystem.TextRenderer.LoadFont("Times New Roman", 14, SixLabors.Fonts.FontStyle.Regular));
 
             //	DEF:	Removed.  Replaced with BLOCKFONT
             //  gpMilitaryFont1  = LoadFontFile( "FONTS\\milfont.sti" );
@@ -416,25 +416,25 @@ namespace SharpAlliance.Core.SubSystems
             this.gp10PointArial = this.LoadFontFile("FONTS\\FONT10ARIAL.sti");
             this.gvo10PointArial = this.GetFontObject(this.gp10PointArial);
             this.CreateFontPaletteTables(this.gvo10PointArial);
-            this.fontLookup.TryAdd(FontStyle.FONT10ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT10ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Regular));
 
             //  gp14PointArial  = LoadFontFile( "FONTS\\Arial14.sti" );
             this.gp14PointArial = this.LoadFontFile("FONTS\\FONT14ARIAL.sti");
             this.gvo14PointArial = this.GetFontObject(this.gp14PointArial);
             this.CreateFontPaletteTables(this.gvo14PointArial);
-            this.fontLookup.TryAdd(FontStyle.FONT14ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 14, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT14ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 14, SixLabors.Fonts.FontStyle.Regular));
 
             //  gp10PointArialBold  = LoadFontFile( "FONTS\\Arial10Bold2.sti" );
             this.gp10PointArialBold = this.LoadFontFile("FONTS\\FONT10ARIALBOLD.sti");
             this.gvo10PointArialBold = this.GetFontObject(this.gp10PointArialBold);
             this.CreateFontPaletteTables(this.gvo10PointArialBold);
-            this.fontLookup.TryAdd(FontStyle.FONT10ARIALBOLD, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Bold));
+            fontLookup.TryAdd(FontStyle.FONT10ARIALBOLD, FontSubSystem.TextRenderer.LoadFont("Arial", 10, SixLabors.Fonts.FontStyle.Bold));
 
             //  gp12PointArial  = LoadFontFile( "FONTS\\Arial12.sti" );
             this.gp12PointArial = this.LoadFontFile("FONTS\\FONT12ARIAL.sti");
             this.gvo12PointArial = this.GetFontObject(this.gp12PointArial);
             this.CreateFontPaletteTables(this.gvo12PointArial);
-            this.fontLookup.TryAdd(FontStyle.FONT12ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT12ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Regular));
 
             //	gpBlockyFont  = LoadFontFile( "FONTS\\FONT2.sti" );
             this.gpBlockyFont = this.LoadFontFile("FONTS\\BLOCKFONT.sti");
@@ -450,12 +450,12 @@ namespace SharpAlliance.Core.SubSystems
             this.gp12PointArialFixedFont = this.LoadFontFile("FONTS\\FONT12ARIALFIXEDWIDTH.sti");
             this.gvo12PointArialFixedFont = this.GetFontObject(this.gp12PointArialFixedFont);
             this.CreateFontPaletteTables(this.gvo12PointArialFixedFont);
-            this.fontLookup.TryAdd(FontStyle.FONT12ARIALFIXEDWIDTH, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT12ARIALFIXEDWIDTH, FontSubSystem.TextRenderer.LoadFont("Arial", 12, SixLabors.Fonts.FontStyle.Regular));
 
             this.gp16PointArial = this.LoadFontFile("FONTS\\FONT16ARIAL.sti");
             this.gvo16PointArial = this.GetFontObject(this.gp16PointArial);
             this.CreateFontPaletteTables(this.gvo16PointArial);
-            this.fontLookup.TryAdd(FontStyle.FONT16ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 16, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT16ARIAL, FontSubSystem.TextRenderer.LoadFont("Arial", 16, SixLabors.Fonts.FontStyle.Regular));
 
             this.gpBlockFontNarrow = this.LoadFontFile("FONTS\\BLOCKFONTNARROW.sti");
             this.gvoBlockFontNarrow = this.GetFontObject(this.gpBlockFontNarrow);
@@ -464,7 +464,7 @@ namespace SharpAlliance.Core.SubSystems
             this.gp14PointHumanist = this.LoadFontFile("FONTS\\FONT14HUMANIST.sti");
             this.gvo14PointHumanist = this.GetFontObject(this.gp14PointHumanist);
             this.CreateFontPaletteTables(this.gvo14PointHumanist);
-            this.fontLookup.TryAdd(FontStyle.FONT14HUMANIST, FontSubSystem.TextRenderer.LoadFont("Arial", 14, SixLabors.Fonts.FontStyle.Regular));
+            fontLookup.TryAdd(FontStyle.FONT14HUMANIST, FontSubSystem.TextRenderer.LoadFont("Arial", 14, SixLabors.Fonts.FontStyle.Regular));
 
             this.gpHugeFont = this.LoadFontFile("FONTS\\HUGEFONT.sti");
             this.gvoHugeFont = this.GetFontObject(this.gpHugeFont);

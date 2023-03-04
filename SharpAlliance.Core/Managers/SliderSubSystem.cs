@@ -341,7 +341,7 @@ public class SliderSubSystem
                 pNewSlider.ubSliderHeight = Slider.STEEL_SLIDER_HEIGHT;
 
 
-                MouseSubSystem.MSYS_DefineRegion(
+                this.inputs.Mouse.MSYS_DefineRegion(
                     pNewSlider.ScrollAreaMouseRegion,
                     new Rectangle(
                         loc.X - pNewSlider.ubSliderWidth / 2,
@@ -353,7 +353,7 @@ public class SliderSubSystem
                     this.SelectedSliderMovementCallBack,
                     this.SelectedSliderButtonCallBack);
 
-                MouseSubSystem.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                this.inputs.Mouse.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
                 break;
 
             case SliderStyle.SLIDER_DEFAULT_STYLE:
@@ -363,7 +363,7 @@ public class SliderSubSystem
                 pNewSlider.ubSliderWidth = usWidth;
                 pNewSlider.ubSliderHeight = Slider.DEFAULT_SLIDER_SIZE;
 
-                MouseSubSystem.MSYS_DefineRegion(
+                this.inputs.Mouse.MSYS_DefineRegion(
                     pNewSlider.ScrollAreaMouseRegion,
                     new Rectangle(loc.X, loc.Y - Slider.DEFAULT_SLIDER_SIZE, pNewSlider.usPos.X + pNewSlider.ubSliderWidth, loc.Y + Slider.DEFAULT_SLIDER_SIZE),
                     sPriority,
@@ -371,7 +371,7 @@ public class SliderSubSystem
                     this.SelectedSliderMovementCallBack,
                     this.SelectedSliderButtonCallBack);
 
-                MouseSubSystem.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
+                this.inputs.Mouse.SetRegionUserData(pNewSlider.ScrollAreaMouseRegion, 1, pNewSlider.uiSliderID);
                 break;
         }
 
@@ -382,7 +382,7 @@ public class SliderSubSystem
         return pNewSlider;
     }
 
-    private void SelectedSliderMovementCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons reason)
+    private void SelectedSliderMovementCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON reason)
     {
         int uiSelectedSlider;
         Slider? pSlider = null;
@@ -393,7 +393,7 @@ public class SliderSubSystem
             return;
         }
 
-        if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             MouseRegionFlags flag = (MouseRegionFlags)ButtonFlags.BUTTON_CLICKED_ON;
             pRegion.uiFlags &= (~flag);
@@ -424,7 +424,7 @@ public class SliderSubSystem
                 }
             }
         }
-        else if (reason.HasFlag(MouseCallbackReasons.GAIN_MOUSE))
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
             MouseRegionFlags flag = (MouseRegionFlags)ButtonFlags.BUTTON_CLICKED_ON;
             pRegion.uiFlags |= flag;
@@ -454,7 +454,7 @@ public class SliderSubSystem
             }
         }
 
-        else if (reason.HasFlag(MouseCallbackReasons.MOVE))
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.MOVE))
         {
             MouseRegionFlags flag = (MouseRegionFlags)ButtonFlags.BUTTON_CLICKED_ON;
             pRegion.uiFlags |= flag;
@@ -485,7 +485,7 @@ public class SliderSubSystem
 
 
 
-    void SelectedSliderButtonCallBack(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
+    void SelectedSliderButtonCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiSelectedSlider;
         Slider? pSlider = null;
@@ -496,10 +496,10 @@ public class SliderSubSystem
             return;
         }
 
-        if (iReason.HasFlag(MouseCallbackReasons.INIT))
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             uiSelectedSlider = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
 
@@ -526,7 +526,7 @@ public class SliderSubSystem
                 this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
             }
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_REPEAT))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_REPEAT))
         {
             uiSelectedSlider = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 1);
 
@@ -552,7 +552,7 @@ public class SliderSubSystem
                 this.CalculateNewSliderIncrement(ref pSlider, pRegion.RelativeMousePos.X);
             }
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
         }
     }

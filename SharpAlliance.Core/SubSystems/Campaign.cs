@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using SharpAlliance.Core.Managers;
-using SixLabors.Fonts;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -354,7 +355,7 @@ public class Campaign
         {
             // increment counters that track how often stat changes are being awarded
             pProfile.usStatChangeChances[ubStat] += usNumChances;
-            pProfile.usStatChangeSuccesses[ubStat] += abs(sSubPointChange);
+            pProfile.usStatChangeSuccesses[ubStat] += Math.Abs(sSubPointChange);
         }
     }
 
@@ -1312,7 +1313,7 @@ public class Campaign
     }
 
 
-    int HighestPlayerProgressPercentage()
+    public static int HighestPlayerProgressPercentage()
     {
         if (Globals.gfEditMode)
         {
@@ -1517,7 +1518,7 @@ public class Campaign
         Debug.Assert(ubStat <= Stat.LAST_CHANGEABLE_STAT);
 
         // if just a 1 point change
-        if (abs(sPtsChanged) == 1)
+        if (Math.Abs(sPtsChanged) == 1)
         {
             // use singular
             ubStringIndex = 2;
@@ -1534,7 +1535,7 @@ public class Campaign
             ubStringIndex += 2;
         }
 
-        wprintf(wString, "%s %s %d %s %s", wName, sPreStatBuildString[fIncrease ? 1 : 0], abs(sPtsChanged),
+        wprintf(wString, "%s %s %d %s %s", wName, sPreStatBuildString[fIncrease ? 1 : 0], Math.Abs(sPtsChanged),
                         sPreStatBuildString[ubStringIndex], sStatGainStrings[ubStat - Globals.FIRST_CHANGEABLE_STAT]);
     }
 

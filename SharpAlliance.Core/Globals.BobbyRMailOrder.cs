@@ -1,4 +1,6 @@
-﻿using SharpAlliance.Core.SubSystems;
+﻿using System;
+using System.Collections.Generic;
+using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core;
 
@@ -182,11 +184,110 @@ public partial class Globals
     public static MOUSE_REGION[] gSelectedUpDownArrowOnScrollAreaRegion = new MOUSE_REGION[2];
 
     public const int MAX_PURCHASE_AMOUNT = 10;
+
+    public const FontStyle BOBBIES_SIGN_FONT = FontStyle.FONT14ARIAL;
+    public const int BOBBIES_SIGN_COLOR = 2;
+    public const FontColor BOBBIES_SIGN_BACKCOLOR = FontColor.FONT_MCOLOR_BLACK;
+    public const int BOBBIES_SIGN_BACKGROUNDCOLOR = 78;//NO_SHADOW;
+    public const int BOBBIES_NUMBER_SIGNS = 5;
+    public const FontStyle BOBBIES_SENTENCE_FONT = FontStyle.FONT12ARIAL;
+    public const FontColor BOBBIES_SENTENCE_COLOR = FontColor.FONT_MCOLOR_WHITE;
+    public const FontShadow BOBBIES_SENTENCE_BACKGROUNDCOLOR = (FontShadow)(2);//NO_SHADOW//226;
+    public const int BOBBY_WOOD_BACKGROUND_X = LAPTOP_SCREEN_UL_X;
+    public const int BOBBY_WOOD_BACKGROUND_Y = LAPTOP_SCREEN_WEB_UL_Y;
+    public const int BOBBY_WOOD_BACKGROUND_WIDTH = 125;
+    public const int BOBBY_WOOD_BACKGROUND_HEIGHT = 100;
+    public const int BOBBY_RAYS_NAME_X = LAPTOP_SCREEN_UL_X + 77;
+    public const int BOBBY_RAYS_NAME_Y = LAPTOP_SCREEN_WEB_UL_Y + 0;
+    public const int BOBBY_RAYS_NAME_WIDTH = 344;
+    public const int BOBBY_RAYS_NAME_HEIGHT = 66;
+    public const int BOBBYS_PLAQUES_X = LAPTOP_SCREEN_UL_X + 39;
+    public const int BOBBYS_PLAQUES_Y = LAPTOP_SCREEN_WEB_UL_Y + 174;
+    public const int BOBBYS_PLAQUES_WIDTH = 414;
+    public const int BOBBYS_PLAQUES_HEIGHT = 190;
+    public const int BOBBIES_TOPHINGE_X = LAPTOP_SCREEN_UL_X;
+    public const int BOBBIES_TOPHINGE_Y = LAPTOP_SCREEN_WEB_UL_Y + 42;
+    public const int BOBBIES_BOTTOMHINGE_X = LAPTOP_SCREEN_UL_X;
+    public const int BOBBIES_BOTTOMHINGE_Y = LAPTOP_SCREEN_WEB_UL_Y + 338;
+    public const int BOBBIES_STORE_PLAQUE_X = LAPTOP_SCREEN_UL_X + 148;
+    public const int BOBBIES_STORE_PLAQUE_Y = LAPTOP_SCREEN_WEB_UL_Y + 66;
+    public const int BOBBIES_STORE_PLAQUE_HEIGHT = 93;
+    public const int BOBBIES_HANDLE_X = LAPTOP_SCREEN_UL_X + 457;
+    public const int BOBBIES_HANDLE_Y = LAPTOP_SCREEN_WEB_UL_Y + 147;
+    public const int BOBBIES_FIRST_SENTENCE_X = LAPTOP_SCREEN_UL_X;
+    public const int BOBBIES_FIRST_SENTENCE_Y = BOBBIES_STORE_PLAQUE_Y + BOBBIES_STORE_PLAQUE_HEIGHT - 3;
+    public const int BOBBIES_FIRST_SENTENCE_WIDTH = 500;
+    public const int BOBBIES_2ND_SENTENCE_X = LAPTOP_SCREEN_UL_X;
+    public const int BOBBIES_2ND_SENTENCE_Y = BOBBIES_FIRST_SENTENCE_Y + 13;
+    public const int BOBBIES_2ND_SENTENCE_WIDTH = 500;
+    public const int BOBBIES_CENTER_SIGN_OFFSET_Y = 23;
+    public const int BOBBIES_USED_SIGN_X = BOBBYS_PLAQUES_X + 93;
+    public const int BOBBIES_USED_SIGN_Y = BOBBYS_PLAQUES_Y + 32;
+    public const int BOBBIES_USED_SIGN_WIDTH = 92;
+    public const int BOBBIES_USED_SIGN_HEIGHT = 50;
+    public const int BOBBIES_USED_SIGN_TEXT_OFFSET = BOBBIES_USED_SIGN_Y + 10;
+    public const int BOBBIES_MISC_SIGN_X = BOBBYS_PLAQUES_X + 238;
+    public const int BOBBIES_MISC_SIGN_Y = BOBBYS_PLAQUES_Y + 27;
+    public const int BOBBIES_MISC_SIGN_WIDTH = 103;
+    public const int BOBBIES_MISC_SIGN_HEIGHT = 57;
+    public const int BOBBIES_MISC_SIGN_TEXT_OFFSET = BOBBIES_MISC_SIGN_Y + BOBBIES_CENTER_SIGN_OFFSET_Y;
+    public const int BOBBIES_GUNS_SIGN_X = BOBBYS_PLAQUES_X + 3;
+    public const int BOBBIES_GUNS_SIGN_Y = BOBBYS_PLAQUES_Y + 102;
+    public const int BOBBIES_GUNS_SIGN_WIDTH = 116;
+    public const int BOBBIES_GUNS_SIGN_HEIGHT = 75;
+    public const int BOBBIES_GUNS_SIGN_TEXT_OFFSET = BOBBIES_GUNS_SIGN_Y + BOBBIES_CENTER_SIGN_OFFSET_Y;
+    public const int BOBBIES_AMMO_SIGN_X = BOBBYS_PLAQUES_X + 150;
+    public const int BOBBIES_AMMO_SIGN_Y = BOBBYS_PLAQUES_Y + 105;
+    public const int BOBBIES_AMMO_SIGN_WIDTH = 112;
+    public const int BOBBIES_AMMO_SIGN_HEIGHT = 71;
+    public const int BOBBIES_AMMO_SIGN_TEXT_OFFSET = BOBBIES_AMMO_SIGN_Y + BOBBIES_CENTER_SIGN_OFFSET_Y;
+    public const int BOBBIES_ARMOUR_SIGN_X = BOBBYS_PLAQUES_X + 290;
+    public const int BOBBIES_ARMOUR_SIGN_Y = BOBBYS_PLAQUES_Y + 108;
+    public const int BOBBIES_ARMOUR_SIGN_WIDTH = 114;
+    public const int BOBBIES_ARMOUR_SIGN_HEIGHT = 70;
+    public const int BOBBIES_ARMOUR_SIGN_TEXT_OFFSET = BOBBIES_ARMOUR_SIGN_Y + BOBBIES_CENTER_SIGN_OFFSET_Y;
+    public const int BOBBIES_3RD_SENTENCE_X = LAPTOP_SCREEN_UL_X;
+    public const int BOBBIES_3RD_SENTENCE_Y = BOBBIES_BOTTOMHINGE_Y + 40;
+    public const int BOBBIES_3RD_SENTENCE_WIDTH = 500;
+    public const int BOBBY_R_NEW_PURCHASE_ARRIVAL_TIME = (1 * 60 * 24); // minutes in 1 day;
+    public const int BOBBY_R_USED_PURCHASE_OFFSET = 1000;
+    public const int BOBBYR_UNDERCONSTRUCTION_ANI_DELAY = 150;
+    public const int BOBBYR_UNDERCONSTRUCTION_NUM_FRAMES = 5;
+    public const int BOBBYR_UNDERCONSTRUCTION_X = LAPTOP_SCREEN_UL_X + (LAPTOP_SCREEN_LR_X - LAPTOP_SCREEN_UL_X - BOBBYR_UNDERCONSTRUCTION_WIDTH) / 2;
+    public const int BOBBYR_UNDERCONSTRUCTION_Y = 175;
+    public const int BOBBYR_UNDERCONSTRUCTION1_Y = 378;
+    public const int BOBBYR_UNDERCONSTRUCTION_WIDTH = 414;
+    public const int BOBBYR_UNDERCONSTRUCTION_HEIGHT = 64;
+    public const int BOBBYR_UNDER_CONSTRUCTION_TEXT_X = LAPTOP_SCREEN_UL_X;
+    public const int BOBBYR_UNDER_CONSTRUCTION_TEXT_Y = BOBBYR_UNDERCONSTRUCTION_Y + 62 + 60;
+    public const int BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH = LAPTOP_SCREEN_LR_X - LAPTOP_SCREEN_UL_X;
+
+    public static int guiBobbyName;
+    public static int guiPlaque;
+    public static int guiTopHinge;
+    public static int guiBottomHinge;
+    public static int guiStorePlaque;
+    public static int guiHandle;
+    public static int guiWoodBackground;
+    public static int guiUnderConstructionImage;
+
+    public static LAPTOP_MODE guiLastBobbyRayPage;
+
+    public static LAPTOP_MODE[] gubBobbyRPages =
+    {
+        LAPTOP_MODE.BOBBY_R_USED,
+        LAPTOP_MODE.BOBBY_R_MISC,
+        LAPTOP_MODE.BOBBY_R_GUNS,
+        LAPTOP_MODE.BOBBY_R_AMMO,
+        LAPTOP_MODE.BOBBY_R_ARMOR,
+    };
+
+    //Bobby's Sign menu mouse regions
+    public static List<MOUSE_REGION> gSelectedBobbiesSignMenuRegion = new();
 }
 
 public class NewBobbyRayOrderStruct
 {
-
     public bool fActive;
     public int ubDeliveryLoc;                // the city the shipment is going to
     public int ubDeliveryMethod;         // type of delivery: next day, 2 days ...

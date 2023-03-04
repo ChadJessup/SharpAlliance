@@ -1043,7 +1043,7 @@ public class StrategicMines
     }
 
 
-    bool HasAnyMineBeenAttackedByMonsters()
+    public static bool HasAnyMineBeenAttackedByMonsters()
     {
         MINE ubMineIndex;
 

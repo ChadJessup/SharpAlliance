@@ -683,7 +683,7 @@ namespace SharpAlliance.Core.SubSystems
             return ButtonSubSystem.GetWidthOfButtonPic(iButtonImage, iButtonImage.OnNormal);
         }
 
-        void MsgBoxClickCallback(ref MOUSE_REGION pRegion, MouseCallbackReasons iReason)
+        void MsgBoxClickCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
         {
             // if (iReason & MouseCallbackReasons.RBUTTON_UP)
             // {
@@ -694,66 +694,66 @@ namespace SharpAlliance.Core.SubSystems
 
 
         bool OKMsgBoxCallbackfLButtonDown = false;
-        void OKMsgBoxCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        void OKMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 OKMsgBoxCallbackfLButtonDown = true;
             }
-            else if ((reason.HasFlag(MouseCallbackReasons.LBUTTON_UP)) && OKMsgBoxCallbackfLButtonDown)
+            else if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) && OKMsgBoxCallbackfLButtonDown)
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
                 // OK, exit
                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 OKMsgBoxCallbackfLButtonDown = false;
             }
         }
 
         bool YESMsgBoxCallbackfLButtonDown = false;
-        void YESMsgBoxCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        void YESMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 YESMsgBoxCallbackfLButtonDown = true;
             }
-            else if ((reason.HasFlag(MouseCallbackReasons.LBUTTON_UP)) && YESMsgBoxCallbackfLButtonDown)
+            else if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) && YESMsgBoxCallbackfLButtonDown)
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
                 // OK, exit
                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 YESMsgBoxCallbackfLButtonDown = false;
             }
         }
 
         bool NOMsgBoxCallbackfLButtonDown = false;
-        void NOMsgBoxCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        void NOMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 NOMsgBoxCallbackfLButtonDown = true;
             }
-            else if ((reason.HasFlag(MouseCallbackReasons.LBUTTON_UP)) && NOMsgBoxCallbackfLButtonDown)
+            else if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) && NOMsgBoxCallbackfLButtonDown)
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
                 // OK, exit
                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 NOMsgBoxCallbackfLButtonDown = false;
             }
@@ -761,22 +761,22 @@ namespace SharpAlliance.Core.SubSystems
 
 
         bool ContractMsgBoxCallbackfLButtonDown = false;
-        void ContractMsgBoxCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        void ContractMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 ContractMsgBoxCallbackfLButtonDown = true;
             }
-            else if ((reason.HasFlag(MouseCallbackReasons.LBUTTON_UP)) && ContractMsgBoxCallbackfLButtonDown)
+            else if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) && ContractMsgBoxCallbackfLButtonDown)
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
                 // OK, exit
                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_CONTRACT;
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 ContractMsgBoxCallbackfLButtonDown = false;
             }
@@ -791,35 +791,35 @@ namespace SharpAlliance.Core.SubSystems
         public bool gfStartedFromGameScreen { get; set; }
         public bool gfStartedFromMapScreen { get; set; }
 
-        void LieMsgBoxCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        void LieMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
                 LieMsgBoxCallbackfLButtonDown = true;
             }
-            else if ((reason.HasFlag(MouseCallbackReasons.LBUTTON_UP)) && LieMsgBoxCallbackfLButtonDown)
+            else if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) && LieMsgBoxCallbackfLButtonDown)
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
                 // OK, exit
                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_LIE;
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LOST_MOUSE))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
             {
                 LieMsgBoxCallbackfLButtonDown = false;
             }
         }
 
 
-        void NumberedMsgBoxCallback(ref GUI_BUTTON btn, MouseCallbackReasons reason)
+        void NumberedMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+            if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
                 btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             }
-            else if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+            else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
             {
                 btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 

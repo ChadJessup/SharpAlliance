@@ -144,11 +144,15 @@ public class Meanwhile
         for (uiCount = 0; uiCount < guiNumNPCSaves; uiCount++)
         {
             if ((gNPCSaveData[uiCount].ubProfile == NO_PROFILE))
+            {
                 return ((int)uiCount);
+            }
         }
 
         if (guiNumNPCSaves < MAX_MEANWHILE_PROFILES)
+        {
             return ((int)guiNumNPCSaves++);
+        }
 
         return (-1);
     }

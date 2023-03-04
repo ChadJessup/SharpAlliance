@@ -1,12 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class ItemSubSystem
 {
+    public static bool ItemIsLegal(Items usItemIndex)
+    {
+        //if the user has selected the reduced gun list
+        if (!Globals.gGameOptions.GunNut)
+        {
+            //if the item is a gun, or ammo
+            if ((Item[usItemIndex].usItemClass == IC.GUN) || (Item[usItemIndex].usItemClass == IC.AMMO))
+            {
+                // and the item is only available with the extended guns
+                if (ExtendedGunListGun(usItemIndex))
+                {
+                    return (false);
+                }
+            }
+        }
+
+        return (true);
+    }
+
     public static Dictionary<Items, Items> ReplacementGuns = new()
     {
         { Items.BARRACUDA, Items.DESERTEAGLE },
@@ -247,13 +267,11 @@ public class ItemSubSystem
     {
         Items usAmmo;
 
-
         Debug.Assert(pObj != null);
         if (pObj == null)
         {
             return (false);
         }
-
 
         pObj = new()
         {

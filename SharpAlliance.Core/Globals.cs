@@ -26,6 +26,16 @@ public partial class Globals
     public const int FIRST_LEVEL = 0;
     public const int SECOND_LEVEL = 1;
 
+    public const double DEATH_RATE_SEVERITY = 1.0f;			// increase to make death rates higher for same # of deaths/time
+
+    // progress threshold that control Enrico E-mail timing
+    public const int SOME_PROGRESS_THRESHOLD = 20;
+    public const int ABOUT_HALFWAY_THRESHOLD = 55;
+    public const int NEARLY_DONE_THRESHOLD = 80;
+    public const int MINOR_SETBACK_THRESHOLD = 5;
+    public const int MAJOR_SETBACK_THRESHOLD = 15;
+
+
     public static ushort gusAlphaMask;// = 0;
     public static ushort gusRedMask;// = 0;
     public static ushort gusGreenMask;// = 0;
@@ -114,6 +124,11 @@ public partial class Globals
     public static bool RPC_RECRUITED(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)));
     public static bool AM_AN_EPC(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE)));
     public static bool AM_A_ROBOT(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON));
+
+    public static email? pEmailList;
+    public static PagePtr? pPageList;
+    public static int iLastPage = -1;
+    public static int iCurrentPage = 0;
 
     public static bool OK_ENEMY_MERC(SOLDIERTYPE p) => (p.bNeutral == 0 && (p.bSide != gbPlayerNum) && p.bLife >= OKLIFE);
     // Checks if our guy can be controllable .... checks bInSector, team, on duty, etc...
@@ -367,6 +382,8 @@ public partial class Globals
     public static GameOptions gGameOptions = new();
     public static GameSettings gGameSettings = new();
 
+    public const MouseCallback? MSYS_NO_CALLBACK = null;
+
     public static ScreenName guiCurrentScreen;
 
     public static int gUIDisplayActionPointsOffY = 0;
@@ -564,7 +581,7 @@ public partial class Globals
 
     public const Surfaces BUTTON_USE_DEFAULT = Surfaces.Unknown;
     public static readonly int? BUTTON_NO_FILENAME = null;
-    public static readonly GuiCallback BUTTON_NO_CALLBACK = (ref GUI_BUTTON o, MouseCallbackReasons r) => { };
+    public static readonly GuiCallback BUTTON_NO_CALLBACK = (ref GUI_BUTTON o, MSYS_CALLBACK_REASON r) => { };
     //public const int MAX_NUMBER_OF_MINES = (int)MINE.MAX_NUMBER_OF_MINES;
     public const int BUTTON_NO_IMAGE = -1;
     public const int BUTTON_NO_SLOT = -1;
@@ -1378,7 +1395,7 @@ public partial class Globals
 
     public const int ARMY_GUN_LEVELS = 11;
 
-    public static readonly STRATEGIC_STATUS gStrategicStatus = new();
+    public static STRATEGIC_STATUS gStrategicStatus;
 
     public const int MSG_INTERFACE = 0;
     public const int MSG_DIALOG = 1;
@@ -1441,14 +1458,10 @@ public partial class Globals
     public const int DIVLINE_X = 130;
     public const int MID_DIVLINE_Y = 155;
     public const int BOT_DIVLINE_Y = 204;
-    public const int TITLE_X = 140;
-    public const int TITLE_Y = 33;
     public const int TEXT_X = 140;
     public const int PAGE_SIZE = 22;
     public const int RECORD_Y = TOP_DIVLINE_Y;
     public const int RECORD_HISTORY_WIDTH = 200;
-    public const int PAGE_NUMBER_X = TOP_X + 20;
-    public const int PAGE_NUMBER_Y = TOP_Y + 33;
     public const int HISTORY_DATE_X = PAGE_NUMBER_X + 85;
     public const int HISTORY_DATE_Y = PAGE_NUMBER_Y;
     public const int RECORD_LOCATION_WIDTH = 142;//95
@@ -1457,6 +1470,17 @@ public partial class Globals
     public const int RECORD_DATE_X = TOP_X + 10;
     public const int RECORD_DATE_WIDTH = 31;//68
     public const int RECORD_HEADER_Y = 90;
+
+    public const Items LAST_DEALER_ITEM = (Items)(-1);
+    public const int NO_DEALER_ITEM = 0;
+    // item suitability categories for dealer inventory initialization, virtual customer sales, and re-ordering
+    public const int ITEM_SUITABILITY_NONE = 0;
+    public const int ITEM_SUITABILITY_LOW = 1;
+    public const int ITEM_SUITABILITY_MEDIUM = 2;
+    public const int ITEM_SUITABILITY_HIGH = 3;
+    public const int ITEM_SUITABILITY_ALWAYS = 4;
+    public const int DEALER_BUYING = 0;
+    public const int DEALER_SELLING = 1;
 
 
     public const int NUM_RECORDS_PER_PAGE = PAGE_SIZE;
@@ -1658,7 +1682,6 @@ public partial class Globals
     public const int MAX_AGE = 10000;
     public const int X_START = 2;
     public const int Y_START = 330;
-    public const int LINE_WIDTH = 320;
     public const int MAP_LINE_WIDTH = 300;
     public const int WIDTH_BETWEEN_NEW_STRINGS = 5;
 
@@ -1811,7 +1834,6 @@ public partial class Globals
     public const int END_OF_INTERRUPTS = 255;
     public static int gubOutOfTurnPersons = 0;
 
-    public static bool gfHiddenInterrupt = false;
     public static int gubLastInterruptedGuy = 0;
 
     public const int MIN_APS_TO_INTERRUPT = 4;

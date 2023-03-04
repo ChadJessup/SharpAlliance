@@ -72,6 +72,43 @@ public static class EnglishText
         { GameInitOptionScreenText.GIO_DISABLED_FOR_THE_DEMO_TEXT, "Disabled for Demo" },
     };
 
+    public static string [] pTraverseStrings =
+    {
+        "Previous",
+        "Next",
+    };
+
+    // Text for Bobby Ray's Home Page
+
+    public static string[] BobbyRaysFrontText = 
+    {
+    	//Details on the web site
+    
+    	"This is the place to be for the newest and hottest in weaponry and military supplies",
+        "We can find the perfect solution for all your explosives needs",
+        "Used and refitted items",
+    
+    	//Text for the various links to the sub pages
+    
+    	"Miscellaneous",
+        "GUNS",
+        "AMMUNITION",		//5
+    	"ARMOR",
+    
+    	//Details on the web site
+    
+    	"If we don't sell it, you can't get it!",
+        "Under Construction",
+    };
+
+    // new mail notify string 
+
+    public static string[] pNewMailStrings =
+    {
+        "You have new mail...",
+    };
+
+
     public static string[] pUpdatePanelButtons = new[]
     {
         "Continue",

@@ -6606,7 +6606,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    bool CheckForFullStruct(int sGridNo, int* pusIndex)
+    bool CheckForFullStruct(int sGridNo, out int? pusIndex)
     {
         LEVELNODE? pStruct = null;
         LEVELNODE? pOldStruct = null;
@@ -6619,10 +6619,10 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         while (pStruct != null)
         {
 
-            if (pStruct.usIndex != NO_TILE && pStruct.usIndex < NUMBEROFTILES)
+            if (pStruct.usIndex != NO_TILE && pStruct.usIndex < (int)TileDefines.NUMBEROFTILES)
             {
 
-                GetTileFlags(pStruct.usIndex, &fTileFlags);
+                GetTileFlags(pStruct.usIndex, fTileFlags);
 
                 // Advance to next
                 pOldStruct = pStruct;
@@ -6635,11 +6635,12 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                     if (FullStructAlone(sGridNo, 2))
                     {
                         // Return true and return index
-                        *pusIndex = pOldStruct.usIndex;
+                        pusIndex = pOldStruct.usIndex;
                         return (true);
                     }
                     else
                     {
+                        pusIndex = null;
                         return (false);
                     }
 
@@ -6656,8 +6657,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         }
 
         // Could not find it, return false
+        pusIndex = null;
         return (false);
-
     }
 
 
@@ -7029,11 +7030,11 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    bool GetProfileFlagsFromGridno(SOLDIERTYPE? pSoldier, int usAnimState, int sTestGridNo, int* usFlags)
+    bool GetProfileFlagsFromGridno(SOLDIERTYPE? pSoldier, int usAnimState, int sTestGridNo, out int usFlags)
     {
-        ANIM_PROF* pProfile;
-        ANIM_PROF_DIR* pProfileDir;
-        ANIM_PROF_TILE* pProfileTile;
+        ANIM_PROF? pProfile;
+        ANIM_PROF_DIR? pProfileDir;
+        ANIM_PROF_TILE? pProfileTile;
         int bProfileID;
         int iTileCount;
         int sGridNo;
@@ -7046,16 +7047,16 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
         bProfileID = gAnimSurfaceDatabase[usAnimSurface].bProfile;
 
-        *usFlags = 0;
+        usFlags = 0;
 
         // Determine if this animation has a profile
         if (bProfileID != -1)
         {
             // Getprofile
-            pProfile = &(gpAnimProfiles[bProfileID]);
+            pProfile = (gpAnimProfiles[bProfileID]);
 
             // Get direction
-            pProfileDir = &(pProfile.Dirs[pSoldier.bDirection]);
+            pProfileDir = (pProfile.Dirs[pSoldier.bDirection]);
 
             // Loop tiles and set accordingly into world
             for (iTileCount = 0; iTileCount < pProfileDir.ubNumTiles; iTileCount++)
@@ -7069,7 +7070,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 {
                     if (sGridNo == sTestGridNo)
                     {
-                        *usFlags = pProfileTile.usTileFlags;
+                        usFlags = pProfileTile.usTileFlags;
                         return (true);
                     }
                 }
@@ -8434,25 +8435,25 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void GetActualSoldierAnimDims(SOLDIERTYPE? pSoldier, int* psHeight, int* psWidth)
+    void GetActualSoldierAnimDims(SOLDIERTYPE? pSoldier, out int psHeight, out int psWidth)
     {
         int usAnimSurface;
-        ETRLEObject* pTrav;
+        ETRLEObject? pTrav;
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == INVALID_ANIMATION_SURFACE)
         {
-            *psHeight = (int)5;
-            *psWidth = (int)5;
+            psHeight = (int)5;
+            psWidth = (int)5;
 
             return;
         }
 
         if (gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
         {
-            *psHeight = (int)5;
-            *psWidth = (int)5;
+            psHeight = (int)5;
+            psWidth = (int)5;
             return;
         }
 
@@ -8465,7 +8466,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             int i = 0;
         }
 
-        pTrav = &(gAnimSurfaceDatabase[usAnimSurface].hVideoObject.pETRLEObject[pSoldier.usAniFrame]);
+        pTrav = (gAnimSurfaceDatabase[usAnimSurface].hVideoObject.pETRLEObject[pSoldier.usAniFrame]);
 
         psHeight = (int)pTrav.usHeight;
         psWidth = (int)pTrav.usWidth;
@@ -8507,8 +8508,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
 
         // OK, from our animation, get height, width
-        GetActualSoldierAnimDims(pSoldier, &sHeight, &sWidth);
-        GetActualSoldierAnimOffsets(pSoldier, &sOffsetX, &sOffsetY);
+        GetActualSoldierAnimDims(pSoldier, out sHeight, out sWidth);
+        GetActualSoldierAnimOffsets(pSoldier, out sOffsetX, out sOffsetY);
 
         // OK, here, use the difference between center of animation ( sWidth/2 ) and our offset!
         //pSoldier.sLocatorOffX = ( abs( sOffsetX ) ) - ( sWidth / 2 );
@@ -8522,11 +8523,11 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     bool SoldierCarriesTwoHandedWeapon(SOLDIERTYPE? pSoldier)
     {
-        int usItem;
+        Items usItem;
 
-        usItem = pSoldier.inv[HANDPOS].usItem;
+        usItem = pSoldier.inv[InventorySlot.HANDPOS].usItem;
 
-        if (usItem != NOTHING && (Item[usItem].fFlags & ITEM_TWO_HANDED))
+        if (usItem != NOTHING && (Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)))
         {
             return (true);
         }

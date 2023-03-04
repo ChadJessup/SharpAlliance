@@ -436,9 +436,9 @@ public class MainMenuScreen : IScreen
         return true;
     }
 
-    private void MenuButtonCallback(ref GUI_BUTTON btn, MouseCallbackReasons reasonValue)
+    private void MenuButtonCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reasonValue)
     {
-        MouseCallbackReasons reason = reasonValue;
+        MSYS_CALLBACK_REASON reason = reasonValue;
         MainMenuItems bID;
 
         bID = (MainMenuItems)btn.UserData[0];
@@ -448,7 +448,7 @@ public class MainMenuScreen : IScreen
             return;
         }
 
-        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             // handle menu
             Globals.gbHandledMainMenu = bID;
@@ -469,7 +469,7 @@ public class MainMenuScreen : IScreen
             btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
 
-        if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             this.RenderMainMenu();
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
@@ -512,12 +512,12 @@ public class MainMenuScreen : IScreen
         }
     }
 
-    private void SelectMainMenuBackGroundRegionCallBack(ref MOUSE_REGION region, MouseCallbackReasons iReason)
+    private void SelectMainMenuBackGroundRegionCallBack(ref MOUSE_REGION region, MSYS_CALLBACK_REASON iReason)
     {
-        if (iReason.HasFlag(MouseCallbackReasons.INIT))
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
         {
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             //		if( gfDoHelpScreen )
             //		{
@@ -525,7 +525,7 @@ public class MainMenuScreen : IScreen
             //			gfDoHelpScreen = false;
             //		}
         }
-        else if (iReason.HasFlag(MouseCallbackReasons.RBUTTON_UP))
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
             /*
                     if( gfDoHelpScreen )

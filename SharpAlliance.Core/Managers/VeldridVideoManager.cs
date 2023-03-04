@@ -262,60 +262,60 @@ public class VeldridVideoManager : IVideoManager
         uiLineSkipDest = uiDestPitch - (uiWidth * 2);
         uiLineSkipSrc = uiSrcPitch - (uiWidth * 2);
 
-//        __asm {
-//            mov esi, pSrcPtr
-//        
-//    mov edi, pDestPtr
-//        
-//    mov ebx, uiHeight
-//        
-//    cld
-//
-//    mov     ecx, uiWidth
-//    test    ecx, 1
-//        
-//    jz BlitDwords
-//        
-//BlitNewLine:
-//
-//            mov ecx, uiWidth
-//        
-//    shr ecx, 1
-//        
-//    movsw
-//
-//    //BlitNL2:
-//
-//    rep     movsd
-//
-//    add     edi, uiLineSkipDest
-//    add     esi, uiLineSkipSrc
-//    dec     ebx
-//    jnz     BlitNewLine
-//
-//    jmp     BlitDone
-//
-//
-//BlitDwords:
-//	mov ecx, uiWidth
-//        
-//    shr ecx, 1
-//        
-//    rep movsd
-//        
-//
-//    add edi, uiLineSkipDest
-//        
-//    add esi, uiLineSkipSrc
-//        
-//    dec ebx
-//        
-//    jnz BlitDwords
-//        
-//BlitDone:
-//
-//
-//    }
+        //        __asm {
+        //            mov esi, pSrcPtr
+        //        
+        //    mov edi, pDestPtr
+        //        
+        //    mov ebx, uiHeight
+        //        
+        //    cld
+        //
+        //    mov     ecx, uiWidth
+        //    test    ecx, 1
+        //        
+        //    jz BlitDwords
+        //        
+        //BlitNewLine:
+        //
+        //            mov ecx, uiWidth
+        //        
+        //    shr ecx, 1
+        //        
+        //    movsw
+        //
+        //    //BlitNL2:
+        //
+        //    rep     movsd
+        //
+        //    add     edi, uiLineSkipDest
+        //    add     esi, uiLineSkipSrc
+        //    dec     ebx
+        //    jnz     BlitNewLine
+        //
+        //    jmp     BlitDone
+        //
+        //
+        //BlitDwords:
+        //	mov ecx, uiWidth
+        //        
+        //    shr ecx, 1
+        //        
+        //    rep movsd
+        //        
+        //
+        //    add edi, uiLineSkipDest
+        //        
+        //    add esi, uiLineSkipSrc
+        //        
+        //    dec ebx
+        //        
+        //    jnz BlitDwords
+        //        
+        //BlitDone:
+        //
+        //
+        //    }
 
         return true;
     }
@@ -362,7 +362,7 @@ public class VeldridVideoManager : IVideoManager
     public static Stream OpenEmbeddedAssetStream(string name)
         => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-    public static HVOBJECT? AddVideoObject(string assetPath, out string key)
+    public static HVOBJECT AddVideoObject(string assetPath, out string key)
     {
         key = assetPath;
 
@@ -511,7 +511,7 @@ public class VeldridVideoManager : IVideoManager
                 // Excellent, everything is cosher, we continue on
                 uiRefreshThreadState = ThreadState.On;
                 Globals.guiRefreshThreadState = ThreadState.On;
-                usScreenWidth =  Globals.gusScreenWidth;
+                usScreenWidth = Globals.gusScreenWidth;
                 usScreenHeight = Globals.gusScreenHeight;
                 break;
             case VideoManagerState.Off:
@@ -785,7 +785,7 @@ public class VeldridVideoManager : IVideoManager
             // Well the mouse buffer is dirty. Upload the whole thing
             Region.X = 0;
             Region.Y = 0;
-            Region.Width =  Globals.gusMouseCursorWidth;
+            Region.Width = Globals.gusMouseCursorWidth;
             Region.Height = Globals.gusMouseCursorHeight;
 
             BlitRegion(
@@ -826,9 +826,9 @@ public class VeldridVideoManager : IVideoManager
         if (fShowMouse == true)
         {
             // Step (1) - Save mouse background
-            Region.X = MousePos.X -    Globals.gsMouseCursorXOffset;
-            Region.Y = MousePos.Y -    Globals.gsMouseCursorYOffset;
-            Region.Width = Region.X +  Globals.gusMouseCursorWidth;
+            Region.X = MousePos.X - Globals.gsMouseCursorXOffset;
+            Region.Y = MousePos.Y - Globals.gsMouseCursorYOffset;
+            Region.Width = Region.X + Globals.gusMouseCursorWidth;
             Region.Height = Region.Y + Globals.gusMouseCursorHeight;
 
             if (Region.Width > usScreenWidth)
@@ -1551,7 +1551,7 @@ public class VeldridVideoManager : IVideoManager
                 hVObject = curr.hVObject;
                 return true;
             }
-        
+
             curr = curr.next;
         }
 
@@ -1785,30 +1785,32 @@ public class VeldridVideoManager : IVideoManager
         FontSubSystem.TextRenderer.ClearText();
     }
 
-    public static int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
+    internal static int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
     {
         throw new NotImplementedException();
     }
 
-    public static void UnLockVideoSurface(Surfaces buffer)
+    internal static void UnLockVideoSurface(Surfaces buffer)
     {
         throw new NotImplementedException();
     }
 
-    public static void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
+    internal static void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
     {
         throw new NotImplementedException();
     }
 
-    public static void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
+    internal static void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
     {
         throw new NotImplementedException();
     }
 
-    internal static void DeleteVideoObjectFromIndex(int guiSHADELINE)
+    internal static void DeleteVideoObjectFromIndex(int guiWoodBackground)
     {
         throw new NotImplementedException();
     }
+
+    internal static void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
 }
 
 public enum BufferState

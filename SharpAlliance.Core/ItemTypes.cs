@@ -353,7 +353,7 @@ namespace SharpAlliance.Core
 
         SPECTRA_HELMET_18,
         SPECTRA_HELMET_Y,
-        CERAMPLATES,
+        CERAMIC_PLATES,
         CREATURE_INFANT_HIDE,
         CREATURE_YOUNG_MALE_HIDE,
         CREATURE_OLD_MALE_HIDE,
