@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
@@ -15,7 +16,7 @@ public class BobbyR
         int i;
 
         // an array of mouse regions for the bobbies signs.  Top Left corner, bottom right corner
-        int[] usMouseRegionPosArray =
+        List<int> usMouseRegionPosArray = new()
         {
             BOBBIES_USED_SIGN_X,
             BOBBIES_USED_SIGN_Y,
@@ -41,37 +42,37 @@ public class BobbyR
         InitBobbyRWoodBackground();
 
         // load the Bobbyname graphic and add it
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        GetMLGFilename(VObjectDesc.ImageFile, MLG_BOBBYNAME);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiBobbyName));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        MultilanguageGraphicUtils.GetMLGFilename(VObjectDesc.ImageFile, MLG.BOBBYNAME);
+        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiBobbyName);
 
         // load the plaque graphic and add it
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\BobbyPlaques.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiPlaque));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //FilenameForBPP("LAPTOP\\BobbyPlaques.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiPlaque);
 
         // load the TopHinge graphic and add it
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\BobbyTopHinge.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiTopHinge));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //FilenameForBPP("LAPTOP\\BobbyTopHinge.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTopHinge);
 
         // load the BottomHinge graphic and add it
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiBottomHinge));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiBottomHinge);
 
         // load the Store Plaque graphic and add it
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        GetMLGFilename(VObjectDesc.ImageFile, MLG_STOREPLAQUE);
-        CHECKF(AddVideoObject(VObjectDesc, guiStorePlaque));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //GetMLGFilename(VObjectDesc.ImageFile, MLG_STOREPLAQUE);
+        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiStorePlaque);
 
         // load the Handle graphic and add it
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\BobbyHandle.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, guiHandle));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //FilenameForBPP("LAPTOP\\BobbyHandle.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiHandle);
 
 
-        InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, out usMouseRegionPosArray, out gSelectedBobbiesSignMenuRegion);
+        InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, usMouseRegionPosArray, gSelectedBobbiesSignMenuRegion);
 
 
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
@@ -86,7 +87,7 @@ public class BobbyR
                 MSYS_DisableRegion(gSelectedBobbiesSignMenuRegion[i]);
             }
 
-            LaptopSaveInfo.ubHaveBeenToBobbyRaysAtLeastOnceWhileUnderConstruction = BOBBYR_BEEN_TO_SITE_ONCE;
+            LaptopSaveInfo.ubHaveBeenToBobbyRaysAtLeastOnceWhileUnderConstruction = BOBBYR_VISITS.BEEN_TO_SITE_ONCE;
         }
 
 
@@ -192,15 +193,24 @@ public class BobbyR
 
         FontSubSystem.SetFontShadow(BOBBIES_SIGN_BACKGROUNDCOLOR);
         //Text on the Used Sign
-        FontSubSystem.DisplayWrappedString(BOBBIES_USED_SIGN_X, BOBBIES_USED_SIGN_TEXT_OFFSET, BOBBIES_USED_SIGN_WIDTH - 5, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[BOBBYR_USED], BOBBIES_SIGN_BACKCOLOR, false, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DisplayWrappedString(
+            new(BOBBIES_USED_SIGN_X, BOBBIES_USED_SIGN_TEXT_OFFSET),
+            BOBBIES_USED_SIGN_WIDTH - 5,
+            2,
+            BOBBIES_SIGN_FONT,
+            BOBBIES_SIGN_COLOR,
+            BobbyRaysFrontText[(int)BOBBYR.USED],
+            BOBBIES_SIGN_BACKCOLOR,
+            TextJustifies.CENTER_JUSTIFIED);
+
         //Text on the Misc Sign
-        FontSubSystem.DisplayWrappedString(BOBBIES_MISC_SIGN_X, BOBBIES_MISC_SIGN_TEXT_OFFSET, BOBBIES_MISC_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[BOBBYR_MISC], BOBBIES_SIGN_BACKCOLOR, false, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DisplayWrappedString(new(BOBBIES_MISC_SIGN_X, BOBBIES_MISC_SIGN_TEXT_OFFSET), BOBBIES_MISC_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[(int)BOBBYR.MISC], BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED);
         //Text on the Guns Sign
-        FontSubSystem.DisplayWrappedString(BOBBIES_GUNS_SIGN_X, BOBBIES_GUNS_SIGN_TEXT_OFFSET, BOBBIES_GUNS_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[BOBBYR_GUNS], BOBBIES_SIGN_BACKCOLOR, false, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DisplayWrappedString(new(BOBBIES_GUNS_SIGN_X, BOBBIES_GUNS_SIGN_TEXT_OFFSET), BOBBIES_GUNS_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[(int)BOBBYR.GUNS], BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED);
         //Text on the Ammo Sign
-        FontSubSystem.DisplayWrappedString(BOBBIES_AMMO_SIGN_X, BOBBIES_AMMO_SIGN_TEXT_OFFSET, BOBBIES_AMMO_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[BOBBYR_AMMO], BOBBIES_SIGN_BACKCOLOR, false, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DisplayWrappedString(new(BOBBIES_AMMO_SIGN_X, BOBBIES_AMMO_SIGN_TEXT_OFFSET), BOBBIES_AMMO_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[(int)BOBBYR.AMMO], BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED);
         //Text on the Armour Sign
-        FontSubSystem.DisplayWrappedString(BOBBIES_ARMOUR_SIGN_X, BOBBIES_ARMOUR_SIGN_TEXT_OFFSET, BOBBIES_ARMOUR_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[BOBBYR_ARMOR], BOBBIES_SIGN_BACKCOLOR, false, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DisplayWrappedString(new(BOBBIES_ARMOUR_SIGN_X, BOBBIES_ARMOUR_SIGN_TEXT_OFFSET), BOBBIES_ARMOUR_SIGN_WIDTH, 2, BOBBIES_SIGN_FONT, BOBBIES_SIGN_COLOR, BobbyRaysFrontText[(int)BOBBYR.ARMOR], BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
 
@@ -215,15 +225,12 @@ public class BobbyR
         //if we cant go to any sub pages, darken the page out
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
-            ShadowVideoSurfaceRect(FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+            ShadowVideoSurfaceRect(Surfaces.FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
         }
 
         RenderWWWProgramTitleBar();
         InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
     }
-
-
-
 
     bool InitBobbyRWoodBackground()
     {
@@ -412,13 +419,13 @@ public class BobbyR
         InitBobbyRayNewInventory();
 
         //Initializes the starting values for Bobby Rays NEW Inventory
-        SetupStoreInventory(LaptopSaveInfo.BobbyRayInventory, false);
+        LaptopSave.SetupStoreInventory(LaptopSaveInfo.BobbyRayInventory, BOBBY_RAY.NEW);
 
         //Initializes which USED items can be bought at Bobby Rays
         InitBobbyRayUsedInventory();
 
         //Initializes the starting values for Bobby Rays USED Inventory
-        SetupStoreInventory(LaptopSaveInfo.BobbyRayUsedInventory, true);
+        LaptopSave.SetupStoreInventory(LaptopSaveInfo.BobbyRayUsedInventory, BOBBY_RAY.USED);
     }
 
 
@@ -433,7 +440,7 @@ public class BobbyR
         for (i = 0; i < Items.MAXITEMS; i++)
         {
             //if Bobby Ray sells this, it can be sold, and it's allowed into this game (some depend on e.g. gun-nut option)
-            if ((storeInventory[i, (int)BOBBY_RAY.NEW] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
+            if ((storeInventory[(int)i, (int)BOBBY_RAY.NEW] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
             {
                 LaptopSaveInfo.BobbyRayInventory[usBobbyrIndex].usItemIndex = i;
                 usBobbyrIndex++;
@@ -462,15 +469,15 @@ public class BobbyR
         int usBobbyrIndex = 0;
 
 
-        memset(LaptopSaveInfo.BobbyRayUsedInventory, 0, sizeof(STORE_INVENTORY) * MAXITEMS);
+        LaptopSaveInfo.BobbyRayUsedInventory = new List<STORE_INVENTORY>();
 
         // add all the NEW items he can ever sell into his possible inventory list, for now in order by item #
         for (i = 0; i < Items.MAXITEMS; i++)
         {
             //if Bobby Ray sells this, it can be sold, and it's allowed into this game (some depend on e.g. gun-nut option)
-            if ((StoreInventory[i][BOBBY_RAY_USED] != 0) && !(Item[i].fFlags & ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
+            if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
             {
-                if ((StoreInventory[i][BOBBY_RAY_USED] != 0) && !(Item[i].fFlags & ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
+                if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
                 {
                     // in case his store inventory list is wrong, make sure this category of item can be sold used
                     if (CanDealerItemBeSoldUsed(i))
@@ -485,18 +492,16 @@ public class BobbyR
         if (usBobbyrIndex > 1)
         {
             // sort this list by object category, and by ascending price within each category
-            qsort(LaptopSaveInfo.BobbyRayUsedInventory, usBobbyrIndex, sizeof(STORE_INVENTORY), BobbyRayItemQsortCompare);
+            //qsort(LaptopSaveInfo.BobbyRayUsedInventory, usBobbyrIndex, sizeof(STORE_INVENTORY), BobbyRayItemQsortCompare);
         }
 
         // remember how many entries in the list are valid
-        LaptopSaveInfo.usInventoryListLength[(int)BOBBY_RAY.USED] = usBobbyrIndex;
+        LaptopSaveInfo.usInventoryListLength[BOBBY_RAY.USED] = usBobbyrIndex;
         // also mark the end of the list of valid item entries
         LaptopSaveInfo.BobbyRayUsedInventory[usBobbyrIndex].usItemIndex = BOBBYR_NO_ITEMS;
 
         return (true);
     }
-
-
 
     void DailyUpdateOfBobbyRaysNewInventory()
     {
@@ -514,10 +519,10 @@ public class BobbyR
             // the index is NOT the item #, get that from the table
             usItemIndex = LaptopSaveInfo.BobbyRayInventory[i].usItemIndex;
 
-            Assert(usItemIndex < MAXITEMS);
+            Debug.Assert(usItemIndex < Items.MAXITEMS);
 
             // make sure this item is still sellable in the latest version of the store inventory
-            if (StoreInventory[usItemIndex][BOBBY_RAY_NEW] == 0)
+            if (storeInventory[(int)usItemIndex, (int)BOBBY_RAY.NEW] == 0)
             {
                 continue;
             }
@@ -526,13 +531,13 @@ public class BobbyR
             if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder == 0)
             {
                 //if the qty on hand is half the desired amount or fewer
-                if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand <= (StoreInventory[usItemIndex][BOBBY_RAY_NEW] / 2))
+                if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand <= (storeInventory[(int)usItemIndex, (int)BOBBY_RAY.NEW] / 2))
                 {
                     // remember value of the "previously eligible" flag
                     fPrevElig = LaptopSaveInfo.BobbyRayInventory[i].fPreviouslyEligible;
 
                     //determine if any can/should be ordered, and how many
-                    LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder = HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand, BOBBY_RAY_NEW);
+                    LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder = HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand, BOBBY_RAY.NEW);
 
                     //if he found some to buy
                     if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder > 0)
@@ -563,14 +568,14 @@ public class BobbyR
     void DailyUpdateOfBobbyRaysUsedInventory()
     {
         int i;
-        int usItemIndex;
+        Items usItemIndex;
         bool fPrevElig;
 
 
         //simulate other buyers by reducing the current quantity on hand
-        SimulateBobbyRayCustomer(LaptopSaveInfo.BobbyRayUsedInventory, BOBBY_RAY_USED);
+        SimulateBobbyRayCustomer(LaptopSaveInfo.BobbyRayUsedInventory, BOBBY_RAY.USED);
 
-        for (i = 0; i < LaptopSaveInfo.usInventoryListLength[BOBBY_RAY_USED]; i++)
+        for (i = 0; i < LaptopSaveInfo.usInventoryListLength[BOBBY_RAY.USED]; i++)
         {
             //if the used item isn't already on order
             if (LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnOrder == 0)
@@ -580,10 +585,10 @@ public class BobbyR
                 {
                     // the index is NOT the item #, get that from the table
                     usItemIndex = LaptopSaveInfo.BobbyRayUsedInventory[i].usItemIndex;
-                    Assert(usItemIndex < MAXITEMS);
+                    Debug.Assert(usItemIndex < Items.MAXITEMS);
 
                     // make sure this item is still sellable in the latest version of the store inventory
-                    if (StoreInventory[usItemIndex][BOBBY_RAY_USED] == 0)
+                    if (storeInventory[(int)usItemIndex, (int)BOBBY_RAY.USED] == 0)
                     {
                         continue;
                     }
@@ -592,7 +597,7 @@ public class BobbyR
                     fPrevElig = LaptopSaveInfo.BobbyRayUsedInventory[i].fPreviouslyEligible;
 
                     //determine if any can/should be ordered, and how many
-                    LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnOrder = HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnHand, BOBBY_RAY_USED);
+                    LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnOrder = HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnHand, BOBBY_RAY.USED);
 
                     //if he found some to buy
                     if (LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnOrder > 0)
@@ -606,7 +611,7 @@ public class BobbyR
                         }
                         else
                         {
-                            OrderBobbyRItem((int)(usItemIndex + BOBBY_R_USED_PURCHASE_OFFSET));
+                            OrderBobbyRItem((usItemIndex + BOBBY_R_USED_PURCHASE_OFFSET));
                         }
                     }
                 }
@@ -616,23 +621,23 @@ public class BobbyR
 
 
     //returns the number of items to order
-    int HowManyBRItemsToOrder(int usItemIndex, int ubCurrentlyOnHand, int ubBobbyRayNewUsed)
+    int HowManyBRItemsToOrder(Items usItemIndex, int ubCurrentlyOnHand, BOBBY_RAY ubBobbyRayNewUsed)
     {
         int ubItemsOrdered = 0;
 
 
-        Assert(usItemIndex < MAXITEMS);
+        Debug.Assert(usItemIndex < Items.MAXITEMS);
         // formulas below will fail if there are more items already in stock than optimal
-        Assert(ubCurrentlyOnHand <= StoreInventory[usItemIndex][ubBobbyRayNewUsed]);
-        Assert(ubBobbyRayNewUsed < BOBBY_RAY_LISTS);
+        Debug.Assert(ubCurrentlyOnHand <= storeInventory[(int)usItemIndex,(int)ubBobbyRayNewUsed]);
+        Debug.Assert(ubBobbyRayNewUsed < BOBBY_RAY.LISTS);
 
 
         // decide if he can get stock for this item (items are reordered an entire batch at a time)
         if (ItemTransactionOccurs(-1, usItemIndex, DEALER_BUYING, ubBobbyRayNewUsed))
         {
-            if (ubBobbyRayNewUsed == BOBBY_RAY_NEW)
+            if (ubBobbyRayNewUsed == BOBBY_RAY.NEW)
             {
-                ubItemsOrdered = HowManyItemsToReorder(StoreInventory[usItemIndex][ubBobbyRayNewUsed], ubCurrentlyOnHand);
+                ubItemsOrdered = HowManyItemsToReorder(storeInventory[(int)usItemIndex, (int)ubBobbyRayNewUsed], ubCurrentlyOnHand);
             }
             else
             {
@@ -651,7 +656,7 @@ public class BobbyR
     }
 
 
-    void OrderBobbyRItem(int usItemIndex)
+    void OrderBobbyRItem(Items usItemIndex)
     {
         uint uiArrivalTime;
 
@@ -666,7 +671,7 @@ public class BobbyR
     {
         int sInventorySlot;
         List<STORE_INVENTORY> pInventoryArray;
-        int fUsed;
+        BOBBY_RAY fUsed;
         int ubItemQuality;
 
 
@@ -674,13 +679,13 @@ public class BobbyR
         {
             usItemIndex -= BOBBY_R_USED_PURCHASE_OFFSET;
             pInventoryArray = LaptopSaveInfo.BobbyRayUsedInventory;
-            fUsed = (int)BOBBY_RAY.USED;
+            fUsed = BOBBY_RAY.USED;
             ubItemQuality = 20 + (int)Globals.Random.Next(60);
         }
         else
         {
             pInventoryArray = LaptopSaveInfo.BobbyRayInventory;
-            fUsed = (int)BOBBY_RAY.NEW;
+            fUsed = BOBBY_RAY.NEW;
             ubItemQuality = 100;
         }
 
@@ -768,4 +773,12 @@ public enum BOBBYR
     ARMOR,
     ADVERTISMENT_3,
     UNDER_CONSTRUCTION,
+};
+
+//used when the player goes to bobby rays when it is still down
+public enum BOBBYR_VISITS
+{
+    NEVER_BEEN_TO_SITE,
+    BEEN_TO_SITE_ONCE,
+    ALREADY_SENT_EMAIL,
 };

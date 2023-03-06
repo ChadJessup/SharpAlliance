@@ -662,7 +662,7 @@ public class Morale
         switch (bMoraleEvent)
         {
             case MoraleEventNames.MORALE_HIGH_DEATHRATE:
-                ModifyPlayerReputation(REPUTATION.HIGH_DEATHRATE);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.HIGH_DEATHRATE);
                 break;
             case MoraleEventNames.MORALE_LOW_DEATHRATE:
                 ModifyPlayerReputation(REPUTATION.LOW_DEATHRATE);

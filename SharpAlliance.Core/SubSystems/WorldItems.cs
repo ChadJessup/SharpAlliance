@@ -1,24 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpAlliance.Core.SubSystems;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class WorldItems
 {
+    public static void RemoveItemFromWorld(int iItemIndex)
+    {
+        // Ensure the item still exists, then if it's a bomb,
+        // remove the appropriate entry from the bomb table
+        if (gWorldItems[iItemIndex].fExists)
+        {
+            if (gWorldItems[iItemIndex].usFlags.HasFlag(WORLD_ITEM.ARMED_BOMB))
+            {
+                RemoveBombFromWorldByItemIndex(iItemIndex);
+            }
+
+            gWorldItems[iItemIndex].fExists = false;
+        }
+    }
+
+    public static void RemoveBombFromWorld(int iBombIndex)
+    {
+        //Remove the world bomb from the table.
+        gWorldBombs[iBombIndex].fExists = false;
+    }
+
+    public static void RemoveBombFromWorldByItemIndex(int iItemIndex)
+    {
+        // Find the world bomb which corresponds with a particular world item, then
+        // remove the world bomb from the table.
+        int uiBombIndex;
+
+        for (uiBombIndex = 0; uiBombIndex < guiNumWorldBombs; uiBombIndex++)
+        {
+            if (gWorldBombs[uiBombIndex].fExists && gWorldBombs[uiBombIndex].iItemIndex == iItemIndex)
+            {
+                RemoveBombFromWorld(uiBombIndex);
+                return;
+            }
+        }
+    }
 }
 
-public struct WORLDITEM
+public class WORLDITEM
 {
     public bool fExists;
     public int sGridNo;
     public int ubLevel;
     public OBJECTTYPE o;
-    public int usFlags;
+    public WORLD_ITEM usFlags;
     public int bRenderZHeightAboveLevel;
     public int bVisible;
 
@@ -30,9 +61,20 @@ public struct WORLDITEM
     public int ubNonExistChance;
 }
 
-public struct WORLDBOMB
+public record WORLDBOMB
 {
     public bool fExists;
     public int iItemIndex;
 }
 
+[Flags]
+public enum WORLD_ITEM
+{
+    DONTRENDER = 0x0001,
+    FIND_SWEETSPOT_FROM_GRIDNO = 0x0002,
+    ARMED_BOMB = 0x0040,
+    SCIFI_ONLY = 0x0080,
+    REALISTIC_ONLY = 0x0100,
+    REACHABLE = 0x0200,
+    GRIDNO_NOT_SET_USE_ENTRY_POINT = 0x0400,
+}

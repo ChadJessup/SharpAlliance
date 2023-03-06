@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SharpAlliance.Core.Managers;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.IsometricUtils;
 
@@ -6625,7 +6626,7 @@ public class OppList
                         {
                             continue;
                         }
-                        ubID = WhoIsThere2(sTempGridNo, bLevel);
+                        ubID = WorldManager.WhoIsThere2(sTempGridNo, bLevel);
                         if (ubID != Globals.NOBODY && Globals.MercPtrs[ubID].bTeam != bTeam)
                         {
                             return (false);

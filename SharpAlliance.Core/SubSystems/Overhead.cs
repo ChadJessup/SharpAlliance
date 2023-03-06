@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
-
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems
@@ -41,6 +40,26 @@ namespace SharpAlliance.Core.SubSystems
                     }
                 }
             }
+        }
+
+        public static void LocateGridNo(int sGridNo)
+        {
+            InternalLocateGridNo(sGridNo, false);
+        }
+
+        private static void InternalLocateGridNo(int sGridNo, bool fForce)
+        {
+            int sNewCenterWorldX, sNewCenterWorldY;
+
+            IsometricUtils.ConvertGridNoToCenterCellXY(sGridNo, out sNewCenterWorldX, out sNewCenterWorldY);
+
+            // FIRST CHECK IF WE ARE ON SCREEN
+            if (SoldierFind.GridNoOnScreen(sGridNo) && !fForce)
+            {
+                return;
+            }
+
+            SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
         }
 
         public bool GetSoldier(out SOLDIERTYPE? ppSoldier, int usSoldierIndex)

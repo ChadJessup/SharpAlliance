@@ -1228,7 +1228,7 @@ public class Campaign
             if (iProfileID < NPCID.BIFF)
             {
                 //send an email to the player telling the player that a merc died
-                AddEmailWithSpecialData(MERC_DIED_ON_OTHER_ASSIGNMENT, MERC_DIED_ON_OTHER_ASSIGNMENT_LENGTH, AIM_SITE, GetWorldTotalMin(), 0, iProfileID);
+                Emails.AddEmailWithSpecialData(MERC_DIED_ON_OTHER_ASSIGNMENT, MERC_DIED_ON_OTHER_ASSIGNMENT_LENGTH, AIM_SITE, GetWorldTotalMin(), 0, iProfileID);
             }
         }
     }
@@ -1579,6 +1579,6 @@ public class Campaign
         int ubEmailOffset = 0;
 
         ubEmailOffset = MERC_UP_LEVEL_BIFF + MERC_UP_LEVEL_LENGTH_BIFF * (ubMercMercIdValue);
-        AddEmail(ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, SPECK_FROM_MERC, GetWorldTotalMin());
+        Emails.AddEmail(ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, EmailAddresses.SPECK_FROM_MERC, GameClock.GetWorldTotalMin());
     }
 }

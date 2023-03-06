@@ -112,7 +112,7 @@ public class CreatureSpreading
 
         ubSectorX = SECTORINFO.SECTORX(ubSectorID);
         ubSectorY = SECTORINFO.SECTORY(ubSectorID);
-        pSector = FindUnderGroundSector(ubSectorX, ubSectorY, ubSectorZ);
+        pSector = QueenCommand.FindUnderGroundSector(ubSectorX, ubSectorY, ubSectorZ);
         if (pSector is not null)
         {
             return pSector.ubNumCreatures;

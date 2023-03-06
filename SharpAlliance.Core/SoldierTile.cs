@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 
@@ -24,7 +25,7 @@ public class SoldierTile
 
         // ATE: Now update realtime movement speed....
         // check if guy exists here...
-        ubPerson = WhoIsThere2(sCauseGridNo, pSoldier.bLevel);
+        ubPerson = WorldManager.WhoIsThere2(sCauseGridNo, pSoldier.bLevel);
 
         // There may not be anybody there, but it's reserved by them!
         if ((gpWorldLevelData[sCauseGridNo].uiFlags & MAPELEMENT_MOVEMENT_RESERVED))
@@ -119,7 +120,7 @@ public class SoldierTile
             return (MOVE_TILE_CLEAR);
         }
 
-        ubPerson = WhoIsThere2(sGridNo, bLevel);
+        ubPerson = WorldManager.WhoIsThere2(sGridNo, bLevel);
 
 
         if (ubPerson != NO_SOLDIER)
@@ -556,7 +557,7 @@ public class SoldierTile
                     if (pSoldier.fDelayedMovement == 3 && (pSoldier.sAbsoluteFinalDestination != NOWHERE || gTacticalStatus.fAutoBandageMode))
                     {
                         // with person who is in the way?
-                        ubPerson = WhoIsThere2(pSoldier.sDelayedMovementCauseGridNo, pSoldier.bLevel);
+                        ubPerson = WorldManager.WhoIsThere2(pSoldier.sDelayedMovementCauseGridNo, pSoldier.bLevel);
 
                         // if either on a mission from god, or two AI guys not on stationary...
                         if (ubPerson != NOBODY && (pSoldier.ubQuoteRecord != 0 || (pSoldier.bTeam != gbPlayerNum && pSoldier.bOrders != STATIONARY && MercPtrs[ubPerson].bTeam != gbPlayerNum && MercPtrs[ubPerson].bOrders != STATIONARY) || (pSoldier.bTeam == gbPlayerNum && gTacticalStatus.fAutoBandageMode && !(MercPtrs[ubPerson].bTeam == CIV_TEAM && MercPtrs[ubPerson].bOrders == STATIONARY))))

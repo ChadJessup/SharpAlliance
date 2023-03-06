@@ -49,7 +49,7 @@ public class ExplosionControl
 
 
     // GENERATE EXPLOSION
-    void InternalIgniteExplosion(int ubOwner, int sX, int sY, int sZ, int sGridNo, Items usItem, bool fLocate, int bLevel)
+    void InternalIgniteExplosion(int ubOwner, int sX, MAP_ROW sY, int sZ, int sGridNo, Items usItem, bool fLocate, int bLevel)
     {
         EXPLOSION_PARAMS ExpParams;
 
@@ -78,7 +78,7 @@ public class ExplosionControl
         // OK, go on!
         ExpParams.uiFlags = EXPLOSION_FLAG_USEABSPOS;
         ExpParams.ubOwner = ubOwner;
-        ExpParams.ubTypeID = Explosive[Item[usItem].ubClassIndex].ubAnimationID;
+        ExpParams.ubTypeID = Weapons.Explosive[Item[usItem].ubClassIndex].ubAnimationID;
         ExpParams.sX = sX;
         ExpParams.sY = sY;
         ExpParams.sZ = sZ;
@@ -91,7 +91,7 @@ public class ExplosionControl
 
     }
 
-    void IgniteExplosion(int ubOwner, int sX, int sY, int sZ, int sGridNo, Items usItem, int bLevel)
+    void IgniteExplosion(int ubOwner, int sX, MAP_ROW sY, int sZ, int sGridNo, Items usItem, int bLevel)
     {
         InternalIgniteExplosion(ubOwner, sX, sY, sZ, sGridNo, usItem, true, bLevel);
     }
@@ -101,9 +101,9 @@ public class ExplosionControl
         EXPLOSIONTYPE? pExplosion;
         int uiFlags;
         int ubOwner;
-        int ubTypeID;
+        EXPLOSION_TYPES ubTypeID;
         int sX;
-        int sY;
+        MAP_ROW sY;
         int sZ;
         int sGridNo;
         Items usItem;
@@ -148,7 +148,7 @@ public class ExplosionControl
         // ATE: Locate to explosion....
         if (pExpParams.fLocate)
         {
-            LocateGridNo(sGridNo);
+            Overhead.LocateGridNo(sGridNo);
         }
     }
 
@@ -1302,7 +1302,7 @@ public class ExplosionControl
         bool fRecompileMovementCosts = false;
         bool fSmokeEffect = false;
         bool fStunEffect = false;
-        int bSmokeEffectType = 0;
+        SmokeEffectType bSmokeEffectType = 0;
         bool fBlastEffect = true;
         int sNewGridNo;
         bool fBloodEffect = false;
@@ -1326,7 +1326,7 @@ public class ExplosionControl
                 case Items.MUSTARD_GRENADE:
 
                     fSmokeEffect = true;
-                    bSmokeEffectType = MUSTARDGAS_SMOKE_EFFECT;
+                    bSmokeEffectType = SmokeEffectType.MUSTARDGAS_SMOKE_EFFECT;
                     fBlastEffect = false;
                     break;
 
@@ -1335,7 +1335,7 @@ public class ExplosionControl
                 case Items.BIG_TEAR_GAS:
 
                     fSmokeEffect = true;
-                    bSmokeEffectType = TEARGAS_SMOKE_EFFECT;
+                    bSmokeEffectType = SmokeEffectType.TEARGAS_SMOKE_EFFECT;
                     fBlastEffect = false;
                     break;
 
@@ -1343,7 +1343,7 @@ public class ExplosionControl
                 case Items.GL_SMOKE_GRENADE:
 
                     fSmokeEffect = true;
-                    bSmokeEffectType = NORMAL_SMOKE_EFFECT;
+                    bSmokeEffectType = SmokeEffectType.NORMAL_SMOKE_EFFECT;
                     fBlastEffect = false;
                     break;
 
@@ -1357,7 +1357,7 @@ public class ExplosionControl
                 case Items.VERY_SMALL_CREATURE_GAS:
 
                     fSmokeEffect = true;
-                    bSmokeEffectType = CREATURE_SMOKE_EFFECT;
+                    bSmokeEffectType = SmokeEffectType.CREATURE_SMOKE_EFFECT;
                     fBlastEffect = false;
                     break;
             }
@@ -1366,7 +1366,7 @@ public class ExplosionControl
 
         // OK, here we:
         // Get explosive data from table
-        pExplosive = (Explosive[Item[usItem].ubClassIndex]);
+        pExplosive = (Weapons.Explosive[Item[usItem].ubClassIndex]);
 
         uiRoll = PreRandom(100);
 
@@ -1417,7 +1417,7 @@ public class ExplosionControl
             // damage structures
             if (uiDist <= Math.Max(1, (int)(pExplosive.ubDamage / 30)))
             {
-                if (Item[usItem].usItemClass & IC.GRENADE)
+                if (Item[usItem].usItemClass.HasFlag(IC.GRENADE))
                 {
                     sStructDmgAmt = sWoundAmt / 3;
                 }
@@ -1462,9 +1462,9 @@ public class ExplosionControl
             // NB radius can be 0 so cannot divide it by 2 here
             if (!fStunEffect && (uiDist * 2 <= pExplosive.ubRadius))
             {
-                GetItemPool(sGridNo, out pItemPool, bLevel);
+                HandleItems.GetItemPool(sGridNo, out pItemPool, bLevel);
 
-                while (pItemPool)
+                while (pItemPool is not null)
                 {
                     pItemPoolNext = pItemPool.pNext;
 
@@ -1529,14 +1529,14 @@ public class ExplosionControl
             if (fBlastEffect)
             {
                 // don't hurt anyone who is already dead & waiting to be removed
-                if ((ubPerson = WhoIsThere2(sGridNo, bLevel)) != NOBODY)
+                if ((ubPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) != NOBODY)
                 {
                     DamageSoldierFromBlast(ubPerson, ubOwner, sBombGridNo, sWoundAmt, sBreathAmt, uiDist, usItem, sSubsequent);
                 }
 
                 if (bLevel == 1)
                 {
-                    if ((ubPerson = WhoIsThere2(sGridNo, 0)) != NOBODY)
+                    if ((ubPerson = WorldManager.WhoIsThere2(sGridNo, 0)) != NOBODY)
                     {
                         if ((sWoundAmt / 2) > 20)
                         {
@@ -1557,7 +1557,7 @@ public class ExplosionControl
             }
             else
             {
-                if ((ubPerson = WhoIsThere2(sGridNo, bLevel)) >= NOBODY)
+                if ((ubPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) >= NOBODY)
                 {
                     return (fRecompileMovementCosts);
                 }
@@ -2207,7 +2207,7 @@ public class ExplosionControl
 
     void DelayedBillyTriggerToBlockOnExit()
     {
-        if (WhoIsThere2(gsTempActionGridNo, 0) == NOBODY)
+        if (WorldManager.WhoIsThere2(gsTempActionGridNo, 0) == NOBODY)
         {
             TriggerNPCRecord(NPCID.BILLY, 6);
         }
@@ -3127,10 +3127,10 @@ public class ExplosionControl
 
 
 
-    bool DoesSAMExistHere(int sSectorX, int sSectorY, int sSectorZ, int sGridNo)
+    bool DoesSAMExistHere(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int sGridNo)
     {
         int cnt;
-        int sSectorNo;
+        SEC sSectorNo;
 
         // ATE: If we are belwo, return right away...
         if (sSectorZ != 0)
@@ -3138,7 +3138,7 @@ public class ExplosionControl
             return (false);
         }
 
-        sSectorNo = SECTOR(sSectorX, sSectorY);
+        sSectorNo = SECTORINFO.SECTOR(sSectorX, sSectorY);
 
         for (cnt = 0; cnt < NUMBER_OF_SAMS; cnt++)
         {
@@ -3157,7 +3157,7 @@ public class ExplosionControl
     }
 
 
-    void UpdateAndDamageSAMIfFound(int sSectorX, int sSectorY, int sSectorZ, int sGridNo, int ubDamage)
+    void UpdateAndDamageSAMIfFound(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int sGridNo, int ubDamage)
     {
         int sSectorNo;
 
@@ -3170,13 +3170,13 @@ public class ExplosionControl
         // Damage.....
         sSectorNo = CALCULATE_STRATEGIC_INDEX(sSectorX, sSectorY);
 
-        if (StrategicMap[sSectorNo].bSAMCondition >= ubDamage)
+        if (strategicMap[sSectorNo].bSAMCondition >= ubDamage)
         {
-            StrategicMap[sSectorNo].bSAMCondition -= ubDamage;
+            strategicMap[sSectorNo].bSAMCondition -= ubDamage;
         }
         else
         {
-            StrategicMap[sSectorNo].bSAMCondition = 0;
+            strategicMap[sSectorNo].bSAMCondition = 0;
         }
 
         // SAM site may have been put out of commission...
@@ -3332,7 +3332,7 @@ public class ExplosionControl
             iItemIndex = FindActiveTimedBomb();
             if (iItemIndex != -1)
             {
-                RemoveItemFromWorld(iItemIndex);
+                WorldItems.RemoveItemFromWorld(iItemIndex);
             }
         } while (iItemIndex != -1);
 
@@ -3418,10 +3418,10 @@ public struct EXPLOSION_PARAMS
 {
     public int uiFlags;
     public int ubOwner;
-    public int ubTypeID;
+    public EXPLOSION_TYPES ubTypeID;
     public Items usItem;
     public int sX;                                       // World X ( optional )
-    public int sY;                                       // World Y ( optional )
+    public MAP_ROW sY;                                       // World Y ( optional )
     public int sZ;                                       // World Z ( optional )
     public int sGridNo;                          // World GridNo
     public bool fLocate;

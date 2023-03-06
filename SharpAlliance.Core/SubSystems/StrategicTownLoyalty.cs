@@ -26,7 +26,7 @@ public class StrategicTownLoyalty
     // is the ENTIRE town under player control?
     public static bool IsTownUnderCompleteControlByPlayer(TOWNS bTownId)
     {
-        if (GetTownSectorSize(bTownId) == GetTownSectorsUnderControl(bTownId))
+        if (StrategicMap.GetTownSectorSize(bTownId) == GetTownSectorsUnderControl(bTownId))
         {
             return (true);
         }

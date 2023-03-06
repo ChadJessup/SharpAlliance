@@ -371,7 +371,7 @@ public class StrategicMines
         return (uiAmountExtracted);
     }
 
-    static int GetAvailableWorkForceForMineForPlayer(MINE bMineIndex)
+    private static int GetAvailableWorkForceForMineForPlayer(MINE bMineIndex)
     {
         // look for available workforce in the town associated with the mine
         int iWorkForceSize = 0;
@@ -396,7 +396,7 @@ public class StrategicMines
 
         bTownId = Globals.gMineLocation[bMineIndex].bAssociatedTown;
 
-        Debug.Assert(GetTownSectorSize(bTownId) != 0);
+        Debug.Assert(StrategicMap.GetTownSectorSize(bTownId) != 0);
 
 
         // get workforce size (is 0-100 based on local town's loyalty)
@@ -409,8 +409,8 @@ public class StrategicMines
         */
 
         // now adjust for town size.. the number of sectors you control
-        iWorkForceSize *= GetTownSectorsUnderControl(bTownId);
-        iWorkForceSize /= GetTownSectorSize(bTownId);
+        iWorkForceSize *= StrategicTownLoyalty.GetTownSectorsUnderControl(bTownId);
+        iWorkForceSize /= StrategicMap.GetTownSectorSize(bTownId);
 
         return (iWorkForceSize);
     }
@@ -433,7 +433,7 @@ public class StrategicMines
 
         bTownId = Globals.gMineLocation[bMineIndex].bAssociatedTown;
 
-        if (GetTownSectorSize(bTownId) == 0)
+        if (StrategicMap.GetTownSectorSize(bTownId) == 0)
         {
             return 0;
         }
@@ -448,13 +448,13 @@ public class StrategicMines
         */
 
         // now adjust for town size.. the number of sectors you control
-        iWorkForceSize *= (GetTownSectorSize(bTownId) - GetTownSectorsUnderControl(bTownId));
-        iWorkForceSize /= GetTownSectorSize(bTownId);
+        iWorkForceSize *= (StrategicMap.GetTownSectorSize(bTownId) - StrategicTownLoyalty.GetTownSectorsUnderControl(bTownId));
+        iWorkForceSize /= StrategicMap.GetTownSectorSize(bTownId);
 
         return (iWorkForceSize);
     }
 
-    int GetCurrentWorkRateOfMineForPlayer(MINE bMineIndex)
+    private static int GetCurrentWorkRateOfMineForPlayer(MINE bMineIndex)
     {
         int iWorkRate = 0;
 
@@ -544,7 +544,7 @@ public class StrategicMines
 
         for (ubShift = 0; ubShift < Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS; ubShift++)
         {
-            GameEvents.AddStrategicEvent(EVENT_HANDLE_MINE_INCOME, GameClock.GetWorldDayInMinutes() + Globals.MINE_PRODUCTION_START_TIME + (ubShift * Globals.MINE_PRODUCTION_PERIOD), 0);
+            GameEvents.AddStrategicEvent(EVENT.HANDLE_MINE_INCOME, (uint)(GameClock.GetWorldDayInMinutes() + Globals.MINE_PRODUCTION_START_TIME + (ubShift * Globals.MINE_PRODUCTION_PERIOD)), 0);
         }
     }
 
@@ -567,7 +567,7 @@ public class StrategicMines
     }
 
 
-    int PredictDailyIncomeFromAMine(MINE bMineIndex)
+    public static int PredictDailyIncomeFromAMine(MINE bMineIndex)
     {
         // predict income from this mine, estimate assumes mining situation will not change during next 4 income periods
         // (miner loyalty, % town controlled, monster infestation level, and current max removal rate may all in fact change)
@@ -590,7 +590,7 @@ public class StrategicMines
     }
 
 
-    int PredictIncomeFromPlayerMines()
+    public static int PredictIncomeFromPlayerMines()
     {
         int iTotal = 0;
         MINE bCounter = 0;
@@ -1298,7 +1298,7 @@ public class MINE_STATUS_TYPE
     public bool fQueenRetookProducingMine;  // whether or not queen ever retook a mine after a player had produced from it
     public bool fAttackedHeadMiner;             // player has attacked the head miner, shutting down mine & decreasing loyalty
     public int usValidDayCreaturesCanInfest; //Creatures will be permitted to spread if the game day is greater than this value.
-    public int uiTimePlayerProductionStarted;       // time in minutes when 'fMineHasProducedForPlayer' was first set
+    public uint uiTimePlayerProductionStarted;       // time in minutes when 'fMineHasProducedForPlayer' was first set
 
     byte[] filler;// [11];					// reserved for expansion
 }

@@ -186,9 +186,9 @@ public partial class Globals
     public const int MAX_PURCHASE_AMOUNT = 10;
 
     public const FontStyle BOBBIES_SIGN_FONT = FontStyle.FONT14ARIAL;
-    public const int BOBBIES_SIGN_COLOR = 2;
+    public const FontColor BOBBIES_SIGN_COLOR = (FontColor)2;
     public const FontColor BOBBIES_SIGN_BACKCOLOR = FontColor.FONT_MCOLOR_BLACK;
-    public const int BOBBIES_SIGN_BACKGROUNDCOLOR = 78;//NO_SHADOW;
+    public const FontShadow BOBBIES_SIGN_BACKGROUNDCOLOR = (FontShadow)78;//NO_SHADOW;
     public const int BOBBIES_NUMBER_SIGNS = 5;
     public const FontStyle BOBBIES_SENTENCE_FONT = FontStyle.FONT12ARIAL;
     public const FontColor BOBBIES_SENTENCE_COLOR = FontColor.FONT_MCOLOR_WHITE;

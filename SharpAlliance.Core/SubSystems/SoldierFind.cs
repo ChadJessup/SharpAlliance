@@ -719,7 +719,7 @@ public class SoldierFind
         psScreenY = sMercScreenY;
     }
 
-    bool GridNoOnScreen(int sGridNo)
+    public static bool GridNoOnScreen(int sGridNo)
     {
         int sNewCenterWorldX, sNewCenterWorldY;
         int sWorldX;

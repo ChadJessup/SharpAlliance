@@ -219,7 +219,7 @@ public class LaptopSaveInfoStruct
     public int guiNumberOfMercPaymentsInDays;               // Keeps track of each day of payment the MERC site gets
     public Dictionary<BOBBY_RAY, int> usInventoryListLength = new();
     public int iVoiceId;
-    public int ubHaveBeenToBobbyRaysAtLeastOnceWhileUnderConstruction;
+    public BOBBYR_VISITS ubHaveBeenToBobbyRaysAtLeastOnceWhileUnderConstruction;
     public bool fMercSiteHasGoneDownYet;
     public int ubSpeckCanSayPlayersLostQuote;
     public LAST_HIRED_MERC_STRUCT sLastHiredMerc;

@@ -64,12 +64,12 @@ public class StrategicStatus
     }
 
 
-    void ModifyPlayerReputation(int bRepChange)
+    public static void ModifyPlayerReputation(REPUTATION bRepChange)
     {
         int iNewBadRep;
 
         // subtract, so that a negative reputation change results in an increase in bad reputation
-        iNewBadRep = (int)gStrategicStatus.ubBadReputation - bRepChange;
+        iNewBadRep = gStrategicStatus.ubBadReputation - (int)bRepChange;
 
         // keep within a 0-100 range (0 = Saint, 100 = Satan)
         iNewBadRep = Math.Max(0, iNewBadRep);
@@ -196,7 +196,7 @@ public class StrategicStatus
         // if creatures have attacked a mine (doesn't care if they're still there or not at the moment)
         if (StrategicMines.HasAnyMineBeenAttackedByMonsters() && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_CREATURES)))
         {
-            Emails.AddEmail(ENRICO_CREATURES, ENRICO_CREATURES_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_CREATURES, ENRICO_CREATURES_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_CREATURES;
             return; // avoid any other E-mail at the same time
         }
@@ -204,31 +204,31 @@ public class StrategicStatus
 
         if ((ubCurrentProgress >= SOME_PROGRESS_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_SOME_PROGRESS)))
         {
-            AddEmail(ENRICO_PROG_20, ENRICO_PROG_20_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_PROG_20, ENRICO_PROG_20_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_SOME_PROGRESS;
             return; // avoid any setback E-mail at the same time
         }
 
         if ((ubCurrentProgress >= ABOUT_HALFWAY_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_ABOUT_HALFWAY)))
         {
-            AddEmail(ENRICO_PROG_55, ENRICO_PROG_55_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_PROG_55, ENRICO_PROG_55_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_ABOUT_HALFWAY;
             return; // avoid any setback E-mail at the same time
         }
 
         if ((ubCurrentProgress >= NEARLY_DONE_THRESHOLD) && !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_NEARLY_DONE)))
         {
-            AddEmail(ENRICO_PROG_80, ENRICO_PROG_80_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_PROG_80, ENRICO_PROG_80_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_NEARLY_DONE;
             return; // avoid any setback E-mail at the same time
         }
 
         // test for a major setback OR a second minor setback
         if ((((ubHighestProgress - ubCurrentProgress) >= MAJOR_SETBACK_THRESHOLD) ||
-            (((ubHighestProgress - ubCurrentProgress) >= MINOR_SETBACK_THRESHOLD) && (gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_FLAG_SETBACK_OVER))) &&
-                !(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_MAJOR_SETBACK))
+            (((ubHighestProgress - ubCurrentProgress) >= MINOR_SETBACK_THRESHOLD) && (gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.FLAG_SETBACK_OVER)))) &&
+                !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_MAJOR_SETBACK)))
         {
-            AddEmail(ENRICO_SETBACK, ENRICO_SETBACK_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_SETBACK, ENRICO_SETBACK_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_MAJOR_SETBACK;
         }
         else
@@ -236,7 +236,7 @@ public class StrategicStatus
         if (((ubHighestProgress - ubCurrentProgress) >= MINOR_SETBACK_THRESHOLD) &&
               !(gStrategicStatus.usEnricoEmailFlags & (ENRICO_EMAIL_SENT_MINOR_SETBACK | ENRICO_EMAIL_SENT_MAJOR_SETBACK)))
         {
-            AddEmail(ENRICO_SETBACK_2, ENRICO_SETBACK_2_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_SETBACK_2, ENRICO_SETBACK_2_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_MINOR_SETBACK;
         }
         else
@@ -299,16 +299,16 @@ public class StrategicStatus
                     switch (bComplaint)
                     {
                         case 3:
-                            AddEmail(LACK_PLAYER_PROGRESS_3, LACK_PLAYER_PROGRESS_3_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-                            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_LACK_PROGRESS3;
+                            Emails.AddEmail(LACK_PLAYER_PROGRESS_3, LACK_PLAYER_PROGRESS_3_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+                            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_LACK_PROGRESS3;
                             break;
                         case 2:
-                            AddEmail(LACK_PLAYER_PROGRESS_2, LACK_PLAYER_PROGRESS_2_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-                            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_LACK_PROGRESS2;
+                            Emails.AddEmail(LACK_PLAYER_PROGRESS_2, LACK_PLAYER_PROGRESS_2_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+                            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_LACK_PROGRESS2;
                             break;
                         default:
-                            AddEmail(LACK_PLAYER_PROGRESS_1, LACK_PLAYER_PROGRESS_1_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-                            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_LACK_PROGRESS1;
+                            Emails.AddEmail(LACK_PLAYER_PROGRESS_1, LACK_PLAYER_PROGRESS_1_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+                            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_LACK_PROGRESS1;
                             break;
 
                     }

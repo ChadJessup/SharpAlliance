@@ -360,17 +360,17 @@ public class Facts
 
             case FACT.RECEIVING_INCOME_FROM_DCAC:
                 gubFact[usFact] = (
-                    (PredictDailyIncomeFromAMine(MINE.DRASSEN) > 0) &&
-                    (PredictDailyIncomeFromAMine(MINE.ALMA) > 0) &&
-                    (PredictDailyIncomeFromAMine(MINE.CAMBRIA) > 0) &&
-                    (PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0));
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.DRASSEN) > 0) &&
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.ALMA) > 0) &&
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CAMBRIA) > 0) &&
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0));
                 break;
 
             case FACT.PLAYER_BEEN_TO_K4:
                 {
                     UNDERGROUND_SECTORINFO? pUnderGroundSector;
 
-                    pUnderGroundSector = FindUnderGroundSector(4, MAP_ROW.K, 1);
+                    pUnderGroundSector = QueenCommand.FindUnderGroundSector(4, MAP_ROW.K, 1);
                     gubFact[usFact] = pUnderGroundSector.fVisited > 0;
                 }
                 break;
@@ -458,24 +458,24 @@ public class Facts
                 break;
 
             case FACT.PLAYER_DOING_POORLY:
-                gubFact[usFact] = (CurrentPlayerProgressPercentage() < 20);
+                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() < 20);
                 break;
 
             case FACT.PLAYER_DOING_WELL:
-                gubFact[usFact] = (CurrentPlayerProgressPercentage() > 50);
+                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 50);
                 break;
 
             case FACT.PLAYER_DOING_VERY_WELL:
-                gubFact[usFact] = (CurrentPlayerProgressPercentage() > 80);
+                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 80);
                 break;
 
             case FACT.FATHER_DRUNK_AND_SCIFI_OPTION_ON:
-                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameSettings.SciFi);
+                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameOptions.SciFi);
                 break;
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:
                 gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED)
-                    && (GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
+                    && (GameClock.GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
                 break;
 
             case FACT.NOTHING_REPAIRED_YET:
@@ -555,7 +555,7 @@ public class Facts
                 break;
 
             case FACT.ROCKET_RIFLE_EXISTS:
-                gubFact[usFact] = ItemTypeExistsAtLocation(10472, ROCKET_RIFLE, 0, null);
+                gubFact[usFact] = HandleItems.ItemTypeExistsAtLocation(10472, Items.ROCKET_RIFLE, 0, out var _);
                 break;
 
             case FACT.DOREEN_ALIVE:
@@ -663,7 +663,7 @@ public class Facts
                 break;
 
             case FACT.KINGPIN_IS_ENEMY:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[(int)CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE);
+                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE);
                 break;
 
             case FACT.DYNAMO_NOT_SPEAKER:

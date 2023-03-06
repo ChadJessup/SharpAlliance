@@ -102,7 +102,7 @@ namespace SharpAlliance.Core.SubSystems
             this.overhead.InitOverhead();
 
             //Reset the email list
-            this.emails.ShutDownEmailList();
+            Emails.ShutDownEmailList();
 
             //Reinit the laptopn screen variables
             this.laptop.InitLaptopAndLaptopScreens();
@@ -137,7 +137,7 @@ namespace SharpAlliance.Core.SubSystems
             Globals.gsCurInterfacePanel = InterfacePanelDefines.TEAM_PANEL;
 
             //Delete all the strategic events
-            this.gameEvents.DeleteAllStrategicEvents();
+            GameEvents.DeleteAllStrategicEvents();
 
             //This function gets called when ur in a game a click the quit to main menu button, therefore no game is in progress
             Globals.gTacticalStatus.fHasAGameBeenStarted = false;

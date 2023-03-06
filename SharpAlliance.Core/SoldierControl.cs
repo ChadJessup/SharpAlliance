@@ -1689,7 +1689,7 @@ public class SoldierControl
         //if ( (gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT) )
         //{
         gTacticalStatus.ubAttackBusyCount++;
-        DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting attack, attack count now %d", gTacticalStatus.ubAttackBusyCount));
+        //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string.Format("!!!!!!! Starting attack, attack count now %d", gTacticalStatus.ubAttackBusyCount));
         //}
 
         // Set soldier's target gridno
@@ -1697,9 +1697,9 @@ public class SoldierControl
         // the actual event call
         pSoldier.sTargetGridNo = sTargetGridNo;
         //pSoldier.sLastTarget = sTargetGridNo;
-        pSoldier.ubTargetID = WhoIsThere2(sTargetGridNo, pSoldier.bTargetLevel);
+        pSoldier.ubTargetID = WorldManager.WhoIsThere2(sTargetGridNo, pSoldier.bTargetLevel);
 
-        if (Item[pSoldier.inv[HANDPOS].usItem].usItemClass & IC_GUN)
+        if (Item[pSoldier.inv[HANDPOS].usItem].usItemClass.HasFlag(IC.GUN))
         {
             if (pSoldier.bDoBurst)
             {
@@ -7112,13 +7112,13 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         int usSoldierIndex;
         int ubTDirection;
         bool fChangeDirection = false;
-        ROTTING_CORPSE* pCorpse;
+        ROTTING_CORPSE? pCorpse;
 
         // Increment the number of people busy doing stuff because of an attack
         //if ( (gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT) )
         //{
         gTacticalStatus.ubAttackBusyCount++;
-        DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Begin blade attack: ATB  %d", gTacticalStatus.ubAttackBusyCount));
+        //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Begin blade attack: ATB  %d", gTacticalStatus.ubAttackBusyCount));
 
         //}
 
@@ -7130,19 +7130,19 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // DETERMINE ANIMATION TO PLAY 
         // LATER BASED ON IF TAREGT KNOWS OF US, STANCE, ETC
         // GET POINTER TO TAREGT
-        if (pSoldier.uiStatusFlags & SOLDIER_MONSTER)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
         {
             int ubTargetID;
 
             // Is there an unconscious guy at gridno......
-            ubTargetID = WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
+            ubTargetID = WorldManager.WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
 
             if (ubTargetID != NOBODY && ((MercPtrs[ubTargetID].bLife < OKLIFE && MercPtrs[ubTargetID].bLife > 0) || (MercPtrs[ubTargetID].bBreath < OKBREATH && MercPtrs[ubTargetID].bCollapsed)))
             {
                 pSoldier.uiPendingActionData4 = ubTargetID;
                 // add regen bonus
                 pSoldier.bRegenerationCounter++;
-                EVENT_InitNewSoldierAnim(pSoldier, MONSTER_BEGIN_EATTING_FLESH, 0, false);
+                EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.MONSTER_BEGIN_EATTING_FLESH, 0, false);
             }
             else
             {
@@ -7161,25 +7161,25 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             // Check if it's a claws or teeth...
             if (pSoldier.inv[HANDPOS].usItem == BLOODCAT_CLAW_ATTACK)
             {
-                EVENT_InitNewSoldierAnim(pSoldier, BLOODCAT_SWIPE, 0, false);
+                EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.BLOODCAT_SWIPE, 0, false);
             }
             else
             {
-                EVENT_InitNewSoldierAnim(pSoldier, BLOODCAT_BITE_ANIM, 0, false);
+                EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.BLOODCAT_BITE_ANIM, 0, false);
             }
         }
         else
         {
-            usSoldierIndex = WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
+            usSoldierIndex = WorldManager.WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
             if (usSoldierIndex != NOBODY)
             {
-                GetSoldier(&pTSoldier, usSoldierIndex);
+                GetSoldier(out pTSoldier, usSoldierIndex);
 
                 // Look at stance of target
                 switch (gAnimControl[pTSoldier.usAnimState].ubEndHeight)
                 {
-                    case ANIM_STAND:
-                    case ANIM_CROUCH:
+                    case AnimationHeights.ANIM_STAND:
+                    case AnimationHeights.ANIM_CROUCH:
 
                         // CHECK IF HE CAN SEE US, IF SO RANDOMIZE
                         if (pTSoldier.bOppList[pSoldier.ubID] == 0 && pTSoldier.bTeam != pSoldier.bTeam)
@@ -7219,7 +7219,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
                         break;
 
-                    case ANIM_PRONE:
+                    case AnimationHeights.ANIM_PRONE:
 
                         // CHECK OUR STANCE
                         if (gAnimControl[pSoldier.usAnimState].ubEndHeight != ANIM_CROUCH)
@@ -7251,17 +7251,17 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
                     if (pCorpse == null)
                     {
-                        EVENT_InitNewSoldierAnim(pSoldier, CROUCH_STAB, 0, false);
+                        EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.CROUCH_STAB, 0, false);
                     }
                     else
                     {
                         if (IsValidDecapitationCorpse(pCorpse))
                         {
-                            EVENT_InitNewSoldierAnim(pSoldier, DECAPITATE, 0, false);
+                            EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.DECAPITATE, 0, false);
                         }
                         else
                         {
-                            EVENT_InitNewSoldierAnim(pSoldier, CROUCH_STAB, 0, false);
+                            EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.CROUCH_STAB, 0, false);
                         }
                     }
                 }
@@ -7271,7 +7271,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // SET TARGET GRIDNO
         pSoldier.sTargetGridNo = sGridNo;
         pSoldier.bTargetLevel = pSoldier.bLevel;
-        pSoldier.ubTargetID = WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
+        pSoldier.ubTargetID = WorldManager.WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
     }
 
 
@@ -7283,7 +7283,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         int usSoldierIndex;
         int ubTDirection;
         bool fChangeDirection = false;
-        int usItem;
+        Items usItem;
 
         // Get item in hand...
         usItem = pSoldier.inv[HANDPOS].usItem;
@@ -7293,15 +7293,15 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         //if ( (gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT) )
         //{
         gTacticalStatus.ubAttackBusyCount++;
-        DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Begin HTH attack: ATB  %d", gTacticalStatus.ubAttackBusyCount));
+        //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string.Format("Begin HTH attack: ATB  %d", gTacticalStatus.ubAttackBusyCount));
 
         //}
 
         // get target.....
-        usSoldierIndex = WhoIsThere2(pSoldier.sTargetGridNo, pSoldier.bLevel);
+        usSoldierIndex = WorldManager.WhoIsThere2(pSoldier.sTargetGridNo, pSoldier.bLevel);
         if (usSoldierIndex != NOBODY)
         {
-            GetSoldier(&pTSoldier, usSoldierIndex);
+            GetSoldier(out pTSoldier, usSoldierIndex);
 
             fChangeDirection = true;
         }
@@ -7343,10 +7343,10 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             // Look at stance of target
             switch (gAnimControl[pTSoldier.usAnimState].ubEndHeight)
             {
-                case ANIM_STAND:
-                case ANIM_CROUCH:
+                case AnimationHeights.ANIM_STAND:
+                case AnimationHeights.ANIM_CROUCH:
 
-                    if (usItem != CROWBAR)
+                    if (usItem != Items.CROWBAR)
                     {
                         EVENT_InitNewSoldierAnim(pSoldier, PUNCH, 0, false);
                     }
@@ -7376,27 +7376,27 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                     }
                     break;
 
-                case ANIM_PRONE:
+                case AnimationHeights.ANIM_PRONE:
 
                     // CHECK OUR STANCE
                     // ATE: Added this for CIV body types 'cause of elliot
                     if (!IS_MERC_BODY_TYPE(pSoldier))
                     {
-                        EVENT_InitNewSoldierAnim(pSoldier, PUNCH, 0, false);
+                        EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.PUNCH, 0, false);
                     }
                     else
                     {
-                        if (gAnimControl[pSoldier.usAnimState].ubEndHeight != ANIM_CROUCH)
+                        if (gAnimControl[pSoldier.usAnimState].ubEndHeight != AnimationHeights.ANIM_CROUCH)
                         {
                             // SET DESIRED STANCE AND SET PENDING ANIMATION
-                            SendChangeSoldierStanceEvent(pSoldier, ANIM_CROUCH);
-                            pSoldier.usPendingAnimation = PUNCH_LOW;
+                            SendChangeSoldierStanceEvent(pSoldier, AnimationHeights.ANIM_CROUCH);
+                            pSoldier.usPendingAnimation = AnimationStates.PUNCH_LOW;
                         }
                         else
                         {
                             // USE crouched one
                             // NEED TO CHANGE STANCE IF NOT CROUCHD!
-                            EVENT_InitNewSoldierAnim(pSoldier, PUNCH_LOW, 0, false);
+                            EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.PUNCH_LOW, 0, false);
                         }
                     }
                     break;
@@ -7407,11 +7407,11 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         pSoldier.sTargetGridNo = sGridNo;
         pSoldier.bTargetLevel = pSoldier.bLevel;
         pSoldier.sLastTarget = sGridNo;
-        pSoldier.ubTargetID = WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
+        pSoldier.ubTargetID = WorldManager.WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
     }
 
 
-    void EVENT_SoldierBeginKnifeThrowAttack(SOLDIERTYPE? pSoldier, int sGridNo, int ubDirection)
+    void EVENT_SoldierBeginKnifeThrowAttack(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections ubDirection)
     {
         // Increment the number of people busy doing stuff because of an attack
         //if ( (gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT) )
@@ -7419,7 +7419,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         gTacticalStatus.ubAttackBusyCount++;
         //}
         pSoldier.bBulletsLeft = 1;
-        DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting knifethrow attack, bullets left %d", pSoldier.bBulletsLeft));
+        //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string.Format("!!!!!!! Starting knifethrow attack, bullets left %d", pSoldier.bBulletsLeft));
 
         EVENT_InitNewSoldierAnim(pSoldier, THROW_KNIFE, 0, false);
 
@@ -7431,10 +7431,10 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // SET TARGET GRIDNO
         pSoldier.sTargetGridNo = sGridNo;
         pSoldier.sLastTarget = sGridNo;
-        pSoldier.fTurningFromPronePosition = 0;
+        pSoldier.fTurningFromPronePosition = false;
         // NB target level must be set by functions outside of here... but I think it
         // is already set in HandleItem or in the AI code - CJC
-        pSoldier.ubTargetID = WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
+        pSoldier.ubTargetID = WorldManager.WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
     }
 
 
@@ -7484,7 +7484,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         int usSoldierIndex;
         bool fRefused = false;
 
-        usSoldierIndex = WhoIsThere2(sGridNo, pSoldier.bLevel);
+        usSoldierIndex = WorldManager.WhoIsThere2(sGridNo, pSoldier.bLevel);
         if (usSoldierIndex != NOBODY)
         {
             pTSoldier = MercPtrs[usSoldierIndex];
@@ -9239,12 +9239,12 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void EVENT_SoldierBeginReloadRobot(SOLDIERTYPE? pSoldier, int sGridNo, int ubDirection, int ubMercSlot)
+    void EVENT_SoldierBeginReloadRobot(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections ubDirection, int ubMercSlot)
     {
         int ubPerson;
 
         // Make sure we have a robot here....
-        ubPerson = WhoIsThere2(sGridNo, pSoldier.bLevel);
+        ubPerson = WorldManager.WhoIsThere2(sGridNo, pSoldier.bLevel);
 
         if (ubPerson != NOBODY && MercPtrs[ubPerson].uiStatusFlags & SOLDIER_ROBOT)
         {

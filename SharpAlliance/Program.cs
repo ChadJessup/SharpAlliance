@@ -29,7 +29,7 @@ namespace SharpAlliance
             // but let's add per-machine configuration as well (and commandline args),
             // since I dev this on multiple machines...and need examples.
             var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile($"SharpAlliance.{Environment.MachineName}.json", optional: true)
+                .AddJsonFile($"SharpAlliance.{System.Environment.MachineName}.json", optional: true)
                 .AddCommandLine(args);
 
             // pass configuration to GamePlatformBuilder...
@@ -67,13 +67,13 @@ namespace SharpAlliance
         {
             builder.AddDependency<IOSManager, WindowsSubSystem>();
             //builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
-            builder.AddDependency<IScreenManager, ScreenManager>();
+            //builder.AddDependency<IScreenManager, ScreenManager>();
             builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
-            builder.AddDependency<IVideoManager, VeldridVideoManager>();
+            //builder.AddDependency<IVideoManager, VeldridVideoManager>();
             builder.AddDependency<ISoundManager, SoundManager>();
             builder.AddDependency<IInputManager, InputManager>();
-            builder.AddDependency<IClockManager, ClockManager>();
+            //builder.AddDependency<IClockManager, ClockManager>();
 
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<Messages>();
@@ -109,7 +109,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<Overhead>();
             builder.Services.AddSingleton<Emails>();
             builder.Services.AddSingleton<Laptop>();
-            builder.Services.AddSingleton<Interface>();
+            //builder.Services.AddSingleton<Interface>();
             builder.Services.AddSingleton<TurnBasedInput>();
             builder.Services.AddSingleton<Cheats>();
             builder.Services.AddSingleton<GameEvents>();

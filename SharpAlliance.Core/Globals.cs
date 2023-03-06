@@ -26,6 +26,27 @@ public partial class Globals
     public const int FIRST_LEVEL = 0;
     public const int SECOND_LEVEL = 1;
 
+    public static int[] gsBoxerGridNo = { 11393, 11233, 11073 };
+
+    public const int NUM_CORPSE_SHADES = 17;
+    public const int ROTTING_CORPSE_FIND_SWEETSPOT_FROM_GRIDNO = 0x01;		//Find the closest spot to the given gridno
+    public const int ROTTING_CORPSE_USE_NORTH_ENTRY_POINT = 0x02;		//Find the spot closest to the north entry grid
+    public const int ROTTING_CORPSE_USE_SOUTH_ENTRY_POINT = 0x04;		//Find the spot closest to the south entry grid
+    public const int ROTTING_CORPSE_USE_EAST_ENTRY_POINT = 0x08;		//Find the spot closest to the east entry grid
+    public const int ROTTING_CORPSE_USE_WEST_ENTRY_POINT = 0x10;		//Find the spot closest to the west entry grid
+    public const int ROTTING_CORPSE_USE_CAMMO_PALETTE = 0x20;		//We use cammo palette here....
+    public const int ROTTING_CORPSE_VEHICLE = 0x40;		//Vehicle Corpse
+
+
+    public const int BOXING_SECTOR_X = 5;
+    public const int BOXING_SECTOR_Y = 4;
+    public const int BOXING_SECTOR_Z = 0;
+    public const int ROOM_SURROUNDING_BOXING_RING = 3;
+    public const int BOXING_RING = 29;
+    public const int BOXING_AI_START_POSITION = 11235;
+    public const int NUM_BOXERS = 3;
+
+
     public const double DEATH_RATE_SEVERITY = 1.0f;			// increase to make death rates higher for same # of deaths/time
 
     // progress threshold that control Enrico E-mail timing
@@ -35,6 +56,24 @@ public partial class Globals
     public const int MINOR_SETBACK_THRESHOLD = 5;
     public const int MAJOR_SETBACK_THRESHOLD = 15;
 
+    // Maximum value that can be returned by the rand function:
+    public const int RAND_MAX = 0x7fff;
+
+    public static int PreRandom(int uiRange) => RNG.PreRandom(uiRange);
+
+    public const int MAX_ROTTING_CORPSES = 100;
+
+
+    public ROTTING_CORPSE[] gRottingCorpse = new ROTTING_CORPSE[MAX_ROTTING_CORPSES];
+    public int giNumRottingCorpse = 0;
+
+
+    //IMPORTANT:
+    // Changing this define will invalidate the JA2 save.  If this is necessary, please ifdef your own value.
+    public const int MAX_PREGENERATED_NUMS = 256;
+
+    public static int guiPreRandomIndex = 0;
+    public static int[] guiPreRandomNums = new int[MAX_PREGENERATED_NUMS];
 
     public static ushort gusAlphaMask;// = 0;
     public static ushort gusRedMask;// = 0;
@@ -549,6 +588,27 @@ public partial class Globals
 
     public static List<WORLDBOMB> gWorldBombs = new();
     public static int guiNumWorldBombs = 0;
+
+    public const int SOUND_MAX_CACHED = 128;                       // number of cache slots
+    public const int SOUND_MAX_CHANNELS = 16;					// number of mixer channels
+
+
+    public const int NUMBER_OF_SAMS = 4;
+    public const int POSITION_SOUND_FROM_SOLDIER = 0x00000001;
+    public const int NUM_POSITION_SOUND_EFFECT_SLOTS = 10;
+
+    // GLOBAL FOR SMOKE LISTING
+    public static POSITIONSND[] gPositionSndData = new POSITIONSND[NUM_POSITION_SOUND_EFFECT_SLOTS];
+    public static int guiNumPositionSnds = 0;
+    public static bool gfPositionSoundsActive = false;
+
+
+    public static SEC[] pSamList = new SEC[NUMBER_OF_SAMS];
+    public static int[] pSamGridNoAList = new int[NUMBER_OF_SAMS];
+    public static int[] pSamGridNoBList = new int[NUMBER_OF_SAMS];
+    public static bool fFoundOrta;
+    public static bool[] fSamSiteFound = new bool[NUMBER_OF_SAMS];
+    public static bool gfUseAlternateMap;
 
 
     public static AnimationSurfaceType[] gAnimSurfaceDatabase = new AnimationSurfaceType[(int)AnimationSurfaceTypes.NUMANIMATIONSURFACETYPES];

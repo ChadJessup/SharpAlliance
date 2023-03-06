@@ -378,7 +378,7 @@ namespace SharpAlliance.Core.SubSystems
             return;
         }
 
-        void AddEmailWithSpecialData(int iMessageOffset, int iMessageLength, int ubSender, int iDate, int iFirstData, int uiSecondData)
+        public static void AddEmailWithSpecialData(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate, int iFirstData, int uiSecondData)
         {
             string pSubject;
             //MessagePtr pMessageList;
@@ -413,7 +413,7 @@ namespace SharpAlliance.Core.SubSystems
             return;
         }
 
-        void AddEmail(int iMessageOffset, int iMessageLength, int ubSender, int iDate)
+        public static void AddEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
         {
             string pSubject;
             //MessagePtr pMessageList;
@@ -467,7 +467,7 @@ namespace SharpAlliance.Core.SubSystems
             return;
         }
 
-        void AddEmailMessage(int iMessageOffset, int iMessageLength, string pSubject, int iDate, int ubSender, bool fAlreadyRead, int iFirstData, int uiSecondData)
+        private static void AddEmailMessage(int iMessageOffset, int iMessageLength, string pSubject, uint iDate, EmailAddresses ubSender, bool fAlreadyRead, int iFirstData, int uiSecondData)
         {
             // will add a message to the list of messages
             email? pEmail = pEmailList;
@@ -4420,7 +4420,7 @@ namespace SharpAlliance.Core.SubSystems
         }
 
 
-        void ShutDownEmailList()
+        public static void ShutDownEmailList()
         {
             email? pEmail = pEmailList;
             email? pTempEmail = null;
@@ -4709,7 +4709,7 @@ namespace SharpAlliance.Core.SubSystems
             giPrevMessageId = giMessageId;
         }
 
-        bool ReplaceMercNameAndAmountWithProperData(string? pFinishedString, email pMail)
+        private static bool ReplaceMercNameAndAmountWithProperData(string? pFinishedString, email pMail)
         {
             //	string		pTempString[MAIL_STRING_SIZE/2 + 1];
             string pTempString;

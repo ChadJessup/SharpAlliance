@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -213,6 +213,141 @@ public class ItemSubSystem
                 fDone = true;
             }
         }
+    }
+
+    public static bool DamageItemOnGround(OBJECTTYPE? pObject, int sGridNo, int bLevel, int iDamage, int ubOwner)
+    {
+        bool fBlowsUp;
+
+        fBlowsUp = DamageItem(pObject, iDamage, true);
+        if (fBlowsUp)
+        {
+            // OK, Ignite this explosion!
+            IgniteExplosion(ubOwner, IsometricUtils.CenterX(sGridNo), IsometricUtils.CenterY(sGridNo), 0, sGridNo, pObject.usItem, bLevel);
+
+            // Remove item!
+            return (true);
+        }
+        else if ((pObject.ubNumberOfObjects < 2) && (pObject.bStatus[0] < USABLE))
+        {
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
+    }
+
+    public static bool DamageItem(OBJECTTYPE? pObject, int iDamage, bool fOnGround)
+    {
+        int bLoop;
+        int bDamage;
+
+        if ((Item[pObject.usItem].fFlags.HasFlag(ItemAttributes.ITEM_DAMAGEABLE) || Item[pObject.usItem].usItemClass == IC.AMMO) && pObject.ubNumberOfObjects > 0)
+        {
+
+            for (bLoop = 0; bLoop < pObject.ubNumberOfObjects; bLoop++)
+            {
+                // if the status of the item is negative then it's trapped/jammed;
+                // leave it alone
+                if (pObject.usItem != NOTHING && pObject.bStatus[bLoop] > 0)
+                {
+                    bDamage = CheckItemForDamage(pObject.usItem, iDamage);
+                    switch (pObject.usItem)
+                    {
+                        case Items.JAR_CREATURE_BLOOD:
+                        case Items.JAR:
+                        case Items.JAR_HUMAN_BLOOD:
+                        case Items.JAR_ELIXIR:
+                            if (PreRandom(bDamage) > 5)
+                            {
+                                // smash!
+                                bDamage = pObject.bStatus[bLoop];
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    if (Item[pObject.usItem].usItemClass == IC.AMMO)
+                    {
+                        if (PreRandom(100) < (int)bDamage)
+                        {
+                            // destroy clip completely
+                            pObject.bStatus[bLoop] = 1;
+                        }
+                    }
+                    else
+                    {
+                        pObject.bStatus[bLoop] -= bDamage;
+                        if (pObject.bStatus[bLoop] < 1)
+                        {
+                            pObject.bStatus[bLoop] = 1;
+                        }
+                    }
+                    // I don't think we increase viewrange based on items any more
+                    // FUN STUFF!  Check for explosives going off as a result!
+                    if (Item[pObject.usItem].usItemClass.HasFlag(IC.EXPLOSV))
+                    {
+                        if (CheckForChainReaction(pObject.usItem, pObject.bStatus[bLoop], bDamage, fOnGround))
+                        {
+                            return (true);
+                        }
+                    }
+
+                    // remove item from index AFTER checking explosions because need item data for explosion!
+                    if (pObject.bStatus[bLoop] == 1)
+                    {
+                        if (pObject.ubNumberOfObjects > 1)
+                        {
+                            RemoveObjFrom(pObject, bLoop);
+                            // since an item was just removed, the items above the current were all shifted down one;
+                            // to process them properly, we have to back up 1 in the counter
+                            bLoop = bLoop - 1;
+                        }
+                    }
+                }
+            }
+
+            for (bLoop = 0; bLoop < MAX_ATTACHMENTS; bLoop++)
+            {
+                if (pObject.usAttachItem[bLoop] != NOTHING && pObject.bAttachStatus[bLoop] > 0)
+                {
+                    pObject.bAttachStatus[bLoop] -= CheckItemForDamage(pObject.usAttachItem[bLoop], iDamage);
+                    if (pObject.bAttachStatus[bLoop] < (Items)1)
+                    {
+                        pObject.bAttachStatus[bLoop] = (Items)1;
+                    }
+                }
+            }
+        }
+
+        return (false);
+    }
+
+    public static int CheckItemForDamage(Items usItem, int iMaxDamage)
+    {
+        int bDamage = 0;
+
+        // if the item is protective armour, reduce the amount of damage
+        // by its armour value
+        if (Item[usItem].usItemClass == IC.ARMOUR)
+        {
+            iMaxDamage -= (iMaxDamage * WeaponTypes.Armour[Item[usItem].ubClassIndex].ubProtection) / 100;
+        }
+        // metal items are tough and will be damaged less
+        if (Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_METAL))
+        {
+            iMaxDamage /= 2;
+        }
+        else if (usItem == Items.BLOODCAT_PELT)
+        {
+            iMaxDamage *= 2;
+        }
+        if (iMaxDamage > 0)
+        {
+            bDamage = (int)PreRandom(iMaxDamage);
+        }
+        return (bDamage);
     }
 
     public static bool CreateItem(Items usItem, int bStatus, OBJECTTYPE? pObj)

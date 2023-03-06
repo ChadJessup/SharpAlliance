@@ -857,7 +857,7 @@ public class HandleUI
                 }
                 else
                 {
-                    UNDERGROUND_SECTORINFO? pSector = FindUnderGroundSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ);
+                    UNDERGROUND_SECTORINFO? pSector = QueenCommand.FindUnderGroundSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ);
                     if (pSector is not null)
                     {
                         switch (pSoldier.ubSoldierClass)
