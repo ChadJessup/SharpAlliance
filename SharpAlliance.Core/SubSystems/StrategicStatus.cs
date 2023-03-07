@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -228,25 +229,25 @@ public class StrategicStatus
             (((ubHighestProgress - ubCurrentProgress) >= MINOR_SETBACK_THRESHOLD) && (gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.FLAG_SETBACK_OVER)))) &&
                 !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_MAJOR_SETBACK)))
         {
-            Emails.AddEmail(ENRICO_SETBACK, ENRICO_SETBACK_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_MAJOR_SETBACK;
+            Emails.AddEmail(ENRICO_SETBACK, ENRICO_SETBACK_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_MAJOR_SETBACK;
         }
         else
         // test for a first minor setback
         if (((ubHighestProgress - ubCurrentProgress) >= MINOR_SETBACK_THRESHOLD) &&
-              !(gStrategicStatus.usEnricoEmailFlags & (ENRICO_EMAIL_SENT_MINOR_SETBACK | ENRICO_EMAIL_SENT_MAJOR_SETBACK)))
+              !(gStrategicStatus.usEnricoEmailFlags & (ENRICO_EMAIL.SENT_MINOR_SETBACK | ENRICO_EMAIL.SENT_MAJOR_SETBACK)))
         {
-            Emails.AddEmail(ENRICO_SETBACK_2, ENRICO_SETBACK_2_LENGTH, MAIL_ENRICO, GetWorldTotalMin());
-            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_SENT_MINOR_SETBACK;
+            Emails.AddEmail(ENRICO_SETBACK_2, ENRICO_SETBACK_2_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_MINOR_SETBACK;
         }
         else
         // if player is back at his maximum progress after having suffered a minor setback
-        if ((ubHighestProgress == ubCurrentProgress) && (gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_MINOR_SETBACK))
+        if ((ubHighestProgress == ubCurrentProgress) && (gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL.SENT_MINOR_SETBACK))
         {
             // remember that the original setback has been overcome, so another one can generate another E-mail
-            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL_FLAG_SETBACK_OVER;
+            gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.FLAG_SETBACK_OVER;
         }
-        else if (GetWorldDay() > (int)(gStrategicStatus.usLastDayOfPlayerActivity))
+        else if (GameClock.GetWorldDay() > (int)(gStrategicStatus.usLastDayOfPlayerActivity))
         {
             int bComplaint = 0;
             int ubTolerance;
@@ -299,21 +300,21 @@ public class StrategicStatus
                     switch (bComplaint)
                     {
                         case 3:
-                            Emails.AddEmail(LACK_PLAYER_PROGRESS_3, LACK_PLAYER_PROGRESS_3_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+                            Emails.AddEmail(LACK_PLAYER_PROGRESS_3, LACK_PLAYER_PROGRESS_3_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
                             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_LACK_PROGRESS3;
                             break;
                         case 2:
-                            Emails.AddEmail(LACK_PLAYER_PROGRESS_2, LACK_PLAYER_PROGRESS_2_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+                            Emails.AddEmail(LACK_PLAYER_PROGRESS_2, LACK_PLAYER_PROGRESS_2_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
                             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_LACK_PROGRESS2;
                             break;
                         default:
-                            Emails.AddEmail(LACK_PLAYER_PROGRESS_1, LACK_PLAYER_PROGRESS_1_LENGTH, EmailAddresses.MAIL_ENRICO, GetWorldTotalMin());
+                            Emails.AddEmail(LACK_PLAYER_PROGRESS_1, LACK_PLAYER_PROGRESS_1_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
                             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_LACK_PROGRESS1;
                             break;
 
                     }
 
-                    AddHistoryToPlayersLog(HISTORY_ENRICO_COMPLAINED, 0, GetWorldTotalMin(), -1, -1);
+                    AddHistoryToPlayersLog(HISTORY_ENRICO_COMPLAINED, 0, GameClock.GetWorldTotalMin(), -1, -1);
                 }
 
                 // penalize loyalty!
@@ -336,7 +337,7 @@ public class StrategicStatus
     }
 
 
-    void TrackEnemiesKilled(int ubKilledHow, int ubSoldierClass)
+    void TrackEnemiesKilled(int ubKilledHow, SOLDIER_CLASS ubSoldierClass)
     {
         int bRankIndex;
 
@@ -358,20 +359,20 @@ public class StrategicStatus
     }
 
 
-    int SoldierClassToRankIndex(int ubSoldierClass)
+    int SoldierClassToRankIndex(SOLDIER_CLASS ubSoldierClass)
     {
         int bRankIndex = -1;
 
         // the soldier class defines are not in natural ascending order, elite comes before army!
         switch (ubSoldierClass)
         {
-            case SOLDIER_CLASS_ADMINISTRATOR:
+            case SOLDIER_CLASS.ADMINISTRATOR:
                 bRankIndex = 0;
                 break;
-            case SOLDIER_CLASS_ELITE:
+            case SOLDIER_CLASS.ELITE:
                 bRankIndex = 2;
                 break;
-            case SOLDIER_CLASS_ARMY:
+            case SOLDIER_CLASS.ARMY:
                 bRankIndex = 1;
                 break;
 
@@ -385,22 +386,22 @@ public class StrategicStatus
 
 
 
-    int RankIndexToSoldierClass(int ubRankIndex)
+    SOLDIER_CLASS RankIndexToSoldierClass(int ubRankIndex)
     {
-        int ubSoldierClass = 0;
+        SOLDIER_CLASS ubSoldierClass = 0;
 
-        Assert(ubRankIndex < NUM_ENEMY_RANKS);
+        Debug.Assert(ubRankIndex < NUM_ENEMY_RANKS);
 
         switch (ubRankIndex)
         {
             case 0:
-                ubSoldierClass = SOLDIER_CLASS_ADMINISTRATOR;
+                ubSoldierClass = SOLDIER_CLASS.ADMINISTRATOR;
                 break;
             case 1:
-                ubSoldierClass = SOLDIER_CLASS_ARMY;
+                ubSoldierClass = SOLDIER_CLASS.ARMY;
                 break;
             case 2:
-                ubSoldierClass = SOLDIER_CLASS_ELITE;
+                ubSoldierClass = SOLDIER_CLASS.ELITE;
                 break;
         }
 

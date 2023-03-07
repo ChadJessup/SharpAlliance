@@ -11,8 +11,8 @@ namespace SharpAlliance.Core.Managers;
 
 public class ClockManager : IClockManager
 {
-    private DateTimeOffset DateTimeOffset;
-    private TimeSpan interval = TimeSpan.FromMilliseconds(10.0);
+    private static DateTimeOffset DateTimeOffset;
+    private static TimeSpan interval = TimeSpan.FromMilliseconds(10.0);
 
     private Timer? globalTimer;
 
@@ -23,30 +23,30 @@ public class ClockManager : IClockManager
 
     public ClockManager(GameContext context)
     {
-        this.context = context;
+        context = context;
     }
 
     public ValueTask<bool> Initialize()
     {
-        this.DateTimeOffset = new DateTimeOffset();
-        Globals.guiStartupTime = Globals.guiCurrentTime = this.DateTimeOffset.ToUnixTimeMilliseconds();
-        this.globalTimer = new Timer
+        DateTimeOffset = new DateTimeOffset();
+        Globals.guiStartupTime = Globals.guiCurrentTime = DateTimeOffset.ToUnixTimeMilliseconds();
+        globalTimer = new Timer
         {
-            Interval = this.interval.TotalMilliseconds,
+            Interval = interval.TotalMilliseconds,
             AutoReset = false,
         };
 
-        this.globalTimer.Elapsed += this.ClockCallback;
-        this.StartTimer();
+        globalTimer.Elapsed += ClockCallback;
+        StartTimer();
 
-        this.inputs = this.context.Services.GetRequiredService<IInputManager>();
+        inputs = context.Services.GetRequiredService<IInputManager>();
 
-        this.IsInitialized = true;
+        IsInitialized = true;
 
         return ValueTask.FromResult(true);
     }
 
-    public long GetClock()
+    public static long GetClock()
     {
         return Globals.guiCurrentTime;
     }
@@ -55,25 +55,25 @@ public class ClockManager : IClockManager
     {
         Globals.guiCurrentTime = e.SignalTime.Ticks;
 
-        this.StartTimer();
+        StartTimer();
     }
 
-    private void StartTimer() => this.globalTimer?.Start();
-    private void StopTimer() => this.globalTimer?.Stop();
+    private void StartTimer() => globalTimer?.Start();
+    private void StopTimer() => globalTimer?.Stop();
 
     public void Dispose()
     {
-        this.StopTimer();
+        StopTimer();
 
-        this.globalTimer?.Dispose();
+        globalTimer?.Dispose();
     }
 
-    public void UpdateClock()
+    public static void UpdateClock()
     {
-        Globals.guiCurrentTime = this.DateTimeOffset.ToUnixTimeMilliseconds();
+        Globals.guiCurrentTime = DateTimeOffset.ToUnixTimeMilliseconds();
     }
 
-    public long GetTickCount()
+    public static long GetTickCount()
     {
         return Globals.guiCurrentTime;
     }
@@ -83,7 +83,7 @@ public class ClockManager : IClockManager
         return (uint)Globals.guiCurrentTime;
     }
 
-    public void UnPauseGame()
+    public static void UnPauseGame()
     {
         // if we're paused
         if (Globals.gfGamePaused)
@@ -100,7 +100,7 @@ public class ClockManager : IClockManager
         }
     }
 
-    public void PauseGame()
+    public static void PauseGame()
     {
         // always allow pausing, even if "locked".  Locking applies only to trying to compress time, not to pausing it
         if (!Globals.gfGamePaused)
@@ -110,7 +110,7 @@ public class ClockManager : IClockManager
         }
     }
 
-    public void RemoveMouseRegionForPauseOfClock()
+    public static void RemoveMouseRegionForPauseOfClock()
     {
         // remove pause region
         if (Globals.fClockMouseRegionCreated == true)
@@ -121,13 +121,13 @@ public class ClockManager : IClockManager
         }
     }
 
-    public void InterruptTime()
+    public static void InterruptTime()
     {
         Globals.gfTimeInterrupt = true;
     }
 
     // call this to prevent player from changing the time compression state via the interface
-    public void LockPauseState(int uiUniqueReasonId)
+    public static void LockPauseState(int uiUniqueReasonId)
     {
         Globals.gfLockPauseState = true;
 
@@ -136,7 +136,7 @@ public class ClockManager : IClockManager
         Globals.guiLockPauseStateLastReasonId = uiUniqueReasonId;
     }
 
-    public void UnLockPauseState()
+    public static void UnLockPauseState()
     {
         throw new NotImplementedException();
     }

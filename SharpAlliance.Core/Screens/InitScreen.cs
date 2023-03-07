@@ -65,7 +65,7 @@ namespace SharpAlliance.Core.Screens
             // this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
             this.tileCache = tileCache;
-            this.mercTextBox = mercTextBox;
+            MercTextBox = mercTextBox;
             this.screen = sm;
             this.fileManager = fileManager;
             this.textUtils = textUtils;
@@ -132,9 +132,9 @@ namespace SharpAlliance.Core.Screens
                 // Init screen
 
                 // Set Font
-                this.font.SetFont(FontStyle.TINYFONT1);
-                this.font.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
-                this.font.SetFontForeground(FontColor.FONT_MCOLOR_WHITE);
+                FontSubSystem.SetFont(FontStyle.TINYFONT1);
+                FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+                FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_WHITE);
 
                 //mprintf( 10, 420, zVersionLabel );
 
@@ -249,7 +249,7 @@ namespace SharpAlliance.Core.Screens
 
             bool s = await this.tileCache.InitTileCache();
 
-            bool t = await this.mercTextBox.InitMercPopupBox();
+            bool t = await MercTextBox.InitMercPopupBox();
 
             // Set global volume
             this.music.MusicSetVolume(1);// gGameSettings.ubMusicVolumeSetting);

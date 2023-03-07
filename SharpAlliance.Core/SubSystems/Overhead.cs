@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems
@@ -42,6 +43,46 @@ namespace SharpAlliance.Core.SubSystems
             }
         }
 
+        public static void LocateSoldier(int usID, int fSetLocator)
+        {
+            SOLDIERTYPE? pSoldier;
+            int sNewCenterWorldX, sNewCenterWorldY;
+
+            //if (!bCenter && SoldierOnScreen(usID))
+            //return;
+
+            // do we need to move the screen?
+            //ATE: Force this baby to locate if told to
+            if (!SoldierOnScreen(usID) || fSetLocator == 10)
+            {
+                // Get pointer of soldier
+                pSoldier = MercPtrs[usID];
+
+                // Center on guy
+                sNewCenterWorldX = (int)pSoldier.dXPos;
+                sNewCenterWorldY = (int)pSoldier.dYPos;
+
+                RenderWorld.SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
+
+                // Plot new path!
+                gfPlotNewMovement = true;
+            }
+
+
+            // do we flash the name & health bars/health string above?
+            if (fSetLocator > 0)
+            {
+                if (fSetLocator == SETLOCATOR || fSetLocator == 10)
+                {
+                    ShowRadioLocator((int)usID, SHOW_LOCATOR_NORMAL);
+                }
+                else
+                {
+                    ShowRadioLocator((int)usID, SHOW_LOCATOR_FAST);
+                }
+            }
+        }
+
         public static void LocateGridNo(int sGridNo)
         {
             InternalLocateGridNo(sGridNo, false);
@@ -59,7 +100,7 @@ namespace SharpAlliance.Core.SubSystems
                 return;
             }
 
-            SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
+            RenderWorld.SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
         }
 
         public bool GetSoldier(out SOLDIERTYPE? ppSoldier, int usSoldierIndex)

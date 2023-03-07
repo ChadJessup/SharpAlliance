@@ -53,7 +53,7 @@ public class Points
         return (bAPs);
     }
 
-    public static bool EnoughAmmo(SOLDIERTYPE? pSoldier, bool fDisplay, int bInvPos)
+    public static bool EnoughAmmo(SOLDIERTYPE? pSoldier, bool fDisplay, InventorySlot bInvPos)
     {
         if (pSoldier.inv[bInvPos].usItem != Globals.NOTHING)
         {
@@ -110,7 +110,7 @@ public class Points
     }
 
 
-    public static void DeductAmmo(SOLDIERTYPE? pSoldier, int bInvPos)
+    public static void DeductAmmo(SOLDIERTYPE? pSoldier, InventorySlot bInvPos)
     {
         OBJECTTYPE? pObj;
 
@@ -173,7 +173,7 @@ public class Points
         IC uiItemClass;
 
         // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-        usItemNum = pSoldier.inv[(int)InventorySlot.HANDPOS].usItem;
+        usItemNum = pSoldier.inv[InventorySlot.HANDPOS].usItem;
         uiItemClass = Globals.Item[usItemNum].usItemClass;
 
         if (uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
@@ -182,7 +182,7 @@ public class Points
 
             if (pSoldier.bDoBurst)
             {
-                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), (pSoldier.inv[(int)InventorySlot.HANDPOS]));
+                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), (pSoldier.inv[InventorySlot.HANDPOS]));
             }
             else
             {
@@ -318,12 +318,12 @@ public class Points
             int bAttachSlot;
             // look for an attached grenade launcher
 
-            bAttachSlot = FindAttachment((pSoldier.inv[(int)InventorySlot.HANDPOS]), UNDER_GLAUNCHER);
+            bAttachSlot = FindAttachment((pSoldier.inv[InventorySlot.HANDPOS]), UNDER_GLAUNCHER);
             if (bAttachSlot == NO_SLOT)
             {
                 // default to hand
                 // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-                uiItemClass = Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
+                uiItemClass = Globals.Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass;
             }
             else
             {
@@ -333,7 +333,7 @@ public class Points
         else
         {
             // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
-            uiItemClass = Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass;
+            uiItemClass = Globals.Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass;
         }
 
         if (uiItemClass == IC.BLADE || uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)

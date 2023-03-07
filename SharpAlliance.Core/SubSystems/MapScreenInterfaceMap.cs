@@ -430,7 +430,7 @@ public class MapScreenInterfaceMap
 
         // get and blt border
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiMapBorder);
-        VeldridVideoManager.BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // show the level marker
         DisplayCurrentLevelMarker();

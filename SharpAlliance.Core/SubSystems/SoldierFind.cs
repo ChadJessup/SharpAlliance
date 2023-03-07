@@ -264,7 +264,7 @@ public class SoldierFind
                         }
 
                         // ATE: If we are an enemy....
-                        if (!gGameSettings.fOptions[TOPTION.SMART_CURSOR])
+                        if (!GameSettings.fOptions[TOPTION.SMART_CURSOR])
                         {
                             if (pSoldier.ubID >= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID && pSoldier.ubID <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID)
                             {

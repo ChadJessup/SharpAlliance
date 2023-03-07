@@ -2,14 +2,14 @@
 
 public interface IClockManager : ISharpAllianceManager
 {
-    long GetClock();
-    long GetTickCount();
-    void UpdateClock();
+    static abstract long GetClock();
+    static abstract long GetTickCount();
+    static abstract void UpdateClock();
     static abstract uint GetJA2Clock();
-    void UnPauseGame();
-    void PauseGame();
-    void RemoveMouseRegionForPauseOfClock();
-    void InterruptTime();
-    void LockPauseState(int v);
-    void UnLockPauseState();
+    static abstract void UnPauseGame();
+    static abstract void PauseGame();
+    static abstract void RemoveMouseRegionForPauseOfClock();
+    static abstract void InterruptTime();
+    static abstract void LockPauseState(int v);
+    static abstract void UnLockPauseState();
 }

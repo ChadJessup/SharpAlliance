@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
@@ -65,7 +66,7 @@ namespace SharpAlliance.Core.SubSystems
             this.screens = screenManager;
             this.mouse = mouseSubSystem;
             this.inputs = inputManager;
-            this.clock = clockManager;
+            ClockManager = clockManager;
             this.overhead = overhead;
             this.context = context;
         }
@@ -228,7 +229,7 @@ namespace SharpAlliance.Core.SubSystems
             gMsgBox.bHandled = 0;
 
             // Init message box
-            gMsgBox.iBoxId = this.mercTextBox.PrepareMercPopupBox(iId, ubMercBoxBackground, ubMercBoxBorder, zString, MSGBOX_DEFAULT_WIDTH, 40, 10, 30, out usTextBoxWidth, out usTextBoxHeight);
+            gMsgBox.iBoxId = MercTextBox.PrepareMercPopupBox(iId, ubMercBoxBackground, ubMercBoxBorder, zString, MSGBOX_DEFAULT_WIDTH, 40, 10, 30, out usTextBoxWidth, out usTextBoxHeight);
 
             if (gMsgBox.iBoxId == -1)
             {
@@ -284,23 +285,23 @@ namespace SharpAlliance.Core.SubSystems
             // UnLockVideoSurface(FRAME_BUFFER);
 
             // Create top-level mouse region
-            this.mouse.MSYS_DefineRegion(gMsgBox.BackRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
+            MouseSubSystem.MSYS_DefineRegion(gMsgBox.BackRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
                                  usCursor, null, MsgBoxClickCallback);
 
             if (gGameSettings[TOPTION.DONT_MOVE_MOUSE] == false)
             {
                 if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
                 {
-                    this.mouse.SimulateMouseMovement((gMsgBox.sX + (usTextBoxWidth / 2) + 27), (gMsgBox.sY + (usTextBoxHeight - 10)));
+                    MouseSubSystem.SimulateMouseMovement((gMsgBox.sX + (usTextBoxWidth / 2) + 27), (gMsgBox.sY + (usTextBoxHeight - 10)));
                 }
                 else
                 {
-                    this.mouse.SimulateMouseMovement(gMsgBox.sX + usTextBoxWidth / 2, gMsgBox.sY + usTextBoxHeight - 4);
+                    MouseSubSystem.SimulateMouseMovement(gMsgBox.sX + usTextBoxWidth / 2, gMsgBox.sY + usTextBoxHeight - 4);
                 }
             }
 
             // Add region
-            this.mouse.AddRegionToList(gMsgBox.BackRegion);
+            MouseSubSystem.AddRegionToList(gMsgBox.BackRegion);
 
             // findout if cursor locked, if so, store old params and store, restore when done
             if (this.cursor.IsCursorRestricted())
@@ -661,11 +662,11 @@ namespace SharpAlliance.Core.SubSystems
 
             }
 
-            this.clock.InterruptTime();
-            this.clock.PauseGame();
-            this.clock.LockPauseState(1);
+            ClockManager.InterruptTime();
+            ClockManager.PauseGame();
+            ClockManager.LockPauseState(1);
             // Pause timers as well....
-            this.clock.PauseTime(true);
+            ClockManager.PauseTime(true);
 
             // Save mouse restriction region...
             this.cursor.GetRestrictedClipCursor(gOldCursorLimitRectangle);
@@ -836,7 +837,7 @@ namespace SharpAlliance.Core.SubSystems
             Point pPosition;
 
             // Delete popup!
-            this.mercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
+            MercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
             gMsgBox.iBoxId = -1;
 
             //Delete buttons!
@@ -911,13 +912,13 @@ namespace SharpAlliance.Core.SubSystems
             ButtonSubSystem.UnloadButtonImage(gMsgBox.iButtonImages);
 
             // Unpause game....
-            this.clock.UnLockPauseState();
-            this.clock.UnPauseGame();
+            ClockManager.UnLockPauseState();
+            ClockManager.UnPauseGame();
             // UnPause timers as well....
-            this.clock.PauseTime(false);
+            ClockManager.PauseTime(false);
 
             // Restore mouse restriction region...
-            this.mouse.RestrictMouseCursor(gOldCursorLimitRectangle);
+            MouseSubSystem.RestrictMouseCursor(gOldCursorLimitRectangle);
 
 
             gfInMsgBox = false;
@@ -953,15 +954,15 @@ namespace SharpAlliance.Core.SubSystems
 
                 if ((pPosition.X > MessageBoxRestrictedCursorRegion.Width) || (pPosition.X > MessageBoxRestrictedCursorRegion.X) && (pPosition.Y < MessageBoxRestrictedCursorRegion.Y) && (pPosition.Y > MessageBoxRestrictedCursorRegion.Height))
                 {
-                    this.mouse.SimulateMouseMovement(pOldMousePosition.X, pOldMousePosition.Y);
+                    MouseSubSystem.SimulateMouseMovement(pOldMousePosition.X, pOldMousePosition.Y);
                 }
 
                 fCursorLockedToArea = false;
-                this.mouse.RestrictMouseCursor(MessageBoxRestrictedCursorRegion);
+                MouseSubSystem.RestrictMouseCursor(MessageBoxRestrictedCursorRegion);
             }
 
             // Remove region
-            this.mouse.MSYS_RemoveRegion(gMsgBox.BackRegion);
+            MouseSubSystem.MSYS_RemoveRegion(gMsgBox.BackRegion);
 
             // Remove save buffer!
             // DeleteVideoSurfaceFromIndex(gMsgBox.uiSaveBuffer);

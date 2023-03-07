@@ -27,7 +27,7 @@ public class WorldManager
         this.saveLoadMap = saveLoadMap;
         this.tileCache = tileCache;
         this.renderWorld = renderWorld;
-        this.worldStructures = worldStructures;
+        WorldStructures = worldStructures;
     }
 
     public static bool RemoveAllOnRoofsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)

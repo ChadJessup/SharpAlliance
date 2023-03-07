@@ -192,7 +192,7 @@ public class Messages
 
 
         pDestBuf = VeldridVideoManager.LockVideoSurface(pBlitter.uiDestBuff, out uiDestPitchBYTES);
-        FontSubSystem.SetFont(pBlitter.uiFontID);
+        FontSubSystem.SetFont(FontStyle.pBlitter.uiFontID);
 
         FontSubSystem.SetFontBackground(pBlitter.ubFontBack);
         FontSubSystem.SetFontForeground(pBlitter.ubFontFore);
@@ -287,7 +287,7 @@ public class Messages
 
         if ((iNumberOfMessagesOnQueue * 1000) >= iMaxAge)
         {
-            iNumberOfMessagesOnQueue = (iMaxAge / 1000);
+            iNumberOfMessagesOnQueue = (int)(iMaxAge / 1000);
         }
         else if (iNumberOfMessagesOnQueue < 0)
         {
@@ -910,7 +910,7 @@ public class Messages
 
         FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 17, 360 + 6, 407, 360 + 101, false);
 
-        FontSubSystem.SetFont(Globals.MAP_SCREEN_MESSAGE_FONT);       // no longer supports variable fonts
+        FontSubSystem.SetFont(FontStyle.Globals.MAP_SCREEN_MESSAGE_FONT);       // no longer supports variable fonts
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 

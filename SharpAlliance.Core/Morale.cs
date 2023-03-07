@@ -55,9 +55,6 @@ public class Morale
     	{ MoraleEventNames.MORALE_SEX, new(MoraleEventType.STRATEGIC_MORALE_EVENT,             +5) },	//  MORALE_SEX,
     };
 
-    bool gfSomeoneSaidMoraleQuote = false;
-
-
     private static MORALE GetMoraleModifier(SOLDIERTYPE? pSoldier)
     {
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
@@ -245,7 +242,7 @@ public class Morale
 
 
 
-    void RefreshSoldierMorale(SOLDIERTYPE? pSoldier)
+    public static void RefreshSoldierMorale(SOLDIERTYPE? pSoldier)
     {
         int iActualMorale;
 
@@ -271,7 +268,7 @@ public class Morale
     }
 
 
-    void UpdateSoldierMorale(SOLDIERTYPE? pSoldier, MoraleEventType ubType, int bMoraleMod)
+    public static void UpdateSoldierMorale(SOLDIERTYPE? pSoldier, MoraleEventType ubType, int bMoraleMod)
     {
         MERCPROFILESTRUCT? pProfile;
         int iMoraleModTotal;
@@ -401,13 +398,13 @@ public class Morale
     }
 
 
-    void HandleMoraleEventForSoldier(SOLDIERTYPE? pSoldier, MoraleEventNames bMoraleEvent)
+    public static void HandleMoraleEventForSoldier(SOLDIERTYPE? pSoldier, MoraleEventNames bMoraleEvent)
     {
         UpdateSoldierMorale(pSoldier, gbMoraleEvent[bMoraleEvent].ubType, gbMoraleEvent[bMoraleEvent].bChange);
     }
 
 
-    void HandleMoraleEvent(SOLDIERTYPE? pSoldier, MoraleEventNames bMoraleEvent, int sMapX, MAP_ROW sMapY, int bMapZ)
+    public static void HandleMoraleEvent(SOLDIERTYPE? pSoldier, MoraleEventNames bMoraleEvent, int sMapX, MAP_ROW sMapY, int bMapZ)
     {
         int ubLoop;
         MERCPROFILESTRUCT? pProfile;
@@ -688,11 +685,11 @@ public class Morale
                 break;
             case MoraleEventNames.MORALE_TEAMMATE_DIED:
                 // impact depends on that dude's level of experience
-                StrategicStatus.ModifyPlayerReputation((int)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_DIED));
+                StrategicStatus.ModifyPlayerReputation((REPUTATION)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_DIED));
                 break;
             case MoraleEventNames.MORALE_MERC_CAPTURED:
                 // impact depends on that dude's level of experience
-                StrategicStatus.ModifyPlayerReputation((int)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_CAPTURED));
+                StrategicStatus.ModifyPlayerReputation((REPUTATION)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_CAPTURED));
                 break;
             case MoraleEventNames.MORALE_KILLED_CIVILIAN:
                 StrategicStatus.ModifyPlayerReputation(REPUTATION.KILLED_CIVILIAN);
@@ -944,12 +941,12 @@ public class Morale
         if (MercThinksHisMoraleIsTooLow(pSoldier))
         {
             // too low, morale sinks further (merc's in a funk and things aren't getting better)
-            HandleMoraleEvent(pSoldier, MORALE_POOR_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_POOR_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
         }
         else if (pSoldier.bMorale >= 75)
         {
             // very high morale, merc is cheerleading others
-            HandleMoraleEvent(pSoldier, MORALE_GREAT_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_GREAT_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
         }
 
     }

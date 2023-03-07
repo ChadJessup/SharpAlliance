@@ -95,7 +95,7 @@ public class Keys
                 // is he close enough to see that gridno if he turns his head?
                 sDistVisible = DistanceVisible(pSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, sGridNo, 0);
 
-                if (PythSpacesAway(pSoldier.sGridNo, sGridNo) <= sDistVisible)
+                if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) <= sDistVisible)
                 {
                     // and we can trace a line of sight to his x,y coordinates?
                     // (taking into account we are definitely aware of this guy now)
@@ -113,10 +113,10 @@ public class Keys
                 // Now try other adjacent gridnos...
                 for (cnt2 = 0; cnt2 < 8; cnt2++)
                 {
-                    usNewGridNo = NewGridNo(sGridNo, DirectionInc(bDirs[cnt2]));
+                    usNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bDirs[cnt2]));
                     sDistVisible = DistanceVisible(pSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, usNewGridNo, 0);
 
-                    if (PythSpacesAway(pSoldier.sGridNo, usNewGridNo) <= sDistVisible)
+                    if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, usNewGridNo) <= sDistVisible)
                     {
                         // and we can trace a line of sight to his x,y coordinates?
                         // (taking into account we are definitely aware of this guy now)
@@ -168,7 +168,7 @@ public class Keys
             // is he close enough to see that gridno if he turns his head?
             sDistVisible = DistanceVisible(pSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, sGridNo, 0);
 
-            if (PythSpacesAway(pSoldier.sGridNo, sGridNo) <= sDistVisible)
+            if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) <= sDistVisible)
             {
                 // and we can trace a line of sight to his x,y coordinates?
                 // (taking into account we are definitely aware of this guy now)
@@ -189,9 +189,9 @@ public class Keys
             // Now try other adjacent gridnos...
             for (cnt2 = 0; cnt2 < 8; cnt2++)
             {
-                usNewGridNo = NewGridNo(sGridNo, DirectionInc(bDirs[cnt2]));
+                usNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bDirs[cnt2]));
 
-                if (PythSpacesAway(pSoldier.sGridNo, usNewGridNo) <= sDistVisible)
+                if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, usNewGridNo) <= sDistVisible)
                 {
                     // and we can trace a line of sight to his x,y coordinates?
                     // (taking into account we are definitely aware of this guy now)
@@ -783,7 +783,7 @@ public class Keys
         }
 
         // Check time...
-        if ((GetWorldTotalMin() - gTacticalStatus.uiTimeSinceLastInTactical) < 30)
+        if ((GameClock.GetWorldTotalMin() - gTacticalStatus.uiTimeSinceLastInTactical) < 30)
         {
             return;
         }
@@ -845,7 +845,7 @@ public class Keys
         cnt = gTacticalStatus.Team[TEAM.ENEMY_TEAM].bFirstID;
 
         // Check time...
-        if ((GetWorldTotalMin() - gTacticalStatus.uiTimeSinceLastInTactical) < 30)
+        if ((GameClock.GetWorldTotalMin() - gTacticalStatus.uiTimeSinceLastInTactical) < 30)
         {
             return;
         }
@@ -864,7 +864,7 @@ public class Keys
         cnt = gTacticalStatus.Team[gbPlayerNum].bFirstID;
         for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
-            if (pSoldier.bActive && pSoldier.bInSector && gbMercIsNewInThisSector[cnt])
+            if (pSoldier.bActive && pSoldier.bInSector && gbMercIsNewInThisSector[cnt] > 0)
             {
                 iNumNewMercs++;
             }

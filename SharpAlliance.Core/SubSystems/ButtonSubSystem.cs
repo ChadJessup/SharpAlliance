@@ -642,7 +642,7 @@ namespace SharpAlliance.Core.SubSystems
                 //xp = b.MouseRegion.Bounds.X + b.bTextOffset.X;
 
                 // Set the printing font to the button text font
-                FontSubSystem.SetFont(b.usFont);
+                FontSubSystem.SetFont(FontStyle.b.usFont);
 
                 // print the text
                 FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);

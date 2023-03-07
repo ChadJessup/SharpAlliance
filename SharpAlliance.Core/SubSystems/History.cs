@@ -10,10 +10,10 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class History
 {
-    bool fInHistoryMode = false;
+    public static bool fInHistoryMode = false;
 
     // current page displayed
-    int iCurrentHistoryPage = 1;
+    public static int iCurrentHistoryPage = 1;
 
     // the History record list
     static history? pHistoryListHead = null;
@@ -21,7 +21,7 @@ public class History
     // current History record (the one at the top of the current page)
     static history? pCurrentHistory = null;
 
-    public static int SetHistoryFact(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
+    public static int SetHistoryFact(HISTORY ubCode, object ubSecondCode, uint uiDate, int sSectorX, MAP_ROW sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -66,7 +66,7 @@ public class History
     }
 
 
-    public static int AddHistoryToPlayersLog(HISTORY ubCode, int ubSecondCode, int uiDate, int sSectorX, int sSectorY)
+    public static int AddHistoryToPlayersLog(HISTORY ubCode, object ubSecondCode, uint uiDate, int sSectorX, MAP_ROW sSectorY)
     {
         // adds History item to player's log(History List), returns unique id number of it
         // outside of the History system(the code in this .c file), this is the only function you'll ever need
@@ -111,7 +111,7 @@ public class History
             FileDelete(HISTORY_DATA_FILE);
         }
 
-        AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GetWorldTotalMin(), -1, -1);
+        AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GameClock.GetWorldTotalMin(), -1, -1);
 
     }
 
@@ -273,11 +273,11 @@ public class History
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiTITLE);
 
         // blt title bar to screen
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiTOP);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
 
         // display background for history list
         DisplayHistoryListBackground();
@@ -287,7 +287,7 @@ public class History
     void DrawHistoryTitleText()
     {
         // setup the font stuff
-        FontSubSystem.SetFont(Globals.HISTORY_HEADER_FONT);
+        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_HEADER_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -464,7 +464,7 @@ public class History
     }
 
 
-    public static int ProcessAndEnterAHistoryRecord(HISTORY ubCode, int uiDate, int ubSecondCode, int sSectorX, int sSectorY, int bSectorZ, int ubColor)
+    public static int ProcessAndEnterAHistoryRecord(HISTORY ubCode, uint uiDate, object ubSecondCode, int sSectorX, MAP_ROW sSectorY, int bSectorZ, int ubColor)
     {
         int uiId = 0;
         history? pHistory = pHistoryListHead;
@@ -518,8 +518,7 @@ public class History
         return uiId;
     }
 
-
-    void OpenAndReadHistoryFile()
+    public static void OpenAndReadHistoryFile()
     {
         // this procedure will open and read in data to the History list
 
@@ -527,7 +526,8 @@ public class History
         HISTORY ubCode;
         int ubSecondCode;
         int uiDate;
-        int sSectorX, sSectorY;
+        int sSectorX;
+        MAP_ROW sSectorY;
         int bSectorZ = 0;
         int ubColor;
         int iBytesRead = 0;
@@ -583,7 +583,7 @@ public class History
         return;
     }
 
-    bool OpenAndWriteHistoryFile()
+    public static bool OpenAndWriteHistoryFile()
     {
         // this procedure will open and write out data from the History list
 
@@ -657,7 +657,7 @@ public class History
         int usX, usY;
 
         // font stuff
-        FontSubSystem.SetFont(Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_TEXT_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -690,13 +690,13 @@ public class History
         for (iCounter = 0; iCounter < 11; iCounter++)
         {
             // blt title bar to screen
-            VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         // the long hortizontal line int he records list display region
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiLONGLINE);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT_SRCTRANSPARENCY, null);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT.SRCTRANSPARENCY, null);
 
         return;
     }
@@ -713,7 +713,7 @@ public class History
         int sX = 0, sY = 0;
 
         // setup the font stuff
-        FontSubSystem.SetFont(Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_TEXT_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -749,7 +749,7 @@ public class History
 
 
             // no location
-            if ((pCurHistory.sSectorX == -1) || (pCurHistory.sSectorY == -1))
+            if ((pCurHistory.sSectorX == -1) || (pCurHistory.sSectorY == (MAP_ROW)(-1)))
             {
                 FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
                 mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, pHistoryLocations[0]);
@@ -835,7 +835,7 @@ public class History
 
 
         // setup the font stuff
-        FontSubSystem.SetFont(Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_TEXT_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -1111,7 +1111,7 @@ public class History
     }
 
 
-    bool LoadInHistoryRecords(int uiPage)
+    public static bool LoadInHistoryRecords(int uiPage)
     {
         // loads in records belogning, to page uiPage
         // no file, return
@@ -1119,9 +1119,10 @@ public class History
         int iCount = 0;
         Stream hFileHandle;
         int ubCode, ubSecondCode;
-        int sSectorX, sSectorY;
+        int sSectorX;
+        MAP_ROW sSectorY;
         int bSectorZ;
-        int uiDate;
+        uint uiDate;
         int ubColor;
         int iBytesRead = 0;
         int uiByteCount = 0;
@@ -1300,13 +1301,11 @@ public class History
         return (true);
     }
 
-    bool LoadNextHistoryPage()
+    private static bool LoadNextHistoryPage()
     {
 
         // clear out old list of records, and load in previous page worth of records
         ClearHistoryList();
-
-
 
         // now load in previous page's records, if we can
         if (LoadInHistoryRecords(iCurrentHistoryPage + 1))
@@ -1348,8 +1347,7 @@ public class History
         }
     }
 
-
-    void SetLastPageInHistoryRecords()
+    public static void SetLastPageInHistoryRecords()
     {
         // grabs the size of the file and interprets number of pages it will take up
         Stream hFileHandle;
@@ -1472,7 +1470,7 @@ public class History
         return (true);
     }
 
-    void ResetHistoryFact(int ubCode, int sSectorX, int sSectorY)
+    public static void ResetHistoryFact(object ubCode, int sSectorX, MAP_ROW sSectorY)
     {
         // run through history list
         int iOldHistoryPage = iCurrentHistoryPage;
@@ -1515,18 +1513,18 @@ public class History
             LoadNextHistoryPage();
         }
 
-        SetHistoryFact(HISTORY.QUEST_FINISHED, ubCode, GetWorldTotalMin(), sSectorX, sSectorY);
+        SetHistoryFact(HISTORY.QUEST_FINISHED, ubCode, GameClock.GetWorldTotalMin(), sSectorX, sSectorY);
         return;
     }
 
 
-    int GetTimeQuestWasStarted(int ubCode)
+    uint GetTimeQuestWasStarted(object ubCode)
     {
         // run through history list
         int iOldHistoryPage = iCurrentHistoryPage;
         history? pList = pHistoryListHead;
         bool fFound = false;
-        int uiTime = 0;
+        uint uiTime = 0;
 
         // set current page to before list	
         iCurrentHistoryPage = 0;
@@ -1621,10 +1619,10 @@ public class history
 {
     public HISTORY ubCode; // the code index in the finance code table
     public int uiIdNumber; // unique id number
-    public int ubSecondCode; // secondary code 
-    public int uiDate; // time in the world in global time
+    public object ubSecondCode; // secondary code 
+    public uint uiDate; // time in the world in global time
     public int sSectorX; // sector X this took place in
-    public int sSectorY; // sector Y this took place in
+    public MAP_ROW sSectorY; // sector Y this took place in
     public int bSectorZ;
     public int ubColor;
     public history? Next; // next unit in the list

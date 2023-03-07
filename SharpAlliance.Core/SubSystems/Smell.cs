@@ -456,7 +456,7 @@ public class Smell
          */
 
         // figure out the type of blood that we're dropping
-        if (pSoldier.uiStatusFlags & SOLDIER_MONSTER)
+        if (pSoldier.uiStatusFlags & SOLDIER.MONSTER)
         {
             if (pSoldier.bLevel == 0)
             {

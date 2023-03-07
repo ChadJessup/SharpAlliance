@@ -47,6 +47,8 @@ public partial class Globals
     public static bool fDisplayMessageFlag { get; internal set; }
     public static bool gfPageButtonsWereCreated { get; internal set; }
     public static int gubVideoConferencingMode { get; internal set; }
+    public static bool gfFirstBattleMeanwhileScenePending { get; internal set; }
+    public static bool gfPlotPathToExitGrid { get; internal set; }
 
     public static bool gfTimeInterruptPause = false;
     public static bool fSuperCompression = false;

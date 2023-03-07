@@ -14,17 +14,17 @@ public class CampaignTypes
 public class SECTORINFO
 {
     //information pertaining to this sector
-    uint uiFlags;                     //various special conditions
-    sbyte ubInvestigativeState;     //When the sector is attacked by the player, the state increases by 1 permanently.
+    public SF uiFlags;                     //various special conditions
+    public sbyte ubInvestigativeState;     //When the sector is attacked by the player, the state increases by 1 permanently.
                                     //This value determines how quickly it is investigated by the enemy.
     public Garrisons ubGarrisonID;                     //IF the sector has an ID for this (non 255), then the queen values this sector and it
                                             //indexes the garrison group.
-    byte ubPendingReinforcements;   //when the enemy owns this sector, this value will keep track of HIGH priority reinforcements -- not regular.
-    bool fMilitiaTrainingPaid;
-    sbyte ubMilitiaTrainingPercentDone;
-    sbyte ubMilitiaTrainingHundredths;
+    public byte ubPendingReinforcements;   //when the enemy owns this sector, this value will keep track of HIGH priority reinforcements -- not regular.
+    public bool fMilitiaTrainingPaid;
+    public sbyte ubMilitiaTrainingPercentDone;
+    public sbyte ubMilitiaTrainingHundredths;
     //enemy military presence
-    bool[] fPlayer = new bool[4];             //whether the player THINKS the sector is unde his control or not. array is for sublevels
+    public bool[] fPlayer = new bool[4];             //whether the player THINKS the sector is unde his control or not. array is for sublevels
                                               //enemy only info
     public sbyte ubNumTroops;              //the actual number of troops here.
     public sbyte ubNumElites;              //the actual number of elites here.

@@ -48,8 +48,8 @@ public struct BULLET
     public int iRange;
     public int iDistanceLimit;
     public int usFlags;
-    public TAG_anitile? pAniTile;
-    public TAG_anitile? pShadowAniTile;
+    public ANITILE? pAniTile;
+    public ANITILE? pShadowAniTile;
     public int ubItemStatus;
 }
 

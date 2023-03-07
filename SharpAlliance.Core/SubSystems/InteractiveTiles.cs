@@ -36,7 +36,7 @@ public class InteractiveTiles
         this.renderWorld = renderWorld;
         this.tileCache = tileCache;
         this.overhead = overhead;
-        this.worldStructures = worldStructures;
+        WorldStructures = worldStructures;
     }
 
     bool InitInteractiveTileManagement()
@@ -179,7 +179,7 @@ public class InteractiveTiles
         ITEM_POOL? pItemPool;
         bool fDidMissingQuote = false;
 
-        pStructure = this.worldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.OPENABLE);
+        pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.OPENABLE);
 
         if (pStructure == null)
         {
@@ -785,7 +785,7 @@ public class InteractiveTiles
                 }
 
                 // If this option is on...
-                if (!gGameSettings.fOptions[TOPTION.SNAP_CURSOR_TO_DOOR])
+                if (!GameSettings.fOptions[TOPTION.SNAP_CURSOR_TO_DOOR])
                 {
                     if (Globals.gCurrentUIMode != UI_MODE.HANDCURSOR_MODE)
                     {

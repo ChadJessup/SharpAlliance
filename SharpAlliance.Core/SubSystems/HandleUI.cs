@@ -87,7 +87,7 @@ public class HandleUI
         IScreenManager screenManager)
     {
         this.logger = logger;
-        this.clock = clock;
+        ClockManager = clock;
         this.overhead = overhead;
         this.rnd = new Random();
         this.points = points;
@@ -785,11 +785,11 @@ public class HandleUI
 
             if (bReturnCode == Globals.MERC_HIRE_FAILED)
             {
-                Messages.ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Merc hire failed:  Either already hired or dislikes you.");
+                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "Merc hire failed:  Either already hired or dislikes you.");
             }
             else if (bReturnCode == Globals.MERC_HIRE_OVER_20_MERCS_HIRED)
             {
-                Messages.ScreenMsg(FONT_ORANGE, Globals.MSG_BETAVERSION, "Can't hire more than 20 mercs.");
+                Messages.ScreenMsg(FontColor.FONT_ORANGE, Globals.MSG_BETAVERSION, "Can't hire more than 20 mercs.");
             }
             else
             {
@@ -1398,7 +1398,7 @@ public class HandleUI
 
             }
 
-            Globals.guiNewUICursor = GetProperItemCursor((byte)Globals.gusSelectedSoldier, pSoldier.inv[(int)InventorySlot.HANDPOS].usItem, usMapPos, false);
+            Globals.guiNewUICursor = GetProperItemCursor((byte)Globals.gusSelectedSoldier, pSoldier.inv[InventorySlot.HANDPOS].usItem, usMapPos, false);
 
             // Show UI ON GUY
             UIHandleOnMerc(false);
@@ -2074,7 +2074,7 @@ public class HandleUI
 
         if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
-            Globals.guiNewUICursor = GetProperItemCursor((byte)Globals.gusSelectedSoldier, pSoldier.inv[(int)InventorySlot.HANDPOS].usItem, usMapPos, true);
+            Globals.guiNewUICursor = GetProperItemCursor((byte)Globals.gusSelectedSoldier, pSoldier.inv[InventorySlot.HANDPOS].usItem, usMapPos, true);
 
             UIHandleOnMerc(false);
         }
@@ -2098,7 +2098,7 @@ public class HandleUI
 
         if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             && pTargetSoldier is not null
-            && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
+            && Globals.Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
         {
             if (NPCFirstDraw(pSoldier, pTargetSoldier))
             {
@@ -2113,7 +2113,7 @@ public class HandleUI
 
         // Set aim time to one in UI
         pSoldier.bAimTime = (pSoldier.bShownAimTime / 2);
-        usItem = pSoldier.inv[(int)InventorySlot.HANDPOS].usItem;
+        usItem = pSoldier.inv[InventorySlot.HANDPOS].usItem;
 
         // ATE: Check if we are targeting an interactive tile, and adjust gridno accordingly...
         pIntNode = GetCurInteractiveTileGridNoAndStructure(out sGridNo, out pStructure);
@@ -2193,7 +2193,7 @@ public class HandleUI
         }
         else
         {
-            iHandleReturn = HandleItem(pSoldier, sTargetGridNo, bTargetLevel, pSoldier.inv[(int)InventorySlot.HANDPOS].usItem, true);
+            iHandleReturn = HandleItem(pSoldier, sTargetGridNo, bTargetLevel, pSoldier.inv[InventorySlot.HANDPOS].usItem, true);
         }
 
         if (iHandleReturn < 0)
@@ -2260,8 +2260,8 @@ public class HandleUI
                 {
                     // If this is one of our own guys.....pop up requiester...
                     if ((pTSoldier.bTeam == Globals.gbPlayerNum || pTSoldier.bTeam == TEAM.MILITIA_TEAM)
-                        && Globals.Item[pSoldier.inv[(int)InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT
-                        && pSoldier.inv[(int)InventorySlot.HANDPOS].usItem != Items.GAS_CAN
+                        && Globals.Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass != IC.MEDKIT
+                        && pSoldier.inv[InventorySlot.HANDPOS].usItem != Items.GAS_CAN
                         && Globals.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile
                         && (pTSoldier.ubID != pSoldier.ubID))
                     {
@@ -2566,7 +2566,7 @@ public class HandleUI
             if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
             {
                 // LOOK IN GUY'S HAND TO CHECK LOCATION
-                usInHand = pSoldier.inv[(int)InventorySlot.HANDPOS].usItem;
+                usInHand = pSoldier.inv[InventorySlot.HANDPOS].usItem;
 
                 // Get cursor value
                 ubItemCursor = GetActionModeCursor(pSoldier);
@@ -3824,7 +3824,7 @@ public class HandleUI
         }
 
         // LOOK IN GUY'S HAND TO CHECK LOCATION
-        usInHand = pSoldier.inv[(int)InventorySlot.HANDPOS].usItem;
+        usInHand = pSoldier.inv[InventorySlot.HANDPOS].usItem;
 
         // Get cursor value
         ubItemCursor = GetActionModeCursor(pSoldier);
@@ -4650,7 +4650,7 @@ public class HandleUI
                         fSelectedSoldierInBatch = true;
                     }
 
-                    if (!gGameSettings.fOptions[TOPTION.MUTE_CONFIRMATIONS] && fAcknowledge)
+                    if (!GameSettings.fOptions[TOPTION.MUTE_CONFIRMATIONS] && fAcknowledge)
                     {
                         InternalDoMercBattleSound(pSoldier, BATTLE_SOUND_ATTN1, BATTLE_SND_LOWER_VOLUME);
                     }
@@ -4693,7 +4693,7 @@ public class HandleUI
             {
                 if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTI_SELECTED))
                 {
-                    pSoldier.fDelayedMovement = false;
+                    pSoldier.fDelayedMovement = 0;
                     pSoldier.sFinalDestination = pSoldier.sGridNo;
                     StopSoldier(pSoldier);
                 }
@@ -5876,7 +5876,7 @@ public class HandleUI
                     // OK, we have a civ , now check if they are near selected guy.....
                     if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
                     {
-                        if (PythSpacesAway(pSoldier.sGridNo, pOverSoldier.sGridNo) == 1)
+                        if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pOverSoldier.sGridNo) == 1)
                         {
                             // Check if we have LOS to them....
                             sDistVisible = DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pOverSoldier.sGridNo, pOverSoldier.bLevel);

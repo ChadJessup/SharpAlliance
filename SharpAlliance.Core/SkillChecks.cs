@@ -223,7 +223,7 @@ public class SkillChecks
         int iSkill;
         int iChance, iReportChance;
         int iRoll, iMadeItBy;
-        int bSlot;
+        InventorySlot bSlot;
         int iLoop;
         SOLDIERTYPE? pTeamSoldier;
         int bBuddyIndex;

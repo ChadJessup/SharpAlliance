@@ -107,7 +107,7 @@ public class AIMain
         else
         {		
             // AI is run on all PCs except the one who is selected
-            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER_PC )
+            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC )
             {
                 // if this soldier is "selected" then only let user give orders!
                 if ((pSoldier.ubID == gusSelectedSoldier) && !(gTacticalStatus.uiFlags.HasFlag(DEMOMODE))
@@ -2023,8 +2023,8 @@ public class AIMain
                 break;
 
             case AI_ACTION.DROP_ITEM:                    // drop item in hand
-                SoldierDropItem(pSoldier, &(pSoldier.inv[HANDPOS]));
-                DeleteObj((pSoldier.inv[HANDPOS]));
+                SoldierDropItem(pSoldier, &(pSoldier.inv[InventorySlot.HANDPOS]));
+                DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
                 pSoldier.bAction = AI_ACTION.PENDING_ACTION;
                 break;
 
@@ -2272,7 +2272,7 @@ public class AIMain
                 }
 # if RECORDNET
                 fprintf(NetDebugFile, "\tExecuteAction: %d calling HandleItem(), inHand %d, actionData %d, anitype %d, oldani %d\n",
-                    pSoldier.ubID, pSoldier.inv[HANDPOS].item, pSoldier.usActionData, pSoldier.anitype[pSoldier.anim], pSoldier.oldani);
+                    pSoldier.ubID, pSoldier.inv[InventorySlot.HANDPOS].item, pSoldier.usActionData, pSoldier.anitype[pSoldier.anim], pSoldier.oldani);
 #endif
 
 # if TESTVERSION
@@ -2285,7 +2285,7 @@ public class AIMain
                     SimulMessage(tempstr, 3000, NODECRYPT);
                 }
 #endif
-                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, pSoldier.bTargetLevel, pSoldier.inv[HANDPOS].usItem, false);
+                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, pSoldier.bTargetLevel, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
                 if (iRetCode != ITEM_HANDLE_OK)
                 {
                     if (iRetCode != ITEM_HANDLE_BROKEN) // if the item broke, this is 'legal' and doesn't need reporting
@@ -2424,7 +2424,7 @@ public class AIMain
 
             case AI_ACTION.GIVE_AID:              // help injured/dying friend
                                                   //pSoldier.usUIMovementMode = RUNNING;
-                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, 0, pSoldier.inv[HANDPOS].usItem, false);
+                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, 0, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
                 if (iRetCode != ITEM_HANDLE_OK)
                 {
 # if JA2BETAVERSION
@@ -2638,13 +2638,13 @@ public class AIMain
             // alert Queen and Joe if they are around
             SOLDIERTYPE? pSoldier;
 
-            pSoldier = FindSoldierByProfileID(NPCID.QUEEN, false);
+            pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.QUEEN, false);
             if (pSoldier is not null)
             {
                 pSoldier.bAlertStatus = STATUS.RED;
             }
 
-            pSoldier = FindSoldierByProfileID(NPCID.JOE, false);
+            pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.JOE, false);
             if (pSoldier is not null)
             {
                 pSoldier.bAlertStatus = STATUS.RED;

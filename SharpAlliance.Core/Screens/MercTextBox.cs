@@ -115,7 +115,7 @@ public class MercTextBox
         //Invalidate!
         if (uiBuffer == Surfaces.FRAME_BUFFER)
         {
-            InvalidateRegion(sDestX, sDestY, (int)(sDestX + Globals.gPopUpTextBox?.sWidth ?? 0), (int)(sDestY + Globals.gPopUpTextBox?.sHeight ?? 0));
+            VeldridVideoManager.InvalidateRegion(sDestX, sDestY, (int)(sDestX + Globals.gPopUpTextBox?.sWidth ?? 0), (int)(sDestY + Globals.gPopUpTextBox?.sHeight ?? 0));
         }
 
         // unlock the video surfaces

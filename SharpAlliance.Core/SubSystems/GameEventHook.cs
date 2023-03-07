@@ -4,7 +4,7 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class GameEventHook
 {
-    bool DelayEventIfBattleInProgress(STRATEGICEVENT? pEvent)
+    public static bool DelayEventIfBattleInProgress(STRATEGICEVENT? pEvent)
     {
         STRATEGICEVENT? pNewEvent;
         if (gTacticalStatus.fEnemyInSector)
@@ -122,9 +122,9 @@ public class GameEventHook
                 break;
             case EVENT.ADDSOLDIER_TO_UPDATE_BOX:
                 // if the grunt is currently active, add to update box
-                if (Menptr[pEvent.uiParam].bActive)
+                if (Menptr[(int)pEvent.uiParam].bActive)
                 {
-                    AddSoldierToWaitingListQueue((Menptr[pEvent.uiParam]));
+                    AddSoldierToWaitingListQueue((Menptr[(int)pEvent.uiParam]));
                 }
                 break;
             case EVENT.SET_MENU_REASON:
@@ -270,10 +270,10 @@ public class GameEventHook
                 break;
             case EVENT.KEITH_GOING_OUT_OF_BUSINESS:
                 // make sure killbillies are still alive, if so, set fact 274 true
-                if (CheckFact(FACT.HILLBILLIES_KILLED, NPCID.KEITH) == false)
+                if (Facts.CheckFact(FACT.HILLBILLIES_KILLED, NPCID.KEITH) == false)
                 {
                     //s et the fact true keith is out of business
-                    SetFactTrue(FACT_KEITH_OUT_OF_BUSINESS);
+                    Facts.SetFactTrue(FACT.KEITH_OUT_OF_BUSINESS);
                 }
                 break;
             case EVENT.MERC_SITE_BACK_ONLINE:

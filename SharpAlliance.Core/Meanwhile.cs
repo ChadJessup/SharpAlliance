@@ -3,6 +3,7 @@ using System.Diagnostics;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
+using static SharpAlliance.Core.EnglishText;
 
 namespace SharpAlliance.Core;
 
@@ -232,21 +233,21 @@ public class Meanwhile
 # if JA2TESTVERSION
         wprintf(zStr, "Meanwhile..... ( %S : Remember to make sure towns are controlled if required by script )", gzMeanwhileStr[gCurrentMeanwhileDef.ubMeanwhileID]);
 #else
-        wprintf(zStr, "%s.....", pMessageStrings[MSG_MEANWHILE]);
+        wprintf(zStr, "%s.....", pMessageStrings[MSG.MEANWHILE]);
 #endif
 
-# if JA2TESTVERSION
+#if JA2TESTVERSION
         if (gCurrentMeanwhileDef.ubMeanwhileID != INTERROGATION)
 #else
-            if (gCurrentMeanwhileDef.ubMeanwhileID != INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
+        if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
 #endif
-            {
-                DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, null);
-            }
-            else
-            {
-                DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, (int)MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, null);
-            }
+        {
+            DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, null);
+        }
+        else
+        {
+            DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, (int)MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, null);
+        }
     }
 
     void CheckForMeanwhileOKStart()
@@ -340,16 +341,16 @@ public class Meanwhile
                 iIndex = GetFreeNPCSave();
                 if (iIndex != -1)
                 {
-                    gNPCSaveData[iIndex].ubProfile = QUEEN;
-                    gNPCSaveData[iIndex].sX = gMercProfiles[QUEEN].sSectorX;
-                    gNPCSaveData[iIndex].sY = gMercProfiles[QUEEN].sSectorY;
-                    gNPCSaveData[iIndex].sZ = gMercProfiles[QUEEN].bSectorZ;
-                    gNPCSaveData[iIndex].sGridNo = gMercProfiles[QUEEN].sGridNo;
+                    gNPCSaveData[iIndex].ubProfile = NPCID.QUEEN;
+                    gNPCSaveData[iIndex].sX = gMercProfiles[NPCID.QUEEN].sSectorX;
+                    gNPCSaveData[iIndex].sY = gMercProfiles[NPCID.QUEEN].sSectorY;
+                    gNPCSaveData[iIndex].sZ = gMercProfiles[NPCID.QUEEN].bSectorZ;
+                    gNPCSaveData[iIndex].sGridNo = gMercProfiles[NPCID.QUEEN].sGridNo;
 
                     // Force reload of NPC files...
-                    ReloadQuoteFile(QUEEN);
+                    ReloadQuoteFile(NPCID.QUEEN);
 
-                    ChangeNpcToDifferentSector(QUEEN, 3, 16, 0);
+                    ChangeNpcToDifferentSector(NPCID.QUEEN, 3, 16, 0);
                 }
 
                 // SAVE MESSANGER!
@@ -368,7 +369,7 @@ public class Meanwhile
                     ChangeNpcToDifferentSector(NPCID.ELLIOT, 3, 16, 0);
                 }
 
-                if (gCurrentMeanwhileDef.ubMeanwhileID == OUTSKIRTS_MEDUNA)
+                if (gCurrentMeanwhileDef.ubMeanwhileID == Meanwhiles.OUTSKIRTS_MEDUNA)
                 {
                     // SAVE JOE!
                     iIndex = GetFreeNPCSave();
@@ -478,9 +479,9 @@ public class Meanwhile
         {
             giNPCReferenceCount = 1;
 
-            if (gCurrentMeanwhileDef.ubMeanwhileID != INTERROGATION)
+            if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION)
             {
-                gTacticalStatus.uiFlags |= SHOW_ALL_MERCS;
+                gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_MERCS;
             }
 
             TriggerNPCRecordImmediately(gCurrentMeanwhileDef.ubNPCNumber, (int)gCurrentMeanwhileDef.usTriggerEvent);
@@ -494,7 +495,7 @@ public class Meanwhile
     {
         if (bExitValue == MSG_BOX_RETURN_OK || bExitValue == MSG_BOX_RETURN_YES)
         {
-            gTacticalStatus.uiFlags |= ENGAGED_IN_CONV;
+            gTacticalStatus.uiFlags |= TacticalEngineStatus.ENGAGED_IN_CONV;
             // Increment reference count...
             giNPCReferenceCount = 1;
 
@@ -553,7 +554,7 @@ public class Meanwhile
         switch (gCurrentMeanwhileDef.ubMeanwhileID)
         {
             case Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE:
-                if (gGameOptions.ubDifficultyLevel == DIF_LEVEL_HARD)
+                if (gGameOptions.ubDifficultyLevel == DifficultyLevel.Hard)
                 { //Wake up the queen earlier to punish the good players!
                     ExecuteStrategicAIAction(STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
                 }
@@ -581,29 +582,29 @@ public class Meanwhile
 
                     StartQuest(QUEST_FIND_SCIENTIST, -1, -1);
                     // place Madlab and robot!
-                    if (SectorInfo[SECTOR(7, MAP_ROW.H)].uiFlags & SF.USE_ALTERNATE_MAP)
+                    if (SectorInfo[SECTORINFO.SECTOR(7, MAP_ROW.H)].uiFlags.HasFlag(SF.USE_ALTERNATE_MAP))
                     {
                         sSectorX = 7;
                         sSectorY = MAP_ROW.H;
                     }
-                    else if (SectorInfo[SECTOR(16, MAP_ROW.H)].uiFlags & SF.USE_ALTERNATE_MAP)
+                    else if (SectorInfo[SECTORINFO.SECTOR(16, MAP_ROW.H)].uiFlags.HasFlag(SF.USE_ALTERNATE_MAP))
                     {
                         sSectorX = 16;
                         sSectorY = MAP_ROW.H;
                     }
-                    else if (SectorInfo[SECTOR(11, MAP_ROW.I)].uiFlags & SF.USE_ALTERNATE_MAP)
+                    else if (SectorInfo[SECTORINFO.SECTOR(11, MAP_ROW.I)].uiFlags.HasFlag(SF.USE_ALTERNATE_MAP))
                     {
                         sSectorX = 11;
-                        sSectorY = MAP_ROW_I;
+                        sSectorY = MAP_ROW.I;
                     }
-                    else if (SectorInfo[SECTOR(4, MAP_ROW.E)].uiFlags & SF.USE_ALTERNATE_MAP)
+                    else if (SectorInfo[SECTORINFO.SECTOR(4, MAP_ROW.E)].uiFlags.HasFlag(SF.USE_ALTERNATE_MAP))
                     {
                         sSectorX = 4;
                         sSectorY = MAP_ROW.E;
                     }
                     else
                     {
-                        Debug.Assert(0);
+                        Debug.Assert(false);
                     }
                     gMercProfiles[NPCID.MADLAB].sSectorX = sSectorX;
                     gMercProfiles[NPCID.MADLAB].sSectorY = sSectorY;
@@ -737,12 +738,12 @@ public class Meanwhile
         // OK, based on screen we were in....
         switch (guiOldScreen)
         {
-            case MAP_SCREEN:
+            case ScreenName.MAP_SCREEN:
                 InternalLeaveTacticalScreen(MAP_SCREEN);
                 //gfEnteringMapScreen = true;
                 break;
 
-            case GAME_SCREEN:
+            case ScreenName.GAME_SCREEN:
                 // restore old interface panel flag
                 SetCurrentInterfacePanel((int)TEAM_PANEL);
                 break;
@@ -762,7 +763,7 @@ public class Meanwhile
         int sGridNo = 0;
 
         // go to the approp. gridno
-        sGridNo = gusMeanWhileGridNo[ubCurrentMeanWhileId];
+        sGridNo = gusMeanWhileGridNo[(int)ubCurrentMeanWhileId];
 
         InternalLocateGridNo(sGridNo, true);
 
@@ -775,7 +776,7 @@ public class Meanwhile
 
         if (gfInMeanwhile)
         {
-            pSoldier = FindSoldierByProfileID(gCurrentMeanwhileDef.ubNPCNumber, false);
+            pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(gCurrentMeanwhileDef.ubNPCNumber, false);
 
             if (pSoldier != null)
             {
@@ -790,7 +791,7 @@ public class Meanwhile
         return (gfReloadingScreenFromMeanwhile);
     }
 
-    int GetMeanwhileID()
+    Meanwhiles GetMeanwhileID()
     {
         return (gCurrentMeanwhileDef.ubMeanwhileID);
     }
@@ -798,63 +799,66 @@ public class Meanwhile
 
     void HandleCreatureRelease()
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
+        uint uiTime = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
-        uiTime = GetWorldTotalMin() + 5;
-
-        MeanwhileDef.ubMeanwhileID = CREATURES;
+        MeanwhileDef.ubMeanwhileID = Meanwhiles.CREATURES;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
 
-    void HandleMeanWhileEventPostingForTownLiberation(int bTownId)
+    void HandleMeanWhileEventPostingForTownLiberation(TOWNS bTownId)
     {
         // post event for meanwhile whithin the next 6 hours if it still will be daylight, otherwise the next morning
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
-        int ubId = 0;
+        uint uiTime = 0;
+        Meanwhiles ubId = 0;
         bool fHandled = false;
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
 
-        uiTime = GetWorldTotalMin() + 5;
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
         // which town iberated?
         switch (bTownId)
         {
-            case DRASSEN:
-                ubId = DRASSEN_LIBERATED;
+            case TOWNS.DRASSEN:
+                ubId = Meanwhiles.DRASSEN_LIBERATED;
                 fHandled = true;
                 break;
-            case CAMBRIA:
-                ubId = CAMBRIA_LIBERATED;
+            case TOWNS.CAMBRIA:
+                ubId = Meanwhiles.CAMBRIA_LIBERATED;
                 fHandled = true;
                 break;
-            case ALMA:
-                ubId = ALMA_LIBERATED;
+            case TOWNS.ALMA:
+                ubId = Meanwhiles.ALMA_LIBERATED;
                 fHandled = true;
                 break;
-            case GRUMM:
-                ubId = GRUMM_LIBERATED;
+            case TOWNS.GRUMM:
+                ubId = Meanwhiles.GRUMM_LIBERATED;
                 fHandled = true;
                 break;
-            case CHITZENA:
-                ubId = CHITZENA_LIBERATED;
+            case TOWNS.CHITZENA:
+                ubId = Meanwhiles.CHITZENA_LIBERATED;
                 fHandled = true;
                 break;
-            case BALIME:
-                ubId = BALIME_LIBERATED;
+            case TOWNS.BALIME:
+                ubId = Meanwhiles.BALIME_LIBERATED;
                 fHandled = true;
                 break;
         }
@@ -864,39 +868,40 @@ public class Meanwhile
             MeanwhileDef.ubMeanwhileID = ubId;
 
             // schedule the event
-            ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+            ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
         }
     }
 
     void HandleMeanWhileEventPostingForTownLoss(int bTownId)
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
+        uint uiTime = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(LOST_TOWN))
+        if (GetMeanWhileFlag(Meanwhiles.LOST_TOWN))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
 
-        uiTime = GetWorldTotalMin() + 5;
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
-        MeanwhileDef.ubMeanwhileID = LOST_TOWN;
+        MeanwhileDef.ubMeanwhileID = Meanwhiles.LOST_TOWN;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleMeanWhileEventPostingForSAMLiberation(int bSamId)
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
-        int ubId = 0;
+        uint uiTime = 0;
+        Meanwhiles ubId = 0;
         bool fHandled = false;
 
         if (bSamId == -1)
@@ -910,26 +915,28 @@ public class Meanwhile
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
-
-        uiTime = GetWorldTotalMin() + 5;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
         // which SAM iberated?
         switch (bSamId)
         {
             case 0:
-                ubId = NW_SAM;
+                ubId = Meanwhiles.NW_SAM;
                 fHandled = true;
                 break;
             case 1:
-                ubId = NE_SAM;
+                ubId = Meanwhiles.NE_SAM;
                 fHandled = true;
                 break;
             case 2:
-                ubId = CENTRAL_SAM;
+                ubId = Meanwhiles.CENTRAL_SAM;
                 fHandled = true;
                 break;
             default:
@@ -942,7 +949,7 @@ public class Meanwhile
             MeanwhileDef.ubMeanwhileID = ubId;
 
             // schedule the event
-            ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+            ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
         }
 
 
@@ -950,206 +957,220 @@ public class Meanwhile
 
     void HandleFlowersMeanwhileScene(int bTimeCode)
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
+        uint uiTime = 0;
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(FLOWERS))
+        if (GetMeanWhileFlag(Meanwhiles.FLOWERS))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
 
         // time delay should be based on time code, 0 next day, 1 seeral days (random)
         if (bTimeCode == 0)
         {
             // 20-24 hours later
-            uiTime = GetWorldTotalMin() + 60 * (20 + Random(5));
+            uiTime = (uint)(GameClock.GetWorldTotalMin() + 60 * (20 + Globals.Random.Next(5)));
         }
         else
         {
             // 2-4 days later
-            uiTime = GetWorldTotalMin() + 60 * (24 + Random(48));
+            uiTime = GameClock.GetWorldTotalMin() + 60 * (24 + Globals.Random.Next(48));
         }
 
-        MeanwhileDef.ubMeanwhileID = FLOWERS;
+        MeanwhileDef.ubMeanwhileID = Meanwhiles.FLOWERS;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleOutskirtsOfMedunaMeanwhileScene()
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
+        uint uiTime = 0;
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(OUTSKIRTS_MEDUNA))
+        if (GetMeanWhileFlag(Meanwhiles.OUTSKIRTS_MEDUNA))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
 
-        uiTime = GetWorldTotalMin() + 5;
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
-        MeanwhileDef.ubMeanwhileID = OUTSKIRTS_MEDUNA;
+        MeanwhileDef.ubMeanwhileID = Meanwhiles.OUTSKIRTS_MEDUNA;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleKillChopperMeanwhileScene()
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
+        uint uiTime = 0;
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(KILL_CHOPPER))
+        if (GetMeanWhileFlag(Meanwhiles.KILL_CHOPPER))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
 
-        uiTime = GetWorldTotalMin() + 55 + Random(10);
+        uiTime = (uint)(GameClock.GetWorldTotalMin() + 55 + Globals.Random.Next(10));
 
-        MeanwhileDef.ubMeanwhileID = KILL_CHOPPER;
+        MeanwhileDef.ubMeanwhileID = Meanwhiles.KILL_CHOPPER;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleScientistAWOLMeanwhileScene()
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
+        uint uiTime = 0;
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(AWOL_SCIENTIST))
+        if (GetMeanWhileFlag(Meanwhiles.AWOL_SCIENTIST))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0
+        };
 
-        uiTime = GetWorldTotalMin() + 5;
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
-        MeanwhileDef.ubMeanwhileID = AWOL_SCIENTIST;
+        MeanwhileDef.ubMeanwhileID = Meanwhiles.AWOL_SCIENTIST;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleInterrogationMeanwhileScene()
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
+        uint uiTime = 0;
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(INTERROGATION))
+        if (GetMeanWhileFlag(Meanwhiles.INTERROGATION))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 7; // what sector?
-        MeanwhileDef.sSectorY = MAP_ROW_N;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 7, // what sector?
+            sSectorY = MAP_ROW.N,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0,
+        };
 
-        uiTime = GetWorldTotalMin() + 60;
+        uiTime = GameClock.GetWorldTotalMin() + 60;
 
-        MeanwhileDef.ubMeanwhileID = INTERROGATION;
+        MeanwhileDef.ubMeanwhileID = Meanwhiles.INTERROGATION;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleFirstBattleVictory()
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
-        int ubId = 0;
+        uint uiTime = 0;
+        Meanwhiles ubId = 0;
 
-        if (GetMeanWhileFlag(END_OF_PLAYERS_FIRST_BATTLE))
+        if (GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0
+        };
 
-        uiTime = GetWorldTotalMin() + 5;
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
-        ubId = END_OF_PLAYERS_FIRST_BATTLE;
+        ubId = Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE;
 
         MeanwhileDef.ubMeanwhileID = ubId;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
 
     }
 
 
     void HandleDelayedFirstBattleVictory()
     {
-        int uiTime = 0;
-        MEANWHILE_DEFINITION MeanwhileDef;
-        int ubId = 0;
+        uint uiTime = 0;
+        Meanwhiles ubId = 0;
 
-        if (GetMeanWhileFlag(END_OF_PLAYERS_FIRST_BATTLE))
+        if (GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
         {
             return;
         }
 
-        MeanwhileDef.sSectorX = 3;
-        MeanwhileDef.sSectorY = 16;
-        MeanwhileDef.ubNPCNumber = QUEEN;
-        MeanwhileDef.usTriggerEvent = 0;
+        MEANWHILE_DEFINITION MeanwhileDef = new()
+        {
+            sSectorX = 3,
+            sSectorY = (MAP_ROW)16,
+            ubNPCNumber = NPCID.QUEEN,
+            usTriggerEvent = 0
+        };
 
         /*
         //It is theoretically impossible to liberate a town within 60 minutes of the first battle (which is supposed to
         //occur outside of a town in this scenario).  The delay is attributed to the info taking longer to reach the queen.
         uiTime = GetWorldTotalMin() + 60;
         */
-        uiTime = GetWorldTotalMin() + 5;
+        uiTime = GameClock.GetWorldTotalMin() + 5;
 
-        ubId = END_OF_PLAYERS_FIRST_BATTLE;
+        ubId = Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE;
 
         MeanwhileDef.ubMeanwhileID = ubId;
 
         // schedule the event
-        ScheduleMeanwhileEvent(&MeanwhileDef, uiTime);
+        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
 
     }
 
 
     void HandleFirstBattleEndingWhileInTown(int sSectorX, int sSectorY, int bSectorZ, bool fFromAutoResolve)
     {
-        int bTownId = 0;
+        TOWNS bTownId = 0;
         int sSector = 0;
 
-        if (GetMeanWhileFlag(END_OF_PLAYERS_FIRST_BATTLE))
+        if (GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
         {
             return;
         }
@@ -1162,9 +1183,9 @@ public class Meanwhile
         sSector = sSectorX + sSectorY * MAP_WORLD_X;
 
         // get town name id
-        bTownId = StrategicMap[sSector].bNameId;
+        bTownId = strategicMap[sSector].bNameId;
 
-        if (bTownId == BLANK_SECTOR)
+        if (bTownId == TOWNS.BLANK_SECTOR)
         {
             // invalid town
             HandleDelayedFirstBattleVictory();
@@ -1232,10 +1253,10 @@ public enum Meanwhiles
 public class MEANWHILE_DEFINITION
 {
     public int sSectorX;
-    public int sSectorY;
+    public MAP_ROW sSectorY;
     public int usTriggerEvent;
     public Meanwhiles ubMeanwhileID;
-    public int ubNPCNumber;
+    public NPCID ubNPCNumber;
 }
 
 [Flags]

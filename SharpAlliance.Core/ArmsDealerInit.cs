@@ -491,7 +491,7 @@ public class ArmsDealerInit
 
 
 
-    int HowManyItemsToReorder(int ubWanted, int ubStillHave)
+    public static int HowManyItemsToReorder(int ubWanted, int ubStillHave)
     {
         int ubNumReordered;
 

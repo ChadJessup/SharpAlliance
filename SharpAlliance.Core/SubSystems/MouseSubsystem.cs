@@ -27,18 +27,18 @@ public class MouseSubSystem : ISharpAllianceManager
     private readonly GameContext gameContext;
     private const int MSYS_DOUBLECLICK_DELAY = 400;
 
-    private Point CurrentCoord = new(0, 0);
+    private static Point CurrentCoord = new(0, 0);
 
-    private ButtonMasks CurrentButtons;
-    private MouseDos MouseAction = 0;
+    private static ButtonMasks CurrentButtons;
+    private static MouseDos MouseAction = 0;
 
-    private bool MouseSystemInitialized = false;
-    private bool UseMouseHandlerHook = false;
+    private static bool MouseSystemInitialized = false;
+    private static bool UseMouseHandlerHook = false;
 
-    private bool WasMouseGrabbed = false;
-    private MOUSE_REGION? GrabbedRegion = null;
+    private static bool WasMouseGrabbed = false;
+    private static MOUSE_REGION? GrabbedRegion = null;
 
-    private MOUSE_REGION? RegionList = null;
+    private static MOUSE_REGION? RegionList = null;
 
     public static MOUSE_REGION? PreviousRegion = null;
     public static MOUSE_REGION? CurrentRegion = null;
@@ -78,56 +78,56 @@ public class MouseSubSystem : ISharpAllianceManager
         IClockManager clockManager,
         CursorSubSystem cursorSubSystem)
     {
-        this.logger = logger;
+        logger = logger;
 
         DefaultMoveCallback = BtnGenericMouseMoveButtonCallback;
-        this.logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
+        logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
         this.clock = clockManager;
         cursors = cursorSubSystem;
-        this.gameContext = gameContext;
+        gameContext = gameContext;
 
-        if (this.RegionList is not null)
+        if (RegionList is not null)
         {
-            this.ClearRegionList();
+            ClearRegionList();
         }
 
-        this.CurrentCoord = new(0, 0);
-        this.CurrentButtons = 0;
-        this.MouseAction = MouseDos.NO_ACTION;
+        CurrentCoord = new(0, 0);
+        CurrentButtons = 0;
+        MouseAction = MouseDos.NO_ACTION;
 
         PreviousRegion = null;
-        this.MouseSystemInitialized = true;
-        this.UseMouseHandlerHook = false;
+        MouseSystemInitialized = true;
+        UseMouseHandlerHook = false;
 
-        this.WasMouseGrabbed = false;
-        this.GrabbedRegion = null;
+        WasMouseGrabbed = false;
+        GrabbedRegion = null;
 
         // Setup the system's background region
-        this.SystemBaseRegion.IdNumber = MSYS_ID.SYSTEM;
-        this.SystemBaseRegion.PriorityLevel = MSYS_PRIORITY.SYSTEM;
-        this.SystemBaseRegion.uiFlags = MouseRegionFlags.BASE_REGION_FLAGS;
-        this.SystemBaseRegion.Bounds = new(-32767, -32767, 32767, 32767);
+        SystemBaseRegion.IdNumber = MSYS_ID.SYSTEM;
+        SystemBaseRegion.PriorityLevel = MSYS_PRIORITY.SYSTEM;
+        SystemBaseRegion.uiFlags = MouseRegionFlags.BASE_REGION_FLAGS;
+        SystemBaseRegion.Bounds = new(-32767, -32767, 32767, 32767);
 
-        this.SystemBaseRegion.MousePos = new(0, 0);
-        this.SystemBaseRegion.RelativeMousePos = new(0, 0);
+        SystemBaseRegion.MousePos = new(0, 0);
+        SystemBaseRegion.RelativeMousePos = new(0, 0);
 
-        this.SystemBaseRegion.ButtonState = 0;
-        this.SystemBaseRegion.Cursor = 0;
-        this.SystemBaseRegion.UserData[0] = 0;
-        this.SystemBaseRegion.UserData[1] = 0;
-        this.SystemBaseRegion.UserData[2] = 0;
-        this.SystemBaseRegion.UserData[3] = 0;
-        this.SystemBaseRegion.MovementCallback = null;
-        this.SystemBaseRegion.ButtonCallback = null;
+        SystemBaseRegion.ButtonState = 0;
+        SystemBaseRegion.Cursor = 0;
+        SystemBaseRegion.UserData[0] = 0;
+        SystemBaseRegion.UserData[1] = 0;
+        SystemBaseRegion.UserData[2] = 0;
+        SystemBaseRegion.UserData[3] = 0;
+        SystemBaseRegion.MovementCallback = null;
+        SystemBaseRegion.ButtonCallback = null;
 
-        this.SystemBaseRegion.FastHelpTimer = 0;
-        this.SystemBaseRegion.FastHelpText = string.Empty;
+        SystemBaseRegion.FastHelpTimer = 0;
+        SystemBaseRegion.FastHelpText = string.Empty;
 
-        this.SystemBaseRegion.FastHelpRect = -1;
+        SystemBaseRegion.FastHelpRect = -1;
 
-        AddRegionToList(this.SystemBaseRegion);
+        AddRegionToList(SystemBaseRegion);
 
-        this.UseMouseHandlerHook = true;
+        UseMouseHandlerHook = true;
     }
 
     //Generic Button Movement Callback to reset the mouse button if the mouse is no longer
@@ -163,29 +163,29 @@ public class MouseSubSystem : ISharpAllianceManager
         }
     }
 
-    public void MouseHook(MouseEvents mouseEvent, Point coord, bool leftButtonDown, bool rightButtonDown)
+    public static void MouseHook(MouseEvents mouseEvent, Point coord, bool leftButtonDown, bool rightButtonDown)
     {
         // If the mouse system isn't initialized, get out o' here
-        if (!this.MouseSystemInitialized)
+        if (!MouseSystemInitialized)
         {
             return;
         }
 
         // If we're not using the handler stuff, ignore this call
-        if (!this.UseMouseHandlerHook)
+        if (!UseMouseHandlerHook)
         {
             return;
         }
 
         coord.Y = 480 - coord.Y;
 
-        if (coord != this.CurrentCoord)
+        if (coord != CurrentCoord)
         {
             // Console.WriteLine($"Mouse: {coord} L: {leftButtonDown} R: {rightButtonDown}");
         }
 
 
-        this.MouseAction = MouseDos.NO_ACTION;
+        MouseAction = MouseDos.NO_ACTION;
         switch (mouseEvent)
         {
             case MouseEvents.LEFT_BUTTON_DOWN:
@@ -195,11 +195,11 @@ public class MouseSubSystem : ISharpAllianceManager
                 //MSYS_Action|=MouseDos.BUTTONS;
                 if (mouseEvent == MouseEvents.LEFT_BUTTON_DOWN)
                 {
-                    this.MouseAction |= MouseDos.LBUTTON_DWN;
+                    MouseAction |= MouseDos.LBUTTON_DWN;
                 }
                 else if (mouseEvent == MouseEvents.LEFT_BUTTON_UP)
                 {
-                    this.MouseAction |= MouseDos.LBUTTON_UP;
+                    MouseAction |= MouseDos.LBUTTON_UP;
                     //Kris:
                     //Used only if applicable.  This is used for that special button that is locked with the
                     //mouse press -- just like windows.  When you release the button, the previous state
@@ -212,38 +212,38 @@ public class MouseSubSystem : ISharpAllianceManager
                 }
                 else if (mouseEvent == MouseEvents.RIGHT_BUTTON_DOWN)
                 {
-                    this.MouseAction |= MouseDos.RBUTTON_DWN;
+                    MouseAction |= MouseDos.RBUTTON_DWN;
                 }
                 else if (mouseEvent == MouseEvents.RIGHT_BUTTON_UP)
                 {
-                    this.MouseAction |= MouseDos.RBUTTON_UP;
+                    MouseAction |= MouseDos.RBUTTON_UP;
                 }
 
                 if (leftButtonDown)
                 {
-                    this.CurrentButtons |= ButtonMasks.MSYS_LEFT_BUTTON;
+                    CurrentButtons |= ButtonMasks.MSYS_LEFT_BUTTON;
                 }
                 else
                 {
-                    this.CurrentButtons &= ~ButtonMasks.MSYS_LEFT_BUTTON;
+                    CurrentButtons &= ~ButtonMasks.MSYS_LEFT_BUTTON;
                 }
 
                 if (rightButtonDown)
                 {
-                    this.CurrentButtons |= ButtonMasks.MSYS_RIGHT_BUTTON;
+                    CurrentButtons |= ButtonMasks.MSYS_RIGHT_BUTTON;
                 }
                 else
                 {
-                    this.CurrentButtons &= ~ButtonMasks.MSYS_RIGHT_BUTTON;
+                    CurrentButtons &= ~ButtonMasks.MSYS_RIGHT_BUTTON;
                 }
 
-                if (coord != this.CurrentCoord)
+                if (coord != CurrentCoord)
                 {
-                    this.MouseAction |= MouseDos.MOVE;
-                    this.CurrentCoord = coord;
+                    MouseAction |= MouseDos.MOVE;
+                    CurrentCoord = coord;
                 }
 
-                this.UpdateMouseRegion();
+                UpdateMouseRegion();
                 break;
 
             // ATE: Checks here for mouse button repeats.....
@@ -253,31 +253,31 @@ public class MouseSubSystem : ISharpAllianceManager
 
                 if (mouseEvent == MouseEvents.LEFT_BUTTON_REPEAT)
                 {
-                    this.MouseAction |= MouseDos.LBUTTON_REPEAT;
+                    MouseAction |= MouseDos.LBUTTON_REPEAT;
                 }
                 else if (mouseEvent == MouseEvents.RIGHT_BUTTON_REPEAT)
                 {
-                    this.MouseAction |= MouseDos.RBUTTON_REPEAT;
+                    MouseAction |= MouseDos.RBUTTON_REPEAT;
                 }
 
-                if (coord != this.CurrentCoord)
+                if (coord != CurrentCoord)
                 {
-                    this.MouseAction |= MouseDos.MOVE;
-                    this.CurrentCoord = coord;
+                    MouseAction |= MouseDos.MOVE;
+                    CurrentCoord = coord;
                 }
 
-                this.UpdateMouseRegion();
+                UpdateMouseRegion();
                 break;
 
             case MouseEvents.MousePosition:
-                if (coord != this.CurrentCoord || Globals.gfRefreshUpdate)
+                if (coord != CurrentCoord || Globals.gfRefreshUpdate)
                 {
-                    this.MouseAction |= MouseDos.MOVE;
-                    this.CurrentCoord = coord;
+                    MouseAction |= MouseDos.MOVE;
+                    CurrentCoord = coord;
 
                     Globals.gfRefreshUpdate = false;
 
-                    this.UpdateMouseRegion();
+                    UpdateMouseRegion();
                 }
                 break;
 
@@ -294,19 +294,19 @@ public class MouseSubSystem : ISharpAllianceManager
     //	Searches the list for the highest priority region and updates it's info. It also dispatches
     //	the callback functions
     //
-    private void UpdateMouseRegion()
+    private static void UpdateMouseRegion()
     {
         int ButtonReason;
 
         // Check previous region!
-        if (this.WasMouseGrabbed)
+        if (WasMouseGrabbed)
         {
-            CurrentRegion = this.GrabbedRegion;
+            CurrentRegion = GrabbedRegion;
         }
 
         var foundRegions = Regions.Where(r =>
             r.IsEnabled
-            && r.Bounds.Contains(this.CurrentCoord));
+            && r.Bounds.Contains(CurrentCoord));
 
         foundRegions = foundRegions
             .OrderByDescending(r => r.PriorityLevel)
@@ -378,7 +378,7 @@ public class MouseSubSystem : ISharpAllianceManager
                 && CurrentRegion.uiFlags.HasFlag(MouseRegionFlags.SET_CURSOR)
                 && CurrentRegion.Cursor != 0)
             {
-                this.SetCurrentCursor(CurrentRegion.Cursor);
+                SetCurrentCursor(CurrentRegion.Cursor);
             }
             else
             {
@@ -390,7 +390,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
                 if (regionWithCursor is not null)
                 {
-                    this.SetCurrentCursor(regionWithCursor.Cursor);
+                    SetCurrentCursor(regionWithCursor.Cursor);
                 }
             }
         }
@@ -401,17 +401,17 @@ public class MouseSubSystem : ISharpAllianceManager
         {
             CurrentRegion.HasMouse = true;
 
-            CurrentRegion.MousePos = this.CurrentCoord;
+            CurrentRegion.MousePos = CurrentCoord;
 
             CurrentRegion.RelativeMousePos = new(
-                this.CurrentCoord.X - CurrentRegion.Bounds.X,
-                this.CurrentCoord.Y - CurrentRegion.Bounds.Y);
+                CurrentCoord.X - CurrentRegion.Bounds.X,
+                CurrentCoord.Y - CurrentRegion.Bounds.Y);
 
-            CurrentRegion.ButtonState = this.CurrentButtons;
+            CurrentRegion.ButtonState = CurrentButtons;
 
             if (CurrentRegion.IsEnabled
                 && CurrentRegion.HasMoveCallback
-                && this.MouseAction.HasFlag(MouseDos.MOVE))
+                && MouseAction.HasFlag(MouseDos.MOVE))
             {
                 IVideoManager.DebugRenderer.DrawRectangle(CurrentRegion.Bounds, Color.Yellow);
                 CurrentRegion.MovementCallback?.Invoke(ref CurrentRegion, MSYS_CALLBACK_REASON.MOVE);
@@ -420,15 +420,15 @@ public class MouseSubSystem : ISharpAllianceManager
             //ExecuteMouseHelpEndCallBack( MSYS_CurrRegion );
             //MSYS_CurrRegion.FastHelpTimer = gsFastHelpDelay;
 
-            this.MouseAction &= ~MouseDos.MOVE;
+            MouseAction &= ~MouseDos.MOVE;
 
             if (CurrentRegion.HasButtonCallback
-                && (this.MouseAction & MouseDos.BUTTONS) != 0)
+                && (MouseAction & MouseDos.BUTTONS) != 0)
             {
                 if (CurrentRegion.IsEnabled)
                 {
                     ButtonReason = (int)MSYS_CALLBACK_REASON.NONE;
-                    if (this.MouseAction.HasFlag(MouseDos.LBUTTON_DWN))
+                    if (MouseAction.HasFlag(MouseDos.LBUTTON_DWN))
                     {
                         ButtonReason |= (int)MSYS_CALLBACK_REASON.LBUTTON_DWN;
                         Globals.gfClickedModeOn = true;
@@ -436,13 +436,13 @@ public class MouseSubSystem : ISharpAllianceManager
                         Globals.gusClickedIDNumber = CurrentRegion.IdNumber;
                     }
 
-                    if (this.MouseAction.HasFlag(MouseDos.LBUTTON_UP))
+                    if (MouseAction.HasFlag(MouseDos.LBUTTON_UP))
                     {
                         ButtonReason |= (int)MSYS_CALLBACK_REASON.LBUTTON_UP;
                         Globals.gfClickedModeOn = false;
                     }
 
-                    if (this.MouseAction.HasFlag(MouseDos.RBUTTON_DWN))
+                    if (MouseAction.HasFlag(MouseDos.RBUTTON_DWN))
                     {
                         ButtonReason |= (int)MSYS_CALLBACK_REASON.RBUTTON_DWN;
                         Globals.gfClickedModeOn = true;
@@ -450,19 +450,19 @@ public class MouseSubSystem : ISharpAllianceManager
                         Globals.gusClickedIDNumber = CurrentRegion.IdNumber;
                     }
 
-                    if (this.MouseAction.HasFlag(MouseDos.RBUTTON_UP))
+                    if (MouseAction.HasFlag(MouseDos.RBUTTON_UP))
                     {
                         ButtonReason |= (int)MSYS_CALLBACK_REASON.RBUTTON_UP;
                         Globals.gfClickedModeOn = false;
                     }
 
                     // ATE: Added repeat resons....
-                    if (this.MouseAction.HasFlag(MouseDos.LBUTTON_REPEAT))
+                    if (MouseAction.HasFlag(MouseDos.LBUTTON_REPEAT))
                     {
                         ButtonReason |= (int)MSYS_CALLBACK_REASON.LBUTTON_REPEAT;
                     }
 
-                    if (this.MouseAction.HasFlag(MouseDos.RBUTTON_REPEAT))
+                    if (MouseAction.HasFlag(MouseDos.RBUTTON_REPEAT))
                     {
                         ButtonReason |= (int)MSYS_CALLBACK_REASON.RBUTTON_REPEAT;
                     }
@@ -485,7 +485,7 @@ public class MouseSubSystem : ISharpAllianceManager
                         //This is where double clicks are checked and passed down.
                         if (ButtonReason == (int)MSYS_CALLBACK_REASON.LBUTTON_DWN)
                         {
-                            long uiCurrTime = this.clock.GetClock();
+                            long uiCurrTime = ClockManager.GetClock();
                             if (Globals.gpRegionLastLButtonDown == CurrentRegion
                                 && Globals.gpRegionLastLButtonUp == CurrentRegion
                                 && uiCurrTime <= Globals.guiRegionLastLButtonDownTime + MSYS_DOUBLECLICK_DELAY)
@@ -499,12 +499,12 @@ public class MouseSubSystem : ISharpAllianceManager
                             else
                             { //First click, record time and region pointer (to check if 2nd click detected later)
                                 Globals.gpRegionLastLButtonDown = CurrentRegion;
-                                Globals.guiRegionLastLButtonDownTime = this.clock.GetClock();
+                                Globals.guiRegionLastLButtonDownTime = ClockManager.GetClock();
                             }
                         }
                         else if (ButtonReason == (int)MSYS_CALLBACK_REASON.LBUTTON_UP)
                         {
-                            long uiCurrTime = this.clock.GetClock();
+                            long uiCurrTime = ClockManager.GetClock();
                             if (Globals.gpRegionLastLButtonDown == CurrentRegion
                                 && uiCurrTime <= Globals.guiRegionLastLButtonDownTime + MSYS_DOUBLECLICK_DELAY)
                             {
@@ -526,35 +526,35 @@ public class MouseSubSystem : ISharpAllianceManager
                 }
             }
 
-            this.MouseAction &= ~MouseDos.BUTTONS;
+            MouseAction &= ~MouseDos.BUTTONS;
         }
         else if (CurrentRegion.IsEnabled)
         {
             // OK here, if we have release a button, UNSET LOCK wherever you are....
             // Just don't give this button the message....
-            if (this.MouseAction.HasFlag(MouseDos.RBUTTON_UP))
+            if (MouseAction.HasFlag(MouseDos.RBUTTON_UP))
             {
                 Globals.gfClickedModeOn = false;
             }
 
-            if (this.MouseAction.HasFlag(MouseDos.LBUTTON_UP))
+            if (MouseAction.HasFlag(MouseDos.LBUTTON_UP))
             {
                 Globals.gfClickedModeOn = false;
             }
 
             // OK, you still want move messages however....
             CurrentRegion.HasMouse = true;
-            CurrentRegion.MousePos = this.CurrentCoord;
+            CurrentRegion.MousePos = CurrentCoord;
             CurrentRegion.RelativeMousePos = new(
-                this.CurrentCoord.X - CurrentRegion.Bounds.X,
-                this.CurrentCoord.Y - CurrentRegion.Bounds.Y);
+                CurrentCoord.X - CurrentRegion.Bounds.X,
+                CurrentCoord.Y - CurrentRegion.Bounds.Y);
 
-            if (CurrentRegion.HasMoveCallback && this.MouseAction.HasFlag(MouseDos.MOVE))
+            if (CurrentRegion.HasMoveCallback && MouseAction.HasFlag(MouseDos.MOVE))
             {
                 CurrentRegion.MovementCallback?.Invoke(ref CurrentRegion, MSYS_CALLBACK_REASON.MOVE);
             }
 
-            this.MouseAction &= ~MouseDos.MOVE;
+            MouseAction &= ~MouseDos.MOVE;
         }
 
         PreviousRegion = CurrentRegion;
@@ -580,7 +580,7 @@ public class MouseSubSystem : ISharpAllianceManager
         // ATE: We could be replacing already existing, active text
         // so let's remove the region so it be rebuilt...
 
-        if (this.gameContext.Services.GetRequiredService<ScreenManager>().CurrentScreenName != ScreenName.MAP_SCREEN)
+        if (gameContext.Services.GetRequiredService<ScreenManager>().CurrentScreenName != ScreenName.MAP_SCREEN)
         {
             region.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
             region.uiFlags &= (~MouseRegionFlags.FASTHELP_RESET);
@@ -606,7 +606,7 @@ public class MouseSubSystem : ISharpAllianceManager
     //
     //	Sets the mouse cursor to the regions defined value.
     //
-    private void SetCurrentCursor(CURSOR cursor)
+    private static void SetCurrentCursor(CURSOR cursor)
     {
         cursors.SetCurrentCursorFromDatabase(cursor);
     }
@@ -801,16 +801,16 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public ValueTask<bool> Initialize()
     {
-        // VeldridVideoManager = this.gameContext.Services.GetRequiredService<IVideoManager>();
+        // VeldridVideoManager = gameContext.Services.GetRequiredService<IVideoManager>();
 
         return ValueTask.FromResult(true);
     }
 
-    public void SimulateMouseMovement(int x, int y)
+    public static void SimulateMouseMovement(int x, int y)
     {
     }
 
-    public void RestrictMouseCursor(Rectangle messageBoxRestrictedCursorRegion)
+    public static void RestrictMouseCursor(Rectangle messageBoxRestrictedCursorRegion)
     {
     }
 
@@ -851,7 +851,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
 public class MOUSE_REGION
 {
-    public MOUSE_REGION(string name) => this.Name = name;
+    public MOUSE_REGION(string name) => Name = name;
     public string Name { get; private set; }
     public int IdNumber;                        // Region's ID number, set by mouse system
     public MSYS_PRIORITY PriorityLevel;         // Region's Priority, set by system and/or caller
@@ -879,14 +879,14 @@ public class MOUSE_REGION
     public MOUSE_HELPTEXT_DONE_CALLBACK? HelpDoneCallback;
 
     public bool IsEnabled { get; set; }
-    public bool HasMoveCallback => this.MovementCallback is not null;
-    public bool HasButtonCallback => this.ButtonCallback is not null;
+    public bool HasMoveCallback => MovementCallback is not null;
+    public bool HasButtonCallback => ButtonCallback is not null;
 
     public bool HasMouse { get; internal set; }
 
     public override string ToString()
     {
-        return $"{this.Name}: {this.IdNumber}: {this.PriorityLevel}: {this.Bounds}";
+        return $"{Name}: {IdNumber}: {PriorityLevel}: {Bounds}";
     }
 }
 

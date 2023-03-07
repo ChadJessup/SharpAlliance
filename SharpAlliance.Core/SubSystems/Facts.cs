@@ -401,7 +401,7 @@ public class Facts
                     // if Skyrider, ignore low loyalty until he has monologues, and wait at least a day since the latest monologue to avoid a hot/cold attitude
                     if ((ubProfileID == NPCID.SKYRIDER)
                         && ((Globals.guiHelicopterSkyriderTalkState == 0)
-                        || ((GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) < (24 * 60))))
+                        || ((GameClock.GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) < (24 * 60))))
                     {
                         gubFact[usFact] = false;
                     }

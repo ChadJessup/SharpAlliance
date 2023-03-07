@@ -55,11 +55,9 @@ namespace SharpAlliance.Core
             // These should be initialized already
             this.mouse = mouseSubSystem;
             this.cursors = cursorSubSystem;
-            this.fonts = fontSubSystem;
             this.helpScreen = helpScreenSubSystem;
             this.inputs = inputManager;
             this.saves = saveGameSubSystem;
-            VeldridVideoManager = videoManager;
             this.music = musicManager;
             this.messageBox = messageBoxSubSystem;
             this.os = OSManager;
@@ -100,7 +98,7 @@ namespace SharpAlliance.Core
 
                 // Hook into mouse stuff for MOVEMENT MESSAGES
 
-                this.mouse.MouseHook(MouseEvents.MousePosition, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                MouseSubSystem.MouseHook(MouseEvents.MousePosition, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
 
                 this.music.MusicPoll(false);
 
@@ -111,22 +109,22 @@ namespace SharpAlliance.Core
                     switch (mouseEvent)
                     {
                         case MouseEvents.LEFT_BUTTON_DOWN:
-                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_DOWN, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.LEFT_BUTTON_UP:
-                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_UP, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.RIGHT_BUTTON_DOWN:
-                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_DOWN, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.RIGHT_BUTTON_UP:
-                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_UP, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.LEFT_BUTTON_REPEAT:
-                            this.mouse.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            MouseSubSystem.MouseHook(MouseEvents.LEFT_BUTTON_REPEAT, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                         case MouseEvents.RIGHT_BUTTON_REPEAT:
-                            this.mouse.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
+                            MouseSubSystem.MouseHook(MouseEvents.RIGHT_BUTTON_REPEAT, MousePos, this.inputs.gfLeftButtonState, this.inputs.gfRightButtonState);
                             break;
                     }
                 }
@@ -188,7 +186,7 @@ namespace SharpAlliance.Core
 
                 Globals.guiGameCycleCounter++;
 
-                this.context.ClockManager.UpdateClock();
+                ClockManager.UpdateClock();
 
                 if (this.context.State != GameState.Running)
                 {

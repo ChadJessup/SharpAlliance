@@ -1595,7 +1595,7 @@ public class VeldridVideoManager : IVideoManager
         //int usPosY = 0;
         //int usFontHeight = 0;
         //int usStringWidth = 0;
-        //fonts.SetFont(ulFont);
+        //fonts.FontSubSystem.SetFont(FontStyle.ulFont);
         //
         ////if (USE_WINFONTS())
         ////{

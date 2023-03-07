@@ -329,10 +329,10 @@ public class StrategicMines
 
             History.AddHistoryToPlayersLog(
                 HISTORY.MINE_RAN_OUT,
-                Globals.gMineLocation[bMineIndex].bAssociatedTown,
+                gMineLocation[bMineIndex].bAssociatedTown,
                 GameClock.GetWorldTotalMin(),
-                Globals.gMineLocation[bMineIndex].sSectorX,
-                Globals.gMineLocation[bMineIndex].sSectorY);
+                gMineLocation[bMineIndex].sSectorX,
+                gMineLocation[bMineIndex].sSectorY);
         }
         else    // still some left after this extraction
         {
@@ -940,7 +940,7 @@ public class StrategicMines
         // if this is our first time set a history fact 
         if (mineStatus.fSpokeToHeadMiner == false)
         {
-            History.AddHistoryToPlayersLog(HISTORY.TALKED_TO_MINER, gMineLocation[ubMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
+            History.AddHistoryToPlayersLog(HISTORY.TALKED_TO_MINER, gMineLocation[ubMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, gMineLocation[ubMineIndex].sSectorY);
             mineStatus.fSpokeToHeadMiner = true;
         }
     }

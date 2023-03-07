@@ -281,8 +281,8 @@ public class TeamTurns
         // decay bomb timers and maybe set some off!
         DecayBombTimers();
 
-        DecaySmokeEffects(GetWorldTotalSeconds());
-        DecayLightEffects(GetWorldTotalSeconds());
+        DecaySmokeEffects(GameClock.GetWorldTotalSeconds());
+        DecayLightEffects(GameClock.GetWorldTotalSeconds());
 
         // decay AI warning values from corpses
         DecayRottingCorpseAIWarnings();

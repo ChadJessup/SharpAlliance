@@ -54,12 +54,12 @@ public class MainMenuScreen : IScreen
         RenderDirty renderDirtySubSystem)
     {
         this.cursor = cursorSubSystem;
-        this.clock = clockManager;
+        ClockManager = clockManager;
         this.input = inputManager;
         this.music = musicManager;
-        this.mouse = mouseSubSystem;
+        MouseSubSystem = mouseSubSystem;
         this.options = gameOptions;
-        this.fonts = fontSubSystem;
+        FontSubSystem = fontSubSystem;
         this.screens = screenManager;
         this.gameInit = gameInit;
         this.renderDirty = renderDirtySubSystem;
@@ -281,7 +281,7 @@ public class MainMenuScreen : IScreen
         //hPixHandle = VeldridVideoManager.GetVideoObject(this.ja2LogoImageKey);
         //VeldridVideoManager.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
 
-        this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
 //            VeldridVideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
@@ -554,7 +554,7 @@ public class MainMenuScreen : IScreen
 
         ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
 
-        this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
     }
 
     public ValueTask Deactivate()

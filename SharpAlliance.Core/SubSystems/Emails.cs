@@ -302,7 +302,7 @@ namespace SharpAlliance.Core.SubSystems
             // draw the text at the top of the screen
 
             // font stuff
-            FontSubSystem.SetFont(EMAIL_WARNING_FONT);
+            FontSubSystem.SetFont(FontStyle.EMAIL_WARNING_FONT);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -332,12 +332,12 @@ namespace SharpAlliance.Core.SubSystems
 
             // get and blt the email list background
             VeldridVideoManager.GetVideoObject(out hHandle, guiEmailBackground);
-            VideoObjectManager. BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
             // get and blt the email title bar
             VeldridVideoManager.GetVideoObject(out hHandle, guiEmailTitle);
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
             // show text on titlebar
             DisplayTextOnTitleBar();
@@ -360,7 +360,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // display border
             VeldridVideoManager.GetVideoObject(out hHandle, guiLaptopBACKGROUND);
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
             ReDisplayBoxes();
@@ -407,7 +407,7 @@ namespace SharpAlliance.Core.SubSystems
             if (fCurrentlyInLaptop == true)
             {
                 // redraw icons, might be new mail
-                DrawLapTopIcons();
+                Laptop.DrawLapTopIcons();
             }
 
             return;
@@ -434,13 +434,13 @@ namespace SharpAlliance.Core.SubSystems
             if (fCurrentlyInLaptop == true)
             {
                 // redraw icons, might be new mail
-                DrawLapTopIcons();
+                Laptop.DrawLapTopIcons();
             }
 
             return;
         }
 
-        void AddPreReadEmail(int iMessageOffset, int iMessageLength, int ubSender, int iDate)
+        void AddPreReadEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
         {
             string pSubject;
             //MessagePtr pMessageList;
@@ -461,7 +461,7 @@ namespace SharpAlliance.Core.SubSystems
             if (fCurrentlyInLaptop == true)
             {
                 // redraw icons, might be new mail
-                DrawLapTopIcons();
+                Laptop.DrawLapTopIcons();
             }
 
             return;
@@ -700,7 +700,7 @@ namespace SharpAlliance.Core.SubSystems
         }
 
 
-        void AddEmailPage()
+        public static void AddEmailPage()
         {
             // simple adds a page to the list
             PagePtr pPage = pPageList;
@@ -799,7 +799,7 @@ namespace SharpAlliance.Core.SubSystems
             }
         }
 
-        void AddMessageToPages(int iMessageId)
+        public static void AddMessageToPages(int iMessageId)
         {
             // go to end of page list
             PagePtr? pPage = pPageList;
@@ -903,7 +903,7 @@ namespace SharpAlliance.Core.SubSystems
                         while (pB is not null)
                         {
                             // lesser string?...need sorting 
-                            if (fSortSenderUpwards > 0)
+                            if (fSortSenderUpwards)
                             {
                                 if ((wcscmp(pSenderNameList[pA.ubSender], pSenderNameList[pB.ubSender])) < 0)
                                 {
@@ -1118,16 +1118,16 @@ namespace SharpAlliance.Core.SubSystems
             // will draw the icon for letter in mail list depending if the mail has been read or not
 
             // grab video object
-            GetVideoObject(out hHandle, guiEmailIndicator);
+            VeldridVideoManager.GetVideoObject(out hHandle, guiEmailIndicator);
 
             // is it read or not?
             if (fRead)
             {
-                BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT_SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
             }
             else
             {
-                BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT_SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
             }
 
             return;
@@ -1173,7 +1173,7 @@ namespace SharpAlliance.Core.SubSystems
                     TextJustifies.LEFT_JUSTIFIED);
 
             }
-            
+
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
             // reset font dest buffer
             FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
@@ -1191,7 +1191,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (fRead)
             {
-                FontSubSystem.SetFont(MESSAGE_FONT);
+                FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
             }
             else
             {
@@ -1200,7 +1200,7 @@ namespace SharpAlliance.Core.SubSystems
 
             mprintf(SENDER_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), pSenderNameList[ubSender]);
 
-            FontSubSystem.SetFont(MESSAGE_FONT);
+            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
             return;
         }
@@ -1215,7 +1215,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (fRead)
             {
-                FontSubSystem.SetFont(MESSAGE_FONT);
+                FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
             }
             else
             {
@@ -1225,7 +1225,7 @@ namespace SharpAlliance.Core.SubSystems
             wprintf(sString, "%s %d", pDayStrings[0], iDate / (24 * 60));
             mprintf(DATE_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), sString);
 
-            FontSubSystem.SetFont(MESSAGE_FONT);
+            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
             return;
         }
@@ -1259,7 +1259,7 @@ namespace SharpAlliance.Core.SubSystems
             // now we have current page, display it
             pEmail = GetEmailMessage(pPage.iIds[iCounter]);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-            FontSubSystem.SetFont(EMAIL_TEXT_FONT);
+            FontSubSystem.SetFont(FontStyle.EMAIL_TEXT_FONT);
 
 
             // draw each line of the list for this page
@@ -1306,7 +1306,7 @@ namespace SharpAlliance.Core.SubSystems
                 }
             }
 
-            InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+            VeldridVideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
 
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
             return;
@@ -1496,7 +1496,7 @@ namespace SharpAlliance.Core.SubSystems
                     giMessagePage = 0;
 
                     // redraw icons
-                    DrawLapTopIcons();
+                    Laptop.DrawLapTopIcons();
 
                     // force update of entire screen
                     fPausedReDrawScreenFlag = true;
@@ -1580,8 +1580,8 @@ namespace SharpAlliance.Core.SubSystems
             GetVideoObject(out hHandle, guiEmailMessage);
 
             // place the graphic on the frame buffer
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT_SRCTRANSPARENCY, null);
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
             // set shadow
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -1590,12 +1590,12 @@ namespace SharpAlliance.Core.SubSystems
             GetVideoObject(out hHandle, guiEmailMessage);
 
             // place the graphic on the frame buffer
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
 
             // the icon for the title of this box
             GetVideoObject(out hHandle, guiTITLEBARICONS);
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X + 5, VIEWER_Y + iViewerPositionY + 2, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X + 5, VIEWER_Y + iViewerPositionY + 2, VO_BLT.SRCTRANSPARENCY, null);
 
             // display header text
             DisplayEmailMessageSubjectDateFromLines(pMail, iViewerPositionY);
@@ -1613,7 +1613,7 @@ namespace SharpAlliance.Core.SubSystems
                 GetVideoObject(out hHandle, guiEmailMessage);
 
                 // place the graphic on the frame buffer
-                BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT_SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
 
             }
 
@@ -1624,12 +1624,12 @@ namespace SharpAlliance.Core.SubSystems
             if (giNumberOfPagesToCurrentEmail <= 2)
             {
                 // place the graphic on the frame buffer
-                BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT_SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
             }
             else
             {
                 // place the graphic on the frame buffer
-                BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT_SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
             }
 
             // reset iCounter and iHeight
@@ -1755,7 +1755,7 @@ namespace SharpAlliance.Core.SubSystems
             DisplayNumberOfPagesToThisEmail(iViewerPositionY);
 
             // mark this area dirty
-            InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+            VeldridVideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
 
 
             // reset shadow
@@ -1956,18 +1956,16 @@ namespace SharpAlliance.Core.SubSystems
             //if( ( fNewMailFlag ) && ( fOldNewMailFlag ) )
             //	return ( false );
 
-
-
-            GetVideoObject(out hHandle, guiEmailWarning);
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT_SRCTRANSPARENCY, null);
+            VeldridVideoManager.GetVideoObject(out hHandle, guiEmailWarning);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
             // the icon for the title of this box
-            GetVideoObject(out hHandle, guiTITLEBARICONS);
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT_SRCTRANSPARENCY, null);
+            VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
             // font stuff 
-            FontSubSystem.SetFont(EMAIL_HEADER_FONT);
+            FontSubSystem.SetFont(FontStyle.EMAIL_HEADER_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -1977,15 +1975,15 @@ namespace SharpAlliance.Core.SubSystems
 
             // font stuff
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-            FontSubSystem.SetFont(EMAIL_WARNING_FONT);
+            FontSubSystem.SetFont(FontStyle.EMAIL_WARNING_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
 
             // printf warning string
             mprintf(EMAIL_WARNING_X + 60, EMAIL_WARNING_Y + 63, pNewMailStrings[0]);
-            DrawLapTopIcons();
+            Laptop.DrawLapTopIcons();
 
             // invalidate region
-            InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + 270, EMAIL_WARNING_Y + 200);
+            VeldridVideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + 270, EMAIL_WARNING_Y + 200);
 
             // mark button
             ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
@@ -2069,7 +2067,7 @@ namespace SharpAlliance.Core.SubSystems
                 // display Previous graphic
 
                 // font stuff
-                FontSubSystem.SetFont(TRAVERSE_EMAIL_FONT);
+                FontSubSystem.SetFont(FontStyle.TRAVERSE_EMAIL_FONT);
                 FontSubSystem.SetFontForeground(FontColor.FONT_RED);
                 FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -2083,7 +2081,7 @@ namespace SharpAlliance.Core.SubSystems
                 // display Next graphic
 
                 // font stuff
-                FontSubSystem.SetFont(TRAVERSE_EMAIL_FONT);
+                FontSubSystem.SetFont(FontStyle.TRAVERSE_EMAIL_FONT);
                 FontSubSystem.SetFontForeground(FontColor.FONT_RED);
                 FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -2432,25 +2430,25 @@ namespace SharpAlliance.Core.SubSystems
             // load graphics
 
             GetVideoObject(out hHandle, guiEmailWarning);
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
             // font stuff 
-            FontSubSystem.SetFont(EMAIL_HEADER_FONT);
+            FontSubSystem.SetFont(FontStyle.EMAIL_HEADER_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
             // the icon for the title of this box
-            GetVideoObject(out hHandle, guiTITLEBARICONS);
-            BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT_SRCTRANSPARENCY, null);
+            VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
             // title 
             mprintf(EMAIL_WARNING_X + 30, EMAIL_WARNING_Y + 8, pEmailTitleText[0]);
 
             // shadow, font, and foreground
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-            FontSubSystem.SetFont(EMAIL_WARNING_FONT);
+            FontSubSystem.SetFont(FontStyle.EMAIL_WARNING_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
 
             // draw text based on mail being read or not
@@ -2470,7 +2468,7 @@ namespace SharpAlliance.Core.SubSystems
             {
                 // draw buttons
                 ButtonSubSystem.MarkButtonsDirty();
-                InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + EMAIL_WARNING_WIDTH, EMAIL_WARNING_Y + EMAIL_WARNING_HEIGHT);
+                VeldridVideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + EMAIL_WARNING_WIDTH, EMAIL_WARNING_Y + EMAIL_WARNING_HEIGHT);
             }
 
             // reset font shadow
@@ -2500,7 +2498,7 @@ namespace SharpAlliance.Core.SubSystems
             PlaceMessagesinPages();
 
             // redraw icons (if deleted message was last unread, remove checkmark)
-            DrawLapTopIcons();
+            Laptop.DrawLapTopIcons();
 
             // if all of a sudden we are beyond last page, move back one
             if (iCurrentPage > iLastPage)
@@ -2518,10 +2516,8 @@ namespace SharpAlliance.Core.SubSystems
             //ReDraw();
 
             // invalidate
-            InvalidateRegion(0, 0, 640, 480);
+            VeldridVideoManager.InvalidateRegion(0, 0, 640, 480);
         }
-
-
 
         void FromCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON iReason)
         {
@@ -2698,9 +2694,9 @@ namespace SharpAlliance.Core.SubSystems
             // draw email screen title text
 
             // font stuff
-            SetFont(EMAIL_TITLE_FONT);
-            SetFontForeground(FONT_WHITE);
-            SetFontBackground(FONT_BLACK);
+            FontSubSystem.SetFont(FontStyle.EMAIL_TITLE_FONT);
+            FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+            FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
             // printf the title
             mprintf(EMAIL_TITLE_X, EMAIL_TITLE_Y, pEmailTitleText[0]);
@@ -2746,8 +2742,8 @@ namespace SharpAlliance.Core.SubSystems
                                                 (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)FromCallback);
             ButtonSubSystem.SetButtonCursor(giSortButton[1], CURSOR.LAPTOP_SCREEN);
             SpecifyFullButtonTextAttributes(giSortButton[1], pEmailHeaders[FROM_HEADER], EMAIL_WARNING_FONT,
-                                                                                   FONT_BLACK, FONT_BLACK,
-                                                                                     FONT_BLACK, FONT_BLACK, TEXT_CJUSTIFIED);
+                                                                                   FontColor.FONT_BLACK, FontColor.FONT_BLACK,
+                                                                                     FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
 
 
             // sender sort
@@ -2757,8 +2753,8 @@ namespace SharpAlliance.Core.SubSystems
                                                 (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)SubjectCallback);
             ButtonSubSystem.SetButtonCursor(giSortButton[2], CURSOR.LAPTOP_SCREEN);
             SpecifyFullButtonTextAttributes(giSortButton[2], pEmailHeaders[SUBJECT_HEADER], EMAIL_WARNING_FONT,
-                                                                                  FONT_BLACK, FONT_BLACK,
-                                                                                    FONT_BLACK, FONT_BLACK, TEXT_CJUSTIFIED);
+                                                                                  FontColor.FONT_BLACK, FontColor.FONT_BLACK,
+                                                                                    FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
 
 
 
@@ -2769,8 +2765,8 @@ namespace SharpAlliance.Core.SubSystems
                                                 (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)DateCallback);
             ButtonSubSystem.SetButtonCursor(giSortButton[3], CURSOR.LAPTOP_SCREEN);
             SpecifyFullButtonTextAttributes(giSortButton[3], pEmailHeaders[RECD_HEADER], EMAIL_WARNING_FONT,
-                                                                                  FONT_BLACK, FONT_BLACK,
-                                                                                    FONT_BLACK, FONT_BLACK, TEXT_CJUSTIFIED);
+                                                                                  FontColor.FONT_BLACK, FontColor.FONT_BLACK,
+                                                                                    FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
 
 
             return;
@@ -2785,7 +2781,7 @@ namespace SharpAlliance.Core.SubSystems
             string sString;
 
             // font stuff	
-            FontSubSystem.SetFont(MESSAGE_FONT);
+            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -2820,7 +2816,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
             // reset shadow
-            SetFontShadow(DEFAULT_SHADOW);
+            FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
             return;
         }
 
@@ -2830,9 +2826,9 @@ namespace SharpAlliance.Core.SubSystems
             // this procedure will display the title of the email message display box
 
             // font stuff
-            SetFont(EMAIL_HEADER_FONT);
-            SetFontForeground(FONT_WHITE);
-            SetFontBackground(FONT_BLACK);
+            FontSubSystem.SetFont(FontStyle.EMAIL_HEADER_FONT);
+            FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+            FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
             // dsiplay mail viewer title on message viewer
             mprintf(VIEWER_X + 30, VIEWER_Y + 8 + (int)iViewerY, pEmailTitleText[0]);
@@ -2849,7 +2845,7 @@ namespace SharpAlliance.Core.SubSystems
             for (iCounter = 1; iCounter < 19; iCounter++)
             {
                 GetVideoObject(out hHandle, guiMAILDIVIDER);
-                BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT_SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT.SRCTRANSPARENCY, null);
             }
 
 
@@ -4298,9 +4294,9 @@ namespace SharpAlliance.Core.SubSystems
             string sString;
 
             // font stuff	
-            SetFont(MESSAGE_FONT);
-            SetFontForeground(FONT_BLACK);
-            SetFontBackground(FONT_BLACK);
+            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
+            FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+            FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
             // page number
@@ -4317,7 +4313,7 @@ namespace SharpAlliance.Core.SubSystems
             mprintf(PAGE_NUMBER_X, PAGE_NUMBER_Y, sString);
 
             // restore shadow
-            SetFontShadow(DEFAULT_SHADOW);
+            FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
             return;
         }
@@ -4371,7 +4367,7 @@ namespace SharpAlliance.Core.SubSystems
             //	FilenameForBPP( "LAPTOP\\mailindent.sti", VObjectDesc.ImageFile );
             //CHECKF( AddVideoObject( &VObjectDesc, &uiMailIndent ) );
             // GetVideoObject( &hHandle, uiMailIndent );
-            // BltVideoObject( FRAME_BUFFER, hHandle, 0,VIEWER_X + INDENT_X_OFFSET, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 10, VO_BLT_SRCTRANSPARENCY,null );
+            // BltVideoObject( FRAME_BUFFER, hHandle, 0,VIEWER_X + INDENT_X_OFFSET, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 10, VO_BLT.SRCTRANSPARENCY,null );
             // DeleteVideoObjectFromIndex( uiMailIndent );
 
             giNumberOfPagesToCurrentEmail = (giNumberOfPagesToCurrentEmail);
@@ -4379,7 +4375,7 @@ namespace SharpAlliance.Core.SubSystems
             // parse current page and max number of pages to email
             wprintf(sString, "%d / %d", (giMessagePage + 1), (giNumberOfPagesToCurrentEmail - 1));
 
-            FontSubSystem.SetFont(FontColor.FONT12ARIAL);
+            FontSubSystem.SetFont(FontStyle.FontColor.FONT12ARIAL);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -4866,15 +4862,19 @@ public struct EmailPageInfoStruct
     public int iPageNumber;
 }
 
-public record RecordPtr(string pRecord, RecordPtr Next);
+public class RecordPtr
+{
+    public string? pRecord;
+    public RecordPtr? Next;
+}
 
 public class email
 {
     public string? pSubject;
     public int usOffset;
     public int usLength;
-    public int ubSender;
-    public int iDate;
+    public EmailAddresses ubSender;
+    public uint iDate;
     public int iId;
     public int iFirstData;
     public int uiSecondData;
@@ -4887,7 +4887,7 @@ public class email
     public int uiSixData;
 
     public email? Next;
-	public email? Prev;
+    public email? Prev;
 };
 
 public record PagePtr
@@ -4895,5 +4895,5 @@ public record PagePtr
     public int[] iIds = new int[MAX_MESSAGES_PAGE];
     public int iPageId;
     public PagePtr? Next;
-	public PagePtr? Prev;
+    public PagePtr? Prev;
 };

@@ -125,8 +125,8 @@ public partial class Globals
     public const int LAPTOP__NEW_EMAIL_ICON_Y = LAPTOP__NEW_FILE_ICON_Y;
 
     // Mode values
-    public static int guiCurrentLaptopMode;
-    public static int guiPreviousLaptopMode;
+    public static LAPTOP_MODE guiCurrentLaptopMode;
+    public static LAPTOP_MODE guiPreviousLaptopMode;
     public static LAPTOP_MODE guiCurrentWWWMode = LAPTOP_MODE.NONE;
     public static int giCurrentSubPage;
     public static int guiCurrentLapTopCursor;

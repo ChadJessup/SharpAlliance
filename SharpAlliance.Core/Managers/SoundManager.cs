@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
@@ -11,6 +12,9 @@ public class SoundManager : ISoundManager
     public const int SOUND_ERROR = 0xffffff;
 
     private readonly IFileManager files;
+    // Local module variables
+    public static bool fSoundSystemInit = false;												// Startup called T/F
+
 
     // Sample cache list for files loaded
     private static SAMPLETAG[] pSampleList = new SAMPLETAG[SOUND_MAX_CACHED];
@@ -99,6 +103,42 @@ public class SoundManager : ISoundManager
 
         return (false);
     }
+
+    //*****************************************************************************************
+    // SoundSetVolumeIndex
+    // 
+    // Sounds the volume on a sound channel.
+    // 
+    // Returns BOOLEAN            - TRUE if the volume was set
+    // 
+    // UINT32 uiChannel           - Sound channel	
+    // UINT32 uiVolume            - New volume 0-127
+    //
+    // Created:  3/17/00 Derek Beland
+    //*****************************************************************************************
+    public static bool SoundSetVolumeIndex(int uiChannel, int uiVolume)
+    {
+        int uiVolCap;
+
+        if (fSoundSystemInit)
+        {
+            uiVolCap = Math.Min(uiVolume, 127);
+
+            //if(pSoundList[uiChannel].hMSS!=NULL)
+            //	AIL_set_sample_volume(pSoundList[uiChannel].hMSS, uiVolCap);
+
+            //if(pSoundList[uiChannel].hMSSStream!=NULL)
+            //	AIL_set_stream_volume(pSoundList[uiChannel].hMSSStream, uiVolCap);
+
+            //if(pSoundList[uiChannel].hM3D!=NULL)
+            //	AIL_set_3D_sample_volume(pSoundList[uiChannel].hM3D, uiVolCap);
+
+            return (true);
+        }
+
+        return (false);
+    }
+
 
     //*******************************************************************************
     // SoundGetIndexByID
@@ -885,3 +925,59 @@ public enum SoundDefine
 
     NO_WEAPON_SOUND = 0,
 };
+
+// Struct definition for sample slots in the cache
+//		Holds the regular sample data, as well as the
+//		data for the random samples
+
+public struct SAMPLETAG
+{
+
+    public string pName;                       // Path to sample data
+    public int uiSize;                              // Size of sample data
+    public int uiSoundSize;                 // Playable sound size
+    public int uiFlags;                         // Status flags
+    public int uiSpeed;                         // Playback frequency
+    public bool fStereo;                            // Stereo/Mono
+    public int ubBits;                               // 8/16 bits
+    public IntPtr pData;                              // pointer to sample data memory		
+    public IntPtr pSoundStart;                    // pointer to start of sound data	
+    public int uiCacheHits;
+    public int uiTimeNext;                      // Random sound data
+    public int uiTimeMin, uiTimeMax;
+    public int uiSpeedMin, uiSpeedMax;
+    public int uiVolMin, uiVolMax;
+    public int uiPanMin, uiPanMax;
+    public int uiPriority;
+    public int uiInstances;
+    public int uiMaxInstances;
+    public int uiAilWaveFormat;         // AIL wave sample type
+    public int uiADPCMBlockSize;			// Block size for compressed files
+}
+
+// Structure definition for slots in the sound output
+//		These are used for both the cached and double-buffered
+//		streams
+public class SOUNDTAG
+{
+    public SAMPLETAG? pSample;
+    public int uiSample;
+    // public HSAMPLE hMSS;
+    // public HSTREAM hMSSStream;
+    // public H3DSAMPLE hM3D;
+    public int uiFlags;
+    public int uiSoundID;
+    public int uiPriority;
+    //void (* pCallback) (UINT8*, UINT32, UINT32, UINT32, void*);
+    //				void* pData;
+    //void (* EOSCallback) (void*);
+    //				void* pCallbackData;
+    public Stream hFile;
+    public bool fLooping;
+    public bool fMusic;
+    public bool fStopAtZero;
+    public int uiTimeStamp;
+    public int uiFadeVolume;
+    public int uiFadeRate;
+    public int uiFadeTime;
+}

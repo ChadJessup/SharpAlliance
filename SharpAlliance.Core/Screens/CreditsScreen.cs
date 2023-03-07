@@ -19,7 +19,6 @@ public class CreditsScreen : IScreen
     private readonly GameContext context;
     private readonly IInputManager inputs;
     private readonly IFileManager files;
-    private readonly FontSubSystem fonts;
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
@@ -28,13 +27,11 @@ public class CreditsScreen : IScreen
         GameContext gameContext,
         IInputManager inputManager,
         IClockManager clockManager,
-        FontSubSystem fontSubSystem,
         IFileManager fileManager,
         GuiManager guiManager)
     {
-        this.fonts = fontSubSystem;
         this.gui = guiManager;
-        this.clock = clockManager;
+        ClockManager = clockManager;
         this.context = gameContext;
         this.inputs = inputManager;
         this.files = fileManager;
@@ -159,9 +156,9 @@ public class CreditsScreen : IScreen
 
         if (Globals.giCurrentlySelectedFace != -1)
         {
-            this.fonts.DrawTextToScreen(EnglishText.gzCreditNames[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
-            this.fonts.DrawTextToScreen(EnglishText.gzCreditNameTitle[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_TITLE_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
-            this.fonts.DrawTextToScreen(EnglishText.gzCreditNameFunny[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_FUNNY_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNames[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNameTitle[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_TITLE_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNameFunny[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_FUNNY_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
         }
     }
 
@@ -500,7 +497,7 @@ public class CreditsScreen : IScreen
         pNodeToAdd.pString = pString;
 
         //Calculate the height of the string
-        pNodeToAdd.sHeightOfString = this.fonts.DisplayWrappedString(
+        pNodeToAdd.sHeightOfString = FontSubSystem.DisplayWrappedString(
             new(0, 0),
             CRDT_WIDTH_OF_TEXT_AREA,
             2,
@@ -541,7 +538,7 @@ public class CreditsScreen : IScreen
             FontSubSystem.SetFontDestBuffer(pNodeToAdd.uiVideoSurfaceImage, 0, 0, CRDT_WIDTH_OF_TEXT_AREA, pNodeToAdd.sHeightOfString, false);
 
             //write the string onto the surface
-            this.fonts.DisplayWrappedString(new SixLabors.ImageSharp.Point(0, 1), CRDT_WIDTH_OF_TEXT_AREA, 2, uiFontToUse, uiColorToUse, pNodeToAdd.pString, 0, Globals.gubCrdtJustification);
+            FontSubSystem.DisplayWrappedString(new SixLabors.ImageSharp.Point(0, 1), CRDT_WIDTH_OF_TEXT_AREA, 2, uiFontToUse, uiColorToUse, pNodeToAdd.pString, 0, Globals.gubCrdtJustification);
 
             //reset the font dest buffer
             FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
@@ -734,9 +731,9 @@ public class CreditsScreen : IScreen
                 this.SelectCreditFaceRegionCallBack);
 
             // Add region
-            //this.inputs.Mouse.MSYS_AddRegion(&gCrdtMouseRegions[uiCnt]);
+            //MouseSubSystem.MSYS_AddRegion(&gCrdtMouseRegions[uiCnt]);
 
-            this.inputs.Mouse.SetRegionUserData(Globals.gCrdtMouseRegions[(int)uiCnt], 0, (int)uiCnt);
+            MouseSubSystem.SetRegionUserData(Globals.gCrdtMouseRegions[(int)uiCnt], 0, (int)uiCnt);
         }
 
 
@@ -793,7 +790,7 @@ public class CreditsScreen : IScreen
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
-            Globals.giCurrentlySelectedFace = (int)this.inputs.Mouse.GetRegionUserData(ref pRegion, 0);
+            Globals.giCurrentlySelectedFace = (int)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.MOVE))
         {

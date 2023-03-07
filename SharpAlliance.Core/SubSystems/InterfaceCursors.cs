@@ -24,7 +24,7 @@ public class InterfaceCursors
         IInputManager inputManager)
     {
         this.logger = logger;
-        this.clock = clock;
+        ClockManager = clock;
         this.gGameSettings = gameSettings;
         this.world = worldManager;
         this.overhead = overhead;
@@ -65,7 +65,7 @@ public class InterfaceCursors
         // OK, WE OVERRIDE HERE CURSOR DRAWING FOR THINGS LIKE
         if (Globals.gpItemPointer != null)
         {
-            this.inputs.Mouse.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
+            MouseSubSystem.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
 
             // Check if we are in the viewport region...
             if (Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
@@ -85,7 +85,7 @@ public class InterfaceCursors
 
             if (Globals.guiCurUICursor == UICursorDefines.NO_UICURSOR)
             {
-                this.inputs.Mouse.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
+                MouseSubSystem.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
                 return true;
             }
 
@@ -188,7 +188,7 @@ public class InterfaceCursors
             if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.SNAPPING))
             {
                 // Hide mouse region cursor
-                this.inputs.Mouse.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
+                MouseSubSystem.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
 
                 // Set Snapping Cursor
                 DrawSnappingCursor();
@@ -237,13 +237,13 @@ public class InterfaceCursors
 
                 if (!fHideCursor)
                 {
-                    this.inputs.Mouse.MSYS_ChangeRegionCursor(Globals.gViewportRegion, Globals.gUICursors[Globals.guiCurUICursor].usFreeCursorName);
+                    MouseSubSystem.MSYS_ChangeRegionCursor(Globals.gViewportRegion, Globals.gUICursors[Globals.guiCurUICursor].usFreeCursorName);
 
                 }
                 else
                 {
                     // Hide
-                    this.inputs.Mouse.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
+                    MouseSubSystem.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
                 }
 
             }
@@ -429,7 +429,7 @@ public class InterfaceCursors
                     newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     newUIElem.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
-                    if (gGameSettings.fOptions[TOPTION.CURSOR_3D])
+                    if (GameSettings.fOptions[TOPTION.CURSOR_3D])
                     {
                         this.world.AddTopmostToHead(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS13);
                         Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -447,7 +447,7 @@ public class InterfaceCursors
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
-                    if (gGameSettings.fOptions[TOPTION.CURSOR_3D])
+                    if (GameSettings.fOptions[TOPTION.CURSOR_3D])
                     {
                         this.world.AddTopmostToHead(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS13);
                         Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -539,7 +539,7 @@ public class InterfaceCursors
     TileDefines GetSnapCursorIndex(TileDefines usAdditionalData)
     {
         // OK, this function will get the 'true' index for drawing the cursor....
-        if (gGameSettings.fOptions[TOPTION.CURSOR_3D])
+        if (GameSettings.fOptions[TOPTION.CURSOR_3D])
         {
             return usAdditionalData switch
             {

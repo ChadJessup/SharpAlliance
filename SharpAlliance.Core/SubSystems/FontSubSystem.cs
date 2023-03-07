@@ -473,6 +473,26 @@ namespace SharpAlliance.Core.SubSystems
             return ValueTask.FromResult(true);
         }
 
+        //*****************************************************************************
+        // SetFontColors
+        //
+        //	Sets both the foreground and the background colors of the current font. The
+        // top byte of the parameter word is the background color, and the bottom byte
+        // is the foreground.
+        //
+        //*****************************************************************************
+        public static void SetFontColors(FontColor usColors)
+        {
+            FontColor ubForeground, ubBackground;
+
+            ubForeground = (FontColor)((int)usColors & 0xff);
+            ubBackground = (FontColor)(((int)usColors & 0xff00) >> 8);
+
+            SetFontForeground(ubForeground);
+            SetFontBackground(ubBackground);
+        }
+
+
         private void InitializeFontManager(FontTranslationTable translationTable)
         {
             // VeldridVideoManager = this.context.Services.GetRequiredService<IVideoManager>();
@@ -1010,6 +1030,11 @@ namespace SharpAlliance.Core.SubSystems
         }
 
         internal void ShadowText(string text, FontStyle ulFont, int v1, int v2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void SetFontShade(FontStyle font, FONT_SHADE shade)
         {
             throw new NotImplementedException();
         }

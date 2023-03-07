@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
@@ -155,15 +156,15 @@ public class ExplosionControl
 
     void GenerateExplosionFromExplosionPointer(EXPLOSIONTYPE? pExplosion)
     {
-        int uiFlags;
+        EXPLOSION_FLAG uiFlags;
         int ubOwner;
-        int ubTypeID;
+        EXPLOSION_TYPES ubTypeID;
         int sX;
-        int sY;
+        MAP_ROW sY;
         int sZ;
         int sGridNo;
-        int usItem;
-        int ubTerrainType;
+        Items usItem;
+        TerrainTypeDefines ubTerrainType;
         int bLevel;
         int uiSoundID;
 
@@ -192,25 +193,25 @@ public class ExplosionControl
         ubTerrainType = GetTerrainType(sGridNo);
 
         // Setup explosion!
-        memset(&AniParams, 0, sizeof(ANITILE_PARAMS));
+        //memset(&AniParams, 0, sizeof(ANITILE_PARAMS));
 
         AniParams.sGridNo = sGridNo;
-        AniParams.ubLevelID = ANI_TOPMOST_LEVEL;
+        AniParams.ubLevelID = ANI.TOPMOST_LEVEL;
         AniParams.sDelay = sBlastSpeeds[ubTypeID];
         AniParams.sStartFrame = pExplosion.sCurrentFrame;
-        AniParams.uiFlags = ANITILE_CACHEDTILE | ANITILE_FORWARD | ANITILE_EXPLOSION;
+        AniParams.uiFlags = ANITILEFLAGS.CACHEDTILE | ANITILEFLAGS.FORWARD | ANITILEFLAGS.EXPLOSION;
 
-        if (ubTerrainType == LOW_WATER || ubTerrainType == MED_WATER || ubTerrainType == DEEP_WATER)
+        if (ubTerrainType == TerrainTypeDefines.LOW_WATER || ubTerrainType == TerrainTypeDefines.MED_WATER || ubTerrainType == TerrainTypeDefines.DEEP_WATER)
         {
             // Change type to water explosion...
-            ubTypeID = WATER_BLAST;
-            AniParams.uiFlags |= ANITILE_ALWAYS_TRANSLUCENT;
+            ubTypeID = EXPLOSION_TYPES.WATER_BLAST;
+            AniParams.uiFlags |= ANITILEFLAGS.ALWAYS_TRANSLUCENT;
         }
 
 
         if (sZ < WALL_HEIGHT)
         {
-            AniParams.uiFlags |= ANITILE_NOZBLITTER;
+            AniParams.uiFlags |= ANITILEFLAGS.NOZBLITTER;
         }
 
         if (uiFlags & EXPLOSION_FLAG_USEABSPOS)
@@ -225,7 +226,7 @@ public class ExplosionControl
         AniParams.ubKeyFrame1 = ubTransKeyFrame[ubTypeID];
         AniParams.uiKeyFrame1Code = ANI_KEYFRAME_BEGIN_TRANSLUCENCY;
 
-        if (!(uiFlags & EXPLOSION_FLAG_DISPLAYONLY))
+        if (!(uiFlags.HasFlag(EXPLOSION_FLAG.DISPLAYONLY)))
         {
             AniParams.ubKeyFrame2 = ubDamageKeyFrame[ubTypeID];
             AniParams.uiKeyFrame2Code = ANI_KEYFRAME_BEGIN_DAMAGE;
@@ -237,7 +238,7 @@ public class ExplosionControl
 
         strcpy(AniParams.zCachedFile, zBlastFilenames[ubTypeID]);
 
-        CreateAnimationTile(&AniParams);
+        CreateAnimationTile(out AniParams);
 
         //  set light source....
         if (pExplosion.iLightID == -1)
@@ -249,7 +250,7 @@ public class ExplosionControl
                 {
                     LightSpritePower(pExplosion.iLightID, true);
 
-                    LightSpritePosition(pExplosion.iLightID, (int)(sX / CELL_X_SIZE), (int)(sY / CELL_Y_SIZE));
+                    LightSpritePosition(pExplosion.iLightID, (int)(sX / CELL_X_SIZE), ((int)sY / CELL_Y_SIZE));
                 }
             }
         }
@@ -296,18 +297,18 @@ public class ExplosionControl
         int uiFenceType;
         int usTileIndex;
 
-        pFenceStructure = FindStructure(sStructGridNo, STRUCTURE_FENCE);
+        pFenceStructure = WorldStructures.FindStructure(sStructGridNo, STRUCTUREFLAGS.FENCE);
 
-        if (pFenceStructure)
+        if (pFenceStructure is not null)
         {
             // How does our explosion partner look?
             if (pFenceStructure.pDBStructureRef.pDBStructure.bDestructionPartner < 0)
             {
                 // Find level node.....
-                pFenceBaseStructure = FindBaseStructure(pFenceStructure);
+                pFenceBaseStructure = WorldStructures.FindBaseStructure(pFenceStructure);
 
                 // Get LEVELNODE for struct and remove!
-                pFenceNode = FindLevelNodeBasedOnStructure(pFenceBaseStructure.sGridNo, pFenceBaseStructure);
+                pFenceNode = WorldStructures.FindLevelNodeBasedOnStructure(pFenceBaseStructure.sGridNo, pFenceBaseStructure);
 
                 // Get type from index...
                 GetTileType(pFenceNode.usIndex, out uiFenceType);
@@ -331,11 +332,9 @@ public class ExplosionControl
         }
     }
 
-
-
-
     int ExplosiveDamageStructureAtGridNo(STRUCTURE? pCurrent, STRUCTURE? ppNextCurrent, int sGridNo, int sWoundAmt, int uiDist, out bool pfRecompileMovementCosts, bool fOnlyWalls, bool fSubSequentMultiTilesTransitionDamage, int ubOwner, int bLevel)
     {
+        pfRecompileMovementCosts = false;
         int sX, sY;
         STRUCTURE? pBase, pWallStruct, pAttached, pAttachedBase;
         LEVELNODE? pNode = null, pNewNode = null, pAttachedNode;
@@ -343,7 +342,7 @@ public class ExplosionControl
         int sNewIndex, sSubIndex;
         int usObjectIndex, usTileIndex;
         int ubNumberOfTiles, ubLoop;
-        DB_STRUCTURE_TILE? ppTile;
+        List<DB_STRUCTURE_TILE> ppTile;
         int bDestructionPartner = -1;
         int bDamageReturnVal;
         int fContinue;
@@ -390,11 +389,11 @@ public class ExplosionControl
         else if (!(pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.PERSON)))
         {
             // Damage structure!
-            if ((bDamageReturnVal = DamageStructure(pCurrent, (int)sWoundAmt, STRUCTURE_DAMAGE_EXPLOSION, sGridNo, sX, sY, NOBODY)) != 0)
+            if ((bDamageReturnVal = WorldStructures.DamageStructure(pCurrent, (int)sWoundAmt, STRUCTURE_DAMAGE_EXPLOSION, sGridNo, sX, sY, NOBODY)) != 0)
             {
                 fContinue = 0;
 
-                pBase = FindBaseStructure(pCurrent);
+                pBase = WorldStructures.FindBaseStructure(pCurrent);
 
                 sBaseGridNo = pBase.sGridNo;
 
@@ -408,7 +407,7 @@ public class ExplosionControl
                 fExplosive = ((pCurrent.fFlags & STRUCTUREFLAGS.EXPLOSIVE) != 0);
 
                 // Get LEVELNODE for struct and remove!
-                pNode = FindLevelNodeBasedOnStructure(pBase.sGridNo, pBase);
+                pNode = WorldStructures.FindLevelNodeBasedOnStructure(pBase.sGridNo, pBase);
 
                 // ATE: if we have completely destroyed a structure,
                 // and this structure should have a in-between explosion partner,
@@ -474,7 +473,7 @@ public class ExplosionControl
                         // Free all the non-base tiles; the base tile is at pointer 0
                         for (ubLoop = BASE_TILE; ubLoop < ubNumberOfTiles; ubLoop++)
                         {
-                            if (!(ppTile[ubLoop].fFlags & TILE_ON_ROOF))
+                            if (!(ppTile[ubLoop].fFlags.HasFlag(TILE.ON_ROOF)))
                             {
                                 sStructGridNo = pBase.sGridNo + ppTile[ubLoop].sPosRelToBase;
                                 // there might be two structures in this tile, one on each level, but we just want to
@@ -581,9 +580,9 @@ public class ExplosionControl
 
                                 if (pNewNode != null)
                                 {
-                                    if (pWallStruct.fFlags & STRUCTURE_WALL)
+                                    if (pWallStruct.fFlags.HasFlag(STRUCTUREFLAGS.WALL))
                                     {
-                                        if (pCurrent.ubWallOrientation == OUTSIDE_TOP_LEFT)
+                                        if (pCurrent.ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
                                         {
                                             sSubIndex = 48;
                                         }
@@ -613,9 +612,9 @@ public class ExplosionControl
 
                                 if (pNewNode != null)
                                 {
-                                    if (pWallStruct.fFlags & STRUCTURE_WALL)
+                                    if (pWallStruct.fFlags.HasFlag(STRUCTUREFLAGS.WALL))
                                     {
-                                        if (pCurrent.ubWallOrientation == OUTSIDE_TOP_LEFT)
+                                        if (pCurrent.ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
                                         {
                                             sSubIndex = 49;
                                         }
@@ -639,11 +638,11 @@ public class ExplosionControl
 
                                 // look for attached structures in same tile
                                 sNewGridNo = pBase.sGridNo;
-                                pAttached = FindStructure(sNewGridNo, STRUCTURE_ON_LEFT_WALL);
-                                while (pAttached)
+                                pAttached = WorldStructures.FindStructure(sNewGridNo, STRUCTUREFLAGS.ON_LEFT_WALL);
+                                while (pAttached is not null)
                                 {
-                                    pAttachedBase = FindBaseStructure(pAttached);
-                                    if (pAttachedBase)
+                                    pAttachedBase = WorldStructures.FindBaseStructure(pAttached);
+                                    if (pAttachedBase is not null)
                                     {
                                         // Remove the beast!
                                         while ((ppNextCurrent) != null && (ppNextCurrent).usStructureID == pAttachedBase.usStructureID)
@@ -654,7 +653,7 @@ public class ExplosionControl
                                         }
 
                                         pAttachedNode = FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
-                                        if (pAttachedNode)
+                                        if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
                                             RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
@@ -683,14 +682,14 @@ public class ExplosionControl
 
                                 // Move in SOUTH, looking for attached structures to remove
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.SOUTH));
-                                pAttached = FindStructure(sNewGridNo, STRUCTURE_ON_LEFT_WALL);
-                                while (pAttached)
+                                pAttached = WorldStructures.FindStructure(sNewGridNo, STRUCTUREFLAGS.ON_LEFT_WALL);
+                                while (pAttached is not null)
                                 {
-                                    pAttachedBase = FindBaseStructure(pAttached);
-                                    if (pAttachedBase)
+                                    pAttachedBase = WorldStructures.FindBaseStructure(pAttached);
+                                    if (pAttachedBase is not null)
                                     {
-                                        pAttachedNode = FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
-                                        if (pAttachedNode)
+                                        pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
+                                        if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
                                             RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
@@ -714,7 +713,7 @@ public class ExplosionControl
                                         break;
                                     }
                                     // search for another, from the start of the list
-                                    pAttached = FindStructure(sNewGridNo, STRUCTURE_ON_LEFT_WALL);
+                                    pAttached = WorldStructures.FindStructure(sNewGridNo, STRUCTUREFLAGS.ON_LEFT_WALL);
                                 }
                                 break;
 
@@ -724,13 +723,13 @@ public class ExplosionControl
                                 // Move in NORTH
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.NORTH));
 
-                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, &pWallStruct);
+                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, out pWallStruct);
 
                                 if (pNewNode != null)
                                 {
-                                    if (pWallStruct.fFlags & STRUCTURE_WALL)
+                                    if (pWallStruct.fFlags.HasFlag(STRUCTUREFLAGS.WALL))
                                     {
-                                        if (pCurrent.ubWallOrientation == OUTSIDE_TOP_RIGHT)
+                                        if (pCurrent.ubWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
                                         {
                                             sSubIndex = 51;
                                         }
@@ -759,9 +758,9 @@ public class ExplosionControl
 
                                 if (pNewNode != null)
                                 {
-                                    if (pWallStruct.fFlags & STRUCTURE_WALL)
+                                    if (pWallStruct.fFlags.HasFlag(STRUCTUREFLAGS.WALL))
                                     {
-                                        if (pCurrent.ubWallOrientation == OUTSIDE_TOP_RIGHT)
+                                        if (pCurrent.ubWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
                                         {
                                             sSubIndex = 50;
                                         }
@@ -785,14 +784,14 @@ public class ExplosionControl
 
                                 // looking for attached structures to remove in base tile
                                 sNewGridNo = pBase.sGridNo;
-                                pAttached = FindStructure(sNewGridNo, STRUCTURE_ON_RIGHT_WALL);
-                                while (pAttached)
+                                pAttached = WorldStructures.FindStructure(sNewGridNo, STRUCTUREFLAGS.ON_RIGHT_WALL);
+                                while (pAttached is not null)
                                 {
-                                    pAttachedBase = FindBaseStructure(pAttached);
-                                    if (pAttachedBase)
+                                    pAttachedBase = WorldStructures.FindBaseStructure(pAttached);
+                                    if (pAttachedBase is not null)
                                     {
-                                        pAttachedNode = FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
-                                        if (pAttachedNode)
+                                        pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
+                                        if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
                                             RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
@@ -810,19 +809,19 @@ public class ExplosionControl
                                         break;
                                     }
                                     // search for another, from the start of the list
-                                    pAttached = FindStructure(sNewGridNo, STRUCTURE_ON_RIGHT_WALL);
+                                    pAttached = WorldStructures.FindStructure(sNewGridNo, STRUCTUREFLAGS.ON_RIGHT_WALL);
                                 }
 
                                 // Move in EAST, looking for attached structures to remove
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.EAST));
-                                pAttached = FindStructure(sNewGridNo, STRUCTURE_ON_RIGHT_WALL);
-                                while (pAttached)
+                                pAttached = WorldStructures.FindStructure(sNewGridNo, STRUCTUREFLAGS.ON_RIGHT_WALL);
+                                while (pAttached is not null)
                                 {
-                                    pAttachedBase = FindBaseStructure(pAttached);
-                                    if (pAttachedBase)
+                                    pAttachedBase = WorldStructures.FindBaseStructure(pAttached);
+                                    if (pAttachedBase is not null)
                                     {
-                                        pAttachedNode = FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
-                                        if (pAttachedNode)
+                                        pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
+                                        if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
                                             RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
@@ -840,7 +839,7 @@ public class ExplosionControl
                                         break;
                                     }
                                     // search for another, from the start of the list
-                                    pAttached = FindStructure(sNewGridNo, STRUCTURE_ON_RIGHT_WALL);
+                                    pAttached = WorldStructures.FindStructure(sNewGridNo, STRUCTUREFLAGS.ON_RIGHT_WALL);
                                 }
 
                                 break;
@@ -932,13 +931,13 @@ public class ExplosionControl
                     InvalidateWorldRedundency();
                     SetRenderFlags(RENDER_FLAG_FULL);
                     // Movement costs!
-                    (pfRecompileMovementCosts) = 1;
+                    (pfRecompileMovementCosts) = true;
 
                     {
                         // Make secondary explosion if eplosive....
                         if (fExplosive)
                         {
-                            InternalIgniteExplosion(ubOwner, IsometricUtils.CenterX(sBaseGridNo), IsometricUtils.CenterY(sBaseGridNo), 0, sBaseGridNo, Items.STRUCTURE_EXPLOSION, false, bLevel);
+                            InternalIgniteExplosion(ubOwner, CenterX(sBaseGridNo), (MAP_ROW)CenterY(sBaseGridNo), 0, sBaseGridNo, Items.STRUCTURE_EXPLOSION, false, bLevel);
                         }
                     }
 
@@ -969,7 +968,7 @@ public class ExplosionControl
         bool fToBreak = false;
         bool fMultiStructure = false;
         int ubNumberOfTiles;
-        bool fMultiStructSpecialFlag = false;
+        int fMultiStructSpecialFlag = 0;
         int fExplodeDamageReturn = 0;
 
         // Based on distance away, damage any struct at this gridno
@@ -1015,7 +1014,7 @@ public class ExplosionControl
             // Check level!
             if (pCurrent.sCubeOffset == sDesiredLevel)
             {
-                fExplodeDamageReturn = ExplosiveDamageStructureAtGridNo(pCurrent, out pNextCurrent, sGridNo, sWoundAmt, uiDist, pfRecompileMovementCosts, fOnlyWalls, 0, ubOwner, bLevel);
+                fExplodeDamageReturn = ExplosiveDamageStructureAtGridNo(pCurrent, pNextCurrent, sGridNo, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, false, ubOwner, bLevel);
 
                 // Are we overwritting damage due to multi-tile...?
                 if (fExplodeDamageReturn > 0)
@@ -1045,7 +1044,7 @@ public class ExplosionControl
                 {
                     if (pBaseStructure)
                     {
-                        MemFree(ppTile);
+                        ppTile = null;
                     }
                     return;
                 }
@@ -1062,21 +1061,21 @@ public class ExplosionControl
                             sNewGridNo2 = NewGridNo(sNewGridNo, DirectionInc(ubLoop2));
                             if (sNewGridNo2 != sNewGridNo && sNewGridNo2 != sGridNo)
                             {
-                                pStructure = FindStructure(sNewGridNo2, STRUCTURE_MULTI);
-                                if (pStructure)
+                                pStructure = WorldStructures.FindStructure(sNewGridNo2, STRUCTUREFLAGS.MULTI);
+                                if (pStructure is not null)
                                 {
-                                    fMultiStructSpecialFlag = ((pStructure.fFlags & STRUCTURE_SPECIAL) != 0);
+                                    fMultiStructSpecialFlag = ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SPECIAL))) ? 1 : 0;
 
                                     if ((bMultiStructSpecialFlag == fMultiStructSpecialFlag))
                                     {
                                         // If we just damaged it, use same damage value....
-                                        if (fMultiStructSpecialFlag)
+                                        if (fMultiStructSpecialFlag > 0)
                                         {
-                                            ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 1, ubOwner, bLevel);
+                                            ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 1, ubOwner, bLevel);
                                         }
                                         else
                                         {
-                                            ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 2, ubOwner, bLevel);
+                                            ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 2, ubOwner, bLevel);
                                         }
 
                                         {
@@ -1120,7 +1119,7 @@ public class ExplosionControl
             return (false);
         }
 
-        if (pSoldier.ubMiscSoldierFlags & SOLDIER_MISC.HURT_BY_EXPLOSION)
+        if (pSoldier.ubMiscSoldierFlags.HasFlag(SOLDIER_MISC.HURT_BY_EXPLOSION))
         {
             // don't want to damage the guy twice
             return (false);
@@ -1140,7 +1139,7 @@ public class ExplosionControl
         }
         EVENT_SoldierGotHit(pSoldier, usItem, sNewWoundAmt, sBreathAmt, ubDirection, (int)uiDist, ubOwner, 0, ANIM_CROUCH, sSubsequent, sBombGridNo);
 
-        pSoldier.ubMiscSoldierFlags |= SOLDIER_MISC_HURT_BY_EXPLOSION;
+        pSoldier.ubMiscSoldierFlags |= SOLDIER_MISC.HURT_BY_EXPLOSION;
 
         if (ubOwner != NOBODY && MercPtrs[ubOwner].bTeam == gbPlayerNum && pSoldier.bTeam != gbPlayerNum)
         {
@@ -1151,7 +1150,7 @@ public class ExplosionControl
 
     bool DishOutGasDamage(SOLDIERTYPE? pSoldier, EXPLOSIVETYPE? pExplosive, int sSubsequent, bool fRecompileMovementCosts, int sWoundAmt, int sBreathAmt, int ubOwner)
     {
-        int bPosOfMask = NO_SLOT;
+        InventorySlot bPosOfMask = NO_SLOT;
 
         if (!pSoldier.bActive || !pSoldier.bInSector || !pSoldier.bLife || AM_A_ROBOT(pSoldier))
         {
@@ -1160,12 +1159,12 @@ public class ExplosionControl
 
         if (pExplosive.ubType == EXPLOSV.CREATUREGAS)
         {
-            if (pSoldier.uiStatusFlags & SOLDIER.MONSTER)
+            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
             {
                 // unaffected by own gas effects
                 return (fRecompileMovementCosts);
             }
-            if (sSubsequent && pSoldier.fHitByGasFlags & HIT_BY.CREATUREGAS)
+            if (sSubsequent > 0 && pSoldier.fHitByGasFlags.HasFlag(HIT_BY.CREATUREGAS))
             {
                 // already affected by creature gas this turn
                 return (fRecompileMovementCosts);
@@ -1182,7 +1181,7 @@ public class ExplosionControl
                 }
 
                 // ignore whether subsequent or not if hit this turn 
-                if (pSoldier.fHitByGasFlags & HIT_BY.TEARGAS)
+                if (pSoldier.fHitByGasFlags.HasFlag(HIT_BY.TEARGAS))
                 {
                     // already affected by creature gas this turn
                     return (fRecompileMovementCosts);
@@ -1195,7 +1194,7 @@ public class ExplosionControl
                     return (fRecompileMovementCosts);
                 }
 
-                if (sSubsequent && pSoldier.fHitByGasFlags & HIT_BY.MUSTARDGAS)
+                if (sSubsequent > 0 && pSoldier.fHitByGasFlags.HasFlag(HIT_BY.MUSTARDGAS))
                 {
                     // already affected by creature gas this turn
                     return (fRecompileMovementCosts);
@@ -1203,11 +1202,11 @@ public class ExplosionControl
 
             }
 
-            if (pSoldier.inv[HEAD1POS].usItem == GASMASK && pSoldier.inv[HEAD1POS].bStatus[0] >= USABLE)
+            if (pSoldier.inv[HEAD1POS].usItem == Items.GASMASK && pSoldier.inv[HEAD1POS].bStatus[0] >= USABLE)
             {
                 bPosOfMask = HEAD1POS;
             }
-            else if (pSoldier.inv[HEAD2POS].usItem == GASMASK && pSoldier.inv[HEAD2POS].bStatus[0] >= USABLE)
+            else if (pSoldier.inv[HEAD2POS].usItem == Items.GASMASK && pSoldier.inv[HEAD2POS].bStatus[0] >= USABLE)
             {
                 bPosOfMask = HEAD2POS;
             }
@@ -1226,7 +1225,7 @@ public class ExplosionControl
                         pSoldier.uiStatusFlags |= SOLDIER.GASSED;
                     }
 
-                    if (pSoldier.uiStatusFlags & SOLDIER.PC)
+                    if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
                     {
 
                         if (sWoundAmt > 1)
@@ -1278,7 +1277,7 @@ public class ExplosionControl
                     break;
             }
             // a gas effect, take damage directly...
-            SoldierTakeDamage(pSoldier, ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE_GAS, NOBODY, NOWHERE, 0, true);
+            SoldierControl.SoldierTakeDamage(pSoldier, AnimationHeights.ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE_GAS, NOBODY, NOWHERE, 0, true);
             if (pSoldier.bLife >= CONSCIOUSNESS)
             {
                 DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
@@ -1573,7 +1572,7 @@ public class ExplosionControl
 
                          if ( pExplosive.ubType == EXPLOSV.CREATUREGAS )
                          {
-                             if ( pSoldier.uiStatusFlags & SOLDIER_MONSTER )
+                             if ( pSoldier.uiStatusFlags & SOLDIER.MONSTER )
                              {
                                 // unaffected by own gas effects
                                 return( fRecompileMovementCosts );
@@ -1636,7 +1635,7 @@ public class ExplosionControl
                                             // if at least 500 of breath damage got through
                                             // the soldier within the blast radius is gassed for at least one
                                             // turn, possibly more if it's tear gas (which hangs around a while)
-                                            pSoldier.uiStatusFlags |= SOLDIER_GASSED;
+                                            pSoldier.uiStatusFlags |= SOLDIER.GASSED;
                                      }
 
                                      if ( sWoundAmt > 1 )
@@ -1701,7 +1700,7 @@ public class ExplosionControl
         return (fRecompileMovementCosts);
     }
 
-    void GetRayStopInfo(int uiNewSpot, WorldDirections ubDir, int bLevel, bool fSmokeEffect, int uiCurRange, int? piMaxRange, bool pubKeepGoing)
+    void GetRayStopInfo(int uiNewSpot, WorldDirections ubDir, int bLevel, bool fSmokeEffect, int uiCurRange, out int? piMaxRange, out int pubKeepGoing)
     {
         int bStructHeight;
         int ubMovementCost;
@@ -1864,7 +1863,7 @@ public class ExplosionControl
             // ATE: Tall things should blaock all
             if (bStructHeight == 4)
             {
-                (pubKeepGoing) = false;
+                (pubKeepGoing) = 0;
             }
             else
             {
@@ -1900,11 +1899,11 @@ public class ExplosionControl
 
                 if (uiCurRange <= (piMaxRange))
                 {
-                    (pubKeepGoing) = true;
+                    (pubKeepGoing) = 1;
                 }
                 else
                 {
-                    (pubKeepGoing) = false;
+                    (pubKeepGoing) = 0;
                 }
             }
         }
@@ -1912,21 +1911,22 @@ public class ExplosionControl
         {
             if (fTravelCostObs)
             {
-                (pubKeepGoing) = false;
+                (pubKeepGoing) = 0;
             }
             else
             {
-                (pubKeepGoing) = true;
+                (pubKeepGoing) = 1;
             }
         }
     }
 
 
 
-    void SpreadEffect(int sGridNo, int ubRadius, Items usItem, int ubOwner, bool fSubsequent, int bLevel, int iSmokeEffectID)
+    void SpreadEffect(int sGridNo, int ubRadius, Items usItem, int ubOwner, int fSubsequent, int bLevel, int iSmokeEffectID)
     {
         int uiNewSpot, uiTempSpot, uiBranchSpot, cnt, branchCnt;
-        int uiTempRange, ubBranchRange;
+        int? uiTempRange;
+        int ubBranchRange;
         WorldDirections ubDir, ubBranchDir;
         int ubKeepGoing;
         int sRange;
@@ -1960,7 +1960,7 @@ public class ExplosionControl
         sRange = ubRadius * 2;
 
         // first, affect main spot
-        if (ExpAffect(sGridNo, sGridNo, 0, usItem, ubOwner, fSubsequent, &fAnyMercHit, bLevel, iSmokeEffectID))
+        if (ExpAffect(sGridNo, sGridNo, 0, usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
         {
             fRecompileMovement = true;
         }
@@ -1994,16 +1994,16 @@ public class ExplosionControl
                 else
                 {
                     // Check if struct is a tree, etc and reduce range...
-                    GetRayStopInfo(uiNewSpot, ubDir, bLevel, fSmokeEffect, cnt, &uiTempRange, &ubKeepGoing);
+                    GetRayStopInfo(uiNewSpot, ubDir, bLevel, fSmokeEffect, cnt, out uiTempRange, out ubKeepGoing);
                 }
 
-                if (ubKeepGoing)
+                if (ubKeepGoing > 0)
                 {
                     uiTempSpot = uiNewSpot;
 
                     //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("Explosion affects %d", uiNewSpot) );
                     // ok, do what we do here...
-                    if (ExpAffect(sGridNo, (int)uiNewSpot, cnt / 2, usItem, ubOwner, fSubsequent, &fAnyMercHit, bLevel, iSmokeEffectID))
+                    if (ExpAffect(sGridNo, (int)uiNewSpot, cnt / 2, usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
                     {
                         fRecompileMovement = true;
                     }
@@ -2011,7 +2011,7 @@ public class ExplosionControl
                     // how far should we branch out here?
                     ubBranchRange = (int)(sRange - cnt);
 
-                    if (ubBranchRange)
+                    if (ubBranchRange > 0)
                     {
                         // ok, there's a branch here. Mark where we start this branch.
                         uiBranchSpot = uiNewSpot;
@@ -2036,13 +2036,13 @@ public class ExplosionControl
                             if (uiNewSpot != uiBranchSpot)
                             {
                                 // Check if struct is a tree, etc and reduce range...
-                                GetRayStopInfo(uiNewSpot, ubBranchDir, bLevel, fSmokeEffect, branchCnt, &ubBranchRange, &ubKeepGoing);
+                                GetRayStopInfo(uiNewSpot, ubBranchDir, bLevel, fSmokeEffect, branchCnt, out ubBranchRange, out ubKeepGoing);
 
-                                if (ubKeepGoing)
+                                if (ubKeepGoing > 0)
                                 {
                                     // ok, do what we do here
                                     //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("Explosion affects %d", uiNewSpot) );
-                                    if (ExpAffect(sGridNo, (int)uiNewSpot, (int)((cnt + branchCnt) / 2), usItem, ubOwner, fSubsequent, &fAnyMercHit, bLevel, iSmokeEffectID))
+                                    if (ExpAffect(sGridNo, (int)uiNewSpot, (int)((cnt + branchCnt) / 2), usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
                                     {
                                         fRecompileMovement = true;
                                     }
@@ -2115,7 +2115,7 @@ public class ExplosionControl
         // do sight checks if something damaged or smoke stuff involved
         if (fRecompileMovement || fSmokeEffect)
         {
-            if (gubElementsOnExplosionQueue)
+            if (gubElementsOnExplosionQueue > 0)
             {
                 gfExplosionQueueMayHaveChangedSight = true;
             }
@@ -2133,7 +2133,7 @@ public class ExplosionControl
             {
                 if (MercSlots[cnt])
                 {
-                    MercSlots[cnt].ubMiscSoldierFlags &= ~SOLDIER_MISC_HURT_BY_EXPLOSION;
+                    MercSlots[cnt].ubMiscSoldierFlags &= ~SOLDIER.MISC_HURT_BY_EXPLOSION;
                 }
             }
         }
@@ -2232,9 +2232,9 @@ public class ExplosionControl
         {
             pSoldier = MercPtrs[ubLoop];
 
-            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && pSoldier.bNeutral && pSoldier.ubBodyType == MINICIV)
+            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && pSoldier.bNeutral > 0 && pSoldier.ubBodyType == MINICIV)
             {
-                if (InARoom(pSoldier.sGridNo, &ubTempRoom) && ubTempRoom == ubRoom)
+                if (InARoom(pSoldier.sGridNo, ubTempRoom) && ubTempRoom == ubRoom)
                 {
                     return (true);
                 }
@@ -2668,7 +2668,7 @@ public class ExplosionControl
         uiCurrentTime = GetJA2Clock();
         for (uiIndex = 0; uiIndex < gubElementsOnExplosionQueue; uiIndex++)
         {
-            if (gExplosionQueue[uiIndex].fExists && uiCurrentTime >= gExplosionQueue[uiIndex].uiTimeStamp)
+            if (gExplosionQueue[uiIndex].fExists > 0 && uiCurrentTime >= gExplosionQueue[uiIndex].uiTimeStamp)
             {
                 // Set off this bomb now!
 
@@ -2713,12 +2713,12 @@ public class ExplosionControl
                     // bomb objects only store the SIDE who placed the bomb! :-(
                     if (pObj.ubBombOwner > 1)
                     {
-                        IgniteExplosion((int)(pObj.ubBombOwner - 2), CenterX(sGridNo), CenterY(sGridNo), 0, sGridNo, pObj.usBombItem, ubLevel);
+                        IgniteExplosion((int)(pObj.ubBombOwner - 2), CenterX(sGridNo), (MAP_ROW)CenterY(sGridNo), 0, sGridNo, pObj.usBombItem, ubLevel);
                     }
                     else
                     {
                         // pre-placed
-                        IgniteExplosion(NOBODY, CenterX(sGridNo), CenterY(sGridNo), 0, sGridNo, pObj.usBombItem, ubLevel);
+                        IgniteExplosion(NOBODY, CenterX(sGridNo), (MAP_ROW)CenterY(sGridNo), 0, sGridNo, pObj.usBombItem, ubLevel);
                     }
                 }
 
@@ -2741,7 +2741,7 @@ public class ExplosionControl
             // re-enable sight
             gTacticalStatus.uiFlags &= (~DISALLOW_SIGHT);
 
-            if (gubPersonToSetOffExplosions != NOBODY && !(MercPtrs[gubPersonToSetOffExplosions].uiStatusFlags & SOLDIER_PC))
+            if (gubPersonToSetOffExplosions != NOBODY && !(MercPtrs[gubPersonToSetOffExplosions].uiStatusFlags & SOLDIER.PC))
             {
                 FreeUpNPCFromPendingAction(MercPtrs[gubPersonToSetOffExplosions]);
             }
@@ -3186,10 +3186,10 @@ public class ExplosionControl
     }
 
 
-    void UpdateSAMDoneRepair(int sSectorX, int sSectorY, int sSectorZ)
+    void UpdateSAMDoneRepair(int sSectorX, MAP_ROW sSectorY, int sSectorZ)
     {
         int cnt;
-        int sSectorNo;
+        SEC sSectorNo;
         bool fInSector = false;
         int usGoodGraphic, usDamagedGraphic;
 
@@ -3205,7 +3205,7 @@ public class ExplosionControl
         }
 
 
-        sSectorNo = SECTOR(sSectorX, sSectorY);
+        sSectorNo = SECTORINFO.SECTOR(sSectorX, sSectorY);
 
         for (cnt = 0; cnt < NUMBER_OF_SAMS; cnt++)
         {
@@ -3269,7 +3269,7 @@ public class ExplosionControl
         cnt = gTacticalStatus.Team[CIV_TEAM].bFirstID;
         for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[CIV_TEAM].bLastID; cnt++, pSoldier++)
         {
-            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife && pSoldier.bNeutral)
+            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife > 0 && pSoldier.bNeutral > 0)
             {
                 if (pSoldier.ubProfile != NO_PROFILE)
                 {
@@ -3454,4 +3454,11 @@ public enum EXPLOSION_TYPES
     MUSTARD_EXP,
 
     NUM_EXP_TYPES,
+}
+
+[Flags]
+public enum EXPLOSION_FLAG
+{ 
+    USEABSPOS = 0x00000001,
+    DISPLAYONLY = 0x00000002,
 }

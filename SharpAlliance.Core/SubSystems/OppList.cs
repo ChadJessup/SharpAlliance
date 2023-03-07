@@ -320,7 +320,7 @@ public class OppList
         //gfHumanSawSomeoneInRealtime = false;
     }
 
-    void AddToShouldBecomeHostileOrSayQuoteList(int ubID)
+    public static void AddToShouldBecomeHostileOrSayQuoteList(int ubID)
     {
         int ubLoop;
 
@@ -596,8 +596,8 @@ public class OppList
                     {
                         // don't allow admins to radio
                         if (pThem.bTeam == TEAM.ENEMY_TEAM
-                            && gTacticalStatus.Team[ENEMY_TEAM].bAwareOfOpposition
-                            && pThem.ubSoldierClass != SOLDIER_CLASS_ADMINISTRATOR)
+                            && gTacticalStatus.Team[ENEMY_TEAM].bAwareOfOpposition > 0
+                            && pThem.ubSoldierClass.HasFlag(SOLDIER_CLASS.ADMINISTRATOR))
                         {
                             RadioSightings(pThem, EVERYBODY, pThem.bTeam);
                         }
@@ -605,14 +605,14 @@ public class OppList
 
 
                     pThem.bNewOppCnt = 0;
-                    pThem.bNeedToLook = false;
+                    pThem.bNeedToLook = 0;
                 }
             }
         }
 
         // CJC August 13 2002: at the end of handling sight, reset sight flags to allow interrupts in case an audio cue should
         // cause someone to see an enemy
-        gubSightFlags |= SIGHT_INTERRUPT;
+        gubSightFlags |= SIGHT.INTERRUPT;
     }
 
 
@@ -660,7 +660,7 @@ public class OppList
         //  slots do not arbitrarily get the bulk of the sighting speech quote
         //  action, while the later ones almost never pipe up, and is NOT
         //  strictly necessary, but a nice improvement over original JA)
-        while (radioCnt)
+        while (radioCnt > 0)
         {
             // pick a merc from one of the remaining slots at random
             iLoop = Globals.Random.Next(radioCnt);
@@ -736,7 +736,7 @@ public class OppList
         return (1);
     }
 
-    int DistanceSmellable(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pSubject)
+    public static int DistanceSmellable(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pSubject)
     {
         int sDistVisible = Globals.STRAIGHT; // as a base
 
@@ -750,9 +750,9 @@ public class OppList
         //	sDistVisible += 3;
         //}
 
-        if (pSubject)
+        if (pSubject is not null)
         {
-            if (pSubject.uiStatusFlags & SOLDIER.MONSTER)
+            if (pSubject.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
             {
                 // trying to smell a friend; change nothing
             }
@@ -786,7 +786,7 @@ public class OppList
         {
             if (!pSubject)
             {
-                return (false);
+                return (0);
             }
 
             return (DistanceSmellable(pSoldier, pSubject));
@@ -806,7 +806,7 @@ public class OppList
             //bSubjectDir = atan8(pSoldier.sX,pSoldier.sY,pOpponent.sX,pOpponent.sY);
         }
 
-        if (!TANK(pSoldier) && (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags & SOLDIER_ROBOT) || (pSubject && pSubject.fMuzzleFlash)))
+        if (!TANK(pSoldier) && (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags & SOLDIER.ROBOT) || (pSubject && pSubject.fMuzzleFlash)))
         {
             sDistVisible = MaxDistanceVisible();
         }
@@ -1017,7 +1017,7 @@ public class OppList
     {
         // calculate the hearing value for the merc...
 
-        int bSlot;
+        InventorySlot bSlot;
         int bHearing;
 
         if (TANK(pSoldier))
@@ -1144,7 +1144,7 @@ public class OppList
                 gubBestToMakeSightingSize = BEST_SIGHTING_ARRAY_SIZE_NONCOMBAT;
             }
         }
-        else if (ubAllowInterrupts)
+        else if (ubAllowInterrupts > 0)
         {
             HandleBestSightingPositionInTurnbased();
             // reset sighting size to 0
@@ -1281,7 +1281,7 @@ public class OppList
             {
                 // check if I was the only one who was seeing this guy (exlude ourselves)
                 // THIS MUST HAPPEN EVEN FOR ENEMIES, TO MAKE THEIR PUBLIC opplist DECAY!
-                if (TeamNoLongerSeesMan(pSoldier.bTeam, pOpponent, pSoldier.ubID, 0))
+                if (TeamNoLongerSeesMan(pSoldier.bTeam, pOpponent, pSoldier.ubID, 0) > 0)
                 {
                     // DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("TeamNoLongerSeesMan: ID %d(%S) to ID %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
 
@@ -1422,7 +1422,7 @@ public class OppList
               return(success);
            */
 
-            if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER || (pSoldier.uiStatusFlags & SOLDIER_VEHICLE && pSoldier.bTeam == OUR_TEAM))
+            if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER || (pSoldier.uiStatusFlags & SOLDIER.VEHICLE && pSoldier.bTeam == OUR_TEAM))
             {
                 // don't do sight for these
                 return (0);
@@ -1635,7 +1635,7 @@ public class OppList
                 {
                     if (pSoldier.ubProfile != NO_PROFILE)
                     {
-                        if (pSoldier.bTeam == CIV_TEAM)
+                        if (pSoldier.bTeam == TEAM.CIV_TEAM)
                         {
                             // if this person doing the sighting is a member of a civ group that hates us but 
                             // this fact hasn't been revealed, change the side of these people now. This will
@@ -1686,9 +1686,9 @@ public class OppList
                                             // or if alarm has gone off (status red)
                                             InARoom(pOpponent.sGridNo, out ubRoom);
 
-                                            if ((CheckFact(FACT_MUSEUM_OPEN, 0) == false && ubRoom >= 22 && ubRoom <= 41) || CheckFact(FACT_MUSEUM_ALARM_WENT_OFF, 0) || (ubRoom == 39 || ubRoom == 40) || (FindObj(pOpponent, CHALICE) != NO_SLOT))
+                                            if ((Facts.CheckFact(FACT.MUSEUM_OPEN, 0) == false && ubRoom >= 22 && ubRoom <= 41) || Facts.CheckFact(FACT.MUSEUM_ALARM_WENT_OFF, 0) || (ubRoom == 39 || ubRoom == 40) || (FindObj(pOpponent, CHALICE) != NO_SLOT))
                                             {
-                                                SetFactTrue(FACT_MUSEUM_ALARM_WENT_OFF);
+                                                Facts.SetFactTrue(FACT.MUSEUM_ALARM_WENT_OFF);
                                                 AddToShouldBecomeHostileOrSayQuoteList(pSoldier.ubID);
                                             }
                                         }
@@ -1714,13 +1714,13 @@ public class OppList
                                     case ANGEL:
                                         if (pOpponent.ubProfile == MARIA)
                                         {
-                                            if (CheckFact(FACT_MARIA_ESCORTED_AT_LEATHER_SHOP, MARIA) == true)
+                                            if (Facts.CheckFact(FACT.MARIA_ESCORTED_AT_LEATHER_SHOP, MARIA) == true)
                                             {
                                                 // she was rescued! yay!
                                                 TriggerNPCRecord(ANGEL, 12);
                                             }
                                         }
-                                        else if ((CheckFact(FACT_ANGEL_LEFT_DEED, ANGEL) == true) && (CheckFact(FACT_ANGEL_MENTIONED_DEED, ANGEL) == false))
+                                        else if ((Facts.CheckFact(FACT.ANGEL_LEFT_DEED, ANGEL) == true) && (Facts.CheckFact(FACT.ANGEL_MENTIONED_DEED, ANGEL) == false))
                                         {
                                             CancelAIAction(pSoldier, true);
                                             pSoldier.sAbsoluteFinalDestination = NOWHERE;
@@ -1791,7 +1791,7 @@ public class OppList
                                     {
                                         EnterCombatMode(pSoldier.bTeam);
                                     }
-                                    SetFactTrue(FACT_MARIA_ESCAPE_NOTICED);
+                                    SetFactTrue(FACT.MARIA_ESCAPE_NOTICED);
                                 }
                                 else
                                 {
@@ -1810,13 +1810,13 @@ public class OppList
                                     }
                                 }
                             }
-                            else if (pSoldier.ubCivilianGroup == HICKS_CIV_GROUP && CheckFact(FACT_HICKS_MARRIED_PLAYER_MERC, 0) == false)
+                            else if (pSoldier.ubCivilianGroup == HICKS_CIV_GROUP && Facts.CheckFact(FACT.HICKS_MARRIED_PLAYER_MERC, 0) == false)
                             {
-                                int uiTime;
+                                uint uiTime;
                                 int sX, sY;
 
                                 // if before 6:05 or after 22:00, make hostile and enter combat
-                                uiTime = GetWorldMinutesInDay();
+                                uiTime = GameClock.GetWorldMinutesInDay();
                                 if (uiTime < 365 || uiTime > 1320)
                                 {
                                     // get off our farm!
@@ -1922,7 +1922,7 @@ public class OppList
                         {
                             if (Facts.CheckFact(FACT.FIRST_BATTLE_FOUGHT, 0) == false)
                             {
-                                Facts.SetFactTrue(FACT_FIRST_BATTLE_BEING_FOUGHT);
+                                Facts.SetFactTrue(FACT.FIRST_BATTLE_BEING_FOUGHT);
                             }
                         }
 
@@ -2167,7 +2167,7 @@ public class OppList
             // # if WE_SEE_WHAT_MILITIA_SEES_AND_VICE_VERSA
             //             if ((pOpponent.bTeam != gbPlayerNum && pOpponent.bTeam != MILITIA_TEAM) && (pOpponent.bVisible >= 0 && pOpponent.bVisible < 2) && pOpponent.bLife)
             // #else
-            if ((pOpponent.bTeam != gbPlayerNum) && (pOpponent.bVisible >= 0 && pOpponent.bVisible < 2) && pOpponent.bLife)
+            if ((pOpponent.bTeam != gbPlayerNum) && (pOpponent.bVisible >= 0 && pOpponent.bVisible < 2) && pOpponent.bLife > 0)
             // #endif
             {
                 // assume he's no longer visible, until one of our mercs sees him again
@@ -2418,7 +2418,7 @@ public class OppList
                 for (pSoldier = Globals.MercPtrs[cnt]; cnt <= gTacticalStatus.Team[ubTeam].bLastID; cnt++, pSoldier++)
                 {
                     // if this soldier is active, in this sector, and well enough to look
-                    if (pSoldier.bActive && pSoldier.bInSector && (pSoldier.bLife >= OKLIFE) && !(pSoldier.uiStatusFlags & SOLDIER_GASSED))
+                    if (pSoldier.bActive && pSoldier.bInSector && (pSoldier.bLife >= OKLIFE) && !(pSoldier.uiStatusFlags & SOLDIER.GASSED))
                     {
                         // if soldier isn't aware of guynum, give him another chance to see
                         if (pSoldier.bOppList[ubID] == NOT_HEARD_OR_SEEN)
@@ -2962,7 +2962,7 @@ public class OppList
 
                 // if these two mercs are on the same SIDE, then they're NOT opponents
                 // NEW: Apr. 21 '96: must allow ALL non-humans to get radioed about
-                if ((pSoldier.bSide == pOpponent.bSide) && (pOpponent.uiStatusFlags & SOLDIER_PC))
+                if ((pSoldier.bSide == pOpponent.bSide) && (pOpponent.uiStatusFlags & SOLDIER.PC))
                 {
                     //# if TESTOPPLIST
                     //                    DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3,
@@ -3209,168 +3209,168 @@ public class OppList
                 // Get Soldier
                 GetSoldier(out pSoldier, usSoldierIndex);
 
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG SOLDIER PAGE ONE, GRIDNO %d", pSoldier.sGridNo);
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
                 ubLine = 2;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "ID:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.ubID);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "TEAM:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bTeam);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SIDE:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bSide);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "STATUS FLAGS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%x", pSoldier.uiStatusFlags);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "HUMAN:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", gTacticalStatus.Team[pSoldier.bTeam].bHuman);
                 ubLine++;
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "APs:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bActionPoints);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Breath:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bBreath);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Life:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bLife);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "LifeMax:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bLifeMax);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Bleeding:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bBleeding);
 
                 ubLine = 2;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Agility:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bAgility, EffectiveAgility(pSoldier));
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Dexterity:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d( %d )", pSoldier.bDexterity, EffectiveDexterity(pSoldier));
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Strength:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d", pSoldier.bStrength);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Wisdom:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bWisdom, EffectiveWisdom(pSoldier));
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Exp Lvl:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bExpLevel, EffectiveExpLevel(pSoldier));
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Mrksmnship:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bMarksmanship, EffectiveMarksmanship(pSoldier));
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Mechanical:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d", pSoldier.bMechanical);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Explosive:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d", pSoldier.bExplosive);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Medical:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(350, LINE_HEIGHT * ubLine, "%d", pSoldier.bMedical);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Drug Effects:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(400, LINE_HEIGHT * ubLine, "%d", pSoldier.bDrugEffect[0]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Drug Side Effects:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(400, LINE_HEIGHT * ubLine, "%d", pSoldier.bDrugSideEffect[0]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Booze Effects:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(400, LINE_HEIGHT * ubLine, "%d", pSoldier.bDrugEffect[1]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "Hangover Side Effects:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(400, LINE_HEIGHT * ubLine, "%d", pSoldier.bDrugSideEffect[1]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(200, LINE_HEIGHT * ubLine, "AI has Keys:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(400, LINE_HEIGHT * ubLine, "%d", pSoldier.bHasKeys);
                 ubLine++;
             }
             else if (GetMouseMapPos(out usMapPos))
             {
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG LAND PAGE ONE");
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
                 ubLine++;
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Num dirty rects:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(200, LINE_HEIGHT * ubLine, "%d", guiNumBackSaves);
                 ubLine++;
 
@@ -3394,137 +3394,137 @@ public class OppList
                 // Get Soldier
                 GetSoldier(out pSoldier, usSoldierIndex);
 
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG SOLDIER PAGE TWO, GRIDNO %d", pSoldier.sGridNo);
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
                 ubLine = 2;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "ID:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.ubID);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Body Type:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.ubBodyType);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Opp Cnt:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bOppCnt);
                 ubLine++;
 
                 if (pSoldier.bTeam == OUR_TEAM || pSoldier.bTeam == MILITIA_TEAM) // look at 8 to 15 opplist entries
                 {
-                    SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                     gprintf(0, LINE_HEIGHT * ubLine, "Opplist B:");
-                    SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                     gprintf(150, LINE_HEIGHT * ubLine, "%d %d %d %d %d %d %d %d", pSoldier.bOppList[20], pSoldier.bOppList[21], pSoldier.bOppList[22],
                                     pSoldier.bOppList[23], pSoldier.bOppList[24], pSoldier.bOppList[25], pSoldier.bOppList[26], pSoldier.bOppList[27]);
                     ubLine++;
                 }
                 else    // team 1 - enemies so look at first 8 (0-7) opplist entries
                 {
-                    SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                     gprintf(0, LINE_HEIGHT * ubLine, "OppList A:");
-                    SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                     gprintf(150, LINE_HEIGHT * ubLine, "%d %d %d %d %d %d %d %d", pSoldier.bOppList[0], pSoldier.bOppList[1], pSoldier.bOppList[2],
                                     pSoldier.bOppList[3], pSoldier.bOppList[4], pSoldier.bOppList[5], pSoldier.bOppList[6],
                                     pSoldier.bOppList[7]);
                     ubLine++;
                 }
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Visible:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bVisible);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Direction:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%S", gzDirectionStr[pSoldier.bDirection]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "DesDirection:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%S", gzDirectionStr[pSoldier.bDesiredDirection]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "GridNo:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.sGridNo);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Dest:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.sFinalDestination);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Path Size:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.usPathDataSize);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Path Index:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.usPathIndex);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "First 3 Steps:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d %d %d", pSoldier.usPathingData[0],
                 pSoldier.usPathingData[1],
                 pSoldier.usPathingData[2]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Next 3 Steps:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d %d %d", pSoldier.usPathingData[pSoldier.usPathIndex],
                 pSoldier.usPathingData[pSoldier.usPathIndex + 1],
                 pSoldier.usPathingData[pSoldier.usPathIndex + 2]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "FlashInd:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fFlashLocator);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "ShowInd:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fShowLocator);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Main hand:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
-                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HANDPOS].usItem]);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
+                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HANDPOS].usItem]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Second hand:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
-                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SECONDHANDPOS].usItem]);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
+                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem]);
                 ubLine++;
 
                 if (GetMouseMapPos(out usMapPos))
                 {
-                    SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                     gprintf(0, LINE_HEIGHT * ubLine, "CurrGridNo:");
-                    SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                     gprintf(150, LINE_HEIGHT * ubLine, "%d", usMapPos);
                     ubLine++;
                 }
@@ -3532,59 +3532,59 @@ public class OppList
             }
             else if (GetMouseMapPos(out usMapPos))
             {
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG LAND PAGE TWO");
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
                 ubLine = 1;
 
-                SetFontColors(COLOR1);
+                FontSubSystem.SetFontColors(COLOR1);
                 mprintf(0, LINE_HEIGHT * ubLine, "Land Raised:");
-                SetFontColors(COLOR2);
+                FontSubSystem.SetFontColors(COLOR2);
                 mprintf(150, LINE_HEIGHT * ubLine, "%d", gpWorldLevelData[usMapPos].sHeight);
                 ubLine++;
 
-                SetFontColors(COLOR1);
+                FontSubSystem.SetFontColors(COLOR1);
                 mprintf(0, LINE_HEIGHT * ubLine, "Land Node:");
-                SetFontColors(COLOR2);
+                FontSubSystem.SetFontColors(COLOR2);
                 mprintf(150, LINE_HEIGHT * ubLine, "%x", gpWorldLevelData[usMapPos].pLandHead);
                 ubLine++;
 
                 if (gpWorldLevelData[usMapPos].pLandHead != null)
                 {
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "Land Node:");
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "%d", gpWorldLevelData[usMapPos].pLandHead.usIndex);
                     ubLine++;
 
                     TileElem = gTileDatabase[gpWorldLevelData[usMapPos].pLandHead.usIndex];
 
                     // Check for full tile
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "Full Land:");
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "%d", TileElem.ubFullTile);
                     ubLine++;
                 }
 
-                SetFontColors(COLOR1);
+                FontSubSystem.SetFontColors(COLOR1);
                 mprintf(0, LINE_HEIGHT * ubLine, "Land St Node:");
-                SetFontColors(COLOR2);
+                FontSubSystem.SetFontColors(COLOR2);
                 mprintf(150, LINE_HEIGHT * ubLine, "%x", gpWorldLevelData[usMapPos].pLandStart);
                 ubLine++;
 
-                SetFontColors(COLOR1);
+                FontSubSystem.SetFontColors(COLOR1);
                 mprintf(0, LINE_HEIGHT * ubLine, "GRIDNO:");
-                SetFontColors(COLOR2);
+                FontSubSystem.SetFontColors(COLOR2);
                 mprintf(150, LINE_HEIGHT * ubLine, "%d", usMapPos);
                 ubLine++;
 
                 if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_MOVEMENT_RESERVED))
                 {
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(0, LINE_HEIGHT * ubLine, "Merc: %d", gpWorldLevelData[usMapPos].ubReservedSoldierID);
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "RESERVED MOVEMENT FLAG ON:");
                     ubLine++;
                 }
@@ -3594,9 +3594,9 @@ public class OppList
 
                 if (pNode != null)
                 {
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(0, LINE_HEIGHT * ubLine, "Tile: %d", pNode.usIndex);
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "ON INT TILE");
                     ubLine++;
                 }
@@ -3604,43 +3604,43 @@ public class OppList
 
                 if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_REVEALED))
                 {
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     //mprintf( 0, LINE_HEIGHT * 9, "Merc: %d",  gpWorldLevelData[ usMapPos ].ubReservedSoldierID );			
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "REVEALED");
                     ubLine++;
                 }
 
                 if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_RAISE_LAND_START))
                 {
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     //mprintf( 0, LINE_HEIGHT * 9, "Merc: %d",  gpWorldLevelData[ usMapPos ].ubReservedSoldierID );			
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "Land Raise Start");
                     ubLine++;
                 }
 
                 if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_RAISE_LAND_END))
                 {
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     //mprintf( 0, LINE_HEIGHT * 9, "Merc: %d",  gpWorldLevelData[ usMapPos ].ubReservedSoldierID );			
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "Raise Land End");
                     ubLine++;
                 }
 
                 if (gubWorldRoomInfo[usMapPos] != NO_ROOM)
                 {
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(0, LINE_HEIGHT * ubLine, "Room Number");
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, "%d", gubWorldRoomInfo[usMapPos]);
                     ubLine++;
                 }
 
                 if (gpWorldLevelData[usMapPos].ubExtFlags[0] & MAPELEMENT_EXT_NOBURN_STRUCT)
                 {
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(0, LINE_HEIGHT * ubLine, "Don't Use Burn Through For Soldier");
                     ubLine++;
                 }
@@ -3663,34 +3663,34 @@ public class OppList
                 // Get Soldier
                 GetSoldier(out pSoldier, usSoldierIndex);
 
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG SOLDIER PAGE THREE, GRIDNO %d", pSoldier.sGridNo);
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
                 ubLine = 2;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "ID:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.ubID);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Action:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%S", gzActionStr[pSoldier.bAction]);
-                if (pSoldier.uiStatusFlags & SOLDIER_ENEMY)
+                if (pSoldier.uiStatusFlags & SOLDIER.ENEMY)
                 {
                     gprintf(350, LINE_HEIGHT * ubLine, "Alert %S", gzAlertStr[pSoldier.bAlertStatus]);
                 }
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Action Data:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.usActionData);
 
-                if (pSoldier.uiStatusFlags & SOLDIER_ENEMY)
+                if (pSoldier.uiStatusFlags & SOLDIER.ENEMY)
                 {
                     gprintf(350, LINE_HEIGHT * ubLine, "AIMorale %d", pSoldier.bAIMorale);
                 }
@@ -3700,9 +3700,9 @@ public class OppList
                 }
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Delayed Movement:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fDelayedMovement);
                 if (gubWatchedLocPoints[pSoldier.ubID, 0] > 0)
                 {
@@ -3715,9 +3715,9 @@ public class OppList
 
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "ActionInProg:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bActionInProgress);
                 ubLine++;
                 if (gubWatchedLocPoints[pSoldier.ubID, 1] > 0)
@@ -3729,9 +3729,9 @@ public class OppList
                         );
                 }
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Last Action:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%S", gzActionStr[pSoldier.bLastAction]);
                 ubLine++;
 
@@ -3744,9 +3744,9 @@ public class OppList
                         );
                 }
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Animation:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%S", gAnimControl[pSoldier.usAnimState].zAnimStr);
                 ubLine++;
 
@@ -3761,9 +3761,9 @@ public class OppList
                         }
                 */
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Getting Hit:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fGettingHit);
 
                 if (pSoldier.ubCivilianGroup != 0)
@@ -3772,90 +3772,90 @@ public class OppList
                 }
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Suppress pts:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.ubSuppressionPoints);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Attacker ID:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.ubAttackerID);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "EndAINotCalled:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fTurnInProgress);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "PrevAnimation:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%S", gAnimControl[pSoldier.usOldAniState].zAnimStr);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "PrevAniCode:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", gusAnimInst[pSoldier.usOldAniState, pSoldier.sOldAniCode]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "GridNo:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.sGridNo);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "AniCode:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", gusAnimInst[pSoldier.usAnimState, pSoldier.usAniCode]);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "No APS To fin Move:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fNoAPToFinishMove);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Reload Delay:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.sReloadDelay);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Reloading:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fReloading);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Bullets out:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bBulletsLeft);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Anim non-int:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fInNonintAnim);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "RT Anim non-int:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.fRTInNonintAnim);
                 ubLine++;
 
                 // OPIONION OF SELECTED MERC
                 if (gusSelectedSoldier != Globals.NOBODY && (Globals.MercPtrs[gusSelectedSoldier].ubProfile < FIRST_NPC) && pSoldier.ubProfile != NO_PROFILE)
                 {
-                    SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                     gprintf(0, LINE_HEIGHT * ubLine, "NPC Opinion:");
-                    SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                     gprintf(150, LINE_HEIGHT * ubLine, "%d", gMercProfiles[pSoldier.ubProfile].bMercOpinion[Globals.MercPtrs[gusSelectedSoldier].ubProfile]);
                     ubLine++;
                 }
@@ -3866,9 +3866,9 @@ public class OppList
                 DOOR_STATUS? pDoorStatus;
                 STRUCTURE? pStructure;
 
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG LAND PAGE THREE");
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
                 // OK, display door information here.....
                 pDoorStatus = GetDoorStatus(usMapPos);
@@ -3877,7 +3877,7 @@ public class OppList
 
                 if (pDoorStatus == null)
                 {
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "No Door Status");
                     ubLine++;
                     ubLine++;
@@ -3885,15 +3885,15 @@ public class OppList
                 }
                 else
                 {
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "Door Status Found:");
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     mprintf(150, LINE_HEIGHT * ubLine, " %d", usMapPos);
                     ubLine++;
 
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "Actual Status:");
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
 
                     if (pDoorStatus.ubFlags & DOOR_OPEN)
                     {
@@ -3906,9 +3906,9 @@ public class OppList
                     ubLine++;
 
 
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "Perceived Status:");
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
 
                     if (pDoorStatus.ubFlags & DOOR_PERCEIVED_NOTSET)
                     {
@@ -3933,16 +3933,16 @@ public class OppList
 
                 if (pStructure == null)
                 {
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "No Door Struct Data");
                     ubLine++;
                 }
                 else
                 {
 
-                    SetFontColors(COLOR1);
+                    FontSubSystem.SetFontColors(COLOR1);
                     mprintf(0, LINE_HEIGHT * ubLine, "State:");
-                    SetFontColors(COLOR2);
+                    FontSubSystem.SetFontColors(COLOR2);
                     if (!(pStructure.fFlags & STRUCTURE_OPEN))
                     {
                         mprintf(200, LINE_HEIGHT * ubLine, "CLOSED");
@@ -4059,39 +4059,39 @@ public class OppList
                 // Get Soldier
                 GetSoldier(out pSoldier, usSoldierIndex);
 
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG SOLDIER PAGE FOUR, GRIDNO %d", pSoldier.sGridNo);
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 ubLine = 2;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "Exp. Level:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.bExpLevel);
                 switch (pSoldier.ubSoldierClass)
                 {
-                    case SOLDIER_CLASS_ADMINISTRATOR:
+                    case SOLDIER_CLASS.ADMINISTRATOR:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Administrator)");
                         break;
-                    case SOLDIER_CLASS_ELITE:
+                    case SOLDIER_CLASS.ELITE:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Army Elite)");
                         break;
-                    case SOLDIER_CLASS_ARMY:
+                    case SOLDIER_CLASS.ARMY:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Army Troop)");
                         break;
-                    case SOLDIER_CLASS_CREATURE:
+                    case SOLDIER_CLASS.CREATURE:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Creature)");
                         break;
-                    case SOLDIER_CLASS_GREEN_MILITIA:
+                    case SOLDIER_CLASS.GREEN_MILITIA:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Green Militia)");
                         break;
-                    case SOLDIER_CLASS_REG_MILITIA:
+                    case SOLDIER_CLASS.REG_MILITIA:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Reg Militia)");
                         break;
-                    case SOLDIER_CLASS_ELITE_MILITIA:
+                    case SOLDIER_CLASS.ELITE_MILITIA:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Elite Militia)");
                         break;
-                    case SOLDIER_CLASS_MINER:
+                    case SOLDIER_CLASS.MINER:
                         gprintf(320, LINE_HEIGHT * ubLine, "(Miner)");
                         break;
                     default:
@@ -4166,7 +4166,7 @@ public class OppList
 
                         pNode = pNode.next;
                     }
-                    SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                    FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                     if (pNode)
                     {
                         gprintf(0, LINE_HEIGHT * ubLine, "%s, %s, REL EQUIP: %d, REL ATTR: %d",
@@ -4180,15 +4180,15 @@ public class OppList
                     ubLine++;
                 }
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "ID:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 gprintf(150, LINE_HEIGHT * ubLine, "%d", pSoldier.ubID);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "HELMETPOS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[HELMETPOS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HELMETPOS].usItem]);
@@ -4197,9 +4197,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[HELMETPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "VESTPOS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[VESTPOS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[VESTPOS].usItem]);
@@ -4208,9 +4208,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[VESTPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "LEGPOS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[LEGPOS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[LEGPOS].usItem]);
@@ -4219,9 +4219,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[LEGPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "HEAD1POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[HEAD1POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HEAD1POS].usItem]);
@@ -4230,9 +4230,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[HEAD1POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "HEAD2POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[HEAD2POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HEAD2POS].usItem]);
@@ -4241,31 +4241,31 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[HEAD2POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "HANDPOS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
-                if (pSoldier.inv[HANDPOS].usItem)
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
+                if (pSoldier.inv[InventorySlot.HANDPOS].usItem)
                 {
-                    gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[HANDPOS].usItem]);
+                    gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HANDPOS].usItem]);
                 }
 
-                WriteQuantityAndAttachments(&pSoldier.inv[HANDPOS], LINE_HEIGHT * ubLine);
+                WriteQuantityAndAttachments(&pSoldier.inv[InventorySlot.HANDPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SECONDHANDPOS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
-                if (pSoldier.inv[SECONDHANDPOS].usItem)
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
+                if (pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem)
                 {
-                    gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SECONDHANDPOS].usItem]);
+                    gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem]);
                 }
 
-                WriteQuantityAndAttachments(&pSoldier.inv[SECONDHANDPOS], LINE_HEIGHT * ubLine);
+                WriteQuantityAndAttachments(&pSoldier.inv[InventorySlot.SECONDHANDPOS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK1POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[BIGPOCK1POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK1POS].usItem]);
@@ -4274,9 +4274,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK1POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK2POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[BIGPOCK2POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK2POS].usItem]);
@@ -4285,9 +4285,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK2POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK3POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[BIGPOCK3POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK3POS].usItem]);
@@ -4296,9 +4296,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK3POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK4POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[BIGPOCK4POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK4POS].usItem]);
@@ -4307,9 +4307,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK4POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK1POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK1POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK1POS].usItem]);
@@ -4318,9 +4318,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK1POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK2POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK2POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK2POS].usItem]);
@@ -4329,9 +4329,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK2POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK3POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK3POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK3POS].usItem]);
@@ -4340,9 +4340,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK3POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK4POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK4POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK4POS].usItem]);
@@ -4351,9 +4351,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK4POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK5POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK5POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK5POS].usItem]);
@@ -4362,9 +4362,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK5POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK6POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK6POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK6POS].usItem]);
@@ -4373,9 +4373,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK6POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK7POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK7POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK7POS].usItem]);
@@ -4384,9 +4384,9 @@ public class OppList
                 WriteQuantityAndAttachments(&pSoldier.inv[SMALLPOCK7POS], LINE_HEIGHT * ubLine);
                 ubLine++;
 
-                SetFontShade(LARGEFONT1, FONT_SHADE_GREEN);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
                 gprintf(0, LINE_HEIGHT * ubLine, "SMALLPOCK8POS:");
-                SetFontShade(LARGEFONT1, FONT_SHADE_NEUTRAL);
+                FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
                 if (pSoldier.inv[SMALLPOCK8POS].usItem)
                 {
                     gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK8POS].usItem]);
@@ -4397,9 +4397,9 @@ public class OppList
             }
             else
             {
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
                 gprintf(0, 0, "DEBUG LAND PAGE FOUR");
-                SetFont(LARGEFONT1);
+                FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             }
         }
 
@@ -4411,7 +4411,7 @@ public class OppList
         {
             int iStealthSkill, iRoll;
             int ubMaxVolume, ubVolume, ubBandaged, ubEffLife;
-            int bInWater = false;
+            int bInWater = 0;
 
             if (pSoldier.bTeam == ENEMY_TEAM)
             {
@@ -4482,19 +4482,19 @@ public class OppList
             {
                 ubMaxVolume = MAX_MOVEMENT_NOISE - (iStealthSkill / 16);    // 9 - (0 to 6) => 3 to 9
 
-                if (bInWater)
+                if (bInWater > 0)
                 {
                     ubMaxVolume++;      // in water, can be even louder
                 }
                 switch (pSoldier.usAnimState)
                 {
-                    case CRAWLING:
+                    case AnimationStates.CRAWLING:
                         ubMaxVolume -= 2;
                         break;
-                    case SWATTING:
+                    case AnimationStates.SWATTING:
                         ubMaxVolume -= 1;
                         break;
-                    case RUNNING:
+                    case AnimationStates.RUNNING:
                         ubMaxVolume += 3;
                         break;
                 }
@@ -4526,13 +4526,13 @@ public class OppList
                     ubVolume = 1 + ((iRoll - iStealthSkill + 1) / 16);  // volume is 1 - 7 ... 
                     switch (pSoldier.usAnimState)
                     {
-                        case CRAWLING:
+                        case AnimationStates.CRAWLING:
                             ubVolume -= 2;
                             break;
-                        case SWATTING:
+                        case AnimationStates.SWATTING:
                             ubVolume -= 1;
                             break;
-                        case RUNNING:
+                        case AnimationStates.RUNNING:
                             ubVolume += 3;
                             break;
                     }
@@ -4572,7 +4572,7 @@ public class OppList
             {
                 ubDoorNoise = DOOR_NOISE_VOLUME;
             }
-            if (MovementNoise(pSoldier))
+            if (MovementNoise(pSoldier) > 0)
             {
                 // failed any stealth checks
                 return (ubDoorNoise);
@@ -4595,7 +4595,7 @@ public class OppList
             SNoise.ubVolume = ubVolume;
             SNoise.ubNoiseType = ubNoiseType;
 
-            if (gTacticalStatus.ubAttackBusyCount)
+            if (gTacticalStatus.ubAttackBusyCount > 0)
             {
                 // delay these events until the attack is over!
                 AddGameEvent(S_NOISE, DEMAND_EVENT_DELAY, &SNoise);
@@ -4682,7 +4682,7 @@ public class OppList
 
         void OurNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume, int ubNoiseType)
         {
-            int bSendNoise = false;
+            int bSendNoise = 0;
             SOLDIERTYPE? pSoldier;
 
 
@@ -4788,7 +4788,8 @@ public class OppList
             int ubLoudestEffVolume, ubEffVolume;
             //	int ubPlayVolume;
             int bCheckTerrain = 0;
-            int ubSourceTerrType, ubSource;
+            TerrainTypeDefines ubSourceTerrType;
+            int ubSource;
             int bTellPlayer = 0, bHeard;
             int? bSeen;
             int ubHeardLoudestBy, ubNoiseDir, ubLoudestNoiseDir;
@@ -4816,7 +4817,7 @@ public class OppList
             {
                 // inactive/not in sector/dead soldiers, shouldn't be making noise!
                 if (!Menptr[ubNoiseMaker].bActive || !Menptr[ubNoiseMaker].bInSector ||
-                Menptr[ubNoiseMaker].uiStatusFlags & SOLDIER_DEAD)
+                Menptr[ubNoiseMaker].uiStatusFlags & SOLDIER.DEAD)
                 {
                     // # if BETAVERSION
                     //                     NumMessage("ProcessNoise: ERROR - Noisemaker is inactive/not in sector/dead, Guy #", ubNoiseMaker);
@@ -4994,12 +4995,12 @@ public class OppList
                     for (bLoop = gTacticalStatus.Team[bTeam].bFirstID, pSoldier = Menptr + bLoop; bLoop <= gTacticalStatus.Team[bTeam].bLastID; bLoop++, pSoldier++)
                     {
                         // if this "listener" is inactive, or in no condition to care
-                        if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.uiStatusFlags & SOLDIER_DEAD || (pSoldier.bLife < OKLIFE) || pSoldier.ubBodyType == LARVAE_MONSTER)
+                        if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.uiStatusFlags & SOLDIER.DEAD || (pSoldier.bLife < OKLIFE) || pSoldier.ubBodyType == LARVAE_MONSTER)
                         {
                             continue;          // skip him!
                         }
 
-                        if (pSoldier.uiStatusFlags & SOLDIER_VEHICLE && pSoldier.bTeam == OUR_TEAM)
+                        if (pSoldier.uiStatusFlags & SOLDIER.VEHICLE && pSoldier.bTeam == OUR_TEAM)
                         {
                             continue; // skip
                         }
@@ -5055,14 +5056,14 @@ public class OppList
                                     break;
                             }
 
-                            if (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW_N)
+                            if (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.N)
                             {
                                 // in the bloodcat arena sector, skip noises between army & bloodcats
-                                if (pSoldier.bTeam == ENEMY_TEAM && Globals.MercPtrs[ubNoiseMaker].bTeam == CREATURE_TEAM)
+                                if (pSoldier.bTeam == TEAM.ENEMY_TEAM && Globals.MercPtrs[ubNoiseMaker].bTeam == TEAM.CREATURE_TEAM)
                                 {
                                     continue;
                                 }
-                                if (pSoldier.bTeam == CREATURE_TEAM && Globals.MercPtrs[ubNoiseMaker].bTeam == ENEMY_TEAM)
+                                if (pSoldier.bTeam == TEAM.CREATURE_TEAM && Globals.MercPtrs[ubNoiseMaker].bTeam == ENEMY_TEAM)
                                 {
                                     continue;
                                 }
@@ -5081,7 +5082,7 @@ public class OppList
 
                         if ((pSoldier.bTeam == CIV_TEAM) && (ubNoiseType == NOISE_GUNFIRE || ubNoiseType == NOISE_EXPLOSION))
                         {
-                            pSoldier.ubMiscSoldierFlags |= SOLDIER_MISC_HEARD_GUNSHOT;
+                            pSoldier.ubMiscSoldierFlags |= SOLDIER_MISC.HEARD_GUNSHOT;
                         }
 
                         // Can the listener hear noise of that volume given his circumstances?
@@ -5414,11 +5415,11 @@ public class OppList
 
                     if (pSoldier.bDirection != atan8(pSoldier.sX, pSoldier.sY, sNoiseX, sNoiseY))
                     {
-                        bHadToTurn = true;
+                        bHadToTurn = 1;
                     }
                     else
                     {
-                        bHadToTurn = false;
+                        bHadToTurn = 0;
                     }
 
                     // and we can trace a line of sight to his x,y coordinates?
@@ -5430,10 +5431,10 @@ public class OppList
                         if (SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, (int)sDistVisible, true))
                         {
                             // he can actually see the spot where the noise came from!
-                            bSourceSeen = true;
+                            bSourceSeen = 1;
 
                             // if this sounds like a door opening/closing (could also be a crate)
-                            if (ubNoiseType == NOISE_CREAKING)
+                            if (ubNoiseType == NOISE.CREAKING)
                             {
                                 // then look around and update ALL doors that have secretly changed
                                 //LookForDoors(pSoldier,AWARE);
@@ -5464,7 +5465,7 @@ public class OppList
 
                         // if it's an AI soldier, he is not allowed to automatically radio any
                         // noise heard, but manSeesMan has set his newOppCnt, so clear it here
-                        if (!(pSoldier.uiStatusFlags & SOLDIER_PC))
+                        if (!(pSoldier.uiStatusFlags & SOLDIER.PC))
                         {
                             pSoldier.bNewOppCnt = 0;
                         }
@@ -5603,7 +5604,7 @@ public class OppList
                 else   // noise made by Globals.NOBODY
                 {
                     // if noise type was unmistakably that of an explosion (seen or not) or alarm
-                    if (!(pSoldier.uiStatusFlags & SOLDIER_PC))
+                    if (!(pSoldier.uiStatusFlags & SOLDIER.PC))
                     {
                         if ((ubNoiseType == NOISE_EXPLOSION || ubNoiseType == NOISE_SILENT_ALARM) && (ubVolume >= 3))
                         {
@@ -5789,7 +5790,7 @@ public class OppList
                     // 
                     // #endif
 
-                    if (pSoldier.uiStatusFlags & SOLDIER_PC)
+                    if (pSoldier.uiStatusFlags & SOLDIER.PC)
                     {
                         RadioSightings(pSoldier, EVERYBODY, pSoldier.bTeam);
                     }
@@ -5862,7 +5863,7 @@ public class OppList
                     //                         pSoldier.guynum, ExtMen[pSoldier.guynum].name, pSoldier.newOppCnt);
                     // #endif
 
-                    if (pSoldier.uiStatusFlags & SOLDIER_PC)
+                    if (pSoldier.uiStatusFlags & SOLDIER.PC)
                     {
                         RadioSightings(pSoldier, EVERYBODY, pSoldier.bTeam);
                     }
@@ -6213,7 +6214,7 @@ public class OppList
 
                 // do we need to do checks for life/breath here?
 
-                if (pDefender.ubBodyType == LARVAE_MONSTER || (pDefender.uiStatusFlags & SOLDIER_VEHICLE && pDefender.bTeam == OUR_TEAM))
+                if (pDefender.ubBodyType == LARVAE_MONSTER || (pDefender.uiStatusFlags & SOLDIER.VEHICLE && pDefender.bTeam == OUR_TEAM))
                 {
                     return;
                 }
@@ -6285,7 +6286,7 @@ public class OppList
                     UpdatePersonal(pDefender, pAttacker.ubID, HEARD_THIS_TURN, pAttacker.sGridNo, pAttacker.bLevel);
 
                     // if the victim is a human-controlled soldier, instantly report publicly
-                    if (pDefender.uiStatusFlags & SOLDIER_PC)
+                    if (pDefender.uiStatusFlags & SOLDIER.PC)
                     {
                         // mark attacker as having been PUBLICLY heard THIS TURN & remember where
                         UpdatePublic(pDefender.bTeam, pAttacker.ubID, HEARD_THIS_TURN, pAttacker.sGridNo, pAttacker.bLevel);

@@ -107,7 +107,7 @@ public class LEVELNODE
     public uint uiAnimHitLocationFlags;  // Animation profile flags for soldier placeholders ( prone merc hit location values )
 
     // Some can contains index values into animated tile data
-    public TAG_anitile? pAniTile;
+    public ANITILE? pAniTile;
 
     // Can be an item pool as well...
     public ITEM_POOL? pItemPool;                   // ITEM POOLS

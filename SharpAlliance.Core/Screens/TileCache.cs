@@ -16,7 +16,7 @@ public class TileCache
         WorldStructures worldStructure)
     {
         this.logger = logger;
-        this.worldStructures = worldStructure;
+        WorldStructures = worldStructure;
     }
 
     public ValueTask<bool> InitTileCache()

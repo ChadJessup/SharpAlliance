@@ -45,7 +45,7 @@ namespace SharpAlliance.Core.SubSystems
         public int ubOppNum;
         public int bLastRenderVisibleValue;
         public bool fInMissionExitNode;
-        public int ubAttackingHand;
+        public InventorySlot ubAttackingHand;
         public int bScientific;
         // traits	
         public int sWeightCarriedAtTurnStart;
@@ -371,9 +371,9 @@ namespace SharpAlliance.Core.SubSystems
         public SKILLCHECKS bLastSkillCheck;
         public int ubSkillCheckAttempts;
         public int bVocalVolume;  // verbal sounds need to differ in volume
-        public int bStartFallDir;
+        public WorldDirections bStartFallDir;
         public int fTryingToFall;
-        public int ubPendingDirection;
+        public WorldDirections ubPendingDirection;
         public int uiAnimSubFlags;
         public int bAimShotLocation;
         public int ubHitLocation;
@@ -429,17 +429,17 @@ namespace SharpAlliance.Core.SubSystems
         public AnimationStates usPendingAnimation2;
         public CIV_GROUP ubCivilianGroup;
         // time changes...when a stat was changed according to GetJA2Clock();
-        public int uiChangeLevelTime;
-        public int uiChangeHealthTime;
-        public int uiChangeStrengthTime;
-        public int uiChangeDexterityTime;
-        public int uiChangeAgilityTime;
-        public int uiChangeWisdomTime;
-        public int uiChangeLeadershipTime;
-        public int uiChangeMarksmanshipTime;
-        public int uiChangeExplosivesTime;
-        public int uiChangeMedicalTime;
-        public int uiChangeMechanicalTime;
+        public uint uiChangeLevelTime;
+        public uint uiChangeHealthTime;
+        public uint uiChangeStrengthTime;
+        public uint uiChangeDexterityTime;
+        public uint uiChangeAgilityTime;
+        public uint uiChangeWisdomTime;
+        public uint uiChangeLeadershipTime;
+        public uint uiChangeMarksmanshipTime;
+        public uint uiChangeExplosivesTime;
+        public uint uiChangeMedicalTime;
+        public uint uiChangeMechanicalTime;
         public int uiUniqueSoldierIdValue; // the unique value every instance of a soldier gets - 1 is the first valid value
         public int bBeingAttackedCount;       // Being attacked counter
         public int[] bNewItemCount = new int[(int)InventorySlot.NUM_INV_SLOTS];

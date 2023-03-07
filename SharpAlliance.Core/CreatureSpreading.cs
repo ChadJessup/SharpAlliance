@@ -101,6 +101,7 @@ public class CreatureSpreading
                 return false;
             }
         }
+
         return true;
     }
 
@@ -121,3 +122,12 @@ public class CreatureSpreading
         return 0;
     }
 }
+
+public enum CREATURE_BATTLE
+{
+    CODE_NONE,
+    CODE_TACTICALLYADD,
+    CODE_TACTICALLYADD_WITHFOV,
+    CODE_PREBATTLEINTERFACE,
+    CODE_AUTORESOLVE,
+};

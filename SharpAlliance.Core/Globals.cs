@@ -63,9 +63,27 @@ public partial class Globals
 
     public const int MAX_ROTTING_CORPSES = 100;
 
+    public static int giHabitatedDistance = 0;
+    public static int giPopulationModifier = 0;
+    public static int giLairID = 0;
+    public static int giDestroyedLairID = 0;
 
-    public ROTTING_CORPSE[] gRottingCorpse = new ROTTING_CORPSE[MAX_ROTTING_CORPSES];
-    public int giNumRottingCorpse = 0;
+    //various information required for keeping track of the battle sector involved for
+    //prebattle interface, autoresolve, etc.
+    public static int gsCreatureInsertionCode = 0;
+    public static int gsCreatureInsertionGridNo = 0;
+    public static int gubNumCreaturesAttackingTown = 0;
+    public static int gubYoungMalesAttackingTown = 0;
+    public static int gubYoungFemalesAttackingTown = 0;
+    public static int gubAdultMalesAttackingTown = 0;
+    public static int gubAdultFemalesAttackingTown = 0;
+    public static CREATURE_BATTLE gubCreatureBattleCode = CREATURE_BATTLE.CODE_NONE;
+    public static int gubSectorIDOfCreatureAttack = 0;
+
+
+
+    public static ROTTING_CORPSE[] gRottingCorpse = new ROTTING_CORPSE[MAX_ROTTING_CORPSES];
+    public static int giNumRottingCorpse = 0;
 
 
     //IMPORTANT:
@@ -270,6 +288,10 @@ public partial class Globals
 
     public static Dictionary<SEC, SECTORINFO> SectorInfo = new();
 
+    public static bool gfSomeoneSaidMoraleQuote = false;
+
+    // UTILITY FUNCTIONS CALLED BY OVERHEAD.H
+    public static WorldDirections[] gDirectionFrom8to2 = { 0, 0, (WorldDirections)1, (WorldDirections)1, 0, (WorldDirections)1, (WorldDirections)1, 0 };
 
     public static SOLDIERTYPE? gpRequesterMerc = null;
     public static SOLDIERTYPE? gpRequesterTargetMerc = null;
@@ -1968,9 +1990,12 @@ public partial class Globals
 
     public const int NO_PENDING_ACTION = 255;
     public const AnimationStates NO_PENDING_ANIMATION = (AnimationStates)32001;
-    public const int NO_PENDING_DIRECTION = 253;
+    public const WorldDirections NO_PENDING_DIRECTION = (WorldDirections)253;
     public const int NO_PENDING_STANCE = 254;
     public const int NO_DESIRED_HEIGHT = 255;
+
+    public const InventorySlot NO_SLOT = (InventorySlot)(-1);
+
 
     public const int MOVEINTERRUPT = 0;
     public const int SIGHTINTERRUPT = 1;
@@ -2135,8 +2160,6 @@ public partial class Globals
     public const int NUM_EXPLOSION_SLOTS = 100;
 
     public const int MAX_DISTANCE_EXPLOSIVE_CAN_DESTROY_STRUCTURES = 2;
-    public const int EXPLOSION_FLAG_USEABSPOS = 0x00000001;
-    public const int EXPLOSION_FLAG_DISPLAYONLY = 0x00000002;
 
     public const int STRUCTURE_DAMAGE_EXPLOSION = 1;
     public const int STRUCTURE_DAMAGE_GUNFIRE = 2;

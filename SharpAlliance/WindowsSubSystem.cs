@@ -44,7 +44,7 @@ namespace SharpAlliance
             this.logger = logger;
             VeldridVideoManager = videoManager;
             this.input = inputManager;
-            this.fonts = fontSubSystem;
+            FontSubSystem = fontSubSystem;
             this.Initialize().AsTask().Wait();
         }
 
@@ -52,7 +52,7 @@ namespace SharpAlliance
         {
             await VeldridVideoManager.Initialize();
             await this.input.Initialize();
-            await this.fonts.Initialize();
+            await FontSubSystem.Initialize();
 
             this.PlatformConstruct();
 

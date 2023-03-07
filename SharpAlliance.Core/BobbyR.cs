@@ -136,35 +136,35 @@ public class BobbyR
 
         // Bobby's Name
         VeldridVideoManager.GetVideoObject(out hPixHandle, guiBobbyName);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBY_RAYS_NAME_X, BOBBY_RAYS_NAME_Y, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBY_RAYS_NAME_X, BOBBY_RAYS_NAME_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Plaque
         VeldridVideoManager.GetVideoObject(out hPixHandle, guiPlaque);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBYS_PLAQUES_X, BOBBYS_PLAQUES_Y, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBYS_PLAQUES_X, BOBBYS_PLAQUES_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Top Hinge
         VeldridVideoManager.GetVideoObject(out hPixHandle, guiTopHinge);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_TOPHINGE_X, BOBBIES_TOPHINGE_Y, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_TOPHINGE_X, BOBBIES_TOPHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Bottom Hinge
         VeldridVideoManager.GetVideoObject(out hPixHandle, guiBottomHinge);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_BOTTOMHINGE_X, BOBBIES_BOTTOMHINGE_Y, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_BOTTOMHINGE_X, BOBBIES_BOTTOMHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // StorePlaque
         VeldridVideoManager.GetVideoObject(out hStorePlaqueHandle, guiStorePlaque);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hStorePlaqueHandle, 0, BOBBIES_STORE_PLAQUE_X, BOBBIES_STORE_PLAQUE_Y, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hStorePlaqueHandle, 0, BOBBIES_STORE_PLAQUE_X, BOBBIES_STORE_PLAQUE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Handle
         VeldridVideoManager.GetVideoObject(out hPixHandle, guiHandle);
-        VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_HANDLE_X, BOBBIES_HANDLE_Y, VO_BLT_SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_HANDLE_X, BOBBIES_HANDLE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         /*
             if( !LaptopSaveInfo.fBobbyRSiteCanBeAccessed )
             {
                 // The undercontsruction graphic 
                 GetVideoObject(&hPixHandle, guiUnderConstructionImage );
-                BltVideoObject(FRAME_BUFFER, hPixHandle, 0,BOBBIES_FIRST_SENTENCE_X, BOBBIES_FIRST_SENTENCE_Y, VO_BLT_SRCTRANSPARENCY,null);
-                BltVideoObject(FRAME_BUFFER, hPixHandle, 0,BOBBIES_3RD_SENTENCE_X, BOBBIES_3RD_SENTENCE_Y, VO_BLT_SRCTRANSPARENCY,null);
+                BltVideoObject(FRAME_BUFFER, hPixHandle, 0,BOBBIES_FIRST_SENTENCE_X, BOBBIES_FIRST_SENTENCE_Y, VO_BLT.SRCTRANSPARENCY,null);
+                BltVideoObject(FRAME_BUFFER, hPixHandle, 0,BOBBIES_3RD_SENTENCE_X, BOBBIES_3RD_SENTENCE_Y, VO_BLT.SRCTRANSPARENCY,null);
             }
         */
 
@@ -229,7 +229,7 @@ public class BobbyR
         }
 
         RenderWWWProgramTitleBar();
-        InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+        VeldridVideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
     }
 
     bool InitBobbyRWoodBackground()
@@ -265,7 +265,7 @@ public class BobbyR
             uiPosX = BOBBY_WOOD_BACKGROUND_X;
             for (x = 0; x < 4; x++)
             {
-                VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hWoodBackGroundHandle, 0, uiPosX, uiPosY, VO_BLT_SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hWoodBackGroundHandle, 0, uiPosX, uiPosY, VO_BLT.SRCTRANSPARENCY, null);
                 uiPosX += BOBBY_WOOD_BACKGROUND_WIDTH;
             }
             uiPosY += BOBBY_WOOD_BACKGROUND_HEIGHT;
@@ -355,7 +355,7 @@ public class BobbyR
             uiPosX = LAPTOP_SCREEN_UL_X;
             for(x=0; x<ubNumX; x++)
             {
-              BltVideoObject(FRAME_BUFFER, hBackGroundHandle, 0,uiPosX, uiPosY, VO_BLT_SRCTRANSPARENCY,null);
+              BltVideoObject(FRAME_BUFFER, hBackGroundHandle, 0,uiPosX, uiPosY, VO_BLT.SRCTRANSPARENCY,null);
                 uiPosX += usWidth;
             }
             uiPosY += usHeight;
@@ -392,8 +392,8 @@ public class BobbyR
         {
             // The undercontsruction graphic 
             VeldridVideoManager.GetVideoObject(out hPixHandle, guiUnderConstructionImage);
-            VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT_SRCTRANSPARENCY, null);
-            VeldridVideoManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT_SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT.SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT.SRCTRANSPARENCY, null);
 
             FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.UNDER_CONSTRUCTION], BOBBYR_UNDER_CONSTRUCTION_TEXT_X, BOBBYR_UNDER_CONSTRUCTION_TEXT_Y, BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH, FontStyle.FONT16ARIAL, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.INVALIDATE_TEXT);
 
@@ -480,7 +480,7 @@ public class BobbyR
                 if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
                 {
                     // in case his store inventory list is wrong, make sure this category of item can be sold used
-                    if (CanDealerItemBeSoldUsed(i))
+                    if (ArmsDealerInit.CanDealerItemBeSoldUsed(i))
                     {
                         LaptopSaveInfo.BobbyRayUsedInventory[usBobbyrIndex].usItemIndex = i;
                         usBobbyrIndex++;
@@ -633,11 +633,11 @@ public class BobbyR
 
 
         // decide if he can get stock for this item (items are reordered an entire batch at a time)
-        if (ItemTransactionOccurs(-1, usItemIndex, DEALER_BUYING, ubBobbyRayNewUsed))
+        if (ArmsDealerInit.ItemTransactionOccurs((ARMS_DEALER)(-1), usItemIndex, DEALER_BUYING, ubBobbyRayNewUsed))
         {
             if (ubBobbyRayNewUsed == BOBBY_RAY.NEW)
             {
-                ubItemsOrdered = HowManyItemsToReorder(storeInventory[(int)usItemIndex, (int)ubBobbyRayNewUsed], ubCurrentlyOnHand);
+                ubItemsOrdered = ArmsDealerInit.HowManyItemsToReorder(storeInventory[(int)usItemIndex, (int)ubBobbyRayNewUsed], ubCurrentlyOnHand);
             }
             else
             {

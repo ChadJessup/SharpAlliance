@@ -201,7 +201,7 @@ public class GameClock
 
     void RenderClock(int sX, int sY)
     {
-        FontSubSystem.SetFont(CLOCK_FONT);
+        FontSubSystem.SetFont(FontStyle.CLOCK_FONT);
         FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
 
         // Are we in combat?
@@ -1142,7 +1142,7 @@ public class GameClock
         if ((gfPauseDueToPlayerGamePause == true) && (gfGamePaused == true) && (iPausedPopUpBox != -1))
         {
             RenderMercPopUpBoxFromIndex(iPausedPopUpBox, (int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), FRAME_BUFFER);
-            InvalidateRegion((int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), (int)(320 - usPausedActualWidth / 2 + usPausedActualWidth), (int)(200 - usPausedActualHeight / 2 + usPausedActualHeight));
+            VeldridVideoManager.InvalidateRegion((int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), (int)(320 - usPausedActualWidth / 2 + usPausedActualWidth), (int)(200 - usPausedActualHeight / 2 + usPausedActualHeight));
         }
 
         // reset we've just finished a pause by the player

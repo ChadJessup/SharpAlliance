@@ -15,7 +15,7 @@ public class Campaign
         Debug.Assert(pSoldier.bActive);
 
         // ignore non-player soldiers
-        if (!PTR_OURTEAM)
+        if (!PTR_OURTEAM(pSoldier))
         {
             return;
         }
@@ -670,7 +670,7 @@ public class Campaign
                             //	DEF: 03/06/99 Now sets an event that will be processed later in the day
                             //						ubEmailOffset = MERC_UP_LEVEL_BIFF + MERC_UP_LEVEL_LENGTH_BIFF * ( ubMercMercIdValue ); 
                             //						AddEmail( ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, SPECK_FROM_MERC, GetWorldTotalMin() );
-                            AddStrategicEvent(EVENT_MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, GetWorldTotalMin() + 60 + Globals.Random.Next(60), ubMercMercIdValue);
+                            AddStrategicEvent(EVENT_MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, GameClock.GetWorldTotalMin() + 60 + Globals.Random.Next(60), ubMercMercIdValue);
 
                             fChangeSalary = true;
                             break;
@@ -1228,7 +1228,7 @@ public class Campaign
             if (iProfileID < NPCID.BIFF)
             {
                 //send an email to the player telling the player that a merc died
-                Emails.AddEmailWithSpecialData(MERC_DIED_ON_OTHER_ASSIGNMENT, MERC_DIED_ON_OTHER_ASSIGNMENT_LENGTH, AIM_SITE, GetWorldTotalMin(), 0, iProfileID);
+                Emails.AddEmailWithSpecialData(MERC_DIED_ON_OTHER_ASSIGNMENT, MERC_DIED_ON_OTHER_ASSIGNMENT_LENGTH, AIM_SITE, GameClock.GetWorldTotalMin(), 0, iProfileID);
             }
         }
     }

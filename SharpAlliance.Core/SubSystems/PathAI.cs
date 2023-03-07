@@ -68,7 +68,7 @@ public class PathAI
             return (0);
         }
 
-        if (gGameSettings.fOptions[TOPTION.ALWAYS_SHOW_MOVEMENT_PATH])
+        if (GameSettings.fOptions[TOPTION.ALWAYS_SHOW_MOVEMENT_PATH])
         {
             bPlot = true;
         }
