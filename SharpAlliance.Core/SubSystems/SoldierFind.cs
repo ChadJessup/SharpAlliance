@@ -764,7 +764,7 @@ public class SoldierFind
         return (IsometricUtils.GridNoOnVisibleWorldTile(pSoldier.sGridNo));
     }
 
-    bool SoldierLocationRelativeToScreen(int sGridNo, int usReasonID, out int pbDirection, out ScrollDirection puiScrollFlags)
+    bool SoldierLocationRelativeToScreen(int sGridNo, int usReasonID, out WorldDirections pbDirection, out ScrollDirection puiScrollFlags)
     {
         int sWorldX;
         int sWorldY;
@@ -797,7 +797,7 @@ public class SoldierFind
 
         // Get direction
         //*pbDirection = atan8( sScreenCenterX, sScreenCenterY, sWorldX, sWorldY );
-        pbDirection = atan8(Globals.gsRenderCenterX, Globals.gsRenderCenterY, (int)(sX), (int)(sY));
+        pbDirection = SoldierControl.atan8(Globals.gsRenderCenterX, Globals.gsRenderCenterY, (int)(sX), (int)(sY));
 
         // Check values!
         if (sWorldX > (sScreenCenterX + 20))

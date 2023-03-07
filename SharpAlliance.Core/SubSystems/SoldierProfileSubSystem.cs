@@ -123,7 +123,7 @@ public class SoldierProfileSubSystem
             // Default is the ubCharNum
             Globals.gMercProfiles[npcId].ubFaceIndex = uiLoop;
 
-            if (!Globals.gGameSettings.GunNut)
+            if (!Globals.gGameOptions.GunNut)
             {
                 // CJC: replace guns in profile if they aren't available
                 for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
@@ -326,7 +326,7 @@ public class SoldierProfileSubSystem
         // EASY:		3, 9%			4, 42%		5, 49%
         // MEDIUM:	3, 25%		4, 50%		5, 25%
         // HARD:		3, 49%		4, 42%		5, 9%
-        switch (Globals.gGameSettings.DifficultyLevel)
+        switch (Globals.gGameOptions.ubDifficultyLevel)
         {
             case DifficultyLevel.Easy:
                 uiChance = 70;

@@ -201,7 +201,7 @@ public class GameClock
 
     void RenderClock(int sX, int sY)
     {
-        FontSubSystem.SetFont(FontStyle.CLOCK_FONT);
+        FontSubSystem.SetFont(CLOCK_FONT);
         FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
 
         // Are we in combat?
@@ -1109,8 +1109,8 @@ public class GameClock
             fCreated = true;
 
             // get region x and y values
-            sX = (gClockMouseRegion).RegionTopLeftX;
-            sY = (gClockMouseRegion).RegionTopLeftY;
+            sX = (gClockMouseRegion).Bounds.Left;
+            sY = (gClockMouseRegion).Bounds.Top;
 
             //re create region on top of this
             RemoveMouseRegionForPauseOfClock();

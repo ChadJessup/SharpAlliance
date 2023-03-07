@@ -287,7 +287,7 @@ public class History
     void DrawHistoryTitleText()
     {
         // setup the font stuff
-        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_HEADER_FONT);
+        FontSubSystem.SetFont(HISTORY_HEADER_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -657,7 +657,7 @@ public class History
         int usX, usY;
 
         // font stuff
-        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFont(HISTORY_TEXT_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -713,7 +713,7 @@ public class History
         int sX = 0, sY = 0;
 
         // setup the font stuff
-        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFont(HISTORY_TEXT_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -828,19 +828,19 @@ public class History
         // MAX_PER_PAGE...it will get the date range and the page number
         int iLastPage = 0;
         int iCounter = 0;
-        int uiLastDate;
+        uint uiLastDate;
         history pTempHistory = pHistoryListHead;
         string sString;
 
 
 
         // setup the font stuff
-        FontSubSystem.SetFont(FontStyle.Globals.HISTORY_TEXT_FONT);
+        FontSubSystem.SetFont(HISTORY_TEXT_FONT);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
-        if (!pCurrentHistory)
+        if (pCurrentHistory is null)
         {
             wprintf(sString, "%s  %d / %d", pHistoryHeaders[1], 1, 1);
             mprintf(Globals.PAGE_NUMBER_X, Globals.PAGE_NUMBER_Y, sString);
@@ -907,6 +907,13 @@ public class History
     {
         string sString;
 
+        NPCID npcId = NO_PROFILE;
+
+        if (pHistory.ubSecondCode is NPCID id)
+        {
+            npcId = id;
+        }
+
         switch (pHistory.ubCode)
         {
             case HISTORY.ENTERED_HISTORY_MODE:
@@ -914,18 +921,18 @@ public class History
                 break;
 
             case HISTORY.HIRED_MERC_FROM_AIM:
-                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_AIM], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_AIM], Globals.gMercProfiles[npcId].zName);
                 break;
 
             case HISTORY.MERC_KILLED:
-                if (pHistory.ubSecondCode != NO_PROFILE)
+                if (npcId != NO_PROFILE)
                 {
-                    wprintf(pString, pHistoryStrings[HISTORY.MERC_KILLED], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
+                    wprintf(pString, pHistoryStrings[HISTORY.MERC_KILLED], Globals.gMercProfiles[npcId].zName);
                 }
                 break;
 
             case HISTORY.HIRED_MERC_FROM_MERC:
-                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_MERC], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.HIRED_MERC_FROM_MERC], Globals.gMercProfiles[npcId].zName);
                 break;
 
             case HISTORY.SETTLED_ACCOUNTS_AT_MERC:
@@ -938,42 +945,42 @@ public class History
                 wprintf(pString, pHistoryStrings[HISTORY.CHARACTER_GENERATED]);
                 break;
             case (HISTORY.PURCHASED_INSURANCE):
-                wprintf(pString, pHistoryStrings[HISTORY.PURCHASED_INSURANCE], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.PURCHASED_INSURANCE], Globals.gMercProfiles[npcId].zNickname);
                 break;
             case (HISTORY.CANCELLED_INSURANCE):
-                wprintf(pString, pHistoryStrings[HISTORY.CANCELLED_INSURANCE], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.CANCELLED_INSURANCE], Globals.gMercProfiles[npcId].zNickname);
                 break;
             case (HISTORY.INSURANCE_CLAIM_PAYOUT):
-                wprintf(pString, pHistoryStrings[HISTORY.INSURANCE_CLAIM_PAYOUT], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.INSURANCE_CLAIM_PAYOUT], Globals.gMercProfiles[npcId].zNickname);
                 break;
 
             case HISTORY.EXTENDED_CONTRACT_1_DAY:
-                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_DAY], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_DAY], Globals.gMercProfiles[npcId].zNickname);
                 break;
 
             case HISTORY.EXTENDED_CONTRACT_1_WEEK:
-                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_WEEK], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_1_WEEK], Globals.gMercProfiles[npcId].zNickname);
                 break;
 
             case HISTORY.EXTENDED_CONTRACT_2_WEEK:
-                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_2_WEEK], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.EXTENDED_CONTRACT_2_WEEK], Globals.gMercProfiles[npcId].zNickname);
                 break;
 
             case (HISTORY.MERC_FIRED):
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_FIRED], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_FIRED], Globals.gMercProfiles[pnpcId].zNickname);
                 break;
 
             case (HISTORY.MERC_QUIT):
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_QUIT], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_QUIT], Globals.gMercProfiles[npcId].zNickname);
                 break;
 
             case (HISTORY.QUEST_STARTED):
-                GetQuestStartedString(pHistory.ubSecondCode, sString);
+                GetQuestStartedString((int)pHistory.ubSecondCode, out sString);
                 wprintf(pString, sString);
 
                 break;
             case (HISTORY.QUEST_FINISHED):
-                GetQuestEndedString(pHistory.ubSecondCode, sString);
+                GetQuestEndedString((int)pHistory.ubSecondCode, out sString);
                 wprintf(pString, sString);
 
                 break;
@@ -1562,15 +1569,17 @@ public class History
         return (uiTime);
     }
 
-    void GetQuestStartedString(int ubQuestValue, string sQuestString)
+    void GetQuestStartedString(int ubQuestValue, out string sQuestString)
     {
+        sQuestString = "QUESTSTARTED";
         // open the file and copy the string
         LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", sQuestString, 160 * (ubQuestValue * 2), 160);
     }
 
 
-    void GetQuestEndedString(int ubQuestValue, string sQuestString)
+    void GetQuestEndedString(int ubQuestValue, out string sQuestString)
     {
+        sQuestString = "QUESTENDED";
         // open the file and copy the string
         LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", sQuestString, 160 * ((ubQuestValue * 2) + 1), 160);
     }

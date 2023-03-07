@@ -432,4 +432,9 @@ public class IsometricUtils
 
         return (true);
     }
+
+    internal static bool IsPointInScreenRectWithRelative(int sX, int sY, Rectangle aRect, out int sRelX, out int sRelY)
+    {
+        throw new NotImplementedException();
+    }
 }

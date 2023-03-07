@@ -54,12 +54,12 @@ public class MainMenuScreen : IScreen
         RenderDirty renderDirtySubSystem)
     {
         this.cursor = cursorSubSystem;
-        ClockManager = clockManager;
+        this.clock = clockManager;
         this.input = inputManager;
         this.music = musicManager;
-        MouseSubSystem = mouseSubSystem;
+        this.mouse = mouseSubSystem;
         this.options = gameOptions;
-        FontSubSystem = fontSubSystem;
+        this.fonts = fontSubSystem;
         this.screens = screenManager;
         this.gameInit = gameInit;
         this.renderDirty = renderDirtySubSystem;

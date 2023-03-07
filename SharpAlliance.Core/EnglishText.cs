@@ -26,6 +26,119 @@ public static class EnglishText
         "There isn't much you can do on this screen until you arrive in Arulco. When you've finalized your team, click on the Time Compression button at the lower right. This will advance time until your team arrives in Arulco.",
     };
 
+    // paused game strings
+    public static string[] pPausedGameText =
+    {
+        "Game Paused",
+        "Resume Game (|P|a|u|s|e)",
+        "Pause Game (|P|a|u|s|e)",
+    };
+
+
+    public static string[] pMessageStrings2 =
+    {
+        "Exit Game?",
+        "OK",
+        "YES",
+        "NO",
+        "CANCEL",
+        "REHIRE",
+        "LIE",
+        "No description", //Save slots that don't have a description.
+    	"Game Saved.",
+        "Game Saved.",
+        "QuickSave", //The name of the quicksave file (filename, text reference)
+    	"SaveGame",	//The name of the normal savegame file, such as SaveGame01, SaveGame02, etc.
+    	"sav",				//The 3 character dos extension (represents sav)
+    	"..\\SavedGames", //The name of the directory where games are saved.
+    	"Day",
+        "Mercs",
+        "Empty Slot", //An empty save game slot
+    	"Demo",				//Demo of JA2
+    	"Debug",				//State of development of a project (JA2) that is a debug build
+    	"Release",			//Release build for JA2
+    	"rpm",					//Abbreviation for Rounds per minute -- the potential # of bullets fired in a minute.
+    	"min",					//Abbreviation for minute.
+    	"m",						//One character abbreviation for meter (metric distance measurement unit).
+    	"rnds",				//Abbreviation for rounds (# of bullets)
+    	"kg",					//Abbreviation for kilogram (metric weight measurement unit)
+    	"lb",					//Abbreviation for pounds (Imperial weight measurement unit)
+    	"Home",				//Home as in homepage on the internet.
+    	"USD",					//Abbreviation to US dollars
+    	"n/a",					//Lowercase acronym for not applicable.
+    	"Meanwhile",		//Meanwhile
+    	"%s has arrived in sector %s%s", //Name/Squad has arrived in sector A9.  Order must not change without notifying
+    																		//SirTech
+    	"Version",
+        "Empty Quick Save Slot",
+        "This slot is reserved for Quick Saves made from the tactical and map screens using ALT+S.",
+        "Opened",
+        "Closed",
+        "You are running low on disk space.  You only have %sMB free and Jagged Alliance 2 requires %sMB.",
+        "Hired %s from AIM",
+        "%s has caught %s.",		//'Merc name' has caught 'item' -- let SirTech know if name comes after item.
+    	"%s has taken the drug.", //'Merc name' has taken the drug
+    	"%s has no medical skill",//'Merc name' has no medical skill.
+    
+    	//CDRom errors (such as ejecting CD while attempting to read the CD)
+    	"The integrity of the game has been compromised.",
+        "ERROR: Ejected CD-ROM",
+    
+    	//When firing heavier weapons in close quarters, you may not have enough room to do so.
+    	"There is no room to fire from here.",
+    	
+    	//Can't change stance due to objects in the way...
+    	"Cannot change stance at this time.",
+    
+    	//Simple text indications that appear in the game, when the merc can do one of these things.
+    	"Drop",
+        "Throw",
+        "Pass",
+    
+        "%s passed to %s.", //"Item" passed to "merc".  Please try to keep the item %s before the merc %s, otherwise,
+    											 //must notify SirTech.
+    	"No room to pass %s to %s.", //pass "item" to "merc".  Same instructions as above.
+    
+    	//A list of attachments appear after the items.  Ex:  Kevlar vest ( Ceramic Plate 'Attached )'
+    	" Attached )",
+    
+    	//Cheat modes
+    	"Cheat level ONE reached",
+        "Cheat level TWO reached",
+    
+    	//Toggling various stealth modes
+    	"Squad on stealth mode.",
+        "Squad off stealth mode.",
+        "%s on stealth mode.",
+        "%s off stealth mode.",
+    
+    	//Wireframes are shown through buildings to reveal doors and windows that can't otherwise be seen in 
+    	//an isometric engine.  You can toggle this mode freely in the game.
+    	"Extra Wireframes On",
+        "Extra Wireframes Off",
+    
+    	//These are used in the cheat modes for changing levels in the game.  Going from a basement level to
+    	//an upper level, etc.  
+    	"Can't go up from this level...",
+        "There are no lower levels...",
+        "Entering basement level %d...",
+        "Leaving basement...",
+        "'s",		// used in the shop keeper inteface to mark the ownership of the item eg Red's gun
+    	"Follow mode OFF.",
+        "Follow mode ON.",
+        "3D Cursor OFF.",
+        "3D Cursor ON.",
+        "Squad %d active.",
+        "You cannot afford to pay for %s's daily salary of %s",	//first %s is the mercs name, the seconds is a string containing the salary
+    	"Skip",
+        "%s cannot leave alone.",
+        "A save has been created called, SaveGame99.sav.  If needed, rename it to SaveGame01 - SaveGame10 and then you will have access to it in the Load screen.",
+        "%s drank some %s",
+        "A package has arrived in Drassen.",
+        "%s should arrive at the designated drop-off point (sector %s) on day %d, at approximately %s.",		//first %s is mercs name, next is the sector location and name where they will be arriving in, lastely is the day an the time of arrival
+    	"History log updated.",
+    };
+
     //option Text
     public static string[] zOptionsToggleText = new string[]
     {
@@ -72,7 +185,7 @@ public static class EnglishText
         { GameInitOptionScreenText.GIO_DISABLED_FOR_THE_DEMO_TEXT, "Disabled for Demo" },
     };
 
-    public static string [] pTraverseStrings =
+    public static string[] pTraverseStrings =
     {
         "Previous",
         "Next",
@@ -80,7 +193,7 @@ public static class EnglishText
 
     // Text for Bobby Ray's Home Page
 
-    public static string[] BobbyRaysFrontText = 
+    public static string[] BobbyRaysFrontText =
     {
     	//Details on the web site
     

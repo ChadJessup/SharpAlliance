@@ -4,6 +4,11 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class NPC
 {
+    internal static void TriggerNPCRecordImmediately(NPCID ubNPCNumber, int usTriggerEvent)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool ReloadAllQuoteFiles()
     {
         return true;

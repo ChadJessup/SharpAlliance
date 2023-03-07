@@ -55,7 +55,7 @@ public class DialogControl
 
             if (Globals.fTextBoxMouseRegionCreated)
             {
-                MSYS_RemoveRegion(Globals.gTextBoxMouseRegion);
+                MouseSubSystem.MSYS_RemoveRegion(Globals.gTextBoxMouseRegion);
                 Globals.fTextBoxMouseRegionCreated = false;
             }
 

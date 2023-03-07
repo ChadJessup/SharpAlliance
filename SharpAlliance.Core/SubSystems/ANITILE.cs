@@ -27,7 +27,7 @@ public struct ANITILE_PARAMS
     public int uiKeyFrame1Code;         // Key frame code
     public int ubKeyFrame2;                  // Key frame 2
     public int uiKeyFrame2Code;         // Key frame code
-    public int uiUserData;
+    public object uiUserData;
     public int ubUserData2;
     public int uiUserData3;
 }

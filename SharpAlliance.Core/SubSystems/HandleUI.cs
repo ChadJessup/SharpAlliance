@@ -563,8 +563,8 @@ public class HandleUI
                         new(0, 0, Globals.gsVIEWPORT_END_X, Globals.gsVIEWPORT_WINDOW_END_Y),
                         MSYS_PRIORITY.NORMAL,
                         CURSOR.VIDEO_NO_CURSOR,
-                        MouseSubSystem.MSYS_NO_CALLBACK,
-                        MouseSubSystem.MSYS_NO_CALLBACK);
+                        MSYS_NO_CALLBACK,
+                        MSYS_NO_CALLBACK);
 
 
                     // Adjust where we blit our cursor!
@@ -583,7 +583,7 @@ public class HandleUI
                         // Define region for viewport
                         MouseSubSystem.MSYS_RemoveRegion(Globals.gViewportRegion);
                         MouseSubSystem.MSYS_DefineRegion(Globals.gViewportRegion, new(0, 0, Globals.gsVIEWPORT_END_X, 480), MSYS_PRIORITY.NORMAL,
-                                             CURSOR.VIDEO_NO_CURSOR, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
+                                             CURSOR.VIDEO_NO_CURSOR, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
 
                         Globals.gsGlobalCursorYOffset = (480 - Globals.gsVIEWPORT_WINDOW_END_Y);
                         this.cursors.SetCurrentCursorFromDatabase(Globals.gUICursors[Globals.guiNewUICursor].usFreeCursorName);
@@ -605,8 +605,8 @@ public class HandleUI
                         new(0, 0, Globals.gsVIEWPORT_END_X, Globals.gsVIEWPORT_WINDOW_END_Y),
                         MSYS_PRIORITY.NORMAL,
                         CURSOR.VIDEO_NO_CURSOR,
-                        MouseSubSystem.MSYS_NO_CALLBACK,
-                        MouseSubSystem.MSYS_NO_CALLBACK);
+                        MSYS_NO_CALLBACK,
+                        MSYS_NO_CALLBACK);
 
                     // Adjust where we blit our cursor!
                     Globals.gsGlobalCursorYOffset = 0;
@@ -619,7 +619,7 @@ public class HandleUI
             if (Globals.gfUIShowExitExitGrid)
             {
                 int usMapPos;
-                byte ubRoomNum;
+                int? ubRoomNum;
 
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
@@ -629,7 +629,7 @@ public class HandleUI
                     if (Globals.gusSelectedSoldier != Globals.NOBODY && Globals.MercPtrs[Globals.gusSelectedSoldier].bLevel == 0)
                     {
                         // ATE: Is this place revealed?
-                        if (!InARoom(usMapPos, out ubRoomNum) || (InARoom(usMapPos, out ubRoomNum) && Globals.gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)))
+                        if (!RenderFun.InARoom(usMapPos, out ubRoomNum) || (RenderFun.InARoom(usMapPos, out ubRoomNum) && Globals.gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)))
                         {
                             if (sOldExitGridNo != usMapPos)
                             {
@@ -4499,15 +4499,15 @@ public class HandleUI
             //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
             MouseSubSystem.MSYS_DefineRegion(Globals.gDisableRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
-                                 CURSOR.WAIT, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
+                                 CURSOR.WAIT, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
             // Add region
             MouseSubSystem.MSYS_AddRegion(ref Globals.gDisableRegion);
 
             //Globals.guiPendingOverrideEvent = LOCKUI_MODE;
 
             // UnPause time!
-            PauseGame();
-            LockPauseState(16);
+            GameClock.PauseGame();
+            GameClock.LockPauseState(16);
         }
 
         return (ScreenName.GAME_SCREEN);
@@ -4540,8 +4540,8 @@ public class HandleUI
             if (!(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)))
             {
                 // UnPause time!
-                UnLockPauseState();
-                UnPauseGame();
+                GameClock.UnLockPauseState();
+                GameClock.UnPauseGame();
             }
         }
 
@@ -4557,8 +4557,8 @@ public class HandleUI
             // Remove region
             MouseSubSystem.MSYS_RemoveRegion(Globals.gDisableRegion);
 
-            UnLockPauseState();
-            UnPauseGame();
+            GameClock.UnLockPauseState();
+            GameClock.UnPauseGame();
 
         }
 
@@ -4571,8 +4571,8 @@ public class HandleUI
             // Remove region
             MouseSubSystem.MSYS_RemoveRegion(Globals.gUserTurnRegion);
 
-            UnLockPauseState();
-            UnPauseGame();
+            GameClock.UnLockPauseState();
+            GameClock.UnPauseGame();
         }
     }
 
@@ -5016,7 +5016,7 @@ public class HandleUI
             //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
             MouseSubSystem.MSYS_DefineRegion(Globals.gUserTurnRegion, new Rectangle(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
-                                 CURSOR.WAIT, MouseSubSystem.MSYS_NO_CALLBACK, MouseSubSystem.MSYS_NO_CALLBACK);
+                                 CURSOR.WAIT, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
             // Add region
             MouseSubSystem.MSYS_AddRegion(ref Globals.gUserTurnRegion);
 
@@ -5025,8 +5025,8 @@ public class HandleUI
             PathAI.ErasePath(true);
 
             // Pause time!
-            PauseGame();
-            LockPauseState(17);
+            GameClock.PauseGame();
+            GameClock.LockPauseState(17);
         }
 
         return (ScreenName.GAME_SCREEN);
@@ -5060,8 +5060,8 @@ public class HandleUI
             TurnOffTeamsMuzzleFlashes(Globals.gbPlayerNum);
 
             // UnPause time!
-            UnLockPauseState();
-            UnPauseGame();
+            GameClock.UnLockPauseState();
+            GameClock.UnPauseGame();
         }
 
         return (ScreenName.GAME_SCREEN);

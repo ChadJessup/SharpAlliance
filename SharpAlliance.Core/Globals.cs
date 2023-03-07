@@ -16,6 +16,20 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public static bool gfTacticalTraversal = false;
+    public static GROUP? gpTacticalTraversalGroup = null;
+    public static SOLDIERTYPE? gpTacticalTraversalChosenSoldier = null;
+
+
+    public static bool gfAutomaticallyStartAutoResolve = false;
+    public static bool gfAutoAmbush = false;
+    public static bool gfHighPotentialForAmbush = false;
+    public static bool gfGotoSectorTransition = false;
+    public static bool gfEnterAutoResolveMode = false;
+    public static bool gfEnteringMapScreenToEnterPreBattleInterface = false;
+    public static bool gfIgnoreAllInput =false;
+
+
     public const int MAX_MOVEMENT_NOISE = 9;
     public const FontColor COLOR1 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGREEN;
     public const FontColor COLOR2 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGRAY2;

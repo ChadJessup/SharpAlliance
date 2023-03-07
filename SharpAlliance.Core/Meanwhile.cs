@@ -484,16 +484,16 @@ public class Meanwhile
                 gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_MERCS;
             }
 
-            TriggerNPCRecordImmediately(gCurrentMeanwhileDef.ubNPCNumber, (int)gCurrentMeanwhileDef.usTriggerEvent);
+            NPC.TriggerNPCRecordImmediately(gCurrentMeanwhileDef.ubNPCNumber, (int)gCurrentMeanwhileDef.usTriggerEvent);
         }
     }
 
 
 
 
-    void BeginMeanwhileCallBack(int bExitValue)
+    void BeginMeanwhileCallBack(MessageBoxReturnCode bExitValue)
     {
-        if (bExitValue == MSG_BOX_RETURN_OK || bExitValue == MSG_BOX_RETURN_YES)
+        if (bExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_OK || bExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
         {
             gTacticalStatus.uiFlags |= TacticalEngineStatus.ENGAGED_IN_CONV;
             // Increment reference count...
@@ -505,8 +505,8 @@ public class Meanwhile
         {
             // skipped scene!
             ProcessImplicationsOfMeanwhile();
-            UnLockPauseState();
-            UnPauseGame();
+            GameClock.UnLockPauseState();
+            GameClock.UnPauseGame();
         }
     }
 

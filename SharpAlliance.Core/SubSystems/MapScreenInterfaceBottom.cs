@@ -47,7 +47,7 @@ public class MapScreenInterfaceBottom
         }
 
         // if we're locked into paused time compression by some event that enforces that
-        if (PauseStateLocked())
+        if (GameClock.PauseStateLocked())
         {
             return (false);
         }

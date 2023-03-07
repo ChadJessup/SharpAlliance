@@ -49,6 +49,7 @@ public partial class Globals
     public static int gubVideoConferencingMode { get; internal set; }
     public static bool gfFirstBattleMeanwhileScenePending { get; internal set; }
     public static bool gfPlotPathToExitGrid { get; internal set; }
+    public static int giNPCReferenceCount { get; internal set; }
 
     public static bool gfTimeInterruptPause = false;
     public static bool fSuperCompression = false;

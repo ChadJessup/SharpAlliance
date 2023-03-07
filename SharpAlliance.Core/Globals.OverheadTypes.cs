@@ -133,11 +133,11 @@ public partial class Globals
     public const int SUB_ANIM_BIGGUYTHREATENSTANCE = 0x00000002;
 
     // DEFINE TEAMS
-    public const int OUR_TEAM = 0;
+    public const TEAM OUR_TEAM = 0;
     public const TEAM ENEMY_TEAM = TEAM.ENEMY_TEAM;
-    public const int CREATURE_TEAM = 2;
+    public const TEAM CREATURE_TEAM = TEAM.CREATURE_TEAM;
     public const TEAM MILITIA_TEAM = TEAM.MILITIA_TEAM;
-    public const int CIV_TEAM = 4;
+    public const TEAM CIV_TEAM = TEAM.CIV_TEAM;
     public const TEAM LAST_TEAM = TEAM.CIV_TEAM;
     public const int PLAYER_PLAN = 5;
 

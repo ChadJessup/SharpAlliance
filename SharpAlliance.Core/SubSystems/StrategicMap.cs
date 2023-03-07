@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using SharpAlliance.Core.Screens;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicMap
@@ -94,7 +96,7 @@ public class StrategicMap
         for (pSoldier = Globals.MercPtrs[cnt]; cnt <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID; cnt++)//, pSoldier++)
         {
             // If we are controllable 
-            if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == CurrentSquad())
+            if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && pSoldier.bAssignment == (Assignments)Squads.CurrentSquad())
             {
                 //Need to keep a copy of a good soldier, so we can access it later, and
                 //not more than once.

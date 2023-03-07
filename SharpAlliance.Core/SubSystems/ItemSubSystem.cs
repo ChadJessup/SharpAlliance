@@ -223,7 +223,7 @@ public class ItemSubSystem
         if (fBlowsUp)
         {
             // OK, Ignite this explosion!
-            IgniteExplosion(ubOwner, IsometricUtils.CenterX(sGridNo), IsometricUtils.CenterY(sGridNo), 0, sGridNo, pObject.usItem, bLevel);
+            ExplosionControl.IgniteExplosion(ubOwner, IsometricUtils.CenterX(sGridNo), IsometricUtils.CenterY(sGridNo), 0, sGridNo, pObject.usItem, bLevel);
 
             // Remove item!
             return (true);
@@ -288,7 +288,7 @@ public class ItemSubSystem
                     // FUN STUFF!  Check for explosives going off as a result!
                     if (Item[pObject.usItem].usItemClass.HasFlag(IC.EXPLOSV))
                     {
-                        if (CheckForChainReaction(pObject.usItem, pObject.bStatus[bLoop], bDamage, fOnGround))
+                        if (ItemSubSystem.CheckForChainReaction(pObject.usItem, pObject.bStatus[bLoop], bDamage, fOnGround))
                         {
                             return (true);
                         }
@@ -322,6 +322,16 @@ public class ItemSubSystem
         }
 
         return (false);
+    }
+
+    private static void RemoveObjFrom(OBJECTTYPE pObject, int bLoop)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static bool CheckForChainReaction(Items usItem, int v, int bDamage, bool fOnGround)
+    {
+        throw new NotImplementedException();
     }
 
     public static int CheckItemForDamage(Items usItem, int iMaxDamage)

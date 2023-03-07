@@ -84,7 +84,7 @@ public class BobbyR
 
             for (i = 0; i < BOBBIES_NUMBER_SIGNS; i++)
             {
-                MSYS_DisableRegion(gSelectedBobbiesSignMenuRegion[i]);
+                MouseSubSystem.MSYS_DisableRegion(gSelectedBobbiesSignMenuRegion[i]);
             }
 
             LaptopSaveInfo.ubHaveBeenToBobbyRaysAtLeastOnceWhileUnderConstruction = BOBBYR_VISITS.BEEN_TO_SITE_ONCE;
@@ -329,7 +329,7 @@ public class BobbyR
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            int ubNewPage = (int)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+            LAPTOP_MODE ubNewPage = (LAPTOP_MODE)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
             guiCurrentLaptopMode = ubNewPage;
             //		FindLastItemIndex(ubNewPage);
 
@@ -366,7 +366,7 @@ public class BobbyR
 
 
     static uint uiLastTime = 1;
-    static int usCount = 0;
+    static ushort usCount = 0;
     void HandleBobbyRUnderConstructionAni(bool fReset)
     {
         HVOBJECT hPixHandle;

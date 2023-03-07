@@ -54,6 +54,21 @@ public class SoundControl
         }
     }
 
+    private static void SoundSetPan(int iSoundSampleID, int bPan)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static int PositionSoundDir(int sGridNo)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void SoundSetVolume(int iSoundSampleID, int bVolume)
+    {
+        throw new NotImplementedException();
+    }
+
     private static int PositionSoundVolume(int bInitialVolume, int sGridNo)
     {
         int sWorldX, sWorldY;

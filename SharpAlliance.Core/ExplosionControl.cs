@@ -77,7 +77,7 @@ public class ExplosionControl
 
 
         // OK, go on!
-        ExpParams.uiFlags = EXPLOSION_FLAG_USEABSPOS;
+        ExpParams.uiFlags = EXPLOSION_FLAG.USEABSPOS;
         ExpParams.ubOwner = ubOwner;
         ExpParams.ubTypeID = Weapons.Explosive[Item[usItem].ubClassIndex].ubAnimationID;
         ExpParams.sX = sX;
@@ -166,7 +166,7 @@ public class ExplosionControl
         Items usItem;
         TerrainTypeDefines ubTerrainType;
         int bLevel;
-        int uiSoundID;
+        SoundDefine uiSoundID;
 
         ANITILE_PARAMS AniParams;
 
@@ -214,7 +214,7 @@ public class ExplosionControl
             AniParams.uiFlags |= ANITILEFLAGS.NOZBLITTER;
         }
 
-        if (uiFlags & EXPLOSION_FLAG_USEABSPOS)
+        if (uiFlags & EXPLOSION_FLAG.USEABSPOS)
         {
             AniParams.sX = sX;
             AniParams.sY = sY;
@@ -255,18 +255,18 @@ public class ExplosionControl
             }
         }
 
-        uiSoundID = uiExplosionSoundID[ubTypeID];
+        uiSoundID = uiExplosionSoundID[(int)ubTypeID];
 
-        if (uiSoundID == EXPLOSION_1)
+        if (uiSoundID == SoundDefine.EXPLOSION_1)
         {
             // Randomize
             if (Globals.Random.Next(2) == 0)
             {
-                uiSoundID = EXPLOSION_ALT_BLAST_1;
+                uiSoundID = SoundDefine.EXPLOSION_ALT_BLAST_1;
             }
         }
 
-        PlayJA2Sample(uiSoundID, RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
+       // PlayJA2Sample(uiSoundID, RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
 
     }
 
@@ -848,18 +848,18 @@ public class ExplosionControl
                         // CJC, Sept 16: if we destroy any wall of the brothel, make Kingpin's men hostile!
                         if (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.C && gbWorldSectorZ == 0)
                         {
-                            int ubRoom;
+                            int? ubRoom;
                             bool fInRoom;
 
-                            fInRoom = InARoom(sGridNo, out ubRoom);
+                            fInRoom = RenderFun.InARoom(sGridNo, out ubRoom);
                             if (!fInRoom)
                             {
                                 // try to south
-                                fInRoom = InARoom((int)(sGridNo + DirectionInc(WorldDirections.SOUTH)), out ubRoom);
+                                fInRoom = RenderFun.InARoom((int)(sGridNo + DirectionInc(WorldDirections.SOUTH)), out ubRoom);
                                 if (!fInRoom)
                                 {
                                     // try to east
-                                    fInRoom = InARoom((int)(sGridNo + DirectionInc(WorldDirections.EAST)), out ubRoom);
+                                    fInRoom = RenderFun.InARoom((int)(sGridNo + DirectionInc(WorldDirections.EAST)), out ubRoom);
                                 }
                             }
 
@@ -2225,16 +2225,17 @@ public class ExplosionControl
 
     bool HookerInRoom(int ubRoom)
     {
-        int ubLoop, ubTempRoom;
+        int ubLoop;
+        int? ubTempRoom;
         SOLDIERTYPE? pSoldier;
 
-        for (ubLoop = gTacticalStatus.Team[CIV_TEAM].bFirstID; ubLoop <= gTacticalStatus.Team[CIV_TEAM].bLastID; ubLoop++)
+        for (ubLoop = gTacticalStatus.Team[TEAM.CIV_TEAM].bFirstID; ubLoop <= gTacticalStatus.Team[TEAM.CIV_TEAM].bLastID; ubLoop++)
         {
             pSoldier = MercPtrs[ubLoop];
 
             if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && pSoldier.bNeutral > 0 && pSoldier.ubBodyType == MINICIV)
             {
-                if (InARoom(pSoldier.sGridNo, ubTempRoom) && ubTempRoom == ubRoom)
+                if (RenderFun.InARoom(pSoldier.sGridNo, out ubTempRoom) && ubTempRoom == ubRoom)
                 {
                     return (true);
                 }
@@ -3338,6 +3339,11 @@ public class ExplosionControl
 
     }
 
+    internal static void IgniteExplosion(int ubOwner, int v1, int v2, int v3, int sGridNo, Items usItem, int bLevel)
+    {
+        throw new NotImplementedException();
+    }
+
     public static int[] ubTransKeyFrame =
     {
         0,
@@ -3416,7 +3422,7 @@ public struct ExplosionQueueElement
 // Explosion Data
 public struct EXPLOSION_PARAMS
 {
-    public int uiFlags;
+    public EXPLOSION_FLAG uiFlags;
     public int ubOwner;
     public EXPLOSION_TYPES ubTypeID;
     public Items usItem;

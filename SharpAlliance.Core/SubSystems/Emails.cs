@@ -302,7 +302,7 @@ namespace SharpAlliance.Core.SubSystems
             // draw the text at the top of the screen
 
             // font stuff
-            FontSubSystem.SetFont(FontStyle.EMAIL_WARNING_FONT);
+            FontSubSystem.SetFont(EMAIL_WARNING_FONT);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -1050,7 +1050,7 @@ namespace SharpAlliance.Core.SubSystems
             return;
         }
 
-        void ClearPages()
+        public static void ClearPages()
         {
             // run through list of message pages and set to -1
             PagePtr? pPage = pPageList;
@@ -1191,7 +1191,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (fRead)
             {
-                FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
+                FontSubSystem.SetFont(MESSAGE_FONT);
             }
             else
             {
@@ -1200,7 +1200,7 @@ namespace SharpAlliance.Core.SubSystems
 
             mprintf(SENDER_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), pSenderNameList[ubSender]);
 
-            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
+            FontSubSystem.SetFont(MESSAGE_FONT);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
             return;
         }
@@ -1215,7 +1215,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (fRead)
             {
-                FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
+                FontSubSystem.SetFont(MESSAGE_FONT);
             }
             else
             {
@@ -1225,7 +1225,7 @@ namespace SharpAlliance.Core.SubSystems
             wprintf(sString, "%s %d", pDayStrings[0], iDate / (24 * 60));
             mprintf(DATE_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), sString);
 
-            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
+            FontSubSystem.SetFont(MESSAGE_FONT);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
             return;
         }
@@ -1259,7 +1259,7 @@ namespace SharpAlliance.Core.SubSystems
             // now we have current page, display it
             pEmail = GetEmailMessage(pPage.iIds[iCounter]);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-            FontSubSystem.SetFont(FontStyle.EMAIL_TEXT_FONT);
+            FontSubSystem.SetFont(EMAIL_TEXT_FONT);
 
 
             // draw each line of the list for this page
@@ -1897,8 +1897,14 @@ namespace SharpAlliance.Core.SubSystems
                 ButtonSubSystem.SetButtonCursor(giNewMailButton[0], CURSOR.LAPTOP_SCREEN);
 
                 // set up screen mask region
-                MouseSubSystem.MSYS_DefineRegion(pScreenMask, 0, 0, 640, 480,
-                    MSYS_PRIORITY.HIGHEST - 3, CURSOR.LAPTOP_SCREEN, MSYS_NO_CALLBACK, Laptop.LapTopScreenCallBack);
+                MouseSubSystem.MSYS_DefineRegion(
+                    pScreenMask,
+                    new(0, 0, 640, 480),
+                    MSYS_PRIORITY.HIGHEST - 3,
+                    CURSOR.LAPTOP_SCREEN,
+                    MSYS_NO_CALLBACK,
+                    Laptop.LapTopScreenCallBack);
+
                 MouseSubSystem.MSYS_AddRegion(ref pScreenMask);
                 ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
                 fReDrawScreenFlag = true;
@@ -1965,7 +1971,7 @@ namespace SharpAlliance.Core.SubSystems
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
             // font stuff 
-            FontSubSystem.SetFont(FontStyle.EMAIL_HEADER_FONT);
+            FontSubSystem.SetFont(EMAIL_HEADER_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -1975,7 +1981,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // font stuff
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-            FontSubSystem.SetFont(FontStyle.EMAIL_WARNING_FONT);
+            FontSubSystem.SetFont(EMAIL_WARNING_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
 
             // printf warning string
@@ -2067,7 +2073,7 @@ namespace SharpAlliance.Core.SubSystems
                 // display Previous graphic
 
                 // font stuff
-                FontSubSystem.SetFont(FontStyle.TRAVERSE_EMAIL_FONT);
+                FontSubSystem.SetFont(TRAVERSE_EMAIL_FONT);
                 FontSubSystem.SetFontForeground(FontColor.FONT_RED);
                 FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -2081,7 +2087,7 @@ namespace SharpAlliance.Core.SubSystems
                 // display Next graphic
 
                 // font stuff
-                FontSubSystem.SetFont(FontStyle.TRAVERSE_EMAIL_FONT);
+                FontSubSystem.SetFont(TRAVERSE_EMAIL_FONT);
                 FontSubSystem.SetFontForeground(FontColor.FONT_RED);
                 FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -2434,7 +2440,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
             // font stuff 
-            FontSubSystem.SetFont(FontStyle.EMAIL_HEADER_FONT);
+            FontSubSystem.SetFont(EMAIL_HEADER_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -2448,7 +2454,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // shadow, font, and foreground
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
-            FontSubSystem.SetFont(FontStyle.EMAIL_WARNING_FONT);
+            FontSubSystem.SetFont(EMAIL_WARNING_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
 
             // draw text based on mail being read or not
@@ -2694,7 +2700,7 @@ namespace SharpAlliance.Core.SubSystems
             // draw email screen title text
 
             // font stuff
-            FontSubSystem.SetFont(FontStyle.EMAIL_TITLE_FONT);
+            FontSubSystem.SetFont(EMAIL_TITLE_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -2781,7 +2787,7 @@ namespace SharpAlliance.Core.SubSystems
             string sString;
 
             // font stuff	
-            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
+            FontSubSystem.SetFont(MESSAGE_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -2816,7 +2822,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
             // reset shadow
-            FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
+            FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
             return;
         }
 
@@ -2826,7 +2832,7 @@ namespace SharpAlliance.Core.SubSystems
             // this procedure will display the title of the email message display box
 
             // font stuff
-            FontSubSystem.SetFont(FontStyle.EMAIL_HEADER_FONT);
+            FontSubSystem.SetFont(EMAIL_HEADER_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -4294,7 +4300,7 @@ namespace SharpAlliance.Core.SubSystems
             string sString;
 
             // font stuff	
-            FontSubSystem.SetFont(FontStyle.MESSAGE_FONT);
+            FontSubSystem.SetFont(MESSAGE_FONT);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -4375,7 +4381,7 @@ namespace SharpAlliance.Core.SubSystems
             // parse current page and max number of pages to email
             wprintf(sString, "%d / %d", (giMessagePage + 1), (giNumberOfPagesToCurrentEmail - 1));
 
-            FontSubSystem.SetFont(FontStyle.FontColor.FONT12ARIAL);
+            FontSubSystem.SetFont(FontStyle.FONT12ARIAL);
             FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
             FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
@@ -4464,7 +4470,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (pMail.usLength > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);

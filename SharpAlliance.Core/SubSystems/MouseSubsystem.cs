@@ -560,7 +560,7 @@ public class MouseSubSystem : ISharpAllianceManager
         PreviousRegion = CurrentRegion;
     }
 
-    public void SetRegionFastHelpText(MOUSE_REGION region, string fastHelpText)
+    public static void SetRegionFastHelpText(MOUSE_REGION region, string fastHelpText)
     {
         region.FastHelpText = null;
         //	region.FastHelpTimer = 0;
@@ -819,7 +819,7 @@ public class MouseSubSystem : ISharpAllianceManager
         // this didn't do anything in original code?
     }
 
-    public void MSYS_ChangeRegionCursor(MOUSE_REGION? region, CURSOR crsr)
+    public static void MSYS_ChangeRegionCursor(MOUSE_REGION? region, CURSOR crsr)
     {
         if (region is null)
         {
@@ -839,13 +839,18 @@ public class MouseSubSystem : ISharpAllianceManager
             }
 
             // Update cursor
-            MSYS_SetCurrentCursor(crsr);
+            MouseSubSystem.MSYS_SetCurrentCursor(crsr);
         }
     }
 
-    public void MSYS_SetCurrentCursor(CURSOR crsr)
+    public static void MSYS_SetCurrentCursor(CURSOR crsr)
     {
         cursors.SetCurrentCursorFromDatabase(crsr);
+    }
+
+    internal static void MSYS_DisableRegion(MOUSE_REGION mOUSE_REGION)
+    {
+        throw new NotImplementedException();
     }
 }
 

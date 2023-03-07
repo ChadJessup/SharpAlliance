@@ -666,7 +666,7 @@ namespace SharpAlliance.Core.SubSystems
             ClockManager.PauseGame();
             ClockManager.LockPauseState(1);
             // Pause timers as well....
-            ClockManager.PauseTime(true);
+            TimerControl.PauseTime(true);
 
             // Save mouse restriction region...
             this.cursor.GetRestrictedClipCursor(gOldCursorLimitRectangle);
@@ -915,7 +915,7 @@ namespace SharpAlliance.Core.SubSystems
             ClockManager.UnLockPauseState();
             ClockManager.UnPauseGame();
             // UnPause timers as well....
-            ClockManager.PauseTime(false);
+            TimerControl.PauseTime(false);
 
             // Restore mouse restriction region...
             MouseSubSystem.RestrictMouseCursor(gOldCursorLimitRectangle);

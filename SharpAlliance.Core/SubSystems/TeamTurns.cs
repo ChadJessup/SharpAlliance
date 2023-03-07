@@ -998,7 +998,7 @@ public class TeamTurns
     {
         //	int ubAniType;
         int ubMinPtsNeeded;
-        int bDir;
+        WorldDirections bDir;
         SOLDIERTYPE? pOpponent;
 
         if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && !(gubSightFlags & SIGHT_INTERRUPT))
@@ -1216,7 +1216,7 @@ public class TeamTurns
                 }
 
                 // if the soldier is behind him and not very close, forget it
-                bDir = atan8(pSoldier.sX, pSoldier.sY, pOpponent.sX, pOpponent.sY);
+                bDir = SoldierControl.atan8(pSoldier.sX, pSoldier.sY, pOpponent.sX, pOpponent.sY);
                 if (gOppositeDirection[pSoldier.bDesiredDirection] == bDir)
                 {
                     // directly behind; allow interrupts only within # of tiles equal to level
