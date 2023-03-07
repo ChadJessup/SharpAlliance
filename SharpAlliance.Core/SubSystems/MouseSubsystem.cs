@@ -80,7 +80,7 @@ public class MouseSubSystem : ISharpAllianceManager
     {
         this.logger = logger;
 
-        DefaultMoveCallback = this.BtnGenericMouseMoveButtonCallback;
+        DefaultMoveCallback = BtnGenericMouseMoveButtonCallback;
         this.logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
         this.clock = clockManager;
         cursors = cursorSubSystem;

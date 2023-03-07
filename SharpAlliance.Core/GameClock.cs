@@ -1005,7 +1005,7 @@ public class GameClock
         {
             // create a mouse region for pausing of game clock
             MouseSubSystem.MSYS_DefineRegion(gClockMouseRegion, new((sX), (int)(sY), (int)(sX + CLOCK_REGION_WIDTH), (int)(sY + CLOCK_REGION_HEIGHT)), MSYS_PRIORITY.HIGHEST,
-                                 CURSOR.MSYS_NO_CURSOR, MouseSubSystem.MSYS_NO_CALLBACK, PauseOfClockBtnCallback);
+                                 CURSOR.MSYS_NO_CURSOR, MSYS_NO_CALLBACK, PauseOfClockBtnCallback);
 
             fClockMouseRegionCreated = true;
 
@@ -1105,7 +1105,7 @@ public class GameClock
         {
             // create a mouse region for pausing of game clock
             MouseSubSystem.MSYS_DefineRegion(gClockScreenMaskMouseRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
-                                 0, MouseSubSystem.MSYS_NO_CALLBACK, ScreenMaskForGamePauseBtnCallBack);
+                                 0, MSYS_NO_CALLBACK, ScreenMaskForGamePauseBtnCallBack);
             fCreated = true;
 
             // get region x and y values

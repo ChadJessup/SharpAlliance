@@ -1541,7 +1541,7 @@ public class Campaign
 
 
 
-    int CalcImportantSectorControl()
+    private static int CalcImportantSectorControl()
     {
         int ubMapX;
         MAP_ROW ubMapY;

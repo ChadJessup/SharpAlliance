@@ -1050,7 +1050,7 @@ public class StrategicMines
         // find which mine this guy represents
         for (ubMineIndex = 0; ubMineIndex < MINE.MAX_NUMBER_OF_MINES; ubMineIndex++)
         {
-            if (!MineClearOfMonsters(ubMineIndex) || Globals.gMineStatus[ubMineIndex].fPrevInvadedByMonsters)
+            if (!CreatureSpreading.MineClearOfMonsters(ubMineIndex) || Globals.gMineStatus[ubMineIndex].fPrevInvadedByMonsters)
             {
                 return (true);
             }

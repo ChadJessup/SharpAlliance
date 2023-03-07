@@ -665,43 +665,43 @@ public class Morale
                 StrategicStatus.ModifyPlayerReputation(REPUTATION.HIGH_DEATHRATE);
                 break;
             case MoraleEventNames.MORALE_LOW_DEATHRATE:
-                ModifyPlayerReputation(REPUTATION.LOW_DEATHRATE);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.LOW_DEATHRATE);
                 break;
             case MoraleEventNames.MORALE_POOR_MORALE:
-                ModifyPlayerReputation(REPUTATION.POOR_MORALE);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.POOR_MORALE);
                 break;
             case MoraleEventNames.MORALE_GREAT_MORALE:
-                ModifyPlayerReputation(REPUTATION.GREAT_MORALE);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.GREAT_MORALE);
                 break;
             case MoraleEventNames.MORALE_BATTLE_WON:
-                ModifyPlayerReputation(REPUTATION.BATTLE_WON);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.BATTLE_WON);
                 break;
             case MoraleEventNames.MORALE_RAN_AWAY:
             case MoraleEventNames.MORALE_HEARD_BATTLE_LOST:
-                ModifyPlayerReputation(REPUTATION.BATTLE_LOST);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.BATTLE_LOST);
                 break;
             case MoraleEventNames.MORALE_TOWN_LIBERATED:
-                ModifyPlayerReputation(REPUTATION.TOWN_WON);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.TOWN_WON);
                 break;
             case MoraleEventNames.MORALE_TOWN_LOST:
-                ModifyPlayerReputation(REPUTATION.TOWN_LOST);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.TOWN_LOST);
                 break;
             case MoraleEventNames.MORALE_TEAMMATE_DIED:
                 // impact depends on that dude's level of experience
-                ModifyPlayerReputation((int)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_DIED));
+                StrategicStatus.ModifyPlayerReputation((int)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_DIED));
                 break;
             case MoraleEventNames.MORALE_MERC_CAPTURED:
                 // impact depends on that dude's level of experience
-                ModifyPlayerReputation((int)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_CAPTURED));
+                StrategicStatus.ModifyPlayerReputation((int)(pSoldier.bExpLevel * (int)REPUTATION.SOLDIER_CAPTURED));
                 break;
             case MoraleEventNames.MORALE_KILLED_CIVILIAN:
-                ModifyPlayerReputation(REPUTATION.KILLED_CIVILIAN);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.KILLED_CIVILIAN);
                 break;
             case MoraleEventNames.MORALE_MONSTER_QUEEN_KILLED:
-                ModifyPlayerReputation(REPUTATION.KILLED_MONSTER_QUEEN);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.KILLED_MONSTER_QUEEN);
                 break;
             case MoraleEventNames.MORALE_DEIDRANNA_KILLED:
-                ModifyPlayerReputation(REPUTATION.KILLED_DEIDRANNA);
+                StrategicStatus.ModifyPlayerReputation(REPUTATION.KILLED_DEIDRANNA);
                 break;
 
             default:
