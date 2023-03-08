@@ -112,48 +112,6 @@ namespace SharpAlliance.Core
         BOMB_SWITCH
     }
 
-    public class OBJECTTYPE
-    {
-        public int usItem;
-        public int ubNumberOfObjects;
-        public int bGunStatus;            // status % of gun
-        public int ubGunAmmoType;    // ammo type, as per weapons.h
-        public int ubGunShotsLeft;   // duh, amount of ammo left
-        public int usGunAmmoItem;   // the item # for the item table
-        public int bGunAmmoStatus; // only for "attached ammo" - grenades, mortar shells
-        public int[] ubGunUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 6];
-        public int[] ubShotsLeft = new int[Globals.MAX_OBJECTS_PER_SLOT];
-        public int[] bStatus = new int[Globals.MAX_OBJECTS_PER_SLOT];
-        public int bMoneyStatus;
-        public int uiMoneyAmount;
-        public int[] ubMoneyUnused = new int[Globals.MAX_OBJECTS_PER_SLOT - 5];
-        // this is used by placed bombs, switches, and the action item
-        public int bBombStatus;           // % status
-        public int bDetonatorType;        // timed, remote, or pressure-activated
-        public int usBombItem;              // the usItem of the bomb.
-        public int bDelay;                // >=0 values used only
-        public int bFrequency;        // >=0 values used only
-        public int ubBombOwner; // side which placed the bomb
-        public int bActionValue;// this is used by the ACTION_ITEM fake item
-        public int ubTolerance; // tolerance value for panic triggers
-        public int ubLocationID; // location value for remote non-bomb (special!) triggers
-        public int[] bKeyStatus = new int[6];
-        public int ubKeyID;
-        public int[] ubKeyUnused = new int[1];
-        public int ubOwnerProfile;
-        public int ubOwnerCivGroup;
-        public int[] ubOwnershipUnused = new int[6];
-        // attached objects
-        public int[] usAttachItem = new int[Globals.MAX_ATTACHMENTS];
-        public int[] bAttachStatus = new int[Globals.MAX_ATTACHMENTS];
-        public int fFlags;
-        public int ubMission;
-        public int bTrap;        // 1-10 exp_lvl to detect
-        public int ubImprintID;  // ID of merc that item is imprinted on
-        public int ubWeight;
-        public int fUsed;                // flags for whether the item is used or not
-    }
-
     internal class ItemIndexes
     {
         public const int FIRST_WEAPON = 1;

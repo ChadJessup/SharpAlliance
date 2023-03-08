@@ -45,40 +45,48 @@ public enum ENEMY_KILLED
 }
 
 
-public struct ARMY_COMPOSITION
+public record ARMY_COMPOSITION
 {
-    public int iReadability;                 //contains the enumeration which is useless, but helps readability.
+    public ARMY_COMPOSITION(
+        Garrisons iReadability,
+        int bPriority,
+        int bElitePercentage,
+        int bTroopPercentage,
+        int bAdminPercentage,
+        int bDesiredPopulation,
+        int bStartPopulation)
+    {
+        this.iReadability = iReadability;
+        this.bPriority = bPriority;
+        this.bElitePercentage = bElitePercentage;
+        this.bTroopPercentage = bTroopPercentage;
+        this.bAdminPercentage = bAdminPercentage;
+        this.bDesiredPopulation = bDesiredPopulation;
+        this.bStartPopulation = bStartPopulation;
+    }
+
+    public Garrisons iReadability;                 //contains the enumeration which is useless, but helps readability;
     public int bPriority;
     public int bElitePercentage;
     public int bTroopPercentage;
     public int bAdminPercentage;
     public int bDesiredPopulation;
     public int bStartPopulation;
-    public int[] bPadding;// [10];
 }
 
 //Defines the patrol groups -- movement groups.
-public struct PATROL_GROUP
-{
-    public int bSize;
-    public int bPriority;
-    public int[] ubSectorID;// [4];
-    public int bFillPermittedAfterDayMod100;
-    public int ubGroupID;
-    public int bWeight;
-    public int ubPendingGroupID;
-    public int[] bPadding;// [10];
-}
+public record PATROL_GROUP(
+    int bSize,
+    int bPriority,
+    SEC[] ubSectorID,// [4];
+    int bFillPermittedAfterDayMod100,
+    int ubGroupID,
+    int bWeight,
+    int ubPendingGroupID);
+
 
 //Defines all stationary defence forces. 
-public struct GARRISON_GROUP
-{
-    public int ubSectorID;
-    public Garrisons ubComposition;
-    public int bWeight;
-    public int ubPendingGroupID;
-    public int[] bPadding;// [10];
-}
+public record GARRISON_GROUP(SEC ubSectorID, Garrisons ubComposition, int bWeight, int ubPendingGroupID);// [10];
 
 
 public enum INSERTION_CODE

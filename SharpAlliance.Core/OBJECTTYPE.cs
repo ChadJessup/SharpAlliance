@@ -1,6 +1,7 @@
 ﻿using System;
+using SharpAlliance.Core.SubSystems;
 
-namespace SharpAlliance.Core.SubSystems;
+namespace SharpAlliance.Core;
 
 public class OBJECTTYPE
 {
@@ -21,7 +22,7 @@ public class OBJECTTYPE
     // this is used by placed bombs, switches, and the action item
     public sbyte bBombStatus;           // % status
     public sbyte bDetonatorType;        // timed, remote, or pressure-activated
-    public ushort usBombItem;              // the usItem of the bomb.
+    public Items usBombItem;              // the usItem of the bomb.
     public sbyte bDelay;                // >=0 values used only
     public sbyte bFrequency;        // >=0 values used only
     public byte ubBombOwner; // side which placed the bomb

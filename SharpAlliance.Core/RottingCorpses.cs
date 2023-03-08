@@ -94,7 +94,7 @@ public enum RottingCorpseDefines
 public class ROTTING_CORPSE_DEFINITION
 {
     public int ubType;
-    public int ubBodyType;
+    public SoldierBodyTypes ubBodyType;
     public int sGridNo;
     public double dXPos;
     public double dYPos;

@@ -9,7 +9,7 @@ namespace SharpAlliance.Core.SubSystems;
 public class Campaign
 {
     // give pSoldier usNumChances to improve ubStat.  If it's from training, it doesn't count towards experience level gain
-    void StatChange(SOLDIERTYPE? pSoldier, Stat ubStat, int usNumChances, int ubReason)
+    public static void StatChange(SOLDIERTYPE? pSoldier, Stat ubStat, int usNumChances, int ubReason)
     {
         Debug.Assert(pSoldier != null);
         Debug.Assert(pSoldier.bActive);
@@ -53,7 +53,7 @@ public class Campaign
         //        }
         //#endif
 
-        ProcessStatChange((Globals.gMercProfiles[pSoldier.ubProfile]), ubStat, usNumChances, ubReason);
+        Campaign.ProcessStatChange((Globals.gMercProfiles[pSoldier.ubProfile]), ubStat, usNumChances, ubReason);
 
         // Update stats....right away... ATE
         UpdateStats(pSoldier);
@@ -82,7 +82,7 @@ public class Campaign
     }
 
 
-    void ProcessStatChange(MERCPROFILESTRUCT? pProfile, Stat ubStat, int usNumChances, int ubReason)
+    public static void ProcessStatChange(MERCPROFILESTRUCT? pProfile, Stat ubStat, int usNumChances, int ubReason)
     {
         int uiCnt, uiEffLevel;
         int sSubPointChange = 0;
@@ -361,14 +361,14 @@ public class Campaign
 
 
     // convert hired mercs' stats subpoint changes into actual point changes where warranted
-    void UpdateStats(SOLDIERTYPE? pSoldier)
+    private static void UpdateStats(SOLDIERTYPE? pSoldier)
     {
         ProcessUpdateStats((Globals.gMercProfiles[pSoldier.ubProfile]), pSoldier);
     }
 
 
     // UpdateStats version for mercs not currently on player's team
-    void ProfileUpdateStats(MERCPROFILESTRUCT? pProfile)
+    private static void ProfileUpdateStats(MERCPROFILESTRUCT? pProfile)
     {
         ProcessUpdateStats(pProfile, null);
     }
@@ -575,7 +575,7 @@ public class Campaign
                 // also we give points for health on sector traversal and this would
                 // probaby mess up battle handling too )
                 if ((ubStat != Stat.HEALTHAMT) && ((ubStat == Stat.EXPERAMT) || Globals.Random.Next(100) < 25))
-                //if ( (ubStat != EXPERAMT) && (ubStat != HEALTHAMT) && ( Random( 100 ) < 25 ) )
+                //if ( (ubStat != EXPERAMT) && (ubStat != HEALTHAMT) && ( Globals.Random.Next( 100 ) < 25 ) )
                 {
                     // Pipe up with "I'm getting better at this!"
                     TacticalCharacterDialogueWithSpecialEventEx(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DISPLAY_STAT_CHANGE, fChangeTypeIncrease, sPtsChanged, ubStat);
@@ -712,7 +712,7 @@ public class Campaign
 
 
     // pSoldier may be null!
-    void ProcessUpdateStats(MERCPROFILESTRUCT? pProfile, SOLDIERTYPE? pSoldier)
+    private static void ProcessUpdateStats(MERCPROFILESTRUCT? pProfile, SOLDIERTYPE? pSoldier)
     {
         // this function will run through the soldier's profile and update their stats based on any accumulated gain pts.
         Stat ubStat = 0;

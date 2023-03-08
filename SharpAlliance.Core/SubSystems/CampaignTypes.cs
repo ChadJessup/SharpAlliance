@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Veldrid.OpenGLBinding;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -26,45 +21,45 @@ public class SECTORINFO
     //enemy military presence
     public bool[] fPlayer = new bool[4];             //whether the player THINKS the sector is unde his control or not. array is for sublevels
                                               //enemy only info
-    public sbyte ubNumTroops;              //the actual number of troops here.
-    public sbyte ubNumElites;              //the actual number of elites here.
-    public sbyte ubNumAdmins;              //the actual number of admins here.
-    sbyte ubNumCreatures;           //only set when immediately before ground attack made!
-    public sbyte ubTroopsInBattle, ubElitesInBattle, ubAdminsInBattle, ubCreaturesInBattle;
+    public int ubNumTroops;              //the actual number of troops here.
+    public int ubNumElites;              //the actual number of elites here.
+    public int ubNumAdmins;              //the actual number of admins here.
+    public int ubNumCreatures;           //only set when immediately before ground attack made!
+    public int ubTroopsInBattle, ubElitesInBattle, ubAdminsInBattle, ubCreaturesInBattle;
 
-    byte bLastKnownEnemies; // -1 means never been there, no idea, otherwise it's what we'd observed most recently
+    public int bLastKnownEnemies; // -1 means never been there, no idea, otherwise it's what we'd observed most recently
                             // while this is being maintained (partially, surely buggy), nothing uses it anymore. ARM
 
-    uint ubDayOfLastCreatureAttack;
-    uint uiFacilitiesFlags;   // the flags for various facilities
+    public uint ubDayOfLastCreatureAttack;
+    public uint uiFacilitiesFlags;   // the flags for various facilities
 
-    sbyte[] ubTraversability = new sbyte[5];//determines the traversability ratings to adjacent sectors.
+    public sbyte[] ubTraversability = new sbyte[5];//determines the traversability ratings to adjacent sectors.
                                             //The last index represents the traversability if travelling
                                             //throught the sector without entering it.
-    byte bNameId;
-    byte bUSUSED;
-    public byte bBloodCats { get; set; }
-    byte bBloodCatPlacements;
-    byte UNUSEDbSAMCondition;
+    public byte bNameId;
+    public byte bUSUSED;
+    public int bBloodCats { get; set; }
+    public int bBloodCatPlacements;
+    public int UNUSEDbSAMCondition;
 
-    sbyte ubTravelRating;   //Represents how travelled a sector is.  Typically, the higher the travel rating,
+    public sbyte ubTravelRating;   //Represents how travelled a sector is.  Typically, the higher the travel rating,
                             //the more people go near it.  A travel rating of 0 means there are never people
                             //around.  This value is used for determining how often items would "vanish" from
                             //a sector (nice theory, except it isn't being used that way.  Stealing is only in towns.  ARM)
-    sbyte[] ubNumberOfCivsAtLevel = new sbyte[(int)MilitiaExperience.MAX_MILITIA_LEVELS]; // town militia per experience class, 0/1/2 is GREEN/REGULAR/ELITE
-    ushort usUNUSEDMilitiaLevels;               // unused (ARM)
-    sbyte ubUNUSEDNumberOfJoeBlowCivilians;     // unused (ARM)
-    uint uiTimeCurrentSectorWasLastLoaded;        //Specifies the last time the player was in the sector
-    sbyte ubUNUSEDNumberOfEnemiesThoughtToBeHere;       // using bLastKnownEnemies instead
-    uint uiTimeLastPlayerLiberated; //in game seconds (used to prevent the queen from attacking for awhile)
+    public sbyte[] ubNumberOfCivsAtLevel = new sbyte[(int)MilitiaExperience.MAX_MILITIA_LEVELS]; // town militia per experience class, 0/1/2 is GREEN/REGULAR/ELITE
+    public ushort usUNUSEDMilitiaLevels;               // unused (ARM)
+    public sbyte ubUNUSEDNumberOfJoeBlowCivilians;     // unused (ARM)
+    public uint uiTimeCurrentSectorWasLastLoaded;        //Specifies the last time the player was in the sector
+    public sbyte ubUNUSEDNumberOfEnemiesThoughtToBeHere;       // using bLastKnownEnemies instead
+    public uint uiTimeLastPlayerLiberated; //in game seconds (used to prevent the queen from attacking for awhile)
 
-    bool fSurfaceWasEverPlayerControlled;
+    public bool fSurfaceWasEverPlayerControlled;
 
     sbyte bFiller1;
     sbyte bFiller2;
     sbyte bFiller3;
 
-    uint uiNumberOfWorldItemsInTempFileThatCanBeSeenByPlayer;
+    public int uiNumberOfWorldItemsInTempFileThatCanBeSeenByPlayer;
 
     byte[] bPadding = new byte[41];
 

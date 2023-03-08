@@ -580,7 +580,7 @@ public class Meanwhile
                     int sSectorX;
                     MAP_ROW sSectorY;
 
-                    StartQuest(QUEST_FIND_SCIENTIST, -1, -1);
+                    Quests.StartQuest(QUEST.FIND_SCIENTIST, -1, (MAP_ROW)(-1));
                     // place Madlab and robot!
                     if (SectorInfo[SECTORINFO.SECTOR(7, MAP_ROW.H)].uiFlags.HasFlag(SF.USE_ALTERNATE_MAP))
                     {

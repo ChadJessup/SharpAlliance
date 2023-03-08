@@ -659,7 +659,7 @@ public class VeldridVideoManager : IVideoManager
         // Do we want to print the frame stuff ??
         if (Globals.gfVideoCapture)
         {
-            uiTime = context.ClockManager.GetTickCount();
+            uiTime = ClockManager.GetTickCount();
             if ((uiTime < Globals.guiLastFrame) || (uiTime > (Globals.guiLastFrame + Globals.guiFramePeriod)))
             {
                 //SnapshotSmall();

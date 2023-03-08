@@ -37,7 +37,8 @@ public class BobbyR
             BOBBIES_ARMOUR_SIGN_X,
             BOBBIES_ARMOUR_SIGN_Y,
             BOBBIES_ARMOUR_SIGN_X+BOBBIES_ARMOUR_SIGN_WIDTH,
-            BOBBIES_ARMOUR_SIGN_Y+BOBBIES_ARMOUR_SIGN_HEIGHT};
+            BOBBIES_ARMOUR_SIGN_Y+BOBBIES_ARMOUR_SIGN_HEIGHT
+        };
 
         InitBobbyRWoodBackground();
 
@@ -628,7 +629,7 @@ public class BobbyR
 
         Debug.Assert(usItemIndex < Items.MAXITEMS);
         // formulas below will fail if there are more items already in stock than optimal
-        Debug.Assert(ubCurrentlyOnHand <= storeInventory[(int)usItemIndex,(int)ubBobbyRayNewUsed]);
+        Debug.Assert(ubCurrentlyOnHand <= storeInventory[(int)usItemIndex, (int)ubBobbyRayNewUsed]);
         Debug.Assert(ubBobbyRayNewUsed < BOBBY_RAY.LISTS);
 
 

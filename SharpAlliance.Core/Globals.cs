@@ -8,7 +8,6 @@ using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Screens.CreditsScreen;
 using static SharpAlliance.Core.SubSystems.InteractiveTiles;
 
@@ -93,8 +92,6 @@ public partial class Globals
     public static int gubAdultFemalesAttackingTown = 0;
     public static CREATURE_BATTLE gubCreatureBattleCode = CREATURE_BATTLE.CODE_NONE;
     public static int gubSectorIDOfCreatureAttack = 0;
-
-
 
     public static ROTTING_CORPSE[] gRottingCorpse = new ROTTING_CORPSE[MAX_ROTTING_CORPSES];
     public static int giNumRottingCorpse = 0;
@@ -264,7 +261,6 @@ public partial class Globals
 
     // World Movement Costs
     public static int[,,] gubWorldMovementCosts = new int[World.WORLD_MAX, World.MAXDIR, 2];
-    public static int[,] gszTerrain = new int[(int)Traversability.NUM_TRAVTERRAIN_TYPES, 15];
 
     public static Dictionary<NPCID, MERCPROFILESTRUCT> gMercProfiles { get; } = new();
 
@@ -1898,7 +1894,12 @@ public partial class Globals
 
     public static uint GetJA2Clock() => ClockManager.GetJA2Clock();
 
-    public static Random Random { get; set; } = new Random();
+    public static void MemFree(object? obj)
+    {
+        obj = null;
+    }
+
+    public static Random Random { get; set; } = new Globals.Random.Next();
 
     public static INTERACTIVE_TILE_STACK_TYPE? gCurIntTileStack;
     public static bool gfCycleIntTile = false;

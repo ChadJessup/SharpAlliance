@@ -1872,7 +1872,7 @@ public class OppList
                   }
                     */
 
-                    PlayJA2Sample(BLOODCAT_ROAR, RATE_11025, HIGHVOLUME, 1, MIDDLEPAN);
+                    //PlayJA2Sample(BLOODCAT_ROAR, RATE_11025, HIGHVOLUME, 1, MIDDLEPAN);
                 }
                 else
                 {
@@ -1880,7 +1880,7 @@ public class OppList
                     {
                         if (Globals.Random.Next(2) == 0)
                         {
-                            PlayJA2Sample(BLOODCAT_ROAR, RATE_11025, HIGHVOLUME, 1, MIDDLEPAN);
+                            //PlayJA2Sample(BLOODCAT_ROAR, RATE_11025, HIGHVOLUME, 1, MIDDLEPAN);
                         }
                     }
                 }
@@ -3050,7 +3050,7 @@ public class OppList
                     if (!gbShowEnemies && (pOpponent.bLife >= OKLIFE))
                     {
                         // if this enemy has not been publicly seen or heard recently
-                        if (*pbPublOL == NOT_HEARD_OR_SEEN)
+                        if (pbPublOL == NOT_HEARD_OR_SEEN)
                         {
                             // chalk up another "unknown" enemy
                             unknownEnemies++;
@@ -3064,14 +3064,14 @@ public class OppList
                             if (pOpponent.bOppList[pSoldier.ubID] != SEEN_CURRENTLY)
                             {
                                 // EXPERIENCE GAIN (10): Discovered a new enemy without being seen
-                                StatChange(pSoldier, EXPERAMT, 10, false);
+                                Campaign.StatChange(pSoldier, Stat.EXPERAMT, 10, 0);
                             }
                         }
                         else
                         {
 
                             // if he has publicly not been seen now, or anytime during this turn
-                            if ((*pbPublOL != SEEN_CURRENTLY) && (*pbPublOL != SEEN_THIS_TURN))
+                            if ((pbPublOL != SEEN_CURRENTLY) && (pbPublOL != SEEN_THIS_TURN))
                             {
                                 // chalk up another "revealed" enemy
                                 revealedEnemies++;
@@ -4544,7 +4544,7 @@ public class OppList
                 }
 
                 // randomize at which movement step the sneaking failure will happen
-                //			Status.stepsTilNoise = Random(MAXMOVESTEPS);	// 0 - 6
+                //			Status.stepsTilNoise = Globals.Random.Next(MAXMOVESTEPS);	// 0 - 6
             }
         }
 
@@ -6262,7 +6262,7 @@ public class OppList
                 if (pDefender.bTeam == gbPlayerNum)
                 {
                     // EXPERIENCE GAIN (5): Victim notices/sees a previously UNSEEN attacker
-                    StatChange(pDefender, EXPERAMT, 5, false);
+                    Campaign.StatChange(pDefender, Stat.EXPERAMT, 5, false);
 
                     // mark attacker as being SEEN right now
                     RadioSightings(pDefender, pAttacker.ubID, pDefender.bTeam);

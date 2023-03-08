@@ -7,6 +7,7 @@ using SharpAlliance.Core.SubSystems;
 
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.EnglishText;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core;
 
@@ -1141,8 +1142,12 @@ public class GameClock
     {
         if ((gfPauseDueToPlayerGamePause == true) && (gfGamePaused == true) && (iPausedPopUpBox != -1))
         {
-            RenderMercPopUpBoxFromIndex(iPausedPopUpBox, (int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), FRAME_BUFFER);
-            VeldridVideoManager.InvalidateRegion((int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), (int)(320 - usPausedActualWidth / 2 + usPausedActualWidth), (int)(200 - usPausedActualHeight / 2 + usPausedActualHeight));
+            MercTextBox.RenderMercPopUpBoxFromIndex(iPausedPopUpBox, (int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), Surfaces.FRAME_BUFFER);
+            VeldridVideoManager.InvalidateRegion(new(
+                (320 - usPausedActualWidth / 2),
+                (200 - usPausedActualHeight / 2),
+                (320 - usPausedActualWidth / 2 + usPausedActualWidth),
+                (200 - usPausedActualHeight / 2 + usPausedActualHeight)));
         }
 
         // reset we've just finished a pause by the player

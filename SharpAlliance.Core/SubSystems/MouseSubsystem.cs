@@ -560,6 +560,16 @@ public class MouseSubSystem : ISharpAllianceManager
         PreviousRegion = CurrentRegion;
     }
 
+    //=================================================================================================
+    //	MSYS_DisableRegion
+    //
+    //	Disables a mouse region without removing it from the system list.
+    //
+    public static void MSYS_DisableRegion(ref MOUSE_REGION region)
+    {
+        region.uiFlags &= (~MouseRegionFlags.REGION_ENABLED);
+    }
+
     public static void SetRegionFastHelpText(MOUSE_REGION region, string fastHelpText)
     {
         region.FastHelpText = null;
@@ -912,6 +922,7 @@ public enum MouseRegionFlags
     SET_CURSOR = 0x00000002,
     REGION_EXISTS = 0x00000010,
     SYSTEM_INIT = 0x00000020,
+    MSYS_REGION_ENABLED = 0x00000040,
     FASTHELP = 0x00000080,
     GOT_BACKGROUND = 0x00000100,
     HAS_BACKRECT = 0x00000200,

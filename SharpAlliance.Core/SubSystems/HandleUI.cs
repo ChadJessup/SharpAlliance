@@ -89,7 +89,7 @@ public class HandleUI
         this.logger = logger;
         ClockManager = clock;
         this.overhead = overhead;
-        this.rnd = new Random();
+        this.rnd = new Globals.Random.Next();
         this.points = points;
         this.inputs = inputManager;
         this.cursors = cursorSubSystem;
@@ -819,7 +819,7 @@ public class HandleUI
                 return (ScreenName.GAME_SCREEN);
             }
 
-            usRandom = (uint)new Random().Next(10);
+            usRandom = (uint)new Globals.Random.Next().Next(10);
             if (usRandom < 4)
             {
                 pSoldier = TacticalCreateAdministrator();

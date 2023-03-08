@@ -3064,7 +3064,7 @@ namespace SharpAlliance.Core.SubSystems
             bool fSufficientMechSkill = false, fSufficientMarkSkill = false, fSufficientMedSkill = false, fSufficientExplSkill = false;
             bool fSufficientHlth = false, fSufficientStr = false, fSufficientWis = false, fSufficientAgi = false, fSufficientDex = false, fSufficientLdr = false;
 
-            iRand = Random(32767);
+            iRand = Globals.Random.Next(32767);
 
             // set record ptr to head of list
             pTempRecord = pMessageRecordList;
@@ -3149,7 +3149,7 @@ namespace SharpAlliance.Core.SubSystems
 
                 // personality tick
                 //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
-                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * ( iOffSet + Random( IMP_PERSONALITY_LENGTH - 1 ) + 1 ), MAIL_STRING_SIZE );
+                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_PERSONALITY_LENGTH - 1 ) + 1 ), MAIL_STRING_SIZE );
                 LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + 1), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3228,7 +3228,7 @@ namespace SharpAlliance.Core.SubSystems
 
                 // attitude tick
                 //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
-                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * ( iOffSet + Random( IMP_ATTITUDE_LENGTH - 2 ) + 1 ), MAIL_STRING_SIZE );
+                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_ATTITUDE_LENGTH - 2 ) + 1 ), MAIL_STRING_SIZE );
                 LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + 1), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);

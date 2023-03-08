@@ -270,7 +270,7 @@ namespace SharpAlliance.Core
 
         private void HandleSingleClicksAndButtonRepeats()
         {
-            long uiTimer = this.context.ClockManager.GetTickCount();
+            long uiTimer = ClockManager.GetTickCount();
 
             // Is there a LEFT mouse button repeat
             if (this.gfLeftButtonState)

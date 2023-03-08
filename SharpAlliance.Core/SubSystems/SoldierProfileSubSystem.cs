@@ -39,7 +39,7 @@ public class SoldierProfileSubSystem
     {
         this.logger = logger;
         this.fileManager = fileManager;
-        this.rnd = new Random(DateTime.UtcNow.Millisecond);
+        this.rnd = new Globals.Random.Next(DateTime.UtcNow.Millisecond);
         this.townReputations = townRep;
         this.cars = carPortraits;
     }

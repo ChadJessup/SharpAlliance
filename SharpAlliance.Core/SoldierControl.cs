@@ -195,7 +195,7 @@ public class SoldierControl
             // ATE: if our guy, have 10% change of say damn, if still conscious...
             if (pSoldier.bTeam == gbPlayerNum && pSoldier.bLife >= OKLIFE)
             {
-                if (Random(10) == 0)
+                if (Globals.Random.Next(10) == 0)
                 {
                     DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_CURSE1));
                 }
@@ -1128,7 +1128,7 @@ public class SoldierControl
         // ATE; For some animations that could use some variations, do so....
         if (usNewState == CHARIOTS_OF_FIRE || usNewState == BODYEXPLODING)
         {
-            pSoldier.usAniCode = (int)(Random(10));
+            pSoldier.usAniCode = (int)(Globals.Random.Next(10));
         }
 
         // ATE: Default to first frame....
@@ -1585,7 +1585,7 @@ public class SoldierControl
                             EVENT_InitNewSoldierAnim(pSoldier, LOW_TO_DEEP_WATER, 0, false);
                             pSoldier.usPendingAnimation = DEEP_WATER_SWIM;
 
-                            PlayJA2Sample(ENTER_DEEP_WATER_1, RATE_11025, SoundVolume(MIDVOLUME, pSoldier.sGridNo), 1, SoundDir(pSoldier.sGridNo));
+                            //PlayJA2Sample(ENTER_DEEP_WATER_1, RATE_11025, SoundVolume(MIDVOLUME, pSoldier.sGridNo), 1, SoundDir(pSoldier.sGridNo));
 
                     }
                 }
@@ -1649,7 +1649,7 @@ public class SoldierControl
                                      IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pEnemy.sGridNo) < DistanceVisible(pEnemy, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, pSoldier.sGridNo, pSoldier.bLevel))
                                 {
                                     // AGILITY (5):  Soldier snuck 1 square past unaware enemy
-                                    StatChange(pSoldier, AGILAMT, 5, false);
+                                    Campaign.StatChange(pSoldier, Stat.AGILAMT, 5, false);
                                     // Keep looping, we'll give'em 1 point for EACH such enemy!
                                 }
                             }
@@ -2487,7 +2487,7 @@ public class SoldierControl
         }
         else
         {
-            PlayJA2Sample((int)(BULLET_IMPACT_1 + Random(3)), RATE_11025, SoundVolume(MIDVOLUME, pSoldier.sGridNo), 1, SoundDir(pSoldier.sGridNo));
+            PlayJA2Sample((int)(BULLET_IMPACT_1 + Globals.Random.Next(3)), RATE_11025, SoundVolume(MIDVOLUME, pSoldier.sGridNo), 1, SoundDir(pSoldier.sGridNo));
         }
 
         // PLAY RANDOM GETTING HIT SOUND
@@ -2508,7 +2508,7 @@ public class SoldierControl
                 }
                 else
                 {
-                    DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Random(2)));
+                    DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
                 }
             }
         }
@@ -2666,7 +2666,7 @@ public class SoldierControl
                 if (!(pSoldier.uiStatusFlags & SOLDIER.DEAD) && pSoldier.bLife == 0)
                 {
                     // Randomize death!
-                    if (Random(2))
+                    if (Globals.Random.Next(2))
                     {
                         EVENT_InitNewSoldierAnim(pSoldier, CIV_DIE2, 0, false);
                         return;
@@ -2928,14 +2928,14 @@ public class SoldierControl
             {
                 if (sRange >= 2 && sRange <= 4)
                 {
-                    DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Random(2)));
+                    DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
 
                     EVENT_InitNewSoldierAnim(pSoldier, CHARIOTS_OF_FIRE, 0, false);
                     return;
                 }
                 else if (sRange <= 1)
                 {
-                    DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Random(2)));
+                    DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
 
                     EVENT_InitNewSoldierAnim(pSoldier, BODYEXPLODING, 0, false);
                     return;
@@ -5451,7 +5451,7 @@ int	gOrangeGlowG[]=
                 if (ubReason == TAKE_DAMAGE_BLOODLOSS)
                 {
                     // Fifty-fifty chance to die now!
-                    if (Random(2) == 0 || gTacticalStatus.Team[pSoldier.bTeam].bMenInSector == 1)
+                    if (Globals.Random.Next(2) == 0 || gTacticalStatus.Team[pSoldier.bTeam].bMenInSector == 1)
                     {
                         // Kill!
                         pSoldier.bLife = 0;
@@ -5582,7 +5582,7 @@ int	gOrangeGlowG[]=
         //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "Chance To Drop Weapon: str: %d Dam: %d Chance: %d", sTestOne, sTestTwo, sChanceToDrop );
 #endif
 
-            if (Random(100) < (int)sChanceToDrop)
+            if (Globals.Random.Next(100) < (int)sChanceToDrop)
             {
                 // OK, drop item in main hand...
                 if (pSoldier.inv[InventorySlot.HANDPOS].usItem != NOTHING)
@@ -5649,7 +5649,7 @@ int	gOrangeGlowG[]=
                 if (ubReason == TAKE_DAMAGE_EXPLOSION)
                 {
                     // EXPLOSIVES GAIN (combLoss):  Causing wounds in battle
-                    StatChange(MercPtrs[ubAttacker], EXPLODEAMT, (int)(10 * ubCombinedLoss), FROM_FAILURE);
+                    Campaign.StatChange(MercPtrs[ubAttacker], Stat.EXPLODEAMT, (int)(10 * ubCombinedLoss), FROM_FAILURE);
                 }
                 /*
                 else if ( ubReason == TAKE_DAMAGE_GUNFIRE )
@@ -5662,10 +5662,10 @@ int	gOrangeGlowG[]=
         }
 
 
-        if (PTR_OURTEAM)
+        if (PTR_OURTEAM(pSoldier))
         {
             // EXPERIENCE GAIN: Took some damage
-            StatChange(pSoldier, EXPERAMT, (int)(5 * ubCombinedLoss), FROM_FAILURE);
+            Campaign.StatChange(pSoldier, Stat.EXPERAMT, (int)(5 * ubCombinedLoss), FROM_FAILURE);
 
             // Check for quote
             if (!(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE.SAID_BEING_PUMMELED))
@@ -5677,9 +5677,9 @@ int	gOrangeGlowG[]=
 
                     if ((pSoldier.bNumHitsThisTurn >= 3) && (pSoldier.bLife - pSoldier.bOldLife > 20))
                     {
-                        if (Random(100) < (int)((40 * (pSoldier.bNumHitsThisTurn - 2))))
+                        if (Globals.Random.Next(100) < (int)((40 * (pSoldier.bNumHitsThisTurn - 2))))
                         {
-                            DelayedTacticalCharacterDialogue(pSoldier, QUOTE_TAKEN_A_BREATING);
+                            DelayedTacticalCharacterDialogue(pSoldier, QUOTE.TAKEN_A_BREATING);
                             pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_BEING_PUMMELED;
                             pSoldier.bNumHitsThisTurn = 0;
                         }
@@ -5781,7 +5781,7 @@ int	gOrangeGlowG[]=
 
                     fDoSub = true;
 
-                    if (Random(2) == 0)
+                    if (Globals.Random.Next(2) == 0)
                     {
                         uiSubSoundID = ACR_DIE_PART1;
                     }
@@ -5818,7 +5818,7 @@ int	gOrangeGlowG[]=
                 case ROBOTNOWEAPON:
 
                     fDoSub = true;
-                    uiSubSoundID = (int)(S_METAL_IMPACT1 + Random(2));
+                    uiSubSoundID = (int)(S_METAL_IMPACT1 + Globals.Random.Next(2));
                     break;
             }
         }
@@ -5981,7 +5981,7 @@ int	gOrangeGlowG[]=
         // Randomize between sounds, if appropriate
         if (gBattleSndsData[ubSoundID].ubRandomVal != 0)
         {
-            ubSoundID = ubSoundID + (int)Random(gBattleSndsData[ubSoundID].ubRandomVal);
+            ubSoundID = ubSoundID + (int)Globals.Random.Next(gBattleSndsData[ubSoundID].ubRandomVal);
 
         }
 
@@ -7187,7 +7187,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                         else
                         {
                             // WE ARE SEEN
-                            if (Random(50) > 25)
+                            if (Globals.Random.Next(50) > 25)
                             {
                                 EVENT_InitNewSoldierAnim(pSoldier, STAB, 0, false);
                             }
@@ -7763,21 +7763,21 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // usedAPs equals (actionPts) * (%of possible points actually used)
         uiUsedAPs = (uiActual * uiAvailAPs) / uiPossible;
 
-        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == MEDICKIT)  // using the GOOD medic stuff
+        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == Items.MEDICKIT)  // using the GOOD medic stuff
         {
             uiUsedAPs = (uiUsedAPs * 2) / 3;    // reverse 50% bonus by taking 2/3rds
         }
 
-        DeductPoints(pSoldier, (int)uiUsedAPs, (int)((uiUsedAPs * BP.PER_AP.LT_EFFORT)));
+        DeductPoints(pSoldier, (int)uiUsedAPs, (int)((uiUsedAPs * BP.PER_AP_LT_EFFORT)));
 
 
-        if (PTR_OURTEAM)
+        if (PTR_OURTEAM(pSoldier))
         {
             // MEDICAL GAIN   (actual / 2):  Helped someone by giving first aid
-            StatChange(pSoldier, MEDICALAMT, (int)(uiActual / 2), false);
+            Campaign.StatChange(pSoldier, Stat.MEDICALAMT, (int)(uiActual / 2), 0);
 
             // DEXTERITY GAIN (actual / 6):  Helped someone by giving first aid
-            StatChange(pSoldier, DEXTAMT, (int)(uiActual / 6), false);
+            Campaign.StatChange(pSoldier, Stat.DEXTAMT, (int)(uiActual / 6), 0);
         }
 
         return (uiMedcost);
@@ -9720,7 +9720,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             {
                 pSoldier.uiTimeSinceLastBleedGrunt = GetJA2Clock();
 
-                DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Random(2)));
+                DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
             }
         }
 
@@ -9834,7 +9834,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 // Pick a random sound...
                 do
                 {
-                    ubRandomSnd = (int)Random(ubRandomMax);
+                    ubRandomSnd = (int)Globals.Random.Next(ubRandomMax);
 
                 } while (ubRandomSnd == pSoldier.ubLastFootPrintSound);
 

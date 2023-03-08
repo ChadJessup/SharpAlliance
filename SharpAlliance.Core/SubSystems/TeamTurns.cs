@@ -1920,8 +1920,8 @@ public class TeamTurns
             int ubLargerHalf, ubSmallerHalf, ubTargetLargerHalf, ubTargetSmallerHalf;
 
             // roll the dice!
-            // e.g. if level 5, roll Random( 3 + 1 ) + 2 for result from 2 to 5
-            // if level 4, roll Random( 2 + 1 ) + 2 for result from 2 to 4
+            // e.g. if level 5, roll Globals.Random.Next( 3 + 1 ) + 2 for result from 2 to 5
+            // if level 4, roll Globals.Random.Next( 2 + 1 ) + 2 for result from 2 to 4
             ubSmallerHalf = EffectiveExpLevel(pSoldier) / 2;
             ubLargerHalf = EffectiveExpLevel(pSoldier) - ubSmallerHalf;
 

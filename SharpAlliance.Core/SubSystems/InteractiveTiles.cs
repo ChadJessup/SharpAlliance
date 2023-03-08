@@ -252,7 +252,7 @@ public class InteractiveTiles
                     SetItemPoolVisibilityOn(pItemPool, ANY_VISIBILITY_VALUE, fDoLocators);
 
                     // Display quote!
-                    //TacticalCharacterDialogue( pSoldier, (int)( QUOTE_SPOTTED_SOMETHING_ONE + Random( 2 ) ) );
+                    //TacticalCharacterDialogue( pSoldier, (int)( QUOTE_SPOTTED_SOMETHING_ONE + Globals.Random.Next( 2 ) ) );
 
                     // ATE: Check now many things in pool.....
                     if (!fDidMissingQuote)

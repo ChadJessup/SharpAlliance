@@ -214,7 +214,7 @@ public class ExplosionControl
             AniParams.uiFlags |= ANITILEFLAGS.NOZBLITTER;
         }
 
-        if (uiFlags & EXPLOSION_FLAG.USEABSPOS)
+        if (uiFlags.HasFlag(EXPLOSION_FLAG.USEABSPOS))
         {
             AniParams.sX = sX;
             AniParams.sY = sY;
@@ -484,7 +484,7 @@ public class ExplosionControl
                                     //Set a flag indicating that the following changes are to go the the maps, temp file
                                     ApplyMapChangesToMapTempFile(true);
 
-                                    AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Globals.Random.Next.Next(3)));
+                                    AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Random.Next(3)));
 
                                     ApplyMapChangesToMapTempFile(false);
                                 }
@@ -505,7 +505,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
 
-                                        AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Globals.Random.Next.Next(3)));
+                                        AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Random.Next(3)));
 
                                         ApplyMapChangesToMapTempFile(false);
                                     }
@@ -520,7 +520,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
 
-                                        AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Globals.Random.Next.Next(3)));
+                                        AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Random.Next(3)));
 
                                         ApplyMapChangesToMapTempFile(false);
                                     }
@@ -592,7 +592,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, &sNewIndex);
+                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -608,7 +608,7 @@ public class ExplosionControl
                                 // Move in EAST
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.EAST));
 
-                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, &pWallStruct);
+                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, out pWallStruct);
 
                                 if (pNewNode != null)
                                 {
@@ -624,7 +624,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, &sNewIndex);
+                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -739,7 +739,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, &sNewIndex);
+                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -754,7 +754,7 @@ public class ExplosionControl
                                 // Move in SOUTH
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.SOUTH));
 
-                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, &pWallStruct);
+                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, out pWallStruct);
 
                                 if (pNewNode != null)
                                 {
@@ -770,7 +770,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, &sNewIndex);
+                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -1042,7 +1042,7 @@ public class ExplosionControl
                 // ATE: Don't after first attack...
                 if (uiDist > 1)
                 {
-                    if (pBaseStructure)
+                    if (pBaseStructure is not null)
                     {
                         ppTile = null;
                     }
@@ -1095,9 +1095,9 @@ public class ExplosionControl
                 }
             }
 
-            if (pBaseStructure)
+            if (pBaseStructure is not null)
             {
-                MemFree(ppTile);
+                ppTile = null;
             }
             pCurrent = pNextCurrent;
         }
@@ -1736,7 +1736,7 @@ public class ExplosionControl
 
         Blocking = GetBlockingStructureInfo((int)uiNewSpot, ubDir, 0, bLevel, out bStructHeight, out pBlockingStructure, true);
 
-        if (pBlockingStructure)
+        if (pBlockingStructure is not null)
         {
             if (pBlockingStructure.fFlags & STRUCTUREFLAGS.CAVEWALL)
             {
@@ -1769,7 +1769,7 @@ public class ExplosionControl
                     // will override there...
                     sNewGridNo = NewGridNo((int)uiNewSpot, DirectionInc(WEST));
 
-                    BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, &bStructHeight, &pBlockingStructure, true);
+                    BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, out bStructHeight, out pBlockingStructure, true);
                     if (BlockingTemp == BLOCKING_TOPRIGHT_OPEN_WINDOW || BlockingTemp == BLOCKING_TOPLEFT_OPEN_WINDOW)
                     {
                         // If open, fTravelCostObs set to false and reduce range....
@@ -1825,7 +1825,7 @@ public class ExplosionControl
                 // will override there...
                 sNewGridNo = NewGridNo((int)uiNewSpot, DirectionInc(WorldDirections.WEST));
 
-                BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, &bStructHeight, &pBlockingStructure, true);
+                BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, out bStructHeight, out pBlockingStructure, true);
                 if (pBlockingStructure && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
                 {
                     fTravelCostObs = false;
@@ -2096,7 +2096,7 @@ public class ExplosionControl
             int sX, sY;
 
             // DO wireframes as well
-            ConvertGridNoToXY((int)sGridNo, &sX, &sY);
+            ConvertGridNoToXY((int)sGridNo, out sX, out sY);
             SetRecalculateWireFrameFlagRadius(sX, sY, ubRadius);
             CalculateWorldWireFrameTiles(false);
 
@@ -2253,7 +2253,7 @@ public class ExplosionControl
         {
             case ACTION_ITEM_OPEN_DOOR:
                 pStructure = FindStructure(sGridNo, STRUCTURE_ANYDOOR);
-                if (pStructure)
+                if (pStructure is not null)
                 {
                     if (pStructure.fFlags & STRUCTURE_OPEN)
                     {
@@ -2283,7 +2283,7 @@ public class ExplosionControl
                 break;
             case ACTION_ITEM_CLOSE_DOOR:
                 pStructure = FindStructure(sGridNo, STRUCTURE_ANYDOOR);
-                if (pStructure)
+                if (pStructure is not null)
                 {
                     if (pStructure.fFlags & STRUCTURE_OPEN)
                     {
@@ -2310,7 +2310,7 @@ public class ExplosionControl
                 break;
             case ACTION_ITEM_TOGGLE_DOOR:
                 pStructure = FindStructure(sGridNo, STRUCTURE_ANYDOOR);
-                if (pStructure)
+                if (pStructure is not null)
                 {
                     if (pStructure.fFlags & STRUCTURE_BASE_TILE)
                     {
@@ -2332,7 +2332,7 @@ public class ExplosionControl
                     DOOR? pDoor;
 
                     pDoor = FindDoorInfoAtGridNo(sGridNo);
-                    if (pDoor)
+                    if (pDoor is not null)
                     {
                         pDoor.fLocked = false;
                     }
@@ -2343,7 +2343,7 @@ public class ExplosionControl
                     DOOR? pDoor;
 
                     pDoor = FindDoorInfoAtGridNo(sGridNo);
-                    if (pDoor)
+                    if (pDoor is not null)
                     {
                         if (pDoor.fLocked)
                         {
@@ -2361,7 +2361,7 @@ public class ExplosionControl
                     DOOR? pDoor;
 
                     pDoor = FindDoorInfoAtGridNo(sGridNo);
-                    if (pDoor)
+                    if (pDoor is not null)
                     {
                         pDoor.ubTrapLevel = 0;
                         pDoor.ubTrapID = NO_TRAP;
@@ -2490,10 +2490,10 @@ public class ExplosionControl
                 */
                 break;
             case ACTION_ITEM_KINGPIN_ALARM:
-                PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
+                //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                 CallAvailableKingpinMenTo(sGridNo);
 
-                gTacticalStatus.fCivGroupHostile[KINGPIN_CIV_GROUP] = CIV_GROUP_HOSTILE;
+                gTacticalStatus.fCivGroupHostile[CIV_GROUP.KINGPIN_CIV_GROUP] = CIV_GROUP_HOSTILE;
 
                 {
                     int ubID, ubID2;
@@ -2603,7 +2603,7 @@ public class ExplosionControl
             case ACTION_ITEM_REVEAL_ROOM:
                 {
                     int ubRoom;
-                    if (InAHiddenRoom(sGridNo, &ubRoom))
+                    if (InAHiddenRoom(sGridNo, out ubRoom))
                     {
                         RemoveRoomRoof(sGridNo, ubRoom, null);
                     }
@@ -2619,10 +2619,10 @@ public class ExplosionControl
                 CallAvailableTeamEnemiesTo(sGridNo, CREATURE_TEAM);
                 break;
             case ACTION_ITEM_KLAXON:
-                PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
+                //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                 break;
             case ACTION_ITEM_MUSEUM_ALARM:
-                PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
+                //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                 CallEldinTo(sGridNo);
                 break;
             default:
@@ -2685,7 +2685,7 @@ public class ExplosionControl
                 }
                 else if (pObj.usBombItem == TRIP_KLAXON)
                 {
-                    PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
+                    //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                     CallAvailableEnemiesTo(sGridNo);
                     //RemoveItemFromPool( sGridNo, gWorldBombs[ uiWorldBombIndex ].iItemIndex, 0 );
                 }
@@ -2829,7 +2829,7 @@ public class ExplosionControl
     {
         int uiWorldBombIndex;
         int uiTimeStamp;
-        OBJECTTYPE* pObj;
+        OBJECTTYPE? pObj;
 
         uiTimeStamp = GetJA2Clock();
 
@@ -2838,7 +2838,7 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = &(gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
                 if (pObj.bDetonatorType == BOMB_REMOTE && !(pObj.fFlags & OBJECT_DISABLED_BOMB))
                 {
                     // Found a remote bomb, so check to see if it has the same frequency
@@ -2901,7 +2901,7 @@ public class ExplosionControl
     {
         int uiWorldBombIndex;
         int uiTimeStamp;
-        OBJECTTYPE* pObj;
+        OBJECTTYPE? pObj;
         bool fFoundMine = false;
 
         uiTimeStamp = GetJA2Clock();
@@ -2965,7 +2965,7 @@ public class ExplosionControl
     void ActivateSwitchInGridNo(int ubID, int sGridNo)
     {
         int uiWorldBombIndex;
-        OBJECTTYPE* pObj;
+        OBJECTTYPE? pObj;
 
         // Go through all the bombs in the world, and look for mines at this location
         for (uiWorldBombIndex = 0; uiWorldBombIndex < guiNumWorldBombs; uiWorldBombIndex++)
@@ -3001,7 +3001,7 @@ public class ExplosionControl
 
 
         //Write the number of explosion queues
-        FileWrite(hFile, &gubElementsOnExplosionQueue, sizeof(int), &uiNumBytesWritten);
+        FileWrite(hFile, &gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             FileClose(hFile);
@@ -3012,7 +3012,7 @@ public class ExplosionControl
         //loop through and add all the explosions
         for (uiCnt = 0; uiCnt < MAX_BOMB_QUEUE; uiCnt++)
         {
-            FileWrite(hFile, &gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), &uiNumBytesWritten);
+            FileWrite(hFile, &gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(ExplosionQueueElement))
             {
                 FileClose(hFile);
@@ -3036,7 +3036,7 @@ public class ExplosionControl
         }
 
         //Save the number of explosions
-        FileWrite(hFile, &uiExplosionCount, sizeof(int), &uiNumBytesWritten);
+        FileWrite(hFile, out uiExplosionCount, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             FileClose(hFile);
@@ -3050,7 +3050,7 @@ public class ExplosionControl
         {
             if (gExplosionData[uiCnt].fAllocated)
             {
-                FileWrite(hFile, &gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), &uiNumBytesWritten);
+                FileWrite(hFile, &gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesWritten);
                 if (uiNumBytesWritten != sizeof(EXPLOSIONTYPE))
                 {
                     FileClose(hFile);
@@ -3078,7 +3078,7 @@ public class ExplosionControl
         memset(gExplosionQueue, 0, sizeof(ExplosionQueueElement) * MAX_BOMB_QUEUE);
 
         //Read the number of explosions queue's
-        FileRead(hFile, &gubElementsOnExplosionQueue, sizeof(int), &uiNumBytesRead);
+        FileRead(hFile, &gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3088,7 +3088,7 @@ public class ExplosionControl
         //loop through read all the active explosions fro the file
         for (uiCnt = 0; uiCnt < MAX_BOMB_QUEUE; uiCnt++)
         {
-            FileRead(hFile, &gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), &uiNumBytesRead);
+            FileRead(hFile, &gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(ExplosionQueueElement))
             {
                 return (false);
@@ -3102,7 +3102,7 @@ public class ExplosionControl
         //
 
         //Load the number of explosions
-        FileRead(hFile, &guiNumExplosions, sizeof(int), &uiNumBytesRead);
+        FileRead(hFile, out guiNumExplosions, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3112,7 +3112,7 @@ public class ExplosionControl
         //loop through and load all the active explosions
         for (uiCnt = 0; uiCnt < guiNumExplosions; uiCnt++)
         {
-            FileRead(hFile, &gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), &uiNumBytesRead);
+            FileRead(hFile, &gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(EXPLOSIONTYPE))
             {
                 return (false);
@@ -3214,7 +3214,7 @@ public class ExplosionControl
             if (pSamList[cnt] == sSectorNo)
             {
                 // get graphic.......
-                GetTileIndexFromTypeSubIndex(EIGHTISTRUCT, (int)(gbSAMGraphicList[cnt]), &usGoodGraphic);
+                GetTileIndexFromTypeSubIndex(EIGHTISTRUCT, (int)(gbSAMGraphicList[cnt]), out usGoodGraphic);
 
                 // Damaged one ( current ) is 2 less...
                 usDamagedGraphic = usGoodGraphic - 2;
@@ -3293,7 +3293,7 @@ public class ExplosionControl
     {
         int uiWorldBombIndex;
         int uiTimeStamp;
-        OBJECTTYPE* pObj;
+        OBJECTTYPE? pObj;
 
         uiTimeStamp = GetJA2Clock();
 
