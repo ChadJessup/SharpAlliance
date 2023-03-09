@@ -9,11 +9,29 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public static int gbSelectedArmsDealerID;
+    // To reduce memory fragmentation from frequent MemRealloc(), we allocate memory for more than one special slot each
+    // time we run out of space.  Odds are that if we need one, we'll need another soon.
+    public const int SPECIAL_ITEMS_ALLOCED_AT_ONCE = 3;
+    // Once allocated, the special item slots remain allocated for the duration of the game, or until the dealer dies.
+    // This is a little bit wasteful, but saves an awful lot of hassles, and avoid unnecessary memory fragmentation
+
+    public const int MIN_REPAIR_TIME_IN_MINUTES = 15;     // minutes
+    public const int MIN_REPAIR_COST = 10;// dollars
+
+    // price classes
+    public const int PRICE_CLASS_JUNK = 0;
+    public const int PRICE_CLASS_CHEAP = 1;
+    public const int PRICE_CLASS_EXPENSIVE = 2;
+
+
+    public static int gubLastSpecialItemAddedAtElement = 255;
+
+
+    public static ARMS_DEALER gbSelectedArmsDealerID;
 
     // THESE GET SAVED/RESTORED/RESET
-    public static ARMS_DEALER_STATUS[] gArmsDealerStatus = new ARMS_DEALER_STATUS[(int)ARMS_DEALER.NUM_ARMS_DEALERS];
-    public static DEALER_ITEM_HEADER[,] gArmsDealersInventory = new DEALER_ITEM_HEADER[(int)ARMS_DEALER.NUM_ARMS_DEALERS, (int)Items.MAXITEMS];
+    public static Dictionary<ARMS_DEALER, ARMS_DEALER_STATUS> gArmsDealerStatus = new();
+    public static Dictionary<ARMS_DEALER, Dictionary<Items, DEALER_ITEM_HEADER>> gArmsDealersInventory = new();
 
     //
     // Setup the inventory arrays for each of the arms dealers
@@ -507,7 +525,7 @@ public partial class Globals
         new(Items.CREATURE_PART_FLESH,  0 ),
         new(Items.CREATURE_PART_ORGAN,  0 ),
         new(Items.JAR_QUEEN_CREATURE_BLOOD, 0 ),
-    
+
         new(LAST_DEALER_ITEM, NO_DEALER_ITEM ),		//Last One
     };
 

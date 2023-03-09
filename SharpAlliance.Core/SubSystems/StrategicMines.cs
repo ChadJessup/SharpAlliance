@@ -329,10 +329,10 @@ public class StrategicMines
 
             History.AddHistoryToPlayersLog(
                 HISTORY.MINE_RAN_OUT,
-                gMineLocation[bMineIndex].bAssociatedTown,
+                Globals.gMineLocation[bMineIndex].bAssociatedTown,
                 GameClock.GetWorldTotalMin(),
-                gMineLocation[bMineIndex].sSectorX,
-                gMineLocation[bMineIndex].sSectorY);
+                Globals.gMineLocation[bMineIndex].sSectorX,
+                Globals.gMineLocation[bMineIndex].sSectorY);
         }
         else    // still some left after this extraction
         {
@@ -707,7 +707,7 @@ public class StrategicMines
     public static bool PlayerControlsMine(MINE bMineIndex)
     {
         // a value of true is from the enemy's point of view
-        if (Globals.StrategicMap[(Globals.gMineLocation[bMineIndex].sSectorX) + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[bMineIndex].sSectorY))].fEnemyControlled == true)
+        if (Globals.strategicMap[(Globals.gMineLocation[bMineIndex].sSectorX) + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[bMineIndex].sSectorY))].fEnemyControlled == true)
         {
             return (false);
         }
@@ -940,7 +940,7 @@ public class StrategicMines
         // if this is our first time set a history fact 
         if (mineStatus.fSpokeToHeadMiner == false)
         {
-            History.AddHistoryToPlayersLog(HISTORY.TALKED_TO_MINER, gMineLocation[ubMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, gMineLocation[ubMineIndex].sSectorY);
+            History.AddHistoryToPlayersLog(HISTORY.TALKED_TO_MINER, gMineLocation[ubMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
             mineStatus.fSpokeToHeadMiner = true;
         }
     }
@@ -1189,7 +1189,7 @@ public class StrategicMines
         // mine not empty
         // player hasn't spoken to the head miner, but hasn't attacked him either
         // miner is alive
-        if ((Globals.StrategicMap[(Globals.gMineLocation[ubMineIndex].sSectorX) + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[ubMineIndex].sSectorY))].fEnemyControlled == false) &&
+        if ((Globals.strategicMap[(Globals.gMineLocation[ubMineIndex].sSectorX) + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[ubMineIndex].sSectorY))].fEnemyControlled == false) &&
              (!pMineStatus.fEmpty) &&
              (!pMineStatus.fSpokeToHeadMiner) &&
              (!pMineStatus.fAttackedHeadMiner) &&

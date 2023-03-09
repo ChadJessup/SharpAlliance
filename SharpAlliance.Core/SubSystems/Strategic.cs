@@ -20,7 +20,7 @@ public class STRATEGIC_STATUS
     public int ubUnhiredMercDeaths;      // how many mercs have died while NOT working for the player
     public int usPlayerKills;                   // kills achieved by all mercs controlled by player together.  *Excludes* militia kills!
     public int[,] usEnemiesKilled = new int[(int)ENEMY_KILLED.NUM_WAYS_ENEMIES_KILLED, (int)ENEMY_RANK.NUM_ENEMY_RANKS];	// admin/troop/elite.  Includes kills by militia, too
-    public int usLastDayOfPlayerActivity;
+    public uint usLastDayOfPlayerActivity;
     public int ubNumNewSectorsVisitedToday;
     public int ubNumberOfDaysOfInactivity;
     public int[] bPadding;// [70];

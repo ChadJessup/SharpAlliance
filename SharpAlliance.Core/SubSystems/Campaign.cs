@@ -1553,7 +1553,7 @@ public class Campaign
             for (ubMapY = (MAP_ROW)1; (int)ubMapY < Globals.MAP_WORLD_Y - 1; ubMapY++)
             {
                 // if player controlled
-                if (Globals.StrategicMap[StrategicMap.CALCULATE_STRATEGIC_INDEX(ubMapX, ubMapY)].fEnemyControlled == false)
+                if (Globals.strategicMap[StrategicMap.CALCULATE_STRATEGIC_INDEX(ubMapX, ubMapY)].fEnemyControlled == false)
                 {
                     // towns where militia can be trained and SAM sites are important sectors
                     if (MilitiaTrainingAllowedInSector(ubMapX, ubMapY, 0))

@@ -230,7 +230,7 @@ public class MapScreenInterfaceMap
                     {
                         if (fShowAircraftFlag && !iCurrentMapSectorZ)
                         {
-                            if (!Globals.StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
+                            if (!Globals.strategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
                             {
                                 // sector not visited, not air controlled
                                 ShadeMapElem(cnt, cnt2, MAP_SHADE.DK_GREEN);
@@ -251,7 +251,7 @@ public class MapScreenInterfaceMap
                     {
                         if (fShowAircraftFlag && !iCurrentMapSectorZ)
                         {
-                            if (!Globals.StrategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
+                            if (!Globals.strategicMap[cnt + cnt2 * Globals.WORLD_MAP_X].fEnemyAirControlled)
                             {
                                 // sector visited and air controlled
                                 ShadeMapElem(cnt, cnt2, MAP_SHADE.LT_GREEN);
@@ -430,7 +430,7 @@ public class MapScreenInterfaceMap
 
         // get and blt border
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiMapBorder);
-        VideoObjectManager.BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VeldridVideoManager.BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // show the level marker
         DisplayCurrentLevelMarker();

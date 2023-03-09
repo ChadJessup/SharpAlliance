@@ -1,39 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
-
-using static SharpAlliance.Core.Globals;
+using System;
+using System.Collections.Generic;
+using Veldrid;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Facts
 {
+    public const int MAX_FACTS = 65536;
+    public const int NUM_FACTS = 500;	//If you increase this number, add entries to the fact text list in QuestText.c
+
     public static Dictionary<FACT, bool> gubFact = new(); // this has to be updated when we figure out how many facts we have
     private readonly ILogger<Facts> logger;
 
     public Facts(ILogger<Facts> logger)
     {
         this.logger = logger;
-    }
-
-    public static void SetFactTrue(FACT usFact)
-    {
-        // This function is here just for control flow purposes (debug breakpoints)
-        // and code is more readable that way
-
-        // must intercept when Jake is first trigered to start selling fuel
-        if ((usFact == FACT.ESTONI_REFUELLING_POSSIBLE) && (CheckFact(usFact, 0) == false))
-        {
-            // give him some gas...
-            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.JAKE, Items.GAS_CAN, (int)(4 + Globals.Random.Next(3)));
-        }
-
-        gubFact[usFact] = true;
-    }
-
-    public static void SetFactFalse(FACT usFact)
-    {
-        gubFact[usFact] = false;
     }
 
     public static bool CheckNPCInOkayHealth(NPCID ubProfileID)
@@ -79,7 +64,7 @@ public class Facts
         {
             return (false);
         }
-        return (IsometricUtils.PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
+        return (PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
     }
 
     public static bool CheckFact(FACT usFact, NPCID ubProfileID)
@@ -273,7 +258,7 @@ public class Facts
                 gubFact[usFact] = (NumMercsNear(ubProfileID, 5) > 0);
                 break;
             case FACT.REBELS_HATE_PLAYER:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE);
+                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE);
                 break;
             case FACT.CURRENT_SECTOR_G9:
                 gubFact[usFact] = (Globals.gWorldSectorX == 9 && Globals.gWorldSectorY == MAP_ROW.G && Globals.gbWorldSectorZ == 0);
@@ -360,17 +345,17 @@ public class Facts
 
             case FACT.RECEIVING_INCOME_FROM_DCAC:
                 gubFact[usFact] = (
-                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.DRASSEN) > 0) &&
-                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.ALMA) > 0) &&
-                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CAMBRIA) > 0) &&
-                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0));
+                    (PredictDailyIncomeFromAMine(MINE.DRASSEN) > 0) &&
+                    (PredictDailyIncomeFromAMine(MINE.ALMA) > 0) &&
+                    (PredictDailyIncomeFromAMine(MINE.CAMBRIA) > 0) &&
+                    (PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0));
                 break;
 
             case FACT.PLAYER_BEEN_TO_K4:
                 {
                     UNDERGROUND_SECTORINFO? pUnderGroundSector;
 
-                    pUnderGroundSector = QueenCommand.FindUnderGroundSector(4, MAP_ROW.K, 1);
+                    pUnderGroundSector = FindUnderGroundSector(4, MAP_ROW.K, 1);
                     gubFact[usFact] = pUnderGroundSector.fVisited > 0;
                 }
                 break;
@@ -401,7 +386,7 @@ public class Facts
                     // if Skyrider, ignore low loyalty until he has monologues, and wait at least a day since the latest monologue to avoid a hot/cold attitude
                     if ((ubProfileID == NPCID.SKYRIDER)
                         && ((Globals.guiHelicopterSkyriderTalkState == 0)
-                        || ((GameClock.GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) < (24 * 60))))
+                        || ((GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) < (24 * 60))))
                     {
                         gubFact[usFact] = false;
                     }
@@ -458,15 +443,15 @@ public class Facts
                 break;
 
             case FACT.PLAYER_DOING_POORLY:
-                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() < 20);
+                gubFact[usFact] = (CurrentPlayerProgressPercentage() < 20);
                 break;
 
             case FACT.PLAYER_DOING_WELL:
-                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 50);
+                gubFact[usFact] = (CurrentPlayerProgressPercentage() > 50);
                 break;
 
             case FACT.PLAYER_DOING_VERY_WELL:
-                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 80);
+                gubFact[usFact] = (CurrentPlayerProgressPercentage() > 80);
                 break;
 
             case FACT.FATHER_DRUNK_AND_SCIFI_OPTION_ON:
@@ -475,7 +460,7 @@ public class Facts
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:
                 gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED)
-                    && (GameClock.GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
+                    && (GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
                 break;
 
             case FACT.NOTHING_REPAIRED_YET:
@@ -555,7 +540,7 @@ public class Facts
                 break;
 
             case FACT.ROCKET_RIFLE_EXISTS:
-                gubFact[usFact] = HandleItems.ItemTypeExistsAtLocation(10472, Items.ROCKET_RIFLE, 0, out var _);
+                gubFact[usFact] = ItemTypeExistsAtLocation(10472, ROCKET_RIFLE, 0, null);
                 break;
 
             case FACT.DOREEN_ALIVE:
@@ -602,31 +587,31 @@ public class Facts
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.DRASSEN);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_DRASSEN_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_CAMBRIA_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.CAMBRIA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CAMBRIA_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_CHITZENA_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.CHITZENA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CHITZENA_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_ALMA_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.ALMA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_ALMA_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
             case FACT.PLAYER_SPOKE_TO_GRUMM_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.GRUMM);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_GRUMM_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !(Globals.StrategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
                 break;
 
             case FACT.ENOUGH_LOYALTY_TO_TRAIN_MILITIA:
@@ -663,7 +648,7 @@ public class Facts
                 break;
 
             case FACT.KINGPIN_IS_ENEMY:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE);
+                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[(int)CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE);
                 break;
 
             case FACT.DYNAMO_NOT_SPEAKER:
@@ -696,6 +681,27 @@ public class Facts
         }
         return (gubFact[usFact]);
     }
+
+    public static void SetFactTrue(FACT usFact)
+    {
+        // This function is here just for control flow purposes (debug breakpoints)
+        // and code is more readable that way
+
+        // must intercept when Jake is first trigered to start selling fuel
+        if ((usFact == FACT.ESTONI_REFUELLING_POSSIBLE) && (CheckFact(usFact, 0) == false))
+        {
+            // give him some gas...
+            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER_JAKE, GAS_CAN, (4 + Globals.Random.Next(3)));
+        }
+
+        gubFact[usFact] = true;
+    }
+
+    public static void SetFactFalse(FACT usFact)
+    {
+        gubFact[usFact] = false;
+    }
+
 }
 
 public enum FACT

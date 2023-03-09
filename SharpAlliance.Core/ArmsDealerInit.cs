@@ -8,95 +8,75 @@ namespace SharpAlliance.Core;
 
 public class ArmsDealerInit
 {
-    int GetDealersMaxItemAmount(ARMS_DEALER ubDealerID, Items usItemIndex)
+    public static int GetDealersMaxItemAmount(ARMS_DEALER ubDealerID, Items usItemIndex)
     {
         switch (ubDealerID)
         {
             case ARMS_DEALER.TONY:
                 return (GetMaxItemAmount(gTonyInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.FRANK:
                 return (GetMaxItemAmount(gFrankInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.MICKY:
                 return (GetMaxItemAmount(gMickyInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.ARNIE:
                 return (GetMaxItemAmount(gArnieInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.PERKO:
                 return (GetMaxItemAmount(gPerkoInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.KEITH:
                 return (GetMaxItemAmount(gKeithInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.BAR_BRO_1:
                 return (GetMaxItemAmount(gHerveInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.BAR_BRO_2:
                 return (GetMaxItemAmount(gPeterInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.BAR_BRO_3:
                 return (GetMaxItemAmount(gAlbertoInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.BAR_BRO_4:
                 return (GetMaxItemAmount(gCarloInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.JAKE:
                 return (GetMaxItemAmount(gJakeInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.FRANZ:
                 return (GetMaxItemAmount(gFranzInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.HOWARD:
                 return (GetMaxItemAmount(gHowardInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.SAM:
                 return (GetMaxItemAmount(gSamInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.FREDO:
                 return (GetMaxItemAmount(gFredoInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.GABBY:
                 return (GetMaxItemAmount(gGabbyInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.DEVIN:
                 return (GetMaxItemAmount(gDevinInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.ELGIN:
                 return (GetMaxItemAmount(gElginInventory, usItemIndex));
-                break;
 
             case ARMS_DEALER.MANNY:
                 return (GetMaxItemAmount(gMannyInventory, usItemIndex));
-                break;
 
             default:
                 Debug.Assert(false);
                 return (0);
-                break;
         }
     }
 
 
-    int GetMaxItemAmount(DEALER_POSSIBLE_INV[] pInv, Items usItemIndex)
+    public static int GetMaxItemAmount(DEALER_POSSIBLE_INV[] pInv, Items usItemIndex)
     {
         int usCnt = 0;
 
@@ -117,85 +97,66 @@ public class ArmsDealerInit
     }
 
 
-    DEALER_POSSIBLE_INV[] GetPointerToDealersPossibleInventory(ARMS_DEALER ubArmsDealerID)
+    public static DEALER_POSSIBLE_INV[]? GetPointerToDealersPossibleInventory(ARMS_DEALER ubArmsDealerID)
     {
         switch (ubArmsDealerID)
         {
             case ARMS_DEALER.TONY:
                 return (gTonyInventory);
-                break;
 
             case ARMS_DEALER.FRANK:
                 return (gFrankInventory);
-                break;
 
             case ARMS_DEALER.MICKY:
                 return (gMickyInventory);
-                break;
 
             case ARMS_DEALER.ARNIE:
                 return (gArnieInventory);
-                break;
 
             case ARMS_DEALER.PERKO:
                 return (gPerkoInventory);
-                break;
 
             case ARMS_DEALER.KEITH:
                 return (gKeithInventory);
-                break;
 
             case ARMS_DEALER.BAR_BRO_1:
                 return (gHerveInventory);
-                break;
 
             case ARMS_DEALER.BAR_BRO_2:
                 return (gPeterInventory);
-                break;
 
             case ARMS_DEALER.BAR_BRO_3:
                 return (gAlbertoInventory);
-                break;
 
             case ARMS_DEALER.BAR_BRO_4:
                 return (gCarloInventory);
-                break;
 
             case ARMS_DEALER.JAKE:
                 return (gJakeInventory);
-                break;
 
             case ARMS_DEALER.FRANZ:
                 return (gFranzInventory);
-                break;
 
             case ARMS_DEALER.HOWARD:
                 return (gHowardInventory);
-                break;
 
             case ARMS_DEALER.SAM:
                 return (gSamInventory);
-                break;
 
             case ARMS_DEALER.FREDO:
                 return (gFredoInventory);
-                break;
 
             case ARMS_DEALER.GABBY:
                 return (gGabbyInventory);
-                break;
 
             case ARMS_DEALER.DEVIN:
                 return (gDevinInventory);
-                break;
 
             case ARMS_DEALER.ELGIN:
                 return (gElginInventory);
-                break;
 
             case ARMS_DEALER.MANNY:
                 return (gMannyInventory);
-                break;
 
             default:
                 return (null);
@@ -418,7 +379,7 @@ public class ArmsDealerInit
         ubChance = ChanceOfItemTransaction(bArmsDealer, usItemIndex, fDealerIsSelling, fUsed);
 
         // if the dealer is buying, and a chance exists (i.e. the item is "eligible")
-        if (fDealerIsSelling == 0&& (ubChance > 0))
+        if (fDealerIsSelling == 0 && (ubChance > 0))
         {
             // mark it as such
             if (bArmsDealer == (ARMS_DEALER)(-1))
@@ -436,7 +397,7 @@ public class ArmsDealerInit
             }
             else
             {
-                gArmsDealersInventory[(int)bArmsDealer, (int)usItemIndex].fPreviouslyEligible = true;
+                gArmsDealersInventory[bArmsDealer][usItemIndex].fPreviouslyEligible = true;
             }
         }
 
@@ -515,7 +476,7 @@ public class ArmsDealerInit
 
 
 
-    int BobbyRayItemQsortCompare(STORE_INVENTORY pArg1, STORE_INVENTORY pArg2)
+    private static int BobbyRayItemQsortCompare(STORE_INVENTORY pArg1, STORE_INVENTORY pArg2)
     {
         Items usItem1Index;
         Items usItem2Index;
@@ -565,8 +526,8 @@ public class ArmsDealerInit
         Debug.Assert(pInvSlot1.sSpecialItemElement != -1);
         Debug.Assert(pInvSlot2.sSpecialItemElement != -1);
 
-        uiRepairTime1 = gArmsDealersInventory[gbSelectedArmsDealerID, (int)pInvSlot1.sItemIndex].SpecialItem[pInvSlot1.sSpecialItemElement].uiRepairDoneTime;
-        uiRepairTime2 = gArmsDealersInventory[gbSelectedArmsDealerID, (int)pInvSlot2.sItemIndex].SpecialItem[pInvSlot2.sSpecialItemElement].uiRepairDoneTime;
+        uiRepairTime1 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot1.sItemIndex].SpecialItem[pInvSlot1.sSpecialItemElement].uiRepairDoneTime;
+        uiRepairTime2 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot2.sItemIndex].SpecialItem[pInvSlot2.sSpecialItemElement].uiRepairDoneTime;
 
 
         // lower reapir time first
@@ -587,7 +548,7 @@ public class ArmsDealerInit
 
 
 
-    int CompareItemsForSorting(Items usItem1Index, Items usItem2Index, int ubItem1Quality, int ubItem2Quality)
+    private static int CompareItemsForSorting(Items usItem1Index, Items usItem2Index, int ubItem1Quality, int ubItem2Quality)
     {
         int ubItem1Category;
         int ubItem2Category;
@@ -770,7 +731,275 @@ public class ArmsDealerInit
         return (0);
     }
 
+    public static bool ItemContainsLiquid(Items usItemIndex)
+    {
+        switch (usItemIndex)
+        {
+            case Items.CANTEEN:
+            case Items.BEER:
+            case Items.ALCOHOL:
+            case Items.JAR_HUMAN_BLOOD:
+            case Items.JAR_CREATURE_BLOOD:
+            case Items.JAR_QUEEN_CREATURE_BLOOD:
+            case Items.JAR_ELIXIR:
+            case Items.GAS_CAN:
+                return (true);
+        }
 
+        return (false);
+    }
+
+    public static int DetermineDealerItemCondition(ARMS_DEALER ubArmsDealer, Items usItemIndex)
+    {
+        int ubCondition = 100;
+
+        // if it's a damagable item, and not a liquid (those are always sold full)
+        if ((Item[usItemIndex].fFlags.HasFlag(ItemAttributes.ITEM_DAMAGEABLE)) && !ItemContainsLiquid(usItemIndex))
+        {
+            // if he ONLY has used items, or 50% of the time if he carries both used & new items
+            if ((ArmsDealerInfo[ubArmsDealer].uiFlags.HasFlag(ARMS_DEALER_ITEM.ONLY_USED_ITEMS)) ||
+                 ((ArmsDealerInfo[ubArmsDealer].uiFlags.HasFlag(ARMS_DEALER_ITEM.SOME_USED_ITEMS)) && (Globals.Random.Next(100) < 50)))
+            {
+                // make the item a used one
+                ubCondition = (20 + Globals.Random.Next(60));
+            }
+        }
+
+        return (ubCondition);
+    }
+
+    public static void SetSpecialItemInfoToDefaults(out SPECIAL_ITEM_INFO pSpclItemInfo)
+    {
+        int ubCnt;
+
+        //memset(pSpclItemInfo, 0, sizeof(SPECIAL_ITEM_INFO));
+        pSpclItemInfo = new()
+        {
+            bItemCondition = 100,
+            ubImprintID = NO_PROFILE,
+        };
+
+        for (ubCnt = 0; ubCnt < MAX_ATTACHMENTS; ubCnt++)
+        {
+            pSpclItemInfo.usAttachment[ubCnt] = (int)Items.NONE;
+            pSpclItemInfo.bAttachmentStatus[ubCnt] = 0;
+        }
+    }
+
+    public static void ArmsDealerGetsFreshStock(ARMS_DEALER ubArmsDealer, Items usItemIndex, int ubNumItems)
+    {
+        int ubCnt;
+        int ubItemCondition;
+        int ubPerfectOnes = 0;
+        SPECIAL_ITEM_INFO? SpclItemInfo;
+
+        // create item info describing a perfect item
+        SetSpecialItemInfoToDefaults(out SpclItemInfo);
+
+
+        // determine the condition of each one, counting up new ones, but adding damaged ones right away
+        for (ubCnt = 0; ubCnt < ubNumItems; ubCnt++)
+        {
+            ubItemCondition = DetermineDealerItemCondition(ubArmsDealer, usItemIndex);
+
+            // if the item is brand new
+            if (ubItemCondition == 100)
+            {
+                ubPerfectOnes++;
+            }
+            else
+            {
+                // add a used item with that condition to his inventory
+                SpclItemInfo.bItemCondition = ubItemCondition;
+                AddItemToArmsDealerInventory(ubArmsDealer, usItemIndex, SpclItemInfo, 1);
+            }
+        }
+
+        // now add all the perfect ones, in one shot
+        if (ubPerfectOnes > 0)
+        {
+            SpclItemInfo.bItemCondition = 100;
+            AddItemToArmsDealerInventory(ubArmsDealer, usItemIndex, SpclItemInfo, ubPerfectOnes);
+        }
+    }
+
+    //Use AddObjectToArmsDealerInventory() instead of this when converting a complex item in OBJECTTYPE format.
+    public static void AddItemToArmsDealerInventory(ARMS_DEALER ubArmsDealer, Items usItemIndex, SPECIAL_ITEM_INFO? pSpclItemInfo, int ubHowMany)
+    {
+        int ubRoomLeft;
+        int ubElement;
+        int ubElementsToAdd;
+        bool fFoundOne;
+        bool fSuccess;
+
+        Debug.Assert(ubHowMany > 0);
+
+        ubRoomLeft = 255 - gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems;
+
+        if (ubHowMany > ubRoomLeft)
+        {
+            // not enough room to store that many, any extras vanish into thin air!
+            ubHowMany = ubRoomLeft;
+        }
+
+        if (ubHowMany == 0)
+        {
+            return;
+        }
+
+
+        // decide whether this item is "special" or not
+        if (IsItemInfoSpecial(pSpclItemInfo))
+        {
+            // Anything that's used/damaged or imprinted is store as a special item in the SpecialItem array,
+            // exactly one item per element.  We (re)allocate memory dynamically as necessary to hold the additional items.
+
+            do
+            {
+                // search for an already allocated, empty element in the special item array
+                fFoundOne = false;
+                for (ubElement = 0; ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced; ubElement++)
+                {
+                    if (!(gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive))
+                    {
+                        //Great!  Store it here, then.
+                        AddSpecialItemToArmsDealerInventoryAtElement(ubArmsDealer, usItemIndex, ubElement, pSpclItemInfo);
+                        fFoundOne = true;
+                        break;
+                    }
+                }
+
+                // if we didn't find any inactive elements already allocated
+                if (!fFoundOne)
+                {
+                    // then we're going to have to allocate some more space...
+                    ubElementsToAdd = Math.Max(SPECIAL_ITEMS_ALLOCED_AT_ONCE, ubHowMany);
+
+                    // if there aren't any allocated at all right now
+                    if (gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced == 0)
+                    {
+                        // allocate new memory for the real buffer
+                        fSuccess = AllocMemsetSpecialItemArray(gArmsDealersInventory[ubArmsDealer][usItemIndex], ubElementsToAdd);
+                    }
+                    else
+                    {
+                        // we have some allocated, but they're all full and we need more.  MemRealloc existing amount + # addition elements
+                        fSuccess = ResizeSpecialItemArray(gArmsDealersInventory[ubArmsDealer][usItemIndex], (gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced + ubElementsToAdd));
+                    }
+
+                    if (!fSuccess)
+                    {
+                        return;
+                    }
+
+                    // now add the special item at the first of the newly added elements (still stored in ubElement!)
+                    AddSpecialItemToArmsDealerInventoryAtElement(ubArmsDealer, usItemIndex, ubElement, pSpclItemInfo);
+                }
+
+                // store the # of the element it was placed in globally so anyone who needs that can grab it there
+                gubLastSpecialItemAddedAtElement = ubElement;
+
+                ubHowMany--;
+            } while (ubHowMany > 0);
+        }
+        else    // adding perfect item(s)
+        {
+            // then it's stored as a "perfect" item, simply add it to that counter!
+            gArmsDealersInventory[ubArmsDealer][usItemIndex].ubPerfectItems += ubHowMany;
+            // increase total items of this type
+            gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems += ubHowMany;
+        }
+    }
+
+    public static bool AllocMemsetSpecialItemArray(DEALER_ITEM_HEADER? pDealerItem, int ubElementsNeeded)
+    {
+        Debug.Assert(ubElementsNeeded > 0);
+
+        pDealerItem.SpecialItem = new(ubElementsNeeded);
+
+        pDealerItem.ubElementsAlloced = ubElementsNeeded;
+
+        return (true);
+    }
+
+
+    public static bool ResizeSpecialItemArray(DEALER_ITEM_HEADER? pDealerItem, int ubElementsNeeded)
+    {
+        // chad: return true, we moved to a list that can grow
+        return true;
+
+        // if (ubElementsNeeded == pDealerItem.ubElementsAlloced)
+        // {
+        //     // shouldn't have been called, but what they hey, it's not exactly a problem
+        //     return (true);
+        // }
+        // 
+        // // already allocated, but change its size
+        // pDealerItem.SpecialItem = MemRealloc(pDealerItem->SpecialItem, sizeof(DEALER_SPECIAL_ITEM) * ubElementsNeeded);
+        // if (pDealerItem->SpecialItem == null)
+        // {
+        //     Assert(0);
+        //     return (FALSE);
+        // }
+        // 
+        // // if adding more elements
+        // if (ubElementsNeeded > pDealerItem->ubElementsAlloced)
+        // {
+        //     // zero them out (they're inactive until an item is actually added)
+        //     memset(&(pDealerItem->SpecialItem[pDealerItem->ubElementsAlloced]), 0, sizeof(DEALER_SPECIAL_ITEM) * (ubElementsNeeded - pDealerItem->ubElementsAlloced));
+        // }
+        // 
+        // pDealerItem->ubElementsAlloced = ubElementsNeeded;
+        // 
+        // return (TRUE);
+    }
+
+    public static bool IsItemInfoSpecial(SPECIAL_ITEM_INFO? pSpclItemInfo)
+    {
+        int ubCnt;
+
+
+        // being damaged / in repairs makes an item special
+        if (pSpclItemInfo.bItemCondition != 100)
+        {
+            return (true);
+        }
+
+        // being imprinted makes an item special
+        if (pSpclItemInfo.ubImprintID != NO_PROFILE)
+        {
+            return (true);
+        }
+
+        // having an attachment makes an item special
+        for (ubCnt = 0; ubCnt < MAX_ATTACHMENTS; ubCnt++)
+        {
+            if (pSpclItemInfo.usAttachment[ubCnt] != (int)Items.NONE)
+            {
+                return (true);
+            }
+        }
+
+        // otherwise, it's just a "perfect" item, nothing special about it
+        return (false);
+    }
+
+    public static void AddSpecialItemToArmsDealerInventoryAtElement(ARMS_DEALER ubArmsDealer, Items usItemIndex, int ubElement, SPECIAL_ITEM_INFO? pSpclItemInfo)
+    {
+        Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems < 255);
+        Debug.Assert(ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced);
+        Debug.Assert(gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive == false);
+        Debug.Assert(IsItemInfoSpecial(pSpclItemInfo));
+
+
+        //Store the special values in that element, and make it active
+        gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive = true;
+
+        gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].Info = pSpclItemInfo;
+
+        // increase the total items
+        gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems++;
+    }
 
     public static bool CanDealerItemBeSoldUsed(Items usItemIndex)
     {
@@ -782,6 +1011,75 @@ public class ArmsDealerInit
         // certain items, although they're damagable, shouldn't be sold in a used condition
         return (DealerItemSortInfo[GetDealerItemCategoryNumber(usItemIndex)].fAllowUsed);
     }
+
+    public static bool DoesDealerDoRepairs(ARMS_DEALER ubArmsDealer)
+    {
+        if (ArmsDealerInfo[ubArmsDealer].ubTypeOfArmsDealer == ARMS_DEALER_KINDS.REPAIRS)
+        {
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
+    }
+
+    public static void GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER ubArmsDealer, Items usItemIndex, int ubHowMany)
+    {
+        // not permitted for repair dealers - would take extra code to avoid counting items under repair!
+        Debug.Assert(!DoesDealerDoRepairs(ubArmsDealer));
+
+        if (gArmsDealerStatus[ubArmsDealer].fOutOfBusiness)
+        {
+            return;
+        }
+
+        //if there are any of these in stock
+        if (gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems >= ubHowMany)
+        {
+            // have what we need...
+            return;
+        }
+
+        // if he can stock it (it appears in his inventory list)
+        // RESTRICTION REMOVED: Jake must be able to guarantee GAS even though it's not in his list, it's presence is conditional
+        //	if( GetDealersMaxItemAmount( ubArmsDealer][usItemIndex ) > 0)
+        {
+            //add the item
+            ArmsDealerGetsFreshStock(ubArmsDealer, usItemIndex, (ubHowMany - gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems));
+        }
+    }
+
+    // THIS STRUCTURE HAS UNCHANGING INFO THAT DOESN'T GET SAVED/RESTORED/RESET
+    public static Dictionary<ARMS_DEALER, ARMS_DEALER_INFO> ArmsDealerInfo = new()
+    {
+									//Buying		Selling	Merc ID#	Type									Initial						Flags	
+									//Price			Price							Of											Cash	
+									//Modifier	Modifier					Dealer
+
+/* Tony  */			    { ARMS_DEALER.TONY, new(0.75f,    1.25f,0.75f,    1.25f,        NPCID.TONY,           ARMS_DEALER_KINDS.BUYS_SELLS, 15000,  ARMS_DEALER_ITEM.SOME_USED_ITEMS | ARMS_DEALER_ITEM.GIVES_CHANGE  ) },
+/* Franz Hinkle */	    { ARMS_DEALER.FRANZ, new(1.0f,     1.5f, 1.0f,     1.5f,         NPCID.FRANZ,      ARMS_DEALER_KINDS.BUYS_SELLS, 5000,   ARMS_DEALER_ITEM.SOME_USED_ITEMS | ARMS_DEALER_ITEM.GIVES_CHANGE  ) },
+/* Keith Hemps */	    { ARMS_DEALER.KEITH, new(0.75f,    1.0f, 0.75f,    1.0f,         NPCID.KEITH,      ARMS_DEALER_KINDS.BUYS_SELLS, 1500,   ARMS_DEALER_ITEM.ONLY_USED_ITEMS | ARMS_DEALER_ITEM.GIVES_CHANGE  ) },
+/* Jake Cameron */	    { ARMS_DEALER.JAKE, new(0.8f,     1.1f, 0.8f,     1.1f,         NPCID.JAKE,       ARMS_DEALER_KINDS.BUYS_SELLS, 2500,   ARMS_DEALER_ITEM.ONLY_USED_ITEMS | ARMS_DEALER_ITEM.GIVES_CHANGE  ) },
+/* Gabby Mulnick*/	    { ARMS_DEALER.GABBY, new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.GABBY,      ARMS_DEALER_KINDS.BUYS_SELLS, 3000,   ARMS_DEALER_ITEM.GIVES_CHANGE) },
+/* Devin Connell*/	    { ARMS_DEALER.DEVIN, new(0.75f,    1.25f,0.75f,    1.25f,        NPCID.DEVIN,          ARMS_DEALER_KINDS.SELLS_ONLY, 5000,   ARMS_DEALER_ITEM.GIVES_CHANGE) },
+/* Howard Filmore*/	    { ARMS_DEALER.HOWARD, new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.HOWARD,     ARMS_DEALER_KINDS.SELLS_ONLY, 3000,   ARMS_DEALER_ITEM.GIVES_CHANGE) },
+/* Sam Rozen */		    { ARMS_DEALER.SAM, new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.SAM,        ARMS_DEALER_KINDS.SELLS_ONLY, 3000,   ARMS_DEALER_ITEM.GIVES_CHANGE) },
+/* Frank */			    { ARMS_DEALER.FRANK, new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.FRANK,      ARMS_DEALER_KINDS.SELLS_ONLY,  500,   ARMS_DEALER_ITEM.ACCEPTS_GIFTS) },
+/* Bar Bro 1 */		    { ARMS_DEALER.BAR_BRO_1, new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.HERVE,      ARMS_DEALER_KINDS.SELLS_ONLY,  250,   ARMS_DEALER_ITEM.ACCEPTS_GIFTS) },
+        /* Bar Bro 2 */	{ ARMS_DEALER.BAR_BRO_2 , new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.PETER,      ARMS_DEALER_KINDS.SELLS_ONLY,  250,   ARMS_DEALER_ITEM.ACCEPTS_GIFTS) },
+/* Bar Bro 3 */			{ ARMS_DEALER.BAR_BRO_3 , new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.ALBERTO,    ARMS_DEALER_KINDS.SELLS_ONLY,  250,   ARMS_DEALER_ITEM.ACCEPTS_GIFTS) },
+/* Bar Bro 4 */			{ ARMS_DEALER.BAR_BRO_4 , new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.CARLO,      ARMS_DEALER_KINDS.SELLS_ONLY,  250,   ARMS_DEALER_ITEM.ACCEPTS_GIFTS) },
+/* Micky O'Brien*/	    { ARMS_DEALER.MICKY , new(1.0f,     1.4f, 1.0f,     1.4f,         NPCID.MICKY,      ARMS_DEALER_KINDS.BUYS_ONLY, 10000,   ARMS_DEALER_ITEM.HAS_NO_INVENTORY | ARMS_DEALER_ITEM.GIVES_CHANGE ) },
+/* Arnie Brunzwell*/    { ARMS_DEALER.ARNIE , new(0.1f,     0.8f, 0.1f,     0.8f,         NPCID.ARNIE,      ARMS_DEALER_KINDS.REPAIRS,        1500,   ARMS_DEALER_ITEM.HAS_NO_INVENTORY | ARMS_DEALER_ITEM.GIVES_CHANGE ) },
+/* Fredo */				{ ARMS_DEALER.FREDO , new(0.6f,     0.6f, 0.6f,     0.6f,         NPCID.FREDO,      ARMS_DEALER_KINDS.REPAIRS,        1000,   ARMS_DEALER_ITEM.HAS_NO_INVENTORY | ARMS_DEALER_ITEM.GIVES_CHANGE ) },
+/* Perko */				{ ARMS_DEALER.PERKO , new(1.0f,     0.4f, 1.0f,     0.4f,         NPCID.PERKO,        ARMS_DEALER_KINDS.REPAIRS,        1000,   ARMS_DEALER_ITEM.HAS_NO_INVENTORY | ARMS_DEALER_ITEM.GIVES_CHANGE ) },
+/* Elgin */				{ ARMS_DEALER.ELGIN , new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.DRUGGIST,     ARMS_DEALER_KINDS.SELLS_ONLY,  500,         ARMS_DEALER_ITEM.ACCEPTS_GIFTS) },
+/* Manny */				{ ARMS_DEALER.MANNY , new(1.0f,     1.0f, 1.0f,     1.0f,         NPCID.MANNY,        ARMS_DEALER_KINDS.SELLS_ONLY,  500,         ARMS_DEALER_ITEM.ACCEPTS_GIFTS) },
+										//Repair	Repair
+										//Speed		Cost
+
+};
 }
 
 //enums for the various arms dealers
@@ -830,17 +1128,15 @@ public enum ARMS_DEALER_KINDS
 
 
 // THIS STRUCTURE HAS UNCHANGING INFO THAT DOESN'T GET SAVED/RESTORED/RESET
-public struct ARMS_DEALER_INFO
-{
-    public float dBuyModifier;             // The price modifier used when this dealer is BUYING something.
-    public float dSellModifier;         // The price modifier used when this dealer is SELLING something.
-    public float dRepairSpeed;             // Modifier to the speed at which a repairman repairs things
-    public float dRepairCost;               // Modifier to the price a repairman charges for repairs
-    public int ubShopKeeperID;                   // Merc Id for the dealer
-    public int ubTypeOfArmsDealer;           // Whether he buys/sells, sells, buys, or repairs
-    public int iInitialCash;                     // How much cash dealer starts with (we now reset to this amount once / day)
-    public int uiFlags;								// various flags which control the dealer's operations
-}
+public record ARMS_DEALER_INFO(
+    float dBuyModifier,             // The price modifier used when this dealer is BUYING something.
+    float dSellModifier,         // The price modifier used when this dealer is SELLING something.
+    float dRepairSpeed,             // Modifier to the speed at which a repairman repairs things
+    float dRepairCost,               // Modifier to the price a repairman charges for repairs
+    NPCID ubShopKeeperID,                   // Merc Id for the dealer
+    ARMS_DEALER_KINDS ubTypeOfArmsDealer,           // Whether he buys/sells, sells, buys, or repairs
+    int iInitialCash,                     // How much cash dealer starts with (we now reset to this amount once / day)
+    ARMS_DEALER_ITEM uiFlags);								// various flags which control the dealer's operations
 
 
 // THIS STRUCTURE GETS SAVED/RESTORED/RESET
@@ -861,22 +1157,22 @@ public class SPECIAL_ITEM_INFO
     public int bItemCondition;                // if 0, no item is stored
                                               // from 1 to 100 indicates an item with that status
                                               // -1 to -100 means the item is in for repairs, flip sign for the actual status
-    public int ubImprintID;                  // imprint ID for imprinted items (during repair!)
+    public NPCID ubImprintID;                  // imprint ID for imprinted items (during repair!)
     public int[] bAttachmentStatus = new int[MAX_ATTACHMENTS];    // status of any attachments on the item
     public int[] ubPadding = new int[2];					// filler
 }
 
-public struct DEALER_SPECIAL_ITEM
+public class DEALER_SPECIAL_ITEM
 {
     // Individual "special" items are stored here as needed, *one* per slot
     // An item is special if it is used (status < 100), has been imprinted, or has a permanent attachment
 
-    public SPECIAL_ITEM_INFO Info;
+    public SPECIAL_ITEM_INFO Info = new();
 
     public int uiRepairDoneTime;            // If the item is in for repairs, this holds the time when it will be repaired (in Math.Min)
     public bool fActive;                            // true means an item is stored here (empty elements may not always be freed immediately)
     public int ubOwnerProfileId;         // stores which merc previously owned an item being repaired
-    public int[] ubPadding;// [6];					// filler
+    int[] ubPadding;// [6];					// filler
 }
 
 public class DEALER_ITEM_HEADER
@@ -902,7 +1198,7 @@ public class DEALER_ITEM_HEADER
 
 //The following defines indicate what items can be sold by the arms dealer
 [Flags]
-public enum ARMS_DEALDER_ITEM : uint
+public enum ARMS_DEALER_ITEM : uint
 {
     HANDGUNCLASS = 0x00000001,
     SMGCLASS = 0x00000002,

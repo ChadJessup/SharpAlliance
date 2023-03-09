@@ -6,7 +6,7 @@ public class MapScreenHelicopter
     public static void CheckAndHandleSkyriderMonologues()
     {
         // wait at least this many days between Skyrider monologues
-        if ((GameClock.GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) >= (MIN_DAYS_BETWEEN_SKYRIDER_MONOLOGUES * 24 * 60))
+        if ((GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) >= (MIN_DAYS_BETWEEN_SKYRIDER_MONOLOGUES * 24 * 60))
         {
             if (Globals.guiHelicopterSkyriderTalkState == 0)
             {
@@ -16,7 +16,7 @@ public class MapScreenHelicopter
             else if (Globals.guiHelicopterSkyriderTalkState == 1)
             {
                 // if enemy still controls the Cambria hospital sector
-                if (Globals.StrategicMap[StrategicMap.CALCULATE_STRATEGIC_INDEX(HOSPITAL_SECTOR_X, HOSPITAL_SECTOR_Y)].fEnemyControlled)
+                if (Globals.strategicMap[StrategicMap.CALCULATE_STRATEGIC_INDEX(HOSPITAL_SECTOR_X, HOSPITAL_SECTOR_Y)].fEnemyControlled)
                 {
                     HandleSkyRiderMonologueEvent(SKYRIDER_MONOLOGUE_EVENT_CAMBRIA_HOSPITAL, 0);
                 }

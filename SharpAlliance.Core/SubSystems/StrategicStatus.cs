@@ -164,7 +164,7 @@ public class StrategicStatus
         }
     }
 
-    void UpdateLastDayOfPlayerActivity(int usDay)
+    public static void UpdateLastDayOfPlayerActivity(uint usDay)
     {
         if (usDay > gStrategicStatus.usLastDayOfPlayerActivity)
         {

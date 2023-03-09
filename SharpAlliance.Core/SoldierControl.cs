@@ -5285,23 +5285,23 @@ int	gOrangeGlowG[]=
         {
             case TEAM.ENEMY_TEAM:
                 // if we're in the wilderness this always counts
-                if (strategicMap[CALCULATE_STRATEGIC_INDEX(gWorldSectorX, gWorldSectorY)].fEnemyControlled || SectorInfo[SECTOR(gWorldSectorX, gWorldSectorY)].ubTraversability[THROUGH_STRATEGIC_MOVE] != TOWN)
+                if (strategicMap[CALCULATE_STRATEGIC_INDEX(gWorldSectorX, gWorldSectorY)].fEnemyControlled || SectorInfo[SECTORINFO.SECTOR(gWorldSectorX, gWorldSectorY)].ubTraversability[(StrategicMove)STRATEGIC_MOVE.THROUGH] != Traversability.TOWN)
                 {
                     // update current day of activity!
-                    UpdateLastDayOfPlayerActivity(GameClock.GetWorldDay());
+                    StrategicStatus.UpdateLastDayOfPlayerActivity(GameClock.GetWorldDay());
                 }
                 break;
             case TEAM.CREATURE_TEAM:
                 // always a sign of activity?
-                UpdateLastDayOfPlayerActivity(GameClock.GetWorldDay());
+                StrategicStatus.UpdateLastDayOfPlayerActivity(GameClock.GetWorldDay());
                 break;
             case TEAM.CIV_TEAM:
                 if (pSoldier.ubCivilianGroup == CIV_GROUP.KINGPIN_CIV_GROUP && gubQuest[QUEST.RESCUE_MARIA] == QUESTINPROGRESS && gTacticalStatus.bBoxingState == BoxingStates.NOT_BOXING)
                 {
                     SOLDIERTYPE? pMaria = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.MARIA, false);
-                    if (pMaria && pMaria.bActive && pMaria.bInSector)
+                    if (pMaria is not null && pMaria.bActive && pMaria.bInSector)
                     {
-                        SetFactTrue(FACT.MARIA_ESCAPE_NOTICED);
+                        Facts.SetFactTrue(FACT.MARIA_ESCAPE_NOTICED);
                     }
                 }
                 break;
@@ -10243,3 +10243,12 @@ public enum SOLDIER_QUOTE
     SAID_BUDDY_2_WITNESSED = 0x0080,
     SAID_BUDDY_3_WITNESSED = 0x0100,
 }
+
+public enum STRATEGIC_MOVE
+{
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST,
+    THROUGH,
+};

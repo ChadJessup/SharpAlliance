@@ -224,7 +224,7 @@ public partial class Globals
     public static int[] gubWorldRoomInfo = new int[WORLD_MAX];
     public static int[] gubWorldRoomHidden = new int[MAX_ROOMS];
 
-    public static StrategicMapElement[] StrategicMap = new StrategicMapElement[Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y];
+    public static StrategicMapElement[] strategicMap = new StrategicMapElement[Globals.MAP_WORLD_X * Globals.MAP_WORLD_Y];
     public static Dictionary<Garrisons, GARRISON_GROUP> gGarrisonGroup = new();
 
     public static bool gfApplyChangesToTempFile { get; set; } = false;

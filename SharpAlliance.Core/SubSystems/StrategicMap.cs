@@ -29,7 +29,7 @@ public class StrategicMap
         {
             for (iCounterB = 0; (int)iCounterB < (Globals.MAP_WORLD_Y - 1); iCounterB++)
             {
-                if (Globals.StrategicMap[CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB)].bNameId == bTownId)
+                if (Globals.strategicMap[CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB)].bNameId == bTownId)
                 {
                     ubSectorSize++;
                 }
@@ -43,7 +43,7 @@ public class StrategicMap
     {
         // return the name value of the town in this sector
 
-        return (Globals.StrategicMap[CALCULATE_STRATEGIC_INDEX(sMapX, sMapY)].bNameId);
+        return (Globals.strategicMap[CALCULATE_STRATEGIC_INDEX(sMapX, sMapY)].bNameId);
     }
 
 

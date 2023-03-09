@@ -1,4 +1,9 @@
-﻿using SharpAlliance.Core.Screens;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SharpAlliance.Core.Screens;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -26,7 +31,7 @@ public class StrategicTownLoyalty
     // is the ENTIRE town under player control?
     public static bool IsTownUnderCompleteControlByPlayer(TOWNS bTownId)
     {
-        if (StrategicMap.GetTownSectorSize(bTownId) == GetTownSectorsUnderControl(bTownId))
+        if (GetTownSectorSize(bTownId) == GetTownSectorsUnderControl(bTownId))
         {
             return (true);
         }
@@ -59,8 +64,8 @@ public class StrategicTownLoyalty
             {
                 usSector = StrategicMap.CALCULATE_STRATEGIC_INDEX(iCounterA, iCounterB);
 
-                if ((Globals.StrategicMap[usSector].bNameId == bTownId) &&
-                        (Globals.StrategicMap[usSector].fEnemyControlled == false) &&
+                if ((Globals.strategicMap[usSector].bNameId == bTownId) &&
+                        (Globals.strategicMap[usSector].fEnemyControlled == false) &&
                         (QueenCommand.NumEnemiesInSector(iCounterA, iCounterB) == 0))
                 {
                     ubSectorsControlled++;
@@ -70,22 +75,4 @@ public class StrategicTownLoyalty
 
         return (ubSectorsControlled);
     }
-}
-
-public enum GLOBAL_LOYALTY
-{
-    // There are only for distance-adjusted global loyalty effects.  Others go into list above instead!
-    BATTLE_WON,
-    BATTLE_LOST,
-    ENEMY_KILLED,
-    NATIVE_KILLED,
-    GAIN_TOWN_SECTOR,
-    LOSE_TOWN_SECTOR,
-    LIBERATE_WHOLE_TOWN,     // awarded only the first time it happens
-    ABANDON_MILITIA,
-    GAIN_MINE,
-    LOSE_MINE,
-    GAIN_SAM,
-    LOSE_SAM,
-    QUEEN_BATTLE_WON,
 }
