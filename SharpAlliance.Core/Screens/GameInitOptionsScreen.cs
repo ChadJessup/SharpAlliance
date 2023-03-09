@@ -85,7 +85,7 @@ namespace SharpAlliance.Core.Screens
             FadeScreen fadeScreen)
         {
             this.fade = fadeScreen;
-            FontSubSystem = fontSubSystem;
+            this.fonts = fontSubSystem;
             this.gGameOptions = gameOptions;
             this.cursor = cursorSubSystem;
             this.context = gameContext;

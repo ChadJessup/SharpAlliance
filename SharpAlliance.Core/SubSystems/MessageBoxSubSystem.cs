@@ -8,6 +8,7 @@ using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using static SharpAlliance.Core.EnglishText;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems
 {
@@ -36,16 +37,11 @@ namespace SharpAlliance.Core.SubSystems
         private MapScreen mapScreen;
         private FadeScreen fadeScreen;
 
-        // old mouse x and y positions
-        Point pOldMousePosition;
-        Rectangle MessageBoxRestrictedCursorRegion;
-
         // if the cursor was locked to a region
-        private bool fCursorLockedToArea = false;
+        internal static bool fCursorLockedToArea = false;
 
         //extern bool fMapExitDueToMessageBox;
         public bool fInMapMode { get; private set; }
-        public bool gfOverheadMapDirty { get; private set; }
 
         public MessageBoxSubSystem(
             GameContext context,
@@ -66,17 +62,12 @@ namespace SharpAlliance.Core.SubSystems
             this.screens = screenManager;
             this.mouse = mouseSubSystem;
             this.inputs = inputManager;
-            ClockManager = clockManager;
+            this.clock = clockManager;
             this.overhead = overhead;
             this.context = context;
         }
 
-        public bool gfNewMessageBox { get; set; }
-
-        public bool gfInMsgBox { get; set; } = false;
         public bool IsInitialized { get; }
-
-        public MessageBox gMsgBox { get; set; } = new MessageBox();
 
         public void Dispose()
         {
@@ -672,7 +663,7 @@ namespace SharpAlliance.Core.SubSystems
             this.cursor.GetRestrictedClipCursor(gOldCursorLimitRectangle);
             this.cursor.FreeMouseCursor();
 
-            this.gfNewMessageBox = true;
+            gfNewMessageBox = true;
 
             gfInMsgBox = true;
 
@@ -784,13 +775,7 @@ namespace SharpAlliance.Core.SubSystems
         }
 
         bool LieMsgBoxCallbackfLButtonDown = false;
-        private string gzUserDefinedButton2;
-        private string gzUserDefinedButton1;
-        private Rectangle gOldCursorLimitRectangle;
-        private bool fRestoreBackgroundForMessageBox;
-        private bool gfDontOverRideSaveBuffer;
-        public bool gfStartedFromGameScreen { get; set; }
-        public bool gfStartedFromMapScreen { get; set; }
+
 
         void LieMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
@@ -972,7 +957,7 @@ namespace SharpAlliance.Core.SubSystems
             {
                 case ScreenName.GAME_SCREEN:
 
-                    if (this.overhead.InOverheadMap())
+                    if (Overhead.InOverheadMap())
                     {
                         gfOverheadMapDirty = true;
                     }
@@ -1003,7 +988,7 @@ namespace SharpAlliance.Core.SubSystems
         public MSGBOX_CALLBACK? ExitCallback;
         public int sX;
         public int sY;
-        public int uiSaveBuffer;
+        public Surfaces uiSaveBuffer;
         public MOUSE_REGION BackRegion { get; } = new(nameof(MessageBox));
         public int usWidth;
         public int usHeight;

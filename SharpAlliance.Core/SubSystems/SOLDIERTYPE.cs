@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SharpAlliance.Core.Managers.Image;
 
+using TIMECOUNTER = System.UInt32;
+
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -88,13 +90,6 @@ public class SOLDIERTYPE
     int bBreathCollapsed;                  // collapsed due to being out of APs
                                            // 50 bytes so far
 
-    public uint UpdateCounter;
-    public uint DamageCounter;
-    public uint ReloadCounter;
-    public uint FlashSelCounter;
-    public uint AICounter;
-    public uint FadeCounter;
-
     public AnimationHeights ubDesiredHeight;
     public AnimationStates usPendingAnimation;
     public AnimationHeights ubPendingStanceChange;
@@ -107,12 +102,12 @@ public class SOLDIERTYPE
     public bool fUIFirstTimeNOAP;       // UI Flag for diming guys when no APs ( dirty flags )
     public bool fUIFirstTimeUNCON;  // UI FLAG For unconscious dirty		
 
-    // TIMECOUNTER UpdateCounter;
-    // TIMECOUNTER DamageCounter;
-    // TIMECOUNTER ReloadCounter;
-    // TIMECOUNTER FlashSelCounter;
-    // TIMECOUNTER AICounter;
-    // TIMECOUNTER FadeCounter;
+    public TIMECOUNTER UpdateCounter;
+    public TIMECOUNTER DamageCounter;
+    public TIMECOUNTER ReloadCounter;
+    public TIMECOUNTER FlashSelCounter;
+    public TIMECOUNTER AICounter;
+    public TIMECOUNTER FadeCounter;
 
     public int ubSkillTrait1;
     public int ubSkillTrait2;
@@ -449,7 +444,7 @@ public class SOLDIERTYPE
     public int bEndDoorOpenCode;
     public int ubScheduleID;
     public int sEndDoorOpenCodeData;
-    //TIMECOUNTER NextTileCounter;
+    public TIMECOUNTER NextTileCounter;
     public bool fBlockedByAnotherMerc;
     public int bBlockedByAnotherMercDirection;
     public Items usAttackingWeapon;
@@ -520,7 +515,7 @@ public class SOLDIERTYPE
     public int sSkillCheckGridNo;
     public int ubLastEnemyCycledID;
 
-    public int ubPrevSectorID;
+    public SEC ubPrevSectorID;
     public int ubNumTilesMovesSinceLastForget;
     public int bTurningIncrement;
     public int uiBattleSoundID;
@@ -599,8 +594,9 @@ public class GROUP
     public int ubSectorZ;
     public int ubNextX;
     public MAP_ROW ubNextY;             //next sector destination
-    public int ubPrevX, ubPrevY;             //prev sector occupied (could be same as ubSectorX/Y)
-    public int ubOriginalSector;             //sector where group was created.
+    public int ubPrevX;             //prev sector occupied (could be same as ubSectorX/Y)
+    public MAP_ROW ubPrevY;
+    public SEC ubOriginalSector;             //sector where group was created.
     public bool fBetweenSectors;            //set only if a group is between sector.
     public MOVE_TYPES ubMoveType;                           //determines the type of movement (ONE_WAY, CIRCULAR, ENDTOEND, etc.)
     public int ubNextWaypointID;             //the ID of the next waypoint
@@ -615,7 +611,7 @@ public class GROUP
     public VehicleTypes ubTransportationMask;     //the mask combining all of the groups transportation methods.
     public int uiFlags;                             //various conditions that apply to the group
     public int ubCreatedSectorID;            //used for debugging strategic AI for keeping track of the sector ID a group was created in.
-    public int ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.
+    public SEC ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.
     public int[] bPadding = new int[29];                      //***********************************************//
 
     public List<PLAYERGROUP> pPlayerList = new();       //list of players in the group

@@ -18,7 +18,7 @@ namespace SharpAlliance.Core.SubSystems
             return ValueTask.FromResult(true);
         }
 
-        public bool InOverheadMap()
+        public static bool InOverheadMap()
         {
             return false;
         }

@@ -1,6 +1,94 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Screens;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
+
+public class Interface
+{
+    private static int iOverlayMessageBox = -1;
+    private static int iUIMessageBox = -1;
+
+    public static void BeginUIMessage(params string[] pFontString)
+    {
+        InternalBeginUIMessage(false, pFontString);
+    }
+
+    private static int CalcUIMessageDuration(string wString)
+    {
+        // base + X per letter
+        return (1000 + 50 * wString.Length);
+    }
+
+    private static void InternalBeginUIMessage(bool fUseSkullIcon, params string[] MsgString)
+    {
+        VIDEO_OVERLAY_DESC VideoOverlayDesc;
+        guiUIMessageTime = ClockManager.GetJA2Clock();
+        guiUIMessageTimeDelay = CalcUIMessageDuration(string.Format(MsgString.First(), MsgString[1..]));
+
+        // Override it!
+        MercTextBox.OverrideMercPopupBox(gpUIMessageOverrideMercBox);
+
+        //SetPrepareMercPopupFlags( MERC_POPUP_PREPARE_FLAGS_TRANS_BACK | MERC_POPUP_PREPARE_FLAGS_MARGINS );
+
+        if (fUseSkullIcon)
+        {
+            MercTextBox.SetPrepareMercPopupFlags(MERC_POPUP_PREPARE_FLAGS.MARGINS | MERC_POPUP_PREPARE_FLAGS.SKULLICON);
+        }
+        else
+        {
+            MercTextBox.SetPrepareMercPopupFlags(MERC_POPUP_PREPARE_FLAGS.MARGINS | MERC_POPUP_PREPARE_FLAGS.STOPICON);
+        }
+
+        // Prepare text box
+        iUIMessageBox = MercTextBox.PrepareMercPopupBox(iUIMessageBox, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER, string.Format(MsgString.First(), MsgString[1..]), 200, 10, 0, 0, out gusUIMessageWidth, out gusUIMessageHeight);
+
+        // Set it back!
+        MercTextBox.ResetOverrideMercPopupBox();
+
+        if (giUIMessageOverlay != -1)
+        {
+            RenderDirty.RemoveVideoOverlay(giUIMessageOverlay);
+
+            giUIMessageOverlay = -1;
+        }
+
+        if (giUIMessageOverlay == -1)
+        {
+            //memset(&VideoOverlayDesc, 0, sizeof(VideoOverlayDesc));
+
+            // Set Overlay
+            VideoOverlayDesc = new()
+            {
+                sLeft = (640 - gusUIMessageWidth) / 2,
+                sTop = 150,
+                sRight = (640 - gusUIMessageWidth) / 2 + gusUIMessageWidth,
+                sBottom = 150 + gusUIMessageHeight,
+                sX = (640 - gusUIMessageWidth) / 2,
+                sY = 150,
+                BltCallback = RenderUIMessage,
+            };
+
+            giUIMessageOverlay = RenderDirty.RegisterVideoOverlay(0, VideoOverlayDesc);
+        }
+
+        gfUseSkullIconMessage = fUseSkullIcon;
+    }
+
+    private static void RenderUIMessage(VIDEO_OVERLAY? pBlitter)
+    {
+        // Shade area first...
+        VideoSurfaceManager.ShadowVideoSurfaceRect(pBlitter.uiDestBuff, pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth - 2, pBlitter.sY + gusUIMessageHeight - 2);
+
+        MercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
+
+        VeldridVideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth, pBlitter.sY + gusUIMessageHeight);
+    }
+
+}
 
 public enum INTERFACE
 {

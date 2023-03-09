@@ -9,7 +9,7 @@ public class MessageSubSystem
     private bool fDisableJustForIan = false;
 
     private bool fScrollMessagesHidden = false;
-    private int uiStartOfPauseTime = 0;
+    public static uint uiStartOfPauseTime = 0;
 
     public void InitGlobalMessageList()
     {

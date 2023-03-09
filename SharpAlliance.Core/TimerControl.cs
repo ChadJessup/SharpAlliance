@@ -6,6 +6,6 @@ public class TimerControl
 {
     public static void PauseTime(bool fPaused)
     {
-        Globals.gfPauseClock = fPaused;
+        gfPauseClock = fPaused;
     }
 }

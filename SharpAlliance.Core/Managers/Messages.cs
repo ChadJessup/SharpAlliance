@@ -4,6 +4,9 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 
+using static SharpAlliance.Core.SubSystems.MessageSubSystem;
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Managers;
 
 public class Messages
@@ -11,6 +14,7 @@ public class Messages
     public static ScrollStringStPtr? pStringS = null;
     private static bool fScrollMessagesHidden;
     private static bool fOkToBeepNewMessage;
+    private static int usLineWidthIfWordIsWiderThenWidth = 0;
 
     public static void DisableScrollMessages()
     {
@@ -559,8 +563,6 @@ public class Messages
         WRAPPED_STRING? pStringWrapper = null;
         WRAPPED_STRING? pStringWrapperHead = null;
         bool fNewString = false;
-        int usLineWidthIfWordIsWiderThenWidth = 0;
-
 
         if (Globals.giTimeCompressMode > TIME_COMPRESS.TIME_COMPRESS_X1)
         {
@@ -699,7 +701,6 @@ public class Messages
         WRAPPED_STRING? pStringWrapper = null;
         WRAPPED_STRING? pStringWrapperHead = null;
         bool fNewString = false;
-        int usLineWidthIfWordIsWiderThenWidth;
 
         if (Globals.fDisableJustForIan == true)
         {

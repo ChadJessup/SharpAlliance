@@ -64,8 +64,7 @@ public class SoldierTile
             Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
         }
 
-        EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
-
+        SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
     }
 
 

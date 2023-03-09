@@ -696,8 +696,7 @@ public partial class Globals
 
     public static int gusUIOldSelectedSoldier;
     public static int giUIMessageOverlay;
-    public static int guiUIMessageTime;
-
+    public static uint guiUIMessageTime;
 
     public static GUI_BUTTON? gpAnchoredButton;
     public static GUI_BUTTON? gpPrevAnchoredButton;
@@ -1738,7 +1737,7 @@ public partial class Globals
     public static MercPopUpBox?[] gpPopUpBoxList = new MercPopUpBox?[MAX_NUMBER_OF_POPUP_BOXES];
 
     // the flags
-    public static int guiFlags = 0;
+    public static MERC_POPUP_PREPARE_FLAGS guiFlags = 0;
     public static int guiBoxIcons;
     public static int guiSkullIcons;
 

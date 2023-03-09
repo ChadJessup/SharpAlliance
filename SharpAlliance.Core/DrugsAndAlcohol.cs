@@ -10,11 +10,11 @@ namespace SharpAlliance.Core;
 
 public class DrugsAndAlcohol
 {
-    private int[] ubDrugTravelRate = { 4, 2 };
-    private int[] ubDrugWearoffRate = { 2, 2 };
-    private int[] ubDrugEffect = { 15, 8 };
-    private int[] ubDrugSideEffect = { 20, 10 };
-    private int[] ubDrugSideEffectRate = { 2, 1 };
+    private static int[] ubDrugTravelRate = { 4, 2 };
+    private static int[] ubDrugWearoffRate = { 2, 2 };
+    private static int[] ubDrugEffect = { 15, 8 };
+    private static int[] ubDrugSideEffect = { 20, 10 };
+    private static int[] ubDrugSideEffectRate = { 2, 1 };
 
     int GetDrugType(Items usItem)
     {
@@ -386,7 +386,7 @@ public class DrugsAndAlcohol
     }
 
 
-    int GetDrunkLevel(SOLDIERTYPE? pSoldier)
+    public static int GetDrunkLevel(SOLDIERTYPE? pSoldier)
     {
         int bNumDrinks;
 
@@ -418,8 +418,7 @@ public class DrugsAndAlcohol
         }
     }
 
-
-    int EffectStatForBeingDrunk(SOLDIERTYPE? pSoldier, int iStat)
+    public static int EffectStatForBeingDrunk(SOLDIERTYPE? pSoldier, int iStat)
     {
         return ((iStat * giDrunkModifier[GetDrunkLevel(pSoldier)] / 100));
     }

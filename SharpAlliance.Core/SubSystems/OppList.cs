@@ -3582,7 +3582,7 @@ public class OppList
             mprintf(150, LINE_HEIGHT * ubLine, "%d", usMapPos);
             ubLine++;
 
-            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_MOVEMENT_RESERVED))
+            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.MOVEMENT_RESERVED))
             {
                 FontSubSystem.SetFontColors(COLOR2);
                 mprintf(0, LINE_HEIGHT * ubLine, "Merc: %d", gpWorldLevelData[usMapPos].ubReservedSoldierID);
@@ -3604,7 +3604,7 @@ public class OppList
             }
 
 
-            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_REVEALED))
+            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED))
             {
                 FontSubSystem.SetFontColors(COLOR2);
                 //mprintf( 0, LINE_HEIGHT * 9, "Merc: %d",  gpWorldLevelData[ usMapPos ].ubReservedSoldierID );			
@@ -3613,7 +3613,7 @@ public class OppList
                 ubLine++;
             }
 
-            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_RAISE_LAND_START))
+            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.RAISE_LAND_START))
             {
                 FontSubSystem.SetFontColors(COLOR2);
                 //mprintf( 0, LINE_HEIGHT * 9, "Merc: %d",  gpWorldLevelData[ usMapPos ].ubReservedSoldierID );			
@@ -3622,7 +3622,7 @@ public class OppList
                 ubLine++;
             }
 
-            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENT_RAISE_LAND_END))
+            if (gpWorldLevelData[usMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.RAISE_LAND_END))
             {
                 FontSubSystem.SetFontColors(COLOR2);
                 //mprintf( 0, LINE_HEIGHT * 9, "Merc: %d",  gpWorldLevelData[ usMapPos ].ubReservedSoldierID );			
@@ -3640,7 +3640,7 @@ public class OppList
                 ubLine++;
             }
 
-            if (gpWorldLevelData[usMapPos].ubExtFlags[0] & MAPELEMENT_EXT_NOBURN_STRUCT)
+            if (gpWorldLevelData[usMapPos].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_NOBURN_STRUCT))
             {
                 FontSubSystem.SetFontColors(COLOR2);
                 mprintf(0, LINE_HEIGHT * ubLine, "Don't Use Burn Through For Soldier");

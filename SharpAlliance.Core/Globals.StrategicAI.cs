@@ -74,7 +74,7 @@ public partial class Globals
     //Saved vars
     public static int[] gbPadding2 = { 0, 0, 0 };   //NOT USED
     public static bool gfExtraElites = false;  //Set when queen compositions are augmented with bonus elites.
-    public static int giGarrisonArraySize = 0;
+    public static Garrisons giGarrisonArraySize = 0;
     public static int giPatrolArraySize = 0;
     public static int giForcePercentage = 0;    //Modifies the starting group sizes relative by percentage
     public static int giArmyAlertness = 0;  //The chance the group will spot an adjacent player/militia
@@ -125,7 +125,7 @@ public partial class Globals
     //group.  When the queen wants to send forces to attack a town that is defended, the initial number of forces that 
     //she would send would be considered too weak.  So, instead, she will send that force to the sector's adjacent sector,
     //and stage, while 
-    public static int? gubGarrisonReinforcementsDenied = null;
+    public static Dictionary<Garrisons, int> gubGarrisonReinforcementsDenied = new();
     public static int? gubPatrolReinforcementsDenied = null;
 
     //Unsaved vars

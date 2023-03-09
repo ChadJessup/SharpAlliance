@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Screens;
 
 public class MercTextBox
@@ -15,6 +17,13 @@ public class MercTextBox
 
     public static void RemoveMercPopupBoxFromIndex(int iBoxId)
     {
+    }
+
+    public static bool SetPrepareMercPopupFlags(MERC_POPUP_PREPARE_FLAGS uiFlags)
+    {
+        guiFlags |= uiFlags;
+        return (true);
+
     }
 
     public static int PrepareMercPopupBox(int iId, MercTextBoxBackground ubMercBoxBackground, MercTextBoxBorder ubMercBoxBorder, string zString, int mSGBOX_DEFAULT_WIDTH, int v1, int v2, int v3, out int usTextBoxWidth, out int usTextBoxHeight)

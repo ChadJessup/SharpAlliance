@@ -31,7 +31,7 @@ public class CreditsScreen : IScreen
         GuiManager guiManager)
     {
         this.gui = guiManager;
-        ClockManager = clockManager;
+        this.clock = clockManager;
         this.context = gameContext;
         this.inputs = inputManager;
         this.files = fileManager;

@@ -6879,13 +6879,13 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     void RevivePlayerTeam()
     {
         int cnt;
-        SOLDIERTYPE? pSoldier;
 
         // End the turn of player charactors
         cnt = gTacticalStatus.Team[gbPlayerNum].bFirstID;
 
         // look for all mercs on the same team, 
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[gbPlayerNum].bLastID; cnt++, pSoldier++)
+        //for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[gbPlayerNum].bLastID; cnt++, pSoldier++)
+        foreach (var pSoldier in MercPtrs)
         {
             ReviveSoldier(pSoldier);
         }
@@ -9524,8 +9524,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                  pSoldier.inv[InventorySlot.HANDPOS].usItem != GLAUNCHER &&
                  Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.GUN &&
                  pSoldier.inv[InventorySlot.SECONDHANDPOS].bGunStatus >= USABLE //&&
-                                                                  //			 pSoldier.inv[InventorySlot.SECONDHANDPOS].ubGunShotsLeft > 0 &&
-                                                                  //			 gAnimControl[ pSoldier.usAnimState ].ubEndHeight != ANIM_PRONE )
+                                                                                //			 pSoldier.inv[InventorySlot.SECONDHANDPOS].ubGunShotsLeft > 0 &&
+                                                                                //			 gAnimControl[ pSoldier.usAnimState ].ubEndHeight != ANIM_PRONE )
                 )
         {
             return (true);
@@ -9992,7 +9992,6 @@ void DebugValidateSoldierData()
 
     void SetSoldierAsUnderAiControl(SOLDIERTYPE? pSoldierToSet)
     {
-        SOLDIERTYPE? pSoldier = null;
         int cnt;
 
         if (pSoldierToSet == null)
@@ -10002,7 +10001,8 @@ void DebugValidateSoldierData()
 
         // Loop through ALL teams...
         cnt = gTacticalStatus.Team[OUR_TEAM].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[LAST_TEAM].bLastID; cnt++, pSoldier++)
+        foreach (var pSoldier in MercPtrs)
+        //for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[LAST_TEAM].bLastID; cnt++, pSoldier++)
         {
             if (pSoldier.bActive)
             {

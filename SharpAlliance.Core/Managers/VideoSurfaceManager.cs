@@ -376,6 +376,11 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
 
         return true;
     }
+
+    internal static void ShadowVideoSurfaceRect(Surfaces uiDestBuff, int sX, int sY, int v1, int v2)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 //

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
+using System.Linq;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -157,7 +157,7 @@ public class StrategicMovement
         {
             pGroup.pPlayerList = pGroup.pPlayerList.next;
 
-            curr.pSoldier.ubPrevSectorID = (int)SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
+            curr.pSoldier.ubPrevSectorID = SECTORINFO.SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
             curr.pSoldier.ubGroupID = 0;
 
             MemFree(curr);
@@ -199,7 +199,7 @@ public class StrategicMovement
 
             //process info for soldier
             pGroup.ubGroupSize--;
-            pSoldier.ubPrevSectorID = (int)SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
+            pSoldier.ubPrevSectorID = SECTORINFO.SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
             pSoldier.ubGroupID = 0;
 
             // if there's nobody left in the group
@@ -234,7 +234,7 @@ public class StrategicMovement
                 //process info for soldier
                 pSoldier.ubGroupID = 0;
                 pGroup.ubGroupSize--;
-                pSoldier.ubPrevSectorID = (int)SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
+                pSoldier.ubPrevSectorID = SECTORINFO.SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
 
                 return true;
             }
@@ -281,7 +281,7 @@ public class StrategicMovement
         //The new direction is reversed, so we have to go back to the sector we just left.
 
         //Search for the arrival event, and kill it!
-        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+        GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Adjust the information in the group to reflect the new movement.
         pGroup.ubPrevX = pGroup.ubNextX;
@@ -1310,7 +1310,8 @@ public class StrategicMovement
         GROUP? pGroup;
         int iVehId = -1;
         PLAYERGROUP? curr;
-        int ubInsertionDirection, ubStrategicInsertionCode;
+        int ubInsertionDirection;
+        INSERTION_CODE ubStrategicInsertionCode;
         SOLDIERTYPE? pSoldier = null;
         bool fExceptionQueue = false;
         bool fFirstTimeInSector = false;
@@ -1334,7 +1335,7 @@ public class StrategicMovement
             curr = pGroup.pPlayerList;
             if (curr)
             {
-                if (curr.pSoldier.bAssignment < ON_DUTY)
+                if (curr.pSoldier.bAssignment < Assignments.ON_DUTY)
                 {
                     ResetDeadSquadMemberList(curr.pSoldier.bAssignment);
                 }
@@ -1344,7 +1345,7 @@ public class StrategicMovement
 
             while (curr)
             {
-                curr.pSoldier.uiStatusFlags &= ~SOLDIER_SHOULD_BE_TACTICALLY_VALID;
+                curr.pSoldier.uiStatusFlags &= ~SOLDIER.SHOULD_BE_TACTICALLY_VALID;
                 curr = curr.next;
             }
 
@@ -1374,9 +1375,9 @@ public class StrategicMovement
             }
         }
         //Check for exception cases which 
-        if (gTacticalStatus.bBoxingState != NOT_BOXING)
+        if (gTacticalStatus.bBoxingState != BoxingStates.NOT_BOXING)
         {
-            if (!pGroup.fPlayer && pGroup.ubNextX == 5 && pGroup.ubNextY == 4 && pGroup.ubSectorZ == 0)
+            if (!pGroup.fPlayer && pGroup.ubNextX == 5 && pGroup.ubNextY == (MAP_ROW)4 && pGroup.ubSectorZ == 0)
             {
                 fExceptionQueue = true;
             }
@@ -1384,7 +1385,7 @@ public class StrategicMovement
         //First check if the group arriving is going to queue another battle.
         //NOTE:  We can't have more than one battle ongoing at a time.
         if (fExceptionQueue || fCheckForBattle && gTacticalStatus.fEnemyInSector &&
-                FindMovementGroupInSector((int)gWorldSectorX, (int)gWorldSectorY, true) &&
+                FindMovementGroupInSector((int)gWorldSectorX, gWorldSectorY, true) &&
               (pGroup.ubNextX != gWorldSectorX || pGroup.ubNextY != gWorldSectorY || gbWorldSectorZ > 0) ||
                 AreInMeanwhile() ||
                 //KM : Aug 11, 1999 -- Patch fix:  Added additional checks to prevent a 2nd battle in the case
@@ -1437,7 +1438,7 @@ public class StrategicMovement
         {
             if (pGroup.ubSectorZ == 0)
             {
-                SectorInfo[SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)].bLastKnownEnemies = NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY);
+                SectorInfo[SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)].bLastKnownEnemies = QueenCommand.NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY);
             }
 
             // award life 'experience' for travelling, based on travel time!
@@ -1544,12 +1545,12 @@ public class StrategicMovement
                     curr.pSoldier.sSectorX = pGroup.ubSectorX;
                     curr.pSoldier.sSectorY = pGroup.ubSectorY;
                     curr.pSoldier.bSectorZ = pGroup.ubSectorZ;
-                    curr.pSoldier.ubPrevSectorID = (int)SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
+                    curr.pSoldier.ubPrevSectorID = SECTORINFO.SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
                     curr.pSoldier.ubInsertionDirection = ubInsertionDirection;
 
                     // don't override if a tactical traversal
-                    if (curr.pSoldier.ubStrategicInsertionCode != INSERTION_CODE_PRIMARY_EDGEINDEX &&
-                            curr.pSoldier.ubStrategicInsertionCode != INSERTION_CODE_SECONDARY_EDGEINDEX)
+                    if (curr.pSoldier.ubStrategicInsertionCode != INSERTION_CODE.PRIMARY_EDGEINDEX &&
+                            curr.pSoldier.ubStrategicInsertionCode != INSERTION_CODE.SECONDARY_EDGEINDEX)
                     {
                         curr.pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
                     }
@@ -2408,7 +2409,7 @@ public class StrategicMovement
         gfRemovingAllGroups = false;
     }
 
-    void SetGroupSectorValue(int sSectorX, int sSectorY, int sSectorZ, int ubGroupID)
+    void SetGroupSectorValue(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int ubGroupID)
     {
         GROUP? pGroup;
         PLAYERGROUP? pPlayer;
@@ -2424,13 +2425,13 @@ public class StrategicMovement
 
         // set sector x and y to passed values
         pGroup.ubSectorX = pGroup.ubNextX = (int)sSectorX;
-        pGroup.ubSectorY = pGroup.ubNextY = (int)sSectorY;
+        pGroup.ubSectorY = pGroup.ubNextY = sSectorY;
         pGroup.ubSectorZ = (int)sSectorZ;
         pGroup.fBetweenSectors = false;
 
         // set next sectors same as current
-        pGroup.ubOriginalSector = (int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
-        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+        pGroup.ubOriginalSector = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
+        GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         // set all of the mercs in the group so that they are in the new sector too.
         pPlayer = pGroup.pPlayerList;
@@ -2440,18 +2441,18 @@ public class StrategicMovement
             pPlayer.pSoldier.sSectorY = sSectorY;
             pPlayer.pSoldier.bSectorZ = (int)sSectorZ;
             pPlayer.pSoldier.fBetweenSectors = false;
-            pPlayer.pSoldier.uiStatusFlags &= ~SOLDIER_SHOULD_BE_TACTICALLY_VALID;
+            pPlayer.pSoldier.uiStatusFlags &= ~SOLDIER.SHOULD_BE_TACTICALLY_VALID;
             pPlayer = pPlayer.next;
         }
 
         CheckAndHandleUnloadingOfCurrentWorld();
     }
 
-    void SetEnemyGroupSector(GROUP? pGroup, int ubSectorID)
+    void SetEnemyGroupSector(GROUP? pGroup, SEC ubSectorID)
     {
         // make sure it is valid
         Debug.Assert(pGroup);
-        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+        GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Remove waypoints
         if (!gfRandomizingPatrolGroup)
@@ -2460,15 +2461,15 @@ public class StrategicMovement
         }
 
         // set sector x and y to passed values
-        pGroup.ubSectorX = pGroup.ubNextX = (int)SECTORX(ubSectorID);
-        pGroup.ubSectorY = pGroup.ubNextY = (int)SECTORY(ubSectorID);
+        pGroup.ubSectorX = pGroup.ubNextX = SECTORINFO.SECTORX(ubSectorID);
+        pGroup.ubSectorY = pGroup.ubNextY = SECTORINFO.SECTORY(ubSectorID);
         pGroup.ubSectorZ = 0;
         pGroup.fBetweenSectors = false;
         //pGroup.fWaypointsCancelled = false;
     }
 
 
-    void SetGroupNextSectorValue(int sSectorX, int sSectorY, int ubGroupID)
+    void SetGroupNextSectorValue(int sSectorX, MAP_ROW sSectorY, int ubGroupID)
     {
         GROUP? pGroup;
 
@@ -2482,12 +2483,12 @@ public class StrategicMovement
         RemovePGroupWaypoints(pGroup);
 
         // set sector x and y to passed values
-        pGroup.ubNextX = (int)sSectorX;
-        pGroup.ubNextY = (int)sSectorY;
+        pGroup.ubNextX = sSectorX;
+        pGroup.ubNextY = sSectorY;
         pGroup.fBetweenSectors = false;
 
         // set next sectors same as current
-        pGroup.ubOriginalSector = (int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
+        pGroup.ubOriginalSector = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
     }
 
 
@@ -2527,7 +2528,7 @@ public class StrategicMovement
         pNode = pGroup.pWaypoints;
 
         // now get the delta in current sector and next sector
-        iDelta = (int)(SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) - SECTOR(pGroup.ubNextX, pGroup.ubNextY));
+        iDelta = (SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) - SECTORINFO.SECTOR(pGroup.ubNextX, pGroup.ubNextY));
 
         if (iDelta == 0)
         {
@@ -2540,9 +2541,9 @@ public class StrategicMovement
         if (pGroup.fBetweenSectors)
         {
             // to get travel time to the first sector, use the arrival time, this way it accounts for delays due to simul. arrival
-            if (pGroup.uiArrivalTime >= GetWorldTotalMin())
+            if (pGroup.uiArrivalTime >= GameClock.GetWorldTotalMin())
             {
-                uiEtaTime += (pGroup.uiArrivalTime - GetWorldTotalMin());
+                uiEtaTime += (pGroup.uiArrivalTime - GameClock.GetWorldTotalMin());
             }
 
             // first waypoint is NEXT sector
@@ -2562,7 +2563,7 @@ public class StrategicMovement
             pDest.y = pNode.y;
 
             // update eta time by the path between these 2 waypts
-            uiEtaTime += FindTravelTimeBetweenWaypoints(&pCurrent, &pDest, pGroup);
+            uiEtaTime += FindTravelTimeBetweenWaypoints(pCurrent, pDest, pGroup);
 
             pCurrent.x = pNode.x;
             pCurrent.y = pNode.y;
@@ -2574,14 +2575,14 @@ public class StrategicMovement
         return (uiEtaTime);
     }
 
-    int FindTravelTimeBetweenWaypoints(WAYPOINT? pSource, WAYPOINT? pDest, GROUP? pGroup)
+    uint FindTravelTimeBetweenWaypoints(WAYPOINT? pSource, WAYPOINT? pDest, GROUP? pGroup)
     {
-        int ubStart = 0, ubEnd = 0;
+        SEC ubStart = 0, ubEnd = 0;
         int iDelta = 0;
-        int iCurrentCostInTime = 0;
-        int ubCurrentSector = 0;
-        int ubDirection;
-        int iThisCostInTime;
+        uint iCurrentCostInTime = 0;
+        SEC ubCurrentSector = 0;
+        StrategicMove ubDirection;
+        uint iThisCostInTime;
 
 
         // find travel time between waypoints
@@ -2592,8 +2593,8 @@ public class StrategicMovement
         }
 
         // get start and end setor values
-        ubStart = SECTOR(pSource.x, pSource.y);
-        ubEnd = SECTOR(pDest.x, pDest.y);
+        ubStart = SECTORINFO.SECTOR(pSource.x, pSource.y);
+        ubEnd = SECTORINFO.SECTOR(pDest.x, pDest.y);
 
         // are we in fact moving?
         if (ubStart == ubEnd)
@@ -3952,7 +3953,7 @@ public class StrategicMovement
         }
     }
 
-    GROUP? FindMovementGroupInSector(int ubSectorX, int ubSectorY, bool fPlayer)
+    GROUP? FindMovementGroupInSector(int ubSectorX, MAP_ROW ubSectorY, bool fPlayer)
     {
         GROUP? pGroup;
         pGroup = gpGroupList;
@@ -4325,7 +4326,7 @@ public class StrategicMovement
         }
     }
 
-    void ReportVehicleOutOfGas(int iVehicleID, int ubSectorX, int ubSectorY)
+    void ReportVehicleOutOfGas(int iVehicleID, int ubSectorX, MAP_ROW ubSectorY)
     {
         string str = string.Empty;
         //Report that the vehicle that just arrived is out of gas.
@@ -4335,7 +4336,7 @@ public class StrategicMovement
         DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, null);
     }
 
-    void SetLocationOfAllPlayerSoldiersInGroup(GROUP? pGroup, int sSectorX, int sSectorY, int bSectorZ)
+    void SetLocationOfAllPlayerSoldiersInGroup(GROUP? pGroup, int sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
         PLAYERGROUP? pPlayer = null;
         SOLDIERTYPE? pSoldier = null;
@@ -4365,7 +4366,7 @@ public class StrategicMovement
             iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicleId != -1);
 
-            pVehicle = &(pVehicleList[iVehicleId]);
+            pVehicle = (pVehicleList[iVehicleId]);
 
             pVehicle.sSectorX = sSectorX;
             pVehicle.sSectorY = sSectorY;
@@ -4392,16 +4393,16 @@ public class StrategicMovement
         int ubMaxWaypointID = 0;
         int ubTotalWaypoints;
         int ubChosen;
-        int ubSectorID;
+        SEC ubSectorID;
 
         //return; //disabled for now
 
         Debug.Assert(!pGroup.fPlayer);
-        Debug.Assert(pGroup.ubMoveType == ENDTOEND_FORWARDS);
+        Debug.Assert(pGroup.ubMoveType == MOVE_TYPES.ENDTOEND_FORWARDS);
         Debug.Assert(pGroup.pEnemyGroup.ubIntention == PATROL);
 
         //Search for the event, and kill it (if it exists)!
-        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+        GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //count the group's waypoints
         wp = pGroup.pWaypoints;
@@ -4423,13 +4424,13 @@ public class StrategicMovement
         if (ubChosen >= ubMaxWaypointID)
         { //They chose a waypoint going in the reverse direction, so translate it
           //to an actual waypointID and switch directions.  
-            pGroup.ubMoveType = ENDTOEND_BACKWARDS;
+            pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_BACKWARDS;
             pGroup.ubNextWaypointID = ubChosen - ubMaxWaypointID;
             ubChosen = pGroup.ubNextWaypointID + 1;
         }
         else
         {
-            pGroup.ubMoveType = ENDTOEND_FORWARDS;
+            pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_FORWARDS;
             pGroup.ubNextWaypointID = ubChosen + 1;
         }
 
@@ -4446,7 +4447,7 @@ public class StrategicMovement
         Debug.Assert(wp);
 
         //Move the group to the location of this chosen waypoint.
-        ubSectorID = (int)SECTOR(wp.x, wp.y);
+        ubSectorID = SECTORINFO.SECTOR(wp.x, wp.y);
 
         //Set up this global var to randomize the arrival time of the group from
         //1 minute to actual traverse time between the sectors.
@@ -4887,28 +4888,8 @@ public class StrategicMovement
         PLAYERGROUP? curr;
 
         pGroup = GetGroup(ubGroupID);
-        Debug.Assert(pGroup);
 
-        curr = pGroup.pPlayerList;
-
-        if (!curr)
-        {
-            return false;
-        }
-
-        while (curr)
-        { //definately more than one node
-
-            if (curr.pSoldier == pSoldier)
-            {
-                return true;
-            }
-
-            curr = curr.next;
-        }
-
-        // !curr
-        return false;
+        return pGroup.pPlayerList.Any(ps => ps.pSoldier == pSoldier);
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -100,6 +101,19 @@ namespace SharpAlliance.Core
         {
             var pos = InputTracker.MousePosition;
             mousePos = new Point((int)pos.X, (int)pos.Y);
+        }
+
+        public static void GetMousePos(out Point Point)
+        {
+            GetCursorPos(out Point MousePos);
+
+            Point = new()
+            {
+                X = MousePos.X,
+                Y = MousePos.Y,
+            };
+
+            return;
         }
 
         public async ValueTask<bool> Initialize()

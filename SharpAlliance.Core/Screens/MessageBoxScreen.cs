@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
@@ -11,258 +6,429 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp;
 using Veldrid;
+using static SharpAlliance.Core.Globals;
 
-namespace SharpAlliance.Core.Screens
+namespace SharpAlliance.Core.Screens;
+
+public class MessageBoxScreen : IScreen
 {
-    public class MessageBoxScreen : IScreen
+    private readonly ILogger<MessageBoxScreen> logger;
+    private readonly MessageBoxSubSystem messageBoxSubSystem;
+
+    public MessageBoxScreen(
+        ILogger<MessageBoxScreen> logger,
+        IClockManager clockManager,
+        IInputManager inputs,
+        MessageBoxSubSystem messageBoxSubSystem)
     {
-        private readonly ILogger<MessageBoxScreen> logger;
-        private readonly MessageBoxSubSystem messageBoxSubSystem;
+        this.logger = logger;
+        this.messageBoxSubSystem = messageBoxSubSystem;
+    }
 
-        public MessageBoxScreen(
-            ILogger<MessageBoxScreen> logger,
-            IClockManager clockManager,
-            IInputManager inputs,
-            MessageBoxSubSystem messageBoxSubSystem)
+    public bool IsInitialized { get; set; }
+    public ScreenState State { get; set; }
+
+    public ValueTask Activate()
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask<ScreenName> Handle()
+    {
+        InputAtom InputEvent;
+
+        if (gfNewMessageBox)
         {
-            this.logger = logger;
-            this.messageBoxSubSystem = messageBoxSubSystem;
-        }
-
-        public bool IsInitialized { get; set; }
-        public ScreenState State { get; set; }
-
-        public ValueTask Activate()
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        public ValueTask<ScreenName> Handle()
-        {
-            InputAtom InputEvent;
-
-            if (this.messageBoxSubSystem.gfNewMessageBox)
+            // If in game screen....
+            if ((gfStartedFromGameScreen) || (gfStartedFromMapScreen))
             {
-                // If in game screen....
-                if ((this.messageBoxSubSystem.gfStartedFromGameScreen) || (this.messageBoxSubSystem.gfStartedFromMapScreen))
+                //int uiDestPitchBYTES, uiSrcPitchBYTES;
+                //Ubyte	 *pDestBuf, *pSrcBuf;
+
+                if (gfStartedFromGameScreen)
                 {
-                    //int uiDestPitchBYTES, uiSrcPitchBYTES;
-                    //Ubyte	 *pDestBuf, *pSrcBuf;
-
-                    if (this.messageBoxSubSystem.gfStartedFromGameScreen)
-                    {
-                        HandleUI.HandleTacticalUILoseCursorFromOtherScreen();
-                    }
-                    else
-                    {
-                        MapScreenInterfaceMap.HandleMAPUILoseCursorFromOtherScreen();
-                    }
-
-                    this.messageBoxSubSystem.gfStartedFromGameScreen = false;
-                    this.messageBoxSubSystem.gfStartedFromMapScreen = false;
+                    HandleUI.HandleTacticalUILoseCursorFromOtherScreen();
+                }
+                else
+                {
+                    MapScreenInterfaceMap.HandleMAPUILoseCursorFromOtherScreen();
                 }
 
-                this.messageBoxSubSystem.gfNewMessageBox = false;
-
-                return ValueTask.FromResult(ScreenName.MSG_BOX_SCREEN);
+                gfStartedFromGameScreen = false;
+                gfStartedFromMapScreen = false;
             }
 
-            ButtonSubSystem.UnmarkButtonsDirty();
-
-            // Render the box!
-            if (this.messageBoxSubSystem.gMsgBox.fRenderBox)
-            {
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[0]);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[1]);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[2]);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiButton[3]);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CANCEL))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
-                {
-                    // Exit messagebox
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiOKButton);
-                }
-
-                if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
-                {
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiYESButton);
-                    ButtonSubSystem.MarkAButtonDirty(this.messageBoxSubSystem.gMsgBox.uiNOButton);
-                }
-
-                MercTextBox.RenderMercPopUpBoxFromIndex(this.messageBoxSubSystem.gMsgBox.iBoxId, this.messageBoxSubSystem.gMsgBox.sX, this.messageBoxSubSystem.gMsgBox.sY, Surfaces.FRAME_BUFFER);
-                //this.messageBoxSubSystem.gMsgBox.fRenderBox = false;
-                // ATE: Render each frame...
-            }
-
-            // Render buttons
-            ButtonSubSystem.RenderButtons();
-
-            VeldridVideoManager.EndFrameBufferRender();
-
-            // carter, need key shortcuts for clearing up message boxes
-            // Check for esc 
-            while (DequeueEvent(out InputEvent) == true)
-            {
-                if (InputEvent.usEvent == KEY_UP)
-                {
-                    if ((InputEvent.usParam == ESC) || (InputEvent.usParam == 'n'))
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
-                        }
-                    }
-
-                    if (InputEvent.usParam == ENTER)
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
-                        }
-                        else if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-                        }
-                        else if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-                        }
-                    }
-                    if (InputEvent.usParam == 'o')
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-                        }
-                    }
-                    if (InputEvent.usParam == 'y')
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
-                        }
-                    }
-                    if (InputEvent.usParam == '1')
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-                        }
-                    }
-                    if (InputEvent.usParam == '2')
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-                        }
-                    }
-                    if (InputEvent.usParam == '3')
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-                        }
-                    }
-                    if (InputEvent.usParam == '4')
-                    {
-                        if (this.messageBoxSubSystem.gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-                        {
-                            // Exit messagebox
-                            this.messageBoxSubSystem.gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-                        }
-                    }
-
-                }
-            }
-
-            if (this.messageBoxSubSystem.gMsgBox.bHandled != 0)
-            {
-                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-                return (ExitMsgBox(this.messageBoxSubSystem.gMsgBox.bHandled));
-            }
+            gfNewMessageBox = false;
 
             return ValueTask.FromResult(ScreenName.MSG_BOX_SCREEN);
         }
 
-        public ValueTask<bool> Initialize()
+        ButtonSubSystem.UnmarkButtonsDirty();
+
+        // Render the box!
+        if (gMsgBox.fRenderBox)
         {
-            return ValueTask.FromResult(true);
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiButton[0]);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiButton[1]);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiButton[2]);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiButton[3]);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CANCEL))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+            {
+                // Exit messagebox
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+            }
+
+            MercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, Surfaces.FRAME_BUFFER);
+            //gMsgBox.fRenderBox = false;
+            // ATE: Render each frame...
         }
 
-        public void Dispose()
+        // Render buttons
+        ButtonSubSystem.RenderButtons();
+
+        VeldridVideoManager.EndFrameBufferRender();
+
+        // carter, need key shortcuts for clearing up message boxes
+        // Check for esc 
+        // while (DequeueEvent(out InputEvent) == true)
+        // {
+        //     if (InputEvent.usEvent == KEY_UP)
+        //     {
+        //         if ((InputEvent.usParam == ESC) || (InputEvent.usParam == 'n'))
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
+        //             }
+        //         }
+        // 
+        //         if (InputEvent.usParam == ENTER)
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
+        //             }
+        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+        //             }
+        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+        //             }
+        //         }
+        //         if (InputEvent.usParam == 'o')
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+        //             }
+        //         }
+        //         if (InputEvent.usParam == 'y')
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
+        //             }
+        //         }
+        //         if (InputEvent.usParam == '1')
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+        //             }
+        //         }
+        //         if (InputEvent.usParam == '2')
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+        //             }
+        //         }
+        //         if (InputEvent.usParam == '3')
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+        //             }
+        //         }
+        //         if (InputEvent.usParam == '4')
+        //         {
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             {
+        //                 // Exit messagebox
+        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+        //             }
+        //         }
+        // 
+        //     }
+        // }
+
+        if (gMsgBox.bHandled != 0)
         {
+            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
+            return (ValueTask.FromResult(ExitMsgBox(gMsgBox.bHandled)));
         }
 
-        public ValueTask Deactivate()
+        return ValueTask.FromResult(ScreenName.MSG_BOX_SCREEN);
+    }
+
+    public ValueTask<bool> Initialize()
+    {
+        return ValueTask.FromResult(true);
+    }
+
+    public void Dispose()
+    {
+    }
+
+    public ValueTask Deactivate()
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public static ScreenName ExitMsgBox(MessageBoxReturnCode ubExitCode)
+    {
+        int uiDestPitchBYTES, uiSrcPitchBYTES;
+        int pDestBuf, pSrcBuf;
+        SixLabors.ImageSharp.Point pPosition;
+
+        // Delete popup!
+        MercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
+        gMsgBox.iBoxId = -1;
+
+        //Delete buttons!
+        if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
         {
-            return ValueTask.CompletedTask;
+            ButtonSubSystem.RemoveButton(gMsgBox.uiButton[0]);
+            ButtonSubSystem.RemoveButton(gMsgBox.uiButton[1]);
+            ButtonSubSystem.RemoveButton(gMsgBox.uiButton[2]);
+            ButtonSubSystem.RemoveButton(gMsgBox.uiButton[3]);
+        }
+        else
+        {
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+            }
         }
 
-        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+        // Delete button images
+        ButtonSubSystem.UnloadButtonImage(gMsgBox.iButtonImages);
+
+        // Unpause game....
+        GameClock.UnLockPauseState();
+        GameClock.UnPauseGame();
+        // UnPause timers as well....
+        TimerControl.PauseTime(false);
+
+        // Restore mouse restriction region...
+        MouseSubSystem.RestrictMouseCursor(gOldCursorLimitRectangle);
+
+
+        gfInMsgBox = false;
+
+        // Call done callback!
+        if (gMsgBox.ExitCallback != null)
         {
+            ((gMsgBox.ExitCallback))(ubExitCode);
         }
+
+
+        //if ur in a non gamescreen and DONT want the msg box to use the save buffer, unset gfDontOverRideSaveBuffer in ur callback
+        if (((gMsgBox.uiExitScreen != ScreenName.GAME_SCREEN) || (fRestoreBackgroundForMessageBox == true)) && gfDontOverRideSaveBuffer)
+        {
+            // restore what we have under here...
+            pSrcBuf =  VeldridVideoManager.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
+            pDestBuf = VeldridVideoManager.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+
+            VeldridVideoManager.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+                        pSrcBuf, uiSrcPitchBYTES,
+                        gMsgBox.sX, gMsgBox.sY,
+                        0, 0,
+                        gMsgBox.usWidth, gMsgBox.usHeight);
+
+            VeldridVideoManager.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
+            VeldridVideoManager.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+
+            VeldridVideoManager.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
+        }
+
+        fRestoreBackgroundForMessageBox = false;
+        gfDontOverRideSaveBuffer = true;
+
+        if (MessageBoxSubSystem.fCursorLockedToArea == true)
+        {
+            InputManager.GetMousePos(out pPosition);
+
+            if ((pPosition.X > MessageBoxRestrictedCursorRegion.Right)
+                || (pPosition.X > MessageBoxRestrictedCursorRegion.Left)
+                && (pPosition.Y < MessageBoxRestrictedCursorRegion.Top)
+                && (pPosition.Y > MessageBoxRestrictedCursorRegion.Bottom))
+            {
+                MouseSubSystem.SimulateMouseMovement(pOldMousePosition.X, pOldMousePosition.Y);
+            }
+
+            MessageBoxSubSystem.fCursorLockedToArea = false;
+            MouseSubSystem.RestrictMouseCursor(MessageBoxRestrictedCursorRegion);
+        }
+
+        // Remove region
+        MouseSubSystem.MSYS_RemoveRegion((gMsgBox.BackRegion));
+
+        // Remove save buffer!
+        VeldridVideoManager.DeleteVideoSurfaceFromIndex(gMsgBox.uiSaveBuffer);
+
+        switch (gMsgBox.uiExitScreen)
+        {
+            case ScreenName.GAME_SCREEN:
+
+                if (Overhead.InOverheadMap())
+                {
+                    gfOverheadMapDirty = true;
+                }
+                else
+                {
+                    RenderWorld.SetRenderFlags(RenderingFlags.FULL);
+                }
+                break;
+            case ScreenName.MAP_SCREEN:
+                fMapPanelDirty = true;
+                break;
+        }
+
+        if (gfFadeInitialized)
+        {
+            // SetPendingNewScreen(ScreenName.FADE_SCREEN);
+            return (ScreenName.FADE_SCREEN);
+        }
+
+        return (gMsgBox.uiExitScreen);
+    }
+
+    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    {
     }
 }

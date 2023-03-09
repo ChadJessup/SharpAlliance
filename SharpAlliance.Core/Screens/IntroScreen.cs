@@ -61,7 +61,7 @@ namespace SharpAlliance.Core.Screens
             this.gameInit = gameInit;
             this.context = context;
             this.screens = screenManager;
-            MouseSubSystem = mouseSubSystem;
+            this.mouse = mouseSubSystem;
             this.cursor = cursorSubSystem;
             this.renderDirty = renderDirtySubSystem;
             this.music = musicManager;

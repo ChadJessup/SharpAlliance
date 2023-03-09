@@ -67,11 +67,6 @@ public class MainMenuScreen : IScreen
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
-    public bool gfFadeInitialized;
-    public bool gfFadeIn;
-    public bool gfFadeInVideo;
-    public int gbFadeType;
-    public Action gFadeFunction;
 
     public async ValueTask Activate()
     {

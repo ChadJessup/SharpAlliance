@@ -605,7 +605,7 @@ public class StrategicAI
             MemFree(gubGarrisonReinforcementsDenied);
             gubGarrisonReinforcementsDenied = null;
         }
-        
+
         GameEvents.DeleteAllStrategicEventsOfType(EVENT.EVALUATE_QUEEN_SITUATION);
     }
 
@@ -781,22 +781,22 @@ public class StrategicAI
         }
     }
 
-    bool HandleMilitiaNoticedByPatrolGroup(int ubSectorID, GROUP? pEnemyGroup)
+    bool HandleMilitiaNoticedByPatrolGroup(SEC ubSectorID, GROUP? pEnemyGroup)
     {
         //For now, automatically attack.
         int usOffensePoints, usDefencePoints;
-        int ubSectorX = (int)(ubSectorID % 16) + 1;
-        int ubSectorY = (int)(ubSectorID / 16) + 1;
+        int ubSectorX = ((int)ubSectorID % 16) + 1;
+        MAP_ROW ubSectorY = (MAP_ROW)((int)ubSectorID / 16) + 1;
         usOffensePoints = pEnemyGroup.pEnemyGroup.ubNumAdmins * 2 +
                                             pEnemyGroup.pEnemyGroup.ubNumTroops * 4 +
                                             pEnemyGroup.pEnemyGroup.ubNumElites * 6;
-        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, &usDefencePoints))
+        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, out usDefencePoints))
         {
             RequestAttackOnSector(ubSectorID, usDefencePoints);
             return false;
         }
 
-        MoveSAIGroupToSector(&pEnemyGroup, (int)SECTOR(ubSectorX, ubSectorY), DIRECT, REINFORCEMENTS);
+        MoveSAIGroupToSector(pEnemyGroup, SECTORINFO.SECTOR(ubSectorX, ubSectorY), SAIMOVECODE.DIRECT, ENEMY_INTENTIONS.REINFORCEMENTS);
 
 
         return false;
@@ -804,7 +804,7 @@ public class StrategicAI
 
     bool AttemptToNoticeEmptySectorSucceeds()
     {
-        if (gubNumAwareBattles || gfAutoAIAware)
+        if (gubNumAwareBattles > 0 || gfAutoAIAware)
         { //The queen is in high-alert and is searching for players.  All adjacent checks will automatically succeed.
             return true;
         }
@@ -872,16 +872,16 @@ public class StrategicAI
         return false;
     }
 
-    bool HandleEmptySectorNoticedByPatrolGroup(GROUP? pGroup, int ubEmptySectorID)
+    bool HandleEmptySectorNoticedByPatrolGroup(GROUP? pGroup, SEC ubEmptySectorID)
     {
-        int ubGarrisonID;
-        int ubSectorX = (int)(ubEmptySectorID % 16) + 1;
-        int ubSectorY = (int)(ubEmptySectorID / 16) + 1;
+        Garrisons ubGarrisonID;
+        int ubSectorX = ((int)ubEmptySectorID % 16) + 1;
+        MAP_ROW ubSectorY = (MAP_ROW)((int)ubEmptySectorID / 16) + 1;
 
         ubGarrisonID = SectorInfo[ubEmptySectorID].ubGarrisonID;
         if (ubGarrisonID != NO_GARRISON)
         {
-            if (gGarrisonGroup[ubGarrisonID].ubPendingGroupID)
+            if (gGarrisonGroup[ubGarrisonID].ubPendingGroupID > 0)
             {
                 return false;
             }
@@ -895,19 +895,19 @@ public class StrategicAI
         ClearPreviousAIGroupAssignment(pGroup);
 
         gGarrisonGroup[ubGarrisonID].ubPendingGroupID = pGroup.ubGroupID;
-        MoveSAIGroupToSector(&pGroup, (int)SECTOR(ubSectorX, ubSectorY), DIRECT, REINFORCEMENTS);
+        MoveSAIGroupToSector(pGroup, SECTORINFO.SECTOR(ubSectorX, ubSectorY), SAIMOVECODE.DIRECT, ENEMY_INTENTIONS.REINFORCEMENTS);
 
 
 
         return true;
     }
 
-    void HandleEmptySectorNoticedByGarrison(int ubGarrisonSectorID, int ubEmptySectorID)
+    void HandleEmptySectorNoticedByGarrison(SEC ubGarrisonSectorID, SEC ubEmptySectorID)
     {
         SECTORINFO? pSector;
         GROUP? pGroup;
         int ubAvailableTroops;
-        int ubSrcGarrisonID = 255, ubDstGarrisonID = 255;
+        Garrisons ubSrcGarrisonID = (Garrisons)255, ubDstGarrisonID = (Garrisons)255;
 
         //Make sure that the destination sector doesn't already have a pending group.
         pSector = SectorInfo[ubEmptySectorID];
@@ -920,7 +920,7 @@ public class StrategicAI
             return;
         }
 
-        if (gGarrisonGroup[ubDstGarrisonID].ubPendingGroupID)
+        if (gGarrisonGroup[ubDstGarrisonID].ubPendingGroupID > 0)
         { //A group is already on-route, so don't send anybody from here.
             return;
         }
@@ -935,19 +935,20 @@ public class StrategicAI
             ConvertGroupTroopsToComposition(pGroup, gGarrisonGroup[ubDstGarrisonID].ubComposition);
             RemoveSoldiersFromGarrisonBasedOnComposition(ubSrcGarrisonID, pGroup.ubGroupSize);
             gGarrisonGroup[ubDstGarrisonID].ubPendingGroupID = pGroup.ubGroupID;
-            MoveSAIGroupToSector(&pGroup, ubEmptySectorID, DIRECT, REINFORCEMENTS);
+            MoveSAIGroupToSector(pGroup, ubEmptySectorID, DIRECT, REINFORCEMENTS);
         }
     }
 
-    bool ReinforcementsApproved(int iGarrisonID, int? pusDefencePoints)
+    bool ReinforcementsApproved(Garrisons iGarrisonID, int? pusDefencePoints)
     {
         SECTORINFO? pSector;
         int usOffensePoints;
-        int ubSectorX, ubSectorY;
+        int ubSectorX;
+        MAP_ROW ubSectorY;
 
         pSector = SectorInfo[gGarrisonGroup[iGarrisonID].ubSectorID];
-        ubSectorX = (int)SECTORINFO.SECTORX(gGarrisonGroup[iGarrisonID].ubSectorID);
-        ubSectorY = (int)SECTORINFO.SECTORY(gGarrisonGroup[iGarrisonID].ubSectorID);
+        ubSectorX = SECTORINFO.SECTORX(gGarrisonGroup[iGarrisonID].ubSectorID);
+        ubSectorY = SECTORINFO.SECTORY(gGarrisonGroup[iGarrisonID].ubSectorID);
 
         pusDefencePoints = pSector.ubNumberOfCivsAtLevel[GREEN_MILITIA] * 1 +
                                             pSector.ubNumberOfCivsAtLevel[REGULAR_MILITIA] * 2 +
@@ -996,7 +997,7 @@ public class StrategicAI
         Debug.Assert(!pGroup.fPlayer);
         if (pGroup.pEnemyGroup.ubIntention == PURSUIT)
         { //Lost the player group that he was going to attack.  Return to original position.
-            ReassignAIGroup(&pGroup);
+            ReassignAIGroup(pGroup);
             return true;
         }
         else if (pGroup.pEnemyGroup.ubIntention == REINFORCEMENTS)
@@ -1004,10 +1005,10 @@ public class StrategicAI
           //Step 1 -- Check for matching garrison location
             for (i = 0; i < giGarrisonArraySize; i++)
             {
-                if (gGarrisonGroup[i].ubSectorID == SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) &&
+                if (gGarrisonGroup[i].ubSectorID == SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) &&
                         gGarrisonGroup[i].ubPendingGroupID == pGroup.ubGroupID)
                 {
-                    pSector = SectorInfo[SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)];
+                    pSector = SectorInfo[SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)];
 
                     if (gGarrisonGroup[i].ubSectorID != SEC.P3)
                     {
@@ -1055,7 +1056,7 @@ public class StrategicAI
             //Step 2 -- Check for Patrol groups matching waypoint index.
             for (i = 0; i < giPatrolArraySize; i++)
             {
-                if (gPatrolGroup[i].ubSectorID[1] == SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) &&
+                if (gPatrolGroup[i].ubSectorID[1] == SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) &&
                         gPatrolGroup[i].ubPendingGroupID == pGroup.ubGroupID)
                 {
                     gPatrolGroup[i].ubPendingGroupID = 0;
@@ -1128,7 +1129,7 @@ public class StrategicAI
         {   //This is a floating group at his final destination...
             if (pGroup.pEnemyGroup.ubIntention != STAGING && pGroup.pEnemyGroup.ubIntention != REINFORCEMENTS)
             {
-                ReassignAIGroup(&pGroup);
+                ReassignAIGroup(pGroup);
                 return true;
             }
         }
@@ -1142,7 +1143,7 @@ public class StrategicAI
         SECTORINFO? pSector;
         GROUP? pEnemyGroup, pPlayerGroup;
         int ubNumEnemies;
-        int ubSectorID;
+        SEC ubSectorID;
         if (!gfQueenAIAwake)
         { //The queen isn't aware the player's presence yet, so she is oblivious to any situations.
 
@@ -1159,7 +1160,7 @@ public class StrategicAI
                     if (pGroup.ubSectorX == 9 && pGroup.ubSectorY == 1 ||
                             pGroup.ubSectorX == 3 && pGroup.ubSectorY == 16)
                     {
-                        SendGroupToPool(&pGroup);
+                        SendGroupToPool(pGroup);
                         if (!pGroup)
                         { //Group was transferred to the pool
                             return true;
@@ -1182,7 +1183,7 @@ public class StrategicAI
             {
                 return EvaluateGroupSituation(pEnemyGroup);
             }
-            ubSectorID = (int)SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY);
+            ubSectorID = SECTORINFO.SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY);
             if (pEnemyGroup && pEnemyGroup.ubSectorY > 1 && EnemyPermittedToAttackSector(&pEnemyGroup, (int)(ubSectorID - 16)))
             {
                 pPlayerGroup = FindMovementGroupInSector(pEnemyGroup.ubSectorX, (int)(pEnemyGroup.ubSectorY - 1), true);
@@ -1193,14 +1194,14 @@ public class StrategicAI
                 else if (CountAllMilitiaInSector(pEnemyGroup.ubSectorX, (int)(pEnemyGroup.ubSectorY - 1)) &&
                                 AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    return HandleMilitiaNoticedByPatrolGroup((int)SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY - 1), pEnemyGroup);
+                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY - 1), pEnemyGroup);
                 }
-                else if (AdjacentSectorIsImportantAndUndefended((int)(ubSectorID - 16)) && AttemptToNoticeEmptySectorSucceeds())
+                else if (AdjacentSectorIsImportantAndUndefended((SEC)(ubSectorID - 16)) && AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (int)(ubSectorID - 16));
+                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (SEC)(ubSectorID - 16));
                 }
             }
-            if (pEnemyGroup && pEnemyGroup.ubSectorX > 1 && EnemyPermittedToAttackSector(&pEnemyGroup, (int)(ubSectorID - 1)))
+            if (pEnemyGroup && pEnemyGroup.ubSectorX > 1 && EnemyPermittedToAttackSector(pEnemyGroup, (int)(ubSectorID - 1)))
             {
                 pPlayerGroup = FindMovementGroupInSector((int)(pEnemyGroup.ubSectorX - 1), pEnemyGroup.ubSectorY, true);
                 if (pPlayerGroup && AttemptToNoticeAdjacentGroupSucceeds())
@@ -1210,14 +1211,14 @@ public class StrategicAI
                 else if (CountAllMilitiaInSector((int)(pEnemyGroup.ubSectorX - 1), pEnemyGroup.ubSectorY) &&
                                 AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    return HandleMilitiaNoticedByPatrolGroup((int)SECTOR(pEnemyGroup.ubSectorX - 1, pEnemyGroup.ubSectorY), pEnemyGroup);
+                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX - 1, pEnemyGroup.ubSectorY), pEnemyGroup);
                 }
-                else if (AdjacentSectorIsImportantAndUndefended((int)(ubSectorID - 1)) && AttemptToNoticeEmptySectorSucceeds())
+                else if (AdjacentSectorIsImportantAndUndefended((ubSectorID - 1)) && AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (int)(ubSectorID - 1));
+                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID - 1));
                 }
             }
-            if (pEnemyGroup && pEnemyGroup.ubSectorY < 16 && EnemyPermittedToAttackSector(&pEnemyGroup, (int)(ubSectorID + 16)))
+            if (pEnemyGroup && pEnemyGroup.ubSectorY < 16 && EnemyPermittedToAttackSector(pEnemyGroup, (int)(ubSectorID + 16)))
             {
                 pPlayerGroup = FindMovementGroupInSector(pEnemyGroup.ubSectorX, (int)(pEnemyGroup.ubSectorY + 1), true);
                 if (pPlayerGroup && AttemptToNoticeAdjacentGroupSucceeds())
@@ -1227,14 +1228,14 @@ public class StrategicAI
                 else if (CountAllMilitiaInSector(pEnemyGroup.ubSectorX, (int)(pEnemyGroup.ubSectorY + 1)) &&
                                 AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    return HandleMilitiaNoticedByPatrolGroup((int)SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY + 1), pEnemyGroup);
+                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY + 1), pEnemyGroup);
                 }
-                else if (AdjacentSectorIsImportantAndUndefended((int)(ubSectorID + 16)) && AttemptToNoticeEmptySectorSucceeds())
+                else if (AdjacentSectorIsImportantAndUndefended((ubSectorID + 16)) && AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (int)(ubSectorID + 16));
+                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 16));
                 }
             }
-            if (pEnemyGroup && pEnemyGroup.ubSectorX < 16 && EnemyPermittedToAttackSector(&pEnemyGroup, (int)(ubSectorID + 1)))
+            if (pEnemyGroup && pEnemyGroup.ubSectorX < 16 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID + 1)))
             {
                 pPlayerGroup = FindMovementGroupInSector((int)(pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY, true);
                 if (pPlayerGroup && AttemptToNoticeAdjacentGroupSucceeds())
@@ -1244,7 +1245,7 @@ public class StrategicAI
                 else if (CountAllMilitiaInSector((int)(pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY) &&
                                 AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    return HandleMilitiaNoticedByPatrolGroup((int)SECTOR(pEnemyGroup.ubSectorX + 1, pEnemyGroup.ubSectorY), pEnemyGroup);
+                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX + 1, pEnemyGroup.ubSectorY), pEnemyGroup);
                 }
                 else if (AdjacentSectorIsImportantAndUndefended((int)(ubSectorID + 1)) && AttemptToNoticeEmptySectorSucceeds())
                 {
@@ -1270,7 +1271,7 @@ public class StrategicAI
                 return false;
             }
 
-            if (!EnemyPermittedToAttackSector(null, (int)SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY)))
+            if (!EnemyPermittedToAttackSector(null, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY)))
             {
                 return false;
             }
@@ -1283,11 +1284,11 @@ public class StrategicAI
                     HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
-                pSector = SectorInfo[SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY - 1)];
+                pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY - 1)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
                 if (ubNumEnemies && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, (int)SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY - 1));
+                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY - 1));
                     return false;
                 }
             }
@@ -1299,11 +1300,11 @@ public class StrategicAI
                     HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
-                pSector = SectorInfo[SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY)];
+                pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
                 if (ubNumEnemies && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, (int)SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY));
+                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY));
                     return false;
                 }
             }
@@ -1315,11 +1316,11 @@ public class StrategicAI
                     HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
-                pSector = SectorInfo[SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1)];
+                pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
                 if (ubNumEnemies && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, (int)SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1));
+                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1));
                     return false;
                 }
             }
@@ -1331,11 +1332,11 @@ public class StrategicAI
                     HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
-                pSector = SectorInfo[SECTOR(pPlayerGroup.ubSectorX + 1, pPlayerGroup.ubSectorY)];
+                pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX + 1, pPlayerGroup.ubSectorY)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
                 if (ubNumEnemies && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, (int)SECTOR(pPlayerGroup.ubSectorX + 1, pPlayerGroup.ubSectorY));
+                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX + 1, pPlayerGroup.ubSectorY));
                     return false;
                 }
             }
@@ -1344,10 +1345,11 @@ public class StrategicAI
     }
 
     //This is called periodically for each enemy occupied sector containing garrisons.
-    void CheckEnemyControlledSector(int ubSectorID)
+    void CheckEnemyControlledSector(SEC ubSectorID)
     {
         SECTORINFO? pSector;
-        int ubSectorX, ubSectorY;
+        int ubSectorX;
+        MAP_ROW ubSectorY;
         if (!gfQueenAIAwake)
         {
             return;
@@ -1384,9 +1386,9 @@ public class StrategicAI
                             }
                             //RequestHighPriorityStagingGroupReinforcements( pGroup );
                         }
-                        else if (SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) != gGarrisonGroup[pSector.ubGarrisonID].ubSectorID)
+                        else if (SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) != gGarrisonGroup[pSector.ubGarrisonID].ubSectorID)
                         {
-                            MoveSAIGroupToSector(&pGroup, gGarrisonGroup[pSector.ubGarrisonID].ubSectorID, DIRECT, pGroup.pEnemyGroup.ubIntention);
+                            MoveSAIGroupToSector(pGroup, gGarrisonGroup[pSector.ubGarrisonID].ubSectorID, DIRECT, pGroup.pEnemyGroup.ubIntention);
                         }
                     }
                     //else the group is on route to stage hopefully...
@@ -1397,8 +1399,8 @@ public class StrategicAI
         {
 
             //The sector is still controlled, so look around to see if there are any players nearby.
-            ubSectorX = (int)SECTORINFO.SECTORX(ubSectorID);
-            ubSectorY = (int)SECTORINFO.SECTORY(ubSectorID);
+            ubSectorX = SECTORINFO.SECTORX(ubSectorID);
+            ubSectorY = SECTORINFO.SECTORY(ubSectorID);
             if (ubSectorY > 1 && EnemyPermittedToAttackSector(null, (int)(ubSectorID - 16)))
             {
                 /*
@@ -1617,17 +1619,17 @@ public class StrategicAI
 
     }
 
-    int ChooseSuitableGarrisonToProvideReinforcements(int iDstGarrisonID, int iReinforcementsRequested)
+    Garrisons ChooseSuitableGarrisonToProvideReinforcements(Garrisons iDstGarrisonID, int iReinforcementsRequested)
     {
-        int iSrcGarrisonID, iBestGarrisonID = NO_GARRISON;
+        Garrisons iSrcGarrisonID, iBestGarrisonID = NO_GARRISON;
         int iReinforcementsAvailable;
-        int i, iRandom, iWeight;
+        int iRandom, iWeight;
+        Garrisons i;
         int bBestWeight;
-        int ubSectorID;
 
         //Check to see if we could send reinforcements from Alma.  Only Drassen/Cambria get preferred
         //service from Alma, due to it's proximity and Alma's purpose as a forward military base.
-        ubSectorID = gGarrisonGroup[iDstGarrisonID].ubSectorID;
+        SEC ubSectorID = gGarrisonGroup[iDstGarrisonID].ubSectorID;
         switch (ubSectorID)
         {
             case SEC.B13:
@@ -1644,7 +1646,7 @@ public class StrategicAI
                 //find which the first sector that contains Alma soldiers.
                 for (i = 0; i < giGarrisonArraySize; i++)
                 {
-                    if (gGarrisonGroup[i].ubComposition == ALMA_DEFENCE)
+                    if (gGarrisonGroup[i].ubComposition == Garrisons.ALMA_DEFENCE)
                     {
                         break;
                     }
@@ -1735,10 +1737,12 @@ public class StrategicAI
     void SendReinforcementsForGarrison(Garrisons iDstGarrisonID, int usDefencePoints, GROUP? pOptionalGroup)
     {
         SECTORINFO? pSector;
-        int iChance, iRandom, iSrcGarrisonID;
+        int iChance, iRandom;
+        Garrisons iSrcGarrisonID;
         int iMaxReinforcementsAllowed, iReinforcementsAvailable, iReinforcementsRequested, iReinforcementsApproved;
         GROUP? pGroup;
-        int ubSrcSectorX, ubSrcSectorY, ubDstSectorX, ubDstSectorY;
+        int ubSrcSectorX, ubDstSectorX;
+        MAP_ROW ubSrcSectorY, ubDstSectorY;
         int ubNumExtraReinforcements;
         int ubGroupSize;
         bool fLimitMaxTroopsAllowable = false;
@@ -1776,8 +1780,8 @@ public class StrategicAI
             return;
         }
 
-        ubDstSectorX = (int)SECTORINFO.SECTORX(gGarrisonGroup[iDstGarrisonID].ubSectorID);
-        ubDstSectorY = (int)SECTORINFO.SECTORY(gGarrisonGroup[iDstGarrisonID].ubSectorID);
+        ubDstSectorX = SECTORINFO.SECTORX(gGarrisonGroup[iDstGarrisonID].ubSectorID);
+        ubDstSectorY = SECTORINFO.SECTORY(gGarrisonGroup[iDstGarrisonID].ubSectorID);
 
         if (pOptionalGroup && pOptionalGroup)
         { //This group will provide the reinforcements
@@ -1801,7 +1805,7 @@ public class StrategicAI
             //KM : Sep 9, 1999
             //If the player owns sector P3, any troops that spawned there were causing serious problems, seeing battle checks
             //were not performed!
-            if (!StrategicMap[CALCULATE_STRATEGIC_INDEX(3, 16)].fEnemyControlled)
+            if (!strategicMap[CALCULATE_STRATEGIC_INDEX(3, 16)].fEnemyControlled)
             { //Queen can no longer send reinforcements from the palace if she doesn't control it!
                 return;
             }
@@ -1841,7 +1845,7 @@ public class StrategicAI
 
             pGroup = CreateNewEnemyGroupDepartingFromSector(SEC.P3, 0, (int)iReinforcementsApproved, 0);
             ConvertGroupTroopsToComposition(pGroup, gGarrisonGroup[iDstGarrisonID].ubComposition);
-            pGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
+            pGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
             giReinforcementPool -= iReinforcementsApproved;
             pGroup.ubMoveType = ONE_WAY;
             gGarrisonGroup[iDstGarrisonID].ubPendingGroupID = pGroup.ubGroupID;
@@ -1850,11 +1854,11 @@ public class StrategicAI
 
             if (ubNumExtraReinforcements)
             {
-                MoveSAIGroupToSector(&pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, STAGING);
+                MoveSAIGroupToSector(pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, STAGING);
             }
             else
             {
-                MoveSAIGroupToSector(&pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, REINFORCEMENTS);
+                MoveSAIGroupToSector(pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, REINFORCEMENTS);
             }
             ValidateWeights(14);
             return;
@@ -1912,7 +1916,7 @@ public class StrategicAI
                 pGroup = CreateNewEnemyGroupDepartingFromSector(gGarrisonGroup[iSrcGarrisonID].ubSectorID, 0, (int)iReinforcementsApproved, 0);
                 ConvertGroupTroopsToComposition(pGroup, gGarrisonGroup[iDstGarrisonID].ubComposition);
                 RemoveSoldiersFromGarrisonBasedOnComposition(iSrcGarrisonID, pGroup.ubGroupSize);
-                pGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
+                pGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
                 pGroup.ubMoveType = ONE_WAY;
                 gGarrisonGroup[iDstGarrisonID].ubPendingGroupID = pGroup.ubGroupID;
                 ubGroupSize = (int)(pGroup.pEnemyGroup.ubNumTroops + pGroup.pEnemyGroup.ubNumElites + pGroup.pEnemyGroup.ubNumAdmins);
@@ -1921,11 +1925,11 @@ public class StrategicAI
                 {
                     pGroup.pEnemyGroup.ubPendingReinforcements = ubNumExtraReinforcements;
 
-                    MoveSAIGroupToSector(&pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, STAGING);
+                    MoveSAIGroupToSector(pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, STAGING);
                 }
                 else
                 {
-                    MoveSAIGroupToSector(&pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, REINFORCEMENTS);
+                    MoveSAIGroupToSector(pGroup, gGarrisonGroup[iDstGarrisonID].ubSectorID, STAGE, REINFORCEMENTS);
                 }
 
                 ValidateWeights(19);
@@ -1938,9 +1942,11 @@ public class StrategicAI
     void SendReinforcementsForPatrol(int iPatrolID, GROUP? pOptionalGroup)
     {
         GROUP? pGroup;
-        int iRandom, iSrcGarrisonID, iWeight;
+        int iRandom, iWeight;
+        Garrisons iSrcGarrisonID;
         int iReinforcementsAvailable, iReinforcementsRequested, iReinforcementsApproved;
-        int ubSrcSectorX, ubSrcSectorY, ubDstSectorX, ubDstSectorY;
+        int ubSrcSectorX, ubDstSectorX;
+        MAP_ROW ubDstSectorY, ubSrcSectorY;
 
         ValidateWeights(21);
 
@@ -1975,12 +1981,12 @@ public class StrategicAI
                 iReinforcementsApproved = iReinforcementsApproved;
             }
             pGroup = CreateNewEnemyGroupDepartingFromSector(SEC.P3, 0, (int)iReinforcementsApproved, 0);
-            pGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
+            pGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
             giReinforcementPool -= iReinforcementsApproved;
 
             gPatrolGroup[iPatrolID].ubPendingGroupID = pGroup.ubGroupID;
 
-            MoveSAIGroupToSector(&pGroup, gPatrolGroup[iPatrolID].ubSectorID[1], EVASIVE, REINFORCEMENTS);
+            MoveSAIGroupToSector(pGroup, gPatrolGroup[iPatrolID].ubSectorID[1], EVASIVE, REINFORCEMENTS);
 
             ValidateWeights(23);
             return;
@@ -1996,20 +2002,20 @@ public class StrategicAI
                 { //if group is able to provide reinforcements.
                     if (iRandom < iWeight)
                     { //This is the group that gets the reinforcements!
-                        ubSrcSectorX = (int)SECTORINFO.SECTORX(gGarrisonGroup[iSrcGarrisonID].ubSectorID);
-                        ubSrcSectorY = (int)SECTORINFO.SECTORY(gGarrisonGroup[iSrcGarrisonID].ubSectorID);
+                        ubSrcSectorX = SECTORINFO.SECTORX(gGarrisonGroup[iSrcGarrisonID].ubSectorID);
+                        ubSrcSectorY = SECTORINFO.SECTORY(gGarrisonGroup[iSrcGarrisonID].ubSectorID);
                         if (ubSrcSectorX != gWorldSectorX || ubSrcSectorY != gWorldSectorY || gbWorldSectorZ > 0)
                         { //The reinforcements aren't coming from the currently loaded sector!
                             iReinforcementsAvailable = ReinforcementsAvailable(iSrcGarrisonID);
                             //Send the lowest of the two:  number requested or number available
                             iReinforcementsApproved = Math.Min(iReinforcementsRequested, iReinforcementsAvailable);
                             pGroup = CreateNewEnemyGroupDepartingFromSector(gGarrisonGroup[iSrcGarrisonID].ubSectorID, 0, (int)iReinforcementsApproved, 0);
-                            pGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
+                            pGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
                             gPatrolGroup[iPatrolID].ubPendingGroupID = pGroup.ubGroupID;
 
                             RemoveSoldiersFromGarrisonBasedOnComposition(iSrcGarrisonID, pGroup.ubGroupSize);
 
-                            MoveSAIGroupToSector(&pGroup, gPatrolGroup[iPatrolID].ubSectorID[1], EVASIVE, REINFORCEMENTS);
+                            MoveSAIGroupToSector(pGroup, gPatrolGroup[iPatrolID].ubSectorID[1], EVASIVE, REINFORCEMENTS);
 
                             ValidateWeights(24);
 
@@ -2059,12 +2065,12 @@ public class StrategicAI
         { //Queen has run out of reinforcements.  Simulate recruiting and training new troops
             uiOffset *= 10;
             giReinforcementPool += 30;
-            AddStrategicEvent(EVENT_EVALUATE_QUEEN_SITUATION, GetWorldTotalMin() + uiOffset, 0);
+            GameEvents.AddStrategicEvent(EVENT.EVALUATE_QUEEN_SITUATION, GetWorldTotalMin() + uiOffset, 0);
             return;
         }
 
         //Re-post the event
-        AddStrategicEvent(EVENT_EVALUATE_QUEEN_SITUATION, GetWorldTotalMin() + uiOffset, 0);
+        GameEvents.AddStrategicEvent(EVENT.EVALUATE_QUEEN_SITUATION, GetWorldTotalMin() + uiOffset, 0);
 
         // if the queen hasn't been alerted to player's presence yet
         if (!gfQueenAIAwake)
@@ -2103,7 +2109,7 @@ public class StrategicAI
                         EnemyPermittedToAttackSector(null, gGarrisonGroup[i].ubSectorID) &&
                         GarrisonRequestingMinimumReinforcements(i))
                 { //This is the group that gets the reinforcements!
-                    if (ReinforcementsApproved(i, &usDefencePoints))
+                    if (ReinforcementsApproved(i, usDefencePoints))
                     {
                         SendReinforcementsForGarrison(i, usDefencePoints, null);
                     }
@@ -2155,19 +2161,19 @@ public class StrategicAI
             return false;
         }
 
-        FileWrite(hFile, &gfExtraElites, 1, &uiNumBytesWritten);
+        FileWrite(hFile, gfExtraElites, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &giGarrisonArraySize, 4, &uiNumBytesWritten);
+        FileWrite(hFile, giGarrisonArraySize, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &giPatrolArraySize, 4, &uiNumBytesWritten);
+        FileWrite(hFile, giPatrolArraySize, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
@@ -3550,26 +3556,28 @@ public class StrategicAI
     }
 
 
-    int SectorDistance(int ubSectorID1, int ubSectorID2)
+    int SectorDistance(SEC ubSectorID1, SEC ubSectorID2)
     {
-        int ubSectorX1, ubSectorX2, ubSectorY1, ubSectorY2;
+        int ubSectorX1, ubSectorX2;
+        MAP_ROW ubSectorY1, ubSectorY2;
         int ubDist;
-        ubSectorX1 = (int)SECTORINFO.SECTORX(ubSectorID1);
         ubSectorX2 = (int)SECTORINFO.SECTORX(ubSectorID2);
-        ubSectorY1 = (int)SECTORINFO.SECTORY(ubSectorID1);
-        ubSectorY2 = (int)SECTORINFO.SECTORY(ubSectorID2);
+        ubSectorX1 = (int)SECTORINFO.SECTORX(ubSectorID1);
+        ubSectorY1 = SECTORINFO.SECTORY(ubSectorID1);
+        ubSectorY2 = SECTORINFO.SECTORY(ubSectorID2);
 
-        ubDist = (int)(abs(ubSectorX1 - ubSectorX2) + abs(ubSectorY1 - ubSectorY2));
+        ubDist = (int)(Math.Abs(ubSectorX1 - ubSectorX2) + Math.Abs(ubSectorY1 - ubSectorY2));
 
         return ubDist;
     }
 
-    void RequestHighPriorityGarrisonReinforcements(int iGarrisonID, int ubSoldiersRequested)
+    void RequestHighPriorityGarrisonReinforcements(Garrisons iGarrisonID, int ubSoldiersRequested)
     {
         int i, iBestIndex;
         GROUP? pGroup;
         int ubBestDist, ubDist;
-        int ubDstSectorX, ubDstSectorY;
+        int ubDstSectorX;
+        MAP_ROW ubDstSectorY;
         //AssertMsg( giPatrolArraySize == PATROL_GROUPS && giGarrisonArraySize == GARRISON_GROUPS, "Strategic AI -- Patrol and/or garrison group definition mismatch." );
         ubBestDist = 255;
         iBestIndex = -1;
@@ -3580,7 +3588,7 @@ public class StrategicAI
                 pGroup = GetGroup(gPatrolGroup[i].ubGroupID);
                 if (pGroup && pGroup.ubGroupSize >= ubSoldiersRequested)
                 {
-                    ubDist = SectorDistance((int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), gGarrisonGroup[iGarrisonID].ubSectorID);
+                    ubDist = SectorDistance(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), gGarrisonGroup[iGarrisonID].ubSectorID);
                     if (ubDist < ubBestDist)
                     {
                         ubBestDist = ubDist;
@@ -3589,15 +3597,15 @@ public class StrategicAI
                 }
             }
         }
-        ubDstSectorX = (int)SECTORINFO.SECTORX(gGarrisonGroup[iGarrisonID].ubSectorID);
-        ubDstSectorY = (int)SECTORINFO.SECTORY(gGarrisonGroup[iGarrisonID].ubSectorID);
+        ubDstSectorX = SECTORINFO.SECTORX(gGarrisonGroup[iGarrisonID].ubSectorID);
+        ubDstSectorY = SECTORINFO.SECTORY(gGarrisonGroup[iGarrisonID].ubSectorID);
         if (iBestIndex != -1)
         { //Send the group to the garrison
             pGroup = GetGroup(gPatrolGroup[iBestIndex].ubGroupID);
             if (pGroup.ubGroupSize > ubSoldiersRequested && pGroup.ubGroupSize - ubSoldiersRequested >= gubMinEnemyGroupSize)
             { //Split the group, and send to location
                 GROUP? pNewGroup;
-                pNewGroup = CreateNewEnemyGroupDepartingFromSector((int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), 0, 0, 0);
+                pNewGroup = CreateNewEnemyGroupDepartingFromSector(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), 0, 0, 0);
                 //Transfer the troops from group to new group
                 if (pGroup.pEnemyGroup.ubNumTroops >= ubSoldiersRequested)
                 { //All of them are troops, so do it in one shot.
@@ -3650,23 +3658,23 @@ public class StrategicAI
                     }
                 }
 
-                pNewGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
+                pNewGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
                 gGarrisonGroup[iGarrisonID].ubPendingGroupID = pNewGroup.ubGroupID;
                 RecalculatePatrolWeight(iBestIndex);
 
-                MoveSAIGroupToSector(&pNewGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
+                MoveSAIGroupToSector(pNewGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
             }
             else
             { //Send the whole group and kill it's patrol assignment.
                 gPatrolGroup[iBestIndex].ubGroupID = 0;
                 gGarrisonGroup[iGarrisonID].ubPendingGroupID = pGroup.ubGroupID;
-                pGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
+                pGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
                 RecalculatePatrolWeight(iBestIndex);
                 //The ONLY case where the group is told to move somewhere else when they could be BETWEEN sectors.  The movegroup functions
                 //don't work if this is the case.  Teleporting them to their previous sector is the best and easiest way to deal with this.
-                SetEnemyGroupSector(pGroup, (int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY));
+                SetEnemyGroupSector(pGroup, SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY));
 
-                MoveSAIGroupToSector(&pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
+                MoveSAIGroupToSector(pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
                 ValidateGroup(pGroup);
             }
         }
@@ -3676,10 +3684,10 @@ public class StrategicAI
             pGroup.ubMoveType = ONE_WAY;
             pGroup.pEnemyGroup.ubIntention = REINFORCEMENTS;
             gGarrisonGroup[iGarrisonID].ubPendingGroupID = pGroup.ubGroupID;
-            pGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
+            pGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
             giReinforcementPool -= (int)ubSoldiersRequested;
 
-            MoveSAIGroupToSector(&pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
+            MoveSAIGroupToSector(pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
             ValidateGroup(pGroup);
         }
     }
@@ -3746,7 +3754,8 @@ public class StrategicAI
             {
                 mprintf(x, y, "%d desired, %d reinforcements requested", iDesired, -iSurplus);
             }
-            if (gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID)
+
+            if (gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID > 0)
             {
                 GROUP? pGroup;
                 pGroup = GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
@@ -3765,7 +3774,7 @@ public class StrategicAI
         }
     }
 
-    void StrategicHandleMineThatRanOut(int ubSectorID)
+    void StrategicHandleMineThatRanOut(SEC ubSectorID)
     {
         switch (ubSectorID)
         {
@@ -3794,7 +3803,7 @@ public class StrategicAI
         }
     }
 
-    bool GarrisonCanProvideMinimumReinforcements(int iGarrisonID)
+    bool GarrisonCanProvideMinimumReinforcements(Garrisons iGarrisonID)
     {
         int iAvailable;
         int iDesired;
@@ -3981,7 +3990,7 @@ public class StrategicAI
         for (i = 0; i < giGarrisonArraySize; i++)
         {
             // skip sector if it's currently loaded, we'll never upgrade guys in those
-            if (SECTOR(gWorldSectorX, gWorldSectorY) == gGarrisonGroup[i].ubSectorID)
+            if (SECTORINFO.SECTOR(gWorldSectorX, gWorldSectorY) == gGarrisonGroup[i].ubSectorID)
             {
                 continue;
             }
@@ -4143,7 +4152,7 @@ public class StrategicAI
         }
         else
         {
-            (pGroup).ubSectorIDOfLastReassignment = (int)SECTOR((pGroup).ubSectorX, (pGroup).ubSectorY);
+            (pGroup).ubSectorIDOfLastReassignment = SECTORINFO.SECTOR((pGroup).ubSectorX, (pGroup).ubSectorY);
             MoveSAIGroupToSector(pGroup, SEC.P3, EVASIVE, REINFORCEMENTS);
         }
     }
@@ -4154,9 +4163,9 @@ public class StrategicAI
         int iWeight;
         int usDefencePoints;
         int iReloopLastIndex = -1;
-        int ubSectorID;
+        SEC ubSectorID;
 
-        ubSectorID = (int)SECTOR((pGroup).ubSectorX, (pGroup).ubSectorY);
+        ubSectorID = SECTORINFO.SECTOR((pGroup).ubSectorX, (pGroup).ubSectorY);
 
         (pGroup).ubSectorIDOfLastReassignment = ubSectorID;
 

@@ -36,7 +36,7 @@ public class SkillChecks
 
         iEffWisdom = pSoldier.bWisdom;
 
-        iEffWisdom = SkillChecks.EffectStatForBeingDrunk(pSoldier, iEffWisdom);
+        iEffWisdom = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffWisdom);
 
         return ((int)iEffWisdom);
     }
@@ -47,7 +47,7 @@ public class SkillChecks
 
         iEffAgility = pSoldier.bAgility;
 
-        iEffAgility = EffectStatForBeingDrunk(pSoldier, iEffAgility);
+        iEffAgility = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffAgility);
 
         if (pSoldier.sWeightCarriedAtTurnStart > 100)
         {
@@ -64,7 +64,7 @@ public class SkillChecks
 
         iEffMechanical = pSoldier.bMechanical;
 
-        iEffMechanical = EffectStatForBeingDrunk(pSoldier, iEffMechanical);
+        iEffMechanical = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffMechanical);
 
         return ((int)iEffMechanical);
     }
@@ -75,7 +75,7 @@ public class SkillChecks
 
         iEffExplosive = pSoldier.bExplosive;
 
-        iEffExplosive = EffectStatForBeingDrunk(pSoldier, iEffExplosive);
+        iEffExplosive = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffExplosive);
 
         return ((int)iEffExplosive);
     }
@@ -87,7 +87,7 @@ public class SkillChecks
 
         iEffMedical = pSoldier.bMedical;
 
-        iEffMedical = EffectStatForBeingDrunk(pSoldier, iEffMedical);
+        iEffMedical = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffMedical);
 
         return ((int)iEffMedical);
     }
@@ -155,7 +155,7 @@ public class SkillChecks
 
         iEffMarksmanship = pSoldier.bMarksmanship;
 
-        iEffMarksmanship = EffectStatForBeingDrunk(pSoldier, iEffMarksmanship);
+        iEffMarksmanship = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffMarksmanship);
 
         return ((int)iEffMarksmanship);
     }
@@ -166,7 +166,7 @@ public class SkillChecks
 
         iEffDexterity = pSoldier.bDexterity;
 
-        iEffDexterity = EffectStatForBeingDrunk(pSoldier, iEffDexterity);
+        iEffDexterity = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffDexterity);
 
         return ((int)iEffDexterity);
     }

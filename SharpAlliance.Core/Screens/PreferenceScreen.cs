@@ -165,12 +165,12 @@ namespace SharpAlliance.Core.Screens
             this.messages = messages;
             this.gameInit = gameInit;
             this.music = musicManager;
-            FontSubSystem = fontSubSystem;
+            this.fonts = fontSubSystem;
             this.options = gameOptions;
             this.settings = gameSettings;
             this.sound = soundManager;
             this.inputs = inputManager;
-            ClockManager = clockManager;
+            this.clock = clockManager;
             this.messageBox = messageBoxSubSystem;
         }
 

@@ -65,7 +65,7 @@ namespace SharpAlliance.Core.Screens
             // this.videoSurface = videoSurfaceManager;
             this.font = fontSubSystem;
             this.tileCache = tileCache;
-            MercTextBox = mercTextBox;
+            this.mercTextBox = mercTextBox;
             this.screen = sm;
             this.fileManager = fileManager;
             this.textUtils = textUtils;
