@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -25,6 +24,38 @@ public class ItemSubSystem
         }
 
         return (true);
+    }
+
+    public static int CalculateCarriedWeight(SOLDIERTYPE? pSoldier)
+    {
+        int  uiTotalWeight = 0;
+        int  uiPercent;
+        InventorySlot ubLoop;
+        int  usWeight;
+        int ubStrengthForCarrying;
+
+        for (ubLoop = 0; ubLoop < NUM_INV_SLOTS; ubLoop++)
+        {
+            usWeight = pSoldier.inv[ubLoop].ubWeight;
+            if (Item[pSoldier.inv[ubLoop].usItem].ubPerPocket > 1)
+            {
+                // account for # of items
+                usWeight *= pSoldier.inv[ubLoop].ubNumberOfObjects;
+            }
+            uiTotalWeight += usWeight;
+
+        }
+        // for now, assume soldiers can carry 1/2 their strength in KGs without penalty.
+        // instead of multiplying by 100 for percent, and then dividing by 10 to account 
+        // for weight units being in 10ths of kilos, not kilos... we just start with 10 instead of 100!
+        ubStrengthForCarrying = SkillChecks.EffectiveStrength(pSoldier);
+        if (ubStrengthForCarrying > 80)
+        {
+            ubStrengthForCarrying += (ubStrengthForCarrying - 80);
+        }
+        uiPercent = (10 * uiTotalWeight) / (ubStrengthForCarrying / 2);
+        return (uiPercent);
+
     }
 
     public static Dictionary<Items, Items> ReplacementGuns = new()

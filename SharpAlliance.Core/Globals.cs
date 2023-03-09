@@ -703,7 +703,9 @@ public partial class Globals
     public static GUI_BUTTON? gpPrevAnchoredButton;
     public static bool gfAnchoredState;
 
-    public static GROUP? gpGroupList;
+    public static InventorySlot NUM_INV_SLOTS = InventorySlot.NUM_INV_SLOTS;
+
+    public static List<GROUP> gpGroupList = new();
     public static GROUP? gpPendingSimultaneousGroup = null;
 
 

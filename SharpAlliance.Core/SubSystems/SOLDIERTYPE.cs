@@ -612,7 +612,7 @@ public class GROUP
     public bool fRestAtNight;                   //set when the group is permitted to rest between 2200 and 0600 when moving
     public bool fWaypointsCancelled;    //set when groups waypoints have been removed.
     public List<WAYPOINT> pWaypoints = new();                   //a list of all of the waypoints in the groups movement.
-    public int ubTransportationMask;     //the mask combining all of the groups transportation methods.
+    public VehicleTypes ubTransportationMask;     //the mask combining all of the groups transportation methods.
     public int uiFlags;                             //various conditions that apply to the group
     public int ubCreatedSectorID;            //used for debugging strategic AI for keeping track of the sector ID a group was created in.
     public int ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.

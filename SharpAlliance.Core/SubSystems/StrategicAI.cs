@@ -404,9 +404,14 @@ public class StrategicAI
                 case Garrisons.ROADBLOCK:
                     pSector.uiFlags |= SF.ENEMY_AMBUSH_LOCATION;
                     if (Chance(20))
+                    {
                         iStartPop = gArmyComp[gGarrisonGroup[i].ubComposition].bDesiredPopulation;
+                    }
                     else
+                    {
                         iStartPop = 0;
+                    }
+
                     break;
                 case Garrisons.SANMONA_SMALL:
                     iStartPop = 0; //not appropriate until Kingpin is killed.
@@ -433,6 +438,7 @@ public class StrategicAI
                     pSector.ubNumAdmins = iAdminChance * iStartPop / 100;
                 }
                 else
+                {
                     while (cnt-- > 0)
                     { //for each person, randomly determine the types of each soldier.
                         {
@@ -447,6 +453,8 @@ public class StrategicAI
                             }
                         }
                     }
+                }
+
                 switch (gGarrisonGroup[i].ubComposition)
                 {
                     case Garrisons.CAMBRIA_DEFENCE:
@@ -526,7 +534,9 @@ public class StrategicAI
                 { //Add optional waypoints if included.
                     AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[2]);
                     if (gPatrolGroup[i].ubSectorID[3])
+                    {
                         AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[3]);
+                    }
                 }
                 RandomizePatrolGroupLocation(pGroup);
                 ValidateGroup(pGroup);
@@ -649,27 +659,39 @@ public class StrategicAI
             case SEC.F10:
                 //Hill-billy farm -- not until hill billies are dead.
                 if (CheckFact(273, false))
+                {
                     return false;
+                }
+
                 break;
             case SEC.A9:
             case SEC.A10:
                 //Omerta -- not until Day 2 at 7:45AM.	
                 if (GameClock.GetWorldTotalMin() < 3345)
+                {
                     return false;
+                }
+
                 break;
             case SEC.B13:
             case SEC.C13:
             case SEC.D13:
                 //Drassen -- not until Day 3 at 6:30AM.
                 if (GameClock.GetWorldTotalMin() < 4710)
+                {
                     return false;
+                }
+
                 break;
             case SEC.C5:
             case SEC.C6:
             case SEC.D5:
                 //San Mona -- not until Kingpin is dead.
                 if (CheckFact(FACT_KINGPIN_DEAD, 0) == false)
+                {
                     return false;
+                }
+
             case SEC.G1:
                 if (PlayerSectorDefended(SEC.G2) && (PlayerSectorDefended(SEC.H1) || PlayerSectorDefended(SEC.H2)))
                 {
@@ -1088,7 +1110,9 @@ public class StrategicAI
                         { //Add optional waypoints if included.
                             AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[2]);
                             if (gPatrolGroup[i].ubSectorID[3])
+                            {
                                 AddWaypointIDToPGroup(pGroup, gPatrolGroup[i].ubSectorID[3]);
+                            }
                         }
 
                         //Otherwise, the engine assumes they are being deployed.
@@ -1242,9 +1266,15 @@ public class StrategicAI
           //       don't mess with the player group here!
             pPlayerGroup = pGroup;
             if (pPlayerGroup.ubSectorZ)
+            {
                 return false;
+            }
+
             if (!EnemyPermittedToAttackSector(null, (int)SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY)))
+            {
                 return false;
+            }
+
             if (pPlayerGroup.ubSectorY > 1)
             {
                 pEnemyGroup = FindMovementGroupInSector(pPlayerGroup.ubSectorX, (int)(pPlayerGroup.ubSectorY - 1), false);
@@ -1479,7 +1509,9 @@ public class StrategicAI
         //First, remove the previous weight from the applicable field.
         iPrevWeight = gPatrolGroup[iPatrolID].bWeight;
         if (iPrevWeight > 0)
+        {
             giRequestPoints -= iPrevWeight;
+        }
 
         if (gPatrolGroup[iPatrolID].ubGroupID)
         {
@@ -1520,9 +1552,13 @@ public class StrategicAI
         //First, remove the previous weight from the applicable field.
         iPrevWeight = gGarrisonGroup[iGarrisonID].bWeight;
         if (iPrevWeight > 0)
+        {
             giRequestPoints -= iPrevWeight;
+        }
         else if (iPrevWeight < 0)
+        {
             giReinforcementPoints += iPrevWeight;
+        }
 
         //Calculate weight (range is -20 to +20 before multiplier).
         //The multiplier of 3 brings it to a range of -96 to +96 which is
@@ -1609,7 +1645,9 @@ public class StrategicAI
                 for (i = 0; i < giGarrisonArraySize; i++)
                 {
                     if (gGarrisonGroup[i].ubComposition == ALMA_DEFENCE)
+                    {
                         break;
+                    }
                 }
                 iSrcGarrisonID = i;
                 //which of these 4 Alma garrisons have the most reinforcements available?  It is
@@ -1910,7 +1948,9 @@ public class StrategicAI
         iReinforcementsRequested = PatrolReinforcementsRequested(iPatrolID);
 
         if (iReinforcementsRequested <= 0)
+        {
             return;
+        }
 
         ubDstSectorX = (gPatrolGroup[iPatrolID].ubSectorID[1] % 16) + 1;
         ubDstSectorY = (gPatrolGroup[iPatrolID].ubSectorID[1] / 16) + 1;
@@ -2111,100 +2151,177 @@ public class StrategicAI
 
         FileWrite(hFile, gbPadding2, 3, &uiNumBytesWritten);
         if (uiNumBytesWritten != 3)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gfExtraElites, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giGarrisonArraySize, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giPatrolArraySize, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giReinforcementPool, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giForcePercentage, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giArmyAlertness, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giArmyAlertnessDecay, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gfQueenAIAwake, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giReinforcementPoints, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &giRequestPoints, 4, &uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gubNumAwareBattles, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gubSAIVersion, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gubQueenPriorityPhase, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gfFirstBattleMeanwhileScenePending, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gfMassFortificationOrdered, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gubMinEnemyGroupSize, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gubHoursGracePeriod, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gusPlayerBattleVictories, 2, &uiNumBytesWritten);
         if (uiNumBytesWritten != 2)
+        {
             return false;
+        }
+
         FileWrite(hFile, &gfUseAlternateQueenPosition, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
+        {
             return false;
+        }
+
         FileWrite(hFile, gbPadding, SAI_PADDING_BYTES, &uiNumBytesWritten);
         if (uiNumBytesWritten != SAI_PADDING_BYTES)
+        {
             return false;
+        }
         //Save the army composition (which does get modified)
         FileWrite(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), &uiNumBytesWritten);
         if (uiNumBytesWritten != NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION))
+        {
             return false;
+        }
+
         i = SAVED_ARMY_COMPOSITIONS - NUM_ARMY_COMPOSITIONS;
         while (i--)
         {
             FileWrite(hFile, &gTempArmyComp, sizeof(ARMY_COMPOSITION), &uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(ARMY_COMPOSITION))
+            {
                 return false;
+            }
         }
         //Save the patrol group definitions
         FileWrite(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), &uiNumBytesWritten);
         if (uiNumBytesWritten != giPatrolArraySize * sizeof(PATROL_GROUP))
+        {
             return false;
+        }
+
         i = SAVED_PATROL_GROUPS - giPatrolArraySize;
         while (i--)
         {
             FileWrite(hFile, &gTempPatrolGroup, sizeof(PATROL_GROUP), &uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(PATROL_GROUP))
+            {
                 return false;
+            }
         }
         //Save the garrison information!
         memset(&gTempGarrisonGroup, 0, sizeof(GARRISON_GROUP));
         FileWrite(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesWritten);
         if (uiNumBytesWritten != giGarrisonArraySize * sizeof(GARRISON_GROUP))
+        {
             return false;
+        }
+
         i = SAVED_GARRISON_GROUPS - giGarrisonArraySize;
         while (i--)
         {
             FileWrite(hFile, &gTempGarrisonGroup, sizeof(GARRISON_GROUP), &uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(GARRISON_GROUP))
+            {
                 return false;
+            }
         }
 
         FileWrite(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, &uiNumBytesWritten);
@@ -2234,77 +2351,144 @@ public class StrategicAI
 
         FileRead(hFile, gbPadding2, 3, &uiNumBytesRead);
         if (uiNumBytesRead != 3)
+        {
             return false;
+        }
+
         FileRead(hFile, &gfExtraElites, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &giGarrisonArraySize, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &giPatrolArraySize, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &giReinforcementPool, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &giForcePercentage, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &giArmyAlertness, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &giArmyAlertnessDecay, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &gfQueenAIAwake, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &giReinforcementPoints, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &giRequestPoints, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
+        {
             return false;
+        }
+
         FileRead(hFile, &gubNumAwareBattles, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &ubSAIVersion, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &gubQueenPriorityPhase, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &gfFirstBattleMeanwhileScenePending, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &gfMassFortificationOrdered, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &gubMinEnemyGroupSize, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &gubHoursGracePeriod, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, &gusPlayerBattleVictories, 2, &uiNumBytesRead);
         if (uiNumBytesRead != 2)
+        {
             return false;
+        }
+
         FileRead(hFile, &gfUseAlternateQueenPosition, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
+        {
             return false;
+        }
+
         FileRead(hFile, gbPadding, SAI_PADDING_BYTES, &uiNumBytesRead);
         if (uiNumBytesRead != SAI_PADDING_BYTES)
+        {
             return false;
+        }
         //Restore the army composition 
         FileRead(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), &uiNumBytesRead);
         if (uiNumBytesRead != NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION))
+        {
             return false;
+        }
+
         i = SAVED_ARMY_COMPOSITIONS - NUM_ARMY_COMPOSITIONS;
         while (i--)
         {
             FileRead(hFile, &gTempArmyComp, sizeof(ARMY_COMPOSITION), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(ARMY_COMPOSITION))
+            {
                 return false;
+            }
         }
 
         //Restore the patrol group definitions
@@ -2315,13 +2499,18 @@ public class StrategicAI
         gPatrolGroup = (PATROL_GROUP?)MemAlloc(giPatrolArraySize * sizeof(PATROL_GROUP));
         FileRead(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), &uiNumBytesRead);
         if (uiNumBytesRead != giPatrolArraySize * sizeof(PATROL_GROUP))
+        {
             return false;
+        }
+
         i = SAVED_PATROL_GROUPS - giPatrolArraySize;
         while (i--)
         {
             FileRead(hFile, &gTempPatrolGroup, sizeof(PATROL_GROUP), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(PATROL_GROUP))
+            {
                 return false;
+            }
         }
 
         gubSAIVersion = SAI_VERSION;
@@ -2556,6 +2745,7 @@ public class StrategicAI
             //when we finally go down there, otherwise she will end up in the wrong spot, possibly inside
             //the walls.
             if (!gubFact[FACT_QUEEN_DEAD] && gMercProfiles[QUEEN].bSectorZ == 1)
+            {
                 if (gbWorldSectorZ != 1 || gWorldSectorX != 16 || gWorldSectorY != 3)
                 { //We aren't in the basement sector
                     gMercProfiles[QUEEN].fUseProfileInsertionInfo = false;
@@ -2573,6 +2763,7 @@ public class StrategicAI
                         }
                     }
                 }
+            }
         }
         if (ubSAIVersion < 25)
         {
@@ -2642,6 +2833,7 @@ public class StrategicAI
                             pSector.ubNumAdmins = iAdminChance * iStartPop / 100;
                         }
                         else
+                        {
                             while (cnt--)
                             { //for each person, randomly determine the types of each soldier.
                                 {
@@ -2656,6 +2848,7 @@ public class StrategicAI
                                     }
                                 }
                             }
+                        }
                     }
                 }
             }
@@ -3416,6 +3609,7 @@ public class StrategicAI
                     ValidateLargeGroup(pNewGroup);
                 }
                 else
+                {
                     while (ubSoldiersRequested)
                     { //There aren't enough troops, so transfer other types when we run out of troops, prioritizing admins, then elites.
                         if (pGroup.pEnemyGroup.ubNumTroops)
@@ -3454,6 +3648,8 @@ public class StrategicAI
                             return;
                         }
                     }
+                }
+
                 pNewGroup.ubOriginalSector = (int)SECTOR(ubDstSectorX, ubDstSectorY);
                 gGarrisonGroup[iGarrisonID].ubPendingGroupID = pNewGroup.ubGroupID;
                 RecalculatePatrolWeight(iBestIndex);
@@ -4432,6 +4628,7 @@ public class StrategicAI
                     pSector.ubNumAdmins = iAdminChance * cnt / 100;
                 }
                 else
+                {
                     while (cnt-- > 0)
                     { //for each person, randomly determine the types of each soldier.
                         if (Chance(iEliteChance))
@@ -4443,6 +4640,7 @@ public class StrategicAI
                             pSector.ubNumTroops++;
                         }
                     }
+                }
             }
         }
     }

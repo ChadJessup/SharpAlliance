@@ -11,7 +11,7 @@ namespace SharpAlliance.Core;
 public class SkillChecks
 {
 
-    private static int EffectiveStrength(SOLDIERTYPE? pSoldier)
+    public static int EffectiveStrength(SOLDIERTYPE? pSoldier)
     {
         int bBandaged;
         int iEffStrength;
@@ -36,7 +36,7 @@ public class SkillChecks
 
         iEffWisdom = pSoldier.bWisdom;
 
-        iEffWisdom = EffectStatForBeingDrunk(pSoldier, iEffWisdom);
+        iEffWisdom = SkillChecks.EffectStatForBeingDrunk(pSoldier, iEffWisdom);
 
         return ((int)iEffWisdom);
     }

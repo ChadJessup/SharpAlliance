@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -33,7 +34,7 @@ public class SECTORINFO
     public uint ubDayOfLastCreatureAttack;
     public uint uiFacilitiesFlags;   // the flags for various facilities
 
-    public sbyte[] ubTraversability = new sbyte[5];//determines the traversability ratings to adjacent sectors.
+    public Dictionary<StrategicMove, Traversability> ubTraversability = new();//determines the traversability ratings to adjacent sectors.
                                             //The last index represents the traversability if travelling
                                             //throught the sector without entering it.
     public byte bNameId;
