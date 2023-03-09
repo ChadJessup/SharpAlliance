@@ -24,9 +24,9 @@ public struct ANITILE_PARAMS
     public string zCachedFile;                  // Filename for cached tile name ( optional )
     public int ubOwner;                          // UBID for the owner
     public int ubKeyFrame1;                  // Key frame 1
-    public int uiKeyFrame1Code;         // Key frame code
+    public KeyFrameEnums uiKeyFrame1Code;         // Key frame code
     public int ubKeyFrame2;                  // Key frame 2
-    public int uiKeyFrame2Code;         // Key frame code
+    public KeyFrameEnums uiKeyFrame2Code;         // Key frame code
     public object uiUserData;
     public int ubUserData2;
     public int uiUserData3;

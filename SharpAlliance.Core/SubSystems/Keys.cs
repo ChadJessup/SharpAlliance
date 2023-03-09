@@ -706,7 +706,7 @@ public class Keys
             AssertMsg(0, "Error Allocating memory for the gpDoorStatus");
         }
 
-        memset(gpDoorStatus, 0, sizeof(DOOR_STATUS) * gubNumDoorStatus);
+        //memset(gpDoorStatus, 0, sizeof(DOOR_STATUS) * gubNumDoorStatus);
 
 
         // Load the number of elements in the door status array

@@ -101,13 +101,6 @@ public partial class Globals
     public static bool gfJustFinishedAPause;
 
     public static bool gfResetAllPlayerKnowsEnemiesFlags;
-
-    internal static void MemFree(object pSubject)
-    {
-        // this is here because the original C code calls it a lot, nop
-    }
-
-    internal static int wcslen(string src) => src.Length;
 }
 
 public enum WARPTIME

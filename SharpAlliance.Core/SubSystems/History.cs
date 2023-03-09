@@ -220,20 +220,20 @@ public class History
         // load History video objects into memory
 
         // title bar
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiTITLE));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTITLE);
 
         // top portion of the screen background
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiTOP));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        Utils.FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTOP);
 
 
         // shaded line
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiSHADELINE));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        Utils.FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiSHADELINE);
 
         /*
         Not being used???  DF commented out	
@@ -243,9 +243,9 @@ public class History
             CHECKF(AddVideoObject(&VObjectDesc, &guiVERTLINE));
         */
         // black divider line - long ( 480 length)
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &guiLONGLINE));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        Utils.FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiLONGLINE);
 
         return (true);
     }

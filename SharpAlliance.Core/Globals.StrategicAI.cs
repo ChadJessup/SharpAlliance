@@ -95,7 +95,6 @@ public partial class Globals
                                                     //10 is the most defensive
                                                     //Used for authorizing the use of the first battle meanwhile scene AFTER the battle is complete.  This is the case used when
                                                     //the player attacks a town, and is set once militia are sent to investigate.
-    public static bool gfFirstBattleMeanwhileScenePending = false;
 
     //After the first battle meanwhile scene is finished, this flag is set, and the queen orders patrol groups to immediately fortify all towns.
     public static bool gfMassFortificationOrdered = false;

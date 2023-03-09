@@ -346,7 +346,7 @@ public class StrategicAI
         memcpy(gPatrolGroup, gOrigPatrolGroup, sizeof(gOrigPatrolGroup));
 
         gubPatrolReinforcementsDenied = (int?)MemAlloc(giPatrolArraySize);
-        memset(gubPatrolReinforcementsDenied, 0, giPatrolArraySize);
+        //memset(gubPatrolReinforcementsDenied, 0, giPatrolArraySize);
 
         //initialize the garrison group definitions
         giGarrisonArraySize = sizeof(gOrigGarrisonGroup) / sizeof(GARRISON_GROUP);
@@ -358,7 +358,7 @@ public class StrategicAI
         memcpy(gGarrisonGroup, gOrigGarrisonGroup, sizeof(gOrigGarrisonGroup));
 
         gubGarrisonReinforcementsDenied = (int?)MemAlloc(giGarrisonArraySize);
-        memset(gubGarrisonReinforcementsDenied, 0, giGarrisonArraySize);
+        //memset(gubGarrisonReinforcementsDenied, 0, giGarrisonArraySize);
 
         //Modify initial force sizes?
         if (giForcePercentage != 100)
@@ -2146,10 +2146,10 @@ public class StrategicAI
         int uiNumBytesWritten;
         int i;
 
-        memset(&gTempPatrolGroup, 0, sizeof(PATROL_GROUP));
-        memset(&gTempArmyComp, 0, sizeof(ARMY_COMPOSITION));
+        //memset(&gTempPatrolGroup, 0, sizeof(PATROL_GROUP));
+        //memset(&gTempArmyComp, 0, sizeof(ARMY_COMPOSITION));
 
-        FileWrite(hFile, gbPadding2, 3, &uiNumBytesWritten);
+        FileWrite(hFile, gbPadding2, 3, out uiNumBytesWritten);
         if (uiNumBytesWritten != 3)
         {
             return false;
@@ -2307,7 +2307,7 @@ public class StrategicAI
             }
         }
         //Save the garrison information!
-        memset(&gTempGarrisonGroup, 0, sizeof(GARRISON_GROUP));
+        //memset(&gTempGarrisonGroup, 0, sizeof(GARRISON_GROUP));
         FileWrite(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesWritten);
         if (uiNumBytesWritten != giGarrisonArraySize * sizeof(GARRISON_GROUP))
         {
@@ -2927,7 +2927,7 @@ public class StrategicAI
         int[] ubOwned = new int[NUM_ARMY_COMPOSITIONS];
         int[] ubTotal = new int[NUM_ARMY_COMPOSITIONS];
         int ubNewPhase;
-        ubNewPhase = CurrentPlayerProgressPercentage() / 10;
+        ubNewPhase = Campaign.CurrentPlayerProgressPercentage() / 10;
 
         if (!fForceChange && ubNewPhase == gubQueenPriorityPhase)
         {
@@ -2954,14 +2954,14 @@ public class StrategicAI
         //are controlled by her, the desired number will be increased as well as the priority.  On the other
         //hand, if she doesn't own those sectors, the values will be decreased instead.  All values are based off of
         //the originals.
-        memset(ubOwned, 0, NUM_ARMY_COMPOSITIONS);
-        memset(ubTotal, 0, NUM_ARMY_COMPOSITIONS);
+        //memset(ubOwned, 0, NUM_ARMY_COMPOSITIONS);
+        //memset(ubTotal, 0, NUM_ARMY_COMPOSITIONS);
 
         //Record the values required to calculate the percentage of each composition type that the queen controls.
         for (i = 0; i < giGarrisonArraySize; i++)
         {
             index = gGarrisonGroup[i].ubComposition;
-            if (StrategicMap[SECTOR_INFO_TO_STRATEGIC_INDEX(gGarrisonGroup[i].ubSectorID)].fEnemyControlled)
+            if (strategicMap[SECTOR_INFO_TO_STRATEGIC_INDEX(gGarrisonGroup[i].ubSectorID)].fEnemyControlled)
             {
                 ubOwned[index]++;
             }

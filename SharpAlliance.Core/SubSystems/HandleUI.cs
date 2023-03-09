@@ -2265,7 +2265,7 @@ public class HandleUI
                         && Globals.gTacticalStatus.ubLastRequesterTargetID != pTSoldier.ubProfile
                         && (pTSoldier.ubID != pSoldier.ubID))
                     {
-                        int[] zStr = new int[200];
+                        string zStr = string.Empty;
 
                         Globals.gpRequesterMerc = pSoldier;
                         Globals.gpRequesterTargetMerc = pTSoldier;
@@ -2275,7 +2275,7 @@ public class HandleUI
 
                         // wprintf(zStr, Globals.TacticalStr[ATTACK_OWN_GUY_PROMPT], pTSoldier.name);
 
-                        DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, GAME_SCREEN, (byte)MSG_BOX_FLAG_YESNO, AttackRequesterCallback, null);
+                        MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, ScreenName.GAME_SCREEN, MessageBoxFlags.MSG_BOX_FLAG_YESNO, AttackRequesterCallback, null);
                     }
                 }
 

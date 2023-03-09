@@ -101,35 +101,23 @@ namespace SharpAlliance.Core.SubSystems
 
         bool EnterEmail()
         {
-            VOBJECT_DESC VObjectDesc;
             // load graphics
-
             iCurrentPage = LaptopSaveInfo.iCurrentEmailPage;
 
             // title bar
-            VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-            FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
-            CHECKF(AddVideoObject(VObjectDesc, guiEmailTitle));
+            VeldridVideoManager.AddVideoObject("LAPTOP\\programtitlebar.sti", out guiEmailTitle);
 
             // the list background
-            VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-            FilenameForBPP("LAPTOP\\Mailwindow.sti", VObjectDesc.ImageFile);
-            CHECKF(AddVideoObject(VObjectDesc, guiEmailBackground));
+            VeldridVideoManager.AddVideoObject("LAPTOP\\Mailwindow.sti", out guiEmailBackground);
 
             // the indication/notification box
-            VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-            FilenameForBPP("LAPTOP\\MailIndicator.sti", VObjectDesc.ImageFile);
-            CHECKF(AddVideoObject(VObjectDesc, guiEmailIndicator));
+            VeldridVideoManager.AddVideoObject("LAPTOP\\MailIndicator.sti", out guiEmailIndicator);
 
             // the message background
-            VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-            FilenameForBPP("LAPTOP\\emailviewer.sti", VObjectDesc.ImageFile);
-            CHECKF(AddVideoObject(VObjectDesc, guiEmailMessage));
+            VeldridVideoManager.AddVideoObject("LAPTOP\\emailviewer.sti", out guiEmailMessage);
 
             // the message background
-            VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-            FilenameForBPP("LAPTOP\\maillistdivider.sti", VObjectDesc.ImageFile);
-            CHECKF(AddVideoObject(VObjectDesc, guiMAILDIVIDER));
+            VeldridVideoManager.AddVideoObject("LAPTOP\\maillistdivider.sti", out guiMAILDIVIDER);
 
             //AddEmail(IMP_EMAIL_PROFILE_RESULTS, IMP_EMAIL_PROFILE_RESULTS_LENGTH, IMP_PROFILE_RESULTS, GetWorldTotalMin( ) );
             // initialize mouse regions

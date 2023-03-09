@@ -43,9 +43,9 @@ public class DrugsAndAlcohol
         int ubDrugType;
         int ubKitPoints;
         int bRegenPointsGained;
-        int usItem;
+        Items usItem;
 
-        usItem = pObject.usItem;
+        usItem = (Items)pObject.usItem;
 
         // If not a syringe, return
 

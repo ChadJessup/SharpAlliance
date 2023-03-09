@@ -3376,7 +3376,7 @@ public class StrategicMovement
                 return (false);
             }
 
-            memset(pTemp, 0, sizeof(GROUP));
+            //memset(pTemp, 0, sizeof(GROUP));
 
             //Read in the node
             FileRead(hFile, pTemp, sizeof(GROUP), &uiNumBytesRead);
@@ -3432,7 +3432,7 @@ public class StrategicMovement
 
         //@@@ TEMP!
         //Rebuild the uniqueIDMask as a very old bug broke the uniqueID assignments in extremely rare cases.
-        memset(uniqueIDMask, 0, sizeof(int) * 8);
+        //memset(uniqueIDMask, 0, sizeof(int) * 8);
         pGroup = gpGroupList;
         while (pGroup)
         {
@@ -3620,16 +3620,8 @@ public class StrategicMovement
     bool LoadEnemyGroupStructFromSavedGame(Stream hFile, GROUP? pGroup)
     {
         int uiNumBytesRead = 0;
-        ENEMYGROUP? pEnemyGroup = null;
 
-        //Alllocate memory for the enemy struct
-        pEnemyGroup = MemAlloc(sizeof(ENEMYGROUP));
-        if (pEnemyGroup == null)
-        {
-            return (false);
-        }
-
-        memset(pEnemyGroup, 0, sizeof(ENEMYGROUP));
+        ENEMYGROUP pEnemyGroup = new();
 
         //Load the enemy struct
         FileRead(hFile, pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesRead);

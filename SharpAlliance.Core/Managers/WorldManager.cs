@@ -30,6 +30,31 @@ public class WorldManager
         this.worldStructures = worldStructures;
     }
 
+    public static TerrainTypeDefines GetTerrainType(int sGridNo)
+    {
+        return (gpWorldLevelData[sGridNo].ubTerrainID);
+        /*
+            LEVELNODE	*pNode;
+
+
+            // Check if we have anything in object layer which has a terrain modifier
+            pNode = gpWorldLevelData[ sGridNo ].pObjectHead;
+
+            if ( pNode != NULL )
+            {
+                if ( gTileDatabase[ pNode->usIndex ].ubTerrainID != NO_TERRAIN )
+                {
+                    return( gTileDatabase[ pNode->usIndex ].ubTerrainID );
+                }
+            }
+
+            // Now try terrain!
+            pNode = gpWorldLevelData[ sGridNo ].pLandHead;
+
+            return( gTileDatabase[ pNode->usIndex ].ubTerrainID );
+        */
+    }
+
     public static bool RemoveAllOnRoofsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
     {
         LEVELNODE? pOnRoof = null;

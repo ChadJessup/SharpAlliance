@@ -29,7 +29,7 @@ public class GameClock
         guiTimeCurrentSectorWasLastLoaded = 0;
         guiGameSecondsPerRealSecond = 0;
         gubClockResolution = 1;
-        memset(gubUnusedTimePadding, 0, TIME_PADDINGBYTES);
+        //memset(gubUnusedTimePadding, 0, TIME_PADDINGBYTES);
     }
 
     public static uint GetWorldTotalMin()

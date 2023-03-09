@@ -100,7 +100,7 @@ public class ExplosionControl
     void GenerateExplosion(out EXPLOSION_PARAMS pExpParams)
     {
         EXPLOSIONTYPE? pExplosion;
-        int uiFlags;
+        EXPLOSION_FLAG uiFlags;
         int ubOwner;
         EXPLOSION_TYPES ubTypeID;
         int sX;
@@ -190,7 +190,7 @@ public class ExplosionControl
         pExplosion.iLightID = -1;
 
         // OK, if we are over water.... use water explosion...
-        ubTerrainType = GetTerrainType(sGridNo);
+        ubTerrainType = WorldManager.GetTerrainType(sGridNo);
 
         // Setup explosion!
         //memset(&AniParams, 0, sizeof(ANITILE_PARAMS));
@@ -224,19 +224,19 @@ public class ExplosionControl
         }
 
         AniParams.ubKeyFrame1 = ubTransKeyFrame[ubTypeID];
-        AniParams.uiKeyFrame1Code = ANI_KEYFRAME_BEGIN_TRANSLUCENCY;
+        AniParams.uiKeyFrame1Code = KeyFrameEnums.ANI_KEYFRAME_BEGIN_TRANSLUCENCY;
 
         if (!(uiFlags.HasFlag(EXPLOSION_FLAG.DISPLAYONLY)))
         {
             AniParams.ubKeyFrame2 = ubDamageKeyFrame[ubTypeID];
-            AniParams.uiKeyFrame2Code = ANI_KEYFRAME_BEGIN_DAMAGE;
+            AniParams.uiKeyFrame2Code = KeyFrameEnums.ANI_KEYFRAME_BEGIN_DAMAGE;
         }
         AniParams.uiUserData = usItem;
         AniParams.ubUserData2 = ubOwner;
         AniParams.uiUserData3 = pExplosion.iID;
 
 
-        strcpy(AniParams.zCachedFile, zBlastFilenames[ubTypeID]);
+        AniParams.zCachedFile = zBlastFilenames[ubTypeID];
 
         CreateAnimationTile(out AniParams);
 
@@ -266,7 +266,7 @@ public class ExplosionControl
             }
         }
 
-       // PlayJA2Sample(uiSoundID, RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
+        // PlayJA2Sample(uiSoundID, RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
 
     }
 
@@ -311,7 +311,7 @@ public class ExplosionControl
                 pFenceNode = WorldStructures.FindLevelNodeBasedOnStructure(pFenceBaseStructure.sGridNo, pFenceBaseStructure);
 
                 // Get type from index...
-                GetTileType(pFenceNode.usIndex, out uiFenceType);
+                TileDefine.GetTileType(pFenceNode.usIndex, out uiFenceType);
 
                 bFenceDestructionPartner = -1 * (pFenceBaseStructure.pDBStructureRef.pDBStructure.bDestructionPartner);
 
@@ -346,7 +346,7 @@ public class ExplosionControl
         int bDestructionPartner = -1;
         int bDamageReturnVal;
         int fContinue;
-        int uiTileType;
+        TileTypeDefines uiTileType;
         int sBaseGridNo;
         bool fExplosive;
 
@@ -431,7 +431,7 @@ public class ExplosionControl
                         // It's -ve and 1-based, change to +ve, 1 based
                         bDestructionPartner = (-1 * pBase.pDBStructureRef.pDBStructure.bDestructionPartner);
 
-                        GetTileType(pNode.usIndex, out uiTileType);
+                        TileDefine.GetTileType(pNode.usIndex, out uiTileType);
 
                         fContinue = 2;
                     }
@@ -874,7 +874,7 @@ public class ExplosionControl
                     // OK, we need to remove the water from the fountain 
                     // Lots of HARD CODING HERE :(
                     // Get tile type
-                    GetTileType(pNode.usIndex, out uiTileType);
+                    TileDefine.GetTileType(pNode.usIndex, out uiTileType);
                     // Check if we are a fountain!
                     if (stricmp(gTilesets[giCurrentTilesetID].TileSurfaceFilenames[uiTileType], "fount1.sti") == 0)
                     {
@@ -897,7 +897,7 @@ public class ExplosionControl
                     // Remove any interactive tiles we could be over!
                     BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
 
-                    if (pCurrent.fFlags & STRUCTURE_WALLSTUFF)
+                    if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                     {
                         RecompileLocalMovementCostsForWall(pBase.sGridNo, pBase.ubWallOrientation);
                     }
@@ -1046,6 +1046,8 @@ public class ExplosionControl
                     {
                         ppTile = null;
                     }
+
+                    pfRecompileMovementCosts = false;
                     return;
                 }
 
@@ -3075,10 +3077,10 @@ public class ExplosionControl
         //
 
         //Clear the Explosion queue
-        memset(gExplosionQueue, 0, sizeof(ExplosionQueueElement) * MAX_BOMB_QUEUE);
+        //memset(gExplosionQueue, 0, sizeof(ExplosionQueueElement) * MAX_BOMB_QUEUE);
 
         //Read the number of explosions queue's
-        FileRead(hFile, &gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
+        FileRead(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3302,7 +3304,7 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = &(gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
                 if (pObj.bDetonatorType == BOMB_TIMED && !(pObj.fFlags & OBJECT_DISABLED_BOMB))
                 {
                     return (gWorldBombs[uiWorldBombIndex].iItemIndex);
@@ -3344,30 +3346,30 @@ public class ExplosionControl
         throw new NotImplementedException();
     }
 
-    public static int[] ubTransKeyFrame =
+    public static Dictionary<EXPLOSION_TYPES, int> ubTransKeyFrame = new()
     {
-        0,
-        17,
-        28,
-        24,
-        1,
-        1,
-        1,
-        1,
-        1,
+        { EXPLOSION_TYPES.NO_BLAST,      0 },
+        { EXPLOSION_TYPES.BLAST_1,       17 },
+        { EXPLOSION_TYPES.BLAST_2,       28 },
+        { EXPLOSION_TYPES.BLAST_3,       24 },
+        { EXPLOSION_TYPES.STUN_BLAST,    1 },
+        { EXPLOSION_TYPES.WATER_BLAST,   1 },
+        { EXPLOSION_TYPES.TARGAS_EXP,    1 },
+        { EXPLOSION_TYPES.SMOKE_EXP,     1 },
+        { EXPLOSION_TYPES.MUSTARD_EXP,   1 },
     };
 
-    public static int[] ubDamageKeyFrame =
+    public static Dictionary<EXPLOSION_TYPES, int> ubDamageKeyFrame = new()
     {
-        0,
-        3,
-        5,
-        5,
-        5,
-        18,
-        18,
-        18,
-        18,
+        { EXPLOSION_TYPES.NO_BLAST,        0 },
+        { EXPLOSION_TYPES.BLAST_1,         3 },
+        { EXPLOSION_TYPES.BLAST_2,         5 },
+        { EXPLOSION_TYPES.BLAST_3,         5 },
+        { EXPLOSION_TYPES.STUN_BLAST,      5 },
+        { EXPLOSION_TYPES.WATER_BLAST,    18 },
+        { EXPLOSION_TYPES.TARGAS_EXP,     18 },
+        { EXPLOSION_TYPES.SMOKE_EXP,      18 },
+        { EXPLOSION_TYPES.MUSTARD_EXP,    18 },
     };
 
 
@@ -3385,30 +3387,30 @@ public class ExplosionControl
     };
 
 
-    public static string[] zBlastFilenames =
+    public static Dictionary<EXPLOSION_TYPES, string> zBlastFilenames = new()
     {
-        "",
-        "TILECACHE\\ZGRAV_D.STI",
-        "TILECACHE\\ZGRAV_C.STI",
-        "TILECACHE\\ZGRAV_B.STI",
-        "TILECACHE\\shckwave.STI",
-        "TILECACHE\\WAT_EXP.STI",
-        "TILECACHE\\TEAR_EXP.STI",
-        "TILECACHE\\TEAR_EXP.STI",
-        "TILECACHE\\MUST_EXP.STI",
+        { EXPLOSION_TYPES.NO_BLAST,   "" },
+        { EXPLOSION_TYPES.BLAST_1,    "TILECACHE\\ZGRAV_D.STI" },
+        { EXPLOSION_TYPES.BLAST_2,    "TILECACHE\\ZGRAV_C.STI" },
+        { EXPLOSION_TYPES.BLAST_3,    "TILECACHE\\ZGRAV_B.STI" },
+        { EXPLOSION_TYPES.STUN_BLAST, "TILECACHE\\shckwave.STI" },
+        { EXPLOSION_TYPES.WATER_BLAST,"TILECACHE\\WAT_EXP.STI" },
+        { EXPLOSION_TYPES.TARGAS_EXP, "TILECACHE\\TEAR_EXP.STI" },
+        { EXPLOSION_TYPES.SMOKE_EXP,  "TILECACHE\\TEAR_EXP.STI" },
+        { EXPLOSION_TYPES.MUSTARD_EXP,"TILECACHE\\MUST_EXP.STI" },
     };
 
-    public static int[] sBlastSpeeds =
+    public static Dictionary<EXPLOSION_TYPES, int> sBlastSpeeds = new()
     {
-        0,
-        80,
-        80,
-        80,
-        20,
-        80,
-        80,
-        80,
-        80,
+        { EXPLOSION_TYPES.NO_BLAST,      0 },
+        { EXPLOSION_TYPES.BLAST_1,      80 },
+        { EXPLOSION_TYPES.BLAST_2,      80 },
+        { EXPLOSION_TYPES.BLAST_3,      80 },
+        { EXPLOSION_TYPES.STUN_BLAST,   20 },
+        { EXPLOSION_TYPES.WATER_BLAST,  80 },
+        { EXPLOSION_TYPES.TARGAS_EXP,   80 },
+        { EXPLOSION_TYPES.SMOKE_EXP,    80 },
+        { EXPLOSION_TYPES.MUSTARD_EXP,  80 },
     };
 }
 
@@ -3464,7 +3466,7 @@ public enum EXPLOSION_TYPES
 
 [Flags]
 public enum EXPLOSION_FLAG
-{ 
+{
     USEABSPOS = 0x00000001,
     DISPLAYONLY = 0x00000002,
 }

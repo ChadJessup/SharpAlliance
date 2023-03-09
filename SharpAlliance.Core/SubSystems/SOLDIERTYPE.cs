@@ -195,8 +195,8 @@ public class SOLDIERTYPE
     int[] usFrontArcFullTileGridNos = new int[MAX_FULLTILE_DIRECTIONS];
 
 
-    SGPPaletteEntry p8BPPPalette; // 4
-    int p16BPPPalette;
+    public SGPPaletteEntry? p8BPPPalette; // 4
+    public int p16BPPPalette;
     public int[] pShades = new int[Globals.NUM_SOLDIER_SHADES]; // Shading tables
     int[] pGlowShades = new int[20]; // 
     public int pCurrentShade;

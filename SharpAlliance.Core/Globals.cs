@@ -1896,12 +1896,11 @@ public partial class Globals
 
     public static uint GetJA2Clock() => ClockManager.GetJA2Clock();
 
-    public static void MemFree(object? obj)
-    {
-        obj = null;
-    }
+    internal static int wcslen(string src) => src.Length;
 
-    public static Random Random { get; set; } = new Globals.Random.Next();
+    public static void MemFree(object? _) => _ = null;
+
+    public static Random Random { get; set; } = new Random();
 
     public static INTERACTIVE_TILE_STACK_TYPE? gCurIntTileStack;
     public static bool gfCycleIntTile = false;

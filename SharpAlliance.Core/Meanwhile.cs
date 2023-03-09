@@ -4,6 +4,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.EnglishText;
+using SharpAlliance.Core.Managers;
 
 namespace SharpAlliance.Core;
 
@@ -228,25 +229,17 @@ public class Meanwhile
 
     void BringupMeanwhileBox()
     {
-        int[] zStr = new int[256];
+        string zStr = string.Empty;
 
-# if JA2TESTVERSION
-        wprintf(zStr, "Meanwhile..... ( %S : Remember to make sure towns are controlled if required by script )", gzMeanwhileStr[gCurrentMeanwhileDef.ubMeanwhileID]);
-#else
         wprintf(zStr, "%s.....", pMessageStrings[MSG.MEANWHILE]);
-#endif
 
-#if JA2TESTVERSION
-        if (gCurrentMeanwhileDef.ubMeanwhileID != INTERROGATION)
-#else
         if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
-#endif
         {
-            DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, null);
+            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, null);
         }
         else
         {
-            DoMessageBox(MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, (int)MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, null);
+            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, null);
         }
     }
 

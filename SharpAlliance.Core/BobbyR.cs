@@ -80,8 +80,12 @@ public class BobbyR
         {
             // load the Handle graphic and add it
             VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-            FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
-            CHECKF(AddVideoObject(VObjectDesc, guiUnderConstructionImage));
+            Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
+            
+            if(VeldridVideoManager.AddVideoObject(VObjectDesc, guiUnderConstructionImage))
+            {
+
+            }
 
             for (i = 0; i < BOBBIES_NUMBER_SIGNS; i++)
             {
@@ -239,7 +243,7 @@ public class BobbyR
 
         // load the Wood bacground graphic and add it
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        FilenameForBPP("LAPTOP\\BobbyWood.sti", VObjectDesc.ImageFile);
+        Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti", VObjectDesc.ImageFile);
         CHECKF(VeldridVideoManager.AddVideoObject(&VObjectDesc, guiWoodBackground));
 
         return (true);

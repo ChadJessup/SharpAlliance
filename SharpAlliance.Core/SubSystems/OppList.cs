@@ -2614,8 +2614,8 @@ public class OppList
     {
         int iTeam, cnt, cnt2;
 
-        memset(gbSeenOpponents, 0, sizeof(gbSeenOpponents));
-        memset(gbPublicOpplist, NOT_HEARD_OR_SEEN, sizeof(gbPublicOpplist));
+        // memset(gbSeenOpponents, 0, sizeof(gbSeenOpponents));
+        // memset(gbPublicOpplist, NOT_HEARD_OR_SEEN, sizeof(gbPublicOpplist));
 
         for (iTeam = 0; iTeam < MAXTEAMS; iTeam++)
         {
@@ -2651,10 +2651,10 @@ public class OppList
 
     void InitSoldierOppList(SOLDIERTYPE? pSoldier)
     {
-        memset(pSoldier.bOppList, NOT_HEARD_OR_SEEN, sizeof(pSoldier.bOppList));
+        //memset(pSoldier.bOppList, NOT_HEARD_OR_SEEN, sizeof(pSoldier.bOppList));
         pSoldier.bOppCnt = 0;
         ResetLastKnownLocs(pSoldier);
-        memset(gbSeenOpponents[pSoldier.ubID], 0, MAXMERCS);
+        //memset(gbSeenOpponents[pSoldier.ubID], 0, MAXMERCS);
     }
 
 
@@ -5897,7 +5897,7 @@ public class OppList
                 }
                 //void HandleManNoLongerSeen( SOLDIERTYPE * pSoldier, SOLDIERTYPE * pOpponent, int * pPersOL, int * pbPublOL )
 
-                memset(pSoldier.bOppList, NOT_HEARD_OR_SEEN, sizeof(pSoldier.bOppList));
+                //memset(pSoldier.bOppList, NOT_HEARD_OR_SEEN, sizeof(pSoldier.bOppList));
                 pSoldier.bOppCnt = 0;
                 return;
             }

@@ -4384,13 +4384,13 @@ int	gOrangeGlowG[]=
 
 
         // Allocate mem for new palette
-        pSoldier.p8BPPPalette = MemAlloc(sizeof(SGPPaletteEntry) * 256);
-        memset(pSoldier.p8BPPPalette, 0, sizeof(SGPPaletteEntry) * 256);
+        pSoldier.p8BPPPalette = new();//MemAlloc(sizeof(SGPPaletteEntry) * 256);
+        //memset(pSoldier.p8BPPPalette, 0, sizeof(SGPPaletteEntry) * 256);
 
-        CHECKF(pSoldier.p8BPPPalette != null);
+        //CHECKF(pSoldier.p8BPPPalette != null);
 
         // --- TAKE FROM CURRENT ANIMATION HVOBJECT!
-        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+        usAnimSurface = AnimationControl.GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         CHECKF(usAnimSurface != INVALID_ANIMATION_SURFACE);
 
@@ -6037,7 +6037,7 @@ int	gOrangeGlowG[]=
         }
 
         // Play sound!
-        memset(&spParms, 0xff, sizeof(SOUNDPARMS));
+        //memset(&spParms, 0xff, sizeof(SOUNDPARMS));
 
         spParms.uiSpeed = RATE_11025;
         //spParms.uiVolume = CalculateSpeechVolume( pSoldier.bVocalVolume );
