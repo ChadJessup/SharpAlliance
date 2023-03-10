@@ -10,7 +10,7 @@ namespace SharpAlliance.Core.Screens;
 public class MercTextBox
 {
 
-    public ValueTask<bool> InitMercPopupBox()
+    public static ValueTask<bool> InitMercPopupBox()
     {
         return ValueTask.FromResult(true);
     }

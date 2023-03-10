@@ -18,7 +18,7 @@ namespace SharpAlliance.Core.SubSystems
         int iDeleteId = 0;
         bool fUnReadMailFlag = false;
         bool fOldUnreadFlag = true;
-        bool fNewMailFlag = false;
+        public static bool fNewMailFlag = false;
         bool fDisplayMessageFlag = false;
         bool fOldDisplayMessageFlag = false;
         bool fReDraw = false;
@@ -319,12 +319,12 @@ namespace SharpAlliance.Core.SubSystems
             int iCounter = 0;
 
             // get and blt the email list background
-            VeldridVideoManager.GetVideoObject(out hHandle, guiEmailBackground);
+            hHandle = VeldridVideoManager.GetVideoObject(guiEmailBackground);
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
             // get and blt the email title bar
-            VeldridVideoManager.GetVideoObject(out hHandle, guiEmailTitle);
+            hHandle = VeldridVideoManager.GetVideoObject(guiEmailTitle);
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
             // show text on titlebar
@@ -347,7 +347,7 @@ namespace SharpAlliance.Core.SubSystems
             DisplayEmailHeaders();
 
             // display border
-            VeldridVideoManager.GetVideoObject(out hHandle, guiLaptopBACKGROUND);
+            hHandle = VeldridVideoManager.GetVideoObject(guiLaptopBACKGROUND);
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -378,7 +378,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
             // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-            LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
             //Make a fake email that will contain the codes ( ie the merc ID )
             FakeEmail.iFirstData = iFirstData;
@@ -412,7 +412,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
             // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-            LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
             // add message to list
             AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, false, 0, 0);
@@ -439,7 +439,7 @@ namespace SharpAlliance.Core.SubSystems
 
 
             // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-            LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
             // add message to list
             AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, true, 0, 0);
@@ -3070,7 +3070,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // have to place players name into string for first record
                     if (iCounter == 0)
@@ -3096,7 +3096,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3137,21 +3137,21 @@ namespace SharpAlliance.Core.SubSystems
 
                 // personality tick
                 //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
-                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_PERSONALITY_LENGTH - 1 ) + 1 ), MAIL_STRING_SIZE );
-                LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + 1), MAIL_STRING_SIZE);
+                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_PERSONALITY_LENGTH - 1 ) + 1 ), MAIL_STRING_SIZE );
+                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + 1)), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
 
                 // persoanlity paragraph
-                LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH), MAIL_STRING_SIZE);
+                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH)), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
 
                 // extra paragraph for bugs
-                if (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bPersonalityTrait == FEAR_OF_INSECTS)
+                if (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bPersonalityTrait == PersonalityTrait.FEAR_OF_INSECTS)
                 {
                     // persoanlity paragraph
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH + 1), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH + 1)), MAIL_STRING_SIZE);
                     // add to list
                     AddEmailRecordToList(pString);
                 }
@@ -3165,7 +3165,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3209,20 +3209,20 @@ namespace SharpAlliance.Core.SubSystems
                 }
 
                 // attitude title
-                LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet), MAIL_STRING_SIZE);
+                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
 
 
                 // attitude tick
                 //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
-                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_ATTITUDE_LENGTH - 2 ) + 1 ), MAIL_STRING_SIZE );
-                LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + 1), MAIL_STRING_SIZE);
+                //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_ATTITUDE_LENGTH - 2 ) + 1 ), MAIL_STRING_SIZE );
+                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + 1), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
 
                 // attitude paragraph
-                LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH - 1), MAIL_STRING_SIZE);
+                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH - 1), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
 
@@ -3230,7 +3230,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (iOffSet != IMP_ATTITUDE_NORMAL)
                 {
                     // attitude paragraph
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH), MAIL_STRING_SIZE);
                     // add to list
                     AddEmailRecordToList(pString);
                 }
@@ -3245,7 +3245,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3289,7 +3289,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3302,7 +3302,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMarkSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MARK), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MARK), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3312,7 +3312,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMedSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MED), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MED), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3321,7 +3321,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMechSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MECH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MECH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3331,7 +3331,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientExplSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_EXPL), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_EXPL), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3377,7 +3377,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3389,7 +3389,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMarkSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MARK), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MARK), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3398,7 +3398,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMedSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MED), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MED), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3407,7 +3407,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMechSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MECH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MECH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3416,7 +3416,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientExplSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_EXPL), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_EXPL), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3461,7 +3461,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3473,7 +3473,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMechSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MECH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MECH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3482,7 +3482,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMarkSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MARK), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MARK), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3491,7 +3491,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientMedSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MED), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MED), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3499,7 +3499,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientExplSkill)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_EXPL), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_EXPL), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3514,7 +3514,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3526,7 +3526,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == KNIFING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == KNIFING))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_KNIFE), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_KNIFE), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3536,7 +3536,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == LOCKPICKING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == LOCKPICKING))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_LOCK), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_LOCK), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3546,7 +3546,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == HANDTOHAND) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == HANDTOHAND))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HAND), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HAND), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3556,7 +3556,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == ELECTRONICS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == ELECTRONICS))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_ELEC), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_ELEC), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3565,7 +3565,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == NIGHTOPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == NIGHTOPS))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_NIGHT), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_NIGHT), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3574,7 +3574,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == THROWING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == THROWING))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THROW), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THROW), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3583,7 +3583,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == TEACHING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == TEACHING))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_TEACH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_TEACH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3592,7 +3592,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == HEAVY_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == HEAVY_WEAPS))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HEAVY), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HEAVY), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3601,7 +3601,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == AUTO_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == AUTO_WEAPS))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AUTO), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AUTO), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3610,7 +3610,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == STEALTHY) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == STEALTHY))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_STEALTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_STEALTH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3619,7 +3619,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == AMBIDEXT) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == AMBIDEXT))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AMBI), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AMBI), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3628,7 +3628,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == THIEF) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == THIEF))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THIEF), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THIEF), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3637,7 +3637,7 @@ namespace SharpAlliance.Core.SubSystems
                 if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == MARTIALARTS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == MARTIALARTS))
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_MARTIAL), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_MARTIAL), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3653,7 +3653,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3713,7 +3713,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3725,7 +3725,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientHlth)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_HEALTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_HEALTH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3735,7 +3735,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientDex)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_DEXTERITY), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_DEXTERITY), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3744,7 +3744,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientStr)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_STRENGTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_STRENGTH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3753,7 +3753,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientAgi)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_AGILITY), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_AGILITY), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3762,7 +3762,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientWis)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_WISDOM), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_WISDOM), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3771,7 +3771,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientLdr)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_LEADERSHIP), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_LEADERSHIP), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3835,7 +3835,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3847,7 +3847,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientHlth)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_HEALTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_HEALTH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3857,7 +3857,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientDex)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_DEXTERITY), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_DEXTERITY), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3866,7 +3866,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientStr)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_STRENGTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_STRENGTH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3877,7 +3877,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientAgi)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_AGILITY), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_AGILITY), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3886,7 +3886,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientWis)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_WISDOM), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_WISDOM), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3895,7 +3895,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientLdr)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_LEADERSHIP), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_LEADERSHIP), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3959,7 +3959,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3971,7 +3971,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientHlth)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_HEALTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_HEALTH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3982,7 +3982,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientDex)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_DEXTERITY), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_DEXTERITY), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -3991,7 +3991,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientStr)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_STRENGTH), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_STRENGTH), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4002,7 +4002,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientAgi)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_AGILITY), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_AGILITY), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4013,7 +4013,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientWis)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_WISDOM), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_WISDOM), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4029,7 +4029,7 @@ namespace SharpAlliance.Core.SubSystems
                 if (fSufficientLdr)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_LEADERSHIP), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_LEADERSHIP), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4043,7 +4043,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4107,7 +4107,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4123,7 +4123,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (iEndOfSection > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4458,7 +4458,7 @@ namespace SharpAlliance.Core.SubSystems
                 while (pMail.usLength > iCounter)
                 {
                     // read one record from email file
-                    LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                    FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                     // add to list
                     AddEmailRecordToList(pString);
@@ -4683,7 +4683,7 @@ namespace SharpAlliance.Core.SubSystems
             for (ubCnt = 0; ubCnt < ubNumberOfRecords; ubCnt++)
             {
                 // read one record from email file
-                LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * usMessageId, MAIL_STRING_SIZE);
+                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * usMessageId, MAIL_STRING_SIZE);
 
                 //Replace the $MERCNAME$ and $AMOUNT$ with the mercs name and the amountm if the string contains the keywords.
                 ReplaceMercNameAndAmountWithProperData(pString, pMail);

@@ -2103,7 +2103,7 @@ public class HandleUI
             if (NPCFirstDraw(pSoldier, pTargetSoldier))
             {
                 // go into turnbased for that person
-                CancelAIAction(pTargetSoldier, true);
+                AIMain.CancelAIAction(pTargetSoldier, 1);
                 AddToShouldBecomeHostileOrSayQuoteList(pTargetSoldier.ubID);
                 //MakeCivHostile( pTargetSoldier, 2 );
                 //TriggerNPCWithIHateYouQuote( pTargetSoldier.ubProfile );

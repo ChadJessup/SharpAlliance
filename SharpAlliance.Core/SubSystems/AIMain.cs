@@ -13,7 +13,7 @@ public class AIMain
 
     int[] GameOption = { 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0 };
 
-    void DebugAI(string szOutput)
+    public static void DebugAI(string szOutput)
     {
 # if JA2BETAVERSION
         // Send regular debug msg AND AI debug message
@@ -179,7 +179,7 @@ public class AIMain
             else
             {
                 //Reset counter!
-                RESETTIMECOUNTER(pSoldier.AICounter, pSoldier.uiAIDelay);
+                RESETTIMECOUNTER(ref pSoldier.AICounter, pSoldier.uiAIDelay);
                 //DebugMsg( TOPIC_JA2, DBG_LEVEL_0, String( "%s waiting %d from %d", pSoldier.name, pSoldier.AICounter, uiCurrTime ) );
             }
             //#endif
@@ -578,7 +578,7 @@ public class AIMain
 
     }
 
-    void EndAIGuysTurn(SOLDIERTYPE? pSoldier)
+    public static void EndAIGuysTurn(SOLDIERTYPE? pSoldier)
     {
         int ubID;
 
@@ -709,7 +709,7 @@ public class AIMain
     }
 
 
-    void StartNPCAI(SOLDIERTYPE? pSoldier)
+    public static void StartNPCAI(SOLDIERTYPE? pSoldier)
     {
 
         bool fInValidSoldier = false;
@@ -1086,7 +1086,7 @@ public class AIMain
 
 
 
-    void ActionDone(SOLDIERTYPE? pSoldier)
+    public static void ActionDone(SOLDIERTYPE? pSoldier)
     {
         // if an action is currently selected
         if (pSoldier.bAction != AI_ACTION.NONE)
@@ -1165,8 +1165,8 @@ public class AIMain
 
     // GLOBALS:
 
-    int SkipCoverCheck = 0;
-    THREATTYPE[] Threat = new THREATTYPE[MAXMERCS];
+    public static int SkipCoverCheck = 0;
+    public static THREATTYPE[] Threat = new THREATTYPE[MAXMERCS];
 
 
     // threat percentage is based on the certainty of opponent knowledge:
@@ -1222,13 +1222,8 @@ public class AIMain
 
 
 
-    void CancelAIAction(SOLDIERTYPE? pSoldier, int ubForce)
+    public static void CancelAIAction(SOLDIERTYPE? pSoldier, int ubForce)
     {
-# if DEBUGDECISIONS
-        if (SkipCoverCheck)
-            DebugAI(String("CancelAIAction: SkipCoverCheck turned OFF\n"));
-#endif
-
         // re-enable cover checking, something is new or something strange happened
         SkipCoverCheck = 0;
 
@@ -1857,7 +1852,7 @@ public class AIMain
     }
 
 
-    void RefreshAI(SOLDIERTYPE? pSoldier)
+    public static void RefreshAI(SOLDIERTYPE? pSoldier)
     {
         // produce our own private "mine map" so we can avoid the ones we can detect
         // MarkDetectableMines(pSoldier);
@@ -1972,7 +1967,7 @@ public class AIMain
                 }
                 else
                 {
-                    RESETTIMECOUNTER(pSoldier.AICounter, pSoldier.usActionData);
+                    RESETTIMECOUNTER(ref pSoldier.AICounter, pSoldier.usActionData);
                     if (pSoldier.ubProfile != NO_PROFILE)
                     {
                         //DebugMsg( TOPIC_JA2, DBG_LEVEL_0, String( "%s waiting %d from %d", pSoldier.name, pSoldier.AICounter, GetJA2Clock() ) );
@@ -2536,7 +2531,7 @@ public class AIMain
         return (1);
     }
 
-    void CheckForChangingOrders(SOLDIERTYPE? pSoldier)
+    public static void CheckForChangingOrders(SOLDIERTYPE? pSoldier)
     {
         switch (pSoldier.bAlertStatus)
         {
@@ -2661,7 +2656,7 @@ public class AIMain
 
     }
 
-    void ManChecksOnFriends(SOLDIERTYPE? pSoldier)
+    public static void ManChecksOnFriends(SOLDIERTYPE? pSoldier)
     {
         int uiLoop;
         SOLDIERTYPE? pFriend;
@@ -2736,7 +2731,7 @@ public class AIMain
     }
 
 
-    void SetNewSituation(SOLDIERTYPE? pSoldier)
+    public static void SetNewSituation(SOLDIERTYPE? pSoldier)
     {
         if (pSoldier.bTeam != gbPlayerNum)
         {
@@ -2753,7 +2748,7 @@ public class AIMain
                 if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)))
                 {
                     // reset delay if necessary!
-                    RESETTIMECOUNTER(pSoldier.AICounter, Globals.Random.Next(1000));
+                    RESETTIMECOUNTER(ref pSoldier.AICounter, (uint)Globals.Random.Next(1000));
                 }
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -31,16 +32,16 @@ public class StrategicMovement
             ubNextX = ubSectorX,
             ubSectorY = ubSectorY,
             ubNextY = ubSectorY,
-            ubOriginalSector = (int)SECTORINFO.SECTOR(ubSectorX, ubSectorY),
+            ubOriginalSector = SECTORINFO.SECTOR(ubSectorX, ubSectorY),
             fPlayer = true,
-            ubMoveType = ONE_WAY,
+            ubMoveType = MOVE_TYPES.ONE_WAY,
             ubNextWaypointID = 0,
             ubFatigueLevel = 100,
             ubRestAtFatigueLevel = 0,
-            ubTransportationMask = FOOT,
+            ubTransportationMask = VehicleTypes.FOOT,
             fVehicle = false,
             ubCreatedSectorID = pNew.ubOriginalSector,
-            ubSectorIDOfLastReassignment = 255,
+            ubSectorIDOfLastReassignment = (SEC)255,
         };
 
         return AddGroupToList(pNew);
@@ -58,8 +59,8 @@ public class StrategicMovement
         pNew.pWaypoints = null;
         pNew.ubSectorX = pNew.ubNextX = ubSectorX;
         pNew.ubSectorY = pNew.ubNextY = ubSectorY;
-        pNew.ubOriginalSector = (int)SECTORINFO.SECTOR(ubSectorX, ubSectorY);
-        pNew.ubMoveType = ONE_WAY;
+        pNew.ubOriginalSector = SECTORINFO.SECTOR(ubSectorX, ubSectorY);
+        pNew.ubMoveType = MOVE_TYPES.ONE_WAY;
         pNew.ubNextWaypointID = 0;
         pNew.ubFatigueLevel = 100;
         pNew.ubRestAtFatigueLevel = 0;
@@ -67,10 +68,10 @@ public class StrategicMovement
         pNew.fPlayer = true;
         pNew.pPlayerList = null;
         pNew.ubCreatedSectorID = pNew.ubOriginalSector;
-        pNew.ubSectorIDOfLastReassignment = 255;
+        pNew.ubSectorIDOfLastReassignment = (SEC)255;
 
         // get the type
-        pNew.ubTransportationMask = CAR;
+        pNew.ubTransportationMask = VehicleTypes.CAR;
 
         return (AddGroupToList(pNew));
     }
@@ -82,7 +83,7 @@ public class StrategicMovement
         PLAYERGROUP? pPlayer, curr;
         pGroup = GetGroup(ubGroupID);
         Debug.Assert(pGroup);
-        pPlayer = (PLAYERGROUP?)MemAlloc(sizeof(PLAYERGROUP));
+        pPlayer = new PLAYERGROUP();
         Debug.Assert(pPlayer);
         ////AssertMsg(pGroup.fPlayer, "Attempting AddPlayerToGroup() on an ENEMY group!");
         pPlayer.pSoldier = pSoldier;
@@ -96,8 +97,8 @@ public class StrategicMovement
         {
             pGroup.pPlayerList = pPlayer;
             pGroup.ubGroupSize = 1;
-            pGroup.ubPrevX = (int)((pSoldier.ubPrevSectorID % 16) + 1);
-            pGroup.ubPrevY = (int)((pSoldier.ubPrevSectorID / 16) + 1);
+            pGroup.ubPrevX = (int)(((int)pSoldier.ubPrevSectorID % 16) + 1);
+            pGroup.ubPrevY = (MAP_ROW)(((int)pSoldier.ubPrevSectorID / 16) + 1);
             pGroup.ubSectorX = (int)pSoldier.sSectorX;
             pGroup.ubSectorY = pSoldier.sSectorY;
             pGroup.ubSectorZ = (int)pSoldier.bSectorZ;
@@ -304,20 +305,20 @@ public class StrategicMovement
         // which direction you're going in!  This becomes critical in case the player reverse directions again before moving!
 
         // The time it takes to arrive there will be exactly the amount of time we have been moving away from it.
-        SetGroupArrivalTime(pGroup, pGroup.uiTraverseTime - pGroup.uiArrivalTime + GetWorldTotalMin() * 2);
+        SetGroupArrivalTime(pGroup, pGroup.uiTraverseTime - pGroup.uiArrivalTime + GameClock.GetWorldTotalMin() * 2);
 
         // if they're not already there
-        if (pGroup.uiArrivalTime > GetWorldTotalMin())
+        if (pGroup.uiArrivalTime > GameClock.GetWorldTotalMin())
         {
             //Post the replacement event to move back to the previous sector!
-            AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
+            GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
 
             if (pGroup.fPlayer)
             {
-                if ((pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY) > GetWorldTotalMin())
+                if ((pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY) > GameClock.GetWorldTotalMin())
                 {
                     // Post the about to arrive event
-                    AddStrategicEvent(EVENT_GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+                    GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
                 }
             }
         }
@@ -616,7 +617,7 @@ public class StrategicMovement
     //1)  Find the first unused ID (unique)
     //2)  Assign that ID to the new group
     //3)  Insert the group at the end of the list.
-    int AddGroupToList(GROUP? pGroup)
+    public static int AddGroupToList(GROUP? pGroup)
     {
         GROUP? curr;
         int bit, index, mask;
@@ -824,9 +825,9 @@ public class StrategicMovement
                     HandleImportantPBIQuote(pSoldier, pInitiatingBattleGroup);
                 }
 
-                InterruptTime();
-                PauseGame();
-                LockPauseState(11);
+                GameClock.InterruptTime();
+                GameClock.PauseGame();
+                GameClock.LockPauseState(11);
 
                 if (!gfTacticalTraversal)
                 {
@@ -850,9 +851,9 @@ public class StrategicMovement
             pSoldier = MercPtrs[ubMercsInGroup[ubChosenMerc]];
 
             HandleImportantPBIQuote(pSoldier, pInitiatingBattleGroup);
-            InterruptTime();
-            PauseGame();
-            LockPauseState(12);
+            GameClock.InterruptTime();
+            GameClock.PauseGame();
+            GameClock.LockPauseState(12);
 
             // disable exit from mapscreen and what not until face done talking
             fDisableMapInterfaceDueToBattle = true;
@@ -1261,7 +1262,7 @@ public class StrategicMovement
 
         // Set time of death
         // Make sure they will be rotting!
-        Corpse.uiTimeOfDeath = GetWorldTotalMin() - (2 * NUM_SEC.IN_DAY / 60);
+        Corpse.uiTimeOfDeath = GameClock.GetWorldTotalMin() - (2 * NUM_SEC_IN_DAY / 60);
         // Set type
         Corpse.ubType = (int)SMERC_JFK;
         Corpse.usFlags = ROTTING_CORPSE_FIND_SWEETSPOT_FROM_GRIDNO;
@@ -1404,19 +1405,19 @@ public class StrategicMovement
             }
             else
             {
-                pGroup.uiArrivalTime += Globals.Random.Next(3) + 3;
+                pGroup.uiArrivalTime += (uint)Globals.Random.Next(3) + 3;
             }
 
 
-            if (!AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
+            if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
             {
                 //AssertMsg(0, "Failed to add movement event.");
 
                 if (pGroup.fPlayer)
                 {
-                    if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GetWorldTotalMin())
+                    if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
                     {
-                        AddStrategicEvent(EVENT_GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+                        GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
                     }
                 }
             }
@@ -1459,7 +1460,7 @@ public class StrategicMovement
 
                 SpendVehicleFuel(pSoldier, (int)(pGroup.uiTraverseTime * 6));
 
-                if (!VehicleFuelRemaining(pSoldier))
+                if (VehicleFuelRemaining(pSoldier) == 0)
                 {
                     ReportVehicleOutOfGas(iVehicleID, pGroup.ubSectorX, pGroup.ubSectorY);
                     //Nuke the group's path, so they don't continue moving.
@@ -1814,17 +1815,17 @@ public class StrategicMovement
     //groups that may arrive at the same time -- enemies or players, and blindly add them to the sector
     //without checking for battle conditions, as it has already determined that a new battle is about to 
     //start.
-    void HandleOtherGroupsArrivingSimultaneously(int ubSectorX, int ubSectorY, int ubSectorZ)
+    void HandleOtherGroupsArrivingSimultaneously(int ubSectorX, MAP_ROW ubSectorY, int ubSectorZ)
     {
-        STRATEGICEVENT* pEvent;
-        int uiCurrTimeStamp;
+        STRATEGICEVENT? pEvent;
+        uint uiCurrTimeStamp;
         GROUP? pGroup;
-        uiCurrTimeStamp = GetWorldTotalSeconds();
+        uiCurrTimeStamp = GameClock.GetWorldTotalSeconds();
         pEvent = gpEventList;
         gubNumGroupsArrivedSimultaneously = 0;
         while (pEvent && pEvent.uiTimeStamp <= uiCurrTimeStamp)
         {
-            if (pEvent.ubCallbackID == EVENT_GROUP_ARRIVAL && !(pEvent.ubFlags & SEF_DELETION_PENDING))
+            if (pEvent.ubCallbackID == EVENT_GROUP_ARRIVAL && !(pEvent.ubFlags.HasFlag(SEF.DELETION_PENDING)))
             {
                 pGroup = GetGroup((int)pEvent.uiParam);
                 Debug.Assert(pGroup);
@@ -1835,7 +1836,7 @@ public class StrategicMovement
                         GroupArrivedAtSector((int)pEvent.uiParam, false, false);
                         pGroup.uiFlags |= GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY;
                         gubNumGroupsArrivedSimultaneously++;
-                        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+                        GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
                         pEvent = gpEventList;
                         continue;
                     }
@@ -1850,7 +1851,7 @@ public class StrategicMovement
     void PrepareGroupsForSimultaneousArrival()
     {
         GROUP? pGroup;
-        int uiLatestArrivalTime = 0;
+        uint uiLatestArrivalTime = 0;
         SOLDIERTYPE? pSoldier = null;
         int iVehId = 0;
 
@@ -1875,18 +1876,18 @@ public class StrategicMovement
         {
             if (pGroup.uiFlags & GROUPFLAG_MARKER)
             {
-                DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+                GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
                 // NOTE: This can cause the arrival time to be > GetWorldTotalMin() + TraverseTime, so keep that in mind
                 // if you have any code that uses these 3 values to figure out how far along its route a group is!
                 SetGroupArrivalTime(pGroup, uiLatestArrivalTime);
-                AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
+                GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
 
                 if (pGroup.fPlayer)
                 {
-                    if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GetWorldTotalMin())
+                    if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
                     {
-                        AddStrategicEvent(EVENT_GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+                        GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
                     }
                 }
 
@@ -1922,13 +1923,13 @@ public class StrategicMovement
             }
         }
 
-        AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
+        GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
 
         if (pGroup.fPlayer)
         {
-            if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GetWorldTotalMin())
+            if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
             {
-                AddStrategicEvent(EVENT_GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+                GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
             }
         }
         DelayEnemyGroupsIfPathsCross(pGroup);
@@ -1974,9 +1975,9 @@ public class StrategicMovement
         { //postpone the battle until the user answers the dialog.
             string str;
             int? pStr, pEnemyType;
-            InterruptTime();
-            PauseGame();
-            LockPauseState(13);
+            GameClock.InterruptTime();
+            GameClock.PauseGame();
+            GameClock.LockPauseState(13);
             gpPendingSimultaneousGroup = pFirstGroup;
             //Build the string
             if (ubNumNearbyGroups == 1)
@@ -2051,7 +2052,7 @@ public class StrategicMovement
                         // NOTE: This can cause the arrival time to be > GetWorldTotalMin() + TraverseTime, so keep that in mind
                         // if you have any code that uses these 3 values to figure out how far along its route a group is!
                         SetGroupArrivalTime(pGroup, pPlayerGroup.uiArrivalTime + 1 + Globals.Random.Next(10));
-                        if (!AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
+                        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
                         {
                             //AssertMsg(0, "Failed to add movement event.");
                         }
@@ -2067,7 +2068,7 @@ public class StrategicMovement
     {
         int dx, dy;
         int i;
-        int ubDirection;
+        STRATEGIC_MOVE ubDirection;
         SEC ubSector;
         WAYPOINT? wp;
         int iVehId = -1;
@@ -2101,22 +2102,22 @@ public class StrategicMovement
         //Clip dx/dy value so that the move is for only one sector.
         if (dx >= 1)
         {
-            ubDirection = EAST_STRATEGIC_MOVE;
+            ubDirection = STRATEGIC_MOVE.EAST_STRATEGIC_MOVE;
             dx = 1;
         }
         else if (dy >= 1)
         {
-            ubDirection = SOUTH_STRATEGIC_MOVE;
+            ubDirection = STRATEGIC_MOVE.SOUTH_STRATEGIC_MOVE;
             dy = 1;
         }
         else if (dx <= -1)
         {
-            ubDirection = WEST_STRATEGIC_MOVE;
+            ubDirection = STRATEGIC_MOVE.WEST_STRATEGIC_MOVE;
             dx = -1;
         }
         else if (dy <= -1)
         {
-            ubDirection = NORTH_STRATEGIC_MOVE;
+            ubDirection = STRATEGIC_MOVE.NORTH_STRATEGIC_MOVE;
             dy = -1;
         }
         else
@@ -2126,7 +2127,7 @@ public class StrategicMovement
         }
         //All conditions for moving to the next waypoint are now good.
         pGroup.ubNextX = (int)(dx + pGroup.ubSectorX);
-        pGroup.ubNextY = (int)(dy + pGroup.ubSectorY);
+        pGroup.ubNextY = (dy + pGroup.ubSectorY);
         //Calc time to get to next waypoint...
         ubSector = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
         if (!pGroup.ubSectorZ)
@@ -2184,7 +2185,7 @@ public class StrategicMovement
             // put group between sectors
             pGroup.fBetweenSectors = true;
             // and set it's arrival time
-            SetGroupArrivalTime(pGroup, GetWorldTotalMin() + pGroup.uiTraverseTime);
+            SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
         }
         // NOTE: if the group is already between sectors, DON'T MESS WITH ITS ARRIVAL TIME!  THAT'S NOT OUR JOB HERE!!!
 
@@ -2194,7 +2195,7 @@ public class StrategicMovement
         { //We're initializing the patrol group, so randomize the enemy groups to have extremely quick and varying
           //arrival times so that their initial positions aren't easily determined.
             pGroup.uiTraverseTime = 1 + Globals.Random.Next(pGroup.uiTraverseTime - 1);
-            SetGroupArrivalTime(pGroup, GetWorldTotalMin() + pGroup.uiTraverseTime);
+            SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
         }
 
 
@@ -2218,7 +2219,7 @@ public class StrategicMovement
         }
 
         //Post the event!
-        if (!AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
+        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
         {
             //AssertMsg(0, "Failed to add movement event.");
 
@@ -2227,9 +2228,9 @@ public class StrategicMovement
             {
                 PLAYERGROUP? curr;
 
-                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GetWorldTotalMin())
+                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
                 {
-                    AddStrategicEvent(EVENT_GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+                    GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
                 }
 
                 curr = pGroup.pPlayerList;
@@ -2303,7 +2304,7 @@ public class StrategicMovement
 
 
     // set this groups previous sector values
-    void SetGroupPrevSectors(int ubGroupID, int ubX, int ubY)
+    void SetGroupPrevSectors(int ubGroupID, int ubX, MAP_ROW ubY)
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
@@ -2745,7 +2746,7 @@ public class StrategicMovement
 
             if (pGroup.fPlayer)
             {
-                foreach(var curr in pGroup.pPlayerList)
+                foreach (var curr in pGroup.pPlayerList)
                 {
                     pSoldier = curr.pSoldier;
                     if (pSoldier.bAssignment != Assignments.VEHICLE)
@@ -3106,11 +3107,11 @@ public class StrategicMovement
                                 ubMercsInGroup--;
                             }
 
-                            *iCountEnter += ubMercsInGroup;
+                            iCountEnter += ubMercsInGroup;
 
-                            if ((curr.uiArrivalTime - GetWorldTotalMin() <= ABOUT_TO_ARRIVE_DELAY) || (fMayRetreatFromBattle == true))
+                            if ((curr.uiArrivalTime - GameClock.GetWorldTotalMin() <= ABOUT_TO_ARRIVE_DELAY) || (fMayRetreatFromBattle == true))
                             {
-                                *fAboutToArriveEnter = true;
+                                fAboutToArriveEnter = true;
                             }
                         }
                         else if ((SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTOR(curr.ubNextX, curr.ubNextY) == sSource) || (fRetreatingFromBattle == true))
@@ -3124,7 +3125,7 @@ public class StrategicMovement
                                 ubMercsInGroup--;
                             }
 
-                            *iCountExit += ubMercsInGroup;
+                            iCountExit += ubMercsInGroup;
                         }
                     }
                 }
@@ -3910,7 +3911,7 @@ public class StrategicMovement
             pGroup.uiTraverseTime = 5;
         }
 
-        SetGroupArrivalTime(pGroup, GetWorldTotalMin() + pGroup.uiTraverseTime);
+        SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
         pGroup.fBetweenSectors = true;
         pGroup.uiFlags |= GROUPFLAG_JUST_RETREATED_FROM_BATTLE;
 
@@ -3924,7 +3925,7 @@ public class StrategicMovement
         }
 
         //Post the event!
-        if (!AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
+        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
         {
             //AssertMsg(0, "Failed to add movement event.");
 
@@ -3934,9 +3935,9 @@ public class StrategicMovement
                 PLAYERGROUP? curr;
                 curr = pGroup.pPlayerList;
 
-                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GetWorldTotalMin())
+                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
                 {
-                    AddStrategicEvent(EVENT_GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+                    GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
                 }
 
 
@@ -3953,7 +3954,7 @@ public class StrategicMovement
         }
     }
 
-    GROUP? FindMovementGroupInSector(int ubSectorX, MAP_ROW ubSectorY, bool fPlayer)
+    public static GROUP? FindMovementGroupInSector(int ubSectorX, MAP_ROW ubSectorY, bool fPlayer)
     {
         GROUP? pGroup;
         pGroup = gpGroupList;
@@ -4035,7 +4036,8 @@ public class StrategicMovement
     void ResetMovementForEnemyGroupsInLocation(int ubSectorX, int ubSectorY)
     {
         GROUP? pGroup, next;
-        int sSectorX, sSectorY, sSectorZ;
+        int sSectorX, sSectorZ;
+        MAP_ROW sSectorY;
 
         GetCurrentBattleSectorXYZ(out sSectorX, out sSectorY, out sSectorZ);
         pGroup = gpGroupList;
@@ -4073,7 +4075,7 @@ public class StrategicMovement
         }
 
         //Cancel the event that is posted.
-        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Calculate the new arrival time (all data pertaining to movement should be valid)
         if (pGroup.uiTraverseTime > 400)
@@ -4081,10 +4083,10 @@ public class StrategicMovement
           //arbitrarily.  Doesn't really matter if this isn't accurate.
             pGroup.uiTraverseTime = 90;
         }
-        SetGroupArrivalTime(pGroup, GetWorldTotalMin() + pGroup.uiTraverseTime);
+        SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
 
         //Add a new event 
-        AddStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
+        GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
     }
 
 
@@ -4164,11 +4166,12 @@ public class StrategicMovement
     //Determines if any particular group WILL be moving through a given sector given it's current
     //position in the route and the pGroup.ubMoveType must be ONE_WAY.  If the group is currently 
     //IN the sector, or just left the sector, it will return false.
-    bool GroupWillMoveThroughSector(GROUP? pGroup, int ubSectorX, int ubSectorY)
+    bool GroupWillMoveThroughSector(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY)
     {
         WAYPOINT? wp;
         int i, dx, dy;
-        int ubOrigX, ubOrigY;
+        int ubOrigX;
+        MAP_ROW ubOrigY;
 
         Debug.Assert(pGroup);
         //AssertMsg(pGroup.ubMoveType == ONE_WAY, String("GroupWillMoveThroughSector() -- Attempting to test group with an invalid move type.  ubGroupID: %d, ubMoveType: %d, sector: %c%d -- KM:0",
@@ -4244,7 +4247,7 @@ public class StrategicMovement
                 }
                 //Advance the sector value
                 pGroup.ubSectorX = (int)(dx + pGroup.ubSectorX);
-                pGroup.ubSectorY = (int)(dy + pGroup.ubSectorY);
+                pGroup.ubSectorY = (dy + pGroup.ubSectorY);
                 //Check to see if it the sector we are checking to see if this group will be moving through.
                 if (pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY)
                 {
@@ -4280,13 +4283,13 @@ public class StrategicMovement
 
     int VehicleFuelRemaining(SOLDIERTYPE? pSoldier)
     {
-        Debug.Assert(pSoldier.uiStatusFlags & SOLDIER_VEHICLE);
+        Debug.Assert(pSoldier.uiStatusFlags & SOLDIER.VEHICLE);
         return pSoldier.sBreathRed;
     }
 
     bool SpendVehicleFuel(SOLDIERTYPE? pSoldier, int sFuelSpent)
     {
-        Debug.Assert(pSoldier.uiStatusFlags & SOLDIER_VEHICLE);
+        Debug.Assert(pSoldier.uiStatusFlags & SOLDIER.VEHICLE);
         pSoldier.sBreathRed -= sFuelSpent;
         pSoldier.sBreathRed = (int)Math.Max(0, pSoldier.sBreathRed);
         pSoldier.bBreath = (int)((pSoldier.sBreathRed + 99) / 100);
@@ -4297,8 +4300,8 @@ public class StrategicMovement
     {
         OBJECTTYPE? pItem;
         int sFuelNeeded, sFuelAvailable, sFuelAdded;
-        pItem = pSoldier.inv[HANDPOS];
-        if (pItem.usItem != GAS_CAN)
+        pItem = pSoldier.inv[InventorySlot.HANDPOS];
+        if (pItem.usItem != Items.GAS_CAN)
         {
 
             return;
@@ -4466,7 +4469,7 @@ public class StrategicMovement
     bool TestForBloodcatAmbush(GROUP? pGroup)
     {
         SECTORINFO? pSector;
-        int iHoursElapsed;
+        uint iHoursElapsed;
         SEC ubSectorID;
         int ubChance;
         int bDifficultyMaxCats;
@@ -4484,7 +4487,7 @@ public class StrategicMovement
 
         ubChance = 5 * gGameOptions.ubDifficultyLevel;
 
-        iHoursElapsed = (GetWorldTotalMin() - pSector.uiTimeCurrentSectorWasLastLoaded) / 60;
+        iHoursElapsed = (GameClock.GetWorldTotalMin() - pSector.uiTimeCurrentSectorWasLastLoaded) / 60;
         if (ubSectorID == SEC.N5 || ubSectorID == SEC.I16)
         { //These are special maps -- we use all placements.
             if (pSector.bBloodCats == -1)
@@ -4505,10 +4508,10 @@ public class StrategicMovement
             if (gfAutoAmbush || PreChance(ubChance))
             {
                 //randomly choose from 5-8, 7-10, 9-12 bloodcats based on easy, normal, and hard, respectively
-                bDifficultyMaxCats = (int)(Globals.Random.Next(4) + gGameOptions.ubDifficultyLevel * 2 + 3);
+                bDifficultyMaxCats = (int)(Globals.Random.Next(4) + (int)gGameOptions.ubDifficultyLevel * 2 + 3);
 
                 //maximum of 3 bloodcats or 1 for every 6%, 5%, 4% progress based on easy, normal, and hard, respectively
-                bProgressMaxCats = (int)Math.Max(CurrentPlayerProgressPercentage() / (7 - gGameOptions.ubDifficultyLevel), 3);
+                bProgressMaxCats = (int)Math.Max(Campaign.CurrentPlayerProgressPercentage() / (7 - (int)gGameOptions.ubDifficultyLevel), 3);
 
                 //make sure bloodcats don't outnumber mercs by a factor greater than 2
                 bNumMercMaxCats = (int)(PlayerMercsInSector(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ) * 2);
@@ -4516,7 +4519,7 @@ public class StrategicMovement
                 //choose the lowest number of cats calculated by difficulty and progress.
                 pSector.bBloodCats = (int)Math.Min(bDifficultyMaxCats, bProgressMaxCats);
 
-                if (gGameOptions.ubDifficultyLevel != DIF_LEVEL_HARD)
+                if (gGameOptions.ubDifficultyLevel != DifficultyLevel.Hard)
                 { //if not hard difficulty, ensure cats never outnumber mercs by a factor of 2 (Math.Min 3 bloodcats)
                     pSector.bBloodCats = (int)Math.Min(pSector.bBloodCats, bNumMercMaxCats);
                     pSector.bBloodCats = (int)Math.Max(pSector.bBloodCats, 3);
@@ -4537,7 +4540,7 @@ public class StrategicMovement
         if (!fAlreadyAmbushed && ubSectorID != SEC.N5 && pSector.bBloodCats > 0 &&
                 !pGroup.fVehicle && !NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY))
         {
-            if (ubSectorID != SEC.I16 || !gubFact[FACT_PLAYER_KNOWS_ABOUT_BLOODCAT_LAIR])
+            if (ubSectorID != SEC.I16 || gubFact[FACT.PLAYER_KNOWS_ABOUT_BLOODCAT_LAIR] == 0)
             {
                 gubEnemyEncounterCode = BLOODCAT_AMBUSH_CODE;
             }
@@ -4568,7 +4571,7 @@ public class StrategicMovement
             wcscpy(str, pMapErrorString[13]);
         }
 
-        if (guiCurrentScreen == MAP_SCREEN)
+        if (guiCurrentScreen == ScreenName.MAP_SCREEN)
         {   //Force render mapscreen (need to update the position of the group before the dialog appears.
             fMapPanelDirty = true;
             MapScreenHandle();
@@ -4582,7 +4585,7 @@ public class StrategicMovement
 
 
 
-    void PlaceGroupInSector(int ubGroupID, int sPrevX, int sPrevY, int sNextX, int sNextY, int bZ, bool fCheckForBattle)
+    void PlaceGroupInSector(int ubGroupID, int sPrevX, MAP_ROW sPrevY, int sNextX, MAP_ROW sNextY, int bZ, bool fCheckForBattle)
     {
         ClearMercPathsAndWaypointsForAllInGroup(GetGroup(ubGroupID));
 
@@ -4598,7 +4601,7 @@ public class StrategicMovement
 
 
     // ARM: centralized it so we can do a comprehensive Debug.Assert on it.  Causing problems with helicopter group!
-    void SetGroupArrivalTime(GROUP? pGroup, int uiArrivalTime)
+    void SetGroupArrivalTime(GROUP? pGroup, uint uiArrivalTime)
     {
         // PLEASE CENTRALIZE ALL CHANGES TO THE ARRIVAL TIMES OF GROUPS THROUGH HERE, ESPECIALLY THE HELICOPTER GROUP!!!
 
@@ -4612,12 +4615,12 @@ public class StrategicMovement
         if (IsGroupTheHelicopterGroup(pGroup))
         {
             // make sure it's valid (NOTE: the correct traverse time must be set first!)
-            if (uiArrivalTime > (GetWorldTotalMin() + pGroup.uiTraverseTime))
+            if (uiArrivalTime > (GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime))
             {
                 //AssertMsg(false, String("SetGroupArrivalTime: Setting invalid arrival time %d for group %d, WorldTime = %d, TraverseTime = %d", uiArrivalTime, pGroup.ubGroupID, GetWorldTotalMin(), pGroup.uiTraverseTime));
 
                 // fix it if assertions are disabled
-                uiArrivalTime = GetWorldTotalMin() + pGroup.uiTraverseTime;
+                uiArrivalTime = GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime;
             }
         }
 
@@ -4798,25 +4801,25 @@ public class StrategicMovement
     }
 
 
-    bool WildernessSectorWithAllProfiledNPCsNotSpokenWith(int sSectorX, int sSectorY, int bSectorZ)
+    bool WildernessSectorWithAllProfiledNPCsNotSpokenWith(int sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
-        int ubProfile;
+        NPCID ubProfile;
         MERCPROFILESTRUCT? pProfile;
         bool fFoundSomebody = false;
 
 
         for (ubProfile = FIRST_RPC; ubProfile < NUM_PROFILES; ubProfile++)
         {
-            pProfile = &gMercProfiles[ubProfile];
+            pProfile = gMercProfiles[ubProfile];
 
             // skip stiffs
-            if ((pProfile.bMercStatus == MERC_IS_DEAD) || (pProfile.bLife <= 0))
+            if ((pProfile.bMercStatus == MercStatus.MERC_IS_DEAD) || (pProfile.bLife <= 0))
             {
                 continue;
             }
 
             // skip vehicles
-            if (ubProfile >= PROF_HUMMER && ubProfile <= PROF_HELICOPTER)
+            if (ubProfile >= NPCID.PROF_HUMMER && ubProfile <= NPCID.PROF_HELICOPTER)
             {
                 continue;
             }
@@ -4846,17 +4849,17 @@ public class StrategicMovement
 
 
 
-    void HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback(int ubExitValue)
+    void HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback(MessageBoxReturnCode ubExitValue)
     {
-        Debug.Assert(gpGroupPrompting);
+        Debug.Assert(gpGroupPrompting is not null);
 
-        if ((ubExitValue == MSG_BOX_RETURN_YES) ||
-                 (ubExitValue == MSG_BOX_RETURN_OK))
+        if ((ubExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES) ||
+                 (ubExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_OK))
         {
             // NPCs now checked, continue moving if appropriate
             PlayerGroupArrivedSafelyInSector(gpGroupPrompting, false);
         }
-        else if (ubExitValue == MSG_BOX_RETURN_NO)
+        else if (ubExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_NO)
         {
             // stop here
 
@@ -4893,7 +4896,7 @@ public class StrategicMovement
     }
 
 
-    bool GroupHasInTransitDeadOrPOWMercs(GROUP? pGroup)
+    public static bool GroupHasInTransitDeadOrPOWMercs(GROUP? pGroup)
     {
         PLAYERGROUP? pPlayer;
 

@@ -205,7 +205,7 @@ public class Meanwhile
     }
 
 
-    bool BeginMeanwhile(int ubMeanwhileID)
+    public static bool BeginMeanwhile(int ubMeanwhileID)
     {
         int cnt;
 

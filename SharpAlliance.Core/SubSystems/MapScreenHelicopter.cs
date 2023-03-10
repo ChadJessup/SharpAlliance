@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core.SubSystems;
+﻿using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.SubSystems;
 
 public class MapScreenHelicopter
 {
@@ -6,7 +8,7 @@ public class MapScreenHelicopter
     public static void CheckAndHandleSkyriderMonologues()
     {
         // wait at least this many days between Skyrider monologues
-        if ((GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) >= (MIN_DAYS_BETWEEN_SKYRIDER_MONOLOGUES * 24 * 60))
+        if ((GameClock.GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) >= (MIN_DAYS_BETWEEN_SKYRIDER_MONOLOGUES * 24 * 60))
         {
             if (Globals.guiHelicopterSkyriderTalkState == 0)
             {

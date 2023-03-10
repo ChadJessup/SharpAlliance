@@ -24,7 +24,7 @@ public class InterfaceCursors
         IInputManager inputManager)
     {
         this.logger = logger;
-        ClockManager = clock;
+        this.clock = clock;
         this.gGameSettings = gameSettings;
         this.world = worldManager;
         this.overhead = overhead;

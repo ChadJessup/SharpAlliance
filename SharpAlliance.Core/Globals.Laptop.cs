@@ -219,7 +219,7 @@ public partial class Globals
     public static int guiBOOKMARK;
     public static int guiGRAPHWINDOW;
     public static int guiGRAPHBAR;
-    public static int guiLaptopBACKGROUND;
+    public static string guiLaptopBACKGROUND;
     public static int guiDOWNLOADTOP;
     public static int guiDOWNLOADMID;
     public static int guiDOWNLOADBOT;

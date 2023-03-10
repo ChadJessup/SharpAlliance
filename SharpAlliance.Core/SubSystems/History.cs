@@ -1393,7 +1393,7 @@ public class History
         return;
     }
 
-    int ReadInLastElementOfHistoryListAndReturnIdNumber()
+    public static int ReadInLastElementOfHistoryListAndReturnIdNumber()
     {
         // this function will read in the last unit in the history list, to grab it's id number
 
@@ -1573,7 +1573,7 @@ public class History
     {
         sQuestString = "QUESTSTARTED";
         // open the file and copy the string
-        LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", sQuestString, 160 * (ubQuestValue * 2), 160);
+        FileManager.LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, 160 * (ubQuestValue * 2), 160);
     }
 
 
@@ -1581,7 +1581,7 @@ public class History
     {
         sQuestString = "QUESTENDED";
         // open the file and copy the string
-        LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", sQuestString, 160 * ((ubQuestValue * 2) + 1), 160);
+        FileManager.LoadEncryptedDataFromFile("BINARYDATA\\quests.edt", out sQuestString, 160 * ((ubQuestValue * 2) + 1), 160);
     }
 
     int GetNumberOfHistoryPages()

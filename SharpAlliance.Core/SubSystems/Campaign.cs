@@ -373,8 +373,7 @@ public class Campaign
         ProcessUpdateStats(pProfile, null);
     }
 
-
-    void ChangeStat(MERCPROFILESTRUCT? pProfile, SOLDIERTYPE? pSoldier, Stat ubStat, int sPtsChanged)
+    public static void ChangeStat(MERCPROFILESTRUCT? pProfile, SOLDIERTYPE? pSoldier, Stat ubStat, int sPtsChanged)
     {
         // this function changes the stat a given amount...
         int? psStatGainPtr = null;
@@ -670,7 +669,7 @@ public class Campaign
                             //	DEF: 03/06/99 Now sets an event that will be processed later in the day
                             //						ubEmailOffset = MERC_UP_LEVEL_BIFF + MERC_UP_LEVEL_LENGTH_BIFF * ( ubMercMercIdValue ); 
                             //						AddEmail( ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, SPECK_FROM_MERC, GetWorldTotalMin() );
-                            AddStrategicEvent(EVENT_MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, GameClock.GetWorldTotalMin() + 60 + Globals.Random.Next(60), ubMercMercIdValue);
+                            GameEvents.AddStrategicEvent(EVENT.MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, GameClock.GetWorldTotalMin() + 60 + Globals.Random.Next(60), ubMercMercIdValue);
 
                             fChangeSalary = true;
                             break;
@@ -963,7 +962,7 @@ public class Campaign
     }
 
 
-    int CalcNewSalary(int uiOldSalary, bool fIncrease, int uiMaxLimit)
+    public static int CalcNewSalary(int uiOldSalary, bool fIncrease, int uiMaxLimit)
     {
         int uiNewSalary;
 
@@ -1000,7 +999,7 @@ public class Campaign
     }
 
 
-    int RoundOffSalary(int uiSalary)
+    public static int RoundOffSalary(int uiSalary)
     {
         int uiMultiple;
 
@@ -1056,7 +1055,7 @@ public class Campaign
     }
 
 
-    int SubpointsPerPoint(Stat ubStat, int bExpLevel)
+    public static int SubpointsPerPoint(Stat ubStat, int bExpLevel)
     {
         int usSubpointsPerPoint;
 
@@ -1509,7 +1508,7 @@ public class Campaign
 
 
 
-    void BuildStatChangeString(string wString, string wName, bool fIncrease, int sPtsChanged, Stat ubStat)
+    public static void BuildStatChangeString(string wString, string wName, bool fIncrease, int sPtsChanged, Stat ubStat)
     {
         int ubStringIndex;
 

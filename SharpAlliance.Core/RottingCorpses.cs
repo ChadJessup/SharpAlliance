@@ -106,7 +106,7 @@ public class ROTTING_CORPSE_DEFINITION
     public PaletteRepID? SkinPal;
 
     public int bDirection;
-    public int uiTimeOfDeath;
+    public uint uiTimeOfDeath;
     public int usFlags;
     public int bLevel;
     public int bVisible;

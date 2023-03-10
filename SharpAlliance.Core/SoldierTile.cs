@@ -21,7 +21,7 @@ public class SoldierTile
         pSoldier.fDelayedMovement = bValue;
         pSoldier.sDelayedMovementCauseGridNo = sCauseGridNo;
 
-        RESETTIMECOUNTER(pSoldier.NextTileCounter, NEXT_TILE_CHECK_DELAY);
+        RESETTIMECOUNTER(ref pSoldier.NextTileCounter, NEXT_TILE_CHECK_DELAY);
 
         // ATE: Now update realtime movement speed....
         // check if guy exists here...
@@ -277,7 +277,7 @@ public class SoldierTile
         ///if ( ( gTacticalStatus.uiFlags & REALTIME ) || !( gTacticalStatus.uiFlags & INCOMBAT ) )
 
         // ATE: If not on visible tile, return clear ( for path out of map )
-        if (!GridNoOnVisibleWorldTile(sGridNo))
+        if (!IsometricUtils.GridNoOnVisibleWorldTile(sGridNo))
         {
             return (true);
         }
@@ -347,7 +347,7 @@ public class SoldierTile
                     MarkMovementReserved(pSoldier, sGridNo);
                 }
 
-                bOverTerrainType = GetTerrainType(sGridNo);
+                bOverTerrainType = WorldManager.GetTerrainType(sGridNo);
 
                 // Check if we are going into water!
                 if (bOverTerrainType == TerrainTypeDefines.LOW_WATER
@@ -395,7 +395,7 @@ public class SoldierTile
         {
             if (TIMECOUNTERDONE(pSoldier.NextTileCounter, NEXT_TILE_CHECK_DELAY))
             {
-                RESETTIMECOUNTER(pSoldier.NextTileCounter, NEXT_TILE_CHECK_DELAY);
+                RESETTIMECOUNTER(ref pSoldier.NextTileCounter, NEXT_TILE_CHECK_DELAY);
 
                 // Get direction from gridno...
                 bCauseDirection = (int)GetDirectionToGridNoFromGridNo(pSoldier.sGridNo, pSoldier.sDelayedMovementCauseGridNo);

@@ -50,7 +50,7 @@ namespace SharpAlliance.Core.SubSystems
             DialogControl dialogs,
             AirRaid airRaid)
         {
-            ClockManager = clock;
+            this.clock = clock;
             this.strategicMap = strategicMap;
             this.sound = soundManager;
             this.tacticalSave = tacticalSaveSubSystem;

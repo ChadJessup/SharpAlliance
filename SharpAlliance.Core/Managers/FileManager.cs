@@ -9,31 +9,31 @@ namespace SharpAlliance.Core.Managers
 {
     public class FileManager : IFileManager
     {
-        private readonly ILibraryManager library;
+        private static ILibraryManager library;
         //The FileDatabaseHeader
-        public DatabaseManagerHeader gFileDataBase { get; } = new();
+        public static DatabaseManagerHeader gFileDataBase { get; } = new();
 
         public FileManager(ILibraryManager libraryFileManager)
         {
-            this.library = libraryFileManager;
+            library = libraryFileManager;
         }
 
         public bool IsInitialized { get; private set; }
 
         public ValueTask<bool> Initialize()
         {
-            var lm = (this.library as LibraryFileManager)!;
+            var lm = (library as LibraryFileManager)!;
 
-            lm.gFileDataBase = this.gFileDataBase;
-            this.gFileDataBase.pLibraries = lm.Libraries;
+            lm.gFileDataBase = gFileDataBase;
+            gFileDataBase.pLibraries = lm.Libraries;
 
-            this.gFileDataBase.fInitialized = true;
-            this.IsInitialized = true;
+            gFileDataBase.fInitialized = true;
+            IsInitialized = true;
 
             return ValueTask.FromResult(true);
         }
 
-        public Stream FileOpen(string strFilename, FileAccess uiOptions, bool fDeleteOnClose = false)
+        public static Stream FileOpen(string strFilename, FileAccess uiOptions, bool fDeleteOnClose = false)
         {
             Stream hFile = Stream.Null;
             FileStream? realFileStream = null;
@@ -79,7 +79,7 @@ namespace SharpAlliance.Core.Managers
 
                 if (!realFileStream.SafeFileHandle.IsInvalid)
                 {
-                    this.AddToOpenFile(realFileStream);
+                    AddToOpenFile(realFileStream);
 
                     return realFileStream;
                 }
@@ -87,7 +87,7 @@ namespace SharpAlliance.Core.Managers
                 //create a file handle for the 'real file'
                 //hFile = CreateRealFileHandle(hRealFile);
             }
-            else if (this.gFileDataBase.fInitialized)
+            else if (gFileDataBase.fInitialized)
             {
                 //if the file is to be opened for writing, return an error cause you cant write a file that is in the database library
                 if (fDeleteOnClose)
@@ -102,7 +102,7 @@ namespace SharpAlliance.Core.Managers
                 }
 
                 //If the file is in the library, get the stream to it.
-                hLibFile = this.library.OpenFileFromLibrary(strFilename);
+                hLibFile = library.OpenFileFromLibrary(strFilename);
                 //tried to open a file that wasnt in the database
                 if (!hLibFile.CanRead)
                 {
@@ -164,9 +164,9 @@ namespace SharpAlliance.Core.Managers
             return realFileStream;
         }
 
-        private Stream AddToOpenFile(Stream hLibFile)
+        private static Stream AddToOpenFile(Stream hLibFile)
         {
-            this.gFileDataBase.RealFiles.pRealFilesOpen.Add(new Library.RealFileOpen
+            gFileDataBase.RealFiles.pRealFilesOpen.Add(new Library.RealFileOpen
             {
                 Stream = hLibFile,
             });
@@ -178,13 +178,13 @@ namespace SharpAlliance.Core.Managers
         {
         }
 
-        public void FileClose(Stream fptr)
+        public static void FileClose(Stream fptr)
         {
         }
 
         private const int ROTATION_ARRAY_SIZE = 46;
 
-        public bool FileExists(string pFilename)
+        public static bool FileExists(string pFilename)
         {
             var exists = false;
 
@@ -192,17 +192,17 @@ namespace SharpAlliance.Core.Managers
             exists = File.Exists(pFilename);
 
             // look through libraries for file...
-            if (!exists && this.library.IsInitialized)
+            if (!exists && library.IsInitialized)
             {
-                exists = this.library.CheckIfFileExistsInLibrary(pFilename);
+                exists = library.CheckIfFileExistsInLibrary(pFilename);
             }
 
             return exists;
         }
 
-        byte[] ubRotationArray = new byte[] { 132, 235, 125, 99, 15, 220, 140, 89, 205, 132, 254, 144, 217, 78, 156, 58, 215, 76, 163, 187, 55, 49, 65, 48, 156, 140, 201, 68, 184, 13, 45, 69, 102, 185, 122, 225, 23, 250, 160, 220, 114, 240, 64, 175, 057, 233 };
+        static byte[] ubRotationArray = new byte[] { 132, 235, 125, 99, 15, 220, 140, 89, 205, 132, 254, 144, 217, 78, 156, 58, 215, 76, 163, 187, 55, 49, 65, 48, 156, 140, 201, 68, 184, 13, 45, 69, 102, 185, 122, 225, 23, 250, 160, 220, 114, 240, 64, 175, 057, 233 };
 
-        public unsafe bool JA2EncryptedFileRead(Stream hFile, byte[] pDest, uint uiBytesToRead, out uint puiBytesRead)
+        public static unsafe bool JA2EncryptedFileRead(Stream hFile, byte[] pDest, uint uiBytesToRead, out uint puiBytesRead)
         {
             uint uiLoop;
             byte ubArrayIndex = 0;
@@ -212,7 +212,7 @@ namespace SharpAlliance.Core.Managers
             bool fRet;
             byte[] pMemBlock = new byte[uiBytesToRead];
 
-            fRet = this.FileRead(hFile, ref pDest, uiBytesToRead, out puiBytesRead);
+            fRet = FileRead(hFile, ref pDest, uiBytesToRead, out puiBytesRead);
             try
             {
                 if (fRet)
@@ -221,7 +221,7 @@ namespace SharpAlliance.Core.Managers
                     for (uiLoop = 0; uiLoop < puiBytesRead; uiLoop++)
                     {
                         ubLastByteForNextLoop = pMemBlock[uiLoop];
-                        pMemBlock[uiLoop] -= (byte)(ubLastByte + this.ubRotationArray[ubArrayIndex]);
+                        pMemBlock[uiLoop] -= (byte)(ubLastByte + ubRotationArray[ubArrayIndex]);
                         ubArrayIndex++;
                         if (ubArrayIndex >= ROTATION_ARRAY_SIZE)
                         {
@@ -239,31 +239,31 @@ namespace SharpAlliance.Core.Managers
             return fRet;
         }
 
-        public long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
+        public static long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
             => hLibraryHandle.Seek(offset, origin);
 
-        public bool FileRead(Stream stream, ref byte[] buffer, uint uiBytesToRead, out uint uiBytesRead)
+        public static bool FileRead(Stream stream, ref byte[] buffer, uint uiBytesToRead, out uint uiBytesRead)
         {
             uiBytesRead = (uint)stream.Read(buffer, 0, (int)uiBytesToRead);
 
             return true;
         }
 
-        public bool FileRead(Stream stream, Span<byte> buffer, out uint bytesRead)
+        public static bool FileRead(Stream stream, Span<byte> buffer, out uint bytesRead)
         {
             bytesRead = (uint)stream.Read(buffer);
 
             return true;
         }
 
-        public bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current)
+        public static bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current)
         {
             stream.Seek(uiStoredSize, current);
 
             return true;
         }
 
-        public bool FileRead<T>(Stream stream, ref T[] obj, uint uiFileSectionSize, out uint uiBytesRead)
+        public static bool FileRead<T>(Stream stream, ref T[] obj, uint uiFileSectionSize, out uint uiBytesRead)
             where T : unmanaged
         {
             var buffer = new byte[uiFileSectionSize];
@@ -276,28 +276,31 @@ namespace SharpAlliance.Core.Managers
             return true;
         }
 
-        public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, uint seekFrom, uint uiSeekAmount)
+        public static bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, int seekFrom, int uiSeekAmount)
+            => LoadEncryptedDataFromFile(pFileName, out pDestString, (uint)seekFrom, (uint)uiSeekAmount);
+
+        public static bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, uint seekFrom, uint uiSeekAmount)
         {
             pDestString = string.Empty;
 
-            using var stream = this.FileOpen(pFileName, FileAccess.Read, false);
+            using var stream = FileOpen(pFileName, FileAccess.Read, false);
             if (stream is null)
             {
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed to FileOpen");
                 return false;
             }
 
-            if (this.FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
+            if (FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
             {
-                this.FileClose(stream);
+                FileClose(stream);
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileSeek");
                 return false;
             }
 
             byte[] buff = new byte[uiSeekAmount];
-            if (!this.FileRead(stream, ref buff, uiSeekAmount, out var uiBytesRead))
+            if (!FileRead(stream, ref buff, uiSeekAmount, out var uiBytesRead))
             {
-                this.FileClose(stream);
+                FileClose(stream);
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileRead");
                 return false;
             }
@@ -324,7 +327,7 @@ namespace SharpAlliance.Core.Managers
 
             }
             pDestString = span.Slice(0, i).ToString();
-            this.FileClose(stream);
+            FileClose(stream);
 
             return true;
         }

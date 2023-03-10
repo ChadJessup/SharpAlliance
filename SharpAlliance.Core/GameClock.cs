@@ -559,7 +559,7 @@ public class GameClock
     }
 
 
-    void TogglePause()
+    public static void TogglePause()
     {
         if (gfGamePaused)
         {
@@ -572,19 +572,19 @@ public class GameClock
     }
 
 
-    bool GamePaused()
+    public static bool GamePaused()
     {
         return gfGamePaused;
     }
 
 
     //ONLY APPLICABLE INSIDE EVENT CALLBACKS!
-    void InterruptTime()
+    public static void InterruptTime()
     {
         gfTimeInterrupt = true;
     }
 
-    void PauseTimeForInterupt()
+    public static void PauseTimeForInterupt()
     {
         gfTimeInterruptPause = true;
     }

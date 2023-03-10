@@ -7,6 +7,8 @@ using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 
 using static System.Math;
+using SharpAlliance.Core.Screens;
+
 namespace SharpAlliance.Core;
 
 public class SoldierControl
@@ -1139,7 +1141,7 @@ public class SoldierControl
         SetSoldierAniSpeed(pSoldier);
 
         // Reset counters
-        RESETTIMECOUNTER(pSoldier.UpdateCounter, pSoldier.sAniDelay);
+        RESETTIMECOUNTER(ref pSoldier.UpdateCounter, pSoldier.sAniDelay);
 
         // Adjust to new animation frame ( the first one )
         AdjustToNextAnimationFrame(pSoldier);
@@ -1405,7 +1407,7 @@ public class SoldierControl
             }
 
             // CHECK IF OUR NEW GIRDNO IS VALID,IF NOT DONOT SET!
-            if (!GridNoOnVisibleWorldTile(sNewGridNo))
+            if (!IsometricUtils.GridNoOnVisibleWorldTile(sNewGridNo))
             {
                 pSoldier.sGridNo = sNewGridNo;
                 return;
@@ -1532,7 +1534,7 @@ public class SoldierControl
             }
 
             pSoldier.bOldOverTerrainType = pSoldier.bOverTerrainType;
-            pSoldier.bOverTerrainType = GetTerrainType(pSoldier.sGridNo);
+            pSoldier.bOverTerrainType = WorldManager.GetTerrainType(pSoldier.sGridNo);
 
             // OK, check that our animation is up to date!
             // Check our water value
@@ -3343,7 +3345,7 @@ public class SoldierControl
     }
 
 
-    void ChangeSoldierStance(SOLDIERTYPE? pSoldier, AnimationHeights ubDesiredStance)
+    public static void ChangeSoldierStance(SOLDIERTYPE? pSoldier, AnimationHeights ubDesiredStance)
     {
         int usNewState;
 
@@ -4536,7 +4538,7 @@ int	gOrangeGlowG[]=
         }
 
 
-        RESETTIMECOUNTER(pSoldier.UpdateCounter, pSoldier.sAniDelay);
+        RESETTIMECOUNTER(ref pSoldier.UpdateCounter, pSoldier.sAniDelay);
     }
 
 
@@ -4699,7 +4701,7 @@ int	gOrangeGlowG[]=
     }
 
 
-    void SetSoldierAniSpeed(SOLDIERTYPE? pSoldier)
+    public static void SetSoldierAniSpeed(SOLDIERTYPE? pSoldier)
     {
         SOLDIERTYPE? pStatsSoldier;
 
@@ -4711,7 +4713,7 @@ int	gOrangeGlowG[]=
             if (((pSoldier.bVisible == -1 && pSoldier.bVisible == pSoldier.bLastRenderVisibleValue) || gTacticalStatus.fAutoBandageMode) && pSoldier.usAnimState != MONSTER_UP)
             {
                 pSoldier.sAniDelay = 0;
-                RESETTIMECOUNTER(pSoldier.UpdateCounter, pSoldier.sAniDelay);
+                RESETTIMECOUNTER(ref pSoldier.UpdateCounter, pSoldier.sAniDelay);
                 return;
             }
         }
@@ -6800,13 +6802,13 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void SendChangeSoldierStanceEvent(SOLDIERTYPE? pSoldier, AnimationHeights ubNewStance)
+    public static void SendChangeSoldierStanceEvent(SOLDIERTYPE? pSoldier, AnimationHeights ubNewStance)
     {
         ChangeSoldierStance(pSoldier, ubNewStance);
     }
 
 
-    void SendBeginFireWeaponEvent(SOLDIERTYPE? pSoldier, int sTargetGridNo)
+    public static void SendBeginFireWeaponEvent(SOLDIERTYPE? pSoldier, int sTargetGridNo)
     {
         EV_S_BEGINFIREWEAPON SBeginFireWeapon;
 
@@ -7206,7 +7208,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
                                 if (pTSoldier.bTeam != gbPlayerNum)
                                 {
-                                    CancelAIAction(pTSoldier, true);
+                                    AIMain.CancelAIAction(pTSoldier, true);
                                 }
 
                                 ubTDirection = (int)GetDirectionFromGridNo(pSoldier.sGridNo, pTSoldier);
@@ -7364,7 +7366,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
                             if (pTSoldier.bTeam != gbPlayerNum)
                             {
-                                CancelAIAction(pTSoldier, true);
+                                AIMain.CancelAIAction(pTSoldier, 1);
                             }
 
                             ubTDirection = (int)GetDirectionFromGridNo(pSoldier.sGridNo, pTSoldier);
@@ -7828,7 +7830,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void ReceivingSoldierCancelServices(SOLDIERTYPE? pSoldier)
+    public static void ReceivingSoldierCancelServices(SOLDIERTYPE? pSoldier)
     {
         InternalReceivingSoldierCancelServices(pSoldier, true);
     }
@@ -8652,7 +8654,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             RESETTIMECOUNTER(pSoldier.PortraitFlashCounter, FLASH_PORTRAIT_DELAY);
 
             // If we are in mapscreen, set this person as selected
-            if (guiCurrentScreen == MAP.SCREEN)
+            if (guiCurrentScreen == ScreenName.MAP_SCREEN)
             {
                 SetInfoChar(pSoldier.ubID);
             }
@@ -8669,7 +8671,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void SoldierCollapse(SOLDIERTYPE? pSoldier)
+    public static void SoldierCollapse(SOLDIERTYPE? pSoldier)
     {
         bool fMerc = false;
 
@@ -8791,7 +8793,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    double CalcSoldierNextBleed(SOLDIERTYPE? pSoldier)
+    public static double CalcSoldierNextBleed(SOLDIERTYPE? pSoldier)
     {
         int bBandaged;
 
@@ -9472,15 +9474,15 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         {
             switch (pTSoldier.ubProfile)
             {
-                case JIM:
-                case JACK:
-                case OLAF:
-                case RAY:
-                case OLGA:
-                case TYRONE:
+                case NPCID.JIM:
+                case NPCID.JACK:
+                case NPCID.OLAF:
+                case NPCID.RAY:
+                case NPCID.OLGA:
+                case NPCID.TYRONE:
                     // Start combat etc
                     DeleteTalkingMenu();
-                    CancelAIAction(pTSoldier, true);
+                    AIMain.CancelAIAction(pTSoldier, 1);
                     AddToShouldBecomeHostileOrSayQuoteList(pTSoldier.ubID);
                     break;
                 default:
@@ -9710,7 +9712,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void HandleSoldierTakeDamageFeedback(SOLDIERTYPE? pSoldier)
+    public static void HandleSoldierTakeDamageFeedback(SOLDIERTYPE? pSoldier)
     {
         // Do sound.....
         // if ( pSoldier.bLife >= CONSCIOUSNESS )
@@ -10243,12 +10245,3 @@ public enum SOLDIER_QUOTE
     SAID_BUDDY_2_WITNESSED = 0x0080,
     SAID_BUDDY_3_WITNESSED = 0x0100,
 }
-
-public enum STRATEGIC_MOVE
-{
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST,
-    THROUGH,
-};

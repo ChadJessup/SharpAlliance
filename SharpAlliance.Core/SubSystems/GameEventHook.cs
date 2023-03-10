@@ -84,10 +84,10 @@ public class GameEventHook
                 DailyUpdateOfMercSite(GameClock.GetWorldDay());
                 break;
             case EVENT.DAY3_ADD_EMAIL_FROM_SPECK:
-                Emails.AddEmail(MERC_INTRO, MERC_INTRO_LENGTH, SPECK_FROM_MERC, GameClock.GetWorldTotalMin());
+                Emails.AddEmail(MERC_INTRO, MERC_INTRO_LENGTH, EmailAddresses.SPECK_FROM_MERC, GameClock.GetWorldTotalMin());
                 break;
             case EVENT.DAY2_ADD_EMAIL_FROM_IMP:
-                Emails.AddEmail(IMP_EMAIL_PROFILE_RESULTS, IMP_EMAIL_PROFILE_RESULTS_LENGTH, IMP_PROFILE_RESULTS, GameClock.GetWorldTotalMin());
+                Emails.AddEmail(IMP_EMAIL_PROFILE_RESULTS, IMP_EMAIL_PROFILE_RESULTS_LENGTH, EmailAddresses.IMP_PROFILE_RESULTS, GameClock.GetWorldTotalMin());
                 break;
             //If a merc gets hired and they dont show up immediately, the merc gets added to the queue and shows up
             // uiTimeTillMercArrives  minutes later
@@ -217,8 +217,8 @@ public class GameEventHook
             case EVENT.MEANWHILE:
                 if (!DelayEventIfBattleInProgress(pEvent))
                 {
-                    BeginMeanwhile((int)pEvent.uiParam);
-                    InterruptTime();
+                    Meanwhile.BeginMeanwhile((int)pEvent.uiParam);
+                    GameClock.InterruptTime();
                 }
                 break;
             case EVENT.BEGIN_CREATURE_QUEST:
@@ -254,7 +254,7 @@ public class GameEventHook
                 TurnOffPrimeLights();
                 break;
             case EVENT.INTERRUPT_TIME:
-                InterruptTime();
+                GameClock.InterruptTime();
                 break;
             case EVENT.ENRICO_MAIL:
                 HandleEnricoEmail();

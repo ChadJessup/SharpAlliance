@@ -134,11 +134,19 @@ public class DrugsAndAlcohol
                     pSoldier.bStrength -= 5;
 
                     if (pSoldier.bWisdom < 1)
+                    {
                         pSoldier.bWisdom = 1;
+                    }
+
                     if (pSoldier.bDexterity < 1)
+                    {
                         pSoldier.bDexterity = 1;
+                    }
+
                     if (pSoldier.bStrength < 1)
+                    {
                         pSoldier.bStrength = 1;
+                    }
 
                     // export stat changes to profile
                     gMercProfiles[pSoldier.ubProfile].bWisdom = pSoldier.bWisdom;

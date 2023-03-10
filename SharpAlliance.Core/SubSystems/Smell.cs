@@ -1,4 +1,5 @@
 ﻿using System;
+using SharpAlliance.Core.Managers;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -226,14 +227,14 @@ public class Smell
         switch (giTimeCompressMode)
         {
             // in time compression, let this happen every 5 REAL seconds
-            case TIME_COMPRESS_5MINS: // rate of 300 seconds per real second
+            case TIME_COMPRESS.TIME_COMPRESS_5MINS: // rate of 300 seconds per real second
                 uiCheckTime = 5 * 300;
                 break;
-            case TIME_COMPRESS_30MINS: // rate of 1800 seconds per real second
+            case TIME_COMPRESS.TIME_COMPRESS_30MINS: // rate of 1800 seconds per real second
                 uiCheckTime = 5 * 1800;
                 break;
-            case TIME_COMPRESS_60MINS: // rate of 3600 seconds per real second
-            case TIME_SUPER_COMPRESS: // should not be used but just in frigging case...
+            case TIME_COMPRESS.TIME_COMPRESS_60MINS: // rate of 3600 seconds per real second
+            case TIME_COMPRESS.TIME_SUPER_COMPRESS: // should not be used but just in frigging case...
                 uiCheckTime = 5 * 3600;
                 break;
             default: // not compressing
@@ -346,7 +347,9 @@ public class Smell
          */
 
         // If we are in water...
-        if (GetTerrainType(sGridNo) == DEEP_WATER || GetTerrainType(sGridNo) == LOW_WATER || GetTerrainType(sGridNo) == MED_WATER)
+        if (WorldManager.GetTerrainType(sGridNo) == TerrainTypeDefines.DEEP_WATER
+            || WorldManager.GetTerrainType(sGridNo) == TerrainTypeDefines.LOW_WATER
+            || WorldManager.GetTerrainType(sGridNo) == TerrainTypeDefines.MED_WATER)
         {
             return;
         }

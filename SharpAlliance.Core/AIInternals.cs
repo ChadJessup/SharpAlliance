@@ -22,3 +22,11 @@ public struct ATTACKTYPE
     public int ubAPCost;                         // how many APs the attack will use up
     public int bWeaponIn;							// the inv slot of the weapon in question
 }
+
+public enum URGENCY
+{
+    LOW = 0,
+    MED,
+    HIGH,
+    NUM_URGENCY_STATES
+};

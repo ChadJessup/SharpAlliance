@@ -386,7 +386,7 @@ public class Facts
                     // if Skyrider, ignore low loyalty until he has monologues, and wait at least a day since the latest monologue to avoid a hot/cold attitude
                     if ((ubProfileID == NPCID.SKYRIDER)
                         && ((Globals.guiHelicopterSkyriderTalkState == 0)
-                        || ((GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) < (24 * 60))))
+                        || ((GameClock.GetWorldTotalMin() - Globals.guiTimeOfLastSkyriderMonologue) < (24 * 60))))
                     {
                         gubFact[usFact] = false;
                     }
@@ -443,15 +443,15 @@ public class Facts
                 break;
 
             case FACT.PLAYER_DOING_POORLY:
-                gubFact[usFact] = (CurrentPlayerProgressPercentage() < 20);
+                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() < 20);
                 break;
 
             case FACT.PLAYER_DOING_WELL:
-                gubFact[usFact] = (CurrentPlayerProgressPercentage() > 50);
+                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 50);
                 break;
 
             case FACT.PLAYER_DOING_VERY_WELL:
-                gubFact[usFact] = (CurrentPlayerProgressPercentage() > 80);
+                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 80);
                 break;
 
             case FACT.FATHER_DRUNK_AND_SCIFI_OPTION_ON:
@@ -460,7 +460,7 @@ public class Facts
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:
                 gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED)
-                    && (GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
+                    && (GameClock.GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
                 break;
 
             case FACT.NOTHING_REPAIRED_YET:
@@ -540,7 +540,7 @@ public class Facts
                 break;
 
             case FACT.ROCKET_RIFLE_EXISTS:
-                gubFact[usFact] = ItemTypeExistsAtLocation(10472, ROCKET_RIFLE, 0, null);
+                gubFact[usFact] = HandleItems.ItemTypeExistsAtLocation(10472, Items.ROCKET_RIFLE, 0, null);
                 break;
 
             case FACT.DOREEN_ALIVE:
@@ -648,7 +648,7 @@ public class Facts
                 break;
 
             case FACT.KINGPIN_IS_ENEMY:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[(int)CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE);
+                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE);
                 break;
 
             case FACT.DYNAMO_NOT_SPEAKER:
@@ -664,7 +664,7 @@ public class Facts
                 break;
 
             case FACT.PLAYER_KILLED_BOXERS:
-                gubFact[usFact] = !BoxerExists();
+                gubFact[usFact] = !Boxing.BoxerExists();
                 break;
 
             // chad: fix this
@@ -691,7 +691,7 @@ public class Facts
         if ((usFact == FACT.ESTONI_REFUELLING_POSSIBLE) && (CheckFact(usFact, 0) == false))
         {
             // give him some gas...
-            GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER_JAKE, GAS_CAN, (4 + Globals.Random.Next(3)));
+            ArmsDealerInit.GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.JAKE, Items.GAS_CAN, (4 + Globals.Random.Next(3)));
         }
 
         gubFact[usFact] = true;

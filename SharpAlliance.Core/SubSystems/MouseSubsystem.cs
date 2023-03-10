@@ -24,7 +24,7 @@ public class MouseSubSystem : ISharpAllianceManager
     private readonly ILogger<MouseSubSystem> logger;
     private readonly IClockManager clock;
     private static CursorSubSystem cursors;
-    private readonly GameContext gameContext;
+    private static GameContext gameContext;
     private const int MSYS_DOUBLECLICK_DELAY = 400;
 
     private static Point CurrentCoord = new(0, 0);

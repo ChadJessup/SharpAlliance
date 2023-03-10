@@ -680,7 +680,7 @@ public class OppList
         }
     }
 
-    int TeamNoLongerSeesMan(TEAM ubTeam, SOLDIERTYPE? pOpponent, int ubExcludeID, int bIteration)
+    public static int TeamNoLongerSeesMan(TEAM ubTeam, SOLDIERTYPE? pOpponent, int ubExcludeID, int bIteration)
     {
         int bLoop;
         SOLDIERTYPE? pMate;
@@ -1241,7 +1241,7 @@ public class OppList
     }
 
 
-    void HandleManNoLongerSeen(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int pPersOL, int pbPublOL)
+    public static void HandleManNoLongerSeen(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int pPersOL, int pbPublOL)
     {
         // if neither side is neutral AND
         // if this soldier is an opponent (fights for different side)
@@ -1264,15 +1264,15 @@ public class OppList
 
         if ((pSoldier.ubCivilianGroup == CIV_GROUP.KINGPIN_CIV_GROUP) && (pOpponent.bTeam == gbPlayerNum))
         {
-            int ubRoom;
+            int? ubRoom;
 
             if (RenderFun.InARoom(pOpponent.sGridNo, out ubRoom) && IN_BROTHEL(ubRoom) && (IN_BROTHEL_GUARD_ROOM(ubRoom)))
             {
                 // unauthorized!
                 // make guard run to block guard room
-                CancelAIAction(pSoldier, true);
-                RESETTIMECOUNTER(pSoldier.AICounter, 0);
-                pSoldier.bNextAction = AI_ACTION_RUN;
+                AIMain.CancelAIAction(pSoldier, 1);
+                RESETTIMECOUNTER(ref pSoldier.AICounter, 0);
+                pSoldier.bNextAction = AI_ACTION.RUN;
                 pSoldier.usNextActionData = 13250;
             }
         }
@@ -1708,7 +1708,7 @@ public class OppList
                                         if (pSoldier.bOppCnt == 0)
                                         {
                                             // didn't see anyone before!
-                                            CancelAIAction(pSoldier, true);
+                                            AIMain.CancelAIAction(pSoldier, 1);
                                             SetNewSituation(pSoldier);
                                         }
                                     }
@@ -1722,19 +1722,19 @@ public class OppList
                                             TriggerNPCRecord(ANGEL, 12);
                                         }
                                     }
-                                    else if ((Facts.CheckFact(FACT.ANGEL_LEFT_DEED, ANGEL) == true) && (Facts.CheckFact(FACT.ANGEL_MENTIONED_DEED, ANGEL) == false))
+                                    else if ((Facts.CheckFact(FACT.ANGEL_LEFT_DEED, NPCID.ANGEL) == true) && (Facts.CheckFact(FACT.ANGEL_MENTIONED_DEED, ANGEL) == false))
                                     {
-                                        CancelAIAction(pSoldier, true);
+                                        AIMain.CancelAIAction(pSoldier, 1);
                                         pSoldier.sAbsoluteFinalDestination = NOWHERE;
                                         EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
-                                        TriggerNPCRecord(ANGEL, 20);
+                                        TriggerNPCRecord(NPCID.ANGEL, 20);
                                         // trigger Angel to walk off afterwards
                                         //TriggerNPCRecord( ANGEL, 24 );
                                     }
                                     break;
                                 //case QUEEN:
-                                case JOE:
-                                case ELLIOT:
+                                case NPCID.JOE:
+                                case NPCID.ELLIOT:
                                     if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 & PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE))
                                     {
                                         if (!AreInMeanwhile())
@@ -2242,16 +2242,16 @@ public class OppList
         }
     }
 
-    void AddOneOpponent(SOLDIERTYPE? pSoldier)
+    public static void AddOneOpponent(SOLDIERTYPE? pSoldier)
     {
         int bOldOppCnt = pSoldier.bOppCnt;
 
         pSoldier.bOppCnt++;
 
-        if (!bOldOppCnt)
+        if (bOldOppCnt == 0)
         {
             // if we hadn't known about opponents being here for sure prior to this
-            if (pSoldier.ubBodyType == LARVAE_MONSTER)
+            if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER)
             {
                 // never become aware of you!
                 return;
@@ -2281,7 +2281,7 @@ public class OppList
 
 
 
-    void RemoveOneOpponent(SOLDIERTYPE? pSoldier)
+    public static void RemoveOneOpponent(SOLDIERTYPE? pSoldier)
     {
         pSoldier.bOppCnt--;
 
@@ -2447,7 +2447,7 @@ public class OppList
 
 
 
-    void UpdatePersonal(SOLDIERTYPE? pSoldier, int ubID, int bNewOpplist, int sGridno, int bLevel)
+    public static void UpdatePersonal(SOLDIERTYPE? pSoldier, int ubID, int bNewOpplist, int sGridno, int bLevel)
     {
         /*
     #if RECORDOPPLIST
@@ -2685,7 +2685,7 @@ public class OppList
     }
 
 
-    void SaySeenQuote(SOLDIERTYPE? pSoldier, bool fSeenCreature, bool fVirginSector, bool fSeenJoey)
+    public static void SaySeenQuote(SOLDIERTYPE? pSoldier, bool fSeenCreature, bool fVirginSector, bool fSeenJoey)
     {
         SOLDIERTYPE? pTeamSoldier;
         int ubNumEnemies = 0;
@@ -2827,7 +2827,7 @@ public class OppList
         }
     }
 
-    void OurTeamSeesSomeone(SOLDIERTYPE? pSoldier, int bNumReRevealed, int bNumNewEnemies)
+    public static void OurTeamSeesSomeone(SOLDIERTYPE? pSoldier, int bNumReRevealed, int bNumNewEnemies)
     {
         if (gTacticalStatus.fVirginSector)
         {

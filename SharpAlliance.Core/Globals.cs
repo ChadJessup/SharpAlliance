@@ -759,7 +759,7 @@ public partial class Globals
     public const int ORTA_SECTOR_Y = 11;
 
     public const int TIXA_SECTOR_X = 9;
-    public const int TIXA_SECTOR_Y = 10;
+    public const MAP_ROW TIXA_SECTOR_Y = (MAP_ROW)10;
     public const int INVALID_ANIMATION_SURFACE = 32000;
 
     public static int gubCheatLevel { get; internal set; }
@@ -1995,9 +1995,6 @@ public partial class Globals
     public static int guiNumBullets = 0;
 
     public const int NOSCORE = 99;
-
-    public const int DONTFORCE = 0;
-    public const int FORCE = 1;
 
     // ANY NEW ACTIONS ADDED - UPDATE OVERHEAD.C ARRAY WITH ACTION'S STRING VALUE
     public const AI_ACTION FIRST_MOVEMENT_ACTION = AI_ACTION.RANDOM_PATROL;

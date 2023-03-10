@@ -29,14 +29,14 @@ public class SOLDIERTYPE
     public int bOldLife;          // life at end of last turn, recorded for monster AI
                                   // attributes
     public bool bInSector { get; set; }
-    int bFlashPortraitFrame;
-    int sFractLife;       // fraction of life pts (in hundreths)	
+    public int bFlashPortraitFrame;
+    public int sFractLife;       // fraction of life pts (in hundreths)	
     public int bBleeding;     // blood loss control variable
     public int bBreath;           // current breath value
     public int bBreathMax;   // max breath, affected by fatigue/sleep
     public bool bStealthMode { get; set; }
 
-    int sBreathRed;           // current breath value
+    public int sBreathRed;           // current breath value
     public int fDelayedMovement;
 
     public bool fReloading;
@@ -402,26 +402,26 @@ public class SOLDIERTYPE
     int usMedicalDeposit;         // is there a medical deposit on merc 
     CIV_GROUP usLifeInsurance;          // is there life insurance taken out on merc  
     //DEF:  Used for the communications
-    int uiStartMovementTime;             // the time since the merc first started moving 
-    int uiOptimumMovementTime;           // everytime in ececute overhead the time for the current ani will be added to this total
-    int usLastUpdateTime;                    // The last time the soldier was in ExecuteOverhead
+    public int uiStartMovementTime;             // the time since the merc first started moving 
+    public int uiOptimumMovementTime;           // everytime in ececute overhead the time for the current ani will be added to this total
+    public int usLastUpdateTime;                    // The last time the soldier was in ExecuteOverhead
 
-    bool fIsSoldierMoving;                           // ie.  Record time is on
-    bool fIsSoldierDelayed;                      //Is the soldier delayed Soldier 
-    bool fSoldierUpdatedFromNetwork;
-    int uiSoldierUpdateNumber;
-    byte ubSoldierUpdateType;
+    public bool fIsSoldierMoving;                           // ie.  Record time is on
+    public bool fIsSoldierDelayed;                      //Is the soldier delayed Soldier 
+    public bool fSoldierUpdatedFromNetwork;
+    public int uiSoldierUpdateNumber;
+    public byte ubSoldierUpdateType;
     //END
-    int iStartOfInsuranceContract;
-    int uiLastAssignmentChangeMin;       // timestamp of last assignment change in minutes
-    int iTotalLengthOfInsuranceContract;
+    public int iStartOfInsuranceContract;
+    public int uiLastAssignmentChangeMin;       // timestamp of last assignment change in minutes
+    public int iTotalLengthOfInsuranceContract;
     public SOLDIER_CLASS ubSoldierClass;                                   //admin, elite, troop (creature types?)
-    int ubAPsLostToSuppression;
-    bool fChangingStanceDueToSuppression;
-    int ubSuppressorID;
+    public int ubAPsLostToSuppression;
+    public bool fChangingStanceDueToSuppression;
+    public int ubSuppressorID;
     //Squad merging vars
-    int ubDesiredSquadAssignment;
-    int ubNumTraversalsAllowedToMerge;
+    public int ubDesiredSquadAssignment;
+    public int ubNumTraversalsAllowedToMerge;
     public AnimationStates usPendingAnimation2;
     public CIV_GROUP ubCivilianGroup;
     // time changes...when a stat was changed according to GetJA2Clock();
@@ -603,14 +603,14 @@ public class GROUP
     public int ubFatigueLevel;                   //the fatigue level of the weakest member in group
     public int ubRestAtFatigueLevel;     //when the group's fatigue level <= this level, they will rest upon arrival at next sector.
     public int ubRestToFatigueLevel;     //when resting, the group will rest until the fatigue level reaches this level.
-    public int uiArrivalTime;                   //the arrival time in world minutes that the group will arrive at the next sector.
-    public int uiTraverseTime;              //the total traversal time from the previous sector to the next sector.
+    public uint uiArrivalTime;                   //the arrival time in world minutes that the group will arrive at the next sector.
+    public uint uiTraverseTime;              //the total traversal time from the previous sector to the next sector.
     public bool fRestAtNight;                   //set when the group is permitted to rest between 2200 and 0600 when moving
     public bool fWaypointsCancelled;    //set when groups waypoints have been removed.
     public List<WAYPOINT> pWaypoints = new();                   //a list of all of the waypoints in the groups movement.
     public VehicleTypes ubTransportationMask;     //the mask combining all of the groups transportation methods.
     public int uiFlags;                             //various conditions that apply to the group
-    public int ubCreatedSectorID;            //used for debugging strategic AI for keeping track of the sector ID a group was created in.
+    public SEC ubCreatedSectorID;            //used for debugging strategic AI for keeping track of the sector ID a group was created in.
     public SEC ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.
     public int[] bPadding = new int[29];                      //***********************************************//
 

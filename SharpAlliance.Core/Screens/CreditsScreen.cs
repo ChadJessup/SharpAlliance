@@ -177,7 +177,7 @@ public class CreditsScreen : IScreen
 
         //Get the current Credit record
         uiStartLoc = CREDITS_LINESIZE * (uint)Globals.guiCurrentCreditRecord;
-        if (!this.files.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out zOriginalString, uiStartLoc, CREDITS_LINESIZE))
+        if (!FileManager.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out zOriginalString, uiStartLoc, CREDITS_LINESIZE))
         {
             //there are no more credits
             return false;

@@ -290,7 +290,7 @@ public class StrategicMines
     }
 
 
-    int ExtractOreFromMine(MINE bMineIndex, int uiAmount)
+    public static int ExtractOreFromMine(MINE bMineIndex, int uiAmount)
     {
         // will remove the ore from the mine and return the amount that was removed
         int uiAmountExtracted = 0;
@@ -474,7 +474,7 @@ public class StrategicMines
         return (iWorkRate);
     }
 
-    int MineAMine(MINE bMineIndex)
+    public static int MineAMine(MINE bMineIndex)
     {
         // will extract ore based on available workforce, and increment players income based on amount
         MINE_TYPE bMineType = 0;
@@ -549,7 +549,7 @@ public class StrategicMines
     }
 
 
-    void HandleIncomeFromMines()
+    public static void HandleIncomeFromMines()
     {
         int iIncome = 0;
         MINE bCounter = 0;
@@ -639,7 +639,7 @@ public class StrategicMines
         return (MINE)(-1);
     }
 
-    void GetMineSector(MINE ubMineIndex, out int psX, out MAP_ROW psY)
+    public static void GetMineSector(MINE ubMineIndex, out int psX, out MAP_ROW psY)
     {
         Debug.Assert((ubMineIndex >= 0) && (ubMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
@@ -649,7 +649,7 @@ public class StrategicMines
 
 
     // get the index of the mine associated with this town
-    MINE GetMineIndexForTown(TOWNS bTownId)
+    public static MINE GetMineIndexForTown(TOWNS bTownId)
     {
         MINE ubMineIndex = 0;
 
@@ -667,7 +667,7 @@ public class StrategicMines
 
 
     // get the sector value for the mine associated with this town
-    int GetMineSectorForTown(TOWNS bTownId)
+    public static int GetMineSectorForTown(TOWNS bTownId)
     {
         MINE ubMineIndex;
         int sMineSector = -1;
@@ -764,7 +764,7 @@ public class StrategicMines
         {
             var mineStatus = Globals.gMineStatus[bMineIndex];
             mineStatus.fShutDown = true;
-            AddHistoryToPlayersLog(HISTORY.MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
+            History.AddHistoryToPlayersLog(HISTORY.MINE_SHUTDOWN, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
         }
     }
 
@@ -779,7 +779,7 @@ public class StrategicMines
             {
                 var mineStatus = Globals.gMineStatus[bMineIndex];
                 mineStatus.fShutDown = false;
-                AddHistoryToPlayersLog(HISTORY.MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
+                History.AddHistoryToPlayersLog(HISTORY.MINE_REOPENED, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
             }
         }
     }
@@ -1216,7 +1216,7 @@ public class StrategicMines
         // mine not empty
         // mine clear of any monsters
         // the "shutdown permanently" flag is only used for the player never receiving the income - miners will keep mining
-        if ((!pMineStatus.fEmpty) && MineClearOfMonsters(ubMineIndex))
+        if ((!pMineStatus.fEmpty) && CreatureSpreading.MineClearOfMonsters(ubMineIndex))
         {
             return (true);
         }

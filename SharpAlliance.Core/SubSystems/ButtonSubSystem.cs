@@ -642,7 +642,7 @@ namespace SharpAlliance.Core.SubSystems
                 //xp = b.MouseRegion.Bounds.X + b.bTextOffset.X;
 
                 // Set the printing font to the button text font
-                FontSubSystem.SetFont(FontStyle.b.usFont);
+                FontSubSystem.SetFont(b.usFont);
 
                 // print the text
                 FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
@@ -705,7 +705,7 @@ namespace SharpAlliance.Core.SubSystems
 
         public static void SetButtonFastHelpText(GUI_BUTTON btn, string text)
         {
-            mouse.SetRegionFastHelpText(btn.MouseRegion, text);
+            MouseSubSystem.SetRegionFastHelpText(btn.MouseRegion, text);
         }
 
         private static void DrawIconOnButton(ref GUI_BUTTON b, int id = 0)

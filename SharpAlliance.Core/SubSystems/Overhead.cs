@@ -37,7 +37,7 @@ namespace SharpAlliance.Core.SubSystems
                         SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
 
                         // END AI actions
-                        CancelAIAction(pSoldier, true);
+                        AIMain.CancelAIAction(pSoldier, 1);
                     }
                 }
             }
@@ -53,7 +53,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // do we need to move the screen?
             //ATE: Force this baby to locate if told to
-            if (!SoldierOnScreen(usID) || fSetLocator == 10)
+            if (!SoldierFind.SoldierOnScreen(usID) || fSetLocator == 10)
             {
                 // Get pointer of soldier
                 pSoldier = MercPtrs[usID];

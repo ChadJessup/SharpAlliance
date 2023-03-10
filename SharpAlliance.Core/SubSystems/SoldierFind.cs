@@ -748,7 +748,7 @@ public class SoldierFind
         return (false);
     }
 
-    bool SoldierOnScreen(int usID)
+    public static bool SoldierOnScreen(int usID)
     {
         SOLDIERTYPE? pSoldier;
 

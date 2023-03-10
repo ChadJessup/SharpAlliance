@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using TIMECOUNTER = System.UInt32;
+﻿using TIMECOUNTER = System.UInt32;
 
 using static SharpAlliance.Core.Globals;
 
@@ -62,7 +56,7 @@ public partial class Globals
     }
     public static void RESETTIMECOUNTER(ref TIMECOUNTER c, TIMECOUNTER d) { c = d; }
     public static bool TIMECOUNTERDONE(TIMECOUNTER c) => c == 0 ? true : false;
-
+    public static bool TIMECOUNTERDONE(TIMECOUNTER c, TIMECOUNTER d) => c == 0 ? true : false;
     public static void SYNCTIMECOUNTER() { }
     public static void ZEROTIMECOUNTER(ref TIMECOUNTER c) { c = 0; }
 }
