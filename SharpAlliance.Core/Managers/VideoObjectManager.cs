@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers.Image;
@@ -653,7 +654,7 @@ public class HVOBJECT
     public int? pGlow;                              // glow highlight table
     public byte? pShade8;                         // 8-bit shading index table
     public byte? pGlow8;                          // 8-bit glow table
-    public ZStripInfo ppZStripInfo;              // Z-value strip info arrays
+    public List<ZStripInfo> ppZStripInfo = new();              // Z-value strip info arrays
 
     public int usNumberOf16BPPObjects;
     public int usNumberOfObjects;   // Total number of objects

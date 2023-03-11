@@ -28,13 +28,10 @@ public partial class Globals
     public static bool gfEnteringMapScreenToEnterPreBattleInterface = false;
     public static bool gfIgnoreAllInput =false;
 
-
     public const int MAX_MOVEMENT_NOISE = 9;
     public const FontColor COLOR1 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGREEN;
     public const FontColor COLOR2 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGRAY2;
     public const int LINE_HEIGHT = 15;
-
-    public const int STRUCTURE_ON_GROUND = 0;
 
     public const int FIRST_LEVEL = 0;
     public const int SECOND_LEVEL = 1;
@@ -624,7 +621,6 @@ public partial class Globals
     public const int SOUND_MAX_CACHED = 128;                       // number of cache slots
     public const int SOUND_MAX_CHANNELS = 16;					// number of mixer channels
 
-
     public const int NUMBER_OF_SAMS = 4;
     public const int POSITION_SOUND_FROM_SOLDIER = 0x00000001;
     public const int NUM_POSITION_SOUND_EFFECT_SLOTS = 10;
@@ -634,14 +630,12 @@ public partial class Globals
     public static int guiNumPositionSnds = 0;
     public static bool gfPositionSoundsActive = false;
 
-
     public static SEC[] pSamList = new SEC[NUMBER_OF_SAMS];
     public static int[] pSamGridNoAList = new int[NUMBER_OF_SAMS];
     public static int[] pSamGridNoBList = new int[NUMBER_OF_SAMS];
     public static bool fFoundOrta;
     public static bool[] fSamSiteFound = new bool[NUMBER_OF_SAMS];
     public static bool gfUseAlternateMap;
-
 
     public static AnimationSurfaceType[] gAnimSurfaceDatabase = new AnimationSurfaceType[(int)AnimationSurfaceTypes.NUMANIMATIONSURFACETYPES];
     public static AnimationStructureType[,] gAnimStructureDatabase = new AnimationStructureType[(int)SoldierBodyTypes.TOTALBODYTYPES, (int)StructData.NUM_STRUCT_IDS];
@@ -656,12 +650,6 @@ public partial class Globals
     // border and bottom buttons
     public static GUI_BUTTON[] giMapBorderButtons = new GUI_BUTTON[6];
     public static int[] guiMapButtonInventory = { -1, -1, -1, -1, -1, -1 };
-
-    public static List<TILE_CACHE_STRUCT> gpTileCacheStructInfo = new();
-    public static List<TILE_CACHE_ELEMENT> gpTileCache = new();
-
-    public const int TILE_CACHE_START_INDEX = 36000;
-    public static int guiNumTileCacheStructs = 0;
 
     public static DISABLED_STYLE gbDisabledButtonStyle;
     public static GUI_BUTTON gpCurrentFastHelpButton;
@@ -972,8 +960,6 @@ public partial class Globals
     public static int gubLoneMercAttemptingToAbandonEPCs { get; internal set; }
     public static int gbPotentiallyAbandonedEPCSlotID { get; internal set; }
     public static bool gfRobotWithoutControllerAttemptingTraversal { get; internal set; }
-
-    public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
     public const int IGNORE_PEOPLE_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 101);
     public const int FIRST_AVAILABLE_STRUCTURE_ID = (INVALID_STRUCTURE_ID + 2);
 

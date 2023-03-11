@@ -287,7 +287,7 @@ public class SoldierControl
 
                     // Check if we are going from crouched height to prone height, and adjust fast turning accordingly
                     // Make guy turn while crouched THEN go into prone
-                    if ((gAnimControl[usNewState].ubEndHeight == AnimationHeights.ANIM_PRONE && gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_CROUCH) && !(gTacticalStatus.uiFlags & INCOMBAT))
+                    if ((gAnimControl[usNewState].ubEndHeight == AnimationHeights.ANIM_PRONE && gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_CROUCH) && !(gTacticalStatus.uiFlags & INCOMBAT))
                     {
                         pSoldier.fTurningUntilDone = true;
                         pSoldier.ubPendingStanceChange = gAnimControl[usNewState].ubEndHeight;
@@ -297,7 +297,7 @@ public class SoldierControl
                     // Check if we are in realtime and we are going from stand to crouch
                     else if (gAnimControl[usNewState].ubEndHeight == AnimationHeights.ANIM_CROUCH
                         && gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND
-                        && (gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(AnimationHeights.ANIM_MOVING))
+                        && (gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.MOVING))
                         && ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
                         || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))))
                     {
@@ -423,7 +423,7 @@ public class SoldierControl
                                     // 2) OK, all's fine... lower weapon first....
                                     pSoldier.usPendingAnimation = usNewState;
                                     // Set new state to be animation to move to new stance
-                                    usNewState = LOWER_RIFLE;
+                                    usNewState = AnimationStates.LOWER_RIFLE;
                             }
                         }
                     }
@@ -431,30 +431,34 @@ public class SoldierControl
             }
 
             // Are we cowering and are tyring to move, getup first...
-            if (gAnimControl[usNewState].uiFlags & ANIM_MOVING && pSoldier.usAnimState == COWERING && gAnimControl[usNewState].ubEndHeight == ANIM_STAND)
+            if (gAnimControl[usNewState].uiFlags & ANIM.MOVING && pSoldier.usAnimState == AnimationStates.COWERING && gAnimControl[usNewState].ubEndHeight == AnimationHeights.ANIM_STAND)
             {
                 pSoldier.usPendingAnimation = usNewState;
                 // Set new state to be animation to move to new stance
-                usNewState = END_COWER;
+                usNewState = AnimationStates.END_COWER;
             }
 
             // If we want to start swatting, put a pending animation
-            if (pSoldier.usAnimState != START_SWAT && usNewState == SWATTING)
+            if (pSoldier.usAnimState != AnimationStates.START_SWAT && usNewState == AnimationStates.SWATTING)
             {
                 // Set new state to be animation to move to new stance
-                usNewState = START_SWAT;
+                usNewState = AnimationStates.START_SWAT;
             }
 
-            if (pSoldier.usAnimState == SWATTING && usNewState == CROUCHING)
+            if (pSoldier.usAnimState == AnimationStates.SWATTING && usNewState == AnimationStates.CROUCHING)
             {
                 // Set new state to be animation to move to new stance
-                usNewState = END_SWAT;
+                usNewState = AnimationStates.END_SWAT;
             }
 
-            if (pSoldier.usAnimState == WALKING && usNewState == STANDING && pSoldier.bLife < INJURED_CHANGE_THREASHOLD && pSoldier.ubBodyType <= REGFEMALE && !MercInWater(pSoldier))
+            if (pSoldier.usAnimState == AnimationStates.WALKING
+                && usNewState == AnimationStates.STANDING
+                && pSoldier.bLife < INJURED_CHANGE_THREASHOLD
+                && pSoldier.ubBodyType <= SoldierBodyTypes.REGFEMALE
+                && !MercInWater(pSoldier))
             {
                 // Set new state to be animation to move to new stance
-                usNewState = END_HURT_WALKING;
+                usNewState = AnimationStates.END_HURT_WALKING;
             }
 
             // Check if we are an enemy, and we are in an animation what should be overriden
@@ -469,7 +473,7 @@ public class SoldierControl
             {
                 if (pSoldier.bLife < INJURED_CHANGE_THREASHOLD)
                 {
-                    if (usNewState == READY_RIFLE_STAND)
+                    if (usNewState == AnimationStates.READY_RIFLE_STAND)
                     {
                         //	pSoldier.usPendingAnimation2 = usNewState;
                         //	usNewState = FROM_INJURED_TRANSITION;
@@ -478,7 +482,7 @@ public class SoldierControl
             }
 
             // Alrighty, check if we should free buddy up!
-            if (usNewState == GIVING_AID)
+            if (usNewState == AnimationStates.GIVING_AID)
             {
                 UnSetUIBusy(pSoldier.ubID);
             }
@@ -499,7 +503,7 @@ public class SoldierControl
             // OK, make guy transition if a big merc...
             if (pSoldier.uiAnimSubFlags & SUB_ANIM_BIGGUYTHREATENSTANCE)
             {
-                if (usNewState == KNEEL_DOWN && pSoldier.usAnimState != BIGMERC_CROUCH_TRANS_INTO)
+                if (usNewState == AnimationStates.KNEEL_DOWN && pSoldier.usAnimState != AnimationStates.BIGMERC_CROUCH_TRANS_INTO)
                 {
                     Items usItem;
 
@@ -512,13 +516,13 @@ public class SoldierControl
                         {
                             if ((Item[usItem].fFlags & ITEM_TWO_HANDED))
                             {
-                                usNewState = BIGMERC_CROUCH_TRANS_INTO;
+                                usNewState = AnimationStates.BIGMERC_CROUCH_TRANS_INTO;
                             }
                         }
                     }
                 }
 
-                if (usNewState == KNEEL_UP && pSoldier.usAnimState != BIGMERC_CROUCH_TRANS_OUTOF)
+                if (usNewState == AnimationStates.KNEEL_UP && pSoldier.usAnimState != AnimationStates.BIGMERC_CROUCH_TRANS_OUTOF)
                 {
                     Items usItem;
 
@@ -531,7 +535,7 @@ public class SoldierControl
                         {
                             if ((Item[usItem].fFlags & ITEM_TWO_HANDED))
                             {
-                                usNewState = BIGMERC_CROUCH_TRANS_OUTOF;
+                                usNewState = AnimationStates.BIGMERC_CROUCH_TRANS_OUTOF;
                             }
                         }
                     }
@@ -541,31 +545,31 @@ public class SoldierControl
             // OK, if we have reverse set, do the side step!
             if (pSoldier.bReverse)
             {
-                if (usNewState == WALKING || usNewState == RUNNING || usNewState == SWATTING)
+                if (usNewState == AnimationStates.WALKING || usNewState == AnimationStates.RUNNING || usNewState == AnimationStates.SWATTING)
                 {
                     // CHECK FOR SIDEWAYS!
                     if (pSoldier.bDirection == gPurpendicularDirection[pSoldier.bDirection][pSoldier.usPathingData[pSoldier.usPathIndex]])
                     {
                         // We are perpendicular!
-                        usNewState = SIDE_STEP;
+                        usNewState = AnimationStates.SIDE_STEP;
                     }
                     else
                     {
-                        if (gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_CROUCH)
+                        if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_CROUCH)
                         {
-                            usNewState = SWAT_BACKWARDS;
+                            usNewState = AnimationStates.SWAT_BACKWARDS;
                         }
                         else
                         {
                             // Here, change to  opposite direction
-                            usNewState = WALK_BACKWARDS;
+                            usNewState = AnimationStates.WALK_BACKWARDS;
                         }
                     }
                 }
             }
 
             // ATE: Patch hole for breath collapse for roofs, fences
-            if (usNewState == CLIMBUPROOF || usNewState == CLIMBDOWNROOF || usNewState == HOPFENCE)
+            if (usNewState == AnimationStates.CLIMBUPROOF || usNewState == AnimationStates.CLIMBDOWNROOF || usNewState == AnimationStates.HOPFENCE)
             {
                 // Check for breath collapse if a given animation like
                 if (CheckForBreathCollapse(pSoldier) || pSoldier.bCollapsed)
@@ -4747,7 +4751,7 @@ int	gOrangeGlowG[]=
     ///////////////////////////////////////////////////////
     bool LoadPaletteData()
     {
-        HWFILE hFile;
+        Stream hFile;
         UINT32 cnt, cnt2;
 
         hFile = FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, FALSE);
@@ -6864,7 +6868,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         }
     }
 
-    bool MercInWater(SOLDIERTYPE? pSoldier)
+    public static bool MercInWater(SOLDIERTYPE? pSoldier)
     {
         // Our water texture , for now is of a given type
         if (pSoldier.bOverTerrainType == TerrainTypeDefines.LOW_WATER || pSoldier.bOverTerrainType == TerrainTypeDefines.MED_WATER || pSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
@@ -8647,11 +8651,11 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // A banaged bleed does not show damage taken , just through existing bandages	
 
         // ATE: Do this ONLY if buddy is in sector.....
-        if ((pSoldier.bInSector && guiCurrentScreen == GAME_SCREEN) || guiCurrentScreen != GAME_SCREEN)
+        if ((pSoldier.bInSector && guiCurrentScreen == ScreenName.GAME_SCREEN) || guiCurrentScreen != ScreenName.GAME_SCREEN)
         {
             pSoldier.fFlashPortrait = true;
-            pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT_STARTSHADE;
-            RESETTIMECOUNTER(pSoldier.PortraitFlashCounter, FLASH_PORTRAIT_DELAY);
+            pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT.STARTSHADE;
+            RESETTIMECOUNTER(ref pSoldier.PortraitFlashCounter, (uint)FLASH_PORTRAIT.DELAY);
 
             // If we are in mapscreen, set this person as selected
             if (guiCurrentScreen == ScreenName.MAP_SCREEN)
@@ -8665,7 +8669,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // If we are already dead, don't show damage!
         if (!fBandagedBleed)
         {
-            SoldierTakeDamage(pSoldier, ANIM_CROUCH, 1, 100, TAKE_DAMAGE_BLOODLOSS, NOBODY, NOWHERE, 0, true);
+            SoldierTakeDamage(pSoldier, AnimationHeights.ANIM_CROUCH, 1, 100, TAKE_DAMAGE_BLOODLOSS, NOBODY, NOWHERE, 0, true);
         }
 
     }

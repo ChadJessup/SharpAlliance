@@ -1099,7 +1099,7 @@ public class GameClock
             fMapPanelDirty = true;
             fMapScreenBottomDirty = true;
             gfJustFinishedAPause = true;
-            MarkButtonsDirty();
+            ButtonSubSystem.MarkButtonsDirty();
             SetRenderFlags(RENDER_FLAG_FULL);
         }
         else if ((gfPauseDueToPlayerGamePause == true) && (fCreated == false))

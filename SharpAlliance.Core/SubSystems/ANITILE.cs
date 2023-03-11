@@ -4,8 +4,34 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class ANITILE
 {
-    public int uiUserData { get; set; }
-    public int sCachedTileID { get; internal set; }
+    public object uiUserData { get; set; }
+    public int sCachedTileID { get; internal set; } // Index into cached tile ID
+    public ANITILE? pNext;
+    public ANITILEFLAGS uiFlags;                         // flags struct
+    public uint uiTimeLastUpdate;            // Stuff for animated tiles
+    public LEVELNODE pLevelNode = new();
+    public ANI ubLevelID;
+    public int sCurrentFrame;
+    public int sStartFrame;
+    public int sDelay;
+    public int usTileType;
+    public int usNumFrames;
+    public int usMissAnimationPlayed;
+    public int ubAttackerMissed;
+    public int sRelativeX;
+    public MAP_ROW sRelativeY;
+    public int sRelativeZ;
+    public int sGridNo;
+    public int usTileIndex;
+    public int usCachedTileSubIndex;        // sub Index 
+    public int ubOwner;
+    public int ubKeyFrame1;
+    public KeyFrameEnums uiKeyFrame1Code;
+    public int ubKeyFrame2;
+    public KeyFrameEnums uiKeyFrame2Code;
+    public int ubUserData2;
+    public int uiUserData3;
+    public int bFrameCountAfterStart;
 }
 
 public struct ANITILE_PARAMS

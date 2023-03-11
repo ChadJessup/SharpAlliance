@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
@@ -70,7 +71,7 @@ public class DialogControl
 
         ppStr = pFilename;
 
-        return this.fileManager.FileExists(pFilename);
+        return FileManager.FileExists(pFilename);
     }
 
     private string GetDialogueDataFilename(NPCID ubCharacterNum, int usQuoteNum, bool fWavFile)

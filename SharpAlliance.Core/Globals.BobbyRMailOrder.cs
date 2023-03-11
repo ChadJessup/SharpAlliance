@@ -268,7 +268,7 @@ public partial class Globals
     public static int guiBottomHinge;
     public static int guiStorePlaque;
     public static int guiHandle;
-    public static int guiWoodBackground;
+    public static string guiWoodBackground;
     public static int guiUnderConstructionImage;
 
     public static LAPTOP_MODE guiLastBobbyRayPage;

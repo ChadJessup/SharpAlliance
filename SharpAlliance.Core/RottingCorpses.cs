@@ -1,4 +1,5 @@
-﻿using SharpAlliance.Core.Managers.Image;
+﻿using System;
+using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
 
 using static SharpAlliance.Core.Globals;
@@ -7,6 +8,54 @@ namespace SharpAlliance.Core;
 
 public class RottingCorpses
 {
+    public static ROTTING_CORPSE? GetCorpseAtGridNo(int sGridNo, int bLevel)
+    {
+        STRUCTURE? pStructure, pBaseStructure;
+        int sBaseGridNo;
+
+        pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.CORPSE);
+
+        if (pStructure != null)
+        {
+            // Get base....
+            pBaseStructure = WorldStructures.FindBaseStructure(pStructure);
+
+            // Find base gridno...
+            sBaseGridNo = pBaseStructure.sGridNo;
+
+            if (pBaseStructure != null)
+            {
+                return (FindCorpseBasedOnStructure(sBaseGridNo, pBaseStructure));
+            }
+        }
+
+        return (null);
+    }
+
+    private static ROTTING_CORPSE? FindCorpseBasedOnStructure(int sGridNo, STRUCTURE? pStructure)
+    {
+        LEVELNODE? pLevelNode;
+        ROTTING_CORPSE? pCorpse = null;
+
+        pLevelNode = gpWorldLevelData[sGridNo].pStructHead;
+        while (pLevelNode != null)
+        {
+            if (pLevelNode.pStructureData == pStructure)
+            {
+                break;
+            }
+            pLevelNode = pLevelNode.pNext;
+        }
+
+        if (pLevelNode != null)
+        {
+            // Get our corpse....
+            pCorpse = (gRottingCorpse[(int)pLevelNode.pAniTile.uiUserData]);
+        }
+
+        return (pCorpse);
+    }
+
     public static void DecayRottingCorpseAIWarnings()
     {
         int cnt;

@@ -3275,12 +3275,12 @@ public class TILE_ELEMENT
 public class TILE_IMAGERY
 {
     public HVOBJECT vo;
-    int fType;
-    AuxObjectData? pAuxData;
-    RelTileLoc? pTileLocData;
-    STRUCTURE_FILE_REF? pStructureFileRef;
-    int ubTerrainID;
-    int bRaisedObjectType;
+    public TileTypeDefines fType;
+    public AuxObjectData? pAuxData;
+    public RelTileLoc pTileLocData;
+    public STRUCTURE_FILE_REF? pStructureFileRef;
+    public int ubTerrainID;
+    public int bRaisedObjectType;
 
     // Reserved for added room and 32-byte boundaries
     int[] bReserved;// = new int[2];

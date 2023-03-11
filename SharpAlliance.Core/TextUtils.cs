@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core
@@ -44,15 +45,15 @@ namespace SharpAlliance.Core
 
         private string LoadShortNameItemInfo(ushort ubIndex)
         {
-            using var stream = this.files.FileOpen(Text.ITEMSTRINGFILENAME, FileAccess.Read, false);
+            using var stream = FileManager.FileOpen(Text.ITEMSTRINGFILENAME, FileAccess.Read, false);
 
             // Get current mercs bio info
             uint uiStartSeekAmount = (uint)((Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex);
 
-            this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+            FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
 
             Span<byte> itemNameBuffer = stackalloc byte[Text.SIZE_ITEM_NAME];
-            this.files.FileRead(stream, itemNameBuffer, out _);
+            FileManager.FileRead(stream, itemNameBuffer, out _);
 
             var shortItemName = TextUtils.ExtractString(itemNameBuffer);
 
@@ -61,20 +62,20 @@ namespace SharpAlliance.Core
 
         private (string itemName, string shortItemName, string itemDescription) LoadItemInfo(ushort ubIndex)
         {
-            using var stream = this.files.FileOpen(Text.ITEMSTRINGFILENAME, FileAccess.Read, false);
+            using var stream = FileManager.FileOpen(Text.ITEMSTRINGFILENAME, FileAccess.Read, false);
 
             // Get current mercs bio info
             uint uiStartSeekAmount = (uint)((Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex);
 
-            this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+            FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
 
             Span<byte> shortItemNameBuffer = stackalloc byte[Text.SIZE_ITEM_NAME];
-            this.files.FileRead(stream, shortItemNameBuffer, out _);
+            FileManager.FileRead(stream, shortItemNameBuffer, out _);
 
             var shortItemName = TextUtils.ExtractString(shortItemNameBuffer);
 
             Span<byte> itemNameBuffer = stackalloc byte[Text.SIZE_ITEM_NAME];
-            this.files.FileRead(stream, itemNameBuffer, out _);
+            FileManager.FileRead(stream, itemNameBuffer, out _);
 
             var itemName = TextUtils.ExtractString(itemNameBuffer);
 
@@ -83,10 +84,10 @@ namespace SharpAlliance.Core
 
             // Get the additional info
             uiStartSeekAmount = (uint)((Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex) + Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME;
-            this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+            FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
 
             Span<byte> itemInfoBuffer = stackalloc byte[Text.SIZE_ITEM_INFO];
-            this.files.FileRead(stream, itemInfoBuffer, out _);
+            FileManager.FileRead(stream, itemInfoBuffer, out _);
 
             var itemDescription = TextUtils.ExtractString(itemInfoBuffer);
 

@@ -50,7 +50,7 @@ public class HIMAGE
             _ => new PCXImageFileLoader(),
         };
 
-        if (!fileManager.FileExists(imageFilePath))
+        if (!FileManager.FileExists(imageFilePath))
         {
             throw new FileNotFoundException($"Unable to find asset, on disk or in library: {imageFilePath}");
         }
@@ -76,7 +76,7 @@ public class HIMAGE
         Rgba32[] palette;
         uint cnt;
         ushort r16, g16, b16, usColor;
-        byte r, g, b;
+        int r, g, b; // byte
 
         gusRedShift = -8;
         gusGreenShift = 8;

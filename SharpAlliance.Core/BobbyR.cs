@@ -12,7 +12,8 @@ public class BobbyR
 {
     bool EnterBobbyR()
     {
-        VOBJECT_DESC VObjectDesc;
+        //VOBJECT_DESC VObjectDesc;
+        string imageFile;
         int i;
 
         // an array of mouse regions for the bobbies signs.  Top Left corner, bottom right corner
@@ -44,7 +45,7 @@ public class BobbyR
 
         // load the Bobbyname graphic and add it
         //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        MultilanguageGraphicUtils.GetMLGFilename(VObjectDesc.ImageFile, MLG.BOBBYNAME);
+        MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.BOBBYNAME);
         VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiBobbyName);
 
         // load the plaque graphic and add it
@@ -230,7 +231,7 @@ public class BobbyR
         //if we cant go to any sub pages, darken the page out
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
-            ShadowVideoSurfaceRect(Surfaces.FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+            VideoSurfaceManager.ShadowVideoSurfaceRect(Surfaces.FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
         }
 
         RenderWWWProgramTitleBar();
@@ -239,12 +240,11 @@ public class BobbyR
 
     bool InitBobbyRWoodBackground()
     {
-        VOBJECT_DESC VObjectDesc;
-
+        //VOBJECT_DESC VObjectDesc;
         // load the Wood bacground graphic and add it
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti", VObjectDesc.ImageFile);
-        CHECKF(VeldridVideoManager.AddVideoObject(&VObjectDesc, guiWoodBackground));
+        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        string filename = Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti");
+        VeldridVideoManager.AddVideoObject(filename, out guiWoodBackground);
 
         return (true);
     }
@@ -258,11 +258,10 @@ public class BobbyR
 
     bool DrawBobbyRWoodBackground()
     {
-        HVOBJECT? hWoodBackGroundHandle;
         int x, y, uiPosX, uiPosY;
 
         // Blt the Wood background
-        VeldridVideoManager.GetVideoObject(out hWoodBackGroundHandle, guiWoodBackground);
+        HVOBJECT hWoodBackGroundHandle = VeldridVideoManager.GetVideoObject(guiWoodBackground);
 
         uiPosY = BOBBY_WOOD_BACKGROUND_Y;
         for (y = 0; y < 4; y++)
@@ -560,7 +559,7 @@ public class BobbyR
 
 # if BR_INVENTORY_TURNOVER_DEBUG
                             if (usItemIndex == ROCKET_LAUNCHER)
-                                MapScreenMessage(0, MSG_DEBUG, L"%s: BR Ordered %d, Has %d", WORLDTIMESTR, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand);
+                                MapScreenMessage(0, MSG_DEBUG, "%s: BR Ordered %d, Has %d", WORLDTIMESTR, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand);
 #endif
                         }
                     }

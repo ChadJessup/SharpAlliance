@@ -46,11 +46,8 @@ public class ExplosionControl
         }
     }
 
-
-
-
     // GENERATE EXPLOSION
-    void InternalIgniteExplosion(int ubOwner, int sX, MAP_ROW sY, int sZ, int sGridNo, Items usItem, bool fLocate, int bLevel)
+    private static void InternalIgniteExplosion(int ubOwner, int sX, MAP_ROW sY, int sZ, int sGridNo, Items usItem, bool fLocate, int bLevel)
     {
         EXPLOSION_PARAMS ExpParams;
 
@@ -92,12 +89,12 @@ public class ExplosionControl
 
     }
 
-    void IgniteExplosion(int ubOwner, int sX, MAP_ROW sY, int sZ, int sGridNo, Items usItem, int bLevel)
+    public static void IgniteExplosion(int ubOwner, int sX, MAP_ROW sY, int sZ, int sGridNo, Items usItem, int bLevel)
     {
         InternalIgniteExplosion(ubOwner, sX, sY, sZ, sGridNo, usItem, true, bLevel);
     }
 
-    void GenerateExplosion(out EXPLOSION_PARAMS pExpParams)
+    public static void GenerateExplosion(out EXPLOSION_PARAMS pExpParams)
     {
         EXPLOSIONTYPE? pExplosion;
         EXPLOSION_FLAG uiFlags;
@@ -209,7 +206,7 @@ public class ExplosionControl
         }
 
 
-        if (sZ < WALL_HEIGHT)
+        if (sZ < TileDefine.WALL_HEIGHT)
         {
             AniParams.uiFlags |= ANITILEFLAGS.NOZBLITTER;
         }
@@ -663,7 +660,7 @@ public class ExplosionControl
                                         {
                                             // error!
 # if JA2BETAVERSION
-                                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Problems removing structure attached to wall at %d", sNewGridNo);
+                                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
 #endif
                                             break;
                                         }
@@ -672,7 +669,7 @@ public class ExplosionControl
                                     {
                                         // error!
 # if JA2BETAVERSION
-                                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Problems removing structure attached to wall at %d", sNewGridNo);
+                                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
 #endif
                                         break;
                                     }
@@ -699,7 +696,7 @@ public class ExplosionControl
                                         {
                                             // error!
 # if JA2BETAVERSION
-                                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Problems removing structure attached to wall at %d", sNewGridNo);
+                                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
 #endif
                                             break;
                                         }
@@ -708,7 +705,7 @@ public class ExplosionControl
                                     {
                                         // error!
 # if JA2BETAVERSION
-                                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Problems removing structure attached to wall at %d", sNewGridNo);
+                                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
 #endif
                                         break;
                                     }
@@ -2279,7 +2276,7 @@ public class ExplosionControl
                 {
                     // error message here
 # if JA2BETAVERSION
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Action item to open door in gridno %d but there is none!", sGridNo);
+                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Action item to open door in gridno %d but there is none!", sGridNo);
 #endif
                 }
                 break;

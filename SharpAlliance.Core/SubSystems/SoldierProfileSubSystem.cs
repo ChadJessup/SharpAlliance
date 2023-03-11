@@ -1,8 +1,12 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -39,7 +43,7 @@ public class SoldierProfileSubSystem
     {
         this.logger = logger;
         this.fileManager = fileManager;
-        this.rnd = new Globals.Random.Next(DateTime.UtcNow.Millisecond);
+        this.rnd = Globals.Random;
         this.townReputations = townRep;
         this.cars = carPortraits;
     }
@@ -78,7 +82,7 @@ public class SoldierProfileSubSystem
         int uiNumBytesRead;
 
 
-        fptr = this.fileManager.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
+        fptr = FileManager.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
         //if (!fptr)
         //{
         //    this.logger.LogDebug(LoggingEventId.JA2, $"FAILED to LoadMercProfiles from file {pFileName}");
@@ -212,7 +216,7 @@ public class SoldierProfileSubSystem
 
         // SET SOME DEFAULT LOCATIONS FOR STARTING NPCS
 
-        this.fileManager.FileClose(fptr);
+        FileManager.FileClose(fptr);
 
         // decide which terrorists are active
         this.DecideActiveTerrorists();
@@ -302,6 +306,126 @@ public class SoldierProfileSubSystem
 
         // this currently varies from about 10 (Flo) to 1200 (Gus)
         return usCompetence;
+    }
+    
+    public static SOLDIERTYPE? SwapLarrysProfiles(SOLDIERTYPE? pSoldier)
+    {
+        NPCID ubSrcProfile;
+        NPCID ubDestProfile;
+        MERCPROFILESTRUCT? pNewProfile;
+
+        ubSrcProfile = pSoldier.ubProfile;
+        if (ubSrcProfile == NPCID.LARRY_NORMAL)
+        {
+            ubDestProfile = NPCID.LARRY_DRUNK;
+        }
+        else if (ubSrcProfile == NPCID.LARRY_DRUNK)
+        {
+            ubDestProfile = NPCID.LARRY_NORMAL;
+        }
+        else
+        {
+            // I don't think so!
+            return (pSoldier);
+        }
+
+        pNewProfile = gMercProfiles[ubDestProfile];
+        pNewProfile.ubMiscFlags2 = gMercProfiles[ubSrcProfile].ubMiscFlags2;
+        pNewProfile.ubMiscFlags = gMercProfiles[ubSrcProfile].ubMiscFlags;
+        pNewProfile.sSectorX = gMercProfiles[ubSrcProfile].sSectorX;
+        pNewProfile.sSectorY = gMercProfiles[ubSrcProfile].sSectorY;
+        pNewProfile.uiDayBecomesAvailable = gMercProfiles[ubSrcProfile].uiDayBecomesAvailable;
+        pNewProfile.usKills = gMercProfiles[ubSrcProfile].usKills;
+        pNewProfile.usAssists = gMercProfiles[ubSrcProfile].usAssists;
+        pNewProfile.usShotsFired = gMercProfiles[ubSrcProfile].usShotsFired;
+        pNewProfile.usShotsHit = gMercProfiles[ubSrcProfile].usShotsHit;
+        pNewProfile.usBattlesFought = gMercProfiles[ubSrcProfile].usBattlesFought;
+        pNewProfile.usTimesWounded = gMercProfiles[ubSrcProfile].usTimesWounded;
+        pNewProfile.usTotalDaysServed = gMercProfiles[ubSrcProfile].usTotalDaysServed;
+        pNewProfile.bResigned = gMercProfiles[ubSrcProfile].bResigned;
+        pNewProfile.bActive = gMercProfiles[ubSrcProfile].bActive;
+        pNewProfile.fUseProfileInsertionInfo = gMercProfiles[ubSrcProfile].fUseProfileInsertionInfo;
+        pNewProfile.sGridNo = gMercProfiles[ubSrcProfile].sGridNo;
+        pNewProfile.ubQuoteActionID = gMercProfiles[ubSrcProfile].ubQuoteActionID;
+        pNewProfile.ubLastQuoteSaid = gMercProfiles[ubSrcProfile].ubLastQuoteSaid;
+        pNewProfile.ubStrategicInsertionCode = gMercProfiles[ubSrcProfile].ubStrategicInsertionCode;
+        pNewProfile.bMercStatus = gMercProfiles[ubSrcProfile].bMercStatus;
+        pNewProfile.bSectorZ = gMercProfiles[ubSrcProfile].bSectorZ;
+        pNewProfile.usStrategicInsertionData = gMercProfiles[ubSrcProfile].usStrategicInsertionData;
+        pNewProfile.sTrueSalary = gMercProfiles[ubSrcProfile].sTrueSalary;
+        pNewProfile.ubMiscFlags3 = gMercProfiles[ubSrcProfile].ubMiscFlags3;
+        pNewProfile.ubDaysOfMoraleHangover = gMercProfiles[ubSrcProfile].ubDaysOfMoraleHangover;
+        pNewProfile.ubNumTimesDrugUseInLifetime = gMercProfiles[ubSrcProfile].ubNumTimesDrugUseInLifetime;
+        pNewProfile.uiPrecedentQuoteSaid = gMercProfiles[ubSrcProfile].uiPrecedentQuoteSaid;
+        pNewProfile.sPreCombatGridNo = gMercProfiles[ubSrcProfile].sPreCombatGridNo;
+
+        // CJC: this is causing problems so just skip the transfer of exp...
+        /*
+            pNewProfile.sLifeGain = gMercProfiles[ ubSrcProfile ].sLifeGain;
+            pNewProfile.sAgilityGain = gMercProfiles[ ubSrcProfile ].sAgilityGain;
+            pNewProfile.sDexterityGain = gMercProfiles[ ubSrcProfile ].sDexterityGain;
+            pNewProfile.sStrengthGain = gMercProfiles[ ubSrcProfile ].sStrengthGain;
+            pNewProfile.sLeadershipGain = gMercProfiles[ ubSrcProfile ].sLeadershipGain;
+            pNewProfile.sWisdomGain = gMercProfiles[ ubSrcProfile ].sWisdomGain;
+            pNewProfile.sExpLevelGain = gMercProfiles[ ubSrcProfile ].sExpLevelGain;
+            pNewProfile.sMarksmanshipGain = gMercProfiles[ ubSrcProfile ].sMarksmanshipGain;
+            pNewProfile.sMedicalGain = gMercProfiles[ ubSrcProfile ].sMedicalGain;
+            pNewProfile.sMechanicGain = gMercProfiles[ ubSrcProfile ].sMechanicGain;
+            pNewProfile.sExplosivesGain = gMercProfiles[ ubSrcProfile ].sExplosivesGain;
+
+            pNewProfile.bLifeDelta = gMercProfiles[ ubSrcProfile ].bLifeDelta;
+            pNewProfile.bAgilityDelta = gMercProfiles[ ubSrcProfile ].bAgilityDelta;
+            pNewProfile.bDexterityDelta = gMercProfiles[ ubSrcProfile ].bDexterityDelta;
+            pNewProfile.bStrengthDelta = gMercProfiles[ ubSrcProfile ].bStrengthDelta;
+            pNewProfile.bLeadershipDelta = gMercProfiles[ ubSrcProfile ].bLeadershipDelta;
+            pNewProfile.bWisdomDelta = gMercProfiles[ ubSrcProfile ].bWisdomDelta;
+            pNewProfile.bExpLevelDelta = gMercProfiles[ ubSrcProfile ].bExpLevelDelta;
+            pNewProfile.bMarksmanshipDelta = gMercProfiles[ ubSrcProfile ].bMarksmanshipDelta;
+            pNewProfile.bMedicalDelta = gMercProfiles[ ubSrcProfile ].bMedicalDelta;
+            pNewProfile.bMechanicDelta = gMercProfiles[ ubSrcProfile ].bMechanicDelta;
+            pNewProfile.bExplosivesDelta = gMercProfiles[ ubSrcProfile ].bExplosivesDelta;
+            */
+
+        //memcpy(pNewProfile.bInvStatus, gMercProfiles[ubSrcProfile].bInvStatus, sizeof(UINT8) * 19);
+        //memcpy(pNewProfile.bInvStatus, gMercProfiles[ubSrcProfile].bInvStatus, sizeof(UINT8) * 19);
+        //memcpy(pNewProfile.inv, gMercProfiles[ubSrcProfile].inv, sizeof(UINT16) * 19);
+        //memcpy(pNewProfile.bMercTownReputation, gMercProfiles[ubSrcProfile].bMercTownReputation, sizeof(UINT8) * 20);
+
+        // remove face
+        Faces.DeleteSoldierFace(pSoldier);
+
+        pSoldier.ubProfile = ubDestProfile;
+
+        // create new face
+        pSoldier.iFaceIndex = InitSoldierFace(pSoldier);
+
+        // replace profile in group
+        ReplaceSoldierProfileInPlayerGroup(pSoldier.ubGroupID, ubSrcProfile, ubDestProfile);
+
+        pSoldier.bStrength = pNewProfile.bStrength + pNewProfile.bStrengthDelta;
+        pSoldier.bDexterity = pNewProfile.bDexterity + pNewProfile.bDexterityDelta;
+        pSoldier.bAgility = pNewProfile.bAgility + pNewProfile.bAgilityDelta;
+        pSoldier.bWisdom = pNewProfile.bWisdom + pNewProfile.bWisdomDelta;
+        pSoldier.bExpLevel = pNewProfile.bExpLevel + pNewProfile.bExpLevelDelta;
+        pSoldier.bLeadership = pNewProfile.bLeadership + pNewProfile.bLeadershipDelta;
+
+        pSoldier.bMarksmanship = pNewProfile.bMarksmanship + pNewProfile.bMarksmanshipDelta;
+        pSoldier.bMechanical = pNewProfile.bMechanical + pNewProfile.bMechanicDelta;
+        pSoldier.bMedical = pNewProfile.bMedical + pNewProfile.bMedicalDelta;
+        pSoldier.bExplosive = pNewProfile.bExplosive + pNewProfile.bExplosivesDelta;
+
+        if (pSoldier.ubProfile == LARRY_DRUNK)
+        {
+            SetFactTrue(FACT_LARRY_CHANGED);
+        }
+        else
+        {
+            SetFactFalse(FACT_LARRY_CHANGED);
+        }
+
+        DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
+
+        return (pSoldier);
     }
 
     private void DecideActiveTerrorists()

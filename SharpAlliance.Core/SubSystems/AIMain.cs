@@ -148,7 +148,7 @@ public class AIMain
             if (pSoldier.bTeam != gTacticalStatus.ubCurrentTeam)
             {
 # if JA2BETAVERSION
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, L"Turning off AI flag for %d because trying to act out of turn", pSoldier.ubID);
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "Turning off AI flag for %d because trying to act out of turn", pSoldier.ubID);
 #endif
                 pSoldier.uiStatusFlags &= ~SOLDIER.UNDERAICONTROL;
                 return;
@@ -420,7 +420,7 @@ public class AIMain
 
                 // If we are in beta version, also report message!
 # if JA2BETAVERSION
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, L"Aborting AI deadlock for %d. Please sent DEBUG.TXT file and SAVE.", pSoldier.ubID);
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "Aborting AI deadlock for %d. Please sent DEBUG.TXT file and SAVE.", pSoldier.ubID);
 #endif
                 // just abort
                 EndAIDeadlock();
@@ -2130,7 +2130,7 @@ public class AIMain
                         // Check if we were told to move by NPC stuff
                         if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                         {
-                            //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_ERROR, L"AI %s failed to get path for dialogue-related move!", pSoldier.name );
+                            //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_ERROR, "AI %s failed to get path for dialogue-related move!", pSoldier.name );
 
                             // Are we close enough?
                             if (!ACTING_ON_SCHEDULE(pSoldier) && SpacesAway(pSoldier.sGridNo, pSoldier.sAbsoluteFinalDestination) < 4)
@@ -2347,10 +2347,10 @@ public class AIMain
                 {
                     HandleInitialRedAlert(pSoldier.bTeam, 1);
                 }
-            //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Debug: AI radios your position!" );
+            //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Debug: AI radios your position!" );
             // DROP THROUGH HERE!
             case AI_ACTION.YELLOW_ALERT:          // tell friends opponent(s) heard
-                                                  //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Debug: AI radios about a noise!" );
+                                                  //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Debug: AI radios about a noise!" );
                 /*
                             NetSend.msgType = NET_RADIO_SIGHTINGS;
                             NetSend.ubID  = pSoldier.ubID;
@@ -2424,7 +2424,7 @@ public class AIMain
                 if (iRetCode != ITEM_HANDLE_OK)
                 {
 # if JA2BETAVERSION
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, L"AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
+                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
 #endif
                     CancelAIAction(pSoldier, FORCE);
 # if TESTAICONTROL
@@ -2459,7 +2459,7 @@ public class AIMain
                     if (pStructure == null)
                     {
 # if JA2TESTVERSION
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, L"AI %d tried to open door it could not then find in %d", pSoldier.ubID, sDoorGridNo);
+                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "AI %d tried to open door it could not then find in %d", pSoldier.ubID, sDoorGridNo);
 #endif
                         CancelAIAction(pSoldier, FORCE);
 # if TESTAICONTROL
@@ -2618,7 +2618,7 @@ public class AIMain
         if (gTacticalStatus.Team[bTeam].bAwareOfOpposition == 0)
         {
 # if JA2TESTVERSION
-            ScreenMsg(FONT_MCOLOR_RED, MSG_ERROR, L"Enemies on team %d prompted to go on RED ALERT!", bTeam);
+            ScreenMsg(FONT_MCOLOR_RED, MSG_ERROR, "Enemies on team %d prompted to go on RED ALERT!", bTeam);
 #endif
         }
 

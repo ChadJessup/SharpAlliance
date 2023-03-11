@@ -24,12 +24,12 @@ namespace SharpAlliance.Core.Managers.Image
 
         public bool LoadImage(ref HIMAGE hImage, HIMAGECreateFlags flags, IFileManager fileManager)
         {
-            if (!fileManager.FileExists(hImage.ImageFile))
+            if (!FileManager.FileExists(hImage.ImageFile))
             {
                 return false;
             }
 
-            using var stream = fileManager.FileOpen(hImage.ImageFile, FileAccess.Read, fDeleteOnClose: false);
+            using var stream = FileManager.FileOpen(hImage.ImageFile, FileAccess.Read, fDeleteOnClose: false);
             var config = SixLabors.ImageSharp.Configuration.Default;
             config.Properties.Clear();
 
@@ -104,7 +104,7 @@ namespace SharpAlliance.Core.Managers.Image
                 //memset(pSTCIPalette, 0, uiFileSectionSize);
 
                 // Read in the palette
-                if (!files.FileRead(stream, ref pSTCIPalette, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
+                if (!FileManager.FileRead(stream, ref pSTCIPalette, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
                 {
                     //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading palette!");
                     //FileClose(hFile);
@@ -125,7 +125,7 @@ namespace SharpAlliance.Core.Managers.Image
             {
                 // seek past the palette
                 uiFileSectionSize = pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
-                if (files.FileSeek(stream, ref uiFileSectionSize, SeekOrigin.Current) == false)
+                if (FileManager.FileSeek(stream, ref uiFileSectionSize, SeekOrigin.Current) == false)
                 {
                     // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past palette!");
                     // FileClose(hFile);
@@ -141,7 +141,7 @@ namespace SharpAlliance.Core.Managers.Image
                     hImage.usNumberOfObjects = pHeader.Indexed.usNumberOfSubImages;
                     uiFileSectionSize = hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
 
-                    if (!files.FileRead<ETRLEObject>(stream, ref hImage.pETRLEObject, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
+                    if (!FileManager.FileRead<ETRLEObject>(stream, ref hImage.pETRLEObject, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
                     {
                         return null;
                     }
@@ -151,7 +151,7 @@ namespace SharpAlliance.Core.Managers.Image
                 }
 
                 hImage.pImageData = new byte[pHeader.uiStoredSize];
-                if (!files.FileRead(stream, ref hImage.pImageData, pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
+                if (!FileManager.FileRead(stream, ref hImage.pImageData, pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
                 {
                     return null;
                 }
@@ -160,7 +160,7 @@ namespace SharpAlliance.Core.Managers.Image
             }
             else if (fContents.HasFlag(HIMAGECreateFlags.IMAGE_APPDATA)) // then there's a point in seeking ahead
             {
-                if (files.FileSeek(stream, ref pHeader.uiStoredSize, SeekOrigin.Current) == false)
+                if (FileManager.FileSeek(stream, ref pHeader.uiStoredSize, SeekOrigin.Current) == false)
                 {
                     // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past image data!");
                     // FileClose(hFile);
@@ -172,7 +172,7 @@ namespace SharpAlliance.Core.Managers.Image
             {
                 // load application-specific data
                 hImage.pAppData = new byte[pHeader.uiAppDataSize];
-                if (!files.FileRead(stream, ref hImage.pAppData, pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
+                if (!FileManager.FileRead(stream, ref hImage.pAppData, pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
                 {
 
                 }

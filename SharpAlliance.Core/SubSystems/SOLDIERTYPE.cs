@@ -29,7 +29,7 @@ public class SOLDIERTYPE
     public int bOldLife;          // life at end of last turn, recorded for monster AI
                                   // attributes
     public bool bInSector { get; set; }
-    public int bFlashPortraitFrame;
+    public FLASH_PORTRAIT bFlashPortraitFrame;
     public int sFractLife;       // fraction of life pts (in hundreths)	
     public int bBleeding;     // blood loss control variable
     public int bBreath;           // current breath value
@@ -344,10 +344,10 @@ public class SOLDIERTYPE
     public int bUIInterfaceLevel;
     public bool fUIMovementFast;
 
-    // TIMECOUNTER BlinkSelCounter;
-    // TIMECOUNTER PortraitFlashCounter;
+    public TIMECOUNTER BlinkSelCounter;
+    public TIMECOUNTER PortraitFlashCounter;
     public bool fDeadSoundPlayed;
-    public NPCID ubProfile { get; }
+    public NPCID ubProfile { get; set; }
     public int ubQuoteRecord;
     public QUOTE_ACTION_ID ubQuoteActionID;
     public int ubBattleSoundID;
@@ -390,17 +390,17 @@ public class SOLDIERTYPE
     public int iNextActionSpecialData;       // AI special action data record for the next action
     public MERC_TYPE ubWhatKindOfMercAmI;          //Set to the type of character it is
     public Assignments bAssignment;                           // soldiers current assignment 
-    int bOldAssignment;                        // old assignment, for autosleep purposes
-    bool fForcedToStayAwake;             // forced by player to stay awake, reset to false, the moment they are set to rest or sleep
-    int bTrainStat;                                // current stat soldier is training
+    public int bOldAssignment;                        // old assignment, for autosleep purposes
+    public bool fForcedToStayAwake;             // forced by player to stay awake, reset to false, the moment they are set to rest or sleep
+    public int bTrainStat;                                // current stat soldier is training
     public int sSectorX { get; set; }       // X position on the Stategic Map
     public MAP_ROW sSectorY;                                 // Y position on the Stategic Map
     public int bSectorZ;                                  // Z sector location
-    int iVehicleId;                               // the id of the vehicle the char is in
+    public int iVehicleId;                               // the id of the vehicle the char is in
     //PathStPtr pMercPath;                                //Path Structure
     public HIT_BY fHitByGasFlags;                       // flags 
-    int usMedicalDeposit;         // is there a medical deposit on merc 
-    CIV_GROUP usLifeInsurance;          // is there life insurance taken out on merc  
+    public int usMedicalDeposit;         // is there a medical deposit on merc 
+    public CIV_GROUP usLifeInsurance;          // is there life insurance taken out on merc  
     //DEF:  Used for the communications
     public int uiStartMovementTime;             // the time since the merc first started moving 
     public int uiOptimumMovementTime;           // everytime in ececute overhead the time for the current ani will be added to this total

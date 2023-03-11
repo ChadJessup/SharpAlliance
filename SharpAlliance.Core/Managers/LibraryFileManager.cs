@@ -375,7 +375,7 @@ namespace SharpAlliance.Core.Managers
 
         public Stream OpenFileFromLibrary(string pName)
         {
-            this.gFileDataBase = (this.context.FileManager as FileManager)!.gFileDataBase;
+            this.gFileDataBase = FileManager.gFileDataBase;
 
             FileHeader? pFileHeader;
             Stream hLibFile;

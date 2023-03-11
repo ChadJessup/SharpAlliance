@@ -6,7 +6,7 @@ namespace SharpAlliance.Core;
 
 public class MultilanguageGraphicUtils
 {
-    public static bool GetMLGFilename(string filename, MLG usMLGGraphicID)
+    public static bool GetMLGFilename(out string filename, MLG usMLGGraphicID)
     {
         switch (usMLGGraphicID)
         {
@@ -111,6 +111,7 @@ public class MultilanguageGraphicUtils
                 return true;
 
             default:
+                filename = string.Empty;
                 return false;
         }
     }

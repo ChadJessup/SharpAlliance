@@ -89,7 +89,7 @@ public class CreatureSpreading
 
                 default:
 # if JA2BETAVERSION
-                    ScreenMsg(FONT_RED, MSG_ERROR, L"Attempting to check if mine is clear but mine index is invalid (%d).", ubMineIndex);
+                    ScreenMsg(FONT_RED, MSG_ERROR, "Attempting to check if mine is clear but mine index is invalid (%d).", ubMineIndex);
 #endif
                     break;
             }

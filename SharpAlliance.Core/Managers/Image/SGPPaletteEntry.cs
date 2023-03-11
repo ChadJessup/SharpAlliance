@@ -27,7 +27,7 @@ namespace SharpAlliance.Core.Managers.Image
         public const int AUX_USES_LAND_Z = 0x20;
     }
 
-    public struct AuxObjectData
+    public class AuxObjectData
     {
         public int ubWallOrientation;
         public int ubNumberOfTiles;
@@ -79,9 +79,9 @@ namespace SharpAlliance.Core.Managers.Image
 
     public struct SGPPaletteEntry
     {
-        public byte peRed { get; set; }
-        public byte peGreen { get; set; }
-        public byte peBlue { get; set; }
-        public readonly byte peFlags { get; init; }
+        public int peRed { get; set; }
+        public int peGreen { get; set; }
+        public int peBlue { get; set; }
+        public readonly int peFlags { get; init; }
     }
 }

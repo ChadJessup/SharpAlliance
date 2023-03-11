@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 
+using static SharpAlliance.Core.Globals;
+
+using TRAILCELLTYPE = System.Int32;
 namespace SharpAlliance.Core.SubSystems;
 
 public class PathAI
@@ -37,10 +40,47 @@ public class PathAI
         this.worldManager = worldManager;
     }
 
-    public static int DoorTravelCost(SOLDIERTYPE? pSoldier, int iGridNo, int ubMovementCost, bool fReturnPerceivedValue, out int piDoorGridNo)
+    public static int DoorTravelCost(SOLDIERTYPE? pSoldier, int iGridNo, int ubMovementCost, bool fReturnPerceivedValue, out int? piDoorGridNo)
     {
         return (InternalDoorTravelCost(pSoldier, iGridNo, ubMovementCost, fReturnPerceivedValue, out piDoorGridNo, false));
     }
+
+    public static void RoofReachableTest(int sStartGridNo, int ubBuildingID)
+    {
+        SOLDIERTYPE s = new()
+        {
+            sGridNo = sStartGridNo,
+            bLevel = 1,
+            bTeam = TEAM.ENEMY_TEAM,
+        };
+
+        gubBuildingInfoToSet = ubBuildingID;
+
+        ReconfigurePathAI(ABSMAX_SKIPLIST_LEVEL, ABSMAX_TRAIL_TREE, ABSMAX_PATHQ);
+        FindBestPath(s, NOWHERE, 1, WALKING, COPYREACHABLE, 0);
+        RestorePathAIToDefaults();
+
+        // set start position to reachable since path code sets it unreachable
+        gpWorldLevelData[sStartGridNo].uiFlags |= MAPELEMENTFLAGS.REACHABLE;
+
+        // reset building variable
+        gubBuildingInfoToSet = 0;
+    }
+
+    void ReconfigurePathAI(int iNewMaxSkipListLevel, int iNewMaxTrailTree, int iNewMaxPathQ)
+    {
+        // make sure the specified parameters are reasonable
+        iNewMaxSkipListLevel = Math.Max(iNewMaxSkipListLevel, ABSMAX_SKIPLIST_LEVEL);
+        iNewMaxTrailTree = Math.Max(iNewMaxTrailTree, ABSMAX_TRAIL_TREE);
+        iNewMaxPathQ = Math.Max(iNewMaxPathQ, ABSMAX_PATHQ);
+        // assign them
+        iMaxSkipListLevel = iNewMaxSkipListLevel;
+        iMaxTrailTree = iNewMaxTrailTree;
+        iMaxPathQ = iNewMaxPathQ;
+        // relocate the head of the closed list to the end of the array portion being used
+        pClosedHead = (pathQ[QPOOLNDX]);
+    }
+
 
     public int UIPlotPath(
         SOLDIERTYPE? pSold,
@@ -286,7 +326,7 @@ public class PathAI
                         sPoints += usMovementModeToUseForAPs switch
                         {
                             AnimationStates.RUNNING => (short)(double)((sTileCost / Globals.RUNDIVISOR)) + (int)sExtraCostStand,
-                            AnimationStates.WALKING => (sTileCost +  Globals.WALKCOST) + (int)sExtraCostStand,
+                            AnimationStates.WALKING => (sTileCost + Globals.WALKCOST) + (int)sExtraCostStand,
                             AnimationStates.SWATTING => (sTileCost + Globals.SWATCOST) + (int)sExtraCostSwat,
                             AnimationStates.CRAWLING => (sTileCost + Globals.CRAWLCOST) + (int)sExtraCostCrawl,
                             _ => sTileCost,
@@ -533,6 +573,8 @@ public class PathAI
 
     private static int InternalDoorTravelCost(SOLDIERTYPE? pSoldier, int iGridNo, int ubMovementCost, bool fReturnPerceivedValue, out int? piDoorGridNo, bool fReturnDoorCost)
     {
+        piDoorGridNo = -1;
+
         // This function will return either TRAVELCOST.DOOR (in place of closed door cost),
         // TRAVELCOST.OBSTACLE, or the base ground terrain
         // travel cost, depending on whether or not the door is open or closed etc.
@@ -544,7 +586,7 @@ public class PathAI
         bool fDoorIsOpen;
         int ubReplacementCost;
 
-        if (IS_TRAVELCOST_DOOR(ubMovementCost))
+        if (TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost))
         {
             ubReplacementCost = TRAVELCOST.OBSTACLE;
 
@@ -700,7 +742,7 @@ public class PathAI
                     else
                     {
                         // have to check if door is locked and NPC does not have keys!
-                        pDoor = FindDoorInfoAtGridNo(iDoorGridNo);
+                        pDoor = Keys.FindDoorInfoAtGridNo(iDoorGridNo);
                         if (pDoor is not null)
                         {
                             if ((!pDoor.fLocked
@@ -819,3 +861,18 @@ public enum STEPSTART
     BLUE = 48,
     ORANGE = 64,
 }
+
+// OLD PATHAI STUFF
+/////////////////////////////////////////////////
+public class path_s
+{
+    public int iLocation;                        //4
+    public path_s[] pNext = new path_s[ABSMAX_SKIPLIST_LEVEL];   //4 * MAX_SKIPLIST_LEVEL (5) = 20
+    public int sPathNdx;                         //2
+    TRAILCELLTYPE usCostSoFar;          //2
+    TRAILCELLTYPE usCostToGo;           //2
+    TRAILCELLTYPE usTotalCost;                  //2
+    public int bLevel;                                //1
+    public int ubTotalAPCost;                //1
+    public int ubLegDistance;				//1
+};

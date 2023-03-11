@@ -99,7 +99,7 @@ public class LEVELNODE
 
     // Some levelnodes can specify relative X and Y values!
     public int sRelativeX;                           // Relative position values
-    public int sRelativeY;                           // Relative position values
+    public MAP_ROW sRelativeY;                           // Relative position values
 
     // Some can contains index values into dead corpses
     public int iCorpseID;                            // Index into corpse ID
@@ -143,31 +143,31 @@ public class STRUCTURE
     public int usStructureID;
     public DB_STRUCTURE_REF pDBStructureRef { get; set; } = new();
 
-    public byte ubHitPoints;
+    public int ubHitPoints;
     byte ubLockStrength;
 
     public int sBaseGridNo { get; set; }
 
-    public int sCubeOffset;// height of bottom of object in profile "cubes"
+    public STRUCTURE_ON sCubeOffset;// height of bottom of object in profile "cubes"
     public STRUCTUREFLAGS fFlags; // need to have something to indicate base tile/not
     public PROFILE? pShape;
     public WallOrientation ubWallOrientation;
-    public byte ubVehicleHitLocation;
-    byte ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
-    byte ubUnused;
+    public int ubVehicleHitLocation;
+    public int ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
+    public int ubUnused;
 }
 
 public class DB_STRUCTURE
 {
-    public byte ubArmour;
-    public byte ubDensity;
-    public byte ubHitPoints;
-    public byte ubNumberOfTiles;
+    public MATERIAL ubArmour;
+    public int ubDensity;
+    public int ubHitPoints;
+    public int ubNumberOfTiles;
     public STRUCTUREFLAGS fFlags;
-    ushort usStructureNumber;
+    public ushort usStructureNumber;
     public WallOrientation ubWallOrientation;
     public sbyte bDestructionPartner; // >0 = debris number (bDP - 1), <0 = partner graphic 
-    public sbyte bPartnerDelta; // opened/closed version, etc... 0 for unused
+    public int bPartnerDelta; // opened/closed version, etc... 0 for unused
     public sbyte bZTileOffsetX;
     public sbyte bZTileOffsetY;
     public byte bUnused;

@@ -45,7 +45,7 @@ public class AnimationData
             {
                 sFilename = this.gAnimStructureDatabase[cnt1, cnt2].Filename;
 
-                if (this.files.FileExists(sFilename))
+                if (FileManager.FileExists(sFilename))
                 {
                     pStructureFileRef = this.structure.LoadStructureFile(sFilename);
                     if (pStructureFileRef == null)

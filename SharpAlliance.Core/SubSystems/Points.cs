@@ -1,6 +1,8 @@
 ﻿using System;
 using SharpAlliance.Core.Managers;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class Points
@@ -51,6 +53,115 @@ public class Points
             bAPs += AP.START_RUN_COST;
         }
         return (bAPs);
+    }
+
+    public static int TerrainActionPoints(SOLDIERTYPE? pSoldier, int sGridno, int bDir, int bLevel)
+    {
+        int sAPCost = 0;
+        int sSwitchValue;
+        bool fHiddenStructVisible;               // Used for hidden struct visiblity
+
+        if (pSoldier.bStealthMode)
+        {
+            sAPCost += AP.STEALTH_MODIFIER;
+        }
+
+        if (pSoldier.bReverse || gUIUseReverse)
+        {
+            sAPCost += AP.REVERSE_MODIFIER;
+        }
+
+        //if (GridCost[gridno] == NPCMINECOST)
+        //   switchValue = BackupGridCost[gridno];
+        //else
+
+        sSwitchValue = gubWorldMovementCosts[sGridno,bDir,bLevel];
+
+        // Check reality vs what the player knows....
+        if (pSoldier.bTeam == gbPlayerNum)
+        {
+            // Is this obstcale a hidden tile that has not been revealed yet?
+            if (DoesGridnoContainHiddenStruct(sGridno, fHiddenStructVisible))
+            {
+                // Are we not visible, if so use terrain costs!
+                if (!fHiddenStructVisible)
+                {
+                    // Set cost of terrain!
+                    sSwitchValue = gTileTypeMovementCost[gpWorldLevelData[sGridno].ubTerrainID];
+                }
+            }
+        }
+        if (sSwitchValue == TRAVELCOST_NOT_STANDING)
+        {
+            // use the cost of the terrain!
+            sSwitchValue = gTileTypeMovementCost[gpWorldLevelData[sGridno].ubTerrainID];
+        }
+        else if (IS_TRAVELCOST_DOOR(sSwitchValue))
+        {
+            sSwitchValue = DoorTravelCost(pSoldier, sGridno, (UINT8)sSwitchValue, (BOOLEAN)(pSoldier.bTeam == gbPlayerNum), NULL);
+        }
+
+        if (sSwitchValue >= TRAVELCOST_BLOCKED && sSwitchValue != TRAVELCOST_DOOR)
+        {
+            return (100);   // Cost too much to be considered!
+        }
+
+        switch (sSwitchValue)
+        {
+            case TRAVELCOST_DIRTROAD:
+            case TRAVELCOST_FLAT:
+                sAPCost += AP_MOVEMENT_FLAT;
+                break;
+            //case TRAVELCOST_BUMPY		:		
+            case TRAVELCOST_GRASS:
+                sAPCost += AP_MOVEMENT_GRASS;
+                break;
+            case TRAVELCOST_THICK:
+                sAPCost += AP_MOVEMENT_BUSH;
+                break;
+            case TRAVELCOST_DEBRIS:
+                sAPCost += AP_MOVEMENT_RUBBLE;
+                break;
+            case TRAVELCOST_SHORE:
+                sAPCost += AP_MOVEMENT_SHORE; // wading shallow water
+                break;
+            case TRAVELCOST_KNEEDEEP:
+                sAPCost += AP_MOVEMENT_LAKE; // wading waist/chest deep - very slow
+                break;
+
+            case TRAVELCOST_DEEPWATER:
+                sAPCost += AP_MOVEMENT_OCEAN; // can swim, so it's faster than wading
+                break;
+            /*
+               case TRAVELCOST_VEINEND	:
+               case TRAVELCOST_VEINMID	: sAPCost += AP_MOVEMENT_FLAT;
+                                                                        break;
+            */
+            case TRAVELCOST_DOOR:
+                sAPCost += AP_MOVEMENT_FLAT;
+                break;
+
+            // cost for jumping a fence REPLACES all other AP costs!
+            case TRAVELCOST_FENCE:
+                return (AP_JUMPFENCE);
+
+            case TRAVELCOST_NONE:
+                return (0);
+
+            default:
+                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calc AP: Unrecongnized MP type %d in %d, direction %d", sSwitchValue, sGridno, bDir));
+                break;
+
+
+        }
+
+        if (bDir & 1)
+        {
+            sAPCost = (sAPCost * 14) / 10;
+        }
+
+
+        return (sAPCost);
     }
 
     public static bool EnoughAmmo(SOLDIERTYPE? pSoldier, bool fDisplay, InventorySlot bInvPos)

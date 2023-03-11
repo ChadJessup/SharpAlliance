@@ -50,7 +50,6 @@ public partial class Globals
     public static bool gfFirstBattleMeanwhileScenePending { get; internal set; }
     public static bool gfPlotPathToExitGrid { get; internal set; }
     public static int giNPCReferenceCount { get; internal set; }
-
     public static bool gfTimeInterruptPause = false;
     public static bool fSuperCompression = false;
     public static uint guiGameClock = STARTING_TIME;
@@ -101,6 +100,35 @@ public partial class Globals
     public static bool gfJustFinishedAPause;
 
     public static bool gfResetAllPlayerKnowsEnemiesFlags;
+
+    /// <summary>
+    /// This was a C macro that would return false, seeing how good an exception works here
+    /// </summary>
+    /// <param name="check"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static void CHECKF(object? check)
+    {
+        if (check is null || (check is bool truthy && !truthy))
+        {
+            throw new InvalidOperationException(nameof(CHECKF));
+        }
+    }
+
+    public static void CHECKV(bool check)
+    {
+        if (!check)
+        {
+            throw new InvalidOperationException(nameof(CHECKV));
+        }
+    }
+
+    public static void CHECKN(object? obj)
+    {
+        if (obj is null)
+        {
+            throw new InvalidOperationException(nameof(obj));
+        }
+    }
 }
 
 public enum WARPTIME

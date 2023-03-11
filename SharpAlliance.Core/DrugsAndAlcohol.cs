@@ -102,11 +102,11 @@ public class DrugsAndAlcohol
             if (ubDrugType == DRUG_TYPE_ALCOHOL)
             {
                 // ATE: use kit points...
-                if (usItem == NPCID.ALCOHOL)
+                if (usItem == Items.ALCOHOL)
                 {
                     ubKitPoints = 10;
                 }
-                else if (usItem == NPCID.WINE)
+                else if (usItem == Items.WINE)
                 {
                     ubKitPoints = 20;
                 }
