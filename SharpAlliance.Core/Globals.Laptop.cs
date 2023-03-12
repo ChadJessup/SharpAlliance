@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
@@ -226,7 +227,7 @@ public partial class Globals
     public static int guiTITLEBARLAPTOP;
     public static int guiLIGHTS;
     public static int guiTITLEBARICONS;
-    public static int guiDESKTOP;
+    public static Surfaces guiDESKTOP;
 
     // email notification
     public static int guiUNREAD;

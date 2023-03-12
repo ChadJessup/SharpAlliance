@@ -1811,6 +1811,11 @@ public class VeldridVideoManager : IVideoManager
     }
 
     internal static void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
+
+    public static void Blt8BPPDataSubTo16BPPBuffer(int pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, int pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Veldrid.Rectangle clip)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public enum BufferState

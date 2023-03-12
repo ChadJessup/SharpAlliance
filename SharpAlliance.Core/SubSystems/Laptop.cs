@@ -1,5 +1,9 @@
 ﻿using System;
-
+using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Veldrid.MetalBindings;
+using Veldrid;
 using static SharpAlliance.Core.Globals;
 
 
@@ -20,6 +24,30 @@ public class Laptop
     public static bool DrawLapTopIcons()
     {
         return (true);
+    }
+
+    public static void SetBookMark(BOOKMARK iBookId)
+    {
+        // find first empty spot, set to iBookId
+        int iCounter = 0;
+        if (iBookId != (BOOKMARK)(-2))
+        {
+            while (LaptopSaveInfo.iBookMarkList[iCounter] != (BOOKMARK)(-1))
+            {
+                // move trhough list until empty
+                if (LaptopSaveInfo.iBookMarkList[iCounter] == iBookId)
+                {
+                    // found it, return
+                    return;
+                }
+
+                iCounter++;
+            }
+
+            LaptopSaveInfo.iBookMarkList[iCounter] = iBookId;
+        }
+     
+        return;
     }
 
     public static void LapTopScreenCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
@@ -64,6 +92,27 @@ public class Laptop
         {
             fShowBookmarkInfo = false;
         }
+    }
+
+    public static void RenderLapTopImage()
+    {
+        HVOBJECT? hLapTopHandle;
+
+
+        if ((fMaximizingProgram == true) || (fMinizingProgram == true))
+        {
+            return;
+        }
+
+        VeldridVideoManager.GetVideoObject(out hLapTopHandle, guiLAPTOP);
+        VideoObjectManager. BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
+
+
+        hLapTopHandle = VeldridVideoManager.GetVideoObject(guiLaptopBACKGROUND);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
+
+
+        ButtonSubSystem.MarkButtonsDirty();
     }
 
     public static void RenderLaptop()
@@ -231,6 +280,128 @@ public class Laptop
         // mark the buttons dirty at this point
         MarkButtonsDirty();
     }
+
+    private static bool DrawDeskTopBackground()
+    {
+        HVSURFACE hSrcVSurface;
+        int uiDestPitchBYTES;
+        int uiSrcPitchBYTES;
+        int pDestBuf;
+        int pSrcBuf;
+        
+        Rectangle clip = new()
+        {
+            // set clipping region
+            X = 0,
+            Width = 506,
+            Y = 0,
+            Height = 408 + 19,
+        };
+
+        // get surfaces
+        pDestBuf = VeldridVideoManager.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+        CHECKF(VeldridVideoManager.GetVideoSurface(out hSrcVSurface, guiDESKTOP));
+        pSrcBuf = VeldridVideoManager.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
+
+
+        // blit .pcx for the background onto desktop
+        VeldridVideoManager.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, LAPTOP_SCREEN_UL_X - 2, LAPTOP_SCREEN_UL_Y - 3, out clip);
+
+
+        // release surfaces
+        VeldridVideoManager.UnLockVideoSurface(guiDESKTOP);
+        VeldridVideoManager.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+
+        return (true);
+    }
+
+    public static bool RenderWWWProgramTitleBar()
+    {
+        // will render the title bar for the www program
+        string uiTITLEFORWWW;
+        HVOBJECT hHandle;
+        int iIndex = 0;
+        string sString;
+
+        // title bar - load
+        CHECKF(VeldridVideoManager.AddVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));
+
+        // blit title
+        hHandle = VeldridVideoManager.GetVideoObject(uiTITLEFORWWW);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+
+
+        // now delete
+        VeldridVideoManager.DeleteVideoObjectFromIndex(uiTITLEFORWWW);
+
+        // now slapdown text
+        FontSubSystem.SetFont(FontStyle.FONT14ARIAL);
+        FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+        FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
+
+        // display title
+
+        // no page loaded yet, do not handle yet
+
+
+        if (guiCurrentLaptopMode == LAPTOP_MODE.WWW)
+        {
+            mprintf(140, 33, pWebTitle[0]);
+        }
+
+        else
+        {
+            iIndex = guiCurrentLaptopMode - LAPTOP_MODE.WWW - 1;
+
+            wprintf(sString, "%s  -  %s", pWebTitle[0], pWebPagesTitles[iIndex]);
+            mprintf(140, 33, sString);
+        }
+
+        BlitTitleBarIcons();
+
+        DisplayProgramBoundingBox(false);
+
+        //InvalidateRegion( 0, 0, 640, 480 );
+        return (true);
+    }
+
+    public static void BlitTitleBarIcons()
+    {
+
+        HVOBJECT hHandle;
+        // will blit the icons for the title bar of the program we are in
+        switch (guiCurrentLaptopMode)
+        {
+            case (LAPTOP_MODE_HISTORY):
+                GetVideoObject(&hHandle, guiTITLEBARICONS);
+                BltVideoObject(FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+                break;
+            case (LAPTOP_MODE_EMAIL):
+                GetVideoObject(&hHandle, guiTITLEBARICONS);
+                BltVideoObject(FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+                break;
+            case (LAPTOP_MODE_PERSONNEL):
+                GetVideoObject(&hHandle, guiTITLEBARICONS);
+                BltVideoObject(FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+                break;
+            case (LAPTOP_MODE_FINANCES):
+                GetVideoObject(&hHandle, guiTITLEBARICONS);
+                BltVideoObject(FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+                break;
+            case (LAPTOP_MODE_FILES):
+                GetVideoObject(&hHandle, guiTITLEBARICONS);
+                BltVideoObject(FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+                break;
+            case (LAPTOP_MODE_NONE):
+                // do nothing
+                break;
+            default:
+                // www pages
+                GetVideoObject(&hHandle, guiTITLEBARICONS);
+                BltVideoObject(FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+                break;
+        }
+    }
 }
 
 // icons text id's
@@ -337,4 +508,18 @@ public enum LAPTOP
     PANEL_CURSOR,
     SCREEN_CURSOR,
     WWW_CURSOR,
+};
+
+// the bookmark values, move cancel down as bookmarks added
+
+public enum BOOKMARK
+{
+    AIM_BOOKMARK = 0,
+    BOBBYR_BOOKMARK,
+    IMP_BOOKMARK,
+    MERC_BOOKMARK,
+    FUNERAL_BOOKMARK,
+    FLORIST_BOOKMARK,
+    INSURANCE_BOOKMARK,
+    CANCEL_STRING,
 };

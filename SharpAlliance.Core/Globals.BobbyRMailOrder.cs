@@ -262,14 +262,14 @@ public partial class Globals
     public const int BOBBYR_UNDER_CONSTRUCTION_TEXT_Y = BOBBYR_UNDERCONSTRUCTION_Y + 62 + 60;
     public const int BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH = LAPTOP_SCREEN_LR_X - LAPTOP_SCREEN_UL_X;
 
-    public static int guiBobbyName;
-    public static int guiPlaque;
-    public static int guiTopHinge;
-    public static int guiBottomHinge;
-    public static int guiStorePlaque;
-    public static int guiHandle;
+    public static string guiBobbyName;
+    public static string guiPlaque;
+    public static string guiTopHinge;
+    public static string guiBottomHinge;
+    public static string guiStorePlaque;
+    public static string guiHandle;
     public static string guiWoodBackground;
-    public static int guiUnderConstructionImage;
+    public static string guiUnderConstructionImage;
 
     public static LAPTOP_MODE guiLastBobbyRayPage;
 

@@ -46,32 +46,32 @@ public class BobbyR
         // load the Bobbyname graphic and add it
         //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.BOBBYNAME);
-        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiBobbyName);
+        VeldridVideoManager.AddVideoObject(imageFile, out guiBobbyName);
 
         // load the plaque graphic and add it
         //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //FilenameForBPP("LAPTOP\\BobbyPlaques.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiPlaque);
+        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
 
         // load the TopHinge graphic and add it
         //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //FilenameForBPP("LAPTOP\\BobbyTopHinge.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTopHinge);
+        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
 
         // load the BottomHinge graphic and add it
         //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        //FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiBottomHinge);
+        //Utils.FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
+        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
 
         // load the Store Plaque graphic and add it
         //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-        //GetMLGFilename(VObjectDesc.ImageFile, MLG_STOREPLAQUE);
-        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiStorePlaque);
+        MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.STOREPLAQUE);
+        VeldridVideoManager.AddVideoObject(imageFile, out guiStorePlaque);
 
         // load the Handle graphic and add it
         //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //FilenameForBPP("LAPTOP\\BobbyHandle.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiHandle);
+        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
 
 
         InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, usMouseRegionPosArray, gSelectedBobbiesSignMenuRegion);
@@ -80,10 +80,10 @@ public class BobbyR
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
             // load the Handle graphic and add it
-            VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-            Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
+            //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+            //Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
             
-            if(VeldridVideoManager.AddVideoObject(VObjectDesc, guiUnderConstructionImage))
+            if(VeldridVideoManager.AddVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage))
             {
 
             }
@@ -97,7 +97,7 @@ public class BobbyR
         }
 
 
-        SetBookMark(BOBBYR_BOOKMARK);
+        Laptop.SetBookMark(BOOKMARK.BOBBYR_BOOKMARK);
         HandleBobbyRUnderConstructionAni(true);
 
         RenderBobbyR();
@@ -141,27 +141,27 @@ public class BobbyR
         DrawBobbyRWoodBackground();
 
         // Bobby's Name
-        VeldridVideoManager.GetVideoObject(out hPixHandle, guiBobbyName);
+        hPixHandle = VeldridVideoManager.GetVideoObject(guiBobbyName);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBY_RAYS_NAME_X, BOBBY_RAYS_NAME_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Plaque
-        VeldridVideoManager.GetVideoObject(out hPixHandle, guiPlaque);
+        hPixHandle = VeldridVideoManager.GetVideoObject(guiPlaque);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBYS_PLAQUES_X, BOBBYS_PLAQUES_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Top Hinge
-        VeldridVideoManager.GetVideoObject(out hPixHandle, guiTopHinge);
+        hPixHandle = VeldridVideoManager.GetVideoObject(guiTopHinge);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_TOPHINGE_X, BOBBIES_TOPHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Bottom Hinge
-        VeldridVideoManager.GetVideoObject(out hPixHandle, guiBottomHinge);
+        hPixHandle = VeldridVideoManager.GetVideoObject(guiBottomHinge);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_BOTTOMHINGE_X, BOBBIES_BOTTOMHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // StorePlaque
-        VeldridVideoManager.GetVideoObject(out hStorePlaqueHandle, guiStorePlaque);
+        hStorePlaqueHandle = VeldridVideoManager.GetVideoObject(guiStorePlaque);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hStorePlaqueHandle, 0, BOBBIES_STORE_PLAQUE_X, BOBBIES_STORE_PLAQUE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Handle
-        VeldridVideoManager.GetVideoObject(out hPixHandle, guiHandle);
+        hPixHandle = VeldridVideoManager.GetVideoObject(guiHandle);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_HANDLE_X, BOBBIES_HANDLE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         /*
@@ -395,7 +395,7 @@ public class BobbyR
         if (((uiCurTime - uiLastTime) > BOBBYR_UNDERCONSTRUCTION_ANI_DELAY) || (fReDrawScreenFlag))
         {
             // The undercontsruction graphic 
-            VeldridVideoManager.GetVideoObject(out hPixHandle, guiUnderConstructionImage);
+            hPixHandle = VeldridVideoManager.GetVideoObject(guiUnderConstructionImage);
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT.SRCTRANSPARENCY, null);
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT.SRCTRANSPARENCY, null);
 

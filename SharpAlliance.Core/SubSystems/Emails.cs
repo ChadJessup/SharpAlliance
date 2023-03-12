@@ -2945,10 +2945,10 @@ namespace SharpAlliance.Core.SubSystems
             {
 
                 case (IMP_EMAIL_AGAIN):
-                    SetBookMark(IMP_BOOKMARK);
+                    Laptop.SetBookMark(BOOKMARK.IMP_BOOKMARK);
                     break;
                 case (IMP_EMAIL_INTRO):
-                    SetBookMark(IMP_BOOKMARK);
+                    Laptop.SetBookMark(BOOKMARK.IMP_BOOKMARK);
                     break;
             }
         }
@@ -2994,7 +2994,7 @@ namespace SharpAlliance.Core.SubSystems
 
                     break;
                 case (MERC_INTRO):
-                    SetBookMark(MERC_BOOKMARK);
+                    Laptop.SetBookMark(BOOKMARK.MERC_BOOKMARK);
                     fReDrawScreenFlag = true;
                     break;
 
@@ -3012,7 +3012,7 @@ namespace SharpAlliance.Core.SubSystems
 
                 case MERC_NEW_SITE_ADDRESS:
                     //Set the book mark so the player can access the site
-                    SetBookMark(MERC_BOOKMARK);
+                    Laptop.SetBookMark(BOOKMARK.MERC_BOOKMARK);
                     break;
 
                 case MERC_DIED_ON_OTHER_ASSIGNMENT:

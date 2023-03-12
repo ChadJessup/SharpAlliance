@@ -173,10 +173,10 @@ public struct BobbyRayPurchaseStruct
 public class LaptopSaveInfoStruct
 {
     //General Laptop Info
-    bool gfNewGameLaptop;                                    //Is it the firs time in Laptop
-    bool[] fVisitedBookmarkAlready = new bool[20];            // have we visitied this site already?
-    int[] iBookMarkList = new int[MAX_BOOKMARKS];
-    int iCurrentBalance;                                  // current players balance
+    public bool gfNewGameLaptop;                                    //Is it the firs time in Laptop
+    public bool[] fVisitedBookmarkAlready = new bool[20];            // have we visitied this site already?
+    public BOOKMARK[] iBookMarkList = new BOOKMARK[MAX_BOOKMARKS];
+    public int iCurrentBalance;                                  // current players balance
 
     //IMP Information
     bool fIMPCompletedFlag;                      // Has the player Completed the IMP process

@@ -66,9 +66,9 @@ public class Buildings
         sTempGridNo = sDesiredSpot;
         // using diagonal directions to hopefully prevent picking a 
         // spot that 
-        while ((gpWorldLevelData[sTempGridNo].uiFlags & MAPELEMENT_REACHABLE))
+        while ((gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
         {
-            sNextTempGridNo = NewGridNo(sTempGridNo, DirectionInc(bDirection));
+            sNextTempGridNo = IsometricUtils.NewGridNo(sTempGridNo, IsometricUtils.DirectionInc(bDirection));
             if (sTempGridNo == sNextTempGridNo)
             {
                 // hit edge of map!??!
