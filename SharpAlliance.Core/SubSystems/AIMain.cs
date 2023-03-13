@@ -1537,7 +1537,7 @@ public class AIMain
          {
           // if he lacks the breath, or APs to get up this turn (life checked above)
           // OR... (new June 13/96 Ian) he's getting first aid...
-          if ((pSoldier.bBreath < OKBREATH) || (pSoldier.bActionPoints < (AP_GET_UP + AP_ROLL_OVER))
+          if ((pSoldier.bBreath < OKBREATH) || (pSoldier.bActionPoints < (AP_GET_UP + AP.ROLL_OVER))
               || pSoldier.service)
            {
        #if RECORDNET
@@ -2303,7 +2303,7 @@ public class AIMain
             case AI_ACTION.PULL_TRIGGER:          // activate an adjacent panic trigger
 
                 // turn to face trigger first
-                if (FindStructure((int)(pSoldier.sGridNo + DirectionInc(WorldDirections.NORTH)), STRUCTUREFLAGS.SWITCH))
+                if (StructureInternals.FindStructure((pSoldier.sGridNo + DirectionInc(WorldDirections.NORTH)), STRUCTUREFLAGS.SWITCH) is not null)
                 {
                     SendSoldierSetDesiredDirectionEvent(pSoldier, WorldDirections.NORTH);
                 }
@@ -2455,19 +2455,10 @@ public class AIMain
                         sDoorGridNo = pSoldier.sGridNo + DirectionInc(bDirection);
                     }
 
-                    pStructure = FindStructure(sDoorGridNo, STRUCTUREFLAGS.ANYDOOR);
+                    pStructure = StructureInternals.FindStructure(sDoorGridNo, STRUCTUREFLAGS.ANYDOOR);
                     if (pStructure == null)
                     {
-# if JA2TESTVERSION
-                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "AI %d tried to open door it could not then find in %d", pSoldier.ubID, sDoorGridNo);
-#endif
                         CancelAIAction(pSoldier, FORCE);
-# if TESTAICONTROL
-                        if (gfTurnBasedAI)
-                        {
-                            DebugAI(String("Ending turn for %d because of error opening door", pSoldier.ubID));
-                        }
-#endif
                         EndAIGuysTurn(pSoldier);
                     }
 

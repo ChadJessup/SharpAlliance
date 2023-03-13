@@ -586,7 +586,7 @@ public class PathAI
         bool fDoorIsOpen;
         int ubReplacementCost;
 
-        if (TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost))
+        if (TRAVELCOST.IS_TRAVELCOST.DOOR(ubMovementCost))
         {
             ubReplacementCost = TRAVELCOST.OBSTACLE;
 
@@ -841,12 +841,12 @@ public class TRAVELCOST
     public const int FLATFLOOR = 10;
     public const int BLOCKED = OFF_MAP;
 
-    public static bool IS_TRAVELCOST_DOOR(int x)
+    public static bool IS_TRAVELCOST.DOOR(int x)
     {
         return (x >= TRAVELCOST.DOOR_CLOSED_HERE && x <= TRAVELCOST.DOOR_OPEN_NW_W);
     }
 
-    public static bool IS_TRAVELCOST_CLOSED_DOOR(int x)
+    public static bool IS_TRAVELCOST.CLOSED_DOOR(int x)
     {
         return (x >= TRAVELCOST.DOOR_CLOSED_HERE && ((int)x) << (int)TRAVELCOST.DOOR_CLOSED_W > 0);
     }

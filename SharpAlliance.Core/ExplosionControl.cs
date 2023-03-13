@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 
@@ -11,8 +12,7 @@ namespace SharpAlliance.Core;
 
 public class ExplosionControl
 {
-
-    int GetFreeExplosion()
+    public static int GetFreeExplosion()
     {
         int uiCount;
 
@@ -151,7 +151,7 @@ public class ExplosionControl
     }
 
 
-    void GenerateExplosionFromExplosionPointer(EXPLOSIONTYPE? pExplosion)
+    public static void GenerateExplosionFromExplosionPointer(EXPLOSIONTYPE? pExplosion)
     {
         EXPLOSION_FLAG uiFlags;
         int ubOwner;
@@ -291,7 +291,7 @@ public class ExplosionControl
         STRUCTURE? pFenceStructure, pFenceBaseStructure;
         LEVELNODE? pFenceNode;
         int bFenceDestructionPartner = -1;
-        int uiFenceType;
+        TileTypeDefines uiFenceType;
         int usTileIndex;
 
         pFenceStructure = WorldStructures.FindStructure(sStructGridNo, STRUCTUREFLAGS.FENCE);
@@ -313,7 +313,7 @@ public class ExplosionControl
                 bFenceDestructionPartner = -1 * (pFenceBaseStructure.pDBStructureRef.pDBStructure.bDestructionPartner);
 
                 // Get new index
-                GetTileIndexFromTypeSubIndex(uiFenceType, (int)(bFenceDestructionPartner), out usTileIndex);
+                TileDefine.GetTileIndexFromTypeSubIndex(uiFenceType, (int)(bFenceDestructionPartner), out usTileIndex);
 
                 //Set a flag indicating that the following changes are to go the the maps, temp file
                 ApplyMapChangesToMapTempFile(true);
@@ -386,7 +386,7 @@ public class ExplosionControl
         else if (!(pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.PERSON)))
         {
             // Damage structure!
-            if ((bDamageReturnVal = WorldStructures.DamageStructure(pCurrent, (int)sWoundAmt, STRUCTURE_DAMAGE_EXPLOSION, sGridNo, sX, sY, NOBODY)) != 0)
+            if ((bDamageReturnVal = DamageStructure(pCurrent, (int)sWoundAmt, STRUCTURE_DAMAGE_EXPLOSION, sGridNo, sX, sY, NOBODY)) != 0)
             {
                 fContinue = 0;
 
@@ -557,8 +557,8 @@ public class ExplosionControl
                         // ATE
                         // Remove any decals in tile....
                         // Use tile database for this as apposed to stuct data
-                        RemoveAllStructsOfTypeRange(pBase.sGridNo, FIRSTWALLDECAL, FOURTHWALLDECAL);
-                        RemoveAllStructsOfTypeRange(pBase.sGridNo, FIFTHWALLDECAL, EIGTHWALLDECAL);
+                        WorldManager.RemoveAllStructsOfTypeRange(pBase.sGridNo, TileTypeDefines.FIRSTWALLDECAL, TileTypeDefines.FOURTHWALLDECAL);
+                        WorldManager.RemoveAllStructsOfTypeRange(pBase.sGridNo, TileTypeDefines.FIFTHWALLDECAL, TileTypeDefines.EIGTHWALLDECAL);
 
                         // Alrighty, now do this
                         // Get orientation
@@ -589,7 +589,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
+                                        TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -621,7 +621,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
+                                        TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -649,7 +649,7 @@ public class ExplosionControl
                                             (ppNextCurrent) = (ppNextCurrent).pNext;
                                         }
 
-                                        pAttachedNode = FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
+                                        pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
                                         if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
@@ -659,18 +659,12 @@ public class ExplosionControl
                                         else
                                         {
                                             // error!
-# if JA2BETAVERSION
-                                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
-#endif
                                             break;
                                         }
                                     }
                                     else
                                     {
                                         // error!
-# if JA2BETAVERSION
-                                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
-#endif
                                         break;
                                     }
                                     // search for another, from the start of the list
@@ -695,18 +689,12 @@ public class ExplosionControl
                                         else
                                         {
                                             // error!
-# if JA2BETAVERSION
-                                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
-#endif
                                             break;
                                         }
                                     }
                                     else
                                     {
                                         // error!
-# if JA2BETAVERSION
-                                        ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Problems removing structure attached to wall at %d", sNewGridNo);
-#endif
                                         break;
                                     }
                                     // search for another, from the start of the list
@@ -736,7 +724,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
+                                        TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -767,7 +755,7 @@ public class ExplosionControl
                                         }
 
                                         // Replace!
-                                        GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
+                                        TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
@@ -878,13 +866,13 @@ public class ExplosionControl
                         // Yes we are!
                         // Remove water....
                         ApplyMapChangesToMapTempFile(true);
-                        GetTileIndexFromTypeSubIndex(uiTileType, 1, out sNewIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 1, out sNewIndex);
                         RemoveStruct(sBaseGridNo, sNewIndex);
                         RemoveStruct(sBaseGridNo, sNewIndex);
-                        GetTileIndexFromTypeSubIndex(uiTileType, 2, out sNewIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 2, out sNewIndex);
                         RemoveStruct(sBaseGridNo, sNewIndex);
                         RemoveStruct(sBaseGridNo, sNewIndex);
-                        GetTileIndexFromTypeSubIndex(uiTileType, 3, out sNewIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 3, out sNewIndex);
                         RemoveStruct(sBaseGridNo, sNewIndex);
                         RemoveStruct(sBaseGridNo, sNewIndex);
                         ApplyMapChangesToMapTempFile(false);
@@ -910,7 +898,7 @@ public class ExplosionControl
                     {
                         // We have a levelnode...
                         // Get new index for new grpahic....
-                        GetTileIndexFromTypeSubIndex(uiTileType, bDestructionPartner, out usTileIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, bDestructionPartner, out usTileIndex);
 
                         ApplyMapChangesToMapTempFile(true);
 
@@ -958,7 +946,7 @@ public class ExplosionControl
     {
         STRUCTURE? pCurrent, pNextCurrent, pStructure;
         STRUCTURE? pBaseStructure;
-        int sDesiredLevel;
+        STRUCTURE_ON sDesiredLevel;
         DB_STRUCTURE_TILE? ppTile;
         int ubLoop, ubLoop2;
         int sNewGridNo, sNewGridNo2, sBaseGridNo;
@@ -971,7 +959,7 @@ public class ExplosionControl
         // Based on distance away, damage any struct at this gridno
         // OK, loop through structures and damage!
         pCurrent = gpWorldLevelData[sGridNo].pStructureHead;
-        sDesiredLevel = STRUCTURE_ON_GROUND;
+        sDesiredLevel = STRUCTURE_ON.GROUND;
 
         // This code gets a little hairy because 
         // (1) we might need to destroy the currently-examined structure
@@ -1276,7 +1264,7 @@ public class ExplosionControl
                     break;
             }
             // a gas effect, take damage directly...
-            SoldierControl.SoldierTakeDamage(pSoldier, AnimationHeights.ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE_GAS, NOBODY, NOWHERE, 0, true);
+            SoldierControl.SoldierTakeDamage(pSoldier, AnimationHeights.ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE.GAS, NOBODY, NOWHERE, 0, true);
             if (pSoldier.bLife >= CONSCIOUSNESS)
             {
                 DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
@@ -1685,7 +1673,7 @@ public class ExplosionControl
                                         break;
                                 }
                                 // a gas effect, take damage directly...
-                                SoldierTakeDamage( pSoldier, ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE_GAS, NOBODY, NOWHERE, 0, true );
+                                SoldierTakeDamage( pSoldier, ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE.GAS, NOBODY, NOWHERE, 0, true );
                                 if ( pSoldier.bLife >= CONSCIOUSNESS )
                                 {
                                     DoMercBattleSound( pSoldier, (int)( BATTLE_SOUND_HIT1 + Globals.Random.Next( 2 ) ) );
@@ -1713,7 +1701,7 @@ public class ExplosionControl
 
         ubMovementCost = gubWorldMovementCosts[uiNewSpot][ubDir][bLevel];
 
-        if (IS_TRAVELCOST_DOOR(ubMovementCost))
+        if (IS_TRAVELCOST.DOOR(ubMovementCost))
         {
             ubMovementCost = DoorTravelCost(null, uiNewSpot, ubMovementCost, false, null);
             // If we have hit a wall, STOP HERE
@@ -2154,14 +2142,14 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = &(gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == BOMB_REMOTE)
+                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                if (pObj.bDetonatorType == DetonatorType.BOMB_REMOTE)
                 {
                     // Found a remote bomb, so check to see if it has the same frequency
                     if (pObj.bFrequency == bFrequency)
                     {
                         // toggle its active flag
-                        if (pObj.fFlags & OBJECT.DISABLED_BOMB)
+                        if (pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                         {
                             pObj.fFlags &= (~OBJECT.DISABLED_BOMB);
                         }
@@ -2186,11 +2174,11 @@ public class ExplosionControl
             if (gWorldBombs[uiWorldBombIndex].fExists && gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].sGridNo == sGridNo)
             {
                 pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == BOMB_PRESSURE)
+                if (pObj.bDetonatorType == DetonatorType.BOMB_PRESSURE)
                 {
                     // Found a pressure item
                     // toggle its active flag
-                    if (pObj.fFlags & OBJECT.DISABLED_BOMB)
+                    if (pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                     {
                         pObj.fFlags &= (~OBJECT.DISABLED_BOMB);
                     }
@@ -2250,18 +2238,18 @@ public class ExplosionControl
 
         switch (pObj.bActionValue)
         {
-            case ACTION_ITEM_OPEN_DOOR:
-                pStructure = FindStructure(sGridNo, STRUCTURE_ANYDOOR);
+            case ACTION_ITEM.OPEN_DOOR:
+                pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
                 if (pStructure is not null)
                 {
-                    if (pStructure.fFlags & STRUCTURE_OPEN)
+                    if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                     {
                         // it's already open - this MIGHT be an error but probably not
                         // because we are basically just ensuring that the door is open
                     }
                     else
                     {
-                        if (pStructure.fFlags & STRUCTURE_BASE_TILE)
+                        if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
                         {
                             HandleDoorChangeFromGridNo(null, sGridNo, false);
                         }
@@ -2275,18 +2263,15 @@ public class ExplosionControl
                 else
                 {
                     // error message here
-# if JA2BETAVERSION
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Action item to open door in gridno %d but there is none!", sGridNo);
-#endif
                 }
                 break;
-            case ACTION_ITEM_CLOSE_DOOR:
-                pStructure = FindStructure(sGridNo, STRUCTURE_ANYDOOR);
+            case ACTION_ITEM.CLOSE_DOOR:
+                pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
                 if (pStructure is not null)
                 {
-                    if (pStructure.fFlags & STRUCTURE_OPEN)
+                    if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                     {
-                        if (pStructure.fFlags & STRUCTURE_BASE_TILE)
+                        if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
                         {
                             HandleDoorChangeFromGridNo(null, sGridNo, false);
                         }
@@ -2307,11 +2292,11 @@ public class ExplosionControl
                     // error message here
                 }
                 break;
-            case ACTION_ITEM_TOGGLE_DOOR:
-                pStructure = FindStructure(sGridNo, STRUCTURE_ANYDOOR);
+            case ACTION_ITEM.TOGGLE_DOOR:
+                pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
                 if (pStructure is not null)
                 {
-                    if (pStructure.fFlags & STRUCTURE_BASE_TILE)
+                    if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
                     {
                         HandleDoorChangeFromGridNo(null, sGridNo, false);
                     }
@@ -2326,7 +2311,7 @@ public class ExplosionControl
                     // error message here
                 }
                 break;
-            case ACTION_ITEM_UNLOCK_DOOR:
+            case ACTION_ITEM.UNLOCK_DOOR:
                 {
                     DOOR? pDoor;
 
@@ -2337,7 +2322,7 @@ public class ExplosionControl
                     }
                 }
                 break;
-            case ACTION_ITEM_TOGGLE_LOCK:
+            case ACTION_ITEM.TOGGLE_LOCK:
                 {
                     DOOR? pDoor;
 
@@ -2355,7 +2340,7 @@ public class ExplosionControl
                     }
                 }
                 break;
-            case ACTION_ITEM_UNTRAP_DOOR:
+            case ACTION_ITEM.UNTRAP_DOOR:
                 {
                     DOOR? pDoor;
 
@@ -2367,30 +2352,30 @@ public class ExplosionControl
                     }
                 }
                 break;
-            case ACTION_ITEM_SMALL_PIT:
+            case ACTION_ITEM.SMALL_PIT:
                 Add3X3Pit(sGridNo);
                 SearchForOtherMembersWithinPitRadiusAndMakeThemFall(sGridNo, 1);
                 break;
-            case ACTION_ITEM_LARGE_PIT:
+            case ACTION_ITEM.LARGE_PIT:
                 Add5X5Pit(sGridNo);
                 SearchForOtherMembersWithinPitRadiusAndMakeThemFall(sGridNo, 2);
                 break;
-            case ACTION_ITEM_TOGGLE_ACTION1:
+            case ACTION_ITEM.TOGGLE_ACTION1:
                 ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 1);
                 break;
-            case ACTION_ITEM_TOGGLE_ACTION2:
+            case ACTION_ITEM.TOGGLE_ACTION2:
                 ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 2);
                 break;
-            case ACTION_ITEM_TOGGLE_ACTION3:
+            case ACTION_ITEM.TOGGLE_ACTION3:
                 ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 3);
                 break;
-            case ACTION_ITEM_TOGGLE_ACTION4:
+            case ACTION_ITEM.TOGGLE_ACTION4:
                 ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 4);
                 break;
-            case ACTION_ITEM_TOGGLE_PRESSURE_ITEMS:
+            case ACTION_ITEM.TOGGLE_PRESSURE_ITEMS:
                 TogglePressureActionItemsInGridNo(sGridNo);
                 break;
-            case ACTION_ITEM_ENTER_BROTHEL:
+            case ACTION_ITEM.ENTER_BROTHEL:
                 // JA2Gold: Disable brothel tracking
                 /*
                 if ( ! (gTacticalStatus.uiFlags & INCOMBAT) )
@@ -2465,7 +2450,7 @@ public class ExplosionControl
                 }
                 */
                 break;
-            case ACTION_ITEM_EXIT_BROTHEL:
+            case ACTION_ITEM.EXIT_BROTHEL:
                 // JA2Gold: Disable brothel tracking
                 /*
                 if ( ! (gTacticalStatus.uiFlags & INCOMBAT) )
@@ -2488,7 +2473,7 @@ public class ExplosionControl
                 }
                 */
                 break;
-            case ACTION_ITEM_KINGPIN_ALARM:
+            case ACTION_ITEM.KINGPIN_ALARM:
                 //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                 CallAvailableKingpinMenTo(sGridNo);
 
@@ -2522,7 +2507,7 @@ public class ExplosionControl
                 // now zap this object so it won't activate again
                 pObj.fFlags &= (~OBJECT_DISABLED_BOMB);
                 break;
-            case ACTION_ITEM_SEX:
+            case ACTION_ITEM.SEX:
                 // JA2Gold: Disable brothel sex
                 /*
                 if ( ! (gTacticalStatus.uiFlags & INCOMBAT) )
@@ -2572,7 +2557,7 @@ public class ExplosionControl
                                 if ( sDoorSpot != NOWHERE && sTeleportSpot != NOWHERE )
                                 {
                                     // close the door... 
-                                    DoorCloser.bActionValue = ACTION_ITEM_CLOSE_DOOR;
+                                    DoorCloser.bActionValue = ACTION_ITEM.CLOSE_DOOR;
                                     PerformItemAction( sDoorSpot, &DoorCloser );
 
                                     // have sex
@@ -2599,7 +2584,7 @@ public class ExplosionControl
                 }
                 */
                 break;
-            case ACTION_ITEM_REVEAL_ROOM:
+            case ACTION_ITEM.REVEAL_ROOM:
                 {
                     int ubRoom;
                     if (InAHiddenRoom(sGridNo, out ubRoom))
@@ -2608,19 +2593,19 @@ public class ExplosionControl
                     }
                 }
                 break;
-            case ACTION_ITEM_LOCAL_ALARM:
+            case ACTION_ITEM.LOCAL_ALARM:
                 MakeNoise(NOBODY, sGridNo, 0, gpWorldLevelData[sGridNo].ubTerrainID, 30, NOISE_SILENT_ALARM);
                 break;
-            case ACTION_ITEM_GLOBAL_ALARM:
+            case ACTION_ITEM.GLOBAL_ALARM:
                 CallAvailableEnemiesTo(sGridNo);
                 break;
-            case ACTION_ITEM_BLOODCAT_ALARM:
+            case ACTION_ITEM.BLOODCAT_ALARM:
                 CallAvailableTeamEnemiesTo(sGridNo, CREATURE_TEAM);
                 break;
-            case ACTION_ITEM_KLAXON:
+            case ACTION_ITEM.KLAXON:
                 //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                 break;
-            case ACTION_ITEM_MUSEUM_ALARM:
+            case ACTION_ITEM.MUSEUM_ALARM:
                 //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                 CallEldinTo(sGridNo);
                 break;
@@ -2678,7 +2663,7 @@ public class ExplosionControl
                 sGridNo = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].sGridNo;
                 ubLevel = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].ubLevel;
 
-                if (pObj.usItem == ACTION_ITEM && pObj.bActionValue != ACTION_ITEM_BLOW_UP)
+                if (pObj.usItem == ACTION_ITEM && pObj.bActionValue != ACTION_ITEM.BLOW_UP)
                 {
                     PerformItemAction(sGridNo, pObj);
                 }
@@ -2702,7 +2687,7 @@ public class ExplosionControl
                     RemoveItemFromPool(sGridNo, gWorldBombs[uiWorldBombIndex].iItemIndex, ubLevel);
 
                     // make sure no one thinks there is a bomb here any more!
-                    if (gpWorldLevelData[sGridNo].uiFlags & MAPELEMENT_PLAYER_MINE_PRESENT)
+                    if (gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.PLAYER_MINE_PRESENT))
                     {
                         RemoveBlueFlag(sGridNo, ubLevel);
                     }
@@ -2771,10 +2756,10 @@ public class ExplosionControl
 
             // unlock UI
             //UnSetUIBusy( (int)gusSelectedSoldier );
-            if (!(gTacticalStatus.uiFlags & INCOMBAT) || gTacticalStatus.ubCurrentTeam == gbPlayerNum)
+            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) || gTacticalStatus.ubCurrentTeam == gbPlayerNum)
             {
                 // don't end UI lock when it's a computer turn
-                guiPendingOverrideEvent = LU_ENDUILOCK;
+                guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
             }
 
             gfExplosionQueueActive = false;
@@ -2795,8 +2780,8 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = &(gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == BOMB_TIMED && !(pObj.fFlags & OBJECT_DISABLED_BOMB))
+                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                if (pObj.bDetonatorType == DetonatorType.BOMB_TIMED && !(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)))
                 {
                     // Found a timed bomb, so decay its delay value and see if it goes off
                     pObj.bDelay--;
@@ -2814,7 +2799,7 @@ public class ExplosionControl
                             gubPersonToSetOffExplosions = NOBODY;
                         }
 
-                        if (pObj.usItem != ACTION_ITEM || pObj.bActionValue == ACTION_ITEM_BLOW_UP)
+                        if (pObj.usItem != Items.ACTION_ITEM || pObj.bActionValue == ACTION_ITEM.BLOW_UP)
                         {
                             uiTimeStamp += BOMB_QUEUE_DELAY;
                         }
@@ -2827,7 +2812,7 @@ public class ExplosionControl
     void SetOffBombsByFrequency(int ubID, int bFrequency)
     {
         int uiWorldBombIndex;
-        int uiTimeStamp;
+        uint uiTimeStamp;
         OBJECTTYPE? pObj;
 
         uiTimeStamp = GetJA2Clock();
@@ -2838,7 +2823,7 @@ public class ExplosionControl
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
                 pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == BOMB_REMOTE && !(pObj.fFlags & OBJECT_DISABLED_BOMB))
+                if (pObj.bDetonatorType == DetonatorType.BOMB_REMOTE && !(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)))
                 {
                     // Found a remote bomb, so check to see if it has the same frequency
                     if (pObj.bFrequency == bFrequency)
@@ -2848,7 +2833,7 @@ public class ExplosionControl
 
                         // put this bomb on the queue
                         AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
-                        if (pObj.usItem != ACTION_ITEM || pObj.bActionValue == ACTION_ITEM_BLOW_UP)
+                        if (pObj.usItem != Items.ACTION_ITEM || pObj.bActionValue == ACTION_ITEM.BLOW_UP)
                         {
                             uiTimeStamp += BOMB_QUEUE_DELAY;
                         }
@@ -2943,12 +2928,12 @@ public class ExplosionControl
 
                             // put this bomb on the queue
                             AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
-                            if (pObj.usItem != ACTION_ITEM || pObj.bActionValue == ACTION_ITEM_BLOW_UP)
+                            if (pObj.usItem != ACTION_ITEM || pObj.bActionValue == ACTION_ITEM.BLOW_UP)
                             {
                                 uiTimeStamp += BOMB_QUEUE_DELAY;
                             }
 
-                            if (pObj.usBombItem != NOTHING && Item[pObj.usBombItem].usItemClass & IC_EXPLOSV)
+                            if (pObj.usBombItem != NOTHING && Item[pObj.usBombItem].usItemClass.HasFlag(IC.EXPLOSV))
                             {
                                 fFoundMine = true;
                             }
@@ -2971,9 +2956,9 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists && gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].sGridNo == sGridNo)
             {
-                pObj = &(gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
 
-                if (pObj.usItem == SWITCH && (!(pObj.fFlags & OBJECT_DISABLED_BOMB)) && pObj.bDetonatorType == BOMB_SWITCH)
+                if (pObj.usItem == Items.SWITCH && (!(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))) && pObj.bDetonatorType == DetonatorType.BOMB_SWITCH)
                 {
                     // send out a signal to detonate other bombs, rather than this which
                     // isn't a bomb but a trigger
@@ -3000,7 +2985,7 @@ public class ExplosionControl
 
 
         //Write the number of explosion queues
-        FileWrite(hFile, &gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
+        FileWrite(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             FileClose(hFile);
@@ -3011,7 +2996,7 @@ public class ExplosionControl
         //loop through and add all the explosions
         for (uiCnt = 0; uiCnt < MAX_BOMB_QUEUE; uiCnt++)
         {
-            FileWrite(hFile, &gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesWritten);
+            FileWrite(hFile, gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(ExplosionQueueElement))
             {
                 FileClose(hFile);
@@ -3049,7 +3034,7 @@ public class ExplosionControl
         {
             if (gExplosionData[uiCnt].fAllocated)
             {
-                FileWrite(hFile, &gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesWritten);
+                FileWrite(hFile, gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesWritten);
                 if (uiNumBytesWritten != sizeof(EXPLOSIONTYPE))
                 {
                     FileClose(hFile);
@@ -3213,7 +3198,7 @@ public class ExplosionControl
             if (pSamList[cnt] == sSectorNo)
             {
                 // get graphic.......
-                GetTileIndexFromTypeSubIndex(EIGHTISTRUCT, (int)(gbSAMGraphicList[cnt]), out usGoodGraphic);
+                TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.EIGHTISTRUCT, (gbSAMGraphicList[cnt]), out usGoodGraphic);
 
                 // Damaged one ( current ) is 2 less...
                 usDamagedGraphic = usGoodGraphic - 2;
@@ -3253,9 +3238,6 @@ public class ExplosionControl
     // see if they get angry
     void HandleBuldingDestruction(int sGridNo, int ubOwner)
     {
-        SOLDIERTYPE? pSoldier;
-        int cnt;
-
         if (ubOwner == NOBODY)
         {
             return;
@@ -3266,15 +3248,16 @@ public class ExplosionControl
             return;
         }
 
-        cnt = gTacticalStatus.Team[CIV_TEAM].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[CIV_TEAM].bLastID; cnt++, pSoldier++)
+        int cnt = gTacticalStatus.Team[CIV_TEAM].bFirstID;
+        foreach (var pSoldier in MercPtrs.Skip(cnt))
         {
             if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife > 0 && pSoldier.bNeutral > 0)
             {
                 if (pSoldier.ubProfile != NO_PROFILE)
                 {
                     // ignore if the player is fighting the enemy here and this is a good guy
-                    if (gTacticalStatus.Team[ENEMY_TEAM].bMenInSector > 0 && (gMercProfiles[pSoldier.ubProfile].ubMiscFlags3 & PROFILE_MISC_FLAG3_GOODGUY))
+                    if (gTacticalStatus.Team[ENEMY_TEAM].bMenInSector > 0
+                        && (gMercProfiles[pSoldier.ubProfile].ubMiscFlags3.HasFlag(ProfileMiscFlags3.PROFILE_MISC_FLAG3_GOODGUY)))
                     {
                         continue;
                     }
@@ -3291,7 +3274,7 @@ public class ExplosionControl
     int FindActiveTimedBomb()
     {
         int uiWorldBombIndex;
-        int uiTimeStamp;
+        uint uiTimeStamp;
         OBJECTTYPE? pObj;
 
         uiTimeStamp = GetJA2Clock();
@@ -3302,7 +3285,7 @@ public class ExplosionControl
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
                 pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == BOMB_TIMED && !(pObj.fFlags & OBJECT_DISABLED_BOMB))
+                if (pObj.bDetonatorType == DetonatorType.BOMB_TIMED && !(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)))
                 {
                     return (gWorldBombs[uiWorldBombIndex].iItemIndex);
                 }

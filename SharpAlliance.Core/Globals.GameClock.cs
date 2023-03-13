@@ -129,6 +129,12 @@ public partial class Globals
             throw new InvalidOperationException(nameof(obj));
         }
     }
+
+    internal static string wcscat(string strSource)
+        => srcDestination += strSource;
+
+    internal static string wprintf(string format, params object[] arguments)
+        => string.Format(format, arguments);
 }
 
 public enum WARPTIME

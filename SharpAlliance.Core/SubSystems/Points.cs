@@ -7,6 +7,166 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Points
 {
+    public static void DeductPoints(SOLDIERTYPE? pSoldier, int sAPCost, int sBPCost)
+    {
+        int  sNewAP = 0, sNewBP = 0;
+        int bNewBreath;
+
+        // in real time, there IS no AP cost, (only breath cost)
+        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
+            || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        {
+            sAPCost = 0;
+        }
+
+        // Get New points
+        sNewAP = pSoldier.bActionPoints - sAPCost;
+
+        // If this is the first time with no action points, set UI flag
+        if (sNewAP <= 0 && pSoldier.bActionPoints > 0)
+        {
+            pSoldier.fUIFirstTimeNOAP = true;
+            fInterfacePanelDirty = 1;
+        }
+
+        // If we cannot deduct points, return FALSE
+        if (sNewAP < 0)
+        {
+            sNewAP = 0;
+        }
+
+        pSoldier.bActionPoints = sNewAP;
+
+        //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Deduct Points (%d at %d) %d %d", pSoldier->ubID, pSoldier->sGridNo, sAPCost, sBPCost));
+
+        if (AM_A_ROBOT(pSoldier))
+        {
+            // zap all breath costs for robot
+            sBPCost = 0;
+        }
+
+        // is there a BREATH deduction/transaction to be made?  (REMEMBER: could be a GAIN!)
+        if (sBPCost > 0)
+        {
+            // Adjust breath changes due to spending or regaining of energy
+            sBPCost = AdjustBreathPts(pSoldier, sBPCost);
+            sBPCost *= -1;
+
+            pSoldier.sBreathRed -= sBPCost;
+
+            // CJC: moved check for high breathred to below so that negative breath can be detected
+
+            // cap breathred
+            if (pSoldier->sBreathRed < 0)
+            {
+                pSoldier->sBreathRed = 0;
+            }
+            if (pSoldier->sBreathRed > 10000)
+            {
+                pSoldier->sBreathRed = 10000;
+            }
+
+            // Get new breath
+            bNewBreath = (int)(pSoldier->bBreathMax - ((FLOAT)pSoldier->sBreathRed / (FLOAT)100));
+
+            if (bNewBreath > 100)
+            {
+                bNewBreath = 100;
+            }
+            if (bNewBreath < 00)
+            {
+                // Take off 1 AP per 5 breath... rem adding a negative subtracts
+                pSoldier->bActionPoints += (bNewBreath / 5);
+                if (pSoldier->bActionPoints < 0)
+                {
+                    pSoldier->bActionPoints = 0;
+                }
+
+                bNewBreath = 0;
+            }
+
+            if (bNewBreath > pSoldier->bBreathMax)
+            {
+                bNewBreath = pSoldier->bBreathMax;
+            }
+            pSoldier->bBreath = bNewBreath;
+        }
+
+        // UPDATE BAR
+        DirtyMercPanelInterface(pSoldier, DIRTYLEVEL1);
+
+    }
+
+    public static int AdjustBreathPts(SOLDIERTYPE? pSold, int sBPCost)
+    {
+        int sBreathFactor = 100;
+        int ubBandaged;
+
+        //NumMessage("BEFORE adjustments, BREATH PTS = ",breathPts);
+
+        // in real time, there IS no AP cost, (only breath cost)
+        /*
+        if (!(gTacticalStatus.uiFlags & TURNBASED) || !(gTacticalStatus.uiFlags & INCOMBAT ) )
+        {
+            // ATE: ADJUST FOR RT - MAKE BREATH GO A LITTLE FASTER!
+            sBPCost	*= TB_BREATH_DEDUCT_MODIFIER;
+        }
+        */
+
+
+        // adjust breath factor for current breath deficiency
+        sBreathFactor += (100 - pSold.bBreath);
+
+        // adjust breath factor for current life deficiency (but add 1/2 bandaging)
+        ubBandaged = pSold.bLifeMax - pSold.bLife - pSold.bBleeding;
+        //sBreathFactor += (pSold->bLifeMax - (pSold->bLife + (ubBandaged / 2)));
+        sBreathFactor += 100 * (pSold.bLifeMax - (pSold.bLife + (ubBandaged / 2))) / pSold.bLifeMax;
+
+        if (pSold.bStrength > 80)
+        {
+            // give % reduction to breath costs for high strength mercs
+            sBreathFactor -= (pSold.bStrength - 80) / 2;
+        }
+
+        /*	THIS IS OLD JAGGED ALLIANCE STUFF (left for possible future reference)
+
+         // apply penalty due to high temperature, heat, and hot Metaviran sun
+         // if INDOORS, in DEEP WATER, or possessing HEAT TOLERANCE trait
+         if ((ptr->terrtype == FLOORTYPE) || (ptr->terr >= OCEAN21) ||
+                               (ptr->trait == HEAT_TOLERANT))
+           breathFactor += (Status.heatFactor / 5);	// 20% of normal heat penalty
+         else
+           breathFactor += Status.heatFactor;		// not used to this!
+        */
+
+
+        // if a non-swimmer type is thrashing around in deep water
+        if ((pSold.ubProfile != NO_PROFILE) && (gMercProfiles[pSold.ubProfile].bPersonalityTrait == PersonalityTrait.NONSWIMMER))
+        {
+            if (pSold.usAnimState == AnimationStates.DEEP_WATER_TRED || pSold.usAnimState == AnimationStates.DEEP_WATER_SWIM)
+            {
+                sBreathFactor *= 5;     // lose breath 5 times faster in deep water!
+            }
+        }
+
+        if (sBreathFactor == 0)
+        {
+            sBPCost = 0;
+        }
+        else if (sBPCost > 0)       // breath DECREASE
+        {
+            // increase breath COST by breathFactor
+            sBPCost = ((sBPCost * sBreathFactor) / 100);
+        }
+        else                // breath INCREASE
+        {
+            // decrease breath GAIN by breathFactor
+            sBPCost = ((sBPCost * 100) / sBreathFactor);
+        }
+
+        return (sBPCost);
+    }
+
     public static int MinAPsToStartMovement(SOLDIERTYPE? pSoldier, AnimationStates usMovementMode)
     {
         int bAPs = 0;
@@ -91,61 +251,61 @@ public class Points
                 }
             }
         }
-        if (sSwitchValue == TRAVELCOST_NOT_STANDING)
+        if (sSwitchValue == TRAVELCOST.NOT_STANDING)
         {
             // use the cost of the terrain!
             sSwitchValue = gTileTypeMovementCost[gpWorldLevelData[sGridno].ubTerrainID];
         }
         else if (IS_TRAVELCOST_DOOR(sSwitchValue))
         {
-            sSwitchValue = DoorTravelCost(pSoldier, sGridno, (UINT8)sSwitchValue, (BOOLEAN)(pSoldier.bTeam == gbPlayerNum), NULL);
+            sSwitchValue = DoorTravelCost(pSoldier, sGridno, (int)sSwitchValue, (bool)(pSoldier.bTeam == gbPlayerNum), NULL);
         }
 
-        if (sSwitchValue >= TRAVELCOST_BLOCKED && sSwitchValue != TRAVELCOST_DOOR)
+        if (sSwitchValue >= TRAVELCOST.BLOCKED && sSwitchValue != TRAVELCOST.DOOR)
         {
             return (100);   // Cost too much to be considered!
         }
 
         switch (sSwitchValue)
         {
-            case TRAVELCOST_DIRTROAD:
-            case TRAVELCOST_FLAT:
-                sAPCost += AP_MOVEMENT_FLAT;
+            case TRAVELCOST.DIRTROAD:
+            case TRAVELCOST.FLAT:
+                sAPCost += AP.MOVEMENT_FLAT;
                 break;
-            //case TRAVELCOST_BUMPY		:		
-            case TRAVELCOST_GRASS:
-                sAPCost += AP_MOVEMENT_GRASS;
+            //case TRAVELCOST.BUMPY		:		
+            case TRAVELCOST.GRASS:
+                sAPCost += AP.MOVEMENT_GRASS;
                 break;
-            case TRAVELCOST_THICK:
-                sAPCost += AP_MOVEMENT_BUSH;
+            case TRAVELCOST.THICK:
+                sAPCost += AP.MOVEMENT_BUSH;
                 break;
-            case TRAVELCOST_DEBRIS:
-                sAPCost += AP_MOVEMENT_RUBBLE;
+            case TRAVELCOST.DEBRIS:
+                sAPCost += AP.MOVEMENT_RUBBLE;
                 break;
-            case TRAVELCOST_SHORE:
-                sAPCost += AP_MOVEMENT_SHORE; // wading shallow water
+            case TRAVELCOST.SHORE:
+                sAPCost += AP.MOVEMENT_SHORE; // wading shallow water
                 break;
-            case TRAVELCOST_KNEEDEEP:
-                sAPCost += AP_MOVEMENT_LAKE; // wading waist/chest deep - very slow
+            case TRAVELCOST.KNEEDEEP:
+                sAPCost += AP.MOVEMENT_LAKE; // wading waist/chest deep - very slow
                 break;
 
-            case TRAVELCOST_DEEPWATER:
-                sAPCost += AP_MOVEMENT_OCEAN; // can swim, so it's faster than wading
+            case TRAVELCOST.DEEPWATER:
+                sAPCost += AP.MOVEMENT_OCEAN; // can swim, so it's faster than wading
                 break;
             /*
-               case TRAVELCOST_VEINEND	:
-               case TRAVELCOST_VEINMID	: sAPCost += AP_MOVEMENT_FLAT;
+               case TRAVELCOST.VEINEND	:
+               case TRAVELCOST.VEINMID	: sAPCost += AP.MOVEMENT_FLAT;
                                                                         break;
             */
-            case TRAVELCOST_DOOR:
-                sAPCost += AP_MOVEMENT_FLAT;
+            case TRAVELCOST.DOOR:
+                sAPCost += AP.MOVEMENT_FLAT;
                 break;
 
             // cost for jumping a fence REPLACES all other AP costs!
-            case TRAVELCOST_FENCE:
-                return (AP_JUMPFENCE);
+            case TRAVELCOST.FENCE:
+                return (AP.JUMPFENCE);
 
-            case TRAVELCOST_NONE:
+            case TRAVELCOST.NONE:
                 return (0);
 
             default:
@@ -426,7 +586,7 @@ public class Points
 
         if (pSoldier.bWeaponMode == WM.ATTACHED)
         {
-            int bAttachSlot;
+            InventorySlot bAttachSlot;
             // look for an attached grenade launcher
 
             bAttachSlot = FindAttachment((pSoldier.inv[InventorySlot.HANDPOS]), UNDER_GLAUNCHER);

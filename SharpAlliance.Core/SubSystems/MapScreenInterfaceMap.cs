@@ -6,6 +6,8 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SixLabors.ImageSharp;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class MapScreenInterfaceMap
@@ -150,7 +152,7 @@ public class MapScreenInterfaceMap
         {
             // pDestBuf = LockVideoSurface(Globals.guiSAVEBUFFER, out uiDestPitchBYTES);
 
-            if (!GetVideoSurface(hSrcVSurface, Globals.guiBIGMAP))
+            if (!VeldridVideoManager.GetVideoSurface(out hSrcVSurface, Globals.guiBIGMAP))
             {
                 return false;
             }
@@ -200,19 +202,19 @@ public class MapScreenInterfaceMap
 
                 if (clip.Bottom > hSrcVSurface.usHeight)
                 {
-                    clip.Bottom = hSrcVSurface.usHeight;
+                    clip.Height = hSrcVSurface.usHeight;
                 }
 
                 if (clip.Right > hSrcVSurface.usWidth)
                 {
-                    clip.Right = hSrcVSurface.usWidth;
+                    clip.Width = hSrcVSurface.usWidth;
                 }
 
-                Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + Globals.MAP_GRID_X, Globals.MAP_VIEW_START_Y + Globals.MAP_GRID_Y - 2, out clip);
+                VeldridVideoManager.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + Globals.MAP_GRID_X, Globals.MAP_VIEW_START_Y + Globals.MAP_GRID_Y - 2, out clip);
             }
             else
             {
-                Blt8BPPDataTo16BPPBufferHalf(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + 1, Globals.MAP_VIEW_START_Y);
+                VeldridVideoManager.Blt8BPPDataTo16BPPBufferHalf(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + 1, Globals.MAP_VIEW_START_Y);
             }
 
             //UnLockVideoSurface(Globals.guiBIGMAP);
@@ -316,7 +318,7 @@ public class MapScreenInterfaceMap
                 DrawTownMilitiaForcesOnMap();
             }
 
-            if (fShowAircraftFlag && !Globals.gfInChangeArrivalSectorMode)
+            if (fShowAircraftFlag && !gfInChangeArrivalSectorMode)
             {
                 DrawBullseye();
             }

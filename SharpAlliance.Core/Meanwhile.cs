@@ -231,7 +231,7 @@ public class Meanwhile
     {
         string zStr = string.Empty;
 
-        wprintf(zStr, "%s.....", pMessageStrings[MSG.MEANWHILE]);
+        zStr = wprintf("%s.....", pMessageStrings[MSG.MEANWHILE]);
 
         if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
         {

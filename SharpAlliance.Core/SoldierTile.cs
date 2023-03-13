@@ -28,7 +28,7 @@ public class SoldierTile
         ubPerson = WorldManager.WhoIsThere2(sCauseGridNo, pSoldier.bLevel);
 
         // There may not be anybody there, but it's reserved by them!
-        if ((gpWorldLevelData[sCauseGridNo].uiFlags & MAPELEMENT_MOVEMENT_RESERVED))
+        if ((gpWorldLevelData[sCauseGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.MOVEMENT_RESERVED)))
         {
             ubPerson = gpWorldLevelData[sCauseGridNo].ubReservedSoldierID;
         }
@@ -704,9 +704,9 @@ public class SoldierTile
     bool CanExchangePlaces(SOLDIERTYPE? pSoldier1, SOLDIERTYPE? pSoldier2, bool fShow)
     {
         // NB checks outside of this function 
-        if (EnoughPoints(pSoldier1, AP_EXCHANGE_PLACES, 0, fShow))
+        if (EnoughPoints(pSoldier1, AP.EXCHANGE_PLACES, 0, fShow))
         {
-            if (EnoughPoints(pSoldier2, AP_EXCHANGE_PLACES, 0, fShow))
+            if (EnoughPoints(pSoldier2, AP.EXCHANGE_PLACES, 0, fShow))
             {
                 if ((gAnimControl[pSoldier2.usAnimState].uiFlags & ANIM_MOVING))
                 {

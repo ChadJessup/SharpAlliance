@@ -1,4 +1,5 @@
 ﻿using System;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core;
@@ -160,8 +161,8 @@ public class FACETYPE
     public int usFaceY;                                             // Y location to render face
     public int usFaceWidth;
     public int usFaceHeight;
-    public int uiAutoDisplayBuffer;                     // Display buffer for face
-    public int uiAutoRestoreBuffer;                     // Restore buffer
+    public Surfaces uiAutoDisplayBuffer;                     // Display buffer for face
+    public Surfaces uiAutoRestoreBuffer;                     // Restore buffer
     public bool fAutoRestoreBuffer;                         // Flag to indicate our own restorebuffer or not
     public bool fAutoDisplayBuffer;                         // Flag to indicate our own display buffer or not
     public bool fDisplayTextOver;                               // Boolean indicating to display text on face

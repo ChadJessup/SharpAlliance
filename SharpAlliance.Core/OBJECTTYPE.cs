@@ -21,12 +21,12 @@ public class OBJECTTYPE
 
     // this is used by placed bombs, switches, and the action item
     public sbyte bBombStatus;           // % status
-    public sbyte bDetonatorType;        // timed, remote, or pressure-activated
+    public DetonatorType bDetonatorType;        // timed, remote, or pressure-activated
     public Items usBombItem;              // the usItem of the bomb.
     public sbyte bDelay;                // >=0 values used only
     public sbyte bFrequency;        // >=0 values used only
     public byte ubBombOwner; // side which placed the bomb
-    public byte bActionValue;// this is used by the ACTION_ITEM fake item
+    public ACTION_ITEM bActionValue;// this is used by the ACTION_ITEM fake item
     public byte ubTolerance; // tolerance value for panic triggers
     public byte ubLocationID; // location value for remote non-bomb (special!) triggers
     public sbyte[] bKeyStatus = new sbyte[6];

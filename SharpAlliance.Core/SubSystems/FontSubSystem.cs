@@ -114,6 +114,18 @@ namespace SharpAlliance.Core.SubSystems
             FontDefault = fontStyle;
         }
 
+        public static void FindFontRightCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
+        {
+            int xp, yp;
+
+            // Compute the coordinates to right justify the text
+            xp = ((sWidth - StringPixLength(pStr, iFontIndex))) + sLeft;
+            yp = ((sHeight - GetFontHeight(iFontIndex)) / 2) + sTop;
+
+            psNewX = xp;
+            psNewY = yp;
+        }
+
         public static void SetFontBackground(FontColor fontColor)
         {
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -81,4 +82,36 @@ public enum ITEM_HANDLE
     BROKEN = -6,
     NOROOM = -7,
     REFUSAL = -8,
+}
+
+public class ITEM_POOL
+{
+    public ITEM_POOL? pNext;
+	public ITEM_POOL? pPrev;
+	
+	public int iItemIndex;
+    public int bVisible;
+    public int bFlashColor;
+    public int uiTimerID;
+    public int sGridNo;
+    public int ubLevel;
+    public int usFlags;
+    public int bRenderZHeightAboveLevel;
+    public LEVELNODE? pLevelNode;
+
+}
+
+public delegate void ITEM_POOL_LOCATOR_HOOK();
+public struct ITEM_POOL_LOCATOR
+{
+
+    ITEM_POOL? pItemPool;
+
+// Additional info for locators
+public int  bRadioFrame;
+public int  uiLastFrameUpdate;
+public ITEM_POOL_LOCATOR_HOOK Callback;
+public bool fAllocated;
+public int   ubFlags;
+
 }

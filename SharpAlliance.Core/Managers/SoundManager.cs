@@ -109,10 +109,10 @@ public class SoundManager : ISoundManager
     // 
     // Sounds the volume on a sound channel.
     // 
-    // Returns BOOLEAN            - TRUE if the volume was set
+    // Returns bool            - TRUE if the volume was set
     // 
-    // UINT32 uiChannel           - Sound channel	
-    // UINT32 uiVolume            - New volume 0-127
+    // int uiChannel           - Sound channel	
+    // int uiVolume            - New volume 0-127
     //
     // Created:  3/17/00 Derek Beland
     //*****************************************************************************************
@@ -968,7 +968,7 @@ public class SOUNDTAG
     public int uiFlags;
     public int uiSoundID;
     public int uiPriority;
-    //void (* pCallback) (UINT8*, UINT32, UINT32, UINT32, void*);
+    //void (* pCallback) (int*, int, int, int, void*);
     //				void* pData;
     //void (* EOSCallback) (void*);
     //				void* pCallbackData;

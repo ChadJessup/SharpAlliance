@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 
@@ -171,14 +172,14 @@ public class Faces
         }
 
         // Load
-        if (AddVideoObject(&VObjectDesc, uiVideoObject) == false)
+        if (VeldridVideoManager.AddVideoObject(VObjectDesc, uiVideoObject) == false)
         {
             // If we are a big face, use placeholder...
             if (uiInitFlags.HasFlag(FACE.BIGFACE))
             {
                 sprintf(VObjectDesc.ImageFile, "FACES\\placeholder.sti");
 
-                if (AddVideoObject(&VObjectDesc, uiVideoObject) == false)
+                if (VeldridVideoManager.AddVideoObject(VObjectDesc, uiVideoObject) == false)
                 {
                     return (-1);
                 }
@@ -218,7 +219,7 @@ public class Faces
 
 
         // Set palette
-        if (GetVideoObject(hVObject, uiVideoObject))
+        if (VeldridVideoManager.GetVideoObject(out hVObject, uiVideoObject))
         {
             // Build a grayscale palette! ( for testing different looks )
             for (uiCount = 0; uiCount < 256; uiCount++)
@@ -228,11 +229,11 @@ public class Faces
                 Pal[uiCount].peBlue = 255;
             }
 
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = Create16BPPPaletteShaded(hVObject.pPaletteEntry, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = Create16BPPPaletteShaded(hVObject.pPaletteEntry, 250, 25, 25, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 250, 25, 25, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, false);
 
             for (uiCount = 0; uiCount < 256; uiCount++)
             {
@@ -240,7 +241,7 @@ public class Faces
                 Pal[uiCount].peGreen = (uiCount % 128) + 128;
                 Pal[uiCount].peBlue = (uiCount % 128) + 128;
             }
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
 
         }
 
@@ -366,7 +367,8 @@ public class Faces
         if (!(pFace.uiFlags.HasFlag(FACE.BIGFACE)) || ((pFace.uiFlags.HasFlag(FACE.FORCE_SMALL))))
         {
             // Are we a recruited merc? .. or small?
-            if ((gMercProfiles[usMercProfileID].ubMiscFlags & (PROFILE_MISC_FLAG_RECRUITED | PROFILE_MISC_FLAG_EPCACTIVE)) || (pFace.uiFlags & FACE_FORCE_SMALL))
+            if ((gMercProfiles[usMercProfileID].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED | ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE))
+                || (pFace.uiFlags.HasFlag(FACE.FORCE_SMALL)))
             {
                 // Loop through all values of availible merc IDs to find ours!
                 for (cnt = 0; cnt < ubRPCNumSmallFaceValues; cnt++)
@@ -700,9 +702,9 @@ public class Faces
                     if (sFrame > 0)
                     {
                         // Blit Accordingly!
-                        BltVideoObjectFromIndex(pFace.uiAutoDisplayBuffer, pFace.uiVideoObject, (int)(sFrame), pFace.usEyesX, pFace.usEyesY, VO_BLT_SRCTRANSPARENCY, null);
+                        BltVideoObjectFromIndex(pFace.uiAutoDisplayBuffer, pFace.uiVideoObject, (int)(sFrame), pFace.usEyesX, pFace.usEyesY, VO_BLT.SRCTRANSPARENCY, null);
 
-                        if (pFace.uiAutoDisplayBuffer == FRAME_BUFFER)
+                        if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
                         {
                             InvalidateRegion(pFace.usEyesX, pFace.usEyesY, pFace.usEyesX + pFace.usEyesWidth, pFace.usEyesY + pFace.usEyesHeight);
                         }
@@ -710,7 +712,7 @@ public class Faces
                     else
                     {
                         //RenderFace( uiDestBuffer , uiCount );
-                        pFace.ubExpression = NO_EXPRESSION;
+                        pFace.ubExpression = Expression.NO_EXPRESSION;
                         // Update rects just for eyes
 
                         if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
@@ -733,8 +735,7 @@ public class Faces
 
     }
 
-
-    void HandleFaceHilights(FACETYPE? pFace, int uiBuffer, int sFaceX, int sFaceY)
+    private static void HandleFaceHilights(FACETYPE? pFace, Surfaces uiBuffer, int sFaceX, int sFaceY)
     {
         int uiDestPitchBYTES;
         int pDestBuf;
@@ -745,13 +746,13 @@ public class Faces
 
         if (!gFacesData[iFaceIndex].fDisabled)
         {
-            if (pFace.uiAutoDisplayBuffer == FRAME_BUFFER && guiCurrentScreen == GAME_SCREEN)
+            if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER && guiCurrentScreen == ScreenName.GAME_SCREEN)
             {
                 // If we are highlighted, do this now!
-                if ((pFace.uiFlags & FACE_SHOW_WHITE_HILIGHT))
+                if ((pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT)))
                 {
                     // Lock buffer
-                    pDestBuf = LockVideoSurface(uiBuffer, uiDestPitchBYTES);
+                    pDestBuf = LockVideoSurface(uiBuffer, out uiDestPitchBYTES);
                     SetClippingRegionAndImageWidth(uiDestPitchBYTES, sFaceX - 2, sFaceY - 1, sFaceX + pFace.usFaceWidth + 4, sFaceY + pFace.usFaceHeight + 4);
 
                     usLineColor = Get16BPPColor(FROMRGB(255, 255, 255));
@@ -761,14 +762,14 @@ public class Faces
 
                     UnLockVideoSurface(uiBuffer);
                 }
-                else if ((pFace.uiFlags & FACE_SHOW_MOVING_HILIGHT))
+                else if ((pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT)))
                 {
                     if (pFace.ubSoldierID != NOBODY)
                     {
                         if (MercPtrs[pFace.ubSoldierID].bLife >= OKLIFE)
                         {
                             // Lock buffer
-                            pDestBuf = LockVideoSurface(uiBuffer, uiDestPitchBYTES);
+                            pDestBuf = LockVideoSurface(uiBuffer, out uiDestPitchBYTES);
                             SetClippingRegionAndImageWidth(uiDestPitchBYTES, sFaceX - 2, sFaceY - 1, sFaceX + pFace.usFaceWidth + 4, sFaceY + pFace.usFaceHeight + 4);
 
                             if (MercPtrs[pFace.ubSoldierID].bStealthMode)
@@ -832,7 +833,7 @@ public class Faces
             pFace = gFacesData[iFaceIndex];
 
             // Remove video overlay is present....
-            if (pFace.uiFlags & FACE_DESTROY_OVERLAY)
+            if (pFace.uiFlags.HasFlag(FACE.DESTROY_OVERLAY))
             {
                 //if ( pFace.iVideoOverlay != -1 )
                 //{
@@ -885,10 +886,10 @@ public class Faces
                                 if (sFrame > 0)
                                 {
                                     // Blit Accordingly!
-                                    BltVideoObjectFromIndex(pFace.uiAutoDisplayBuffer, pFace.uiVideoObject, (int)(sFrame + 4), pFace.usMouthX, pFace.usMouthY, VO_BLT_SRCTRANSPARENCY, null);
+                                    BltVideoObjectFromIndex(pFace.uiAutoDisplayBuffer, pFace.uiVideoObject, (int)(sFrame + 4), pFace.usMouthX, pFace.usMouthY, VO_BLT.SRCTRANSPARENCY, null);
 
                                     // Update rects
-                                    if (pFace.uiAutoDisplayBuffer == FRAME_BUFFER)
+                                    if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
                                     {
                                         InvalidateRegion(pFace.usMouthX, pFace.usMouthY, pFace.usMouthX + pFace.usMouthWidth, pFace.usMouthY + pFace.usMouthHeight);
                                     }
@@ -917,7 +918,7 @@ public class Faces
                 }
             }
 
-            if (!(pFace.uiFlags & FACE_INACTIVE_HANDLED_ELSEWHERE))
+            if (!(pFace.uiFlags.HasFlag(FACE.INACTIVE_HANDLED_ELSEWHERE)))
             {
                 HandleFaceHilights(pFace, pFace.uiAutoDisplayBuffer, pFace.usFaceX, pFace.usFaceY);
             }
@@ -1045,7 +1046,7 @@ public class Faces
         psY = sY;
     }
 
-    void GetXYForRightIconPlacement(FACETYPE? pFace, int ubIndex, int sFaceX, int sFaceY, out int psX, out int psY, int bNumIcons)
+    private static void GetXYForRightIconPlacement(FACETYPE? pFace, int ubIndex, int sFaceX, int sFaceY, out int psX, out int psY, int bNumIcons)
     {
         int sX, sY;
         int usWidth, usHeight;
@@ -1068,22 +1069,22 @@ public class Faces
 
 
 
-    void DoRightIcon(int uiRenderBuffer, FACETYPE? pFace, int sFaceX, int sFaceY, int bNumIcons, int sIconIndex)
+    private static void DoRightIcon(Surfaces uiRenderBuffer, FACETYPE? pFace, int sFaceX, int sFaceY, int bNumIcons, int sIconIndex)
     {
         int sIconX, sIconY;
 
         // Find X, y for placement
         GetXYForRightIconPlacement(pFace, sIconIndex, sFaceX, sFaceY, out sIconX, out sIconY, bNumIcons);
-        BltVideoObjectFromIndex(uiRenderBuffer, guiPORTRAITICONS, sIconIndex, sIconX, sIconY, VO_BLT_SRCTRANSPARENCY, null);
+        BltVideoObjectFromIndex(uiRenderBuffer, guiPORTRAITICONS, sIconIndex, sIconX, sIconY, VO_BLT.SRCTRANSPARENCY, null);
     }
 
 
-    void HandleRenderFaceAdjustments(FACETYPE? pFace, bool fDisplayBuffer, bool fUseExternBuffer, int uiBuffer, int sFaceX, int sFaceY, int usEyesX, int usEyesY)
+    public static void HandleRenderFaceAdjustments(FACETYPE? pFace, bool fDisplayBuffer, bool fUseExternBuffer, int uiBuffer, int sFaceX, int sFaceY, int usEyesX, int usEyesY)
     {
         int sIconX, sIconY;
         int sIconIndex = -1;
         bool fDoIcon = false;
-        int uiRenderBuffer;
+        Surfaces uiRenderBuffer;
         int sPtsAvailable = 0;
         int usMaximumPts = 0;
         string sString;
@@ -1129,16 +1130,16 @@ public class Faces
             if ((MercPtrs[pFace.ubSoldierID].bLife < CONSCIOUSNESS || MercPtrs[pFace.ubSoldierID].fDeadPanel))
             {
                 // Blit Closed eyes here!
-                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT_SRCTRANSPARENCY, null);
+                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
 
                 // Blit hatch!
-                BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT_SRCTRANSPARENCY, null);
+                BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
             }
 
             if (MercPtrs[pFace.ubSoldierID].fMercAsleep == true)
             {
                 // blit eyes closed
-                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT_SRCTRANSPARENCY, null);
+                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
             }
 
             if ((pSoldier.uiStatusFlags & SOLDIER_DEAD))
@@ -1147,10 +1148,10 @@ public class Faces
                 if (!pSoldier.fClosePanel && !pSoldier.fDeadPanel && !pSoldier.fUIdeadMerc && !pSoldier.fUICloseMerc)
                 {
                     // Put close panel there
-                    BltVideoObjectFromIndex(uiRenderBuffer, guiDEAD, 5, sFaceX, sFaceY, VO_BLT_SRCTRANSPARENCY, null);
+                    BltVideoObjectFromIndex(uiRenderBuffer, guiDEAD, 5, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
 
                     // Blit hatch!
-                    BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT_SRCTRANSPARENCY, null);
+                    BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
                 }
             }
 
@@ -1161,7 +1162,7 @@ public class Faces
             }
 
             // ATE: Only do this, because we can be talking during an interrupt....
-            if ((pFace.uiFlags & FACE_INACTIVE_HANDLED_ELSEWHERE) && !fUseExternBuffer)
+            if ((pFace.uiFlags.HasFlag(FACE.INACTIVE_HANDLED_ELSEWHERE)) && !fUseExternBuffer)
             {
                 // Don't do this if we are being handled elsewhere and it's not an extern buffer...
             }
@@ -1171,25 +1172,25 @@ public class Faces
 
                 if (pSoldier.bOppCnt > 0)
                 {
-                    SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
+                    FontSubSystem.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
 
-                    wprintf(sString, "%d", pSoldier.bOppCnt);
+                    sString = wprintf("%d", pSoldier.bOppCnt);
 
-                    SetFont(TINYFONT1);
-                    SetFontForeground(FONT_DKRED);
-                    SetFontBackground(FONT_NEARBLACK);
+                    FontSubSystem.SetFont(FontStyle.TINYFONT1);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_DKRED);
+                    FontSubSystem.SetFontBackground(FontColor.FONT_NEARBLACK);
 
                     sX1 = (int)(sFaceX);
                     sY1 = (int)(sFaceY);
 
-                    sX2 = sX1 + StringPixLength(sString, TINYFONT1) + 1;
-                    sY2 = sY1 + GetFontHeight(TINYFONT1) - 1;
+                    sX2 = sX1 + FontSubSystem.StringPixLength(sString, FontStyle.TINYFONT1) + 1;
+                    sY2 = sY1 + FontSubSystem.GetFontHeight(FontStyle.TINYFONT1) - 1;
 
                     mprintf((int)(sX1 + 1), (int)(sY1 - 1), sString);
-                    SetFontDestBuffer(FRAME_BUFFER, 0, 0, 640, 480, false);
+                    FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
 
                     // Draw box
-                    pDestBuf = LockVideoSurface(uiRenderBuffer, &uiDestPitchBYTES);
+                    pDestBuf = LockVideoSurface(uiRenderBuffer, out uiDestPitchBYTES);
                     SetClippingRegionAndImageWidth(uiDestPitchBYTES, 0, 0, 640, 480);
 
                     usLineColor = Get16BPPColor(FROMRGB(105, 8, 9));
@@ -1202,7 +1203,7 @@ public class Faces
                 if (MercPtrs[pFace.ubSoldierID].bInSector && (((gTacticalStatus.ubCurrentTeam != OUR_TEAM) || !OK_INTERRUPT_MERC(MercPtrs[pFace.ubSoldierID])) && !gfHiddenInterrupt) || ((gfSMDisableForItems && !gfInItemPickupMenu) && gusSMCurrentMerc == pFace.ubSoldierID && gsCurInterfacePanel == SM_PANEL))
                 {
                     // Blit hatch!
-                    BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT_SRCTRANSPARENCY, null);
+                    BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
                 }
 
                 if (!pFace.fDisabled && !pFace.fInvalidAnim)
@@ -1210,13 +1211,13 @@ public class Faces
                     // Render text above here if that's what was asked for
                     if (pFace.fDisplayTextOver != FACE_NO_TEXT_OVER)
                     {
-                        SetFont(TINYFONT1);
-                        SetFontBackground(FONT_MCOLOR_BLACK);
-                        SetFontForeground(FONT_MCOLOR_WHITE);
+                        FontSubSystem.SetFont(FontStyle.TINYFONT1);
+                        FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_WHITE);
 
-                        SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
+                        FontSubSystem.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
 
-                        VarFindFontCenterCoordinates(sFaceX, sFaceY, pFace.usFaceWidth, pFace.usFaceHeight, TINYFONT1, &sFontX, &sFontY, pFace.zDisplayText);
+                        VarFindFontCenterCoordinates(sFaceX, sFaceY, pFace.usFaceWidth, pFace.usFaceHeight, FontStyle.TINYFONT1, &sFontX, &sFontY, pFace.zDisplayText);
 
                         if (pFace.fDisplayTextOver == FACE_DRAW_TEXT_OVER)
                         {
@@ -1229,7 +1230,7 @@ public class Faces
                             pFace.fDisplayTextOver = FACE_NO_TEXT_OVER;
                         }
 
-                        SetFontDestBuffer(FRAME_BUFFER, 0, 0, 640, 480, false);
+                        FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
 
                     }
                 }
@@ -1237,7 +1238,7 @@ public class Faces
             }
 
             // Check if a robot and is not controlled....
-            if (MercPtrs[pFace.ubSoldierID].uiStatusFlags & SOLDIER.ROBOT)
+            if (MercPtrs[pFace.ubSoldierID].uiStatusFlags.HasFlag(SOLDIER.ROBOT))
             {
                 if (!CanRobotBeControlled(MercPtrs[pFace.ubSoldierID]))
                 {
@@ -1261,7 +1262,7 @@ public class Faces
                 bNumRightIcons++;
             }
 
-            if (MercPtrs[pFace.ubSoldierID].bDrugEffect[DRUG_TYPE_ADRENALINE])
+            if (MercPtrs[pFace.ubSoldierID].bDrugEffect[DRUG_TYPE_ADRENALINE] > 0)
             {
                 DoRightIcon(uiRenderBuffer, pFace, sFaceX, sFaceY, bNumRightIcons, 7);
                 bNumRightIcons++;
@@ -1372,13 +1373,13 @@ public class Faces
             if (fDoIcon)
             {
                 // Find X, y for placement
-                GetXYForIconPlacement(pFace, sIconIndex, sFaceX, sFaceY, &sIconX, &sIconY);
-                BltVideoObjectFromIndex(uiRenderBuffer, guiPORTRAITICONS, sIconIndex, sIconX, sIconY, VO_BLT_SRCTRANSPARENCY, null);
+                GetXYForIconPlacement(pFace, sIconIndex, sFaceX, sFaceY, out sIconX, out sIconY);
+                BltVideoObjectFromIndex(uiRenderBuffer, guiPORTRAITICONS, sIconIndex, sIconX, sIconY, VO_BLT.SRCTRANSPARENCY, null);
 
                 // ATE: Show numbers only in mapscreen
                 if (fShowNumber)
                 {
-                    SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
+                    FontSubSystem.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
 
                     if (fShowMaximum)
                     {
@@ -1389,15 +1390,15 @@ public class Faces
                         wprintf(sString, "%d", sPtsAvailable);
                     }
 
-                    usTextWidth = StringPixLength(sString, FONT10ARIAL);
+                    usTextWidth = FontSubSystem.StringPixLength(sString, FontStyle.FONT10ARIAL);
                     usTextWidth += 1;
 
-                    SetFont(FONT10ARIAL);
-                    SetFontForeground(FONT_YELLOW);
-                    SetFontBackground(FONT_BLACK);
+                    FontSubSystem.SetFont(FontStyle.FONT10ARIAL);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_YELLOW);
+                    FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
                     mprintf(sFaceX + pFace.usFaceWidth - usTextWidth, (int)(sFaceY + 3), sString);
-                    SetFontDestBuffer(FRAME_BUFFER, 0, 0, 640, 480, false);
+                    FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
                 }
             }
         }
@@ -1440,11 +1441,11 @@ public class Faces
         {
             if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
             {
-                BltVideoObjectFromIndex(pFace.uiAutoRestoreBuffer, pFace.uiVideoObject, 0, pFace.usFaceX, pFace.usFaceY, VO_BLT_SRCTRANSPARENCY, null);
+                BltVideoObjectFromIndex(pFace.uiAutoRestoreBuffer, pFace.uiVideoObject, 0, pFace.usFaceX, pFace.usFaceY, VO_BLT.SRCTRANSPARENCY, null);
             }
             else
             {
-                BltVideoObjectFromIndex(pFace.uiAutoRestoreBuffer, pFace.uiVideoObject, 0, 0, 0, VO_BLT_SRCTRANSPARENCY, null);
+                BltVideoObjectFromIndex(pFace.uiAutoRestoreBuffer, pFace.uiVideoObject, 0, 0, 0, VO_BLT.SRCTRANSPARENCY, null);
             }
         }
 
@@ -1498,7 +1499,7 @@ public class Faces
         }
 
         // Blit face to save buffer!
-        BltVideoObjectFromIndex(uiBuffer, pFace.uiVideoObject, 0, sX, sY, VO_BLT_SRCTRANSPARENCY, null);
+        BltVideoObjectFromIndex(uiBuffer, pFace.uiVideoObject, 0, sX, sY, VO_BLT.SRCTRANSPARENCY, null);
 
         GetFaceRelativeCoordinates(pFace, &usEyesX, &usEyesY, &usMouthX, &usMouthY);
 
@@ -1771,22 +1772,22 @@ public class Faces
                         fRerender = true;
                     }
 
-                    if (!(pFace.uiFlags & FACE_SHOW_WHITE_HILIGHT) && pFace.fOldShowHighlight)
+                    if (!(pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT)) && pFace.fOldShowHighlight)
                     {
                         fRerender = true;
                     }
 
-                    if ((pFace.uiFlags & FACE_SHOW_WHITE_HILIGHT) && !(pFace.fOldShowHighlight))
+                    if ((pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT)) && !(pFace.fOldShowHighlight))
                     {
                         fRerender = true;
                     }
 
-                    if (!(pFace.uiFlags & FACE_SHOW_MOVING_HILIGHT) && pFace.fOldShowMoveHilight)
+                    if (!(pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT)) && pFace.fOldShowMoveHilight)
                     {
                         fRerender = true;
                     }
 
-                    if ((pFace.uiFlags & FACE_SHOW_MOVING_HILIGHT) && !(pFace.fOldShowMoveHilight))
+                    if ((pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT)) && !(pFace.fOldShowMoveHilight))
                     {
                         fRerender = true;
                     }
@@ -1816,7 +1817,7 @@ public class Faces
                     pFace.bOldStealthMode = pSoldier.bStealthMode;
                     pFace.bOldOppCnt = pSoldier.bOppCnt;
 
-                    if (pFace.uiFlags & FACE_SHOW_WHITE_HILIGHT)
+                    if (pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT))
                     {
                         pFace.fOldShowHighlight = true;
                     }
@@ -1825,7 +1826,7 @@ public class Faces
                         pFace.fOldShowHighlight = false;
                     }
 
-                    if (pFace.uiFlags & FACE_SHOW_MOVING_HILIGHT)
+                    if (pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT))
                     {
                         pFace.fOldShowMoveHilight = true;
                     }
@@ -1880,7 +1881,7 @@ public class Faces
                         fRerender = true;
                     }
 
-                    if (pFace.uiFlags & FACE_REDRAW_WHOLE_FACE_NEXT_FRAME)
+                    if (pFace.uiFlags.HasFlag(FACE.REDRAW_WHOLE_FACE_NEXT_FRAME))
                     {
                         pFace.uiFlags &= ~FACE_REDRAW_WHOLE_FACE_NEXT_FRAME;
 
@@ -1964,7 +1965,7 @@ public class Faces
         UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
 
         // Add rect to frame buffer queue
-        if (pFace.uiAutoDisplayBuffer == FRAME_BUFFER)
+        if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
         {
             InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, (sDestLeft + sWidth + 3), (sDestTop + sHeight + 2), 0);
         }
@@ -2132,7 +2133,7 @@ public class Faces
         }
 
         // Setup flag to wait for advance ( because we have no text! )
-        if (gGameSettings.fOptions[TOPTION_KEY_ADVANCE_SPEECH] && (pFace.uiFlags & FACE_POTENTIAL_KEYWAIT))
+        if (gGameSettings.fOptions[TOPTION_KEY_ADVANCE_SPEECH] && (pFace.uiFlags.HasFlag(FACE.POTENTIAL_KEYWAIT)))
         {
 
             // Check if we have had valid speech!

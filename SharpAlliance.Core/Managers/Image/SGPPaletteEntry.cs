@@ -52,8 +52,8 @@ namespace SharpAlliance.Core.Managers.Image
         public uint uiDataLength;
         public short sOffsetX;
         public short sOffsetY;
-        public ushort usHeight;
-        public ushort usWidth;
+        public int usHeight;
+        public int usWidth;
     }
 
     public struct ETRLEData

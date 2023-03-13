@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
+
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
-
 public class StrategicMovement
 {
-
-
     //Player grouping functions
     //.........................
     //Creates a new player group, returning the unique ID of that group.  This is the first
@@ -40,7 +39,7 @@ public class StrategicMovement
             ubRestAtFatigueLevel = 0,
             ubTransportationMask = VehicleTypes.FOOT,
             fVehicle = false,
-            ubCreatedSectorID = pNew.ubOriginalSector,
+            ubCreatedSectorID = SECTORINFO.SECTOR(ubSectorX, ubSectorY),
             ubSectorIDOfLastReassignment = (SEC)255,
         };
 
@@ -53,10 +52,7 @@ public class StrategicMovement
         GROUP? pNew;
         ////AssertMsg(ubSectorX >= 1 && ubSectorX <= 16, string.Format("CreateNewVehicleGroup with out of range sectorX value of %d", ubSectorX));
         ////AssertMsg(ubSectorY >= 1 && ubSectorY <= 16, string.Format("CreateNewVehicleGroup with out of range sectorY value of %d", ubSectorY));
-        pNew = new GROUP();// (GROUP?)MemAlloc(sizeof(GROUP));
-        ////AssertMsg(pNew, "MemAlloc failure during CreateNewVehicleGroup.");
-        //memset(pNew, 0, sizeof(GROUP));
-        pNew.pWaypoints = null;
+        pNew = new GROUP();
         pNew.ubSectorX = pNew.ubNextX = ubSectorX;
         pNew.ubSectorY = pNew.ubNextY = ubSectorY;
         pNew.ubOriginalSector = SECTORINFO.SECTOR(ubSectorX, ubSectorY);
@@ -66,7 +62,6 @@ public class StrategicMovement
         pNew.ubRestAtFatigueLevel = 0;
         pNew.fVehicle = true;
         pNew.fPlayer = true;
-        pNew.pPlayerList = null;
         pNew.ubCreatedSectorID = pNew.ubOriginalSector;
         pNew.ubSectorIDOfLastReassignment = (SEC)255;
 
@@ -82,9 +77,9 @@ public class StrategicMovement
         GROUP? pGroup;
         PLAYERGROUP? pPlayer, curr;
         pGroup = GetGroup(ubGroupID);
-        Debug.Assert(pGroup);
+        Debug.Assert(pGroup is not null);
         pPlayer = new PLAYERGROUP();
-        Debug.Assert(pPlayer);
+        Debug.Assert(pPlayer is not null);
         ////AssertMsg(pGroup.fPlayer, "Attempting AddPlayerToGroup() on an ENEMY group!");
         pPlayer.pSoldier = pSoldier;
         pPlayer.ubProfileID = pSoldier.ubProfile;
@@ -270,7 +265,7 @@ public class StrategicMovement
 
 
 
-    bool GroupReversingDirectionsBetweenSectors(GROUP? pGroup, int ubSectorX, int ubSectorY, bool fBuildingWaypoints)
+    bool GroupReversingDirectionsBetweenSectors(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY, bool fBuildingWaypoints)
     {
         // if we're not between sectors, or we are but we're continuing in the same direction as before
         if (!GroupBetweenSectorsAndSectorXYIsInDifferentDirection(pGroup, ubSectorX, ubSectorY))
@@ -340,7 +335,7 @@ public class StrategicMovement
 
 
 
-    bool GroupBetweenSectorsAndSectorXYIsInDifferentDirection(GROUP? pGroup, int ubSectorX, int ubSectorY)
+    bool GroupBetweenSectorsAndSectorXYIsInDifferentDirection(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY)
     {
         int currDX, currDY, newDX, newDY;
         int ubNumUnalignedAxes = 0;
@@ -364,12 +359,12 @@ public class StrategicMovement
         if (newDX)
         {
             ubNumUnalignedAxes++;
-            newDX /= abs(newDX);
+            newDX /= Math.Abs(newDX);
         }
         if (newDY)
         {
             ubNumUnalignedAxes++;
-            newDY /= abs(newDY);
+            newDY /= Math.Abs(newDY);
         }
 
         // error checking
@@ -539,11 +534,10 @@ public class StrategicMovement
     }
 
     // NOTE: This does NOT expect a strategic sector ID
-    bool AddWaypointIDToPGroup(GROUP? pGroup, int ubSectorID)
+    bool AddWaypointIDToPGroup(GROUP? pGroup, SEC ubSectorID)
     {
-        int ubSectorX, ubSectorY;
-        ubSectorX = SECTORX(ubSectorID);
-        ubSectorY = SECTORY(ubSectorID);
+        int ubSectorX = SECTORINFO.SECTORX(ubSectorID);
+        MAP_ROW ubSectorY = SECTORINFO.SECTORY(ubSectorID);
         return AddWaypointToPGroup(pGroup, ubSectorX, ubSectorY);
     }
 
@@ -1047,7 +1041,7 @@ public class StrategicMovement
                 {
                     string str;
                     int[] pSectorStr = new int[128];
-                    GetSectorIDString(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, pSectorStr, true);
+                    StrategicMap.GetSectorIDString(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, pSectorStr, true);
                     wprintf(str, gpStrategicString[STR_DIALOG_ENEMIES_ATTACK_UNCONCIOUSMERCS], pSectorStr);
                     DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
                 }
@@ -1269,32 +1263,32 @@ public class StrategicMovement
 
         // 1st gridno
         Corpse.sGridNo = 14319;
-        ConvertGridNoToXY(Corpse.sGridNo, &sXPos, &sYPos);
-        Corpse.dXPos = (FLOAT)(CenterX(sXPos));
-        Corpse.dYPos = (FLOAT)(CenterY(sYPos));
+        IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out sXPos, out sYPos);
+        Corpse.dXPos = (IsometricUtils.CenterX(sXPos));
+        Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
-        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, &Corpse);
+        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
 
 
         // 2nd gridno
         Corpse.sGridNo = 9835;
-        ConvertGridNoToXY(Corpse.sGridNo, &sXPos, &sYPos);
-        Corpse.dXPos = (FLOAT)(CenterX(sXPos));
-        Corpse.dYPos = (FLOAT)(CenterY(sYPos));
+        IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out sXPos, out sYPos);
+        Corpse.dXPos = (IsometricUtils.CenterX(sXPos));
+        Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
-        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, &Corpse);
+        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
 
 
         // 3rd gridno
         Corpse.sGridNo = 11262;
-        ConvertGridNoToXY(Corpse.sGridNo, &sXPos, &sYPos);
-        Corpse.dXPos = (FLOAT)(CenterX(sXPos));
-        Corpse.dYPos = (FLOAT)(CenterY(sYPos));
+        IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out sXPos, out sYPos);
+        Corpse.dXPos = (IsometricUtils.CenterX(sXPos));
+        Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
-        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, &Corpse);
+        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
 
     }
 
@@ -1311,7 +1305,7 @@ public class StrategicMovement
         GROUP? pGroup;
         int iVehId = -1;
         PLAYERGROUP? curr;
-        int ubInsertionDirection;
+        WorldDirections ubInsertionDirection;
         INSERTION_CODE ubStrategicInsertionCode;
         SOLDIERTYPE? pSoldier = null;
         bool fExceptionQueue = false;
@@ -1385,14 +1379,17 @@ public class StrategicMovement
         }
         //First check if the group arriving is going to queue another battle.
         //NOTE:  We can't have more than one battle ongoing at a time.
-        if (fExceptionQueue || fCheckForBattle && gTacticalStatus.fEnemyInSector &&
-                FindMovementGroupInSector((int)gWorldSectorX, gWorldSectorY, true) &&
-              (pGroup.ubNextX != gWorldSectorX || pGroup.ubNextY != gWorldSectorY || gbWorldSectorZ > 0) ||
-                AreInMeanwhile() ||
+        if (fExceptionQueue
+            || fCheckForBattle
+            && gTacticalStatus.fEnemyInSector
+            && FindMovementGroupInSector(gWorldSectorX, gWorldSectorY, true) is not null
+            && (pGroup.ubNextX != gWorldSectorX || pGroup.ubNextY != gWorldSectorY || gbWorldSectorZ > 0)
+            || AreInMeanwhile()
+            ||
                 //KM : Aug 11, 1999 -- Patch fix:  Added additional checks to prevent a 2nd battle in the case
                 //     where the player is involved in a potential battle with bloodcats/civilians
-                fCheckForBattle && HostileCiviliansPresent() ||
-                fCheckForBattle && HostileBloodcatsPresent()
+                fCheckForBattle && HostileCiviliansPresent()
+                || fCheckForBattle && HostileBloodcatsPresent()
             )
         {
             //QUEUE BATTLE!
@@ -1491,13 +1488,13 @@ public class StrategicMovement
             if (pGroup.ubSectorZ == 0)
             {
                 // check for discovering secret locations
-                int bTownId = GetTownIdForSector(pGroup.ubSectorX, pGroup.ubSectorY);
+                TOWNS bTownId = StrategicMap.GetTownIdForSector(pGroup.ubSectorX, pGroup.ubSectorY);
 
-                if (bTownId == TIXA)
+                if (bTownId == TOWNS.TIXA)
                 {
                     SetTixaAsFound();
                 }
-                else if (bTownId == ORTA)
+                else if (bTownId == TOWNS.ORTA)
                 {
                     SetOrtaAsFound();
                 }
@@ -1510,23 +1507,23 @@ public class StrategicMovement
 
             if (pGroup.ubSectorX < pGroup.ubPrevX)
             {
-                ubInsertionDirection = SOUTHWEST;
-                ubStrategicInsertionCode = INSERTION_CODE_EAST;
+                ubInsertionDirection = WorldDirections.SOUTHWEST;
+                ubStrategicInsertionCode = INSERTION_CODE.EAST;
             }
             else if (pGroup.ubSectorX > pGroup.ubPrevX)
             {
-                ubInsertionDirection = NORTHEAST;
-                ubStrategicInsertionCode = INSERTION_CODE_WEST;
+                ubInsertionDirection = WorldDirections.NORTHEAST;
+                ubStrategicInsertionCode = INSERTION_CODE.WEST;
             }
             else if (pGroup.ubSectorY < pGroup.ubPrevY)
             {
-                ubInsertionDirection = NORTHWEST;
-                ubStrategicInsertionCode = INSERTION_CODE_SOUTH;
+                ubInsertionDirection = WorldDirections.NORTHWEST;
+                ubStrategicInsertionCode = INSERTION_CODE.SOUTH;
             }
             else if (pGroup.ubSectorY > pGroup.ubPrevY)
             {
-                ubInsertionDirection = SOUTHEAST;
-                ubStrategicInsertionCode = INSERTION_CODE_NORTH;
+                ubInsertionDirection = WorldDirections.SOUTHEAST;
+                ubStrategicInsertionCode = INSERTION_CODE.NORTH;
             }
             else
             {
@@ -1578,15 +1575,15 @@ public class StrategicMovement
                     if (GroupAtFinalDestination(pGroup) && (pGroup.ubSectorZ == 0) && !fNeverLeft)
                     {
                         // if assigned to a squad
-                        if (pGroup.pPlayerList.pSoldier.bAssignment < ON_DUTY)
+                        if (pGroup.pPlayerList.pSoldier.bAssignment < Assignments.ON_DUTY)
                         {
                             // squad
-                            ScreenMsg(FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pAssignmentStrings[pGroup.pPlayerList.pSoldier.bAssignment], pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pAssignmentStrings[pGroup.pPlayerList.pSoldier.bAssignment], pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
                         }
                         else
                         {
                             // a loner
-                            ScreenMsg(FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pGroup.pPlayerList.pSoldier.name, pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pGroup.pPlayerList.pSoldier.name, pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
                         }
                     }
                 }
@@ -1613,7 +1610,7 @@ public class StrategicMovement
                 if (iVehId != iHelicopterVehicleId)
                 {
                     pSoldier = GetSoldierStructureForVehicle(iVehId);
-                    Debug.Assert(pSoldier);
+                    Debug.Assert(pSoldier is not null);
 
                     pSoldier.fBetweenSectors = false;
                     pSoldier.sSectorX = pGroup.ubSectorX;
@@ -1675,7 +1672,7 @@ public class StrategicMovement
                     // don't print any messages when arriving underground, there's no delay involved
                     if (GroupAtFinalDestination(pGroup) && (pGroup.ubSectorZ == 0) && !fNeverLeft)
                     {
-                        ScreenMsg(FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pVehicleStrings[pVehicleList[iVehId].ubVehicleType], pMapVertIndex[pGroup.ubSectorY], pMapHortIndex[pGroup.ubSectorX]);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG.ARRIVE], pVehicleStrings[pVehicleList[iVehId].ubVehicleType], pMapVertIndex[pGroup.ubSectorY], pMapHortIndex[pGroup.ubSectorX]);
                     }
                 }
             }
@@ -1684,7 +1681,7 @@ public class StrategicMovement
             if (!fGroupDestroyed)
             {
                 // check if sector had been visited previously
-                fFirstTimeInSector = !GetSectorFlagStatus(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF_ALREADY_VISITED);
+                fFirstTimeInSector = !GetSectorFlagStatus(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF.ALREADY_VISITED);
 
                 // on foot, or in a vehicle other than the chopper
                 if (!pGroup.fVehicle || !IsGroupTheHelicopterGroup(pGroup))
@@ -1697,7 +1694,7 @@ public class StrategicMovement
                     }
 
                     // mark the sector as visited already
-                    SetSectorFlag(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF_ALREADY_VISITED);
+                    SetSectorFlag(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF.ALREADY_VISITED);
                 }
             }
 
@@ -2612,12 +2609,12 @@ public class StrategicMovement
             if (iDelta % (SOUTH_MOVE - 2) == 0)
             {
                 iDelta = (SOUTH_MOVE - 2);
-                ubDirection = SOUTH_STRATEGIC_MOVE;
+                ubDirection = StrategicMove.SOUTH;
             }
             else
             {
                 iDelta = EAST_MOVE;
-                ubDirection = EAST_STRATEGIC_MOVE;
+                ubDirection = StrategicMove.EAST;
             }
         }
         else
@@ -2625,12 +2622,12 @@ public class StrategicMovement
             if (iDelta % (NORTH_MOVE + 2) == 0)
             {
                 iDelta = (NORTH_MOVE + 2);
-                ubDirection = NORTH_STRATEGIC_MOVE;
+                ubDirection = StrategicMove.NORTH;
             }
             else
             {
                 iDelta = WEST_MOVE;
-                ubDirection = WEST_STRATEGIC_MOVE;
+                ubDirection = StrategicMove.WEST;
             }
         }
 
@@ -3008,7 +3005,8 @@ public class StrategicMovement
                 }
                 cnt++;
             }
-            ScreenMsg(FONT_YELLOW, MSG_INTERFACE, Message[STR_PLAYER_REINFORCEMENTS]);
+
+            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG_INTERFACE, Message[STR_PLAYER_REINFORCEMENTS]);
 
         }
         else
@@ -3018,7 +3016,7 @@ public class StrategicMovement
             AddPossiblePendingEnemiesToBattle();
         }
         //Update the known number of enemies in the sector.
-        pSector = &SectorInfo[SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)];
+        pSector = SectorInfo[SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)];
         iNumEnemiesInSector = NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY);
         if (iNumEnemiesInSector)
         {

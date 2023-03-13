@@ -5,6 +5,7 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const int NUM_ENEMY_RANKGS = (int)ENEMY_RANK.NUM_ENEMY_RANKS;
     public const int SAI_VERSION = 29;
 
     //The maximum size for any team strategically speaking.  For example, we can't have more than 20 enemies, militia, or creatures at a time.

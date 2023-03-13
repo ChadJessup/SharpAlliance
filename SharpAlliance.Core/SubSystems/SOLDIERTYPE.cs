@@ -42,7 +42,7 @@ public class SOLDIERTYPE
     public bool fReloading;
     public int ubWaitActionToDo;
     public bool fPauseAim;
-    public int ubInsertionDirection;
+    public WorldDirections ubInsertionDirection;
     public int bGunType;
     // skills
     public int ubOppNum;
@@ -222,7 +222,7 @@ public class SOLDIERTYPE
 
 
     // PATH STUFF
-    public int[] usPathingData = new int[Globals.MAX_PATH_LIST_SIZE];
+    public WorldDirections[] usPathingData = new WorldDirections[MAX_PATH_LIST_SIZE];
     public int usPathDataSize;
     public int usPathIndex;
     public int sBlackList;
@@ -248,7 +248,7 @@ public class SOLDIERTYPE
     public int sX;
     public int sY;
 
-    public int usOldAniState;
+    public AnimationStates usOldAniState;
     public int sOldAniCode;
 
     public int bBulletsLeft;
@@ -272,7 +272,7 @@ public class SOLDIERTYPE
     public int bNeutral;
     public int bNewSituation;
     public int bNextTargetLevel;
-    public int bOrders;
+    public Orders bOrders;
     public Attitudes bAttitude;
     public int bUnderFire;
     public int bShock;
@@ -496,11 +496,11 @@ public class SOLDIERTYPE
     public bool fMercCollapsedFlag;
     public bool fDoneAssignmentAndNothingToDoFlag;
     public bool fMercAsleep;
-    bool fDontChargeAPsForStanceChange;
+    public bool fDontChargeAPsForStanceChange;
 
-    int ubHoursOnAssignment;                      // used for assignments handled only every X hours
+    public int ubHoursOnAssignment;                      // used for assignments handled only every X hours
 
-    int ubMercJustFired;   // the merc was just fired..there may be dialogue events occuring, this flag will prevent any interaction with contracts
+    public int ubMercJustFired;   // the merc was just fired..there may be dialogue events occuring, this flag will prevent any interaction with contracts
                            // until after the merc leaves	
     public int ubTurnsUntilCanSayHeardNoise;
     public SOLDIER_QUOTE usQuoteSaidExtFlags;
@@ -607,15 +607,15 @@ public class GROUP
     public uint uiTraverseTime;              //the total traversal time from the previous sector to the next sector.
     public bool fRestAtNight;                   //set when the group is permitted to rest between 2200 and 0600 when moving
     public bool fWaypointsCancelled;    //set when groups waypoints have been removed.
-    public List<WAYPOINT> pWaypoints = new();                   //a list of all of the waypoints in the groups movement.
+    public List<WAYPOINT>? pWaypoints = new();                   //a list of all of the waypoints in the groups movement.
     public VehicleTypes ubTransportationMask;     //the mask combining all of the groups transportation methods.
     public int uiFlags;                             //various conditions that apply to the group
     public SEC ubCreatedSectorID;            //used for debugging strategic AI for keeping track of the sector ID a group was created in.
     public SEC ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.
     public int[] bPadding = new int[29];                      //***********************************************//
 
-    public List<PLAYERGROUP> pPlayerList = new();       //list of players in the group
-    public List<ENEMYGROUP> pEnemyGroup = new();        //a structure containing general enemy info
+    public readonly List<PLAYERGROUP> pPlayerList = new();       //list of players in the group
+    public readonly List<ENEMYGROUP> pEnemyGroup = new();        //a structure containing general enemy info
     public GROUP? next;						//next group
 }
 

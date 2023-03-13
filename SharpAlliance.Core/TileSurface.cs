@@ -60,6 +60,7 @@ public class TileSurface
         {
             strcat(cStructureFilename, ".");
         }
+
         strcat(cStructureFilename, STRUCTURE_FILE_EXTENSION);
         if (FileExists(cStructureFilename))
         {

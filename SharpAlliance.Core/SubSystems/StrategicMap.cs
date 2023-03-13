@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Screens;
-
 using static SharpAlliance.Core.Globals;
+using static SharpAlliance.Core.EnglishText;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -252,6 +253,220 @@ public class StrategicMap
         return (ubReturnVal);
     }
 
+    // Get sector ID string makes a string like 'A9 - OMERTA', or just J11 if no town....
+    public static void GetSectorIDString(int sSectorX, MAP_ROW sSectorY, int bSectorZ, string zString, bool fDetailed)
+    {
+        SECTORINFO? pSector = null;
+        UNDERGROUND_SECTORINFO? pUnderground;
+        TOWNS bTownNameID;
+        MINE bMineIndex;
+        SEC ubSectorID = 0;
+        Traversability ubLandType = 0;
+
+        if (sSectorX <= 0 || sSectorY <= 0 || bSectorZ < 0)
+        {
+            //wprintf( zString, "%s", pErrorStrings[0] );
+        }
+        else if (bSectorZ != 0)
+        {
+            pUnderground = FindUnderGroundSector(sSectorX, sSectorY, bSectorZ);
+            if (pUnderground && (pUnderground.fVisited || gfGettingNameFromSaveLoadScreen))
+            {
+                bMineIndex = StrategicMines.GetIdOfMineForSector(sSectorX, sSectorY, bSectorZ);
+                if (bMineIndex != (MINE)(-1))
+                {
+                    wprintf(zString, "%c%d: %s %s", 'A' + sSectorY - 1, sSectorX, pTownNames[StrategicMines.GetTownAssociatedWithMine(bMineIndex)], pwMineStrings[0]);
+                }
+                else
+                {
+                    switch (SECTORINFO.SECTOR(sSectorX, sSectorY))
+                    {
+                        case SEC.A10:
+                            wprintf(zString, "A10: %s", pLandTypeStrings[Traversability.REBEL_HIDEOUT]);
+                            break;
+                        case SEC.J9:
+                            wprintf(zString, "J9: %s", pLandTypeStrings[Traversability.TIXA_DUNGEON]);
+                            break;
+                        case SEC.K4:
+                            wprintf(zString, "K4: %s", pLandTypeStrings[Traversability.ORTA_BASEMENT]);
+                            break;
+                        case SEC.O3:
+                            wprintf(zString, "O3: %s", pLandTypeStrings[Traversability.TUNNEL]);
+                            break;
+                        case SEC.P3:
+                            wprintf(ref zString, "P3: %s", pLandTypeStrings[Traversability.SHELTER]);
+                            break;
+                        default:
+                            wprintf(ref zString, "%c%d: %s", 'A' + sSectorY - 1, sSectorX, pLandTypeStrings[Traversability.CREATURE_LAIR]);
+                            break;
+                    }
+                }
+            }
+            else
+            { //Display nothing
+                wcscpy(zString, "");
+            }
+        }
+        else
+        {
+            bTownNameID = strategicMap[CALCULATE_STRATEGIC_INDEX(sSectorX, sSectorY)].bNameId;
+            ubSectorID = SECTORINFO.SECTOR(sSectorX, sSectorY);
+            pSector = SectorInfo[ubSectorID];
+            ubLandType = pSector.ubTraversability[(StrategicMove)4];
+            wprintf(zString, "%c%d: ", 'A' + sSectorY - 1, sSectorX);
+
+            if (bTownNameID == TOWNS.BLANK_SECTOR)
+            {
+                // OK, build string id like J11
+                // are we dealing with the unfound towns?
+                switch (ubSectorID)
+                {
+                    case SEC.D2: //Chitzena SAM
+                        if (!fSamSiteFound[SAM_SITE.ONE])
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.TROPICS]);
+                        }
+                        else if (fDetailed)
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.TROPICS_SAM_SITE]);
+                        }
+                        else
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.SAM_SITE]);
+                        }
+
+                        break;
+                    case SEC.D15: //Drassen SAM
+                        if (!fSamSiteFound[SAM_SITE.TWO])
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.SPARSE]);
+                        }
+                        else if (fDetailed)
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.SPARSE_SAM_SITE]);
+                        }
+                        else
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.SAM_SITE]);
+                        }
+
+                        break;
+                    case SEC.I8: //Cambria SAM
+                        if (!fSamSiteFound[SAM_SITE.THREE])
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.SAND]);
+                        }
+                        else if (fDetailed)
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.SAND_SAM_SITE]);
+                        }
+                        else
+                        {
+                            zString = wcscat(pLandTypeStrings[Traversability.SAM_SITE]);
+                        }
+
+                        break;
+                    default:
+                        zString = wcscat(pLandTypeStrings[ubLandType]);
+                        break;
+                }
+            }
+            else
+            {
+                switch (ubSectorID)
+                {
+                    case SEC.B13:
+                        if (fDetailed)
+                        {
+                            wcscat(zString, pLandTypeStrings[DRASSEN_AIRPORT_SITE]);
+                        }
+                        else
+                        {
+                            wcscat(zString, pTownNames[TOWNS.DRASSEN]);
+                        }
+
+                        break;
+                    case SEC.F8:
+                        if (fDetailed)
+                        {
+                            wcscat(zString, pLandTypeStrings[CAMBRIA_HOSPITAL_SITE]);
+                        }
+                        else
+                        {
+                            wcscat(zString, pTownNames[TOWNS.CAMBRIA]);
+                        }
+
+                        break;
+                    case SEC.J9: //Tixa
+                        if (!fFoundTixa)
+                        {
+                            wcscat(zString, pLandTypeStrings[SAND]);
+                        }
+                        else
+                        {
+                            wcscat(zString, pTownNames[TOWNS.TIXA]);
+                        }
+
+                        break;
+                    case SEC.K4: //Orta
+                        if (!fFoundOrta)
+                        {
+                            wcscat(zString, pLandTypeStrings[SWAMP]);
+                        }
+                        else
+                        {
+                            wcscat(zString, pTownNames[TOWNS.ORTA]);
+                        }
+
+                        break;
+                    case SEC.N3:
+                        if (fDetailed)
+                        {
+                            wcscat(zString, pLandTypeStrings[MEDUNA_AIRPORT_SITE]);
+                        }
+                        else
+                        {
+                            wcscat(zString, pTownNames[TOWNS.MEDUNA]);
+                        }
+
+                        break;
+                    default:
+                        if (ubSectorID == SEC.N4 && fSamSiteFound[SAM_SITE_FOUR])
+                        {   //Meduna's SAM site
+                            if (fDetailed)
+                            {
+                                wcscat(zString, pLandTypeStrings[MEDUNA_SAM_SITE]);
+                            }
+                            else
+                            {
+                                wcscat(zString, pLandTypeStrings[SAM_SITE]);
+                            }
+                        }
+                        else
+                        {   //All other towns that are known since beginning of the game.
+                            zString = wcscat(pTownNames[bTownNameID]);
+                            if (fDetailed)
+                            {
+                                switch (ubSectorID)
+                                { //Append the word, "mine" for town sectors containing a mine.
+                                    case SEC.B2:
+                                    case SEC.D4:
+                                    case SEC.D13:
+                                    case SEC.H3:
+                                    case SEC.H8:
+                                    case SEC.I14:
+                                        zString = wcscat(" "); //space
+                                        zString += wcscat(pwMineStrings[0]); //then "Mine"
+                                        break;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
     // get index into array
     public static int CALCULATE_STRATEGIC_INDEX(int x, MAP_ROW y) => (x + ((int)y * Globals.MAP_WORLD_X));
     public static int GET_X_FROM_STRATEGIC_INDEX(int i) => (i % Globals.MAP_WORLD_X);
@@ -261,7 +476,34 @@ public class StrategicMap
     public static int SECTOR_INFO_TO_STRATEGIC_INDEX(SEC i) => (CALCULATE_STRATEGIC_INDEX(SECTORINFO.SECTORX(i), SECTORINFO.SECTORY(i)));
     public static SEC STRATEGIC_INDEX_TO_SECTOR_INFO(int i) => (SECTORINFO.SECTOR(GET_X_FROM_STRATEGIC_INDEX(i), GET_Y_FROM_STRATEGIC_INDEX(i)));
 
+    public static bool IsThisSectorASAMSector(SEC sSectorX, MAP_ROW sSectorY, int bSectorZ)
+    {
 
+        // is the sector above ground?
+        if (bSectorZ != 0)
+        {
+            return (false);
+        }
+
+        if ((SAM.SAM_1_X == (SAM)sSectorX) && (SAM.SAM_1_Y == (SAM)sSectorY))
+        {
+            return (true);
+        }
+        else if ((SAM.SAM_2_X == (SAM)sSectorX) && (SAM.SAM_2_Y == (SAM)sSectorY))
+        {
+            return (true);
+        }
+        else if ((SAM.SAM_3_X == (SAM)sSectorX) && (SAM.SAM_3_Y == (SAM)sSectorY))
+        {
+            return (true);
+        }
+        else if ((SAM.SAM_4_X == (SAM)sSectorX) && (SAM.SAM_4_Y == (SAM)sSectorY))
+        {
+            return (true);
+        }
+
+        return (false);
+    }
 }
 
 public class StrategicMapElement

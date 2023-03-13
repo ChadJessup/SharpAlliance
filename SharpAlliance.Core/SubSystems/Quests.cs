@@ -485,7 +485,7 @@ public class Quests
 
             if (pSoldier.bActive && pSoldier.bLife > 0)
             {
-                if (ItemSubSystem.FindObjInObjRange(pSoldier, HEAD_2, HEAD_7) != NO_SLOT)
+                if (ItemSubSystem.FindObjInObjRange(pSoldier, Items.HEAD_2, Items.HEAD_7) != (Items)NO_SLOT)
                 {
                     return (true);
                 }

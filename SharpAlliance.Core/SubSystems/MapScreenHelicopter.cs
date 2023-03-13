@@ -70,3 +70,13 @@ public class MapScreenHelicopter
         return (true);
     }
 }
+
+// the sam site enums
+public enum SAM_SITE
+{
+    ONE = 0,           // near Chitzena
+    TWO,                   // near Drassen
+    THREE,             // near Cambria
+    FOUR,              // near Meduna
+    NUMBER_OF_SAM_SITES,
+};

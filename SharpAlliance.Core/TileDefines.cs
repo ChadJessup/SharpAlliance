@@ -68,6 +68,22 @@ public class TileDefine
 
         return (true);
     }
+
+    // These values coorespond to TerrainTypeDefines order
+    public static int[] gTileTypeMovementCost =
+    {
+        TRAVELCOST.FLAT,			// NO_TERRAIN
+        TRAVELCOST.FLAT,			// FLAT GROUND
+        TRAVELCOST.FLATFLOOR,		// FLAT FLOOR
+        TRAVELCOST.PAVEDROAD,		// PAVED ROAD
+        TRAVELCOST.DIRTROAD,		// DIRT ROAD
+        TRAVELCOST.FLAT,			// LOW_GRASS
+        TRAVELCOST.FLAT,			// HIGH GRASS
+        TRAVELCOST.TRAINTRACKS,		// TRAIN TRACKS
+        TRAVELCOST.SHORE,			// LOW WATER
+        TRAVELCOST.SHORE,			// MED WATER
+        TRAVELCOST.SHORE,			// DEEP WATER
+    };
 }
 
 public enum TerrainTypeDefines

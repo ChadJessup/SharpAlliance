@@ -4,8 +4,8 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Veldrid.MetalBindings;
 using Veldrid;
-using static SharpAlliance.Core.Globals;
 
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -275,10 +275,10 @@ public class Laptop
             return;
         }
 
-        DisplayProgramBoundingBox(FALSE);
+        DisplayProgramBoundingBox(false);
 
         // mark the buttons dirty at this point
-        MarkButtonsDirty();
+        ButtonSubSystem.MarkButtonsDirty();
     }
 
     private static bool DrawDeskTopBackground()
@@ -367,38 +367,37 @@ public class Laptop
 
     public static void BlitTitleBarIcons()
     {
-
-        HVOBJECT hHandle;
+        HVOBJECT? hHandle;
         // will blit the icons for the title bar of the program we are in
         switch (guiCurrentLaptopMode)
         {
-            case (LAPTOP_MODE_HISTORY):
-                GetVideoObject(&hHandle, guiTITLEBARICONS);
-                BltVideoObject(FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+            case (LAPTOP_MODE.HISTORY):
+                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE_EMAIL):
-                GetVideoObject(&hHandle, guiTITLEBARICONS);
-                BltVideoObject(FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+            case (LAPTOP_MODE.EMAIL):
+                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE_PERSONNEL):
-                GetVideoObject(&hHandle, guiTITLEBARICONS);
-                BltVideoObject(FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+            case (LAPTOP_MODE.PERSONNEL):
+                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE_FINANCES):
-                GetVideoObject(&hHandle, guiTITLEBARICONS);
-                BltVideoObject(FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+            case (LAPTOP_MODE.FINANCES):
+                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE_FILES):
-                GetVideoObject(&hHandle, guiTITLEBARICONS);
-                BltVideoObject(FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+            case (LAPTOP_MODE.FILES):
+                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE_NONE):
+            case (LAPTOP_MODE.NONE):
                 // do nothing
                 break;
             default:
                 // www pages
-                GetVideoObject(&hHandle, guiTITLEBARICONS);
-                BltVideoObject(FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT_SRCTRANSPARENCY, NULL);
+                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
         }
     }

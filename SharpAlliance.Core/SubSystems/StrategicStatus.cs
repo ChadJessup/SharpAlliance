@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -229,20 +230,20 @@ public class StrategicStatus
             (((ubHighestProgress - ubCurrentProgress) >= MINOR_SETBACK_THRESHOLD) && (gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.FLAG_SETBACK_OVER)))) &&
                 !(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_MAJOR_SETBACK)))
         {
-            Emails.AddEmail(ENRICO_SETBACK, ENRICO_SETBACK_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_SETBACK, ENRICO_SETBACK_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_MAJOR_SETBACK;
         }
         else
         // test for a first minor setback
         if (((ubHighestProgress - ubCurrentProgress) >= MINOR_SETBACK_THRESHOLD) &&
-              !(gStrategicStatus.usEnricoEmailFlags & (ENRICO_EMAIL.SENT_MINOR_SETBACK | ENRICO_EMAIL.SENT_MAJOR_SETBACK)))
+              !(gStrategicStatus.usEnricoEmailFlags.HasFlag((ENRICO_EMAIL.SENT_MINOR_SETBACK | ENRICO_EMAIL.SENT_MAJOR_SETBACK))))
         {
-            Emails.AddEmail(ENRICO_SETBACK_2, ENRICO_SETBACK_2_LENGTH, MAIL_ENRICO, GameClock.GetWorldTotalMin());
+            Emails.AddEmail(ENRICO_SETBACK_2, ENRICO_SETBACK_2_LENGTH, EmailAddresses.MAIL_ENRICO, GameClock.GetWorldTotalMin());
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.SENT_MINOR_SETBACK;
         }
         else
         // if player is back at his maximum progress after having suffered a minor setback
-        if ((ubHighestProgress == ubCurrentProgress) && (gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL.SENT_MINOR_SETBACK))
+        if ((ubHighestProgress == ubCurrentProgress) && (gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_MINOR_SETBACK)))
         {
             // remember that the original setback has been overcome, so another one can generate another E-mail
             gStrategicStatus.usEnricoEmailFlags |= ENRICO_EMAIL.FLAG_SETBACK_OVER;
@@ -260,15 +261,15 @@ public class StrategicStatus
                 if (gStrategicStatus.ubNumberOfDaysOfInactivity == ubTolerance)
                 {
                     // send email
-                    if (!(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS1))
+                    if (!(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS1)))
                     {
                         bComplaint = 1;
                     }
-                    else if (!(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS2))
+                    else if (!(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS2)))
                     {
                         bComplaint = 2;
                     }
-                    else if (!(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS3))
+                    else if (!(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS3)))
                     {
                         bComplaint = 3;
                     }
@@ -276,11 +277,11 @@ public class StrategicStatus
                 else if (gStrategicStatus.ubNumberOfDaysOfInactivity == (int)ubTolerance * 2)
                 {
                     // six days? send 2nd or 3rd message possibly
-                    if (!(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS2))
+                    if (!(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS2)))
                     {
                         bComplaint = 2;
                     }
-                    else if (!(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS3))
+                    else if (!(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS3)))
                     {
                         bComplaint = 3;
                     }
@@ -289,7 +290,7 @@ public class StrategicStatus
                 else if (gStrategicStatus.ubNumberOfDaysOfInactivity == ubTolerance * 3)
                 {
                     // nine days??? send 3rd message possibly
-                    if (!(gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS3))
+                    if (!(gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS3)))
                     {
                         bComplaint = 3;
                     }
@@ -314,11 +315,11 @@ public class StrategicStatus
 
                     }
 
-                    AddHistoryToPlayersLog(HISTORY_ENRICO_COMPLAINED, 0, GameClock.GetWorldTotalMin(), -1, -1);
+                    History.AddHistoryToPlayersLog(HISTORY.ENRICO_COMPLAINED, 0, GameClock.GetWorldTotalMin(), -1, (MAP_ROW)(-1));
                 }
 
                 // penalize loyalty!
-                if (gStrategicStatus.usEnricoEmailFlags & ENRICO_EMAIL_SENT_LACK_PROGRESS2)
+                if (gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS2))
                 {
                     DecrementTownLoyaltyEverywhere(LOYALTY_PENALTY_INACTIVE * (gStrategicStatus.ubNumberOfDaysOfInactivity - LackOfProgressTolerance() + 1));
                 }
@@ -350,11 +351,11 @@ public class StrategicStatus
             return;
         }
 
-        gStrategicStatus.usEnemiesKilled[ubKilledHow][bRankIndex]++;
+        gStrategicStatus.usEnemiesKilled[ubKilledHow, bRankIndex]++;
 
         if (ubKilledHow != ENEMY_KILLED_TOTAL)
         {
-            gStrategicStatus.usEnemiesKilled[ENEMY_KILLED_TOTAL][bRankIndex]++;
+            gStrategicStatus.usEnemiesKilled[ENEMY_KILLED_TOTAL, bRankIndex]++;
         }
     }
 
@@ -442,4 +443,20 @@ public enum ENRICO_EMAIL
     SENT_LACK_PROGRESS1 = 0x0080,
     SENT_LACK_PROGRESS2 = 0x0100,
     SENT_LACK_PROGRESS3 = 0x0200,
+}
+
+public enum STRATEGIC_PLAYER_CAPTURED_FOR
+{
+    RESCUE = 0x00000001,
+    ESCAPE = 0x00000002,
+}
+
+// progress threshold that control Enrico E-mail timing
+public enum EMAIL_PROGRESS_THRESHOLD
+{
+    SOME_PROGRESS_THRESHOLD = 20,
+    ABOUT_HALFWAY_THRESHOLD = 55,
+    NEARLY_DONE_THRESHOLD = 80,
+    MINOR_SETBACK_THRESHOLD = 5,
+    MAJOR_SETBACK_THRESHOLD = 15,
 }

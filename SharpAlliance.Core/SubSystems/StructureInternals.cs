@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using SharpAlliance.Core.Managers;
 using static SharpAlliance.Core.Globals;
 
@@ -11,7 +12,7 @@ public class StructureInternals
 {
 
     // Function operating on a structure tile
-    int FilledTilePositions(DB_STRUCTURE_TILE? pTile)
+    private static int FilledTilePositions(DB_STRUCTURE_TILE? pTile)
     {
         int ubFilled = 0, ubShapeValue;
         int bLoopX, bLoopY, bLoopZ;
@@ -39,7 +40,7 @@ public class StructureInternals
     // Structure database functions
     //
 
-    void FreeStructureFileRef(STRUCTURE_FILE_REF? pFileRef)
+    private static void FreeStructureFileRef(STRUCTURE_FILE_REF? pFileRef)
     { // Frees all of the memory associated with a file reference, including
       // the file reference structure itself
 
@@ -50,21 +51,24 @@ public class StructureInternals
         {
             for (usLoop = 0; usLoop < pFileRef.usNumberOfStructures; usLoop++)
             {
-                if (pFileRef.pDBStructureRef[usLoop].ppTile)
+                if (pFileRef.pDBStructureRef[usLoop].ppTile.Any())
                 {
-                    MemFree(pFileRef.pDBStructureRef[usLoop].ppTile);
+                    pFileRef.pDBStructureRef[usLoop].ppTile.Clear();
                 }
             }
-            MemFree(pFileRef.pDBStructureRef);
+
+            pFileRef.pDBStructureRef.Clear();
         }
         if (pFileRef.pubStructureData != null)
         {
-            MemFree(pFileRef.pubStructureData);
+            pFileRef.pubStructureData = null;
         }
+
         if (pFileRef.pAuxData != null)
         {
             MemFree(pFileRef.pAuxData);
         }
+
         MemFree(pFileRef);
     }
 
@@ -110,7 +114,7 @@ public class StructureInternals
         return (true);
     }
 
-    bool LoadStructureData(STR szFileName, STRUCTURE_FILE_REF? pFileRef, out int puiStructureDataSize)
+    private static bool LoadStructureData(STR szFileName, STRUCTURE_FILE_REF? pFileRef, out int puiStructureDataSize)
     //int **ppubStructureData, int * puiDataSize, STRUCTURE_FILE_HEADER * pHeader )
     { // Loads a structure file's data as a honking chunk o' memory 
         Stream hInput;
@@ -168,7 +172,7 @@ public class StructureInternals
                 }
             }
         }
-        if (Header.fFlags.HasFlag(STRUCTUREFLAGS.FILE_CONTAINS_STRUCTUREDATA))
+        if (Header.fFlags.HasFlag(STRUCTURE_FILE_CONTAINS_STRUCTUREDATA))
         {
             pFileRef.usNumberOfStructuresStored = Header.usNumberOfStructuresStored;
             uiDataSize = Header.usStructureDataSize;
@@ -186,6 +190,7 @@ public class StructureInternals
                         MemFree(pFileRef.pTileLocData);
                     }
                 }
+
                 return (false);
             }
             fOk = FileRead(hInput, pFileRef.pubStructureData, uiDataSize, &uiBytesRead);
@@ -210,13 +215,13 @@ public class StructureInternals
         return (true);
     }
 
-    bool CreateFileStructureArrays(STRUCTURE_FILE_REF? pFileRef, int uiDataSize)
+    private static bool CreateFileStructureArrays(STRUCTURE_FILE_REF? pFileRef, int uiDataSize)
     { // Based on a file chunk, creates all the dynamic arrays for the 
       // structure definitions contained within
 
         int? pCurrent;
-        DB_STRUCTURE_REF pDBStructureRef = new();
-        DB_STRUCTURE_TILE ppTileArray = new();
+        List<DB_STRUCTURE_REF> pDBStructureRef = new();
+        List<DB_STRUCTURE_TILE> ppTileArray = new();
         int usLoop;
         int usIndex;
         int usTileLoop;
@@ -244,7 +249,7 @@ public class StructureInternals
                     // freeing of memory will occur outside of the function
                     return (false);
                 }
-                ppTileArray[usTileLoop] = (DB_STRUCTURE_TILE?)pCurrent;
+                ppTileArray[usTileLoop] = (DB_STRUCTURE_TILE)pCurrent;
                 // set the single-value relative position between this tile and the base tile
                 ppTileArray[usTileLoop].sPosRelToBase = ppTileArray[usTileLoop].bXPosRelToBase + ppTileArray[usTileLoop].bYPosRelToBase * WORLD_COLS;
                 uiHitPoints += FilledTilePositions(ppTileArray[usTileLoop]);
@@ -269,7 +274,7 @@ public class StructureInternals
         return (true);
     }
 
-    STRUCTURE_FILE_REF? LoadStructureFile(STR szFileName)
+    public static STRUCTURE_FILE_REF? LoadStructureFile(STR szFileName)
     { // NB should be passed in expected number of structures so we can check equality
         int uiDataSize = 0;
         bool fOk;
@@ -306,7 +311,7 @@ public class StructureInternals
     //
 
 
-    STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF? pDBStructureRef, int ubTileNum)
+    private static STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF? pDBStructureRef, int ubTileNum)
     { // Creates a STRUCTURE struct for one tile of a structure
         STRUCTURE? pStructure;
         DB_STRUCTURE? pDBStructure;
@@ -320,16 +325,14 @@ public class StructureInternals
         pTile = pDBStructureRef.ppTile[ubTileNum];
         CHECKN(pTile);
 
-        // allocate memory...
-        pStructure = MemAlloc(sizeof(STRUCTURE));
-        CHECKN(pStructure);
-
-        memset(pStructure, 0, sizeof(STRUCTURE));
-
         // setup
-        pStructure.fFlags = pDBStructure.fFlags;
-        pStructure.pShape = &(pTile.Shape);
-        pStructure.pDBStructureRef = pDBStructureRef;
+        pStructure = new()
+        {
+            fFlags = pDBStructure.fFlags,
+            pShape = (pTile.Shape),
+            pDBStructureRef = pDBStructureRef
+        };
+
         if (pTile.sPosRelToBase == 0)
         {   // base tile
             pStructure.fFlags |= STRUCTUREFLAGS.BASE_TILE;
@@ -357,7 +360,7 @@ public class StructureInternals
         return (pStructure);
     }
 
-    bool OkayToAddStructureToTile(int sBaseGridNo, int sCubeOffset, DB_STRUCTURE_REF? pDBStructureRef, int ubTileIndex, int sExclusionID, bool fIgnorePeople)
+    private static bool OkayToAddStructureToTile(int sBaseGridNo, STRUCTURE_ON sCubeOffset, DB_STRUCTURE_REF? pDBStructureRef, int ubTileIndex, int sExclusionID, bool fIgnorePeople)
     { // Verifies whether a structure is blocked from being added to the map at a particular point
         DB_STRUCTURE? pDBStructure;
         List<DB_STRUCTURE_TILE> ppTile;
@@ -385,7 +388,7 @@ public class StructureInternals
 
         /*
             // If adding a mobile structure, always allow addition if the mobile structure tile is passable
-            if ( (pDBStructure.fFlags & STRUCTURE_MOBILE) && (ppTile[ubTileIndex].fFlags & TILE_PASSABLE) )
+            if ( (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)) && (ppTile[ubTileIndex].fFlags & TILE_PASSABLE) )
             {
                 return( true );
             }
@@ -591,10 +594,10 @@ public class StructureInternals
         return (true);
     }
 
-    bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID, bool fIgnorePeople)
+    private static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID, bool fIgnorePeople)
     {
         int ubLoop;
-        int sCubeOffset;
+        STRUCTURE_ON sCubeOffset;
 
         CHECKF(pDBStructureRef);
         CHECKF(pDBStructureRef.pDBStructure);
@@ -615,7 +618,7 @@ public class StructureInternals
             {
                 if (bLevel == 0)
                 {
-                    sCubeOffset = PROFILE_Z_SIZE;
+                    sCubeOffset = (STRUCTURE_ON)PROFILE_Z_SIZE;
                 }
                 else
                 {
@@ -624,7 +627,7 @@ public class StructureInternals
             }
             else
             {
-                sCubeOffset = bLevel * PROFILE_Z_SIZE;
+                sCubeOffset = (STRUCTURE_ON)(bLevel * PROFILE_Z_SIZE);
             }
             if (!OkayToAddStructureToTile(sBaseGridNo, sCubeOffset, pDBStructureRef, ubLoop, sExclusionID, fIgnorePeople))
             {
@@ -634,12 +637,12 @@ public class StructureInternals
         return (true);
     }
 
-    bool OkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID)
+    public static bool OkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID)
     {
         return (InternalOkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, sExclusionID, (bool)(sExclusionID == IGNORE_PEOPLE_STRUCTURE_ID)));
     }
 
-    bool AddStructureToTile(MAP_ELEMENT? pMapElement, STRUCTURE? pStructure, int usStructureID)
+    private static bool AddStructureToTile(MAP_ELEMENT? pMapElement, STRUCTURE? pStructure, int usStructureID)
     { // adds a STRUCTURE to a MAP_ELEMENT (adds part of a structure to a location on the map)
         STRUCTURE? pStructureTail;
 
@@ -665,13 +668,13 @@ public class StructureInternals
     }
 
 
-    STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelNode)
+    private static STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelNode)
     { // Adds a complete structure to the world at a location plus all other locations covered by the structure
         int sGridNo;
-        STRUCTURE? ppStructure;
+        List<STRUCTURE?> ppStructure = new();
         STRUCTURE? pBaseStructure;
         DB_STRUCTURE? pDBStructure;
-        DB_STRUCTURE_TILE? ppTile;
+        List<DB_STRUCTURE_TILE> ppTile;
         int ubLoop;
         int ubLoop2;
         int sBaseTileHeight = -1;
@@ -701,11 +704,6 @@ public class StructureInternals
         // the first stage.  This array gets given to the base tile so
         // there is an easy way to remove an entire object from the world quickly
 
-        // NB we add 1 because the 0th element is in fact the reference count!
-        ppStructure = MemAlloc(pDBStructure.ubNumberOfTiles * sizeof(STRUCTURE?));
-        CHECKF(ppStructure);
-        memset(ppStructure, 0, pDBStructure.ubNumberOfTiles * sizeof(STRUCTURE?));
-
         for (ubLoop = BASE_TILE; ubLoop < pDBStructure.ubNumberOfTiles; ubLoop++)
         { // for each tile, create the appropriate STRUCTURE struct
             ppStructure[ubLoop] = CreateStructureFromDB(pDBStructureRef, ubLoop);
@@ -726,11 +724,11 @@ public class StructureInternals
             }
             if (ppTile[ubLoop].fFlags.HasFlag(TILE.ON_ROOF))
             {
-                ppStructure[ubLoop].sCubeOffset = (bLevel + 1) * PROFILE_Z_SIZE;
+                ppStructure[ubLoop].sCubeOffset = (STRUCTURE_ON)((bLevel + 1) * PROFILE_Z_SIZE);
             }
             else
             {
-                ppStructure[ubLoop].sCubeOffset = bLevel * PROFILE_Z_SIZE;
+                ppStructure[ubLoop].sCubeOffset = (STRUCTURE_ON)(bLevel * PROFILE_Z_SIZE);
             }
             if (ppTile[ubLoop].fFlags.HasFlag(TILE.PASSABLE))
             {
@@ -805,7 +803,7 @@ public class StructureInternals
                 // error! abort!
                 for (ubLoop2 = BASE_TILE; ubLoop2 < ubLoop; ubLoop2++)
                 {
-                    DeleteStructureFromTile(&(gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
+                    DeleteStructureFromTile((gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
                 }
                 MemFree(ppStructure);
                 return (null);
@@ -837,7 +835,7 @@ public class StructureInternals
     // Structure deletion functions
     //
 
-    void DeleteStructureFromTile(MAP_ELEMENT pMapElement, STRUCTURE? pStructure)
+    private static void DeleteStructureFromTile(MAP_ELEMENT pMapElement, STRUCTURE? pStructure)
     { // removes a STRUCTURE element at a particular location from the world
       // put location pointer in tile
         if (pMapElement.pStructureHead == pStructure)
@@ -877,11 +875,11 @@ public class StructureInternals
         MemFree(pStructure);
     }
 
-    bool DeleteStructureFromWorld(STRUCTURE? pStructure)
+    private static bool DeleteStructureFromWorld(STRUCTURE? pStructure)
     { // removes all of the STRUCTURE elements for a structure from the world
         MAP_ELEMENT? pBaseMapElement;
         STRUCTURE? pBaseStructure;
-        DB_STRUCTURE_TILE? ppTile;
+        List<DB_STRUCTURE_TILE> ppTile = new();
         STRUCTURE? pCurrent;
         int ubLoop, ubLoop2;
         int ubNumberOfTiles;
@@ -948,7 +946,7 @@ public class StructureInternals
         return (true);
     }
 
-    STRUCTURE? InternalSwapStructureForPartner(int sGridNo, STRUCTURE? pStructure, bool fFlipSwitches, bool fStoreInMap)
+    private static STRUCTURE? InternalSwapStructureForPartner(int sGridNo, STRUCTURE? pStructure, bool fFlipSwitches, bool fStoreInMap)
     { // switch structure 
         LEVELNODE? pLevelNode;
         LEVELNODE? pShadowNode;
@@ -959,7 +957,7 @@ public class StructureInternals
 
         int bDelta;
         int ubHitPoints;
-        int sCubeOffset;
+        STRUCTURE_ON sCubeOffset;
 
         if (pStructure == null)
         {
@@ -972,7 +970,7 @@ public class StructureInternals
             return (null);
         }
         fDoor = ((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)));
-        pLevelNode = FindLevelNodeBasedOnStructure(pBaseStructure.sGridNo, pBaseStructure);
+        pLevelNode = WorldStructures.FindLevelNodeBasedOnStructure(pBaseStructure.sGridNo, pBaseStructure);
         if (pLevelNode == null)
         {
             return (null);
@@ -990,7 +988,7 @@ public class StructureInternals
         {
             return (null);
         }
-        pNewBaseStructure = InternalAddStructureToWorld(sGridNo, (int)(sCubeOffset / PROFILE_Z_SIZE), pPartnerDBStructure, pLevelNode);
+        pNewBaseStructure = InternalAddStructureToWorld(sGridNo, ((int)sCubeOffset / PROFILE_Z_SIZE), pPartnerDBStructure, pLevelNode);
         if (pNewBaseStructure == null)
         {
             return (null);
@@ -1034,22 +1032,22 @@ public class StructureInternals
         return (pNewBaseStructure);
     }
 
-    STRUCTURE? SwapStructureForPartner(int sGridNo, STRUCTURE? pStructure)
+    public static STRUCTURE? SwapStructureForPartner(int sGridNo, STRUCTURE? pStructure)
     {
         return (InternalSwapStructureForPartner(sGridNo, pStructure, true, false));
     }
 
-    STRUCTURE? SwapStructureForPartnerWithoutTriggeringSwitches(int sGridNo, STRUCTURE? pStructure)
+    public static STRUCTURE? SwapStructureForPartnerWithoutTriggeringSwitches(int sGridNo, STRUCTURE? pStructure)
     {
         return (InternalSwapStructureForPartner(sGridNo, pStructure, false, false));
     }
 
-    STRUCTURE? SwapStructureForPartnerAndStoreChangeInMap(int sGridNo, STRUCTURE? pStructure)
+    public static STRUCTURE? SwapStructureForPartnerAndStoreChangeInMap(int sGridNo, STRUCTURE? pStructure)
     {
         return (InternalSwapStructureForPartner(sGridNo, pStructure, true, true));
     }
 
-    STRUCTURE? FindStructure(int sGridNo, STRUCTUREFLAGS fFlags)
+    public static STRUCTURE? FindStructure(int sGridNo, STRUCTUREFLAGS fFlags)
     { // finds a structure that matches any of the given flags
         STRUCTURE? pCurrent;
 
@@ -1065,7 +1063,7 @@ public class StructureInternals
         return (null);
     }
 
-    STRUCTURE? FindNextStructure(STRUCTURE? pStructure, STRUCTUREFLAGS fFlags)
+    public static STRUCTURE? FindNextStructure(STRUCTURE? pStructure, STRUCTUREFLAGS fFlags)
     {
         STRUCTURE? pCurrent;
 
@@ -1082,7 +1080,7 @@ public class StructureInternals
         return (null);
     }
 
-    STRUCTURE? FindStructureByID(int sGridNo, int usStructureID)
+    public static STRUCTURE? FindStructureByID(int sGridNo, int usStructureID)
     { // finds a structure that matches any of the given flags
         STRUCTURE? pCurrent;
 
@@ -1098,7 +1096,7 @@ public class StructureInternals
         return (null);
     }
 
-    STRUCTURE? FindBaseStructure(STRUCTURE? pStructure)
+    public static STRUCTURE? FindBaseStructure(STRUCTURE? pStructure)
     { // finds the base structure for any structure
         CHECKF(pStructure);
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
@@ -1165,7 +1163,7 @@ public class StructureInternals
                 // and don't need to check any below it
                 for (bLoopZ = PROFILE_Z_SIZE - 1; bLoopZ > bGreatestHeight; bLoopZ--)
                 {
-                    if (ubShapeValue & AtHeight[bLoopZ])
+                    if ((ubShapeValue & AtHeight[bLoopZ]) != 0)
                     {
                         bGreatestHeight = bLoopZ;
                         if (bGreatestHeight == PROFILE_Z_SIZE - 1)
@@ -1687,7 +1685,7 @@ public class StructureInternals
         {
             pDBStructureRef = (pStructureFileRef.pDBStructureRef[uiLoop]);
             pDBStructure = pDBStructureRef.pDBStructure;
-            //if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1 && !(pDBStructure.fFlags & STRUCTURE_WALLSTUFF) )
+            //if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1 && !(pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)) )
             if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1)
             {
                 for (ubLoop2 = 1; ubLoop2 < pDBStructure.ubNumberOfTiles; ubLoop2++)

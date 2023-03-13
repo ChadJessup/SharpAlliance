@@ -119,22 +119,6 @@ public class LEVELNODE
     public int ubFakeShadeLevel;				// LIGHTING INFO
 };
 
-public class ITEM_POOL
-{
-    public ITEM_POOL? pNext;
-    public ITEM_POOL? pPrev;
-
-    public int iItemIndex;
-    byte bVisible;
-    byte bFlashColor;
-    uint uiTimerID;
-    short sGridNo;
-    byte ubLevel;
-    short usFlags;
-    byte bRenderZHeightAboveLevel;
-    LEVELNODE? pLevelNode;
-}
-
 public class STRUCTURE
 {
     public STRUCTURE? pPrev;
@@ -181,9 +165,9 @@ public class DB_STRUCTURE_REF
 
 public class DB_STRUCTURE_TILE
 {
-    public short sPosRelToBase;  // "single-axis"
-    public sbyte bXPosRelToBase;
-    public sbyte bYPosRelToBase;
+    public int sPosRelToBase;  // "single-axis"
+    public int bXPosRelToBase;
+    public int bYPosRelToBase;
     public PROFILE Shape;                  // 25 bytes
     public TILE fFlags { get; set; }
     public byte ubVehicleHitLocation;

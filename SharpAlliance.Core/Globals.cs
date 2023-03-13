@@ -630,13 +630,6 @@ public partial class Globals
     public static int guiNumPositionSnds = 0;
     public static bool gfPositionSoundsActive = false;
 
-    public static SEC[] pSamList = new SEC[NUMBER_OF_SAMS];
-    public static int[] pSamGridNoAList = new int[NUMBER_OF_SAMS];
-    public static int[] pSamGridNoBList = new int[NUMBER_OF_SAMS];
-    public static bool fFoundOrta;
-    public static bool[] fSamSiteFound = new bool[NUMBER_OF_SAMS];
-    public static bool gfUseAlternateMap;
-
     public static AnimationSurfaceType[] gAnimSurfaceDatabase = new AnimationSurfaceType[(int)AnimationSurfaceTypes.NUMANIMATIONSURFACETYPES];
     public static AnimationStructureType[,] gAnimStructureDatabase = new AnimationStructureType[(int)SoldierBodyTypes.TOTALBODYTYPES, (int)StructData.NUM_STRUCT_IDS];
 
@@ -935,7 +928,7 @@ public partial class Globals
     public const int ROOF_LEVEL_HEIGHT = 50;
 
     // the big map .pcx
-    public static int guiBIGMAP = 0;
+    public static uint guiBIGMAP = 0;
 
     public static uint guiBOTTOMPANEL { get; set; }
     public static uint guiRIGHTPANEL { get; set; }
@@ -1472,8 +1465,6 @@ public partial class Globals
     public const int WORKIMPROVERATE = 2;      // increase to make working  mercs improve more
     public const int TRAINIMPROVERATE = 2;      // increase to make training mercs improve more
 
-    public const int ARMY_GUN_LEVELS = 11;
-
     public static STRATEGIC_STATUS gStrategicStatus;
 
     public const int MSG_INTERFACE = 0;
@@ -1994,6 +1985,14 @@ public partial class Globals
 
     public const InventorySlot NO_SLOT = (InventorySlot)(-1);
 
+    // MACRO FOR DEFINING OF ITEM IS VISIBLE
+    public static bool ITEMPOOL_VISIBLE(ITEM_POOL pItemPool) => ((pItemPool.bVisible >= 1)
+        || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)));
+
+    // NB brothel rooms 88-90 removed because they are the antechamber
+    public static bool IN_BROTHEL(int room) => (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.C && (room) >= 91 && (room) <= 119);
+    public static bool IN_BROTHEL_GUARD_ROOM(int room) => (room == 110);
+    public static bool IN_KINGPIN_HOUSE(int room) => (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.D && (room) >= 30 && (room) <= 39);
 
     public const int MOVEINTERRUPT = 0;
     public const int SIGHTINTERRUPT = 1;
@@ -2066,7 +2065,7 @@ public partial class Globals
 
     public static int[] gubBestToMakeSighting = new int[BEST_SIGHTING_ARRAY_SIZE];
     public static int gubBestToMakeSightingSize = 0;
-    //BOOLEAN		gfHumanSawSomeoneInRealtime;
+    //bool		gfHumanSawSomeoneInRealtime;
 
     public static bool gfDelayResolvingBestSightingDueToDoor = false;
 
@@ -2140,7 +2139,7 @@ public partial class Globals
       {    4,    6,     8,    10,     13  }      // DIFF_MAX_COVER_RANGE
     };
 
-    public static int BOMB_QUEUE_DELAY { get; } = (1000 + Random.Next(500));
+    public static uint BOMB_QUEUE_DELAY { get; } = (uint)(1000 + Random.Next(500));
 
     public const int MAX_BOMB_QUEUE = 40;
     public static ExplosionQueueElement[] gExplosionQueue = new ExplosionQueueElement[MAX_BOMB_QUEUE];

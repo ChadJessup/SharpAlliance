@@ -84,28 +84,28 @@ public class Buildings
         sStartGridNo = sTempGridNo;
 
         sCurrGridNo = sStartGridNo;
-        sVeryTemporaryGridNo = NewGridNo(sCurrGridNo, DirectionInc(EAST));
-        if (gpWorldLevelData[sVeryTemporaryGridNo].uiFlags & MAPELEMENT_REACHABLE)
+        sVeryTemporaryGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(WorldDirections.EAST));
+        if (gpWorldLevelData[sVeryTemporaryGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
         {
             // go north first
-            bDirection = NORTH;
+            bDirection = WorldDirections.NORTH;
         }
         else
         {
             // go that way (east)
-            bDirection = EAST;
+            bDirection = WorldDirections.EAST;
         }
 
-        gpWorldLevelData[sStartGridNo].ubExtFlags[0] |= MAPELEMENT_EXT_ROOFCODE_VISITED;
+        gpWorldLevelData[sStartGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.ROOFCODE_VISITED;
 
-        while (1)
+        while (true)
         {
 
             // if point to (2 clockwise) is not part of building and is not visited,
             // or is starting point, turn!
-            sRightGridNo = NewGridNo(sCurrGridNo, DirectionInc(gTwoCDirection[bDirection]));
+            sRightGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(gTwoCDirection[bDirection]));
             sTempGridNo = sRightGridNo;
-            if (((!(gpWorldLevelData[sTempGridNo].uiFlags & MAPELEMENT_REACHABLE) && !(gpWorldLevelData[sTempGridNo].ubExtFlags[0] & MAPELEMENT_EXT_ROOFCODE_VISITED)) || (sTempGridNo == sStartGridNo)) && (sCurrGridNo != sStartGridNo))
+            if (((!(gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)) && !(gpWorldLevelData[sTempGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED))) || (sTempGridNo == sStartGridNo)) && (sCurrGridNo != sStartGridNo))
             {
                 bDirection = gTwoCDirection[bDirection];
                 // try in that direction
@@ -113,8 +113,8 @@ public class Buildings
             }
 
             // if spot ahead is part of building, turn
-            sTempGridNo = NewGridNo(sCurrGridNo, DirectionInc(bDirection));
-            if (gpWorldLevelData[sTempGridNo].uiFlags & MAPELEMENT_REACHABLE)
+            sTempGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(bDirection));
+            if (gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
             {
                 // first search for a spot that is neither part of the building or visited
 
@@ -123,8 +123,8 @@ public class Buildings
                 fFoundDir = false;
                 for (uiLoop = 0; uiLoop < 3; uiLoop++)
                 {
-                    sTempGridNo = NewGridNo(sCurrGridNo, DirectionInc(bTempDirection));
-                    if (!(gpWorldLevelData[sTempGridNo].uiFlags & MAPELEMENT_REACHABLE) && !(gpWorldLevelData[sTempGridNo].ubExtFlags[0] & MAPELEMENT_EXT_ROOFCODE_VISITED))
+                    sTempGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(bTempDirection));
+                    if (!(gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)) && !(gpWorldLevelData[sTempGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED)))
                     {
                         // this is the way to go!
                         fFoundDir = true;
@@ -139,8 +139,8 @@ public class Buildings
                     fFoundDir = false;
                     for (uiLoop = 0; uiLoop < 3; uiLoop++)
                     {
-                        sTempGridNo = NewGridNo(sCurrGridNo, DirectionInc(bTempDirection));
-                        if (!(gpWorldLevelData[sTempGridNo].uiFlags & MAPELEMENT_REACHABLE))
+                        sTempGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(bTempDirection));
+                        if (!(gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
                         {
                             // this is the way to go!
                             fFoundDir = true;
@@ -162,20 +162,7 @@ public class Buildings
             // move ahead
             sPrevGridNo = sCurrGridNo;
             sCurrGridNo = sTempGridNo;
-            sRightGridNo = NewGridNo(sCurrGridNo, DirectionInc(gTwoCDirection[bDirection]));
-
-# if ROOF_DEBUG
-            if (gsCoverValue[sCurrGridNo] == 0x7F7F)
-            {
-                gsCoverValue[sCurrGridNo] = 1;
-            }
-            else if (gsCoverValue[sCurrGridNo] >= 0)
-            {
-                gsCoverValue[sCurrGridNo]++;
-            }
-
-            DebugAI(String("Roof code visits %d", sCurrGridNo));
-#endif
+            sRightGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(gTwoCDirection[bDirection]));
 
             if (sCurrGridNo == sStartGridNo)
             {
@@ -183,9 +170,9 @@ public class Buildings
                 break;
             }
 
-            if (!(gpWorldLevelData[sCurrGridNo].ubExtFlags[0] & MAPELEMENT_EXT_ROOFCODE_VISITED))
+            if (!(gpWorldLevelData[sCurrGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED)))
             {
-                gpWorldLevelData[sCurrGridNo].ubExtFlags[0] |= MAPELEMENT_EXT_ROOFCODE_VISITED;
+                gpWorldLevelData[sCurrGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.ROOFCODE_VISITED;
 
                 // consider this location as possible climb gridno		
                 // there must be a regular wall adjacent to this for us to consider it a 
@@ -197,21 +184,21 @@ public class Buildings
 
                 switch (bDirection)
                 {
-                    case NORTH:
+                    case WorldDirections.NORTH:
                         sWallGridNo = sCurrGridNo;
-                        bDesiredOrientation = OUTSIDE_TOP_RIGHT;
+                        bDesiredOrientation = WallOrientation.OUTSIDE_TOP_RIGHT;
                         break;
-                    case EAST:
+                    case WorldDirections.EAST:
                         sWallGridNo = sCurrGridNo;
-                        bDesiredOrientation = OUTSIDE_TOP_LEFT;
+                        bDesiredOrientation = WallOrientation.OUTSIDE_TOP_LEFT;
                         break;
-                    case SOUTH:
-                        sWallGridNo = (int)(sCurrGridNo + DirectionInc(gTwoCDirection[bDirection]));
-                        bDesiredOrientation = OUTSIDE_TOP_RIGHT;
+                    case WorldDirections.SOUTH:
+                        sWallGridNo = (sCurrGridNo + IsometricUtils.DirectionInc(gTwoCDirection[bDirection]));
+                        bDesiredOrientation = WallOrientation.OUTSIDE_TOP_RIGHT;
                         break;
-                    case WEST:
-                        sWallGridNo = (int)(sCurrGridNo + DirectionInc(gTwoCDirection[bDirection]));
-                        bDesiredOrientation = OUTSIDE_TOP_LEFT;
+                    case WorldDirections.WEST:
+                        sWallGridNo = (sCurrGridNo + IsometricUtils.DirectionInc(gTwoCDirection[bDirection]));
+                        bDesiredOrientation = WallOrientation.OUTSIDE_TOP_LEFT;
                         break;
                     default:
                         // what the heck?
@@ -220,14 +207,14 @@ public class Buildings
 
                 if (bDesiredOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
                 {
-                    if (WallExistsOfTopLeftOrientation(sWallGridNo))
+                    if (StructureWrap.WallExistsOfTopLeftOrientation(sWallGridNo))
                     {
                         fFoundWall = true;
                     }
                 }
                 else
                 {
-                    if (WallExistsOfTopRightOrientation(sWallGridNo))
+                    if (StructureWrap.WallExistsOfTopRightOrientation(sWallGridNo))
                     {
                         fFoundWall = true;
                     }
@@ -242,7 +229,7 @@ public class Buildings
                     else if (Globals.Random.Next(uiChanceIn) == 0)
                     {
                         // don't consider people as obstacles
-                        if (NewOKDestination(&FakeSoldier, sCurrGridNo, false, 0))
+                        if (NewOKDestination(FakeSoldier, sCurrGridNo, false, 0))
                         {
                             pBuilding.sUpClimbSpots[pBuilding.ubNumClimbSpots] = sCurrGridNo;
                             pBuilding.sDownClimbSpots[pBuilding.ubNumClimbSpots] = sRightGridNo;

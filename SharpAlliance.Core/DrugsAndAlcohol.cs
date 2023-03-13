@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
+
+using static SharpAlliance.Core.EnglishText;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -60,7 +63,7 @@ public class DrugsAndAlcohol
         // do switch for Larry!!
         if (pSoldier.ubProfile == NPCID.LARRY_NORMAL)
         {
-            pSoldier = SwapLarrysProfiles(pSoldier);
+            pSoldier = SoldierProfileSubSystem.SwapLarrysProfiles(pSoldier);
         }
         else if (pSoldier.ubProfile == NPCID.LARRY_DRUNK)
         {
@@ -194,11 +197,11 @@ public class DrugsAndAlcohol
 
         if (ubDrugType == DRUG_TYPE_ALCOHOL)
         {
-            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_DRANK_SOME], pSoldier.name, ShortItemNames[usItem]);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG.DRANK_SOME], pSoldier.name, ShortItemNames[usItem]);
         }
         else
         {
-            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_MERC_TOOK_DRUG], pSoldier.name);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG.MERC_TOOK_DRUG], pSoldier.name);
         }
 
         // Dirty panel
@@ -274,7 +277,7 @@ public class DrugsAndAlcohol
                 pSoldier.bDrugEffect[cnt] += pSoldier.bDrugEffectRate[cnt];
 
                 // Refresh morale w/ new drug value...
-                RefreshSoldierMorale(pSoldier);
+                Morale.RefreshSoldierMorale(pSoldier);
 
                 // Check if we need to stop 'adding'
                 if (pSoldier.bFutureDrugEffect[cnt] <= 0)
@@ -435,11 +438,11 @@ public class DrugsAndAlcohol
     bool MercUnderTheInfluence(SOLDIERTYPE? pSoldier)
     {
         // Are we in a side effect or good effect?
-        if (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE])
+        if (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] > 0)
         {
             return (true);
         }
-        else if (pSoldier.bDrugSideEffect[DRUG_TYPE_ADRENALINE])
+        else if (pSoldier.bDrugSideEffect[DRUG_TYPE_ADRENALINE] > 0)
         {
             return (true);
         }

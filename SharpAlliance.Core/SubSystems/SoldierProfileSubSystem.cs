@@ -386,10 +386,10 @@ public class SoldierProfileSubSystem
             pNewProfile.bExplosivesDelta = gMercProfiles[ ubSrcProfile ].bExplosivesDelta;
             */
 
-        //memcpy(pNewProfile.bInvStatus, gMercProfiles[ubSrcProfile].bInvStatus, sizeof(UINT8) * 19);
-        //memcpy(pNewProfile.bInvStatus, gMercProfiles[ubSrcProfile].bInvStatus, sizeof(UINT8) * 19);
-        //memcpy(pNewProfile.inv, gMercProfiles[ubSrcProfile].inv, sizeof(UINT16) * 19);
-        //memcpy(pNewProfile.bMercTownReputation, gMercProfiles[ubSrcProfile].bMercTownReputation, sizeof(UINT8) * 20);
+        //memcpy(pNewProfile.bInvStatus, gMercProfiles[ubSrcProfile].bInvStatus, sizeof(int) * 19);
+        //memcpy(pNewProfile.bInvStatus, gMercProfiles[ubSrcProfile].bInvStatus, sizeof(int) * 19);
+        //memcpy(pNewProfile.inv, gMercProfiles[ubSrcProfile].inv, sizeof(int) * 19);
+        //memcpy(pNewProfile.bMercTownReputation, gMercProfiles[ubSrcProfile].bMercTownReputation, sizeof(int) * 20);
 
         // remove face
         Faces.DeleteSoldierFace(pSoldier);

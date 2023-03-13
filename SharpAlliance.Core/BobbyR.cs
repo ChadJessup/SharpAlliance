@@ -82,11 +82,8 @@ public class BobbyR
             // load the Handle graphic and add it
             //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
             //Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
-            
-            if(VeldridVideoManager.AddVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage))
-            {
 
-            }
+            var hvobject = VeldridVideoManager.AddVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
 
             for (i = 0; i < BOBBIES_NUMBER_SIGNS; i++)
             {
@@ -234,7 +231,7 @@ public class BobbyR
             VideoSurfaceManager.ShadowVideoSurfaceRect(Surfaces.FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
         }
 
-        RenderWWWProgramTitleBar();
+        Laptop.RenderWWWProgramTitleBar();
         VeldridVideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
     }
 

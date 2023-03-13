@@ -1141,7 +1141,7 @@ namespace SharpAlliance.Core.SubSystems
                 //if the subject will be too long, cap it, and add the '...'
                 if (FontSubSystem.StringPixLength(pTempSubject, MESSAGE_FONT) >= SUBJECT_WIDTH - 10)
                 {
-                    ReduceStringLength(pTempSubject, SUBJECT_WIDTH - 10, MESSAGE_FONT);
+                    WordWrap.ReduceStringLength(pTempSubject, SUBJECT_WIDTH - 10, MESSAGE_FONT);
                 }
 
                 // display string subject
@@ -1152,7 +1152,7 @@ namespace SharpAlliance.Core.SubSystems
                 //if the subject will be too long, cap it, and add the '...'
                 if (FontSubSystem.StringPixLength(pTempSubject, FontStyle.FONT10ARIALBOLD) >= SUBJECT_WIDTH - 10)
                 {
-                    ReduceStringLength(pTempSubject, SUBJECT_WIDTH - 10, FontStyle.FONT10ARIALBOLD);
+                    WordWrap.ReduceStringLength(pTempSubject, SUBJECT_WIDTH - 10, FontStyle.FONT10ARIALBOLD);
                 }
 
                 // display string subject
@@ -1569,7 +1569,7 @@ namespace SharpAlliance.Core.SubSystems
 
             // place the graphic on the frame buffer
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
             // set shadow
             FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
@@ -1595,13 +1595,13 @@ namespace SharpAlliance.Core.SubSystems
 
             iCounter = 0;
             // now blit the text background based on height
-            for (iCounter = 2; iCounter < ((iTotalHeight) / (GetFontHeight(MESSAGE_FONT))); iCounter++)
+            for (iCounter = 2; iCounter < ((iTotalHeight) / (FontSubSystem.GetFontHeight(MESSAGE_FONT))); iCounter++)
             {
                 // get a handle to the bitmap of EMAIL VIEWER Background
                 GetVideoObject(out hHandle, guiEmailMessage);
 
                 // place the graphic on the frame buffer
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
 
             }
 
@@ -1612,12 +1612,12 @@ namespace SharpAlliance.Core.SubSystems
             if (giNumberOfPagesToCurrentEmail <= 2)
             {
                 // place the graphic on the frame buffer
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
             }
             else
             {
                 // place the graphic on the frame buffer
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
             }
 
             // reset iCounter and iHeight
@@ -2783,7 +2783,7 @@ namespace SharpAlliance.Core.SubSystems
             // all headers, but not info are right justified 
 
             // print from
-            FindFontRightCoordinates(MESSAGE_HEADER_X - 20, (int)(MESSAGE_FROM_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_FROM_Y + GetFontHeight(MESSAGE_FONT)), pEmailHeaders[0], MESSAGE_FONT, out usX, out usY);
+            FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X - 20, (int)(MESSAGE_FROM_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_FROM_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[0], MESSAGE_FONT, out usX, out usY);
             mprintf(usX, MESSAGE_FROM_Y + (int)iViewerY, pEmailHeaders[0]);
 
             // the actual from info
@@ -2791,17 +2791,17 @@ namespace SharpAlliance.Core.SubSystems
 
 
             // print date
-            FindFontRightCoordinates(MESSAGE_HEADER_X + 168, (int)(MESSAGE_DATE_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_DATE_Y + GetFontHeight(MESSAGE_FONT)), pEmailHeaders[2], MESSAGE_FONT, out usX, out usY);
+            FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X + 168, (int)(MESSAGE_DATE_Y + (int)iViewerY), MESSAGE_HEADER_WIDTH, (int)(MESSAGE_DATE_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[2], MESSAGE_FONT, out usX, out usY);
             mprintf(usX, MESSAGE_DATE_Y + (int)iViewerY, pEmailHeaders[2]);
 
             // the actual date info
-            wprintf(sString, "%d", ((pMail.iDate) / (24 * 60)));
+            sString = wprintf("%d", ((pMail.iDate) / (24 * 60)));
             mprintf(MESSAGE_HEADER_X + 235, MESSAGE_DATE_Y + (int)iViewerY, sString);
 
 
 
             // print subject
-            FindFontRightCoordinates(MESSAGE_HEADER_X - 20, MESSAGE_SUBJECT_Y, MESSAGE_HEADER_WIDTH, (int)(MESSAGE_SUBJECT_Y + GetFontHeight(MESSAGE_FONT)), pEmailHeaders[1], MESSAGE_FONT, out usX, out usY);
+            FontSubSystem.FindFontRightCoordinates(MESSAGE_HEADER_X - 20, MESSAGE_SUBJECT_Y, MESSAGE_HEADER_WIDTH, (int)(MESSAGE_SUBJECT_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT)), pEmailHeaders[1], MESSAGE_FONT, out usX, out usY);
             mprintf(usX, MESSAGE_SUBJECT_Y + (int)iViewerY, pEmailHeaders[1]);
 
             // the actual subject info
@@ -3058,7 +3058,7 @@ namespace SharpAlliance.Core.SubSystems
             pTempRecord = pMessageRecordList;
 
             // increment height for size of one line
-            iHeight += GetFontHeight(MESSAGE_FONT);
+            iHeight += FontSubSystem.GetFontHeight(MESSAGE_FONT);
 
             // load intro
             iEndOfSection = IMP_RESULTS_INTRO_LENGTH;
@@ -4378,7 +4378,7 @@ namespace SharpAlliance.Core.SubSystems
 
             FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
 
-            FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out sX, out sY);
+            FontSubSystem.FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out sX, out sY);
             mprintf(sX, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 2, sString);
 
 
@@ -4490,7 +4490,7 @@ namespace SharpAlliance.Core.SubSystems
                 wcscpy(pString, pTempRecord.pRecord);
 
                 // get the height of the string, ONLY!...must redisplay ON TOP OF background graphic
-                iHeight += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + GetFontHeight(MESSAGE_FONT)), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, 0);
+                iHeight += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + FontSubSystem.GetFontHeight(MESSAGE_FONT)), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, 0);
 
                 // next message record string
                 pTempRecord = pTempRecord.Next;
@@ -4509,9 +4509,9 @@ namespace SharpAlliance.Core.SubSystems
             iTotalHeight = iHeight;
 
             // if the message background is less than MIN_MESSAGE_HEIGHT_IN_LINES, set to that number
-            if ((iTotalHeight / GetFontHeight(MESSAGE_FONT)) < MIN_MESSAGE_HEIGHT_IN_LINES)
+            if ((iTotalHeight / FontSubSystem.GetFontHeight(MESSAGE_FONT)) < MIN_MESSAGE_HEIGHT_IN_LINES)
             {
-                iTotalHeight = GetFontHeight(MESSAGE_FONT) * MIN_MESSAGE_HEIGHT_IN_LINES;
+                iTotalHeight = FontSubSystem.GetFontHeight(MESSAGE_FONT) * MIN_MESSAGE_HEIGHT_IN_LINES;
             }
 
             if (iTotalHeight > MAX_EMAIL_MESSAGE_PAGE_SIZE)

@@ -132,6 +132,8 @@ public partial class Globals
         127,	// indestructable
         57,		// like 22 but with screen windows
     };
+
+    public const int BASE_TILE = (int)STRUCTUREFLAGS.BASE_TILE;
 }
 
 

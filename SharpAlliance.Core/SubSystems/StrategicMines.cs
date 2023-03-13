@@ -261,7 +261,7 @@ public class StrategicMines
     }
 
 
-    TOWNS GetTownAssociatedWithMine(MINE bMineIndex)
+    public static TOWNS GetTownAssociatedWithMine(MINE bMineIndex)
     {
         Debug.Assert((bMineIndex >= 0) && (bMineIndex < MINE.MAX_NUMBER_OF_MINES));
 

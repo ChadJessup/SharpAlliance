@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core.SubSystems;
+﻿using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.SubSystems;
 
 public class Strategic
 {
@@ -10,7 +12,7 @@ public class STRATEGIC_STATUS
     public int uiFlags;
     public int ubNumCapturedForRescue;
     public int ubHighestProgress;            // the highest level of progress player has attained thus far in the game (0-100)
-    public int[] ubStandardArmyGunIndex = new int[Globals.ARMY_GUN_LEVELS];      // type of gun in each group that Queen's army is using this game
+    public int[] ubStandardArmyGunIndex = new int[ARMY_GUN_LEVELS];      // type of gun in each group that Queen's army is using this game
     public bool[] fWeaponDroppedAlready = new bool[(int)Items.MAX_WEAPONS];             // flag that tracks whether this weapon type has been dropped before
     public int ubMercDeaths;                     // how many soldiers have bit it while in the player's employ (0-100)
     public int uiManDaysPlayed;             // once per day, # living mercs on player's team is added to this running total

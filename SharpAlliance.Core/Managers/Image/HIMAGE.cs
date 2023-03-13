@@ -40,7 +40,7 @@ public class HIMAGE
     public static HIMAGE CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager)
     {
         HIMAGE hImage;
-        var ext = Path.GetExtension(imageFilePath);
+        var ext = System.IO.Path.GetExtension(imageFilePath);
 
         IImageFileLoader iFileLoader = ext.ToUpper() switch
         {

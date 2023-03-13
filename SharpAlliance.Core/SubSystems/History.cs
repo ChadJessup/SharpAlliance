@@ -522,7 +522,7 @@ public class History
     {
         // this procedure will open and read in data to the History list
 
-        //Stream hFileHandle;
+        Stream hFileHandle;
         HISTORY ubCode;
         int ubSecondCode;
         int uiDate;
@@ -530,7 +530,7 @@ public class History
         MAP_ROW sSectorY;
         int bSectorZ = 0;
         int ubColor;
-        int iBytesRead = 0;
+        uint iBytesRead = 0;
         int uiByteCount = 0;
 
         // clear out the old list
@@ -562,13 +562,13 @@ public class History
         while (FileGetSize(hFileHandle) > uiByteCount)
         {
             // read in other data
-            // FileRead(hFileHandle, &ubCode, sizeof(int), &iBytesRead);
-            // FileRead(hFileHandle, &ubSecondCode, sizeof(int), &iBytesRead);
-            // FileRead(hFileHandle, &uiDate, sizeof(int), &iBytesRead);
-            // FileRead(hFileHandle, &sSectorX, sizeof(int), &iBytesRead);
-            // FileRead(hFileHandle, &sSectorY, sizeof(int), &iBytesRead);
-            // FileRead(hFileHandle, &bSectorZ, sizeof(int), &iBytesRead);
-            // FileRead(hFileHandle, &ubColor, sizeof(int), &iBytesRead);
+            FileManager.FileRead<HISTORY>(hFileHandle, ref ubCode, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ubSecondCode, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, uiDate, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, sSectorX, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, sSectorY, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, bSectorZ, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ubColor, sizeof(int), out iBytesRead);
 
             // add transaction
             ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
@@ -593,7 +593,7 @@ public class History
 
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_CREATE_ALWAYS, false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, FileAccess.Write | FILE_CREATE_ALWAYS, false);
 
         // if no file exits, do nothing
         if (!hFileHandle)
@@ -663,15 +663,15 @@ public class History
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // the date header
-        FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[0]);
 
         // the date header
-        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[3]);
 
         // event header
-        FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, usX, usY);
+        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, usX, usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[4]);
         // reset shadow
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -738,7 +738,7 @@ public class History
             }
             // get and write the date
             wprintf(sString, "%d", (pCurHistory.uiDate / (24 * 60)));
-            FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, Globals.HISTORY.TEXT_FONT, out usX, out usY);
+            FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, Globals.HISTORY.TEXT_FONT, out usX, out usY);
             mprintf(usX, Globals.RECORD_Y + (iCounter * (Globals.BOX_HEIGHT)) + 3, sString);
 
             // now the actual history text
@@ -751,15 +751,15 @@ public class History
             // no location
             if ((pCurHistory.sSectorX == -1) || (pCurHistory.sSectorY == (MAP_ROW)(-1)))
             {
-                FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
+                FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
                 mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, pHistoryLocations[0]);
             }
             else
             {
                 GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, sString, true);
-                FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, sX, sY);
+                FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, sX, sY);
 
-                ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
+                WordWrap.ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
 
                 mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, sString);
             }

@@ -5944,7 +5944,7 @@ public class HandleUI
 
             // ATE: Check our movement costs for going through walls!
             ubMovementCost = Globals.gubWorldMovementCosts[sIntSpot, (int)sDirs[cnt], pSoldier.bLevel];
-            if ((TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost)))
+            if ((TRAVELCOST.IS_TRAVELCOST.DOOR(ubMovementCost)))
             {
                 ubMovementCost = PathAI.DoorTravelCost(pSoldier, sIntSpot, ubMovementCost, (bool)(pSoldier.bTeam == Globals.gbPlayerNum), out iDoorGridNo);
             }

@@ -12,7 +12,7 @@ public class StructureWrap
 {
     bool IsFencePresentAtGridno(int sGridNo)
     {
-        if (FindStructure(sGridNo, STRUCTURE_ANYFENCE) != null)
+        if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYFENCE) != null)
         {
             return (true);
         }
@@ -22,7 +22,7 @@ public class StructureWrap
 
     bool IsRoofPresentAtGridno(int sGridNo)
     {
-        if (FindStructure(sGridNo, STRUCTURE_ROOF) != null)
+        if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ROOF) != null)
         {
             return (true);
         }
@@ -35,7 +35,7 @@ public class StructureWrap
     {
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.OBSTACLE);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.OBSTACLE);
 
         if (pStructure is not null)
         {
@@ -55,7 +55,7 @@ public class StructureWrap
 
     bool IsDoorPresentAtGridno(int sGridNo)
     {
-        if (FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR) != null)
+        if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR) != null)
         {
             return (true);
         }
@@ -66,7 +66,7 @@ public class StructureWrap
 
     bool IsTreePresentAtGridno(int sGridNo)
     {
-        if (FindStructure(sGridNo, STRUCTUREFLAGS.TREE) != null)
+        if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.TREE) != null)
         {
             return (true);
         }
@@ -80,11 +80,11 @@ public class StructureWrap
         LEVELNODE? pNode = null;
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
+        pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
 
         if (pStructure != null)
         {
-            pNode = FindLevelNodeBasedOnStructure(sGridNo, pStructure);
+            pNode = WorldStructures.FindLevelNodeBasedOnStructure(sGridNo, pStructure);
         }
 
         return (pNode);
@@ -95,41 +95,41 @@ public class StructureWrap
         LEVELNODE? pNode = null;
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
 
         while (pStructure != null)
         {
             // Check orientation
             if (pStructure.ubWallOrientation == ubOrientation)
             {
-                pNode = FindLevelNodeBasedOnStructure(sGridNo, pStructure);
+                pNode = WorldStructures.FindLevelNodeBasedOnStructure(sGridNo, pStructure);
                 return (pNode);
             }
-            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
+            pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
         }
 
         return (null);
     }
 
 
-    LEVELNODE? GetWallLevelNodeAndStructOfSameOrientationAtGridno(int sGridNo, int ubOrientation, STRUCTURE? ppStructure)
+    LEVELNODE? GetWallLevelNodeAndStructOfSameOrientationAtGridno(int sGridNo, WallOrientation ubOrientation, STRUCTURE? ppStructure)
     {
         LEVELNODE? pNode = null;
         STRUCTURE? pStructure, pBaseStructure;
 
         (ppStructure) = null;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
 
         while (pStructure != null)
         {
             // Check orientation
             if (pStructure.ubWallOrientation == ubOrientation)
             {
-                pBaseStructure = FindBaseStructure(pStructure);
+                pBaseStructure = WorldStructures.FindBaseStructure(pStructure);
                 if (pBaseStructure)
                 {
-                    pNode = FindLevelNodeBasedOnStructure(pBaseStructure.sGridNo, pBaseStructure);
+                    pNode = WorldStructures.FindLevelNodeBasedOnStructure(pBaseStructure.sGridNo, pBaseStructure);
                     (ppStructure) = pBaseStructure;
                     return (pNode);
                 }
@@ -146,7 +146,7 @@ public class StructureWrap
         STRUCTURE? pStructure;
         int sNewGridNo;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
 
         if (pStructure != null)
         {
@@ -208,7 +208,7 @@ public class StructureWrap
 
         //if ( pStructure != null )
         //{
-        //	if ( !(gpWorldLevelData[ sGridNo ].uiFlags & MAPELEMENT_REVEALED ) && !(gTacticalStatus.uiFlags&SHOW_ALL_MERCS)  )
+        //	if ( !(gpWorldLevelData[ sGridNo ].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED )) && !(gTacticalStatus.uiFlags&SHOW_ALL_MERCS)  )
         //	{
         //		*pfVisible = false;
         //	}
@@ -241,35 +241,35 @@ public class StructureWrap
     }
 
 
-    bool WallExistsOfTopLeftOrientation(int sGridNo)
+    public static bool WallExistsOfTopLeftOrientation(int sGridNo)
     {
         // CJC: changing to search only for normal walls, July 16, 1998
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.WALL);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WALL);
 
         while (pStructure != null)
         {
             // Check orientation
             if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_LEFT
-                || pStructure.ubWallOrientation == WorldDirections.OUTSIDE_TOP_LEFT)
+                || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
             {
                 return (true);
             }
 
-            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALL);
+            pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.WALL);
 
         }
 
         return (false);
     }
 
-    bool WallExistsOfTopRightOrientation(int sGridNo)
+    public static bool WallExistsOfTopRightOrientation(int sGridNo)
     {
         // CJC: changing to search only for normal walls, July 16, 1998
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.WALL);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WALL);
 
         while (pStructure != null)
         {
@@ -280,7 +280,7 @@ public class StructureWrap
                 return (true);
             }
 
-            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALL);
+            pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.WALL);
 
         }
 
@@ -291,7 +291,7 @@ public class StructureWrap
     {
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
 
         while (pStructure != null)
         {
@@ -318,7 +318,7 @@ public class StructureWrap
     {
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
 
         while (pStructure != null)
         {
@@ -344,7 +344,7 @@ public class StructureWrap
     {
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
 
         while (pStructure != null && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
         {
@@ -352,13 +352,13 @@ public class StructureWrap
             if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_RIGHT
                 || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
             {
-                if ((pStructure.fFlags & STRUCTURE_DOOR) || (pStructure.fFlags & STRUCTURE_DDOOR_RIGHT))
+                if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DOOR)) || (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_RIGHT)))
                 {
                     return (true);
                 }
             }
 
-            pStructure = FindNextStructure(pStructure, STRUCTURE_ANYDOOR);
+            pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.ANYDOOR);
 
         }
 
@@ -369,20 +369,20 @@ public class StructureWrap
     {
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTURE_ANYDOOR);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
 
-        while (pStructure != null && (pStructure.fFlags & STRUCTURE_OPEN))
+        while (pStructure != null && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
         {
             // Check orientation
-            if (pStructure.ubWallOrientation == INSIDE_TOP_LEFT || pStructure.ubWallOrientation == OUTSIDE_TOP_LEFT)
+            if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_LEFT || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
             {
-                if ((pStructure.fFlags & STRUCTURE_DOOR) || (pStructure.fFlags & STRUCTURE_DDOOR_LEFT))
+                if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DOOR)) || (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_LEFT)))
                 {
                     return (true);
                 }
             }
 
-            pStructure = FindNextStructure(pStructure, STRUCTURE_ANYDOOR);
+            pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.ANYDOOR);
 
         }
 
@@ -393,8 +393,8 @@ public class StructureWrap
     {
         STRUCTURE? pStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTURE_WIREFENCE);
-        if (pStructure != null && pStructure.ubWallOrientation != NO_ORIENTATION && !(pStructure.fFlags & STRUCTURE_OPEN))
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WIREFENCE);
+        if (pStructure != null && pStructure.ubWallOrientation != WallOrientation.NO_ORIENTATION && !(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
         {
             return (pStructure);
         }
@@ -547,15 +547,15 @@ public class StructureWrap
         STRUCTURE? pStructure;
         STRUCTURE? pNewStructure;
 
-        pStructure = FindStructure(sGridNo, STRUCTURE_OPENABLE);
+        pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.OPENABLE);
         if (!pStructure)
         {
             return (false);
         }
 
-        if (pStructure.fFlags & STRUCTURE_OPEN)
+        if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
-            pNewStructure = SwapStructureForPartner(sGridNo, pStructure);
+            pNewStructure = StructureInternals.SwapStructureForPartner(sGridNo, pStructure);
             if (pNewStructure != null)
             {
                 RecompileLocalMovementCosts(sGridNo);

@@ -918,14 +918,14 @@ public class OppList
 
 
         // let tanks see and be seen further (at night)
-        if ((TANK(pSoldier) && sDistVisible > 0) || (pSubject && TANK(pSubject)))
+        if ((TANK(pSoldier) && sDistVisible > 0) || (pSubject is not null && TANK(pSubject)))
         {
             sDistVisible = Math.Max(sDistVisible + 5, MaxDistanceVisible());
         }
 
-        if (gpWorldLevelData[pSoldier.sGridNo].ubExtFlags[bLevel] & (MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS))
+        if (gpWorldLevelData[pSoldier.sGridNo].ubExtFlags[bLevel].HasFlag((MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS)))
         {
-            if (pSoldier.inv[HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[HEAD2POS].usItem != Items.GASMASK)
+            if (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK)
             {
                 // in gas without a gas mask; reduce max distance visible to 2 tiles at most
                 sDistVisible = Math.Min(sDistVisible, 2);
@@ -3931,7 +3931,7 @@ public class OppList
             }
 
             //Find struct data and se what it says......
-            pStructure = FindStructure(usMapPos, STRUCTURE_ANYDOOR);
+            pStructure = StructureInternals.FindStructure(usMapPos, STRUCTUREFLAGS.ANYDOOR);
 
             if (pStructure == null)
             {
@@ -3945,7 +3945,7 @@ public class OppList
                 FontSubSystem.SetFontColors(COLOR1);
                 mprintf(0, LINE_HEIGHT * ubLine, "State:");
                 FontSubSystem.SetFontColors(COLOR2);
-                if (!(pStructure.fFlags & STRUCTURE_OPEN))
+                if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
                 {
                     mprintf(200, LINE_HEIGHT * ubLine, "CLOSED");
                 }
@@ -3959,21 +3959,24 @@ public class OppList
 
     }
 
-    void AppendAttachmentCode(int usItem, int? str)
+    void AppendAttachmentCode(Items usItem, out string str)
     {
         switch (usItem)
         {
-            case SILENCER:
-                wcscat(str, " Sil");
+            case Items.SILENCER:
+                str = wcscat(" Sil");
                 break;
-            case SNIPERSCOPE:
-                wcscat(str, " Scp");
+            case Items.SNIPERSCOPE:
+                str = wcscat(" Scp");
                 break;
-            case BIPOD:
-                wcscat(str, " Bip");
+            case Items.BIPOD:
+                str = wcscat(" Bip");
                 break;
-            case LASERSCOPE:
-                wcscat(str, " Las");
+            case Items.LASERSCOPE:
+                str = wcscat(" Las");
+                break;
+            default:
+                str = string.Empty;
                 break;
         }
     }
@@ -3996,7 +3999,7 @@ public class OppList
               pObject.usAttachItem[2] || pObject.usAttachItem[3])
         {
             fAttachments = true;
-            wprintf(szAttach, "(");
+            szAttach = wprintf("(");
             AppendAttachmentCode(pObject.usAttachItem[0], szAttach);
             AppendAttachmentCode(pObject.usAttachItem[1], szAttach);
             AppendAttachmentCode(pObject.usAttachItem[2], szAttach);
@@ -4004,19 +4007,20 @@ public class OppList
             wcscat(szAttach, " )");
         }
 
-        if (Item[pObject.usItem].usItemClass == IC_AMMO)
+        if (Item[pObject.usItem].usItemClass == IC.AMMO)
         { //ammo
             if (pObject.ubNumberOfObjects > 1)
             {
-                int[] str = new int[50];
-                int[] temp = new int[5];
+                string str = string.Empty;
+                string temp = string.Empty;
                 int i;
-                wprintf(str, "Clips:  %d  (%d", pObject.ubNumberOfObjects, pObject.bStatus[0]);
+                str = wprintf("Clips:  %d  (%d", pObject.ubNumberOfObjects, pObject.bStatus[0]);
                 for (i = 1; i < pObject.ubNumberOfObjects; i++)
                 {
-                    wprintf(temp, ", %d", pObject.bStatus[0]);
+                    temp = wprintf(", %d", pObject.bStatus[0]);
                     wcscat(str, temp);
                 }
+
                 wcscat(str, ")");
                 gprintf(320, yp, str);
             }
@@ -4051,8 +4055,8 @@ public class OppList
     {
         SOLDIERTYPE? pSoldier;
         int uiMercFlags;
-        int[] szOrders = new int[20];
-        int[] szAttitude = new int[20];
+        string szOrders = string.Empty;
+        string szAttitude = string.Empty;
         int usSoldierIndex;
         int ubLine;
 
@@ -4104,60 +4108,30 @@ public class OppList
             if (pSoldier.bTeam != OUR_TEAM)
             {
                 SOLDIERINITNODE? pNode;
-                switch (pSoldier.bOrders)
+                szOrders = pSoldier.bOrders switch
                 {
-                    case STATIONARY:
-                        wprintf(szOrders, "STATIONARY");
-                        break;
-                    case ONGUARD:
-                        wprintf(szOrders, "ON GUARD");
-                        break;
-                    case ONCALL:
-                        wprintf(szOrders, "ON CALL");
-                        break;
-                    case SEEKENEMY:
-                        wprintf(szOrders, "SEEK ENEMY");
-                        break;
-                    case CLOSEPATROL:
-                        wprintf(szOrders, "CLOSE PATROL");
-                        break;
-                    case FARPATROL:
-                        wprintf(szOrders, "FAR PATROL");
-                        break;
-                    case POINTPATROL:
-                        wprintf(szOrders, "POINT PATROL");
-                        break;
-                    case RNDPTPATROL:
-                        wprintf(szOrders, "RND PT PATROL");
-                        break;
-                    default:
-                        wprintf(szOrders, "UNKNOWN");
-                        break;
-                }
-                switch (pSoldier.bAttitude)
+                    Orders.STATIONARY => wprintf("STATIONARY"),
+                    Orders.ONGUARD => wprintf("ON GUARD"),
+                    Orders.ONCALL => wprintf("ON CALL"),
+                    Orders.SEEKENEMY => wprintf("SEEK ENEMY"),
+                    Orders.CLOSEPATROL => wprintf("CLOSE PATROL"),
+                    Orders.FARPATROL => wprintf("FAR PATROL"),
+                    Orders.POINTPATROL => wprintf("POINT PATROL"),
+                    Orders.RNDPTPATROL => wprintf("RND PT PATROL"),
+                    _ => wprintf("UNKNOWN"),
+                };
+
+                szAttitude = pSoldier.bAttitude switch
                 {
-                    case DEFENSIVE:
-                        wprintf(szAttitude, "DEFENSIVE");
-                        break;
-                    case BRAVESOLO:
-                        wprintf(szAttitude, "BRAVE SOLO");
-                        break;
-                    case BRAVEAID:
-                        wprintf(szAttitude, "BRAVE AID");
-                        break;
-                    case AGGRESSIVE:
-                        wprintf(szAttitude, "AGGRESSIVE");
-                        break;
-                    case CUNNINGSOLO:
-                        wprintf(szAttitude, "CUNNING SOLO");
-                        break;
-                    case CUNNINGAID:
-                        wprintf(szAttitude, "CUNNING AID");
-                        break;
-                    default:
-                        wprintf(szAttitude, "UNKNOWN");
-                        break;
-                }
+                    Attitudes.DEFENSIVE => wprintf("DEFENSIVE"),
+                    Attitudes.BRAVESOLO => wprintf("BRAVE SOLO"),
+                    Attitudes.BRAVEAID => wprintf("BRAVE AID"),
+                    Attitudes.AGGRESSIVE => wprintf("AGGRESSIVE"),
+                    Attitudes.CUNNINGSOLO => wprintf("CUNNING SOLO"),
+                    Attitudes.CUNNINGAID => wprintf("CUNNING AID"),
+                    _ => wprintf("UNKNOWN"),
+                };
+
                 pNode = gSoldierInitHead;
                 while (pNode)
                 {

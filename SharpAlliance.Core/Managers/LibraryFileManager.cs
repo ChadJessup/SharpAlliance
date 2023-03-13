@@ -114,7 +114,7 @@ namespace SharpAlliance.Core.Managers
             DirEntry dirEntry;
 
             //open the library for reading ( if it exists )
-            var hFile = File.OpenRead(Path.Combine(this.DataDirectory, pLibraryName));
+            var hFile = File.OpenRead(System.IO.Path.Combine(this.DataDirectory, pLibraryName));
             using BinaryReader br = new(hFile, Encoding.Default, leaveOpen: true);
 
             LibHeader libHeader = this.ParseLibHeader(br);
@@ -467,7 +467,7 @@ namespace SharpAlliance.Core.Managers
             var seekedAmount = libraryHeader.hLibraryHandle.Seek(pFileHeader.Value.uiFileOffset, SeekOrigin.Begin);
             libraryHeader.hLibraryHandle.CopyTo(ms, pFileHeader.Value.uiFileLength);
 
-            using FileStream fs = new(Path.Combine("C:\\assets", pFileHeader.Value.pFileName), FileMode.OpenOrCreate);
+            using FileStream fs = new(System.IO.Path.Combine("C:\\assets", pFileHeader.Value.pFileName), FileMode.OpenOrCreate);
             ms.Seek(0, SeekOrigin.Begin);
             ms.CopyTo(fs);
             ms.Seek(0, SeekOrigin.Begin);

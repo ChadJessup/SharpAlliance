@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using SharpAlliance.Core.Managers;
 
+using static SharpAlliance.Core.EnglishText;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -577,7 +578,7 @@ public class Campaign
                 //if ( (ubStat != EXPERAMT) && (ubStat != HEALTHAMT) && ( Globals.Random.Next( 100 ) < 25 ) )
                 {
                     // Pipe up with "I'm getting better at this!"
-                    TacticalCharacterDialogueWithSpecialEventEx(pSoldier, 0, DIALOGUE_SPECIAL_EVENT_DISPLAY_STAT_CHANGE, fChangeTypeIncrease, sPtsChanged, ubStat);
+                    TacticalCharacterDialogueWithSpecialEventEx(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DISPLAY_STAT_CHANGE, fChangeTypeIncrease, sPtsChanged, ubStat);
                     TacticalCharacterDialogue(pSoldier, QUOTE.EXPERIENCE_GAIN);
                 }
                 else
@@ -585,7 +586,7 @@ public class Campaign
                     string wTempString;
 
                     // tell player about it
-                    BuildStatChangeString(wTempString, pSoldier.name, fChangeTypeIncrease, sPtsChanged, ubStat);
+                    BuildStatChangeString(out wTempString, pSoldier.name, fChangeTypeIncrease, sPtsChanged, ubStat);
                     Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, wTempString);
                 }
 
@@ -1508,7 +1509,7 @@ public class Campaign
 
 
 
-    public static void BuildStatChangeString(string wString, string wName, bool fIncrease, int sPtsChanged, Stat ubStat)
+    public static void BuildStatChangeString(out string wString, string wName, bool fIncrease, int sPtsChanged, Stat ubStat)
     {
         int ubStringIndex;
 
@@ -1534,7 +1535,7 @@ public class Campaign
             ubStringIndex += 2;
         }
 
-        wprintf(wString, "%s %s %d %s %s", wName, sPreStatBuildString[fIncrease ? 1 : 0], Math.Abs(sPtsChanged),
+        wString = wprintf("%s %s %d %s %s", wName, sPreStatBuildString[fIncrease ? 1 : 0], Math.Abs(sPtsChanged),
                         sPreStatBuildString[ubStringIndex], sStatGainStrings[ubStat - Globals.FIRST_CHANGEABLE_STAT]);
     }
 

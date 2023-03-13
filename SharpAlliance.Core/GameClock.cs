@@ -25,7 +25,7 @@ public class GameClock
         guiDay = (guiGameClock / NUM_SEC_IN_DAY);
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
-        wprintf(WORLDTIMESTR, "%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
+        WORLDTIMESTR = wprintf("%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
         guiTimeCurrentSectorWasLastLoaded = 0;
         guiGameSecondsPerRealSecond = 0;
         gubClockResolution = 1;

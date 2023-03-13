@@ -34,6 +34,104 @@ public static class EnglishText
         "Pause Game (|P|a|u|s|e)",
     };
 
+    // Mine strings
+
+    public static string[] pwMineStrings =
+    {
+        "Mine",						// 0
+    	"Silver",
+        "Gold",
+        "Daily Production",
+        "Possible Production",
+        "Abandoned",				// 5
+    	"Shut Down",
+        "Running Out",
+        "Producing",
+        "Status",
+        "Production Rate",
+        "Ore Type",				// 10
+    	"Town Control",
+        "Town Loyalty",
+    //	"Working Miners",
+    };
+
+    // These are the different terrain types. 
+
+    public static Dictionary<Traversability, string> pLandTypeStrings = new()
+    {
+        { Traversability.TOWN , "Urban" },
+        { Traversability.ROAD , "Road" },
+        { Traversability.PLAINS , "Plains" },
+        { Traversability.SAND, "Desert" },
+        { Traversability.SPARSE, "Woods" },
+        { Traversability.DENSE, "Forest" },
+        { Traversability.SWAMP, "Swamp" },
+        { Traversability.WATER, "Water" },
+        { Traversability.HILLS, "Hills" },
+        { Traversability.GROUNDBARRIER, "Impassable" },
+        { Traversability.NS_RIVER, "River" },	//river from north to south
+    	{ Traversability.EW_RIVER, "River" },	//river from east to west
+    	{ Traversability.EDGEOFWORLD, "Foreign Country" },
+    	//NONE of the following are used for directional travel, just for the sector description.
+    	{ Traversability.TROPICS, "Tropical" },
+        { Traversability.FARMLAND, "Farmland" },
+        { Traversability.PLAINS_ROAD, "Plains, road" },
+        { Traversability.SPARSE_ROAD, "Woods, road" },
+        { Traversability.FARMLAND_ROAD, "Farm, road" },
+        { Traversability.TROPICS_ROAD, "Tropical, road" },
+        { Traversability.DENSE_ROAD, "Forest, road" },
+        { Traversability.COASTAL, "Coastline" },
+        { Traversability.HILLS_ROAD, "Mountain, road" },
+        { Traversability.COASTAL_ROAD, "Coastal, road" },
+        { Traversability.SAND_ROAD, "Desert, road" },
+        { Traversability.SWAMP_ROAD, "Swamp, road" },
+        { Traversability.SPARSE_SAM_SITE, "Woods, SAM site" },
+        { Traversability.SAND_SAM_SITE, "Desert, SAM site" },
+        { Traversability.TROPICS_SAM_SITE, "Tropical, SAM site" },
+        { Traversability.MEDUNA_SAM_SITE, "Meduna, SAM site" },
+    	
+    	//These are descriptions for special sectors
+    	{ Traversability.CAMBRIA_HOSPITAL_SITE, "Cambria Hospital" },
+        { Traversability.DRASSEN_AIRPORT_SITE, "Drassen Airport" },
+        { Traversability.MEDUNA_AIRPORT_SITE, "Meduna Airport" },
+        { Traversability.SAM_SITE, "SAM site" },
+        { Traversability.REBEL_HIDEOUT, "Rebel Hideout" }, //The rebel base underground in sector A10
+    	{ Traversability.TIXA_DUNGEON, "Tixa Dungeon" },	//The basement of the Tixa Prison (J9)
+    	{ Traversability.CREATURE_LAIR, "Creature Lair" },	//Any mine sector with creatures in it
+    	{ Traversability.ORTA_BASEMENT, "Orta Basement" }, //The basement of Orta (K4)
+    	{ Traversability.TUNNEL, "Tunnel" },				//The tunnel access from the maze garden in Meduna 
+    									//leading to the secret shelter underneath the palace
+    	{ Traversability.SHELTER, "Shelter" },				//The shelter underneath the queen's palace
+    	{ Traversability.ABANDONED_MINE, "" },							//Unused
+    };
+
+    // NOTE: combine prestatbuildstring with statgain to get a line like the example below.
+    // "John has gained 3 points of marksmanship skill." 
+
+    public static string[] sPreStatBuildString =
+    {
+        "lost", 			// the merc has lost a statistic
+    	"gained", 		// the merc has gained a statistic
+    	"point of",	// singular
+    	"points of",	// plural
+    	"level of",	// singular
+    	"levels of",	// plural
+    };
+
+    public static string[] sStatGainStrings =
+    {
+        "health.",
+        "agility.",
+        "dexterity.",
+        "wisdom.",
+        "medical skill.",
+        "explosives skill.",
+        "mechanical skill.",
+        "marksmanship skill.",
+        "experience.",
+        "strength.",
+        "leadership.",
+    };
 
     public static string[] pMessageStrings2 =
     {
@@ -94,7 +192,7 @@ public static class EnglishText
     	"Drop",
         "Throw",
         "Pass",
-    
+
         "%s passed to %s.", //"Item" passed to "merc".  Please try to keep the item %s before the merc %s, otherwise,
     											 //must notify SirTech.
     	"No room to pass %s to %s.", //pass "item" to "merc".  Same instructions as above.

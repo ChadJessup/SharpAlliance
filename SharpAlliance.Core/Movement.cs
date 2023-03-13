@@ -576,15 +576,15 @@ public class Movement
                          // in theory, no NPC should ever be in one of these animations as
                          // things stand (they don't medic anyone), but leave it for robustness
                          case START_AID   :
-                         case GIVING_AID  : sAnimCost = AP_STOP_FIRST_AID;
+                         case GIVING_AID  : sAnimCost = AP.STOP_FIRST_AID;
                             break;
 
                          case TWISTOMACH  :
-                         case COLLAPSED   : sAnimCost = AP_GET_UP;
+                         case COLLAPSED   : sAnimCost = AP.GET_UP;
                             break;
 
                          case TWISTBACK   :
-                         case UNCONSCIOUS : sAnimCost = (AP_ROLL_OVER + AP_GET_UP);
+                         case UNCONSCIOUS : sAnimCost = (AP_ROLL_OVER + AP.GET_UP);
                             break;
 
                          default          : sAnimCost = 0;

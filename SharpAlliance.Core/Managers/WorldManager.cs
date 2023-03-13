@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
-
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
@@ -28,6 +27,53 @@ public class WorldManager
         this.tileCache = tileCache;
         this.renderWorld = renderWorld;
         this.worldStructures = worldStructures;
+    }
+
+    public static bool RemoveAllStructsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
+    {
+        LEVELNODE? pStruct = null;
+        LEVELNODE? pOldStruct = null;
+        TileTypeDefines fTileType;
+        int usIndex;
+        bool fRetVal = false;
+
+        pStruct = gpWorldLevelData[iMapIndex].pStructHead;
+
+        // Look through all structs and Search for type
+
+        while (pStruct != null)
+        {
+
+            if (pStruct.usIndex != (int)TileCategory.NO_TILE)
+            {
+
+                TileDefine.GetTileType(pStruct.usIndex, out fTileType);
+
+                // Advance to next
+                pOldStruct = pStruct;
+                pStruct = pStruct.pNext;
+
+                if (fTileType >= fStartType && fTileType <= fEndType)
+                {
+                    usIndex = pOldStruct.usIndex;
+
+                    // Remove Item
+                    if (usIndex < (int)TileDefines.NUMBEROFTILES)
+                    {
+                        RemoveStruct(iMapIndex, pOldStruct.usIndex);
+                        fRetVal = true;
+                        if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags & HAS_SHADOW_BUDDY && gTileDatabase[usIndex].sBuddyNum != -1)
+                        {
+                            RemoveShadow(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        return fRetVal;
     }
 
     public static TerrainTypeDefines GetTerrainType(int sGridNo)
@@ -156,7 +202,7 @@ public class WorldManager
         // If we're at the head, set here
         if (pOnRoof == null)
         {
-            if(!CreateLevelNode(out pOnRoof))
+            if (!CreateLevelNode(out pOnRoof))
             {
                 return null;
             }
@@ -188,7 +234,7 @@ public class WorldManager
 
                 if (pOnRoof.pNext == null)
                 {
-                    if(!CreateLevelNode(out pNextOnRoof))
+                    if (!CreateLevelNode(out pNextOnRoof))
                     {
                         return null;
                     }
@@ -485,7 +531,7 @@ public class WorldManager
     public void AddUIElem(int iMapIndex, TileDefines usIndex, int sRelativeX, int sRelativeY, out LEVELNODE ppNewNode)
         => AddUIElem(iMapIndex, usIndex, sRelativeX, sRelativeY, out ppNewNode);
 
-    public bool AddUIElem(int iMapIndex, ushort usIndex, int sRelativeX, int sRelativeY, out LEVELNODE ppNewNode)
+    public bool AddUIElem(int iMapIndex, ushort usIndex, int sRelativeX, MAP_ROW sRelativeY, out LEVELNODE ppNewNode)
     {
         LEVELNODE? pTopmost = AddTopmostToTail(iMapIndex, usIndex);
 
