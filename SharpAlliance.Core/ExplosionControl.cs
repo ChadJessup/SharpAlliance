@@ -319,7 +319,7 @@ public class ExplosionControl
                 ApplyMapChangesToMapTempFile(true);
 
                 // Remove it!
-                RemoveStructFromLevelNode(pFenceBaseStructure.sGridNo, pFenceNode);
+                WorldManager.RemoveStructFromLevelNode(pFenceBaseStructure.sGridNo, pFenceNode);
 
                 // Add it!
                 AddStructToHead(pFenceBaseStructure.sGridNo, (int)(usTileIndex));
@@ -336,7 +336,8 @@ public class ExplosionControl
         STRUCTURE? pBase, pWallStruct, pAttached, pAttachedBase;
         LEVELNODE? pNode = null, pNewNode = null, pAttachedNode;
         int sNewGridNo, sStructGridNo;
-        int sNewIndex, sSubIndex;
+        TileDefines sNewIndex;
+        int sSubIndex;
         int usObjectIndex, usTileIndex;
         int ubNumberOfTiles, ubLoop;
         List<DB_STRUCTURE_TILE> ppTile;
@@ -594,7 +595,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps temp file
                                         ApplyMapChangesToMapTempFile(true);
 
-                                        RemoveStructFromLevelNode(sNewGridNo, pNewNode);
+                                        WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
                                         AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
                                         ApplyMapChangesToMapTempFile(false);
@@ -626,7 +627,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
 
-                                        RemoveStructFromLevelNode(sNewGridNo, pNewNode);
+                                        WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
                                         AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
                                         ApplyMapChangesToMapTempFile(false);
@@ -653,7 +654,7 @@ public class ExplosionControl
                                         if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
-                                            RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
+                                            WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
                                             ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
@@ -683,7 +684,7 @@ public class ExplosionControl
                                         if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
-                                            RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
+                                            WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
                                             ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
@@ -729,7 +730,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
 
-                                        RemoveStructFromLevelNode(sNewGridNo, pNewNode);
+                                        WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
                                         AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
                                         ApplyMapChangesToMapTempFile(false);
@@ -760,7 +761,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         ApplyMapChangesToMapTempFile(true);
 
-                                        RemoveStructFromLevelNode(sNewGridNo, pNewNode);
+                                        WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
                                         AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
                                         ApplyMapChangesToMapTempFile(false);
@@ -779,7 +780,7 @@ public class ExplosionControl
                                         if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
-                                            RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
+                                            WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
                                             ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
@@ -809,7 +810,7 @@ public class ExplosionControl
                                         if (pAttachedNode is not null)
                                         {
                                             ApplyMapChangesToMapTempFile(true);
-                                            RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
+                                            WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
                                             ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
@@ -833,7 +834,7 @@ public class ExplosionControl
                         // CJC, Sept 16: if we destroy any wall of the brothel, make Kingpin's men hostile!
                         if (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.C && gbWorldSectorZ == 0)
                         {
-                            int? ubRoom;
+                            int ubRoom;
                             bool fInRoom;
 
                             fInRoom = RenderFun.InARoom(sGridNo, out ubRoom);
@@ -867,14 +868,14 @@ public class ExplosionControl
                         // Remove water....
                         ApplyMapChangesToMapTempFile(true);
                         TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 1, out sNewIndex);
-                        RemoveStruct(sBaseGridNo, sNewIndex);
-                        RemoveStruct(sBaseGridNo, sNewIndex);
+                        WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
+                        WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
                         TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 2, out sNewIndex);
-                        RemoveStruct(sBaseGridNo, sNewIndex);
-                        RemoveStruct(sBaseGridNo, sNewIndex);
+                        WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
+                        WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
                         TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 3, out sNewIndex);
-                        RemoveStruct(sBaseGridNo, sNewIndex);
-                        RemoveStruct(sBaseGridNo, sNewIndex);
+                        WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
+                        WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
                         ApplyMapChangesToMapTempFile(false);
                     }
 
@@ -890,7 +891,7 @@ public class ExplosionControl
                     // Remove!
                     //Set a flag indicating that the following changes are to go the the maps, temp file
                     ApplyMapChangesToMapTempFile(true);
-                    RemoveStructFromLevelNode(pBase.sGridNo, pNode);
+                    WorldManager.RemoveStructFromLevelNode(pBase.sGridNo, pNode);
                     ApplyMapChangesToMapTempFile(false);
 
                     // OK, if we are to swap structures, do it now...
@@ -3176,7 +3177,8 @@ public class ExplosionControl
         int cnt;
         SEC sSectorNo;
         bool fInSector = false;
-        int usGoodGraphic, usDamagedGraphic;
+        TileDefines usGoodGraphic;
+        TileDefines usDamagedGraphic;
 
         // ATE: If we are below, return right away...
         if (sSectorZ != 0)
@@ -3212,7 +3214,7 @@ public class ExplosionControl
                     // Remove old!
                     ApplyMapChangesToMapTempFile(true);
 
-                    RemoveStruct(pSamGridNoAList[cnt], usDamagedGraphic);
+                    WorldManager.RemoveStruct(pSamGridNoAList[cnt], usDamagedGraphic);
                     AddStructToHead(pSamGridNoAList[cnt], usGoodGraphic);
 
                     ApplyMapChangesToMapTempFile(false);

@@ -15,7 +15,7 @@ public class SaveLoadMap
         this.overhead = overhead;
     }
 
-    public static void AddRemoveObjectToMapTempFile(int uiMapIndex, int usIndex)
+    public static void AddRemoveObjectToMapTempFile(int uiMapIndex, TileDefines usIndex)
     {
         MODIFY_MAP Map;
         TileTypeDefines uiType;
@@ -46,7 +46,7 @@ public class SaveLoadMap
             ubType = SLM.REMOVE_OBJECT
         };
 
-        SaveModifiedMapStructToMapTempFile(out Map, Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ);
+        // SaveModifiedMapStructToMapTempFile(out Map, Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ);
     }
 }
 

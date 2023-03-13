@@ -118,12 +118,12 @@ public class DrugsAndAlcohol
                     ubKitPoints = 100;
                 }
 
-                UseKitPoints(pObject, ubKitPoints, pSoldier);
+                DrugsAndAlcohol.UseKitPoints(pObject, ubKitPoints, pSoldier);
             }
             else
             {
                 // Remove the object....
-                DeleteObj(pObject);
+                ItemSubSystem.DeleteObj(pObject);
 
                 // ATE: Make guy collapse from heart attack if too much stuff taken....
                 if (pSoldier.bDrugSideEffectRate[ubDrugType] > (ubDrugSideEffect[ubDrugType] * 3))
@@ -192,7 +192,7 @@ public class DrugsAndAlcohol
             }
 
             // remove object
-            DeleteObj(pObject);
+            ItemSubSystem.DeleteObj(pObject);
         }
 
         if (ubDrugType == DRUG_TYPE_ALCOHOL)
@@ -208,6 +208,43 @@ public class DrugsAndAlcohol
         fInterfacePanelDirty = DIRTYLEVEL2;
 
         return (true);
+    }
+
+    public static int UseKitPoints(OBJECTTYPE? pObj, int usPoints, SOLDIERTYPE? pSoldier)
+    {
+        // start consuming from the last kit in, so we end up with fewer fuller kits rather than
+        // lots of half-empty ones.
+        int bLoop;
+        int usOriginalPoints = usPoints;
+
+        for (bLoop = pObj.ubNumberOfObjects - 1; bLoop >= 0; bLoop--)
+        {
+            if (usPoints < pObj.bStatus[bLoop])
+            {
+                pObj.bStatus[bLoop] -= usPoints;
+                return (usOriginalPoints);
+            }
+            else
+            {
+                // consume this kit totally
+                usPoints -= pObj.bStatus[bLoop];
+                pObj.bStatus[bLoop] = 0;
+
+                pObj.ubNumberOfObjects--;
+            }
+        }
+
+        // check if pocket/hand emptied..update inventory, then update panel
+        if (pObj.ubNumberOfObjects == 0)
+        {
+            // Delete object
+            ItemSubSystem.DeleteObj(pObj);
+
+            // dirty interface panel
+            DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
+        }
+
+        return (usOriginalPoints - usPoints);
     }
 
     void HandleEndTurnDrugAdjustments(SOLDIERTYPE? pSoldier)

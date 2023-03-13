@@ -92,7 +92,7 @@ public class LEVELNODE
     public int uiAPCost;                     // FOR AP DISPLAY
     public int iExitGridInfo;
 
-    public int usIndex;                         // TILE DATABASE INDEX
+    public TileDefines usIndex;                         // TILE DATABASE INDEX
     public int sCurrentFrame;                // Stuff for animated tiles for a given tile location ( doors, etc )
 
     public SOLDIERTYPE? pSoldier;                          // POINTER TO SOLDIER

@@ -126,7 +126,7 @@ public class TileSurface
     }
 
 
-    void DeleteTileSurface(TILE_IMAGERY pTileSurf)
+    public static void DeleteTileSurface(TILE_IMAGERY pTileSurf)
     {
         if (pTileSurf.pStructureFileRef != null)
         {

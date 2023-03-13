@@ -29,35 +29,34 @@ public class TileDefine
     }
 
     // Database access functions
-    public static bool GetTileType(int usIndex, out TileTypeDefines puiType)
+    public static bool GetTileType(TileDefines usIndex, out TileTypeDefines puiType)
     {
         TILE_ELEMENT TileElem;
 
         //CHECKF(usIndex != NO_TILE);
 
         // Get tile element
-        TileElem = Globals.gTileDatabase[usIndex];
+        TileElem = gTileDatabase[usIndex];
 
         puiType = TileElem.fType;
 
         return true;
     }
 
-    public static bool GetSubIndexFromTileIndex(int usTileIndex, out int? pusSubIndex)
+    public static bool GetSubIndexFromTileIndex(TileDefines usTileIndex, out int? pusSubIndex)
     {
         pusSubIndex = null;
 
-        TileTypeDefines uiType = 0;
-        if (GetTileType(usTileIndex, out uiType))
+        if (GetTileType(usTileIndex, out TileTypeDefines uiType))
         {
-            pusSubIndex = usTileIndex - gTileTypeStartIndex[(int)uiType] + 1;
+            pusSubIndex = (int?)usTileIndex - gTileTypeStartIndex[(int)uiType] + 1;
             return true;
         }
 
         return false;
     }
 
-    public static bool GetTileFlags(int usIndex, out uint puiFlags)
+    public static bool GetTileFlags(TileDefines usIndex, out TileCategory puiFlags)
     {
         TILE_ELEMENT TileElem;
 
@@ -3041,8 +3040,8 @@ public enum TileDefines
 
     // Add/combine new ones below the NUMBEROFTILES value
     DISPLAY_AP_INDEX = MOCKFLOOR1,
-};
-
+    NO_TILE = 3126,
+}
 //#define BLUEFLAG_GRAPHIC FIRSTSWITCHES21
 
 // Defines for tile type identification
@@ -3264,7 +3263,7 @@ public class TILE_ELEMENT
     public TileTypeDefines fType;
     public HVOBJECT hTileSurface;
     public DB_STRUCTURE_REF? pDBStructureRef;
-    public uint uiFlags;
+    public TileCategory uiFlags;
     public RelTileLoc? pTileLocData;
     public ushort usRegionIndex;
     public short sBuddyNum;

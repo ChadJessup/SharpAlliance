@@ -23,6 +23,27 @@ namespace SharpAlliance.Core.SubSystems
             return false;
         }
 
+        public static bool FlatRoofAboveGridNo(int iMapIndex)
+        {
+            LEVELNODE? pRoof;
+            TileTypeDefines uiTileType;
+            pRoof = gpWorldLevelData[iMapIndex].pRoofHead;
+            while (pRoof is not null)
+            {
+                if (pRoof.usIndex != TileDefines.NO_TILE)
+                {
+                    TileDefine.GetTileType(pRoof.usIndex, out uiTileType);
+                    if (uiTileType >= TileTypeDefines.FIRSTROOF && uiTileType <= LASTROOF)
+                    {
+                        return true;
+                    }
+                }
+                pRoof = pRoof.pNext;
+            }
+         
+            return false;
+        }
+
         public static void CencelAllActionsForTimeCompression()
         {
             int cnt;
@@ -74,11 +95,11 @@ namespace SharpAlliance.Core.SubSystems
             {
                 if (fSetLocator == SETLOCATOR || fSetLocator == 10)
                 {
-                    ShowRadioLocator((int)usID, SHOW_LOCATOR_NORMAL);
+                    InterfacePanel.ShowRadioLocator(usID, SHOW_LOCATOR.NORMAL);
                 }
                 else
                 {
-                    ShowRadioLocator((int)usID, SHOW_LOCATOR_FAST);
+                    InterfacePanel.ShowRadioLocator(usID, SHOW_LOCATOR.FAST);
                 }
             }
         }

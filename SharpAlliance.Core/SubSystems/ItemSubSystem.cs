@@ -7,6 +7,11 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class ItemSubSystem
 {
+    public static void DeleteObj(OBJECTTYPE? pObj)
+    {
+        pObj = null;
+    }
+
     public static bool ItemIsLegal(Items usItemIndex)
     {
         //if the user has selected the reduced gun list

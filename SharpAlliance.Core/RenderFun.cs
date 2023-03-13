@@ -9,10 +9,8 @@ namespace SharpAlliance.Core;
 
 public class RenderFun
 {
-    public static bool InARoom(int sGridNo, out int? pubRoomNo)
+    public static bool InARoom(int sGridNo, out int pubRoomNo)
     {
-        pubRoomNo= null;
-
         if (gubWorldRoomInfo[sGridNo] != NO_ROOM)
         {
             pubRoomNo = gubWorldRoomInfo[sGridNo];
@@ -20,6 +18,7 @@ public class RenderFun
             return (true);
         }
 
+        pubRoomNo = NO_ROOM;
         return (false);
     }
 

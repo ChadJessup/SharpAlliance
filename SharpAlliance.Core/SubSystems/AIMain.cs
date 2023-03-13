@@ -2019,8 +2019,8 @@ public class AIMain
                 break;
 
             case AI_ACTION.DROP_ITEM:                    // drop item in hand
-                SoldierDropItem(pSoldier, &(pSoldier.inv[InventorySlot.HANDPOS]));
-                DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
+                SoldierDropItem(pSoldier, (pSoldier.inv[InventorySlot.HANDPOS]));
+                ItemSubSystem.DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
                 pSoldier.bAction = AI_ACTION.PENDING_ACTION;
                 break;
 

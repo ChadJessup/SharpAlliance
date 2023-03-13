@@ -1265,7 +1265,7 @@ public class StructureInternals
     }
 
 
-    int StructureBottomLevel(STRUCTURE? pStructure)
+    public static int StructureBottomLevel(STRUCTURE? pStructure)
     { // return the bottom level of an object, from 1-4
         int ubLoopX, ubLoopY;
         PROFILE? pShape;
@@ -1305,7 +1305,7 @@ public class StructureInternals
     }
 
 
-    bool StructureDensity(STRUCTURE? pStructure, out int pubLevel0, out int pubLevel1, out int pubLevel2, out int pubLevel3)
+    public static bool StructureDensity(STRUCTURE? pStructure, out int pubLevel0, out int pubLevel1, out int pubLevel2, out int pubLevel3)
     {
         int ubLoopX, ubLoopY;
         int ubShapeValue;
@@ -1652,7 +1652,7 @@ public class StructureInternals
 #endif
     }
 
-    bool AddZStripInfoToVObject(HVOBJECT hVObject, STRUCTURE_FILE_REF? pStructureFileRef, bool fFromAnimation, int sSTIStartIndex)
+    public static bool AddZStripInfoToVObject(HVOBJECT hVObject, STRUCTURE_FILE_REF? pStructureFileRef, bool fFromAnimation, int sSTIStartIndex)
     {
         int uiLoop;
         int ubLoop2;

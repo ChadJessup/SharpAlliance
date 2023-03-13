@@ -174,7 +174,7 @@ public partial class Globals
     	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0,
-    
+
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // Sixth Texture
     	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -184,13 +184,13 @@ public partial class Globals
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0,
-    
+
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // Water1 Texture
     	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    
+
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1 // Water2 Texture
     };
 
@@ -221,7 +221,7 @@ public partial class Globals
     "OFSTRUCT2",
     "PLACEHOLDER1",
     "PLACEHOLDER2",
-    
+
     "SHADOW1",
     "SHADOW2",
     "SHADOW3",
@@ -234,7 +234,7 @@ public partial class Globals
     "FSHADOW2",
     "PLACEHOLDER3",
     "PLACEHOLDER4",
-    
+
     "WALL1",
     "WALL2",
     "WALL3",
@@ -272,27 +272,27 @@ public partial class Globals
     "ONROOF1",
     "ONROOF2",
     "MOCKF1",
-    
+
     "ISTRUCT1",
     "ISTRUCT2",
     "ISTRUCT3",
     "ISTRUCT4",
-    
+
     "FIRSTCISTRCUT",
-    
+
     "FIRSTROAD",
-    
+
     "ROCKS",
     "WOOD",
     "WEEDS",
     "GRASS",
     "SAND",
     "MISC",
-    
+
     "ANIOSTRUCT",
     "FENCESTRUCT",
     "FENCESHADOW",
-    
+
     "FIRSTVEHICLE",
     "SECONDVEHICLE",
     "FIRSTVEHICLESHADOW",
@@ -306,27 +306,27 @@ public partial class Globals
     "TENTHOSTRUCT",
     "NINTHOSTRUCTSHADOW",
     "TENTHOSTRUCTSHADOW",
-    
+
     "FIRSTEXPLODEDEBRIS",
     "SECONDEXPLODEDEBRIS",
     "FIRSTLARGEEXPLODEDEBRIS",
     "SECONDLARGEEXPLODEDEBRIS",
     "FIRSTLARGEEXPLODEDEBRISSHADOW",
     "SECONDLARGEEXPLODEDEBRISSHADOW",
-    
+
     "FIFTHISTRUCT",
     "SIXTHISTRUCT",
     "SEVENTHISTRUCT",
     "EIGHTISTRUCT",
-    
+
     "FIRSTHIGHROOF",
     "SECONDHIGHROOF",
-    
+
     "WALLDECAL5",
     "WALLDECAL6",
     "WALLDECAL7",
     "WALLDECAL8",
-    
+
     "HUMANBLOOD",
     "CREATUREBLOOD",
     "FIRSTSWITCHES",
@@ -336,21 +336,21 @@ public partial class Globals
     "REVEALEDSLANTROOF",
     "1stREVEALEDHIGHROOF",
     "2ndREVEALEDHIGHROOF",
-    
+
     "GUNS",
     "ITEMS",
     "ITEMS2",
-    
+
     "GLASSSHATTER",
     "ITEMS3",
     "BODYBLOW",
-    
+
     "EXITTEXTURE",
     "FOOTPRINTS",
     "POINTERS",
     "POINTERS2",
     "POINTERS3",
-    
+
     "GOODRUN",
     "GOODWALK",
     "GOODSWAT",
@@ -544,4 +544,31 @@ public partial class Globals
     public static int gusNumAnimatedTiles;
     public static int[] gusAnimatedTiles = new int[TileDefine.MAX_ANIMATED_TILES];
     public static int[] gTileTypeMovementCost = new int[(int)TerrainTypeDefines.NUM_TERRAIN_TYPES];
+
+    //==========================================================================
+    // Quick defines for finding last type entry in tile types
+    public const TileTypeDefines LASTTEXTURE =      (TileTypeDefines.DEEPWATERTEXTURE - 1);
+    public const TileTypeDefines LASTBANKS =        (TileTypeDefines.FIRSTCLIFFSHADOW - 1);
+    public const TileTypeDefines LASTCLIFFHANG =    (TileTypeDefines.FIRSTCLIFF - 1);
+    public const TileTypeDefines LASTCLIFFSHADOW =  (TileTypeDefines.FIRSTOSTRUCT - 1);
+    public const TileTypeDefines LASTOSTRUCT =      (TileTypeDefines.THIRDFULLSTRUCT - 1);
+    public const TileTypeDefines LASTSHADOW =       (TileTypeDefines.FIRSTWALL - 1);
+    public const TileTypeDefines LASTWALL =         (TileTypeDefines.FIRSTDOOR - 1);
+    public const TileTypeDefines LASTDOOR =         (TileTypeDefines.FIRSTDOORSHADOW - 1);
+    public const TileTypeDefines LASTDOORSHADOW =   (TileTypeDefines.SLANTROOFCEILING - 1);
+    public const TileTypeDefines LASTDECORATIONS =  (TileTypeDefines.FIRSTWALLDECAL - 1);
+    public const TileTypeDefines LASTWALLDECAL =    (TileTypeDefines.FIRSTFLOOR - 1);
+    public const TileTypeDefines LASTFLOOR =        (TileTypeDefines.FIRSTROOF - 1);
+    public const TileTypeDefines LASTROOF =         (TileTypeDefines.FIRSTSLANTROOF - 1);
+    public const TileTypeDefines LASTSLANTROOF =    (TileTypeDefines.FIRSTONROOF - 1);
+    public const TileTypeDefines LASTMOCKFLOOR =    (TileTypeDefines.FIRSTISTRUCT - 1);
+    public const TileTypeDefines LASTISTRUCT =      (TileTypeDefines.FIRSTROAD - 1);
+    public const TileTypeDefines LASTROAD =         (TileTypeDefines.DEBRISROCKS - 1);
+    public const TileTypeDefines LASTDEBRIS =       (TileTypeDefines.ANIOSTRUCT - 1);
+    public const TileTypeDefines LASTITEM =         (TileTypeDefines.WINDOWSHATTER - 1);
+    // public const TileTypeDefines LASTDEBRIS =    (TileTypeDefines.FOOTPRINTS - 1);
+    public const TileTypeDefines LASTFOOTPRINTS =   (TileTypeDefines.FIRSTPOINTERS - 1);
+    public const TileTypeDefines LASTPOINTERS =     (TileTypeDefines.SELRING - 1);
+    public const TileTypeDefines LASTUIELEM =       (TileTypeDefines.WIREFRAMES - 1);		// Change this entry if adding new types to the end
+    public const TileTypeDefines LASTTIELSETELEM =  (TileTypeDefines.GUNS - 1);
 }

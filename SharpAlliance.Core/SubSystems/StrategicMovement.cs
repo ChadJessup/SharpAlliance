@@ -4320,9 +4320,9 @@ public class StrategicMovement
             pVehicle.bBreath = (int)(pVehicle.sBreathRed / 100);
             //Subtract from item
             pItem.bStatus[0] = (int)(pItem.bStatus[0] - sFuelAdded / 50);
-            if (!pItem.bStatus[0])
+            if (pItem.bStatus[0] == 0)
             { //Gas can is empty, so toast the item.
-                DeleteObj(pItem);
+                ItemSubSystem.DeleteObj(pItem);
             }
         }
     }

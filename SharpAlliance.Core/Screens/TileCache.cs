@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core;
@@ -27,15 +28,15 @@ public class TileCache
         return ValueTask.FromResult(true);
     }
 
-    public static void CheckForAndDeleteTileCacheStructInfo(LEVELNODE? pNode, int usIndex)
+    public static void CheckForAndDeleteTileCacheStructInfo(LEVELNODE? pNode, TileDefines usIndex)
     {
         ArgumentNullException.ThrowIfNull(pNode);
 
         STRUCTURE_FILE_REF? pStructureFileRef;
 
-        if (usIndex >= Globals.TILE_CACHE_START_INDEX)
+        if (usIndex >= (TileDefines)TILE_CACHE_START_INDEX)
         {
-            pStructureFileRef = GetCachedTileStructureRef((usIndex - Globals.TILE_CACHE_START_INDEX));
+            pStructureFileRef = GetCachedTileStructureRef((usIndex - TILE_CACHE_START_INDEX));
 
             if (pStructureFileRef != null)
             {
@@ -44,19 +45,19 @@ public class TileCache
         }
     }
 
-    public static STRUCTURE_FILE_REF? GetCachedTileStructureRef(int iIndex)
+    public static STRUCTURE_FILE_REF? GetCachedTileStructureRef(TileDefines iIndex)
     {
-        if (iIndex == -1)
+        if (iIndex == (TileDefines)(-1))
         {
             return null;
         }
 
-        if (Globals.gpTileCache[iIndex].sStructRefID == -1)
+        if (Globals.gpTileCache[(int)iIndex].sStructRefID == -1)
         {
             return null;
         }
 
-        return (Globals.gpTileCacheStructInfo[Globals.gpTileCache[iIndex].sStructRefID].pStructureFileRef);
+        return (Globals.gpTileCacheStructInfo[Globals.gpTileCache[(int)iIndex].sStructRefID].pStructureFileRef);
     }
 
     private STRUCTURE_FILE_REF? GetCachedTileStructureRefFromFilename(string cFilename)
@@ -91,8 +92,8 @@ public class TileCache
 
     public static int GetCachedTile(string cFilename)
     {
-        int  cnt;
-        int  ubLowestIndex = 0;
+        int cnt;
+        int ubLowestIndex = 0;
         int sMostHits = 15000;
 
         // Check to see if surface exists already
@@ -100,7 +101,7 @@ public class TileCache
         {
             if (gpTileCache[cnt].pImagery != null)
             {
-                if (_stricmp(gpTileCache[cnt].zName, cFilename) == 0)
+                if (gpTileCache[cnt].zName.Equals(cFilename, StringComparison.OrdinalIgnoreCase))
                 {
                     // Found surface, return
                     gpTileCache[cnt].sHits++;
@@ -123,7 +124,7 @@ public class TileCache
             }
 
             // Bump off lowest index
-            DeleteTileSurface(gpTileCache[ubLowestIndex].pImagery);
+            TileSurface.DeleteTileSurface(gpTileCache[ubLowestIndex].pImagery);
 
             // Decrement
             gpTileCache[ubLowestIndex].sHits = 0;
@@ -138,25 +139,25 @@ public class TileCache
             if (gpTileCache[cnt].pImagery == null)
             {
                 // Insert here
-                gpTileCache[cnt].pImagery = LoadTileSurface(cFilename);
+                gpTileCache[cnt].pImagery = TileSurface.LoadTileSurface(cFilename);
 
                 if (gpTileCache[cnt].pImagery == null)
                 {
                     return (-1);
                 }
 
-                strcpy(gpTileCache[cnt].zName, cFilename);
+                gpTileCache[cnt].zName = cFilename;
                 gpTileCache[cnt].sHits = 1;
 
                 // Get root name
-                GetRootName(gpTileCache[cnt].zRootName, cFilename);
+                gpTileCache[cnt].zRootName = GetRootName(cFilename);
 
                 gpTileCache[cnt].sStructRefID = FindCacheStructDataIndex(gpTileCache[cnt].zRootName);
 
                 // ATE: Add z-strip info
                 if (gpTileCache[cnt].sStructRefID != -1)
                 {
-                    AddZStripInfoToVObject(gpTileCache[cnt].pImagery.vo, gpTileCacheStructInfo[gpTileCache[cnt].sStructRefID].pStructureFileRef, TRUE, 0);
+                    StructureInternals.AddZStripInfoToVObject(gpTileCache[cnt].pImagery.vo, gpTileCacheStructInfo[gpTileCache[cnt].sStructRefID].pStructureFileRef, true, 0);
                 }
 
                 if (gpTileCache[cnt].pImagery.pAuxData != null)
@@ -181,6 +182,11 @@ public class TileCache
 
         // Can't find one!
         return (-1);
+    }
+
+    public static string GetRootName(string pSrcStr)
+    {
+        return System.IO.Path.GetFileNameWithoutExtension(pSrcStr);
     }
 }
 

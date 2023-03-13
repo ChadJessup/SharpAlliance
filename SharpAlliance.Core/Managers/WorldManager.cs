@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
@@ -34,7 +35,7 @@ public class WorldManager
         LEVELNODE? pStruct = null;
         LEVELNODE? pOldStruct = null;
         TileTypeDefines fTileType;
-        int usIndex;
+        TileDefines usIndex;
         bool fRetVal = false;
 
         pStruct = gpWorldLevelData[iMapIndex].pStructHead;
@@ -44,7 +45,7 @@ public class WorldManager
         while (pStruct != null)
         {
 
-            if (pStruct.usIndex != (int)TileCategory.NO_TILE)
+            if (pStruct.usIndex != TileDefines.NO_TILE)
             {
 
                 TileDefine.GetTileType(pStruct.usIndex, out fTileType);
@@ -58,22 +59,188 @@ public class WorldManager
                     usIndex = pOldStruct.usIndex;
 
                     // Remove Item
-                    if (usIndex < (int)TileDefines.NUMBEROFTILES)
+                    if (usIndex < TileDefines.NUMBEROFTILES)
                     {
                         RemoveStruct(iMapIndex, pOldStruct.usIndex);
                         fRetVal = true;
-                        if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags & HAS_SHADOW_BUDDY && gTileDatabase[usIndex].sBuddyNum != -1)
+                        if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY)
+                            && gTileDatabase[usIndex].sBuddyNum != -1)
                         {
                             RemoveShadow(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
                         }
                     }
                 }
-
             }
-
         }
 
         return fRetVal;
+    }
+
+    public static bool RemoveStructFromLevelNode(int iMapIndex, LEVELNODE? pNode)
+    {
+        LEVELNODE? pStruct = null;
+        LEVELNODE? pOldStruct = null;
+        TileDefines usIndex;
+
+        usIndex = pNode.usIndex;
+
+        pStruct = gpWorldLevelData[iMapIndex].pStructHead;
+
+        // Look through all structs and remove index if found
+
+        while (pStruct != null)
+        {
+            if (pStruct == pNode)
+            {
+                // OK, set links
+                // Check for head or tail
+                if (pOldStruct == null)
+                {
+                    // It's the head
+                    gpWorldLevelData[iMapIndex].pStructHead = pStruct.pNext;
+                }
+                else
+                {
+                    pOldStruct.pNext = pStruct.pNext;
+                }
+
+                // Delete memory assosiated with item
+                DeleteStructureFromWorld(pStruct.pStructureData);
+
+                //If we have to, make sure to remove this node when we reload the map from a saved game
+                RemoveStructFromMapTempFile(iMapIndex, usIndex);
+
+                if (pNode.usIndex < TileDefines.NUMBEROFTILES)
+                {
+                    // Check flags for tiledat and set a shadow if we have a buddy
+                    if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY)
+                        && gTileDatabase[usIndex].sBuddyNum != -1)
+                    {
+                        RemoveShadow(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
+                    }
+                }
+                MemFree(pStruct);
+                guiLevelNodes--;
+
+                return (true);
+            }
+
+            pOldStruct = pStruct;
+            pStruct = pStruct.pNext;
+
+        }
+
+        // Could not find it, return FALSE
+        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
+
+        return (false);
+
+    }
+
+    public static bool FloorAtGridNo(int iMapIndex)
+    {
+        LEVELNODE? pLand;
+        TileTypeDefines uiTileType;
+        pLand = gpWorldLevelData[iMapIndex].pLandHead;
+        // Look through all objects and Search for type
+        while (pLand is not null)
+        {
+            if (pLand.usIndex != TileDefines.NO_TILE)
+            {
+                TileDefine.GetTileType(pLand.usIndex, out uiTileType);
+                if (uiTileType >= TileTypeDefines.FIRSTFLOOR && uiTileType <= LASTFLOOR)
+                {
+                    return true;
+                }
+
+                pLand = pLand.pNext;
+            }
+        }
+
+        return false;
+    }
+
+    public static bool GridNoIndoors(int iMapIndex)
+    {
+        if (gfBasement || gfCaves)
+        {
+            return true;
+        }
+
+        if (FloorAtGridNo(iMapIndex))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool RemoveStruct(int iMapIndex, TileDefines usIndex)
+    {
+        LEVELNODE? pStruct = null;
+        LEVELNODE? pOldStruct = null;
+
+        pStruct = gpWorldLevelData[iMapIndex].pStructHead;
+
+        // Look through all structs and remove index if found
+
+        while (pStruct != null)
+        {
+            if (pStruct.usIndex == usIndex)
+            {
+                // OK, set links
+                // Check for head or tail
+                if (pOldStruct == null)
+                {
+                    // It's the head
+                    gpWorldLevelData[iMapIndex].pStructHead = pStruct.pNext;
+                }
+                else
+                {
+                    pOldStruct.pNext = pStruct.pNext;
+                }
+
+                //Check for special flag to stop burn-through on same-tile structs...
+                if (pStruct.pStructureData != null)
+                {
+                    // If we are NOT a wall and NOT multi-tiles, set mapelement flag...
+                    //if ( !( pStruct->pStructureData->fFlags & STRUCTURE_WALLSTUFF ) && pStruct->pStructureData->pDBStructureRef->pDBStructure->ubNumberOfTiles == 1 )
+                    //{
+                    // UNSet flag...
+                    //	gpWorldLevelData[ iMapIndex ].ubExtFlags[0] &= ( ~MAPELEMENT_EXT_NOBURN_STRUCT );
+                    //}
+                }
+
+                // Delete memory assosiated with item
+                DeleteStructureFromWorld(pStruct.pStructureData);
+
+                //If we have to, make sure to remove this node when we reload the map from a saved game
+                RemoveStructFromMapTempFile(iMapIndex, usIndex);
+
+                if (usIndex < TileDefines.NUMBEROFTILES)
+                {
+                    // Check flags for tiledat and set a shadow if we have a buddy
+                    if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY)
+                        && gTileDatabase[usIndex].sBuddyNum != -1)
+                    {
+                        RemoveShadow(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
+                    }
+                }
+                MemFree(pStruct);
+                guiLevelNodes--;
+
+                return (true);
+            }
+
+            pOldStruct = pStruct;
+            pStruct = pStruct.pNext;
+
+        }
+
+        // Could not find it, return FALSE
+        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
+
+        return (false);
     }
 
     public static TerrainTypeDefines GetTerrainType(int sGridNo)
@@ -114,7 +281,7 @@ public class WorldManager
 
         while (pOnRoof != null)
         {
-            if (pOnRoof.usIndex != (uint)TileCategory.NO_TILE)
+            if (pOnRoof.usIndex != TileDefines.NO_TILE)
             {
                 TileDefine.GetTileType(pOnRoof.usIndex, out fTileType);
 
@@ -293,7 +460,7 @@ public class WorldManager
                 if (fTileType >= fStartType && fTileType <= fEndType)
                 {
                     // Remove Item
-                    RemoveTopmost(iMapIndex, (TileDefines)pOldTopmost.usIndex);
+                    RemoveTopmost(iMapIndex, pOldTopmost.usIndex);
                     fRetVal = true;
                 }
             }
@@ -302,7 +469,7 @@ public class WorldManager
         return fRetVal;
     }
 
-    public static bool RemoveOnRoof(int iMapIndex, int usIndex)
+    public static bool RemoveOnRoof(int iMapIndex, TileDefines usIndex)
     {
         LEVELNODE? pOnRoof = null;
         LEVELNODE? pOldOnRoof = null;
@@ -379,7 +546,7 @@ public class WorldManager
         return fRetVal;
     }
 
-    public static bool RemoveObject(int iMapIndex, int usIndex)
+    public static bool RemoveObject(int iMapIndex, TileDefines usIndex)
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pOldObject = null;
@@ -461,9 +628,6 @@ public class WorldManager
     }
 
     public static bool RemoveTopmost(int iMapIndex, TileDefines usIndex)
-        => RemoveTopmost(iMapIndex, (ushort)usIndex);
-
-    public static bool RemoveTopmost(int iMapIndex, ushort usIndex)
     {
         LEVELNODE? pTopmost = null;
         LEVELNODE? pOldTopmost = null;
@@ -504,9 +668,6 @@ public class WorldManager
     }
 
     public bool AddTopmostToHead(int iMapIndex, TileDefines usIndex)
-        => AddTopmostToHead(iMapIndex, (ushort)usIndex);
-
-    public bool AddTopmostToHead(int iMapIndex, ushort usIndex)
     {
         LEVELNODE? pTopmost = Globals.gpWorldLevelData[iMapIndex].pTopmostHead;
 
@@ -549,16 +710,12 @@ public class WorldManager
         return (true);
     }
 
-    public void RemoveUIElem(int iMapIndex, ushort usIndex)
+    public void RemoveUIElem(int iMapIndex, TileDefines usIndex)
     {
         RemoveTopmost(iMapIndex, usIndex);
     }
 
-
     public LEVELNODE? AddTopmostToTail(int iMapIndex, TileDefines usIndex)
-        => AddTopmostToTail(iMapIndex, (ushort)usIndex);
-
-    public LEVELNODE? AddTopmostToTail(int iMapIndex, ushort usIndex)
     {
         LEVELNODE? pNextTopmost = null;
 
@@ -616,7 +773,7 @@ public class WorldManager
 
         if (usIndex < TileDefines.NUMBEROFTILES)
         {
-            if (Globals.gTileDatabase[(int)usIndex].pDBStructureRef != null)
+            if (gTileDatabase[usIndex].pDBStructureRef != null)
             {
                 if (WorldStructures.AddStructureToWorld((short)iMapIndex, 1, Globals.gTileDatabase[(int)usIndex].pDBStructureRef, pNextOnRoof) == false)
                 {
@@ -628,7 +785,7 @@ public class WorldManager
         }
 
         pNextOnRoof.pNext = pOnRoof;
-        pNextOnRoof.usIndex = (int)usIndex;
+        pNextOnRoof.usIndex = usIndex;
 
 
         // Set head

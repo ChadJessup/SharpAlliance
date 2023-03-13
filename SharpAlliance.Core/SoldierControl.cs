@@ -5586,7 +5586,7 @@ int	gOrangeGlowG[]=
                 // OK, drop item in main hand...
                 if (pSoldier.inv[InventorySlot.HANDPOS].usItem != NOTHING)
                 {
-                    if (!(pSoldier.inv[InventorySlot.HANDPOS].fFlags & OBJECT_UNDROPPABLE))
+                    if (!(pSoldier.inv[InventorySlot.HANDPOS].fFlags.HasFlag(OBJECT.UNDROPPABLE)))
                     {
                         // ATE: if our guy, make visible....
                         if (pSoldier.bTeam == gbPlayerNum)
@@ -5594,8 +5594,8 @@ int	gOrangeGlowG[]=
                             bVisible = 1;
                         }
 
-                        AddItemToPool(pSoldier.sGridNo, &(pSoldier.inv[InventorySlot.HANDPOS]), bVisible, pSoldier.bLevel, 0, -1);
-                        DeleteObj(&(pSoldier.inv[InventorySlot.HANDPOS]));
+                        AddItemToPool(pSoldier.sGridNo, (pSoldier.inv[InventorySlot.HANDPOS]), bVisible, pSoldier.bLevel, 0, -1);
+                        ItemSubSystem.DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
                     }
                 }
             }
@@ -9226,10 +9226,10 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         EVENT_SetSoldierDesiredDirection(pSoldier, ubDirection);
         EVENT_SetSoldierDirection(pSoldier, ubDirection);
 
-        EVENT_InitNewSoldierAnim(pSoldier, ATTACH_CAN_TO_STRING, 0, false);
+        EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.ATTACH_CAN_TO_STRING, 0, false);
 
         // Remove item...
-        DeleteObj(&(pSoldier.inv[InventorySlot.HANDPOS]));
+        ItemSubSystem.DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
         fInterfacePanelDirty = DIRTYLEVEL2;
 
     }

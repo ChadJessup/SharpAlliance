@@ -262,7 +262,8 @@ public partial class Globals
     public static Dictionary<NPCID, MERCPROFILESTRUCT> gMercProfiles { get; } = new();
 
     public static TacticalStatusType gTacticalStatus { get; set; } = new TacticalStatusType();
-    public static TILE_ELEMENT[] gTileDatabase = new TILE_ELEMENT[(int)TileDefines.NUMBEROFTILES];
+    public static Dictionary<TileDefines, TILE_ELEMENT> gTileDatabase = new();
+
 
     public static SOLDIERTYPE[] Menptr = new SOLDIERTYPE[TOTAL_SOLDIERS];
     public static SOLDIERTYPE[] MercPtrs = new SOLDIERTYPE[TOTAL_SOLDIERS];
