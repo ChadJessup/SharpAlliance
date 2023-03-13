@@ -13,13 +13,13 @@ public class TileDefine
     public static int WALL_HEIGHT = 50;
     // Globals used
     
-    public static bool GetTileIndexFromTypeSubIndex(TileTypeDefines uiCheckType, int usSubIndex, out int pusTileIndex)
+    public static bool GetTileIndexFromTypeSubIndex(TileTypeDefines uiCheckType, int usSubIndex, out TileDefines pusTileIndex)
     {
         // Tile database is zero-based, Type indecies are 1-based!
 
         if (uiCheckType > TileTypeDefines.NUMBEROFTILETYPES)
         {
-            pusTileIndex = -1;
+            pusTileIndex = (TileDefines)(-1);
             return false;
         }
 
@@ -127,6 +127,7 @@ public enum TileCategory
     UNDERFLOW_FILLER = 0x00010000,
 }
 
+// chad: TileIndexes might be a better name.
 public enum TileDefines
 {
     FIRSTTEXTURE1 = 0,

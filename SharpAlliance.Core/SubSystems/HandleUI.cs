@@ -4993,7 +4993,7 @@ public class HandleUI
         pSoldier.fTurningUntilDone = true;
         // ATE: Reset flag to go back to prone...
         //pSoldier.fTurningFromPronePosition = TURNING_FROM_PRONE_OFF;
-        pSoldier.usPendingAnimation = AnimationStates.JUMP_OVER_BLOCKING_PERSON;
+        pSoldier.usPendingAnimation = AnimationStates.JUMP_OVER_BLOCKING.PERSON;
 
 
         return (ScreenName.GAME_SCREEN);

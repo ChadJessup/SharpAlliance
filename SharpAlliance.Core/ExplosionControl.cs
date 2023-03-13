@@ -292,7 +292,7 @@ public class ExplosionControl
         LEVELNODE? pFenceNode;
         int bFenceDestructionPartner = -1;
         TileTypeDefines uiFenceType;
-        int usTileIndex;
+        TileDefines usTileIndex;
 
         pFenceStructure = WorldStructures.FindStructure(sStructGridNo, STRUCTUREFLAGS.FENCE);
 
@@ -338,7 +338,7 @@ public class ExplosionControl
         int sNewGridNo, sStructGridNo;
         TileDefines sNewIndex;
         int sSubIndex;
-        int usObjectIndex, usTileIndex;
+        TileDefines usObjectIndex, usTileIndex;
         int ubNumberOfTiles, ubLoop;
         List<DB_STRUCTURE_TILE> ppTile;
         int bDestructionPartner = -1;
@@ -1102,7 +1102,7 @@ public class ExplosionControl
 
         pSoldier = MercPtrs[ubPerson];   // someone is here, and they're gonna get hurt
 
-        if (!pSoldier.bActive || !pSoldier.bInSector || !pSoldier.bLife)
+        if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.bLife == 0)
         {
             return (false);
         }
@@ -1125,7 +1125,7 @@ public class ExplosionControl
         {
             sNewWoundAmt = 0;
         }
-        EVENT_SoldierGotHit(pSoldier, usItem, sNewWoundAmt, sBreathAmt, ubDirection, (int)uiDist, ubOwner, 0, ANIM_CROUCH, sSubsequent, sBombGridNo);
+        EVENT_SoldierGotHit(pSoldier, usItem, sNewWoundAmt, sBreathAmt, ubDirection, (int)uiDist, ubOwner, 0, AnimationHeights.ANIM_CROUCH, sSubsequent, sBombGridNo);
 
         pSoldier.ubMiscSoldierFlags |= SOLDIER_MISC.HURT_BY_EXPLOSION;
 
@@ -1140,7 +1140,7 @@ public class ExplosionControl
     {
         InventorySlot bPosOfMask = NO_SLOT;
 
-        if (!pSoldier.bActive || !pSoldier.bInSector || !pSoldier.bLife || AM_A_ROBOT(pSoldier))
+        if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.bLife == 0 || AM_A_ROBOT(pSoldier))
         {
             return (fRecompileMovementCosts);
         }
@@ -1190,13 +1190,13 @@ public class ExplosionControl
 
             }
 
-            if (pSoldier.inv[HEAD1POS].usItem == Items.GASMASK && pSoldier.inv[HEAD1POS].bStatus[0] >= USABLE)
+            if (pSoldier.inv[InventorySlot.HEAD1POS].usItem == Items.GASMASK && pSoldier.inv[InventorySlot.HEAD1POS].bStatus[0] >= USABLE)
             {
-                bPosOfMask = HEAD1POS;
+                bPosOfMask = InventorySlot.HEAD1POS;
             }
-            else if (pSoldier.inv[HEAD2POS].usItem == Items.GASMASK && pSoldier.inv[HEAD2POS].bStatus[0] >= USABLE)
+            else if (pSoldier.inv[InventorySlot.HEAD2POS].usItem == Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].bStatus[0] >= USABLE)
             {
-                bPosOfMask = HEAD2POS;
+                bPosOfMask = InventorySlot.HEAD2POS;
             }
 
             if (bPosOfMask != NO_SLOT)
@@ -1455,7 +1455,7 @@ public class ExplosionControl
                 {
                     pItemPoolNext = pItemPool.pNext;
 
-                    if (DamageItemOnGround((gWorldItems[pItemPool.iItemIndex].o), sGridNo, bLevel, (int)(sWoundAmt * 2), ubOwner))
+                    if (ItemSubSystem.DamageItemOnGround((gWorldItems[pItemPool.iItemIndex].o), sGridNo, bLevel, (int)(sWoundAmt * 2), ubOwner))
                     {
                         // item was destroyed
                         RemoveItemFromPool(sGridNo, pItemPool.iItemIndex, bLevel);
@@ -1692,7 +1692,7 @@ public class ExplosionControl
     {
         int bStructHeight;
         int ubMovementCost;
-        int Blocking, BlockingTemp;
+        BLOCKING Blocking, BlockingTemp;
         bool fTravelCostObs = false;
         int uiRangeReduce;
         int sNewGridNo;
@@ -1700,9 +1700,9 @@ public class ExplosionControl
         bool fBlowWindowSouth = false;
         bool fReduceRay = true;
 
-        ubMovementCost = gubWorldMovementCosts[uiNewSpot][ubDir][bLevel];
+        ubMovementCost = gubWorldMovementCosts[uiNewSpot, (int)ubDir, bLevel];
 
-        if (IS_TRAVELCOST.DOOR(ubMovementCost))
+        if (IS_TRAVELCOST_DOOR(ubMovementCost))
         {
             ubMovementCost = DoorTravelCost(null, uiNewSpot, ubMovementCost, false, null);
             // If we have hit a wall, STOP HERE
@@ -1726,7 +1726,7 @@ public class ExplosionControl
 
         if (pBlockingStructure is not null)
         {
-            if (pBlockingStructure.fFlags & STRUCTUREFLAGS.CAVEWALL)
+            if (pBlockingStructure.fFlags.HasFlag(STRUCTUREFLAGS.CAVEWALL))
             {
                 // block completely!
                 fTravelCostObs = true;
@@ -1744,7 +1744,7 @@ public class ExplosionControl
 
             if (fSmokeEffect)
             {
-                if (Blocking == BLOCKING_TOPRIGHT_OPEN_WINDOW || Blocking == BLOCKING_TOPLEFT_OPEN_WINDOW)
+                if (Blocking == BLOCKING.TOPRIGHT_OPEN_WINDOW || Blocking == BLOCKING.TOPLEFT_OPEN_WINDOW)
                 {
                     // If open, fTravelCostObs set to false and reduce range....
                     fTravelCostObs = false;
@@ -1755,16 +1755,16 @@ public class ExplosionControl
                 {
                     // ATE: For windows, check to the west and north for a broken window, as movement costs
                     // will override there...
-                    sNewGridNo = NewGridNo((int)uiNewSpot, DirectionInc(WEST));
+                    sNewGridNo = NewGridNo(uiNewSpot, DirectionInc(WorldDirections.WEST));
 
                     BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, out bStructHeight, out pBlockingStructure, true);
-                    if (BlockingTemp == BLOCKING_TOPRIGHT_OPEN_WINDOW || BlockingTemp == BLOCKING_TOPLEFT_OPEN_WINDOW)
+                    if (BlockingTemp == BLOCKING.TOPRIGHT_OPEN_WINDOW || BlockingTemp == BLOCKING.TOPLEFT_OPEN_WINDOW)
                     {
                         // If open, fTravelCostObs set to false and reduce range....
                         fTravelCostObs = false;
                         // Range will be reduced below...
                     }
-                    if (pBlockingStructure && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
+                    if (pBlockingStructure is not null && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
                     {
                         fTravelCostObs = false;
                         fReduceRay = false;
@@ -1776,7 +1776,7 @@ public class ExplosionControl
                     sNewGridNo = NewGridNo((int)uiNewSpot, DirectionInc(WorldDirections.NORTH));
 
                     BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, bStructHeight, pBlockingStructure, true);
-                    if (BlockingTemp == BLOCKING_TOPRIGHT_OPEN_WINDOW || BlockingTemp == BLOCKING_TOPLEFT_OPEN_WINDOW)
+                    if (BlockingTemp == BLOCKING.TOPRIGHT_OPEN_WINDOW || BlockingTemp == BLOCKING.TOPLEFT_OPEN_WINDOW)
                     {
                         // If open, fTravelCostObs set to false and reduce range....
                         fTravelCostObs = false;
@@ -1795,7 +1795,7 @@ public class ExplosionControl
                 // We are a blast effect....
 
                 // ATE: explode windows!!!!
-                if (Blocking == BLOCKING_TOPLEFT_WINDOW || Blocking == BLOCKING_TOPRIGHT_WINDOW)
+                if (Blocking == BLOCKING.TOPLEFT_WINDOW || Blocking == BLOCKING.TOPRIGHT_WINDOW)
                 {
                     // Explode!
                     if (ubDir == WorldDirections.SOUTH || ubDir == WorldDirections.SOUTHEAST || ubDir == WorldDirections.SOUTHWEST)
@@ -1819,7 +1819,7 @@ public class ExplosionControl
                     fTravelCostObs = false;
                     fReduceRay = false;
                 }
-                if (BlockingTemp == BLOCKING_TOPRIGHT_WINDOW || BlockingTemp == BLOCKING_TOPLEFT_WINDOW)
+                if (BlockingTemp == BLOCKING.TOPRIGHT_WINDOW || BlockingTemp == BLOCKING.TOPLEFT_WINDOW)
                 {
                     if (pBlockingStructure != null)
                     {
@@ -1835,7 +1835,7 @@ public class ExplosionControl
                     fTravelCostObs = false;
                     fReduceRay = false;
                 }
-                if (BlockingTemp == BLOCKING_TOPRIGHT_WINDOW || BlockingTemp == BLOCKING_TOPLEFT_WINDOW)
+                if (BlockingTemp == BLOCKING.TOPRIGHT_WINDOW || BlockingTemp == BLOCKING.TOPLEFT_WINDOW)
                 {
                     if (pBlockingStructure != null)
                     {
@@ -1846,7 +1846,7 @@ public class ExplosionControl
         }
 
         // Have we hit things like furniture, etc?
-        if (Blocking != NOTHING_BLOCKING && !fTravelCostObs)
+        if (Blocking != BLOCKING.NOTHING_BLOCKING && !fTravelCostObs)
         {
             // ATE: Tall things should blaock all
             if (bStructHeight == 4)

@@ -4,18 +4,22 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 
-namespace SharpAlliance.Core.SubSystems;
+namespace SharpAlliance.Core;
 
-public class InteractiveTiles
+public partial class Globals
 {
     public const int MAX_INTTILE_STACK = 10;
     public const int INTTILE_DOOR_TILE_ONE = 1;
     public const int INTTILE_DOOR_OPENSPEED = 70;
     public const int INTILE_CHECK_FULL = 1;
     public const int INTILE_CHECK_SELECTIVE = 2;
+}
 
+public class InteractiveTiles
+{
     private readonly ILogger<InteractiveTiles> logger;
     private readonly GameSettings gGameSettings;
     private readonly RenderWorld renderWorld;
@@ -36,7 +40,7 @@ public class InteractiveTiles
         this.renderWorld = renderWorld;
         this.tileCache = tileCache;
         this.overhead = overhead;
-        WorldStructures = worldStructures;
+        this.worldStructures = worldStructures;
     }
 
     bool InitInteractiveTileManagement()
