@@ -77,25 +77,21 @@ public record ARMY_COMPOSITION
 }
 
 //Defines the patrol groups -- movement groups.
-public record PATROL_GROUP()
-{
-    public int bSize;
-    public int bPriority;
-    public SEC[] ubSectorID = new SEC[4];// [4];
-    public int bFillPermittedAfterDayMod100;
-    public int ubGroupID;
-    public int bWeight;
-    public int ubPendingGroupID;
-}
+public record PATROL_GROUP(
+    int bSize,
+    int bPriority,
+    SEC[] ubSectorID,// = new SEC[4];// [4],
+    int bFillPermittedAfterDayMod100,
+    int ubGroupID,
+    int bWeight,
+    int ubPendingGroupID);
 
 //Defines all stationary defence forces. 
-public record GARRISON_GROUP
-{
-    public SEC ubSectorID;
-    public Garrisons ubComposition;
-    public int bWeight;
-    public int ubPendingGroupID;// [10];
-}
+public record GARRISON_GROUP(
+    SEC ubSectorID,
+    Garrisons ubComposition,
+    int bWeight,
+    int ubPendingGroupID);// [10];
 
 public enum INSERTION_CODE
 {

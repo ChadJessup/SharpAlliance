@@ -4798,9 +4798,9 @@ namespace SharpAlliance.Core.SubSystems
                 else
                 {
                     //add the rest of the string
-                    wcscat(pFinishedString, pTempString[iCurLocInSourceString]);
+                    wcscat(pFinishedString, pTempString[iCurLocInSourceString..]);
 
-                    iCurLocInSourceString += wcslen(pTempString[iCurLocInSourceString]);
+                    iCurLocInSourceString += wcslen(pTempString[iCurLocInSourceString..]);
                 }
             }
 

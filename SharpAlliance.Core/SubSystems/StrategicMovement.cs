@@ -927,7 +927,7 @@ public class StrategicMovement
                                     {
                                         fCombatAbleMerc = true;
                                     }
-                                    if (pSoldier.bLife > 0)
+                                    if (pSoldier.IsAlive)
                                     {
                                         fAliveMerc = true;
                                     }
@@ -2858,7 +2858,7 @@ public class StrategicMovement
                     foreach (var pg in pPlayer)
                     {
                         // robots count as mercs here, because they can fight, but vehicles don't
-                        if ((pg.pSoldier.bLife > 0) && !(pg.pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                        if ((pg.pSoldier.IsAlive) && !(pg.pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
                         {
                             ubNumMercs++;
                         }
@@ -2882,7 +2882,7 @@ public class StrategicMovement
                     //we have a group, make sure that it isn't a group containing only dead members.
                     foreach (var pPlayer in pGroup.pPlayerList)
                     {
-                        if (pPlayer.pSoldier.bLife > 0)
+                        if (pPlayer.pSoldier.IsAlive)
                         {
                             ubNumGroups++;
                             break;
@@ -4827,7 +4827,7 @@ public class StrategicMovement
             {
                 // if we haven't talked to him yet, and he's not currently recruired/escorted by player (!)
                 if ((pProfile.ubLastDateSpokenTo == 0) &&
-                        !(pProfile.ubMiscFlags & (PROFILE_MISC_FLAG_RECRUITED | PROFILE_MISC_FLAG_EPCACTIVE)))
+                        !(pProfile.ubMiscFlags & (ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED | ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE)))
                 {
                     // then this is a guy we need to stop for...
                     fFoundSomebody = true;

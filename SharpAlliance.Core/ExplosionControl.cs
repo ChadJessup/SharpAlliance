@@ -1094,11 +1094,11 @@ public class ExplosionControl
     }
 
 
-    bool DamageSoldierFromBlast(int ubPerson, int ubOwner, int sBombGridNo, int sWoundAmt, int sBreathAmt, int uiDist, int usItem, int sSubsequent)
+    bool DamageSoldierFromBlast(int ubPerson, int ubOwner, int sBombGridNo, int sWoundAmt, int sBreathAmt, int uiDist, Items usItem, int sSubsequent)
     {
         SOLDIERTYPE? pSoldier;
         int sNewWoundAmt = 0;
-        int ubDirection;
+        WorldDirections ubDirection;
 
         pSoldier = MercPtrs[ubPerson];   // someone is here, and they're gonna get hurt
 
@@ -1114,7 +1114,7 @@ public class ExplosionControl
         }
 
         // Direction to center of explosion
-        ubDirection = (int)GetDirectionFromGridNo(sBombGridNo, pSoldier);
+        ubDirection = SoldierControl.GetDirectionFromGridNo(sBombGridNo, pSoldier);
 
         // Increment attack counter...
         gTacticalStatus.ubAttackBusyCount++;
@@ -1773,16 +1773,16 @@ public class ExplosionControl
 
                 if (fTravelCostObs)
                 {
-                    sNewGridNo = NewGridNo((int)uiNewSpot, DirectionInc(WorldDirections.NORTH));
+                    sNewGridNo = NewGridNo(uiNewSpot, DirectionInc(WorldDirections.NORTH));
 
-                    BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, bStructHeight, pBlockingStructure, true);
+                    BlockingTemp = GetBlockingStructureInfo(sNewGridNo, ubDir, 0, bLevel, bStructHeight, pBlockingStructure, true);
                     if (BlockingTemp == BLOCKING.TOPRIGHT_OPEN_WINDOW || BlockingTemp == BLOCKING.TOPLEFT_OPEN_WINDOW)
                     {
                         // If open, fTravelCostObs set to false and reduce range....
                         fTravelCostObs = false;
                         // Range will be reduced below...
                     }
-                    if (pBlockingStructure && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
+                    if (pBlockingStructure is not null && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
                     {
                         fTravelCostObs = false;
                         fReduceRay = false;
@@ -1805,20 +1805,21 @@ public class ExplosionControl
 
                     if (pBlockingStructure != null)
                     {
-                        WindowHit((int)uiNewSpot, pBlockingStructure.usStructureID, fBlowWindowSouth, true);
+                        WindowHit(uiNewSpot, pBlockingStructure.usStructureID, fBlowWindowSouth, true);
                     }
                 }
 
                 // ATE: For windows, check to the west and north for a broken window, as movement costs
                 // will override there...
-                sNewGridNo = NewGridNo((int)uiNewSpot, DirectionInc(WorldDirections.WEST));
+                sNewGridNo = NewGridNo(uiNewSpot, DirectionInc(WorldDirections.WEST));
 
-                BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, out bStructHeight, out pBlockingStructure, true);
-                if (pBlockingStructure && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
+                BlockingTemp = GetBlockingStructureInfo(sNewGridNo, ubDir, 0, bLevel, out bStructHeight, out pBlockingStructure, true);
+                if (pBlockingStructure is not null && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
                 {
                     fTravelCostObs = false;
                     fReduceRay = false;
                 }
+
                 if (BlockingTemp == BLOCKING.TOPRIGHT_WINDOW || BlockingTemp == BLOCKING.TOPLEFT_WINDOW)
                 {
                     if (pBlockingStructure != null)
@@ -1830,7 +1831,7 @@ public class ExplosionControl
                 sNewGridNo = NewGridNo((int)uiNewSpot, DirectionInc(WorldDirections.NORTH));
                 BlockingTemp = GetBlockingStructureInfo((int)sNewGridNo, ubDir, 0, bLevel, bStructHeight, pBlockingStructure, true);
 
-                if (pBlockingStructure && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
+                if (pBlockingStructure is not null && pBlockingStructure.pDBStructureRef.pDBStructure.ubDensity <= 15)
                 {
                     fTravelCostObs = false;
                     fReduceRay = false;
@@ -1960,7 +1961,7 @@ public class ExplosionControl
 
             uiTempRange = sRange;
 
-            if (ubDir & 1)
+            if (ubDir.HasFlag(WorldDirections.NORTHEAST))
             {
                 cnt = 3;
             }
@@ -2005,9 +2006,9 @@ public class ExplosionControl
                         uiBranchSpot = uiNewSpot;
 
                         // figure the branch direction - which is one dir clockwise
-                        ubBranchDir = (ubDir + 1) % 8;
+                        ubBranchDir = (WorldDirections)(int)(((int)ubDir + 1) % 8);
 
-                        if (ubBranchDir & 1)
+                        if (ubBranchDir.HasFlag(WorldDirections.NORTHEAST))
                         {
                             branchCnt = 3;
                         }
@@ -2066,7 +2067,7 @@ public class ExplosionControl
                     break;
                 }
 
-                if (ubDir & 1)
+                if (ubDir.HasFlag(WorldDirections.NORTHEAST))
                 {
                     cnt += 3;
                 }
@@ -2117,18 +2118,18 @@ public class ExplosionControl
         if (fAnyMercHit)
         {
             // reset explosion hit flag so we can damage mercs again
-            for (cnt = 0; cnt < (int)guiNumMercSlots; cnt++)
+            for (cnt = 0; cnt < guiNumMercSlots; cnt++)
             {
-                if (MercSlots[cnt])
+                if (MercSlots[cnt] is not null)
                 {
-                    MercSlots[cnt].ubMiscSoldierFlags &= ~SOLDIER.MISC_HURT_BY_EXPLOSION;
+                    MercSlots[cnt].ubMiscSoldierFlags &= ~SOLDIER_MISC.HURT_BY_EXPLOSION;
                 }
             }
         }
 
         if (fSubsequent != BLOOD_SPREAD_EFFECT)
         {
-            MakeNoise(NOBODY, sGridNo, bLevel, gpWorldLevelData[sGridNo].ubTerrainID, Explosive[Item[usItem].ubClassIndex].ubVolume, NOISE_EXPLOSION);
+            MakeNoise(NOBODY, sGridNo, bLevel, gpWorldLevelData[sGridNo].ubTerrainID, Explosive[Item[usItem].ubClassIndex].ubVolume, NOISE.EXPLOSION);
 
         }
     }
@@ -2214,14 +2215,14 @@ public class ExplosionControl
     bool HookerInRoom(int ubRoom)
     {
         int ubLoop;
-        int? ubTempRoom;
+        int ubTempRoom;
         SOLDIERTYPE? pSoldier;
 
         for (ubLoop = gTacticalStatus.Team[TEAM.CIV_TEAM].bFirstID; ubLoop <= gTacticalStatus.Team[TEAM.CIV_TEAM].bLastID; ubLoop++)
         {
             pSoldier = MercPtrs[ubLoop];
 
-            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && pSoldier.bNeutral > 0 && pSoldier.ubBodyType == MINICIV)
+            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && pSoldier.bNeutral > 0 && pSoldier.ubBodyType == SoldierBodyTypes.MINICIV)
             {
                 if (RenderFun.InARoom(pSoldier.sGridNo, out ubTempRoom) && ubTempRoom == ubRoom)
                 {
@@ -2486,7 +2487,7 @@ public class ExplosionControl
 
                     for (ubID = gTacticalStatus.Team[CIV_TEAM].bFirstID; ubID <= gTacticalStatus.Team[CIV_TEAM].bLastID; ubID++)
                     {
-                        if (MercPtrs[ubID].bActive && MercPtrs[ubID].bInSector && MercPtrs[ubID].ubCivilianGroup == KINGPIN_CIV_GROUP)
+                        if (MercPtrs[ubID].bActive && MercPtrs[ubID].bInSector && MercPtrs[ubID].ubCivilianGroup == CIV_GROUP.KINGPIN_CIV_GROUP)
                         {
                             for (ubID2 = gTacticalStatus.Team[gbPlayerNum].bFirstID; ubID2 <= gTacticalStatus.Team[gbPlayerNum].bLastID; ubID2++)
                             {
@@ -2595,7 +2596,7 @@ public class ExplosionControl
                 }
                 break;
             case ACTION_ITEM.LOCAL_ALARM:
-                MakeNoise(NOBODY, sGridNo, 0, gpWorldLevelData[sGridNo].ubTerrainID, 30, NOISE_SILENT_ALARM);
+                MakeNoise(NOBODY, sGridNo, 0, gpWorldLevelData[sGridNo].ubTerrainID, 30, NOISE.SILENT_ALARM);
                 break;
             case ACTION_ITEM.GLOBAL_ALARM:
                 CallAvailableEnemiesTo(sGridNo);
@@ -3253,7 +3254,7 @@ public class ExplosionControl
         int cnt = gTacticalStatus.Team[CIV_TEAM].bFirstID;
         foreach (var pSoldier in MercPtrs.Skip(cnt))
         {
-            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife > 0 && pSoldier.bNeutral > 0)
+            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.IsAlive && pSoldier.bNeutral > 0)
             {
                 if (pSoldier.ubProfile != NO_PROFILE)
                 {

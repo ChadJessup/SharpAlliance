@@ -43,7 +43,7 @@ public class Facts
 
         // the NPC is wounded...
         pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
-        if (pSoldier is not null && pSoldier.bLife > 0 && pSoldier.bBleeding > 0)
+        if (pSoldier is not null && pSoldier.IsAlive && pSoldier.bBleeding > 0)
         {
             return (true);
         }

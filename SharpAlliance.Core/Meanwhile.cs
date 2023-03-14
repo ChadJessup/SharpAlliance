@@ -5,6 +5,7 @@ using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.EnglishText;
 using SharpAlliance.Core.Managers;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core;
 
@@ -232,14 +233,15 @@ public class Meanwhile
         string zStr = string.Empty;
 
         zStr = wprintf("%s.....", pMessageStrings[MSG.MEANWHILE]);
+        Rectangle? toss = new();
 
         if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
         {
-            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, null);
+            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, ref toss);
         }
         else
         {
-            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, null);
+            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, ref toss);
         }
     }
 
@@ -732,7 +734,7 @@ public class Meanwhile
         switch (guiOldScreen)
         {
             case ScreenName.MAP_SCREEN:
-                InternalLeaveTacticalScreen(MAP_SCREEN);
+                InternalLeaveTacticalScreen(ScreenName.MAP_SCREEN);
                 //gfEnteringMapScreen = true;
                 break;
 
@@ -976,7 +978,7 @@ public class Meanwhile
         else
         {
             // 2-4 days later
-            uiTime = GameClock.GetWorldTotalMin() + 60 * (24 + Globals.Random.Next(48));
+            uiTime = (uint)(GameClock.GetWorldTotalMin() + 60 * (24 + Globals.Random.Next(48)));
         }
 
         MeanwhileDef.ubMeanwhileID = Meanwhiles.FLOWERS;

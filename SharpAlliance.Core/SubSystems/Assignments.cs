@@ -38,6 +38,8 @@ public enum Assignments
     ASSIGNMENT_HOSPITAL,
     ASSIGNMENT_EMPTY,
     NO_ASSIGNMENT = 127, //used when no pSoldier.ubDesiredSquad
+
+    SLEEPING = 172, // chad: added because original code intermixed Assignments and AnimationStates.
 };
 
 

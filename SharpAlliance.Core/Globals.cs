@@ -8,8 +8,8 @@ using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using static SharpAlliance.Core.InteractiveTiles;
 using static SharpAlliance.Core.Screens.CreditsScreen;
-using static SharpAlliance.Core.SubSystems.InteractiveTiles;
 
 namespace SharpAlliance.Core;
 
@@ -2008,8 +2008,8 @@ public partial class Globals
     public static int[,] gbSeenOpponents = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
     public static int[,] gsLastKnownOppLoc = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];		// merc vs. merc
     public static int[,] gbLastKnownOppLevel = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
-    public static int[,] gsPublicLastKnownOppLoc = new int[MAXTEAMS, TOTAL_SOLDIERS];	// team vs. merc
-    public static int[,] gbPublicLastKnownOppLevel = new int[MAXTEAMS, TOTAL_SOLDIERS];
+    public static Dictionary<TEAM, List<int>> gsPublicLastKnownOppLoc = new(); //int[MAXTEAMS, TOTAL_SOLDIERS];	// team vs. merc
+    public static Dictionary<TEAM, List<int>> gbPublicLastKnownOppLevel = new();
     public static int[] gubPublicNoiseVolume = new int[MAXTEAMS];
     public static int[] gsPublicNoiseGridno = new int[MAXTEAMS];
     public static int[] gbPublicNoiseLevel = new int[MAXTEAMS];

@@ -415,7 +415,7 @@ public class StrategicMines
         return (iWorkForceSize);
     }
 
-    int GetAvailableWorkForceForMineForEnemy(MINE bMineIndex)
+    public static int GetAvailableWorkForceForMineForEnemy(MINE bMineIndex)
     {
         // look for available workforce in the town associated with the mine
         int iWorkForceSize = 0;
@@ -464,7 +464,7 @@ public class StrategicMines
         return (iWorkRate);
     }
 
-    int GetCurrentWorkRateOfMineForEnemy(MINE bMineIndex)
+    public static int GetCurrentWorkRateOfMineForEnemy(MINE bMineIndex)
     {
         int iWorkRate = 0;
 
@@ -802,7 +802,7 @@ public class StrategicMines
     }
 
 
-    int GetHeadMinerIndexForMine(MINE bMineIndex)
+    public static int GetHeadMinerIndexForMine(MINE bMineIndex)
     {
         int ubMinerIndex = 0;
         NPCID usProfileId = 0;
@@ -831,7 +831,7 @@ public class StrategicMines
         return (Globals.gHeadMinerData[GetHeadMinerIndexForMine(bMineIndex)].usProfileId);
     }
 
-    void IssueHeadMinerQuote(MINE bMineIndex, HEAD_MINER_STRATEGIC_QUOTE ubQuoteType)
+    public static void IssueHeadMinerQuote(MINE bMineIndex, HEAD_MINER_STRATEGIC_QUOTE ubQuoteType)
     {
         int ubHeadMinerIndex = 0;
         NPCID usHeadMinerProfileId = 0;
@@ -1193,7 +1193,7 @@ public class StrategicMines
              (!pMineStatus.fEmpty) &&
              (!pMineStatus.fSpokeToHeadMiner) &&
              (!pMineStatus.fAttackedHeadMiner) &&
-             (Globals.gMercProfiles[GetHeadMinerProfileIdForMine(ubMineIndex)].bLife > 0))
+             (Globals.gMercProfiles[GetHeadMinerProfileIdForMine(ubMineIndex)].IsAlive))
         {
             return (true);
         }

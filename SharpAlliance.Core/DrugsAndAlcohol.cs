@@ -129,7 +129,7 @@ public class DrugsAndAlcohol
                 if (pSoldier.bDrugSideEffectRate[ubDrugType] > (ubDrugSideEffect[ubDrugType] * 3))
                 {
                     // Keel over...
-                    DeductPoints(pSoldier, 0, 10000);
+                    Points.DeductPoints(pSoldier, 0, 10000);
 
                     // Permanently lower certain stats...
                     pSoldier.bWisdom -= 5;

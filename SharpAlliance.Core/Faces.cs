@@ -229,11 +229,11 @@ public class Faces
                 Pal[uiCount].peBlue = 255;
             }
 
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 250, 25, 25, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = VeldridVideoManager.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 250, 25, 25, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, false);
 
             for (uiCount = 0; uiCount < 256; uiCount++)
             {
@@ -241,7 +241,7 @@ public class Faces
                 Pal[uiCount].peGreen = (uiCount % 128) + 128;
                 Pal[uiCount].peBlue = (uiCount % 128) + 128;
             }
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
 
         }
 
@@ -926,7 +926,7 @@ public class Faces
     }
 
 
-    void HandleTalkingAutoFace(int iFaceIndex)
+    public static void HandleTalkingAutoFace(int iFaceIndex)
     {
         FACETYPE? pFace;
 
@@ -1025,7 +1025,7 @@ public class Faces
         return (RenderAutoFace(MercPtrs[ubSoldierID].iFaceIndex));
     }
 
-    void GetXYForIconPlacement(FACETYPE? pFace, int ubIndex, int sFaceX, int sFaceY, out int psX, out int psY)
+    public static void GetXYForIconPlacement(FACETYPE? pFace, int ubIndex, int sFaceX, int sFaceY, out int psX, out int psY)
     {
         int sX, sY;
         int usWidth, usHeight;
@@ -1034,8 +1034,8 @@ public class Faces
 
 
         // Get height, width of icon...
-        GetVideoObject(&hVObject, guiPORTRAITICONS);
-        pTrav = &(hVObject.pETRLEObject[ubIndex]);
+        GetVideoObject(hVObject, guiPORTRAITICONS);
+        pTrav = (hVObject.pETRLEObject[ubIndex]);
         usHeight = pTrav.usHeight;
         usWidth = pTrav.usWidth;
 
@@ -2099,7 +2099,7 @@ public class Faces
         InternalShutupaYoFace(iFaceIndex, true);
     }
 
-    void SetupFinalTalkingDelay(FACETYPE? pFace)
+    public static void SetupFinalTalkingDelay(FACETYPE? pFace)
     {
         pFace.fFinishTalking = true;
 

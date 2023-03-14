@@ -208,12 +208,6 @@ public class AIMain
             if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.BOXER)))
             {
                 // do nothing!
-# if TESTAICONTROL
-                if (gfTurnBasedAI)
-                {
-                    DebugAI(String("Ending turn for %d because not a boxer", pSoldier.ubID));
-                }
-#endif
                 EndAIGuysTurn(pSoldier);
                 return;
             }
@@ -226,12 +220,6 @@ public class AIMain
             {
                 EndMuzzleFlash(pSoldier);
             }
-# if TESTAICONTROL
-            if (gfTurnBasedAI)
-            {
-                DebugAI(String("Ending turn for %d because bad life/inactive", pSoldier.ubID));
-            }
-#endif
 
             EndAIGuysTurn(pSoldier);
             return;
@@ -248,13 +236,6 @@ public class AIMain
             else if (!(pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE)))
             {
                 // don't do anything!
-# if TESTAICONTROL
-                if (gfTurnBasedAI)
-                {
-                    DebugAI(String("Ending turn for %d because asleep and no scheduled action", pSoldier.ubID));
-                }
-#endif
-
                 EndAIGuysTurn(pSoldier);
                 return;
             }
@@ -263,13 +244,6 @@ public class AIMain
         if (pSoldier.bInSector == false && !(pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE)))
         {
             // don't do anything!
-# if TESTAICONTROL
-            if (gfTurnBasedAI)
-            {
-                DebugAI(String("Ending turn for %d because out of sector and no scheduled action", pSoldier.ubID));
-            }
-#endif
-
             EndAIGuysTurn(pSoldier);
             return;
         }
@@ -278,13 +252,6 @@ public class AIMain
             && !TANK(pSoldier)) || AM_A_ROBOT(pSoldier))
         {
             // bail out!
-# if TESTAICONTROL
-            if (gfTurnBasedAI)
-            {
-                DebugAI(String("Ending turn for %d because is vehicle or robot", pSoldier.ubID));
-            }
-#endif
-
             EndAIGuysTurn(pSoldier);
             return;
         }
@@ -756,7 +723,7 @@ public class AIMain
             && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             && gubOutOfTurnPersons == 0)
         {
-            if (((pSoldier.bVisible != -1 && pSoldier.bLife > 0) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))) && (fInValidSoldier == false))
+            if (((pSoldier.bVisible != -1 && pSoldier.IsAlive) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))) && (fInValidSoldier == false))
             {
                 // If we are on a roof, set flag for rendering...
                 if (pSoldier.bLevel != 0 && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -812,7 +779,7 @@ public class AIMain
 
             if (pOurTeam.bActive)
             {
-                if (pOurTeam.sGridNo == sGridno || pOurTeam.usActionData == sGridno)
+                if (pOurTeam.sGridNo == sGridno || sGridno == (int)pOurTeam.usActionData)
                 {
                     return (false);
                 }
@@ -1388,14 +1355,10 @@ public class AIMain
 
 
         // this here should never happen, but it seems to (turns sometimes hang!)
-        if ((pSoldier.bAction == AI_ACTION.CHANGE_FACING) && (pSoldier.bDesiredDirection != pSoldier.usActionData))
+        if ((pSoldier.bAction == AI_ACTION.CHANGE_FACING) && (pSoldier.bDesiredDirection != (WorldDirections)pSoldier.usActionData))
         {
-# if TESTVERSION
-            PopMessage("ActionInProgress: WARNING - CONTINUING FACING CHANGE...");
-#endif
-
             // don't try to pay any more APs for this, it was paid for once already!
-            pSoldier.bDesiredDirection = (int)pSoldier.usActionData;   // turn to face direction in actionData
+            pSoldier.bDesiredDirection = (WorldDirections)pSoldier.usActionData;   // turn to face direction in actionData
             return (1);
         }
 
@@ -1675,21 +1638,10 @@ public class AIMain
             // if action should remain in progress
             if (ActionInProgress(pSoldier) > 0)
             {
-# if DEBUGBUSY
-                AINumMessage("Busy with action, skipping guy#", pSoldier.ubID);
-#endif
-
                 // let it continue
                 return;
             }
         }
-
-
-# if DEBUGDECISIONS
-        DebugAI(String("HandleManAI - DECIDING for guynum %d(%s) at gridno %d, APs %d\n",
-            pSoldier.ubID, pSoldier.name, pSoldier.sGridNo, pSoldier.bActionPoints));
-#endif
-
 
         // if man has nothing to do
         if (pSoldier.bAction == AI_ACTION.NONE)
@@ -1801,10 +1753,6 @@ public class AIMain
             // if he chose to continue doing nothing
             if (pSoldier.bAction == AI_ACTION.NONE)
             {
-# if RECORDNET
-                fprintf(NetDebugFile, "\tMOVED BECOMING true: Chose to do nothing, guynum %d\n", pSoldier.ubID);
-#endif
-
                 NPCDoesNothing(pSoldier);  // sets pSoldier.moved to true
                 return;
             }
@@ -1842,9 +1790,6 @@ public class AIMain
             }
             else
             {
-# if DEBUGDECISIONS
-                AINumMessage("HandleManAI - Not enough APs, skipping guy#", pSoldier.ubID);
-#endif
                 HaltMoveForSoldierOutOfPoints(pSoldier);
                 return;
             }
@@ -2025,7 +1970,7 @@ public class AIMain
                 break;
 
             case AI_ACTION.MOVE_TO_CLIMB:
-                if (pSoldier.usActionData == pSoldier.sGridNo)
+                if ((int)pSoldier.usActionData == pSoldier.sGridNo)
                 {
                     // change action to climb now and try that.
                     pSoldier.bAction = AI_ACTION.CLIMB_ROOF;
@@ -2070,7 +2015,7 @@ public class AIMain
                         pSoldier.sLastTwoLocations[1] = pSoldier.sGridNo;
                     }
                     // check for loop
-                    else if (pSoldier.usActionData == pSoldier.sLastTwoLocations[1] && pSoldier.sGridNo == pSoldier.sLastTwoLocations[0])
+                    else if ((int)pSoldier.usActionData == pSoldier.sLastTwoLocations[1] && pSoldier.sGridNo == pSoldier.sLastTwoLocations[0])
                     {
                         DebugAI(string.Format("%d in movement loop, aborting turn", pSoldier.ubID));
 
@@ -2092,7 +2037,7 @@ public class AIMain
                     {
                         if (Globals.Random.Next(2) == 0)
                         {
-                            PlaySoldierJA2Sample(pSoldier.ubID, (BLOODCAT_GROWL_1 + Globals.Random.Next(4)), RATE_11025, SoundVolume(HIGHVOLUME, pSoldier.sGridNo), 1, SoundDir(pSoldier.sGridNo), true);
+                            // PlaySoldierJA2Sample(pSoldier.ubID, (BLOODCAT_GROWL_1 + Globals.Random.Next(4)), RATE_11025, SoundVolume(HIGHVOLUME, pSoldier.sGridNo), 1, SoundDir(pSoldier.sGridNo), true);
                         }
                     }
                 }
@@ -2173,19 +2118,19 @@ public class AIMain
                 switch (pSoldier.ubQuoteActionID)
                 {
                     case QUOTE_ACTION_ID.TRAVERSE_EAST:
-                        pSoldier.sOffWorldGridNo = pSoldier.usActionData;
+                        pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
                         AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.EAST);
                         break;
                     case QUOTE_ACTION_ID.TRAVERSE_SOUTH:
-                        pSoldier.sOffWorldGridNo = pSoldier.usActionData;
+                        pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
                         AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.SOUTH);
                         break;
                     case QUOTE_ACTION_ID.TRAVERSE_WEST:
-                        pSoldier.sOffWorldGridNo = pSoldier.usActionData;
+                        pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
                         AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.WEST);
                         break;
                     case QUOTE_ACTION_ID.TRAVERSE_NORTH:
-                        pSoldier.sOffWorldGridNo = pSoldier.usActionData;
+                        pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
                         AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.NORTH);
                         break;
                     default:
@@ -2195,24 +2140,8 @@ public class AIMain
                 NewDest(pSoldier, pSoldier.usActionData);    // set new .sDestination to actionData
 
                 // make sure it worked (check that pSoldier.sDestination == pSoldier.usActionData)
-                if (pSoldier.sFinalDestination != pSoldier.usActionData)
+                if (pSoldier.sFinalDestination != (int)pSoldier.usActionData)
                 {
-# if BETAVERSION
-                    // this should NEVER happen, indicates AI picked an illegal spot!
-                    sprintf(tempstr, "ExecuteAction: ERROR - %s tried MOVE to gridno %d, NewDest failed, action %d CANCELED",
-                        pSoldier.name, pSoldier.usActionData, pSoldier.bAction);
-
-# if RECORDNET
-                    fprintf(NetDebugFile, "\n%s\n\n", tempstr);
-#endif
-
-                    PopMessage(tempstr);
-
-                    sprintf(tempstr, "BLACK-LISTING gridno %d for %s", pSoldier.usActionData, pSoldier.name);
-                    PopMessage(tempstr);
-
-                    SaveGame(ERROR_SAVE);
-#endif
                     // temporarily black list this gridno to stop enemy from going there
                     pSoldier.sBlackList = (int)pSoldier.usActionData;
 
@@ -2266,21 +2195,7 @@ public class AIMain
                         }
                     }
                 }
-# if RECORDNET
-                fprintf(NetDebugFile, "\tExecuteAction: %d calling HandleItem(), inHand %d, actionData %d, anitype %d, oldani %d\n",
-                    pSoldier.ubID, pSoldier.inv[InventorySlot.HANDPOS].item, pSoldier.usActionData, pSoldier.anitype[pSoldier.anim], pSoldier.oldani);
-#endif
 
-# if TESTVERSION
-                if (pSoldier.bAction == KNIFE_MOVE)
-                {
-                    sprintf(tempstr, "TEST MSG: %s is about to go stab %s. MAKE SURE HE DOES!",
-                        pSoldier.name,
-                    ExtMen[WhoIsThere(pSoldier.usActionData)].name);
-
-                    SimulMessage(tempstr, 3000, NODECRYPT);
-                }
-#endif
                 iRetCode = HandleItem(pSoldier, pSoldier.usActionData, pSoldier.bTargetLevel, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
                 if (iRetCode != ITEM_HANDLE_OK)
                 {
@@ -2289,13 +2204,8 @@ public class AIMain
                         DebugAI(string.Format("AI %d got error code %ld from HandleItem, doing action %d, has %d APs... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction, pSoldier.bActionPoints));
                         Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
                     }
+
                     CancelAIAction(pSoldier, FORCE);
-# if TESTAICONTROL
-                    if (gfTurnBasedAI)
-                    {
-                        DebugAI(String("Ending turn for %d because of error from HandleItem", pSoldier.ubID));
-                    }
-#endif
                     EndAIGuysTurn(pSoldier);
                 }
                 break;
@@ -2312,9 +2222,9 @@ public class AIMain
                     SendSoldierSetDesiredDirectionEvent(pSoldier, WorldDirections.WEST);
                 }
 
-                EVENT_InitNewSoldierAnim(pSoldier, AI_PULL_SWITCH, 0, false);
+                SoldierControl.EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.AI_PULL_SWITCH, 0, false);
 
-                DeductPoints(pSoldier, AP.PULL_TRIGGER, 0);
+                Points.DeductPoints(pSoldier, AP.PULL_TRIGGER, 0);
 
                 //gTacticalStatus.fPanicFlags					= 0; // turn all flags off
                 gTacticalStatus.ubTheChosenOne = NOBODY;
@@ -2326,7 +2236,7 @@ public class AIMain
                 //gTacticalStatus.sPanicTriggerGridno	= NOWHERE;
 
                 // grab detonator and set off bomb(s)
-                DeductPoints(pSoldier, AP.USE_REMOTE, BP.USE_DETONATOR);// pay for it!
+                Points.DeductPoints(pSoldier, AP.USE_REMOTE, BP.USE_DETONATOR);// pay for it!
                                                                         //SetOffPanicBombs(1000,COMMUNICATE);    // BOOOOOOOOOOOOOOOOOOOOM!!!!!
                 SetOffPanicBombs(pSoldier.ubID, 0);
 
@@ -2357,7 +2267,7 @@ public class AIMain
 
                             SendNetData(ALL_NODES);
                 */
-                DeductPoints(pSoldier, AP.RADIO, BP.RADIO);// pay for it!
+                Points.DeductPoints(pSoldier, AP.RADIO, BP.RADIO);// pay for it!
                 RadioSightings(pSoldier, EVERYBODY, pSoldier.bTeam);      // about everybody
                                                                           // action completed immediately, cancel it right away
 
@@ -2367,7 +2277,7 @@ public class AIMain
                 break;
 
             case AI_ACTION.CREATURE_CALL:                                   // creature calling to others
-                DeductPoints(pSoldier, AP.RADIO, BP.RADIO);// pay for it!
+                Points.DeductPoints(pSoldier, AP.RADIO, BP.RADIO);// pay for it!
                 CreatureCall(pSoldier);
                 //return( false ); // no longer in progress
                 break;
@@ -2555,7 +2465,7 @@ public class AIMain
             case STATUS.YELLOW:
                 break;
             default:
-                if ((pSoldier.bOrders == ONGUARD) || (pSoldier.bOrders == CLOSEPATROL))
+                if ((pSoldier.bOrders == Orders.ONGUARD) || (pSoldier.bOrders == Orders.CLOSEPATROL))
                 {
                     // crank up ONGUARD to CLOSEPATROL, and CLOSEPATROL to FARPATROL
                     pSoldier.bOrders++;       // increase roaming range by 1 category
@@ -2563,13 +2473,13 @@ public class AIMain
                 else if (pSoldier.bTeam == TEAM.MILITIA_TEAM)
                 {
                     // go on alert!
-                    pSoldier.bOrders = SEEKENEMY;
+                    pSoldier.bOrders = Orders.SEEKENEMY;
                 }
                 else if (CREATURE_OR_BLOODCAT(pSoldier))
                 {
-                    if (pSoldier.bOrders != STATIONARY && pSoldier.bOrders != ONCALL)
+                    if (pSoldier.bOrders != Orders.STATIONARY && pSoldier.bOrders != Orders.ONCALL)
                     {
-                        pSoldier.bOrders = SEEKENEMY;
+                        pSoldier.bOrders = Orders.SEEKENEMY;
                     }
                 }
 
@@ -2614,7 +2524,7 @@ public class AIMain
         }
 
         // if there is a stealth mission in progress here, and a panic trigger exists
-        if (bTeam == ENEMY_TEAM && (gTacticalStatus.fPanicFlags.HasFlag(PANIC_TRIGGERS_HERE)))
+        if (bTeam == ENEMY_TEAM && (gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE)))
         {
             // they're going to be aware of us now!
             MakeClosestEnemyChosenOne();
@@ -2752,7 +2662,7 @@ public class AIMain
 
         if (pSoldier.ubProfile != NO_PROFILE && NPCHasUnusedRecordWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_TRAVERSAL))
         {
-            gMercProfiles[pSoldier.ubProfile].ubMiscFlags3 |= PROFILE_MISC_FLAG3_HANDLE_DONE_TRAVERSAL;
+            gMercProfiles[pSoldier.ubProfile].ubMiscFlags3 |= ProfileMiscFlags3.PROFILE_MISC_FLAG3_HANDLE_DONE_TRAVERSAL;
         }
         else
         {

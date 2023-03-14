@@ -26,22 +26,22 @@ namespace SharpAlliance.Core.SubSystems
         private readonly GameContext context;
         private readonly IClockManager clock;
         private readonly MouseSubSystem mouse;
-        private readonly GameSettings gGameSettings;
+        private static GameSettings gGameSettings;
         private readonly MercTextBox mercTextBox;
-        private readonly IScreenManager screens;
+        private static IScreenManager screens;
         private readonly Overhead overhead;
         private readonly RenderWorld renderWorld;
-        private readonly CursorSubSystem cursor;
-        private readonly IInputManager inputs;
+        private static CursorSubSystem cursor;
+        private static IInputManager inputs;
 
-        private MapScreen mapScreen;
-        private FadeScreen fadeScreen;
+        private static MapScreen mapScreen;
+        private static FadeScreen fadeScreen;
 
         // if the cursor was locked to a region
         internal static bool fCursorLockedToArea = false;
 
         //extern bool fMapExitDueToMessageBox;
-        public bool fInMapMode { get; private set; }
+        public static bool fInMapMode { get; private set; }
 
         public MessageBoxSubSystem(
             GameContext context,
@@ -55,16 +55,16 @@ namespace SharpAlliance.Core.SubSystems
             Overhead overhead,
             GameSettings gameSettings)
         {
-            this.gGameSettings = gameSettings;
-            this.mercTextBox = mercTextBox;
-            this.renderWorld = renderWorld;
-            this.cursor = cursorSubSystem;
-            this.screens = screenManager;
-            this.mouse = mouseSubSystem;
-            this.inputs = inputManager;
-            this.clock = clockManager;
-            this.overhead = overhead;
-            this.context = context;
+            gGameSettings = gameSettings;
+            mercTextBox = mercTextBox;
+            renderWorld = renderWorld;
+            cursor = cursorSubSystem;
+            screens = screenManager;
+            mouse = mouseSubSystem;
+            inputs = inputManager;
+            clock = clockManager;
+            overhead = overhead;
+            context = context;
         }
 
         public bool IsInitialized { get; }
@@ -75,13 +75,13 @@ namespace SharpAlliance.Core.SubSystems
 
         public async ValueTask<bool> Initialize()
         {
-            this.mapScreen = await this.screens.GetScreen<MapScreen>(ScreenName.MAP_SCREEN, activate: false);
-            this.fadeScreen = await this.screens.GetScreen<FadeScreen>(ScreenName.FADE_SCREEN, activate: false);
+            mapScreen = await screens.GetScreen<MapScreen>(ScreenName.MAP_SCREEN, activate: false);
+            fadeScreen = await screens.GetScreen<FadeScreen>(ScreenName.FADE_SCREEN, activate: false);
 
             return true;
         }
 
-        public int DoMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MessageBoxFlags usFlags, MSGBOX_CALLBACK ReturnCallback, ref Rectangle? pCenteringRect)
+        public static int DoMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MessageBoxFlags usFlags, MSGBOX_CALLBACK ReturnCallback, ref Rectangle? pCenteringRect)
         {
             VSURFACE_DESC vs_desc;
             int usTextBoxWidth;
@@ -97,12 +97,12 @@ namespace SharpAlliance.Core.SubSystems
             CURSOR usCursor;
             int iId = -1;
 
-            this.inputs.GetCursorPosition(out pOldMousePosition);
+            inputs.GetCursorPosition(out pOldMousePosition);
 
             //this variable can be unset if ur in a non gamescreen and DONT want the msg box to use the save buffer
             gfDontOverRideSaveBuffer = true;
 
-            this.cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
+            cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
             if (gMsgBox.BackRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
             {
@@ -235,7 +235,7 @@ namespace SharpAlliance.Core.SubSystems
             gMsgBox.sX = (int)((((aRect.Width - aRect.X) - usTextBoxWidth) / 2) + aRect.X);
             gMsgBox.sY = (int)((((aRect.Height - aRect.Y) - usTextBoxHeight) / 2) + aRect.Y);
 
-            if (this.screens.CurrentScreenName == ScreenName.GAME_SCREEN)
+            if (screens.CurrentScreenName == ScreenName.GAME_SCREEN)
             {
                 gfStartedFromGameScreen = true;
             }
@@ -244,12 +244,12 @@ namespace SharpAlliance.Core.SubSystems
             {
                 //		fMapExitDueToMessageBox = true;
                 gfStartedFromMapScreen = true;
-                this.mapScreen.fMapPanelDirty = true;
+                mapScreen.fMapPanelDirty = true;
             }
 
 
             // Set pending screen
-            this.screens.SetPendingNewScreen(ScreenName.MSG_BOX_SCREEN);
+            screens.SetPendingNewScreen(ScreenName.MSG_BOX_SCREEN);
 
             // Init save buffer
             vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_DEFAULT | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
@@ -295,11 +295,11 @@ namespace SharpAlliance.Core.SubSystems
             MouseSubSystem.AddRegionToList(gMsgBox.BackRegion);
 
             // findout if cursor locked, if so, store old params and store, restore when done
-            if (this.cursor.IsCursorRestricted())
+            if (cursor.IsCursorRestricted())
             {
                 fCursorLockedToArea = true;
-                this.cursor.GetRestrictedClipCursor(MessageBoxRestrictedCursorRegion);
-                this.cursor.FreeMouseCursor();
+                cursor.GetRestrictedClipCursor(MessageBoxRestrictedCursorRegion);
+                cursor.FreeMouseCursor();
             }
 
             // Create four numbered buttons
@@ -660,8 +660,8 @@ namespace SharpAlliance.Core.SubSystems
             TimerControl.PauseTime(true);
 
             // Save mouse restriction region...
-            this.cursor.GetRestrictedClipCursor(gOldCursorLimitRectangle);
-            this.cursor.FreeMouseCursor();
+            //CursorSubSystem.GetRestrictedClipCursor(gOldCursorLimitRectangle);
+            //CursorSubSystem.FreeMouseCursor();
 
             gfNewMessageBox = true;
 
@@ -670,12 +670,12 @@ namespace SharpAlliance.Core.SubSystems
             return (iId);
         }
 
-        private int GetMSgBoxButtonWidth(ButtonPic iButtonImage)
+        private static int GetMSgBoxButtonWidth(ButtonPic iButtonImage)
         {
             return ButtonSubSystem.GetWidthOfButtonPic(iButtonImage, iButtonImage.OnNormal);
         }
 
-        void MsgBoxClickCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
+        public static void MsgBoxClickCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
         {
             // if (iReason & MouseCallbackReasons.RBUTTON_UP)
             // {
@@ -685,8 +685,8 @@ namespace SharpAlliance.Core.SubSystems
         }
 
 
-        bool OKMsgBoxCallbackfLButtonDown = false;
-        void OKMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+        private static bool OKMsgBoxCallbackfLButtonDown = false;
+        public static void OKMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
             if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
@@ -707,8 +707,8 @@ namespace SharpAlliance.Core.SubSystems
             }
         }
 
-        bool YESMsgBoxCallbackfLButtonDown = false;
-        void YESMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+        private static bool YESMsgBoxCallbackfLButtonDown = false;
+        public static void YESMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
             if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
@@ -729,8 +729,8 @@ namespace SharpAlliance.Core.SubSystems
             }
         }
 
-        bool NOMsgBoxCallbackfLButtonDown = false;
-        void NOMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+        private static bool NOMsgBoxCallbackfLButtonDown = false;
+        public static void NOMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
             if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
@@ -752,8 +752,8 @@ namespace SharpAlliance.Core.SubSystems
         }
 
 
-        bool ContractMsgBoxCallbackfLButtonDown = false;
-        void ContractMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+        private static bool ContractMsgBoxCallbackfLButtonDown = false;
+        public static void ContractMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
             if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
@@ -774,10 +774,8 @@ namespace SharpAlliance.Core.SubSystems
             }
         }
 
-        bool LieMsgBoxCallbackfLButtonDown = false;
-
-
-        void LieMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+        private static bool LieMsgBoxCallbackfLButtonDown = false;
+        public static void LieMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
 
             if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
@@ -799,7 +797,7 @@ namespace SharpAlliance.Core.SubSystems
         }
 
 
-        void NumberedMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
+        public static void NumberedMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
         {
             if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
             {
@@ -935,7 +933,7 @@ namespace SharpAlliance.Core.SubSystems
 
             if (fCursorLockedToArea == true)
             {
-                this.inputs.GetCursorPosition(out pPosition);
+                inputs.GetCursorPosition(out pPosition);
 
                 if ((pPosition.X > MessageBoxRestrictedCursorRegion.Width) || (pPosition.X > MessageBoxRestrictedCursorRegion.X) && (pPosition.Y < MessageBoxRestrictedCursorRegion.Y) && (pPosition.Y > MessageBoxRestrictedCursorRegion.Height))
                 {
@@ -967,13 +965,13 @@ namespace SharpAlliance.Core.SubSystems
                     }
                     break;
                 case ScreenName.MAP_SCREEN:
-                    this.mapScreen.fMapPanelDirty = true;
+                    mapScreen.fMapPanelDirty = true;
                     break;
             }
 
-            if (this.fadeScreen.gfFadeInitialized)
+            if (fadeScreen.gfFadeInitialized)
             {
-                this.screens.SetPendingNewScreen(ScreenName.FADE_SCREEN);
+                screens.SetPendingNewScreen(ScreenName.FADE_SCREEN);
                 return ScreenName.FADE_SCREEN;
             }
 

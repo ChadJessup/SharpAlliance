@@ -130,11 +130,21 @@ public partial class Globals
         }
     }
 
-    internal static string wcscat(string strSource)
+    internal static string wcscat(string srcDestination, string strSource)
         => srcDestination += strSource;
 
     internal static string wprintf(string format, params object[] arguments)
         => string.Format(format, arguments);
+
+    internal static void gprintf(int x, int y, string format, params object[] arguments)
+    {
+        
+    }
+
+    internal static void mprintf(int v1, int v2, string v3)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public enum WARPTIME

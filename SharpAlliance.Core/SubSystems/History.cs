@@ -2,7 +2,7 @@
 using System.IO;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-
+using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.EnglishText;
 using static SharpAlliance.Core.Globals;
 
@@ -967,7 +967,7 @@ public class History
                 break;
 
             case (HISTORY.MERC_FIRED):
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_FIRED], Globals.gMercProfiles[pnpcId].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_FIRED], Globals.gMercProfiles[npcId].zNickname);
                 break;
 
             case (HISTORY.MERC_QUIT):
@@ -985,10 +985,10 @@ public class History
 
                 break;
             case (HISTORY.TALKED_TO_MINER):
-                wprintf(pString, pHistoryStrings[HISTORY.TALKED_TO_MINER], pTownNames[pHistory.ubSecondCode]);
+                wprintf(pString, pHistoryStrings[HISTORY.TALKED_TO_MINER], pTownNames[(TOWNS)pHistory.ubSecondCode]);
                 break;
             case (HISTORY.LIBERATED_TOWN):
-                wprintf(pString, pHistoryStrings[HISTORY.LIBERATED_TOWN], pTownNames[pHistory.ubSecondCode]);
+                wprintf(pString, pHistoryStrings[HISTORY.LIBERATED_TOWN], pTownNames[(TOWNS)pHistory.ubSecondCode]);
                 break;
             case (HISTORY.CHEAT_ENABLED):
                 wprintf(pString, pHistoryStrings[HISTORY.CHEAT_ENABLED]);
@@ -997,13 +997,13 @@ public class History
                 wprintf(pString, pHistoryStrings[HISTORY.TALKED_TO_FATHER_WALKER]);
                 break;
             case HISTORY.MERC_MARRIED_OFF:
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_MARRIED_OFF], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_MARRIED_OFF], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
                 break;
             case HISTORY.MERC_CONTRACT_EXPIRED:
-                wprintf(pString, pHistoryStrings[HISTORY.MERC_CONTRACT_EXPIRED], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.MERC_CONTRACT_EXPIRED], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zName);
                 break;
             case HISTORY.RPC_JOINED_TEAM:
-                wprintf(pString, pHistoryStrings[HISTORY.RPC_JOINED_TEAM], Globals.gMercProfiles[pHistory.ubSecondCode].zName);
+                wprintf(pString, pHistoryStrings[HISTORY.RPC_JOINED_TEAM], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zName);
                 break;
             case HISTORY.ENRICO_COMPLAINED:
                 wprintf(pString, pHistoryStrings[HISTORY.ENRICO_COMPLAINED]);
@@ -1013,14 +1013,14 @@ public class History
             case HISTORY.MINE_SHUTDOWN:
             case HISTORY.MINE_REOPENED:
                 // all the same format
-                wprintf(pString, pHistoryStrings[pHistory.ubCode], pTownNames[pHistory.ubSecondCode]);
+                wprintf(pString, pHistoryStrings[pHistory.ubCode], pTownNames[(TOWNS)pHistory.ubSecondCode]);
                 break;
             case HISTORY.LOST_BOXING:
             case HISTORY.WON_BOXING:
             case HISTORY.DISQUALIFIED_BOXING:
             case HISTORY.NPC_KILLED:
             case HISTORY.MERC_KILLED_CHARACTER:
-                wprintf(pString, pHistoryStrings[pHistory.ubCode], Globals.gMercProfiles[pHistory.ubSecondCode].zNickname);
+                wprintf(pString, pHistoryStrings[pHistory.ubCode], Globals.gMercProfiles[(NPCID)pHistory.ubSecondCode].zNickname);
                 break;
 
             // ALL SIMPLE HISTORY LOG MSGS, NO PARAMS

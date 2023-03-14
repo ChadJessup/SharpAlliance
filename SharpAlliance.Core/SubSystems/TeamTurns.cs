@@ -36,7 +36,7 @@ public class TeamTurns
         {
             pSoldier = Globals.MercPtrs[iLoop];
 
-            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife > 0 && pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
+            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.IsAlive && pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
             {
                 return (true);
             }
@@ -80,7 +80,7 @@ public class TeamTurns
             // look for all mercs on the same team, 
             //for ( pSoldier = Globals.MercPtrs[ cnt ]; cnt <= Globals.gTacticalStatus.Team[ Globals.gbPlayerNum ].bLastID; cnt++,pSoldier++)
             //{	
-            //	if ( pSoldier.bActive && pSoldier.bLife > 0 )
+            //	if ( pSoldier.bActive && pSoldier.IsAlive )
             //	{
             //		SBeginTurn.usSoldierID		= (int)cnt;
             //		AddGameEvent( S_BEGINTURN, 0, &SBeginTurn );
@@ -333,7 +333,7 @@ public class TeamTurns
                 }
 
                 {
-                    if (pSoldier.bActive && pSoldier.bLife > 0)
+                    if (pSoldier.bActive && pSoldier.IsAlive)
                     {
                         // decay personal opplist, and refresh APs and BPs
                         EVENT_BeginMercTurn(pSoldier, false, 0);
@@ -1955,26 +1955,6 @@ public class TEAM_TURN_SAVE_STRUCT
     public int ubLastInterruptedGuy;
     public int[] ubFiller = new int[16];
 }
-
-
-// noise type constants
-public enum NOISE
-{
-    UNKNOWN = 0,
-    MOVEMENT,
-    CREAKING,
-    SPLASHING,
-    BULLET_IMPACT,
-    GUNFIRE,
-    EXPLOSION,
-    SCREAM,
-    ROCK_IMPACT,
-    GRENADE_IMPACT,
-    WINDOW_SMASHING,
-    DOOR_SMASHING,
-    SILENT_ALARM, // only heard by enemies
-    MAX_NOISES
-};
 
 public enum EXPECTED
 {

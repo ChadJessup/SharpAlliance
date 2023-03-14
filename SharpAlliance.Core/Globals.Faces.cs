@@ -150,7 +150,7 @@ public class FACETYPE
     public bool fInvalidAnim;
     public FACE uiFlags;                                             // Basic flags 
     public int uiTalkingDuration;                           // A delay based on text length for how long to talk if no speech
-    public int uiTalkingTimer;                                  // A timer to handle delay when no speech file
+    public uint uiTalkingTimer;                                  // A timer to handle delay when no speech file
     public int uiTalkingFromVeryBeginningTimer;// Timer from very beginning of talking...	
     public bool fFinishTalking;                                 // A flag to indicate we want to delay after speech done
     public int iVideoOverlay;                                    // Value for video overlay ( not used too much )

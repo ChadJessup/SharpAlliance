@@ -304,7 +304,7 @@ public class WorldManager
     // First for object layer
     // #################################################################
 
-    public static LEVELNODE? AddObjectToTail(int iMapIndex, int usIndex)
+    public static LEVELNODE? AddObjectToTail(int iMapIndex, TileDefines usIndex)
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pNextObject = null;
@@ -359,7 +359,7 @@ public class WorldManager
     // OnRoof layer
     // #################################################################
 
-    public static LEVELNODE? AddOnRoofToTail(int iMapIndex, int usIndex)
+    public static LEVELNODE? AddOnRoofToTail(int iMapIndex, TileDefines usIndex)
     {
         LEVELNODE? pOnRoof = null;
         LEVELNODE? pNextOnRoof = null;
@@ -374,7 +374,7 @@ public class WorldManager
                 return null;
             }
 
-            if (usIndex < (int)TileDefines.NUMBEROFTILES)
+            if (usIndex < TileDefines.NUMBEROFTILES)
             {
                 if (Globals.gTileDatabase[usIndex].pDBStructureRef != null)
                 {
@@ -406,7 +406,7 @@ public class WorldManager
                         return null;
                     }
 
-                    if (usIndex < (int)TileDefines.NUMBEROFTILES)
+                    if (usIndex < TileDefines.NUMBEROFTILES)
                     {
                         if (Globals.gTileDatabase[usIndex].pDBStructureRef != null)
                         {
@@ -453,7 +453,7 @@ public class WorldManager
             pOldTopmost = pTopmost;
             pTopmost = pTopmost.pNext;
 
-            if (pOldTopmost.usIndex != (ushort)TileCategory.NO_TILE && pOldTopmost.usIndex < (ushort)TileDefines.NUMBEROFTILES)
+            if (pOldTopmost.usIndex != TileDefines.NO_TILE && pOldTopmost.usIndex < TileDefines.NUMBEROFTILES)
             {
                 TileDefine.GetTileType(pOldTopmost.usIndex, out fTileType);
 
@@ -528,7 +528,7 @@ public class WorldManager
             pOldObject = pObject;
             pObject = pObject.pNext;
 
-            if (pOldObject.usIndex != (ushort)TileCategory.NO_TILE && pOldObject.usIndex < (ushort)TileDefines.NUMBEROFTILES)
+            if (pOldObject.usIndex != TileDefines.NO_TILE && pOldObject.usIndex < TileDefines.NUMBEROFTILES)
             {
 
                 TileDefine.GetTileType(pOldObject.usIndex, out fTileType);
@@ -692,7 +692,7 @@ public class WorldManager
     public void AddUIElem(int iMapIndex, TileDefines usIndex, int sRelativeX, int sRelativeY, out LEVELNODE ppNewNode)
         => AddUIElem(iMapIndex, usIndex, sRelativeX, sRelativeY, out ppNewNode);
 
-    public bool AddUIElem(int iMapIndex, ushort usIndex, int sRelativeX, MAP_ROW sRelativeY, out LEVELNODE ppNewNode)
+    public bool AddUIElem(int iMapIndex, TileDefines usIndex, int sRelativeX, MAP_ROW sRelativeY, out LEVELNODE ppNewNode)
     {
         LEVELNODE? pTopmost = AddTopmostToTail(iMapIndex, usIndex);
 
@@ -775,7 +775,7 @@ public class WorldManager
         {
             if (gTileDatabase[usIndex].pDBStructureRef != null)
             {
-                if (WorldStructures.AddStructureToWorld((short)iMapIndex, 1, Globals.gTileDatabase[(int)usIndex].pDBStructureRef, pNextOnRoof) == false)
+                if (WorldStructures.AddStructureToWorld((short)iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pNextOnRoof) == false)
                 {
                     // MemFree(pNextOnRoof);
                     Globals.guiLevelNodes--;

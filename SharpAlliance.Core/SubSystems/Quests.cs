@@ -53,7 +53,7 @@ public class Quests
 
         // the NPC is wounded...
         pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
-        if (pSoldier is not null && pSoldier.bLife > 0 && pSoldier.bBleeding > 0)
+        if (pSoldier is not null && pSoldier.IsAlive && pSoldier.bBleeding > 0)
         {
             return (true);
         }
@@ -242,7 +242,7 @@ public class Quests
         {
             pSoldier = Globals.MercSlots[uiLoop];
 
-            if (pSoldier is not null && pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.bLife > 0 && pSoldier.bLife < pSoldier.bLifeMax && pSoldier.bAssignment != Assignments.ASSIGNMENT_HOSPITAL)
+            if (pSoldier is not null && pSoldier.bTeam == Globals.gbPlayerNum && pSoldier.IsAlive && pSoldier.bLife < pSoldier.bLifeMax && pSoldier.bAssignment != Assignments.ASSIGNMENT_HOSPITAL)
             {
                 if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= HOSPITAL_PATIENT_DISTANCE)
                 {
@@ -483,7 +483,7 @@ public class Quests
         {
             pSoldier = Globals.MercPtrs[bLoop];
 
-            if (pSoldier.bActive && pSoldier.bLife > 0)
+            if (pSoldier.bActive && pSoldier.IsAlive)
             {
                 if (ItemSubSystem.FindObjInObjRange(pSoldier, Items.HEAD_2, Items.HEAD_7) != (Items)NO_SLOT)
                 {

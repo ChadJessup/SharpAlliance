@@ -449,7 +449,7 @@ public class Messages
     }
 
     // new screen message
-    public static void ScreenMsg(FontColor usColor, int ubPriority, params string[] pStringA)
+    public static void ScreenMsg(FontColor usColor, int ubPriority, params object[] pStringA)
     {
         if (Globals.fDisableJustForIan == true)
         {

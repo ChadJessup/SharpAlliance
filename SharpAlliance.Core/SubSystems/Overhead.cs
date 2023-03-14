@@ -197,8 +197,8 @@ namespace SharpAlliance.Core.SubSystems
         public int sHandGrid;
         public int ubSpottersCalledForBy;
         public int ubTheChosenOne;
-        public int uiTimeOfLastInput;
-        public int uiTimeSinceDemoOn;
+        public uint uiTimeOfLastInput;
+        public uint uiTimeSinceDemoOn;
         public int uiCountdownToRestart;
         public bool fGoingToEnterDemo;
         public bool fNOTDOLASTDEMO;

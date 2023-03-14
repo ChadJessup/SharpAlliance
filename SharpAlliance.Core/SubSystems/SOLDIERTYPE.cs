@@ -111,7 +111,7 @@ public class SOLDIERTYPE
 
     public int ubSkillTrait1;
     public int ubSkillTrait2;
-    public int uiAIDelay;
+    public uint uiAIDelay;
     public int bDexterity;        // dexterity (hand coord) value
     public int bWisdom;
     public int sReloadDelay;
@@ -130,6 +130,7 @@ public class SOLDIERTYPE
     // 60
     //AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
 
+    public bool IsAlive => bLife > 0;
     public int bLife;             // current life (hit points or health)
     public TEAM bSide;
     public int bViewRange;
@@ -263,12 +264,14 @@ public class SOLDIERTYPE
     public int[] bOppList = new int[Globals.MAX_NUM_SOLDIERS]; // AI knowledge database
     public AI_ACTION bLastAction;
     public AI_ACTION bAction;
-    public int usActionData;
+    public object usActionData;
     public AI_ACTION bNextAction;
     public int usNextActionData;
     public int bActionInProgress;
     public STATUS bAlertStatus;
     public int bOppCnt;
+
+    public bool IsNeutral => bNeutral > 0;
     public int bNeutral;
     public int bNewSituation;
     public int bNextTargetLevel;
