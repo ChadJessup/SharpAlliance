@@ -62,7 +62,7 @@ public class TileSurface
         }
 
         strcat(cStructureFilename, STRUCTURE_FILE_EXTENSION);
-        if (FileExists(cStructureFilename))
+        if (FileManager.FileExists(cStructureFilename))
         {
             pStructureFileRef = LoadStructureFile(cStructureFilename);
             if (pStructureFileRef == null || hVObject.usNumberOfObjects != pStructureFileRef.usNumberOfStructures)

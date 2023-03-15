@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 
 using static SharpAlliance.Core.Globals;
@@ -391,7 +392,7 @@ public class Keys
                 if (fDirty)
                 {
                     InvalidateWorldRedundency();
-                    SetRenderFlags(RENDER_FLAG_FULL);
+                    RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 }
             }
 
@@ -425,7 +426,7 @@ public class Keys
                 if (fDirty)
                 {
                     InvalidateWorldRedundency();
-                    SetRenderFlags(RENDER_FLAG_FULL);
+                    RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 }
             }
 
@@ -466,7 +467,7 @@ public class Keys
             if (fDirty)
             {
                 InvalidateWorldRedundency();
-                SetRenderFlags(RENDER_FLAG_FULL);
+                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             }
         }
     }
@@ -614,11 +615,11 @@ public class Keys
         //add the 'm' for 'Modifed Map' to the front of the map name
         //	sprintf( zMapName, "%s\\ds_%s", MAPS_DIR, zTempName);
 
-        GetMapTempFileName(SF_DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
+        GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
 
 
         //Open the file for writing, Create it if it doesnt exist
-        hFile = FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
         if (hFile == 0)
         {
             //Error opening map modification file
@@ -627,11 +628,11 @@ public class Keys
 
 
         //Save the number of elements in the door array
-        FileWrite(hFile, gubNumDoorStatus, sizeof(int), out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubNumDoorStatus, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of array to disk
-            FileClose(hFile);
+            FileManager.FileClose(hFile);
             return (false);
         }
 
@@ -639,19 +640,19 @@ public class Keys
         if (gubNumDoorStatus != 0)
         {
             //Save the door array
-            FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesWritten);
+            FileManager.FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesWritten);
             if (uiNumBytesWritten != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
             {
                 //Error Writing size of array to disk
-                FileClose(hFile);
+                FileManager.FileClose(hFile);
                 return (false);
             }
         }
 
-        FileClose(hFile);
+        FileManager.FileClose(hFile);
 
         //Set the flag indicating that there is a door status array
-        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF_DOOR_STATUS_TEMP_FILE_EXISTS);
+        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.DOOR_STATUS_TEMP_FILE_EXISTS);
 
         return (true);
     }
@@ -670,13 +671,13 @@ public class Keys
         //add the 'm' for 'Modifed Map' to the front of the map name
         //	sprintf( zMapName, "%s\\ds_%s", MAPS_DIR, zTempName);
 
-        GetMapTempFileName(SF_DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+        GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
 
         //Get rid of the existing door array
         TrashDoorStatusArray();
 
         //Open the file for reading
-        hFile = FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
+        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
         if (hFile == 0)
         {
             //Error opening map modification file,
@@ -685,16 +686,16 @@ public class Keys
 
 
         // Load the number of elements in the door status array
-        FileRead(hFile, out gubNumDoorStatus, sizeof(int), out uiNumBytesRead);
+        FileManager.FileRead(hFile, ref gubNumDoorStatus, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            FileClose(hFile);
+            FileManager.FileClose(hFile);
             return (false);
         }
 
         if (gubNumDoorStatus == 0)
         {
-            FileClose(hFile);
+            FileManager.FileClose(hFile);
             return (true);
         }
 
@@ -703,28 +704,28 @@ public class Keys
         gpDoorStatus = MemAlloc(sizeof(DOOR_STATUS) * gubNumDoorStatus);
         if (gpDoorStatus == null)
         {
-            AssertMsg(0, "Error Allocating memory for the gpDoorStatus");
+            //AssertMsg(0, "Error Allocating memory for the gpDoorStatus");
         }
 
         //memset(gpDoorStatus, 0, sizeof(DOOR_STATUS) * gubNumDoorStatus);
 
 
         // Load the number of elements in the door status array
-        FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesRead);
+        FileManager.FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesRead);
         if (uiNumBytesRead != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
         {
-            FileClose(hFile);
+            FileManager.FileClose(hFile);
             return (false);
         }
 
-        FileClose(hFile);
+        FileManager.FileClose(hFile);
 
         // the graphics will be updated later in the loading process.
 
         // set flags in map for containing a door status 
         for (ubLoop = 0; ubLoop < gubNumDoorStatus; ubLoop++)
         {
-            gpWorldLevelData[gpDoorStatus[ubLoop].sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT_DOOR_STATUS_PRESENT;
+            gpWorldLevelData[gpDoorStatus[ubLoop].sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.DOOR_STATUS_PRESENT;
         }
 
         UpdateDoorGraphicsFromStatus(true, false);
@@ -739,7 +740,7 @@ public class Keys
 
 
         // Save the KeyTable
-        FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(KEY) * NUM_KEYS)
         {
             return (false);
@@ -754,7 +755,7 @@ public class Keys
 
 
         // Load the KeyTable
-        FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
+        FileManager.FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(KEY) * NUM_KEYS)
         {
             return (false);

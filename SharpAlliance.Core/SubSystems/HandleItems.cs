@@ -279,8 +279,8 @@ public class HandleItems
         if (bVisible == 1 && GridNoOnScreen((psGridNo)))
         {
             //gpWorldLevelData[*psGridNo].uiFlags|=MAPELEMENT_REDRAW;
-            //SetRenderFlags(RENDER_FLAG_MARKED);
-            SetRenderFlags(RENDER_FLAG_FULL);
+            //RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
+            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
         }
 
         // Set flahs timer
@@ -390,7 +390,7 @@ public class ITEM_POOL
     public ITEM_POOL? pPrev;
 
     public int iItemIndex;
-    public int bVisible;
+    public ItemVisibility bVisible;
     public int bFlashColor;
     public int uiTimerID;
     public int sGridNo;

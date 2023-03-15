@@ -76,6 +76,109 @@ public class WorldManager
         return fRetVal;
     }
 
+    // When adding, put in order such that it's drawn before any walls of a
+    // lesser orientation value
+    public static bool AddWallToStructLayer(int iMapIndex, TileDefines usIndex, bool fReplace)
+    {
+        LEVELNODE? pStruct = null;
+        WallOrientation usCheckWallOrient;
+        WallOrientation usWallOrientation;
+        bool fInsertFound = false;
+        bool fRoofFound = false;
+        int ubRoofLevel = 0;
+        TileTypeDefines uiCheckType;
+        int ubLevel = 0;
+
+        pStruct = gpWorldLevelData[iMapIndex].pStructHead;
+
+
+        // Get orientation of peice we want to add
+        GetWallOrientation(usIndex, out usWallOrientation);
+
+        // Look through all objects and Search for orientation
+        while (pStruct != null)
+        {
+
+            GetWallOrientation(pStruct.usIndex, out usCheckWallOrient);
+            //OLD CASE 
+            //if ( usCheckWallOrient > usWallOrientation )
+            //Kris:
+            //New case -- If placing a new wall which is at right angles to the current wall, then
+            //we insert it.
+            if (usCheckWallOrient > usWallOrientation)
+            {
+                if ((usWallOrientation      == WallOrientation.INSIDE_TOP_RIGHT || usWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
+                    && (usCheckWallOrient ==   WallOrientation.INSIDE_TOP_LEFT || usCheckWallOrient   == WallOrientation.OUTSIDE_TOP_LEFT)
+                    || (usWallOrientation == WallOrientation.INSIDE_TOP_LEFT || usWallOrientation   == WallOrientation.OUTSIDE_TOP_LEFT)
+                    && (usCheckWallOrient == WallOrientation.INSIDE_TOP_RIGHT || usCheckWallOrient  == WallOrientation.OUTSIDE_TOP_RIGHT))
+                {
+                    fInsertFound = true;
+                }
+            }
+
+            TileDefine.GetTileType(pStruct.usIndex, out uiCheckType);
+
+            //		if ( uiCheckType >= FIRSTFLOOR && uiCheckType <= LASTFLOOR )
+            if (uiCheckType >= TileTypeDefines.FIRSTROOF && uiCheckType <= LASTROOF)
+            {
+                fRoofFound = true;
+                ubRoofLevel = ubLevel;
+            }
+
+            //OLD CHECK
+            // Check if it's the same orientation
+            //if ( usCheckWallOrient == usWallOrientation )
+            //Kris:
+            //New check -- we want to check for walls being parallel to each other.  If so, then
+            //we we want to replace it.  This is because of an existing problem with say, INSIDE_TOP_LEFT
+            //and OUTSIDE_TOP_LEFT walls coexisting.
+            if ((usWallOrientation ==   WallOrientation.INSIDE_TOP_RIGHT || usWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
+                && (usCheckWallOrient == WallOrientation.INSIDE_TOP_RIGHT || usCheckWallOrient == WallOrientation.OUTSIDE_TOP_RIGHT)
+                || (usWallOrientation == WallOrientation.INSIDE_TOP_LEFT || usWallOrientation  == WallOrientation.OUTSIDE_TOP_LEFT)
+                && (usCheckWallOrient == WallOrientation.INSIDE_TOP_LEFT || usCheckWallOrient  == WallOrientation.OUTSIDE_TOP_LEFT))
+            {
+                // Same, if replace, replace here
+                if (fReplace)
+                {
+                    return (ReplaceStructIndex(iMapIndex, pStruct.usIndex, usIndex));
+                }
+                else
+                {
+                    return (false);
+                }
+            }
+
+            // Advance to next
+            pStruct = pStruct.pNext;
+
+            ubLevel++;
+
+        }
+
+        // Check if we found an insert position, otherwise set to head
+        if (fInsertFound)
+        {
+            // Insert struct at head
+            AddStructToHead(iMapIndex, usIndex);
+        }
+        else
+        {
+            // Make sure it's ALWAYS after the roof ( if any )
+            if (fRoofFound)
+            {
+                InsertStructIndex(iMapIndex, usIndex, ubRoofLevel);
+            }
+            else
+            {
+                AddStructToTail(iMapIndex, usIndex);
+            }
+        }
+
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
+        // Could not find it, return false
+        return (true);
+    }
+
     public static bool RemoveStructFromLevelNode(int iMapIndex, LEVELNODE? pNode)
     {
         LEVELNODE? pStruct = null;
@@ -130,7 +233,7 @@ public class WorldManager
 
         }
 
-        // Could not find it, return FALSE
+        // Could not find it, return false
         RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
 
         return (false);
@@ -204,7 +307,7 @@ public class WorldManager
                 if (pStruct.pStructureData != null)
                 {
                     // If we are NOT a wall and NOT multi-tiles, set mapelement flag...
-                    //if ( !( pStruct->pStructureData->fFlags & STRUCTURE_WALLSTUFF ) && pStruct->pStructureData->pDBStructureRef->pDBStructure->ubNumberOfTiles == 1 )
+                    //if ( !( pStruct.pStructureData.fFlags & STRUCTURE_WALLSTUFF ) && pStruct.pStructureData.pDBStructureRef.pDBStructure.ubNumberOfTiles == 1 )
                     //{
                     // UNSet flag...
                     //	gpWorldLevelData[ iMapIndex ].ubExtFlags[0] &= ( ~MAPELEMENT_EXT_NOBURN_STRUCT );
@@ -212,7 +315,7 @@ public class WorldManager
                 }
 
                 // Delete memory assosiated with item
-                DeleteStructureFromWorld(pStruct.pStructureData);
+                WorldStructures.DeleteStructureFromWorld(pStruct.pStructureData);
 
                 //If we have to, make sure to remove this node when we reload the map from a saved game
                 RemoveStructFromMapTempFile(iMapIndex, usIndex);
@@ -237,7 +340,7 @@ public class WorldManager
 
         }
 
-        // Could not find it, return FALSE
+        // Could not find it, return false
         RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
 
         return (false);
@@ -253,18 +356,18 @@ public class WorldManager
             // Check if we have anything in object layer which has a terrain modifier
             pNode = gpWorldLevelData[ sGridNo ].pObjectHead;
 
-            if ( pNode != NULL )
+            if ( pNode != null )
             {
-                if ( gTileDatabase[ pNode->usIndex ].ubTerrainID != NO_TERRAIN )
+                if ( gTileDatabase[ pNode.usIndex ].ubTerrainID != NO_TERRAIN )
                 {
-                    return( gTileDatabase[ pNode->usIndex ].ubTerrainID );
+                    return( gTileDatabase[ pNode.usIndex ].ubTerrainID );
                 }
             }
 
             // Now try terrain!
             pNode = gpWorldLevelData[ sGridNo ].pLandHead;
 
-            return( gTileDatabase[ pNode->usIndex ].ubTerrainID );
+            return( gTileDatabase[ pNode.usIndex ].ubTerrainID );
         */
     }
 

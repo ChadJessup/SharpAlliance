@@ -10,6 +10,12 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    // "J2SD" = Jagged 2 Structure Data
+    public const string STRUCTURE_FILE_ID = "J2SD";
+    public const string STRUCTURE_SCRIPT_FILE_EXTENSION = "JSS";
+    public const string STRUCTURE_FILE_EXTENSION = "JSD";
+    public const int STRUCTURE_FILE_ID_LEN = 4;
+
     // A few words about the overall structure scheme:
     //
     // Large structures are split into multiple sections,
@@ -50,7 +56,7 @@ public partial class Globals
 
     public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
     public static int[] AtHeight = { 0x01, 0x02, 0x04, 0x08 };
-    public static STRUCTURE_FILE_REF? gpStructureFileRefs;
+    public static STRUCTURE_FILE_REF gpStructureFileRefs;
 
     public static SoundDefine[] guiMaterialHitSound =
     {
@@ -82,7 +88,6 @@ public partial class Globals
         SoundDefine.S_METAL_IMPACT3,
     };
 
-    public static int[] gubMaterialArmour =
     /*
     index  1-10, organics
     index 11-20, rocks and concretes
@@ -101,36 +106,37 @@ public partial class Globals
     index 24, indestructable stone
     index 25, indestructable metal
     */
-
-    { // note: must increase; r.c. should block *AP* 7.62mm rounds
-    	 0,		// nothing
-    	25,		// dry timber; wood wall +1/2
-    	20,		// furniture wood (thin!) or plywood wall +1/2
-    	30,		// wood (live); 1.5x timber
-    	 3,		// light vegetation
-    	10,		// upholstered furniture
-    	47,		// porcelain
-    	10,		// cactus, hay, bamboo
-    		0,
-            0,
-            0,
-        55,		// stone masonry; 3x timber
-    	63,		// non-reinforced concrete; 4x timber???
-      70,		// reinforced concrete; 6x timber
-      85,		// rock? - number invented
-    	 9,		// rubber - tires
-    	40,		// sand
-    		1,	// cloth
-    	40,		// sandbag
-        0,
-        0,
-        37,		// light metal (furniture; NB thin!)
-        57,		// thicker metal (dumpster)
-        85,		// heavy metal (vault doors) - block everything
+    public static Dictionary<MATERIAL, int> gubMaterialArmour = new()
+    {
+        // note: must increase; r.c. should block *AP* 7.62mm rounds
+    	{ MATERIAL.NOTHING,  0 },		// nothing
+    	{ MATERIAL.WOOD_WALL, 25 },		// dry timber; wood wall +1/2
+    	{ MATERIAL.PLYWOOD_WALL, 20 },		// furniture wood (thin!) or plywood wall +1/2
+    	{ MATERIAL.LIVE_WOOD, 30 },		// wood (live); 1.5x timber
+    	{ MATERIAL.LIGHT_VEGETATION,  3 },		// light vegetation
+    	{ MATERIAL.FURNITURE, 10 },		// upholstered furniture
+    	{ MATERIAL.PORCELAIN, 47 },		// porcelain
+    	{ MATERIAL.CACTUS, 10 },		// cactus, hay, bamboo
+        { MATERIAL.NOTUSED1,  0 },
+        { MATERIAL.NOTUSED2,  0 },
+        { MATERIAL.NOTUSED3,  0 },
+        { MATERIAL.STONE, 55 },		// stone masonry; 3x timber
+    	{ MATERIAL.CONCRETE1, 63 },		// non-reinforced concrete; 4x timber???
+        { MATERIAL.CONCRETE2, 70 },		// reinforced concrete; 6x timber
+        { MATERIAL.ROCK, 85 },		// rock? - number invented
+        { MATERIAL.RUBBER,  9 },		// rubber - tires
+        { MATERIAL.SAND, 40 },		// sand
+        { MATERIAL.CLOTH,  1 },	// cloth
+        { MATERIAL.SANDBAG, 40 },		// sandbag
+        { MATERIAL.NOTUSED5,  0 },
+        { MATERIAL.NOTUSED6,  0 },
+        { MATERIAL.LIGHT_METAL,  37 },		// light metal (furniture; NB thin!)
+        { MATERIAL.THICKER_METAL,  57 },		// thicker metal (dumpster)
+        { MATERIAL.HEAVY_METAL,  85 },		// heavy metal (vault doors) - block everything
         // note that vehicle armour will probably end up in here
-        127,	// rock indestructable
-        127,	// indestructable
-        57,		// like 22 but with screen windows
+        { MATERIAL.INDESTRUCTABLE_STONE, 127 },	// rock indestructable
+        { MATERIAL.INDESTRUCTABLE_METAL, 127 },	// indestructable
+        { MATERIAL.THICKER_METAL_WITH_SCREEN_WINDOWS, 57  },		// like 22 but with screen windows
     };
 
     public const int BASE_TILE = (int)STRUCTUREFLAGS.BASE_TILE;
@@ -180,3 +186,10 @@ public enum MATERIAL
 
     NUM_MATERIAL_TYPES
 };
+
+[Flags]
+public enum STRUCTURE_FILE_CONTAINS : byte
+{
+    AUXIMAGEDATA = 0x01,
+    STRUCTUREDATA = 0x02,
+}

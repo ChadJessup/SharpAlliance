@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.IsometricUtils;
 
@@ -681,7 +682,7 @@ public class OppList
         }
     }
 
-    public static int TeamNoLongerSeesMan(TEAM ubTeam, SOLDIERTYPE? pOpponent, int ubExcludeID, int bIteration)
+    public static bool TeamNoLongerSeesMan(TEAM ubTeam, SOLDIERTYPE? pOpponent, int ubExcludeID, int bIteration)
     {
         int bLoop;
         SOLDIERTYPE? pMate;
@@ -713,7 +714,7 @@ public class OppList
             // if this teammate currently sees this opponent
             if (pMate.bOppList[pOpponent.ubID] == SEEN_CURRENTLY)
             {
-                return (0);     // that's all I need to know, get out of here
+                return (false);     // that's all I need to know, get out of here
             }
         }
 
@@ -734,7 +735,7 @@ public class OppList
         // #endif
 
         // none of my friends is currently seeing the guy, so return success
-        return (1);
+        return (true);
     }
 
     public static int DistanceSmellable(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pSubject)
@@ -1095,12 +1096,12 @@ public class OppList
         int uiLoop;
         SOLDIERTYPE? pSoldier;
 
-        if ((gTacticalStatus.uiFlags.HasFlag(LOADING_SAVED_GAME)))
+        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
         {
             return;
         }
 
-        if (ubAllowInterrupts || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (ubAllowInterrupts > 0 || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
             gubBestToMakeSightingSize = BEST_SIGHTING_ARRAY_SIZE_ALL_TEAMS_LOOK_FOR_ALL;
             if (gfDelayResolvingBestSightingDueToDoor)
@@ -1121,7 +1122,7 @@ public class OppList
 
             if (pSoldier != null && pSoldier.bLife >= OKLIFE)
             {
-                HandleSight(pSoldier, SIGHT_LOOK);  // no radio or interrupts yet
+                HandleSight(pSoldier, SIGHT.LOOK);  // no radio or interrupts yet
             }
         }
 
@@ -1228,19 +1229,17 @@ public class OppList
 
                     // OK, We now want to , if in non-combat, set visiblity to 0 if not visible still....
                     // This allows us to walk away from buddy and have them disappear instantly
-                    if (gTacticalStatus.uiFlags.HasFlag(TURNBASED && !(gTacticalStatus.uiFlags & INCOMBAT)))
+                    if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         if (pOpponent.bVisible == 0)
                         {
                             pOpponent.bVisible = -1;
                         }
                     }
-
                 }
             }
         }
     }
-
 
     public static void HandleManNoLongerSeen(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int pPersOL, int pbPublOL)
     {
@@ -1661,14 +1660,14 @@ public class OppList
                         {
                             switch (pSoldier.ubProfile)
                             {
-                                case CARMEN:
-                                    if (pOpponent.ubProfile == SLAY) // 64
+                                case NPCID.CARMEN:
+                                    if (pOpponent.ubProfile == NPCID.SLAY) // 64
                                     {
                                         // Carmen goes to war (against Slay)
                                         if (pSoldier.IsNeutral)
                                         {
                                             //SetSoldierNonNeutral( pSoldier );
-                                            pSoldier.bAttitude = ATTACKSLAYONLY;
+                                            pSoldier.bAttitude = Attitudes.ATTACKSLAYONLY;
                                             TriggerNPCRecord(pSoldier.ubProfile, 28);
                                         }
                                         /*
@@ -1679,13 +1678,13 @@ public class OppList
                                         */
                                     }
                                     break;
-                                case ELDIN:
+                                case NPCID.ELDIN:
                                     if (pSoldier.IsNeutral)
                                     {
                                         int ubRoom = 0;
                                         // if player is in behind the ropes of the museum display
                                         // or if alarm has gone off (status red)
-                                        InARoom(pOpponent.sGridNo, out ubRoom);
+                                        RenderFun.InARoom(pOpponent.sGridNo, out ubRoom);
 
                                         if ((Facts.CheckFact(FACT.MUSEUM_OPEN, 0) == false && ubRoom >= 22 && ubRoom <= 41) || Facts.CheckFact(FACT.MUSEUM_ALARM_WENT_OFF, 0) || (ubRoom == 39 || ubRoom == 40) || (FindObj(pOpponent, CHALICE) != NO_SLOT))
                                         {
@@ -1694,16 +1693,16 @@ public class OppList
                                         }
                                     }
                                     break;
-                                case JIM:
-                                case JACK:
-                                case OLAF:
-                                case RAY:
-                                case OLGA:
-                                case TYRONE:
+                                case NPCID.JIM:
+                                case NPCID.JACK:
+                                case NPCID.OLAF:
+                                case NPCID.RAY:
+                                case NPCID.OLGA:
+                                case NPCID.TYRONE:
                                     // change orders, reset action!
-                                    if (pSoldier.bOrders != SEEKENEMY)
+                                    if (pSoldier.bOrders != Orders.SEEKENEMY)
                                     {
-                                        pSoldier.bOrders = SEEKENEMY;
+                                        pSoldier.bOrders = Orders.SEEKENEMY;
                                         if (pSoldier.bOppCnt == 0)
                                         {
                                             // didn't see anyone before!
@@ -1712,13 +1711,13 @@ public class OppList
                                         }
                                     }
                                     break;
-                                case ANGEL:
-                                    if (pOpponent.ubProfile == MARIA)
+                                case NPCID.ANGEL:
+                                    if (pOpponent.ubProfile == NPCID.MARIA)
                                     {
-                                        if (Facts.CheckFact(FACT.MARIA_ESCORTED_AT_LEATHER_SHOP, MARIA) == true)
+                                        if (Facts.CheckFact(FACT.MARIA_ESCORTED_AT_LEATHER_SHOP, NPCID.MARIA) == true)
                                         {
                                             // she was rescued! yay!
-                                            TriggerNPCRecord(ANGEL, 12);
+                                            TriggerNPCRecord(NPCID.ANGEL, 12);
                                         }
                                     }
                                     else if ((Facts.CheckFact(FACT.ANGEL_LEFT_DEED, NPCID.ANGEL) == true) && (Facts.CheckFact(FACT.ANGEL_MENTIONED_DEED, ANGEL) == false))
@@ -1734,7 +1733,7 @@ public class OppList
                                 //case QUEEN:
                                 case NPCID.JOE:
                                 case NPCID.ELLIOT:
-                                    if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 & ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE))
+                                    if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE)))
                                     {
                                         if (!AreInMeanwhile())
                                         {
@@ -1761,8 +1760,8 @@ public class OppList
                                 }
                                 break;
                                 */
-                            case IGGY:
-                                if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 & ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE))
+                            case NPCID.IGGY:
+                                if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE)))
                                 {
                                     TriggerNPCRecord(pSoldier.ubProfile, 9);
                                     gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE;
@@ -1803,7 +1802,7 @@ public class OppList
 
                                 // JA2 Gold: only go hostile if see player IN guard room
                                 //if ( InARoom( pOpponent.sGridNo, &ubRoom ) && IN_BROTHEL( ubRoom ) && ( gMercProfiles[ MADAME ].bNPCData == 0 || IN_BROTHEL_GUARD_ROOM( ubRoom ) ) )
-                                if (InARoom(pOpponent.sGridNo, out ubRoom) && IN_BROTHEL_GUARD_ROOM(ubRoom))
+                                if (RenderFun.InARoom(pOpponent.sGridNo, out ubRoom) && IN_BROTHEL_GUARD_ROOM(ubRoom))
                                 {
                                     // unauthorized!
                                     MakeCivHostile(pSoldier, 2);
@@ -1848,6 +1847,7 @@ public class OppList
                     {
                         gfMikeShouldSayHi = true;
                     }
+
                     TacticalCharacterDialogue(pSoldier, QUOTE.AIM_SEEN_MIKE);
                     pSoldier.usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_MIKE;
                 }
@@ -2003,7 +2003,7 @@ public class OppList
         }
 
         // if this man has never seen this opponent before in this sector
-        if (gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] == false)
+        if (gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] == 0)
         {
             // remember that he is just seeing him now for the first time (-1)
             gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] = -1;
@@ -2011,7 +2011,7 @@ public class OppList
         else
         {
             // man is seeing an opponent AGAIN whom he has seen at least once before
-            gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] = true;
+            gbSeenOpponents[pSoldier.ubID, pOpponent.ubID] = 1;
         }
 
 
@@ -2039,7 +2039,7 @@ public class OppList
             // ATE: Added for fade in.....
             if (pOpponent.fBeginFade == 1 || pOpponent.fBeginFade == 2)
             {
-                pOpponent.fBeginFade = false;
+                pOpponent.fBeginFade = 0;
 
                 if (pOpponent.bLevel > 0 && gpWorldLevelData[pOpponent.sGridNo].pRoofHead != null)
                 {
@@ -2664,16 +2664,12 @@ public class OppList
 
     void BetweenTurnsVisibilityAdjustments()
     {
-        int cnt;
-        SOLDIERTYPE? pSoldier;
-
-
         // make all soldiers on other teams that are no longer seen not visible
-        for (cnt = 0, pSoldier = Menptr; cnt < MAXMERCS; cnt++, pSoldier++)
+        foreach (var pSoldier in Menptr)
         {
-            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife)
+            if (pSoldier.bActive && pSoldier.bInSector && pSoldier.IsAlive)
             {
-                if (!PTR_OURTEAM)
+                if (!PTR_OURTEAM(pSoldier))
                 {
                     // check if anyone on our team currently sees him (exclude Globals.NOBODY)
                     if (TeamNoLongerSeesMan(gbPlayerNum, pSoldier, Globals.NOBODY, 0))
@@ -2689,7 +2685,7 @@ public class OppList
     }
 
 
-    public static void SaySeenQuote(SOLDIERTYPE? pSoldier, bool fSeenCreature, bool fVirginSector, bool fSeenJoey)
+    public static void SaySeenQuote(SOLDIERTYPE? pSoldier, int fSeenCreature, bool fVirginSector, bool fSeenJoey)
     {
         SOLDIERTYPE? pTeamSoldier;
         int ubNumEnemies = 0;
@@ -3212,7 +3208,7 @@ public class OppList
         if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
-            GetSoldier(out pSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out pSoldier, usSoldierIndex);
 
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG SOLDIER PAGE ONE, GRIDNO %d", pSoldier.sGridNo);
@@ -3397,7 +3393,7 @@ public class OppList
         if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
-            GetSoldier(out pSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out pSoldier, usSoldierIndex);
 
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG SOLDIER PAGE TWO, GRIDNO %d", pSoldier.sGridNo);
@@ -3666,7 +3662,7 @@ public class OppList
         if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
-            GetSoldier(out pSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out pSoldier, usSoldierIndex);
 
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG SOLDIER PAGE THREE, GRIDNO %d", pSoldier.sGridNo);
@@ -3962,26 +3958,16 @@ public class OppList
 
     }
 
-    void AppendAttachmentCode(Items usItem, out string str)
+    void AppendAttachmentCode(Items usItem, ref string str)
     {
-        switch (usItem)
+        str = usItem switch
         {
-            case Items.SILENCER:
-                str = wcscat(" Sil");
-                break;
-            case Items.SNIPERSCOPE:
-                str = wcscat(" Scp");
-                break;
-            case Items.BIPOD:
-                str = wcscat(" Bip");
-                break;
-            case Items.LASERSCOPE:
-                str = wcscat(" Las");
-                break;
-            default:
-                str = string.Empty;
-                break;
-        }
+            Items.SILENCER => wcscat(str, " Sil"),
+            Items.SNIPERSCOPE => wcscat(str, " Scp"),
+            Items.BIPOD => wcscat(str, " Bip"),
+            Items.LASERSCOPE => wcscat(str, " Las"),
+            _ => string.Empty,
+        };
     }
 
     void WriteQuantityAndAttachments(OBJECTTYPE? pObject, int yp)
@@ -4066,7 +4052,7 @@ public class OppList
         if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
-            GetSoldier(out pSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out pSoldier, usSoldierIndex);
 
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG SOLDIER PAGE FOUR, GRIDNO %d", pSoldier.sGridNo);
@@ -5004,7 +4990,7 @@ public class OppList
                         if (pSoldier.bOppList[ubNoiseMaker] == SEEN_CURRENTLY)
                         {
                             // civilians care about gunshots even if they come from someone they can see
-                            if (!(pSoldier.bNeutral && ubNoiseType == NOISE.GUNFIRE))
+                            if (!(pSoldier.IsNeutral && ubNoiseType == NOISE.GUNFIRE))
                             {
                                 continue;        // then who cares whether he can also hear the guy?
                             }
@@ -5147,7 +5133,7 @@ public class OppList
                 // if the listening team is human-controlled AND
                 // the noise's source is another soldier
                 // (computer-controlled teams don't radio or automatically report NOISE)
-                if (gTacticalStatus.Team[bTeam].bHuman && (ubSource < Globals.NOBODY))
+                if (gTacticalStatus.Team[bTeam].IsHuman && (ubSource < NOBODY))
                 {
                     // if ubNoiseMaker was seen by at least one member of this team
                     if (bSeen)
@@ -5166,7 +5152,7 @@ public class OppList
                         //                        }
                         //#else
                         // if this human team is OURS
-                        if (1 /* bTeam == Net.pnum */)
+                        if (true /* bTeam == Net.pnum */)
                         {
                             // this team is now allowed to report sightings and set Public flags
                             OurTeamRadiosRandomlyAbout(ubSource);
@@ -6364,7 +6350,7 @@ public class OppList
             SOLDIERTYPE? pSoldier;
 
             // if anyone is still left...
-            if (gTacticalStatus.Team[ENEMY_TEAM].bTeamActive && gTacticalStatus.Team[ENEMY_TEAM].bMenInSector > 0)
+            if (gTacticalStatus.Team[ENEMY_TEAM].bTeamActive > 0 && gTacticalStatus.Team[ENEMY_TEAM].bMenInSector > 0)
             {
                 for (ubID = gTacticalStatus.Team[ENEMY_TEAM].bFirstID; ubID <= gTacticalStatus.Team[ENEMY_TEAM].bLastID; ubID++)
                 {

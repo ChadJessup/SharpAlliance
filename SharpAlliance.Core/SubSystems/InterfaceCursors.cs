@@ -324,7 +324,7 @@ public class InterfaceCursors
 
         if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
         {
-            this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier);
+            Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier);
 
         }
 

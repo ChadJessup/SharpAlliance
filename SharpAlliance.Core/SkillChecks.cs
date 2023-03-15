@@ -95,14 +95,14 @@ public class SkillChecks
     private static int EffectiveLeadership(SOLDIERTYPE? pSoldier)
     {
         int iEffLeadership;
-        int bDrunkLevel;
+        DrunkLevel bDrunkLevel;
 
         iEffLeadership = pSoldier.bLeadership;
 
         // if we are drunk, effect leader ship in a +ve way...
-        bDrunkLevel = GetDrunkLevel(pSoldier);
+        bDrunkLevel = DrugsAndAlcohol.GetDrunkLevel(pSoldier);
 
-        if (bDrunkLevel == FEELING_GOOD)
+        if (bDrunkLevel == DrunkLevel.FEELING_GOOD)
         {
             iEffLeadership = (iEffLeadership * 120 / 100);
         }
@@ -113,7 +113,7 @@ public class SkillChecks
     private static int EffectiveExpLevel(SOLDIERTYPE? pSoldier)
     {
         int iEffExpLevel;
-        int bDrunkLevel;
+        DrunkLevel bDrunkLevel;
         int[] iExpModifier =
         {   0,	// SOBER
 		    0,	// Feeling good
@@ -124,9 +124,9 @@ public class SkillChecks
 
         iEffExpLevel = pSoldier.bExpLevel;
 
-        bDrunkLevel = GetDrunkLevel(pSoldier);
+        bDrunkLevel = DrugsAndAlcohol.GetDrunkLevel(pSoldier);
 
-        iEffExpLevel = iEffExpLevel + iExpModifier[bDrunkLevel];
+        iEffExpLevel = iEffExpLevel + iExpModifier[(int)bDrunkLevel];
 
         if (pSoldier.ubProfile != NO_PROFILE)
         {
@@ -225,7 +225,6 @@ public class SkillChecks
         int iRoll, iMadeItBy;
         InventorySlot bSlot;
         int iLoop;
-        SOLDIERTYPE? pTeamSoldier;
         int bBuddyIndex;
         bool fForceDamnSound = false;
 
@@ -356,7 +355,7 @@ public class SkillChecks
                 break;
             case SKILLCHECKS.LIE_TO_QUEEN_CHECK:
                 // competitive check vs the queen's wisdom and leadership... poor guy!
-                iSkill = 50 * (EffectiveWisdom(pSoldier) + EffectiveLeadership(pSoldier)) / (gMercProfiles[QUEEN].bWisdom + gMercProfiles[QUEEN].bLeadership);
+                iSkill = 50 * (EffectiveWisdom(pSoldier) + EffectiveLeadership(pSoldier)) / (gMercProfiles[NPCID.QUEEN].bWisdom + gMercProfiles[NPCID.QUEEN].bLeadership);
                 break;
             case SKILLCHECKS.ATTACHING_SPECIAL_ITEM_CHECK:
             case SKILLCHECKS.ATTACHING_SPECIAL_ELECTRONIC_ITEM_CHECK:
@@ -473,7 +472,7 @@ public class SkillChecks
             {
                 // If a buddy of this merc is standing around nearby, they'll make a positive comment.
                 iLoop = gTacticalStatus.Team[gbPlayerNum].bFirstID;
-                for (pTeamSoldier = MercPtrs[iLoop]; iLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; iLoop++, pTeamSoldier++)
+                foreach (var pTeamSoldier in MercPtrs.Skip(iLoop).SkipWhile(_ => iLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID))
                 {
                     if (OK_INSECTOR_MERC(pTeamSoldier))
                     {
@@ -499,6 +498,8 @@ public class SkillChecks
                             }
                         }
                     }
+
+                    iLoop++;
                 }
             }
         }

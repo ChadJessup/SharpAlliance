@@ -87,9 +87,9 @@ public class HandleUI
         IScreenManager screenManager)
     {
         this.logger = logger;
-        ClockManager = clock;
+        this.clock = clock;
         this.overhead = overhead;
-        this.rnd = new Globals.Random.Next();
+        this.rnd = Globals.Random;
         this.points = points;
         this.inputs = inputManager;
         this.cursors = cursorSubSystem;
@@ -819,7 +819,7 @@ public class HandleUI
                 return (ScreenName.GAME_SCREEN);
             }
 
-            usRandom = (uint)new Globals.Random.Next().Next(10);
+            usRandom = (uint)Globals.Random.Next(10);
             if (usRandom < 4)
             {
                 pSoldier = TacticalCreateAdministrator();
@@ -917,7 +917,7 @@ public class HandleUI
         }
         else
         {
-            if (FileExists("..\\AutoSave.pls") && CanGameBeSaved())
+            if (FileManager.FileExists("..\\AutoSave.pls") && CanGameBeSaved())
             {
                 //Save the game
                 Globals.guiPreviousOptionScreen = Globals.guiCurrentScreen;
@@ -940,7 +940,7 @@ public class HandleUI
         if (Globals.gfUIFullTargetFound)
         {
             // Get Soldier
-            this.overhead.GetSoldier(out pSoldier, Globals.gusUIFullTargetID);
+            Overhead.GetSoldier(out pSoldier, Globals.gusUIFullTargetID);
 
             if (_KeyDown(SHIFT))
             {
@@ -1066,7 +1066,7 @@ public class HandleUI
         Globals.gUIActionModeChangeDueToMouseOver = false;
 
         // If we are a vehicle..... just show an X
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             if ((OK_ENTERABLE_VEHICLE(pSoldier)))
             {
@@ -1123,7 +1123,7 @@ public class HandleUI
             }
 
 
-            if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+            if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
             {
 
                 if (pSoldier.sGridNo == (int)Globals.NOWHERE)
@@ -1154,7 +1154,7 @@ public class HandleUI
             if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
             {
                 // Get Soldier Pointer
-                this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier);
+                Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier);
 
                 // Get interactvie tile node
                 pIntNode = GetCurInteractiveTileGridNo(out sIntTileGridNo);
@@ -1252,7 +1252,7 @@ public class HandleUI
 
 
         // Get soldier
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1364,7 +1364,7 @@ public class HandleUI
         }
 
         // Get soldier to determine range
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             // ATE: Add stuff here to display a system message if we are targeting smeothing and
             //  are out of range.
@@ -1482,7 +1482,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             pInvTile = GetCurInteractiveTile();
 
@@ -1633,7 +1633,7 @@ public class HandleUI
             else
             {
                 // Get soldier
-                if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+                if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
                 {
                     // FOR REALTIME - DO MOVEMENT BASED ON STANCE!
                     if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -1732,7 +1732,7 @@ public class HandleUI
     {
         SOLDIERTYPE? pSoldier;
 
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1751,7 +1751,7 @@ public class HandleUI
         SOLDIERTYPE pSoldier;
         bool fGoodMode = false;
 
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1841,7 +1841,7 @@ public class HandleUI
             Globals.gfIgnoreScrolling = true;
 
             // Get soldier current height of animation
-            if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+            if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
             {
                 // IF we are on a basic level...(temp)
                 if (pSoldier.bLevel == 0)
@@ -1930,7 +1930,7 @@ public class HandleUI
             if (Globals.gusAnchorMouseY > Globals.gusMouseYPos)
             {
                 // Get soldier
-                if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+                if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
                 {
                     if (iPosDiff < GO_MOVE_ONE && Globals.ubUpHeight >= 1)
                     {
@@ -1987,7 +1987,7 @@ public class HandleUI
             {
 
                 // Get soldier
-                if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+                if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
                 {
                     if (iPosDiff < GO_MOVE_ONE && Globals.ubDownDepth >= 1)
                     {
@@ -2051,7 +2051,7 @@ public class HandleUI
     {
         SOLDIERTYPE pSoldier;
 
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             HandleLeftClickCursor(pSoldier);
 
@@ -2072,7 +2072,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             Globals.guiNewUICursor = GetProperItemCursor((byte)Globals.gusSelectedSoldier, pSoldier.inv[InventorySlot.HANDPOS].usItem, usMapPos, true);
 
@@ -2189,7 +2189,7 @@ public class HandleUI
 
         if (pSoldier.bWeaponMode == WM.ATTACHED)
         {
-            iHandleReturn = HandleItem(pSoldier, sTargetGridNo, bTargetLevel, UNDER_GLAUNCHER, true);
+            iHandleReturn = HandleItem(pSoldier, sTargetGridNo, bTargetLevel, Items.UNDER_GLAUNCHER, true);
         }
         else
         {
@@ -2246,7 +2246,7 @@ public class HandleUI
             }
 
             // Get soldier
-            if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+            if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
             {
                 // Get target guy...
                 if (Globals.gfUIFullTargetFound)
@@ -2302,7 +2302,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
                 || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -2328,7 +2328,7 @@ public class HandleUI
     {
         SOLDIERTYPE? pSoldier;
 
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             HandleEndConfirmCursor(pSoldier);
         }
@@ -2383,7 +2383,7 @@ public class HandleUI
         if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER && Globals.gbAdjustStanceDiff != 0)
         {
             // Get soldier
-            if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+            if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
             {
                 ubNewStance = GetAdjustedAnimHeight(Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight, Globals.gbAdjustStanceDiff);
 
@@ -2478,7 +2478,7 @@ public class HandleUI
         if (Globals.gfUIFullTargetFound)
         {
             // Get Soldier
-            this.overhead.GetSoldier(out pSoldier, Globals.gusUIFullTargetID);
+            Overhead.GetSoldier(out pSoldier, Globals.gusUIFullTargetID);
 
             // If an enemy, and in a given mode, highlight
             if (Globals.guiUIFullTargetFlags.HasFlag(FIND_SOLDIER_RESPONSES.ENEMY_MERC))
@@ -2563,7 +2563,7 @@ public class HandleUI
             }
 
             // Get soldier
-            if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+            if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
             {
                 // LOOK IN GUY'S HAND TO CHECK LOCATION
                 usInHand = pSoldier.inv[InventorySlot.HANDPOS].usItem;
@@ -2598,7 +2598,7 @@ public class HandleUI
                     if (Globals.gfUIFullTargetFound)
                     {
                         // GetSoldier
-                        this.overhead.GetSoldier(out pTargetSoldier, Globals.gusUIFullTargetID);
+                        Overhead.GetSoldier(out pTargetSoldier, Globals.gusUIFullTargetID);
                         sTargetGridNo = pTargetSoldier.sGridNo;
                     }
                     else
@@ -2635,7 +2635,7 @@ public class HandleUI
         LEVELNODE? pIntTile;
 
         // Get soldier
-        if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             if (!IsometricUtils.GetMouseMapPos(out usMapPos))
             {
@@ -2687,7 +2687,7 @@ public class HandleUI
         pfGoDown = false;
         pfGoUp = false;
 
-        if (!this.overhead.GetSoldier(out pSoldier, ubSoldierID))
+        if (!Overhead.GetSoldier(out pSoldier, ubSoldierID))
         {
             return;
         }
@@ -2734,7 +2734,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -2863,7 +2863,7 @@ public class HandleUI
         if (fFoundMerc)
         {
             // Get Soldier
-            this.overhead.GetSoldier(out pSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out pSoldier, usSoldierIndex);
 
             if (uiMercFlags.HasFlag(FIND_SOLDIER_RESPONSES.OWNED_MERC))
             {
@@ -4223,7 +4223,7 @@ public class HandleUI
         Globals.guiNewUICursor = UICursorDefines.LOOK_UICURSOR;
 
         // Get soldier
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return ScreenName.GAME_SCREEN;
         }
@@ -4235,7 +4235,7 @@ public class HandleUI
 
 
         // Get soldier
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4342,7 +4342,7 @@ public class HandleUI
         else
         {
             // Get soldier
-            if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+            if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
             {
                 return (ScreenName.GAME_SCREEN);
             }
@@ -4366,7 +4366,7 @@ public class HandleUI
         int sDistVisible;
 
         // Get soldier
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4929,7 +4929,7 @@ public class HandleUI
         int usMapPos;
 
         // Here, first get map screen
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4963,7 +4963,7 @@ public class HandleUI
         byte bDirection;
 
         // Here, first get map screen
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -5190,7 +5190,7 @@ public class HandleUI
         byte ubDirection;
 
         // Get soldier
-        if (!this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+        if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
         {
             return (false);
         }
@@ -5206,7 +5206,7 @@ public class HandleUI
             // Is he a valid NPC?
             if (IsValidTalkableNPC(Globals.gusUIFullTargetID, false, true, false))
             {
-                this.overhead.GetSoldier(out pTSoldier, Globals.gusUIFullTargetID);
+                Overhead.GetSoldier(out pTSoldier, Globals.gusUIFullTargetID);
 
                 if (pTSoldier.ubID != pSoldier.ubID)
                 {
@@ -5846,7 +5846,7 @@ public class HandleUI
                 Globals.gsRenderHeight += Globals.ROOF_LEVEL_HEIGHT;
             }
 
-            RenderWorld.SetRenderFlags(RENDER_FLAG_FULL);
+            RenderWorld.RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             PathAI.ErasePath(false);
 
             sOldHeight = sHeight;
@@ -5874,7 +5874,7 @@ public class HandleUI
                 if (!(pOverSoldier.uiStatusFlags.HasFlag(SOLDIER.ANIMAL)))
                 {
                     // OK, we have a civ , now check if they are near selected guy.....
-                    if (this.overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
+                    if (Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
                     {
                         if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pOverSoldier.sGridNo) == 1)
                         {
@@ -5944,7 +5944,7 @@ public class HandleUI
 
             // ATE: Check our movement costs for going through walls!
             ubMovementCost = Globals.gubWorldMovementCosts[sIntSpot, (int)sDirs[cnt], pSoldier.bLevel];
-            if ((TRAVELCOST.IS_TRAVELCOST.DOOR(ubMovementCost)))
+            if ((TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost)))
             {
                 ubMovementCost = PathAI.DoorTravelCost(pSoldier, sIntSpot, ubMovementCost, (bool)(pSoldier.bTeam == Globals.gbPlayerNum), out iDoorGridNo);
             }

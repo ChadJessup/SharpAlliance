@@ -1346,7 +1346,7 @@ public class Campaign
             // at 50% make Mike available to the strategic AI
             if (ubCurrentProgress >= 50 && Globals.gStrategicStatus.ubHighestProgress < 50)
             {
-                SetFactTrue(FACT.MIKE_AVAILABLE_TO_ARMY);
+                Facts.SetFactTrue(FACT.MIKE_AVAILABLE_TO_ARMY);
             }
 
             // at 70% add Iggy to the world

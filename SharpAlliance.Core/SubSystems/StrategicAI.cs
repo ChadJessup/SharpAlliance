@@ -475,7 +475,7 @@ public class StrategicAI
 
                 }
             }
-            if (iAdminChance && pSector.ubNumAdmins < gubMinEnemyGroupSize)
+            if (iAdminChance > 0 && pSector.ubNumAdmins < gubMinEnemyGroupSize)
             {
                 pSector.ubNumAdmins = gubMinEnemyGroupSize;
             }
@@ -841,7 +841,7 @@ public class StrategicAI
     //not notice as much.  If it fails, the alertness gradually increases until it succeeds.
     bool AttemptToNoticeAdjacentGroupSucceeds()
     {
-        if (gubNumAwareBattles || gfAutoAIAware)
+        if (gubNumAwareBattles > 0 || gfAutoAIAware)
         { //The queen is in high-alert and is searching for players.  All adjacent checks will automatically succeed.
             return true;
         }
@@ -1060,7 +1060,7 @@ public class StrategicAI
                         gPatrolGroup[i].ubPendingGroupID == pGroup.ubGroupID)
                 {
                     gPatrolGroup[i].ubPendingGroupID = 0;
-                    if (gPatrolGroup[i].ubGroupID && gPatrolGroup[i].ubGroupID != pGroup.ubGroupID)
+                    if (gPatrolGroup[i].ubGroupID > 0 && gPatrolGroup[i].ubGroupID != pGroup.ubGroupID)
                     { //cheat, and warp our reinforcements to them!
                         pPatrolGroup = GetGroup(gPatrolGroup[i].ubGroupID);
                         pPatrolGroup.pEnemyGroup.ubNumTroops += pGroup.pEnemyGroup.ubNumTroops;
@@ -1072,7 +1072,7 @@ public class StrategicAI
                             int ubCut;
                             //truncate the group size.
                             ubCut = pPatrolGroup.ubGroupSize - MAX_STRATEGIC_TEAM_SIZE;
-                            while (ubCut--)
+                            while (ubCut-- > 0)
                             {
                                 if (pGroup.pEnemyGroup.ubNumAdmins)
                                 {
@@ -1161,7 +1161,7 @@ public class StrategicAI
                             pGroup.ubSectorX == 3 && pGroup.ubSectorY == (MAP_ROW)16)
                     {
                         SendGroupToPool(pGroup);
-                        if (!pGroup)
+                        if (pGroup is null)
                         { //Group was transferred to the pool
                             return true;
                         }
@@ -1235,24 +1235,25 @@ public class StrategicAI
                     return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 16));
                 }
             }
-            if (pEnemyGroup && pEnemyGroup.ubSectorX < 16 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID + 1)))
+            if (pEnemyGroup is not null && pEnemyGroup.ubSectorX < 16 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID + 1)))
             {
-                pPlayerGroup = StrategicMovement.FindMovementGroupInSector((int)(pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY, true);
-                if (pPlayerGroup && AttemptToNoticeAdjacentGroupSucceeds())
+                pPlayerGroup = StrategicMovement.FindMovementGroupInSector((pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY, true);
+                if (pPlayerGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     return HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                 }
-                else if (CountAllMilitiaInSector((int)(pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY) &&
+                else if (CountAllMilitiaInSector((pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY) &&
                                 AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX + 1, pEnemyGroup.ubSectorY), pEnemyGroup);
                 }
-                else if (AdjacentSectorIsImportantAndUndefended((int)(ubSectorID + 1)) && AttemptToNoticeEmptySectorSucceeds())
+                else if (AdjacentSectorIsImportantAndUndefended((ubSectorID + 1)) && AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (int)(ubSectorID + 1));
+                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 1));
                 }
             }
-            if (!pEnemyGroup)
+
+            if (pEnemyGroup is null)
             { //group deleted.
                 return true;
             }
@@ -1302,23 +1303,23 @@ public class StrategicAI
                 }
                 pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
-                if (ubNumEnemies && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
+                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY));
                     return false;
                 }
             }
-            if (pPlayerGroup.ubSectorY < 16)
+            if (pPlayerGroup.ubSectorY < (MAP_ROW)16)
             {
-                pEnemyGroup = StrategicMovement.FindMovementGroupInSector(pPlayerGroup.ubSectorX, (int)(pPlayerGroup.ubSectorY + 1), false);
-                if (pEnemyGroup && AttemptToNoticeAdjacentGroupSucceeds())
+                pEnemyGroup = StrategicMovement.FindMovementGroupInSector(pPlayerGroup.ubSectorX, (pPlayerGroup.ubSectorY + 1), false);
+                if (pEnemyGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
                 pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
-                if (ubNumEnemies && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
+                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1));
                     return false;
@@ -1586,9 +1587,9 @@ public class StrategicAI
         ValidateWeights(7);
     }
 
-    void RecalculateSectorWeight(int ubSectorID)
+    void RecalculateSectorWeight(SEC ubSectorID)
     {
-        int i;
+        Garrisons i;
         for (i = 0; i < giGarrisonArraySize; i++)
         {
             if (gGarrisonGroup[i].ubSectorID == ubSectorID)
@@ -1902,7 +1903,7 @@ public class StrategicAI
 
                 //The chance she will send them is related with the strength difference between the
                 //player's force and the queen's.
-                if (iReinforcementsApproved + ubNumExtraReinforcements == iMaxReinforcementsAllowed && usDefencePoints)
+                if (iReinforcementsApproved + ubNumExtraReinforcements == iMaxReinforcementsAllowed && usDefencePoints > 0)
                 {
                     iChance = (iReinforcementsApproved + ubNumExtraReinforcements) * 100 / usDefencePoints;
                     if (!Chance(iChance))
@@ -2154,158 +2155,158 @@ public class StrategicAI
         //memset(&gTempPatrolGroup, 0, sizeof(PATROL_GROUP));
         //memset(&gTempArmyComp, 0, sizeof(ARMY_COMPOSITION));
 
-        FileWrite(hFile, gbPadding2, 3, out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gbPadding2, 3, out uiNumBytesWritten);
         if (uiNumBytesWritten != 3)
         {
             return false;
         }
 
-        FileWrite(hFile, gfExtraElites, 1, out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gfExtraElites, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, giGarrisonArraySize, 4, out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giGarrisonArraySize, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, giPatrolArraySize, 4, out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giPatrolArraySize, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &giReinforcementPool, 4, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giReinforcementPool, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &giForcePercentage, 4, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giForcePercentage, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &giArmyAlertness, 4, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giArmyAlertness, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &giArmyAlertnessDecay, 4, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giArmyAlertnessDecay, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &gfQueenAIAwake, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gfQueenAIAwake, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &giReinforcementPoints, 4, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giReinforcementPoints, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &giRequestPoints, 4, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, giRequestPoints, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileWrite(hFile, &gubNumAwareBattles, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubNumAwareBattles, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &gubSAIVersion, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubSAIVersion, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &gubQueenPriorityPhase, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubQueenPriorityPhase, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &gfFirstBattleMeanwhileScenePending, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gfFirstBattleMeanwhileScenePending, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &gfMassFortificationOrdered, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gfMassFortificationOrdered, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &gubMinEnemyGroupSize, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubMinEnemyGroupSize, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &gubHoursGracePeriod, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubHoursGracePeriod, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, &gusPlayerBattleVictories, 2, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gusPlayerBattleVictories, 2, &uiNumBytesWritten);
         if (uiNumBytesWritten != 2)
         {
             return false;
         }
 
-        FileWrite(hFile, &gfUseAlternateQueenPosition, 1, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gfUseAlternateQueenPosition, 1, &uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileWrite(hFile, gbPadding, SAI_PADDING_BYTES, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gbPadding, SAI_PADDING_BYTES, &uiNumBytesWritten);
         if (uiNumBytesWritten != SAI_PADDING_BYTES)
         {
             return false;
         }
         //Save the army composition (which does get modified)
-        FileWrite(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), &uiNumBytesWritten);
         if (uiNumBytesWritten != NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION))
         {
             return false;
         }
 
         i = SAVED_ARMY_COMPOSITIONS - NUM_ARMY_COMPOSITIONS;
-        while (i--)
+        while (i-- > 0)
         {
-            FileWrite(hFile, &gTempArmyComp, sizeof(ARMY_COMPOSITION), &uiNumBytesWritten);
+            FileManager.FileManager.FileWrite(hFile, &gTempArmyComp, sizeof(ARMY_COMPOSITION), &uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(ARMY_COMPOSITION))
             {
                 return false;
             }
         }
         //Save the patrol group definitions
-        FileWrite(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), &uiNumBytesWritten);
         if (uiNumBytesWritten != giPatrolArraySize * sizeof(PATROL_GROUP))
         {
             return false;
         }
 
         i = SAVED_PATROL_GROUPS - giPatrolArraySize;
-        while (i--)
+        while (i-- > 0)
         {
-            FileWrite(hFile, &gTempPatrolGroup, sizeof(PATROL_GROUP), &uiNumBytesWritten);
+            FileManager.FileWrite(hFile, &gTempPatrolGroup, sizeof(PATROL_GROUP), &uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(PATROL_GROUP))
             {
                 return false;
@@ -2313,7 +2314,7 @@ public class StrategicAI
         }
         //Save the garrison information!
         //memset(&gTempGarrisonGroup, 0, sizeof(GARRISON_GROUP));
-        FileWrite(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesWritten);
         if (uiNumBytesWritten != giGarrisonArraySize * sizeof(GARRISON_GROUP))
         {
             return false;
@@ -2322,20 +2323,20 @@ public class StrategicAI
         i = SAVED_GARRISON_GROUPS - giGarrisonArraySize;
         while (i--)
         {
-            FileWrite(hFile, &gTempGarrisonGroup, sizeof(GARRISON_GROUP), &uiNumBytesWritten);
+            FileManager.FileWrite(hFile, gTempGarrisonGroup, sizeof(GARRISON_GROUP), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(GARRISON_GROUP))
             {
                 return false;
             }
         }
 
-        FileWrite(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, out uiNumBytesWritten);
         if (uiNumBytesWritten != (int)giPatrolArraySize)
         {
             return false;
         }
 
-        FileWrite(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, out uiNumBytesWritten);
         if (uiNumBytesWritten != (int)giGarrisonArraySize)
         {
             return false;
@@ -2354,142 +2355,142 @@ public class StrategicAI
         int i;
         int ubSAIVersion;
 
-        FileRead(hFile, gbPadding2, 3, &uiNumBytesRead);
+        FileManager.FileRead(hFile, gbPadding2, 3, &uiNumBytesRead);
         if (uiNumBytesRead != 3)
         {
             return false;
         }
 
-        FileRead(hFile, &gfExtraElites, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gfExtraElites, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &giGarrisonArraySize, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giGarrisonArraySize, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &giPatrolArraySize, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giPatrolArraySize, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &giReinforcementPool, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giReinforcementPool, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &giForcePercentage, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giForcePercentage, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &giArmyAlertness, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giArmyAlertness, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &giArmyAlertnessDecay, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giArmyAlertnessDecay, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &gfQueenAIAwake, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gfQueenAIAwake, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &giReinforcementPoints, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giReinforcementPoints, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &giRequestPoints, 4, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &giRequestPoints, 4, &uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileRead(hFile, &gubNumAwareBattles, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gubNumAwareBattles, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &ubSAIVersion, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &ubSAIVersion, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &gubQueenPriorityPhase, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gubQueenPriorityPhase, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &gfFirstBattleMeanwhileScenePending, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gfFirstBattleMeanwhileScenePending, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &gfMassFortificationOrdered, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gfMassFortificationOrdered, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &gubMinEnemyGroupSize, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gubMinEnemyGroupSize, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &gubHoursGracePeriod, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gubHoursGracePeriod, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, &gusPlayerBattleVictories, 2, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gusPlayerBattleVictories, 2, &uiNumBytesRead);
         if (uiNumBytesRead != 2)
         {
             return false;
         }
 
-        FileRead(hFile, &gfUseAlternateQueenPosition, 1, &uiNumBytesRead);
+        FileManager.FileRead(hFile, &gfUseAlternateQueenPosition, 1, &uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileRead(hFile, gbPadding, SAI_PADDING_BYTES, &uiNumBytesRead);
+        FileManager.FileRead(hFile, gbPadding, SAI_PADDING_BYTES, &uiNumBytesRead);
         if (uiNumBytesRead != SAI_PADDING_BYTES)
         {
             return false;
         }
         //Restore the army composition 
-        FileRead(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), &uiNumBytesRead);
+        FileManager.FileRead(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), &uiNumBytesRead);
         if (uiNumBytesRead != NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION))
         {
             return false;
         }
 
         i = SAVED_ARMY_COMPOSITIONS - NUM_ARMY_COMPOSITIONS;
-        while (i--)
+        while (i-- > 0)
         {
-            FileRead(hFile, &gTempArmyComp, sizeof(ARMY_COMPOSITION), &uiNumBytesRead);
+            FileManager.FileRead(hFile, &gTempArmyComp, sizeof(ARMY_COMPOSITION), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(ARMY_COMPOSITION))
             {
                 return false;
@@ -2501,17 +2502,19 @@ public class StrategicAI
         {
             MemFree(gPatrolGroup);
         }
+
         gPatrolGroup = (PATROL_GROUP?)MemAlloc(giPatrolArraySize * sizeof(PATROL_GROUP));
-        FileRead(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), &uiNumBytesRead);
+        FileManager.FileRead(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), &uiNumBytesRead);
+
         if (uiNumBytesRead != giPatrolArraySize * sizeof(PATROL_GROUP))
         {
             return false;
         }
 
         i = SAVED_PATROL_GROUPS - giPatrolArraySize;
-        while (i--)
+        while (i-- > 0)
         {
-            FileRead(hFile, &gTempPatrolGroup, sizeof(PATROL_GROUP), &uiNumBytesRead);
+            FileManager.FileRead(hFile, &gTempPatrolGroup, sizeof(PATROL_GROUP), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(PATROL_GROUP))
             {
                 return false;
@@ -2524,16 +2527,17 @@ public class StrategicAI
         {
             MemFree(gGarrisonGroup);
         }
+
         gGarrisonGroup = (GARRISON_GROUP?)MemAlloc(giGarrisonArraySize * sizeof(GARRISON_GROUP));
-        FileRead(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesRead);
+        FileManager.FileRead(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesRead);
         if (uiNumBytesRead != giGarrisonArraySize * sizeof(GARRISON_GROUP))
         {
             return false;
         }
         i = SAVED_GARRISON_GROUPS - giGarrisonArraySize;
-        while (i--)
+        while (i-- > 0)
         {
-            FileRead(hFile, &gTempGarrisonGroup, sizeof(GARRISON_GROUP), &uiNumBytesRead);
+            FileManager.FileRead(hFile, &gTempGarrisonGroup, sizeof(GARRISON_GROUP), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(GARRISON_GROUP))
             {
                 return false;
@@ -2547,7 +2551,7 @@ public class StrategicAI
             gubPatrolReinforcementsDenied = null;
         }
         gubPatrolReinforcementsDenied = (int?)MemAlloc(giPatrolArraySize);
-        FileRead(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, &uiNumBytesRead);
+        FileManager.FileRead(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, &uiNumBytesRead);
         if (uiNumBytesRead != (int)giPatrolArraySize)
         {
             return false;
@@ -2560,7 +2564,7 @@ public class StrategicAI
             gubGarrisonReinforcementsDenied = null;
         }
         gubGarrisonReinforcementsDenied = (int?)MemAlloc(giGarrisonArraySize);
-        FileRead(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, &uiNumBytesRead);
+        FileManager.FileRead(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, &uiNumBytesRead);
         if (uiNumBytesRead != (int)giGarrisonArraySize)
         {
             return false;
@@ -2602,7 +2606,7 @@ public class StrategicAI
                 if (!pGroup.fPlayer && pGroup.ubGroupSize >= 16)
                 { //accident in patrol groups being too large
                     int ubGetRidOfXTroops = pGroup.ubGroupSize - 10;
-                    if (gbWorldSectorZ || pGroup.ubSectorX != gWorldSectorX || pGroup.ubSectorY != gWorldSectorY)
+                    if (gbWorldSectorZ > 0 || pGroup.ubSectorX != gWorldSectorX || pGroup.ubSectorY != gWorldSectorY)
                     { //don't modify groups in the currently loaded sector.
                         if (pGroup.pEnemyGroup.ubNumTroops >= ubGetRidOfXTroops)
                         {
@@ -2926,7 +2930,8 @@ public class StrategicAI
 
     void EvolveQueenPriorityPhase(bool fForceChange)
     {
-        int i, index, num, iFactor;
+        Garrisons i;
+        int index, num, iFactor;
         int iChange, iNew, iNumSoldiers, iNumPromotions;
         SECTORINFO? pSector;
         int[] ubOwned = new int[NUM_ARMY_COMPOSITIONS];
@@ -2974,18 +2979,18 @@ public class StrategicAI
         }
 
         //Go through the *majority* of compositions and modify the priority/desired values.
-        for (i = 0; i < NUM_ARMY_COMPOSITIONS; i++)
+        for (i = 0; i < Garrisons.NUM_ARMY_COMPOSITIONS; i++)
         {
             switch (i)
             {
-                case QUEEN_DEFENCE:
-                case MEDUNA_DEFENCE:
-                case MEDUNA_SAMSITE:
-                case LEVEL1_DEFENCE:
-                case LEVEL2_DEFENCE:
-                case LEVEL3_DEFENCE:
-                case OMERTA_WELCOME_WAGON:
-                case ROADBLOCK:
+                case Garrisons.QUEEN_DEFENCE:
+                case Garrisons.MEDUNA_DEFENCE:
+                case Garrisons.MEDUNA_SAMSITE:
+                case Garrisons.LEVEL1_DEFENCE:
+                case Garrisons.LEVEL2_DEFENCE:
+                case Garrisons.LEVEL3_DEFENCE:
+                case Garrisons.OMERTA_WELCOME_WAGON:
+                case Garrisons.ROADBLOCK:
                     //case SANMONA_SMALL:
                     //don't consider these compositions
                     continue;
@@ -3004,7 +3009,7 @@ public class StrategicAI
             iFactor = iFactor * gubQueenPriorityPhase / 10;
 
             //modify priority by + or - 25% of original
-            if (gArmyComp[i].bPriority)
+            if (gArmyComp[i].bPriority > 0)
             {
                 num = gOrigArmyComp[i].bPriority + iFactor / 2;
                 num = Math.Min(Math.Max(0, num), 100);
@@ -3017,7 +3022,7 @@ public class StrategicAI
             gArmyComp[i].bDesiredPopulation = (int)num;
 
             //if gfExtraElites is set, then augment the composition sizes
-            if (gfExtraElites && iFactor >= 15 && gArmyComp[i].bElitePercentage)
+            if (gfExtraElites && iFactor >= 15 && gArmyComp[i].bElitePercentage > 0)
             {
                 iChange = gGameOptions.ubDifficultyLevel * 5;
 
@@ -3041,23 +3046,24 @@ public class StrategicAI
             {
                 //if we are dealing with extra elites, then augment elite compositions (but only if they exist in the sector).  
                 //If the queen still owns the town by more than 65% (iFactor >= 15), then upgrade troops to elites in those sectors.
-                index = gGarrisonGroup[i].ubComposition;
-                switch (index)
+                var idx = gGarrisonGroup[i].ubComposition;
+                index = (int)idx;
+                switch (idx)
                 {
-                    case QUEEN_DEFENCE:
-                    case MEDUNA_DEFENCE:
-                    case MEDUNA_SAMSITE:
-                    case LEVEL1_DEFENCE:
-                    case LEVEL2_DEFENCE:
-                    case LEVEL3_DEFENCE:
-                    case OMERTA_WELCOME_WAGON:
-                    case ROADBLOCK:
+                    case Garrisons.QUEEN_DEFENCE:
+                    case Garrisons.MEDUNA_DEFENCE:
+                    case Garrisons.MEDUNA_SAMSITE:
+                    case Garrisons.LEVEL1_DEFENCE:
+                    case Garrisons.LEVEL2_DEFENCE:
+                    case Garrisons.LEVEL3_DEFENCE:
+                    case Garrisons.OMERTA_WELCOME_WAGON:
+                    case Garrisons.ROADBLOCK:
                         //case SANMONA_SMALL:
                         //don't consider these compositions
                         continue;
                 }
                 pSector = SectorInfo[gGarrisonGroup[i].ubSectorID];
-                if (ubTotal[index])
+                if (ubTotal[index] > 0)
                 {
                     iFactor = (ubOwned[index] * 100 / ubTotal[index]) - 50;
                 }
@@ -3067,22 +3073,22 @@ public class StrategicAI
                 }
                 if (iFactor >= 15)
                 { //Make the actual elites in sector match the new garrison percentage
-                    if (!gfWorldLoaded || gbWorldSectorZ ||
+                    if (!gfWorldLoaded || gbWorldSectorZ > 0 ||
                             gWorldSectorX != SECTORINFO.SECTORX(gGarrisonGroup[i].ubSectorID) ||
                             gWorldSectorY != SECTORINFO.SECTORY(gGarrisonGroup[i].ubSectorID))
                     { //Also make sure the sector isn't currently loaded!
                         iNumSoldiers = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
-                        iNumPromotions = gArmyComp[index].bElitePercentage * iNumSoldiers / 100 - pSector.ubNumElites;
+                        iNumPromotions = gArmyComp[(Garrisons)index].bElitePercentage * iNumSoldiers / 100 - pSector.ubNumElites;
 
                         if (iNumPromotions > 0)
                         {
-                            while (iNumPromotions--)
+                            while (iNumPromotions-- > 0)
                             {
-                                if (pSector.ubNumAdmins)
+                                if (pSector.ubNumAdmins > 0)
                                 {
                                     pSector.ubNumAdmins--;
                                 }
-                                else if (pSector.ubNumTroops)
+                                else if (pSector.ubNumTroops > 0)
                                 {
                                     pSector.ubNumTroops--;
                                 }
@@ -3105,7 +3111,7 @@ public class StrategicAI
         }
     }
 
-    void ExecuteStrategicAIAction(int usActionCode, int sSectorX, MAP_ROW sSectorY)
+    void ExecuteStrategicAIAction(NPC_ACTION usActionCode, int sSectorX, MAP_ROW sSectorY)
     {
         GROUP? pGroup, pPendingGroup = null;
         SECTORINFO? pSector;
@@ -3113,15 +3119,15 @@ public class StrategicAI
         int ubNumSoldiers;
         switch (usActionCode)
         {
-            case STRATEGIC_AI_ACTION_WAKE_QUEEN:
+            case NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN:
                 WakeUpQueen();
                 break;
 
-            case STRATEGIC_AI_ACTION_QUEEN_DEAD:
+            case NPC_ACTION.STRATEGIC_AI_ACTION_QUEEN_DEAD:
                 gfQueenAIAwake = false;
                 break;
 
-            case STRATEGIC_AI_ACTION_KINGPIN_DEAD:
+            case NPC_ACTION.STRATEGIC_AI_ACTION_KINGPIN_DEAD:
                 //Immediate send a small garrison to C5 (to discourage access to Tony the dealer)
                 /*
                 for( i = 0; i < giGarrisonArraySize; i++ )
@@ -3139,7 +3145,7 @@ public class StrategicAI
                 }
                 */
                 break;
-            case NPC_ACTION_SEND_SOLDIERS_TO_DRASSEN:
+            case NPC_ACTION.SEND_SOLDIERS_TO_DRASSEN:
                 //Send 6, 9, or 12 troops (based on difficulty) one of the Drassen sectors.  If nobody is there when they arrive,
                 //those troops will get reassigned.
 
@@ -3173,7 +3179,7 @@ public class StrategicAI
                 MoveSAIGroupToSector(&pGroup, ubSectorID, EVASIVE, pGroup.pEnemyGroup.ubIntention);
 
                 break;
-            case NPC_ACTION_SEND_SOLDIERS_TO_BATTLE_LOCATION:
+            case NPC_ACTION.SEND_SOLDIERS_TO_BATTLE_LOCATION:
 
                 //Send 4, 8, or 12 troops (based on difficulty) to the location of the first battle.  If nobody is there when they arrive,
                 //those troops will get reassigned.
@@ -3208,7 +3214,7 @@ public class StrategicAI
                 }
 
                 break;
-            case NPC_ACTION_SEND_SOLDIERS_TO_OMERTA:
+            case NPC_ACTION.SEND_SOLDIERS_TO_OMERTA:
                 ubNumSoldiers = (int)(gGameOptions.ubDifficultyLevel * 6); //6, 12, or 18 based on difficulty.
                 pGroup = CreateNewEnemyGroupDepartingFromSector(SEC.P3, 0, ubNumSoldiers, (int)(ubNumSoldiers / 7)); //add 1 elite to normal, and 2 for hard
                 ubNumSoldiers = (int)(ubNumSoldiers + ubNumSoldiers / 7);
@@ -3227,7 +3233,7 @@ public class StrategicAI
 
                 ValidateGroup(pGroup);
                 break;
-            case NPC_ACTION_SEND_TROOPS_TO_SAM:
+            case NPC_ACTION.SEND_TROOPS_TO_SAM:
                 ubSectorID = SECTORINFO.SECTOR(sSectorX, sSectorY);
                 ubNumSoldiers = (int)(3 + gGameOptions.ubDifficultyLevel + HighestPlayerProgressPercentage() / 15);
                 giReinforcementPool -= ubNumSoldiers;
@@ -3251,21 +3257,21 @@ public class StrategicAI
                 }
 
                 break;
-            case NPC_ACTION_ADD_MORE_ELITES:
+            case NPC_ACTION.ADD_MORE_ELITES:
                 gfExtraElites = true;
                 EvolveQueenPriorityPhase(true);
                 break;
-            case NPC_ACTION_GIVE_KNOWLEDGE_OF_ALL_MERCS:
+            case NPC_ACTION.GIVE_KNOWLEDGE_OF_ALL_MERCS:
                 //temporarily make the queen's forces more aware (high alert)
                 switch (gGameOptions.ubDifficultyLevel)
                 {
-                    case DIF_LEVEL_EASY:
+                    case DifficultyLevel.Easy:
                         gubNumAwareBattles = EASY_NUM_AWARE_BATTLES;
                         break;
-                    case DIF_LEVEL_MEDIUM:
+                    case DifficultyLevel.Medium:
                         gubNumAwareBattles = NORMAL_NUM_AWARE_BATTLES;
                         break;
-                    case DIF_LEVEL_HARD:
+                    case DifficultyLevel.Hard:
                         gubNumAwareBattles = HARD_NUM_AWARE_BATTLES;
                         break;
                 }
@@ -3432,7 +3438,7 @@ public class StrategicAI
         { //check to see if there are any pending reinforcements.  If so, then cancel their orders and have them
           //reassigned, so the player doesn't get pestered.  This is a feature that *dumbs* down the AI, and is done
           //for the sake of gameplay.  We don't want the game to be tedious.
-            if (!pSector.uiTimeLastPlayerLiberated)
+            if (pSector.uiTimeLastPlayerLiberated == 0)
             {
                 pSector.uiTimeLastPlayerLiberated = GameClock.GetWorldTotalSeconds();
             }
@@ -3582,7 +3588,7 @@ public class StrategicAI
         iBestIndex = -1;
         for (i = 0; i < giPatrolArraySize; i++)
         {
-            if (gPatrolGroup[i].ubGroupID)
+            if (gPatrolGroup[i].ubGroupID > 0)
             {
                 pGroup = GetGroup(gPatrolGroup[i].ubGroupID);
                 if (pGroup && pGroup.ubGroupSize >= ubSoldiersRequested)
@@ -3651,7 +3657,7 @@ public class StrategicAI
                         }
                         else
                         {
-                            AssertMsg(0, "Strategic AI group transfer error.  KM : 0");
+                            //AssertMsg(0, "Strategic AI group transfer error.  KM : 0");
                             return;
                         }
                     }
@@ -3661,7 +3667,7 @@ public class StrategicAI
                 gGarrisonGroup[iGarrisonID].ubPendingGroupID = pNewGroup.ubGroupID;
                 RecalculatePatrolWeight(iBestIndex);
 
-                MoveSAIGroupToSector(pNewGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
+                MoveSAIGroupToSector(pNewGroup, gGarrisonGroup[iGarrisonID].ubSectorID, SAIMOVECODE.EVASIVE, ENEMY_INTENTIONS.REINFORCEMENTS);
             }
             else
             { //Send the whole group and kill it's patrol assignment.
@@ -3673,20 +3679,20 @@ public class StrategicAI
                 //don't work if this is the case.  Teleporting them to their previous sector is the best and easiest way to deal with this.
                 SetEnemyGroupSector(pGroup, SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY));
 
-                MoveSAIGroupToSector(pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
+                MoveSAIGroupToSector(pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, SAIMOVECODE.EVASIVE, ENEMY_INTENTIONS.REINFORCEMENTS);
                 ValidateGroup(pGroup);
             }
         }
         else
         { //There are no groups that have enough troops.  Send a new force from the palace instead.
             pGroup = CreateNewEnemyGroupDepartingFromSector(SEC.P3, 0, ubSoldiersRequested, 0);
-            pGroup.ubMoveType = ONE_WAY;
+            pGroup.ubMoveType = MOVE_TYPES.ONE_WAY;
             pGroup.pEnemyGroup.ubIntention = REINFORCEMENTS;
             gGarrisonGroup[iGarrisonID].ubPendingGroupID = pGroup.ubGroupID;
             pGroup.ubOriginalSector = SECTORINFO.SECTOR(ubDstSectorX, ubDstSectorY);
             giReinforcementPool -= (int)ubSoldiersRequested;
 
-            MoveSAIGroupToSector(pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, EVASIVE, REINFORCEMENTS);
+            MoveSAIGroupToSector(pGroup, gGarrisonGroup[iGarrisonID].ubSectorID, SAIMOVECODE.EVASIVE, ENEMY_INTENTIONS.REINFORCEMENTS);
             ValidateGroup(pGroup);
         }
     }
@@ -3703,7 +3709,7 @@ public class StrategicAI
 
     void MassFortifyTowns()
     {
-        int i;
+        Garrisons i;
         SECTORINFO? pSector;
         GROUP? pGroup;
         int ubNumTroops, ubDesiredTroops;
@@ -3714,8 +3720,8 @@ public class StrategicAI
             ubDesiredTroops = (int)gArmyComp[gGarrisonGroup[i].ubComposition].bDesiredPopulation;
             if (ubNumTroops < ubDesiredTroops)
             {
-                if (!gGarrisonGroup[i].ubPendingGroupID &&
-                        gGarrisonGroup[i].ubComposition != ROADBLOCK &&
+                if (gGarrisonGroup[i].ubPendingGroupID == 0 &&
+                        gGarrisonGroup[i].ubComposition != Garrisons.ROADBLOCK &&
                         EnemyPermittedToAttackSector(null, gGarrisonGroup[i].ubSectorID))
                 {
                     RequestHighPriorityGarrisonReinforcements(i, (int)(ubDesiredTroops - ubNumTroops));
@@ -3730,7 +3736,7 @@ public class StrategicAI
             Debug.Assert(pGroup);
             pSector.ubNumTroops = 0;
             pGroup.pEnemyGroup.ubIntention = PATROL;
-            pGroup.ubMoveType = ONE_WAY;
+            pGroup.ubMoveType = MOVE_TYPES.ONE_WAY;
             ReassignAIGroup(&pGroup);
             ValidateGroup(pGroup);
             RecalculateSectorWeight(SEC.A9);

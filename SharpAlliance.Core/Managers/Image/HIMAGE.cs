@@ -76,7 +76,7 @@ public class HIMAGE
         Rgba32[] palette;
         uint cnt;
         ushort r16, g16, b16, usColor;
-        int r, g, b; // byte
+        byte r, g, b; // byte
 
         gusRedShift = -8;
         gusGreenShift = 8;

@@ -30,3 +30,10 @@ public enum URGENCY
     HIGH,
     NUM_URGENCY_STATES
 };
+
+[Flags]
+public enum FLAG
+{
+    CAUTIOUS = 0x01,
+    STOPSHORT = 0x02,
+}

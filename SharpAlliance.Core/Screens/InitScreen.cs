@@ -220,7 +220,7 @@ namespace SharpAlliance.Core.Screens
             await this.strategicMap.InitStrategicMovementCosts();
 
             // Init tactical engine
-            if (!await this.overhead.InitTacticalEngine())
+            if (!await Overhead.InitTacticalEngine())
             {
                 return ScreenName.ERROR_SCREEN;
             }

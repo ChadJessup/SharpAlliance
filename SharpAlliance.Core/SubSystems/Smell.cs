@@ -64,7 +64,7 @@ public class Smell
 
     public static void DECAY_SMELL_STRENGTH(int s)
     {
-        int ubStrength = Globals.SMELL_STRENGTH((s));
+        int ubStrength = Smell.SMELL_STRENGTH((s));
         ubStrength--;
         ubStrength <<= Globals.SMELL_TYPE_NUM_BITS;
         (s) = SMELL_TYPE_BITS((s)) | ubStrength;
@@ -547,7 +547,7 @@ public class Smell
 
                     // Update rendering!
                     pMapElement.uiFlags |= MAPELEMENT_REDRAW;
-                    SetRenderFlags(RENDER_FLAG_MARKED);
+                    RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
 
                 }
             }

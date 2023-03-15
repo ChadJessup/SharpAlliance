@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.Image;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -26,7 +28,7 @@ public class StructureInternals
                 ubShapeValue = pTile.Shape[bLoopX, bLoopY];
                 for (bLoopZ = 0; bLoopZ < PROFILE_Z_SIZE; bLoopZ++)
                 {
-                    if (ubShapeValue & AtHeight[bLoopZ])
+                    if ((ubShapeValue & AtHeight[bLoopZ]) == 0)
                     {
                         ubFilled++;
                     }
@@ -40,13 +42,12 @@ public class StructureInternals
     // Structure database functions
     //
 
-    private static void FreeStructureFileRef(STRUCTURE_FILE_REF? pFileRef)
+    private static void FreeStructureFileRef(STRUCTURE_FILE_REF pFileRef)
     { // Frees all of the memory associated with a file reference, including
       // the file reference structure itself
 
         int usLoop;
 
-        Debug.Assert(pFileRef != null);
         if (pFileRef.pDBStructureRef != null)
         {
             for (usLoop = 0; usLoop < pFileRef.usNumberOfStructures; usLoop++)
@@ -57,161 +58,150 @@ public class StructureInternals
                 }
             }
 
-            pFileRef.pDBStructureRef.Clear();
+            pFileRef.pDBStructureRef = null;
         }
-        if (pFileRef.pubStructureData != null)
-        {
-            pFileRef.pubStructureData = null;
-        }
+        // if (pFileRef.pubStructureData != null)
+        // {
+        //     pFileRef.pubStructureData = null;
+        // }
 
-        if (pFileRef.pAuxData != null)
-        {
-            MemFree(pFileRef.pAuxData);
-        }
+        // if (pFileRef.pAuxData != null)
+        // {
+        //     MemFree(pFileRef.pAuxData);
+        // }
 
         MemFree(pFileRef);
     }
 
     void FreeAllStructureFiles()
-    { // Frees all of the structure database!
-        STRUCTURE_FILE_REF? pFileRef;
-        STRUCTURE_FILE_REF? pNextRef;
+    {
+        // Frees all of the structure database!
+        STRUCTURE_FILE_REF pFileRef;
+        STRUCTURE_FILE_REF pNextRef;
 
         pFileRef = gpStructureFileRefs;
-        while (pFileRef != null)
+        while (IntPtr.Zero != pFileRef.pNext)
         {
-            pNextRef = pFileRef.pNext;
+            pNextRef = Marshal.PtrToStructure<STRUCTURE_FILE_REF>(pFileRef.pNext);
             FreeStructureFileRef(pFileRef);
             pFileRef = pNextRef;
         }
     }
 
-    bool FreeStructureFile(STRUCTURE_FILE_REF? pStructureFile)
+    bool FreeStructureFile(STRUCTURE_FILE_REF pStructureFile)
     {
-        CHECKF(pStructureFile is not null);
-
         // unlink the file ref
-        if (pStructureFile.pPrev != null)
-        {
-            pStructureFile.pPrev.pNext = pStructureFile.pNext;
-        }
-        else
-        {
-            // freeing the head of the list!
-            gpStructureFileRefs = pStructureFile.pNext;
-        }
-        if (pStructureFile.pNext != null)
-        {
-            pStructureFile.pNext.pPrev = pStructureFile.pPrev;
-        }
-        if (pStructureFile.pPrev == null && pStructureFile.pNext == null)
-        {
-            // toasting the list!
-            gpStructureFileRefs = null;
-        }
+        // if (pStructureFile.pPrev != null)
+        // {
+        //     pStructureFile.pPrev.pNext = pStructureFile.pNext;
+        // }
+        // else
+        // {
+        //     // freeing the head of the list!
+        //     gpStructureFileRefs = pStructureFile.pNext;
+        // }
+        // if (pStructureFile.pNext != null)
+        // {
+        //     pStructureFile.pNext.pPrev = pStructureFile.pPrev;
+        // }
+        // if (pStructureFile.pPrev == null && pStructureFile.pNext == null)
+        // {
+        //     // toasting the list!
+        //     gpStructureFileRefs = null;
+        // }
         // and free all the structures used!
         FreeStructureFileRef(pStructureFile);
         return (true);
     }
 
-    private static bool LoadStructureData(STR szFileName, STRUCTURE_FILE_REF? pFileRef, out int puiStructureDataSize)
-    //int **ppubStructureData, int * puiDataSize, STRUCTURE_FILE_HEADER * pHeader )
-    { // Loads a structure file's data as a honking chunk o' memory 
+    private unsafe static bool LoadStructureData(string szFileName, STRUCTURE_FILE_REF pFileRef, out int puiStructureDataSize)
+    {
+        // Loads a structure file's data as a honking chunk o' memory 
+        //int **ppubStructureData, int * puiDataSize, STRUCTURE_FILE_HEADER * pHeader )
+        puiStructureDataSize = 0;
         Stream hInput;
-        STRUCTURE_FILE_HEADER Header;
+        STRUCTURE_FILE_HEADER Header = new();
         int uiBytesRead;
         int uiDataSize;
         bool fOk;
 
         CHECKF(szFileName);
         CHECKF(pFileRef);
-        hInput = FileOpen(szFileName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
-        if (hInput == 0)
+        hInput = FileManager.FileOpen(szFileName, FileAccess.Read /*FILE_OPEN_EXISTING*/, false);
+        if (hInput.Length == -1)
         {
             return (false);
         }
-        fOk = FileRead(hInput, &Header, sizeof(STRUCTURE_FILE_HEADER), out uiBytesRead);
-        if (!fOk || uiBytesRead != sizeof(STRUCTURE_FILE_HEADER) || strncmp(Header.szId, STRUCTURE_FILE_ID, STRUCTURE_FILE_ID_LEN) != 0 || Header.usNumberOfStructures == 0)
+
+        uint STRUCTURE_FILE_HEADER_SIZE = 16;
+        fOk = FileManager.FileRead<STRUCTURE_FILE_HEADER>(hInput, ref Header, sizeof(STRUCTURE_FILE_HEADER), out uiBytesRead);
+        var szId = new string(Header.szId);
+        if (!fOk || uiBytesRead != STRUCTURE_FILE_HEADER_SIZE
+            || !szId.Equals(STRUCTURE_FILE_ID)
+            || Header.usNumberOfStructures == 0)
         {
-            FileClose(hInput);
+            FileManager.FileClose(hInput);
             return (false);
         }
         pFileRef.usNumberOfStructures = Header.usNumberOfStructures;
-        if (Header.fFlags.HasFlag(STRUCTURE_FILE_CONTAINS_AUXIMAGEDATA))
+        if (Header.fFlags.HasFlag(STRUCTURE_FILE_CONTAINS.AUXIMAGEDATA))
         {
             uiDataSize = sizeof(AuxObjectData) * Header.usNumberOfImages;
-            pFileRef.pAuxData = MemAlloc(uiDataSize);
-            if (pFileRef.pAuxData == null)
-            {
-                FileClose(hInput);
-                return (false);
-            }
-            fOk = FileRead(hInput, pFileRef.pAuxData, uiDataSize, &uiBytesRead);
+
+            fOk = FileManager.FileRead<AuxObjectData>(hInput, ref pFileRef.pAuxData, uiDataSize, out uiBytesRead);
             if (!fOk || uiBytesRead != uiDataSize)
             {
                 MemFree(pFileRef.pAuxData);
-                FileClose(hInput);
+                FileManager.FileClose(hInput);
                 return (false);
             }
             if (Header.usNumberOfImageTileLocsStored > 0)
             {
                 uiDataSize = sizeof(RelTileLoc) * Header.usNumberOfImageTileLocsStored;
-                pFileRef.pTileLocData = MemAlloc(uiDataSize);
-                if (pFileRef.pTileLocData == null)
-                {
-                    MemFree(pFileRef.pAuxData);
-                    FileClose(hInput);
-                    return (false);
-                }
-                fOk = FileRead(hInput, pFileRef.pTileLocData, uiDataSize, &uiBytesRead);
+
+                fOk = FileManager.FileRead(hInput, ref pFileRef.pTileLocData, uiDataSize, out uiBytesRead);
                 if (!fOk || uiBytesRead != uiDataSize)
                 {
                     MemFree(pFileRef.pAuxData);
-                    FileClose(hInput);
+                    FileManager.FileClose(hInput);
                     return (false);
                 }
             }
         }
-        if (Header.fFlags.HasFlag(STRUCTURE_FILE_CONTAINS_STRUCTUREDATA))
+        if (Header.fFlags.HasFlag(STRUCTURE_FILE_CONTAINS.STRUCTUREDATA))
         {
             pFileRef.usNumberOfStructuresStored = Header.usNumberOfStructuresStored;
             uiDataSize = Header.usStructureDataSize;
             // Determine the size of the data, from the header just read,
             // allocate enough memory and read it in
-            pFileRef.pubStructureData = MemAlloc(uiDataSize);
+            //pFileRef.pubStructureData = MemAlloc(uiDataSize);
             if (pFileRef.pubStructureData == null)
             {
-                FileClose(hInput);
-                if (pFileRef.pAuxData != null)
-                {
-                    MemFree(pFileRef.pAuxData);
-                    if (pFileRef.pTileLocData != null)
-                    {
-                        MemFree(pFileRef.pTileLocData);
-                    }
-                }
+                FileManager.FileClose(hInput);
 
                 return (false);
             }
-            fOk = FileRead(hInput, pFileRef.pubStructureData, uiDataSize, &uiBytesRead);
+
+            fOk = FileManager.FileRead(hInput, ref pFileRef.pubStructureData, uiDataSize, out uiBytesRead);
             if (!fOk || uiBytesRead != uiDataSize)
             {
                 MemFree(pFileRef.pubStructureData);
-                if (pFileRef.pAuxData != null)
-                {
-                    MemFree(pFileRef.pAuxData);
-                    if (pFileRef.pTileLocData != null)
-                    {
-                        MemFree(pFileRef.pTileLocData);
-                    }
-                }
-                FileClose(hInput);
+                // if (pFileRef.pAuxData != null)
+                // {
+                //     MemFree(pFileRef.pAuxData);
+                //     if (pFileRef.pTileLocData != null)
+                //     {
+                //         MemFree(pFileRef.pTileLocData);
+                //     }
+                // }
+                FileManager.FileClose(hInput);
                 return (false);
             }
 
             puiStructureDataSize = uiDataSize;
         }
-        FileClose(hInput);
+
+        FileManager.FileClose(hInput);
         return (true);
     }
 
@@ -875,77 +865,6 @@ public class StructureInternals
         MemFree(pStructure);
     }
 
-    private static bool DeleteStructureFromWorld(STRUCTURE? pStructure)
-    { // removes all of the STRUCTURE elements for a structure from the world
-        MAP_ELEMENT? pBaseMapElement;
-        STRUCTURE? pBaseStructure;
-        List<DB_STRUCTURE_TILE> ppTile = new();
-        STRUCTURE? pCurrent;
-        int ubLoop, ubLoop2;
-        int ubNumberOfTiles;
-        int sBaseGridNo, sGridNo;
-        int usStructureID;
-        bool fMultiStructure;
-        bool fRecompileMPs;
-        bool fRecompileExtraRadius; // for doors... yuck
-        int sCheckGridNo;
-
-        CHECKF(pStructure);
-
-        pBaseStructure = FindBaseStructure(pStructure);
-        CHECKF(pBaseStructure);
-
-        usStructureID = pBaseStructure.usStructureID;
-        fMultiStructure = ((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MULTI)));
-        fRecompileMPs = ((gsRecompileAreaLeft != 0) && !((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE))));
-        if (fRecompileMPs)
-        {
-            fRecompileExtraRadius = ((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)));
-        }
-        else
-        {
-            fRecompileExtraRadius = false;
-        }
-
-        pBaseMapElement = gpWorldLevelData[pBaseStructure.sGridNo];
-        ppTile = pBaseStructure.pDBStructureRef.ppTile;
-        sBaseGridNo = pBaseStructure.sGridNo;
-        ubNumberOfTiles = pBaseStructure.pDBStructureRef.pDBStructure.ubNumberOfTiles;
-        // Free all the tiles
-        for (ubLoop = BASE_TILE; ubLoop < ubNumberOfTiles; ubLoop++)
-        {
-            sGridNo = sBaseGridNo + ppTile[ubLoop].sPosRelToBase;
-            // there might be two structures in this tile, one on each level, but we just want to
-            // delete one on each pass
-            pCurrent = FindStructureByID(sGridNo, usStructureID);
-            if (pCurrent is not null)
-            {
-                DeleteStructureFromTile(gpWorldLevelData[sGridNo], pCurrent);
-            }
-
-            if (!gfEditMode && (fRecompileMPs))
-            {
-                if (fRecompileMPs)
-                {
-                    AddTileToRecompileArea(sGridNo);
-                    if (fRecompileExtraRadius)
-                    {
-                        // add adjacent tiles too
-                        for (ubLoop2 = 0; ubLoop2 < NUM_WORLD_DIRECTIONS; ubLoop2++)
-                        {
-                            sCheckGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(ubLoop2));
-                            if (sCheckGridNo != sGridNo)
-                            {
-                                AddTileToRecompileArea(sCheckGridNo);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return (true);
-    }
-
     private static STRUCTURE? InternalSwapStructureForPartner(int sGridNo, STRUCTURE? pStructure, bool fFlipSwitches, bool fStoreInMap)
     { // switch structure 
         LEVELNODE? pLevelNode;
@@ -1001,7 +920,7 @@ public class StructureInternals
             // store removal of previous if necessary
             if (fStoreInMap)
             {
-                ApplyMapChangesToMapTempFile(true);
+                SaveLoadMap.ApplyMapChangesToMapTempFile(true);
                 RemoveStructFromMapTempFile(sGridNo, pLevelNode.usIndex);
             }
 
@@ -1011,7 +930,7 @@ public class StructureInternals
             if (fStoreInMap)
             {
                 AddStructToMapTempFile(sGridNo, pLevelNode.usIndex);
-                ApplyMapChangesToMapTempFile(false);
+                SaveLoadMap.ApplyMapChangesToMapTempFile(false);
             }
 
             if (pShadowNode != null)
@@ -1351,7 +1270,7 @@ public class StructureInternals
         return (true);
     }
 
-    bool DamageStructure(STRUCTURE? pStructure, int ubDamage, int ubReason, int sGridNo, int sX, int sY, int ubOwner)
+    public static int DamageStructure(STRUCTURE? pStructure, int ubDamage, int ubReason, int sGridNo, int sX, int sY, int ubOwner)
     {   // do damage to a structure; returns true if the structure should be removed
 
         STRUCTURE? pBase;
@@ -1362,13 +1281,13 @@ public class StructureInternals
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PERSON) || pStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE))
         {
             // don't hurt this structure, it's used for hit detection only!
-            return (false);
+            return (0);
         }
 
         if ((pStructure.pDBStructureRef.pDBStructure.ubArmour == MATERIAL.INDESTRUCTABLE_METAL)
             || (pStructure.pDBStructureRef.pDBStructure.ubArmour == MATERIAL.INDESTRUCTABLE_STONE))
         {
-            return (false);
+            return (0);
         }
 
         // Account for armour!
@@ -1386,7 +1305,7 @@ public class StructureInternals
             if (ubArmour > ubDamage)
             {
                 // didn't even scratch the paint
-                return (false);
+                return (0);
             }
             else
             {
@@ -1426,7 +1345,7 @@ public class StructureInternals
                 ExplosionControl.IgniteExplosion(ubOwner, sX, sY, 0, sGridNo, Items.STRUCTURE_IGNITE, 0);
 
                 // ATE: Return false here, as we are dealing with deleting the graphic here...
-                return (false);
+                return (0);
             }
 
             // Make hit sound....
@@ -1442,7 +1361,7 @@ public class StructureInternals
                 }
             }
             // Don't update damage HPs....
-            return (true);
+            return (1);
         }
 
         // OK, LOOK FOR A SAM SITE, UPDATE....
@@ -1454,7 +1373,7 @@ public class StructureInternals
         if (pBase.ubHitPoints <= ubDamage)
         {
             // boom! structure destroyed!
-            return (true);
+            return (1);
         }
         else
         {
@@ -2263,3 +2182,45 @@ public enum STRUCTUREFLAGS : uint
     TYPE_DEFINED = 0x8FEF8F00,
     ROOF = 0x07000000,
 }
+
+
+[StructLayout(LayoutKind.Explicit, Size = 24)]
+public unsafe struct STRUCTURE_FILE_REF
+{
+    [FieldOffset(00)] public IntPtr pPrev;
+    [FieldOffset(02)] public IntPtr pNext;
+    [FieldOffset(04)] public AuxObjectData pAuxData;
+    [FieldOffset(20)] public RelTileLoc pTileLocData;
+    [FieldOffset(00)] public IntPtr pubStructureData;
+    [FieldOffset(00)] public DB_STRUCTURE_REF[] pDBStructureRef; // dynamic array
+    [FieldOffset(00)] public ushort usNumberOfStructures;
+    [FieldOffset(00)] public ushort usNumberOfStructuresStored;
+} // 24 bytes
+
+// IMPORTANT THING TO REMEMBER
+//
+// Although the number of structures and images about which information
+// may be stored in a file, the two are stored very differently.
+//
+// The structure data stored amounts to a sparse array, with no data
+// saved for any structures that are not defined.
+//
+// For image information, however, an array is stored with every entry
+// filled regardless of whether there is non-zero data defined for
+// that graphic!
+
+// chad: read this exactly off disk thusly, then manually parse the rest using the numbers stored
+// below. Trying to avoid unsafe here.
+
+[StructLayout(LayoutKind.Explicit, Size = 16)]
+public unsafe struct STRUCTURE_FILE_HEADER
+{
+    [FieldOffset(00)] public fixed char szId[4];
+    [FieldOffset(04)] public ushort usNumberOfStructures;
+    [FieldOffset(04)] public ushort usNumberOfImages;
+    [FieldOffset(06)] public ushort usNumberOfStructuresStored;
+    [FieldOffset(08)] public ushort usStructureDataSize;
+    [FieldOffset(09)] public STRUCTURE_FILE_CONTAINS fFlags;
+    [FieldOffset(12)] private fixed byte bUnused[3];
+    [FieldOffset(15)] public ushort usNumberOfImageTileLocsStored;
+} // 16 bytes

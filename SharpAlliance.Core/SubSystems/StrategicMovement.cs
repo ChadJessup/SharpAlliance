@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
-
+using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -25,8 +25,6 @@ public class StrategicMovement
         {
             ////AssertMsg(pNew, "MemAlloc failure during CreateNewPlayerGroup.");
             //memset(pNew, 0, sizeof(GROUP));
-            pPlayerList = null,
-            pWaypoints = null,
             ubSectorX = ubSectorX,
             ubNextX = ubSectorX,
             ubSectorY = ubSectorY,
@@ -80,7 +78,6 @@ public class StrategicMovement
         Debug.Assert(pGroup is not null);
         pPlayer = new PLAYERGROUP();
         Debug.Assert(pPlayer is not null);
-        ////AssertMsg(pGroup.fPlayer, "Attempting AddPlayerToGroup() on an ENEMY group!");
         pPlayer.pSoldier = pSoldier;
         pPlayer.ubProfileID = pSoldier.ubProfile;
         pPlayer.ubID = pSoldier.ubID;
@@ -88,9 +85,9 @@ public class StrategicMovement
         pPlayer.next = null;
 
 
-        if (!pGroup.pPlayerList)
+        if (!pGroup.pPlayerList.Any())
         {
-            pGroup.pPlayerList = pPlayer;
+            pGroup.pPlayerList.Add(pPlayer);
             pGroup.ubGroupSize = 1;
             pGroup.ubPrevX = (int)(((int)pSoldier.ubPrevSectorID % 16) + 1);
             pGroup.ubPrevY = (MAP_ROW)(((int)pSoldier.ubPrevSectorID / 16) + 1);
@@ -105,19 +102,19 @@ public class StrategicMovement
         }
         else
         {
-            curr = pGroup.pPlayerList;
-            pSoldier.ubNumTraversalsAllowedToMerge = curr.pSoldier.ubNumTraversalsAllowedToMerge;
-            pSoldier.ubDesiredSquadAssignment = curr.pSoldier.ubDesiredSquadAssignment;
-            while (curr.next)
+            foreach (var playerGroup in pGroup.pPlayerList)
             {
+                curr = playerGroup;
+                pSoldier.ubNumTraversalsAllowedToMerge = curr.pSoldier.ubNumTraversalsAllowedToMerge;
+                pSoldier.ubDesiredSquadAssignment = curr.pSoldier.ubDesiredSquadAssignment;
                 if (curr.ubProfileID == pSoldier.ubProfile)
                 {
                     ////AssertMsg(0, String("Attempting to add an already existing merc to group (ubProfile=%d).", pSoldier.ubProfile));
                 }
 
                 curr = curr.next;
+                curr.next = pPlayer;
             }
-            curr.next = pPlayer;
 
             // set group id
             pSoldier.ubGroupID = ubGroupID;
@@ -144,22 +141,15 @@ public class StrategicMovement
 
     bool RemoveAllPlayersFromPGroup(GROUP? pGroup)
     {
-        PLAYERGROUP? curr;
-
         //AssertMsg(pGroup.fPlayer, "Attempting RemovePlayerFromGroup() on an ENEMY group!");
-
-        curr = pGroup.pPlayerList;
-        while (curr)
+        foreach (var curr in pGroup.pPlayerList)
         {
-            pGroup.pPlayerList = pGroup.pPlayerList.next;
+            // pGroup.pPlayerList = pGroup.pPlayerList.next;
 
             curr.pSoldier.ubPrevSectorID = SECTORINFO.SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
             curr.pSoldier.ubGroupID = 0;
-
-            MemFree(curr);
-
-            curr = pGroup.pPlayerList;
         }
+
         pGroup.ubGroupSize = 0;
 
         if (!pGroup.fPersistant)
@@ -176,57 +166,41 @@ public class StrategicMovement
 
     bool RemovePlayerFromPGroup(GROUP? pGroup, SOLDIERTYPE? pSoldier)
     {
-        PLAYERGROUP? prev, curr;
         //AssertMsg(pGroup.fPlayer, "Attempting RemovePlayerFromGroup() on an ENEMY group!");
 
-        curr = pGroup.pPlayerList;
-
-        if (!curr)
+        foreach (var curr in pGroup.pPlayerList)
         {
-            return false;
-        }
-
-        if (curr.pSoldier == pSoldier)
-        { //possibly the only node
-            pGroup.pPlayerList = pGroup.pPlayerList.next;
-
-            //delete the node
-            MemFree(curr);
-
-            //process info for soldier
-            pGroup.ubGroupSize--;
-            pSoldier.ubPrevSectorID = SECTORINFO.SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
-            pSoldier.ubGroupID = 0;
-
-            // if there's nobody left in the group
-            if (pGroup.ubGroupSize == 0)
+            if (curr.pSoldier == pSoldier)
             {
-                if (!pGroup.fPersistant)
-                {   //remove the empty group
-                    RemovePGroup(pGroup);
-                }
-                else
+                //possibly the only node
+                // pGroup.pPlayerList = pGroup.pPlayerList.next;
+
+                //delete the node
+                // MemFree(curr);
+
+                //process info for soldier
+                pGroup.ubGroupSize--;
+                pSoldier.ubPrevSectorID = SECTORINFO.SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
+                pSoldier.ubGroupID = 0;
+
+                // if there's nobody left in the group
+                if (pGroup.ubGroupSize == 0)
                 {
-                    CancelEmptyPersistentGroupMovement(pGroup);
+                    if (!pGroup.fPersistant)
+                    {   //remove the empty group
+                        RemovePGroup(pGroup);
+                    }
+                    else
+                    {
+                        CancelEmptyPersistentGroupMovement(pGroup);
+                    }
                 }
+
+                return true;
             }
-
-            return true;
-        }
-        prev = null;
-
-        while (curr)
-        { //definately more than one node
 
             if (curr.pSoldier == pSoldier)
             {
-                //detach and delete the node
-                if (prev)
-                {
-                    prev.next = curr.next;
-                }
-                MemFree(curr);
-
                 //process info for soldier
                 pSoldier.ubGroupID = 0;
                 pGroup.ubGroupSize--;
@@ -234,10 +208,6 @@ public class StrategicMovement
 
                 return true;
             }
-
-            prev = curr;
-            curr = curr.next;
-
         }
 
         // !curr
@@ -252,7 +222,7 @@ public class StrategicMovement
         //KM : August 6, 1999 Patch fix
         //     Because the release build has no assertions, it was still possible for the group to be null,
         //     causing a crash.  Instead of crashing, it'll simply return false.
-        if (!pGroup)
+        if (pGroup is null)
         {
             return false;
         }
@@ -518,7 +488,7 @@ public class StrategicMovement
         return true;
     }
 
-    bool AddWaypointToGroup(int ubGroupID, int ubSectorX, int ubSectorY)
+    bool AddWaypointToGroup(int ubGroupID, int ubSectorX, MAP_ROW ubSectorY)
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
@@ -526,7 +496,7 @@ public class StrategicMovement
     }
 
     // NOTE: This does NOT expect a strategic sector ID
-    bool AddWaypointIDToGroup(int ubGroupID, int ubSectorID)
+    bool AddWaypointIDToGroup(int ubGroupID, SEC ubSectorID)
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
@@ -550,9 +520,10 @@ public class StrategicMovement
 
     bool AddWaypointStrategicIDToPGroup(GROUP? pGroup, int uiSectorID)
     {
-        int ubSectorX, ubSectorY;
-        ubSectorX = (int)GET_X_FROM_STRATEGIC_INDEX(uiSectorID);
-        ubSectorY = (int)GET_Y_FROM_STRATEGIC_INDEX(uiSectorID);
+        int ubSectorX;
+        MAP_ROW ubSectorY;
+        ubSectorX = GET_X_FROM_STRATEGIC_INDEX(uiSectorID);
+        ubSectorY = GET_Y_FROM_STRATEGIC_INDEX(uiSectorID);
         return AddWaypointToPGroup(pGroup, ubSectorX, ubSectorY);
     }
 
@@ -663,7 +634,7 @@ public class StrategicMovement
         pGroup = GetGroup(ubId);
 
         // is there in fact a group?
-        Debug.Assert(pGroup);
+        Debug.Assert(pGroup is not null);
 
         // now remove this group
         RemoveGroupFromList(pGroup);
@@ -674,7 +645,7 @@ public class StrategicMovement
     {
         GROUP? curr, temp;
         curr = gpGroupList;
-        if (!curr)
+        if (curr is null)
         {
             return;
         }
@@ -934,7 +905,7 @@ public class StrategicMovement
                                 }
                                 pPlayer = pPlayer.next;
                             }
-                            if (!pPlayerDialogGroup && fCombatAbleMerc)
+                            if (pPlayerDialogGroup is null && fCombatAbleMerc)
                             {
                                 pPlayerDialogGroup = curr;
                             }
@@ -1040,9 +1011,9 @@ public class StrategicMovement
                 else
                 {
                     string str;
-                    int[] pSectorStr = new int[128];
+                    string pSectorStr = string.Empty;
                     StrategicMap.GetSectorIDString(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, pSectorStr, true);
-                    wprintf(str, gpStrategicString[STR_DIALOG_ENEMIES_ATTACK_UNCONCIOUSMERCS], pSectorStr);
+                    str = wprintf(gpStrategicString[STR_DIALOG_ENEMIES_ATTACK_UNCONCIOUSMERCS], pSectorStr);
                     DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
                 }
             }
@@ -1068,7 +1039,7 @@ public class StrategicMovement
 
     void DeployGroupToSector(GROUP? pGroup)
     {
-        Debug.Assert(pGroup);
+        Debug.Assert(pGroup is not null);
         if (pGroup.fPlayer)
         {
             //Update the sector positions of the players...
@@ -1195,7 +1166,7 @@ public class StrategicMovement
         int uiPoints;
         int uiCarriedPercent;
 
-        if (!pGroup || !pGroup.fPlayer)
+        if (pGroup is null || !pGroup.fPlayer)
         {
             return;
         }
@@ -3267,7 +3238,7 @@ public class StrategicMovement
 
 
         // Save the number of movement groups to the saved game file
-        FileWrite(hFile, &uiNumberOfGroups, sizeof(int), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, uiNumberOfGroups, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3278,10 +3249,10 @@ public class StrategicMovement
         pGroup = gpGroupList;
 
         //Loop through the linked lists and add each node
-        while (pGroup)
+        while (pGroup is not null)
         {
             // Save each node in the LL
-            FileWrite(hFile, pGroup, sizeof(GROUP), &uiNumBytesWritten);
+            FileManager.FileWrite(hFile, pGroup, sizeof(GROUP), &uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(GROUP))
             {
                 //Error Writing group node to disk
@@ -3320,7 +3291,7 @@ public class StrategicMovement
         }
 
         // Save the unique id mask
-        FileWrite(hFile, uniqueIDMask, sizeof(int) * 8, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, uniqueIDMask, sizeof(int) * 8, &uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * 8)
         {
             //Error Writing size of L.L. to disk
@@ -3357,7 +3328,7 @@ public class StrategicMovement
 
 
         //load the number of nodes in the list
-        FileRead(hFile, &uiNumberOfGroups, sizeof(int), &uiNumBytesRead);
+        FileManager.FileRead(hFile, &uiNumberOfGroups, sizeof(int), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3379,7 +3350,7 @@ public class StrategicMovement
             //memset(pTemp, 0, sizeof(GROUP));
 
             //Read in the node
-            FileRead(hFile, pTemp, sizeof(GROUP), &uiNumBytesRead);
+            FileManager.FileRead(hFile, pTemp, sizeof(GROUP), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(GROUP))
             {
                 //Error Writing size of L.L. to disk
@@ -3428,7 +3399,7 @@ public class StrategicMovement
         }
 
         // Load the unique id mask
-        FileRead(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesRead);
+        FileManager.FileRead(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesRead);
 
         //@@@ TEMP!
         //Rebuild the uniqueIDMask as a very old bug broke the uniqueID assignments in extremely rare cases.
@@ -3495,7 +3466,7 @@ public class StrategicMovement
         }
 
         //Save the number of nodes in the list
-        FileWrite(hFile, &uiNumberOfNodesInList, sizeof(int), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, &uiNumberOfNodesInList, sizeof(int), &uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3509,7 +3480,7 @@ public class StrategicMovement
         {
             // Save the ubProfile ID for this node
             uiProfileID = pTemp.ubProfileID;
-            FileWrite(hFile, &uiProfileID, sizeof(int), &uiNumBytesWritten);
+            FileManager.FileWrite(hFile, uiProfileID, sizeof(int), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(int))
             {
                 //Error Writing size of L.L. to disk
@@ -3541,7 +3512,7 @@ public class StrategicMovement
         //	pHead = *pGroup.pPlayerList;
 
         // Load the number of nodes in the player list
-        FileRead(hFile, &uiNumberOfNodes, sizeof(int), &uiNumBytesRead);
+        FileManager.FileRead(hFile, &uiNumberOfNodes, sizeof(int), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3561,7 +3532,7 @@ public class StrategicMovement
 
 
             // Load the ubProfile ID for this node
-            FileRead(hFile, &uiProfileID, sizeof(int), &uiNumBytesRead);
+            FileManager.FileRead(hFile, &uiProfileID, sizeof(int), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(int))
             {
                 //Error Writing size of L.L. to disk
@@ -3605,7 +3576,7 @@ public class StrategicMovement
         int uiNumBytesWritten = 0;
 
         //Save the enemy struct info to the saved game file
-        FileWrite(hFile, pGroup.pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, pGroup.pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(ENEMYGROUP))
         {
             //Error Writing size of L.L. to disk
@@ -3621,10 +3592,10 @@ public class StrategicMovement
     {
         int uiNumBytesRead = 0;
 
-        ENEMYGROUP pEnemyGroup = new();
+        ENEMYGROUP pEnemyGroup;
 
         //Load the enemy struct
-        FileRead(hFile, pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesRead);
+        FileManager.FileRead(hFile, ref pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(ENEMYGROUP))
         {
             //Error Writing size of L.L. to disk
@@ -3700,7 +3671,7 @@ public class StrategicMovement
         uiNumberOfWayPoints = pWayPoints.Count;
 
         //Save the number of waypoints
-        FileWrite(hFile, &uiNumberOfWayPoints, sizeof(int), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, &uiNumberOfWayPoints, sizeof(int), &uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3714,7 +3685,7 @@ public class StrategicMovement
             for (cnt = 0; cnt < uiNumberOfWayPoints; cnt++)
             {
                 //Save the waypoint node
-                FileWrite(hFile, pWayPoints, sizeof(WAYPOINT), &uiNumBytesWritten);
+                FileManager.FileWrite(hFile, pWayPoints, sizeof(WAYPOINT), &uiNumBytesWritten);
                 if (uiNumBytesWritten != sizeof(WAYPOINT))
                 {
                     //Error Writing size of L.L. to disk
@@ -3741,7 +3712,7 @@ public class StrategicMovement
 
 
         //Load the number of waypoints
-        FileRead(hFile, &uiNumberOfWayPoints, sizeof(int), &uiNumBytesRead);
+        FileManager.FileRead(hFile, &uiNumberOfWayPoints, sizeof(int), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3764,7 +3735,7 @@ public class StrategicMovement
                 memset(pTemp, 0, sizeof(WAYPOINT));
 
                 //Load the waypoint node
-                FileRead(hFile, pTemp, sizeof(WAYPOINT), &uiNumBytesRead);
+                FileManager.FileRead(hFile, pTemp, sizeof(WAYPOINT), &uiNumBytesRead);
                 if (uiNumBytesRead != sizeof(WAYPOINT))
                 {
                     //Error Writing size of L.L. to disk
@@ -4144,15 +4115,15 @@ public class StrategicMovement
             while (!fDone)
             {
                 pGroup = gpGroupList;
-                while (pGroup)
+                while (pGroup is not null)
                 {
-                    if (!pGroup.ubGroupSize && !pGroup.fPersistant)
+                    if (pGroup.ubGroupSize == 0 && !pGroup.fPersistant)
                     {
                         RemovePGroup(pGroup);
                         break;
                     }
                     pGroup = pGroup.next;
-                    if (!pGroup)
+                    if (pGroup is null)
                     {
                         fDone = true;
                     }
@@ -4561,7 +4532,7 @@ public class StrategicMovement
         string zTempString = string.Empty;
         if (gubEnemyEncounterCode == BLOODCAT_AMBUSH_CODE)
         {
-            GetSectorIDString(ubSectorX, ubSectorY, 0, zTempString, true);
+            StrategicMap.GetSectorIDString(ubSectorX, ubSectorY, 0, zTempString, true);
             wprintf(str, pMapErrorString[12], zTempString);
         }
         else if (gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE)
@@ -4710,16 +4681,15 @@ public class StrategicMovement
 
 
 
-    bool HandlePlayerGroupEnteringSectorToCheckForNPCsOfNote(GROUP? pGroup)
+    bool HandlePlayerGroupEnteringSectorToCheckForNPCsOfNote(GROUP pGroup)
     {
-        int sSectorX = 0, sSectorY = 0;
+        int sSectorX = 0;
+        MAP_ROW sSectorY;
         int bSectorZ = 0;
         string sString;
         string wSectorName;
         int sStrategicSector;
 
-
-        Debug.Assert(pGroup);
         Debug.Assert(pGroup.fPlayer);
 
         // nobody in the group (perfectly legal with the chopper)
@@ -4754,10 +4724,10 @@ public class StrategicMovement
         }
 
         // get the strategic sector value
-        sStrategicSector = sSectorX + MAP_WORLD_X * sSectorY;
+        sStrategicSector = sSectorX + MAP_WORLD_X * (int)sSectorY;
 
         // skip towns/pseudo-towns (anything that shows up on the map as being special)
-        if (StrategicMap[sStrategicSector].bNameId != BLANK_SECTOR)
+        if (strategicMap[sStrategicSector].bNameId != TOWNS.BLANK_SECTOR)
         {
             return (false);
         }
@@ -4780,8 +4750,8 @@ public class StrategicMovement
         gpGroupPrompting = pGroup;
 
         // build string for squad
-        GetSectorIDString(sSectorX, sSectorY, bSectorZ, wSectorName, false);
-        wprintf(sString, pLandMarkInSectorString[0], pGroup.pPlayerList.pSoldier.bAssignment + 1, wSectorName);
+        StrategicMap.GetSectorIDString(sSectorX, sSectorY, bSectorZ, wSectorName, false);
+        sString = wprintf(pLandMarkInSectorString[0], pGroup.pPlayerList.pSoldier.bAssignment + 1, wSectorName);
 
         if (GroupAtFinalDestination(pGroup))
         {
@@ -4947,7 +4917,7 @@ public class PLAYERGROUP
     public int ubID;                                     //index in the Menptr array
     public SOLDIERTYPE? pSoldier;              //direct access to the soldier pointer
     public int bFlags;                                   //flags referring to individual player soldiers
-    public PLAYERGROUP? next;			//next player in list
+    public PLAYERGROUP? next;           //next player in list
 }
 
 //This structure contains all of the information about a group moving in the strategic
@@ -4990,5 +4960,5 @@ public enum MOVE_TYPES//move types
     ONE_WAY,                        //from first waypoint to last, deleting each waypoint as they are reached.
     CIRCULAR,                       //from first to last, recycling forever.
     ENDTOEND_FORWARDS,  //from first to last -- when reaching last, change to backwards.
-    ENDTOEND_BACKWARDS	//from last to first -- when reaching first, change to forwards.
+    ENDTOEND_BACKWARDS  //from last to first -- when reaching first, change to forwards.
 };

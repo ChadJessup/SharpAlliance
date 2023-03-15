@@ -157,7 +157,7 @@ public class DB_STRUCTURE
     public byte bUnused;
 } // 16 bytes
 
-public class DB_STRUCTURE_REF
+public struct DB_STRUCTURE_REF
 {
     public DB_STRUCTURE pDBStructure;
     public List<DB_STRUCTURE_TILE> ppTile; // dynamic array

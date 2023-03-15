@@ -794,6 +794,15 @@ public enum PlotPathDefines
     PATH_CLOSE_RADIUS = 5,
 }
 
+[Flags]
+public enum PATH
+{
+    THROUGH_PEOPLE = 0x01,
+    IGNORE_PERSON_AT_DEST = 0x02,
+    CLOSE_GOOD_ENOUGH = 0x04,
+    CLOSE_RADIUS = 0x05,
+}
+
 public class TRAVELCOST
 {
     public const int NONE = 0;

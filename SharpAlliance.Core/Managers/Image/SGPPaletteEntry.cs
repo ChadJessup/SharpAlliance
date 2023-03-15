@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -27,22 +29,24 @@ namespace SharpAlliance.Core.Managers.Image
         public const int AUX_USES_LAND_Z = 0x20;
     }
 
-    public class AuxObjectData
+    [StructLayout(LayoutKind.Explicit, Size = 16)]
+    public unsafe struct AuxObjectData
     {
-        public int ubWallOrientation;
-        public int ubNumberOfTiles;
-        public int usTileLocIndex;
-        public int[] ubUnused1;//[3];
-        public int ubCurrentFrame;
-        public int ubNumberOfFrames;
-        public int fFlags;
-        public int[] ubUnused;//[6];
-    }
+        [FieldOffset(00)] public byte ubWallOrientation;
+        [FieldOffset(01)] public byte ubNumberOfTiles;
+        [FieldOffset(02)] public ushort usTileLocIndex;
+        [FieldOffset(04)] private fixed byte ubUnused1[3];
+        [FieldOffset(07)] public byte ubCurrentFrame;
+        [FieldOffset(08)] public byte ubNumberOfFrames;
+        [FieldOffset(09)] public byte fFlags;
+        [FieldOffset(10)] private fixed byte ubUnused[6];
+    } // chad: 16 I think!
 
+    [StructLayout(LayoutKind.Explicit, Size = 2)]
     public struct RelTileLoc
     {
-        public int bTileOffsetX;
-        public int bTileOffsetY;
+        [FieldOffset(00)] public sbyte bTileOffsetX;
+        [FieldOffset(01)] public sbyte bTileOffsetY;
     }// relative tile location
 
     // TRLE subimage structure, mirroring that of ST(C)I
@@ -79,9 +83,9 @@ namespace SharpAlliance.Core.Managers.Image
 
     public struct SGPPaletteEntry
     {
-        public int peRed { get; set; }
-        public int peGreen { get; set; }
-        public int peBlue { get; set; }
+        public byte peRed { get; set; }
+        public byte peGreen { get; set; }
+        public byte peBlue { get; set; }
         public readonly int peFlags { get; init; }
     }
 }

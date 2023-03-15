@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform.Interfaces;
+using Vortice.Mathematics.PackedVector;
 
 namespace SharpAlliance.Core.Managers
 {
@@ -202,7 +204,7 @@ namespace SharpAlliance.Core.Managers
 
         static byte[] ubRotationArray = new byte[] { 132, 235, 125, 99, 15, 220, 140, 89, 205, 132, 254, 144, 217, 78, 156, 58, 215, 76, 163, 187, 55, 49, 65, 48, 156, 140, 201, 68, 184, 13, 45, 69, 102, 185, 122, 225, 23, 250, 160, 220, 114, 240, 64, 175, 057, 233 };
 
-        public static unsafe bool JA2EncryptedFileRead(Stream hFile, byte[] pDest, uint uiBytesToRead, out uint puiBytesRead)
+        public static unsafe bool JA2EncryptedFileRead(Stream hFile, byte[] pDest, int uiBytesToRead, out int puiBytesRead)
         {
             uint uiLoop;
             byte ubArrayIndex = 0;
@@ -242,9 +244,9 @@ namespace SharpAlliance.Core.Managers
         public static long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
             => hLibraryHandle.Seek(offset, origin);
 
-        public static bool FileRead(Stream stream, ref byte[] buffer, uint uiBytesToRead, out uint uiBytesRead)
+        public static bool FileRead(Stream stream, ref byte[] buffer, int uiBytesToRead, out int uiBytesRead)
         {
-            uiBytesRead = (uint)stream.Read(buffer, 0, (int)uiBytesToRead);
+            uiBytesRead = stream.Read(buffer, 0, uiBytesToRead);
 
             return true;
         }
@@ -263,11 +265,25 @@ namespace SharpAlliance.Core.Managers
             return true;
         }
 
-        public static bool FileRead<T>(Stream stream, ref T[] obj, uint uiFileSectionSize, out uint uiBytesRead)
+        public static bool FileRead<T>(Stream stream, ref T obj, int uiFileSectionSize, out int uiBytesRead)
+            where T : unmanaged
+        {
+            T[] buff = new T[1];
+            var result = FileRead(stream, ref buff, uiFileSectionSize, out uiBytesRead);
+
+            if (result)
+            {
+                obj = buff.FirstOrDefault();
+            }
+
+            return result;
+        }
+
+        public static bool FileRead<T>(Stream stream, ref T[] obj, int uiFileSectionSize, out int uiBytesRead)
             where T : unmanaged
         {
             var buffer = new byte[uiFileSectionSize];
-            uiBytesRead = (uint)stream.Read(buffer, 0, (int)uiFileSectionSize);
+            uiBytesRead = stream.Read(buffer, 0, uiFileSectionSize);
             var bufferSpan = new ReadOnlySpan<byte>(buffer);
 
             var tSpan = MemoryMarshal.Cast<byte, T>(bufferSpan);
@@ -298,7 +314,7 @@ namespace SharpAlliance.Core.Managers
             }
 
             byte[] buff = new byte[uiSeekAmount];
-            if (!FileRead(stream, ref buff, uiSeekAmount, out var uiBytesRead))
+            if (!FileRead(stream, ref buff, (int)uiSeekAmount, out var uiBytesRead))
             {
                 FileClose(stream);
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileRead");
@@ -330,6 +346,11 @@ namespace SharpAlliance.Core.Managers
             FileClose(stream);
 
             return true;
+        }
+
+        internal static void FileWrite<T>(Stream stream, T value, int size, out int bytesWritten)
+        {
+            bytesWritten = size;
         }
     }
 }

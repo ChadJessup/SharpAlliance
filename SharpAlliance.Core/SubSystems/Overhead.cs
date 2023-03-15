@@ -124,7 +124,7 @@ namespace SharpAlliance.Core.SubSystems
             RenderWorld.SetRenderCenter(sNewCenterWorldX, sNewCenterWorldY);
         }
 
-        public bool GetSoldier(out SOLDIERTYPE? ppSoldier, int usSoldierIndex)
+        public static bool GetSoldier(out SOLDIERTYPE? ppSoldier, int usSoldierIndex)
         {
             // Check range of index given
             ppSoldier = null;
@@ -292,6 +292,8 @@ public class TacticalTeamType
     public int bTeamActive;
     public int bAwareOfOpposition;
     public int bHuman;
+
+    public bool IsHuman => this.bHuman > 0;
 }
 
 [Flags]

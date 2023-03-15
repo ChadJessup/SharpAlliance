@@ -113,7 +113,7 @@ public class TeamTurns
                         {
                             Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
                             InvalidateWorldRedundency();
-                            SetRenderFlags(RENDER_FLAG_FULL);
+                            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                             ErasePath(false);
                         }
                     }
@@ -885,7 +885,7 @@ public class TeamTurns
                         {
                             Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
                             InvalidateWorldRedundency();
-                            SetRenderFlags(RENDER_FLAG_FULL);
+                            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                             ErasePath(false);
                         }
                     }
@@ -1847,7 +1847,7 @@ public class TeamTurns
         int uiNumBytesWritten;
 
         //Save the gubTurn Order Array
-        FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * MAXMERCS)
         {
             return (false);
@@ -1866,7 +1866,7 @@ public class TeamTurns
 
 
         //Save the Team turn save structure
-        FileWrite(hFile, TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(TEAM_TURN_SAVE_STRUCT))
         {
             return (false);
@@ -1881,7 +1881,7 @@ public class TeamTurns
         TEAM_TURN_SAVE_STRUCT TeamTurnStruct;
 
         //Load the gubTurn Order Array
-        FileRead(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
+        FileManager.FileRead(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int) * MAXMERCS)
         {
             return (false);
@@ -1889,7 +1889,7 @@ public class TeamTurns
 
 
         //Load the Team turn save structure
-        FileRead(hFile, out TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), out uiNumBytesRead);
+        FileManager.FileRead(hFile, out TeamTurnStruct, sizeof(TEAM_TURN_SAVE_STRUCT), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(TEAM_TURN_SAVE_STRUCT))
         {
             return (false);

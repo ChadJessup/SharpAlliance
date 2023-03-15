@@ -1062,7 +1062,7 @@ public class GameClock
                 }
 
                 // ATE: re-render
-                SetRenderFlags(RENDER_FLAG_FULL);
+                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             }
 
             UnPauseGame();
@@ -1094,13 +1094,13 @@ public class GameClock
             MouseSubSystem.MSYS_RemoveRegion(gClockScreenMaskMouseRegion);
             RemoveMercPopupBoxFromIndex(iPausedPopUpBox);
             iPausedPopUpBox = -1;
-            SetRenderFlags(RENDER_FLAG_FULL);
+            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             fTeamPanelDirty = true;
             fMapPanelDirty = true;
             fMapScreenBottomDirty = true;
             gfJustFinishedAPause = true;
             ButtonSubSystem.MarkButtonsDirty();
-            SetRenderFlags(RENDER_FLAG_FULL);
+            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
         }
         else if ((gfPauseDueToPlayerGamePause == true) && (fCreated == false))
         {

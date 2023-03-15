@@ -369,7 +369,7 @@ public class DrugsAndAlcohol
 
     void HandleAPEffectDueToDrugs(SOLDIERTYPE? pSoldier, out int pubPoints)
     {
-        int bDrunkLevel;
+        DrunkLevel bDrunkLevel;
         pubPoints = 0;
         int sPoints = (pubPoints);
 
@@ -392,7 +392,7 @@ public class DrugsAndAlcohol
 
         bDrunkLevel = GetDrunkLevel(pSoldier);
 
-        if (bDrunkLevel == HUNGOVER)
+        if (bDrunkLevel == DrunkLevel.HUNGOVER)
         {
             // Reduce....
             sPoints -= HANGOVER_AP_REDUCE;
@@ -409,7 +409,7 @@ public class DrugsAndAlcohol
 
     void HandleBPEffectDueToDrugs(SOLDIERTYPE? pSoldier, out int psPointReduction)
     {
-        int bDrunkLevel;
+        DrunkLevel bDrunkLevel;
         psPointReduction = 0;
 
         // Are we in a side effect or good effect?
@@ -426,7 +426,7 @@ public class DrugsAndAlcohol
 
         bDrunkLevel = GetDrunkLevel(pSoldier);
 
-        if (bDrunkLevel == HUNGOVER)
+        if (bDrunkLevel == DrunkLevel.HUNGOVER)
         {
             // Reduce....
             (psPointReduction) += HANGOVER_BP_REDUCE;
@@ -434,19 +434,19 @@ public class DrugsAndAlcohol
     }
 
 
-    public static int GetDrunkLevel(SOLDIERTYPE? pSoldier)
+    public static DrunkLevel GetDrunkLevel(SOLDIERTYPE? pSoldier)
     {
         int bNumDrinks;
 
         // If we have a -ve effect ...
         if (pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] == 0 && pSoldier.bDrugSideEffect[DRUG_TYPE_ALCOHOL] == 0)
         {
-            return (SOBER);
+            return (DrunkLevel.SOBER);
         }
 
         if (pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] == 0 && pSoldier.bDrugSideEffect[DRUG_TYPE_ALCOHOL] != 0)
         {
-            return (HUNGOVER);
+            return (DrunkLevel.HUNGOVER);
         }
 
         // Calculate how many dinks we have had....
@@ -454,15 +454,15 @@ public class DrugsAndAlcohol
 
         if (bNumDrinks <= 3)
         {
-            return (FEELING_GOOD);
+            return (DrunkLevel.FEELING_GOOD);
         }
         else if (bNumDrinks <= 4)
         {
-            return (BORDERLINE);
+            return (DrunkLevel.BORDERLINE);
         }
         else
         {
-            return (DRUNK);
+            return (DrunkLevel.DRUNK);
         }
     }
 
@@ -484,7 +484,7 @@ public class DrugsAndAlcohol
             return (true);
         }
 
-        if (GetDrunkLevel(pSoldier) != SOBER)
+        if (GetDrunkLevel(pSoldier) != DrunkLevel.SOBER)
         {
             return (true);
         }

@@ -122,7 +122,7 @@ public class PanicButtons
             if (pSoldier.sGridNo != sPanicTriggerGridNo)
             {
                 // get the AP cost for this enemy to go to target position
-                sPathCost = PlotPath(pSoldier, sPanicTriggerGridNo, false, false, false, WALKING, false, false, 0);
+                sPathCost = PathAI.PlotPath(pSoldier, sPanicTriggerGridNo, null, false, null, AnimationStates.WALKING, null, null, 0);
             }
             else
             {
@@ -133,7 +133,7 @@ public class PanicButtons
             pSoldier.bHasKeys = (pSoldier.bHasKeys >> 1);
 
             // if he can get there (or is already there!)
-            if (sPathCost || (pSoldier.sGridNo == sPanicTriggerGridNo))
+            if (sPathCost > 0 || (pSoldier.sGridNo == sPanicTriggerGridNo))
             {
                 if (sPathCost < sShortestPath)
                 {
@@ -150,24 +150,17 @@ public class PanicButtons
         {
             gTacticalStatus.ubTheChosenOne = ubClosestEnemy;       // flag him as the chosen one
 
-# if TESTVERSION
-            NumMessage("TEST MSG: The chosen one is ", TheChosenOne);
-#endif
-
-            pSoldier = MercPtrs[gTacticalStatus.ubTheChosenOne];
-            if (pSoldier.bAlertStatus < STATUS_RED)
+            var pSoldier = MercPtrs[gTacticalStatus.ubTheChosenOne];
+            if (pSoldier.bAlertStatus < STATUS.RED)
             {
-                pSoldier.bAlertStatus = STATUS_RED;
+                pSoldier.bAlertStatus = STATUS.RED;
                 CheckForChangingOrders(pSoldier);
             }
+
             SetNewSituation(pSoldier);    // set new situation for the chosen one
             pSoldier.bHasKeys = (pSoldier.bHasKeys << 1) | 1; // cheat and give him keys to every door
                                                               //pSoldier.bHasKeys = true;         
         }
-# if TESTVERSION
-        else
-            PopMessage("TEST MSG: Couldn't find anyone eligible to become TheChosenOne!");
-#endif
     }
 
     void PossiblyMakeThisEnemyChosenOne(SOLDIERTYPE? pSoldier)
@@ -212,7 +205,7 @@ public class PanicButtons
         iAPCost = AP.PULL_TRIGGER;
         if (pSoldier.sGridNo != sPanicTriggerGridNo)
         {
-            iPathCost = PathAI.PlotPath(pSoldier, sPanicTriggerGridNo, false, false, false, RUNNING, false, false, 0);
+            iPathCost = PathAI.PlotPath(pSoldier, sPanicTriggerGridNo, null, false, null, AnimationStates.RUNNING, null, null, 0);
             if (iPathCost == 0)
             {
                 //pSoldier.bHasKeys = bOldKeys;
@@ -288,7 +281,7 @@ public class PanicButtons
                 if (pSoldier.sGridNo != sPanicTriggerGridNo)
                 {
                     // determine whether we can still get there 
-                    iPathCost = PathAI.PlotPath(pSoldier, sPanicTriggerGridNo, false, false, false, RUNNING, false, false, 0);
+                    iPathCost = PathAI.PlotPath(pSoldier, sPanicTriggerGridNo, null, false, null, AnimationStates.RUNNING, null, null, 0);
                     if (iPathCost != 0)
                     {
                         fFoundRoute = true;
@@ -346,10 +339,10 @@ public class PanicButtons
                         {
                             // if we can get to the HandGrid spot to yank the trigger
                             // animations don't allow trigger-pulling from water, so we won't!
-                            if (LegalNPCDestination(pSoldier, sPanicTriggerGridNo, ENSURE_PATH, NOWATER, 0))
+                            if (Movement.LegalNPCDestination(pSoldier, sPanicTriggerGridNo, ENSURE_PATH, NOWATER, 0))
                             {
                                 pSoldier.usActionData = sPanicTriggerGridNo;
-                                pSoldier.bPathStored = 1;
+                                pSoldier.bPathStored = true;
 
                                 return (AI_ACTION.GET_CLOSER);
                             }
@@ -492,7 +485,7 @@ public class PanicButtons
         }
         else
         {
-            if (LegalNPCDestination(pSoldier, STAIRCASE_GRIDNO, ENSURE_PATH, WATEROK, 0))
+            if (Movement.LegalNPCDestination(pSoldier, STAIRCASE_GRIDNO, ENSURE_PATH, WATEROK, 0))
             {
                 pSoldier.usActionData = STAIRCASE_GRIDNO;
                 return (AI_ACTION.GET_CLOSER);

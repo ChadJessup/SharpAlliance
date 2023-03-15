@@ -19,21 +19,20 @@ public class Movement
     // GoAsFarAsPossibleTowards - C.O. stuff related to current animation esp first aid
     // SetCivilianDestination - C.O. stuff for if we don't control the civ
 
-    public static int LegalNPCDestination(SOLDIERTYPE? pSoldier, int sGridno, int ubPathMode, int ubWaterOK, int fFlags)
+    public static bool LegalNPCDestination(SOLDIERTYPE? pSoldier, int sGridno, int ubPathMode, int ubWaterOK, PATH fFlags)
     {
         bool fSkipTilesWithMercs;
 
         if ((sGridno < 0) || (sGridno >= GRIDSIZE))
         {
-            return (0);
+            return (false);
         }
 
         // return false if gridno on different level from merc
         if (IsometricUtils.GridNoOnVisibleWorldTile(pSoldier.sGridNo) && gpWorldLevelData[pSoldier.sGridNo].sHeight != gpWorldLevelData[sGridno].sHeight)
         {
-            return (0);
+            return (false);
         }
-
 
         // skip mercs if turnbased and adjacent AND not doing an IGNORE_PATH check (which is used almost exclusively by GoAsFarAsPossibleTowards)
         fSkipTilesWithMercs = (gfTurnBasedAI && ubPathMode != IGNORE_PATH && IsometricUtils.SpacesAway(pSoldier.sGridNo, sGridno) == 1);
@@ -63,9 +62,9 @@ public class Movement
         {
 
             // if water's a problem, and gridno is in a water tile (bridges are OK)
-            if (!ubWaterOK && Water(sGridno))
+            if (ubWaterOK == 0 && Water(sGridno))
             {
-                return (0);
+                return (false);
             }
 
             // passed all checks, now try to make sure we can get there!
@@ -74,29 +73,29 @@ public class Movement
                 // if finding a path wasn't asked for (could have already been done,
                 // for example), don't bother
                 case IGNORE_PATH:
-                    return (1);
+                    return (true);
 
                 case ENSURE_PATH:
                     if (FindBestPath(pSoldier, sGridno, pSoldier.bLevel, AnimationStates.WALKING, COPYROUTE, fFlags))
                     {
-                        return (1);        // legal destination
+                        return (true);        // legal destination
                     }
                     else // got this far, but found no clear path,
                     {
                         // so test fails
-                        return (0);
+                        return (false);
                     }
                 // *** NOTE: movement mode hardcoded to WALKING !!!!!
                 case ENSURE_PATH_COST:
-                    return (PathAI.PlotPath(pSoldier, sGridno, null, false, null, AnimationStates.WALKING, null, null, 0));
+                    return (PathAI.PlotPath(pSoldier, sGridno, null, false, null, AnimationStates.WALKING, null, null, 0) > 0);
 
                 default:
-                    return (0);
+                    return (false);
             }
         }
         else  // something failed - didn't even have to test path
         {
-            return (0);         // illegal destination
+            return (false);         // illegal destination
         }
     }
 
@@ -105,15 +104,15 @@ public class Movement
 
     int TryToResumeMovement(SOLDIERTYPE? pSoldier, int sGridno)
     {
-        int ubGottaCancel = 0;
+        bool ubGottaCancel;
         int ubSuccess = 0;
 
 
         // have to make sure the old destination is still legal (somebody may
         // have occupied the destination gridno in the meantime!)
-        if (LegalNPCDestination(pSoldier, sGridno, ENSURE_PATH, WATEROK, 0) > 0)
+        if (LegalNPCDestination(pSoldier, sGridno, ENSURE_PATH, WATEROK, 0))
         {
-            pSoldier.bPathStored = 1;   // optimization - Ian
+            pSoldier.bPathStored = true;   // optimization - Ian
 
             // make him go to it (needed to continue movement across multiple turns)
             NewDest(pSoldier, sGridno);
@@ -148,7 +147,7 @@ public class Movement
                 pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sGridno, pSoldier.bAction);
 
                 // if it's not possible to get any closer
-                if (pSoldier.usActionData == NOWHERE)
+                if ((int)pSoldier.usActionData == NOWHERE)
                 {
                     ubGottaCancel = true;
                 }
@@ -166,7 +165,7 @@ public class Movement
                     // make sure that it worked (check that pSoldier.sDestination == pSoldier.sGridNo)
                     if (pSoldier.sDestination == sGridno)
                     {
-                        ubSuccess = true;
+                        ubSuccess = 1;
                     }
                     else
                     {
@@ -213,10 +212,10 @@ public class Movement
 
 
 
-    int PointPatrolAI(SOLDIERTYPE? pSoldier)
+    bool PointPatrolAI(SOLDIERTYPE? pSoldier)
     {
         int sPatrolPoint;
-        int bOldOrders;
+        Orders bOldOrders;
 
 
         sPatrolPoint = pSoldier.usPatrolGrid[pSoldier.bNextPatrolPnt];
@@ -243,14 +242,14 @@ public class Movement
         if (sPatrolPoint == NOWHERE)
         {
             // over-ride orders to something safer
-            pSoldier.bOrders = FARPATROL;
+            pSoldier.bOrders = Orders.FARPATROL;
             return (false);
         }
 
 
         // make sure we can get there from here at this time, if we can't get all
         // the way there, at least do our best to get close
-        if (LegalNPCDestination(pSoldier, sPatrolPoint, ENSURE_PATH, WATEROK, 0))
+        if (LegalNPCDestination(pSoldier, sPatrolPoint, ENSURE_PATH, WATEROK, 0) > 0)
         {
             pSoldier.bPathStored = true;       // optimization - Ian
             pSoldier.usActionData = sPatrolPoint;
@@ -260,14 +259,14 @@ public class Movement
             // temporarily extend roaming range to infinity by changing orders, else
             // this won't work if the next patrol point is > 10 tiles away!
             bOldOrders = pSoldier.bOrders;
-            pSoldier.bOrders = ONCALL;
+            pSoldier.bOrders = Orders.ONCALL;
 
             pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sPatrolPoint, pSoldier.bAction);
 
             pSoldier.bOrders = bOldOrders;
 
             // if it's not possible to get any closer, that's OK, but fail this call
-            if (pSoldier.usActionData == NOWHERE)
+            if (NOWHERE == (int)pSoldier.usActionData)
             {
                 return (false);
             }
@@ -276,10 +275,11 @@ public class Movement
         return (true);
     }
 
-    int RandomPointPatrolAI(SOLDIERTYPE? pSoldier)
+    bool RandomPointPatrolAI(SOLDIERTYPE? pSoldier)
     {
         int sPatrolPoint;
-        int bOldOrders, bPatrolIndex;
+        Orders bOldOrders;
+        int bPatrolIndex;
         int bCnt;
 
         sPatrolPoint = pSoldier.usPatrolGrid[pSoldier.bNextPatrolPnt];
@@ -322,13 +322,13 @@ public class Movement
         if (sPatrolPoint == NOWHERE)
         {
             // over-ride orders to something safer
-            pSoldier.bOrders = FARPATROL;
+            pSoldier.bOrders = Orders.FARPATROL;
             return (false);
         }
 
         // make sure we can get there from here at this time, if we can't get all
         // the way there, at least do our best to get close
-        if (LegalNPCDestination(pSoldier, sPatrolPoint, ENSURE_PATH, WATEROK, 0))
+        if (LegalNPCDestination(pSoldier, sPatrolPoint, ENSURE_PATH, WATEROK, 0) > 0)
         {
             pSoldier.bPathStored = true;       // optimization - Ian
             pSoldier.usActionData = sPatrolPoint;
@@ -338,14 +338,14 @@ public class Movement
             // temporarily extend roaming range to infinity by changing orders, else
             // this won't work if the next patrol point is > 10 tiles away!
             bOldOrders = pSoldier.bOrders;
-            pSoldier.bOrders = SEEKENEMY;
+            pSoldier.bOrders = Orders.SEEKENEMY;
 
             pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sPatrolPoint, pSoldier.bAction);
 
             pSoldier.bOrders = bOldOrders;
 
             // if it's not possible to get any closer, that's OK, but fail this call
-            if (pSoldier.usActionData == NOWHERE)
+            if (NOWHERE == (int)pSoldier.usActionData)
             {
                 return (false);
             }
@@ -358,7 +358,7 @@ public class Movement
 
 
 
-    int InternalGoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, int bReserveAPs, AI_ACTION bAction, int fFlags)
+    int InternalGoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, int bReserveAPs, AI_ACTION bAction, FLAG fFlags)
     {
         int sLoop, sAPCost;
         int sTempDest, sGoToGrid;
@@ -367,7 +367,8 @@ public class Movement
         int ubDirection, ubDirsLeft;
         int[] ubDirChecked = new int[8];
         int fFound = 0;
-        int bAPsLeft, fPathFlags;
+        int bAPsLeft;
+        PATH fPathFlags;
         int ubRoomRequired = 0, ubTempRoom;
 
         if (bReserveAPs == -1)
@@ -388,9 +389,9 @@ public class Movement
         // obtain maximum roaming distance from soldier's sOrigin
         usMaxDist = RoamingRange(pSoldier, out sOrigin);
 
-        if (pSoldier.bOrders <= CLOSEPATROL && (pSoldier.bTeam == CIV_TEAM || pSoldier.ubProfile != NO_PROFILE))
+        if (pSoldier.bOrders <= Orders.CLOSEPATROL && (pSoldier.bTeam == CIV_TEAM || pSoldier.ubProfile != NO_PROFILE))
         {
-            if (InARoom(pSoldier.usPatrolGrid[0], out ubRoomRequired))
+            if (RenderFun.InARoom(pSoldier.usPatrolGrid[0], out ubRoomRequired))
             {
                 // make sure this doesn't interfere with pathing for scripts
                 if (pSoldier.sAbsoluteFinalDestination != NOWHERE)
@@ -401,7 +402,7 @@ public class Movement
         }
 
         pSoldier.usUIMovementMode = DetermineMovementMode(pSoldier, bAction);
-        if (pSoldier.usUIMovementMode == AnimationStates.RUNNING && fFlags & FLAG_CAUTIOUS)
+        if (pSoldier.usUIMovementMode == AnimationStates.RUNNING && fFlags.HasFlag(FLAG.CAUTIOUS))
         {
             pSoldier.usUIMovementMode = AnimationStates.WALKING;
         }
@@ -440,7 +441,7 @@ public class Movement
 		else
 		{
 		*/
-            fPathFlags = PATH_CLOSE_GOOD_ENOUGH;
+            fPathFlags = PATH.CLOSE_GOOD_ENOUGH;
             //}
         }
 
@@ -477,7 +478,7 @@ public class Movement
                     {
                         ubDirection = Globals.Random.Next(8);
                     }
-                    while (ubDirChecked[ubDirection]);
+                    while (ubDirChecked[ubDirection] > 0);
 
                     ubDirChecked[ubDirection] = 1;
 
@@ -538,14 +539,14 @@ public class Movement
 
             if (ubRoomRequired > 0)
             {
-                if (!(InARoom(sTempDest, out ubTempRoom) && ubTempRoom == ubRoomRequired))
+                if (!(RenderFun.InARoom(sTempDest, out ubTempRoom) && ubTempRoom == ubRoomRequired))
                 {
                     // quit here, limited by room!
                     break;
                 }
             }
 
-            if ((fFlags & FLAG_STOPSHORT) && IsometricUtils.SpacesAway(sDesGrid, sTempDest) <= STOPSHORTDIST)
+            if ((fFlags.HasFlag(FLAG.STOPSHORT)) && IsometricUtils.SpacesAway(sDesGrid, sTempDest) <= STOPSHORTDIST)
             {
                 break;           // quit here, sGoToGrid is where we are going
             }
@@ -638,13 +639,13 @@ public class Movement
             // possible optimization - stored path IS good if we're going all the way
             if (sGoToGrid == sDesGrid)
             {
-                pSoldier.bPathStored = 1;
+                pSoldier.bPathStored = true;
                 pSoldier.sFinalDestination = sGoToGrid;
             }
             else if (pSoldier.usPathIndex == 0)
             {
                 // we can hack this surely! -- CJC
-                pSoldier.bPathStored = 1;
+                pSoldier.bPathStored = true;
                 pSoldier.sFinalDestination = sGoToGrid;
                 pSoldier.usPathDataSize = sLoop + 1;
             }
@@ -673,7 +674,7 @@ public class Movement
             return;
         }
 
-        if (pSoldier.usActionData >= NOWHERE)
+        if ((int)pSoldier.usActionData >= NOWHERE)
         {
             AIMain.CancelAIAction(pSoldier, DONTFORCE);
             return;
@@ -687,7 +688,7 @@ public class Movement
 
         if (IsActionAffordable(pSoldier))
         {
-            if (pSoldier.bActionInProgress == false)
+            if (pSoldier.bActionInProgress == 0)
             {
                 // start a move that didn't even get started before...
                 // hope this works...
@@ -706,7 +707,7 @@ public class Movement
             AIMain.CancelAIAction(pSoldier, DONTFORCE);
         }
 
-        usNewGridNo = NewGridNo((int)pSoldier.sGridNo, DirectionInc((int)pSoldier.usPathingData[pSoldier.usPathIndex]));
+        usNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(pSoldier.usPathingData[pSoldier.usPathIndex]));
 
         // Find out how much it takes to move here!
         bAPCost = EstimateActionPointCost(pSoldier, usNewGridNo, (int)pSoldier.usPathingData[pSoldier.usPathIndex], pSoldier.usUIMovementMode, (int)pSoldier.usPathIndex, (int)pSoldier.usPathDataSize);
@@ -758,7 +759,7 @@ public class Movement
           {
         */
         // if the destination is different from what he has now
-        if (pSoldier.usActionData != sGridno)
+        if ((int)pSoldier.usActionData != sGridno)
         {
             // store his new destination
             pSoldier.usActionData = sGridno;
@@ -777,7 +778,7 @@ public class Movement
         pSoldier.bUnderEscort = 1;
 
         // change orders to maximize roaming range so he can Go As Far As Possible
-        pSoldier.bOrders = ONCALL;
+        pSoldier.bOrders = Orders.ONCALL;
         /*
           }
 
@@ -846,13 +847,13 @@ public class Movement
                         // wrapped across map!
                         continue;
                     }
-                    if (LegalNPCDestination(pSoldier, pSoldier.usActionData, ENSURE_PATH, WATEROK, 0) > 0)
+                    if (LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, 0))
                     {
                         // check this location out
                         pMapElement = (gpWorldLevelData[iGridNo]);
-                        if (pMapElement.ubSmellInfo && (SMELL_TYPE(pMapElement.ubSmellInfo) == ubSoughtSmell))
+                        if (pMapElement.ubSmellInfo > 0 && (Smell.SMELL_TYPE(pMapElement.ubSmellInfo) == ubSoughtSmell))
                         {
-                            ubStrength = SMELL_STRENGTH(pMapElement.ubSmellInfo);
+                            ubStrength = Smell.SMELL_STRENGTH(pMapElement.ubSmellInfo);
                             if (ubStrength > ubBestStrength)
                             {
                                 iBestGridNo = iGridNo;

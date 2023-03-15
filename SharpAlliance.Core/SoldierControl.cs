@@ -8,6 +8,7 @@ using static SharpAlliance.Core.Globals;
 
 using static System.Math;
 using SharpAlliance.Core.Screens;
+using System.IO;
 
 namespace SharpAlliance.Core;
 
@@ -1724,7 +1725,7 @@ public class SoldierControl
         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting attack, bullets left %d", pSoldier.bBulletsLeft));
 
         // Convert our grid-not into an XY
-        ConvertGridNoToXY(sTargetGridNo, &sTargetXPos, &sTargetYPos);
+        ConvertGridNoToXY(sTargetGridNo, out sTargetXPos, out sTargetYPos);
 
 
         // Change to fire animation
@@ -1742,7 +1743,7 @@ public class SoldierControl
 
             // else
             {
-                if (pSoldier.uiStatusFlags & SOLDIER.MONSTER)
+                if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
                 {
                     // Force our direction!
                     EVENT_SetSoldierDirection(pSoldier, pSoldier.bDesiredDirection);
@@ -1751,7 +1752,8 @@ public class SoldierControl
                 else
                 {
                     // IF WE ARE IN REAl-TIME, FIRE IMMEDIATELY!
-                    if (((gTacticalStatus.uiFlags & REALTIME) || !(gTacticalStatus.uiFlags & INCOMBAT)))
+                    if (((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
+                        || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))))
                     {
                         //fDoFireRightAway = true;
                     }
@@ -1759,9 +1761,9 @@ public class SoldierControl
                     // Check if our weapon has no intermediate anim...
                     switch (pSoldier.inv[InventorySlot.HANDPOS].usItem)
                     {
-                        case ROCKET_LAUNCHER:
-                        case MORTAR:
-                        case GLAUNCHER:
+                        case Items.ROCKET_LAUNCHER:
+                        case Items.MORTAR:
+                        case Items.GLAUNCHER:
 
                             fDoFireRightAway = true;
                             break;
@@ -1798,10 +1800,10 @@ public class SoldierControl
     //gAnimControl[ pSoldier.usAnimState ].ubEndHeight
     //					ChangeSoldierState( pSoldier, SHOOT_RIFLE_STAND, 0 , false );
 
-    AnimationStates SelectFireAnimation(SOLDIERTYPE? pSoldier, AnimationHeights ubHeight)
+    public static AnimationStates SelectFireAnimation(SOLDIERTYPE? pSoldier, AnimationHeights ubHeight)
     {
         int sDist;
-        int usItem;
+        Items usItem;
         double dTargetX;
         double dTargetY;
         double dTargetZ;
@@ -1817,25 +1819,15 @@ public class SoldierControl
                 case SoldierBodyTypes.AM_MONSTER:
                 case SoldierBodyTypes.YAF_MONSTER:
                 case SoldierBodyTypes.YAM_MONSTER:
-
                     return (AnimationStates.MONSTER_SPIT_ATTACK);
-                    break;
-
                 case SoldierBodyTypes.LARVAE_MONSTER:
-
                     break;
-
                 case SoldierBodyTypes.INFANT_MONSTER:
-
                     return (AnimationStates.INFANT_ATTACK);
-                    break;
-
                 case SoldierBodyTypes.QUEENMONSTER:
-
                     return (AnimationStates.QUEEN_SPIT);
-                    break;
-
             }
+
             return (AnimationStates.STANDING);
         }
 
@@ -1852,19 +1844,19 @@ public class SoldierControl
         }
 
         // Check for rocket laucncher....
-        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == ROCKET_LAUNCHER)
+        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == Items.ROCKET_LAUNCHER)
         {
             return (AnimationStates.SHOOT_ROCKET);
         }
 
         // Check for rocket laucncher....
-        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == MORTAR)
+        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == Items.MORTAR)
         {
             return (AnimationStates.SHOOT_MORTAR);
         }
 
         // Check for tank cannon
-        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == TANK_CANNON)
+        if (pSoldier.inv[InventorySlot.HANDPOS].usItem == Items.TANK_CANNON)
         {
             return (AnimationStates.TANK_SHOOT);
         }
@@ -3075,7 +3067,7 @@ public class SoldierControl
         int[] usPathingData = new int[MAX_PATH_LIST_SIZE];
         int ubPathingMaxDirection;
         bool fAdvancePath = true;
-        int fFlags = 0;
+        PATH fFlags = 0;
 
         // Ifd this code, make true if a player
         if (fFromUI == 3)
@@ -3107,18 +3099,18 @@ public class SoldierControl
         {
             if (pSoldier.ubDelayedMovementFlags & DELAYED_MOVEMENT_FLAG_PATH_THROUGH_PEOPLE)
             {
-                fFlags = PATH_THROUGH_PEOPLE;
+                fFlags = PATH.THROUGH_PEOPLE;
             }
             else
             {
-                fFlags = PATH_IGNORE_PERSON_AT_DEST;
+                fFlags = PATH.IGNORE_PERSON_AT_DEST;
             }
             pSoldier.fDelayedMovement = false;
         }
 
         if (gfGetNewPathThroughPeople)
         {
-            fFlags = PATH_THROUGH_PEOPLE;
+            fFlags = PATH.THROUGH_PEOPLE;
         }
 
         // ATE: Some stuff here for realtime, going through interface....
@@ -3153,7 +3145,7 @@ public class SoldierControl
                 {
                     memcpy(usPathingData, pSoldier.usPathingData, sizeof(usPathingData));
                     ubPathingMaxDirection = (int)usPathingData[MAX_PATH_LIST_SIZE - 1];
-                    memcpy(&(pSoldier.usPathingData[1]), usPathingData, sizeof(usPathingData) - sizeof(int));
+                    memcpy((pSoldier.usPathingData[1]), usPathingData, sizeof(usPathingData) - sizeof(int));
 
                     // If we have reach the max, go back one sFinalDest....
                     if (pSoldier.usPathDataSize == MAX_PATH_LIST_SIZE)
@@ -3168,16 +3160,16 @@ public class SoldierControl
 
                 usMoveAnimState = pSoldier.usUIMovementMode;
 
-                if (pSoldier.bOverTerrainType == DEEP_WATER)
+                if (pSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
                 {
-                    usMoveAnimState = DEEP_WATER_SWIM;
+                    usMoveAnimState = AnimationStates.DEEP_WATER_SWIM;
                 }
 
                 // Change animation only.... set value to NOT call any goto new gridno stuff.....
                 if (usMoveAnimState != pSoldier.usAnimState)
                 {
                     //
-                    pSoldier.usDontUpdateNewGridNoOnMoveAnimChange = true;
+                    pSoldier.usDontUpdateNewGridNoOnMoveAnimChange = 1;
 
                     EVENT_InitNewSoldierAnim(pSoldier, usMoveAnimState, 0, false);
                 }
@@ -3212,7 +3204,7 @@ public class SoldierControl
 
 
             // CHECK IF FIRST TILE IS FREE
-            sNewGridNo = NewGridNo((int)pSoldier.sGridNo, DirectionInc((int)pSoldier.usPathingData[pSoldier.usPathIndex]));
+            sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc((int)pSoldier.usPathingData[pSoldier.usPathIndex]));
 
             // If true, we're OK, if not, WAIT for a guy to pass!
             // If we are in deep water, we can only swim!
@@ -3797,7 +3789,7 @@ public class SoldierControl
                 BeginSoldierGetup(pSoldier);
 
                 // CJC Nov 30: handle RT opplist decaying in another function which operates less often
-                if (gTacticalStatus.uiFlags & INCOMBAT)
+                if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                 {
                     VerifyAndDecayOpplist(pSoldier);
 
@@ -4748,12 +4740,12 @@ int	gOrangeGlowG[]=
         Stream hFile;
         int cnt, cnt2;
 
-        hFile = FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, FALSE);
+        hFile = FileManager.FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, FALSE);
 
         // Read # of types
-        if (!FileRead(hFile, &guiNumPaletteSubRanges, sizeof(guiNumPaletteSubRanges), null))
+        if (!FileManager.FileRead(hFile, ref guiNumPaletteSubRanges, sizeof(guiNumPaletteSubRanges), null))
         {
-            return (FALSE);
+            return (false);
         }
 
         // Malloc!
@@ -4763,30 +4755,30 @@ int	gOrangeGlowG[]=
         // Read # of types for each!
         for (cnt = 0; cnt < guiNumPaletteSubRanges; cnt++)
         {
-            if (!FileRead(hFile, &gubpNumReplacementsPerRange[cnt], sizeof(int), null))
+            if (!FileManager.FileRead(hFile, ref gubpNumReplacementsPerRange[cnt], sizeof(int), null))
             {
-                return (FALSE);
+                return (false);
             }
         }
 
         // Loop for each one, read in data
         for (cnt = 0; cnt < guiNumPaletteSubRanges; cnt++)
         {
-            if (!FileRead(hFile, &gpPaletteSubRanges[cnt].ubStart, sizeof(int), null))
+            if (!FileManager.FileRead(hFile, &gpPaletteSubRanges[cnt].ubStart, sizeof(int), null))
             {
-                return (FALSE);
+                return (false);
             }
-            if (!FileRead(hFile, &gpPaletteSubRanges[cnt].ubEnd, sizeof(int), null))
+            if (!FileManager.FileRead(hFile, &gpPaletteSubRanges[cnt].ubEnd, sizeof(int), null))
             {
-                return (FALSE);
+                return (false);
             }
         }
 
 
         // Read # of palettes
-        if (!FileRead(hFile, &guiNumReplacements, sizeof(guiNumReplacements), null))
+        if (!FileManager.FileRead(hFile, &guiNumReplacements, sizeof(guiNumReplacements), null))
         {
-            return (FALSE);
+            return (false);
         }
 
         // Malloc!
@@ -4795,21 +4787,22 @@ int	gOrangeGlowG[]=
         // Read!
         for (cnt = 0; cnt < guiNumReplacements; cnt++)
         {
-            // type
-            if (false)//!FileRead(hFile, gpPalRep[cnt].ubType, sizeof(gpPalRep[cnt].ubType), null))
+            // sizeof(gpPalRep[cnt].ubType)
+            if (!FileManager.FileRead(hFile, gpPalRep[cnt].ubType, 100, null))
             {
-                return (FALSE);
+                return (false);
             }
 
-            if (false)//!FileRead(hFile, &gpPalRep[cnt].ID, sizeof(gpPalRep[cnt].ID), null ) )
+            // sizeof(gpPalRep[cnt].ID)
+            if (!FileManager.FileRead(hFile, &gpPalRep[cnt].ID, 100, null))
             {
-                return (FALSE);
+                return (false);
             }
 
-            // # entries
-            if (false)//!FileRead(hFile, &gpPalRep[cnt].ubPaletteSize, sizeof(gpPalRep[cnt].ubPaletteSize), null ) )
+            // # entries // sizeof(gpPalRep[cnt].ubPaletteSize)
+            if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].ubPaletteSize, 100, null))
             {
-                return (FALSE);
+                return (false);
             }
 
             // Malloc
@@ -4822,23 +4815,23 @@ int	gOrangeGlowG[]=
 
             for (cnt2 = 0; cnt2 < gpPalRep[cnt].ubPaletteSize; cnt2++)
             {
-                if (!FileRead(hFile, &gpPalRep[cnt].r[cnt2], sizeof(int), null))
+                if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].r[cnt2], sizeof(int), null))
                 {
-                    return (FALSE);
+                    return (false);
                 }
-                if (!FileRead(hFile, &gpPalRep[cnt].g[cnt2], sizeof(int), null))
+                if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].g[cnt2], sizeof(int), null))
                 {
-                    return (FALSE);
+                    return (false);
                 }
-                if (!FileRead(hFile, &gpPalRep[cnt].b[cnt2], sizeof(int), null))
+                if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].b[cnt2], sizeof(int), null))
                 {
-                    return (FALSE);
+                    return (false);
                 }
             }
 
-            FileClose(hFile);
+            FileManager.FileClose(hFile);
 
-            return (TRUE);
+            return (true);
         }
     }
 
@@ -4848,7 +4841,7 @@ int	gOrangeGlowG[]=
         int ubType;
         int ubPalIndex;
 
-        CHECKF(GetPaletteRepIndexFromID(aPalRep, &ubPalIndex));
+        CHECKF(GetPaletteRepIndexFromID(aPalRep, ubPalIndex));
 
         // Get range type
         ubType = gpPalRep[ubPalIndex].ubType;
@@ -5028,9 +5021,9 @@ int	gOrangeGlowG[]=
 
     void BeginSoldierClimbUpRoof(SOLDIERTYPE? pSoldier)
     {
-        int bNewDirection;
+        WorldDirections bNewDirection;
 
-        if (FindHeigherLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, &bNewDirection) && (pSoldier.bLevel == 0))
+        if (FindHeigherLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, out bNewDirection) && (pSoldier.bLevel == 0))
         {
             if (EnoughPoints(pSoldier, GetAPsToClimbRoof(pSoldier, false), 0, true))
             {
@@ -5040,7 +5033,7 @@ int	gOrangeGlowG[]=
                     SetUIBusy(pSoldier.ubID);
                 }
 
-                pSoldier.sTempNewGridNo = NewGridNo((int)pSoldier.sGridNo, (int)DirectionInc(bNewDirection));
+                pSoldier.sTempNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(bNewDirection));
 
                 pSoldier.ubPendingDirection = bNewDirection;
                 //pSoldier.usPendingAnimation = CLIMBUPROOF;
@@ -5991,7 +5984,7 @@ int	gOrangeGlowG[]=
         {
             sprintf(zFilename, "BATTLESNDS\\%03d_%s.wav", pSoldier.ubProfile, gBattleSndsData[ubSoundID].zName);
 
-            if (!FileExists(zFilename))
+            if (!FileManager.FileExists(zFilename))
             {
                 // OK, temp build file...
                 if (pSoldier.ubBodyType == REGFEMALE)
@@ -6153,7 +6146,7 @@ int	gOrangeGlowG[]=
     bool CheckSoldierHitRoof(SOLDIERTYPE? pSoldier)
     {
         // Check if we are near a lower level
-        int bNewDirection;
+        WorldDirections bNewDirection;
         bool fReturnVal = false;
         int sNewGridNo;
         // Default to true
@@ -6164,22 +6157,22 @@ int	gOrangeGlowG[]=
             return (false);
         }
 
-        if (FindLowerLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, &bNewDirection) && (pSoldier.bLevel > 0))
+        if (FindLowerLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, out bNewDirection) && (pSoldier.bLevel > 0))
         {
             // ONly if standing!
-            if (gAnimControl[pSoldier.usAnimState].ubHeight == ANIM_STAND)
+            if (gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_STAND)
             {
                 // We are near a lower level.
                 // Use opposite direction
                 bNewDirection = gOppositeDirection[bNewDirection];
 
                 // Alrighty, let's not blindly change here, look at whether the dest gridno is good!
-                sNewGridNo = NewGridNo((int)pSoldier.sGridNo, DirectionInc(gOppositeDirection[bNewDirection]));
+                sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(gOppositeDirection[bNewDirection]));
                 if (!NewOKDestination(pSoldier, sNewGridNo, true, 0))
                 {
                     return (false);
                 }
-                sNewGridNo = NewGridNo((int)sNewGridNo, DirectionInc(gOppositeDirection[bNewDirection]));
+                sNewGridNo = IsometricUtils.NewGridNo(sNewGridNo, IsometricUtils.DirectionInc(gOppositeDirection[bNewDirection]));
                 if (!NewOKDestination(pSoldier, sNewGridNo, true, 0))
                 {
                     return (false);
@@ -6200,11 +6193,11 @@ int	gOrangeGlowG[]=
                 // ATE: Make this more usefull...
                 if (fDoForwards)
                 {
-                    pSoldier.sTempNewGridNo = NewGridNo((int)pSoldier.sGridNo, (int)(-1 * DirectionInc(bNewDirection)));
-                    pSoldier.sTempNewGridNo = NewGridNo((int)pSoldier.sTempNewGridNo, (int)(-1 * DirectionInc(bNewDirection)));
+                    pSoldier.sTempNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, (int)(-1 * IsometricUtils.DirectionInc(bNewDirection)));
+                    pSoldier.sTempNewGridNo = IsometricUtils.NewGridNo(pSoldier.sTempNewGridNo, (int)(-1 * IsometricUtils.DirectionInc(bNewDirection)));
                     EVENT_SetSoldierDesiredDirection(pSoldier, gOppositeDirection[bNewDirection]);
                     pSoldier.fTurningUntilDone = true;
-                    pSoldier.usPendingAnimation = FALLFORWARD_ROOF;
+                    pSoldier.usPendingAnimation = AnimationStates.FALLFORWARD_ROOF;
                     //EVENT_InitNewSoldierAnim( pSoldier, FALLFORWARD_ROOF, 0 , false );
 
                     // Deduct hitpoints/breath for falling!
@@ -6216,14 +6209,14 @@ int	gOrangeGlowG[]=
                 else
                 {
 
-                    pSoldier.sTempNewGridNo = NewGridNo((int)pSoldier.sGridNo, (int)(-1 * DirectionInc(bNewDirection)));
-                    pSoldier.sTempNewGridNo = NewGridNo((int)pSoldier.sTempNewGridNo, (int)(-1 * DirectionInc(bNewDirection)));
+                    pSoldier.sTempNewGridNo = IsometricUtils.NewGridNo((int)pSoldier.sGridNo, (int)(-1 * IsometricUtils.DirectionInc(bNewDirection)));
+                    pSoldier.sTempNewGridNo = IsometricUtils.NewGridNo((int)pSoldier.sTempNewGridNo, (int)(-1 * IsometricUtils.DirectionInc(bNewDirection)));
                     EVENT_SetSoldierDesiredDirection(pSoldier, bNewDirection);
                     pSoldier.fTurningUntilDone = true;
-                    pSoldier.usPendingAnimation = FALLOFF;
+                    pSoldier.usPendingAnimation = AnimationStates.FALLOFF;
 
                     // Deduct hitpoints/breath for falling!
-                    SoldierTakeDamage(pSoldier, ANIM_CROUCH, 100, 5000, TAKE_DAMAGE.FALLROOF, NOBODY, NOWHERE, 0, true);
+                    SoldierTakeDamage(pSoldier, AnimationHeights.ANIM_CROUCH, 100, 5000, TAKE_DAMAGE.FALLROOF, NOBODY, NOWHERE, 0, true);
 
                     fReturnVal = true;
                 }
@@ -6235,9 +6228,9 @@ int	gOrangeGlowG[]=
 
     void BeginSoldierClimbDownRoof(SOLDIERTYPE? pSoldier)
     {
-        int bNewDirection;
+        WorldDirections bNewDirection;
 
-        if (FindLowerLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, &bNewDirection) && (pSoldier.bLevel > 0))
+        if (FindLowerLevel(pSoldier, pSoldier.sGridNo, pSoldier.bDirection, out bNewDirection) && (pSoldier.bLevel > 0))
         {
             if (EnoughPoints(pSoldier, GetAPsToClimbRoof(pSoldier, true), 0, true))
             {
@@ -6247,7 +6240,7 @@ int	gOrangeGlowG[]=
                     SetUIBusy(pSoldier.ubID);
                 }
 
-                pSoldier.sTempNewGridNo = NewGridNo((int)pSoldier.sGridNo, (int)DirectionInc(bNewDirection));
+                pSoldier.sTempNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(bNewDirection));
 
                 bNewDirection = gTwoCDirection[bNewDirection];
 
@@ -6774,7 +6767,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     }
 
-    void SendSoldierSetDesiredDirectionEvent(SOLDIERTYPE? pSoldier, int usDesiredDirection)
+    public static void SendSoldierSetDesiredDirectionEvent(SOLDIERTYPE? pSoldier, int usDesiredDirection)
     {
         // Sent event for position update
         EV_S_SETDESIREDDIRECTION SSetDesiredDirection;
@@ -6854,7 +6847,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
                 // ATE: Set to NOBODY if this person is NOT dead
                 // otherise, we keep it so the kill can be awarded!
-                if (pSoldier.bLife != 0 && pSoldier.ubBodyType != QUEENMONSTER)
+                if (pSoldier.bLife != 0 && pSoldier.ubBodyType != SoldierBodyTypes.QUEENMONSTER)
                 {
                     pSoldier.ubAttackerID = NOBODY;
                 }
@@ -6865,7 +6858,9 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     public static bool MercInWater(SOLDIERTYPE? pSoldier)
     {
         // Our water texture , for now is of a given type
-        if (pSoldier.bOverTerrainType == TerrainTypeDefines.LOW_WATER || pSoldier.bOverTerrainType == TerrainTypeDefines.MED_WATER || pSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
+        if (pSoldier.bOverTerrainType == TerrainTypeDefines.LOW_WATER
+            || pSoldier.bOverTerrainType == TerrainTypeDefines.MED_WATER
+            || pSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
         {
             return (true);
         }
@@ -6904,7 +6899,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
             pSoldier.bLife = pSoldier.bLifeMax;
             pSoldier.bBleeding = 0;
-            pSoldier.ubDesiredHeight = ANIM_STAND;
+            pSoldier.ubDesiredHeight = AnimationHeights.ANIM_STAND;
 
             AddManToTeam(pSoldier.bTeam);
 
@@ -6913,7 +6908,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             pSoldier.fRTInNonintAnim = false;
 
             // Change to standing,unless we can getup with an animation
-            EVENT_InitNewSoldierAnim(pSoldier, STANDING, 0, true);
+            EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.STANDING, 0, true);
             BeginSoldierGetup(pSoldier);
 
             // Makesure center of tile
@@ -7102,7 +7097,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void EVENT_SoldierBeginBladeAttack(SOLDIERTYPE? pSoldier, int sGridNo, int ubDirection)
+    void EVENT_SoldierBeginBladeAttack(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections ubDirection)
     {
         SOLDIERTYPE? pTSoldier;
         //int uiMercFlags;
@@ -7170,7 +7165,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             usSoldierIndex = WorldManager.WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
             if (usSoldierIndex != NOBODY)
             {
-                GetSoldier(out pTSoldier, usSoldierIndex);
+                Overhead.GetSoldier(out pTSoldier, usSoldierIndex);
 
                 // Look at stance of target
                 switch (gAnimControl[pTSoldier.usAnimState].ubEndHeight)
@@ -7272,7 +7267,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    void EVENT_SoldierBeginPunchAttack(SOLDIERTYPE? pSoldier, int sGridNo, int ubDirection)
+    public static void EVENT_SoldierBeginPunchAttack(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections ubDirection)
     {
         bool fMartialArtist = false;
         SOLDIERTYPE? pTSoldier;
@@ -7298,7 +7293,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         usSoldierIndex = WorldManager.WhoIsThere2(pSoldier.sTargetGridNo, pSoldier.bLevel);
         if (usSoldierIndex != NOBODY)
         {
-            GetSoldier(out pTSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out pTSoldier, usSoldierIndex);
 
             fChangeDirection = true;
         }
@@ -7317,18 +7312,20 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
 
         // Are we a martial artist?
-        if (HAS_SKILL_TRAIT(pSoldier, MARTIALARTS))
+        if (HAS_SKILL_TRAIT(pSoldier, SkillTrait.MARTIALARTS))
         {
             fMartialArtist = true;
         }
 
 
-        if (fMartialArtist && !AreInMeanwhile() && usItem != CROWBAR)
+        if (fMartialArtist && !AreInMeanwhile() && usItem != Items.CROWBAR)
         {
             // Are we in attack mode yet?
-            if (pSoldier.usAnimState != NINJA_BREATH && gAnimControl[pSoldier.usAnimState].ubHeight == ANIM_STAND && gAnimControl[pTSoldier.usAnimState].ubHeight != ANIM_PRONE)
+            if (pSoldier.usAnimState != AnimationStates.NINJA_BREATH
+                && gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_STAND
+                && gAnimControl[pTSoldier.usAnimState].ubHeight != AnimationHeights.ANIM_PRONE)
             {
-                EVENT_InitNewSoldierAnim(pSoldier, NINJA_GOTOBREATH, 0, false);
+                EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.NINJA_GOTOBREATH, 0, false);
             }
             else
             {
@@ -7345,11 +7342,11 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
                     if (usItem != Items.CROWBAR)
                     {
-                        EVENT_InitNewSoldierAnim(pSoldier, PUNCH, 0, false);
+                        EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.PUNCH, 0, false);
                     }
                     else
                     {
-                        EVENT_InitNewSoldierAnim(pSoldier, CROWBAR_ATTACK, 0, false);
+                        EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.CROWBAR_ATTACK, 0, false);
                     }
 
                     // CHECK IF HE CAN SEE US, IF SO CHANGE DIR
@@ -7357,7 +7354,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                     {
                         // Get direction to target
                         // IF WE ARE AN ANIMAL, CAR, MONSTER, DONT'T TURN
-                        if (!(pTSoldier.uiStatusFlags & (SOLDIER.MONSTER | SOLDIER.ANIMAL | SOLDIER.VEHICLE)))
+                        if (!(pTSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER | SOLDIER.ANIMAL | SOLDIER.VEHICLE)))
                         {
                             // OK, stop merc....
                             EVENT_StopMerc(pTSoldier, pTSoldier.sGridNo, pTSoldier.bDirection);
@@ -9281,8 +9278,8 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         int usNewGridNo;
 
         // Get dest gridno, convert to center coords
-        usNewGridNo = NewGridNo((int)pSoldier.sGridNo, DirectionInc(gOppositeDirection[bDirection]));
-        usNewGridNo = NewGridNo((int)usNewGridNo, DirectionInc(gOppositeDirection[bDirection]));
+        usNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(gOppositeDirection[bDirection]));
+        usNewGridNo = IsometricUtils.NewGridNo(usNewGridNo, IsometricUtils.DirectionInc(gOppositeDirection[bDirection]));
 
         // Remove any previous actions
         pSoldier.ubPendingAction = NO_PENDING_ACTION;
@@ -9463,7 +9460,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
 
         // Are we an EPC that is being escorted?
-        if (pTSoldier.ubProfile != NO_PROFILE && pTSoldier.ubWhatKindOfMercAmI == MERC_TYPE__EPC)
+        if (pTSoldier.ubProfile != NO_PROFILE && pTSoldier.ubWhatKindOfMercAmI == MERC_TYPE.EPC)
         {
             return (InitiateConversation(pTSoldier, pSoldier, APPROACH_EPC_WHO_IS_RECRUITED, 0));
             //Converse( pTSoldier.ubProfile, pSoldier.ubProfile, APPROACH_EPC_WHO_IS_RECRUITED, 0 );
@@ -9502,9 +9499,9 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     bool IsValidSecondHandShot(SOLDIERTYPE? pSoldier)
     {
         if (Item[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem].usItemClass == IC.GUN &&
-                 !(Item[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem].fFlags & ITEM_TWO_HANDED) &&
+                 !(Item[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)) &&
                  !pSoldier.bDoBurst &&
-                 pSoldier.inv[InventorySlot.HANDPOS].usItem != GLAUNCHER &&
+                 pSoldier.inv[InventorySlot.HANDPOS].usItem != Items.GLAUNCHER &&
                  Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.GUN &&
                  pSoldier.inv[InventorySlot.SECONDHANDPOS].bGunStatus >= USABLE &&
                  pSoldier.inv[InventorySlot.SECONDHANDPOS].ubGunShotsLeft > 0)
@@ -9521,7 +9518,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // about ammo taken out!
         if (Item[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem].usItemClass == IC.GUN &&
                  !pSoldier.bDoBurst &&
-                 pSoldier.inv[InventorySlot.HANDPOS].usItem != GLAUNCHER &&
+                 pSoldier.inv[InventorySlot.HANDPOS].usItem != Items.GLAUNCHER &&
                  Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.GUN &&
                  pSoldier.inv[InventorySlot.SECONDHANDPOS].bGunStatus >= USABLE //&&
                                                                                 //			 pSoldier.inv[InventorySlot.SECONDHANDPOS].ubGunShotsLeft > 0 &&
@@ -10024,7 +10021,7 @@ void DebugValidateSoldierData()
         //Update all the mercs in the sector
         EnableDisableSoldierLightEffects(GameSettings.fOptions[TOPTION.MERC_CASTS_LIGHT]);
 
-        SetRenderFlags(RENDER_FLAG_FULL);
+        RenderWorld.SetRenderFlags(RenderingFlags.FULL);
     }
 
 
@@ -10258,3 +10255,22 @@ public enum TAKE_DAMAGE
     STRUCTURE_EXPLOSION = 10,
     OBJECT = 11,
 }
+
+// TYPEDEFS FOR ANIMATION PROFILES
+public class ANIM_PROF_TILE
+{
+    public int usTileFlags;
+    public int bTileX;
+    public int bTileY;
+};
+
+public class ANIM_PROF_DIR
+{
+    public int ubNumTiles;
+    public ANIM_PROF_TILE? pTiles;
+};
+
+public class ANIM_PROF
+{
+    public ANIM_PROF_DIR[] Dirs = new ANIM_PROF_DIR[8];
+};

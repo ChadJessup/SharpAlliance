@@ -12,20 +12,6 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class SoldierProfileSubSystem
 {
-    internal static class Constants
-    {
-        public const int NUM_TERRORISTS = 6;
-
-        public const int NUM_PROFILES = 170;
-        public const int MAX_ADDITIONAL_TERRORISTS = 4;
-        public const int NUM_TERRORIST_POSSIBLE_LOCATIONS = 5;
-
-        // A.I.M. is 0-39, M.E.R.C.s are 40-50
-        public const int AIM_AND_MERC_MERCS = 51;
-        public const int FIRST_RPC = 57;
-        public const int FIRST_NPC = 75;
-    }
-
     private readonly ILogger<SoldierProfileSubSystem> logger;
     private readonly IFileManager fileManager;
     private readonly DialogControl dialogs;
@@ -70,6 +56,24 @@ public class SoldierProfileSubSystem
             }
         }
         return (null);
+    }
+
+    public static int WhichHated(NPCID ubCharNum, MERCPROFILESTRUCT ubHated)
+    {
+        MERCPROFILESTRUCT? pProfile;
+        int bLoop;
+
+        pProfile = (gMercProfiles[ubCharNum]);
+
+        for (bLoop = 0; bLoop < 3; bLoop++)
+        {
+            if (pProfile.bHated[bLoop] == ubHated)
+            {
+                return (bLoop);
+            }
+        }
+
+        return (-1);
     }
 
     public bool LoadMercProfiles()
@@ -414,13 +418,13 @@ public class SoldierProfileSubSystem
         pSoldier.bMedical = pNewProfile.bMedical + pNewProfile.bMedicalDelta;
         pSoldier.bExplosive = pNewProfile.bExplosive + pNewProfile.bExplosivesDelta;
 
-        if (pSoldier.ubProfile == LARRY_DRUNK)
+        if (pSoldier.ubProfile == NPCID.LARRY_DRUNK)
         {
-            SetFactTrue(FACT_LARRY_CHANGED);
+            Facts.SetFactTrue(FACT.LARRY_CHANGED);
         }
         else
         {
-            SetFactFalse(FACT_LARRY_CHANGED);
+            Facts.SetFactFalse(FACT.LARRY_CHANGED);
         }
 
         DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);

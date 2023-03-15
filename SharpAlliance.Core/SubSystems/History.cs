@@ -104,11 +104,11 @@ public class History
 
     void GameInitHistory()
     {
-        if ((FileExists(HISTORY_DATA_FILE)))
+        if ((FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             // unlink history file
-            FileClearAttributes(HISTORY_DATA_FILE);
-            FileDelete(HISTORY_DATA_FILE);
+            FileManager.FileClearAttributes(HISTORY_DATA_FILE);
+            FileManager.FileDelete(HISTORY_DATA_FILE);
         }
 
         AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GameClock.GetWorldTotalMin(), -1, -1);
@@ -315,8 +315,8 @@ public class History
 
 
         // set buttons
-        SetButtonCursor(giHistoryButton[0], Globals.CURSOR_LAPTOP_SCREEN);
-        SetButtonCursor(giHistoryButton[1], Globals.CURSOR_LAPTOP_SCREEN);
+        SetButtonCursor(giHistoryButton[0], CURSOR_LAPTOP_SCREEN);
+        SetButtonCursor(giHistoryButton[1], CURSOR_LAPTOP_SCREEN);
 
         return;
     }
@@ -402,13 +402,13 @@ public class History
         int uiFileSize = 0;
         int uiSizeOfRecordsOnEachPage = 0;
 
-        if (!(FileExists(HISTORY_DATA_FILE)))
+        if (!(FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             return (false);
         }
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
         if (!hFileHandle)
@@ -417,13 +417,13 @@ public class History
         }
 
         // make sure file is more than 0 length
-        if (FileGetSize(hFileHandle) == 0)
+        if (FileManager.FileGetSize(hFileHandle) == 0)
         {
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (false);
         }
 
-        uiFileSize = FileGetSize(hFileHandle) - 1;
+        uiFileSize = FileManager.FileGetSize(hFileHandle) - 1;
         uiSizeOfRecordsOnEachPage = (NUM_RECORDS_PER_PAGE * (sizeof(int) + sizeof(int) + 3 * sizeof(int) + sizeof(int) + sizeof(int)));
 
         // is the file long enough?
@@ -431,13 +431,13 @@ public class History
         if (uiFileSize / uiSizeOfRecordsOnEachPage + 1 < (int)(iCurrentHistoryPage + 1))
         {
             // nope
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (false);
         }
         else
         {
             iCurrentHistoryPage++;
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
         }
 
 
@@ -537,13 +537,13 @@ public class History
         ClearHistoryList();
 
         // no file, return
-        if (!(FileExists(HISTORY_DATA_FILE)))
+        if (!(FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             return;
         }
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
         if (!hFileHandle)
@@ -552,14 +552,14 @@ public class History
         }
 
         // make sure file is more than 0 length
-        if (FileGetSize(hFileHandle) == 0)
+        if (FileManager.FileGetSize(hFileHandle) == 0)
         {
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return;
         }
 
         // file exists, read in data, continue until file end
-        while (FileGetSize(hFileHandle) > uiByteCount)
+        while (FileManager.FileGetSize(hFileHandle) > uiByteCount)
         {
             // read in other data
             FileManager.FileRead<HISTORY>(hFileHandle, ref ubCode, sizeof(int), out iBytesRead);
@@ -578,7 +578,7 @@ public class History
         }
 
         // close file 
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
 
         return;
     }
@@ -601,16 +601,17 @@ public class History
             return (false);
         }
         // write info, while there are elements left in the list
+        var doncare = 0;
         while (pHistoryList is not null)
         {
             // now write date and amount, and code
-            FileWrite(hFileHandle, out (pHistoryList.ubCode), sizeof(int), null);
-            FileWrite(hFileHandle, out (pHistoryList.ubSecondCode), sizeof(int), null);
-            FileWrite(hFileHandle, out (pHistoryList.uiDate), sizeof(int), null);
-            FileWrite(hFileHandle, out (pHistoryList.sSectorX), sizeof(int), null);
-            FileWrite(hFileHandle, out (pHistoryList.sSectorY), sizeof(int), null);
-            FileWrite(hFileHandle, out (pHistoryList.bSectorZ), sizeof(int), null);
-            FileWrite(hFileHandle, out (pHistoryList.ubColor), sizeof(int), null);
+            FileManager.FileWrite(hFileHandle, (pHistoryList.ubCode), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pHistoryList.ubSecondCode), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pHistoryList.uiDate), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pHistoryList.sSectorX), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pHistoryList.sSectorY), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pHistoryList.bSectorZ), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pHistoryList.ubColor), sizeof(int), out doncare);
 
             // next element in list
             pHistoryList = pHistoryList.Next;
@@ -618,7 +619,7 @@ public class History
         }
 
         // close file
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
         // clear out the old list
         ClearHistoryList();
 
@@ -719,7 +720,7 @@ public class History
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // error check
-        if (!pCurHistory)
+        if (pCurHistory is null)
         {
             return;
         }
@@ -737,8 +738,8 @@ public class History
                 FontSubSystem.SetFontForeground(FontColor.FONT_RED);
             }
             // get and write the date
-            wprintf(sString, "%d", (pCurHistory.uiDate / (24 * 60)));
-            FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, Globals.HISTORY.TEXT_FONT, out usX, out usY);
+            sString = wprintf("%d", (pCurHistory.uiDate / (24 * 60)));
+            FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, HISTORY_TEXT_FONT, out usX, out usY);
             mprintf(usX, Globals.RECORD_Y + (iCounter * (Globals.BOX_HEIGHT)) + 3, sString);
 
             // now the actual history text
@@ -756,7 +757,7 @@ public class History
             }
             else
             {
-                GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, sString, true);
+                StrategicMap.GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, sString, true);
                 FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, sX, sY);
 
                 WordWrap.ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
@@ -1141,13 +1142,13 @@ public class History
         }
 
 
-        if (!(FileExists(HISTORY_DATA_FILE)))
+        if (!(FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             return (false);
         }
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
         if (!hFileHandle)
@@ -1156,21 +1157,21 @@ public class History
         }
 
         // make sure file is more than 0 length
-        if (FileGetSize(hFileHandle) == 0)
+        if (FileManager.FileGetSize(hFileHandle) == 0)
         {
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (false);
         }
 
         // is the file long enough?
-        if ((FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
+        if ((FileManager.FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
         {
             // nope
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (false);
         }
 
-        FileSeek(hFileHandle, (uiPage - 1) * NUM_RECORDS_PER_PAGE * (SIZE_OF_HISTORY_FILE_RECORD), FILE_SEEK_FROM_START);
+        FileManager.FileSeek(hFileHandle, (uiPage - 1) * NUM_RECORDS_PER_PAGE * (SIZE_OF_HISTORY_FILE_RECORD), FILE_SEEK_FROM_START);
 
         uiByteCount = (uiPage - 1) * NUM_RECORDS_PER_PAGE * (SIZE_OF_HISTORY_FILE_RECORD);
         // file exists, read in data, continue until end of page
@@ -1178,13 +1179,13 @@ public class History
         {
 
             // read in other data
-            FileRead(hFileHandle, out ubCode, sizeof(int), iBytesRead);
-            FileRead(hFileHandle, out ubSecondCode, sizeof(int), iBytesRead);
-            FileRead(hFileHandle, out uiDate, sizeof(int), iBytesRead);
-            FileRead(hFileHandle, out sSectorX, sizeof(int), iBytesRead);
-            FileRead(hFileHandle, out sSectorY, sizeof(int), iBytesRead);
-            FileRead(hFileHandle, out bSectorZ, sizeof(int), iBytesRead);
-            FileRead(hFileHandle, out ubColor, sizeof(int), iBytesRead);
+            FileManager.FileRead(hFileHandle, ref ubCode, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ref ubSecondCode, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ref uiDate, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ref sSectorX, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ref sSectorY, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ref bSectorZ, sizeof(int), out iBytesRead);
+            FileManager.FileRead(hFileHandle, ref ubColor, sizeof(int), out iBytesRead);
 
             // add transaction
             ProcessAndEnterAHistoryRecord((HISTORY)ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
@@ -1193,7 +1194,7 @@ public class History
             uiByteCount += SIZE_OF_HISTORY_FILE_RECORD;
 
             // we've overextended our welcome, and bypassed end of file, get out
-            if (uiByteCount >= FileGetSize(hFileHandle))
+            if (uiByteCount >= FileManager.FileGetSize(hFileHandle))
             {
                 // not ok to continue
                 fOkToContinue = false;
@@ -1203,7 +1204,7 @@ public class History
         }
 
         // close file 
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
 
         // check to see if we in fact have a list to display
         if (pHistoryListHead == null)
@@ -1237,13 +1238,13 @@ public class History
         }
 
 
-        if (!(FileExists(HISTORY_DATA_FILE)))
+        if (!(FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             return (false);
         }
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_WRITE), false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_WRITE), false);
 
         // failed to get file, return
         if (!hFileHandle)
@@ -1252,17 +1253,17 @@ public class History
         }
 
         // make sure file is more than 0 length
-        if (FileGetSize(hFileHandle) == 0)
+        if (FileManager.FileGetSize(hFileHandle) == 0)
         {
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (false);
         }
 
         // is the file long enough?
-        if ((FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
+        if ((FileManager.FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
         {
             // nope
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (false);
         }
 
@@ -1273,20 +1274,22 @@ public class History
             return (false);
         }
 
-        FileSeek(hFileHandle, sizeof(int) + (uiPage - 1) * NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD, FILE_SEEK_FROM_START);
+        FileManager.FileSeek(hFileHandle, sizeof(int) + (uiPage - 1) * NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD, FILE_SEEK_FROM_START);
 
         uiByteCount = /*sizeof( int )+ */(uiPage - 1) * NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD;
         // file exists, read in data, continue until end of page
+
+        var doncare = 0;
         while ((iCount < NUM_RECORDS_PER_PAGE) && (fOkToContinue))
         {
 
-            FileWrite(hFileHandle, (pList.ubCode), sizeof(int), null);
-            FileWrite(hFileHandle, (pList.ubSecondCode), sizeof(int), null);
-            FileWrite(hFileHandle, (pList.uiDate), sizeof(int), null);
-            FileWrite(hFileHandle, (pList.sSectorX), sizeof(int), null);
-            FileWrite(hFileHandle, (pList.sSectorY), sizeof(int), null);
-            FileWrite(hFileHandle, (pList.bSectorZ), sizeof(int), null);
-            FileWrite(hFileHandle, (pList.ubColor), sizeof(int), null);
+            FileManager.FileWrite(hFileHandle, (pList.ubCode), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pList.ubSecondCode), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pList.uiDate), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pList.sSectorX), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pList.sSectorY), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pList.bSectorZ), sizeof(int), out doncare);
+            FileManager.FileWrite(hFileHandle, (pList.ubColor), sizeof(int), out doncare);
 
             pList = pList.Next;
 
@@ -1301,7 +1304,7 @@ public class History
         }
 
         // close file 
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
 
         ClearHistoryList();
 
@@ -1361,13 +1364,13 @@ public class History
         int iBytesRead = 0;
 
         // no file, return
-        if (!(FileExists(HISTORY_DATA_FILE)))
+        if (!(FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             return;
         }
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
         if (hFileHandle.Position < 0)
@@ -1377,16 +1380,16 @@ public class History
         }
 
         // make sure file is more than 0 length
-        if (FileGetSize(hFileHandle) == 0)
+        if (FileManager.FileGetSize(hFileHandle) == 0)
         {
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             guiLastPageInHistoryRecordsList = 1;
             return;
         }
 
 
         // done with file, close it
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
 
         guiLastPageInHistoryRecordsList = ReadInLastElementOfHistoryListAndReturnIdNumber() / NUM_RECORDS_PER_PAGE;
 
@@ -1403,13 +1406,13 @@ public class History
         int iFileSize = 0;
 
         // no file, return
-        if (!(FileExists(HISTORY_DATA_FILE)))
+        if (!(FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             return 0;
         }
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
         if (!hFileHandle)
@@ -1418,9 +1421,9 @@ public class History
         }
 
         // make sure file is more than balance size + length of 1 record - 1 byte
-        if (FileGetSize(hFileHandle) < SIZE_OF_HISTORY_FILE_RECORD)
+        if (FileManager.FileGetSize(hFileHandle) < SIZE_OF_HISTORY_FILE_RECORD)
         {
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return 0;
         }
 
@@ -1428,7 +1431,7 @@ public class History
         iFileSize = FileGetSize(hFileHandle);
 
         // done with file, close it
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
 
         // file size  / sizeof record in bytes is id
         return ((iFileSize) / (SIZE_OF_HISTORY_FILE_RECORD));
@@ -1445,7 +1448,7 @@ public class History
 
 
         // open file
-        hFileHandle = FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
 
         // if no file exits, do nothing
         if (!hFileHandle)
@@ -1454,25 +1457,26 @@ public class History
         }
 
         // go to the end
-        if (FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
+        if (FileManager.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
         {
             // error
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (false);
         }
 
         // now write date and amount, and code
-        FileWrite(hFileHandle, (pHistoryList.ubCode), sizeof(int), null);
-        FileWrite(hFileHandle, (pHistoryList.ubSecondCode), sizeof(int), null);
-        FileWrite(hFileHandle, (pHistoryList.uiDate), sizeof(int), null);
-        FileWrite(hFileHandle, (pHistoryList.sSectorX), sizeof(int), null);
-        FileWrite(hFileHandle, (pHistoryList.sSectorY), sizeof(int), null);
-        FileWrite(hFileHandle, (pHistoryList.bSectorZ), sizeof(int), null);
-        FileWrite(hFileHandle, (pHistoryList.ubColor), sizeof(int), null);
+        var doncare = 0;
+        FileManager.FileWrite(hFileHandle, (pHistoryList.ubCode), sizeof(int), out doncare);
+        FileManager.FileWrite(hFileHandle, (pHistoryList.ubSecondCode), sizeof(int), out doncare);
+        FileManager.FileWrite(hFileHandle, (pHistoryList.uiDate), sizeof(int), out doncare);
+        FileManager.FileWrite(hFileHandle, (pHistoryList.sSectorX), sizeof(int), out doncare);
+        FileManager.FileWrite(hFileHandle, (pHistoryList.sSectorY), sizeof(int), out doncare);
+        FileManager.FileWrite(hFileHandle, (pHistoryList.bSectorZ), sizeof(int), out doncare);
+        FileManager.FileWrite(hFileHandle, (pHistoryList.ubColor), sizeof(int), out doncare);
 
 
         // close file
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
 
         return (true);
     }
@@ -1591,13 +1595,13 @@ public class History
         int uiSizeOfRecordsOnEachPage = 0;
         int iNumberOfHistoryPages = 0;
 
-        if (!(FileExists(Globals.HISTORY_DATA_FILE)))
+        if (!(FileManager.FileExists(Globals.HISTORY_DATA_FILE)))
         {
             return (0);
         }
 
         // open file
-        hFileHandle = FileOpen(Globals.HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+        hFileHandle = FileManager.FileOpen(Globals.HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
         if (!hFileHandle)
@@ -1606,18 +1610,18 @@ public class History
         }
 
         // make sure file is more than 0 length
-        if (FileGetSize(hFileHandle) == 0)
+        if (FileManager.FileGetSize(hFileHandle) == 0)
         {
-            FileClose(hFileHandle);
+            FileManager.FileClose(hFileHandle);
             return (0);
         }
 
-        uiFileSize = FileGetSize(hFileHandle) - 1;
+        uiFileSize = FileManager.FileGetSize(hFileHandle) - 1;
         uiSizeOfRecordsOnEachPage = (Globals.NUM_RECORDS_PER_PAGE * (sizeof(int) + sizeof(int) + 3 * sizeof(int) + sizeof(int) + sizeof(int)));
 
         iNumberOfHistoryPages = (int)(uiFileSize / uiSizeOfRecordsOnEachPage);
 
-        FileClose(hFileHandle);
+        FileManager.FileClose(hFileHandle);
 
         return (iNumberOfHistoryPages);
     }

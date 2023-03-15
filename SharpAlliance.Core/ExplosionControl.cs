@@ -316,7 +316,7 @@ public class ExplosionControl
                 TileDefine.GetTileIndexFromTypeSubIndex(uiFenceType, (int)(bFenceDestructionPartner), out usTileIndex);
 
                 //Set a flag indicating that the following changes are to go the the maps, temp file
-                ApplyMapChangesToMapTempFile(true);
+                SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                 // Remove it!
                 WorldManager.RemoveStructFromLevelNode(pFenceBaseStructure.sGridNo, pFenceNode);
@@ -324,7 +324,7 @@ public class ExplosionControl
                 // Add it!
                 AddStructToHead(pFenceBaseStructure.sGridNo, (int)(usTileIndex));
 
-                ApplyMapChangesToMapTempFile(false);
+                SaveLoadMap.ApplyMapChangesToMapTempFile(false);
             }
         }
     }
@@ -387,7 +387,7 @@ public class ExplosionControl
         else if (!(pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.PERSON)))
         {
             // Damage structure!
-            if ((bDamageReturnVal = DamageStructure(pCurrent, (int)sWoundAmt, STRUCTURE_DAMAGE_EXPLOSION, sGridNo, sX, sY, NOBODY)) != 0)
+            if ((bDamageReturnVal = StructureInternals.DamageStructure(pCurrent, (int)sWoundAmt, STRUCTURE_DAMAGE_EXPLOSION, sGridNo, sX, sY, NOBODY)) != 0)
             {
                 fContinue = 0;
 
@@ -480,11 +480,11 @@ public class ExplosionControl
                                 if (!TypeRangeExistsInObjectLayer(sStructGridNo, TileTypeDefines.FIRSTEXPLDEBRIS, TileTypeDefines.SECONDEXPLDEBRIS, out usObjectIndex))
                                 {
                                     //Set a flag indicating that the following changes are to go the the maps, temp file
-                                    ApplyMapChangesToMapTempFile(true);
+                                    SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                                     AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Random.Next(3)));
 
-                                    ApplyMapChangesToMapTempFile(false);
+                                    SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                 }
                             }
                         }
@@ -501,11 +501,11 @@ public class ExplosionControl
                                     if (!TypeRangeExistsInObjectLayer(sStructGridNo, TileTypeDefines.FIRSTEXPLDEBRIS, TileTypeDefines.SECONDEXPLDEBRIS, out usObjectIndex))
                                     {
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
-                                        ApplyMapChangesToMapTempFile(true);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                                         AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Random.Next(3)));
 
-                                        ApplyMapChangesToMapTempFile(false);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                     }
                                     break;
 
@@ -516,11 +516,11 @@ public class ExplosionControl
                                     if (!TypeRangeExistsInObjectLayer(sStructGridNo, TileTypeDefines.FIRSTEXPLDEBRIS, TileTypeDefines.SECONDEXPLDEBRIS, out usObjectIndex))
                                     {
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
-                                        ApplyMapChangesToMapTempFile(true);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                                         AddObjectToHead(sStructGridNo, (int)(usTileIndex + Globals.Random.Next(3)));
 
-                                        ApplyMapChangesToMapTempFile(false);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                     }
                                     break;
                             }
@@ -574,7 +574,7 @@ public class ExplosionControl
                                 // Move WEST
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.WEST));
 
-                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, out pWallStruct);
+                                pNewNode = StructureWrap.GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, pWallStruct);
 
                                 if (pNewNode != null)
                                 {
@@ -593,12 +593,12 @@ public class ExplosionControl
                                         TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps temp file
-                                        ApplyMapChangesToMapTempFile(true);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                                         WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
-                                        AddWallToStructLayer(sNewGridNo, sNewIndex, true);
+                                        WorldManager.AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
-                                        ApplyMapChangesToMapTempFile(false);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(false);
 
                                     }
                                 }
@@ -606,7 +606,7 @@ public class ExplosionControl
                                 // Move in EAST
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.EAST));
 
-                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, out pWallStruct);
+                                pNewNode = StructureWrap.GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, pWallStruct);
 
                                 if (pNewNode != null)
                                 {
@@ -625,12 +625,12 @@ public class ExplosionControl
                                         TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
-                                        ApplyMapChangesToMapTempFile(true);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                                         WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
-                                        AddWallToStructLayer(sNewGridNo, sNewIndex, true);
+                                        WorldManager.AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
-                                        ApplyMapChangesToMapTempFile(false);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                     }
                                 }
 
@@ -653,9 +653,9 @@ public class ExplosionControl
                                         pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
                                         if (pAttachedNode is not null)
                                         {
-                                            ApplyMapChangesToMapTempFile(true);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(true);
                                             WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
-                                            ApplyMapChangesToMapTempFile(false);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
                                         {
@@ -683,9 +683,9 @@ public class ExplosionControl
                                         pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
                                         if (pAttachedNode is not null)
                                         {
-                                            ApplyMapChangesToMapTempFile(true);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(true);
                                             WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
-                                            ApplyMapChangesToMapTempFile(false);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
                                         {
@@ -709,7 +709,7 @@ public class ExplosionControl
                                 // Move in NORTH
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.NORTH));
 
-                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, out pWallStruct);
+                                pNewNode = StructureWrap.GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, pWallStruct);
 
                                 if (pNewNode != null)
                                 {
@@ -728,19 +728,19 @@ public class ExplosionControl
                                         TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
-                                        ApplyMapChangesToMapTempFile(true);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                                         WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
-                                        AddWallToStructLayer(sNewGridNo, sNewIndex, true);
+                                        WorldManager.AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
-                                        ApplyMapChangesToMapTempFile(false);
+                                        SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                     }
                                 }
 
                                 // Move in SOUTH
                                 sNewGridNo = NewGridNo(pBase.sGridNo, DirectionInc(WorldDirections.SOUTH));
 
-                                pNewNode = GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, out pWallStruct);
+                                pNewNode = StructureWrap.GetWallLevelNodeAndStructOfSameOrientationAtGridno(sNewGridNo, pCurrent.ubWallOrientation, pWallStruct);
 
                                 if (pNewNode != null)
                                 {
@@ -759,12 +759,12 @@ public class ExplosionControl
                                         TileDefine.GetTileIndexFromTypeSubIndex(gTileDatabase[pNewNode.usIndex].fType, sSubIndex, out sNewIndex);
 
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
-                                        ApplyMapChangesToMapTempFile(true);
+                                        //ApplyMapChangesToMapTempFile(true);
 
                                         WorldManager.RemoveStructFromLevelNode(sNewGridNo, pNewNode);
-                                        AddWallToStructLayer(sNewGridNo, sNewIndex, true);
+                                        WorldManager.AddWallToStructLayer(sNewGridNo, sNewIndex, true);
 
-                                        ApplyMapChangesToMapTempFile(false);
+                                        //ApplyMapChangesToMapTempFile(false);
                                     }
                                 }
 
@@ -779,9 +779,9 @@ public class ExplosionControl
                                         pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
                                         if (pAttachedNode is not null)
                                         {
-                                            ApplyMapChangesToMapTempFile(true);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(true);
                                             WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
-                                            ApplyMapChangesToMapTempFile(false);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
                                         {
@@ -809,9 +809,9 @@ public class ExplosionControl
                                         pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
                                         if (pAttachedNode is not null)
                                         {
-                                            ApplyMapChangesToMapTempFile(true);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(true);
                                             WorldManager.RemoveStructFromLevelNode(pAttachedBase.sGridNo, pAttachedNode);
-                                            ApplyMapChangesToMapTempFile(false);
+                                            SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                         }
                                         else
                                         {
@@ -862,11 +862,11 @@ public class ExplosionControl
                     // Get tile type
                     TileDefine.GetTileType(pNode.usIndex, out uiTileType);
                     // Check if we are a fountain!
-                    if (stricmp(gTilesets[giCurrentTilesetID].TileSurfaceFilenames[uiTileType], "fount1.sti") == 0)
+                    if (gTilesets[giCurrentTilesetID].TileSurfaceFilenames[uiTileType].Equals("fount1.sti", StringComparison.OrdinalIgnoreCase))
                     {
                         // Yes we are!
                         // Remove water....
-                        ApplyMapChangesToMapTempFile(true);
+                        SaveLoadMap.ApplyMapChangesToMapTempFile(true);
                         TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 1, out sNewIndex);
                         WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
                         WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
@@ -876,7 +876,7 @@ public class ExplosionControl
                         TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, 3, out sNewIndex);
                         WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
                         WorldManager.RemoveStruct(sBaseGridNo, sNewIndex);
-                        ApplyMapChangesToMapTempFile(false);
+                        SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                     }
 
 
@@ -890,9 +890,9 @@ public class ExplosionControl
 
                     // Remove!
                     //Set a flag indicating that the following changes are to go the the maps, temp file
-                    ApplyMapChangesToMapTempFile(true);
+                    SaveLoadMap.ApplyMapChangesToMapTempFile(true);
                     WorldManager.RemoveStructFromLevelNode(pBase.sGridNo, pNode);
-                    ApplyMapChangesToMapTempFile(false);
+                    SaveLoadMap.ApplyMapChangesToMapTempFile(false);
 
                     // OK, if we are to swap structures, do it now...
                     if (fContinue == 2)
@@ -901,11 +901,11 @@ public class ExplosionControl
                         // Get new index for new grpahic....
                         TileDefine.GetTileIndexFromTypeSubIndex(uiTileType, bDestructionPartner, out usTileIndex);
 
-                        ApplyMapChangesToMapTempFile(true);
+                        SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                         AddStructToHead(sBaseGridNo, usTileIndex);
 
-                        ApplyMapChangesToMapTempFile(false);
+                        SaveLoadMap.ApplyMapChangesToMapTempFile(false);
 
 
                     }
@@ -915,7 +915,7 @@ public class ExplosionControl
                     gTacticalStatus.uiFlags |= TacticalEngineStatus.NOHIDE_REDUNDENCY;
                     // FOR THE NEXT RENDER LOOP, RE-EVALUATE REDUNDENT TILES
                     InvalidateWorldRedundency();
-                    SetRenderFlags(RENDER_FLAG_FULL);
+                    RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                     // Movement costs!
                     (pfRecompileMovementCosts) = true;
 
@@ -948,7 +948,7 @@ public class ExplosionControl
         STRUCTURE? pCurrent, pNextCurrent, pStructure;
         STRUCTURE? pBaseStructure;
         STRUCTURE_ON sDesiredLevel;
-        DB_STRUCTURE_TILE? ppTile;
+        DB_STRUCTURE_TILE[] ppTile;
         int ubLoop, ubLoop2;
         int sNewGridNo, sNewGridNo2, sBaseGridNo;
         bool fToBreak = false;
@@ -974,7 +974,7 @@ public class ExplosionControl
                 sBaseGridNo = pBaseStructure.sGridNo;
                 ubNumberOfTiles = pBaseStructure.pDBStructureRef.pDBStructure.ubNumberOfTiles;
                 fMultiStructure = ((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MULTI)));
-                ppTile = new();//MemAlloc(sizeof(DB_STRUCTURE_TILE) * ubNumberOfTiles);
+                ppTile = new DB_STRUCTURE_TILE[ubNumberOfTiles];
                 //memcpy(ppTile, pBaseStructure.pDBStructureRef.ppTile, sizeof(DB_STRUCTURE_TILE) * ubNumberOfTiles);
 
                 if (bMultiStructSpecialFlag == -1)
@@ -1441,7 +1441,7 @@ public class ExplosionControl
                 //	GetTileIndexFromTypeSubIndex( SECONDEXPLDEBRIS, (int)( Globals.Random.Next( 10 ) + 1 ), &usTileIndex );
                 //	AddObjectToHead( sGridNo, usTileIndex );
 
-                //	SetRenderFlags(RENDER_FLAG_FULL);
+                //	RenderWorld.SetRenderFlags(RenderingFlags.FULL);
 
                 //}
             }
@@ -1690,6 +1690,7 @@ public class ExplosionControl
 
     void GetRayStopInfo(int uiNewSpot, WorldDirections ubDir, int bLevel, bool fSmokeEffect, int uiCurRange, out int? piMaxRange, out int pubKeepGoing)
     {
+        piMaxRange = -1;
         int bStructHeight;
         int ubMovementCost;
         BLOCKING Blocking, BlockingTemp;
@@ -1702,7 +1703,7 @@ public class ExplosionControl
 
         ubMovementCost = gubWorldMovementCosts[uiNewSpot, (int)ubDir, bLevel];
 
-        if (IS_TRAVELCOST_DOOR(ubMovementCost))
+        if (TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost))
         {
             ubMovementCost = DoorTravelCost(null, uiNewSpot, ubMovementCost, false, null);
             // If we have hit a wall, STOP HERE
@@ -1908,8 +1909,6 @@ public class ExplosionControl
             }
         }
     }
-
-
 
     void SpreadEffect(int sGridNo, int ubRadius, Items usItem, int ubOwner, int fSubsequent, int bLevel, int iSmokeEffectID)
     {
@@ -2500,14 +2499,14 @@ public class ExplosionControl
                         }
                     }
 
-                    if (!(gTacticalStatus.uiFlags & INCOMBAT))
+                    if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         EnterCombatMode(CIV_TEAM);
                     }
                 }
 
                 // now zap this object so it won't activate again
-                pObj.fFlags &= (~OBJECT_DISABLED_BOMB);
+                pObj.fFlags &= (~OBJECT.DISABLED_BOMB);
                 break;
             case ACTION_ITEM.SEX:
                 // JA2Gold: Disable brothel sex
@@ -2987,10 +2986,10 @@ public class ExplosionControl
 
 
         //Write the number of explosion queues
-        FileWrite(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            FileClose(hFile);
+            FileManager.FileClose(hFile);
             return (false);
         }
 
@@ -2998,10 +2997,10 @@ public class ExplosionControl
         //loop through and add all the explosions
         for (uiCnt = 0; uiCnt < MAX_BOMB_QUEUE; uiCnt++)
         {
-            FileWrite(hFile, gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesWritten);
+            FileManager.FileWrite(hFile, gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(ExplosionQueueElement))
             {
-                FileClose(hFile);
+                FileManager.FileClose(hFile);
                 return (false);
             }
         }
@@ -3022,10 +3021,10 @@ public class ExplosionControl
         }
 
         //Save the number of explosions
-        FileWrite(hFile, out uiExplosionCount, sizeof(int), out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, uiExplosionCount, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            FileClose(hFile);
+            FileManager.FileClose(hFile);
             return (false);
         }
 
@@ -3036,10 +3035,10 @@ public class ExplosionControl
         {
             if (gExplosionData[uiCnt].fAllocated)
             {
-                FileWrite(hFile, gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesWritten);
+                FileManager.FileWrite(hFile, gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesWritten);
                 if (uiNumBytesWritten != sizeof(EXPLOSIONTYPE))
                 {
-                    FileClose(hFile);
+                    FileManager.FileClose(hFile);
                     return (false);
                 }
             }
@@ -3064,7 +3063,7 @@ public class ExplosionControl
         //memset(gExplosionQueue, 0, sizeof(ExplosionQueueElement) * MAX_BOMB_QUEUE);
 
         //Read the number of explosions queue's
-        FileRead(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
+        FileManager.FileRead(hFile, ref gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3074,7 +3073,7 @@ public class ExplosionControl
         //loop through read all the active explosions fro the file
         for (uiCnt = 0; uiCnt < MAX_BOMB_QUEUE; uiCnt++)
         {
-            FileRead(hFile, &gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesRead);
+            FileManager.FileRead(hFile, ref gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(ExplosionQueueElement))
             {
                 return (false);
@@ -3088,7 +3087,7 @@ public class ExplosionControl
         //
 
         //Load the number of explosions
-        FileRead(hFile, out guiNumExplosions, sizeof(int), out uiNumBytesRead);
+        FileManager.FileRead(hFile, ref guiNumExplosions, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3098,7 +3097,7 @@ public class ExplosionControl
         //loop through and load all the active explosions
         for (uiCnt = 0; uiCnt < guiNumExplosions; uiCnt++)
         {
-            FileRead(hFile, &gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesRead);
+            FileManager.FileRead(hFile, ref gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(EXPLOSIONTYPE))
             {
                 return (false);
@@ -3106,8 +3105,9 @@ public class ExplosionControl
             gExplosionData[uiCnt].iID = uiCnt;
             gExplosionData[uiCnt].iLightID = -1;
 
-            GenerateExplosionFromExplosionPointer(&gExplosionData[uiCnt]);
+            GenerateExplosionFromExplosionPointer(gExplosionData[uiCnt]);
         }
+
         return (true);
     }
 
@@ -3213,12 +3213,12 @@ public class ExplosionControl
                 {
                     // Update graphic.....
                     // Remove old!
-                    ApplyMapChangesToMapTempFile(true);
+                    SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
                     WorldManager.RemoveStruct(pSamGridNoAList[cnt], usDamagedGraphic);
                     AddStructToHead(pSamGridNoAList[cnt], usGoodGraphic);
 
-                    ApplyMapChangesToMapTempFile(false);
+                    SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                 }
                 else
                 {

@@ -99,7 +99,7 @@ namespace SharpAlliance.Core.SubSystems
             }
 
             // Re-init overhead...
-            this.overhead.InitOverhead();
+            Overhead.InitOverhead();
 
             //Reset the email list
             Emails.ShutDownEmailList();

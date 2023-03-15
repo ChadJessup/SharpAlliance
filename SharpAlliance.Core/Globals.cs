@@ -362,8 +362,6 @@ public partial class Globals
     public const int OKLIFE = 15;
     public const int CONSCIOUSNESS = 10;
 
-    public const NPCID FIRST_RPC = (NPCID)57;
-
     public static int[] guiPlottedPath = new int[256];
     public static int[] guiPathingData = new int[256];
     public static int giPathDataSize;
@@ -630,9 +628,6 @@ public partial class Globals
     public static POSITIONSND[] gPositionSndData = new POSITIONSND[NUM_POSITION_SOUND_EFFECT_SLOTS];
     public static int guiNumPositionSnds = 0;
     public static bool gfPositionSoundsActive = false;
-
-    public static AnimationSurfaceType[] gAnimSurfaceDatabase = new AnimationSurfaceType[(int)AnimationSurfaceTypes.NUMANIMATIONSURFACETYPES];
-    public static AnimationStructureType[,] gAnimStructureDatabase = new AnimationStructureType[(int)SoldierBodyTypes.TOTALBODYTYPES, (int)StructData.NUM_STRUCT_IDS];
 
     public static MAPCREATE_STRUCT gMapInformation;
 
@@ -1987,7 +1982,7 @@ public partial class Globals
     public const InventorySlot NO_SLOT = (InventorySlot)(-1);
 
     // MACRO FOR DEFINING OF ITEM IS VISIBLE
-    public static bool ITEMPOOL_VISIBLE(ITEM_POOL pItemPool) => ((pItemPool.bVisible >= 1)
+    public static bool ITEMPOOL_VISIBLE(ITEM_POOL pItemPool) => ((pItemPool.bVisible >= (ItemVisibility)1)
         || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)));
 
     // NB brothel rooms 88-90 removed because they are the antechamber

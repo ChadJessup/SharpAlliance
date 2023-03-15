@@ -408,7 +408,7 @@ public class TileAnimations
 
                         if (GridNoOnScreen(pAniNode.sGridNo))
                         {
-                            SetRenderFlags(RENDER_FLAG_FULL);
+                            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                         }
 
                     }
@@ -594,7 +594,7 @@ public class TileAnimations
                             pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.DYNAMIC);
 
                             // Dangerous here, since we may not even be on the screen...
-                            SetRenderFlags(RENDER_FLAG_FULL);
+                            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
 
                             continue;
                         }
@@ -679,7 +679,7 @@ public class TileAnimations
                             //pNode.pLevelNode.uiFlags |= LEVELNODE_UPDATESAVEBUFFERONCE;
 
                             // Dangerous here, since we may not even be on the screen...
-                            SetRenderFlags(RENDER_FLAG_FULL);
+                            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
 
                         }
 
@@ -701,7 +701,7 @@ public class TileAnimations
                             {
                                 pNode.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.DYNAMIC);
                                 pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.LASTDYNAMIC);
-                                SetRenderFlags(RENDER_FLAG_FULL);
+                                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                             }
                         }
                     }

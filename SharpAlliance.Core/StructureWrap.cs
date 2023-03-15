@@ -112,7 +112,7 @@ public class StructureWrap
     }
 
 
-    LEVELNODE? GetWallLevelNodeAndStructOfSameOrientationAtGridno(int sGridNo, WallOrientation ubOrientation, STRUCTURE? ppStructure)
+    public static LEVELNODE? GetWallLevelNodeAndStructOfSameOrientationAtGridno(int sGridNo, WallOrientation ubOrientation, STRUCTURE? ppStructure)
     {
         LEVELNODE? pNode = null;
         STRUCTURE? pStructure, pBaseStructure;
@@ -412,7 +412,7 @@ public class StructureWrap
             if (pStructure)
             {
                 RecompileLocalMovementCosts(sGridNo);
-                SetRenderFlags(RENDER_FLAG_FULL);
+                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 return (true);
             }
         }
@@ -559,7 +559,7 @@ public class StructureWrap
             if (pNewStructure != null)
             {
                 RecompileLocalMovementCosts(sGridNo);
-                SetRenderFlags(RENDER_FLAG_FULL);
+                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             }
         }
         // else leave it as is!

@@ -249,7 +249,7 @@ public class SoldierTile
                 {
                     gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENTFLAGS.REVEALED;
                     gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENTFLAGS.REDRAW;
-                    SetRenderFlags(RENDER_FLAG_MARKED);
+                    RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
                     RecompileLocalMovementCosts((int)sGridNo);
                 }
 
@@ -342,7 +342,7 @@ public class SoldierTile
             else
             {
                 // Mark this tile as reserverd ( until we get there! )
-                if (!((gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT)))
+                if (!((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))))
                 {
                     MarkMovementReserved(pSoldier, sGridNo);
                 }
@@ -388,7 +388,7 @@ public class SoldierTile
         int sNewGridNo, sCheckGridNo;
         int ubDirection, bCauseDirection;
         int ubPerson;
-        int fFlags = 0;
+        PATH fFlags = 0;
 
 
         if (pSoldier.fDelayedMovement > 0)
@@ -428,7 +428,7 @@ public class SoldierTile
                     }
 
                     // Default to pathing through people
-                    fFlags = PATH_THROUGH_PEOPLE;
+                    fFlags = PATH.THROUGH_PEOPLE;
 
                     // Now, if we are in the state where we are desparently trying to get out...
                     // Use other flag
@@ -503,12 +503,12 @@ public class SoldierTile
                                 gfPlotPathToExitGrid = true;
                             }
 
-                            sCost = (int)FindBestPath(pSoldier, sCheckGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, NO_COPYROUTE, PATH_IGNORE_PERSON_AT_DEST);
+                            sCost = (int)FindBestPath(pSoldier, sCheckGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, NO_COPYROUTE, PATH.IGNORE_PERSON_AT_DEST);
 
                             gfPlotPathToExitGrid = false;
 
                             // Is the next tile in this new path blocked too?
-                            sNewGridNo = NewGridNo((int)pSoldier.sGridNo, DirectionInc((int)guiPathingData[0]));
+                            sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(guiPathingData[0]));
 
                             bPathBlocked = TileIsClear(pSoldier, (int)guiPathingData[0], sNewGridNo, pSoldier.bLevel);
 
@@ -578,9 +578,9 @@ public class SoldierTile
                             // We must calculate the path here so that we can give it the "through people" parameter
                             if (gTacticalStatus.fAutoBandageMode && pSoldier.sAbsoluteFinalDestination == NOWHERE)
                             {
-                                FindBestPath(pSoldier, pSoldier.sFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH_THROUGH_PEOPLE);
+                                FindBestPath(pSoldier, pSoldier.sFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH.THROUGH_PEOPLE);
                             }
-                            else if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !FindBestPath(pSoldier, pSoldier.sAbsoluteFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH_THROUGH_PEOPLE))
+                            else if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !FindBestPath(pSoldier, pSoldier.sAbsoluteFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH.THROUGH_PEOPLE))
                             {
                                 // check to see if we're there now!
                                 if (pSoldier.sGridNo == pSoldier.sAbsoluteFinalDestination)
@@ -708,12 +708,12 @@ public class SoldierTile
         {
             if (EnoughPoints(pSoldier2, AP.EXCHANGE_PLACES, 0, fShow))
             {
-                if ((gAnimControl[pSoldier2.usAnimState].uiFlags & ANIM_MOVING))
+                if ((gAnimControl[pSoldier2.usAnimState].uiFlags.HasFlag(ANIM.MOVING)))
                 {
                     return (false);
                 }
 
-                if ((gAnimControl[pSoldier1.usAnimState].uiFlags & ANIM_MOVING) && !(gTacticalStatus.uiFlags & INCOMBAT))
+                if ((gAnimControl[pSoldier1.usAnimState].uiFlags.HasFlag(ANIM.MOVING)) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
                     return (false);
                 }
@@ -724,15 +724,15 @@ public class SoldierTile
                 }
 
                 // hehe - don't allow animals to exchange places
-                if (pSoldier2.uiStatusFlags & (SOLDIER.ANIMAL))
+                if (pSoldier2.uiStatusFlags.HasFlag(SOLDIER.ANIMAL))
                 {
                     return (false);
                 }
 
                 // must NOT be hostile, must NOT have stationary orders OR militia team, must be >= OKLIFE
                 if (pSoldier2.bNeutral > 0 && pSoldier2.bLife >= OKLIFE &&
-                           pSoldier2.ubCivilianGroup != HICKS_CIV_GROUP &&
-                         ((pSoldier2.bOrders != STATIONARY || pSoldier2.bTeam == MILITIA_TEAM) ||
+                           pSoldier2.ubCivilianGroup != CIV_GROUP.HICKS_CIV_GROUP &&
+                         ((pSoldier2.bOrders != Orders.STATIONARY || pSoldier2.bTeam == MILITIA_TEAM) ||
                          (pSoldier2.sAbsoluteFinalDestination != NOWHERE && pSoldier2.sAbsoluteFinalDestination != pSoldier2.sGridNo)))
                 {
                     return (true);

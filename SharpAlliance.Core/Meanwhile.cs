@@ -551,24 +551,24 @@ public class Meanwhile
             case Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE:
                 if (gGameOptions.ubDifficultyLevel == DifficultyLevel.Hard)
                 { //Wake up the queen earlier to punish the good players!
-                    ExecuteStrategicAIAction(STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
+                    ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
                 }
-                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION_SEND_SOLDIERS_TO_BATTLE_LOCATION, 0);
+                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.SEND_SOLDIERS_TO_BATTLE_LOCATION, 0);
                 break;
             case Meanwhiles.CAMBRIA_LIBERATED:
             case Meanwhiles.ALMA_LIBERATED:
             case Meanwhiles.GRUMM_LIBERATED:
             case Meanwhiles.CHITZENA_LIBERATED:
             case Meanwhiles.BALIME_LIBERATED:
-                ExecuteStrategicAIAction(STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
+                ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
                 break;
             case Meanwhiles.DRASSEN_LIBERATED:
-                ExecuteStrategicAIAction(STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
-                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION_SEND_SOLDIERS_TO_DRASSEN, 0);
+                ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
+                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.SEND_SOLDIERS_TO_DRASSEN, 0);
                 break;
             case Meanwhiles.CREATURES:
                 // add Rat
-                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION_ADD_RAT, 0);
+                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.ADD_RAT, 0);
                 break;
             case Meanwhiles.AWOL_SCIENTIST:
                 {
@@ -611,13 +611,13 @@ public class Meanwhile
                 }
                 break;
             case Meanwhiles.NW_SAM:
-                ExecuteStrategicAIAction(NPC_ACTION_SEND_TROOPS_TO_SAM, SAM_1_X, SAM_1_Y);
+                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_1_X, SAM.SAM_1_Y);
                 break;
             case Meanwhiles.NE_SAM:
-                ExecuteStrategicAIAction(NPC_ACTION_SEND_TROOPS_TO_SAM, SAM_2_X, SAM_2_Y);
+                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_2_X, SAM.SAM_2_Y);
                 break;
             case Meanwhiles.CENTRAL_SAM:
-                ExecuteStrategicAIAction(NPC_ACTION_SEND_TROOPS_TO_SAM, SAM_3_X, SAM_3_X);
+                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_3_X, SAM.SAM_3_X);
                 break;
 
             default:

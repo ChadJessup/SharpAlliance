@@ -996,7 +996,7 @@ public class Faces
 
         if (pFace.iVideoOverlay == -1 && !fExternBlit)
         {
-            if ((pSoldier.bActionPoints == 0) && !(gTacticalStatus.uiFlags & REALTIME) && (gTacticalStatus.uiFlags & INCOMBAT))
+            if ((pSoldier.bActionPoints == 0) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
                 SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT_LITESHADE);
             }
@@ -1268,7 +1268,7 @@ public class Faces
                 bNumRightIcons++;
             }
 
-            if (GetDrunkLevel(MercPtrs[pFace.ubSoldierID]) != SOBER)
+            if (DrugsAndAlcohol.GetDrunkLevel(MercPtrs[pFace.ubSoldierID]) != DrunkLevel.SOBER)
             {
                 DoRightIcon(uiRenderBuffer, pFace, sFaceX, sFaceY, bNumRightIcons, 8);
                 bNumRightIcons++;

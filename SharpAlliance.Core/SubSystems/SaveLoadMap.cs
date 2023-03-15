@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class SaveLoadMap
@@ -13,6 +15,11 @@ public class SaveLoadMap
     {
         this.logger = logger;
         this.overhead = overhead;
+    }
+
+    public static void ApplyMapChangesToMapTempFile(bool fAddToMap)
+    {
+        gfApplyChangesToTempFile = fAddToMap;
     }
 
     public static void AddRemoveObjectToMapTempFile(int uiMapIndex, TileDefines usIndex)

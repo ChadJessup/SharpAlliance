@@ -542,7 +542,7 @@ public class Messages
 
 
     // new tactical and mapscreen message system
-    private static void TacticalScreenMsg(FontColor usColor, int ubPriority, params string[] pStringA)
+    private static void TacticalScreenMsg(FontColor usColor, int ubPriority, params object[] pStringA)
     {
         // this function sets up the string into several single line structures
 
@@ -682,7 +682,7 @@ public class Messages
         return;
     }
 
-    private static void MapScreenMessage(FontColor usColor, int ubPriority, params string[] pStringA)
+    private static void MapScreenMessage(FontColor usColor, int ubPriority, params object[] pStringA)
     {
         // this function sets up the string into several single line structures
 

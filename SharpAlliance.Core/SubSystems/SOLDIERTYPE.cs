@@ -109,8 +109,8 @@ public class SOLDIERTYPE
     public TIMECOUNTER AICounter;
     public TIMECOUNTER FadeCounter;
 
-    public int ubSkillTrait1;
-    public int ubSkillTrait2;
+    public SkillTrait ubSkillTrait1;
+    public SkillTrait ubSkillTrait2;
     public uint uiAIDelay;
     public int bDexterity;        // dexterity (hand coord) value
     public int bWisdom;
@@ -197,7 +197,7 @@ public class SOLDIERTYPE
     int[] pGlowShades = new int[20]; // 
     public int pCurrentShade;
     public int bMedical;
-    public bool fBeginFade;
+    public int fBeginFade;
     public int ubFadeLevel;
     public int ubServiceCount;
     public int ubServicePartner;
@@ -229,7 +229,7 @@ public class SOLDIERTYPE
     public int sBlackList;
     public int bAimTime;
     public int bShownAimTime;
-    public int bPathStored;   // good for AI to reduct redundancy
+    public bool bPathStored;   // good for AI to reduct redundancy
     public int bHasKeys;          // allows AI controlled dudes to open locked doors
 
 
@@ -617,8 +617,8 @@ public class GROUP
     public SEC ubSectorIDOfLastReassignment; //used for debuggin strategic AI.  Records location of any reassignments.
     public int[] bPadding = new int[29];                      //***********************************************//
 
-    public readonly List<PLAYERGROUP> pPlayerList = new();       //list of players in the group
-    public readonly List<ENEMYGROUP> pEnemyGroup = new();        //a structure containing general enemy info
+    public List<PLAYERGROUP> pPlayerList = new();       //list of players in the group
+    public List<ENEMYGROUP> pEnemyGroup = new();        //a structure containing general enemy info
     public GROUP? next;						//next group
 }
 

@@ -597,7 +597,7 @@ public class AIMain
             if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ROOFS)
                 && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
-                SetRenderFlags(RENDER_FLAG_FULL);
+                RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
                 InvalidateWorldRedundency();
             }
@@ -608,11 +608,6 @@ public class AIMain
             pSoldier.fTurnInProgress = false;
             pSoldier.bMoved = 1;
             pSoldier.bBypassToGreen = 0;
-
-# if TESTAICONTROL
-            if (!(gTacticalStatus.uiFlags.HasFlag(DEMOMODE))
-                DebugAI(String("Ending control for %d", pSoldier.ubID));
-#endif
 
             // find the next AI guy
             ubID = RemoveFirstAIListEntry();
@@ -729,7 +724,7 @@ public class AIMain
                 if (pSoldier.bLevel != 0 && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
                     gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
-                    SetRenderFlags(RENDER_FLAG_FULL);
+                    RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                     InvalidateWorldRedundency();
                 }
 
@@ -2054,7 +2049,7 @@ public class AIMain
                     if ((pSoldier.sAbsoluteFinalDestination != NOWHERE || gTacticalStatus.fAutoBandageMode) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         // NPC system move, allow path through
-                        if (LegalNPCDestination(pSoldier, pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH_THROUGH_PEOPLE))
+                        if (Movement.LegalNPCDestination(pSoldier, pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE))
                         {
                             // optimization - Ian: prevent another path call in SetNewCourse()
                             pSoldier.bPathStored = 1;
@@ -2062,15 +2057,15 @@ public class AIMain
                     }
                     else
                     {
-                        if (LegalNPCDestination(pSoldier, pSoldier.usActionData, ENSURE_PATH, WATEROK, 0))
+                        if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, 0))
                         {
                             // optimization - Ian: prevent another path call in SetNewCourse()
-                            pSoldier.bPathStored = 1;
+                            pSoldier.bPathStored = true;
                         }
                     }
 
                     // if we STILL don't have a path
-                    if (pSoldier.bPathStored == 0)
+                    if (!pSoldier.bPathStored)
                     {
                         // Check if we were told to move by NPC stuff
                         if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -2087,10 +2082,10 @@ public class AIMain
                             else
                             {
                                 // This is important, so try taking a path through people (and bumping them aside)
-                                if (LegalNPCDestination(pSoldier, pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH_THROUGH_PEOPLE))
+                                if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE))
                                 {
                                     // optimization - Ian: prevent another path call in SetNewCourse()
-                                    pSoldier.bPathStored = 1;
+                                    pSoldier.bPathStored = true;
                                 }
                                 else
                                 {
@@ -2100,7 +2095,7 @@ public class AIMain
                                 }
                             }
 
-                            if (pSoldier.bPathStored == 0)
+                            if (!pSoldier.bPathStored)
                             {
                                 CancelAIAction(pSoldier, FORCE);
                                 return (0);         // nothing is in progress
