@@ -139,7 +139,7 @@ public class SOLDIERTYPE
 
     public int usAniCode;
     public int usAniFrame;
-    public int sAniDelay;
+    public uint sAniDelay;
 
     // MOVEMENT TO NEXT TILE HANDLING STUFF
     public int bAgility;          // agility (speed) value
@@ -471,8 +471,8 @@ public class SOLDIERTYPE
     public int sBoundingBoxHeight;
     public int sBoundingBoxOffsetX;
     public int sBoundingBoxOffsetY;
-    public int uiTimeSameBattleSndDone;
-    public int bOldBattleSnd;
+    public uint uiTimeSameBattleSndDone;
+    public BATTLE_SOUND bOldBattleSnd;
     public bool fReactingFromBeingShot;
     public bool fContractPriceHasIncreased;
     public int iBurstSoundID;

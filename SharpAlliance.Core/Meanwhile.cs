@@ -506,7 +506,7 @@ public class Meanwhile
     }
 
 
-    bool AreInMeanwhile()
+    public static bool AreInMeanwhile()
     {
         STRATEGICEVENT? curr;
 

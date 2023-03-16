@@ -170,7 +170,7 @@ public enum SFCF
 
 public class UNDERGROUND_SECTORINFO
 {
-    public uint uiFlags;
+    public SF uiFlags;
     public byte ubSectorX, ubSectorZ;
     public MAP_ROW ubSectorY;
     public int ubNumElites, ubNumTroops, ubNumAdmins, ubNumCreatures;

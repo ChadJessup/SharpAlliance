@@ -101,7 +101,7 @@ public class Faces
         int iFaceIndex;
         ETRLEObject ETRLEObject;
         HVOBJECT hVObject;
-        int uiCount;
+        byte uiCount;
         SGPPaletteEntry[] Pal = new SGPPaletteEntry[256];
 
         if ((iFaceIndex = GetFreeFace()) == (-1))
@@ -172,7 +172,7 @@ public class Faces
         }
 
         // Load
-        if (VeldridVideoManager.AddVideoObject(VObjectDesc, uiVideoObject) == false)
+        if (VeldridVideoManager.AddVideoObject(VObjectDesc, out uiVideoObject) == false)
         {
             // If we are a big face, use placeholder...
             if (uiInitFlags.HasFlag(FACE.BIGFACE))
@@ -237,9 +237,9 @@ public class Faces
 
             for (uiCount = 0; uiCount < 256; uiCount++)
             {
-                Pal[uiCount].peRed = (uiCount % 128) + 128;
-                Pal[uiCount].peGreen = (uiCount % 128) + 128;
-                Pal[uiCount].peBlue = (uiCount % 128) + 128;
+                Pal[uiCount].peRed = (byte)((byte)(uiCount % 128) + 128);
+                Pal[uiCount].peGreen = (byte)((byte)(uiCount % 128) + 128);
+                Pal[uiCount].peBlue =  (byte)((byte)(uiCount % 128) + 128);
             }
             hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
 
@@ -393,7 +393,7 @@ public class Faces
     }
 
 
-    void SetAutoFaceActive(int uiDisplayBuffer, int uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY)
+    void SetAutoFaceActive(int uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY)
     {
         int usEyesX;
         int usEyesY;
@@ -413,7 +413,7 @@ public class Faces
     }
 
 
-    void InternalSetAutoFaceActive(int uiDisplayBuffer, int uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY, int usEyesX, int usEyesY, int usMouthX, int usMouthY)
+    void InternalSetAutoFaceActive(int uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY, int usEyesX, int usEyesY, int usMouthX, int usMouthY)
     {
         NPCID usMercProfileID;
         FACETYPE? pFace;
@@ -453,7 +453,7 @@ public class Faces
 
             pFace.fAutoRestoreBuffer = true;
 
-            CHECKV(AddVideoSurface(vs_desc, (pFace.uiAutoRestoreBuffer)));
+            CHECKV(VeldridVideoManager.AddVideoSurface(out vs_desc, out pFace.uiAutoRestoreBuffer) > 0);
         }
         else
         {
@@ -1142,7 +1142,7 @@ public class Faces
                 BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
             }
 
-            if ((pSoldier.uiStatusFlags & SOLDIER_DEAD))
+            if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD)))
             {
                 // IF we are in the process of doing any deal/close animations, show face, not skill...
                 if (!pSoldier.fClosePanel && !pSoldier.fDeadPanel && !pSoldier.fUIdeadMerc && !pSoldier.fUICloseMerc)
@@ -1883,12 +1883,12 @@ public class Faces
 
                     if (pFace.uiFlags.HasFlag(FACE.REDRAW_WHOLE_FACE_NEXT_FRAME))
                     {
-                        pFace.uiFlags &= ~FACE_REDRAW_WHOLE_FACE_NEXT_FRAME;
+                        pFace.uiFlags &= ~FACE.REDRAW_WHOLE_FACE_NEXT_FRAME;
 
                         fRerender = true;
                     }
 
-                    if (fInterfacePanelDirty == DIRTYLEVEL2 && guiCurrentScreen == GAME_SCREEN)
+                    if (fInterfacePanelDirty == DIRTYLEVEL2 && guiCurrentScreen == ScreenName.GAME_SCREEN)
                     {
                         fRerender = true;
                     }
@@ -1952,23 +1952,24 @@ public class Faces
             return (false);
         }
 
-        pDestBuf = LockVideoSurface(pFace.uiAutoDisplayBuffer, &uiDestPitchBYTES);
-        pSrcBuf = LockVideoSurface(pFace.uiAutoRestoreBuffer, &uiSrcPitchBYTES);
+        pDestBuf    = VeldridVideoManager.LockVideoSurface(pFace.uiAutoDisplayBuffer, out uiDestPitchBYTES);
+        pSrcBuf     = VeldridVideoManager.LockVideoSurface(pFace.uiAutoRestoreBuffer, out uiSrcPitchBYTES);
 
-        Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+        VeldridVideoManager.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
                     pSrcBuf, uiSrcPitchBYTES,
                     sDestLeft, sDestTop,
                     sSrcLeft, sSrcTop,
                     sWidth, sHeight);
 
-        UnLockVideoSurface(pFace.uiAutoDisplayBuffer);
-        UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
+        VeldridVideoManager.UnLockVideoSurface(pFace.uiAutoDisplayBuffer);
+        VeldridVideoManager.UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
 
         // Add rect to frame buffer queue
         if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
         {
-            InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, (sDestLeft + sWidth + 3), (sDestTop + sHeight + 2), 0);
+            VeldridVideoManager.InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, (sDestLeft + sWidth + 3), (sDestTop + sHeight + 2), 0);
         }
+
         return (true);
     }
 
@@ -1984,15 +1985,15 @@ public class Faces
         pFace.fAnimatingTalking = true;
         pFace.fFinishTalking = false;
 
-        if (!AreInMeanwhile())
+        if (!Meanwhile.AreInMeanwhile())
         {
             TurnOnSectorLocator(pFace.ubCharacterNum);
         }
 
         // Play sample
-        if (gGameSettings.fOptions[TOPTION_SPEECH])
+        if (GameSettings.fOptions[TOPTION.SPEECH])
         {
-            pFace.uiSoundID = PlayJA2GapSample(zSoundFile, RATE_11025, HIGHVOLUME, 1, MIDDLEPAN, &(pFace.GapList));
+           // pFace.uiSoundID = PlayJA2GapSample(zSoundFile, RATE_11025, HIGHVOLUME, 1, MIDDLEPAN, &(pFace.GapList));
         }
         else
         {
@@ -2061,7 +2062,7 @@ public class Faces
             }
 
             // Remove gap info
-            AudioGapListDone(&(pFace.GapList));
+            AudioGapListDone((pFace.GapList));
 
             // Shutup mouth!
             pFace.sMouthFrame = 0;
@@ -2107,7 +2108,7 @@ public class Faces
 
         pFace.uiTalkingTimer = GetJA2Clock();
 
-        if (gGameSettings.fOptions[TOPTION_SUBTITLES])
+        if (GameSettings.fOptions[TOPTION.SUBTITLES])
         {
             //pFace.uiTalkingDuration = FINAL_TALKING_DURATION;
             pFace.uiTalkingDuration = 300;
@@ -2133,11 +2134,11 @@ public class Faces
         }
 
         // Setup flag to wait for advance ( because we have no text! )
-        if (gGameSettings.fOptions[TOPTION_KEY_ADVANCE_SPEECH] && (pFace.uiFlags.HasFlag(FACE.POTENTIAL_KEYWAIT)))
+        if (GameSettings.fOptions[TOPTION.KEY_ADVANCE_SPEECH] && (pFace.uiFlags.HasFlag(FACE.POTENTIAL_KEYWAIT)))
         {
 
             // Check if we have had valid speech!
-            if (!pFace.fValidSpeech || gGameSettings.fOptions[TOPTION_SUBTITLES])
+            if (!pFace.fValidSpeech || GameSettings.fOptions[TOPTION.SUBTITLES])
             {
                 // Set false!
                 pFace.fFinishTalking = false;
@@ -2148,10 +2149,7 @@ public class Faces
 
         // Set final delay!
         pFace.fValidSpeech = false;
-
-
     }
-
 }
 
 [Flags]

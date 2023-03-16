@@ -112,9 +112,9 @@ public class TeamTurns
                         if (gsInterfaceLevel == 1)
                         {
                             Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
-                            InvalidateWorldRedundency();
+                            RenderWorld.InvalidateWorldRedundency();
                             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-                            ErasePath(false);
+                            PathAI.ErasePath(false);
                         }
                     }
                 }
@@ -124,7 +124,7 @@ public class TeamTurns
             fInterfacePanelDirty = DIRTYLEVEL2;
 
             // Adjust time now!
-            UpdateClock();
+            GameClock.UpdateClock();
 
             if (!fEnteringCombatMode)
             {
@@ -139,7 +139,7 @@ public class TeamTurns
         /// that a baddie can die and still maintain it's attacker ID
         Globals.gTacticalStatus.fKilledEnemyOnAttack = false;
 
-        HandleTacticalUI();
+        HandleUI.HandleTacticalUI();
     }
 
     void FreezeInterfaceForEnemyTurn()
@@ -148,7 +148,7 @@ public class TeamTurns
         gfPlotNewMovement = true;
 
         // Erase path
-        ErasePath(true);
+        PathAI.ErasePath(true);
 
         // Setup locked UI
         guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_BEGINUILOCK;
@@ -416,7 +416,7 @@ public class TeamTurns
         Globals.fInterfacePanelDirty = DIRTYLEVEL2;
 
         // Erase path!
-        ErasePath(true);
+        PathAI.ErasePath(true);
 
         // Reset flags
         Globals.gfPlotNewMovement = true;
@@ -445,7 +445,7 @@ public class TeamTurns
         // whose pointer has been passed in as an argument (we were in non-combat and the AI is doing
         // something visible, i.e. making an attack)
 
-        if (AreInMeanwhile())
+        if (Meanwhile.AreInMeanwhile())
         {
             return;
         }
@@ -625,7 +625,7 @@ public class TeamTurns
 
             // Signal UI done enemy's turn
             guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
-            HandleTacticalUI();
+            HandleUI.HandleTacticalUI();
 
             InitPlayerUIBar(true);
             //AddTopMessage( PLAYER_INTERRUPT_MESSAGE, Message[STR_INTERRUPT] );
@@ -872,7 +872,7 @@ public class TeamTurns
                     // both hidden interrupts as well - NOT good because
                     // hidden interrupts should leave it locked if it was already...
                     guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
-                    HandleTacticalUI();
+                    HandleUI.HandleTacticalUI();
 
                     if (gusSelectedSoldier != NO_SOLDIER)
                     {
@@ -884,9 +884,9 @@ public class TeamTurns
                         if (gsInterfaceLevel == 1)
                         {
                             Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
-                            InvalidateWorldRedundency();
+                            RenderWorld.InvalidateWorldRedundency();
                             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-                            ErasePath(false);
+                            PathAI.ErasePath(false);
                         }
                     }
                     // 2 indicates that we're ending an interrupt and going back to
@@ -905,7 +905,7 @@ public class TeamTurns
                 fInterfacePanelDirty = DIRTYLEVEL2;
 
                 // Erase path!
-                ErasePath(true);
+                PathAI.ErasePath(true);
 
                 // Reset flags
                 gfPlotNewMovement = true;
@@ -1060,7 +1060,7 @@ public class TeamTurns
             if (pSoldier.bTeam == Globals.gTacticalStatus.ubCurrentTeam)
             {
                 // if this is a player's a merc or civilian
-                if ((pSoldier.uiStatusFlags & SOLDIER.PC) || PTR_CIVILIAN)
+                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)) || PTR_CIVILIAN)
                 {
                     // then they are not allowed to interrupt their own team
                     return (false);
@@ -1068,7 +1068,7 @@ public class TeamTurns
                 else
                 {
                     // enemies, MAY interrupt each other, but NOT themselves!
-                    //if ( pSoldier.uiStatusFlags & SOLDIER_UNDERAICONTROL )
+                    //if ( pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL ))
                     //{
                     return (false);
                     //}

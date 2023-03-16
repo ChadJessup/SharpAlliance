@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.EnglishText;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using SharpAlliance.Core.Managers;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -17,6 +17,59 @@ public class StrategicMap
     public ValueTask<bool> InitStrategicEngine()
     {
         return ValueTask.FromResult(true);
+    }
+
+    public static void GetMapFileName(int sMapX, MAP_ROW sMapY, int bSectorZ, out string bString, bool fUsePlaceholder, bool fAddAlternateMapLetter)
+    {
+        string bTestString;
+        string bExtensionString;
+
+        if (bSectorZ != 0)
+        {
+            bExtensionString = sprintf("_b%d", bSectorZ);
+        }
+        else
+        {
+            bExtensionString = "";
+        }
+
+        // the gfUseAlternateMap flag is set in the loading saved games.  When starting a new game the underground sector
+        //info has not been initialized, so we need the flag to load an alternate sector.
+        if (gfUseAlternateMap | GetSectorFlagStatus(sMapX, sMapY, bSectorZ, SF.USE_ALTERNATE_MAP))
+        {
+            gfUseAlternateMap = false;
+
+            //if we ARE to use the a map, or if we are saving AND the save game version is before 80, add the a
+            if (fAddAlternateMapLetter)
+            {
+                bExtensionString += "_a";
+            }
+        }
+
+        // If we are in a meanwhile...
+        if (Meanwhile.AreInMeanwhile() && sMapX == 3 && sMapY == (MAP_ROW)16 && bSectorZ == 0)//GetMeanwhileID() != INTERROGATION )
+        {
+            if (fAddAlternateMapLetter)
+            {
+                bExtensionString += "_m";
+            }
+        }
+
+        // This is the string to return, but...
+        bString = sprintf("%s%s%s.DAT", pVertStrings[sMapY], pHortStrings[sMapX], bExtensionString);
+
+        // We will test against this string
+        bTestString = sprintf("MAPS\\%s", bString);
+
+        if (fUsePlaceholder && !FileManager.FileExists(bTestString))
+        {
+            // Debug str
+            // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string.Format("Map does not exist for %s, using default.", bTestString));
+            // Set to a string we know!
+            bString = sprintf("H10.DAT", pVertStrings[sMapY], pHortStrings[sMapX]);
+            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG_DEBUG, "Using PLACEHOLDER map!");
+        }
+        return;
     }
 
     // return number of sectors this town takes up

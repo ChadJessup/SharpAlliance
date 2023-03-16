@@ -26,7 +26,7 @@ public class InterfacePanel
         if (ubLocatorSpeed == SHOW_LOCATOR.NORMAL)
         {
             // If we are an AI guy, and we have the baton, make lower...
-            // ( MercPtrs[ ubID ]->uiStatusFlags & SOLDIER_UNDERAICONTROL && MercPtrs[ ubID ]->bTeam != gbPlayerNum )
+            // ( MercPtrs[ ubID ]->uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL && MercPtrs[ ubID ]->bTeam != gbPlayerNum ))
             //
             //ercPtrs[ ubID ]->ubNumLocateCycles = 3;
             //

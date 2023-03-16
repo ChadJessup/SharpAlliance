@@ -26,6 +26,18 @@ public class RenderWorld : IDisposable
     {
     }
 
+    public static void InvalidateWorldRedundency()
+    {
+        int uiCount;
+
+        SetRenderFlags(RenderingFlags.CHECKZ);
+
+        for (uiCount = 0; uiCount < WORLD_MAX; uiCount++)
+        {
+            gpWorldLevelData[uiCount].uiFlags |= MAPELEMENTFLAGS.REEVALUATE_REDUNDENCY;
+        }
+    }
+
     public static void ResetSpecificLayerOptimizing(TILES_DYNAMIC uiRowFlag)
     {
         uiLayerUsedFlags |= uiRowFlag;
@@ -34,7 +46,7 @@ public class RenderWorld : IDisposable
 
     public static void SetRenderCenter(int sNewX, int sNewY)
     {
-        if (gfIgnoreScrolling == 1)
+        if (gfIgnoreScrolling)
         {
             return;
         }

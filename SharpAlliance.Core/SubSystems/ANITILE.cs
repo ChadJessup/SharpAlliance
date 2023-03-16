@@ -22,15 +22,15 @@ public class ANITILE
     public MAP_ROW sRelativeY;
     public int sRelativeZ;
     public int sGridNo;
-    public int usTileIndex;
+    public TileDefines usTileIndex;
     public int usCachedTileSubIndex;        // sub Index 
     public int ubOwner;
     public int ubKeyFrame1;
-    public KeyFrameEnums uiKeyFrame1Code;
+    public ANI_KEYFRAME uiKeyFrame1Code;
     public int ubKeyFrame2;
-    public KeyFrameEnums uiKeyFrame2Code;
+    public ANI_KEYFRAME uiKeyFrame2Code;
     public int ubUserData2;
-    public int uiUserData3;
+    public WorldDirections uiUserData3;
     public int bFrameCountAfterStart;
 }
 
@@ -40,8 +40,8 @@ public struct ANITILE_PARAMS
     public ANI ubLevelID;                        // Level ID for rendering layer
     public int sStartFrame;                  // Start frame
     public int sDelay;                               // Delay time
-    public int usTileType;                      // Tile databse type ( optional )
-    public int usTileIndex;                 // Tile database index ( optional )
+    public TileTypeDefines usTileType;                      // Tile databse type ( optional )
+    public TileDefines usTileIndex;                 // Tile database index ( optional )
     public int sX;                                       // World X ( optional )
     public MAP_ROW sY;                                       // World Y ( optional )
     public int sZ;                                       // World Z ( optional )
@@ -50,12 +50,12 @@ public struct ANITILE_PARAMS
     public string zCachedFile;                  // Filename for cached tile name ( optional )
     public int ubOwner;                          // UBID for the owner
     public int ubKeyFrame1;                  // Key frame 1
-    public KeyFrameEnums uiKeyFrame1Code;         // Key frame code
+    public ANI_KEYFRAME uiKeyFrame1Code;         // Key frame code
     public int ubKeyFrame2;                  // Key frame 2
-    public KeyFrameEnums uiKeyFrame2Code;         // Key frame code
+    public ANI_KEYFRAME uiKeyFrame2Code;         // Key frame code
     public object uiUserData;
     public int ubUserData2;
-    public int uiUserData3;
+    public WorldDirections uiUserData3;
 }
 
 [Flags]

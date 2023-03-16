@@ -599,7 +599,7 @@ public class AIMain
             {
                 RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
-                InvalidateWorldRedundency();
+                RenderWorld.InvalidateWorldRedundency();
             }
 
             // End this NPC's control, move to next dude
@@ -725,7 +725,7 @@ public class AIMain
                 {
                     gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
                     RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-                    InvalidateWorldRedundency();
+                    RenderWorld.InvalidateWorldRedundency();
                 }
 
 
@@ -897,7 +897,7 @@ public class AIMain
                     {
                         // Kyle after getting money
                         pSoldier.ubQuoteRecord = 0;
-                        TriggerNPCRecord(NPCID.KYLE, 11);
+                        NPC.TriggerNPCRecord(NPCID.KYLE, 11);
                     }
                     else if (pSoldier.usAnimState == AnimationStates.END_OPENSTRUCT)
                     {

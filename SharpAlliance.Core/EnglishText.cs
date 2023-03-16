@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 
@@ -282,6 +283,12 @@ public static class EnglishText
         { GameInitOptionScreenText.GIO_IRON_MAN_TEXT, "Iron Man" },
         { GameInitOptionScreenText.GIO_DISABLED_FOR_THE_DEMO_TEXT, "Disabled for Demo" },
     };
+
+    public static Dictionary<Items, string> ShortItemNames = new()
+    {
+        { Items.NONE, "" },
+    };
+
 
     public static string[] pTraverseStrings =
     {

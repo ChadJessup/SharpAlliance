@@ -755,7 +755,7 @@ public class StrategicMovement
         {
             pSoldier = pPlayer.pSoldier;
 
-            if (pSoldier.bLife >= OKLIFE && !(pSoldier.uiStatusFlags & SOLDIER_VEHICLE) &&
+            if (pSoldier.bLife >= OKLIFE && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) &&
                         !AM_A_ROBOT(pSoldier) && !AM_AN_EPC(pSoldier))
             {
                 ubMercsInGroup[ubNumMercs] = pSoldier.ubID;
@@ -890,7 +890,7 @@ public class StrategicMovement
                             while (pPlayer)
                             {
                                 pSoldier = pPlayer.pSoldier;
-                                if (!(pSoldier.uiStatusFlags & SOLDIER_VEHICLE))
+                                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
                                 {
                                     if (!AM_A_ROBOT(pSoldier) &&
                                             !AM_AN_EPC(pSoldier) &&
@@ -1176,7 +1176,7 @@ public class StrategicMovement
         {
             pSoldier = pPlayerGroup.pSoldier;
             if (pSoldier && !AM_A_ROBOT(pSoldier) &&
-                    !AM_AN_EPC(pSoldier) && !(pSoldier.uiStatusFlags & SOLDIER_VEHICLE))
+                    !AM_AN_EPC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
             {
                 if (pSoldier.bLifeMax < 100)
                 {
@@ -1355,7 +1355,7 @@ public class StrategicMovement
             && gTacticalStatus.fEnemyInSector
             && FindMovementGroupInSector(gWorldSectorX, gWorldSectorY, true) is not null
             && (pGroup.ubNextX != gWorldSectorX || pGroup.ubNextY != gWorldSectorY || gbWorldSectorZ > 0)
-            || AreInMeanwhile()
+            || Meanwhile.AreInMeanwhile()
             ||
                 //KM : Aug 11, 1999 -- Patch fix:  Added additional checks to prevent a 2nd battle in the case
                 //     where the player is involved in a potential battle with bloodcats/civilians
@@ -1366,7 +1366,7 @@ public class StrategicMovement
             //QUEUE BATTLE!
             //Delay arrival by a random value ranging from 3-5 minutes, so it doesn't get the player
             //too suspicious after it happens to him a few times, which, by the way, is a rare occurrence.
-            if (AreInMeanwhile())
+            if (Meanwhile.AreInMeanwhile())
             {
                 pGroup.uiArrivalTime++; //tack on only 1 minute if we are in a meanwhile scene.  This effectively
                                         //prevents any battle from occurring while inside a meanwhile scene.
@@ -4242,7 +4242,7 @@ public class StrategicMovement
 
     bool VehicleHasFuel(SOLDIERTYPE? pSoldier)
     {
-        Debug.Assert(pSoldier.uiStatusFlags & SOLDIER.VEHICLE);
+        Debug.Assert(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
         if (pSoldier.sBreathRed)
         {
             return true;
@@ -4252,13 +4252,13 @@ public class StrategicMovement
 
     int VehicleFuelRemaining(SOLDIERTYPE? pSoldier)
     {
-        Debug.Assert(pSoldier.uiStatusFlags & SOLDIER.VEHICLE);
+        Debug.Assert(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
         return pSoldier.sBreathRed;
     }
 
     bool SpendVehicleFuel(SOLDIERTYPE? pSoldier, int sFuelSpent)
     {
-        Debug.Assert(pSoldier.uiStatusFlags & SOLDIER.VEHICLE);
+        Debug.Assert(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
         pSoldier.sBreathRed -= sFuelSpent;
         pSoldier.sBreathRed = (int)Math.Max(0, pSoldier.sBreathRed);
         pSoldier.bBreath = (int)((pSoldier.sBreathRed + 99) / 100);

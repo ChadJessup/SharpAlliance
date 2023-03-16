@@ -1,9 +1,38 @@
 ﻿using System;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class NPC
 {
+    public static void TriggerNPCRecord(NPCID ubTriggerNPC, int ubTriggerNPCRec)
+    {
+        // Check if we have a quote to trigger...
+        NPCQuoteInfo? pQuotePtr;
+        bool fDisplayDialogue = true;
+
+        if (EnsureQuoteFileLoaded(ubTriggerNPC) == false)
+        {
+            // error!!!
+            return;
+        }
+        pQuotePtr = (gpNPCQuoteInfoArray[ubTriggerNPC][ubTriggerNPCRec]);
+        if (pQuotePtr.ubQuoteNum == IRRELEVANT)
+        {
+            fDisplayDialogue = false;
+        }
+
+        if (NPCConsiderQuote(ubTriggerNPC, 0, TRIGGER_NPC, ubTriggerNPCRec, 0, gpNPCQuoteInfoArray[ubTriggerNPC]))
+        {
+            NPCTriggerNPC(ubTriggerNPC, ubTriggerNPCRec, TRIGGER_NPC, fDisplayDialogue);
+        }
+        else
+        {
+            // don't do anything
+            // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("WARNING: trigger of %d, record %d cannot proceed, possible error", ubTriggerNPC, ubTriggerNPCRec));
+        }
+    }
+
     internal static void TriggerNPCRecordImmediately(NPCID ubNPCNumber, int usTriggerEvent)
     {
         throw new NotImplementedException();

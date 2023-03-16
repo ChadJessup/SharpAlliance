@@ -650,7 +650,7 @@ public enum MERC_TYPE
     VEHICLE,
 }
 
-public enum MAP_ROW
+public enum MAP_ROW : short
 {
     A = 1,
     B = 2,

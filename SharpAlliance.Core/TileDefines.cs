@@ -3267,7 +3267,7 @@ public class TILE_ELEMENT
     public TileCategory uiFlags;
     public RelTileLoc? pTileLocData;
     public ushort usRegionIndex;
-    public short sBuddyNum;
+    public TileDefines sBuddyNum;
     public byte ubTerrainID;
     public byte ubNumberOfTiles;
 

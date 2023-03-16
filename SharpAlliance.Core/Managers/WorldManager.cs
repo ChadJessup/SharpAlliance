@@ -64,7 +64,7 @@ public class WorldManager
                         RemoveStruct(iMapIndex, pOldStruct.usIndex);
                         fRetVal = true;
                         if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY)
-                            && gTileDatabase[usIndex].sBuddyNum != -1)
+                            && gTileDatabase[usIndex].sBuddyNum != (TileDefines)(-1))
                         {
                             RemoveShadow(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
                         }
@@ -72,8 +72,202 @@ public class WorldManager
                 }
             }
         }
-
         return fRetVal;
+    }
+
+    public static bool AddObjectToHead(int iMapIndex, TileDefines usIndex)
+    {
+        LEVELNODE? pObject = null;
+        LEVELNODE? pNextObject = null;
+
+        pObject = gpWorldLevelData[iMapIndex].pObjectHead;
+
+        CHECKF(CreateLevelNode(out pNextObject) != false);
+
+        pNextObject.pNext = pObject;
+        pNextObject.usIndex = usIndex;
+
+        // Set head
+        gpWorldLevelData[iMapIndex].pObjectHead = pNextObject;
+
+        //CheckForAndAddTileCacheStructInfo( pNextObject, (INT16)iMapIndex, usIndex );
+
+        // If it's NOT the first head
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.OBJECTS);
+
+        //Add the object to the map temp file, if we have to
+        SaveLoadMap.AddObjectToMapTempFile(iMapIndex, usIndex);
+
+        return (true);
+    }
+
+    public static bool TypeRangeExistsInObjectLayer(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType, out TileDefines pusObjectIndex)
+    {
+        LEVELNODE? pObject = null;
+        LEVELNODE? pOldObject = null;
+        TileTypeDefines fTileType;
+
+        pObject = gpWorldLevelData[iMapIndex].pObjectHead;
+
+        // Look through all objects and Search for type
+
+        while (pObject != null)
+        {
+            // Advance to next
+            pOldObject = pObject;
+            pObject = pObject.pNext;
+
+            if (pOldObject.usIndex != TileDefines.NO_TILE && pOldObject.usIndex < NUMBEROFTILES)
+            {
+                TileDefine.GetTileType(pOldObject.usIndex, out fTileType);
+
+                if (fTileType >= fStartType && fTileType <= fEndType)
+                {
+                    pusObjectIndex = pOldObject.usIndex;
+                    return (true);
+                }
+
+            }
+
+        }
+
+        // Could not find it, return false
+
+        pusObjectIndex = TileDefines.NO_TILE;
+        return (false);
+    }
+
+    public static bool AddStructToHead(int iMapIndex, TileDefines usIndex)
+    {
+        LEVELNODE? pStruct = null;
+        LEVELNODE? pNextStruct = null;
+        DB_STRUCTURE? pDBStructure;
+
+        pStruct = gpWorldLevelData[iMapIndex].pStructHead;
+
+        CHECKF(CreateLevelNode(out pNextStruct) != false);
+
+        if (usIndex < NUMBEROFTILES)
+        {
+            if (gTileDatabase[usIndex].pDBStructureRef != null)
+            {
+                if (WorldStructures.AddStructureToWorld(iMapIndex, 0, gTileDatabase[usIndex].pDBStructureRef, pNextStruct) == false)
+                {
+                    MemFree(pNextStruct);
+                    guiLevelNodes--;
+                    return (false);
+                }
+            }
+        }
+
+        pNextStruct.pNext = pStruct;
+        pNextStruct.usIndex = usIndex;
+
+        // Set head
+        gpWorldLevelData[iMapIndex].pStructHead = pNextStruct;
+
+        WorldManager.SetWorldFlagsFromNewNode(iMapIndex, pNextStruct.usIndex);
+
+        if (usIndex < NUMBEROFTILES)
+        {
+            // Check flags for tiledat and set a shadow if we have a buddy
+            if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY) && gTileDatabase[usIndex].sBuddyNum != -1)
+            {
+                AddShadowToHead(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
+                gpWorldLevelData[iMapIndex].pShadowHead.uiFlags |= LEVELNODEFLAGS.BUDDYSHADOW;
+            }
+
+            //Check for special flag to stop burn-through on same-tile structs...
+            if (gTileDatabase[usIndex].pDBStructureRef != null)
+            {
+                pDBStructure = gTileDatabase[usIndex].pDBStructureRef.pDBStructure;
+
+                // Default to off....
+                gpWorldLevelData[iMapIndex].ubExtFlags[0] &= (~MAPELEMENT_EXT.NOBURN_STRUCT);
+
+                // If we are NOT a wall and NOT multi-tiles, set mapelement flag...
+                if (WorldStructures.FindStructure(iMapIndex, STRUCTUREFLAGS.WALLSTUFF) is null && pDBStructure.ubNumberOfTiles == 1)
+                {
+                    // Set flag...
+                    gpWorldLevelData[iMapIndex].ubExtFlags[0] |= MAPELEMENT_EXT.NOBURN_STRUCT;
+                }
+            }
+
+        }
+
+        //Add the structure the maps temp file
+        AddStructToMapTempFile(iMapIndex, usIndex);
+
+        //CheckForAndAddTileCacheStructInfo( pNextStruct, (INT16)iMapIndex, usIndex );
+
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
+        return (true);
+    }
+
+    public static bool AddShadowToHead(int iMapIndex, TileDefines usIndex)
+    {
+        LEVELNODE? pShadow;
+        LEVELNODE? pNextShadow = null;
+
+        pShadow = gpWorldLevelData[iMapIndex].pShadowHead;
+
+        // Allocate head
+        CHECKF(CreateLevelNode(out pNextShadow) != false);
+        pNextShadow.pNext = pShadow;
+        pNextShadow.usIndex = usIndex;
+
+        // Set head
+        gpWorldLevelData[iMapIndex].pShadowHead = pNextShadow;
+
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.SHADOWS);
+        return (true);
+    }
+
+
+    public static bool RemoveShadow(int iMapIndex, TileDefines usIndex)
+    {
+        LEVELNODE? pShadow = null;
+        LEVELNODE? pOldShadow = null;
+
+        pShadow = gpWorldLevelData[iMapIndex].pShadowHead;
+
+        // Look through all shadows and remove index if found
+
+        while (pShadow != null)
+        {
+            if (pShadow.usIndex == usIndex)
+            {
+                // OK, set links
+                // Check for head or tail
+                if (pOldShadow == null)
+                {
+                    // It's the head
+                    gpWorldLevelData[iMapIndex].pShadowHead = pShadow.pNext;
+                }
+                else
+                {
+                    pOldShadow.pNext = pShadow.pNext;
+                }
+
+                // Delete memory assosiated with item
+                MemFree(pShadow);
+                guiLevelNodes--;
+
+                return (true);
+            }
+
+            pOldShadow = pShadow;
+            pShadow = pShadow.pNext;
+
+        }
+
+        // Could not find it, return false
+
+        return (false);
+    }
+
+    private static void SetWorldFlagsFromNewNode(int iMapIndex, TileDefines usIndex)
+    {
     }
 
     // When adding, put in order such that it's drawn before any walls of a
@@ -107,10 +301,10 @@ public class WorldManager
             //we insert it.
             if (usCheckWallOrient > usWallOrientation)
             {
-                if ((usWallOrientation      == WallOrientation.INSIDE_TOP_RIGHT || usWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
-                    && (usCheckWallOrient ==   WallOrientation.INSIDE_TOP_LEFT || usCheckWallOrient   == WallOrientation.OUTSIDE_TOP_LEFT)
-                    || (usWallOrientation == WallOrientation.INSIDE_TOP_LEFT || usWallOrientation   == WallOrientation.OUTSIDE_TOP_LEFT)
-                    && (usCheckWallOrient == WallOrientation.INSIDE_TOP_RIGHT || usCheckWallOrient  == WallOrientation.OUTSIDE_TOP_RIGHT))
+                if ((usWallOrientation == WallOrientation.INSIDE_TOP_RIGHT || usWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
+                    && (usCheckWallOrient == WallOrientation.INSIDE_TOP_LEFT || usCheckWallOrient == WallOrientation.OUTSIDE_TOP_LEFT)
+                    || (usWallOrientation == WallOrientation.INSIDE_TOP_LEFT || usWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
+                    && (usCheckWallOrient == WallOrientation.INSIDE_TOP_RIGHT || usCheckWallOrient == WallOrientation.OUTSIDE_TOP_RIGHT))
                 {
                     fInsertFound = true;
                 }
@@ -132,10 +326,10 @@ public class WorldManager
             //New check -- we want to check for walls being parallel to each other.  If so, then
             //we we want to replace it.  This is because of an existing problem with say, INSIDE_TOP_LEFT
             //and OUTSIDE_TOP_LEFT walls coexisting.
-            if ((usWallOrientation ==   WallOrientation.INSIDE_TOP_RIGHT || usWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
+            if ((usWallOrientation == WallOrientation.INSIDE_TOP_RIGHT || usWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
                 && (usCheckWallOrient == WallOrientation.INSIDE_TOP_RIGHT || usCheckWallOrient == WallOrientation.OUTSIDE_TOP_RIGHT)
-                || (usWallOrientation == WallOrientation.INSIDE_TOP_LEFT || usWallOrientation  == WallOrientation.OUTSIDE_TOP_LEFT)
-                && (usCheckWallOrient == WallOrientation.INSIDE_TOP_LEFT || usCheckWallOrient  == WallOrientation.OUTSIDE_TOP_LEFT))
+                || (usWallOrientation == WallOrientation.INSIDE_TOP_LEFT || usWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
+                && (usCheckWallOrient == WallOrientation.INSIDE_TOP_LEFT || usCheckWallOrient == WallOrientation.OUTSIDE_TOP_LEFT))
             {
                 // Same, if replace, replace here
                 if (fReplace)

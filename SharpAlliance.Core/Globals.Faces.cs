@@ -84,9 +84,9 @@ public partial class Globals
 
     // Defines
     public const int NUM_FACE_SLOTS = 50;
-    public const uint FACE_AUTO_DISPLAY_BUFFER = 0xFFFFF000;
-    public const uint FACE_AUTO_RESTORE_BUFFER = 0xFFFFFF00;
-    public const uint FACE_NO_RESTORE_BUFFER = 0xFFFFFFF0;
+    public const Surfaces FACE_AUTO_DISPLAY_BUFFER  = (Surfaces)0xFFFFF000;
+    public const Surfaces FACE_AUTO_RESTORE_BUFFER  = (Surfaces)0xFFFFFF00;
+    public const Surfaces FACE_NO_RESTORE_BUFFER    = (Surfaces)0xFFFFFFF0;
 
     // duration for talking
     public const int FINAL_TALKING_DURATION = 2000;
@@ -151,7 +151,7 @@ public class FACETYPE
     public FACE uiFlags;                                             // Basic flags 
     public int uiTalkingDuration;                           // A delay based on text length for how long to talk if no speech
     public uint uiTalkingTimer;                                  // A timer to handle delay when no speech file
-    public int uiTalkingFromVeryBeginningTimer;// Timer from very beginning of talking...	
+    public uint uiTalkingFromVeryBeginningTimer;// Timer from very beginning of talking...	
     public bool fFinishTalking;                                 // A flag to indicate we want to delay after speech done
     public int iVideoOverlay;                                    // Value for video overlay ( not used too much )
     public int uiSoundID;                                           // Sound ID if one being played

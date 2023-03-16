@@ -101,8 +101,8 @@ public class StrategicAI
     int PatrolReinforcementsRequested(int iPatrolID)
     {
         GROUP? pGroup;
-        pGroup = GetGroup(gPatrolGroup[iPatrolID].ubGroupID);
-        if (!pGroup)
+        pGroup = StrategicMovement.GetGroup(gPatrolGroup[iPatrolID].ubGroupID);
+        if (pGroup is null)
         {
             return gPatrolGroup[iPatrolID].bSize;
         }
@@ -632,7 +632,7 @@ public class StrategicAI
             if (gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID > 0)
             {
                 GROUP? pPendingGroup;
-                pPendingGroup = GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
+                pPendingGroup = StrategicMovement.GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
                 if (pPendingGroup == pGroup)
                 {
                     if (fPermittedToAttack)
@@ -1062,7 +1062,7 @@ public class StrategicAI
                     gPatrolGroup[i].ubPendingGroupID = 0;
                     if (gPatrolGroup[i].ubGroupID > 0 && gPatrolGroup[i].ubGroupID != pGroup.ubGroupID)
                     { //cheat, and warp our reinforcements to them!
-                        pPatrolGroup = GetGroup(gPatrolGroup[i].ubGroupID);
+                        pPatrolGroup = StrategicMovement.GetGroup(gPatrolGroup[i].ubGroupID);
                         pPatrolGroup.pEnemyGroup.ubNumTroops += pGroup.pEnemyGroup.ubNumTroops;
                         pPatrolGroup.pEnemyGroup.ubNumElites += pGroup.pEnemyGroup.ubNumElites;
                         pPatrolGroup.pEnemyGroup.ubNumAdmins += pGroup.pEnemyGroup.ubNumAdmins;
@@ -1362,7 +1362,7 @@ public class StrategicAI
             if (gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID > 0)
             { //Look for a staging group.
                 GROUP? pGroup;
-                pGroup = GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
+                pGroup = StrategicMovement.GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
                 if (pGroup)
                 { //We have a staging group
                     if (GroupAtFinalDestination(pGroup))
@@ -1515,9 +1515,9 @@ public class StrategicAI
             giRequestPoints -= iPrevWeight;
         }
 
-        if (gPatrolGroup[iPatrolID].ubGroupID)
+        if (gPatrolGroup[iPatrolID].ubGroupID > 0)
         {
-            pGroup = GetGroup(gPatrolGroup[iPatrolID].ubGroupID);
+            pGroup = StrategicMovement.GetGroup(gPatrolGroup[iPatrolID].ubGroupID);
             iNeedPopulation = gPatrolGroup[iPatrolID].bSize - pGroup.ubGroupSize;
             if (iNeedPopulation < 0)
             {
@@ -3243,7 +3243,7 @@ public class StrategicAI
 
                 if (gGarrisonGroup[SectorInfo[ubSectorID].ubGarrisonID].ubPendingGroupID)
                 {   //Clear the pending group's assignment.
-                    pPendingGroup = GetGroup(gGarrisonGroup[SectorInfo[ubSectorID].ubGarrisonID].ubPendingGroupID);
+                    pPendingGroup = StrategicMovement.GetGroup(gGarrisonGroup[SectorInfo[ubSectorID].ubGarrisonID].ubPendingGroupID);
                     Debug.Assert(pPendingGroup);
                     ClearPreviousAIGroupAssignment(pPendingGroup);
                 }
@@ -3449,7 +3449,7 @@ public class StrategicAI
             if (gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID > 0)
             {
                 GROUP? pGroup;
-                pGroup = GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
+                pGroup = StrategicMovement.GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
                 if (pGroup)
                 {
                     ReassignAIGroup(pGroup);
@@ -3590,7 +3590,7 @@ public class StrategicAI
         {
             if (gPatrolGroup[i].ubGroupID > 0)
             {
-                pGroup = GetGroup(gPatrolGroup[i].ubGroupID);
+                pGroup = StrategicMovement.GetGroup(gPatrolGroup[i].ubGroupID);
                 if (pGroup && pGroup.ubGroupSize >= ubSoldiersRequested)
                 {
                     ubDist = SectorDistance(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), gGarrisonGroup[iGarrisonID].ubSectorID);
@@ -3606,7 +3606,7 @@ public class StrategicAI
         ubDstSectorY = SECTORINFO.SECTORY(gGarrisonGroup[iGarrisonID].ubSectorID);
         if (iBestIndex != -1)
         { //Send the group to the garrison
-            pGroup = GetGroup(gPatrolGroup[iBestIndex].ubGroupID);
+            pGroup = StrategicMovement.GetGroup(gPatrolGroup[iBestIndex].ubGroupID);
             if (pGroup.ubGroupSize > ubSoldiersRequested && pGroup.ubGroupSize - ubSoldiersRequested >= gubMinEnemyGroupSize)
             { //Split the group, and send to location
                 GROUP? pNewGroup;
@@ -3763,7 +3763,7 @@ public class StrategicAI
             if (gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID > 0)
             {
                 GROUP? pGroup;
-                pGroup = GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
+                pGroup = StrategicMovement.GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
                 mprintf(x, y + 10, "%d reinforcements on route from group %d in %c%d", pGroup.ubGroupSize, pGroup.ubGroupID,
                     pGroup.ubSectorY + 'A' - 1, pGroup.ubSectorX);
             }
@@ -3861,7 +3861,7 @@ public class StrategicAI
     {
         GROUP? pGroup;
 
-        if (gPatrolGroup[iPatrolID].ubPendingGroupID)
+        if (gPatrolGroup[iPatrolID].ubPendingGroupID > 0)
         {
             return false;
         }
@@ -3869,8 +3869,8 @@ public class StrategicAI
         { //if the group was defeated, it won't be considered for reinforcements again for several days
             return false;
         }
-        pGroup = GetGroup(gPatrolGroup[iPatrolID].ubGroupID);
-        if (pGroup)
+        pGroup = StrategicMovement.GetGroup(gPatrolGroup[iPatrolID].ubGroupID);
+        if (pGroup is not null)
         {
             if (gPatrolGroup[iPatrolID].bSize - pGroup.ubGroupSize >= gubMinEnemyGroupSize)
             {
@@ -4627,8 +4627,8 @@ public class StrategicAI
                 { //if the garrison has reinforcements on route, then subtract the number of 
                   //reinforcements from the value we reset the size of the garrison.  This is to 
                   //prevent overfilling the group.
-                    pGroup = GetGroup(gGarrisonGroup[i].ubPendingGroupID);
-                    if (pGroup)
+                    pGroup = StrategicMovement.GetGroup(gGarrisonGroup[i].ubPendingGroupID);
+                    if (pGroup is not null)
                     {
                         cnt -= pGroup.ubGroupSize;
                         cnt = Math.Max(cnt, 0);
@@ -4668,8 +4668,8 @@ public class StrategicAI
         {
             if (gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID > 0)
             {
-                pGroup = GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
-                Debug.Assert(pGroup);
+                pGroup = StrategicMovement.GetGroup(gGarrisonGroup[pSector.ubGarrisonID].ubPendingGroupID);
+                Debug.Assert(pGroup is not null);
                 return pGroup;
             }
         }

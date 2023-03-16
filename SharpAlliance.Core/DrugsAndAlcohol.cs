@@ -241,7 +241,7 @@ public class DrugsAndAlcohol
             ItemSubSystem.DeleteObj(pObj);
 
             // dirty interface panel
-            DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
+            Interface.DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
         }
 
         return (usOriginalPoints - usPoints);

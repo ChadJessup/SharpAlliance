@@ -78,7 +78,7 @@ public class Interface
         gfUseSkullIconMessage = fUseSkullIcon;
     }
 
-    private static void RenderUIMessage(VIDEO_OVERLAY? pBlitter)
+    private static void RenderUIMessage(VIDEO_OVERLAY pBlitter)
     {
         // Shade area first...
         VideoSurfaceManager.ShadowVideoSurfaceRect(pBlitter.uiDestBuff, pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth - 2, pBlitter.sY + gusUIMessageHeight - 2);
@@ -88,6 +88,18 @@ public class Interface
         VeldridVideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth, pBlitter.sY + gusUIMessageHeight);
     }
 
+    public static void DirtyMercPanelInterface(SOLDIERTYPE pSoldier, int ubDirtyLevel)
+    {
+        if (pSoldier.bTeam == gbPlayerNum)
+        {
+            // ONly set to a higher level!
+            if (fInterfacePanelDirty < ubDirtyLevel)
+            {
+                fInterfacePanelDirty = ubDirtyLevel;
+            }
+        }
+
+    }
 }
 
 public enum INTERFACE
@@ -147,4 +159,21 @@ public enum ARROWS
     SHOW_UP_ABOVE_CLIMB2 = 0x00400000,
     SHOW_UP_ABOVE_CLIMB3 = 0x00800000,
     SHOW_DOWN_CLIMB = 0x02000000,
+}
+
+public enum FLASH_PORTRAIT
+{
+    // FLASH PORTRAIT CODES
+    STOP = 0,
+    START = 1,
+    WAITING = 2,
+    DELAY = 150,
+
+    // FLASH PORTRAIT PALETTE IDS
+    NOSHADE = 0,
+    STARTSHADE = 1,
+    ENDSHADE = 2,
+    DARKSHADE = 3,
+    GRAYSHADE = 4,
+    LITESHADE = 5,
 }

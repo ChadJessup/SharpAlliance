@@ -92,7 +92,7 @@ public partial class Globals
 
     // ATE: Update this w/ graphic used 
     // Use 3 if / orientation, 4 if \ orientation
-    public int[] gbSAMGraphicList =
+    public static int[] gbSAMGraphicList =
     {
         4,
         3,
@@ -151,27 +151,27 @@ public partial class Globals
     };
 
 
-    public static string[] pVertStrings =
+    public static Dictionary<MAP_ROW, string> pVertStrings = new()
     {
-        "X",
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
+        { (MAP_ROW)0, "X" },
+        { MAP_ROW.A, "A" },
+        { MAP_ROW.B, "B" },
+        { MAP_ROW.C, "C" },
+        { MAP_ROW.D, "D" },
+        { MAP_ROW.E, "E" },
+        { MAP_ROW.F, "F" },
+        { MAP_ROW.G, "G" },
+        { MAP_ROW.H, "H" },
+        { MAP_ROW.I, "I" },
+        { MAP_ROW.J, "J" },
+        { MAP_ROW.K, "K" },
+        { MAP_ROW.L, "L" },
+        { MAP_ROW.M, "M" },
+        { MAP_ROW.N, "N" },
+        { MAP_ROW.O, "O" },
+        { MAP_ROW.P, "P" },
+        { MAP_ROW.Q, "Q" },
+        { MAP_ROW.R, "R" },
     };
 
     public static string[] pHortStrings =

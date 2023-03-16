@@ -15,6 +15,7 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const TileDefines NUMBEROFTILES = TileDefines.NUMBEROFTILES;
     public static bool gfTacticalTraversal = false;
     public static GROUP? gpTacticalTraversalGroup = null;
     public static SOLDIERTYPE? gpTacticalTraversalChosenSoldier = null;
@@ -632,7 +633,7 @@ public partial class Globals
     public static MAPCREATE_STRUCT gMapInformation;
 
     public const Items NOTHING = Items.NONE;
-    public const Items ITEM_NOT_FOUND = (Items)(-1);
+    public const Items ITEM_NOT_FOUND = Items.UNSET;
 
     public const int USABLE = 10;      // minimum work% of items to still be usable
 
@@ -2005,7 +2006,7 @@ public partial class Globals
     public static int[,] gbLastKnownOppLevel = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
     public static Dictionary<TEAM, List<int>> gsPublicLastKnownOppLoc = new(); //int[MAXTEAMS, TOTAL_SOLDIERS];	// team vs. merc
     public static Dictionary<TEAM, List<int>> gbPublicLastKnownOppLevel = new();
-    public static int[] gubPublicNoiseVolume = new int[MAXTEAMS];
+    public static Dictionary<TEAM, int> gubPublicNoiseVolume = new();
     public static int[] gsPublicNoiseGridno = new int[MAXTEAMS];
     public static int[] gbPublicNoiseLevel = new int[MAXTEAMS];
     public static int gfKnowAboutOpponents;

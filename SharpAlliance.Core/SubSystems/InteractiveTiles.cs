@@ -670,7 +670,7 @@ public class InteractiveTiles
     }
 
 
-    void BeginCurInteractiveTileCheck(int bCheckFlags)
+    public static void BeginCurInteractiveTileCheck(int bCheckFlags)
     {
         Globals.gfOverIntTile = false;
 

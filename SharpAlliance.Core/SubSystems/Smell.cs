@@ -459,7 +459,7 @@ public class Smell
          */
 
         // figure out the type of blood that we're dropping
-        if (pSoldier.uiStatusFlags & SOLDIER.MONSTER)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
         {
             if (pSoldier.bLevel == 0)
             {
@@ -485,7 +485,7 @@ public class Smell
     {
         MAP_ELEMENT? pMapElement;
         int bValue;
-        int usIndex, usNewIndex;
+        TileDefines usIndex, usNewIndex;
 
         // OK, based on level, type, display graphics for blood
         pMapElement = (Globals.gpWorldLevelData[sGridNo]);
@@ -508,14 +508,14 @@ public class Smell
                 bValue = BLOOD_FLOOR_STRENGTH(pMapElement.ubBloodInfo);
 
                 // OK, remove tile graphic if one exists....
-                if (TypeRangeExistsInObjectLayer(sGridNo, TileTypeDefines.HUMANBLOOD, TileTypeDefines.CREATUREBLOOD, out usIndex))
+                if (WorldManager.TypeRangeExistsInObjectLayer(sGridNo, TileTypeDefines.HUMANBLOOD, TileTypeDefines.CREATUREBLOOD, out usIndex))
                 {
                     //This has been removed and it is handled by the ubBloodInfo level when restoring a saved game.
                     //Set a flag indicating that the following changes are to go the the maps temp file
                     //ApplyMapChangesToMapTempFile( TRUE );
 
                     // Remove
-                    RemoveObject(sGridNo, usIndex);
+                    WorldManager.RemoveObject(sGridNo, usIndex);
 
                     //ApplyMapChangesToMapTempFile( FALSE );
                 }
@@ -524,15 +524,15 @@ public class Smell
 
                 if (bValue > 0)
                 {
-                    usIndex = (int)((Globals.Random.Next(4) * 4) + ubBloodGraphicLUT[bValue]);
+                    usIndex = (TileDefines)((Globals.Random.Next(4) * 4) + ubBloodGraphicLUT[bValue]);
 
                     if (BLOOD_FLOOR_TYPE(pMapElement.ubSmellInfo) == 0)
                     {
-                        GetTileIndexFromTypeSubIndex(HUMANBLOOD, (int)(usIndex + 1), out usNewIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.HUMANBLOOD, (int)(usIndex + 1), out usNewIndex);
                     }
                     else
                     {
-                        GetTileIndexFromTypeSubIndex(CREATUREBLOOD, (int)(usIndex + 1), out usNewIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.CREATUREBLOOD, (int)(usIndex + 1), out usNewIndex);
                     }
 
                     //This has been removed and it is handled by the ubBloodInfo level when restoring a saved game.
@@ -540,15 +540,14 @@ public class Smell
                     //ApplyMapChangesToMapTempFile( TRUE );
 
                     // Add!
-                    AddObjectToHead(sGridNo, usNewIndex);
+                    WorldManager.AddObjectToHead(sGridNo, usNewIndex);
 
                     //ApplyMapChangesToMapTempFile( FALSE );
 
 
                     // Update rendering!
-                    pMapElement.uiFlags |= MAPELEMENT_REDRAW;
+                    pMapElement.uiFlags |= MAPELEMENTFLAGS.REDRAW;
                     RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
-
                 }
             }
             // Roof

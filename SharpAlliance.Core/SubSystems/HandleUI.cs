@@ -170,7 +170,7 @@ public class HandleUI
     // MAIN TACTICAL UI HANDLER
     static LEVELNODE? pOldIntTile = null;
 
-    ScreenName HandleTacticalUI()
+    public static ScreenName HandleTacticalUI()
     {
         ScreenName ReturnVal = ScreenName.GAME_SCREEN;
         UI_EVENT_DEFINES uiNewEvent;
@@ -988,18 +988,18 @@ public class HandleUI
         {
             Globals.gsRenderHeight += Globals.ROOF_LEVEL_HEIGHT;
             Globals.gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
-            InvalidateWorldRedundency();
+            RenderWorld.InvalidateWorldRedundency();
         }
         else if (Globals.gsInterfaceLevel == 0)
         {
             Globals.gsRenderHeight -= Globals.ROOF_LEVEL_HEIGHT;
             Globals.gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
-            InvalidateWorldRedundency();
+            RenderWorld.InvalidateWorldRedundency();
         }
 
         RenderWorld.SetRenderFlags(RenderingFlags.FULL);
         // Remove any interactive tiles we could be over!
-        BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
+        InteractiveTiles.BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
         Globals.gfPlotNewMovement = true;
         PathAI.ErasePath(false);
     }

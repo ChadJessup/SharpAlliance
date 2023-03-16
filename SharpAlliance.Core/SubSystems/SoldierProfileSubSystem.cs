@@ -427,7 +427,7 @@ public class SoldierProfileSubSystem
             Facts.SetFactFalse(FACT.LARRY_CHANGED);
         }
 
-        DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
+        Interface.DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
 
         return (pSoldier);
     }

@@ -57,7 +57,7 @@ public struct PaletteSubRangeType
 
 public record PaletteRepID();
 
-public enum WorldDirections
+public enum WorldDirections : int
 {
     NORTH = 0,
     NORTHEAST,

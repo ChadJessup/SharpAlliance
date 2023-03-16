@@ -1052,7 +1052,7 @@ public class StructureInternals
         }
     }
 
-    int StructureHeight(STRUCTURE? pStructure)
+    public static int StructureHeight(STRUCTURE? pStructure)
     { // return the height of an object from 1-4
         int ubLoopX, ubLoopY;
         PROFILE? pShape;
@@ -1903,7 +1903,7 @@ public class StructureInternals
     }
 
 
-    BLOCKING GetBlockingStructureInfo(int sGridNo, int bDir, int bNextDir, int bLevel, out int pStructHeight, out STRUCTURE? ppTallestStructure, bool fWallsBlock)
+    public static BLOCKING GetBlockingStructureInfo(int sGridNo, WorldDirections bDir, int bNextDir, int bLevel, out int pStructHeight, out STRUCTURE? ppTallestStructure, bool fWallsBlock)
     {
         STRUCTURE? pCurrent, pStructure;
         STRUCTURE_ON sDesiredLevel;
@@ -1982,7 +1982,6 @@ public class StructureInternals
                             {
                                 return (BLOCKING.TOPLEFT_WINDOW);
                             }
-                            break;
 
                         case WallOrientation.OUTSIDE_TOP_RIGHT:
                         case WallOrientation.INSIDE_TOP_RIGHT:
@@ -1998,7 +1997,6 @@ public class StructureInternals
                             {
                                 return (BLOCKING.TOPRIGHT_WINDOW);
                             }
-                            break;
                     }
                 }
 
@@ -2022,7 +2020,6 @@ public class StructureInternals
                                 (pStructHeight) = StructureHeight(pCurrent);
                                 (ppTallestStructure) = pCurrent;
                                 return (BLOCKING.TOPLEFT_DOOR);
-                                break;
 
                             case WallOrientation.OUTSIDE_TOP_RIGHT:
                             case WallOrientation.INSIDE_TOP_RIGHT:
@@ -2030,11 +2027,11 @@ public class StructureInternals
                                 (pStructHeight) = StructureHeight(pCurrent);
                                 (ppTallestStructure) = pCurrent;
                                 return (BLOCKING.TOPRIGHT_DOOR);
-                                break;
                         }
                     }
                 }
             }
+
             pCurrent = pCurrent.pNext;
         }
 
@@ -2086,7 +2083,7 @@ public class StructureInternals
     {
         STRUCTUREFLAGS uiFlag = (STRUCTUREFLAGS)0x1;
 
-        uiFlag = uiFlag << ubType;
+        uiFlag <<= ubType;
         return (uiFlag);
     }
 

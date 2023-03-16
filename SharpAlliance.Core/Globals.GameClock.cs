@@ -145,6 +145,9 @@ public partial class Globals
     {
         throw new NotImplementedException();
     }
+
+    internal static string sprintf(string format, params object[] arguments)
+        => string.Format(format, arguments);
 }
 
 public enum WARPTIME

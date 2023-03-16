@@ -808,7 +808,7 @@ public class OppList
             //bSubjectDir = atan8(pSoldier.sX,pSoldier.sY,pOpponent.sX,pOpponent.sY);
         }
 
-        if (!TANK(pSoldier) && (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags & SOLDIER.ROBOT) || (pSubject && pSubject.fMuzzleFlash)))
+        if (!TANK(pSoldier) && (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT)) || (pSubject && pSubject.fMuzzleFlash)))
         {
             sDistVisible = MaxDistanceVisible();
         }
@@ -1026,7 +1026,7 @@ public class OppList
         {
             return (-5);
         }
-        else if (pSoldier.uiStatusFlags & SOLDIER.MONSTER)
+        else if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
         {
             return (-10);
         }
@@ -1423,7 +1423,7 @@ public class OppList
           return(success);
        */
 
-        if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER || (pSoldier.uiStatusFlags & SOLDIER.VEHICLE && pSoldier.bTeam == OUR_TEAM))
+        if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE && pSoldier.bTeam == OUR_TEAM)))
         {
             // don't do sight for these
             return (0);
@@ -1668,7 +1668,7 @@ public class OppList
                                         {
                                             //SetSoldierNonNeutral( pSoldier );
                                             pSoldier.bAttitude = Attitudes.ATTACKSLAYONLY;
-                                            TriggerNPCRecord(pSoldier.ubProfile, 28);
+                                            NPC.TriggerNPCRecord(pSoldier.ubProfile, 28);
                                         }
                                         /*
                                         if ( ! gTacticalStatus.uiFlags.HasFlag(INCOMBAT ))
@@ -1717,7 +1717,7 @@ public class OppList
                                         if (Facts.CheckFact(FACT.MARIA_ESCORTED_AT_LEATHER_SHOP, NPCID.MARIA) == true)
                                         {
                                             // she was rescued! yay!
-                                            TriggerNPCRecord(NPCID.ANGEL, 12);
+                                            NPC.TriggerNPCRecord(NPCID.ANGEL, 12);
                                         }
                                     }
                                     else if ((Facts.CheckFact(FACT.ANGEL_LEFT_DEED, NPCID.ANGEL) == true) && (Facts.CheckFact(FACT.ANGEL_MENTIONED_DEED, ANGEL) == false))
@@ -1725,7 +1725,7 @@ public class OppList
                                         AIMain.CancelAIAction(pSoldier, 1);
                                         pSoldier.sAbsoluteFinalDestination = NOWHERE;
                                         EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
-                                        TriggerNPCRecord(NPCID.ANGEL, 20);
+                                        NPC.TriggerNPCRecord(NPCID.ANGEL, 20);
                                         // trigger Angel to walk off afterwards
                                         //TriggerNPCRecord( ANGEL, 24 );
                                     }
@@ -1735,9 +1735,9 @@ public class OppList
                                 case NPCID.ELLIOT:
                                     if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE)))
                                     {
-                                        if (!AreInMeanwhile())
+                                        if (!Meanwhile.AreInMeanwhile())
                                         {
-                                            TriggerNPCRecord(pSoldier.ubProfile, 4);
+                                            NPC.TriggerNPCRecord(pSoldier.ubProfile, 4);
                                             gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE;
                                         }
                                     }
@@ -1763,7 +1763,7 @@ public class OppList
                             case NPCID.IGGY:
                                 if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE)))
                                 {
-                                    TriggerNPCRecord(pSoldier.ubProfile, 9);
+                                    NPC.TriggerNPCRecord(pSoldier.ubProfile, 9);
                                     gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE;
                                     gbPublicOpplist[gbPlayerNum][pSoldier.ubID] = HEARD_THIS_TURN;
                                 }
@@ -2692,7 +2692,7 @@ public class OppList
         int ubNumAllies = 0;
         int cnt;
 
-        if (AreInMeanwhile())
+        if (Meanwhile.AreInMeanwhile())
         {
             return;
         }
@@ -2767,7 +2767,7 @@ public class OppList
                         {
                             if (OK_ENEMY_MERC(pTeamSoldier))
                             {
-                                if (pTeamSoldier.uiStatusFlags & SOLDIER.MONSTER && pSoldier.bOppList[pTeamSoldier.ubID] == SEEN_CURRENTLY)
+                                if (pTeamSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER && pSoldier.bOppList[pTeamSoldier.ubID] == SEEN_CURRENTLY))
                                 {
                                     ubNumEnemies++;
                                 }
@@ -3112,7 +3112,7 @@ public class OppList
                                 }
                             }
 
-                            if (pOpponent.uiStatusFlags & SOLDIER.MONSTER)
+                            if (pOpponent.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
                             {
                                 gfPlayerTeamSawCreatures = true;
                             }
@@ -4549,7 +4549,7 @@ public class OppList
         }
     }
 
-    void MakeNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume, int ubNoiseType)
+    public static void MakeNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume, int ubNoiseType)
     {
         EV_S_NOISE SNoise;
 
@@ -4645,7 +4645,7 @@ public class OppList
     }
 
 
-    void OurNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume, int ubNoiseType)
+    void OurNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume, NOISE ubNoiseType)
     {
         int bSendNoise = 0;
         SOLDIERTYPE? pSoldier;
@@ -4684,8 +4684,7 @@ public class OppList
 
 
 
-    void TheirNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume,
-        int ubNoiseType)
+    void TheirNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume, NOISE ubNoiseType)
     {
         //	SOLDIERTYPE *pSoldier;
 
@@ -4758,7 +4757,8 @@ public class OppList
         int ubSource;
         bool bTellPlayer = false, bHeard;
         bool bSeen;
-        int ubHeardLoudestBy, ubLoudestNoiseDir;
+        int ubHeardLoudestBy;
+        WorldDirections ubLoudestNoiseDir;
         WorldDirections ubNoiseDir;
 
 
@@ -4768,7 +4768,7 @@ public class OppList
         // #endif
 
         // if the base volume itself was negligible
-        if (!ubBaseVolume)
+        if (ubBaseVolume == 0)
         {
             return;
         }
@@ -5009,10 +5009,10 @@ public class OppList
                             case ENEMY_TEAM:
                                 switch (pSoldier.ubProfile)
                                 {
-                                    case WARDEN:
-                                    case GENERAL:
-                                    case SERGEANT:
-                                    case CONRAD:
+                                    case NPCID.WARDEN:
+                                    case NPCID.GENERAL:
+                                    case NPCID.SERGEANT:
+                                    case NPCID.CONRAD:
                                         // ignore soldier team
                                         continue;
                                     default:
@@ -5071,7 +5071,7 @@ public class OppList
                         // ALL RIGHT!  Passed all the tests, this listener hears this noise!!!
                         HearNoise(pSoldier, ubSource, sGridNo, bLevel, ubEffVolume, ubNoiseType, out bSeen);
 
-                        bHeard = 1;
+                        bHeard = true;
 
                         ubNoiseDir = SoldierControl.atan8(CenterX(pSoldier.sGridNo), CenterY(pSoldier.sGridNo), CenterX(sGridNo), CenterY(sGridNo));
 
@@ -5709,7 +5709,7 @@ public class OppList
             // if the quote was faint, say something
             if (ubVolumeIndex == 0)
             {
-                if (!AreInMeanwhile() && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)) && pSoldier.ubTurnsUntilCanSayHeardNoise == 0)
+                if (!Meanwhile.AreInMeanwhile() && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)) && pSoldier.ubTurnsUntilCanSayHeardNoise == 0)
                 {
                     TacticalCharacterDialogue(pSoldier, QUOTE.HEARD_SOMETHING);
                     if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
@@ -5730,7 +5730,7 @@ public class OppList
         void VerifyAndDecayOpplist(SOLDIERTYPE? pSoldier)
         {
             int uiLoop;
-            int? pPersOL;           // pointer into soldier's opponent list
+            int pPersOL;           // pointer into soldier's opponent list
             SOLDIERTYPE? pOpponent;
 
             // reduce all seen/known opponent's turn counters by 1 (towards 0)
@@ -5787,7 +5787,7 @@ public class OppList
                         continue;
                     }
 
-                    pPersOL = pSoldier.bOppList + pOpponent.ubID;
+                    pPersOL = pSoldier.bOppList[pOpponent.ubID];
 
                     // if this opponent is "known" in any way (seen or heard recently)
                     if (pPersOL != NOT_HEARD_OR_SEEN)
@@ -5827,7 +5827,7 @@ public class OppList
 
 
             // if any new opponents were seen
-            if (pSoldier.bNewOppCnt)
+            if (pSoldier.bNewOppCnt > 0)
             {
                 // turns out this is NOT an error!  If this guy was gassed last time he
                 // looked, his sight limit was 2 tiles, and now he may no longer be gassed
@@ -5887,7 +5887,7 @@ public class OppList
                         continue;
                     }
 
-                    pPersOL = pSoldier.bOppList + pOpponent.ubID;
+                    pPersOL = pSoldier.bOppList[pOpponent.ubID];
 
                     // if this opponent is seen currently
                     if (pPersOL == SEEN_CURRENTLY)
@@ -5944,7 +5944,7 @@ public class OppList
                     }
 
                     // point to what the deceased's personal opplist value is
-                    pPersOL = pSoldier.bOppList + pOpponent.ubID;
+                    pPersOL = pSoldier.bOppList[pOpponent.ubID];
 
                     // if this opponent was CURRENTLY SEEN by the deceased (before his
                     // untimely demise)
@@ -5967,7 +5967,7 @@ public class OppList
                                 }
 
                                 // point to what the teammate's personal opplist value is
-                                pMatePersOL = pTeamMate.bOppList + pOpponent.ubID;
+                                pMatePersOL = pTeamMate.bOppList[pOpponent.ubID];
 
                                 // test to see if this value is "seen currently"
                                 if (pMatePersOL == SEEN_CURRENTLY)
@@ -6027,7 +6027,7 @@ public class OppList
                 pSoldier = MercSlots[uiLoop];
 
                 // for every active, living soldier on ANOTHER team
-                if (pSoldier && pSoldier.IsAlive && (pSoldier.bTeam != bTeam))
+                if (pSoldier is not null && pSoldier.IsAlive && (pSoldier.bTeam != bTeam))
                 {
                     // hang a pointer to the byte holding team's public opplist for this merc
                     pbPublOL = gbPublicOpplist[bTeam][pSoldier.ubID];
@@ -6089,19 +6089,19 @@ public class OppList
                 // decay!
                 for (cnt = 0; cnt < guiNumMercSlots; cnt++)
                 {
-                    if (MercSlots[cnt])
+                    if (MercSlots[cnt] is not null)
                     {
                         VerifyAndDecayOpplist(MercSlots[cnt]);
                     }
                 }
 
 
-                for (cnt = 0; cnt < MAXTEAMS; cnt++)
+                for (TEAM t = 0; t < (TEAM)MAXTEAMS; t++)
                 {
-                    if (gTacticalStatus.Team[cnt].bMenInSector > 0)
+                    if (gTacticalStatus.Team[t].bMenInSector > 0)
                     {
                         // decay team's public opplist
-                        DecayPublicOpplist((int)cnt);
+                        DecayPublicOpplist(t);
                     }
                 }
                 // update time
@@ -6181,7 +6181,7 @@ public class OppList
             if (pAttacker.usAttackingWeapon == Items.DART_GUN)
             {
                 // rarely noticed
-                if (SkillChecks(pDefender, NOTICE_DART_CHECK, 0) < 0)
+                if (SkillChecks.SkillCheck(pDefender, SKILLCHECKS.NOTICE_DART_CHECK, 0) < 0)
                 {
                     return;
                 }
@@ -6189,7 +6189,7 @@ public class OppList
 
             // do we need to do checks for life/breath here?
 
-            if (pDefender.ubBodyType == LARVAE_MONSTER || (pDefender.uiStatusFlags & SOLDIER.VEHICLE && pDefender.bTeam == OUR_TEAM))
+            if (pDefender.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER || (pDefender.uiStatusFlags.HasFlag(SOLDIER.VEHICLE) && pDefender.bTeam == OUR_TEAM))
             {
                 return;
             }
@@ -6261,7 +6261,7 @@ public class OppList
                 UpdatePersonal(pDefender, pAttacker.ubID, HEARD_THIS_TURN, pAttacker.sGridNo, pAttacker.bLevel);
 
                 // if the victim is a human-controlled soldier, instantly report publicly
-                if (pDefender.uiStatusFlags & SOLDIER.PC)
+                if (pDefender.uiStatusFlags.HasFlag(SOLDIER.PC))
                 {
                     // mark attacker as having been PUBLICLY heard THIS TURN & remember where
                     UpdatePublic(pDefender.bTeam, pAttacker.ubID, HEARD_THIS_TURN, pAttacker.sGridNo, pAttacker.bLevel);
@@ -6374,7 +6374,7 @@ public class OppList
             {
                 for (ubID = gTacticalStatus.Team[CREATURE_TEAM].bFirstID; ubID <= gTacticalStatus.Team[CREATURE_TEAM].bLastID; ubID++)
                 {
-                    if ((pSoldier.bOppList[ubID] == SEEN_CURRENTLY) && (Globals.MercPtrs[ubID].uiStatusFlags & SOLDIER.MONSTER))
+                    if ((pSoldier.bOppList[ubID] == SEEN_CURRENTLY) && (Globals.MercPtrs[ubID].uiStatusFlags.HasFlag(SOLDIER.MONSTER)))
                     {
                         return (true);
                     }

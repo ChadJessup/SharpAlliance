@@ -122,8 +122,9 @@ namespace SharpAlliance.Core
         public const int FIRST_KEY = 271;
     }
 
-    public enum Items
+    public enum Items : short
     {
+        UNSET = -1,
         NONE = 0,
 
         // weapons

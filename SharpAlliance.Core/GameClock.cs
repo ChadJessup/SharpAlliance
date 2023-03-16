@@ -623,7 +623,7 @@ public class GameClock
     static uint uiLastSecondTime = 0;
     static uint uiLastTimeProcessed = 0;
 
-    void UpdateClock()
+    public static void UpdateClock()
     {
         uint uiNewTime;
         uint uiThousandthsOfThisSecondProcessed;

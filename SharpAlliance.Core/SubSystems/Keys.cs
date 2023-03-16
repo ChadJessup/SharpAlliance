@@ -391,7 +391,7 @@ public class Keys
 
                 if (fDirty)
                 {
-                    InvalidateWorldRedundency();
+                    RenderWorld.InvalidateWorldRedundency();
                     RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 }
             }
@@ -400,14 +400,14 @@ public class Keys
         }
 
         // If we want to be closed but structure is closed
-        if (!fWantToBeOpen && !(pStructure.fFlags & STRUCTUREFLAGS.OPEN))
+        if (!fWantToBeOpen && !(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
         {
             bool fFound = false;
             // Adjust graphic....
 
             // Loop through and and find closed graphic for the opend one....
             cnt = 0;
-            while (gClosedDoorList[cnt] != -1)
+            while (gClosedDoorList[cnt] != (TileDefines)(-1))
             {
                 // IF WE ARE A SHADOW TYPE
                 if (pNode.usIndex == gClosedDoorList[cnt])
@@ -425,7 +425,7 @@ public class Keys
 
                 if (fDirty)
                 {
-                    InvalidateWorldRedundency();
+                    RenderWorld.InvalidateWorldRedundency();
                     RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 }
             }
@@ -466,7 +466,7 @@ public class Keys
 
             if (fDirty)
             {
-                InvalidateWorldRedundency();
+                RenderWorld.InvalidateWorldRedundency();
                 RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             }
         }
