@@ -6391,7 +6391,7 @@ int	gOrangeGlowG[]=
         return (GetDirectionFromXY(sXPos, sYPos, pSoldier));
     }
 
-    int GetDirectionToGridNoFromGridNo(int sGridNoDest, int sGridNoSrc)
+    public static WorldDirections GetDirectionToGridNoFromGridNo(int sGridNoDest, int sGridNoSrc)
     {
         int sXPos2, sYPos2;
         int sXPos, sYPos;
@@ -8379,7 +8379,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         if (pStructureFileRef != null)
         {
             // Can we add structure data for this stance...?
-            if (!OkayToAddStructureToWorld(pSoldier.sGridNo, pSoldier.bLevel, &(pStructureFileRef.pDBStructureRef[gOneCDirection[bDirection]]), usOKToAddStructID))
+            if (!WorldStructures.OkayToAddStructureToWorld(pSoldier.sGridNo, pSoldier.bLevel, &(pStructureFileRef.pDBStructureRef[gOneCDirection[bDirection]]), usOKToAddStructID))
             {
                 return (false);
             }

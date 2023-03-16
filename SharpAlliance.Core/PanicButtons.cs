@@ -371,11 +371,11 @@ public class PanicButtons
         return (AI_ACTION)(-1);
     }
 
-    void InitPanicSystem()
+    public static void InitPanicSystem()
     {
         // start by assuming there is no panic bombs or triggers here
         gTacticalStatus.ubTheChosenOne = NOBODY;
-        FindPanicBombsAndTriggers();
+        WorldItems.FindPanicBombsAndTriggers();
     }
 
     int ClosestPanicTrigger(SOLDIERTYPE? pSoldier)

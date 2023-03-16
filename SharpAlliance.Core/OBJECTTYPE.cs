@@ -24,7 +24,7 @@ public class OBJECTTYPE
     public DetonatorType bDetonatorType;        // timed, remote, or pressure-activated
     public Items usBombItem;              // the usItem of the bomb.
     public sbyte bDelay;                // >=0 values used only
-    public sbyte bFrequency;        // >=0 values used only
+    public int bFrequency;        // >=0 values used only
     public byte ubBombOwner; // side which placed the bomb
     public ACTION_ITEM bActionValue;// this is used by the ACTION_ITEM fake item
     public byte ubTolerance; // tolerance value for panic triggers

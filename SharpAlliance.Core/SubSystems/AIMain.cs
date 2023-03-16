@@ -45,22 +45,11 @@ public class AIMain
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
         {
             //init the panic system
-            InitPanicSystem();
+            PanicButtons.InitPanicSystem();
         }
-
-# if JA2TESTVERSION
-        // Clear the AI debug txt file to prevent it from getting huge
-        if ((DebugFile = fopen("aidebug.txt", "w")) != null)
-        {
-            fputs("\n", DebugFile);
-            fclose(DebugFile);
-        }
-#endif
 
         return (true);
     }
-
-
 
     bool AimingGun(SOLDIERTYPE? pSoldier)
     {
@@ -147,20 +136,11 @@ public class AIMain
 
             if (pSoldier.bTeam != gTacticalStatus.ubCurrentTeam)
             {
-# if JA2BETAVERSION
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "Turning off AI flag for %d because trying to act out of turn", pSoldier.ubID);
-#endif
                 pSoldier.uiStatusFlags &= ~SOLDIER.UNDERAICONTROL;
                 return;
             }
             if (pSoldier.bMoved > 0)
             {
-# if TESTAICONTROL
-                if (gfTurnBasedAI)
-                {
-                    DebugAI(String("Ending turn for %d because set to moved", pSoldier.ubID));
-                }
-#endif
                 // this guy doesn't get to act!
                 EndAIGuysTurn(pSoldier);
                 return;
@@ -218,7 +198,7 @@ public class AIMain
         {
             if (pSoldier.bActive && pSoldier.fMuzzleFlash)
             {
-                EndMuzzleFlash(pSoldier);
+                OppList.EndMuzzleFlash(pSoldier);
             }
 
             EndAIGuysTurn(pSoldier);
@@ -261,15 +241,8 @@ public class AIMain
             // being handled so turn off muzzle flash
             if (pSoldier.fMuzzleFlash)
             {
-                EndMuzzleFlash(pSoldier);
+                OppList.EndMuzzleFlash(pSoldier);
             }
-
-# if TESTAICONTROL
-            if (gfTurnBasedAI)
-            {
-                DebugAI(String("Ending turn for %d because unconscious", pSoldier.ubID));
-            }
-#endif
 
             // stunned/collapsed!
             CancelAIAction(pSoldier, FORCE);
@@ -361,41 +334,22 @@ public class AIMain
             pSoldier.bNewSituation = NOT_NEW_SITUATION;
         }
 
-# if TESTAI
-        DebugMsg(TOPIC_JA2AI, DBG_LEVEL_3, String(".... HANDLING AI FOR %d", pSoldier.ubID));
-#endif
-
         /*********
             Start of new overall AI system
             ********/
-
-
 
         if (gfTurnBasedAI)
         {
             if ((GetJA2Clock() - gTacticalStatus.uiTimeSinceMercAIStart) > DEADLOCK_DELAY && !gfUIInDeadlock)
             {
                 // ATE: Display message that deadlock occured...
-                LiveMessage("Breaking Deadlock");
+                // LiveMessage("Breaking Deadlock");
 
-# if JA2TESTVERSION		
-                // display deadlock message
-                gfUIInDeadlock = true;
-                gUIDeadlockedSoldier = pSoldier.ubID;
-                DebugAI(String("DEADLOCK soldier %d action %s ABC %d", pSoldier.ubID, gzActionStr[pSoldier.bAction], gTacticalStatus.ubAttackBusyCount));
-#else
-
-                // If we are in beta version, also report message!
-# if JA2BETAVERSION
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "Aborting AI deadlock for %d. Please sent DEBUG.TXT file and SAVE.", pSoldier.ubID);
-#endif
-                // just abort
                 EndAIDeadlock();
                 if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL)))
                 {
                     return;
                 }
-#endif
             }
         }
 
@@ -404,7 +358,7 @@ public class AIMain
             // being handled so turn off muzzle flash
             if (pSoldier.fMuzzleFlash)
             {
-                EndMuzzleFlash(pSoldier);
+                OppList.EndMuzzleFlash(pSoldier);
             }
 
             gubAICounter++;
@@ -553,7 +507,7 @@ public class AIMain
         {
             if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.PLAYER_TEAM_DEAD))
             {
-                EndAITurn();
+                TeamTurns.EndAITurn();
                 return;
             }
 
@@ -619,8 +573,7 @@ public class AIMain
 
             // We are at the end, return control to next team
             DebugAI("Ending AI turn\n");
-            EndAITurn();
-
+            TeamTurns.EndAITurn();
         }
         else
         {
@@ -2687,13 +2640,13 @@ public class AIMain
     }
 }
 
-public enum CreatureCalls
+public enum CALL
 {
-    CALL_NONE = 0,
-    CALL_1_PREY,
-    CALL_MULTIPLE_PREY,
-    CALL_ATTACKED,
-    CALL_CRIPPLED,
+    NONE = 0,
+    SINGLE_PREY,
+    MULTIPLE_PREY,
+    ATTACKED,
+    CRIPPLED,
     NUM_CREATURE_CALLS
 }
 

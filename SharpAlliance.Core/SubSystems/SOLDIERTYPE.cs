@@ -17,7 +17,7 @@ public class SOLDIERTYPE
     // DESCRIPTION / STATS, ETC
     public SoldierBodyTypes ubBodyType;
     public int bActionPoints;
-    int bInitialActionPoints;
+    public int bInitialActionPoints;
 
     public SOLDIER uiStatusFlags { get; set; }
 
@@ -282,7 +282,7 @@ public class SOLDIERTYPE
     public int bUnderEscort;
     public int bBypassToGreen;
     public int ubLastMercToRadio;
-    public int bDominantDir;              // AI main direction to face...
+    public WorldDirections bDominantDir;              // AI main direction to face...
     public int bPatrolCnt;                    // number of patrol gridnos
     public int bNextPatrolPnt;            // index to next patrol gridno
     public int[] usPatrolGrid = new int[MAXPATROLGRIDS];// AI list for ptr.orders==PATROL
@@ -316,7 +316,7 @@ public class SOLDIERTYPE
     public int bFrenzied;
     public int bNormalSmell;
     public int bMonsterSmell;
-    public int bMobility;
+    public CREATURE bMobility;
     public int bRTPCombat;
     public AIDEFINES fAIFlags;
 
@@ -373,7 +373,7 @@ public class SOLDIERTYPE
     public WorldDirections bStartFallDir;
     public int fTryingToFall;
     public WorldDirections ubPendingDirection;
-    public int uiAnimSubFlags;
+    public SUB_ANIM uiAnimSubFlags;
     public int bAimShotLocation;
     public int ubHitLocation;
     public int[] pEffectShades = new int[Globals.NUM_SOLDIER_EFFECTSHADES]; // Shading tables for effects

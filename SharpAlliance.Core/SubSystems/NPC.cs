@@ -1,10 +1,24 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class NPC
 {
+    public static void ReplaceLocationInNPCDataFromProfileID(NPCID ubNPC, int sOldGridNo, int sNewGridNo)
+    {
+        if (EnsureQuoteFileLoaded(ubNPC) == false)
+        {
+            // error!!!
+            return;
+        }
+
+        var pNPCQuoteInfoArray = gpNPCQuoteInfoArray[ubNPC];
+
+        ReplaceLocationInNPCData(pNPCQuoteInfoArray, sOldGridNo, sNewGridNo);
+    }
+
     public static void TriggerNPCRecord(NPCID ubTriggerNPC, int ubTriggerNPCRec)
     {
         // Check if we have a quote to trigger...
@@ -44,41 +58,84 @@ public class NPC
     }
 }
 
-public enum Approaches
+public enum APPROACH
 {
-    APPROACH_FRIENDLY = 1,
-    APPROACH_DIRECT,
-    APPROACH_THREATEN,
-    APPROACH_RECRUIT,
-    APPROACH_REPEAT,
+    FRIENDLY = 1,
+    DIRECT,
+    THREATEN,
+    RECRUIT,
+    REPEAT,
 
-    APPROACH_GIVINGITEM,
+    GIVINGITEM,
     NPC_INITIATING_CONV,
     NPC_INITIAL_QUOTE,
     NPC_WHOAREYOU,
     TRIGGER_NPC,
 
-    APPROACH_GIVEFIRSTAID,
-    APPROACH_SPECIAL_INITIAL_QUOTE,
-    APPROACH_ENEMY_NPC_QUOTE,
-    APPROACH_DECLARATION_OF_HOSTILITY,
-    APPROACH_EPC_IN_WRONG_SECTOR,
+    GIVEFIRSTAID,
+    SPECIAL_INITIAL_QUOTE,
+    ENEMY_NPC_QUOTE,
+    DECLARATION_OF_HOSTILITY,
+    EPC_IN_WRONG_SECTOR,
 
-    APPROACH_EPC_WHO_IS_RECRUITED,
-    APPROACH_INITIAL_QUOTE,
-    APPROACH_CLOSING_SHOP,
-    APPROACH_SECTOR_NOT_SAFE,
-    APPROACH_DONE_SLAPPED,  // 20
+    EPC_WHO_IS_RECRUITED,
+    INITIAL_QUOTE,
+    CLOSING_SHOP,
+    SECTOR_NOT_SAFE,
+    DONE_SLAPPED,  // 20
 
-    APPROACH_DONE_PUNCH_0,
-    APPROACH_DONE_PUNCH_1,
-    APPROACH_DONE_PUNCH_2,
-    APPROACH_DONE_OPEN_STRUCTURE,
-    APPROACH_DONE_GET_ITEM,                 // 25
+    DONE_PUNCH_0,
+    DONE_PUNCH_1,
+    DONE_PUNCH_2,
+    DONE_OPEN_STRUCTURE,
+    DONE_GET_ITEM,                 // 25
 
-    APPROACH_DONE_GIVING_ITEM,
-    APPROACH_DONE_TRAVERSAL,
-    APPROACH_BUYSELL,
-    APPROACH_ONE_OF_FOUR_STANDARD,
-    APPROACH_FRIENDLY_DIRECT_OR_RECRUIT,	// 30
+    DONE_GIVING_ITEM,
+    DONE_TRAVERSAL,
+    BUYSELL,
+    ONE_OF_FOUR_STANDARD,
+    FRIENDLY_DIRECT_OR_RECRUIT,	// 30
 }
+
+public enum QUOTE//StandardQuoteIDs
+{
+    INTRO = 0,
+    SUBS_INTRO,
+    FRIENDLY_DEFAULT1,
+    FRIENDLY_DEFAULT2,
+    GIVEITEM_NO,
+    DIRECT_DEFAULT,
+    THREATEN_DEFAULT,
+    RECRUIT_NO,
+    BYE,
+    GETLOST,
+}
+
+[StructLayout(LayoutKind.Explicit, Size = 32)]
+public struct NPCQuoteInfo
+{
+    [FieldOffset(00)] public ushort fFlags;
+    [FieldOffset(02)] public short sRequiredItem;            // item NPC must have to say quote
+    [FieldOffset(04)] public short sRequiredGridno;		// location for NPC req'd to say quote
+    [FieldOffset(06)] public ushort usFactMustBeTrue;        // ...before saying quote
+    [FieldOffset(08)] public ushort usFactMustBeFalse;   // ...before saying quote
+    [FieldOffset(10)] public byte ubQuest;                      // quest must be current to say quote
+    [FieldOffset(11)] public byte ubFirstDay;                   // first day quote can be said
+    [FieldOffset(12)] public byte ubLastDay;                    // last day quote can be said
+    [FieldOffset(13)] public byte ubApproachRequired;   // must use this approach to generate quote
+    [FieldOffset(14)] public byte ubOpinionRequired;    // opinion needed for this quote     13 bytes
+    [FieldOffset(15)] public byte ubQuoteNum;                   // this is the quote to say
+    [FieldOffset(16)] public byte ubNumQuotes;              // total # of quotes to say          15 bytes
+    [FieldOffset(17)] public byte ubStartQuest;
+    [FieldOffset(18)] public byte ubEndQuest;
+    [FieldOffset(19)] public byte ubTriggerNPC;
+    [FieldOffset(20)] public byte ubTriggerNPCRec;
+    [FieldOffset(21)] public byte ubFiller;             //                                       20 bytes
+    [FieldOffset(22)] public ushort usSetFactTrue;
+    [FieldOffset(24)] public ushort usGiftItem;          // item NPC gives to merc after saying quote
+    [FieldOffset(26)] public ushort usGoToGridno;
+    [FieldOffset(28)] public short sActionData;      // special action value
+
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+    [FieldOffset(30)] public byte[] ubUnused;
+} // 32 bytes

@@ -1,4 +1,7 @@
-﻿using SharpAlliance.Core.Managers;
+﻿using System;
+using SharpAlliance.Core.Managers;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -7,6 +10,235 @@ public class AnimationControl
     public const int MAX_ANIMATIONS = 320;
     public const int MAX_FRAMES_PER_ANIM = 100;
     public const int MAX_RANDOM_ANIMS_PER_BODYTYPE = 7;
+
+    public static int DetermineSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
+    {
+        int  usAnimSurface;
+        int  usAltAnimSurface;
+        SoldierBodyTypes ubBodyType;
+        Items usItem;
+        int ubWaterHandIndex = 1;
+        int cnt;
+        bool fAdjustedForItem = false;
+        AnimationStates usNewAnimState;
+
+        ubBodyType = pSoldier.ubBodyType;
+
+        if (SubstituteBodyTypeAnimation(pSoldier, usAnimState, out usNewAnimState))
+        {
+            usAnimState = usNewAnimState;
+        }
+
+        usAnimSurface = gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState];
+
+        // CHECK IF WE CAN DO THIS ANIMATION, IE WE HAVE IT AVAILIBLE
+        if (usAnimSurface == INVALID_ANIMATION)
+        {
+            // WE SHOULD NOT BE USING THIS ANIMATION
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG_BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier->ubBodyType, gAnimControl[usAnimState].zAnimStr);
+            // Set index to FOUND_INVALID_ANIMATION
+            gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState] = FOUND_INVALID_ANIMATION;
+            return (INVALID_ANIMATION_SURFACE);
+        }
+
+        if (usAnimSurface == FOUND_INVALID_ANIMATION)
+        {
+            return (INVALID_ANIMATION_SURFACE);
+        }
+
+
+        // OK - DO SOME MAGIC HERE TO SWITCH BODY TYPES IF WE WANT!
+
+
+        // If we are a queen, pick the 'real' anim surface....
+        if (usAnimSurface == QUEENMONSTERSPIT_SW)
+        {
+            WorldDirections bDir;
+
+            // Assume a target gridno is here.... get direction...
+            // ATE: use +2 in gridno because here head is far from body
+            bDir = SoldierControl.GetDirectionToGridNoFromGridNo((pSoldier.sGridNo + 2), pSoldier.sTargetGridNo);
+
+            return (gusQueenMonsterSpitAnimPerDir[bDir]);
+        }
+
+
+        // IF we are not a merc, return
+        if (pSoldier.ubBodyType > SoldierBodyTypes.REGFEMALE)
+        {
+            return (usAnimSurface);
+        }
+
+        // SWITCH TO DIFFERENT AIM ANIMATION FOR BIG GUY!
+        if (usAnimSurface == BGMSTANDAIM2)
+        {
+            if (pSoldier.uiAnimSubFlags & SUB_ANIM_BIGGUYSHOOT2)
+            {
+                usAnimSurface = BGMSTANDAIM;
+            }
+        }
+
+        // SWITCH TO DIFFERENT STAND ANIMATION FOR BIG GUY!
+        if (usAnimSurface == BGMSTANDING)
+        {
+            if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
+            {
+                usAnimSurface = BGMTHREATENSTAND;
+            }
+        }
+
+        if (usAnimSurface == BGMWALKING)
+        {
+            if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
+            {
+                usAnimSurface = BGMWALK2;
+            }
+        }
+
+        if (usAnimSurface == BGMRUNNING)
+        {
+            if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
+            {
+                usAnimSurface = BGMRUN2;
+            }
+        }
+
+        if (usAnimSurface == BGMRAISE)
+        {
+            if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
+            {
+                usAnimSurface = BGMRAISE2;
+            }
+        }
+
+
+        // ADJUST ANIMATION SURFACE BASED ON TERRAIN
+
+        // CHECK FOR WATER
+        if (MercInWater(pSoldier))
+        {
+
+            // ADJUST BASED ON ITEM IN HAND....
+            usItem = pSoldier.inv[InventorySlot.HANDPOS].usItem;
+
+            // Default it to the 1 ( ie: no rifle )
+            if (usItem != NOTHING)
+            {
+                if ((Item[usItem].usItemClass == IC.GUN || Item[usItem].usItemClass == IC.LAUNCHER) && usItem != Items.ROCKET_LAUNCHER)
+                {
+                    if ((Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)))
+                    {
+                        ubWaterHandIndex = 0;
+                    }
+                }
+            }
+
+            // CHANGE BASED ON HIEGHT OF WATER
+            usAltAnimSurface = gubAnimSurfaceMidWaterSubIndex[pSoldier.ubBodyType][usAnimState][ubWaterHandIndex];
+
+            if (usAltAnimSurface != INVALID_ANIMATION)
+            {
+                usAnimSurface = usAltAnimSurface;
+            }
+
+        }
+        else
+        {
+            // ADJUST BASED ON ITEM IN HAND....
+            usItem = pSoldier.inv[InventorySlot.HANDPOS].usItem;
+
+            if (!(Item[usItem].usItemClass == IC.GUN) && !(Item[usItem].usItemClass == IC.LAUNCHER) || usItem == Items.ROCKET_LAUNCHER)
+            {
+                if (usAnimState == AnimationStates.STANDING)
+                {
+                    usAnimSurface = gusNothingBreath[pSoldier.ubBodyType];
+                    fAdjustedForItem = true;
+                }
+                else
+                {
+                    usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
+
+                    if (usAltAnimSurface != INVALID_ANIMATION)
+                    {
+                        usAnimSurface = usAltAnimSurface;
+                        fAdjustedForItem = true;
+                    }
+                }
+            }
+            else
+            {
+                // CHECK FOR HANDGUN
+                if ((Item[usItem].usItemClass == IC.GUN || Item[usItem].usItemClass == IC.LAUNCHER) && usItem != Items.ROCKET_LAUNCHER)
+                {
+                    if (!(Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)))
+                    {
+                        usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
+                        if (usAltAnimSurface != INVALID_ANIMATION)
+                        {
+                            usAnimSurface = usAltAnimSurface;
+                            fAdjustedForItem = true;
+                        }
+
+                        // Look for good two pistols sub anim.....
+                        if (gDoubleHandledSub.usAnimState == usAnimState)
+                        {
+                            // Do we carry two pistols...
+                            if (Item[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem].usItemClass == IC.GUN)
+                            {
+                                usAnimSurface = gDoubleHandledSub.usAnimationSurfaces[pSoldier.ubBodyType];
+                                fAdjustedForItem = true;
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
+
+                    if (usAltAnimSurface != INVALID_ANIMATION)
+                    {
+                        usAnimSurface = usAltAnimSurface;
+                        fAdjustedForItem = true;
+                    }
+                }
+            }
+
+            // Based on if we have adjusted for item or not... check for injured status...
+            if (fAdjustedForItem)
+            {
+                // If life below thresthold for being injured 
+                if (pSoldier.bLife < INJURED_CHANGE_THREASHOLD)
+                {
+                    // ADJUST FOR INJURED....
+                    for (cnt = 0; cnt < NUM_INJURED_SUBS; cnt++)
+                    {
+                        if (gNothingInjuredSub[cnt].usAnimState == usAnimState)
+                        {
+                            usAnimSurface = gNothingInjuredSub[cnt].usAnimationSurfaces[pSoldier.ubBodyType];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // If life below thresthold for being injured 
+                if (pSoldier.bLife < INJURED_CHANGE_THREASHOLD)
+                {
+                    // ADJUST FOR INJURED....
+                    for (cnt = 0; cnt < NUM_INJURED_SUBS; cnt++)
+                    {
+                        if (gRifleInjuredSub[cnt].usAnimState == usAnimState)
+                        {
+                            usAnimSurface = gRifleInjuredSub[cnt].usAnimationSurfaces[pSoldier.ubBodyType];
+                        }
+                    }
+                }
+            }
+        }
+     
+        return (usAnimSurface);
+    }
 
     public static int GetSoldierAnimationSurface(SOLDIERTYPE? pSoldier, AnimationStates usAnimState)
     {
@@ -428,4 +660,12 @@ public struct ANIMCONTROLTYPE
     public AnimationHeights ubHeight;
     public AnimationHeights ubEndHeight;
     public int bProfile;
+}
+
+// DEFINES FOR BODY TYPE SUBSTITUTIONS
+[Flags]
+public enum SUB_ANIM
+{
+    BIGGUYSHOOT2 = 0x00000001,
+    BIGGUYTHREATENSTANCE = 0x00000002,
 }

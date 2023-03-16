@@ -208,7 +208,7 @@ public class TeamTurns
         }
     }
 
-    void EndAITurn()
+    public static void EndAITurn()
     {
         SOLDIERTYPE? pSoldier;
         int cnt;
@@ -1927,7 +1927,7 @@ public class TeamTurns
 
             ubTargetSmallerHalf = EffectiveExpLevel(pTargetSoldier) / 2;
             ubTargetLargerHalf = EffectiveExpLevel(pTargetSoldier) - ubTargetSmallerHalf;
-            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached > 0 & gbFirstApproachFlags[(int)Approaches.APPROACH_THREATEN - 1] == 1)
+            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached > 0 & gbFirstApproachFlags[(int)APPROACH.APPROACH_THREATEN - 1] == 1)
             {
                 // gains 1 to 2 points
                 ubTargetSmallerHalf += 1;

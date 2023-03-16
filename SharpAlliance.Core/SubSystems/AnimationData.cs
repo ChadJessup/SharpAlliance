@@ -49,7 +49,7 @@ public class AnimationData
 
                 if (FileManager.FileExists(sFilename))
                 {
-                    pStructureFileRef = this.structure.LoadStructureFile(sFilename);
+                    pStructureFileRef = StructureInternals.LoadStructureFile(sFilename);
                     if (pStructureFileRef == null)
                     {
                         // SET_ERROR("Animation structure file load failed - %s", sFilename);
@@ -149,7 +149,7 @@ public enum StructData
 // RGM = Regular Male
 // (RG) = Body desc ( Regular - RG, Short Stocky ( SS ), etc
 // (M) = Sex, Male, female
-public enum AnimationSurfaceTypes
+public enum AnimationSurfaceTypes : ushort
 {
     RGMBASICWALKING = 0,
     RGMSTANDING,

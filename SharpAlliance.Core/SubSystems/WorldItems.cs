@@ -5,6 +5,87 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class WorldItems
 {
+    public static void FindPanicBombsAndTriggers()
+    {
+        // This function searches the bomb table to find panic-trigger-tuned bombs and triggers
+
+        int uiBombIndex;
+        OBJECTTYPE? pObj;
+        STRUCTURE? pSwitch;
+        int sGridNo = NOWHERE;
+        bool fPanicTriggerIsAlarm = false;
+        int bPanicIndex;
+
+        for (uiBombIndex = 0; uiBombIndex < guiNumWorldBombs; uiBombIndex++)
+        {
+            if (gWorldBombs[uiBombIndex].fExists)
+            {
+                pObj = (gWorldItems[gWorldBombs[uiBombIndex].iItemIndex].o);
+                if (pObj.bFrequency == PANIC_FREQUENCY || pObj.bFrequency == PANIC_FREQUENCY_2 || pObj.bFrequency == PANIC_FREQUENCY_3)
+                {
+                    if (pObj.usItem == Items.SWITCH)
+                    {
+                        sGridNo = gWorldItems[gWorldBombs[uiBombIndex].iItemIndex].sGridNo;
+                        switch (pObj.bFrequency)
+                        {
+                            case PANIC_FREQUENCY:
+                                bPanicIndex = 0;
+                                break;
+
+                            case PANIC_FREQUENCY_2:
+                                bPanicIndex = 1;
+                                break;
+
+                            case PANIC_FREQUENCY_3:
+                                bPanicIndex = 2;
+                                break;
+
+                            default:
+                                // augh!!!
+                                continue;
+                        }
+
+                        pSwitch = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.SWITCH);
+                        if (pSwitch is not null)
+                        {
+                            switch (pSwitch.ubWallOrientation)
+                            {
+                                case WallOrientation.INSIDE_TOP_LEFT:
+                                case WallOrientation.OUTSIDE_TOP_LEFT:
+                                    sGridNo += IsometricUtils.DirectionInc(WorldDirections.SOUTH);
+                                    break;
+                                case WallOrientation.INSIDE_TOP_RIGHT:
+                                case WallOrientation.OUTSIDE_TOP_RIGHT:
+                                    sGridNo += IsometricUtils.DirectionInc(WorldDirections.EAST);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        gTacticalStatus.sPanicTriggerGridNo[bPanicIndex] = sGridNo;
+                        gTacticalStatus.ubPanicTolerance[bPanicIndex] = pObj.ubTolerance;
+                        if (pObj.fFlags.HasFlag(OBJECT.ALARM_TRIGGER))
+                        {
+                            gTacticalStatus.bPanicTriggerIsAlarm[bPanicIndex] = 1;
+                        }
+
+                        gTacticalStatus.fPanicFlags |= PANIC.TRIGGERS_HERE;
+                        bPanicIndex++;
+                        if (bPanicIndex == NUM_PANIC_TRIGGERS)
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        gTacticalStatus.fPanicFlags |= PANIC.BOMBS_HERE;
+                    }
+                }
+            }
+        }
+    }
+
     public static void RemoveItemFromWorld(int iItemIndex)
     {
         // Ensure the item still exists, then if it's a bomb,

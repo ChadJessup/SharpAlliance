@@ -937,7 +937,7 @@ public class OppList
         return (sDistVisible);
     }
 
-    void EndMuzzleFlash(SOLDIERTYPE? pSoldier)
+    public static void EndMuzzleFlash(SOLDIERTYPE? pSoldier)
     {
         int uiLoop;
         SOLDIERTYPE? pOtherSoldier;

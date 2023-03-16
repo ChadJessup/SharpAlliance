@@ -264,7 +264,7 @@ public class StructureInternals
         return (true);
     }
 
-    public static STRUCTURE_FILE_REF? LoadStructureFile(STR szFileName)
+    public static STRUCTURE_FILE_REF? LoadStructureFile(string szFileName)
     { // NB should be passed in expected number of structures so we can check equality
         int uiDataSize = 0;
         bool fOk;

@@ -898,7 +898,7 @@ public class ExplosionControl
 
                         SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
-                        AddStructToHead(sBaseGridNo, usTileIndex);
+                        WorldManager.AddStructToHead(sBaseGridNo, usTileIndex);
 
                         SaveLoadMap.ApplyMapChangesToMapTempFile(false);
 

@@ -360,16 +360,82 @@ public class WorldManager
             // Make sure it's ALWAYS after the roof ( if any )
             if (fRoofFound)
             {
-                InsertStructIndex(iMapIndex, usIndex, ubRoofLevel);
+                WorldManager.InsertStructIndex(iMapIndex, usIndex, ubRoofLevel);
             }
             else
             {
-                AddStructToTail(iMapIndex, usIndex);
+                WorldManager.AddStructToTail(iMapIndex, usIndex);
             }
         }
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
         // Could not find it, return false
+        return (true);
+    }
+
+    public static bool InsertStructIndex(int iMapIndex, TileDefines usIndex, int ubLevel)
+    {
+        LEVELNODE? pStruct = null;
+        LEVELNODE? pNextStruct = null;
+        int level = 0;
+        bool CanInsert = false;
+
+        pStruct = gpWorldLevelData[iMapIndex].pStructHead;
+
+        // If we want to insert at head;
+        if (ubLevel == 0)
+        {
+            return (AddStructToHead(iMapIndex, usIndex));
+        }
+
+
+        // Allocate memory for new item
+        CHECKF(CreateLevelNode(out pNextStruct) != false);
+
+        pNextStruct.usIndex = usIndex;
+
+        // Move to index before insertion
+        while (pStruct != null)
+        {
+            if (level == (ubLevel - 1))
+            {
+                CanInsert = true;
+                break;
+            }
+
+            pStruct = pStruct.pNext;
+            level++;
+
+        }
+
+        // Check if level has been macthed
+        if (!CanInsert)
+        {
+            MemFree(pNextStruct);
+            guiLevelNodes--;
+            return (false);
+        }
+
+        if (usIndex < NUMBEROFTILES)
+        {
+            if (gTileDatabase[usIndex].pDBStructureRef != null)
+            {
+                if (WorldStructures.AddStructureToWorld(iMapIndex, 0, gTileDatabase[usIndex].pDBStructureRef, pNextStruct) == false)
+                {
+                    MemFree(pNextStruct);
+                    guiLevelNodes--;
+                    return (false);
+                }
+            }
+        }
+
+        // Set links, according to position!
+        pNextStruct.pNext = pStruct.pNext;
+        pStruct.pNext = pNextStruct;
+
+        //CheckForAndAddTileCacheStructInfo( pNextStruct, (INT16)iMapIndex, usIndex );
+
+        RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
         return (true);
     }
 
