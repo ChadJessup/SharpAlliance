@@ -94,7 +94,7 @@ public class Keys
             if (pSoldier.bLife >= Globals.OKLIFE && pSoldier.sGridNo != Globals.NOWHERE && pSoldier.bActive && pSoldier.bInSector)
             {
                 // is he close enough to see that gridno if he turns his head?
-                sDistVisible = DistanceVisible(pSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, sGridNo, 0);
+                sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, sGridNo, 0);
 
                 if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) <= sDistVisible)
                 {
@@ -115,7 +115,7 @@ public class Keys
                 for (cnt2 = 0; cnt2 < 8; cnt2++)
                 {
                     usNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bDirs[cnt2]));
-                    sDistVisible = DistanceVisible(pSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, usNewGridNo, 0);
+                    sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, usNewGridNo, 0);
 
                     if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, usNewGridNo) <= sDistVisible)
                     {
@@ -167,7 +167,7 @@ public class Keys
             sGridNo = pDoorStatus.sGridNo;
 
             // is he close enough to see that gridno if he turns his head?
-            sDistVisible = DistanceVisible(pSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, sGridNo, 0);
+            sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, sGridNo, 0);
 
             if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) <= sDistVisible)
             {

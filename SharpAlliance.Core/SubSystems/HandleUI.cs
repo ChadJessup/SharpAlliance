@@ -967,7 +967,7 @@ public class HandleUI
 
             Globals.gTacticalStatus.ubAttackBusyCount++;
 
-            EVENT_SoldierGotHit(pSoldier, 1, bDamage, 10, pSoldier.bDirection, 320, Globals.NOBODY, FIRE_WEAPON_NO_SPECIAL, pSoldier.bAimShotLocation, 0, (int)Globals.NOWHERE);
+            SoldierControl.EVENT_SoldierGotHit(pSoldier, Items.GLOCK_17, bDamage, 10, pSoldier.bDirection, 320, Globals.NOBODY, FIRE_WEAPON_NO_SPECIAL, pSoldier.bAimShotLocation, 0, (int)Globals.NOWHERE);
 
         }
 
@@ -1608,7 +1608,7 @@ public class HandleUI
                         //	pSoldier.usRTPendingMovementAnim  = pSoldier.usUIMovementMode;
                         //}
                         //else					
-                        if (EVENT_InternalGetNewSoldierPath(pSoldier, usMapPos, pSoldier.usUIMovementMode, true, false))
+                        if (SoldierControl.EVENT_InternalGetNewSoldierPath(pSoldier, usMapPos, pSoldier.usUIMovementMode, 1, false))
                         {
                             InternalDoMercBattleSound(pSoldier, BATTLE_SOUND_OK1, BATTLE_SND_LOWER_VOLUME);
                         }
@@ -1708,7 +1708,7 @@ public class HandleUI
                         pSoldier.ubPendingAction = MERC.NO_PENDING_ACTION;
 
                         {
-                            EVENT_InternalGetNewSoldierPath(pSoldier, sDestGridNo, pSoldier.usUIMovementMode, true, pSoldier.fNoAPToFinishMove);
+                            SoldierControl.EVENT_InternalGetNewSoldierPath(pSoldier, sDestGridNo, pSoldier.usUIMovementMode, 1, pSoldier.fNoAPToFinishMove);
                         }
 
                         if (pSoldier.usPathDataSize > 5)
@@ -4404,7 +4404,7 @@ public class HandleUI
 
         //ATE: Check if we have good LOS
         // is he close enough to see that gridno if he turns his head?
-        sDistVisible = DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, sTargetGridNo, pSoldier.bLevel);
+        sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, sTargetGridNo, pSoldier.bLevel);
 
         if (uiRange <= NPC_TALK_RADIUS)
         {
@@ -4780,7 +4780,7 @@ public class HandleUI
                     pSoldier.ubPendingAction = MERC.NO_PENDING_ACTION;
 
 
-                    if (EVENT_InternalGetNewSoldierPath(pSoldier, sDestGridNo, pSoldier.usUIMovementMode, true, pSoldier.fNoAPToFinishMove))
+                    if (SoldierControl.EVENT_InternalGetNewSoldierPath(pSoldier, sDestGridNo, pSoldier.usUIMovementMode, 1, pSoldier.fNoAPToFinishMove))
                     {
                         InternalDoMercBattleSound(pSoldier, BATTLE_SOUND_OK1, BATTLE_SND_LOWER_VOLUME);
                     }
@@ -4960,7 +4960,7 @@ public class HandleUI
     {
         SOLDIERTYPE? pSoldier;
         int usMapPos;
-        byte bDirection;
+        WorldDirections bDirection;
 
         // Here, first get map screen
         if (!Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier))
@@ -4985,15 +4985,15 @@ public class HandleUI
         pSoldier.ubPendingAction = MERC.NO_PENDING_ACTION;
 
         // Get direction to goto....
-        bDirection = (byte)GetDirectionFromGridNo(usMapPos, pSoldier);
+        bDirection = GetDirectionFromGridNo(usMapPos, pSoldier);
 
 
         pSoldier.fDontChargeTurningAPs = true;
-        EVENT_InternalSetSoldierDesiredDirection(pSoldier, bDirection, false, pSoldier.usAnimState);
+        SoldierControl.EVENT_InternalSetSoldierDesiredDirection(pSoldier, bDirection, false, pSoldier.usAnimState);
         pSoldier.fTurningUntilDone = true;
         // ATE: Reset flag to go back to prone...
         //pSoldier.fTurningFromPronePosition = TURNING_FROM_PRONE_OFF;
-        pSoldier.usPendingAnimation = AnimationStates.JUMP_OVER_BLOCKING.PERSON;
+        pSoldier.usPendingAnimation = AnimationStates.JUMP_OVER_BLOCKING_PERSON;
 
 
         return (ScreenName.GAME_SCREEN);
@@ -5212,7 +5212,7 @@ public class HandleUI
                 {
                     //ATE: Check if we have good LOS
                     // is he close enough to see that gridno if he turns his head?
-                    sDistVisible = DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pTSoldier.sGridNo, pTSoldier.bLevel);
+                    sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pTSoldier.sGridNo, pTSoldier.bLevel);
 
                     // Check LOS!
                     if (!SoldierTo3DLocationLineOfSightTest(pSoldier, pTSoldier.sGridNo, pTSoldier.bLevel, 3, (byte)sDistVisible, true))
@@ -5359,7 +5359,7 @@ public class HandleUI
                     pSoldier.ubPendingActionAnimCount = 0;
 
                     // WALK UP TO DEST FIRST
-                    EVENT_InternalGetNewSoldierPath(pSoldier, sGoodGridNo, pSoldier.usUIMovementMode, true, pSoldier.fNoAPToFinishMove);
+                    SoldierControl.EVENT_InternalGetNewSoldierPath(pSoldier, sGoodGridNo, pSoldier.usUIMovementMode, 1, pSoldier.fNoAPToFinishMove);
 
                     return (false);
                 }
@@ -5879,7 +5879,7 @@ public class HandleUI
                         if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pOverSoldier.sGridNo) == 1)
                         {
                             // Check if we have LOS to them....
-                            sDistVisible = DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pOverSoldier.sGridNo, pOverSoldier.bLevel);
+                            sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pOverSoldier.sGridNo, pOverSoldier.bLevel);
 
                             if (SoldierTo3DLocationLineOfSightTest(pSoldier, pOverSoldier.sGridNo, pOverSoldier.bLevel, (byte)3, (byte)sDistVisible, true))
                             {

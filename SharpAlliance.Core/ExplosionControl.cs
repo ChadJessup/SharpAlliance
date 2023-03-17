@@ -1120,7 +1120,8 @@ public class ExplosionControl
         {
             sNewWoundAmt = 0;
         }
-        EVENT_SoldierGotHit(pSoldier, usItem, sNewWoundAmt, sBreathAmt, ubDirection, (int)uiDist, ubOwner, 0, AnimationHeights.ANIM_CROUCH, sSubsequent, sBombGridNo);
+
+        SoldierControl.EVENT_SoldierGotHit(pSoldier, usItem, sNewWoundAmt, sBreathAmt, ubDirection, (int)uiDist, ubOwner, 0, AnimationHeights.ANIM_CROUCH, sSubsequent, sBombGridNo);
 
         pSoldier.ubMiscSoldierFlags |= SOLDIER_MISC.HURT_BY_EXPLOSION;
 
@@ -2547,7 +2548,7 @@ public class ExplosionControl
                                     PerformItemAction( sDoorSpot, &DoorCloser );
 
                                     // have sex
-                                    HandleNPCDoAction( 0, NPC_ACTION_SEX, 0 );	
+                                    HandleNPCDoAction( 0, NPC_ACTION.SEX, 0 );	
 
                                     // move the merc outside of the room again
                                     sTeleportSpot = FindGridNoFromSweetSpotWithStructData( MercPtrs[ ubID ], STANDING, sTeleportSpot, 2, &ubDirection, false );

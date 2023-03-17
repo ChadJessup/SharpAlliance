@@ -605,7 +605,7 @@ public class StrategicMines
     }
 
 
-    int CalcMaxPlayerIncomeFromMines()
+    public static int CalcMaxPlayerIncomeFromMines()
     {
         int iTotal = 0;
         MINE bCounter = 0;

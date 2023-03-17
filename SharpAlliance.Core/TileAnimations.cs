@@ -497,7 +497,7 @@ public class TileAnimations
 
                                 case ANI_KEYFRAME.CHAIN_WATER_EXPLOSION:
 
-                                    ExplosionControl.IgniteExplosion(pNode.ubUserData2, pNode.pLevelNode.sRelativeX, pNode.pLevelNode.sRelativeY, 0, pNode.sGridNo, (int)(pNode.uiUserData), 0);
+                                    ExplosionControl.IgniteExplosion(pNode.ubUserData2, pNode.pLevelNode.sRelativeX, pNode.pLevelNode.sRelativeY, 0, pNode.sGridNo, (Items)(pNode.uiUserData), 0);
                                     break;
 
                                 case ANI_KEYFRAME.DO_SOUND:
@@ -524,7 +524,7 @@ public class TileAnimations
                                     {
                                         // Do sound....
                                         // PlayJA2Sample( AIR_ESCAPING_1, RATE_11025, SoundVolume( HIGHVOLUME, pNode.sGridNo ), 1, SoundDir( pNode.sGridNo ) );			
-                                        NewSmokeEffect(pNode.sGridNo, (int)pNode.uiUserData, gExplosionData[pNode.uiUserData3].Params.bLevel, (int)pNode.ubUserData2);
+                                        NewSmokeEffect(pNode.sGridNo, (int)pNode.uiUserData, gExplosionData[(int)pNode.uiUserData3].Params.bLevel, (int)pNode.ubUserData2);
                                     }
                                     else
                                     {

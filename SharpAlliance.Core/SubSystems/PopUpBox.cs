@@ -1,5 +1,7 @@
 ﻿using SixLabors.ImageSharp;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class PopUpBox

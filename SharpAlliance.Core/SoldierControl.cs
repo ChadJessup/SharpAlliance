@@ -1644,15 +1644,15 @@ public class SoldierControl
                         if (pEnemy.bActive && pEnemy.bInSector && (pEnemy.bLife >= OKLIFE))
                         {
                             // no points for sneaking by the neutrals & friendlies!!!
-                            if (!pEnemy.bNeutral && (pSoldier.bSide != pEnemy.bSide) && (pEnemy.ubBodyType != COW && pEnemy.ubBodyType != CROW))
+                            if (pEnemy.bNeutral == 0 && (pSoldier.bSide != pEnemy.bSide) && (pEnemy.ubBodyType != SoldierBodyTypes.COW && pEnemy.ubBodyType != SoldierBodyTypes.CROW))
                             {
                                 // if we SEE this particular oppponent, and he DOESN'T see us... and he COULD see us...
                                 if ((pSoldier.bOppList[cnt] == SEEN_CURRENTLY) &&
                                      pEnemy.bOppList[pSoldier.ubID] != SEEN_CURRENTLY &&
-                                     IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pEnemy.sGridNo) < DistanceVisible(pEnemy, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, pSoldier.sGridNo, pSoldier.bLevel))
+                                     IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pEnemy.sGridNo) < OppList.DistanceVisible(pEnemy, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pSoldier.sGridNo, pSoldier.bLevel))
                                 {
                                     // AGILITY (5):  Soldier snuck 1 square past unaware enemy
-                                    Campaign.StatChange(pSoldier, Stat.AGILAMT, 5, false);
+                                    Campaign.StatChange(pSoldier, Stat.AGILAMT, 5, 0);
                                     // Keep looping, we'll give'em 1 point for EACH such enemy!
                                 }
                             }
@@ -2255,7 +2255,7 @@ public class SoldierControl
     }
 
     // ATE: THIS FUNCTION IS USED FOR ALL SOLDIER TAKE DAMAGE FUNCTIONS!
-    void EVENT_SoldierGotHit(SOLDIERTYPE? pSoldier, Items usWeaponIndex, int sDamage, int sBreathLoss, WorldDirections bDirection, int sRange, int ubAttackerID, int ubSpecial, int ubHitLocation, int sSubsequent, int sLocationGrid)
+    public static void EVENT_SoldierGotHit(SOLDIERTYPE? pSoldier, Items usWeaponIndex, int sDamage, int sBreathLoss, WorldDirections bDirection, int sRange, int ubAttackerID, int ubSpecial, int ubHitLocation, int sSubsequent, int sLocationGrid)
     {
         int ubCombinedLoss, ubVolume;
         TAKE_DAMAGE ubReason;
@@ -3499,7 +3499,7 @@ public class SoldierControl
         return (bTurningIncrement);
     }
 
-    private static void EVENT_InternalSetSoldierDesiredDirection(SOLDIERTYPE? pSoldier, WorldDirections usNewDirection, bool fInitalMove, AnimationStates usAnimState)
+    public static void EVENT_InternalSetSoldierDesiredDirection(SOLDIERTYPE? pSoldier, WorldDirections usNewDirection, bool fInitalMove, AnimationStates usAnimState)
     {
         //if ( usAnimState == WALK_BACKWARDS )
         if (pSoldier.bReverse && usAnimState != AnimationStates.SIDE_STEP)
@@ -3656,13 +3656,13 @@ public class SoldierControl
     }
 
 
-    void EVENT_BeginMercTurn(SOLDIERTYPE? pSoldier, bool fFromRealTime, int iRealTimeCounter)
+    public static void EVENT_BeginMercTurn(SOLDIERTYPE? pSoldier, bool fFromRealTime, int iRealTimeCounter)
     {
         // NB realtimecounter is not used, always passed in as 0 now!
 
         int iBlood;
 
-        if (pSoldier.bUnderFire)
+        if (pSoldier.bUnderFire > 0)
         {
             // UnderFire now starts at 2 for "under fire this turn",
             // down to 1 for "under fire last turn", to 0.

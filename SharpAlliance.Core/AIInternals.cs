@@ -20,7 +20,7 @@ public struct ATTACKTYPE
     public int sTarget;                              // target gridno of this attack
     public int bTargetLevel;                  // target level of this attack
     public int ubAPCost;                         // how many APs the attack will use up
-    public int bWeaponIn;							// the inv slot of the weapon in question
+    public InventorySlot bWeaponIn;							// the inv slot of the weapon in question
 }
 
 public enum URGENCY

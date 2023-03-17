@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class EXITGRIDS

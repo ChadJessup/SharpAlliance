@@ -1,5 +1,6 @@
 ﻿using System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 

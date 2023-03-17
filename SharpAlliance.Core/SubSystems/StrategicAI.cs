@@ -502,7 +502,7 @@ public class StrategicAI
 
             //Now post an event which allows them to check adjacent sectors periodically.
             //Spread them out so that they process at different times.
-            AddPeriodStrategicEventWithOffset(EVENT_CHECK_ENEMY_CONTROLLED_SECTOR, 140 - 20 * gGameOptions.ubDifficultyLevel + Globals.Random.Next(4), 475 + i, gGarrisonGroup[i].ubSectorID);
+            AddPeriodStrategicEventWithOffset(EVENT.CHECK_ENEMY_CONTROLLED_SECTOR, 140 - 20 * gGameOptions.ubDifficultyLevel + Globals.Random.Next(4), 475 + i, gGarrisonGroup[i].ubSectorID);
         }
         //Now, initialize each of the patrol groups
         for (i = 0; i < giPatrolArraySize; i++)

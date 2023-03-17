@@ -4,7 +4,7 @@ using SharpAlliance.Core.Screens;
 using System;
 using System.Collections.Generic;
 using Veldrid;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 

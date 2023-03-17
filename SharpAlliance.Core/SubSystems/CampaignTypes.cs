@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class CampaignTypes

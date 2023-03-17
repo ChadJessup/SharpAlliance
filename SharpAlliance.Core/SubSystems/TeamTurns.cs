@@ -178,7 +178,7 @@ public class TeamTurns
             }
             */
 
-        if (INTERRUPT_QUEUED())
+        if (INTERRUPT_QUEUED)
         {
             EndInterrupt(false);
         }
@@ -336,7 +336,7 @@ public class TeamTurns
                     if (pSoldier.bActive && pSoldier.IsAlive)
                     {
                         // decay personal opplist, and refresh APs and BPs
-                        EVENT_BeginMercTurn(pSoldier, false, 0);
+                        SoldierControl.EVENT_BeginMercTurn(pSoldier, false, 0);
                     }
                 }
 
@@ -847,7 +847,7 @@ public class TeamTurns
 
                         if (Globals.MercPtrs[gusSelectedSoldier].sGridNo != Globals.MercPtrs[gusSelectedSoldier].sFinalDestination)
                         {
-                            EVENT_GetNewSoldierPath(Globals.MercPtrs[gusSelectedSoldier], Globals.MercPtrs[gusSelectedSoldier].sFinalDestination, Globals.MercPtrs[gusSelectedSoldier].usUIMovementMode);
+                            SoldierControl.EVENT_GetNewSoldierPath(Globals.MercPtrs[gusSelectedSoldier], Globals.MercPtrs[gusSelectedSoldier].sFinalDestination, Globals.MercPtrs[gusSelectedSoldier].usUIMovementMode);
                         }
                         else
                         {
@@ -1060,7 +1060,7 @@ public class TeamTurns
             if (pSoldier.bTeam == Globals.gTacticalStatus.ubCurrentTeam)
             {
                 // if this is a player's a merc or civilian
-                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)) || PTR_CIVILIAN)
+                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)) || PTR_CIVILIAN(pSoldier))
                 {
                     // then they are not allowed to interrupt their own team
                     return (false);
@@ -1157,7 +1157,7 @@ public class TeamTurns
             if (pSoldier.bSide == pOpponent.bSide)
             {
                 // human/civilians on same side can't interrupt each other
-                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)) || PTR_CIVILIAN)
+                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)) || PTR_CIVILIAN(pSoldier))
                 {
                     return (false);
                 }
@@ -1227,7 +1227,7 @@ public class TeamTurns
                 }
 
                 // if the soldier isn't currently crouching
-                if (!PTR_CROUCHED)
+                if (!PTR_CROUCHED(pSoldier))
                 {
                     ubMinPtsNeeded = AP.CROUCH;
                 }
@@ -1927,7 +1927,7 @@ public class TeamTurns
 
             ubTargetSmallerHalf = EffectiveExpLevel(pTargetSoldier) / 2;
             ubTargetLargerHalf = EffectiveExpLevel(pTargetSoldier) - ubTargetSmallerHalf;
-            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached > 0 & gbFirstApproachFlags[(int)APPROACH.APPROACH_THREATEN - 1] == 1)
+            if (gMercProfiles[pTargetSoldier.ubProfile].bApproached > 0 & gbFirstApproachFlags[(int)APPROACH.THREATEN - 1] == 1)
             {
                 // gains 1 to 2 points
                 ubTargetSmallerHalf += 1;

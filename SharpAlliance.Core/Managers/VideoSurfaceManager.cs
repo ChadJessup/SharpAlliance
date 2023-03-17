@@ -12,7 +12,8 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Veldrid.ImageSharp;
 using Veldrid.MetalBindings;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
 

@@ -351,7 +351,7 @@ public class SOLDIERTYPE
     public TIMECOUNTER PortraitFlashCounter;
     public bool fDeadSoundPlayed;
     public NPCID ubProfile { get; set; }
-    public int ubQuoteRecord;
+    public NPC_ACTION ubQuoteRecord;
     public QUOTE_ACTION_ID ubQuoteActionID;
     public int ubBattleSoundID;
     public bool fClosePanel;

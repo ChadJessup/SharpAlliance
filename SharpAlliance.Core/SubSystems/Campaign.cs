@@ -670,7 +670,7 @@ public class Campaign
                             //	DEF: 03/06/99 Now sets an event that will be processed later in the day
                             //						ubEmailOffset = MERC_UP_LEVEL_BIFF + MERC_UP_LEVEL_LENGTH_BIFF * ( ubMercMercIdValue ); 
                             //						AddEmail( ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, SPECK_FROM_MERC, GetWorldTotalMin() );
-                            GameEvents.AddStrategicEvent(EVENT.MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, GameClock.GetWorldTotalMin() + 60 + Globals.Random.Next(60), ubMercMercIdValue);
+                            GameEvents.AddStrategicEvent(EVENT.MERC_MERC_WENT_UP_LEVEL_EMAIL_DELAY, (uint)(GameClock.GetWorldTotalMin() + 60 + Globals.Random.Next(60)), ubMercMercIdValue);
 
                             fChangeSalary = true;
                             break;
@@ -736,7 +736,7 @@ public class Campaign
             }
 
             // ignore non-player soldiers
-            if (!PTR_OURTEAM)
+            if (!PTR_OURTEAM(pSoldier))
             {
                 return;
             }
@@ -1139,7 +1139,7 @@ public class Campaign
             do
             {
                 // pick ONE stat at random to focus on (it may be beyond training cap, but so what, too hard to weed those out)
-                ubStat = (int)(Stat.FIRST_CHANGEABLE_STAT + Globals.Random.Next(ubNumStats));
+                ubStat = (Stat.FIRST_CHANGEABLE_STAT + Globals.Random.Next(ubNumStats));
                 // except experience - can't practise that!
             } while (ubStat == Stat.EXPERAMT);
 
@@ -1167,7 +1167,7 @@ public class Campaign
         }
 
         // how many in total can be killed like this depends on player's difficulty setting
-        switch (Globals.gGameSettings.DifficultyLevel)
+        switch (Globals.gGameOptions.ubDifficultyLevel)
         {
             case DifficultyLevel.Easy:
                 ubMaxDeaths = 1;
@@ -1228,7 +1228,7 @@ public class Campaign
             if (iProfileID < NPCID.BIFF)
             {
                 //send an email to the player telling the player that a merc died
-                Emails.AddEmailWithSpecialData(MERC_DIED_ON_OTHER_ASSIGNMENT, MERC_DIED_ON_OTHER_ASSIGNMENT_LENGTH, AIM_SITE, GameClock.GetWorldTotalMin(), 0, iProfileID);
+                Emails.AddEmailWithSpecialData(MERC_DIED_ON_OTHER_ASSIGNMENT, MERC_DIED_ON_OTHER_ASSIGNMENT_LENGTH, EmailAddresses.AIM_SITE, GameClock.GetWorldTotalMin(), 0, iProfileID);
             }
         }
     }
@@ -1249,10 +1249,10 @@ public class Campaign
         }
 
         // figure out the player's current mine income
-        uiCurrentIncome = PredictIncomeFromPlayerMines();
+        uiCurrentIncome = StrategicMines.PredictIncomeFromPlayerMines();
 
         // figure out the player's potential mine income
-        uiPossibleIncome = CalcMaxPlayerIncomeFromMines();
+        uiPossibleIncome = StrategicMines.CalcMaxPlayerIncomeFromMines();
 
         // either of these indicates a critical failure of some sort
         Debug.Assert(uiPossibleIncome > 0);
@@ -1264,7 +1264,7 @@ public class Campaign
         //Kris:  Make sure you don't divide by zero!!!
         if (uiPossibleIncome > 0)
         {
-            ubCurrentProgress = (int)((uiCurrentIncome * Globals.PROGRESS_PORTION_INCOME) / uiPossibleIncome);
+            ubCurrentProgress = ((uiCurrentIncome * Globals.PROGRESS_PORTION_INCOME) / uiPossibleIncome);
         }
         else
         {
@@ -1272,7 +1272,7 @@ public class Campaign
         }
 
         // kills per point depends on difficulty, and should match the ratios of starting enemy populations (730/1050/1500)
-        switch (Globals.gGameSettings.DifficultyLevel)
+        switch (Globals.gGameOptions.ubDifficultyLevel)
         {
             case DifficultyLevel.Easy:
                 ubKillsPerPoint = 7;
@@ -1466,30 +1466,30 @@ public class Campaign
 
 
 
-    void AwardExperienceBonusToActiveSquad(int ubExpBonusType)
+    void AwardExperienceBonusToActiveSquad(EXP_BONUS ubExpBonusType)
     {
         int usXPs = 0;
         int ubGuynum;
         SOLDIERTYPE? pSoldier;
 
 
-        Debug.Assert(ubExpBonusType < NUM_EXP_BONUS_TYPES);
+        Debug.Assert(ubExpBonusType < EXP_BONUS.NUM_EXP_BONUS_TYPES);
 
         switch (ubExpBonusType)
         {
-            case EXP_BONUS_MINIMUM:
+            case EXP_BONUS.MINIMUM:
                 usXPs = 25;
                 break;
-            case EXP_BONUS_SMALL:
+            case EXP_BONUS.SMALL:
                 usXPs = 50;
                 break;
-            case EXP_BONUS_AVERAGE:
+            case EXP_BONUS.AVERAGE:
                 usXPs = 100;
                 break;
-            case EXP_BONUS_LARGE:
+            case EXP_BONUS.LARGE:
                 usXPs = 200;
                 break;
-            case EXP_BONUS_MAXIMUM:
+            case EXP_BONUS.MAXIMUM:
                 usXPs = 400;
                 break;
         }
@@ -1582,3 +1582,14 @@ public class Campaign
         Emails.AddEmail(ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, EmailAddresses.SPECK_FROM_MERC, GameClock.GetWorldTotalMin());
     }
 }
+
+// types of experience bonus awards
+public enum EXP_BONUS
+{
+    MINIMUM,
+    SMALL,
+    AVERAGE,
+    LARGE,
+    MAXIMUM,
+    NUM_EXP_BONUS_TYPES,
+};

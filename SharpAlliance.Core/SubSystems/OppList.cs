@@ -1724,7 +1724,7 @@ public class OppList
                                     {
                                         AIMain.CancelAIAction(pSoldier, 1);
                                         pSoldier.sAbsoluteFinalDestination = NOWHERE;
-                                        EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
+                                        SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
                                         NPC.TriggerNPCRecord(NPCID.ANGEL, 20);
                                         // trigger Angel to walk off afterwards
                                         //TriggerNPCRecord( ANGEL, 24 );

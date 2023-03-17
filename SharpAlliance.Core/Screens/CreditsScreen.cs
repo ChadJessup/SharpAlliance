@@ -10,6 +10,8 @@ using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using Veldrid;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Screens;
 
 public class CreditsScreen : IScreen

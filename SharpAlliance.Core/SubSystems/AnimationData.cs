@@ -25,7 +25,8 @@ public class AnimationData
 
     public ValueTask<bool> InitAnimationSystem()
     {
-        int cnt1, cnt2;
+        SoldierBodyTypes cnt1;
+        StructData cnt2;
         string sFilename;
         STRUCTURE_FILE_REF? pStructureFileRef;
 
@@ -40,11 +41,11 @@ public class AnimationData
         }
 
         // OK, Load all animation structures.....
-        for (cnt1 = 0; cnt1 < (int)SoldierBodyTypes.TOTALBODYTYPES; cnt1++)
+        for (cnt1 = 0; cnt1 < SoldierBodyTypes.TOTALBODYTYPES; cnt1++)
         {
-            for (cnt2 = 0; cnt2 < (int)StructData.NUM_STRUCT_IDS; cnt2++)
+            for (cnt2 = 0; cnt2 < StructData.NUM_STRUCT_IDS; cnt2++)
             {
-                sFilename = gAnimStructureDatabase[cnt1, cnt2].Filename;
+                sFilename = gAnimStructureDatabase[cnt1][cnt2].Filename;
 
                 if (FileManager.FileExists(sFilename))
                 {
@@ -54,7 +55,7 @@ public class AnimationData
                         // SET_ERROR("Animation structure file load failed - %s", sFilename);
                     }
 
-                    gAnimStructureDatabase[cnt1, cnt2].pStructureFileRef = pStructureFileRef;
+                    gAnimStructureDatabase[cnt1][cnt2].pStructureFileRef = pStructureFileRef;
                 }
             }
         }
@@ -89,10 +90,10 @@ public class AnimationData
         if ((usAnimState == AnimationStates.FALLFORWARD_FROMHIT_STAND || usAnimState == AnimationStates.GENERIC_HIT_STAND ||
                  usAnimState == AnimationStates.FALLFORWARD_FROMHIT_CROUCH || usAnimState == AnimationStates.STANDING_BURST_HIT) && !fUseAbsolute)
         {
-            return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType, StructData.S_STRUCT].pStructureFileRef);
+            return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType][StructData.S_STRUCT].pStructureFileRef);
         }
 
-        return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType, bStructDataType].pStructureFileRef);
+        return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType][bStructDataType].pStructureFileRef);
     }
 
     public static STRUCTURE_FILE_REF? GetAnimationStructureRef(int usSoldierID, AnimationSurfaceTypes usSurfaceIndex, AnimationStates usAnimState)

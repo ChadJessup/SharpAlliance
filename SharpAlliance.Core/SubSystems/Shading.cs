@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class Shading

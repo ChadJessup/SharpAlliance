@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
+
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -23,7 +24,20 @@ public class TileDefine
             return false;
         }
 
-        pusTileIndex = usSubIndex + gTileTypeStartIndex[(int)uiCheckType] - 1;
+        pusTileIndex = (TileDefines)(usSubIndex + gTileTypeStartIndex[(int)uiCheckType] - 1);
+        return (true);
+    }
+
+    public static bool GetWallOrientation(TileDefines usIndex, out WallOrientation pusWallOrientation)
+    {
+        TILE_ELEMENT TileElem;
+
+        CHECKF(usIndex != TileDefines.NO_TILE);
+
+        // Get tile element
+        TileElem = gTileDatabase[usIndex];
+
+        pusWallOrientation = TileElem.usWallOrientation;
 
         return (true);
     }
@@ -3277,7 +3291,7 @@ public class TILE_ELEMENT
     // This union contains different data based on tile type
     // Land and overlay type
     public short sOffsetHeight;
-    public ushort usWallOrientation;
+    public WallOrientation usWallOrientation;
     public byte ubFullTile;
 
     // For animated tiles

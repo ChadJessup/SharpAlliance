@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 /// <summary>

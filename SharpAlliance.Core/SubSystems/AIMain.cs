@@ -846,7 +846,7 @@ public class AIMain
             {
                 if (pSoldier.ubProfile != NO_PROFILE)
                 {
-                    if (pSoldier.ubQuoteRecord == NPC_ACTION_KYLE_GETS_MONEY)
+                    if (pSoldier.ubQuoteRecord == NPC_ACTION.KYLE_GETS_MONEY)
                     {
                         // Kyle after getting money
                         pSoldier.ubQuoteRecord = 0;
@@ -854,12 +854,12 @@ public class AIMain
                     }
                     else if (pSoldier.usAnimState == AnimationStates.END_OPENSTRUCT)
                     {
-                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_OPEN_STRUCTURE, true);
+                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH.DONE_OPEN_STRUCTURE, true);
                         //TriggerNPCWithGivenApproach( pSoldier.ubProfile, APPROACH_DONE_OPEN_STRUCTURE, false );
                     }
                     else if (pSoldier.usAnimState == AnimationStates.PICKUP_ITEM || pSoldier.usAnimState == AnimationStates.ADJACENT_GET_ITEM)
                     {
-                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_GET_ITEM, true);
+                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH.DONE_GET_ITEM, true);
                     }
                 }
                 ActionDone(pSoldier);
@@ -1027,7 +1027,7 @@ public class AIMain
 
             if (!pSoldier.fNoAPToFinishMove)
             {
-                EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
+                SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
                 AdjustNoAPToFinishMove(pSoldier, false);
             }
 
@@ -1050,7 +1050,7 @@ public class AIMain
             // This is possible if we decide on an action that we have no points for
             // (but which set pathStored).  The action is retained until next turn,
             // although NewDest isn't called.  A newSit. could cancel it before then!
-            pSoldier.bPathStored = 0;
+            pSoldier.bPathStored = false;
         }
     }
 
@@ -1612,7 +1612,7 @@ public class AIMain
             // The only reason we would NEED to reinitialize it here is if I've
             // incorrectly set pathStored to true in a process that doesn't end up
             // calling NewDest()
-            pSoldier.bPathStored = 0;
+            pSoldier.bPathStored = false;
 
             // decide on the next action
             if (pSoldier.bNextAction != AI_ACTION.NONE)
@@ -1775,7 +1775,7 @@ public class AIMain
                 // make sure any paths stored during out last AI decision but not reacted
                 // to (probably due to lack of APs) get re-tested by the ExecuteAction()
                 // function in AI, since the .sDestination may no longer be legal now!
-                pSoldier.bPathStored = 0;
+                pSoldier.bPathStored = false;
 
                 // if not currently engaged, or even alerted
                 // take a quick look around to see if any friends seem to be in trouble
@@ -1798,7 +1798,7 @@ public class AIMain
             return;
         }
 
-        if (PTR_CIVILIAN && pSoldier.ubCivilianGroup != CIV_GROUP.KINGPIN_CIV_GROUP)
+        if (PTR_CIVILIAN(pSoldier) && pSoldier.ubCivilianGroup != CIV_GROUP.KINGPIN_CIV_GROUP)
         {
             // don't play anim
             ActionDone(pSoldier);
@@ -1809,12 +1809,12 @@ public class AIMain
         {
             case AnimationHeights.ANIM_STAND:
 
-                EVENT_InitNewSoldierAnim(pSoldier, AI_RADIO, 0, false);
+                SoldierControl.EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.AI_RADIO, 0, false);
                 break;
 
             case AnimationHeights.ANIM_CROUCH:
 
-                EVENT_InitNewSoldierAnim(pSoldier, AI_CR_RADIO, 0, false);
+                SoldierControl.EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.AI_CR_RADIO, 0, false);
                 break;
 
             case AnimationHeights.ANIM_PRONE:
@@ -1860,7 +1860,7 @@ public class AIMain
                 }
                 else
                 {
-                    RESETTIMECOUNTER(ref pSoldier.AICounter, pSoldier.usActionData);
+                    RESETTIMECOUNTER(ref pSoldier.AICounter, (uint)pSoldier.usActionData);
                     if (pSoldier.ubProfile != NO_PROFILE)
                     {
                         //DebugMsg( TOPIC_JA2, DBG_LEVEL_0, String( "%s waiting %d from %d", pSoldier.name, pSoldier.AICounter, GetJA2Clock() ) );
@@ -1997,15 +1997,15 @@ public class AIMain
                 // gridno, etc.)  So we gotta check again that the .sDestination's legal!
 
                 // optimization - Ian (if up-to-date path is known, do not check again)
-                if (pSoldier.bPathStored == 0)
+                if (!pSoldier.bPathStored)
                 {
                     if ((pSoldier.sAbsoluteFinalDestination != NOWHERE || gTacticalStatus.fAutoBandageMode) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         // NPC system move, allow path through
-                        if (Movement.LegalNPCDestination(pSoldier, pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE))
+                        if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE))
                         {
                             // optimization - Ian: prevent another path call in SetNewCourse()
-                            pSoldier.bPathStored = 1;
+                            pSoldier.bPathStored = true;
                         }
                     }
                     else
@@ -2281,16 +2281,7 @@ public class AIMain
                 iRetCode = HandleItem(pSoldier, pSoldier.usActionData, 0, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
                 if (iRetCode != ITEM_HANDLE_OK)
                 {
-# if JA2BETAVERSION
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_ERROR, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
-#endif
                     CancelAIAction(pSoldier, FORCE);
-# if TESTAICONTROL
-                    if (gfTurnBasedAI)
-                    {
-                        DebugAI(String("Ending turn for %d because of error from HandleItem", pSoldier.ubID));
-                    }
-#endif
                     EndAIGuysTurn(pSoldier);
                 }
                 break;
@@ -2370,9 +2361,6 @@ public class AIMain
                 break;
 
             default:
-# if BETAVERSION
-                NumMessage("ExecuteAction - Illegal action type = ", pSoldier.bAction);
-#endif
                 return (0);
         }
 
@@ -2380,7 +2368,7 @@ public class AIMain
         return (1);
     }
 
-    public static void CheckForChangingOrders(SOLDIERTYPE? pSoldier)
+    public static void CheckForChangingOrders(SOLDIERTYPE pSoldier)
     {
         switch (pSoldier.bAlertStatus)
         {
@@ -2466,9 +2454,6 @@ public class AIMain
 
         if (gTacticalStatus.Team[bTeam].bAwareOfOpposition == 0)
         {
-# if JA2TESTVERSION
-            ScreenMsg(FONT_MCOLOR_RED, MSG_ERROR, "Enemies on team %d prompted to go on RED ALERT!", bTeam);
-#endif
         }
 
         // if there is a stealth mission in progress here, and a panic trigger exists

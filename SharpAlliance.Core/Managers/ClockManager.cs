@@ -7,6 +7,8 @@ using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Managers;
 
 public class ClockManager : IClockManager

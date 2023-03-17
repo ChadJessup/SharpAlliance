@@ -323,12 +323,12 @@ public class StrategicMap
         else if (bSectorZ != 0)
         {
             pUnderground = FindUnderGroundSector(sSectorX, sSectorY, bSectorZ);
-            if (pUnderground && (pUnderground.fVisited || gfGettingNameFromSaveLoadScreen))
+            if (pUnderground is not null && (pUnderground.fVisited > 0 || gfGettingNameFromSaveLoadScreen))
             {
                 bMineIndex = StrategicMines.GetIdOfMineForSector(sSectorX, sSectorY, bSectorZ);
                 if (bMineIndex != (MINE)(-1))
                 {
-                    wprintf(zString, "%c%d: %s %s", 'A' + sSectorY - 1, sSectorX, pTownNames[StrategicMines.GetTownAssociatedWithMine(bMineIndex)], pwMineStrings[0]);
+                    wprintf(zString, "%c%d: %s %s", 'A' + (int)sSectorY - 1, sSectorX, pTownNames[StrategicMines.GetTownAssociatedWithMine(bMineIndex)], pwMineStrings[0]);
                 }
                 else
                 {
@@ -347,10 +347,10 @@ public class StrategicMap
                             wprintf(zString, "O3: %s", pLandTypeStrings[Traversability.TUNNEL]);
                             break;
                         case SEC.P3:
-                            wprintf(ref zString, "P3: %s", pLandTypeStrings[Traversability.SHELTER]);
+                            wprintf(zString, "P3: %s", pLandTypeStrings[Traversability.SHELTER]);
                             break;
                         default:
-                            wprintf(ref zString, "%c%d: %s", 'A' + sSectorY - 1, sSectorX, pLandTypeStrings[Traversability.CREATURE_LAIR]);
+                            wprintf(zString, "%c%d: %s", 'A' + (int)sSectorY - 1, sSectorX, pLandTypeStrings[Traversability.CREATURE_LAIR]);
                             break;
                     }
                 }
@@ -366,7 +366,7 @@ public class StrategicMap
             ubSectorID = SECTORINFO.SECTOR(sSectorX, sSectorY);
             pSector = SectorInfo[ubSectorID];
             ubLandType = pSector.ubTraversability[(StrategicMove)4];
-            wprintf(zString, "%c%d: ", 'A' + sSectorY - 1, sSectorX);
+            zString = wprintf("%c%d: ", 'A' + (int)sSectorY - 1, sSectorX);
 
             if (bTownNameID == TOWNS.BLANK_SECTOR)
             {
@@ -377,50 +377,50 @@ public class StrategicMap
                     case SEC.D2: //Chitzena SAM
                         if (!fSamSiteFound[SAM_SITE.ONE])
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.TROPICS]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.TROPICS]);
                         }
                         else if (fDetailed)
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.TROPICS_SAM_SITE]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.TROPICS_SAM_SITE]);
                         }
                         else
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.SAM_SITE]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.SAM_SITE]);
                         }
 
                         break;
                     case SEC.D15: //Drassen SAM
                         if (!fSamSiteFound[SAM_SITE.TWO])
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.SPARSE]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.SPARSE]);
                         }
                         else if (fDetailed)
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.SPARSE_SAM_SITE]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.SPARSE_SAM_SITE]);
                         }
                         else
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.SAM_SITE]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.SAM_SITE]);
                         }
 
                         break;
                     case SEC.I8: //Cambria SAM
                         if (!fSamSiteFound[SAM_SITE.THREE])
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.SAND]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.SAND]);
                         }
                         else if (fDetailed)
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.SAND_SAM_SITE]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.SAND_SAM_SITE]);
                         }
                         else
                         {
-                            zString = wcscat(pLandTypeStrings[Traversability.SAM_SITE]);
+                            zString = wcscat(zString, pLandTypeStrings[Traversability.SAM_SITE]);
                         }
 
                         break;
                     default:
-                        zString = wcscat(pLandTypeStrings[ubLandType]);
+                        zString = wcscat(zString, pLandTypeStrings[ubLandType]);
                         break;
                 }
             }
@@ -431,7 +431,7 @@ public class StrategicMap
                     case SEC.B13:
                         if (fDetailed)
                         {
-                            wcscat(zString, pLandTypeStrings[DRASSEN_AIRPORT_SITE]);
+                            wcscat(zString, pLandTypeStrings[Traversability.DRASSEN_AIRPORT_SITE]);
                         }
                         else
                         {
@@ -442,7 +442,7 @@ public class StrategicMap
                     case SEC.F8:
                         if (fDetailed)
                         {
-                            wcscat(zString, pLandTypeStrings[CAMBRIA_HOSPITAL_SITE]);
+                            wcscat(zString, pLandTypeStrings[Traversability.CAMBRIA_HOSPITAL_SITE]);
                         }
                         else
                         {
@@ -453,7 +453,7 @@ public class StrategicMap
                     case SEC.J9: //Tixa
                         if (!fFoundTixa)
                         {
-                            wcscat(zString, pLandTypeStrings[SAND]);
+                            wcscat(zString, pLandTypeStrings[Traversability.SAND]);
                         }
                         else
                         {
@@ -464,7 +464,7 @@ public class StrategicMap
                     case SEC.K4: //Orta
                         if (!fFoundOrta)
                         {
-                            wcscat(zString, pLandTypeStrings[SWAMP]);
+                            wcscat(zString, pLandTypeStrings[Traversability.SWAMP]);
                         }
                         else
                         {
@@ -475,7 +475,7 @@ public class StrategicMap
                     case SEC.N3:
                         if (fDetailed)
                         {
-                            wcscat(zString, pLandTypeStrings[MEDUNA_AIRPORT_SITE]);
+                            wcscat(zString, pLandTypeStrings[Traversability.MEDUNA_AIRPORT_SITE]);
                         }
                         else
                         {
@@ -484,20 +484,20 @@ public class StrategicMap
 
                         break;
                     default:
-                        if (ubSectorID == SEC.N4 && fSamSiteFound[SAM_SITE_FOUR])
+                        if (ubSectorID == SEC.N4 && fSamSiteFound[SAM_SITE.FOUR])
                         {   //Meduna's SAM site
                             if (fDetailed)
                             {
-                                wcscat(zString, pLandTypeStrings[MEDUNA_SAM_SITE]);
+                                wcscat(zString, pLandTypeStrings[Traversability.MEDUNA_SAM_SITE]);
                             }
                             else
                             {
-                                wcscat(zString, pLandTypeStrings[SAM_SITE]);
+                                wcscat(zString, pLandTypeStrings[Traversability.SAM_SITE]);
                             }
                         }
                         else
                         {   //All other towns that are known since beginning of the game.
-                            zString = wcscat(pTownNames[bTownNameID]);
+                            zString = wcscat(zString, pTownNames[bTownNameID]);
                             if (fDetailed)
                             {
                                 switch (ubSectorID)
@@ -508,8 +508,8 @@ public class StrategicMap
                                     case SEC.H3:
                                     case SEC.H8:
                                     case SEC.I14:
-                                        zString = wcscat(" "); //space
-                                        zString += wcscat(pwMineStrings[0]); //then "Mine"
+                                        zString = wcscat(zString, " "); //space
+                                        zString += wcscat(zString, pwMineStrings[0]); //then "Mine"
                                         break;
                                 }
                             }

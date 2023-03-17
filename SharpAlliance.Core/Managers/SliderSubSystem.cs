@@ -5,6 +5,8 @@ using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Managers;
 
 public delegate void SliderChangeCallback(int newValue);

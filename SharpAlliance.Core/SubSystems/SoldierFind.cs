@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SixLabors.ImageSharp;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class SoldierFind

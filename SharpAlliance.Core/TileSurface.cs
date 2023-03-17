@@ -9,6 +9,8 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core;
 
 public class TileSurface
@@ -90,10 +92,7 @@ public class TileSurface
             pStructureFileRef = null;
         }
 
-        pTileSurf = MemAlloc(sizeof(TILE_IMAGERY));
-
-        // Set all values to zero
-        memset(pTileSurf, 0, sizeof(TILE_IMAGERY));
+        pTileSurf = new();
 
         pTileSurf.vo = hVObject;
         pTileSurf.pStructureFileRef = pStructureFileRef;

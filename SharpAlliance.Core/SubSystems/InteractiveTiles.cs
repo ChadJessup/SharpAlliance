@@ -7,6 +7,8 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core;
 
 public partial class Globals

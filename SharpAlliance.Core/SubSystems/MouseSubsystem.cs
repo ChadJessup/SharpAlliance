@@ -14,6 +14,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
+using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 

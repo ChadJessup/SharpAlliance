@@ -4,6 +4,8 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using Veldrid;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Screens;
 
 public class MapScreen : IScreen

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SharpAlliance.Core.Managers.Image;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class StructureFile

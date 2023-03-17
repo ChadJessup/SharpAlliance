@@ -6,20 +6,21 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Core.Interfaces
-{
-    public interface IVideoObjectManager : ISharpAllianceManager
-    {
-        bool GetVideoObject(string key, out HVOBJECT hPixHandle);
-        bool BltVideoObject(
-            uint uiDestVSurface,
-            HVOBJECT hSrcVObject,
-            ushort usRegionIndex,
-            int iDestX,
-            int iDestY,
-            int fBltFlags,
-            blt_fx? pBltFx);
+using static SharpAlliance.Core.Globals;
 
-        bool DeleteVideoObjectFromIndex(int uiLogoID);
-    }
+namespace SharpAlliance.Core.Interfaces;
+
+public interface IVideoObjectManager : ISharpAllianceManager
+{
+    bool GetVideoObject(string key, out HVOBJECT hPixHandle);
+    bool BltVideoObject(
+        uint uiDestVSurface,
+        HVOBJECT hSrcVObject,
+        ushort usRegionIndex,
+        int iDestX,
+        int iDestY,
+        int fBltFlags,
+        blt_fx? pBltFx);
+
+    bool DeleteVideoObjectFromIndex(int uiLogoID);
 }

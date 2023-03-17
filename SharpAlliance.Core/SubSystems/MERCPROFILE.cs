@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SharpAlliance.Core.Screens;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class MERCPROFILESTRUCT

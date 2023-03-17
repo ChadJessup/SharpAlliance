@@ -14,6 +14,8 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 using Point = SixLabors.ImageSharp.Point;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.Screens;
 
 public class MainMenuScreen : IScreen

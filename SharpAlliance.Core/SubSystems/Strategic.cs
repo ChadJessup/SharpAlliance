@@ -109,6 +109,14 @@ public class PATROL_GROUP
 //Defines all stationary defence forces. 
 public class GARRISON_GROUP
 {
+    public GARRISON_GROUP(SEC a, Garrisons b, int c, int d)
+    {
+        ubSectorID = a;
+        ubComposition = b;
+        bWeight = c;
+        ubPendingGroupID = d;
+    }
+
     public SEC ubSectorID;
     public Garrisons ubComposition;
     public int bWeight;

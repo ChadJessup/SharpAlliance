@@ -163,9 +163,9 @@ public class SoldierTile
                                 PlotPathDefines.FORWARD,
                                 pSoldier.bActionPoints) > 0)
                             {
-                                pSoldier.bPathStored = 0;
+                                pSoldier.bPathStored = false;
                                 // OK, make guy go here...
-                                EVENT_GetNewSoldierPath(pSoldier, pSoldier.sFinalDestination, pSoldier.usUIMovementMode);
+                                SoldierControl.EVENT_GetNewSoldierPath(pSoldier, pSoldier.sFinalDestination, pSoldier.usUIMovementMode);
                                 // Restore final dest....
                                 MercPtrs[ubPerson].sFinalDestination = sTempDestGridNo;
                                 pSoldier.fBlockedByAnotherMerc = false;
@@ -201,8 +201,8 @@ public class SoldierTile
 
                                     // With these two guys swapped, they should try and continue on their way....
                                     // Start them both again along their way...
-                                    EVENT_GetNewSoldierPath(pSoldier, pSoldier.sFinalDestination, pSoldier.usUIMovementMode);
-                                    EVENT_GetNewSoldierPath(MercPtrs[ubPerson], MercPtrs[ubPerson].sFinalDestination, MercPtrs[ubPerson].usUIMovementMode);
+                                    SoldierControl.EVENT_GetNewSoldierPath(pSoldier, pSoldier.sFinalDestination, pSoldier.usUIMovementMode);
+                                    SoldierControl.EVENT_GetNewSoldierPath(MercPtrs[ubPerson], MercPtrs[ubPerson].sFinalDestination, MercPtrs[ubPerson].usUIMovementMode);
                                 }
                             }
                         }
@@ -312,7 +312,7 @@ public class SoldierTile
 
                         // Maintain sFinalDest....
                         sOldFinalDest = pSoldier.sFinalDestination;
-                        EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
+                        SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
                         // Restore...
                         pSoldier.sFinalDestination = sOldFinalDest;
 
@@ -328,7 +328,7 @@ public class SoldierTile
 
                         // Maintain sFinalDest....
                         sOldFinalDest = pSoldier.sFinalDestination;
-                        EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
+                        SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
                         // Restore...
                         pSoldier.sFinalDestination = sOldFinalDest;
 
@@ -537,9 +537,9 @@ public class SoldierTile
                             // ATE: THis will get set in EENT_GetNewSoldierPath....
                             pSoldier.usActionData = sCheckGridNo;
 
-                            pSoldier.bPathStored = 0;
+                            pSoldier.bPathStored = false;
 
-                            EVENT_GetNewSoldierPath(pSoldier, sCheckGridNo, pSoldier.usUIMovementMode);
+                            SoldierControl.EVENT_GetNewSoldierPath(pSoldier, sCheckGridNo, pSoldier.usUIMovementMode);
                             gfPlotPathToExitGrid = false;
 
                             return (true);
@@ -594,7 +594,7 @@ public class SoldierTile
 
                             pSoldier.bPathStored = true;
 
-                            EVENT_GetNewSoldierPath(pSoldier, pSoldier.sAbsoluteFinalDestination, pSoldier.usUIMovementMode);
+                            SoldierControl.EVENT_GetNewSoldierPath(pSoldier, pSoldier.sAbsoluteFinalDestination, pSoldier.usUIMovementMode);
                             //EVENT_GetNewSoldierPath( MercPtrs[ ubPerson ], MercPtrs[ ubPerson ].sFinalDestination, MercPtrs[ ubPerson ].usUIMovementMode );					
                         }
 
@@ -639,7 +639,7 @@ public class SoldierTile
             // TELEPORT TO THIS LOCATION!
             sX = CenterX(sGridNo);
             sY = CenterY(sGridNo);
-            EVENT_SetSoldierPosition(pSoldier, (FLOAT)sX, (FLOAT)sY);
+            SoldierControl.EVENT_SetSoldierPosition(pSoldier, sX, sY);
 
             pSoldier.sFinalDestination = sGridNo;
 

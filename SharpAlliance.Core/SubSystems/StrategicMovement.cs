@@ -1793,7 +1793,7 @@ public class StrategicMovement
         gubNumGroupsArrivedSimultaneously = 0;
         while (pEvent && pEvent.uiTimeStamp <= uiCurrTimeStamp)
         {
-            if (pEvent.ubCallbackID == EVENT_GROUP_ARRIVAL && !(pEvent.ubFlags.HasFlag(SEF.DELETION_PENDING)))
+            if (pEvent.ubCallbackID == EVENT.GROUP_ARRIVAL && !(pEvent.ubFlags.HasFlag(SEF.DELETION_PENDING)))
             {
                 pGroup = GetGroup((int)pEvent.uiParam);
                 Debug.Assert(pGroup);
@@ -2015,7 +2015,7 @@ public class StrategicMovement
                             pGroup.ubSectorY == pPlayerGroup.ubNextY)
                     { //Okay, the enemy group will cross paths with the player, so find and delete the arrival event
                       //and repost it in the future (like a minute or so after the player arrives)
-                        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+                        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
                         // NOTE: This can cause the arrival time to be > GetWorldTotalMin() + TraverseTime, so keep that in mind
                         // if you have any code that uses these 3 values to figure out how far along its route a group is!
@@ -2333,7 +2333,7 @@ public class StrategicMovement
         RemovePGroupWaypoints(pGroup);
 
         //Remove the arrival event if applicable.
-        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, pGroup.ubGroupID);
+        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Determine what type of group we have (because it requires different methods)
         if (pGroup.fPlayer)

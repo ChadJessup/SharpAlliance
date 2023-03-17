@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using SharpAlliance.Core.Screens;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
@@ -29,17 +30,17 @@ public class GameEvents
         if (usDelay == DEMAND_EVENT_DELAY)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local and network #%d", uiEvent));
-            return (AddGameEventToQueue(uiEvent, 0, pEventData, DEMAND_EVENT_QUEUE));
+            return (AddGameEventToQueue(uiEvent, 0, pEventData, EVENT_QUEUE.DEMAND_EVENT_QUEUE));
         }
         else if (uiEvent < EVENTS_LOCAL_AND_NETWORK)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local and network #%d", uiEvent));
-            return (AddGameEventToQueue(uiEvent, usDelay, pEventData, PRIMARY_EVENT_QUEUE));
+            return (AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE));
         }
         else if (uiEvent < EVENTS_ONLY_USED_LOCALLY)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local #%d", uiEvent));
-            return (AddGameEventToQueue(uiEvent, usDelay, pEventData, PRIMARY_EVENT_QUEUE));
+            return (AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE));
         }
         else if (uiEvent < EVENTS_ONLY_SENT_OVER_NETWORK)
         {
@@ -53,7 +54,7 @@ public class GameEvents
         }
     }
 
-    public static bool AddGameEventToQueue(int  uiEvent, int usDelay, object pEventData, int ubQueueID)
+    public static bool AddGameEventToQueue(int  uiEvent, int usDelay, object pEventData, EVENT_QUEUE ubQueueID)
     {
         int uiDataSize;
 

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
@@ -287,13 +287,13 @@ public class WorldManager
 
 
         // Get orientation of peice we want to add
-        GetWallOrientation(usIndex, out usWallOrientation);
+        TileDefine.GetWallOrientation(usIndex, out usWallOrientation);
 
         // Look through all objects and Search for orientation
         while (pStruct != null)
         {
 
-            GetWallOrientation(pStruct.usIndex, out usCheckWallOrient);
+            TileDefine.GetWallOrientation(pStruct.usIndex, out usCheckWallOrient);
             //OLD CASE 
             //if ( usCheckWallOrient > usWallOrientation )
             //Kris:
@@ -364,7 +364,7 @@ public class WorldManager
             }
             else
             {
-                WorldManager.AddStructToTail(iMapIndex, usIndex);
+                AddStructToTail(iMapIndex, usIndex);
             }
         }
 

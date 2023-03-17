@@ -1,5 +1,7 @@
 ﻿using System;
 
+using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core.SubSystems;
 
 public class ANITILE
