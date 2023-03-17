@@ -143,5 +143,7 @@
         NPC169,
 
         NO_PROFILE = 200,
+
+        UNSET = -1,
     }
 }

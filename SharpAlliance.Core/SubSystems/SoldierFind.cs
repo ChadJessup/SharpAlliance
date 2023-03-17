@@ -155,7 +155,7 @@ public class SoldierFind
     }
 
     // THIS FUNCTION IS CALLED FAIRLY REGULARLY
-    public bool FindSoldier(int sGridNo, out int pusSoldierIndex, out FIND_SOLDIER_RESPONSES pMercFlags, FIND_SOLDIER uiFlags)
+    public static bool FindSoldier(int sGridNo, out int pusSoldierIndex, out FIND_SOLDIER_RESPONSES pMercFlags, FIND_SOLDIER uiFlags)
     {
         int cnt;
         SOLDIERTYPE? pSoldier;

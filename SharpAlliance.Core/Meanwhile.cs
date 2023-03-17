@@ -775,7 +775,7 @@ public class Meanwhile
 
             if (pSoldier != null)
             {
-                LocateSoldier(pSoldier.ubID, false);
+                Overhead.LocateSoldier(pSoldier.ubID, 0);
             }
         }
     }
@@ -786,7 +786,7 @@ public class Meanwhile
         return (gfReloadingScreenFromMeanwhile);
     }
 
-    Meanwhiles GetMeanwhileID()
+    public static Meanwhiles GetMeanwhileID()
     {
         return (gCurrentMeanwhileDef.ubMeanwhileID);
     }

@@ -48,7 +48,9 @@ public class GameEvents
         }
         // There is an error with the event
         else
+        {
             return (false);
+        }
     }
 
     public static bool AddGameEventToQueue(int  uiEvent, int usDelay, object pEventData, int ubQueueID)

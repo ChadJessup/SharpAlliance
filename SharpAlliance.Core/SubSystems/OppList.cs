@@ -1829,7 +1829,7 @@ public class OppList
                                 {
                                     EnterCombatMode(pSoldier.bTeam);
 
-                                    LocateSoldier(pSoldier.ubID, true);
+                                    Overhead.LocateSoldier(pSoldier.ubID, true);
                                     GetSoldierScreenPos(pSoldier, out sX, out sY);
                                     // begin quote
                                     BeginCivQuote(pSoldier, CIV_QUOTE_HICKS_SEE_US_AT_NIGHT, 0, sX, sY);
@@ -2866,7 +2866,7 @@ public class OppList
                 if (gTacticalStatus.fEnemySightingOnTheirTurn)
                 {
                     // Locate to our guy, then slide to enemy
-                    LocateSoldier(pSoldier.ubID, SETLOCATOR);
+                    Overhead.LocateSoldier(pSoldier.ubID, SETLOCATOR);
 
                     // Now slide to other guy....
                     SlideTo(NOWHERE, gTacticalStatus.ubEnemySightingOnTheirTurnEnemyID, Globals.NOBODY, SETLOCATOR);

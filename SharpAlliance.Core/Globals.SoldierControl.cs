@@ -5,6 +5,11 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public static bool PTR_CIVILIAN(SOLDIERTYPE pSoldier) => (pSoldier.bTeam == CIV_TEAM);
+    public static bool PTR_CROUCHED(SOLDIERTYPE pSoldier) => (gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_CROUCH);
+    public static bool PTR_STANDING(SOLDIERTYPE pSoldier) => (gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_STAND);
+    public static bool PTR_PRONE(SOLDIERTYPE pSoldier) => (gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_PRONE);
+
     public static bool HAS_SKILL_TRAIT(SOLDIERTYPE s, SkillTrait t) => (s.ubSkillTrait1 == t || s.ubSkillTrait2 == t);
     public static int NUM_SKILL_TRAITS(SOLDIERTYPE s, SkillTrait t) => ((s.ubSkillTrait1 == t)
         ? ((s.ubSkillTrait2 == t) ? 2 : 1)

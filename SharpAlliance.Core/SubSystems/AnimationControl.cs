@@ -1,6 +1,5 @@
 ﻿using System;
 using SharpAlliance.Core.Managers;
-
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -11,10 +10,41 @@ public class AnimationControl
     public const int MAX_FRAMES_PER_ANIM = 100;
     public const int MAX_RANDOM_ANIMS_PER_BODYTYPE = 7;
 
-    public static int DetermineSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
+    bool SetSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
     {
-        int  usAnimSurface;
-        int  usAltAnimSurface;
+        AnimationSurfaceTypes usAnimSurface;
+
+        // Delete any structure info!
+        if (pSoldier.pLevelNode != null)
+        {
+            DeleteStructureFromWorld(pSoldier.pLevelNode.pStructureData);
+            pSoldier.pLevelNode.pStructureData = null;
+        }
+
+
+        usAnimSurface = LoadSoldierAnimationSurface(pSoldier, usAnimState);
+
+        // Add structure info!
+        if (pSoldier.pLevelNode != null && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PAUSEANIMOVE)))
+        {
+            AddMercStructureInfoFromAnimSurface(pSoldier.sGridNo, pSoldier, usAnimSurface, usAnimState);
+        }
+
+        // Set
+        pSoldier.usAnimSurface = usAnimSurface;
+
+        if (usAnimSurface == INVALID_ANIMATION_SURFACE)
+        {
+            return (false);
+        }
+
+        return (true);
+    }
+
+    public static AnimationSurfaceTypes DetermineSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
+    {
+        AnimationSurfaceTypes usAnimSurface;
+        AnimationSurfaceTypes usAltAnimSurface;
         SoldierBodyTypes ubBodyType;
         Items usItem;
         int ubWaterHandIndex = 1;
@@ -32,18 +62,19 @@ public class AnimationControl
         usAnimSurface = gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState];
 
         // CHECK IF WE CAN DO THIS ANIMATION, IE WE HAVE IT AVAILIBLE
-        if (usAnimSurface == INVALID_ANIMATION)
+        if (usAnimSurface == AnimationSurfaceTypes.INVALID_ANIMATION)
         {
             // WE SHOULD NOT BE USING THIS ANIMATION
-            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG_BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier->ubBodyType, gAnimControl[usAnimState].zAnimStr);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG_BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier.ubBodyType, gAnimControl[usAnimState].zAnimStr);
             // Set index to FOUND_INVALID_ANIMATION
-            gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState] = FOUND_INVALID_ANIMATION;
-            return (INVALID_ANIMATION_SURFACE);
+            gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState] = AnimationStates.FOUND_INVALID_ANIMATION;
+            return (AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE);
         }
 
-        if (usAnimSurface == FOUND_INVALID_ANIMATION)
+        
+        if (usAnimSurface == AnimationSurfaceTypes.FOUND_INVALID_ANIMATION)
         {
-            return (INVALID_ANIMATION_SURFACE);
+            return (AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE);
         }
 
 
@@ -51,7 +82,7 @@ public class AnimationControl
 
 
         // If we are a queen, pick the 'real' anim surface....
-        if (usAnimSurface == QUEENMONSTERSPIT_SW)
+        if (usAnimSurface == AnimationSurfaceTypes.QUEENMONSTERSPIT_SW)
         {
             WorldDirections bDir;
 
@@ -70,44 +101,44 @@ public class AnimationControl
         }
 
         // SWITCH TO DIFFERENT AIM ANIMATION FOR BIG GUY!
-        if (usAnimSurface == BGMSTANDAIM2)
+        if (usAnimSurface == AnimationSurfaceTypes.BGMSTANDAIM2)
         {
-            if (pSoldier.uiAnimSubFlags & SUB_ANIM_BIGGUYSHOOT2)
+            if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYSHOOT2))
             {
-                usAnimSurface = BGMSTANDAIM;
+                usAnimSurface = AnimationSurfaceTypes.BGMSTANDAIM;
             }
         }
 
         // SWITCH TO DIFFERENT STAND ANIMATION FOR BIG GUY!
-        if (usAnimSurface == BGMSTANDING)
+        if (usAnimSurface == AnimationSurfaceTypes.BGMSTANDING)
         {
             if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
             {
-                usAnimSurface = BGMTHREATENSTAND;
+                usAnimSurface = AnimationSurfaceTypes.BGMTHREATENSTAND;
             }
         }
 
-        if (usAnimSurface == BGMWALKING)
+        if (usAnimSurface == AnimationSurfaceTypes.BGMWALKING)
         {
             if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
             {
-                usAnimSurface = BGMWALK2;
+                usAnimSurface = AnimationSurfaceTypes.BGMWALK2;
             }
         }
 
-        if (usAnimSurface == BGMRUNNING)
+        if (usAnimSurface == AnimationSurfaceTypes.BGMRUNNING)
         {
             if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
             {
-                usAnimSurface = BGMRUN2;
+                usAnimSurface = AnimationSurfaceTypes.BGMRUN2;
             }
         }
 
-        if (usAnimSurface == BGMRAISE)
+        if (usAnimSurface == AnimationSurfaceTypes.BGMRAISE)
         {
             if (pSoldier.uiAnimSubFlags.HasFlag(SUB_ANIM.BIGGUYTHREATENSTANCE))
             {
-                usAnimSurface = BGMRAISE2;
+                usAnimSurface = AnimationSurfaceTypes.BGMRAISE2;
             }
         }
 
@@ -115,9 +146,8 @@ public class AnimationControl
         // ADJUST ANIMATION SURFACE BASED ON TERRAIN
 
         // CHECK FOR WATER
-        if (MercInWater(pSoldier))
+        if (SoldierControl.MercInWater(pSoldier))
         {
-
             // ADJUST BASED ON ITEM IN HAND....
             usItem = pSoldier.inv[InventorySlot.HANDPOS].usItem;
 
@@ -136,7 +166,7 @@ public class AnimationControl
             // CHANGE BASED ON HIEGHT OF WATER
             usAltAnimSurface = gubAnimSurfaceMidWaterSubIndex[pSoldier.ubBodyType][usAnimState][ubWaterHandIndex];
 
-            if (usAltAnimSurface != INVALID_ANIMATION)
+            if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
             {
                 usAnimSurface = usAltAnimSurface;
             }
@@ -158,7 +188,7 @@ public class AnimationControl
                 {
                     usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
 
-                    if (usAltAnimSurface != INVALID_ANIMATION)
+                    if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
                     {
                         usAnimSurface = usAltAnimSurface;
                         fAdjustedForItem = true;
@@ -173,7 +203,7 @@ public class AnimationControl
                     if (!(Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)))
                     {
                         usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
-                        if (usAltAnimSurface != INVALID_ANIMATION)
+                        if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
                         {
                             usAnimSurface = usAltAnimSurface;
                             fAdjustedForItem = true;
@@ -196,7 +226,7 @@ public class AnimationControl
                 {
                     usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
 
-                    if (usAltAnimSurface != INVALID_ANIMATION)
+                    if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
                     {
                         usAnimSurface = usAltAnimSurface;
                         fAdjustedForItem = true;
@@ -236,20 +266,18 @@ public class AnimationControl
                 }
             }
         }
-     
+
         return (usAnimSurface);
     }
 
-    public static int GetSoldierAnimationSurface(SOLDIERTYPE? pSoldier, AnimationStates usAnimState)
+    public static AnimationSurfaceTypes GetSoldierAnimationSurface(SOLDIERTYPE? pSoldier, AnimationStates usAnimState)
     {
-        int usAnimSurface;
-
-        usAnimSurface = pSoldier.usAnimSurface;
+        AnimationSurfaceTypes usAnimSurface = pSoldier.usAnimSurface;
 
         if (usAnimSurface != Globals.INVALID_ANIMATION_SURFACE)
         {
             // Ensure that it's loaded!
-            if (Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
+            if (gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
             {
                 Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, Globals.MSG_BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType.ToString(),
                     Globals.gAnimControl[usAnimState].zAnimStr, usAnimSurface.ToString());
@@ -596,7 +624,10 @@ public enum AnimationStates
     CRIPPLE_END_OPEN_DOOR,
     CRIPPLE_END_OPEN_LOCKED_DOOR,
     LOCKPICK_CROUCHED,
-    NUMANIMATIONSTATES
+    NUMANIMATIONSTATES,
+
+    INVALID_ANIMATION = 0xFFF0,
+    FOUND_INVALID_ANIMATION = 0xFFF1,
 }
 
 public enum AnimationHeights

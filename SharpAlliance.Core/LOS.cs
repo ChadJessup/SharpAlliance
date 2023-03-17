@@ -26,7 +26,7 @@ public class LOS
 
         if (bCubeLevel > 0)
         {
-            dEndZPos = ((float)(bCubeLevel + bLevel * PROFILE_Z_SIZE) - 0.5f) * HEIGHT_UNITS_PER_INDEX;
+            dEndZPos = ((bCubeLevel + bLevel * PROFILE_Z_SIZE) - 0.5f) * HEIGHT_UNITS_PER_INDEX;
             dEndZPos += CONVERT_PIXELS_TO_HEIGHTUNITS(gpWorldLevelData[sGridNo].sHeight);
         }
         else
@@ -48,6 +48,6 @@ public class LOS
         sXPos = sXPos * CELL_X_SIZE + (CELL_X_SIZE / 2);
         sYPos = sYPos * CELL_Y_SIZE + (CELL_Y_SIZE / 2);
 
-        return (LineOfSightTest((FLOAT)CenterX(pStartSoldier->sGridNo), (FLOAT)CenterY(pStartSoldier->sGridNo), dStartZPos, (FLOAT)sXPos, (FLOAT)sYPos, dEndZPos, ubTileSightLimit, gubTreeSightReduction[ANIM_STAND], bAware, 0, FALSE, NULL));
+        return (LineOfSightTest(CenterX(pStartSoldier.sGridNo), CenterY(pStartSoldier.sGridNo), dStartZPos, sXPos, sYPos, dEndZPos, ubTileSightLimit, gubTreeSightReduction[AnimationHeights.ANIM_STAND], bAware, 0, false, null));
     }
 }

@@ -76,7 +76,7 @@ public class SOLDIERTYPE
     public float dYPos;
     public float dOldXPos;
     public float dOldYPos;
-    int sInitialGridNo;
+    public int sInitialGridNo;
     public int sGridNo;
     public WorldDirections bDirection;
     public int sHeightAdjustment;
@@ -87,7 +87,7 @@ public class SOLDIERTYPE
     public int bOldOverTerrainType;
 
     public bool bCollapsed;                    // collapsed due to being out of APs
-    int bBreathCollapsed;                  // collapsed due to being out of APs
+    public int bBreathCollapsed;                  // collapsed due to being out of APs
                                            // 50 bytes so far
 
     public AnimationHeights ubDesiredHeight;
@@ -180,21 +180,21 @@ public class SOLDIERTYPE
 
 
     // PALETTE MANAGEMENT STUFF
-    PaletteRepID HeadPal;   // 30 
-    PaletteRepID PantsPal;  // 30
-    PaletteRepID VestPal;   // 30
-    PaletteRepID SkinPal;   // 30
-    PaletteRepID MiscPal;   // 30
+    public PaletteRepID HeadPal;   // 30 
+    public PaletteRepID PantsPal;  // 30
+    public PaletteRepID VestPal;   // 30
+    public PaletteRepID SkinPal;   // 30
+    public PaletteRepID MiscPal;   // 30
 
     // FULL 3-d TILE STUFF ( keep records of three tiles infront )
-    int[] usFrontArcFullTileList = new int[MAX_FULLTILE_DIRECTIONS];
-    int[] usFrontArcFullTileGridNos = new int[MAX_FULLTILE_DIRECTIONS];
+    public int[] usFrontArcFullTileList = new int[MAX_FULLTILE_DIRECTIONS];
+    public int[] usFrontArcFullTileGridNos = new int[MAX_FULLTILE_DIRECTIONS];
 
 
     public SGPPaletteEntry? p8BPPPalette; // 4
     public int p16BPPPalette;
     public int[] pShades = new int[Globals.NUM_SOLDIER_SHADES]; // Shading tables
-    int[] pGlowShades = new int[20]; // 
+    public int[] pGlowShades = new int[20]; // 
     public int pCurrentShade;
     public int bMedical;
     public int fBeginFade;
@@ -206,9 +206,9 @@ public class SOLDIERTYPE
     // THROW_PARAMS pThrowParams;
     public bool fTurningFromPronePosition;
     public bool bReverse;
-    //struct TAG_level_node               *pLevelNode;
-    //struct TAG_level_node               *pExternShadowLevelNode;
-    //struct TAG_level_node               *pRoofUILevelNode;
+    public LEVELNODE? pLevelNode;
+    public LEVELNODE? pExternShadowLevelNode;
+    public LEVELNODE? pRoofUILevelNode;
 
     // WALKING STUFF
     public WorldDirections bDesiredDirection;
@@ -234,10 +234,10 @@ public class SOLDIERTYPE
 
 
     // UNBLIT BACKGROUND
-    int pBackGround;
-    int pZBackground;
-    int usUnblitX, usUnblitY;
-    int usUnblitWidth, usUnblitHeight;
+    public int pBackGround;
+    public int pZBackground;
+    public int usUnblitX, usUnblitY;
+    public int usUnblitWidth, usUnblitHeight;
 
     public INSERTION_CODE ubStrategicInsertionCode;
     public int usStrategicInsertionData;
@@ -299,8 +299,8 @@ public class SOLDIERTYPE
     public MERC ubPendingAction;
     public int ubPendingActionAnimCount;
     public int uiPendingActionData1;
-    public int sPendingActionData2;
-    public int bPendingActionData3;
+    public object sPendingActionData2;
+    public object bPendingActionData3;
     public int ubDoorHandleCode;
     public int uiPendingActionData4;
     public int bInterruptDuelPts;
@@ -321,7 +321,7 @@ public class SOLDIERTYPE
     public AIDEFINES fAIFlags;
 
     public bool fDontChargeReadyAPs;
-    public int usAnimSurface;
+    public AnimationSurfaceTypes usAnimSurface;
     public int sZLevel;
     public bool fPrevInWater;
     public bool fGoBackToAimAfterHit;
@@ -464,7 +464,7 @@ public class SOLDIERTYPE
     public int bVehicleID;
     public int fPastXDest;
     public int fPastYDest;
-    public int bMovementDirection;
+    public WorldDirections bMovementDirection;
     public int sOldGridNo;
     public int usDontUpdateNewGridNoOnMoveAnimChange;
     public int sBoundingBoxWidth;
@@ -528,7 +528,7 @@ public class SOLDIERTYPE
     public int usValueGoneUp;
 
     public int ubNumLocateCycles;
-    public int ubDelayedMovementFlags;
+    public DELAYED_MOVEMENT_FLAG ubDelayedMovementFlags;
     public bool fMuzzleFlash;
     public int ubCTGTTargetID;
 

@@ -405,9 +405,9 @@ public class AIMain
                         {
                             pSoldier.sAbsoluteFinalDestination = NOWHERE;
 
-                            if (!ACTING_ON_SCHEDULE(pSoldier) && pSoldier.ubQuoteRecord && pSoldier.ubQuoteActionID == QUOTE_ACTION_ID.CHECKFORDEST)
+                            if (!ACTING_ON_SCHEDULE(pSoldier) && pSoldier.ubQuoteRecord > 0 && pSoldier.ubQuoteActionID == QUOTE_ACTION_ID.CHECKFORDEST)
                             {
-                                NPCReachedDestination(pSoldier, false);
+                                NPC.NPCReachedDestination(pSoldier, false);
                                 // wait just a little bit so the queue can be processed
                                 pSoldier.bNextAction = AI_ACTION.WAIT;
                                 pSoldier.usNextActionData = 500;
@@ -689,7 +689,7 @@ public class AIMain
                     && pSoldier.bSide == 0
                     && pSoldier.bAlertStatus == STATUS.GREEN))
                 {
-                    LocateSoldier(pSoldier.ubID, SETLOCATORFAST);
+                    Overhead.LocateSoldier(pSoldier.ubID, SETLOCATORFAST);
                 }
 
                 // try commenting this out altogether

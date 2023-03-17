@@ -120,7 +120,7 @@ public class DecideAction
                     ((pSoldier.bAlertStatus == STATUS.YELLOW) && (pSoldier.bBreath < 50)))
                 {
                     // as long as he's not in water (standing on a bridge is OK)
-                    if (!MercInWater(pSoldier))
+                    if (!SoldierControl.MercInWater(pSoldier))
                     {
                         // force a NEW decision so that he can get some rest
                         SetNewSituation(pSoldier);

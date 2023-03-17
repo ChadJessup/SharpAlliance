@@ -1,11 +1,89 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.IO;
 using System.Runtime.InteropServices;
+using SharpAlliance.Core.Managers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class NPC
 {
+    public static void NPCReachedDestination(SOLDIERTYPE? pNPC, bool fAlreadyThere)
+    {
+        // perform action or whatever after reaching our destination
+        NPCID ubNPC;
+        NPCQuoteInfo pQuotePtr;
+        List<NPCQuoteInfo> pNPCQuoteInfoArray;
+        int ubLoop;
+        int ubQuoteRecord;
+
+        if (pNPC.ubQuoteRecord == 0)
+        {
+            ubQuoteRecord = 0;
+        }
+        else
+        {
+            ubQuoteRecord = (pNPC.ubQuoteRecord - 1);
+        }
+
+        // Clear values!
+        pNPC.ubQuoteRecord = 0;
+        if (pNPC.bTeam == gbPlayerNum)
+        {
+            // the "under ai control" flag was set temporarily; better turn it off now
+            pNPC.uiStatusFlags &= (~SOLDIER.PCUNDERAICONTROL);
+            // make damn sure the AI_HANDLE_EVERY_FRAME flag is turned off
+            pNPC.fAIFlags &= (AIDEFINES.AI_HANDLE_EVERY_FRAME);
+        }
+
+        ubNPC = pNPC.ubProfile;
+        if (EnsureQuoteFileLoaded(ubNPC) == false)
+        {
+            // error!!!
+            return;
+        }
+
+        pNPCQuoteInfoArray = gpNPCQuoteInfoArray[ubNPC];
+        pQuotePtr = (pNPCQuoteInfoArray[ubQuoteRecord]);
+        // either we are supposed to consider a new quote record
+        // (indicated by a negative gridno in the has-item field)
+        // or an action to perform once we reached this gridno
+
+        if (pNPC.sGridNo == pQuotePtr.usGoToGridno)
+        {
+            // check for an after-move action
+            if (pQuotePtr.sActionData > 0)
+            {
+                NPCDoAction(ubNPC, pQuotePtr.sActionData, ubQuoteRecord);
+            }
+        }
+
+        for (ubLoop = 0; ubLoop < NUM_NPC_QUOTE_RECORDS; ubLoop++)
+        {
+            pQuotePtr = (pNPCQuoteInfoArray[ubLoop]);
+            if (pNPC.sGridNo == -(pQuotePtr.sRequiredGridno))
+            {
+                if (NPCConsiderQuote(ubNPC, 0, TRIGGER_NPC, ubLoop, 0, pNPCQuoteInfoArray))
+                {
+                    if (fAlreadyThere)
+                    {
+                        TriggerNPCRecord(ubNPC, ubLoop);
+                    }
+                    else
+                    {
+                        // trigger this quote
+                        TriggerNPCRecordImmediately(ubNPC, ubLoop);
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
     public static void ReplaceLocationInNPCDataFromProfileID(NPCID ubNPC, int sOldGridNo, int sNewGridNo)
     {
         if (EnsureQuoteFileLoaded(ubNPC) == false)
@@ -45,6 +123,119 @@ public class NPC
             // don't do anything
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("WARNING: trigger of %d, record %d cannot proceed, possible error", ubTriggerNPC, ubTriggerNPCRec));
         }
+    }
+
+    public static bool EnsureQuoteFileLoaded(NPCID ubNPC)
+    {
+        bool fLoadFile = false;
+
+        if (ubNPC == NPCID.ROBOT)
+        {
+            return (false);
+        }
+
+        if (gpNPCQuoteInfoArray[ubNPC] == null)
+        {
+            fLoadFile = true;
+        }
+
+        if (ubNPC >= FIRST_RPC && ubNPC < FIRST_NPC)
+        {
+            if (gMercProfiles[ubNPC].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED))
+            {
+                // recruited
+                if (gpBackupNPCQuoteInfoArray[ubNPC] == null)
+                {
+                    // no backup stored of current script, so need to backup
+                    fLoadFile = true;
+                    // set pointer to back up script!
+                    BackupOriginalQuoteFile(ubNPC);
+                }
+                // else have backup, are recruited, nothing special
+            }
+            else
+            {
+                // not recruited
+                if (gpBackupNPCQuoteInfoArray[ubNPC] != null)
+                {
+                    // backup stored, restore backup
+                    RevertToOriginalQuoteFile(ubNPC);
+                }
+                // else are no backup, nothing special
+            }
+        }
+
+        if (fLoadFile)
+        {
+            gpNPCQuoteInfoArray[ubNPC] = LoadQuoteFile(ubNPC);
+            if (gpNPCQuoteInfoArray[ubNPC] == null)
+            {
+                // error message at this point!
+                return (false);
+            }
+        }
+
+        return (true);
+    }
+
+    public NPCQuoteInfo LoadQuoteFile(NPCID ubNPC)
+    {
+        string zFileName;
+        Stream hFile;
+        NPCQuoteInfo pFileData = new();
+        int uiBytesRead;
+        int uiFileSize;
+
+        if (ubNPC == NPCID.PETER || ubNPC == NPCID.ALBERTO || ubNPC == NPCID.CARLO)
+        {
+            // use a copy of Herve's data file instead!
+            zFileName = sprintf("NPCData\\%03d.npc", NPCID.HERVE);
+        }
+        else if (ubNPC < FIRST_RPC || (ubNPC < FIRST_NPC && gMercProfiles[ubNPC].ubMiscFlags.HasFlag(ProfileMiscFlags1.ROFILE_MISC_FLAG_RECRUITED)))
+        {
+            zFileName = sprintf("NPCData\\000.npc", ubNPC);
+        }
+        else
+        {
+            zFileName = sprintf("NPCData\\%03d.npc", ubNPC);
+        }
+
+        // ATE: Put some stuff i here to use a different NPC file if we are in a meanwhile.....
+        if (Meanwhile.AreInMeanwhile())
+        {
+            // If we are the queen....
+            if (ubNPC == NPCID.QUEEN)
+            {
+                sprintf(zFileName, "NPCData\\%03d.npc", gubAlternateNPCFileNumsForQueenMeanwhiles[Meanwhile.GetMeanwhileID()]);
+            }
+
+            // If we are elliot....
+            if (ubNPC == NPCID.ELLIOT)
+            {
+                sprintf(zFileName, "NPCData\\%03d.npc", gubAlternateNPCFileNumsForElliotMeanwhiles[Meanwhile.GetMeanwhileID()]);
+            }
+
+        }
+
+        CHECKN(FileManager.FileExists(zFileName));
+
+        hFile = FileManager.FileOpen(zFileName, FILE_ACCESS_READ, false);
+        CHECKN(hFile);
+
+        uiFileSize = sizeof(NPCQuoteInfo) * NUM_NPC_QUOTE_RECORDS;
+        pFileData = MemAlloc(uiFileSize);
+        if (pFileData)
+        {
+            if (!FileManager.FileRead(hFile, ref pFileData, uiFileSize, out uiBytesRead) || uiBytesRead != uiFileSize)
+            {
+                MemFree(pFileData);
+                pFileData = null;
+            }
+        }
+
+        FileClose(hFile);
+
+        return (pFileData);
     }
 
     internal static void TriggerNPCRecordImmediately(NPCID ubNPCNumber, int usTriggerEvent)

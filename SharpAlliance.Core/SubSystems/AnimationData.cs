@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Platform.Interfaces;
-
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -66,6 +65,39 @@ public class AnimationData
     private bool LoadAnimationProfiles()
     {
         return true;
+    }
+
+    private static STRUCTURE_FILE_REF? InternalGetAnimationStructureRef(int usSoldierID, AnimationSurfaceTypes usSurfaceIndex, AnimationStates usAnimState, bool fUseAbsolute)
+    {
+        StructData bStructDataType;
+
+        if (usSurfaceIndex == INVALID_ANIMATION_SURFACE)
+        {
+            return (null);
+        }
+
+        bStructDataType = gAnimSurfaceDatabase[usSurfaceIndex].bStructDataType;
+
+        if (bStructDataType == StructData.NO_STRUCT)
+        {
+            return (null);
+        }
+
+        // ATE: Alright - we all hate exception coding but ness here...
+        // return STANDING struct for these - which start standing but end prone
+        // CJC August 14 2002: added standing burst hit to this list
+        if ((usAnimState == AnimationStates.FALLFORWARD_FROMHIT_STAND || usAnimState == AnimationStates.GENERIC_HIT_STAND ||
+                 usAnimState == AnimationStates.FALLFORWARD_FROMHIT_CROUCH || usAnimState == AnimationStates.STANDING_BURST_HIT) && !fUseAbsolute)
+        {
+            return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType, StructData.S_STRUCT].pStructureFileRef);
+        }
+
+        return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType, bStructDataType].pStructureFileRef);
+    }
+
+    public static STRUCTURE_FILE_REF? GetAnimationStructureRef(int usSoldierID, AnimationSurfaceTypes usSurfaceIndex, AnimationStates usAnimState)
+    {
+        return (InternalGetAnimationStructureRef(usSoldierID, usSurfaceIndex, usAnimState, false));
     }
 
     private void InitAnimationSurfacesPerBodytype()
@@ -574,6 +606,10 @@ public enum AnimationSurfaceTypes : ushort
     BODYEXPLODE,
 
     NUMANIMATIONSURFACETYPES,
+
+    INVALID_ANIMATION = 0xFFF0,
+    FOUND_INVALID_ANIMATION = 0xFFF1,
+    INVALID_ANIMATION_SURFACE = 32000,
 }
 
 public struct AnimationStructureType
@@ -593,12 +629,12 @@ public struct AnimationSurfaceType
 {
     public int ubName;
     public string Filename;
-    public int bStructDataType;
+    public StructData bStructDataType;
     public int ubFlags;
     public int uiNumDirections;
     public int uiNumFramesPerDir;
     public HVOBJECT hVideoObject;
     public int Unused;
     public int bUsageCount;
-    public int bProfile;
+    public NPCID bProfile;
 }

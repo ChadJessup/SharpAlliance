@@ -585,13 +585,14 @@ public class SoldierTile
                                 // check to see if we're there now!
                                 if (pSoldier.sGridNo == pSoldier.sAbsoluteFinalDestination)
                                 {
-                                    NPCReachedDestination(pSoldier, false);
+                                    NPC.NPCReachedDestination(pSoldier, false);
                                     pSoldier.bNextAction = AI_ACTION.WAIT;
                                     pSoldier.usNextActionData = 500;
                                     return (true);
                                 }
                             }
-                            pSoldier.bPathStored = 1;
+
+                            pSoldier.bPathStored = true;
 
                             EVENT_GetNewSoldierPath(pSoldier, pSoldier.sAbsoluteFinalDestination, pSoldier.usUIMovementMode);
                             //EVENT_GetNewSoldierPath( MercPtrs[ ubPerson ], MercPtrs[ ubPerson ].sFinalDestination, MercPtrs[ ubPerson ].usUIMovementMode );					

@@ -27,7 +27,7 @@ public partial class Globals
     public static bool gfGotoSectorTransition = false;
     public static bool gfEnterAutoResolveMode = false;
     public static bool gfEnteringMapScreenToEnterPreBattleInterface = false;
-    public static bool gfIgnoreAllInput =false;
+    public static bool gfIgnoreAllInput = false;
 
     public const int MAX_MOVEMENT_NOISE = 9;
     public const FontColor COLOR1 = (FontColor)((int)FontColor.FONT_MCOLOR_BLACK << 8) | FontColor.FONT_MCOLOR_LTGREEN;
@@ -126,15 +126,15 @@ public partial class Globals
     public const int NUM_PLANNING_MERCS = 8;
     public const int TOTAL_SOLDIERS = (NUM_PLANNING_MERCS + MAX_NUM_SOLDIERS);
 
-    public const int MAXCOL = World.WORLD_COLS;
-    public const int MAXROW = World.WORLD_ROWS;
+    public const int MAXCOL = WORLD_COLS;
+    public const int MAXROW = WORLD_ROWS;
     public const int GRIDSIZE = MAXCOL * MAXROW;
     public const int RIGHTMOSTGRID = MAXCOL - 1;
     public const int LASTROWSTART = GRIDSIZE - MAXCOL;
     public const int NOWHERE = GRIDSIZE + 1;
     public const int NO_MAP_POS = NOWHERE;
-    public const int MAPWIDTH = World.WORLD_COLS;
-    public const int MAPHEIGHT = World.WORLD_ROWS;
+    public const int MAPWIDTH = WORLD_COLS;
+    public const int MAPHEIGHT = WORLD_ROWS;
     public const int MAPLENGTH = MAPHEIGHT * MAPWIDTH;
     public const int NUM_PANIC_TRIGGERS = 3;
     public const int WORLD_TILE_X = 40;
@@ -258,7 +258,7 @@ public partial class Globals
     public static List<MAP_ELEMENT> gpWorldLevelData { get; set; } = new();
 
     // World Movement Costs
-    public static int[,,] gubWorldMovementCosts = new int[World.WORLD_MAX, World.MAXDIR, 2];
+    public static int[,,] gubWorldMovementCosts = new int[WORLD_MAX, MAXDIR, 2];
 
     public static Dictionary<NPCID, MERCPROFILESTRUCT> gMercProfiles { get; } = new();
 
@@ -386,15 +386,15 @@ public partial class Globals
     public const int MAX_FULLTILE_DIRECTIONS = 3;
 
 
-    public static int[] gzLocation;// [20];
+    public static int[] gzLocation = new int[20];
     public static bool gfLocation = false;
 
     public static bool gfUIBodyHitLocation = false;
 
-    public static int[] gzIntTileLocation;// [20];
+    public static int[] gzIntTileLocation = new int[20];
     public static bool gfUIIntTileLocation;
 
-    public static int[] gzIntTileLocation2;// [20];
+    public static int[] gzIntTileLocation2 = new int[20];
     public static bool gfUIIntTileLocation2;
 
 
@@ -405,8 +405,47 @@ public partial class Globals
     public static bool gfUserTurnRegionActive = false;
 
     public static int[] gbFirstApproachFlags = { 0x01, 0x02, 0x04, 0x08 };
-    public static int[] gubAlternateNPCFileNumsForQueenMeanwhiles = { 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176 };
-    public static int[] gubAlternateNPCFileNumsForElliotMeanwhiles = { 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196 };
+    public static Dictionary<Meanwhiles, int> gubAlternateNPCFileNumsForQueenMeanwhiles = new()
+    {
+        { Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE,   160 },
+        { Meanwhiles.DRASSEN_LIBERATED,             161 },
+        { Meanwhiles.CAMBRIA_LIBERATED,             162 },
+        { Meanwhiles.ALMA_LIBERATED,                163 },
+        { Meanwhiles.GRUMM_LIBERATED,               164 },
+        { Meanwhiles.CHITZENA_LIBERATED,            165 },
+        { Meanwhiles.NW_SAM,                        166 },
+        { Meanwhiles.NE_SAM,                        167 },
+        { Meanwhiles.CENTRAL_SAM,                   168 },
+        { Meanwhiles.FLOWERS,                       169 },
+        { Meanwhiles.LOST_TOWN,                     170 },
+        { Meanwhiles.INTERROGATION,                 171 },
+        { Meanwhiles.CREATURES,                     172 },
+        { Meanwhiles.KILL_CHOPPER,                  173 },
+        { Meanwhiles.AWOL_SCIENTIST,                174 },
+        { Meanwhiles.OUTSKIRTS_MEDUNA,              175 },
+        { Meanwhiles.BALIME_LIBERATED,              176 },
+    };
+
+    public static Dictionary<Meanwhiles, int> gubAlternateNPCFileNumsForElliotMeanwhiles = new()
+    {
+        { Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE,   180 },
+        { Meanwhiles.DRASSEN_LIBERATED,             181 },
+        { Meanwhiles.CAMBRIA_LIBERATED,             182 },
+        { Meanwhiles.ALMA_LIBERATED,                183 },
+        { Meanwhiles.GRUMM_LIBERATED,               184 },
+        { Meanwhiles.CHITZENA_LIBERATED,            185 },
+        { Meanwhiles.NW_SAM,                        186 },
+        { Meanwhiles.NE_SAM,                        187 },
+        { Meanwhiles.CENTRAL_SAM,                   188 },
+        { Meanwhiles.FLOWERS,                       189 },
+        { Meanwhiles.LOST_TOWN,                     190 },
+        { Meanwhiles.INTERROGATION,                 191 },
+        { Meanwhiles.CREATURES,                     192 },
+        { Meanwhiles.KILL_CHOPPER,                  193 },
+        { Meanwhiles.AWOL_SCIENTIST,                194 },
+        { Meanwhiles.OUTSKIRTS_MEDUNA,              195 },
+        { Meanwhiles.BALIME_LIBERATED,              196 },
+    };
 
 
     // For use with mouse button query routines
@@ -444,8 +483,6 @@ public partial class Globals
     public static NPCID gubSrcSoldierProfile;
     public static NPCID gubNiceNPCProfile = NO_PROFILE;
     public static NPCID gubNastyNPCProfile = NO_PROFILE;
-
-    public const int DELAYED_MOVEMENT_FLAG_PATH_THROUGH_PEOPLE = 0x01;
 
     public static GameOptions gGameOptions = new();
     public static GameSettings gGameSettings = new();
@@ -738,7 +775,7 @@ public partial class Globals
 
     public const int TIXA_SECTOR_X = 9;
     public const MAP_ROW TIXA_SECTOR_Y = (MAP_ROW)10;
-    public const int INVALID_ANIMATION_SURFACE = 32000;
+    public const AnimationSurfaceTypes INVALID_ANIMATION_SURFACE = (AnimationSurfaceTypes)32000;
 
     public static int gubCheatLevel { get; internal set; }
     public static bool fShowAttributeMenu { get; internal set; }

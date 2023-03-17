@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Core.Interfaces
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.Interfaces;
+
+public interface IImageManager : ISharpAllianceManager
 {
-    public interface IImageManager : ISharpAllianceManager
-    {
-    }
 }

@@ -5,236 +5,378 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public static List<ANIM_PROF> gpAnimProfiles = new();
+    public static Dictionary<NPCID, ANIM_PROF> gpAnimProfiles = new();
     public static int gubNumAnimProfiles;
 
-    public static AnimationSurfaceType[] gAnimSurfaceDatabase = new AnimationSurfaceType[(int)AnimationSurfaceTypes.NUMANIMATIONSURFACETYPES];
-    public static AnimationStructureType[,] gAnimStructureDatabase = new AnimationStructureType[(int)SoldierBodyTypes.TOTALBODYTYPES, (int)StructData.NUM_STRUCT_IDS]
+    // BODY TYPES
+    // RGM = Regular Male
+    // (RG) = Body desc ( Regular - RG, Short Stocky ( SS ), etc
+    // (M) = Sex, Male, female
+    public static bool IS_MERC_BODY_TYPE(SOLDIERTYPE p) => ((p.ubBodyType <= SoldierBodyTypes.REGFEMALE) ? (true) : (false));
+    public static bool IS_CIV_BODY_TYPE(SOLDIERTYPE p) => ((p.ubBodyType >= SoldierBodyTypes.FATCIV) && (p.ubBodyType <= SoldierBodyTypes.CRIPPLECIV));
+
+
+    public static Dictionary<AnimationSurfaceTypes, AnimationSurfaceType> gAnimSurfaceDatabase = new();
+    public static Dictionary<SoldierBodyTypes, Dictionary<StructData, AnimationStructureType>> gAnimStructureDatabase = new()
     {
         {
-            // Normal Male
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
-            // Big male
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
-            // Stocky male
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
+            SoldierBodyTypes.REGMALE,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
+            SoldierBodyTypes.BIGMALE,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
+            SoldierBodyTypes.STOCKYMALE,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // Reg Female
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
+            SoldierBodyTypes.REGFEMALE,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // Adult female creature
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
-            // Adult male creature
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
+            SoldierBodyTypes.ADULTFEMALEMONSTER,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
+            SoldierBodyTypes.AM_MONSTER,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // Young Adult female creature
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
+            SoldierBodyTypes.YAF_MONSTER,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // Young Adult male creature
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
+            SoldierBodyTypes.YAM_MONSTER,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\MN_BREAT.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // larvea creature
-            new("ANIMS\\STRUCTDATA\\L_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\L_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\L_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\L_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\L_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
+            SoldierBodyTypes.LARVAE_MONSTER,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\L_BREATH.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\L_BREATH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\L_BREATH.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\L_BREATH.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\L_BREATH.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // infant creature
-            new("ANIMS\\STRUCTDATA\\I_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\I_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\I_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\I_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\I_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\I_BREATH.JSD"),// default
-        }, {
+            SoldierBodyTypes.INFANT_MONSTER,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\I_BREATH.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\I_BREATH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\I_BREATH.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\I_BREATH.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\I_BREATH.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\I_BREATH.JSD") },
+            }
+        },
+        {
             // Queen creature
-            new("ANIMS\\STRUCTDATA\\Q_READY.JSD"),
-            new("ANIMS\\STRUCTDATA\\Q_READY.JSD"),
-            new("ANIMS\\STRUCTDATA\\Q_READY.JSD"),
-            new("ANIMS\\STRUCTDATA\\Q_READY.JSD"),
-            new("ANIMS\\STRUCTDATA\\Q_READY.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),// default
-        }, {
+            SoldierBodyTypes.QUEENMONSTER,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\Q_READY.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\Q_READY.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\Q_READY.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\Q_READY.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\Q_READY.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // Fat civ
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.FATCIV,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // man civ
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.MANCIV,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // miniskirt civ
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.MINICIV,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // dress civ
-            new("ANIMS\\STRUCTDATA\\M_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.DRESSCIV,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // kid civ
-            new("ANIMS\\STRUCTDATA\\K_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-        }, {
+            SoldierBodyTypes.KIDCIV,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\K_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+            }
+        },
+        {
             // hat kid civ
-            new("ANIMS\\STRUCTDATA\\K_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_PRONE.JSD"),
-        }, {
+            SoldierBodyTypes.HATKIDCIV,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\K_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\K_CROUCH.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_PRONE.JSD") },
+            }
+        },
+        {
             // cripple civ
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALL.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.CRIPPLECIV,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\M_FALL.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\M_FALLBACK.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // cow
-            new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.COW,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\CW_BREATH.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // crow
-            new("ANIMS\\STRUCTDATA\\CR_STAND.JSD"),
-            new("ANIMS\\STRUCTDATA\\CR_CROUCH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CR_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\CR_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\CR_PRONE.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.CROW,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\CR_STAND.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\CR_CROUCH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\CR_PRONE.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\CR_PRONE.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\CR_PRONE.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // CAT
-            new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
-        }, {
+            SoldierBodyTypes.BLOODCAT,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\CT_BREATH.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // ROBOT1
-            new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD"),
-            new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD"),
-            new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD"),
-            new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD"),
-            new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD"),
-            new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD"), // default
-        }, {
+            SoldierBodyTypes.ROBOTNOWEAPON,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\J_R_BRET.JSD") },
+            }
+        },
+        {
             // vech 1
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") // default
-        }, {
+            SoldierBodyTypes.HUMVEE,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // tank 1
-            new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") // default
-        }, {
+            SoldierBodyTypes.TANK_NW,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\TNK_SHT.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             // tank 2
-            new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD"),
-            new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD"), // default
+            SoldierBodyTypes.TANK_NE,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\TNK2_ROT.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
         }, {
             //ELDORADO
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") // default
-        }, {
+            SoldierBodyTypes.ELDORADO,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             //ICECREAMTRUCK
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") // default
-        }, {
+            SoldierBodyTypes.ICECREAMTRUCK,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
+        },
+        {
             //JEEP
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\HMMV.JSD"),
-            new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") // default
+            SoldierBodyTypes.JEEP,
+            new()
+            {
+                { StructData.S_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.C_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.P_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.F_STRUCT,          new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.FB_STRUCT,         new("ANIMS\\STRUCTDATA\\HMMV.JSD") },
+                { StructData.DEFAULT_STRUCT,    new("ANIMS\\STRUCTDATA\\M_CROUCH.JSD") },
+            }
         }
     };
 }
