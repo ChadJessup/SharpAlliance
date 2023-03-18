@@ -160,20 +160,3 @@ public enum ARROWS
     SHOW_UP_ABOVE_CLIMB3 = 0x00800000,
     SHOW_DOWN_CLIMB = 0x02000000,
 }
-
-public enum FLASH_PORTRAIT
-{
-    // FLASH PORTRAIT CODES
-    STOP = 0,
-    START = 1,
-    WAITING = 2,
-    DELAY = 150,
-
-    // FLASH PORTRAIT PALETTE IDS
-    NOSHADE = 0,
-    STARTSHADE = 1,
-    ENDSHADE = 2,
-    DARKSHADE = 3,
-    GRAYSHADE = 4,
-    LITESHADE = 5,
-}

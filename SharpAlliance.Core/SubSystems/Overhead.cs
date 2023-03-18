@@ -211,14 +211,18 @@ public class Overhead
                 if (ubWallOrientation == OUTSIDE_TOP_RIGHT || ubWallOrientation == INSIDE_TOP_RIGHT)
                 {
                     if (sDirs[cnt] == NORTH || sDirs[cnt] == WEST || sDirs[cnt] == SOUTH)
+                    {
                         continue;
+                    }
                 }
 
                 // Refuse the north and west and east directions if our orientation is top-right
                 if (ubWallOrientation == OUTSIDE_TOP_LEFT || ubWallOrientation == INSIDE_TOP_LEFT)
                 {
                     if (sDirs[cnt] == NORTH || sDirs[cnt] == WEST || sDirs[cnt] == EAST)
+                    {
                         continue;
+                    }
                 }
             }
 
@@ -665,7 +669,7 @@ public class TacticalStatusType
     public int usItemsSeenOnAttackGridNo;
     public bool fLockItemLocators;
     public int ubLastQuoteSaid;
-    public int ubLastQuoteProfileNUm;
+    public NPCID ubLastQuoteProfileNUm;
     public bool fCantGetThrough;
     public int sCantGetThroughGridNo;
     public int sCantGetThroughSoldierGridNo;

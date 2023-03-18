@@ -83,4 +83,5 @@ public enum TEAM
     CIV_TEAM = 4,
     LAST_TEAM = CIV_TEAM,
     PLAYER_PLAN = 5,
+    MAX_TEAMS = 6,
 }

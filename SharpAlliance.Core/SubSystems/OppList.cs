@@ -3174,13 +3174,13 @@ public class OppList
 
 
         // if this soldier is on the local team
-        if (PTR_OURTEAM)
+        if (PTR_OURTEAM(pSoldier))
         {
             // don't trigger sighting quotes or stop merc's movement if everyone visible
             //if (!(gTacticalStatus.uiFlags.HasFlag(SHOW_ALL_MERCS)))
             {
                 // if we've revealed any enemies, or seen any previously unknown enemies
-                if (revealedEnemies || unknownEnemies)
+                if (revealedEnemies > 0 || unknownEnemies > 0)
                 {
                     // First check for a virgin map and set to false if we see our first guy....
                     // Only if this guy is an ememy!
@@ -3281,13 +3281,13 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(200, LINE_HEIGHT * ubLine, "Agility:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bAgility, EffectiveAgility(pSoldier));
+            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bAgility, SkillChecks.EffectiveAgility(pSoldier));
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(200, LINE_HEIGHT * ubLine, "Dexterity:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(350, LINE_HEIGHT * ubLine, "%d( %d )", pSoldier.bDexterity, EffectiveDexterity(pSoldier));
+            gprintf(350, LINE_HEIGHT * ubLine, "%d( %d )", pSoldier.bDexterity, SkillChecks.EffectiveDexterity(pSoldier));
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -3299,19 +3299,19 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(200, LINE_HEIGHT * ubLine, "Wisdom:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bWisdom, EffectiveWisdom(pSoldier));
+            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bWisdom, SkillChecks.EffectiveWisdom(pSoldier));
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(200, LINE_HEIGHT * ubLine, "Exp Lvl:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bExpLevel, EffectiveExpLevel(pSoldier));
+            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bExpLevel, SkillChecks.EffectiveExpLevel(pSoldier));
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(200, LINE_HEIGHT * ubLine, "Mrksmnship:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bMarksmanship, EffectiveMarksmanship(pSoldier));
+            gprintf(350, LINE_HEIGHT * ubLine, "%d ( %d )", pSoldier.bMarksmanship, SkillChecks.EffectiveMarksmanship(pSoldier));
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4383,7 +4383,7 @@ public class OppList
             return ((int)(MAX_MOVEMENT_NOISE - PreRandom(2)));
         }
 
-        iStealthSkill = 20 + 4 * EffectiveExpLevel(pSoldier) + ((EffectiveDexterity(pSoldier) * 4) / 10); // 24-100
+        iStealthSkill = 20 + 4 * SkillChecks.EffectiveExpLevel(pSoldier) + ((SkillChecks.EffectiveDexterity(pSoldier) * 4) / 10); // 24-100
 
         // big bonus for those "extra stealthy" mercs
         if (pSoldier.ubBodyType == BLOODCAT)

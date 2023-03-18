@@ -992,25 +992,25 @@ public class Faces
     private static void SetFaceShade(SOLDIERTYPE? pSoldier, FACETYPE? pFace, bool fExternBlit)
     {
         // Set to default
-        SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT_NOSHADE);
+        SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT.NOSHADE);
 
         if (pFace.iVideoOverlay == -1 && !fExternBlit)
         {
             if ((pSoldier.bActionPoints == 0) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
-                SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT_LITESHADE);
+                SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT.LITESHADE);
             }
         }
 
         if (pSoldier.bLife < OKLIFE)
         {
-            SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT_DARKSHADE);
+            SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT.DARKSHADE);
         }
 
         // ATE: Don't shade for damage if blitting extern face...
         if (!fExternBlit)
         {
-            if (pSoldier.fFlashPortrait == FLASH_PORTRAIT_START)
+            if (pSoldier.fFlashPortrait == FLASH_PORTRAIT.START)
             {
                 SetObjectHandleShade(pFace.uiVideoObject, pSoldier.bFlashPortraitFrame);
             }
@@ -1240,7 +1240,7 @@ public class Faces
             // Check if a robot and is not controlled....
             if (MercPtrs[pFace.ubSoldierID].uiStatusFlags.HasFlag(SOLDIER.ROBOT))
             {
-                if (!CanRobotBeControlled(MercPtrs[pFace.ubSoldierID]))
+                if (!SoldierControl.CanRobotBeControlled(MercPtrs[pFace.ubSoldierID]))
                 {
                     // Not controlled robot
                     sIconIndex = 5;
@@ -1248,7 +1248,7 @@ public class Faces
                 }
             }
 
-            if (ControllingRobot(MercPtrs[pFace.ubSoldierID]))
+            if (SoldierControl.ControllingRobot(MercPtrs[pFace.ubSoldierID]))
             {
                 // controlling robot
                 sIconIndex = 4;
@@ -1836,33 +1836,33 @@ public class Faces
                     }
 
 
-                    if (pSoldier.fGettingHit && pSoldier.fFlashPortrait == FLASH_PORTRAIT_STOP)
+                    if (pSoldier.fGettingHit && pSoldier.fFlashPortrait == FLASH_PORTRAIT.STOP)
                     {
-                        pSoldier.fFlashPortrait = true;
-                        pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT_STARTSHADE;
-                        RESETTIMECOUNTER(pSoldier.PortraitFlashCounter, FLASH_PORTRAIT_DELAY);
+                        pSoldier.fFlashPortrait = FLASH_PORTRAIT.START;
+                        pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT.STARTSHADE;
+                        RESETTIMECOUNTER(ref pSoldier.PortraitFlashCounter, (uint)FLASH_PORTRAIT.DELAY);
                         fRerender = true;
                     }
-                    if (pSoldier.fFlashPortrait == FLASH_PORTRAIT_START)
+                    if (pSoldier.fFlashPortrait == FLASH_PORTRAIT.START)
                     {
                         // Loop through flash values
-                        if (TIMECOUNTERDONE(pSoldier.PortraitFlashCounter, FLASH_PORTRAIT_DELAY))
+                        if (TIMECOUNTERDONE(pSoldier.PortraitFlashCounter, (uint)FLASH_PORTRAIT.DELAY))
                         {
-                            RESETTIMECOUNTER(pSoldier.PortraitFlashCounter, FLASH_PORTRAIT_DELAY);
+                            RESETTIMECOUNTER(ref pSoldier.PortraitFlashCounter, (uint)FLASH_PORTRAIT.DELAY);
                             pSoldier.bFlashPortraitFrame++;
 
-                            if (pSoldier.bFlashPortraitFrame > FLASH_PORTRAIT_ENDSHADE)
+                            if (pSoldier.bFlashPortraitFrame > FLASH_PORTRAIT.ENDSHADE)
                             {
-                                pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT_ENDSHADE;
+                                pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT.ENDSHADE;
 
                                 if (pSoldier.fGettingHit)
                                 {
-                                    pSoldier.fFlashPortrait = FLASH_PORTRAIT_WAITING;
+                                    pSoldier.fFlashPortrait = FLASH_PORTRAIT.WAITING;
                                 }
                                 else
                                 {
                                     // Render face again!
-                                    pSoldier.fFlashPortrait = FLASH_PORTRAIT_STOP;
+                                    pSoldier.fFlashPortrait = FLASH_PORTRAIT.STOP;
                                 }
 
                                 fRerender = true;
@@ -1870,13 +1870,13 @@ public class Faces
                         }
                     }
                     // CHECK IF WE WERE WAITING FOR GETTING HIT TO FINISH!
-                    if (!pSoldier.fGettingHit && pSoldier.fFlashPortrait == FLASH_PORTRAIT_WAITING)
+                    if (!pSoldier.fGettingHit && pSoldier.fFlashPortrait == FLASH_PORTRAIT.WAITING)
                     {
-                        pSoldier.fFlashPortrait = false;
+                        pSoldier.fFlashPortrait = FLASH_PORTRAIT.STOP;
                         fRerender = true;
                     }
 
-                    if (pSoldier.fFlashPortrait == FLASH_PORTRAIT_START)
+                    if (pSoldier.fFlashPortrait == FLASH_PORTRAIT.START)
                     {
                         fRerender = true;
                     }
@@ -2037,9 +2037,7 @@ public class Faces
         return (true);
     }
 
-
-
-    void InternalShutupaYoFace(int iFaceIndex, bool fForce)
+    private static void InternalShutupaYoFace(int iFaceIndex, bool fForce)
     {
         FACETYPE? pFace;
 
@@ -2095,7 +2093,7 @@ public class Faces
 
     }
 
-    void ShutupaYoFace(int iFaceIndex)
+    public static void ShutupaYoFace(int iFaceIndex)
     {
         InternalShutupaYoFace(iFaceIndex, true);
     }

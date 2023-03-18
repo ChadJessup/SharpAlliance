@@ -172,7 +172,7 @@ public class SOLDIERTYPE
     public bool fFlashLocator;
     public int sLocatorFrame;
     public bool fShowLocator;
-    public bool fFlashPortrait;
+    public FLASH_PORTRAIT fFlashPortrait;
     public int bMechanical;
     public int bLifeMax;          // maximum life for this merc
 
@@ -578,7 +578,7 @@ public class SOLDIERTYPE
     public bool fComplainedThatTired;
     public int[] sLastTwoLocations = new int[2];
     public int bFillerDude;
-    public int uiTimeSinceLastBleedGrunt;
+    public uint uiTimeSinceLastBleedGrunt;
     public int ubNextToPreviousAttackerID;
 
     int[] bFiller = new int[39];

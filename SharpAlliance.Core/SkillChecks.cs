@@ -30,7 +30,7 @@ public class SkillChecks
     }
 
 
-    private static int EffectiveWisdom(SOLDIERTYPE? pSoldier)
+    public static int EffectiveWisdom(SOLDIERTYPE? pSoldier)
     {
         int iEffWisdom;
 
@@ -41,7 +41,7 @@ public class SkillChecks
         return ((int)iEffWisdom);
     }
 
-    private static int EffectiveAgility(SOLDIERTYPE? pSoldier)
+    public static int EffectiveAgility(SOLDIERTYPE? pSoldier)
     {
         int iEffAgility;
 
@@ -58,7 +58,7 @@ public class SkillChecks
     }
 
 
-    private static int EffectiveMechanical(SOLDIERTYPE? pSoldier)
+    public static int EffectiveMechanical(SOLDIERTYPE? pSoldier)
     {
         int iEffMechanical;
 
@@ -69,7 +69,7 @@ public class SkillChecks
         return ((int)iEffMechanical);
     }
 
-    private static int EffectiveExplosive(SOLDIERTYPE? pSoldier)
+    public static int EffectiveExplosive(SOLDIERTYPE? pSoldier)
     {
         int iEffExplosive;
 
@@ -81,7 +81,7 @@ public class SkillChecks
     }
 
 
-    private static int EffectiveMedical(SOLDIERTYPE? pSoldier)
+    public static int EffectiveMedical(SOLDIERTYPE? pSoldier)
     {
         int iEffMedical;
 
@@ -92,7 +92,7 @@ public class SkillChecks
         return ((int)iEffMedical);
     }
 
-    private static int EffectiveLeadership(SOLDIERTYPE? pSoldier)
+    public static int EffectiveLeadership(SOLDIERTYPE? pSoldier)
     {
         int iEffLeadership;
         DrunkLevel bDrunkLevel;
@@ -110,7 +110,7 @@ public class SkillChecks
         return ((int)iEffLeadership);
     }
 
-    private static int EffectiveExpLevel(SOLDIERTYPE? pSoldier)
+    public static int EffectiveExpLevel(SOLDIERTYPE? pSoldier)
     {
         int iEffExpLevel;
         DrunkLevel bDrunkLevel;
@@ -149,7 +149,7 @@ public class SkillChecks
         }
     }
 
-    private static int EffectiveMarksmanship(SOLDIERTYPE? pSoldier)
+    public static int EffectiveMarksmanship(SOLDIERTYPE? pSoldier)
     {
         int iEffMarksmanship;
 
@@ -160,7 +160,7 @@ public class SkillChecks
         return ((int)iEffMarksmanship);
     }
 
-    private static int EffectiveDexterity(SOLDIERTYPE? pSoldier)
+    public static int EffectiveDexterity(SOLDIERTYPE? pSoldier)
     {
         int iEffDexterity;
 

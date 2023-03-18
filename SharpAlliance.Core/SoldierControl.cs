@@ -2722,9 +2722,9 @@ public class SoldierControl
         // Victim yells out in pain, making noise.  Yelps are louder from greater
         // wounds, but softer for more experienced soldiers.
 
-        if (ubVolume > (10 - EffectiveExpLevel(pSoldier)))
+        if (ubVolume > (10 - SkillChecks.EffectiveExpLevel(pSoldier)))
         {
-            ubVolume = 10 - EffectiveExpLevel(pSoldier);
+            ubVolume = 10 - SkillChecks.EffectiveExpLevel(pSoldier);
         }
 
         /*
@@ -4657,12 +4657,12 @@ int	gOrangeGlowG[]=
             bBreathDef = 30;
         }
 
-        bAgilDef = 50 - (EffectiveAgility(pStatsSoldier) / 4);
+        bAgilDef = 50 - (SkillChecks.EffectiveAgility(pStatsSoldier) / 4);
         bLifeDef = 50 - (pStatsSoldier.bLife / 2);
 
         uiTerrainDelay += (bLifeDef + bBreathDef + bAgilDef + bAdditional);
 
-        pSoldier.sAniDelay = (int)uiTerrainDelay;
+        pSoldier.sAniDelay = uiTerrainDelay;
 
         // If a moving animation and w/re on drugs, increase speed....
         if (gAnimControl[pSoldier.usAnimState].uiFlags & ANIM_MOVING)
@@ -5075,7 +5075,7 @@ int	gOrangeGlowG[]=
         int bEffectiveStrength;
 
         // figure out base chance of succumbing, 
-        bEffectiveStrength = EffectiveStrength(pSoldier);
+        bEffectiveStrength = SkillChecks.EffectiveStrength(pSoldier);
 
         if (bEffectiveStrength > 90)
         {
@@ -5557,11 +5557,11 @@ int	gOrangeGlowG[]=
             int sTestOne, sTestTwo, sChanceToDrop;
             int bVisible = -1;
 
-            sTestOne = EffectiveStrength(pSoldier);
+            sTestOne = SkillChecks.EffectiveStrength(pSoldier);
             sTestTwo = (2 * (Math.Max(sLifeDeduct, (sBreathLoss / 100))));
 
 
-            if (pSoldier.ubAttackerID != NOBODY && MercPtrs[pSoldier.ubAttackerID].ubBodyType == BLOODCAT)
+            if (pSoldier.ubAttackerID != NOBODY && MercPtrs[pSoldier.ubAttackerID].ubBodyType == SoldierBodyTypes.BLOODCAT)
             {
                 // bloodcat boost, let them make people drop items more
                 sTestTwo += 20;
@@ -5571,14 +5571,10 @@ int	gOrangeGlowG[]=
             sChanceToDrop = (Math.Max(0, (sTestTwo - sTestOne)));
 
             // ATE: Increase odds of NOT dropping an UNDROPPABLE OBJECT
-            if ((pSoldier.inv[InventorySlot.HANDPOS].fFlags & OBJECT_UNDROPPABLE))
+            if ((pSoldier.inv[InventorySlot.HANDPOS].fFlags.HasFlag(OBJECT.UNDROPPABLE)))
             {
                 sChanceToDrop -= 30;
             }
-
-#if JA2TESTVERSION
-        //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "Chance To Drop Weapon: str: %d Dam: %d Chance: %d", sTestOne, sTestTwo, sChanceToDrop );
-#endif
 
             if (Globals.Random.Next(100) < (int)sChanceToDrop)
             {
@@ -5608,7 +5604,7 @@ int	gOrangeGlowG[]=
             ubBlood = MAXBLOODQUANTITY;
         }
 
-        if (!(pSoldier.uiStatusFlags & (SOLDIER.VEHICLE | SOLDIER.ROBOT)))
+        if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.ROBOT)))
         {
             if (ubBlood != 0)
             {
@@ -5666,7 +5662,7 @@ int	gOrangeGlowG[]=
             Campaign.StatChange(pSoldier, Stat.EXPERAMT, (int)(5 * ubCombinedLoss), FROM_FAILURE);
 
             // Check for quote
-            if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER.QUOTE.SAID_BEING_PUMMELED)))
+            if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_BEING_PUMMELED)))
             {
                 // Check attacker!
                 if (ubAttacker != NOBODY && ubAttacker != pSoldier.ubID)
@@ -5689,7 +5685,7 @@ int	gOrangeGlowG[]=
         if ((ubAttacker != NOBODY) && (Menptr[ubAttacker].bTeam == OUR_TEAM) && (pSoldier.ubProfile != NO_PROFILE) && (pSoldier.ubProfile >= FIRST_RPC))
         {
             gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= ProfileMiscFlags1.PROFILE_MISC_FLAG_WOUNDEDBYPLAYER;
-            if (pSoldier.ubProfile == 114)
+            if (pSoldier.ubProfile == (NPCID)114)
             {
                 Facts.SetFactTrue(FACT.PACOS_KILLED);
             }
@@ -5700,7 +5696,7 @@ int	gOrangeGlowG[]=
         // Check if we are < unconscious, and shutup if so! also wipe sight
         if (pSoldier.bLife < CONSCIOUSNESS)
         {
-            ShutupaYoFace(pSoldier.iFaceIndex);
+            Faces.ShutupaYoFace(pSoldier.iFaceIndex);
         }
 
         if (pSoldier.bLife < OKLIFE)
@@ -7595,10 +7591,10 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         }
 
         // calculate wound-dressing skill (3x medical, 2x equip, 1x level, 1x dex)
-        uiDressSkill = ((3 * EffectiveMedical(pSoldier)) +                  // medical knowledge
+        uiDressSkill = ((3 * SkillChecks.EffectiveMedical(pSoldier)) +                  // medical knowledge
                                            (2 * sStatus) +                                                              // state of medical kit
-                                           (10 * EffectiveExpLevel(pSoldier)) +                 // battle injury experience
-                                                       EffectiveDexterity(pSoldier)) / 7;       // general "handiness"
+                                           (10 * SkillChecks.EffectiveExpLevel(pSoldier)) +                 // battle injury experience
+                                                       SkillChecks.EffectiveDexterity(pSoldier)) / 7;       // general "handiness"
 
         // try to use every AP that the merc has left
         uiAvailAPs = pSoldier.bActionPoints;
@@ -8646,7 +8642,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // ATE: Do this ONLY if buddy is in sector.....
         if ((pSoldier.bInSector && guiCurrentScreen == ScreenName.GAME_SCREEN) || guiCurrentScreen != ScreenName.GAME_SCREEN)
         {
-            pSoldier.fFlashPortrait = true;
+            pSoldier.fFlashPortrait = FLASH_PORTRAIT.START;
             pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT.STARTSHADE;
             RESETTIMECOUNTER(ref pSoldier.PortraitFlashCounter, (uint)FLASH_PORTRAIT.DELAY);
 
@@ -9326,7 +9322,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    private static void SetSoldierCowerState(SOLDIERTYPE? pSoldier, bool fOn)
+    public static void SetSoldierCowerState(SOLDIERTYPE? pSoldier, bool fOn)
     {
         // Robot's don't cower!
         if (pSoldier.ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON)
@@ -9538,7 +9534,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
 
 
-    bool CanRobotBeControlled(SOLDIERTYPE? pSoldier)
+    public static bool CanRobotBeControlled(SOLDIERTYPE pSoldier)
     {
         SOLDIERTYPE? pController;
 
@@ -9567,7 +9563,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    bool ControllingRobot(SOLDIERTYPE? pSoldier)
+    public static bool ControllingRobot(SOLDIERTYPE? pSoldier)
     {
         SOLDIERTYPE? pRobot;
         int bPos;
@@ -9727,9 +9723,9 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         }
 
         // Flash portrait....
-        pSoldier.fFlashPortrait = true;
-        pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT_STARTSHADE;
-        RESETTIMECOUNTER(pSoldier.PortraitFlashCounter, FLASH_PORTRAIT_DELAY);
+        pSoldier.fFlashPortrait = FLASH_PORTRAIT.START;
+        pSoldier.bFlashPortraitFrame = FLASH_PORTRAIT.STARTSHADE;
+        RESETTIMECOUNTER(ref pSoldier.PortraitFlashCounter, (uint)FLASH_PORTRAIT.DELAY);
     }
 
 

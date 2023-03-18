@@ -166,7 +166,7 @@ public class StrategicMap
                     ubNumEPCs++;
                     //Also record the EPC's slot ID incase we later build a string using the EPC's name.
                     Globals.gbPotentiallyAbandonedEPCSlotID = (int)cnt;
-                    if (AM_A_ROBOT(pSoldier) && !CanRobotBeControlled(pSoldier))
+                    if (AM_A_ROBOT(pSoldier) && !SoldierControl.CanRobotBeControlled(pSoldier))
                     {
                         Globals.gfRobotWithoutControllerAttemptingTraversal = true;
                         ubNumControllableMercs--;
@@ -230,7 +230,7 @@ public class StrategicMap
               //exiting sector gui, we restrict it by explaining it with a message box.
                 if (AM_AN_EPC(Globals.MercPtrs[Globals.gusSelectedSoldier]))
                 {
-                    if (AM_A_ROBOT(pSoldier) && !CanRobotBeControlled(pSoldier))
+                    if (AM_A_ROBOT(pSoldier) && !SoldierControl.CanRobotBeControlled(pSoldier))
                     {
                         //gfRobotWithoutControllerAttemptingTraversal = true;
                         return 0;

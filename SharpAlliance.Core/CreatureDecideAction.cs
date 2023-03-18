@@ -72,7 +72,7 @@ public class CreatureDecideAction
             {
                 if (pReceiver.ubBodyType != SoldierBodyTypes.LARVAE_MONSTER && pReceiver.ubBodyType != SoldierBodyTypes.INFANT_MONSTER && pReceiver.ubBodyType != SoldierBodyTypes.QUEENMONSTER)
                 {
-                    usDistToCaller = PythSpacesAway(pReceiver.sGridNo, pCaller.sGridNo);
+                    usDistToCaller = IsometricUtils.PythSpacesAway(pReceiver.sGridNo, pCaller.sGridNo);
                     bPriority = bFullPriority - (int)(usDistToCaller / PRIORITY_DECR_DISTANCE);
                     if (bPriority > pReceiver.bCallPriority)
                     {
@@ -793,7 +793,7 @@ public class CreatureDecideAction
                     // note, have to change this to use the level returned from ClosestKnownOpponent
                     sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, sClosestOpponent, 0);
 
-                    if ((pSoldier.bDirection != ubOpponentDir) && (PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) <= sDistVisible))
+                    if ((pSoldier.bDirection != ubOpponentDir) && (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) <= sDistVisible))
                     {
                         // set base chance according to orders
                         if ((pSoldier.bOrders == STATIONARY) || (pSoldier.bOrders == ONGUARD))
@@ -1284,7 +1284,7 @@ public class CreatureDecideAction
                 // if we have a closest reachable opponent
                 if (sClosestOpponent != NOWHERE)
                 {
-                    if (ubCanMove && PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) > 2)
+                    if (ubCanMove && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) > 2)
                     {
                         if (bSpitIn != NO_SLOT)
                         {
@@ -1377,7 +1377,7 @@ public class CreatureDecideAction
         return (bAction);
     }
 
-    void CreatureDecideAlertStatus(SOLDIERTYPE pSoldier)
+    public static void CreatureDecideAlertStatus(SOLDIERTYPE pSoldier)
     {
         STATUS bOldStatus;
         int iDummy;

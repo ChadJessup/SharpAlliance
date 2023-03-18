@@ -763,7 +763,7 @@ public class Morale
                 bNumTeamMembers = 0;
 
                 // let people with high leadership affect their own morale
-                bHighestTeamLeadership = EffectiveLeadership(pSoldier);
+                bHighestTeamLeadership = SkillChecks.EffectiveLeadership(pSoldier);
 
                 // loop through all other mercs
                 bOtherID = gTacticalStatus.Team[gbPlayerNum].bFirstID;
@@ -835,9 +835,9 @@ public class Morale
                         }
                         iTotalOpinions += bOpinion;
                         bNumTeamMembers++;
-                        if (EffectiveLeadership(pOtherSoldier) > bHighestTeamLeadership)
+                        if (SkillChecks.EffectiveLeadership(pOtherSoldier) > bHighestTeamLeadership)
                         {
-                            bHighestTeamLeadership = EffectiveLeadership(pOtherSoldier);
+                            bHighestTeamLeadership = SkillChecks.EffectiveLeadership(pOtherSoldier);
                         }
                     }
                 }

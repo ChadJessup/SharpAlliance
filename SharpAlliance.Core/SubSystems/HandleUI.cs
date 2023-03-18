@@ -1577,7 +1577,7 @@ public class HandleUI
                         // If we can't be controlled, returninvalid...
                         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                         {
-                            if (!CanRobotBeControlled(pSoldier))
+                            if (!SoldierControl.CanRobotBeControlled(pSoldier))
                             {
                                 continue;
                             }
@@ -4756,7 +4756,7 @@ public class HandleUI
                     // If we can't be controlled, returninvalid...
                     if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                     {
-                        if (!CanRobotBeControlled(pSoldier))
+                        if (!SoldierControl.CanRobotBeControlled(pSoldier))
                         {
                             continue;
                         }

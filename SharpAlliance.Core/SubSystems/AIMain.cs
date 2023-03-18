@@ -315,7 +315,7 @@ public class AIMain
                         pSoldier.bNextAction = AI_ACTION.NONE;
                     }
 
-                    DecideAlertStatus(pSoldier);
+                    DecideAction.DecideAlertStatus(pSoldier);
                 }
                 else
                 {
@@ -708,7 +708,7 @@ public class AIMain
 
         // Remove deadlock message
         EndDeadlockMsg();
-        DecideAlertStatus(pSoldier);
+        DecideAction.DecideAlertStatus(pSoldier);
 
     }
 
@@ -1754,7 +1754,7 @@ public class AIMain
         pSoldier.bLastAttackHit = 0;
 
         // get an up-to-date alert status for this guy
-        DecideAlertStatus(pSoldier);
+        DecideAction.DecideAlertStatus(pSoldier);
 
         if (pSoldier.bAlertStatus == STATUS.YELLOW)
         {
@@ -1827,7 +1827,7 @@ public class AIMain
 
     int ExecuteAction(SOLDIERTYPE? pSoldier)
     {
-        int iRetCode;
+        ITEM_HAND iRetCode;
         //NumMessage("ExecuteAction - Guy#",pSoldier.ubID);
 
         // in most cases, merc will change location, or may cause damage to opponents,
@@ -2145,9 +2145,9 @@ public class AIMain
                 }
 
                 iRetCode = HandleItem(pSoldier, pSoldier.usActionData, pSoldier.bTargetLevel, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
-                if (iRetCode != ITEM_HANDLE_OK)
+                if (iRetCode != ITEM_HANDLE.OK)
                 {
-                    if (iRetCode != ITEM_HANDLE_BROKEN) // if the item broke, this is 'legal' and doesn't need reporting
+                    if (iRetCode != ITEM_HANDLE.BROKEN) // if the item broke, this is 'legal' and doesn't need reporting
                     {
                         DebugAI(string.Format("AI %d got error code %ld from HandleItem, doing action %d, has %d APs... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction, pSoldier.bActionPoints));
                         Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
@@ -2163,11 +2163,11 @@ public class AIMain
                 // turn to face trigger first
                 if (StructureInternals.FindStructure((pSoldier.sGridNo + DirectionInc(WorldDirections.NORTH)), STRUCTUREFLAGS.SWITCH) is not null)
                 {
-                    SendSoldierSetDesiredDirectionEvent(pSoldier, WorldDirections.NORTH);
+                    SoldierControl.SendSoldierSetDesiredDirectionEvent(pSoldier, WorldDirections.NORTH);
                 }
                 else
                 {
-                    SendSoldierSetDesiredDirectionEvent(pSoldier, WorldDirections.WEST);
+                    SoldierControl.SendSoldierSetDesiredDirectionEvent(pSoldier, WorldDirections.WEST);
                 }
 
                 SoldierControl.EVENT_InitNewSoldierAnim(pSoldier, AnimationStates.AI_PULL_SWITCH, 0, false);
@@ -2193,9 +2193,6 @@ public class AIMain
                 pSoldier.bLastAction = pSoldier.bAction;
                 pSoldier.bAction = AI_ACTION.NONE;
                 return (0);           // no longer in progress
-
-                break;
-
             case AI_ACTION.RED_ALERT:             // tell friends opponent(s) seen
                                                   // if a computer merc, and up to now they didn't know you're here
                 if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
@@ -2243,7 +2240,7 @@ public class AIMain
 # if DEBUGDECISIONS
                 DebugAI(String("ExecuteAction: SkipCoverCheck ON\n"));
 #endif
-                SendChangeSoldierStanceEvent(pSoldier, (int)pSoldier.usActionData);
+                SoldierControl.SendChangeSoldierStanceEvent(pSoldier, (AnimationHeights)pSoldier.usActionData);
                 break;
 
             case AI_ACTION.COWER:
@@ -2257,7 +2254,7 @@ public class AIMain
                 else
                 {
                     pSoldier.usActionData = (int)AnimationHeights.ANIM_CROUCH;
-                    SetSoldierCowerState(pSoldier, true);
+                    SoldierControl.SetSoldierCowerState(pSoldier, true);
                 }
                 break;
 
@@ -2266,7 +2263,7 @@ public class AIMain
                 if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.COWERING))
                 {
                     pSoldier.usActionData = (int)AnimationHeights.ANIM_STAND;
-                    SetSoldierCowerState(pSoldier, false);
+                    SoldierControl.SetSoldierCowerState(pSoldier, false);
                 }
                 else
                 {
@@ -2279,7 +2276,7 @@ public class AIMain
             case AI_ACTION.GIVE_AID:              // help injured/dying friend
                                                   //pSoldier.usUIMovementMode = RUNNING;
                 iRetCode = HandleItem(pSoldier, pSoldier.usActionData, 0, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
-                if (iRetCode != ITEM_HANDLE_OK)
+                if (iRetCode != ITEM_HANDLE.OK)
                 {
                     CancelAIAction(pSoldier, FORCE);
                     EndAIGuysTurn(pSoldier);
@@ -2345,11 +2342,13 @@ public class AIMain
                 {
                     EndAIGuysTurn(pSoldier);
                 }
+
                 if (pSoldier.ubProfile != NO_PROFILE)
                 {
                     gMercProfiles[pSoldier.ubProfile].bSectorZ++;
                     gMercProfiles[pSoldier.ubProfile].fUseProfileInsertionInfo = false;
                 }
+                
                 TacticalRemoveSoldier(pSoldier.ubID);
                 CheckForEndOfBattle(true);
 
@@ -2565,7 +2564,7 @@ public class AIMain
     }
 
 
-    public static void SetNewSituation(SOLDIERTYPE? pSoldier)
+    public static void SetNewSituation(SOLDIERTYPE pSoldier)
     {
         if (pSoldier.bTeam != gbPlayerNum)
         {
@@ -2621,6 +2620,7 @@ public class AIMain
             ProcessQueenCmdImplicationsOfDeath(pSoldier);
             TacticalRemoveSoldier(pSoldier.ubID);
         }
+
         CheckForEndOfBattle(true);
     }
 }

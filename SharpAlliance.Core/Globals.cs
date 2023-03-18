@@ -645,7 +645,7 @@ public partial class Globals
     public const int SWATCOST = 0;
     public const int CRAWLCOST = 1;
 
-    public const int MAXTEAMS = 6;
+    public const TEAM MAXTEAMS = TEAM.MAX_TEAMS;
     public const int MAXMERCS = MAX_NUM_SOLDIERS;
 
     //Global dynamic array of all of the items in a loaded map.
@@ -2044,8 +2044,8 @@ public partial class Globals
     public static Dictionary<TEAM, List<int>> gsPublicLastKnownOppLoc = new(); //int[MAXTEAMS, TOTAL_SOLDIERS];	// team vs. merc
     public static Dictionary<TEAM, List<int>> gbPublicLastKnownOppLevel = new();
     public static Dictionary<TEAM, int> gubPublicNoiseVolume = new();
-    public static int[] gsPublicNoiseGridno = new int[MAXTEAMS];
-    public static int[] gbPublicNoiseLevel = new int[MAXTEAMS];
+    public static Dictionary<TEAM, int> gsPublicNoiseGridno = new();
+    public static Dictionary<TEAM, int> gbPublicNoiseLevel = new();
     public static int gfKnowAboutOpponents;
 
     public static bool gfPlayerTeamSawJoey;

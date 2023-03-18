@@ -67,7 +67,7 @@ public enum LEVELNODEFLAGS : uint
 [Flags]
 public enum MAPELEMENT_EXT
 {
-    EXT_SMOKE = 0x01,
+    SMOKE = 0x01,
     TEARGAS = 0x02,
     MUSTARDGAS = 0x04,
     DOOR_STATUS_PRESENT = 0x08,

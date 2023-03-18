@@ -6,7 +6,7 @@ namespace SharpAlliance.Core;
 
 public class DecideAction
 {
-    void DecideAlertStatus(SOLDIERTYPE pSoldier)
+    public static void DecideAlertStatus(SOLDIERTYPE pSoldier)
     {
         STATUS bOldStatus;
         int  iDummy;
@@ -22,7 +22,7 @@ public class DecideAction
 
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
         {
-            CreatureDecideAlertStatus(pSoldier);
+            CreatureDecideAction.CreatureDecideAlertStatus(pSoldier);
             return;
         }
 
@@ -51,7 +51,7 @@ public class DecideAction
 
                     case STATUS.YELLOW:
                         // if all enemies have been RED alerted, or we're under fire
-                        if (!PTR_CIVILIAN && (gTacticalStatus.Team[pSoldier.bTeam].bAwareOfOpposition > 0 || pSoldier.bUnderFire > 0))
+                        if (!PTR_CIVILIAN(pSoldier) && (gTacticalStatus.Team[pSoldier.bTeam].bAwareOfOpposition > 0 || pSoldier.bUnderFire > 0))
                         {
                             pSoldier.bAlertStatus = STATUS.RED;
                         }

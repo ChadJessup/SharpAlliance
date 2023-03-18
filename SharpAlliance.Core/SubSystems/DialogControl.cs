@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -48,6 +47,88 @@ public class DialogControl
         157,
         158,
     };
+
+    public static bool TacticalCharacterDialogue(SOLDIERTYPE pSoldier, QUOTE usQuoteNum)
+    {
+        if (pSoldier.ubProfile == NO_PROFILE)
+        {
+            return (false);
+        }
+
+        if (Meanwhile.AreInMeanwhile())
+        {
+            return (false);
+        }
+
+        if (pSoldier.bLife < CONSCIOUSNESS)
+        {
+            return (false);
+        }
+
+        if (pSoldier.bLife < OKLIFE && usQuoteNum != QUOTE.SERIOUSLY_WOUNDED)
+        {
+            return (false);
+        }
+
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.GASSED))
+        {
+            return (false);
+        }
+
+        if ((AM_A_ROBOT(pSoldier)))
+        {
+            return (false);
+        }
+
+        if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
+        {
+            return (false);
+        }
+
+        // OK, let's check if this is the exact one we just played, if so, skip.
+        if (pSoldier.ubProfile == gTacticalStatus.ubLastQuoteProfileNUm
+            && usQuoteNum == gTacticalStatus.ubLastQuoteSaid)
+        {
+            return (false);
+        }
+
+
+        // If we are a robot, play the controller's quote!
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
+        {
+            if (SoldierControl.CanRobotBeControlled(pSoldier))
+            {
+                return (TacticalCharacterDialogue(MercPtrs[pSoldier.ubRobotRemoteHolderID], usQuoteNum));
+            }
+            else
+            {
+                return (false);
+            }
+        }
+
+        if (AM_AN_EPC(pSoldier) && !(gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_FORCENPCQUOTE)))
+        {
+            return (false);
+        }
+
+        // Check for logging of me too bleeds...
+        if (usQuoteNum == QUOTE.STARTING_TO_BLEED)
+        {
+            if (gubLogForMeTooBleeds)
+            {
+                // If we are greater than one...
+                if (gubLogForMeTooBleeds > 1)
+                {
+                    //Replace with me too....
+                    usQuoteNum = QUOTE.ME_TOO;
+                }
+
+                gubLogForMeTooBleeds++;
+            }
+        }
+
+        return (CharacterDialogue(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false));
+    }
 
     public static void ShutDownLastQuoteTacticalTextBox()
     {

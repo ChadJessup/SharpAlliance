@@ -1220,7 +1220,7 @@ public class TeamTurns
                 if (gOppositeDirection[pSoldier.bDesiredDirection] == bDir)
                 {
                     // directly behind; allow interrupts only within # of tiles equal to level
-                    if (PythSpacesAway(pSoldier.sGridNo, pOpponent.sGridNo) > EffectiveExpLevel(pSoldier))
+                    if (PythSpacesAway(pSoldier.sGridNo, pOpponent.sGridNo) > SkillChecks.EffectiveExpLevel(pSoldier))
                     {
                         return (false);
                     }
@@ -1281,13 +1281,13 @@ public class TeamTurns
 
         // Robot has interrupt points based on the controller...
         // Controller's interrupt points are reduced by 2 for being distracted...
-        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT) && CanRobotBeControlled(pSoldier))
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT) && SoldierControl.CanRobotBeControlled(pSoldier))
         {
-            bPoints = EffectiveExpLevel(Globals.MercPtrs[pSoldier.ubRobotRemoteHolderID]) - 2;
+            bPoints = SkillChecks.EffectiveExpLevel(Globals.MercPtrs[pSoldier.ubRobotRemoteHolderID]) - 2;
         }
         else
         {
-            bPoints = EffectiveExpLevel(pSoldier);
+            bPoints = SkillChecks.EffectiveExpLevel(pSoldier);
             /*
             if ( pSoldier.bTeam == ENEMY_TEAM )
             {
@@ -1297,7 +1297,7 @@ public class TeamTurns
             }
             */
 
-            if (ControllingRobot(pSoldier))
+            if (SoldierControl.ControllingRobot(pSoldier))
             {
                 bPoints -= 2;
             }
@@ -1325,7 +1325,7 @@ public class TeamTurns
         // if soldier is still in shock from recent injuries, that penalizes him
         bPoints -= pSoldier.bShock;
 
-        ubDistance = (int)PythSpacesAway(pSoldier.sGridNo, Globals.MercPtrs[ubOpponentID].sGridNo);
+        ubDistance = PythSpacesAway(pSoldier.sGridNo, Globals.MercPtrs[ubOpponentID].sGridNo);
 
         // if we are in combat mode - thus doing an interrupt rather than determine who gets first turn - 
         // then give bonus 
@@ -1366,13 +1366,13 @@ public class TeamTurns
             bPoints -= 2;
         }
 
-        if (HAS_SKILL_TRAIT(pSoldier, NIGHTOPS))
+        if (HAS_SKILL_TRAIT(pSoldier, SkillTrait.NIGHTOPS))
         {
             bLightLevel = LightTrueLevel(pSoldier.sGridNo, pSoldier.bLevel);
             if (bLightLevel > NORMAL_LIGHTLEVEL_DAY + 3)
             {
                 // it's dark, give a bonus for interrupts
-                bPoints += 1 * NUM_SKILL_TRAITS(pSoldier, NIGHTOPS);
+                bPoints += 1 * NUM_SKILL_TRAITS(pSoldier, SkillTrait.NIGHTOPS);
             }
         }
 
@@ -1881,7 +1881,7 @@ public class TeamTurns
         TEAM_TURN_SAVE_STRUCT TeamTurnStruct;
 
         //Load the gubTurn Order Array
-        FileManager.FileRead(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
+        FileManager.FileRead(hFile, ref gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int) * MAXMERCS)
         {
             return (false);
@@ -1922,11 +1922,11 @@ public class TeamTurns
             // roll the dice!
             // e.g. if level 5, roll Globals.Random.Next( 3 + 1 ) + 2 for result from 2 to 5
             // if level 4, roll Globals.Random.Next( 2 + 1 ) + 2 for result from 2 to 4
-            ubSmallerHalf = EffectiveExpLevel(pSoldier) / 2;
-            ubLargerHalf = EffectiveExpLevel(pSoldier) - ubSmallerHalf;
+            ubSmallerHalf = SkillChecks.EffectiveExpLevel(pSoldier) / 2;
+            ubLargerHalf = SkillChecks.EffectiveExpLevel(pSoldier) - ubSmallerHalf;
 
-            ubTargetSmallerHalf = EffectiveExpLevel(pTargetSoldier) / 2;
-            ubTargetLargerHalf = EffectiveExpLevel(pTargetSoldier) - ubTargetSmallerHalf;
+            ubTargetSmallerHalf = SkillChecks.EffectiveExpLevel(pTargetSoldier) / 2;
+            ubTargetLargerHalf = SkillChecks.EffectiveExpLevel(pTargetSoldier) - ubTargetSmallerHalf;
             if (gMercProfiles[pTargetSoldier.ubProfile].bApproached > 0 & gbFirstApproachFlags[(int)APPROACH.THREATEN - 1] == 1)
             {
                 // gains 1 to 2 points

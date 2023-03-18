@@ -16,7 +16,6 @@ public class AI
 
 public enum AIDEFINES
 {
-    
     AI_RTP_OPTION_CAN_RETREAT = 0x01,
     AI_RTP_OPTION_CAN_SEEK_COVER = 0x02,
     AI_RTP_OPTION_CAN_HELP = 0x04,
