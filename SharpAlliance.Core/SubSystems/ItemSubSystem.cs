@@ -33,10 +33,10 @@ public class ItemSubSystem
 
     public static int CalculateCarriedWeight(SOLDIERTYPE? pSoldier)
     {
-        int  uiTotalWeight = 0;
-        int  uiPercent;
+        int uiTotalWeight = 0;
+        int uiPercent;
         InventorySlot ubLoop;
-        int  usWeight;
+        int usWeight;
         int ubStrengthForCarrying;
 
         for (ubLoop = 0; ubLoop < NUM_INV_SLOTS; ubLoop++)
@@ -128,6 +128,36 @@ public class ItemSubSystem
     public static bool ExtendedGunListGun(Items usGun)
     {
         return Globals.Item[usGun].fFlags.HasFlag(ItemAttributes.ITEM_BIGGUNLIST);
+    }
+
+    public static InventorySlot FindObj(SOLDIERTYPE pSoldier, Items usItem)
+    {
+        InventorySlot bLoop;
+
+        for (bLoop = 0; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (pSoldier.inv[bLoop].usItem == usItem)
+            {
+                return (bLoop);
+            }
+        }
+
+        return (NO_SLOT);
+    }
+
+    public static InventorySlot FindObjClass(SOLDIERTYPE pSoldier, IC usItemClass)
+    {
+        InventorySlot bLoop;
+
+        for (bLoop = 0; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (Item[pSoldier.inv[bLoop].usItem].usItemClass.HasFlag(usItemClass))
+            {
+                return (bLoop);
+            }
+        }
+
+        return (NO_SLOT);
     }
 
     public static Items FindObjInObjRange(SOLDIERTYPE? pSoldier, Items usItem1, Items usItem2)
@@ -348,7 +378,7 @@ public class ItemSubSystem
             {
                 if (pObject.usAttachItem[bLoop] != NOTHING && pObject.bAttachStatus[bLoop] > 0)
                 {
-                    pObject.bAttachStatus[bLoop] -= CheckItemForDamage(pObject.usAttachItem[bLoop], iDamage);
+                    // pObject.bAttachStatus[bLoop] -= CheckItemForDamage(pObject.usAttachItem[bLoop], iDamage);
                     if (pObject.bAttachStatus[bLoop] < (Items)1)
                     {
                         pObject.bAttachStatus[bLoop] = (Items)1;
@@ -380,6 +410,7 @@ public class ItemSubSystem
         {
             iMaxDamage -= (iMaxDamage * WeaponTypes.Armour[Item[usItem].ubClassIndex].ubProtection) / 100;
         }
+
         // metal items are tough and will be damaged less
         if (Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_METAL))
         {
@@ -389,10 +420,12 @@ public class ItemSubSystem
         {
             iMaxDamage *= 2;
         }
+
         if (iMaxDamage > 0)
         {
             bDamage = (int)PreRandom(iMaxDamage);
         }
+
         return (bDamage);
     }
 
@@ -522,7 +555,7 @@ public class ItemSubSystem
         {
             usItem = usItem,
             ubNumberOfObjects = 1,
-            ubShotsLeft = new [] { WeaponTypes.Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize },
+            ubShotsLeft = new[] { WeaponTypes.Magazine[Globals.Item[usItem].ubClassIndex].ubMagSize },
             ubWeight = CalculateObjectWeight(pObj)
         };
 

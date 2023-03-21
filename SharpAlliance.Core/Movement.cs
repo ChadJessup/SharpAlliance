@@ -19,19 +19,19 @@ public class Movement
     // GoAsFarAsPossibleTowards - C.O. stuff related to current animation esp first aid
     // SetCivilianDestination - C.O. stuff for if we don't control the civ
 
-    public static bool LegalNPCDestination(SOLDIERTYPE? pSoldier, int sGridno, int ubPathMode, int ubWaterOK, PATH fFlags)
+    public static int LegalNPCDestination(SOLDIERTYPE? pSoldier, int sGridno, int ubPathMode, int ubWaterOK, PATH fFlags)
     {
         bool fSkipTilesWithMercs;
 
         if ((sGridno < 0) || (sGridno >= GRIDSIZE))
         {
-            return (false);
+            return (0);
         }
 
         // return false if gridno on different level from merc
         if (IsometricUtils.GridNoOnVisibleWorldTile(pSoldier.sGridNo) && gpWorldLevelData[pSoldier.sGridNo].sHeight != gpWorldLevelData[sGridno].sHeight)
         {
-            return (false);
+            return (0);
         }
 
         // skip mercs if turnbased and adjacent AND not doing an IGNORE_PATH check (which is used almost exclusively by GoAsFarAsPossibleTowards)
@@ -45,17 +45,17 @@ public class Movement
 
         // Nov 28 98: skip people in destination tile if in turnbased
         if ((NewOKDestination(pSoldier, sGridno, fSkipTilesWithMercs, pSoldier.bLevel)) &&
-                       (!InGas(pSoldier, sGridno)) &&
+                       (!AIUtils.InGas(pSoldier, sGridno)) &&
                        (sGridno != pSoldier.sGridNo) &&
                        (sGridno != pSoldier.sBlackList))
         /*
         if ( ( NewOKDestination(pSoldier, sGridno, false, pSoldier.bLevel ) ) &&
-                       ( !(gpWorldLevelData[ sGridno ].ubExtFlags[0] & (MAPELEMENT_EXT_SMOKE | MAPELEMENT_EXT_TEARGAS | MAPELEMENT_EXT_MUSTARDGAS)) || ( pSoldier.inv[ HEAD1POS ].usItem == GASMASK || pSoldier.inv[ HEAD2POS ].usItem == GASMASK ) ) &&
+                       ( !(gpWorldLevelData[ sGridno ].ubExtFlags[0] & (MAPELEMENTFLAGS.EXT_SMOKE | MAPELEMENTFLAGS.EXT_TEARGAS | MAPELEMENTFLAGS.EXT_MUSTARDGAS)) || ( pSoldier.inv[ HEAD1POS ].usItem == GASMASK || pSoldier.inv[ HEAD2POS ].usItem == GASMASK ) ) &&
                        ( sGridno != pSoldier.sGridNo ) &&
                        ( sGridno != pSoldier.sBlackList ) )*/
         /*
         if ( ( NewOKDestination(pSoldier,sGridno,ALLPEOPLE, pSoldier.bLevel ) ) &&
-                       ( !(gpWorldLevelData[ sGridno ].ubExtFlags[0] & (MAPELEMENT_EXT_SMOKE | MAPELEMENT_EXT_TEARGAS | MAPELEMENT_EXT_MUSTARDGAS)) || ( pSoldier.inv[ HEAD1POS ].usItem == GASMASK || pSoldier.inv[ HEAD2POS ].usItem == GASMASK ) ) &&
+                       ( !(gpWorldLevelData[ sGridno ].ubExtFlags[0] & (MAPELEMENTFLAGS.EXT_SMOKE | MAPELEMENTFLAGS.EXT_TEARGAS | MAPELEMENTFLAGS.EXT_MUSTARDGAS)) || ( pSoldier.inv[ HEAD1POS ].usItem == GASMASK || pSoldier.inv[ HEAD2POS ].usItem == GASMASK ) ) &&
                        ( sGridno != pSoldier.sGridNo ) &&
                        ( sGridno != pSoldier.sBlackList ) )
                        */
@@ -64,7 +64,7 @@ public class Movement
             // if water's a problem, and gridno is in a water tile (bridges are OK)
             if (ubWaterOK == 0 && Water(sGridno))
             {
-                return (false);
+                return (0);
             }
 
             // passed all checks, now try to make sure we can get there!
@@ -73,29 +73,29 @@ public class Movement
                 // if finding a path wasn't asked for (could have already been done,
                 // for example), don't bother
                 case IGNORE_PATH:
-                    return (true);
+                    return (1);
 
                 case ENSURE_PATH:
                     if (FindBestPath(pSoldier, sGridno, pSoldier.bLevel, AnimationStates.WALKING, COPYROUTE, fFlags))
                     {
-                        return (true);        // legal destination
+                        return (1);        // legal destination
                     }
                     else // got this far, but found no clear path,
                     {
                         // so test fails
-                        return (false);
+                        return (1);
                     }
                 // *** NOTE: movement mode hardcoded to WALKING !!!!!
                 case ENSURE_PATH_COST:
-                    return (PathAI.PlotPath(pSoldier, sGridno, null, false, null, AnimationStates.WALKING, null, null, 0) > 0);
+                    return (PathAI.PlotPath(pSoldier, sGridno, null, false, null, AnimationStates.WALKING, null, null, 0));
 
                 default:
-                    return (false);
+                    return (0);
             }
         }
         else  // something failed - didn't even have to test path
         {
-            return (false);         // illegal destination
+            return (0);         // illegal destination
         }
     }
 
@@ -110,12 +110,12 @@ public class Movement
 
         // have to make sure the old destination is still legal (somebody may
         // have occupied the destination gridno in the meantime!)
-        if (LegalNPCDestination(pSoldier, sGridno, ENSURE_PATH, WATEROK, 0))
+        if (LegalNPCDestination(pSoldier, sGridno, ENSURE_PATH, WATEROK, 0) > 0)
         {
             pSoldier.bPathStored = true;   // optimization - Ian
 
             // make him go to it (needed to continue movement across multiple turns)
-            NewDest(pSoldier, sGridno);
+            AIUtils.NewDest(pSoldier, sGridno);
 
             ubSuccess = 1;
 
@@ -154,12 +154,12 @@ public class Movement
                 else
                 {
                     // change his desired destination to this new one
-                    sGridno = pSoldier.usActionData;
+                    sGridno = (int)pSoldier.usActionData;
 
                     // GoAsFar... sets pathStored true only if he could go all the way
 
                     // make him go to it (needed to continue movement across multiple turns)
-                    NewDest(pSoldier, sGridno);
+                    AIUtils.NewDest(pSoldier, sGridno);
 
 
                     // make sure that it worked (check that pSoldier.sDestination == pSoldier.sGridNo)
@@ -686,16 +686,16 @@ public class Movement
             return;
         }
 
-        if (IsActionAffordable(pSoldier))
+        if (AIUtils.IsActionAffordable(pSoldier))
         {
             if (pSoldier.bActionInProgress == 0)
             {
                 // start a move that didn't even get started before...
                 // hope this works...
-                NPCDoesAct(pSoldier);
+                AIMain.NPCDoesAct(pSoldier);
 
                 // perform the chosen action
-                pSoldier.bActionInProgress = ExecuteAction(pSoldier); // if started, mark us as busy
+                pSoldier.bActionInProgress = AIMain.ExecuteAction(pSoldier); // if started, mark us as busy
             }
             else
             {
@@ -715,7 +715,7 @@ public class Movement
         if (pSoldier.bActionPoints >= bAPCost)
         {
             // seems to have enough points...
-            NewDest(pSoldier, usNewGridNo);
+            AIUtils.NewDest(pSoldier, usNewGridNo);
             // maybe we didn't actually start the action last turn...
             pSoldier.bActionInProgress = 1;
         }
@@ -725,7 +725,7 @@ public class Movement
         }
     }
 
-    void HaltMoveForSoldierOutOfPoints(SOLDIERTYPE? pSoldier)
+    public static void HaltMoveForSoldierOutOfPoints(SOLDIERTYPE? pSoldier)
     {
         // If a special move, ignore this!
         if ((gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.SPECIALMOVE)))
@@ -847,7 +847,7 @@ public class Movement
                         // wrapped across map!
                         continue;
                     }
-                    if (LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, 0))
+                    if (LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, 0) > 0)
                     {
                         // check this location out
                         pMapElement = (gpWorldLevelData[iGridNo]);

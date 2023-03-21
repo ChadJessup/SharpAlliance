@@ -27,7 +27,7 @@ public class World
             return;
         }
 
-        Globals.gpWorldLevelData[sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.RECALCULATE_MOVEMENT;
+        Globals.gpWorldLevelData[sGridNo].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.RECALCULATE_MOVEMENT;
 
         // check Top/Left of recompile region
         sCheckGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((int)WorldDirections.NORTHWEST));

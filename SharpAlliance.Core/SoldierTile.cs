@@ -77,7 +77,7 @@ public class SoldierTile
         }
 
         // For single-tiled mercs, set this gridno
-        gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENT_MOVEMENT_RESERVED;
+        gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENTFLAGS.MOVEMENT_RESERVED;
 
         // Save soldier's reserved ID #
         gpWorldLevelData[sGridNo].ubReservedSoldierID = pSoldier.ubID;
@@ -101,7 +101,7 @@ public class SoldierTile
         // See if we have one reserved!
         if (pSoldier.sReservedMovementGridNo != NOWHERE)
         {
-            gpWorldLevelData[pSoldier.sReservedMovementGridNo].uiFlags &= (~MAPELEMENT_MOVEMENT_RESERVED);
+            gpWorldLevelData[pSoldier.sReservedMovementGridNo].uiFlags &= (~MAPELEMENTFLAGS.MOVEMENT_RESERVED);
 
             pSoldier.sReservedMovementGridNo = NOWHERE;
         }
@@ -637,8 +637,8 @@ public class SoldierTile
         if (NewOKDestination(pSoldier, sGridNo, true, 0) || fForce)
         {
             // TELEPORT TO THIS LOCATION!
-            sX = CenterX(sGridNo);
-            sY = CenterY(sGridNo);
+            sX = IsometricUtils.CenterX(sGridNo);
+            sY = IsometricUtils.CenterY(sGridNo);
             SoldierControl.EVENT_SetSoldierPosition(pSoldier, sX, sY);
 
             pSoldier.sFinalDestination = sGridNo;
@@ -647,7 +647,7 @@ public class SoldierTile
             RevealRoofsAndItems(pSoldier, true, true, pSoldier.bLevel, true);
 
             // Handle sight!
-            HandleSight(pSoldier, SIGHT_LOOK | SIGHT_RADIO);
+            HandleSight(pSoldier, SIGHT.LOOK | SIGHT.RADIO);
 
             // Cancel services...
             GivingSoldierCancelServices(pSoldier);

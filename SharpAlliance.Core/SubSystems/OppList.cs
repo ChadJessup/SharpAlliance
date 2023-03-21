@@ -925,7 +925,7 @@ public class OppList
             sDistVisible = Math.Max(sDistVisible + 5, MaxDistanceVisible());
         }
 
-        if (gpWorldLevelData[pSoldier.sGridNo].ubExtFlags[bLevel].HasFlag((MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS)))
+        if (gpWorldLevelData[pSoldier.sGridNo].ubExtFlags[bLevel].HasFlag((MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS)))
         {
             if (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK)
             {
@@ -1038,14 +1038,14 @@ public class OppList
             bHearing++;
         }
 
-        if (HAS_SKILL_TRAIT(pSoldier, NIGHTOPS))
+        if (HAS_SKILL_TRAIT(pSoldier, SkillTrait.NIGHTOPS))
         {
             // sharper hearing generally
-            bHearing += 1 * NUM_SKILL_TRAITS(pSoldier, NIGHTOPS);
+            bHearing += 1 * NUM_SKILL_TRAITS(pSoldier, SkillTrait.NIGHTOPS);
         }
 
-        bSlot = FindObj(pSoldier, EXTENDEDEAR);
-        if (bSlot == HEAD1POS || bSlot == HEAD2POS)
+        bSlot = ItemSubSystem.FindObj(pSoldier, Items.EXTENDEDEAR);
+        if (bSlot == InventorySlot.HEAD1POS || bSlot == InventorySlot.HEAD2POS)
         {
             // at 81-100% adds +5, at 61-80% adds +4, at 41-60% adds +3, etc.
             bHearing += pSoldier.inv[bSlot].bStatus[0] / 20 + 1;
@@ -1067,10 +1067,10 @@ public class OppList
             case 14:
             case 15:
                 bHearing += 3;
-                if (HAS_SKILL_TRAIT(pSoldier, NIGHTOPS))
+                if (HAS_SKILL_TRAIT(pSoldier, SkillTrait.NIGHTOPS))
                 {
                     // yet another bonus for nighttime
-                    bHearing += 1 * NUM_SKILL_TRAITS(pSoldier, NIGHTOPS);
+                    bHearing += 1 * NUM_SKILL_TRAITS(pSoldier, SkillTrait.NIGHTOPS);
                 }
                 break;
             default:
@@ -1129,7 +1129,7 @@ public class OppList
         // the player team now radios about all sightings
         for (uiLoop = gTacticalStatus.Team[gbPlayerNum].bFirstID; uiLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; uiLoop++)
         {
-            HandleSight(Globals.MercPtrs[uiLoop], SIGHT_RADIO);      // looking was done above
+            HandleSight(Globals.MercPtrs[uiLoop], SIGHT.RADIO);      // looking was done above
         }
 
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -1280,7 +1280,7 @@ public class OppList
         {
             // check if I was the only one who was seeing this guy (exlude ourselves)
             // THIS MUST HAPPEN EVEN FOR ENEMIES, TO MAKE THEIR PUBLIC opplist DECAY!
-            if (TeamNoLongerSeesMan(pSoldier.bTeam, pOpponent, pSoldier.ubID, 0) > 0)
+            if (TeamNoLongerSeesMan(pSoldier.bTeam, pOpponent, pSoldier.ubID, 0))
             {
                 // DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("TeamNoLongerSeesMan: ID %d(%S) to ID %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID));
 
@@ -1686,7 +1686,7 @@ public class OppList
                                         // or if alarm has gone off (status red)
                                         RenderFun.InARoom(pOpponent.sGridNo, out ubRoom);
 
-                                        if ((Facts.CheckFact(FACT.MUSEUM_OPEN, 0) == false && ubRoom >= 22 && ubRoom <= 41) || Facts.CheckFact(FACT.MUSEUM_ALARM_WENT_OFF, 0) || (ubRoom == 39 || ubRoom == 40) || (FindObj(pOpponent, CHALICE) != NO_SLOT))
+                                        if ((Facts.CheckFact(FACT.MUSEUM_OPEN, 0) == false && ubRoom >= 22 && ubRoom <= 41) || Facts.CheckFact(FACT.MUSEUM_ALARM_WENT_OFF, 0) || (ubRoom == 39 || ubRoom == 40) || (ItemSubSystem.FindObj(pOpponent, Items.CHALICE) != NO_SLOT))
                                         {
                                             Facts.SetFactTrue(FACT.MUSEUM_ALARM_WENT_OFF);
                                             AddToShouldBecomeHostileOrSayQuoteList(pSoldier.ubID);

@@ -224,10 +224,10 @@ public class StructureWrap
     }
 
 
-    bool IsHiddenStructureVisible(int sGridNo, int usIndex)
+    bool IsHiddenStructureVisible(int sGridNo, TileDefines usIndex)
     {
         // Check if it's a hidden struct and we have not revealed anything!
-        if (gTileDatabase[usIndex].uiFlags & HIDDEN_TILE)
+        if (gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HIDDEN_TILE))
         {
             if (!(gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED))
                 && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
@@ -453,7 +453,7 @@ public class StructureWrap
         }
 
 
-        return (false);
+        return (0);
     }
 
 

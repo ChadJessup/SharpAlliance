@@ -3046,7 +3046,7 @@ public class HandleUI
         pSoldier = Globals.MercPtrs[ubSoldierID];
 
         // Is this a valid stance for our position?
-        if (!IsValidStance(pSoldier, bNewStance))
+        if (!SoldierControl.IsValidStance(pSoldier, bNewStance))
         {
             if (pSoldier.bCollapsed && pSoldier.bBreath < Globals.OKBREATH)
             {

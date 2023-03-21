@@ -1001,7 +1001,9 @@ public class TeamTurns
         WorldDirections bDir;
         SOLDIERTYPE? pOpponent;
 
-        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && !(gubSightFlags & SIGHT_INTERRUPT))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
+            && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+            && !(gubSightFlags.HasFlag(SIGHT.INTERRUPT)))
         {
             return (false);
         }
@@ -1054,7 +1056,8 @@ public class TeamTurns
 
         // in non-combat allow interrupt points to be calculated freely (everyone's in control!)
         // also allow calculation for storing in AllTeamsLookForAll
-        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (gubBestToMakeSightingSize != BEST_SIGHTING_ARRAY_SIZE_ALL_TEAMS_LOOK_FOR_ALL))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+            && (gubBestToMakeSightingSize != BEST_SIGHTING_ARRAY_SIZE_ALL_TEAMS_LOOK_FOR_ALL))
         {
             // if his team's already in control
             if (pSoldier.bTeam == Globals.gTacticalStatus.ubCurrentTeam)

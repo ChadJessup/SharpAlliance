@@ -19,7 +19,7 @@ public class AIUtils
     // InWaterOrGas - gas stuff
     // RoamingRange - point patrol stuff
 
-    URGENCY[,] Urgency =
+    public static URGENCY[,] Urgency =
     {
         { URGENCY.LOW,  URGENCY.LOW,  URGENCY.LOW,  URGENCY.LOW,  URGENCY.LOW }, // green
     	{ URGENCY.HIGH, URGENCY.MED,  URGENCY.MED,  URGENCY.LOW,  URGENCY.LOW }, // yellow
@@ -27,7 +27,7 @@ public class AIUtils
     	{ URGENCY.HIGH, URGENCY.HIGH, URGENCY.HIGH, URGENCY.MED,  URGENCY.MED }  // black
     };
 
-    AnimationStates[,] MovementMode =
+    public static AnimationStates[,] MovementMode =
     {
         { AnimationStates.WALKING,   AnimationStates.WALKING,  AnimationStates.WALKING }, // AI_ACTION.NONE
     
@@ -103,7 +103,7 @@ public class AIUtils
         return (NOSHOOT)(1);
     }
 
-    bool ConsiderProne(SOLDIERTYPE pSoldier)
+    public static bool ConsiderProne(SOLDIERTYPE pSoldier)
     {
         int sOpponentGridNo;
         int bOpponentLevel;
@@ -126,35 +126,35 @@ public class AIUtils
         }
     }
 
-    int StanceChange(SOLDIERTYPE pSoldier, int ubAttackAPCost)
+    public static AnimationHeights StanceChange(SOLDIERTYPE pSoldier, int ubAttackAPCost)
     {
         // consider crouching or going prone
 
-        if (PTR_STANDING)
+        if (PTR_STANDING(pSoldier))
         {
-            if (pSoldier.bActionPoints - ubAttackAPCost >= AP_CROUCH)
+            if (pSoldier.bActionPoints - ubAttackAPCost >= AP.CROUCH)
             {
-                if ((pSoldier.bActionPoints - ubAttackAPCost >= AP_CROUCH + AP_PRONE) && IsValidStance(pSoldier, ANIM_PRONE) && ConsiderProne(pSoldier))
+                if ((pSoldier.bActionPoints - ubAttackAPCost >= AP.CROUCH + AP.PRONE) && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_PRONE) && ConsiderProne(pSoldier))
                 {
-                    return (ANIM_PRONE);
+                    return (AnimationHeights.ANIM_PRONE);
                 }
-                else if (IsValidStance(pSoldier, ANIM_CROUCH))
+                else if (SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
                 {
-                    return (ANIM_CROUCH);
+                    return (AnimationHeights.ANIM_CROUCH);
                 }
             }
         }
-        else if (PTR_CROUCHED)
+        else if (PTR_CROUCHED(pSoldier))
         {
-            if ((pSoldier.bActionPoints - ubAttackAPCost >= AP_PRONE) && IsValidStance(pSoldier, ANIM_PRONE) && ConsiderProne(pSoldier))
+            if ((pSoldier.bActionPoints - ubAttackAPCost >= AP.PRONE) && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_PRONE) && ConsiderProne(pSoldier))
             {
-                return (ANIM_PRONE);
+                return (AnimationHeights.ANIM_PRONE);
             }
         }
         return (0);
     }
 
-    int ShootingStanceChange(SOLDIERTYPE pSoldier, ATTACKTYPE* pAttack, int bDesiredDirection)
+    public static AnimationHeights ShootingStanceChange(SOLDIERTYPE pSoldier, ATTACKTYPE pAttack, WorldDirections bDesiredDirection)
     {
         // Figure out the best stance for this attack
 
@@ -162,18 +162,19 @@ public class AIUtils
         // just compare the chance of the bullet hitting if we are 
         // standing, crouched, or prone
 
-        int usRealAnimState, usBestAnimState;
+        AnimationStates usRealAnimState;
+        AnimationStates usBestAnimState;
         int bBestStanceDiff = -1;
         int bLoop, bStanceNum, bStanceDiff, bAPsAfterAttack;
         int uiChanceOfDamage, uiBestChanceOfDamage, uiCurrChanceOfDamage;
-        int uiStanceBonus, uiMinimumStanceBonusPerChange = 20 - 3 * pAttack.ubAimTime;
+        int uiStanceBonus, uiMinimumStanceBonusPerChange = 20 - 3 * (int)pAttack.ubAimTime;
         int iRange;
 
         bStanceNum = 0;
         uiCurrChanceOfDamage = 0;
 
         bAPsAfterAttack = pSoldier.bActionPoints - pAttack.ubAPCost - GetAPsToReadyWeapon(pSoldier, pSoldier.usAnimState);
-        if (bAPsAfterAttack < AP_CROUCH)
+        if (bAPsAfterAttack < AP.CROUCH)
         {
             return (0);
         }
@@ -188,20 +189,20 @@ public class AIUtils
         {
             // set a stance number comparable with our loop variable so we can easily compute
             // stance differences and thus AP cost
-            case ANIM_STAND:
+            case AnimationHeights.ANIM_STAND:
                 bStanceNum = 0;
                 break;
-            case ANIM_CROUCH:
+            case AnimationHeights.ANIM_CROUCH:
                 bStanceNum = 1;
                 break;
-            case ANIM_PRONE:
+            case AnimationHeights.ANIM_PRONE:
                 bStanceNum = 2;
                 break;
         }
         for (bLoop = 0; bLoop < 3; bLoop++)
         {
-            bStanceDiff = abs(bLoop - bStanceNum);
-            if (bStanceDiff == 2 && bAPsAfterAttack < AP_CROUCH + AP_PRONE)
+            bStanceDiff = Math.Abs(bLoop - bStanceNum);
+            if (bStanceDiff == 2 && bAPsAfterAttack < AP.CROUCH + AP.PRONE)
             {
                 // can't consider this!
                 continue;
@@ -210,25 +211,25 @@ public class AIUtils
             switch (bLoop)
             {
                 case 0:
-                    if (!InternalIsValidStance(pSoldier, bDesiredDirection, ANIM_STAND))
+                    if (!SoldierControl.InternalIsValidStance(pSoldier, bDesiredDirection, AnimationHeights.ANIM_STAND))
                     {
                         continue;
                     }
-                    pSoldier.usAnimState = STANDING;
+                    pSoldier.usAnimState = AnimationStates.STANDING;
                     break;
                 case 1:
-                    if (!InternalIsValidStance(pSoldier, bDesiredDirection, ANIM_CROUCH))
+                    if (!SoldierControl.InternalIsValidStance(pSoldier, bDesiredDirection, AnimationHeights.ANIM_CROUCH))
                     {
                         continue;
                     }
-                    pSoldier.usAnimState = CROUCHING;
+                    pSoldier.usAnimState = AnimationStates.CROUCHING;
                     break;
                 default:
-                    if (!InternalIsValidStance(pSoldier, bDesiredDirection, ANIM_PRONE))
+                    if (!SoldierControl.InternalIsValidStance(pSoldier, bDesiredDirection, AnimationHeights.ANIM_PRONE))
                     {
                         continue;
                     }
-                    pSoldier.usAnimState = PRONE;
+                    pSoldier.usAnimState = AnimationStates.PRONE;
                     break;
             }
 
@@ -239,7 +240,7 @@ public class AIUtils
                 // artificially augment "chance of damage" to reflect penalty to be shot at various stances
                 switch (pSoldier.usAnimState)
                 {
-                    case CROUCHING:
+                    case AnimationStates.CROUCHING:
                         if (iRange > POINT_BLANK_RANGE + 10 * (AIM_PENALTY_TARGET_CROUCHED / 3))
                         {
                             uiStanceBonus = AIM_BONUS_CROUCHING;
@@ -250,7 +251,7 @@ public class AIUtils
                             uiStanceBonus = 3 * ((iRange - POINT_BLANK_RANGE) / CELL_X_SIZE); // penalty -3%/tile
                         }
                         break;
-                    case PRONE:
+                    case AnimationStates.PRONE:
                         if (iRange <= MIN_PRONE_RANGE)
                         {
                             // HATE being prone this close!
@@ -297,7 +298,7 @@ public class AIUtils
     }
 
 
-    AnimationStates DetermineMovementMode(SOLDIERTYPE pSoldier, AI_ACTION bAction)
+    public static AnimationStates DetermineMovementMode(SOLDIERTYPE pSoldier, AI_ACTION bAction)
     {
         if (pSoldier.fUIMovementFast)
         {
@@ -320,7 +321,7 @@ public class AIUtils
         }
         else
         {
-            if ((pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS)) && (MovementMode[bAction][Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]] == AnimationStates.RUNNING))
+            if ((pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS)) && (MovementMode[bAction, Urgency[pSoldier.bAlertStatus, pSoldier.bAIMorale]] == AnimationStates.RUNNING))
             {
                 return (AnimationStates.WALKING);
             }
@@ -339,7 +340,7 @@ public class AIUtils
         }
     }
 
-    void NewDest(SOLDIERTYPE pSoldier, int usGridNo)
+    public static void NewDest(SOLDIERTYPE pSoldier, int usGridNo)
     {
         // ATE: Setting sDestination? Tis does not make sense...
         //pSoldier.sDestination = usGridNo;
@@ -351,12 +352,12 @@ public class AIUtils
 
             // getting real movement anim for someone who is going to take cover, not just considering
             usMovementMode = MovementMode[AI_ACTION.TAKE_COVER][Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]];
-            if (usMovementMode != SWATTING)
+            if (usMovementMode != AnimationStates.SWATTING)
             {
                 // really want to look at path, see how far we could get on path while swatting
-                if (EnoughPoints(pSoldier, RecalculatePathCost(pSoldier, SWATTING), 0, false) || (pSoldier.bLastAction == AI_ACTION.TAKE_COVER && pSoldier.usUIMovementMode == SWATTING))
+                if (EnoughPoints(pSoldier, RecalculatePathCost(pSoldier, AnimationStates.SWATTING), 0, false) || (pSoldier.bLastAction == AI_ACTION.TAKE_COVER && pSoldier.usUIMovementMode == AnimationStates.SWATTING))
                 {
-                    pSoldier.usUIMovementMode = SWATTING;
+                    pSoldier.usUIMovementMode = AnimationStates.SWATTING;
                 }
                 else
                 {
@@ -406,9 +407,9 @@ public class AIUtils
                 fSet = true;
             }
 
-            if (pSoldier.usUIMovementMode == SWATTING && !IS_MERC_BODY_TYPE(pSoldier))
+            if (pSoldier.usUIMovementMode == AnimationStates.SWATTING && !IS_MERC_BODY_TYPE(pSoldier))
             {
-                pSoldier.usUIMovementMode = WALKING;
+                pSoldier.usUIMovementMode = AnimationStates.WALKING;
             }
         }
 
@@ -421,7 +422,7 @@ public class AIUtils
     }
 
 
-    bool IsActionAffordable(SOLDIERTYPE pSoldier)
+    public static bool IsActionAffordable(SOLDIERTYPE pSoldier)
     {
         int bMinPointsNeeded = 0;
 
@@ -540,7 +541,8 @@ public class AIUtils
     {
         int uiLoop;
         int usMaxDist;
-        int ubFriendCount, ubFriendIDs[MAXMERCS], ubFriendID;
+        int ubFriendCount, ubFriendID;
+        int[] ubFriendIDs = new int[MAXMERCS];
         int usDirection;
         int ubDirsLeft;
         bool[] fDirChecked = new bool[8];
@@ -595,11 +597,11 @@ public class AIUtils
 
             // if this man not neutral, but is on my side, OR if he is neutral, but
             // so am I, then he's a "friend" for the purposes of random visitations
-            if ((!pFriend.bNeutral && (pSoldier.bSide == pFriend.bSide)) ||
-                (pFriend.bNeutral && pSoldier.bNeutral))
+            if ((!pFriend.IsNeutral && (pSoldier.bSide == pFriend.bSide)) ||
+                (pFriend.IsNeutral && pSoldier.IsNeutral))
             {
                 // if we're not already neighbors
-                if (SpacesAway(pSoldier.sGridNo, pFriend.sGridNo) > 1)
+                if (IsometricUtils.SpacesAway(pSoldier.sGridNo, pFriend.sGridNo) > 1)
                 {
                     // remember his guynum, increment friend counter
                     ubFriendIDs[ubFriendCount++] = pFriend.ubID;
@@ -608,7 +610,7 @@ public class AIUtils
         }
 
 
-        while (ubFriendCount && !fFound)
+        while (ubFriendCount > 0 && !fFound)
         {
             // randomly select one of the remaining friends in the list
             ubFriendID = ubFriendIDs[PreRandom(ubFriendCount)];
@@ -616,7 +618,7 @@ public class AIUtils
             // if our movement range is NOT restricted, or this friend's within range
             // use distance - 1, because there must be at least 1 tile 1 space closer
             if (!fRangeRestricted ||
-                (SpacesAway(usOrigin, Menptr[ubFriendID].sGridNo) - 1) <= usMaxDist)
+                (IsometricUtils.SpacesAway(usOrigin, Menptr[ubFriendID].sGridNo) - 1) <= usMaxDist)
             {
                 // should be close enough, try to find a legal .sDestination within 1 tile
 
@@ -630,7 +632,7 @@ public class AIUtils
 
                 // examine all 8 spots around 'ubFriendID'
                 // keep looking while directions remain and a satisfactory one not found
-                while ((ubDirsLeft--) && !fFound)
+                while ((ubDirsLeft--) > 0 && !fFound)
                 {
                     // randomly select a direction which hasn't been 'checked' yet
                     do
@@ -653,7 +655,7 @@ public class AIUtils
                     // if our movement range is NOT restricted
                     if (!fRangeRestricted || (IsometricUtils.SpacesAway(usOrigin, usDest) <= usMaxDist))
                     {
-                        if (LegalNPCDestination(pSoldier, usDest, ENSURE_PATH, NOWATER, 0))
+                        if (Movement.LegalNPCDestination(pSoldier, usDest, ENSURE_PATH, NOWATER, 0))
                         {
                             fFound = true;            // found a spot
                             pSoldier.usActionData = usDest;  // store this .sDestination
@@ -711,7 +713,7 @@ public class AIUtils
         if (pSoldier.bOrders <= Orders.CLOSEPATROL && (pSoldier.bTeam == CIV_TEAM || pSoldier.ubProfile != NO_PROFILE))
         {
             // any other combo uses the default of ubRoom == 0, set above
-            if (!InARoom(pSoldier.usPatrolGrid[0], out ubRoom))
+            if (!RenderFun.InARoom(pSoldier.usPatrolGrid[0], out ubRoom))
             {
                 ubRoom = 0;
             }
@@ -740,7 +742,7 @@ public class AIUtils
         if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER)
         {
             // only crawl 1 tile, within our roaming range
-            while ((ubTriesLeft--) && !fFound)
+            while ((ubTriesLeft--) > 0 && !fFound)
             {
                 sXOffset = (int)Globals.Random.Next(3) - 1; // generates -1 to +1
                 sYOffset = (int)Globals.Random.Next(3) - 1;
@@ -764,7 +766,7 @@ public class AIUtils
                     sRandDest = usOrigin + sXOffset + (MAXCOL * sYOffset);
                 }
 
-                if (!LegalNPCDestination(pSoldier, sRandDest, ENSURE_PATH, NOWATER, 0))
+                if (Movement.LegalNPCDestination(pSoldier, sRandDest, ENSURE_PATH, NOWATER, 0) == 0)
                 {
                     sRandDest = NOWHERE;
                     continue;                   // try again!
@@ -778,7 +780,7 @@ public class AIUtils
         else
         {
             // keep rolling random .sDestinations until one's satisfactory or retries used
-            while ((ubTriesLeft--) && !fFound)
+            while ((ubTriesLeft--) > 0 && !fFound)
             {
                 if (fLimited)
                 {
@@ -800,14 +802,14 @@ public class AIUtils
                     sRandDest = (int)PreRandom(GRIDSIZE);
                 }
 
-                if (ubRoom && InARoom(sRandDest, out ubTempRoom) && ubTempRoom != ubRoom)
+                if (ubRoom > 0 && RenderFun.InARoom(sRandDest, out ubTempRoom) && ubTempRoom != ubRoom)
                 {
                     // outside of room available for patrol!
                     sRandDest = NOWHERE;
                     continue;
                 }
 
-                if (!LegalNPCDestination(pSoldier, sRandDest, ENSURE_PATH, NOWATER, 0))
+                if (Movement.LegalNPCDestination(pSoldier, sRandDest, ENSURE_PATH, NOWATER, 0) == 0)
                 {
                     sRandDest = NOWHERE;
                     continue;                   // try again!
@@ -894,7 +896,7 @@ public class AIUtils
             }
 
             // if personal knowledge is more up to date or at least equal
-            if ((gubKnowledgeValue[pbPublOL - OLDEST_HEARD_VALUE][pbPersOL - OLDEST_HEARD_VALUE] > 0) ||
+            if ((gubKnowledgeValue[pbPublOL - OLDEST_HEARD_VALUE, pbPersOL - OLDEST_HEARD_VALUE] > 0) ||
                  (pbPersOL == pbPublOL))
             {
                 // using personal knowledge, obtain opponent's "best guess" gridno
@@ -969,7 +971,7 @@ public class AIUtils
             else
             {
                 // get the AP cost to get to the location of the noise
-                iPathCost = EstimatePathCostToLocation(pSoldier, sGridNo, bLevel, false, &fClimbingNecessary, &sClimbGridNo);
+                iPathCost = EstimatePathCostToLocation(pSoldier, sGridNo, bLevel, false, out fClimbingNecessary, out sClimbGridNo);
                 // if we can get there
                 if (iPathCost != 0)
                 {
@@ -1049,7 +1051,7 @@ public class AIUtils
 
 
         // NOTE: THIS FUNCTION ALLOWS RETURN OF UNCONSCIOUS AND UNREACHABLE OPPONENTS
-        psLastLoc = (gsLastKnownOppLoc[pSoldier.ubID][0]);
+        psLastLoc = (gsLastKnownOppLoc[pSoldier.ubID, 0]);
 
         // hang pointers at start of this guy's personal and public opponent opplists
         pbPersOL = pSoldier.bOppList[0];
@@ -1073,7 +1075,7 @@ public class AIUtils
             }
 
             // Special stuff for Carmen the bounty hunter
-            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpp.ubProfile != 64)
+            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpp.ubProfile != (NPCID.SLAY))
             {
                 continue;  // next opponent
             }
@@ -1083,18 +1085,18 @@ public class AIUtils
             psLastLoc = gsLastKnownOppLoc[pSoldier.ubID] + pOpp.ubID;
 
             // if this opponent is unknown personally and publicly
-            if ((*pbPersOL == NOT_HEARD_OR_SEEN) && (*pbPublOL == NOT_HEARD_OR_SEEN))
+            if ((pbPersOL == NOT_HEARD_OR_SEEN) && (pbPublOL == NOT_HEARD_OR_SEEN))
             {
                 continue;          // next merc
             }
 
             // if personal knowledge is more up to date or at least equal
-            if ((gubKnowledgeValue[*pbPublOL - OLDEST_HEARD_VALUE][*pbPersOL - OLDEST_HEARD_VALUE] > 0) ||
-                 (*pbPersOL == *pbPublOL))
+            if ((gubKnowledgeValue[pbPublOL - OLDEST_HEARD_VALUE, pbPersOL - OLDEST_HEARD_VALUE] > 0) ||
+                 (pbPersOL == pbPublOL))
             {
                 // using personal knowledge, obtain opponent's "best guess" gridno
-                sGridNo = gsLastKnownOppLoc[pSoldier.ubID][pOpp.ubID];
-                bLevel = gbLastKnownOppLevel[pSoldier.ubID][pOpp.ubID];
+                sGridNo = gsLastKnownOppLoc[pSoldier.ubID, pOpp.ubID];
+                bLevel = gbLastKnownOppLevel[pSoldier.ubID, pOpp.ubID];
             }
             else
             {
@@ -1138,21 +1140,22 @@ public class AIUtils
 
         if (psGridNo)
         {
-            *psGridNo = sClosestOpponent;
+            psGridNo = sClosestOpponent;
         }
         if (pbLevel)
         {
-            *pbLevel = bClosestLevel;
+            pbLevel = bClosestLevel;
         }
+
         return (sClosestOpponent);
     }
 
-    int ClosestSeenOpponent(SOLDIERTYPE pSoldier, int* psGridNo, int* pbLevel)
+    int ClosestSeenOpponent(SOLDIERTYPE pSoldier, int? psGridNo, int? pbLevel)
     {
         int sGridNo, sClosestOpponent = NOWHERE;
         int uiLoop;
         int iRange, iClosestRange = 1500;
-        int* pbPersOL;
+        int? pbPersOL;
         int bLevel, bClosestLevel;
         SOLDIERTYPE pOpp;
 
@@ -1176,7 +1179,7 @@ public class AIUtils
             }
 
             // Special stuff for Carmen the bounty hunter
-            if (pSoldier.bAttitude == ATTACKSLAYONLY && pOpp.ubProfile != 64)
+            if (pSoldier.bAttitude == ATTACKSLAYONLY && pOpp.ubProfile != NPCID.SLAY)
             {
                 continue;  // next opponent
             }
@@ -1184,7 +1187,7 @@ public class AIUtils
             pbPersOL = pSoldier.bOppList + pOpp.ubID;
 
             // if this opponent is not seen personally
-            if (*pbPersOL != SEEN_CURRENTLY)
+            if (pbPersOL != SEEN_CURRENTLY)
             {
                 continue;          // next merc
             }
@@ -1238,7 +1241,7 @@ public class AIUtils
     }
 
 
-    int ClosestPC(SOLDIERTYPE pSoldier, int* psDistance)
+    int ClosestPC(SOLDIERTYPE pSoldier, int? psDistance)
     {
         // used by NPCs... find the closest PC
 
@@ -1255,7 +1258,7 @@ public class AIUtils
 
         for (; ubLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; ubLoop++)
         {
-            pTargetSoldier = Menptr + ubLoop;
+            pTargetSoldier = Menptr[ubLoop];
 
             if (!pTargetSoldier.bActive || !pTargetSoldier.bInSector)
             {
@@ -1348,27 +1351,27 @@ public class AIUtils
         }
     }
 
-    int GetInterveningClimbingLocation(SOLDIERTYPE pSoldier, int sDestGridNo, int bDestLevel, bool* pfClimbingNecessary)
+    int GetInterveningClimbingLocation(SOLDIERTYPE pSoldier, int sDestGridNo, int bDestLevel, out bool pfClimbingNecessary)
     {
         if (pSoldier.bLevel == bDestLevel)
         {
             if ((pSoldier.bLevel == 0) || (gubBuildingInfo[pSoldier.sGridNo] == gubBuildingInfo[sDestGridNo]))
             {
                 // on ground or same building... normal!
-                *pfClimbingNecessary = false;
+                pfClimbingNecessary = false;
                 return (NOWHERE);
             }
             else
             {
                 // different buildings!
                 // yes, pass in same gridno twice... want closest climb-down spot for building we are on!
-                *pfClimbingNecessary = true;
+                pfClimbingNecessary = true;
                 return (FindClosestClimbPointAvailableToAI(pSoldier, pSoldier.sGridNo, pSoldier.sGridNo, false));
             }
         }
         else
         {
-            *pfClimbingNecessary = true;
+            pfClimbingNecessary = true;
             // different levels
             if (pSoldier.bLevel == 0)
             {
@@ -1396,7 +1399,7 @@ public class AIUtils
             if ((pSoldier.bLevel == 0) || (gubBuildingInfo[pSoldier.sGridNo] == gubBuildingInfo[sDestGridNo]))
             {
                 // on ground or same building... normal!
-                sPathCost = EstimatePlotPath(pSoldier, sDestGridNo, false, false, false, WALKING, false, false, 0);
+                sPathCost = EstimatePlotPath(pSoldier, sDestGridNo, false, false, false, AnimationStates.WALKING, false, false, 0);
                 pfClimbingNecessary = false;
                 psClimbGridNo = NOWHERE;
             }
@@ -1411,7 +1414,7 @@ public class AIUtils
                 }
                 else
                 {
-                    sPathCost = PlotPath(pSoldier, sClimbGridNo, false, false, false, WALKING, false, false, 0);
+                    sPathCost = PathAI.PlotPath(pSoldier, sClimbGridNo, null, false, null, AnimationStates.WALKING, null, null, 0);
                     if (sPathCost != 0)
                     {
                         // add in cost of climbing down
@@ -1455,7 +1458,7 @@ public class AIUtils
             }
             else
             {
-                sPathCost = PlotPath(pSoldier, sClimbGridNo, false, false, false, WALKING, false, false, 0);
+                sPathCost = PathAI.PlotPath(pSoldier, sClimbGridNo, null, false, null, AnimationStates.WALKING, null, null, 0);
                 if (sPathCost != 0)
                 {
                     // add in the cost of climbing up or down
@@ -1558,7 +1561,7 @@ public class AIUtils
             }
 
             // if we're already neighbors
-            if (SpacesAway(pSoldier.sGridNo, pFriend.sGridNo) == 1)
+            if (IsometricUtils.SpacesAway(pSoldier.sGridNo, pFriend.sGridNo) == 1)
             {
                 continue;          // next merc
             }
@@ -1654,7 +1657,7 @@ public class AIUtils
                 }
             }
 
-            sDist = SpacesAway(pSoldier.sGridNo, pTargetSoldier.sGridNo);
+            sDist = IsometricUtils.SpacesAway(pSoldier.sGridNo, pTargetSoldier.sGridNo);
 
             if (sDist < sMinDist)
             {
@@ -1665,7 +1668,7 @@ public class AIUtils
         return (sMinDist);
     }
 
-    bool InWaterGasOrSmoke(SOLDIERTYPE pSoldier, int sGridNo)
+    public static bool InWaterGasOrSmoke(SOLDIERTYPE pSoldier, int sGridNo)
     {
         if (WaterTooDeepForAttacks(sGridNo))
         {
@@ -1673,13 +1676,13 @@ public class AIUtils
         }
 
         // smoke
-        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENT_EXT.SMOKE))
+        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.SMOKE))
         {
             return (true);
         }
 
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS))
+        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
             && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK
             && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
         {
@@ -1689,16 +1692,16 @@ public class AIUtils
         return (false);
     }
 
-    bool InGasOrSmoke(SOLDIERTYPE pSoldier, int sGridNo)
+    public static bool InGasOrSmoke(SOLDIERTYPE pSoldier, int sGridNo)
     {
         // smoke
-        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENT_EXT.SMOKE))
+        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.SMOKE))
         {
             return (true);
         }
 
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS))
+        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
             && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
         {
             return (true);
@@ -1716,7 +1719,7 @@ public class AIUtils
         }
 
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS))
+        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
             && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
         {
             return (true);
@@ -1725,10 +1728,10 @@ public class AIUtils
         return (false);
     }
 
-    bool InGas(SOLDIERTYPE pSoldier, int sGridNo)
+    public static bool InGas(SOLDIERTYPE pSoldier, int sGridNo)
     {
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENT_EXT.TEARGAS | MAPELEMENT_EXT.MUSTARDGAS))
+        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
             && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK
             && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
         {
@@ -1742,7 +1745,7 @@ public class AIUtils
     {
         InventorySlot bSlot, bNewSlot;
 
-        bSlot = FindObj(pSoldier, GASMASK);
+        bSlot = ItemSubSystem.FindObj(pSoldier, Items.GASMASK);
         if (bSlot == NO_SLOT)
         {
             return (false);
@@ -1788,7 +1791,7 @@ public class AIUtils
         }
 
         // could've been placed here, ignore the light
-        if (InARoom(sGridNo, null))
+        if (RenderFun.InARoom(sGridNo, out var _))
         {
             return (false);
         }
@@ -1804,30 +1807,30 @@ public class AIUtils
         return (false);
     }
 
-    int CalcMorale(SOLDIERTYPE pSoldier)
+    MORALE CalcMorale(SOLDIERTYPE pSoldier)
     {
         int uiLoop, uiLoop2;
         int iOurTotalThreat = 0, iTheirTotalThreat = 0;
         int sOppThreatValue, sFrndThreatValue, sMorale;
         int iPercent;
         int bMostRecentOpplistValue;
-        int bMoraleCategory;
-        int* pSeenOpp; //,*friendOlPtr;
-        int* pbPersOL, *pbPublOL;
-        SOLDIERTYPE pOpponent,*pFriend;
+        MORALE bMoraleCategory;
+        int pSeenOpp; //,*friendOlPtr;
+        int pbPersOL, pbPublOL;
+        SOLDIERTYPE pOpponent, pFriend;
 
         // if army guy has NO weapons left then panic!
         if (pSoldier.bTeam == ENEMY_TEAM)
         {
-            if (FindAIUsableObjClass(pSoldier, IC_WEAPON) == NO_SLOT)
+            if (FindAIUsableObjClass(pSoldier, IC.WEAPON) == NO_SLOT)
             {
-                return (MORALE_HOPELESS);
+                return (MORALE.HOPELESS);
             }
         }
 
         // hang pointers to my personal opplist, my team's public opplist, and my
         // list of previously seen opponents
-        pSeenOpp = &(gbSeenOpponents[pSoldier.ubID][0]);
+        pSeenOpp = (gbSeenOpponents[pSoldier.ubID][0]);
 
         // loop through every one of my possible opponents
         for (uiLoop = 0; uiLoop < guiNumMercSlots; uiLoop++)
@@ -1857,10 +1860,10 @@ public class AIUtils
             pSeenOpp = gbSeenOpponents[pSoldier.ubID] + pOpponent.ubID;
 
             // if this opponent is unknown to me personally AND unknown to my team, too
-            if ((*pbPersOL == NOT_HEARD_OR_SEEN) && (*pbPublOL == NOT_HEARD_OR_SEEN))
+            if ((pbPersOL == NOT_HEARD_OR_SEEN) && (pbPublOL == NOT_HEARD_OR_SEEN))
             {
                 // if I have never seen him before anywhere in this sector, either
-                if (!(*pSeenOpp))
+                if ((pSeenOpp == 0))
                 {
                     continue;        // next merc
                 }
@@ -1871,13 +1874,13 @@ public class AIUtils
             else         // decide which opplist is more current
             {
                 // if personal knowledge is more up to date or at least equal
-                if ((gubKnowledgeValue[*pbPublOL - OLDEST_HEARD_VALUE][*pbPersOL - OLDEST_HEARD_VALUE] > 0) || (*pbPersOL == *pbPublOL))
+                if ((gubKnowledgeValue[pbPublOL - OLDEST_HEARD_VALUE, pbPersOL - OLDEST_HEARD_VALUE] > 0) || (*pbPersOL == *pbPublOL))
                 {
-                    bMostRecentOpplistValue = *pbPersOL;      // use personal
+                    bMostRecentOpplistValue = pbPersOL;      // use personal
                 }
                 else
                 {
-                    bMostRecentOpplistValue = *pbPublOL;      // use public
+                    bMostRecentOpplistValue = pbPublOL;      // use public
                 }
             }
 
@@ -1912,7 +1915,7 @@ public class AIUtils
 
                 // WE CAN'T AFFORD TO CONSIDER THE ENEMY OF MY ENEMY MY FRIEND, HERE!
                 // ONLY IF WE ARE ACTUALLY OFFICIALLY CO-OPERATING TOGETHER (SAME SIDE)
-                if (pFriend.bNeutral && !(pSoldier.ubCivilianGroup != NON_CIV_GROUP && pSoldier.ubCivilianGroup == pFriend.ubCivilianGroup))
+                if (pFriend.IsNeutral && !(pSoldier.ubCivilianGroup != CIV_GROUP.NON_CIV_GROUP && pSoldier.ubCivilianGroup == pFriend.ubCivilianGroup))
                 {
                     continue;        // next merc
                 }
@@ -1935,7 +1938,7 @@ public class AIUtils
                 // reduce the percentage value based on how far away they are from the enemy, if they only hear him
                 if (pFriend.bOppList[pOpponent.ubID] <= HEARD_LAST_TURN)
                 {
-                    iPercent -= PythSpacesAway(pSoldier.sGridNo, pFriend.sGridNo) * 2;
+                    iPercent -= IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pFriend.sGridNo) * 2;
                     if (iPercent <= 0)
                     {
                         //ignore!
@@ -1977,23 +1980,23 @@ public class AIUtils
 
         if (sMorale <= 25)              // odds 1:4 or worse
         {
-            bMoraleCategory = MORALE_HOPELESS;
+            bMoraleCategory = MORALE.HOPELESS;
         }
         else if (sMorale <= 50)         // odds between 1:4 and 1:2
         {
-            bMoraleCategory = MORALE_WORRIED;
+            bMoraleCategory = MORALE.WORRIED;
         }
         else if (sMorale <= 150)        // odds between 1:2 and 3:2
         {
-            bMoraleCategory = MORALE_NORMAL;
+            bMoraleCategory = MORALE.NORMAL;
         }
         else if (sMorale <= 300)        // odds between 3:2 and 3:1
         {
-            bMoraleCategory = MORALE_CONFIDENT;
+            bMoraleCategory = MORALE.CONFIDENT;
         }
         else                           // odds better than 3:1
         {
-            bMoraleCategory = MORALE_FEARLESS;
+            bMoraleCategory = MORALE.FEARLESS;
         }
 
         switch (pSoldier.bAttitude)
@@ -2073,15 +2076,15 @@ public class AIUtils
 
 
         // if adjustments made it outside the allowed limits
-        if (bMoraleCategory < MORALE_HOPELESS)
+        if (bMoraleCategory < MORALE.HOPELESS)
         {
-            bMoraleCategory = MORALE_HOPELESS;
+            bMoraleCategory = MORALE.HOPELESS;
         }
         else
         {
-            if (bMoraleCategory > MORALE_FEARLESS)
+            if (bMoraleCategory > MORALE.FEARLESS)
             {
-                bMoraleCategory = MORALE_FEARLESS;
+                bMoraleCategory = MORALE.FEARLESS;
             }
         }
 
@@ -2097,10 +2100,10 @@ public class AIUtils
         */
 
         // brave guys never get hopeless, at worst they get worried
-        if (bMoraleCategory == MORALE_HOPELESS &&
+        if (bMoraleCategory == MORALE.HOPELESS &&
             (pSoldier.bAttitude == BRAVESOLO || pSoldier.bAttitude == BRAVEAID))
         {
-            bMoraleCategory = MORALE_WORRIED;
+            bMoraleCategory = MORALE.WORRIED;
         }
 
 
@@ -2112,7 +2115,7 @@ public class AIUtils
         return (bMoraleCategory);
     }
 
-    int CalcManThreatValue(SOLDIERTYPE pEnemy, int sMyGrid, int ubReduceForCover, SOLDIERTYPE pMe)
+    int CalcManThreatValue(SOLDIERTYPE pEnemy, int sMyGrid, bool ubReduceForCover, SOLDIERTYPE pMe)
     {
         int iThreatValue = 0;
         bool fForCreature = CREATURE_OR_BLOODCAT(pMe);
@@ -2192,7 +2195,7 @@ public class AIUtils
             else
             {
                 // ADD 5% if man's already facing me
-                if (pEnemy.bDirection == atan8(CenterX(pEnemy.sGridNo), CenterY(pEnemy.sGridNo), CenterX(sMyGrid), CenterY(sMyGrid)))
+                if (pEnemy.bDirection == SoldierControl.atan8(IsometricUtils.CenterX(pEnemy.sGridNo), IsometricUtils.CenterY(pEnemy.sGridNo), IsometricUtils.CenterX(sMyGrid), IsometricUtils.CenterY(sMyGrid)))
                 {
                     iThreatValue += (iThreatValue / 20);
                 }
@@ -2318,7 +2321,7 @@ public class AIUtils
     }
 
 
-    void RearrangePocket(SOLDIERTYPE pSoldier, InventorySlot bPocket1, InventorySlot bPocket2, bool bPermanent)
+    public static void RearrangePocket(SOLDIERTYPE pSoldier, InventorySlot bPocket1, InventorySlot bPocket2, bool bPermanent)
     {
         // NB there's no such thing as a temporary swap for now...
         SwapObjs((pSoldier.inv[bPocket1]), (pSoldier.inv[bPocket2]));
@@ -2382,7 +2385,7 @@ public class AIUtils
         }
     }
 
-    int SoldierDifficultyLevel(SOLDIERTYPE pSoldier)
+    public static int SoldierDifficultyLevel(SOLDIERTYPE pSoldier)
     {
         int bDifficultyBase;
         int bDifficulty;
@@ -2465,7 +2468,7 @@ public class AIUtils
                 {
                     bTempDir = WorldDirections.NORTH;
                 }
-                if (!InternalIsValidStance(pCreature, bTempDir, AnimationHeights.ANIM_STAND))
+                if (!SoldierControl.InternalIsValidStance(pCreature, bTempDir, AnimationHeights.ANIM_STAND))
                 {
                     fFound = false;
                     break;
@@ -2523,7 +2526,8 @@ public class AIUtils
         {
             iRangeFactorMultiplier += gTacticalStatus.bConsNumTurnsWeHaventSeenButEnemyDoes;
         }
-        return (iRangeFactorMultiplier);
+
+        return ((int)iRangeFactorMultiplier);
     }
 
     bool ArmySeesOpponents()

@@ -96,7 +96,7 @@ public class Buildings
             bDirection = WorldDirections.EAST;
         }
 
-        gpWorldLevelData[sStartGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.ROOFCODE_VISITED;
+        gpWorldLevelData[sStartGridNo].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.ROOFCODE_VISITED;
 
         while (true)
         {
@@ -172,7 +172,7 @@ public class Buildings
 
             if (!(gpWorldLevelData[sCurrGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED)))
             {
-                gpWorldLevelData[sCurrGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.ROOFCODE_VISITED;
+                gpWorldLevelData[sCurrGridNo].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.ROOFCODE_VISITED;
 
                 // consider this location as possible climb gridno		
                 // there must be a regular wall adjacent to this for us to consider it a 
@@ -374,7 +374,7 @@ public class Buildings
         for (uiLoop = 0; uiLoop < WORLD_MAX; uiLoop++)
         {
             gpWorldLevelData[uiLoop].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
-            gpWorldLevelData[uiLoop].ubExtFlags[0] &= ~(MAPELEMENT_EXT.ROOFCODE_VISITED);
+            gpWorldLevelData[uiLoop].ubExtFlags[0] &= ~(MAPELEMENTFLAGS_EXT.ROOFCODE_VISITED);
         }
 
         // search through world

@@ -685,7 +685,7 @@ public class PathAI
                 piDoorGridNo = iDoorGridNo;
             }
 
-            if (fReturnPerceivedValue && Globals.gpWorldLevelData[iDoorGridNo].ubExtFlags[0].HasFlag(MAPELEMENT_EXT.DOOR_STATUS_PRESENT))
+            if (fReturnPerceivedValue && Globals.gpWorldLevelData[iDoorGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS_EXT.DOOR_STATUS_PRESENT))
             {
                 // check door status
                 pDoorStatus = Keys.GetDoorStatus((int)iDoorGridNo);

@@ -668,7 +668,7 @@ public class TacticalStatusType
     public bool fSaidCreatureSmellQuote;
     public int usItemsSeenOnAttackGridNo;
     public bool fLockItemLocators;
-    public int ubLastQuoteSaid;
+    public QUOTE ubLastQuoteSaid;
     public NPCID ubLastQuoteProfileNUm;
     public bool fCantGetThrough;
     public int sCantGetThroughGridNo;

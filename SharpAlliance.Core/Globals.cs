@@ -290,7 +290,7 @@ public partial class Globals
     public static Dictionary<AnimationStates, ANIMCONTROLTYPE> gAnimControl = new();
 
     public static ANI_SPEED_DEF[] gubAnimWalkSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
-    public static ANI_SPEED_DEF[] gubAnimRunSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static Dictionary<SoldierBodyTypes, ANI_SPEED_DEF> gubAnimRunSpeeds = new();
     public static ANI_SPEED_DEF[] gubAnimSwatSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
     public static ANI_SPEED_DEF[] gubAnimCrawlSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
     public static int[] gubMaxActionPoints = new int[(int)SoldierBodyTypes.TOTALBODYTYPES];
@@ -1635,7 +1635,7 @@ public partial class Globals
     public const int MAINMENU_Y_SPACE = 37;
     public const int MAINMENU_Y = 480 - 187;
 
-    public static ushort[] gusMainMenuButtonWidths = new ushort[(int)MainMenuItems.NUM_MENU_ITEMS];
+    public static int[] gusMainMenuButtonWidths = new int[(int)MainMenuItems.NUM_MENU_ITEMS];
     public static MOUSE_REGION gBackRegion = new(nameof(gBackRegion));
     public static MainMenuItems gbHandledMainMenu = MainMenuItems.Unknown;
 
@@ -1834,7 +1834,7 @@ public partial class Globals
     public static bool fPausedTimeDuringQuote = false;
     public static bool fWasPausedDuringDialogue = false;
 
-    public static bool gubLogForMeTooBleeds = false;
+    public static int gubLogForMeTooBleeds = 0;
 
     // has the text region been created?
     public static bool fTextBoxMouseRegionCreated = false;

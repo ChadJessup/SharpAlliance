@@ -725,7 +725,7 @@ public class Keys
         // set flags in map for containing a door status 
         for (ubLoop = 0; ubLoop < gubNumDoorStatus; ubLoop++)
         {
-            gpWorldLevelData[gpDoorStatus[ubLoop].sGridNo].ubExtFlags[0] |= MAPELEMENT_EXT.DOOR_STATUS_PRESENT;
+            gpWorldLevelData[gpDoorStatus[ubLoop].sGridNo].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.DOOR_STATUS_PRESENT;
         }
 
         UpdateDoorGraphicsFromStatus(true, false);

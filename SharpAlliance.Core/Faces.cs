@@ -15,7 +15,7 @@ namespace SharpAlliance.Core;
 
 public class Faces
 {
-    int GetFreeFace()
+    private static int GetFreeFace()
     {
         int uiCount;
 
@@ -50,7 +50,7 @@ public class Faces
     }
 
 
-    int InitSoldierFace(SOLDIERTYPE? pSoldier)
+    public static int InitSoldierFace(SOLDIERTYPE? pSoldier)
     {
         int iFaceIndex;
 
@@ -66,7 +66,7 @@ public class Faces
     }
 
 
-    int InitFace(NPCID usMercProfileID, int ubSoldierID, FACE uiInitFlags)
+    public static int InitFace(NPCID usMercProfileID, int ubSoldierID, FACE uiInitFlags)
     {
         int uiBlinkFrequency;
         int uiExpressionFrequency;
@@ -93,7 +93,7 @@ public class Faces
     }
 
 
-    int InternalInitFace(NPCID usMercProfileID, int ubSoldierID, FACE uiInitFlags, int iFaceFileID, int uiBlinkFrequency, int uiExpressionFrequency)
+    private static int InternalInitFace(NPCID usMercProfileID, int ubSoldierID, FACE uiInitFlags, int iFaceFileID, int uiBlinkFrequency, int uiExpressionFrequency)
     {
         FACETYPE? pFace;
         // VOBJECT_DESC VObjectDesc;
@@ -335,7 +335,7 @@ public class Faces
 
     }
 
-    void SetAutoFaceActiveFromSoldier(int uiDisplayBuffer, int uiRestoreBuffer, int ubSoldierID, int usFaceX, int usFaceY)
+    void SetAutoFaceActiveFromSoldier(Surfaces uiDisplayBuffer, Surfaces uiRestoreBuffer, int ubSoldierID, int usFaceX, int usFaceY)
     {
         if (ubSoldierID == NOBODY)
         {
@@ -346,7 +346,7 @@ public class Faces
 
     }
 
-    void GetFaceRelativeCoordinates(FACETYPE? pFace, out int pusEyesX, out int pusEyesY, out int pusMouthX, out int pusMouthY)
+    public static void GetFaceRelativeCoordinates(FACETYPE? pFace, out int pusEyesX, out int pusEyesY, out int pusMouthX, out int pusMouthY)
     {
         NPCID usMercProfileID;
         int usEyesX;
@@ -393,7 +393,7 @@ public class Faces
     }
 
 
-    void SetAutoFaceActive(int uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY)
+    void SetAutoFaceActive(Surfaces uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY)
     {
         int usEyesX;
         int usEyesY;
@@ -413,7 +413,7 @@ public class Faces
     }
 
 
-    void InternalSetAutoFaceActive(int uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY, int usEyesX, int usEyesY, int usMouthX, int usMouthY)
+    void InternalSetAutoFaceActive(Surfaces uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY, int usEyesX, int usEyesY, int usMouthX, int usMouthY)
     {
         NPCID usMercProfileID;
         FACETYPE? pFace;
@@ -1079,7 +1079,7 @@ public class Faces
     }
 
 
-    public static void HandleRenderFaceAdjustments(FACETYPE? pFace, bool fDisplayBuffer, bool fUseExternBuffer, int uiBuffer, int sFaceX, int sFaceY, int usEyesX, int usEyesY)
+    public static void HandleRenderFaceAdjustments(FACETYPE? pFace, bool fDisplayBuffer, bool fUseExternBuffer, Surfaces uiBuffer, int sFaceX, int sFaceY, int usEyesX, int usEyesY)
     {
         int sIconX, sIconY;
         int sIconIndex = -1;
@@ -1465,7 +1465,7 @@ public class Faces
     }
 
 
-    public static bool ExternRenderFaceFromSoldier(int uiBuffer, int ubSoldierID, int sX, int sY)
+    public static bool ExternRenderFaceFromSoldier(Surfaces uiBuffer, int ubSoldierID, int sX, int sY)
     {
         // Check for valid soldier
         CHECKF(ubSoldierID != NOBODY);
@@ -1474,7 +1474,7 @@ public class Faces
     }
 
 
-    public static bool ExternRenderFace(int uiBuffer, int iFaceIndex, int sX, int sY)
+    public static bool ExternRenderFace(Surfaces uiBuffer, int iFaceIndex, int sX, int sY)
     {
         int usEyesX;
         int usEyesY;
@@ -1501,7 +1501,7 @@ public class Faces
         // Blit face to save buffer!
         BltVideoObjectFromIndex(uiBuffer, pFace.uiVideoObject, 0, sX, sY, VO_BLT.SRCTRANSPARENCY, null);
 
-        GetFaceRelativeCoordinates(pFace, &usEyesX, &usEyesY, &usMouthX, &usMouthY);
+        GetFaceRelativeCoordinates(pFace, out usEyesX, out usEyesY, out usMouthX, out usMouthY);
 
         HandleRenderFaceAdjustments(pFace, false, true, uiBuffer, sX, sY, (int)(sX + usEyesX), (int)(sY + usEyesY));
 
@@ -2149,26 +2149,6 @@ public class Faces
         pFace.fValidSpeech = false;
     }
 }
-
-[Flags]
-public enum FaceFlags
-{
-    // FLAGS....
-    FACE_DESTROY_OVERLAY = 0x00000000,                      // A face may contain a video overlay
-    FACE_BIGFACE = 0x00000001,                      // A BIGFACE instead of small face
-    FACE_POTENTIAL_KEYWAIT = 0x00000002,                        // If the option is set, will not stop face until key pressed
-    FACE_PCTRIGGER_NPC = 0x00000004,                        // This face has to trigger an NPC after being done
-    FACE_INACTIVE_HANDLED_ELSEWHERE = 0x00000008,   // This face has been setup and any disable should be done
-                                                    // Externally                   
-    FACE_TRIGGER_PREBATTLE_INT = 0x00000010,
-    FACE_SHOW_WHITE_HILIGHT = 0x00000020,           // Show highlight around face
-    FACE_FORCE_SMALL = 0x00000040,                      // force to small face	
-    FACE_MODAL = 0x00000080,                        // make game modal
-    FACE_MAKEACTIVE_ONCE_DONE = 0x00000100,
-    FACE_SHOW_MOVING_HILIGHT = 0x00000200,
-    FACE_REDRAW_WHOLE_FACE_NEXT_FRAM = 0x00000400,						// Redraw the complete face next frame
-}
-
 
 public record RPC_SMALL_FACE_VALUES(
     int bEyesX,

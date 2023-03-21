@@ -22,7 +22,7 @@ public partial class Globals
     public const int NPC_TOSS_SAFETY_MARGIN = 4;       // all friends must be this far away;
     public static bool ACTING_ON_SCHEDULE(SOLDIERTYPE p) => (p.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE));
     public const int AI_AP_CLIMBROOF = 15;    // the AI should try to have this many APs before climbing a roof, if possible;
-    public const int TEMPORARILY = 0;
+    public const bool TEMPORARILY = false;
     public const bool FOREVER = true;
     public const int DONTADDTURNCOST = 0;
     public const int ADDTURNCOST = 1;

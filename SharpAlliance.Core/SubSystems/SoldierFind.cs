@@ -35,9 +35,6 @@ public class SoldierFind
         3, 0, 0, 0, 0, 0, 3, 3,
     };
 
-    SOLDIER_STACK_TYPE gSoldierStack;
-    bool gfHandleStack = false;
-
     // extern bool Globals.gUIActionModeChangeDueToMouseOver;
     // extern int guiUITargetSoldierId;
 
@@ -167,7 +164,7 @@ public class SoldierFind
         int sMaxScreenMercY, sHeighestMercScreenY = -32000;
         bool fDoFull;
         int ubBestMerc = Globals.NOBODY;
-        int usAnimSurface;
+        AnimationSurfaceTypes usAnimSurface;
         int iMercScreenX, iMercScreenY;
         bool fInScreenRect = false;
         bool fInGridNo = false;
@@ -589,9 +586,7 @@ public class SoldierFind
 
     void GetSoldierAnimDims(SOLDIERTYPE? pSoldier, out int psHeight, out int psWidth)
     {
-        int usAnimSurface;
-
-        usAnimSurface = AnimationControl.GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+        AnimationSurfaceTypes usAnimSurface = AnimationControl.GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
@@ -616,9 +611,7 @@ public class SoldierFind
 
     void GetSoldierAnimOffsets(SOLDIERTYPE? pSoldier, out int sOffsetX, out int sOffsetY)
     {
-        int usAnimSurface;
-
-        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+        AnimationSurfaceTypes usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
@@ -637,7 +630,7 @@ public class SoldierFind
         int sMercScreenX, sMercScreenY;
         float dOffsetX, dOffsetY;
         float dTempX_S, dTempY_S;
-        int usAnimSurface;
+        AnimationSurfaceTypes usAnimSurface;
         //		ETRLEObject *pTrav;
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
@@ -687,7 +680,7 @@ public class SoldierFind
         int sMercScreenX, sMercScreenY;
         float dOffsetX, dOffsetY;
         float dTempX_S, dTempY_S;
-        int usAnimSurface;
+        AnimationSurfaceTypes usAnimSurface;
 
         usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 

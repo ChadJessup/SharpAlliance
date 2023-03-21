@@ -97,7 +97,7 @@ public class CreatureDecideAction
     {
         int iChance, iSneaky = 10;
         //int		bInWater;
-        int bInGas;
+        bool bInGas;
 
         //bInWater = MercInWater(pSoldier);
 
@@ -108,7 +108,7 @@ public class CreatureDecideAction
             return (AI_ACTION.NONE);
         }
 
-        bInGas = InGas(pSoldier, pSoldier.sGridNo);
+        bInGas = AIUtils.InGas(pSoldier, pSoldier.sGridNo);
 
         if (pSoldier.bMobility == CREATURE.MOBILE)
         {
@@ -158,7 +158,7 @@ public class CreatureDecideAction
             // WHEN LEFT IN WATER OR GAS, GO TO NEAREST REACHABLE SPOT OF UNGASSED LAND
             ////////////////////////////////////////////////////////////////////////////
 
-            if ( /*bInWater || */ bInGas > 0)
+            if ( /*bInWater || */ bInGas)
             {
                 pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
 
@@ -579,7 +579,7 @@ public class CreatureDecideAction
         int ubCanMove;
         WorldDirections ubOpponentDir;
         //int bInWater;
-        int bInGas;
+        bool bInGas;
         int bSeekPts = 0, bHelpPts = 0, bHidePts = 0;
         int sAdjustedGridNo;
         bool fChangeLevel;
@@ -604,14 +604,14 @@ public class CreatureDecideAction
         //bInWater = MercInWater(pSoldier);
 
         // check if standing in tear gas without a gas mask on
-        bInGas = InGas(pSoldier, pSoldier.sGridNo);
+        bInGas = AIUtils.InGas(pSoldier, pSoldier.sGridNo);
 
 
         ////////////////////////////////////////////////////////////////////////////
         // WHEN IN GAS, GO TO NEAREST REACHABLE SPOT OF UNGASSED LAND
         ////////////////////////////////////////////////////////////////////////////
 
-        if (bInGas > 0 && ubCanMove > 0)
+        if (bInGas && ubCanMove > 0)
         {
             pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
 
@@ -738,7 +738,7 @@ public class CreatureDecideAction
                 pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sClosestDisturbance, AI_ACTION.SEEK_OPPONENT);
 
                 // if it's possible
-                if (pSoldier.usActionData != NOWHERE)
+                if ((int)pSoldier.usActionData != NOWHERE)
                 {
                     return (AI_ACTION.SEEK_OPPONENT);
                 }
@@ -796,7 +796,7 @@ public class CreatureDecideAction
                     if ((pSoldier.bDirection != ubOpponentDir) && (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) <= sDistVisible))
                     {
                         // set base chance according to orders
-                        if ((pSoldier.bOrders == STATIONARY) || (pSoldier.bOrders == ONGUARD))
+                        if ((pSoldier.bOrders == Orders.STATIONARY) || (pSoldier.bOrders == Orders.ONGUARD))
                         {
                             iChance = 50;
                         }
@@ -805,7 +805,7 @@ public class CreatureDecideAction
                             iChance = 25;
                         }
 
-                        if (pSoldier.bAttitude == DEFENSIVE)
+                        if (pSoldier.bAttitude == Attitudes.DEFENSIVE)
                         {
                             iChance += 25;
                         }
@@ -843,8 +843,9 @@ public class CreatureDecideAction
         // monster AI - hostile mammals in sense range
         int sClosestOpponent, sBestCover = NOWHERE;
         int sClosestDisturbance;
-        int ubMinAPCost, ubCanMove/*,bInWater*/, bInGas;
-        int bDirection;
+        int ubMinAPCost, ubCanMove/*,bInWater*/;
+        bool bInGas;
+        WorldDirections bDirection;
         AI_ACTION ubBestAttackAction;
         int bCanAttack;
         InventorySlot bSpitIn;
@@ -933,7 +934,7 @@ public class CreatureDecideAction
         //bInWater = MercInWater(pSoldier);
 
         // check if standing in tear gas without a gas mask on
-        bInGas = InGas(pSoldier, pSoldier.sGridNo);
+        bInGas = AIUtils.InGas(pSoldier, pSoldier.sGridNo);
 
 
         ////////////////////////////////////////////////////////////////////////////
@@ -941,7 +942,7 @@ public class CreatureDecideAction
         ////////////////////////////////////////////////////////////////////////////
 
         // if we're desperately short on breath (it's OK if we're in water, though!)
-        if (bInGas > 0 || (pSoldier.bBreath < 5))
+        if (bInGas || (pSoldier.bBreath < 5))
         {
             // if soldier has enough APs left to move at least 1 square's worth
             if (ubCanMove > 0)
@@ -963,11 +964,11 @@ public class CreatureDecideAction
         ////////////////////////////////////////////////////////////////////////////
 
         // if soldier in water/gas has enough APs left to move at least 1 square
-        if ((/*bInWater ||*/ bInGas) && ubCanMove)
+        if ((/*bInWater ||*/ bInGas) && ubCanMove > 0)
         {
             pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
 
-            if (pSoldier.usActionData != NOWHERE)
+            if ((int)pSoldier.usActionData != NOWHERE)
             {
                 return (AI_ACTION.LEAVE_WATER_GAS);
             }
@@ -978,7 +979,7 @@ public class CreatureDecideAction
         ////////////////////////////////////////////////////////////////////////////
 
         // NPCs in water/tear gas without masks are not permitted to shoot/stab/throw
-        if ((pSoldier.bActionPoints < 2) /*|| bInWater*/ || bInGas > 0)
+        if ((pSoldier.bActionPoints < 2) /*|| bInWater*/ || bInGas)
         {
             bCanAttack = 0;
         }
@@ -994,16 +995,16 @@ public class CreatureDecideAction
                     // try to find a bladed weapon
                     if (pSoldier.ubBodyType == SoldierBodyTypes.QUEENMONSTER)
                     {
-                        bWeaponIn = FindObjClass(pSoldier, IC.TENTACLES);
+                        bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.TENTACLES);
                     }
                     else
                     {
-                        bWeaponIn = FindObjClass(pSoldier, IC.BLADE);
+                        bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.BLADE);
                     }
 
                     if (bWeaponIn != NO_SLOT)
                     {
-                        RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, FOREVER);
+                        AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, FOREVER);
                         bCanAttack = true;
                     }
                     else
@@ -1040,7 +1041,7 @@ public class CreatureDecideAction
 
             pSoldier.bAimShotLocation = AIM_SHOT_RANDOM;
 
-            bWeaponIn = FindObjClass(pSoldier, IC.GUN);
+            bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.GUN);
 
             if (bWeaponIn != NO_SLOT)
             {
@@ -1052,7 +1053,7 @@ public class CreatureDecideAction
                         // if it's in another pocket, swap it into his hand temporarily
                         if (bWeaponIn != InventorySlot.HANDPOS)
                         {
-                            RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
+                            AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
                         }
 
                         // now it better be a gun, or the guy can't shoot (but has other attack(s))
@@ -1074,7 +1075,7 @@ public class CreatureDecideAction
                                 // (usually, this means all the guys we see our unconscious, but, on
                                 //  rare occasions, we may not be able to shoot a healthy guy, too)
                                 if ((Menptr[BestShot.ubOpponent].bLife < OKLIFE) &&
-                                    !Menptr[BestShot.ubOpponent].bService)
+                                    Menptr[BestShot.ubOpponent].bService == 0)
                                 {
                                     // if our attitude is NOT aggressive
                                     if (pSoldier.bAttitude != Attitudes.AGGRESSIVE)
@@ -1096,14 +1097,14 @@ public class CreatureDecideAction
                                 }
 
                                 // now we KNOW FOR SURE that we will do something (shoot, at least)
-                                NPCDoesAct(pSoldier);
+                                AIMain.NPCDoesAct(pSoldier);
 
                             }
                         }
                         // if it was in his holster, swap it back into his holster for now
                         if (bWeaponIn != InventorySlot.HANDPOS)
                         {
-                            RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
+                            AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
                         }
                     }
                     else
@@ -1122,18 +1123,18 @@ public class CreatureDecideAction
             // if soldier has a knife in his hand
             if (pSoldier.ubBodyType == SoldierBodyTypes.QUEENMONSTER)
             {
-                bWeaponIn = FindObjClass(pSoldier, IC.TENTACLES);
+                bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.TENTACLES);
             }
             else if (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
             {
                 // 1 in 3 attack with teeth, otherwise with claws
                 if (PreRandom(3) > 0)
                 {
-                    bWeaponIn = FindObj(pSoldier, BLOODCAT_CLAW_ATTACK);
+                    bWeaponIn = ItemSubSystem.FindObj(pSoldier, Items.BLOODCAT_CLAW_ATTACK);
                 }
                 else
                 {
-                    bWeaponIn = FindObj(pSoldier, BLOODCAT_BITE);
+                    bWeaponIn = ItemSubSystem.FindObj(pSoldier, Items.BLOODCAT_BITE);
                 }
             }
             else
@@ -1145,7 +1146,7 @@ public class CreatureDecideAction
                 }
                 else
                 {
-                    bWeaponIn = FindObjClass(pSoldier, IC.BLADE);
+                    bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.BLADE);
                 }
             }
 
@@ -1161,7 +1162,7 @@ public class CreatureDecideAction
                 // if it's in his holster, swap it into his hand temporarily
                 if (bWeaponIn != InventorySlot.HANDPOS)
                 {
-                    RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
+                    AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
                 }
 
                 // get the minimum cost to attack with this knife
@@ -1175,7 +1176,7 @@ public class CreatureDecideAction
                 {
                     // then look around for a worthy target (which sets BestStab.ubPossible)
 
-                    if (pSoldier.ubBodyType == QUEENMONSTER)
+                    if (pSoldier.ubBodyType == SoldierBodyTypes.QUEENMONSTER)
                     {
                         CalcTentacleAttack(pSoldier, out CurrStab);
                     }
@@ -1187,19 +1188,19 @@ public class CreatureDecideAction
                     if (CurrStab.ubPossible > 0)
                     {
                         // now we KNOW FOR SURE that we will do something (stab, at least)
-                        NPCDoesAct(pSoldier);
+                        AIMain.NPCDoesAct(pSoldier);
                     }
 
                     // if it was in his holster, swap it back into his holster for now
                     if (bWeaponIn != InventorySlot.HANDPOS)
                     {
-                        RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
+                        AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
                     }
 
                     if (CurrStab.iAttackValue > BestStab.iAttackValue)
                     {
                         CurrStab.bWeaponIn = bWeaponIn;
-                        memcpy(&BestStab, &CurrStab, sizeof(BestStab));
+                        //memcpy(&BestStab, &CurrStab, sizeof(BestStab));
                     }
 
                 }
@@ -1209,7 +1210,7 @@ public class CreatureDecideAction
             //////////////////////////////////////////////////////////////////////////
             // CHOOSE THE BEST TYPE OF ATTACK OUT OF THOSE FOUND TO BE POSSIBLE
             //////////////////////////////////////////////////////////////////////////
-            if (BestShot.ubPossible)
+            if (BestShot.ubPossible > 0)
             {
                 BestAttack.iAttackValue = BestShot.iAttackValue;
                 ubBestAttackAction = AI_ACTION.FIRE_GUN;
@@ -1232,11 +1233,13 @@ public class CreatureDecideAction
                 switch (ubBestAttackAction)
                 {
                     case AI_ACTION.FIRE_GUN:
-                        memcpy(&BestAttack, &BestShot, sizeof(BestAttack));
+                        // memcpy(&BestAttack, &BestShot, sizeof(BestAttack));
+                        BestAttack = BestShot;
                         break;
 
                     case AI_ACTION.KNIFE_MOVE:
-                        memcpy(&BestAttack, &BestStab, sizeof(BestAttack));
+                        // memcpy(&BestAttack, &BestStab, sizeof(BestAttack));
+                        BestAttack = BestStab;
                         break;
 
                 }
@@ -1245,7 +1248,7 @@ public class CreatureDecideAction
                 if (BestAttack.bWeaponIn != InventorySlot.HANDPOS)
                 {
                     // IS THIS NOT BEING SET RIGHT?????
-                    RearrangePocket(pSoldier, InventorySlot.HANDPOS, BestAttack.bWeaponIn, FOREVER);
+                    AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, BestAttack.bWeaponIn, FOREVER);
                 }
 
                 //////////////////////////////////////////////////////////////////////////
@@ -1284,7 +1287,7 @@ public class CreatureDecideAction
                 // if we have a closest reachable opponent
                 if (sClosestOpponent != NOWHERE)
                 {
-                    if (ubCanMove && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) > 2)
+                    if (ubCanMove > 0 && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) > 2)
                     {
                         if (bSpitIn != NO_SLOT)
                         {
@@ -1310,7 +1313,7 @@ public class CreatureDecideAction
                     }
                     else if (GetAPsToLook(pSoldier) <= pSoldier.bActionPoints) // turn to face enemy
                     {
-                        bDirection = atan8(CenterX(pSoldier.sGridNo), CenterY(pSoldier.sGridNo), CenterX(sClosestOpponent), CenterY(sClosestOpponent));
+                        bDirection = SoldierControl.atan8(IsometricUtils.CenterX(pSoldier.sGridNo), IsometricUtils.CenterY(pSoldier.sGridNo), IsometricUtils.CenterX(sClosestOpponent), IsometricUtils.CenterY(sClosestOpponent));
 
                         // if we're not facing towards him
                         if (pSoldier.bDirection != bDirection && ValidCreatureTurn(pSoldier, bDirection))
@@ -1562,7 +1565,7 @@ public class CreatureDecideAction
         if (sCorpseGridNo != NOWHERE)
         {
             // Are we close, if so , peck!
-            if (SpacesAway(pSoldier.sGridNo, sCorpseGridNo) < 2)
+            if (IsometricUtils.SpacesAway(pSoldier.sGridNo, sCorpseGridNo) < 2)
             {
                 // Change facing
                 sFacingDir = SoldierControl.GetDirectionFromGridNo(sCorpseGridNo, pSoldier);
@@ -1586,7 +1589,7 @@ public class CreatureDecideAction
             {
                 // Walk to nearest one!
                 pSoldier.usActionData = FindGridNoFromSweetSpot(pSoldier, sCorpseGridNo, 4, out ubDirection);
-                if (pSoldier.usActionData != NOWHERE)
+                if ((int)pSoldier.usActionData != NOWHERE)
                 {
                     return (AI_ACTION.GET_CLOSER);
                 }
@@ -1596,7 +1599,7 @@ public class CreatureDecideAction
         return (AI_ACTION.NONE);
     }
 
-    AI_ACTION CrowDecideAction(SOLDIERTYPE pSoldier)
+    public static AI_ACTION CrowDecideAction(SOLDIERTYPE pSoldier)
     {
         if (pSoldier.usAnimState == AnimationStates.CROW_FLY)
         {

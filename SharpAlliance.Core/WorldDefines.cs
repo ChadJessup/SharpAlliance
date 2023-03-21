@@ -65,7 +65,7 @@ public enum LEVELNODEFLAGS : uint
 }
 
 [Flags]
-public enum MAPELEMENT_EXT
+public enum MAPELEMENTFLAGS_EXT
 {
     SMOKE = 0x01,
     TEARGAS = 0x02,
@@ -191,7 +191,7 @@ public class MAP_ELEMENT
     public STRUCTURE? pStructureTail;
 
     public MAPELEMENTFLAGS uiFlags;
-    public MAPELEMENT_EXT[] ubExtFlags = new MAPELEMENT_EXT[2];
+    public MAPELEMENTFLAGS_EXT[] ubExtFlags = new MAPELEMENTFLAGS_EXT[2];
     public ushort[] sSumRealLights = new ushort[1];
     public byte sHeight;
     public byte ubAdjacentSoldierCnt;

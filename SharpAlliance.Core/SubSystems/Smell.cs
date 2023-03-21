@@ -437,7 +437,7 @@ public class Smell
         }
 
         // Turn on flag...
-        pMapElement.uiFlags |= MAPELEMENT_REEVALUATEBLOOD;
+        pMapElement.uiFlags |= MAPELEMENTFLAGS.REEVALUATEBLOOD;
 
         if (bVisible != -1)
         {

@@ -278,7 +278,7 @@ public class HandleItems
         // If bbisible is true, render makered world
         if (bVisible == 1 && GridNoOnScreen((psGridNo)))
         {
-            //gpWorldLevelData[*psGridNo].uiFlags|=MAPELEMENT_REDRAW;
+            //gpWorldLevelData[*psGridNo].uiFlags|=MAPELEMENTFLAGS.REDRAW;
             //RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
         }

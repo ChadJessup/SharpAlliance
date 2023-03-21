@@ -183,13 +183,13 @@ public class WorldManager
                 pDBStructure = gTileDatabase[usIndex].pDBStructureRef.pDBStructure;
 
                 // Default to off....
-                gpWorldLevelData[iMapIndex].ubExtFlags[0] &= (~MAPELEMENT_EXT.NOBURN_STRUCT);
+                gpWorldLevelData[iMapIndex].ubExtFlags[0] &= (~MAPELEMENTFLAGS_EXT.NOBURN_STRUCT);
 
                 // If we are NOT a wall and NOT multi-tiles, set mapelement flag...
                 if (WorldStructures.FindStructure(iMapIndex, STRUCTUREFLAGS.WALLSTUFF) is null && pDBStructure.ubNumberOfTiles == 1)
                 {
                     // Set flag...
-                    gpWorldLevelData[iMapIndex].ubExtFlags[0] |= MAPELEMENT_EXT.NOBURN_STRUCT;
+                    gpWorldLevelData[iMapIndex].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.NOBURN_STRUCT;
                 }
             }
 
@@ -570,7 +570,7 @@ public class WorldManager
                     //if ( !( pStruct.pStructureData.fFlags & STRUCTURE_WALLSTUFF ) && pStruct.pStructureData.pDBStructureRef.pDBStructure.ubNumberOfTiles == 1 )
                     //{
                     // UNSet flag...
-                    //	gpWorldLevelData[ iMapIndex ].ubExtFlags[0] &= ( ~MAPELEMENT_EXT_NOBURN_STRUCT );
+                    //	gpWorldLevelData[ iMapIndex ].ubExtFlags[0] &= ( ~MAPELEMENTFLAGS.EXT_NOBURN_STRUCT );
                     //}
                 }
 
@@ -1195,7 +1195,7 @@ public class WorldManager
         {
             //if ( InARoom( sMapPos, &ubRoom ) )
             {
-                //if ( !( gpWorldLevelData[ sMapPos ].uiFlags.HasFlag(MAPELEMENT_REVEALED )) )
+                //if ( !( gpWorldLevelData[ sMapPos ].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED )) )
                 {
                     return (true);
                 }

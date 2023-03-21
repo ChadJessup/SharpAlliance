@@ -48,6 +48,6 @@ public class LOS
         sXPos = sXPos * CELL_X_SIZE + (CELL_X_SIZE / 2);
         sYPos = sYPos * CELL_Y_SIZE + (CELL_Y_SIZE / 2);
 
-        return (LineOfSightTest(CenterX(pStartSoldier.sGridNo), CenterY(pStartSoldier.sGridNo), dStartZPos, sXPos, sYPos, dEndZPos, ubTileSightLimit, gubTreeSightReduction[AnimationHeights.ANIM_STAND], bAware, 0, false, null));
+        return (LineOfSightTest(IsometricUtils.CenterX(pStartSoldier.sGridNo), IsometricUtils.CenterY(pStartSoldier.sGridNo), dStartZPos, sXPos, sYPos, dEndZPos, ubTileSightLimit, gubTreeSightReduction[AnimationHeights.ANIM_STAND], bAware, 0, false, null));
     }
 }

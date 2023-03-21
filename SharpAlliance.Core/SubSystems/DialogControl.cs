@@ -38,14 +38,14 @@ public class DialogControl
 
     public int[] uiExternalStaticNPCFaces = new int[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES];
 
-    public int[] uiExternalFaceProfileIds = new int[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES]
+    public NPCID[] uiExternalFaceProfileIds = new NPCID[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES]
     {
-        97,
-        106,
-        148,
-        156,
-        157,
-        158,
+        (NPCID)( 97),
+        (NPCID)(106),
+        (NPCID)(148),
+        (NPCID)(156),
+        (NPCID)(157),
+        (NPCID)(158),
     };
 
     public static bool TacticalCharacterDialogue(SOLDIERTYPE pSoldier, QUOTE usQuoteNum)
@@ -114,7 +114,7 @@ public class DialogControl
         // Check for logging of me too bleeds...
         if (usQuoteNum == QUOTE.STARTING_TO_BLEED)
         {
-            if (gubLogForMeTooBleeds)
+            if (gubLogForMeTooBleeds > 0)
             {
                 // If we are greater than one...
                 if (gubLogForMeTooBleeds > 1)
@@ -243,7 +243,7 @@ public class DialogControl
 
         for (iCounter = 0; iCounter < (int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES; iCounter++)
         {
-            this.uiExternalStaticNPCFaces[iCounter] = (int)this.faces.InitFace(this.uiExternalFaceProfileIds[iCounter], Globals.NOBODY, FaceFlags.FACE_FORCE_SMALL);
+            this.uiExternalStaticNPCFaces[iCounter] = (int)Faces.InitFace(this.uiExternalFaceProfileIds[iCounter], Globals.NOBODY, FACE.FORCE_SMALL);
         }
 
         return;

@@ -259,7 +259,7 @@ public class SkillChecks
                     iSkill /= 2;
                 }
                 // adjust chance based on status of kit
-                bSlot = FindObj(pSoldier, Items.LOCKSMITHKIT);
+                bSlot = ItemSubSystem.FindObj(pSoldier, Items.LOCKSMITHKIT);
                 if (bSlot == NO_SLOT)
                 {
                     // this should never happen, but might as well check...
@@ -477,7 +477,7 @@ public class SkillChecks
                     if (OK_INSECTOR_MERC(pTeamSoldier))
                     {
                         bBuddyIndex = WhichBuddy(pTeamSoldier.ubProfile, pSoldier.ubProfile);
-                        if (bBuddyIndex >= 0 && SpacesAway(pSoldier.sGridNo, pTeamSoldier.sGridNo) < 15)
+                        if (bBuddyIndex >= 0 && IsometricUtils.SpacesAway(pSoldier.sGridNo, pTeamSoldier.sGridNo) < 15)
                         {
                             switch (bBuddyIndex)
                             {

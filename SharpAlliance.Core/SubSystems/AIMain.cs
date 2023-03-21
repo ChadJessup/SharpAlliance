@@ -394,7 +394,7 @@ public class AIMain
                             if (pSoldier.sAbsoluteFinalDestination != pSoldier.sGridNo)
                             {
                                 // update NPC records to replace our final dest with this location
-                                ReplaceLocationInNPCDataFromProfileID(pSoldier.ubProfile, pSoldier.sAbsoluteFinalDestination, pSoldier.sGridNo);
+                                NPC.ReplaceLocationInNPCDataFromProfileID(pSoldier.ubProfile, pSoldier.sAbsoluteFinalDestination, pSoldier.sGridNo);
                             }
                             pSoldier.sAbsoluteFinalDestination = pSoldier.sGridNo;
                             // change action data so that we consider this our final destination below
@@ -447,7 +447,7 @@ public class AIMain
 
                             // fake setting action to climb roof and see if we can afford this
                             pSoldier.bAction = AI_ACTION.CLIMB_ROOF;
-                            if (IsActionAffordable(pSoldier))
+                            if (AIUtils.IsActionAffordable(pSoldier))
                             {
                                 // set action to none and next action to climb roof so we do that next
                                 pSoldier.bAction = AI_ACTION.NONE;
@@ -1080,17 +1080,11 @@ public class AIMain
 
     // GLOBALS:
 
-    public static int SkipCoverCheck = 0;
-    public static THREATTYPE[] Threat = new THREATTYPE[MAXMERCS];
-
-
     // threat percentage is based on the certainty of opponent knowledge:
     // opplist value:        -4  -3  -2  -1 SEEN  1    2   3   4   5
     int[] ThreatPercent = { 20, 40, 60, 80, 25, 100, 90, 75, 60, 45 };
 
-
-
-    void NPCDoesAct(SOLDIERTYPE? pSoldier)
+    public static void NPCDoesAct(SOLDIERTYPE pSoldier)
     {
         // if the action is visible and we're in a hidden turnbased mode, go to turnbased
         if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
@@ -1684,7 +1678,7 @@ public class AIMain
                     }
                     else if (pSoldier.ubBodyType == SoldierBodyTypes.CROW)
                     {
-                        pSoldier.bAction = CrowDecideAction(pSoldier);
+                        pSoldier.bAction = CreatureDecideAction.CrowDecideAction(pSoldier);
                     }
                     else
                     {
@@ -1723,7 +1717,7 @@ public class AIMain
             // to get here, we MUST have an action selected, but not in progress...
 
             // see if we can afford to do this action
-            if (IsActionAffordable(pSoldier))
+            if (AIUtils.IsActionAffordable(pSoldier))
             {
                 NPCDoesAct(pSoldier);
 
@@ -1738,7 +1732,7 @@ public class AIMain
             }
             else
             {
-                HaltMoveForSoldierOutOfPoints(pSoldier);
+                Movement.HaltMoveForSoldierOutOfPoints(pSoldier);
                 return;
             }
         }
@@ -1825,7 +1819,7 @@ public class AIMain
     }
 
 
-    int ExecuteAction(SOLDIERTYPE? pSoldier)
+    public static int ExecuteAction(SOLDIERTYPE? pSoldier)
     {
         ITEM_HAND iRetCode;
         //NumMessage("ExecuteAction - Guy#",pSoldier.ubID);
@@ -1922,7 +1916,7 @@ public class AIMain
                 {
                     // change action to climb now and try that.
                     pSoldier.bAction = AI_ACTION.CLIMB_ROOF;
-                    if (IsActionAffordable(pSoldier))
+                    if (AIUtils.IsActionAffordable(pSoldier))
                     {
                         return (ExecuteAction(pSoldier));
                     }
@@ -2029,7 +2023,7 @@ public class AIMain
                             if (!ACTING_ON_SCHEDULE(pSoldier) && SpacesAway(pSoldier.sGridNo, pSoldier.sAbsoluteFinalDestination) < 4)
                             {
                                 // This is close enough...
-                                ReplaceLocationInNPCDataFromProfileID(pSoldier.ubProfile, pSoldier.sAbsoluteFinalDestination, pSoldier.sGridNo);
+                                NPC.ReplaceLocationInNPCDataFromProfileID(pSoldier.ubProfile, pSoldier.sAbsoluteFinalDestination, pSoldier.sGridNo);
                                 NPCGotoGridNo(pSoldier.ubProfile, pSoldier.sGridNo, (int)(pSoldier.ubQuoteRecord - 1));
                             }
                             else
@@ -2085,7 +2079,7 @@ public class AIMain
                         break;
                 }
 
-                NewDest(pSoldier, pSoldier.usActionData);    // set new .sDestination to actionData
+                AIUtils.NewDest(pSoldier, (int)pSoldier.usActionData);    // set new .sDestination to actionData
 
                 // make sure it worked (check that pSoldier.sDestination == pSoldier.usActionData)
                 if (pSoldier.sFinalDestination != (int)pSoldier.usActionData)

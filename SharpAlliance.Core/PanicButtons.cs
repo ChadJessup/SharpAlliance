@@ -240,7 +240,7 @@ public class PanicButtons
         if (gTacticalStatus.fPanicFlags.HasFlag(PANIC.BOMBS_HERE))
         {
             // if enemy is holding a portable panic bomb detonator, he tries to use it
-            bSlot = FindObj(pSoldier, Items.REMOTEBOMBTRIGGER);
+            bSlot = ItemSubSystem.FindObj(pSoldier, Items.REMOTEBOMBTRIGGER);
             if (bSlot != NO_SLOT)
             {
                 //////////////////////////////////////////////////////////////////////

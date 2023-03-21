@@ -288,7 +288,7 @@ public enum APPROACH
     FRIENDLY_DIRECT_OR_RECRUIT,	// 30
 }
 
-public enum QUOTE//StandardQuoteIDs
+public enum QUOTEID//StandardQuoteIDs
 {
     INTRO = 0,
     SUBS_INTRO,
