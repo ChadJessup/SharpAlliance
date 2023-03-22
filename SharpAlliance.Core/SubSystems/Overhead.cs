@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
@@ -21,6 +23,162 @@ public class Overhead
     public static bool InOverheadMap()
     {
         return false;
+    }
+
+    public static void SelectSoldier(int usSoldierID, bool fAcknowledge, bool fForceReselect)
+    {
+        InternalSelectSoldier(usSoldierID, fAcknowledge, fForceReselect, false);
+    }
+
+    private static void InternalSelectSoldier(int usSoldierID, bool fAcknowledge, bool fForceReselect, bool fFromUI)
+    {
+        SOLDIERTYPE? pSoldier, pOldSoldier;
+
+
+        // ARM: can't call SelectSoldier() in mapscreen, that will initialize interface panels!!!
+        // ATE: Adjusted conditions a bit ( sometimes were not getting selected )
+        if (guiCurrentScreen == ScreenName.LAPTOP_SCREEN || guiCurrentScreen == ScreenName.MAP_SCREEN)
+        {
+            return;
+        }
+
+        if (usSoldierID == NOBODY)
+        {
+            return;
+        }
+
+        //if we are in the shop keeper interface
+        if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE))
+        {
+            //dont allow the player to change the selected merc
+            return;
+        }
+
+
+        // Get guy
+        pSoldier = MercPtrs[usSoldierID];
+
+
+        // If we are dead, ignore
+        if (!OK_CONTROLLABLE_MERC(pSoldier))
+        {
+            return;
+        }
+
+        // Don't do it if we don't have an interrupt
+        if (!OK_INTERRUPT_MERC(pSoldier))
+        {
+            // OK, we want to display message that we can't....
+            if (fFromUI)
+            {
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[MERC_IS_UNAVAILABLE_STR], pSoldier.name);
+            }
+            return;
+        }
+
+        if (pSoldier.ubID == gusSelectedSoldier)
+        {
+            if (!fForceReselect)
+            {
+                return;
+            }
+        }
+
+        // CANCEL FROM PLANNING MODE!
+        if (InUIPlanMode())
+        {
+            EndUIPlan();
+        }
+
+        // Unselect old selected guy
+        if (gusSelectedSoldier != NO_SOLDIER)
+        {
+            // Get guy
+            pOldSoldier = MercPtrs[gusSelectedSoldier];
+            pOldSoldier.fShowLocator = false;
+            pOldSoldier.fFlashLocator = false;
+
+            // DB This used to say pSoldier... I fixed it
+            if (pOldSoldier.bLevel == 0)
+            {
+                //ConcealWalls((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE), REVEAL_WALLS_RADIUS);
+                //	ApplyTranslucencyToWalls((INT16)(pOldSoldier.dXPos/CELL_X_SIZE), (INT16)(pOldSoldier.dYPos/CELL_Y_SIZE));
+                //LightHideTrees((INT16)(pOldSoldier.dXPos/CELL_X_SIZE), (INT16)(pOldSoldier.dYPos/CELL_Y_SIZE));
+            }
+            //DeleteSoldierLight( pOldSoldier );
+
+            if (pOldSoldier.uiStatusFlags.HasFlag(SOLDIER.GREEN_RAY))
+            {
+                LightHideRays((pOldSoldier.dXPos / CELL_X_SIZE), (pOldSoldier.dYPos / CELL_Y_SIZE));
+                pOldSoldier.uiStatusFlags &= (~SOLDIER.GREEN_RAY);
+            }
+
+            UpdateForContOverPortrait(pOldSoldier, false);
+        }
+
+        gusSelectedSoldier = usSoldierID;
+
+        // find which squad this guy is, then set selected squad to this guy
+        SetCurrentSquad(pSoldier.bAssignment, false);
+
+        if (pSoldier.bLevel == 0)
+        {
+            //RevealWalls((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE), REVEAL_WALLS_RADIUS);
+            //	CalcTranslucentWalls((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE));
+            //LightTranslucentTrees((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE));
+        }
+
+        //SetCheckSoldierLightFlag( pSoldier );
+
+        // Set interface to reflect new selection!
+        SetCurrentTacticalPanelCurrentMerc(usSoldierID);
+
+        // PLay ATTN SOUND
+        if (fAcknowledge)
+        {
+            if (!GameSettings.fOptions[TOPTION.MUTE_CONFIRMATIONS])
+            {
+                DoMercBattleSound(pSoldier, BATTLE_SOUND_ATTN1);
+            }
+        }
+
+        // Change UI mode to reflact that we are selected
+        // NOT if we are locked inthe UI
+        if (gTacticalStatus.ubCurrentTeam == OUR_TEAM
+            && gCurrentUIMode != UI_MODE.LOCKUI_MODE
+            && gCurrentUIMode != UI_MODE.LOCKOURTURN_UI_MODE)
+        {
+            guiPendingOverrideEvent = UI_EVENT_DEFINES.M_ON_TERRAIN;
+        }
+
+        ChangeInterfaceLevel(pSoldier.bLevel);
+
+        if (pSoldier.fMercAsleep)
+        {
+            PutMercInAwakeState(pSoldier);
+        }
+
+        // possibly say personality quote
+        if ((pSoldier.bTeam == gbPlayerNum) && (pSoldier.ubProfile != NO_PROFILE && pSoldier.ubWhatKindOfMercAmI != MERC_TYPE__PLAYER_CHARACTER) && !(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_PERSONALITY))
+        {
+            switch (gMercProfiles[pSoldier.ubProfile].bPersonalityTrait)
+            {
+                case PersonalityTrait.PSYCHO:
+                    if (Globals.Random.Next(50) == 0)
+                    {
+                        DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.PERSONALITY_TRAIT);
+                        pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        UpdateForContOverPortrait(pSoldier, true);
+
+        // Remove any interactive tiles we could be over!
+        BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
     }
 
     public static int FindAdjacentGridEx(SOLDIERTYPE pSoldier, int sGridNo, WorldDirections pubDirection, out int psAdjustedGridNo, bool fForceToPerson, bool fDoor)
@@ -680,7 +838,7 @@ public class TacticalStatusType
     public bool fGoodToAllowCrows;
     public int ubNumCrowsPossible;
     public int uiTimeCounterForGiveItemSrc;
-    public int[] bNumFoughtInBattle = new int[Globals.MAXTEAMS];
+    public int[] bNumFoughtInBattle = new int[(int)Globals.MAXTEAMS];
     public int uiDecayBloodLastUpdate;
     public int uiTimeSinceLastInTactical;
     public int bConsNumTurnsWeHaventSeenButEnemyDoes;

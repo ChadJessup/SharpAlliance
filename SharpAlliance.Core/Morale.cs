@@ -151,7 +151,7 @@ public class Morale
                     case PersonalityTrait.NERVOUS:
                         if (pSoldier.bMorale < 50)
                         {
-                            if (pSoldier.ubGroupID != 0 && PlayerIDGroupInMotion(pSoldier.ubGroupID))
+                            if (pSoldier.ubGroupID != 0 && StrategicMovement.PlayerIDGroupInMotion(pSoldier.ubGroupID))
                             {
                                 if (NumberOfPeopleInSquad(pSoldier.bAssignment) == 1)
                                 {
@@ -164,7 +164,7 @@ public class Morale
                             }
                             else if (pSoldier.bActive && pSoldier.bInSector)
                             {
-                                if (DistanceToClosestFriend(pSoldier) > NERVOUS_RADIUS)
+                                if (AIUtils.DistanceToClosestFriend(pSoldier) > NERVOUS_RADIUS)
                                 {
                                     fHandleNervous = true;
                                 }
@@ -199,7 +199,7 @@ public class Morale
                                 // alone, no recovery... in fact, if tact morale is high, decay
                                 if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY)))
                                 {
-                                    TacticalCharacterDialogue(pSoldier, QUOTE.PERSONALITY_TRAIT);
+                                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.PERSONALITY_TRAIT);
                                     pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
                                 }
 

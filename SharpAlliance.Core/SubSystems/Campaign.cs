@@ -579,7 +579,7 @@ public class Campaign
                 {
                     // Pipe up with "I'm getting better at this!"
                     TacticalCharacterDialogueWithSpecialEventEx(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DISPLAY_STAT_CHANGE, fChangeTypeIncrease, sPtsChanged, ubStat);
-                    TacticalCharacterDialogue(pSoldier, QUOTE.EXPERIENCE_GAIN);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.EXPERIENCE_GAIN);
                 }
                 else
                 {

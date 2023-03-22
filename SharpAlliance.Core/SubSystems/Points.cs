@@ -355,7 +355,7 @@ public class Points
 
                     if (fDisplay)
                     {
-                        TacticalCharacterDialogue(pSoldier, QUOTE.OUT_OF_AMMO);
+                        DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.OUT_OF_AMMO);
                     }
 
                     return (false);
@@ -366,7 +366,7 @@ public class Points
                     {
                         if (fDisplay)
                         {
-                            TacticalCharacterDialogue(pSoldier, QUOTE.OUT_OF_AMMO);
+                            DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.OUT_OF_AMMO);
                         }
                         return (false);
                     }

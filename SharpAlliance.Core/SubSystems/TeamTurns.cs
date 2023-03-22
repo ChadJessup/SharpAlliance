@@ -575,7 +575,7 @@ public class TeamTurns
             sTemp = Message[STR_INTERRUPT_FOR];
 
             // build string in separate loop here, want to linearly process squads...
-            for (iSquad = 0; iSquad < (int)Squad.NUMBER_OF_SQUADS; iSquad++)
+            for (iSquad = 0; iSquad < (int)SquadEnum.NUMBER_OF_SQUADS; iSquad++)
             {
                 for (iCounter = 0; iCounter < Globals.NUMBER_OF_SOLDIERS_PER_SQUAD; iCounter++)
                 {
@@ -642,7 +642,7 @@ public class TeamTurns
                         if (Globals.MercPtrs[iCounter].bNumHitsThisTurn == 0 && !(Globals.MercPtrs[iCounter].usQuoteSaidExtFlags.HasFlag(SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL)) && Random.Next(3) == 0)
                         {
                             // say close call quote!
-                            TacticalCharacterDialogue(Globals.MercPtrs[iCounter], QUOTE.CLOSE_CALL);
+                            DialogControl.TacticalCharacterDialogue(Globals.MercPtrs[iCounter], QUOTE.CLOSE_CALL);
                             Globals.MercPtrs[iCounter].usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL;
                         }
 

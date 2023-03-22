@@ -1848,12 +1848,12 @@ public class OppList
                         gfMikeShouldSayHi = true;
                     }
 
-                    TacticalCharacterDialogue(pSoldier, QUOTE.AIM_SEEN_MIKE);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.AIM_SEEN_MIKE);
                     pSoldier.usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_MIKE;
                 }
                 else if (pOpponent.ubProfile == NPCID.JOEY && gfPlayerTeamSawJoey == false)
                 {
-                    TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_JOEY);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_JOEY);
                     gfPlayerTeamSawJoey = true;
                 }
             }
@@ -2736,7 +2736,7 @@ public class OppList
             if ((pSoldier.bOppCnt - ubNumAllies) > 2)
             {
                 // Say quote!
-                TacticalCharacterDialogue(pSoldier, QUOTE.IN_TROUBLE_SLASH_IN_BATTLE);
+                DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.IN_TROUBLE_SLASH_IN_BATTLE);
 
                 pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_IN_SHIT;
 
@@ -2781,16 +2781,16 @@ public class OppList
                         pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_MULTIPLE_CREATURES;
 
                         // Say quote
-                        TacticalCharacterDialogue(pSoldier, QUOTE.ATTACKED_BY_MULTIPLE_CREATURES);
+                        DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.ATTACKED_BY_MULTIPLE_CREATURES);
                     }
                     else
                     {
-                        TacticalCharacterDialogue(pSoldier, QUOTE.SEE_CREATURE);
+                        DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SEE_CREATURE);
                     }
                 }
                 else
                 {
-                    TacticalCharacterDialogue(pSoldier, QUOTE.SEE_CREATURE);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SEE_CREATURE);
                 }
             }
             else
@@ -2798,20 +2798,20 @@ public class OppList
                 // Yes, set flag
                 gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE;
 
-                TacticalCharacterDialogue(pSoldier, QUOTE.FIRSTTIME_GAME_SEE_CREATURE);
+                DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.FIRSTTIME_GAME_SEE_CREATURE);
             }
         }
         // 2 is for bloodcat...
         else if (fSeenCreature == 2)
         {
-            TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_BLOODCAT);
+            DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_BLOODCAT);
         }
         else
         {
             if (fVirginSector)
             {
                 // First time we've seen a guy this sector
-                TacticalCharacterDialogue(pSoldier, QUOTE.SEE_ENEMY_VARIATION);
+                DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SEE_ENEMY_VARIATION);
             }
             else
             {
@@ -2821,7 +2821,7 @@ public class OppList
                 }
                 else
                 {
-                    TacticalCharacterDialogue(pSoldier, QUOTE.SEE_ENEMY);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SEE_ENEMY);
                 }
             }
         }
@@ -3190,7 +3190,7 @@ public class OppList
                 else if (fSawCreatureForFirstTime)
                 {
                     gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE;
-                    TacticalCharacterDialogue(pSoldier, QUOTE_FIRSTTIME_GAME_SEE_CREATURE);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.FIRSTTIME_GAME_SEE_CREATURE);
                 }
 
             }
@@ -5711,7 +5711,7 @@ public class OppList
             {
                 if (!Meanwhile.AreInMeanwhile() && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)) && pSoldier.ubTurnsUntilCanSayHeardNoise == 0)
                 {
-                    TacticalCharacterDialogue(pSoldier, QUOTE.HEARD_SOMETHING);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.HEARD_SOMETHING);
                     if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                     {
                         pSoldier.ubTurnsUntilCanSayHeardNoise = 2;

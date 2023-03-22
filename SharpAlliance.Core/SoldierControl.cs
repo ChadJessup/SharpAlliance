@@ -2350,7 +2350,7 @@ public class SoldierControl
                     // say quote
                     if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
                     {
-                        TacticalCharacterDialogue(pSoldier, QUOTE_BLINDED);
+                        DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.BLINDED);
                     }
 
                     DecayIndividualOpplist(pSoldier);
@@ -3814,7 +3814,7 @@ public class SoldierControl
                                 Morale.HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_INSECT_PHOBIC_SEES_CREATURE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
                                 if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY)))
                                 {
-                                    TacticalCharacterDialogue(pSoldier, QUOTE_PERSONALITY_TRAIT);
+                                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.PERSONALITY_TRAIT);
                                     pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
                                 }
                             }
@@ -3826,7 +3826,7 @@ public class SoldierControl
                                 Morale.HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_CLAUSTROPHOBE_UNDERGROUND, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
                                 if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY)))
                                 {
-                                    TacticalCharacterDialogue(pSoldier, QUOTE_PERSONALITY_TRAIT);
+                                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.PERSONALITY_TRAIT);
                                     pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
                                 }
 
@@ -3841,7 +3841,7 @@ public class SoldierControl
                                     Morale.HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_NERVOUS_ALONE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
                                     if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY)))
                                     {
-                                        TacticalCharacterDialogue(pSoldier, QUOTE_PERSONALITY_TRAIT);
+                                        DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.PERSONALITY_TRAIT);
                                         pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
                                     }
                                 }
@@ -8617,7 +8617,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                         // Also, not if they are being bandaged....
                         if ((pSoldier.bLife >= OKLIFE) && !pSoldier.fDyingComment && !pSoldier.fWarnedAboutBleeding && !gTacticalStatus.fAutoBandageMode && pSoldier.ubServiceCount == 0)
                         {
-                            TacticalCharacterDialogue(pSoldier, QUOTE.STARTING_TO_BLEED);
+                            DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.STARTING_TO_BLEED);
 
                             // "starting to bleed" quote
                             pSoldier.fWarnedAboutBleeding = true;

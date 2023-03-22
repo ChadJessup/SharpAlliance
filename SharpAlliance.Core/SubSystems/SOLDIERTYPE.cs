@@ -11,7 +11,7 @@ namespace SharpAlliance.Core.SubSystems;
 public class SOLDIERTYPE
 {
     // ID
-    public int ubID;
+    public short ubID;
     int bReserved1;
 
     // DESCRIPTION / STATS, ETC
@@ -393,14 +393,14 @@ public class SOLDIERTYPE
     public int iNextActionSpecialData;       // AI special action data record for the next action
     public MERC_TYPE ubWhatKindOfMercAmI;          //Set to the type of character it is
     public Assignments bAssignment;                           // soldiers current assignment 
-    public int bOldAssignment;                        // old assignment, for autosleep purposes
+    public Assignments bOldAssignment;                        // old assignment, for autosleep purposes
     public bool fForcedToStayAwake;             // forced by player to stay awake, reset to false, the moment they are set to rest or sleep
     public int bTrainStat;                                // current stat soldier is training
     public int sSectorX { get; set; }       // X position on the Stategic Map
     public MAP_ROW sSectorY;                                 // Y position on the Stategic Map
     public int bSectorZ;                                  // Z sector location
     public int iVehicleId;                               // the id of the vehicle the char is in
-    //PathStPtr pMercPath;                                //Path Structure
+    public Path pMercPath;                                //Path Structure
     public HIT_BY fHitByGasFlags;                       // flags 
     public int usMedicalDeposit;         // is there a medical deposit on merc 
     public CIV_GROUP usLifeInsurance;          // is there life insurance taken out on merc  

@@ -1604,7 +1604,7 @@ public class AIUtils
         return (sClosestFriend);
     }
 
-    int DistanceToClosestFriend(SOLDIERTYPE pSoldier)
+    public static int DistanceToClosestFriend(SOLDIERTYPE pSoldier)
     {
         // find the distance to the closest person on the same team
         int ubLoop;

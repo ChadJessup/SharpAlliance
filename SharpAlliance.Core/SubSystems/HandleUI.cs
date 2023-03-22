@@ -1022,7 +1022,7 @@ public class HandleUI
 
     ScreenName UIHandleSelectMerc(UI_EVENT pUIEvent)
     {
-        Squad iCurrentSquad;
+        SquadEnum iCurrentSquad;
 
         // Get merc index at mouse and set current selection
         if (Globals.gfUIFullTargetFound)
@@ -5303,7 +5303,7 @@ public class HandleUI
                         ubQuoteNum = QUOTE.PASSING_DISLIKE;
                     }
 
-                    TacticalCharacterDialogue(pTSoldier, ubQuoteNum);
+                    DialogControl.TacticalCharacterDialogue(pTSoldier, ubQuoteNum);
 
                     return (false);
                 }

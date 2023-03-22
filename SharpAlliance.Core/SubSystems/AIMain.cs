@@ -521,7 +521,7 @@ public class AIMain
                         if (!gTacticalStatus.fSomeoneHit && MercPtrs[ubID].bNumHitsThisTurn == 0 && !(MercPtrs[ubID].usQuoteSaidExtFlags.HasFlag(SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL)) && Globals.Random.Next(3) == 0)
                         {
                             // say close call quote!
-                            TacticalCharacterDialogue(MercPtrs[ubID], QUOTE.CLOSE_CALL);
+                            DialogControl.TacticalCharacterDialogue(MercPtrs[ubID], QUOTE.CLOSE_CALL);
                             MercPtrs[ubID].usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL;
                         }
                         MercPtrs[ubID].fCloseCall = 0;

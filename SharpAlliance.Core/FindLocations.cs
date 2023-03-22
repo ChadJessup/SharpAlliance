@@ -110,8 +110,10 @@ public class FindLocations
                 bWorstCTGT = bThisCTGT;
                 // if there is perfect cover
                 if (bWorstCTGT == 0)
+                {
                     // then bail from the for loop, it can't possible get any better
                     break;
+                }
             }
         }
         return (bWorstCTGT);
@@ -221,8 +223,10 @@ public class FindLocations
                             bBestCTGT = bThisCTGT;
                             // if there is no cover
                             if (bBestCTGT == 100)
+                            {
                                 // then bail from the for loop, it can't possible get any better
                                 break;
+                            }
                         }
                     }
                 }
@@ -391,9 +395,11 @@ public class FindLocations
             // if I CAN'T crouch when I get there, that makes it significantly less
             // appealing a spot (how much depends on range), so that's a penalty to me
             if (iMyAPsLeft < AP.CROUCH)
+            {
                 // subtract another 1 % penalty for NOT being able to crouch per tile
                 // the farther away we are, the bigger a difference crouching will make!
                 iMyPosValue -= ((iMyPosValue * (AIM_PENALTY_TARGET_CROUCHED + (iRange / CELL_X_SIZE))) / 100);
+            }
         }
 
 
@@ -479,7 +485,10 @@ public class FindLocations
         {
             sTempGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(ubLoop));
             if (sTempGridNo != sGridNo)
+            {
                 ;
+            }
+
             {
                 ubWhoIsThere = WhoIsThere2(sGridNo, pSoldier.bLevel);
                 if (ubWhoIsThere != NOBODY && ubWhoIsThere != pSoldier.ubID && MercPtrs[ubWhoIsThere].bTeam == pSoldier.bTeam)
@@ -1463,7 +1472,9 @@ public class FindLocations
 
             // if we found a piece of land in this search area
             if (sClosestLand != NOWHERE)  // quit now, no need to look any farther
+            {
                 break;
+            }
         }
 
         //NumMessage("closestLand = ",closestLand);

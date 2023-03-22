@@ -16,7 +16,7 @@ public class StrategicMovement
     //.........................
     //Creates a new player group, returning the unique ID of that group.  This is the first
     //step before adding waypoints and members to the player group.
-    int CreateNewPlayerGroupDepartingFromSector(int ubSectorX, MAP_ROW ubSectorY)
+    public static int CreateNewPlayerGroupDepartingFromSector(int ubSectorX, MAP_ROW ubSectorY)
     {
         GROUP? pNew;
         ////AssertMsg(ubSectorX >= 1 && ubSectorX <= 16, string.Format("CreateNewPlayerGroup with out of range sectorX value of %d", ubSectorX));
@@ -70,7 +70,7 @@ public class StrategicMovement
     }
 
     //Allows you to add players to the group.
-    bool AddPlayerToGroup(int ubGroupID, SOLDIERTYPE? pSoldier)
+    public static bool AddPlayerToGroup(int ubGroupID, SOLDIERTYPE? pSoldier)
     {
         GROUP? pGroup;
         PLAYERGROUP? pPlayer, curr;
@@ -214,7 +214,7 @@ public class StrategicMovement
         return false;
     }
 
-    bool RemovePlayerFromGroup(int ubGroupID, SOLDIERTYPE? pSoldier)
+    public static bool RemovePlayerFromGroup(int ubGroupID, SOLDIERTYPE? pSoldier)
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
@@ -641,7 +641,7 @@ public class StrategicMovement
 
     }
     //Destroys the waypoint list, detaches group from list, then deallocated the memory for the group
-    void RemoveGroupFromList(GROUP? pGroup)
+    public static void RemoveGroupFromList(GROUP? pGroup)
     {
         GROUP? curr, temp;
         curr = gpGroupList;
@@ -714,13 +714,13 @@ public class StrategicMovement
         // wake merc up for THIS quote
         if (pSoldier.fMercAsleep)
         {
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE_ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 0, 0);
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE_ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE_ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 1, 0);
+            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 0, 0);
+            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
+            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 1, 0);
         }
         else
         {
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE_ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
+            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
         }
     }
 
@@ -1271,7 +1271,7 @@ public class StrategicMovement
     //This is called whenever any group arrives in the next sector (player or enemy)
     //This function will first check to see if a battle should start, or if they
     //aren't at the final destination, they will move to the next sector. 
-    void GroupArrivedAtSector(int ubGroupID, bool fCheckForBattle, bool fNeverLeft)
+    public static void GroupArrivedAtSector(int ubGroupID, bool fCheckForBattle, bool fNeverLeft)
     {
         GROUP? pGroup;
         int iVehId = -1;
@@ -2231,7 +2231,7 @@ public class StrategicMovement
         RemovePGroupWaypoints(pGroup);
     }
 
-    void RemovePGroupWaypoints(GROUP? pGroup)
+    public static void RemovePGroupWaypoints(GROUP? pGroup)
     {
         WAYPOINT? wp;
         //if there aren't any waypoints to delete, then return.  This also avoids setting
@@ -2272,7 +2272,7 @@ public class StrategicMovement
 
 
     // set this groups previous sector values
-    void SetGroupPrevSectors(int ubGroupID, int ubX, MAP_ROW ubY)
+    public static void SetGroupPrevSectors(int ubGroupID, int ubX, MAP_ROW ubY)
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
@@ -2371,14 +2371,14 @@ public class StrategicMovement
     void RemoveAllGroups()
     {
         gfRemovingAllGroups = true;
-        while (gpGroupList)
+        while (gpGroupList is not null)
         {
             RemovePGroup(gpGroupList);
         }
         gfRemovingAllGroups = false;
     }
 
-    void SetGroupSectorValue(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int ubGroupID)
+    public static void SetGroupSectorValue(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int ubGroupID)
     {
         GROUP? pGroup;
         PLAYERGROUP? pPlayer;
@@ -2387,7 +2387,7 @@ public class StrategicMovement
         pGroup = GetGroup(ubGroupID);
 
         // make sure it is valid
-        Debug.Assert(pGroup);
+        Debug.Assert(pGroup is not null);
 
         //Remove waypoints
         RemovePGroupWaypoints(pGroup);
@@ -2438,7 +2438,7 @@ public class StrategicMovement
     }
 
 
-    void SetGroupNextSectorValue(int sSectorX, MAP_ROW sSectorY, int ubGroupID)
+    public static void SetGroupNextSectorValue(int sSectorX, MAP_ROW sSectorY, int ubGroupID)
     {
         GROUP? pGroup;
 
@@ -2868,7 +2868,7 @@ public class StrategicMovement
 
 
     // is the player group with this id in motion?
-    bool PlayerIDGroupInMotion(int ubID)
+    public static bool PlayerIDGroupInMotion(int ubID)
     {
         GROUP? pGroup;
 
@@ -2972,7 +2972,7 @@ public class StrategicMovement
                 // DO arrives quote....
                 if (cnt == 0)
                 {
-                    TacticalCharacterDialogue(pSoldier, QUOTE_MERC_REACHED_DESTINATION);
+                    DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.MERC_REACHED_DESTINATION);
                 }
                 cnt++;
             }
@@ -3179,7 +3179,7 @@ public class StrategicMovement
 
 
     // this is only for grunts who were in mvt groups between sectors and are set to a new squad...NOTHING ELSE!!!!!
-    void SetGroupPosition(int ubNextX, int ubNextY, int ubPrevX, int ubPrevY, int uiTraverseTime, int uiArriveTime, int ubGroupId)
+    public static void SetGroupPosition(int ubNextX, int ubNextY, int ubPrevX, int ubPrevY, int uiTraverseTime, int uiArriveTime, int ubGroupId)
     {
         GROUP? pGroup;
         PLAYERGROUP? pPlayer;
@@ -3649,7 +3649,7 @@ public class StrategicMovement
             if (pCurrentSoldier.bBleeding > 0)
             {
                 // complain about bleeding
-                TacticalCharacterDialogue(pCurrentSoldier, QUOTE.STARTING_TO_BLEED);
+                DialogControl.TacticalCharacterDialogue(pCurrentSoldier, QUOTE.STARTING_TO_BLEED);
             }
             pPlayer = pPlayer.next;
 
@@ -4552,14 +4552,12 @@ public class StrategicMovement
         DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
     }
 
-
-
-    void PlaceGroupInSector(int ubGroupID, int sPrevX, MAP_ROW sPrevY, int sNextX, MAP_ROW sNextY, int bZ, bool fCheckForBattle)
+    public static void PlaceGroupInSector(int ubGroupID, int sPrevX, MAP_ROW sPrevY, int sNextX, MAP_ROW sNextY, int bZ, bool fCheckForBattle)
     {
         ClearMercPathsAndWaypointsForAllInGroup(GetGroup(ubGroupID));
 
         // change where they are and where they're going
-        SetGroupPrevSectors(ubGroupID, (int)sPrevX, (int)sPrevY);
+        SetGroupPrevSectors(ubGroupID, sPrevX, sPrevY);
         SetGroupSectorValue(sPrevX, sPrevY, bZ, ubGroupID);
         SetGroupNextSectorValue(sNextX, sNextY, ubGroupID);
 
@@ -4634,12 +4632,10 @@ public class StrategicMovement
 
 
     // look for NPCs to stop for, anyone is too tired to keep going, if all OK rebuild waypoints & continue movement
-    void PlayerGroupArrivedSafelyInSector(GROUP? pGroup, bool fCheckForNPCs)
+    void PlayerGroupArrivedSafelyInSector(GROUP pGroup, bool fCheckForNPCs)
     {
         bool fPlayerPrompted = false;
 
-
-        Debug.Assert(pGroup);
         Debug.Assert(pGroup.fPlayer);
 
 

@@ -14,7 +14,6 @@ public partial class Globals
 
     // is the bottom of the map panel dirty?
     public static  bool gfUsePersistantPBI;
-    public static int[] SquadMovementGroups;
     public static int[] gubVehicleMovementGroups;
     public static bool gfDelayAutoResolveStart = false;
     public static bool gfRandomizingPatrolGroup = false;

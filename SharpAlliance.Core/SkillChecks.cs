@@ -434,7 +434,7 @@ public class SkillChecks
                         if ((100 - (pSoldier.ubSkillCheckAttempts - 2) * 20) < EffectiveWisdom(pSoldier))
                         {
                             // say "I can't do this" quote
-                            TacticalCharacterDialogue(pSoldier, QUOTE.DEFINITE_CANT_DO);
+                            DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.DEFINITE_CANT_DO);
                             return (iMadeItBy);
                         }
                     }
@@ -483,15 +483,15 @@ public class SkillChecks
                             {
                                 case 0:
                                     // buddy #1 did something good!
-                                    TacticalCharacterDialogue(pTeamSoldier, QUOTE.BUDDY_1_GOOD);
+                                    DialogControl.TacticalCharacterDialogue(pTeamSoldier, QUOTE.BUDDY_1_GOOD);
                                     break;
                                 case 1:
                                     // buddy #2 did something good!
-                                    TacticalCharacterDialogue(pTeamSoldier, QUOTE.BUDDY_2_GOOD);
+                                    DialogControl.TacticalCharacterDialogue(pTeamSoldier, QUOTE.BUDDY_2_GOOD);
                                     break;
                                 case 2:
                                     // learn to like buddy did something good!
-                                    TacticalCharacterDialogue(pTeamSoldier, QUOTE.LEARNED_TO_LIKE_WITNESSED);
+                                    DialogControl.TacticalCharacterDialogue(pTeamSoldier, QUOTE.LEARNED_TO_LIKE_WITNESSED);
                                     break;
                                 default:
                                     break;

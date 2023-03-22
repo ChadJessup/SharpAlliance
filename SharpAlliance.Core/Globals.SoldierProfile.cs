@@ -8,6 +8,8 @@ public partial class Globals
 {
     public const int NUM_TERRORISTS = 6;
 
+    public const int NERVOUS_RADIUS = 10;
+
     public const int NUM_PROFILES = 170;
     public const int MAX_ADDITIONAL_TERRORISTS = 4;
     public const int NUM_TERRORIST_POSSIBLE_LOCATIONS = 5;
