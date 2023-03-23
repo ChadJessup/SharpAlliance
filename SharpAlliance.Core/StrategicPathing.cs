@@ -9,7 +9,25 @@ using SharpAlliance.Core.SubSystems;
 
 using static SharpAlliance.Core.Globals;
 
+using TRAILCELLTYPE = System.UInt32;
+
 namespace SharpAlliance.Core;
+
+public struct path_t
+{
+    public int nextLink;           //2
+    public int prevLink;           //2
+    public int location;           //2
+    public uint costSoFar;          //4
+    public uint costToGo;           //4
+    public int pathNdx;            //2
+};
+
+public struct trail_t
+{
+    public short nextLink;
+    public short diStratDelta;
+};
 
 public partial class Globals
 {
@@ -17,126 +35,140 @@ public partial class Globals
     public static int[] gusMapPathingData = new int[256];
     public static int gusPathDataSize;
     public static bool gfPlotToAvoidPlayerInfuencedSectors = false;
+    public static int queRequests;
 
-#define MAXTRAILTREE	(4096)
-#define MAXpathQ			(512)
-#define MAP_WIDTH 18
-#define MAP_LENGTH MAP_WIDTH*MAP_WIDTH
+    public static bool fPreviousPlotDirectPath = false;     // don't save
+                                                            // Shortest Path Defines
+    public const int NORTH_MOVE = -18;
+    public const int EAST_MOVE = 1;
+    public const int WEST_MOVE = -1;
+    public const int SOUTH_MOVE = 18;
+
+    // Movement speed defines
+    public const int NORMAL_MVT = 1;
+    public const int SLOW_MVT = 0;
+
+    public const int MAXTRAILTREE = (4096);
+    public const int MAXpathQ = (512);
+    public const int MAP_WIDTH = 18;
+    public const int MAP_LENGTH = MAP_WIDTH * MAP_WIDTH;
 
     //#define EASYWATERCOST	TRAVELCOST_FLAT / 2
     //#define ISWATER(t)	(((t)==TRAVELCOST_KNEEDEEP) || ((t)==TRAVELCOST_DEEPWATER))
     //#define NOPASS (TRAVELCOST_OBSTACLE)
     //#define VEINCOST TRAVELCOST_FLAT     //actual cost for bridges and doors and such
     //#define ISVEIN(v) ((v==TRAVELCOST_VEINMID) || (v==TRAVELCOST_VEINEND))
-#define TRAILCELLTYPE int
+    public static path_t[] pathQB = new path_t[MAXpathQ];
+    public static int[] totAPCostB = new int[MAXpathQ];
+    public static int[,] gusMapMovementCostsB = new int[MAP_LENGTH, MAXDIR];
+    public static int[] trailCostB = new int[MAP_LENGTH];
+    public static trail_t[] trailStratTreeB = new trail_t[MAXTRAILTREE];
 
-    static path_t pathQB[MAXpathQ];
-    static int totAPCostB[MAXpathQ];
-    static int gusPathShown, gusAPtsToMove;
-    static int gusMapMovementCostsB[MAP_LENGTH][MAXDIR];
-static TRAILCELLTYPE trailCostB[MAP_LENGTH];
-    static trail_t trailStratTreeB[MAXTRAILTREE];
-    short trailStratTreedxB = 0;
+    public const int QHEADNDX = (0);
+    public const int QPOOLNDX = (MAXpathQ - 1);
 
-#define QHEADNDX (0)
-#define QPOOLNDX (MAXpathQ-1)
+    public static bool pathQNotEmpty() => (pathQB[QHEADNDX].nextLink != QHEADNDX);
+    public static bool pathFound(TRAILCELLTYPE sDestination) => (pathQB[pathQB[QHEADNDX].nextLink].location == sDestination);
+    public static bool pathNotYetFound(TRAILCELLTYPE sDestination) => (!pathFound(sDestination));
 
-#define pathQNotEmpty (pathQB[QHEADNDX].nextLink!=QHEADNDX)
-#define pathFound (pathQB[ pathQB[QHEADNDX].nextLink ].location == sDestination)
-#define pathNotYetFound (!pathFound)
+    public static void REMQUENODE(int ndx)
+    {
+        pathQB[pathQB[ndx].prevLink].nextLink = pathQB[ndx].nextLink;
+        pathQB[pathQB[ndx].nextLink].prevLink = pathQB[ndx].prevLink;
+    }
 
-#define REMQUENODE(ndx)							\
-{	pathQB[pathQB[ndx].prevLink].nextLink = pathQB[ndx].nextLink;	\
-	pathQB[pathQB[ndx].nextLink].prevLink = pathQB[ndx].prevLink;	\
+    public static void INSQUENODEPREV(TRAILCELLTYPE newNode, TRAILCELLTYPE curNode)
+    {
+        pathQB[newNode].nextLink = curNode;
+        pathQB[newNode].prevLink = pathQB[curNode].prevLink;
+        pathQB[pathQB[curNode].prevLink].nextLink = newNode;
+        pathQB[curNode].prevLink = newNode;
+    }
+
+    public static void INSQUENODE(TRAILCELLTYPE newNode, TRAILCELLTYPE curNode)
+    {
+        pathQB[newNode].prevLink = curNode;
+        pathQB[newNode].NextLink = pathQB[curNode].nextLink;
+        pathQB[pathQB[curNode].nextLink].prevLink = newNode;
+        pathQB[curNode].nextLink = newNode;
+    }
+
+
+    public static void DELQUENODE(int ndx)
+    {
+        REMQUENODE(ndx);
+        INSQUENODEPREV(ndx, QPOOLNDX);
+        pathQB[ndx].location = -1;
+    }
+
+
+
+    public static void NEWQUENODE(int qNewNdx)
+    {
+        if (queRequests < QPOOLNDX)
+        {
+            qNewNdx = queRequests++;
+        }
+        else
+        {
+            qNewNdx = pathQB[QPOOLNDX].nextLink;
+            REMQUENODE(qNewNdx);
+        }
+    }
+
+    // chad: this wasn't defined in original source? Was originally in a template, dunno.
+    private const int FLATCOST = 0;
+    public static int ESTIMATE0(int dx, int dy) => ((dx > dy) ? (dx) : (dy));
+    public static int ESTIMATE1(int dx, int dy) => ((dx < dy) ? ((dx * 14) / 10 + dy) : ((dy * 14) / 10 + dx));
+    public static int ESTIMATE2(int dx, int dy) => FLATCOST * ((dx < dy) ? ((dx * 14) / 10 + dy) : ((dy * 14) / 10 + dx));
+    public static int ESTIMATEn(int dx, int dy) => ((int)(FLATCOST * Math.Sqrt(dx * dx + dy * dy)));
+    public static int ESTIMATE(int dx, int dy) => ESTIMATE1(dx, dy);
+
+
+    public static int REMAININGCOST(int ndx, int iDestX, int iDestY)
+    {
+        int locY = pathQB[ndx].location / MAP_WIDTH;
+        int locX = pathQB[ndx].location % MAP_WIDTH;
+        int dy = Math.Abs(iDestY - locY);
+        int dx = Math.Abs(iDestX - locX);
+
+        return ESTIMATE(dx, dy);
+    }
+
+    public const int MAXCOST = (99900);
+    public static int TOTALCOST(int ndx) => (pathQB[ndx].costSoFar + pathQB[ndx].costToGo);
+    public static int XLOC(int a) => (a % MAP_WIDTH);
+    public static int YLOC(int a) => (a / MAP_WIDTH);
+    public static int LEGDISTANCE(int a, int b) => (Math.Abs(XLOC(b) - XLOC(a)) + Math.Abs(YLOC(b) - YLOC(a)));
+    public static int FARTHER(int ndx, int NDX) => (LEGDISTANCE(pathQB[ndx].location, sDestination) > LEGDISTANCE(pathQB[NDX].location, sDestination));
+
+    public const int FLAT_STRATEGIC_TRAVEL_TIME = 60;
+
+    public static void QUESEARCH(int ndx, int NDX)
+    {
+        int k = TOTALCOST(ndx);
+        NDX = pathQB[QHEADNDX].nextLink;
+        while (NDX > 0 && (k > TOTALCOST(NDX)))
+        {
+            NDX = pathQB[NDX].nextLink;
+        }
+
+        while (NDX > 0 && (k == TOTALCOST(NDX)) && FARTHER(ndx, NDX) > 0)
+        {
+            NDX = pathQB[NDX].nextLink;
+        }
+    }
 }
 
-#define INSQUENODEPREV(newNode,curNode)				\
-{	pathQB[newNode].nextLink = curNode;			\
-	pathQB[newNode].prevLink = pathQB[curNode].prevLink;	\
-	pathQB[pathQB[curNode].prevLink].nextLink = newNode;	\
-	pathQB[curNode].prevLink = newNode;			\
-}
 
-#define INSQUENODE(newNode,curNode)				\
+// movment modes
+public enum MVT_MODE
 {
-    pathQB[newNode].prevLink = curNode;			\
-	pathQB[newNode].NextLink = pathQB[curNode].nextLink;	\
-	pathQB[pathQB[curNode].nextLink].prevLink = newNode;	\
-	pathQB[curNode].nextLink = newNode;			\
-}
-
-
-#define DELQUENODE(ndx)                     			\
-{
-    REMQUENODE(ndx);                        		\
-	INSQUENODEPREV(ndx, QPOOLNDX);           		\
-	pathQB[ndx].location = -1;				\
-}
-
-
-
-#define NEWQUENODE                          			\
-if (queRequests < QPOOLNDX)                       \
-		qNewNdx = queRequests++;			\
-
-    else                            \
-	{                                       		\
-		qNewNdx = pathQB[QPOOLNDX].nextLink;		\
-		REMQUENODE(qNewNdx);				\
-	}
-
-#define ESTIMATE0	((dx>dy) ?       (dx)      :       (dy))
-#define ESTIMATE1	((dx<dy) ? ((dx*14)/10+dy) : ((dy*14)/10+dx) )
-#define ESTIMATE2	FLATCOST*( (dx<dy) ? ((dx*14)/10+dy) : ((dy*14)/10+dx) )
-#define ESTIMATEn	((int)(FLATCOST*sqrt(dx*dx+dy*dy)))
-#define ESTIMATE ESTIMATE1
-
-
-#define REMAININGCOST(ndx)					\
-(                               \
-	(locY = pathQB[ndx].location / MAP_WIDTH),			\
-	(locX = pathQB[ndx].location % MAP_WIDTH),			\
-	(dy = abs(iDestY - locY)),					\
-	(dx = abs(iDestX - locX)),					\
-	ESTIMATE						\
-)
-
-
-#define MAXCOST (99900)
-#define TOTALCOST(ndx) (pathQB[ndx].costSoFar + pathQB[ndx].costToGo)
-#define XLOC(a) (a%MAP_WIDTH)
-#define YLOC(a) (a/MAP_WIDTH)
-#define LEGDISTANCE(a,b) ( abs( XLOC(b)-XLOC(a) ) + abs( YLOC(b)-YLOC(a) ) )
-#define FARTHER(ndx,NDX) ( LEGDISTANCE(pathQB[ndx].location,sDestination) > LEGDISTANCE(pathQB[NDX].location,sDestination) )
-
-#define FLAT_STRATEGIC_TRAVEL_TIME		60
-
-#define QUESEARCH(ndx,NDX)						\
-{									\
-	int k = TOTALCOST(ndx);					\
-	NDX = pathQB[QHEADNDX].nextLink;					\
-	while (NDX && (k > TOTALCOST(NDX)))              \
-		NDX = pathQB[NDX].nextLink;				\
-	while (NDX && (k == TOTALCOST(NDX)) && FARTHER(ndx, NDX))    \
-		NDX = pathQB[NDX].nextLink;				\
-}
-}
-
-struct path_s
-{
-    int nextLink;           //2
-    int prevLink;           //2
-    int location;           //2
-    int costSoFar;          //4
-    int costToGo;           //4
-    int pathNdx;            //2
+    AIR,
+    VEHICLE,
+    FOOT,
 };
 
-struct trail_s
-{
-    short nextLink;
-    short diStratDelta;
-};
 
 public class StrategicPathing
 {
@@ -149,48 +181,40 @@ public class StrategicPathing
     };
 
 
+    short trailStratTreedxB = 0;
 
 
-    int queRequests;
-
-
-    int diStratDelta[8] =
+    int[] diStratDelta =
     {
-    -MAP_WIDTH,        //N
-	1-MAP_WIDTH,       //NE
-	1,                //E
-	1+MAP_WIDTH,       //SE
-	MAP_WIDTH,         //S
-	MAP_WIDTH-1,       //SW
-	-1,               //W
-	-MAP_WIDTH-1       //NW
-};
-
-
-    extern int GetTraversability(int sStartSector, int sEndSector);
-
-
+        -MAP_WIDTH,        //N
+    	1-MAP_WIDTH,       //NE
+    	1,                //E
+    	1+MAP_WIDTH,       //SE
+    	MAP_WIDTH,         //S
+    	MAP_WIDTH-1,       //SW
+    	-1,               //W
+    	-MAP_WIDTH-1       //NW
+    };
 
     // this will find if a shortest strategic path
-
-    static bool fPreviousPlotDirectPath = false;     // don't save
     int FindStratPath(int sStart, int sDestination, int sMvtGroupNumber, bool fTacticalTraversal)
     {
         int iCnt, ndx, insertNdx, qNewNdx;
         int iDestX, iDestY, locX, locY, dx, dy;
-        int sSectorX, sSectorY;
+        int sSectorX;
+        MAP_ROW sSectorY;
         int newLoc, curLoc;
         TRAILCELLTYPE curCost, newTotCost, nextCost;
         int sOrigination;
         int iCounter = 0;
         bool fPlotDirectPath = false;
-        GROUP* pGroup;
+        GROUP? pGroup;
 
         // ******** Fudge by Bret (for now), curAPcost is never initialized in this function, but should be!
         // so this is just to keep things happy!
 
         // for player groups only!
-        pGroup = GetGroup((int)sMvtGroupNumber);
+        pGroup = StrategicMovement.GetGroup(sMvtGroupNumber);
         if (pGroup.fPlayer)
         {
             // if player is holding down SHIFT key, find the shortest route instead of the quickest route!
@@ -212,14 +236,14 @@ public class StrategicPathing
         queRequests = 2;
 
         //initialize the ai data structures
-        memset(trailStratTreeB, 0, sizeof(trailStratTreeB));
-        memset(trailCostB, 255, sizeof(trailCostB));
+        trailStratTreeB = new trail_t[0];// , 0, sizeof(trailStratTreeB));
+        trailCostB = new int[255];//, sizeof(trailCostB));
 
         //memset(trailCostB,255*PATHFACTOR,MAP_LENGTH);
-        memset(pathQB, 0, sizeof(pathQB));
+        pathQB = new path_t[0];//, 0, sizeof(pathQB));
 
         // FOLLOWING LINE COMMENTED OUT ON MARCH 7/97 BY IC
-        memset(gusMapPathingData, ((int)sStart), sizeof(gusMapPathingData));
+        gusMapPathingData = new int[sStart];//, (sStart), sizeof(gusMapPathingData));
         trailStratTreedxB = 0;
 
         //set up common info
@@ -250,7 +274,7 @@ public class StrategicPathing
         pathQB[1].location = sOrigination;
         pathQB[1].pathNdx = 0;
         pathQB[1].costSoFar = 0;
-        pathQB[1].costToGo = REMAININGCOST(1);
+        pathQB[1].costToGo = REMAININGCOST(1, iDestX, iDestY);
 
 
         trailStratTreedxB = 0;
@@ -267,11 +291,12 @@ public class StrategicPathing
             curLoc = pathQB[ndx].location;
             curCost = pathQB[ndx].costSoFar;
             // = totAPCostB[ndx];
-            DELQUENODE((int)ndx);
+            DELQUENODE(ndx);
 
             if (trailCostB[curLoc] < curCost)
+            {
                 continue;
-
+            }
 
             //contemplate a new path in each direction
             for (iCnt = 0; iCnt < 8; iCnt += 2)
@@ -299,7 +324,7 @@ public class StrategicPathing
                     {
                         continue;
                     }
-                    if (!OkayForEnemyToMoveThroughSector((int)SECTOR(sSectorX, sSectorY)))
+                    if (!StrategicAI.OkayForEnemyToMoveThroughSector(SECTORINFO.SECTOR(sSectorX, sSectorY)))
                     {
                         continue;
                     }
@@ -310,12 +335,12 @@ public class StrategicPathing
                 {
                     if (iHelicopterVehicleId != -1)
                     {
-                        nextCost = GetTravelTimeForGroup((int)(SECTOR((curLoc % MAP_WORLD_X), (curLoc / MAP_WORLD_X))), (int)(iCnt / 2), (int)sMvtGroupNumber);
+                        nextCost = GetTravelTimeForGroup((int)(SECTORINFO.SECTOR((curLoc % MAP_WORLD_X), (curLoc / MAP_WORLD_X))), (int)(iCnt / 2), (int)sMvtGroupNumber);
                         if (nextCost != 0xffffffff && sMvtGroupNumber == pVehicleList[iHelicopterVehicleId].ubMovementGroup)
                         {
                             // is a heli, its pathing is determined not by time (it's always the same) but by total cost
                             // Skyrider will avoid uncontrolled airspace as much as possible...
-                            if (StrategicMap[curLoc].fEnemyAirControlled == true)
+                            if (strategicMap[curLoc].fEnemyAirControlled == true)
                             {
                                 nextCost = COST_AIRSPACE_UNSAFE;
                             }
@@ -876,7 +901,7 @@ public class StrategicPathing
         if ((sMvtGroup != -1) && (sMvtGroup != 0))
         {
             // clear this groups mvt pathing
-            RemoveGroupWaypoints((int)sMvtGroup);
+            StrategicMovement.RemoveGroupWaypoints(sMvtGroup);
         }
 
         return (pNode);
@@ -1534,8 +1559,8 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         int iOldDelta = 0;
         bool fFirstNode = true;
         Path pNode = pHeadOfPath;
-        GROUP* pGroup = null;
-        WAYPOINT* wp = null;
+        GROUP? pGroup = null;
+        WAYPOINT? wp = null;
 
 
         if ((sMvtGroup == -1) || (sMvtGroup == 0))
@@ -1544,13 +1569,13 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             return;
         }
 
-        pGroup = GetGroup((int)sMvtGroup);
+        pGroup = StrategicMovement.GetGroup(sMvtGroup);
 
         //KRIS!  Added this because it was possible to plot a new course to the same destination, and the
         //       group would add new arrival events without removing the existing one(s).
-        DeleteStrategicEvent(EVENT_GROUP_ARRIVAL, sMvtGroup);
+        GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, sMvtGroup);
 
-        RemoveGroupWaypoints((int)sMvtGroup);
+        StrategicMovement.RemoveGroupWaypoints(sMvtGroup);
 
 
         if (pGroup.fPlayer)
@@ -1617,15 +1642,15 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
         // there must have been at least one next node, or we would have bailed out on "no path" earlier
-        Assert(!fFirstNode);
+        Debug.Assert(!fFirstNode);
 
         // the final destination sector - always add a waypoint for it
         AddWaypointStrategicIDToPGroup(pGroup, pNode.uiSectorId);
 
         // at this point, the final sector in the path must be identical to this group's last waypoint
         wp = GetFinalWaypoint(pGroup);
-        AssertMsg(wp, "Path exists, but no waypoints were added!  AM-0");
-        AssertMsg(pNode.uiSectorId == (int)CALCULATE_STRATEGIC_INDEX(wp.x, wp.y), "Last waypoint differs from final path sector!  AM-0");
+        // AssertMsg(wp, "Path exists, but no waypoints were added!  AM-0");
+        // AssertMsg(pNode.uiSectorId == (int)CALCULATE_STRATEGIC_INDEX(wp.x, wp.y), "Last waypoint differs from final path sector!  AM-0");
 
 
         // see if we've already reached the first sector in the path (we never actually left the sector and reversed back to it)
@@ -1641,14 +1666,14 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
     // clear strategic movement (mercpaths and waypoints) for this soldier, and his group (including its vehicles)
     void ClearMvtForThisSoldierAndGang(SOLDIERTYPE? pSoldier)
     {
-        GROUP* pGroup = null;
+        GROUP? pGroup = null;
 
 
         // check if valid grunt
-        Assert(pSoldier);
+        Debug.Assert(pSoldier is not null);
 
-        pGroup = GetGroup(pSoldier.ubGroupID);
-        Assert(pGroup);
+        pGroup = StrategicMovement.GetGroup(pSoldier.ubGroupID);
+        Debug.Assert(pGroup is not null);
 
         // clear their strategic movement (mercpaths and waypoints)
         ClearMercPathsAndWaypointsForAllInGroup(pGroup);
@@ -1879,21 +1904,21 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
 
-    Path GetGroupMercPathPtr(GROUP* pGroup)
+    Path GetGroupMercPathPtr(GROUP? pGroup)
     {
         Path pMercPath = null;
         int iVehicledId = -1;
 
 
-        Assert(pGroup);
+        Debug.Assert(pGroup is not null);
 
         // must be a player group!
-        Assert(pGroup.fPlayer);
+        Debug.Assert(pGroup.fPlayer);
 
         if (pGroup.fVehicle)
         {
             iVehicledId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
-            Assert(iVehicledId != -1);
+            Debug.Assert(iVehicledId != -1);
 
             pMercPath = pVehicleList[iVehicledId].pMercPath;
         }
@@ -1916,12 +1941,12 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         int ubGroupId = 0;
 
         // IN a vehicle?
-        if (pSoldier.bAssignment == VEHICLE)
+        if (pSoldier.bAssignment == Assignments.VEHICLE)
         {
             ubGroupId = pVehicleList[pSoldier.iVehicleId].ubMovementGroup;
         }
         // IS a vehicle?
-        else if (pSoldier.uiStatusFlags & SOLDIER_VEHICLE)
+        else if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
         {
             ubGroupId = pVehicleList[pSoldier.bVehicleID].ubMovementGroup;
         }
@@ -1936,9 +1961,9 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
     // clears this groups strategic movement (mercpaths and waypoints), include those in the vehicle structs(!)
-    void ClearMercPathsAndWaypointsForAllInGroup(GROUP* pGroup)
+    void ClearMercPathsAndWaypointsForAllInGroup(GROUP? pGroup)
     {
-        PLAYERGROUP* pPlayer = null;
+        PLAYERGROUP? pPlayer = null;
         SOLDIERTYPE? pSoldier = null;
 
         pPlayer = pGroup.pPlayerList;
@@ -1958,12 +1983,12 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         if (pGroup.fVehicle)
         {
             int iVehicleId = -1;
-            VEHICLETYPE* pVehicle = null;
+            VEHICLETYPE? pVehicle = null;
 
             iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
-            Assert(iVehicleId != -1);
+            Debug.Assert(iVehicleId != -1);
 
-            pVehicle = &(pVehicleList[iVehicleId]);
+            pVehicle = (pVehicleList[iVehicleId]);
 
             // clear the path for that vehicle
             pVehicle.pMercPath = ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
@@ -1980,21 +2005,21 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
     // clears the contents of the soldier's mercpPath, as well as his vehicle path if he is a / or is in a vehicle
     void ClearPathForSoldier(SOLDIERTYPE? pSoldier)
     {
-        VEHICLETYPE* pVehicle = null;
+        VEHICLETYPE? pVehicle = null;
 
 
         // clear the soldier's mercpath
         pSoldier.pMercPath = ClearStrategicPathList(pSoldier.pMercPath, pSoldier.ubGroupID);
 
         // if a vehicle
-        if (pSoldier.uiStatusFlags & SOLDIER_VEHICLE)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
         {
-            pVehicle = &(pVehicleList[pSoldier.bVehicleID]);
+            pVehicle = (pVehicleList[pSoldier.bVehicleID]);
         }
         // or in a vehicle
-        else if (pSoldier.bAssignment == VEHICLE)
+        else if (pSoldier.bAssignment == Assignments.VEHICLE)
         {
-            pVehicle = &(pVehicleList[pSoldier.iVehicleId]);
+            pVehicle = (pVehicleList[pSoldier.iVehicleId]);
         }
 
         // if there's an associate vehicle structure
@@ -2007,9 +2032,9 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
 
-    void AddSectorToFrontOfMercPathForAllSoldiersInGroup(GROUP* pGroup, int ubSectorX, int ubSectorY)
+    void AddSectorToFrontOfMercPathForAllSoldiersInGroup(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY)
     {
-        PLAYERGROUP* pPlayer = null;
+        PLAYERGROUP? pPlayer = null;
         SOLDIERTYPE? pSoldier = null;
 
         pPlayer = pGroup.pPlayerList;
@@ -2019,7 +2044,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
             if (pSoldier != null)
             {
-                AddSectorToFrontOfMercPath(&(pSoldier.pMercPath), ubSectorX, ubSectorY);
+                AddSectorToFrontOfMercPath((pSoldier.pMercPath), ubSectorX, ubSectorY);
             }
 
             pPlayer = pPlayer.next;
@@ -2029,42 +2054,39 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         if (pGroup.fVehicle)
         {
             int iVehicleId = -1;
-            VEHICLETYPE* pVehicle = null;
+            VEHICLETYPE? pVehicle = null;
 
             iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
-            Assert(iVehicleId != -1);
+            Debug.Assert(iVehicleId != -1);
 
-            pVehicle = &(pVehicleList[iVehicleId]);
+            pVehicle = (pVehicleList[iVehicleId]);
 
             // add it to that vehicle's path
-            AddSectorToFrontOfMercPath(&(pVehicle.pMercPath), ubSectorX, ubSectorY);
+            AddSectorToFrontOfMercPath((pVehicle.pMercPath), ubSectorX, ubSectorY);
         }
     }
 
 
 
-    void AddSectorToFrontOfMercPath(Path* ppMercPath, int ubSectorX, int ubSectorY)
+    void AddSectorToFrontOfMercPath(Path? ppMercPath, int ubSectorX, MAP_ROW ubSectorY)
     {
-        Path pNode = null;
-
-
-        // allocate and hang a new node at the front of the path list
-        pNode = MemAlloc(sizeof(PathSt));
-
-        pNode.uiSectorId = CALCULATE_STRATEGIC_INDEX(ubSectorX, ubSectorY);
-        pNode.pNext = *ppMercPath;
-        pNode.pPrev = null;
-        pNode.uiEta = GetWorldTotalMin();
-        pNode.fSpeed = NORMAL_MVT;
+        Path pNode = new()
+        {
+            uiSectorId = CALCULATE_STRATEGIC_INDEX(ubSectorX, ubSectorY),
+            pNext = ppMercPath,
+            pPrev = null,
+            uiEta = GameClock.GetWorldTotalMin(),
+            fSpeed = NORMAL_MVT,
+        };
 
         // if path wasn't null
-        if (*ppMercPath != null)
+        if (ppMercPath != null)
         {
             // hang the previous pointer of the old head to the new head
-            (*ppMercPath).pPrev = pNode;
+            (ppMercPath).pPrev = pNode;
         }
 
-        *ppMercPath = pNode;
+        ppMercPath = pNode;
     }
 
 }

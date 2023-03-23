@@ -26,7 +26,7 @@ public class SOLDIERTYPE
     public OBJECTTYPE? pTempObject;
     // KEY_ON_RING pKeyRing;
 
-    public int bOldLife;          // life at end of last turn, recorded for monster AI
+    public uint bOldLife;          // life at end of last turn, recorded for monster AI
                                   // attributes
     public bool bInSector { get; set; }
     public FLASH_PORTRAIT bFlashPortraitFrame;
@@ -131,7 +131,7 @@ public class SOLDIERTYPE
     //AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
 
     public bool IsAlive => bLife > 0;
-    public int bLife;             // current life (hit points or health)
+    public uint bLife;             // current life (hit points or health)
     public TEAM bSide;
     public int bViewRange;
     public int bNewOppCnt;
@@ -147,7 +147,7 @@ public class SOLDIERTYPE
     public int sDelayedMovementCauseGridNo;
     public int sReservedMovementGridNo;
 
-    public int bStrength;
+    public uint bStrength;
 
     // Weapon Stuff
     public bool fHoldAttackerUntilDone;
@@ -174,7 +174,7 @@ public class SOLDIERTYPE
     public bool fShowLocator;
     public FLASH_PORTRAIT fFlashPortrait;
     public int bMechanical;
-    public int bLifeMax;          // maximum life for this merc
+    public uint bLifeMax;          // maximum life for this merc
 
     public int iFaceIndex;
 

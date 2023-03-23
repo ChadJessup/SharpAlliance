@@ -95,7 +95,8 @@ public class CreatureDecideAction
 
     public static AI_ACTION CreatureDecideActionGreen(SOLDIERTYPE? pSoldier)
     {
-        int iChance, iSneaky = 10;
+        int iChance;
+        int iSneaky = 10;
         //int		bInWater;
         bool bInGas;
 
@@ -240,7 +241,7 @@ public class CreatureDecideAction
             }
 
             // reduce chance for any injury, less likely to wander around when hurt
-            iChance -= (pSoldier.bLifeMax - pSoldier.bLife);
+            iChance -= (int)(pSoldier.bLifeMax - pSoldier.bLife);
 
             // reduce chance if breath is down, less likely to wander around when tired
             iChance -= (100 - pSoldier.bBreath);
@@ -1005,7 +1006,7 @@ public class CreatureDecideAction
                     if (bWeaponIn != NO_SLOT)
                     {
                         AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, FOREVER);
-                        bCanAttack = true;
+                        bCanAttack = 1;
                     }
                     else
                     {
@@ -1065,9 +1066,9 @@ public class CreatureDecideAction
                         if (pSoldier.bActionPoints >= ubMinAPCost)
                         {
                             // look around for a worthy target (which sets BestShot.ubPossible)
-                            CalcBestShot(pSoldier, BestShot);
+                            CalcBestShot(pSoldier, out BestShot);
 
-                            if (BestShot.ubPossible)
+                            if (BestShot.ubPossible > 0)
                             {
                                 BestShot.bWeaponIn = bWeaponIn;
 
@@ -1307,7 +1308,7 @@ public class CreatureDecideAction
                         pSoldier.usActionData = NOWHERE;
                     }
 
-                    if (pSoldier.usActionData != NOWHERE) // charge!
+                    if ((int)pSoldier.usActionData != NOWHERE) // charge!
                     {
                         return (AI_ACTION.SEEK_OPPONENT);
                     }
@@ -1329,13 +1330,13 @@ public class CreatureDecideAction
         else
         {
             // run away!
-            if (ubCanMove)
+            if (ubCanMove > 0)
             {
                 // look for best place to RUN AWAY to (farthest from the closest threat)
                 //pSoldier.usActionData = RunAway( pSoldier );
                 pSoldier.usActionData = FindSpotMaxDistFromOpponents(pSoldier);
 
-                if (pSoldier.usActionData != NOWHERE)
+                if ((int)pSoldier.usActionData != NOWHERE)
                 {
                     return (AI_ACTION.RUN_AWAY);
                 }
@@ -1350,9 +1351,6 @@ public class CreatureDecideAction
         pSoldier.usActionData = NOWHERE;
         return (AI_ACTION.NONE);
     }
-
-
-
 
     AI_ACTION CreatureDecideAction(SOLDIERTYPE? pSoldier)
     {
@@ -1534,10 +1532,7 @@ public class CreatureDecideAction
         }
     }
 
-
-
-
-    AI_ACTION CrowDecideActionRed(SOLDIERTYPE pSoldier)
+    public static AI_ACTION CrowDecideActionRed(SOLDIERTYPE pSoldier)
     {
         // OK, Fly away!
         //HandleCrowFlyAway( pSoldier );
@@ -1552,8 +1547,7 @@ public class CreatureDecideAction
         }
     }
 
-
-    AI_ACTION CrowDecideActionGreen(SOLDIERTYPE pSoldier)
+    public static AI_ACTION CrowDecideActionGreen(SOLDIERTYPE pSoldier)
     {
         int sCorpseGridNo;
         WorldDirections ubDirection;

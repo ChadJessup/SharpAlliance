@@ -168,7 +168,7 @@ public class VEHICLETYPE
 public class Path
 {
     public int uiSectorId;
-    public int uiEta;
+    public uint uiEta;
     public bool fSpeed;
     public Path? pNext;
 	public Path? pPrev;

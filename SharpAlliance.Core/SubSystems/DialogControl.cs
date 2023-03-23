@@ -1,11 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 
-namespace SharpAlliance.Core.SubSystems;
+namespace SharpAlliance.Core;
+
+public partial class Globals
+{
+    public static Queue<DIALOGUE_Q_STRUCT> ghDialogueQ = new();
+
+    public static Queue<T> AddtoQueue<T>(Queue<T> queue, T item)
+    {
+        queue.Enqueue(item);
+        return queue;
+    }
+}
 
 public class DialogControl
 {
@@ -128,6 +141,109 @@ public class DialogControl
         }
 
         return (CharacterDialogue(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false));
+    }
+    public static bool CharacterDialogue(NPCID ubCharacterNum, QUOTE usQuoteNum, int iFaceIndex, int bUIHandlerID, bool fFromSoldier, bool fDelayed)
+    {
+        // Allocate new item
+        // QItem = MemAlloc(sizeof(DIALOGUE_Q_STRUCT));
+        // memset(QItem, 0, sizeof(DIALOGUE_Q_STRUCT));
+
+        DIALOGUE_Q_STRUCT QItem = new()
+        {
+            ubCharacterNum = ubCharacterNum,
+            usQuoteNum = usQuoteNum,
+            iFaceIndex = iFaceIndex,
+            bUIHandlerID = bUIHandlerID,
+            iTimeStamp = GetJA2Clock(),
+            fFromSoldier = fFromSoldier,
+            fDelayed = fDelayed,
+        };
+
+        // check if pause already locked, if so, then don't mess with it
+        if (gfLockPauseState == false)
+        {
+            QItem.fPauseTime = fPausedTimeDuringQuote;
+        }
+
+        fPausedTimeDuringQuote = false;
+
+        // Add to queue
+        ghDialogueQ = AddtoQueue(ghDialogueQ, QItem);
+
+        return (true);
+    }
+
+    public static bool TacticalCharacterDialogueWithSpecialEvent(SOLDIERTYPE? pSoldier, QUOTE usQuoteNum, DIALOGUE_SPECIAL_EVENT uiFlag, object uiData1, int uiData2)
+    {
+        if (pSoldier.ubProfile == NO_PROFILE)
+        {
+            return (false);
+        }
+
+        if (uiFlag != DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND && (BATTLE_SOUND)uiData1 != BATTLE_SOUND.DIE1)
+        {
+            if (pSoldier.bLife < CONSCIOUSNESS)
+            {
+                return (false);
+            }
+
+            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.GASSED))
+            {
+                return (false);
+            }
+        }
+
+        return (CharacterDialogueWithSpecialEvent(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false, uiFlag, uiData1, uiData2));
+    }
+
+    // This function takes a profile num, quote num, faceindex and a UI hander ID.
+    // What it does is queues up the dialog to be ultimately loaded/displayed
+    //				FACEINDEX
+    //						The face index is an index into an ACTIVE face. The face is considered to
+    //						be active, and if it's not, either that has to be handled by the UI handler
+    //						ir nothing will show.  What this function does is set the face to talking,
+    //						and the face sprite system should handle the rest.
+    //				bUIHandlerID
+    //						Because this could be used in any place, the UI handleID is used to differentiate
+    //						places in the game. For example, specific things happen in the tactical engine
+    //						that may not be the place where in the AIM contract screen uses.....
+
+    // NB;				The queued system is not yet implemented, but will be transpatent to the caller....
+
+
+    public static bool CharacterDialogueWithSpecialEvent(NPCID ubCharacterNum, QUOTE usQuoteNum, int iFaceIndex, int bUIHandlerID, bool fFromSoldier, bool fDelayed, DIALOGUE_SPECIAL_EVENT uiFlag, object uiData1, int uiData2)
+    {
+
+        // Allocate new item
+        //QItem = MemAlloc(sizeof(DIALOGUE_Q_STRUCT));
+        //memset(QItem, 0, sizeof(DIALOGUE_Q_STRUCT));
+
+        DIALOGUE_Q_STRUCT QItem = new()
+        {
+            ubCharacterNum = ubCharacterNum,
+            usQuoteNum = usQuoteNum,
+            iFaceIndex = iFaceIndex,
+            bUIHandlerID = bUIHandlerID,
+            iTimeStamp = GetJA2Clock(),
+            fFromSoldier = fFromSoldier,
+            fDelayed = fDelayed,
+
+            // Set flag for special event
+            uiSpecialEventFlag = uiFlag,
+            uiSpecialEventData = uiData1,
+            uiSpecialEventData2 = uiData2
+        };
+
+        // Add to queue
+        ghDialogueQ = AddtoQueue(ghDialogueQ, QItem);
+
+        if (uiFlag.HasFlag(DIALOGUE_SPECIAL_EVENT.PCTRIGGERNPC))
+        {
+            // Increment refrence count...
+            giNPCReferenceCount++;
+        }
+
+        return (true);
     }
 
     public static void ShutDownLastQuoteTacticalTextBox()
@@ -467,3 +583,20 @@ public enum QUOTE
     MERC_LEAVING_ALSUCO_SOON,
     MERC_GONE_UP_IN_PRICE,
 }
+
+public struct DIALOGUE_Q_STRUCT
+{
+    public QUOTE usQuoteNum;
+    public NPCID ubCharacterNum;
+    public int bUIHandlerID;
+    public int iFaceIndex;
+    public uint iTimeStamp;
+    public DIALOGUE_SPECIAL_EVENT uiSpecialEventFlag;
+    public object uiSpecialEventData;
+    public int uiSpecialEventData2;
+    public int uiSpecialEventData3;
+    public int uiSpecialEventData4;
+    public bool fFromSoldier;
+    public bool fDelayed;
+    public bool fPauseTime;
+};

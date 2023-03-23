@@ -8,6 +8,6 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public const Items BOBBYR_NO_ITEMS = (Items)65535;
+    public const Items BOBBYR_NO_ITEMS = (Items)32767;
 
 }

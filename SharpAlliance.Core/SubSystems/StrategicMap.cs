@@ -307,8 +307,10 @@ public class StrategicMap
     }
 
     // Get sector ID string makes a string like 'A9 - OMERTA', or just J11 if no town....
-    public static void GetSectorIDString(int sSectorX, MAP_ROW sSectorY, int bSectorZ, string zString, bool fDetailed)
+    public static void GetSectorIDString(int sSectorX, MAP_ROW sSectorY, int bSectorZ, out string zString, bool fDetailed)
     {
+        zString = "";
+
         SECTORINFO? pSector = null;
         UNDERGROUND_SECTORINFO? pUnderground;
         TOWNS bTownNameID;
@@ -322,7 +324,7 @@ public class StrategicMap
         }
         else if (bSectorZ != 0)
         {
-            pUnderground = FindUnderGroundSector(sSectorX, sSectorY, bSectorZ);
+            pUnderground = QueenCommand.FindUnderGroundSector(sSectorX, sSectorY, bSectorZ);
             if (pUnderground is not null && (pUnderground.fVisited > 0 || gfGettingNameFromSaveLoadScreen))
             {
                 bMineIndex = StrategicMines.GetIdOfMineForSector(sSectorX, sSectorY, bSectorZ);
@@ -357,7 +359,7 @@ public class StrategicMap
             }
             else
             { //Display nothing
-                wcscpy(zString, "");
+                zString = "";
             }
         }
         else

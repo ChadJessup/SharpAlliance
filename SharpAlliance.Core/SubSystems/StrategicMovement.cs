@@ -534,16 +534,14 @@ public class StrategicMovement
     {
         GROUP pNew = new GROUP
         {
-            pEnemyGroup = new(),
             //AssertMsg(uiSector >= 0 && uiSector <= 255, String("CreateNewEnemyGroup with out of range value of %d", uiSector));
             //AssertMsg(pNew, "MemAlloc failure during CreateNewEnemyGroup.");
             //memset(pNew, 0, sizeof(GROUP));
             //AssertMsg(pNew.pEnemyGroup, "MemAlloc failure during enemy group creation.");
-
             pWaypoints = null,
             ubSectorX = SECTORINFO.SECTORX(uiSector),
             ubSectorY = SECTORINFO.SECTORY(uiSector),
-            ubOriginalSector = (int)uiSector,
+            ubOriginalSector = uiSector,
             fPlayer = false,
             ubMoveType = MOVE_TYPES.CIRCULAR,
             ubNextWaypointID = 0,
@@ -560,15 +558,15 @@ public class StrategicMovement
                 }
             },
             ubGroupSize = (int)(ubNumTroops + ubNumElites),
-            ubTransportationMask = FOOT,
+            ubTransportationMask = VehicleTypes.FOOT,
             fVehicle = false,
-            ubCreatedSectorID = ubOriginalSector,
-            ubSectorIDOfLastReassignment = 255,
+            ubCreatedSectorID = 0,//ubOriginalSector,
+            ubSectorIDOfLastReassignment = (SEC)255,
         };
 
 
 
-        if (AddGroupToList(pNew))
+        if (AddGroupToList(pNew) > 0)
         {
             return pNew;
         }
@@ -588,7 +586,7 @@ public class StrategicMovement
         int bit, index, mask;
         int ID = 0;
         //First, find a unique ID
-        while (++ID)
+        while (++ID > 0)
         {
             index = ID / 32;
             bit = ID % 32;
@@ -617,7 +615,8 @@ public class StrategicMovement
                 return ID;
             }
         }
-        return false;
+
+        return 0;
     }
 
     void RemoveGroupIdFromList(int ubId)
@@ -994,7 +993,7 @@ public class StrategicMovement
 
             gpInitPrebattleGroup = pGroup;
 
-            if (gubEnemyEncounterCode == BLOODCAT_AMBUSH_CODE || gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE)
+            if (gubEnemyEncounterCode == ENCOUNTER_CODE.BLOODCAT_AMBUSH_CODE || gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE)
             {
                 NotifyPlayerOfBloodcatBattle(pGroup.ubSectorX, pGroup.ubSectorY);
                 return true;
@@ -1020,7 +1019,7 @@ public class StrategicMovement
 
 
 
-            if (pPlayerDialogGroup)
+            if (pPlayerDialogGroup is not null)
             {
                 PrepareForPreBattleInterface(pPlayerDialogGroup, pGroup);
             }
@@ -1065,7 +1064,7 @@ public class StrategicMovement
             return;
         }
 
-        if (!pGroup.pWaypoints)
+        if (!pGroup.pWaypoints.Any())
         {
             return;
         }
@@ -1094,7 +1093,7 @@ public class StrategicMovement
         { //We have reached the next waypoint, so now determine what the next waypoint is.
             switch (pGroup.ubMoveType)
             {
-                case ONE_WAY:
+                case MOVE_TYPES.ONE_WAY:
                     if (!wp.next)
                     { //No more waypoints, so we've reached the destination.
                         DeployGroupToSector(pGroup);
@@ -1103,7 +1102,7 @@ public class StrategicMovement
                     //Advance destination to next waypoint ID
                     pGroup.ubNextWaypointID++;
                     break;
-                case CIRCULAR:
+                case MOVE_TYPES.CIRCULAR:
                     wp = wp.next;
                     if (!wp)
                     {   //reached the end of the patrol route.  Set to the first waypoint in list, indefinately.
@@ -1117,13 +1116,13 @@ public class StrategicMovement
                     }
 
                     break;
-                case ENDTOEND_FORWARDS:
+                case MOVE_TYPES.ENDTOEND_FORWARDS:
                     wp = wp.next;
                     if (!wp)
                     {
                         //AssertMsg(pGroup.ubNextWaypointID, "EndToEnd patrol group needs more than one waypoint!");
                         pGroup.ubNextWaypointID--;
-                        pGroup.ubMoveType = ENDTOEND_BACKWARDS;
+                        pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_BACKWARDS;
                     }
                     else
                     {
@@ -1131,11 +1130,11 @@ public class StrategicMovement
                     }
 
                     break;
-                case ENDTOEND_BACKWARDS:
+                case MOVE_TYPES.ENDTOEND_BACKWARDS:
                     if (!pGroup.ubNextWaypointID)
                     {
                         pGroup.ubNextWaypointID++;
-                        pGroup.ubMoveType = ENDTOEND_FORWARDS;
+                        pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_FORWARDS;
                     }
                     else
                     {
@@ -1163,7 +1162,7 @@ public class StrategicMovement
         // based on how long movement took, mercs gain a bit of life experience for travelling
         PLAYERGROUP? pPlayerGroup;
         SOLDIERTYPE? pSoldier;
-        int uiPoints;
+        uint uiPoints;
         int uiCarriedPercent;
 
         if (pGroup is null || !pGroup.fPlayer)
@@ -1175,8 +1174,10 @@ public class StrategicMovement
         while (pPlayerGroup)
         {
             pSoldier = pPlayerGroup.pSoldier;
-            if (pSoldier && !AM_A_ROBOT(pSoldier) &&
-                    !AM_AN_EPC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+            if (pSoldier is not null
+                && !AM_A_ROBOT(pSoldier)
+                && !AM_AN_EPC(pSoldier)
+                && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
             {
                 if (pSoldier.bLifeMax < 100)
                 {
@@ -1192,7 +1193,7 @@ public class StrategicMovement
 
                 if (pSoldier.bStrength < 100)
                 {
-                    uiCarriedPercent = CalculateCarriedWeight(pSoldier);
+                    uiCarriedPercent = ItemSubSystem.CalculateCarriedWeight(pSoldier);
                     if (uiCarriedPercent > 50)
                     {
                         uiPoints = pGroup.uiTraverseTime / (450 / (100 - pSoldier.bStrength));
@@ -2223,11 +2224,10 @@ public class StrategicMovement
         }
     }
 
-    void RemoveGroupWaypoints(int ubGroupID)
+    public static void RemoveGroupWaypoints(int ubGroupID)
     {
-        GROUP? pGroup;
-        pGroup = GetGroup(ubGroupID);
-        Debug.Assert(pGroup);
+        GROUP? pGroup = GetGroup(ubGroupID);
+        Debug.Assert(pGroup is not null);
         RemovePGroupWaypoints(pGroup);
     }
 
@@ -2623,7 +2623,7 @@ public class StrategicMovement
     }
 
     //CHANGES:  ubDirection contains the strategic move value, not the delta value.  
-    uint GetSectorMvtTimeForGroup(SEC ubSector, StrategicMove ubDirection, GROUP? pGroup)
+    public static uint GetSectorMvtTimeForGroup(SEC ubSector, StrategicMove ubDirection, GROUP? pGroup)
     {
         uint iTraverseTime;
         uint iBestTraverseTime = 1000000;
@@ -2895,7 +2895,7 @@ public class StrategicMovement
 
 
     // get travel time for this group
-    int GetTravelTimeForGroup(int ubSector, int ubDirection, int ubGroup)
+    public static uint GetTravelTimeForGroup(SEC ubSector, StrategicMove ubDirection, int ubGroup)
     {
         GROUP? pGroup;
 
@@ -2908,14 +2908,15 @@ public class StrategicMovement
         return (GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup));
     }
 
-    int GetTravelTimeForFootTeam(int ubSector, int ubDirection)
+    public static uint GetTravelTimeForFootTeam(SEC ubSector, StrategicMove ubDirection)
     {
-        GROUP Group = new();
+        GROUP Group = new()
+        {
+            // group going on foot
+            ubTransportationMask = VehicleTypes.FOOT
+        };
 
-        // group going on foot
-        Group.ubTransportationMask = VehicleTypes.FOOT;
-
-        return (GetSectorMvtTimeForGroup(ubSector, ubDirection, out (Group)));
+        return (GetSectorMvtTimeForGroup(ubSector, ubDirection, Group));
 
     }
 
@@ -2934,23 +2935,23 @@ public class StrategicMovement
         { //We don't have to worry about filling up the player slots, because it is impossible
           //to have more player's in the game then the number of slots available for the player.
             PLAYERGROUP? pPlayer;
-            int ubStrategicInsertionCode;
+            INSERTION_CODE ubStrategicInsertionCode;
             //First, determine which entrypoint to use, based on the travel direction of the group.
             if (pGroup.ubSectorX < pGroup.ubPrevX)
             {
-                ubStrategicInsertionCode = INSERTION_CODE_EAST;
+                ubStrategicInsertionCode = INSERTION_CODE.EAST;
             }
             else if (pGroup.ubSectorX > pGroup.ubPrevX)
             {
-                ubStrategicInsertionCode = INSERTION_CODE_WEST;
+                ubStrategicInsertionCode = INSERTION_CODE.WEST;
             }
             else if (pGroup.ubSectorY < pGroup.ubPrevY)
             {
-                ubStrategicInsertionCode = INSERTION_CODE_SOUTH;
+                ubStrategicInsertionCode = INSERTION_CODE.SOUTH;
             }
             else if (pGroup.ubSectorY > pGroup.ubPrevY)
             {
-                ubStrategicInsertionCode = INSERTION_CODE_NORTH;
+                ubStrategicInsertionCode = INSERTION_CODE.NORTH;
             }
             else
             {
@@ -2961,10 +2962,10 @@ public class StrategicMovement
 
             cnt = 0;
 
-            while (pPlayer)
+            while (pPlayer is not null)
             {
                 pSoldier = pPlayer.pSoldier;
-                Debug.Assert(pSoldier);
+                Debug.Assert(pSoldier is not null);
                 pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
                 UpdateMercInSector(pSoldier, pGroup.ubSectorX, pGroup.ubSectorY, 0);
                 pPlayer = pPlayer.next;
@@ -2987,7 +2988,7 @@ public class StrategicMovement
             AddPossiblePendingEnemiesToBattle();
         }
         //Update the known number of enemies in the sector.
-        pSector = SectorInfo[SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)];
+        pSector = SectorInfo[SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)];
         iNumEnemiesInSector = NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY);
         if (iNumEnemiesInSector)
         {
@@ -3003,10 +3004,10 @@ public class StrategicMovement
         }
     }
 
-    public static bool PlayersBetweenTheseSectors(int sSource, int sDest, out int iCountEnter, out int iCountExit, out bool fAboutToArriveEnter)
+    public static bool PlayersBetweenTheseSectors(SEC sSource, SEC sDest, out int iCountEnter, out int iCountExit, out bool fAboutToArriveEnter)
     {
         GROUP? curr = gpGroupList;
-        int sBattleSector = -1;
+        SEC sBattleSector = SEC.UNSET;
         bool fMayRetreatFromBattle = false;
         bool fRetreatingFromBattle = false;
         bool fHandleRetreats = false;
@@ -3020,7 +3021,7 @@ public class StrategicMovement
         if (gpBattleGroup is not null)
         {
             //Debug.Assert( gfPreBattleInterfaceActive );
-            sBattleSector = (int)SECTOR(gpBattleGroup.ubSectorX, gpBattleGroup.ubSectorY);
+            sBattleSector = SECTORINFO.SECTOR(gpBattleGroup.ubSectorX, gpBattleGroup.ubSectorY);
         }
 
         // debug only
@@ -3053,19 +3054,19 @@ public class StrategicMovement
                         fMayRetreatFromBattle = false;
                         fRetreatingFromBattle = false;
 
-                        if ((sBattleSector == sSource) && (SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTOR(curr.ubPrevX, curr.ubPrevY) == sDest))
+                        if ((sBattleSector == sSource) && (SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTORINFO.SECTOR(curr.ubPrevX, curr.ubPrevY) == sDest))
                         {
                             fMayRetreatFromBattle = true;
                         }
 
-                        if ((sBattleSector == sDest) && (SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTOR(curr.ubPrevX, curr.ubPrevY) == sSource))
+                        if ((sBattleSector == sDest) && (SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTORINFO.SECTOR(curr.ubPrevX, curr.ubPrevY) == sSource))
                         {
                             fRetreatingFromBattle = true;
                         }
 
                         ubMercsInGroup = curr.ubGroupSize;
 
-                        if (((SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTOR(curr.ubNextX, curr.ubNextY) == sDest)) || (fMayRetreatFromBattle == true))
+                        if (((SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTORINFO.SECTOR(curr.ubNextX, curr.ubNextY) == sDest)) || (fMayRetreatFromBattle == true))
                         {
                             // if it's a valid vehicle, but not the helicopter (which can fly empty)
                             if (curr.fVehicle && !fHelicopterGroup && (GivenMvtGroupIdFindVehicleId(curr.ubGroupID) != -1))
@@ -3083,7 +3084,7 @@ public class StrategicMovement
                                 fAboutToArriveEnter = true;
                             }
                         }
-                        else if ((SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTOR(curr.ubNextX, curr.ubNextY) == sSource) || (fRetreatingFromBattle == true))
+                        else if ((SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTORINFO.SECTOR(curr.ubNextX, curr.ubNextY) == sSource) || (fRetreatingFromBattle == true))
                         {
                             // if it's a valid vehicle, but not the helicopter (which can fly empty)
                             if (curr.fVehicle && !fHelicopterGroup && (GivenMvtGroupIdFindVehicleId(curr.ubGroupID) != -1))
@@ -3105,7 +3106,7 @@ public class StrategicMovement
         }
 
         // if there was actually anyone leaving this sector and entering next
-        if (*iCountEnter > 0)
+        if (iCountEnter > 0)
         {
             return (true);
         }
@@ -3144,7 +3145,7 @@ public class StrategicMovement
     }
 
 
-    public static void GetGroupPosition(out int ubNextX, out MAP_ROW ubNextY, out int ubPrevX, out int ubPrevY, out uint uiTraverseTime, out int uiArriveTime, int ubGroupId)
+    public static void GetGroupPosition(out int ubNextX, out MAP_ROW ubNextY, out int ubPrevX, out MAP_ROW ubPrevY, out uint uiTraverseTime, out uint uiArriveTime, int ubGroupId)
     {
         GROUP? pGroup;
 
@@ -3950,7 +3951,7 @@ public class StrategicMovement
         return null;
     }
 
-    bool GroupAtFinalDestination(GROUP? pGroup)
+    public static bool GroupAtFinalDestination(GROUP? pGroup)
     {
         WAYPOINT? wp;
 
@@ -4063,13 +4064,13 @@ public class StrategicMovement
     {
         GROUP? pGroup = null;
         bool fDone = false;
-        int cnt;
+        SquadEnum cnt;
         bool fDoChange = false;
 
         // ATE: If saved game is < 61, we need to do something better!
         if (uiSavedGameVersion < 61)
         {
-            for (cnt = 0; cnt < 55; cnt++)
+            for (cnt = 0; cnt < (SquadEnum)55; cnt++)
             {
                 // create mvt groups
                 pGroup = GetGroup((int)cnt);
@@ -4216,7 +4217,7 @@ public class StrategicMovement
                 }
                 //Advance the sector value
                 pGroup.ubSectorX = (int)(dx + pGroup.ubSectorX);
-                pGroup.ubSectorY = (dy + pGroup.ubSectorY);
+                pGroup.ubSectorY = (MAP_ROW)(dy + (int)pGroup.ubSectorY);
                 //Check to see if it the sector we are checking to see if this group will be moving through.
                 if (pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY)
                 {
@@ -4243,7 +4244,7 @@ public class StrategicMovement
     bool VehicleHasFuel(SOLDIERTYPE? pSoldier)
     {
         Debug.Assert(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
-        if (pSoldier.sBreathRed)
+        if (pSoldier.sBreathRed > 0)
         {
             return true;
         }
@@ -4446,15 +4447,15 @@ public class StrategicMovement
         int bNumMercMaxCats;
         bool fAlreadyAmbushed = false;
 
-        if (pGroup.ubSectorZ)
+        if (pGroup.ubSectorZ > 0)
         { //no ambushes underground (no bloodcats either)
             return false;
         }
 
-        ubSectorID = (int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
-        pSector = &SectorInfo[ubSectorID];
+        ubSectorID = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
+        pSector = SectorInfo[ubSectorID];
 
-        ubChance = 5 * gGameOptions.ubDifficultyLevel;
+        ubChance = 5 * (int)gGameOptions.ubDifficultyLevel;
 
         iHoursElapsed = (GameClock.GetWorldTotalMin() - pSector.uiTimeCurrentSectorWasLastLoaded) / 60;
         if (ubSectorID == SEC.N5 || ubSectorID == SEC.I16)
@@ -4521,21 +4522,21 @@ public class StrategicMovement
         }
         else
         {
-            gubEnemyEncounterCode = NO_ENCOUNTER_CODE;
+            gubEnemyEncounterCode = ENCOUNTER_CODE.NO_ENCOUNTER_CODE;
             return false;
         }
     }
 
-    void NotifyPlayerOfBloodcatBattle(int ubSectorX, int ubSectorY)
+    void NotifyPlayerOfBloodcatBattle(int ubSectorX, MAP_ROW ubSectorY)
     {
         string str = string.Empty;
         string zTempString = string.Empty;
-        if (gubEnemyEncounterCode == BLOODCAT_AMBUSH_CODE)
+        if (gubEnemyEncounterCode == ENCOUNTER_CODE.BLOODCAT_AMBUSH_CODE)
         {
             StrategicMap.GetSectorIDString(ubSectorX, ubSectorY, 0, zTempString, true);
             wprintf(str, pMapErrorString[12], zTempString);
         }
-        else if (gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE)
+        else if (gubEnemyEncounterCode == ENCOUNTER_CODE.ENTERING_BLOODCAT_LAIR_CODE)
         {
             wcscpy(str, pMapErrorString[13]);
         }
@@ -4746,7 +4747,7 @@ public class StrategicMovement
         gpGroupPrompting = pGroup;
 
         // build string for squad
-        StrategicMap.GetSectorIDString(sSectorX, sSectorY, bSectorZ, wSectorName, false);
+        StrategicMap.GetSectorIDString(sSectorX, sSectorY, bSectorZ, out wSectorName, false);
         sString = wprintf(pLandMarkInSectorString[0], pGroup.pPlayerList.pSoldier.bAssignment + 1, wSectorName);
 
         if (GroupAtFinalDestination(pGroup))
@@ -4926,18 +4927,19 @@ public class WAYPOINT
     public WAYPOINT? next;
 }
 
-public record ENEMYGROUP(
-    int ubNumTroops,                      //number of regular troops in the group
-    int ubNumElites,                      //number of elite troops in the group
-    int ubNumAdmins,                      //number of administrators in the group
-    int ubLeaderProfileID,            //could be Mike, maybe the warden... someone new, but likely nobody.
-    int ubPendingReinforcements,//This group is waiting for reinforcements before attacking or attempting to fortify newly aquired sector.
-    int ubAdminsInBattle,            //number of administrators in currently in battle.
-    ENEMY_INTENTIONS ubIntention,                      //the type of group this is:  patrol, assault, spies, etc.
-    int ubTroopsInBattle,             //number of soldiers currently in battle.
-    int ubElitesInBattle,             //number of elite soldiers currently in battle.
-    int[] bPadding);
-
+public class ENEMYGROUP
+{
+    public int ubNumTroops;                      //number of regular troops in the group
+    public int ubNumElites;                      //number of elite troops in the group
+    public int ubNumAdmins;                      //number of administrators in the group
+    public int ubLeaderProfileID;            //could be Mike, maybe the warden... someone new, but likely nobody.
+    public int ubPendingReinforcements;//This group is waiting for reinforcements before attacking or attempting to fortify newly aquired sector.
+    public int ubAdminsInBattle;            //number of administrators in currently in battle.
+    public ENEMY_INTENTIONS ubIntention;                      //the type of group this is:  patrol, assault, spies, etc.
+    public int ubTroopsInBattle;             //number of soldiers currently in battle.
+    public int ubElitesInBattle;             //number of elite soldiers currently in battle.
+    private int[] bPadding = new int[20];
+}
 
 public enum ENEMY_INTENTIONS//enemy intentions,
 {

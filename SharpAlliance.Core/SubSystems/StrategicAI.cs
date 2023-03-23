@@ -609,7 +609,7 @@ public class StrategicAI
         GameEvents.DeleteAllStrategicEventsOfType(EVENT.EVALUATE_QUEEN_SITUATION);
     }
 
-    bool OkayForEnemyToMoveThroughSector(SEC ubSectorID)
+    public static bool OkayForEnemyToMoveThroughSector(SEC ubSectorID)
     {
         SECTORINFO? pSector;
         pSector = SectorInfo[ubSectorID];
