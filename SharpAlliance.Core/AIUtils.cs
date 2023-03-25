@@ -1351,7 +1351,7 @@ public class AIUtils
         }
     }
 
-    int GetInterveningClimbingLocation(SOLDIERTYPE pSoldier, int sDestGridNo, int bDestLevel, out bool pfClimbingNecessary)
+    public static int GetInterveningClimbingLocation(SOLDIERTYPE pSoldier, int sDestGridNo, int bDestLevel, out bool pfClimbingNecessary)
     {
         if (pSoldier.bLevel == bDestLevel)
         {
@@ -1741,7 +1741,7 @@ public class AIUtils
         return (false);
     }
 
-    bool WearGasMaskIfAvailable(SOLDIERTYPE pSoldier)
+    public static bool WearGasMaskIfAvailable(SOLDIERTYPE pSoldier)
     {
         InventorySlot bSlot, bNewSlot;
 

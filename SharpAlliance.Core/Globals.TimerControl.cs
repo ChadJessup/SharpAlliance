@@ -1,6 +1,7 @@
 ﻿using TIMECOUNTER = System.UInt32;
 
 using static SharpAlliance.Core.Globals;
+using System.Collections.Generic;
 
 namespace SharpAlliance.Core;
 
@@ -13,9 +14,9 @@ public partial class Globals
     public const int NUMTIMERS = (int)TIMER.NUMTIMERS;
 
     // TIMER INTERVALS
-    public static int[] giTimerIntervals = new int[NUMTIMERS];
+    public static Dictionary<TIMER, int> giTimerIntervals = new();// int[NUMTIMERS];
     // TIMER COUNTERS
-    public static int[] giTimerCounters = new int[NUMTIMERS];
+    public static Dictionary<TIMER, int> giTimerCounters = new();// int[NUMTIMERS];
 
     // GLOBAL SYNC TEMP TIME
     public static int giClockTimer;
@@ -29,7 +30,7 @@ public partial class Globals
     // MACROS
     //																CHeck if new counter < 0														 | set to 0 |										 Decrement
 
-    public static void UPDATECOUNTER(TIMECOUNTER c)
+    public static void UPDATECOUNTER(TIMER c)
     {
         if ((giTimerCounters[c] - BASETIMESLICE) < 0)
         {
@@ -41,8 +42,8 @@ public partial class Globals
         }
     }
 
-    public static void RESETCOUNTER(TIMECOUNTER c) { giTimerCounters[c] = giTimerIntervals[c]; }
-    public static bool COUNTERDONE(TIMECOUNTER c) => giTimerCounters[c] == 0 ? true : false;
+    public static void RESETCOUNTER(TIMER c) { giTimerCounters[c] = giTimerIntervals[c]; }
+    public static bool COUNTERDONE(TIMER c) => giTimerCounters[c] == 0 ? true : false;
     public static void UPDATETIMECOUNTER(ref TIMECOUNTER c)
     {
         if ((c - BASETIMESLICE) < 0)

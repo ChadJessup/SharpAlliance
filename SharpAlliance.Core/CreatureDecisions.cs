@@ -5,7 +5,7 @@ using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
 
-public class CreatureDecideAction
+public class CreatureDecisions
 {
     public static void CreatureCall(SOLDIERTYPE pCaller)
     {
@@ -545,7 +545,7 @@ public class CreatureDecideAction
 
             if (PreRandom(100) < iChance)
             {
-                pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sNoiseGridNo, AI_ACTION.SEEK_NOISE);
+                pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sNoiseGridNo, AI_ACTION.SEEK_NOISE);
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
@@ -717,7 +717,7 @@ public class CreatureDecideAction
                 }
                 else
                 {
-                    pSoldier.usActionData = InternalGoAsFarAsPossibleTowards(pSoldier, pSoldier.sCallerGridNo, -1, AI_ACTION.SEEK_FRIEND, FLAG.STOPSHORT);
+                    pSoldier.usActionData = Movement.InternalGoAsFarAsPossibleTowards(pSoldier, pSoldier.sCallerGridNo, -1, AI_ACTION.SEEK_FRIEND, FLAG.STOPSHORT);
 
                     if ((int)pSoldier.usActionData != NOWHERE)
                     {
@@ -736,7 +736,7 @@ public class CreatureDecideAction
                 //////////////////////////////////////////////////////////////////////
 
                 // try to move towards him
-                pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sClosestDisturbance, AI_ACTION.SEEK_OPPONENT);
+                pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sClosestDisturbance, AI_ACTION.SEEK_OPPONENT);
 
                 // if it's possible
                 if ((int)pSoldier.usActionData != NOWHERE)
@@ -1295,12 +1295,12 @@ public class CreatureDecideAction
                             pSoldier.usActionData = AdvanceToFiringRange(pSoldier, sClosestOpponent);
                             if (pSoldier.usActionData == NOWHERE)
                             {
-                                pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
+                                pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
                             }
                         }
                         else
                         {
-                            pSoldier.usActionData = GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
+                            pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
                         }
                     }
                     else
@@ -1352,7 +1352,7 @@ public class CreatureDecideAction
         return (AI_ACTION.NONE);
     }
 
-    AI_ACTION CreatureDecideAction(SOLDIERTYPE? pSoldier)
+    public static AI_ACTION CreatureDecideAction(SOLDIERTYPE pSoldier)
     {
         AI_ACTION bAction = AI_ACTION.NONE;
 

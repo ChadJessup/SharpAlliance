@@ -6168,12 +6168,12 @@ int	gOrangeGlowG[]=
 
                 // Alrighty, let's not blindly change here, look at whether the dest gridno is good!
                 sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(gOppositeDirection[bNewDirection]));
-                if (!NewOKDestination(pSoldier, sNewGridNo, true, 0))
+                if (!Overhead.NewOKDestination(pSoldier, sNewGridNo, true, 0))
                 {
                     return (false);
                 }
                 sNewGridNo = IsometricUtils.NewGridNo(sNewGridNo, IsometricUtils.DirectionInc(gOppositeDirection[bNewDirection]));
-                if (!NewOKDestination(pSoldier, sNewGridNo, true, 0))
+                if (!Overhead.NewOKDestination(pSoldier, sNewGridNo, true, 0))
                 {
                     return (false);
                 }
@@ -7231,7 +7231,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             else
             {
                 // OK, SEE IF THERE IS AN OBSTACLE HERE...
-                if (!NewOKDestination(pSoldier, sGridNo, false, pSoldier.bLevel))
+                if (!Overhead.NewOKDestination(pSoldier, sGridNo, false, pSoldier.bLevel))
                 {
                     EVENT_InitNewSoldierAnim(pSoldier, STAB, 0, false);
                 }

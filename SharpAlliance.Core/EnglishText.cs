@@ -8,7 +8,103 @@ namespace SharpAlliance.Core;
 // TODO: Move to built-in internationalization stuff.
 public static class EnglishText
 {
-    public static string[] gzCopyrightText = new string[]
+    public static string[] Message =
+    {
+    	"",
+    
+    	// In the following 8 strings, the %s is the merc's name, and the %d (if any) is a number.
+    
+    	"%s is hit in the head and loses a point of wisdom!",
+    	"%s is hit in the shoulder and loses a point of dexterity!",
+    	"%s is hit in the chest and loses a point of strength!",
+    	"%s is hit in the legs and loses a point of agility!",
+    	"%s is hit in the head and loses %d points of wisdom!",
+    	"%s is hit in the shoulder and loses %d points of dexterity!",
+    	"%s is hit in the chest and loses %d points of strength!",
+    	"%s is hit in the legs and loses %d points of agility!",
+    	"Interrupt!",
+    
+    	// The first %s is a merc's name, the second is a string from pNoiseVolStr,
+    	// the third is a string from pNoiseTypeStr, and the last is a string from pDirectionStr
+    
+    	"", //OBSOLETE
+    	"Your reinforcements have arrived!",
+    
+    	// In the following four lines, all %s's are merc names
+    
+    	"%s reloads.",
+    	"%s doesn't have enough Action Points!",
+    	"%s is applying first aid. (Press any key to cancel.)",
+    	"%s and %s are applying first aid. (Press any key to cancel.)",
+    	// the following 17 strings are used to create lists of gun advantages and disadvantages
+    	// (separated by commas)
+    	"reliable",
+    	"unreliable",
+    	"easy to repair",
+    	"hard to repair",
+    	"high damage",
+    	"low damage",
+    	"quick firing",
+    	"slow firing",
+    	"long range",
+    	"short range",
+    	"light",
+    	"heavy",
+    	"small",
+    	"fast burst fire",
+    	"no burst fire",
+    	"large magazine",
+    	"small magazine",
+    
+    	// In the following two lines, all %s's are merc names
+    
+    	"%s's camouflage has worn off.",
+    	"%s's camouflage has washed off.",
+    
+    	// The first %s is a merc name and the second %s is an item name
+    
+    	"Second weapon is out of ammo!",
+    	"%s has stolen the %s.",
+    
+    	// The %s is a merc name
+    
+    	"%s's weapon can't burst fire.",
+    
+    	"You've already got one of those attached.",
+    	"Merge items?",
+    
+    	// Both %s's are item names
+    
+    	"You can't attach a %s to a %s.",
+    
+    	"None",
+    	"Eject ammo",
+    	"Attachments",
+    	
+    	//You cannot use "item(s)" and your "other item" at the same time.
+    	//Ex:  You cannot use sun goggles and you gas mask at the same time.
+    	"You cannot use %s and your %s at the same time.",
+    	"The item you have in your cursor can be attached to certain items by placing it in one of the four attachment slots.",
+    	"The item you have in your cursor can be attached to certain items by placing it in one of the four attachment slots. (However in this case, the item is not compatible.)",
+    	"The sector isn't cleared of enemies!",
+    	"You still need to give %s %s", 
+    	"%s is hit in the head!",
+    	"Abandon the fight?",
+    	"This attachment will be permanent.  Go ahead with it?",
+    	"%s feels more energetic!",
+    	"%s slipped on some marbles!",
+    	"%s failed to grab the %s!",
+    	"%s has repaired the %s",
+    	"Interrupt for ",
+    	"Surrender?",
+    	"This person refuses your aid.",
+    	"I DON'T think so!",
+        "To travel in Skyrider's chopper, you'll have to ASSIGN mercs to VEHICLE/HELICOPTER first.",
+    	"%s only had enough time to reload ONE gun",
+    	"Bloodcats' turn",
+    };
+
+public static string[] gzCopyrightText = new string[]
     {
         "Copyright (C) 1999 Sir-tech Canada Ltd.  All rights reserved.",
     };

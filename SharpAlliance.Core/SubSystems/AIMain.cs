@@ -738,7 +738,7 @@ public class AIMain
     }
 
 
-    int FindAdjacentSpotBeside(SOLDIERTYPE? pSoldier, int sGridno)
+    int FindAdjacentSpotBeside(SOLDIERTYPE pSoldier, int sGridno)
     {
         int cnt;
         int[] mods = { -1, -MAPWIDTH, 1, MAPWIDTH };
@@ -750,7 +750,7 @@ public class AIMain
             sTempGridno = sGridno + mods[cnt];
             if (!OutOfBounds(sGridno, sTempGridno))
             {
-                if (NewOKDestination(pSoldier, sTempGridno, PEOPLETOO, pSoldier.bLevel) && DestNotSpokenFor(pSoldier, sTempGridno))
+                if (Overhead.NewOKDestination(pSoldier, sTempGridno, PEOPLETOO, pSoldier.bLevel) && DestNotSpokenFor(pSoldier, sTempGridno))
                 {
                     sMovementCost = PathAI.PlotPath(
                         pSoldier,
@@ -1674,11 +1674,11 @@ public class AIMain
                 {
                     if (CREATURE_OR_BLOODCAT(pSoldier))
                     {
-                        pSoldier.bAction = CreatureDecideAction(pSoldier);
+                        pSoldier.bAction = CreatureDecisions(pSoldier);
                     }
                     else if (pSoldier.ubBodyType == SoldierBodyTypes.CROW)
                     {
-                        pSoldier.bAction = CreatureDecideAction.CrowDecideAction(pSoldier);
+                        pSoldier.bAction = CreatureDecisions.CrowDecideAction(pSoldier);
                     }
                     else
                     {

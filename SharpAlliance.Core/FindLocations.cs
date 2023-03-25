@@ -171,7 +171,7 @@ public class FindLocations
 
         // precalculate these for speed
         // what was struct for?
-        sOKTest = NewOKDestination(pSoldier, sCentralGridNo, IGNOREPEOPLE, bLevel);
+        sOKTest = Overhead.NewOKDestination(pSoldier, sCentralGridNo, IGNOREPEOPLE, bLevel);
         sNorthGridNo = IsometricUtils.NewGridNo(sCentralGridNo, IsometricUtils.DirectionInc(WorldDirections.NORTH));
         sSouthGridNo = IsometricUtils.NewGridNo(sCentralGridNo, IsometricUtils.DirectionInc(WorldDirections.SOUTH));
 
@@ -185,7 +185,7 @@ public class FindLocations
             if (sAdjSpot != sCentralGridNo)
             {
                 // if the adjacent spot can we walked on and isn't in water or gas
-                if ((NewOKDestination(pSoldier, sAdjSpot, IGNOREPEOPLE, bLevel) > 0) && !InWaterOrGas(pSoldier, sAdjSpot))
+                if ((Overhead.NewOKDestination(pSoldier, sAdjSpot, IGNOREPEOPLE, bLevel) > 0) && !InWaterOrGas(pSoldier, sAdjSpot))
                 {
                     switch (sDir)
                     {
@@ -209,7 +209,7 @@ public class FindLocations
 
                     // ATE: OLD STUFF
                     // if the adjacent gridno is reachable from the starting spot
-                    if (NewOKDestination(pSoldier, sCheckSpot, false, bLevel))
+                    if (Overhead.NewOKDestination(pSoldier, sCheckSpot, false, bLevel))
                     {
                         // the dude could move to this adjacent gridno, so put him there
                         // "virtually" so we can calculate what our cover is from there

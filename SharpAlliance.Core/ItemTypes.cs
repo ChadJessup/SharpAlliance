@@ -502,3 +502,30 @@ public enum Items : short
 
     MAXITEMS
 }
+
+public enum CURS
+{
+    INVALIDCURS = 0,
+    QUESTCURS = 1,
+    PUNCHCURS = 2,
+    TARGETCURS = 3,
+    KNIFECURS = 4,
+    AIDCURS = 5,
+    TOSSCURS = 6,
+    MINECURS = 8,
+    LPICKCURS = 9,
+    MDETECTCURS = 10,
+    CROWBARCURS = 11,
+    SURVCAMCURS = 12,
+    CAMERACURS = 13,
+    KEYCURS = 14,
+    SAWCURS = 15,
+    WIRECUTCURS = 16,
+    REMOTECURS = 17,
+    BOMBCURS = 18, // ( only calculated, not set item table)
+    REPAIRCURS = 19,
+    TRAJECTORYCURS = 20,
+    JARCURS = 21,
+    TINCANCURS = 22,
+    REFUELCURS = 23,
+}

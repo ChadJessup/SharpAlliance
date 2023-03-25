@@ -12,6 +12,39 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class NPC
 {
+    public static bool TriggerNPCWithIHateYouQuote(NPCID ubTriggerNPC)
+    {
+        // Check if we have a quote to trigger...
+        NPCQuoteInfo pNPCQuoteInfoArray;
+        NPCQuoteInfo pQuotePtr;
+        bool fDisplayDialogue = true;
+        int ubLoop;
+
+        if (!EnsureQuoteFileLoaded(ubTriggerNPC))
+        {
+            // error!!!
+            return (false);
+        }
+
+        pNPCQuoteInfoArray = gpNPCQuoteInfoArray[ubTriggerNPC];
+
+        for (ubLoop = 0; ubLoop < NUM_NPC_QUOTE_RECORDS; ubLoop++)
+        {
+            pQuotePtr = (pNPCQuoteInfoArray[ubLoop]);
+            if (NPCConsiderQuote(ubTriggerNPC, 0, APPROACH_DECLARATION_OF_HOSTILITY, ubLoop, 0, pNPCQuoteInfoArray))
+            {
+                // trigger this quote!
+                // reset approach required value so that we can trigger it
+                //pQuotePtr->ubApproachRequired = TRIGGER_NPC;
+                NPCTriggerNPC(ubTriggerNPC, ubLoop, APPROACH_DECLARATION_OF_HOSTILITY, TRUE);
+                gMercProfiles[ubTriggerNPC].ubMiscFlags |= PROFILE_MISC_FLAG_SAID_HOSTILE_QUOTE;
+                return (true);
+            }
+        }
+        return (false);
+
+    }
+
     public static void NPCReachedDestination(SOLDIERTYPE? pNPC, bool fAlreadyThere)
     {
         // perform action or whatever after reaching our destination
@@ -19,7 +52,7 @@ public class NPC
         NPCQuoteInfo pQuotePtr;
         List<NPCQuoteInfo> pNPCQuoteInfoArray;
         int ubLoop;
-        int ubQuoteRecord;
+        NPC_ACTION ubQuoteRecord;
 
         if (pNPC.ubQuoteRecord == 0)
         {

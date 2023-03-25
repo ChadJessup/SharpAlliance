@@ -25,6 +25,128 @@ public class Overhead
         return false;
     }
 
+    // NB if making changes don't forget to update NewOKDestination
+    public static bool NewOKDestinationAndDirection(SOLDIERTYPE pCurrSoldier, int sGridNo, int bDirection, bool fPeopleToo, int bLevel)
+    {
+        int bPerson;
+        STRUCTURE? pStructure;
+        int sDesiredLevel;
+        bool fOKCheckStruct;
+
+        if (fPeopleToo && (bPerson = WhoIsThere2(sGridNo, bLevel)) != NO_SOLDIER)
+        {
+            // we could be multitiled... if the person there is us, and the gridno is not
+            // our base gridno, skip past these checks
+            if (!(bPerson == pCurrSoldier.ubID && sGridNo != pCurrSoldier.sGridNo))
+            {
+                if (pCurrSoldier.bTeam == gbPlayerNum)
+                {
+                    if ((Menptr[bPerson].bVisible >= 0) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+                        return (false);                 // if someone there it's NOT OK
+                }
+                else
+                {
+                    return (false);                 // if someone there it's NOT OK
+                }
+            }
+        }
+
+        // Check structure database
+        if ((pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)) && !(gfEstimatePath))
+        {
+            int usAnimSurface;
+            STRUCTURE_FILE_REF pStructureFileRef;
+            bool fOk;
+            int bLoop;
+            int usStructureID = INVALID_STRUCTURE_ID;
+
+            // this could be kinda slow...
+
+            // Get animation surface...
+            usAnimSurface = DetermineSoldierAnimationSurface(pCurrSoldier, pCurrSoldier.usUIMovementMode);
+            // Get structure ref...
+            pStructureFileRef = GetAnimationStructureRef(pCurrSoldier.ubID, usAnimSurface, pCurrSoldier.usUIMovementMode);
+
+            if (pStructureFileRef)
+            {
+
+                // use the specified direction for checks
+                bLoop = bDirection;
+
+                {
+                    // ATE: Only if we have a levelnode...
+                    if (pCurrSoldier.pLevelNode != null && pCurrSoldier.pLevelNode.pStructureData != null)
+                    {
+                        usStructureID = pCurrSoldier.pLevelNode.pStructureData.usStructureID;
+                    }
+
+                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, &(pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (BOOLEAN)!fPeopleToo);
+                    if (fOk)
+                    {
+                        return (true);
+                    }
+                }
+
+            }
+            return (false);
+        }
+        else
+        {
+            // quick test
+            if (gpWorldLevelData[sGridNo].pStructureHead != null)
+            {
+                // Something is here, check obstruction in future
+                if (bLevel == 0)
+                {
+                    sDesiredLevel = STRUCTURE_ON_GROUND;
+                }
+                else
+                {
+                    sDesiredLevel = STRUCTURE_ON_ROOF;
+                }
+
+                pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.BLOCKSMOVES);
+
+                // ATE: If we are trying to get a path to an exit grid AND
+                // we are a cave....still allow this..
+                //if ( pStructure && gfPlotPathToExitGrid && pStructure.fFlags & STRUCTURE_CAVEWALL )
+                if (pStructure && gfPlotPathToExitGrid)
+                {
+                    pStructure = null;
+                }
+
+                while (pStructure != null)
+                {
+                    if (!(pStructure.fFlags & STRUCTURE_PASSABLE))
+                    {
+                        fOKCheckStruct = true;
+
+                        // Check if this is a multi-tile
+                        if ((pStructure.fFlags & STRUCTURE_MOBILE) && (pCurrSoldier.uiStatusFlags & SOLDIER_MULTITILE))
+                        {
+                            // Check IDs with soldier's ID
+                            if (pCurrSoldier.pLevelNode != null && pCurrSoldier.pLevelNode.pStructureData != null && pCurrSoldier.pLevelNode.pStructureData.usStructureID == pStructure.usStructureID)
+                            {
+                                fOKCheckStruct = false;
+                            }
+                        }
+
+                        if (fOKCheckStruct)
+                        {
+                            if (pStructure.sCubeOffset == sDesiredLevel)
+                            {
+                                return (false);
+                            }
+                        }
+                    }
+
+                    pStructure = FindNextStructure(pStructure, STRUCTURE_BLOCKSMOVES);
+                }
+            }
+        }
+        return (true);
+    }
+
     public static void SelectSoldier(int usSoldierID, bool fAcknowledge, bool fForceReselect)
     {
         InternalSelectSoldier(usSoldierID, fAcknowledge, fForceReselect, false);
@@ -352,7 +474,7 @@ public class Overhead
             else
             {
                 // this function returns original MP cost if not a door cost
-                if (DoorTravelCost(pSoldier, sSpot, gubWorldMovementCosts[sSpot][ubTestDirection][pSoldier.bLevel], FALSE, null) >= TRAVELCOST_BLOCKED)
+                if (DoorTravelCost(pSoldier, sSpot, gubWorldMovementCosts[sSpot][ubTestDirection][pSoldier.bLevel], false, null) >= TRAVELCOST_BLOCKED)
                 {
                     // obstacle or wall there!
                     continue;
@@ -405,7 +527,7 @@ public class Overhead
             // don't store path, just measure it
             ubDir = (UINT8)GetDirectionToGridNoFromGridNo(sSpot, sGridNo);
 
-            if ((NewOKDestinationAndDirection(pSoldier, sSpot, ubDir, TRUE, pSoldier.bLevel) > 0) &&
+            if ((NewOKDestinationAndDirection(pSoldier, sSpot, ubDir, true, pSoldier.bLevel) > 0) &&
                 ((sDistance = PlotPath(pSoldier, sSpot, NO_COPYROUTE, NO_PLOT, TEMPORARY, (INT16)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints)) > 0))
             {
                 if (sDistance < sClosest)
@@ -479,12 +601,12 @@ public class Overhead
         STRUCTURE_ON sDesiredLevel;
         bool fOKCheckStruct;
 
-        if (!GridNoOnVisibleWorldTile(sGridNo))
+        if (!IsometricUtils.GridNoOnVisibleWorldTile(sGridNo))
         {
             return (true);
         }
 
-        if (fPeopleToo && (bPerson = WhoIsThere2(sGridNo, bLevel)) != NO_SOLDIER)
+        if (fPeopleToo && (bPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) != NO_SOLDIER)
         {
             // we could be multitiled... if the person there is us, and the gridno is not
             // our base gridno, skip past these checks
@@ -863,23 +985,23 @@ public class TacticalStatusType
 // TACTICAL ENGINE STATUS FLAGS
 public class TacticalTeamType
 {
-public int RadarColor;
-public int bFirstID;
-public int bLastID;
-public TEAM bSide;
-public int bMenInSector;
-public int ubLastMercToRadio;
-public int bTeamActive;
-public int bAwareOfOpposition;
-public int bHuman;
-
-public bool IsHuman => this.bHuman > 0;
+    public int RadarColor;
+    public int bFirstID;
+    public int bLastID;
+    public TEAM bSide;
+    public int bMenInSector;
+    public int ubLastMercToRadio;
+    public bool IsTeamActive => bTeamActive > 0;
+    public int bTeamActive;
+    public int bAwareOfOpposition;
+    public int bHuman;
+    public bool IsHuman => this.bHuman > 0;
 }
 
 [Flags]
 public enum PANIC
 {
-BOMBS_HERE = 0x01,
-TRIGGERS_HERE = 0x02,
-NUM_PANIC_TRIGGERS = 3,
+    BOMBS_HERE = 0x01,
+    TRIGGERS_HERE = 0x02,
+    NUM_PANIC_TRIGGERS = 3,
 }

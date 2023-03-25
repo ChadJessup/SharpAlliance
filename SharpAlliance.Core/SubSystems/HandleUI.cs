@@ -427,7 +427,7 @@ public class HandleUI
     static int sOldExitGridNo = (int)Globals.NOWHERE;
     static bool fOkForExit = false;
 
-    void SetUIMouseCursor()
+    public static void SetUIMouseCursor()
     {
         MOUSE uiCursorFlags;
         uint uiTraverseTimeInMinutes;
@@ -569,7 +569,7 @@ public class HandleUI
 
                     // Adjust where we blit our cursor!
                     Globals.gsGlobalCursorYOffset = 0;
-                    SetCurrentCursorFromDatabase(CURSOR.NORMAL);
+                    CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
                 }
                 else
                 {
@@ -2551,7 +2551,7 @@ public class HandleUI
         int sTargetGridNo;
         bool fEnoughPoints = true;
         int sAPCost;
-        byte ubItemCursor;
+        CURS ubItemCursor;
         Items usInHand;
 
         if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
@@ -2571,12 +2571,12 @@ public class HandleUI
                 // Get cursor value
                 ubItemCursor = GetActionModeCursor(pSoldier);
 
-                if (ubItemCursor == INVALIDCURS)
+                if (ubItemCursor == CURS.INVALIDCURS)
                 {
                     return (false);
                 }
 
-                if (ubItemCursor == BOMBCURS)
+                if (ubItemCursor == CURS.BOMBCURS)
                 {
                     // Check as...
                     if (EnoughPoints(pSoldier, GetTotalAPsToDropBomb(pSoldier, usMapPos), 0, true))
@@ -3188,15 +3188,14 @@ public class HandleUI
         return (ScreenName.InitScreen);
     }
 
-    static bool fStationary = false;
-    static int usOldMouseXPos = 32000;
-    static int usOldMouseYPos = 32000;
-    static int usOldMapPos = 32000;
+    private static bool fStationary = false;
+    private static int usOldMouseXPos = 32000;
+    private static int usOldMouseYPos = 32000;
+    private static int usOldMapPos = 32000;
+    private static MOUSE uiSameFrameCursorFlags;
+    private static int uiOldFrameNumber = 99999;
 
-    static MOUSE uiSameFrameCursorFlags;
-    static int uiOldFrameNumber = 99999;
-
-    void GetCursorMovementFlags(out MOUSE puiCursorFlags)
+    public static void GetCursorMovementFlags(out MOUSE puiCursorFlags)
     {
         int usMapPos;
         int sXPos, sYPos;
@@ -3810,7 +3809,7 @@ public class HandleUI
     }
 
 
-    bool UIMouseOnValidAttackLocation(SOLDIERTYPE? pSoldier)
+    bool UIMouseOnValidAttackLocation(SOLDIERTYPE pSoldier)
     {
         Items usInHand;
         bool fGuyHere = false;
@@ -3888,7 +3887,7 @@ public class HandleUI
                 return (true);
             }
 
-            if (!NewOKDestination(pSoldier, usMapPos, true, pSoldier.bLevel))
+            if (!Overhead.NewOKDestination(pSoldier, usMapPos, true, pSoldier.bLevel))
             {
                 return (false);
             }
@@ -5967,7 +5966,7 @@ public class HandleUI
             if (ubGuyThere == pSoldier.ubID)
             {
                 // Double check OK destination......
-                if (NewOKDestination(pSoldier, sGridNo, true, Globals.gsInterfaceLevel))
+                if (Overhead.NewOKDestination(pSoldier, sGridNo, true, Globals.gsInterfaceLevel))
                 {
                     // If the soldier in the middle of doing stuff?
                     if (!pSoldier.fTurningUntilDone)

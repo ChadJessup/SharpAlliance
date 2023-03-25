@@ -44,7 +44,7 @@ public class Movement
         // AND the gridno hasn't been black-listed for us
 
         // Nov 28 98: skip people in destination tile if in turnbased
-        if ((NewOKDestination(pSoldier, sGridno, fSkipTilesWithMercs, pSoldier.bLevel)) &&
+        if ((Overhead.NewOKDestination(pSoldier, sGridno, fSkipTilesWithMercs, pSoldier.bLevel)) &&
                        (!AIUtils.InGas(pSoldier, sGridno)) &&
                        (sGridno != pSoldier.sGridNo) &&
                        (sGridno != pSoldier.sBlackList))
@@ -228,7 +228,7 @@ public class Movement
             {
                 sPatrolPoint = NextPatrolPoint(pSoldier);
             }
-            while ((sPatrolPoint != NOWHERE) && (NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1));
+            while ((sPatrolPoint != NOWHERE) && (Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1));
 
             // if we're back where we started, then ALL other patrol points are junk!
             if (pSoldier.sGridNo == sPatrolPoint)
@@ -298,7 +298,7 @@ public class Movement
                 sPatrolPoint = pSoldier.usPatrolGrid[bPatrolIndex];
                 bCnt++;
             }
-            while ((sPatrolPoint == pSoldier.sGridNo) || ((sPatrolPoint != NOWHERE) && (bCnt < pSoldier.bPatrolCnt) && (NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1)));
+            while ((sPatrolPoint == pSoldier.sGridNo) || ((sPatrolPoint != NOWHERE) && (bCnt < pSoldier.bPatrolCnt) && (Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1)));
 
             if (bCnt == pSoldier.bPatrolCnt)
             {
@@ -308,7 +308,7 @@ public class Movement
                 {
                     sPatrolPoint = NextPatrolPoint(pSoldier);
                 }
-                while ((sPatrolPoint != NOWHERE) && (NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1));
+                while ((sPatrolPoint != NOWHERE) && (Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1));
             }
 
             // do nothing this time around
@@ -356,9 +356,7 @@ public class Movement
         return (true);
     }
 
-
-
-    int InternalGoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, int bReserveAPs, AI_ACTION bAction, FLAG fFlags)
+    public static int InternalGoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, int bReserveAPs, AI_ACTION bAction, FLAG fFlags)
     {
         int sLoop, sAPCost;
         int sTempDest, sGoToGrid;
@@ -654,7 +652,7 @@ public class Movement
         }
     }
 
-    int GoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, AI_ACTION bAction)
+    public static int GoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, AI_ACTION bAction)
     {
         return (InternalGoAsFarAsPossibleTowards(pSoldier, sDesGrid, -1, bAction, 0));
     }
@@ -680,7 +678,7 @@ public class Movement
             return;
         }
 
-        if (!NewOKDestination(pSoldier, pSoldier.usActionData, true, pSoldier.bLevel))
+        if (!Overhead.NewOKDestination(pSoldier, (int)pSoldier.usActionData, true, pSoldier.bLevel))
         {
             AIMain.CancelAIAction(pSoldier, DONTFORCE);
             return;

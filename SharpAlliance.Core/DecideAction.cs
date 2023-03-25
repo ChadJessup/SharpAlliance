@@ -9,7 +9,7 @@ public class DecideAction
     public static void DecideAlertStatus(SOLDIERTYPE pSoldier)
     {
         STATUS bOldStatus;
-        int  iDummy;
+        int  iDummy = 0;
         bool fClimbDummy, fReachableDummy;
 
         // THE FOUR (4) POSSIBLE ALERT STATUSES ARE:
@@ -22,7 +22,7 @@ public class DecideAction
 
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
         {
-            CreatureDecideAction.CreatureDecideAlertStatus(pSoldier);
+            CreatureDecisions.CreatureDecideAlertStatus(pSoldier);
             return;
         }
 
@@ -60,7 +60,7 @@ public class DecideAction
                             // if we are NOT aware of any uninvestigated noises right now
                             // and we are not currently in the middle of an action
                             // (could still be on his way heading to investigate a noise!)
-                            if ((MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE)
+                            if ((Knowledge.MostImportantNoiseHeard(pSoldier, ref iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE)
                                 && pSoldier.bActionInProgress == 0)
                             {
                                 // then drop back to GREEN status
@@ -72,14 +72,14 @@ public class DecideAction
 
                     case STATUS.GREEN:
                         // if all enemies have been RED alerted, or we're under fire
-                        if (!PTR_CIVILIAN && (gTacticalStatus.Team[pSoldier.bTeam].bAwareOfOpposition > 0 || pSoldier.bUnderFire > 0))
+                        if (!PTR_CIVILIAN(pSoldier) && (gTacticalStatus.Team[pSoldier.bTeam].bAwareOfOpposition > 0 || pSoldier.bUnderFire > 0))
                         {
                             pSoldier.bAlertStatus = STATUS.RED;
                         }
                         else
                         {
                             // if we ARE aware of any uninvestigated noises right now
-                            if (MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) != NOWHERE)
+                            if (Knowledge.MostImportantNoiseHeard(pSoldier, ref iDummy, out fClimbDummy, out fReachableDummy) != NOWHERE)
                             {
                                 // then move up to YELLOW status
                                 pSoldier.bAlertStatus = STATUS.YELLOW;
@@ -103,7 +103,7 @@ public class DecideAction
                 if ((bOldStatus < STATUS.RED) || (pSoldier.bAlertStatus < STATUS.RED))
                 {
                     // force a NEW action decision on next pass through HandleManAI()
-                    SetNewSituation(pSoldier);
+                    AIMain.SetNewSituation(pSoldier);
                 }
 
                 // if this guy JUST discovered that there were opponents here for sure...
@@ -123,11 +123,11 @@ public class DecideAction
                     if (!SoldierControl.MercInWater(pSoldier))
                     {
                         // force a NEW decision so that he can get some rest
-                        SetNewSituation(pSoldier);
+                        AIMain.SetNewSituation(pSoldier);
 
                         // current action will be canceled. if noise is no longer important
                         if ((pSoldier.bAlertStatus == STATUS.YELLOW) &&
-                            (MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE))
+                            (Knowledge.MostImportantNoiseHeard(pSoldier, ref iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE))
                         {
                             // then drop back to GREEN status
                             pSoldier.bAlertStatus = STATUS.GREEN;

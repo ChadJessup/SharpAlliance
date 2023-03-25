@@ -229,8 +229,6 @@ public class Buildings
                     else if (Globals.Random.Next(uiChanceIn) == 0)
                     {
                         // don't consider people as obstacles
-                        if (NewOKDestination(FakeSoldier, sCurrGridNo, false, 0))
-                        {
                             pBuilding.sUpClimbSpots[pBuilding.ubNumClimbSpots] = sCurrGridNo;
                             pBuilding.sDownClimbSpots[pBuilding.ubNumClimbSpots] = sRightGridNo;
                             pBuilding.ubNumClimbSpots++;
@@ -291,8 +289,6 @@ public class Buildings
                 }
 
             }
-
-        }
 
         // at end could prune # of locations if there are too many
 

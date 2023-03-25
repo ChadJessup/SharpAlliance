@@ -7,7 +7,7 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class CursorSubSystem : IDisposable
 {
-    public void SetCurrentCursorFromDatabase(CURSOR cursor)
+    public static void SetCurrentCursorFromDatabase(CURSOR cursor)
     {
     }
 

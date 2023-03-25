@@ -266,7 +266,7 @@ public class InterfaceCursors
         if (Globals.gpItemPointer != null)
         {
             // Check if we are in the viewport region...
-            if (Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
+            if (gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
                 HideItemTileCursor();
                 return true;
@@ -465,9 +465,9 @@ public class InterfaceCursors
         {
             if (Globals.gfUIDisplayActionPointsInvalid)
             {
-                if (COUNTERDONE(CURSORFLASH))
+                if (COUNTERDONE(TIMER.CURSORFLASH))
                 {
-                    RESETCOUNTER(CURSORFLASH);
+                    RESETCOUNTER(TIMER.CURSORFLASH);
 
                     fShowAP = !fShowAP;
                 }

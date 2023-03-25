@@ -31,7 +31,7 @@ public class SOLDIERTYPE
     public bool bInSector { get; set; }
     public FLASH_PORTRAIT bFlashPortraitFrame;
     public int sFractLife;       // fraction of life pts (in hundreths)	
-    public int bBleeding;     // blood loss control variable
+    public uint bBleeding;     // blood loss control variable
     public int bBreath;           // current breath value
     public int bBreathMax;   // max breath, affected by fatigue/sleep
     public bool bStealthMode { get; set; }
@@ -58,6 +58,7 @@ public class SOLDIERTYPE
 
 
     public bool bActive;
+    public bool IsActive => bActive;
 
     public TEAM bTeam;             // Team identifier
 

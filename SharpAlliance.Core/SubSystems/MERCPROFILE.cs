@@ -63,7 +63,7 @@ public class MERCPROFILESTRUCT
 
     public int uiDayBecomesAvailable;           //day the merc will be available.  used with the bMercStatus
 
-    public int bStrength;
+    public uint bStrength;
 
     public int bLifeMax;
     public int bExpLevelDelta;

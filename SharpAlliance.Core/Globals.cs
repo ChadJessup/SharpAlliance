@@ -2039,8 +2039,8 @@ public partial class Globals
     public static Dictionary<TEAM, int[]> gbPublicOpplist = new();
     //public static int[,] gbPublicOpplist = new int[MAXTEAMS, TOTAL_SOLDIERS];
     public static int[,] gbSeenOpponents = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
-    public static int[,] gsLastKnownOppLoc = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];		// merc vs. merc
-    public static int[,] gbLastKnownOppLevel = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
+    public static int[][] gsLastKnownOppLoc = new int[TOTAL_SOLDIERS][];// [TOTAL_SOLDIERS];		// merc vs. merc
+    public static int[][] gbLastKnownOppLevel = new int[TOTAL_SOLDIERS][];// [TOTAL_SOLDIERS];
     public static Dictionary<TEAM, List<int>> gsPublicLastKnownOppLoc = new(); //int[MAXTEAMS, TOTAL_SOLDIERS];	// team vs. merc
     public static Dictionary<TEAM, List<int>> gbPublicLastKnownOppLevel = new();
     public static Dictionary<TEAM, int> gubPublicNoiseVolume = new();
@@ -2114,16 +2114,16 @@ public partial class Globals
     {
        //   P E R S O N A L   O P P L I S T  //
        // -4   -3   -2   -1   0   1   2   3   4   5   //
-       {   0,   1,   2,   3,  0,  5,  4,  3,  2,  1}, // -4
-       {   0,   0,   1,   2,  0,  4,  3,  2,  1,  0}, // -3    O
-       {   0,   0,   0,   1,  0,  3,  2,  1,  0,  0}, // -2  P P
-       {   0,   0,   0,   0,  0,  2,  1,  0,  0,  0}, // -1  U P
-       {   0,   1,   2,   3,  0,  5,  4,  3,  2,  1}, //  0  B L
-       {   0,   0,   0,   0,  0,  0,  0,  0,  0,  0}, //  1  L I
-       {   0,   0,   0,   0,  0,  1,  0,  0,  0,  0}, //  2  I S
-       {   0,   0,   0,   1,  0,  2,  1,  0,  0,  0}, //  3  C T
-       {   0,   0,   1,   2,  0,  3,  2,  1,  0,  0}, //  4
-       {   0,   1,   2,   3,  0,  4,  3,  2,  1,  0}  //  5
+       {   0,   1,   2,   3,  0,  5,  4,  3,  2,  1 }, // -4
+       {   0,   0,   1,   2,  0,  4,  3,  2,  1,  0 }, // -3    O
+       {   0,   0,   0,   1,  0,  3,  2,  1,  0,  0 }, // -2  P P
+       {   0,   0,   0,   0,  0,  2,  1,  0,  0,  0 }, // -1  U P
+       {   0,   1,   2,   3,  0,  5,  4,  3,  2,  1 }, //  0  B L
+       {   0,   0,   0,   0,  0,  0,  0,  0,  0,  0 }, //  1  L I
+       {   0,   0,   0,   0,  0,  1,  0,  0,  0,  0 }, //  2  I S
+       {   0,   0,   0,   1,  0,  2,  1,  0,  0,  0 }, //  3  C T
+       {   0,   0,   1,   2,  0,  3,  2,  1,  0,  0 }, //  4
+       {   0,   1,   2,   3,  0,  4,  3,  2,  1,  0 }  //  5
     
     /*
        //   P E R S O N A L   O P P L I S T  //

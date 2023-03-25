@@ -239,7 +239,7 @@ public class SoldierTile
         }
 
         // Are we clear of structs?
-        if (!NewOKDestination(pSoldier, sGridNo, false, pSoldier.bLevel))
+        if (!Overhead.NewOKDestination(pSoldier, sGridNo, false, pSoldier.bLevel))
         {
             // ATE: Fence cost is an exclusiuon here....
             if (gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel] != TRAVELCOST.FENCE)
@@ -446,7 +446,7 @@ public class SoldierTile
                         // on last lap of scripted move, make sure we get to final dest
                         sCheckGridNo = pSoldier.sAbsoluteFinalDestination;
                     }
-                    else if (!NewOKDestination(pSoldier, pSoldier.sFinalDestination, true, pSoldier.bLevel))
+                    else if (!Overhead.NewOKDestination(pSoldier, pSoldier.sFinalDestination, true, pSoldier.bLevel))
                     {
                         if (pSoldier.fDelayedMovement >= 150)
                         {
@@ -634,7 +634,7 @@ public class SoldierTile
         int sX, sY;
 
         // Check dest...
-        if (NewOKDestination(pSoldier, sGridNo, true, 0) || fForce)
+        if (Overhead.NewOKDestination(pSoldier, sGridNo, true, 0) || fForce)
         {
             // TELEPORT TO THIS LOCATION!
             sX = IsometricUtils.CenterX(sGridNo);
@@ -687,7 +687,7 @@ public class SoldierTile
         RemoveSoldierFromGridNo(pSoldier2);
 
         // OK, test OK destination for each.......
-        if (NewOKDestination(pSoldier1, sGridNo2, true, 0) && NewOKDestination(pSoldier2, sGridNo1, true, 0))
+        if (Overhead.NewOKDestination(pSoldier1, sGridNo2, true, 0) && Overhead.NewOKDestination(pSoldier2, sGridNo1, true, 0))
         {
             // OK, call teleport function for each.......
             TeleportSoldier(pSoldier1, sGridNo2, false);

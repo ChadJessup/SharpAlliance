@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core;
 
@@ -22,4 +23,49 @@ public partial class Globals
     public static int CONVERT_INDEX_TO_PIXELS(int n) => ((n) * MAX_STRUCTURE_HEIGHT * HEIGHT_UNITS_PER_INDEX / HEIGHT_UNITS);
     public const int TREE_SIGHT_REDUCTION = 6;
     public const int NORMAL_TREES = 10;
+
+    public const float STANDING_HEIGHT = 191.0f;
+    public const float STANDING_LOS_POS = 175.0f;
+    public const float STANDING_FIRING_POS = 175.0f;
+    public const float STANDING_HEAD_TARGET_POS = 175.0f;
+    public const float STANDING_HEAD_BOTTOM_POS = 159.0f;
+    public const float STANDING_TORSO_TARGET_POS = 127.0f;
+    public const float STANDING_TORSO_BOTTOM_POS = 95.0f;
+    public const float STANDING_LEGS_TARGET_POS = 47.0f;
+    public const float STANDING_TARGET_POS = STANDING_HEAD_TARGET_POS;
+    public const float CROUCHED_HEIGHT = 130.0f;
+    public const float CROUCHED_LOS_POS = 111.0f;
+    public const float CROUCHED_FIRING_POS = 111.0f;
+    public const float CROUCHED_HEAD_TARGET_POS = 111.0f;
+    public const float CROUCHED_HEAD_BOTTOM_POS = 95.0f;
+    public const float CROUCHED_TORSO_TARGET_POS = 71.0f;
+    public const float CROUCHED_TORSO_BOTTOM_POS = 47.0f;
+    public const float CROUCHED_LEGS_TARGET_POS = 31.0f;
+    public const float CROUCHED_TARGET_POS = CROUCHED_HEAD_TARGET_POS;
+    public const float PRONE_HEIGHT = 63.0f;
+    public const float PRONE_LOS_POS = 31.0f;
+    public const float PRONE_FIRING_POS = 31.0f;
+    public const float PRONE_TORSO_TARGET_POS = 31.0f;
+    public const float PRONE_HEAD_TARGET_POS = 31.0f;
+    public const float PRONE_LEGS_TARGET_POS = 31.0f;
+    public const float PRONE_TARGET_POS = PRONE_HEAD_TARGET_POS;
+    public const float WALL_HEIGHT_UNITS = HEIGHT_UNITS;
+    public const float WINDOW_BOTTOM_HEIGHT_UNITS = 87;
+    public const float WINDOW_TOP_HEIGHT_UNITS = 220;
+    public const float CLOSE_TO_FIRER = 25;
+    public const float VERY_CLOSE_TO_FIRER = 21;
+
+    public static Dictionary<AnimationHeights, int> gubTreeSightReduction = new()
+    {
+        { (AnimationHeights)0, 0 },
+        { AnimationHeights.ANIM_PRONE, 8 }, // prone
+    	{ (AnimationHeights)0, 0 },
+        { AnimationHeights.ANIM_CROUCH, 7 }, // crouched
+    	{ (AnimationHeights)0, 0 },
+        { (AnimationHeights)0, 0 },
+        { AnimationHeights.ANIM_STAND , 6 } // standing
+    };
+
+    public const int MAX_DIST_FOR_LESS_THAN_MAX_CHANCE_TO_HIT_STRUCTURE = 25;
+
 }

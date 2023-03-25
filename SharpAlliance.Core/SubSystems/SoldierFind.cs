@@ -379,7 +379,7 @@ public class SoldierFind
                         // Selective means don't give out enemy mercs if they are not visible
 
                         ///&& !NewOKDestination( pSoldier, sGridNo, true, (int)gsInterfaceLevel )
-                        if (pSoldier.sGridNo == sGridNo && !NewOKDestination(pSoldier, sGridNo, true, (int)Globals.gsInterfaceLevel))
+                        if (pSoldier.sGridNo == sGridNo && !Overhead.NewOKDestination(pSoldier, sGridNo, true, (int)Globals.gsInterfaceLevel))
                         {
                             // Set it!
                             ubBestMerc = pSoldier.ubID;
