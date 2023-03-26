@@ -28,4 +28,6 @@ public partial class Globals
     public const int MAX_INDIVIDUALS = 148;
     public SOLDIERINITNODE? gSoldierInitHead;
     public SOLDIERINITNODE? gSoldierInitTail;
+
+    public static bool gfEstimatePath { get; internal set; }
 }

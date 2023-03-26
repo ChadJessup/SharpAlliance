@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
@@ -30,10 +31,10 @@ public class Overhead
     {
         int bPerson;
         STRUCTURE? pStructure;
-        int sDesiredLevel;
+        STRUCTURE_ON sDesiredLevel;
         bool fOKCheckStruct;
 
-        if (fPeopleToo && (bPerson = WhoIsThere2(sGridNo, bLevel)) != NO_SOLDIER)
+        if (fPeopleToo && (bPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) != NO_SOLDIER)
         {
             // we could be multitiled... if the person there is us, and the gridno is not
             // our base gridno, skip past these checks
@@ -54,8 +55,8 @@ public class Overhead
         // Check structure database
         if ((pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)) && !(gfEstimatePath))
         {
-            int usAnimSurface;
-            STRUCTURE_FILE_REF pStructureFileRef;
+            AnimationSurfaceTypes usAnimSurface;
+            STRUCTURE_FILE_REF? pStructureFileRef;
             bool fOk;
             int bLoop;
             int usStructureID = INVALID_STRUCTURE_ID;
@@ -63,11 +64,11 @@ public class Overhead
             // this could be kinda slow...
 
             // Get animation surface...
-            usAnimSurface = DetermineSoldierAnimationSurface(pCurrSoldier, pCurrSoldier.usUIMovementMode);
+            usAnimSurface = AnimationControl.DetermineSoldierAnimationSurface(pCurrSoldier, pCurrSoldier.usUIMovementMode);
             // Get structure ref...
-            pStructureFileRef = GetAnimationStructureRef(pCurrSoldier.ubID, usAnimSurface, pCurrSoldier.usUIMovementMode);
+            pStructureFileRef = AnimationData.GetAnimationStructureRef(pCurrSoldier.ubID, usAnimSurface, pCurrSoldier.usUIMovementMode);
 
-            if (pStructureFileRef)
+            if (pStructureFileRef is not null)
             {
 
                 // use the specified direction for checks
@@ -80,7 +81,7 @@ public class Overhead
                         usStructureID = pCurrSoldier.pLevelNode.pStructureData.usStructureID;
                     }
 
-                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, &(pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (BOOLEAN)!fPeopleToo);
+                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, &(pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (bool)!fPeopleToo);
                     if (fOk)
                     {
                         return (true);
@@ -98,11 +99,11 @@ public class Overhead
                 // Something is here, check obstruction in future
                 if (bLevel == 0)
                 {
-                    sDesiredLevel = STRUCTURE_ON_GROUND;
+                    sDesiredLevel = STRUCTURE_ON.GROUND;
                 }
                 else
                 {
-                    sDesiredLevel = STRUCTURE_ON_ROOF;
+                    sDesiredLevel = STRUCTURE_ON.ROOF;
                 }
 
                 pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.BLOCKSMOVES);
@@ -110,19 +111,19 @@ public class Overhead
                 // ATE: If we are trying to get a path to an exit grid AND
                 // we are a cave....still allow this..
                 //if ( pStructure && gfPlotPathToExitGrid && pStructure.fFlags & STRUCTURE_CAVEWALL )
-                if (pStructure && gfPlotPathToExitGrid)
+                if (pStructure is not null && gfPlotPathToExitGrid)
                 {
                     pStructure = null;
                 }
 
                 while (pStructure != null)
                 {
-                    if (!(pStructure.fFlags & STRUCTURE_PASSABLE))
+                    if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
                     {
                         fOKCheckStruct = true;
 
                         // Check if this is a multi-tile
-                        if ((pStructure.fFlags & STRUCTURE_MOBILE) && (pCurrSoldier.uiStatusFlags & SOLDIER_MULTITILE))
+                        if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)) && (pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)))
                         {
                             // Check IDs with soldier's ID
                             if (pCurrSoldier.pLevelNode != null && pCurrSoldier.pLevelNode.pStructureData != null && pCurrSoldier.pLevelNode.pStructureData.usStructureID == pStructure.usStructureID)
@@ -140,7 +141,7 @@ public class Overhead
                         }
                     }
 
-                    pStructure = FindNextStructure(pStructure, STRUCTURE_BLOCKSMOVES);
+                    pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.BLOCKSMOVES);
                 }
             }
         }
@@ -223,9 +224,9 @@ public class Overhead
             // DB This used to say pSoldier... I fixed it
             if (pOldSoldier.bLevel == 0)
             {
-                //ConcealWalls((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE), REVEAL_WALLS_RADIUS);
-                //	ApplyTranslucencyToWalls((INT16)(pOldSoldier.dXPos/CELL_X_SIZE), (INT16)(pOldSoldier.dYPos/CELL_Y_SIZE));
-                //LightHideTrees((INT16)(pOldSoldier.dXPos/CELL_X_SIZE), (INT16)(pOldSoldier.dYPos/CELL_Y_SIZE));
+                //ConcealWalls((int)(pSoldier.dXPos/CELL_X_SIZE), (int)(pSoldier.dYPos/CELL_Y_SIZE), REVEAL_WALLS_RADIUS);
+                //	ApplyTranslucencyToWalls((int)(pOldSoldier.dXPos/CELL_X_SIZE), (int)(pOldSoldier.dYPos/CELL_Y_SIZE));
+                //LightHideTrees((int)(pOldSoldier.dXPos/CELL_X_SIZE), (int)(pOldSoldier.dYPos/CELL_Y_SIZE));
             }
             //DeleteSoldierLight( pOldSoldier );
 
@@ -241,13 +242,13 @@ public class Overhead
         gusSelectedSoldier = usSoldierID;
 
         // find which squad this guy is, then set selected squad to this guy
-        SetCurrentSquad(pSoldier.bAssignment, false);
+        Squads.SetCurrentSquad((SquadEnum)pSoldier.bAssignment, false);
 
         if (pSoldier.bLevel == 0)
         {
-            //RevealWalls((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE), REVEAL_WALLS_RADIUS);
-            //	CalcTranslucentWalls((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE));
-            //LightTranslucentTrees((INT16)(pSoldier.dXPos/CELL_X_SIZE), (INT16)(pSoldier.dYPos/CELL_Y_SIZE));
+            //RevealWalls((int)(pSoldier.dXPos/CELL_X_SIZE), (int)(pSoldier.dYPos/CELL_Y_SIZE), REVEAL_WALLS_RADIUS);
+            //	CalcTranslucentWalls((int)(pSoldier.dXPos/CELL_X_SIZE), (int)(pSoldier.dYPos/CELL_Y_SIZE));
+            //LightTranslucentTrees((int)(pSoldier.dXPos/CELL_X_SIZE), (int)(pSoldier.dYPos/CELL_Y_SIZE));
         }
 
         //SetCheckSoldierLightFlag( pSoldier );
@@ -316,7 +317,8 @@ public class Overhead
         int sDistance = 0;
         WorldDirections[] sDirs = { WorldDirections.NORTH, WorldDirections.EAST, WorldDirections.SOUTH, WorldDirections.WEST };
         int cnt;
-        int sClosest = NOWHERE, sSpot, sOkTest;
+        int sClosest = NOWHERE, sSpot;
+        bool sOkTest;
         int sCloseGridNo = NOWHERE;
         FIND_SOLDIER_RESPONSES uiMercFlags;
         int usSoldierIndex;
@@ -413,7 +415,7 @@ public class Overhead
         }
 
 
-        if ((sOkTest = NewOKDestination(pSoldier, sGridNo, true, pSoldier.bLevel)) > 0)    // no problem going there! nobody on it!
+        if ((sOkTest = NewOKDestination(pSoldier, sGridNo, true, pSoldier.bLevel)))    // no problem going there! nobody on it!
         {
             // OK, if we are looking to goto a switch, ignore this....
             if (pDoor is not null)
@@ -518,22 +520,22 @@ public class Overhead
                     // Use direction to the door!
                     if (pubDirection)
                     {
-                        (*pubDirection) = (UINT8)GetDirectionFromGridNo(sGridNo, pSoldier);
+                        (pubDirection) = (int)GetDirectionFromGridNo(sGridNo, pSoldier);
                     }
                 }
                 return (sSpot);
             }
 
             // don't store path, just measure it
-            ubDir = (UINT8)GetDirectionToGridNoFromGridNo(sSpot, sGridNo);
+            ubDir = (int)GetDirectionToGridNoFromGridNo(sSpot, sGridNo);
 
             if ((NewOKDestinationAndDirection(pSoldier, sSpot, ubDir, true, pSoldier.bLevel) > 0) &&
-                ((sDistance = PlotPath(pSoldier, sSpot, NO_COPYROUTE, NO_PLOT, TEMPORARY, (INT16)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints)) > 0))
+                ((sDistance = PlotPath(pSoldier, sSpot, NO_COPYROUTE, NO_PLOT, TEMPORARY, (int)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints)) > 0))
             {
                 if (sDistance < sClosest)
                 {
                     sClosest = sDistance;
-                    sCloseGridNo = (INT16)sSpot;
+                    sCloseGridNo = (int)sSpot;
                 }
             }
         }
@@ -571,7 +573,7 @@ public class Overhead
             else
             {
                 // Calculate direction if our gridno is different....
-                ubDir = (UINT8)GetDirectionToGridNoFromGridNo(sCloseGridNo, sGridNo);
+                ubDir = (int)GetDirectionToGridNoFromGridNo(sCloseGridNo, sGridNo);
                 if (pubDirection)
                 {
                     *pubDirection = ubDir;
@@ -590,6 +592,412 @@ public class Overhead
         else
         {
             return (-1);
+        }
+    }
+
+    public static SOLDIERTYPE? InternalReduceAttackBusyCount(int ubID, bool fCalledByAttacker, int ubTargetID)
+    {
+        // Strange as this may seem, this function returns a pointer to
+        // the *target* in case the target has changed sides as a result
+        // of being attacked
+        SOLDIERTYPE? pSoldier;
+        SOLDIERTYPE? pTarget;
+        bool fEnterCombat = false;
+
+        if (ubID == NOBODY)
+        {
+            pSoldier = null;
+            pTarget = null;
+        }
+        else
+        {
+            pSoldier = MercPtrs[ubID];
+            if (ubTargetID != NOBODY)
+            {
+                pTarget = MercPtrs[ubTargetID];
+            }
+            else
+            {
+                pTarget = null;
+                // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string(">>Target ptr is null!"));
+            }
+        }
+
+        if (fCalledByAttacker)
+        {
+            if (pSoldier is not null && Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.GUN))
+            {
+                if (pSoldier.bBulletsLeft > 0)
+                {
+                    return (pTarget);
+                }
+            }
+        }
+
+        //	if ((gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT))
+        //	{
+
+        if (gTacticalStatus.ubAttackBusyCount == 0)
+        {
+            // ATE: We have a problem here... if testversion, report error......
+            // But for all means.... DON'T wrap!
+            if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            {
+                // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! &&&&&&& Problem with attacker busy count decrementing past 0.... preventing wrap-around."));
+# if JA2BETAVERSION
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Attack busy problem. Save, exit and send debug.txt + save file to Sir-Tech.");
+#endif
+            }
+        }
+        else
+        {
+            gTacticalStatus.ubAttackBusyCount--;
+        }
+
+       // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Ending attack, attack count now %d", gTacticalStatus.ubAttackBusyCount));
+        //	}
+
+        if (gTacticalStatus.ubAttackBusyCount > 0)
+        {
+            return (pTarget);
+        }
+
+        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
+            && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        {
+
+            // Check to see if anyone was suppressed
+            if (pSoldier is not null)
+            {
+                HandleSuppressionFire(pSoldier.ubTargetID, ubID);
+            }
+            else
+            {
+                HandleSuppressionFire(NOBODY, ubID);
+            }
+
+
+            //HandleAfterShootingGuy( pSoldier, pTarget );
+
+            // suppression fire might cause the count to be increased, so check it again
+            if (gTacticalStatus.ubAttackBusyCount > 0)
+            {
+                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting suppression, attack count now %d", gTacticalStatus.ubAttackBusyCount));
+                return (pTarget);
+            }
+        }
+
+        // ATE: IN MEANWHILES, we have 'combat' in realtime....
+        // this is so we DON'T call freeupattacker() which will cancel
+        // the AI guy's meanwhile NPC stuff.
+        // OK< let's NOT do this if it was the queen attacking....
+        if (AreInMeanwhile() && pSoldier != null && pSoldier.ubProfile != QUEEN)
+        {
+            return (pTarget);
+        }
+
+        if (pTarget)
+        {
+            // reset # of shotgun pellets hit by
+            pTarget.bNumPelletsHitBy = 0;
+            // reset flag for making "ow" sound on being shot
+        }
+
+        if (pSoldier)
+        {
+            // reset attacking hand
+            pSoldier.ubAttackingHand = HANDPOS;
+
+            // if there is a valid target, and our attack was noticed
+            if (pTarget && (pSoldier.uiStatusFlags & SOLDIER_ATTACK_NOTICED))
+            {
+                // stuff that only applies to when we attack
+                if (pTarget.ubBodyType != CROW)
+                {
+                    if (pSoldier.bTeam == gbPlayerNum)
+                    {
+                        fEnterCombat = ProcessImplicationsOfPCAttack(pSoldier, &pTarget, REASON_NORMAL_ATTACK);
+                        if (!fEnterCombat)
+                        {
+                            // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Not entering combat as a result of PC attack");
+                        }
+                    }
+                }
+
+                // global
+
+                // ATE: If we are an animal, etc, don't change to hostile... 
+                // ( and don't go into combat )
+                if (pTarget.ubBodyType == SoldierBodyTypes.CROW)
+                {
+                    // Loop through our team, make guys who can see this fly away....
+                    {
+                        int cnt;
+                        SOLDIERTYPE pTeamSoldier;
+                        TEAM ubTeam;
+
+                        ubTeam = pTarget.bTeam;
+
+                        for (cnt = gTacticalStatus.Team[ubTeam].bFirstID, pTeamSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[ubTeam].bLastID; cnt++, pTeamSoldier++)
+                        {
+                            if (pTeamSoldier.bActive && pTeamSoldier.bInSector)
+                            {
+                                if (pTeamSoldier.ubBodyType == SoldierBodyTypes.CROW)
+                                {
+                                    if (pTeamSoldier.bOppList[pSoldier.ubID] == SEEN_CURRENTLY)
+                                    {
+                                        //ZEROTIMECOUNTER( pTeamSoldier.AICounter );		
+
+                                        //MakeCivHostile( pTeamSoldier, 2 );
+
+                                        HandleCrowFlyAway(pTeamSoldier);
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Don't enter combat...
+                    fEnterCombat = false;
+                }
+
+                if (gTacticalStatus.bBoxingState == BoxingStates.BOXING)
+                {
+                    if (pTarget is not null && pTarget.bLife <= 0)
+                    {
+                        // someone has won!
+                        EndBoxingMatch(pTarget);
+                    }
+                }
+
+
+                // if soldier and target were not both players and target was not under fire before...
+                if ((pSoldier.bTeam != gbPlayerNum || pTarget.bTeam != gbPlayerNum))
+                {
+                    if (pTarget.bOppList[pSoldier.ubID] != SEEN_CURRENTLY)
+                    {
+                        OppList.NoticeUnseenAttacker(pSoldier, pTarget, 0);
+                    }
+                    // "under fire" lasts for 2 turns
+                    pTarget.bUnderFire = 2;
+                }
+
+            }
+            else if (pTarget is not null)
+            {
+                // something is wrong here!
+                if (!pTarget.bActive || !pTarget.bInSector)
+                {
+                    DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Invalid target attacked!");
+                }
+                else if (!(pSoldier.uiStatusFlags & SOLDIER_ATTACK_NOTICED))
+                {
+                    DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Attack not noticed");
+                }
+            }
+            else
+            {
+                // no target, don't enter combat
+                fEnterCombat = false;
+            }
+
+            if (pSoldier.fSayAmmoQuotePending)
+            {
+                pSoldier.fSayAmmoQuotePending = false;
+                TacticalCharacterDialogue(pSoldier, QUOTE_OUT_OF_AMMO);
+            }
+
+            if (pSoldier.uiStatusFlags & SOLDIER_PC)
+            {
+                UnSetUIBusy(ubID);
+            }
+            else
+            {
+                FreeUpNPCFromAttacking(ubID);
+            }
+
+            if (!fEnterCombat)
+            {
+                DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Not to enter combat from this attack");
+            }
+
+
+            if (fEnterCombat && !(gTacticalStatus.uiFlags & INCOMBAT))
+            {
+                // Go into combat!
+
+                // If we are in a meanwhile... don't enter combat here...
+                if (!AreInMeanwhile())
+                {
+                    EnterCombatMode(pSoldier.bTeam);
+                }
+            }
+
+            pSoldier.uiStatusFlags &= (~SOLDIER_ATTACK_NOTICED);
+        }
+
+        if (gTacticalStatus.fKilledEnemyOnAttack)
+        {
+            // Check for death quote...
+            HandleKilledQuote(MercPtrs[gTacticalStatus.ubEnemyKilledOnAttack], MercPtrs[gTacticalStatus.ubEnemyKilledOnAttackKiller], gTacticalStatus.ubEnemyKilledOnAttackLocation, gTacticalStatus.bEnemyKilledOnAttackLevel);
+            gTacticalStatus.fKilledEnemyOnAttack = false;
+        }
+
+        // ATE: Check for stat changes....
+        HandleAnyStatChangesAfterAttack();
+
+
+        if (gTacticalStatus.fItemsSeenOnAttack && gTacticalStatus.ubCurrentTeam == gbPlayerNum)
+        {
+            gTacticalStatus.fItemsSeenOnAttack = false;
+
+            // Display quote!
+            if (!AM_AN_EPC(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier]))
+            {
+                TacticalCharacterDialogueWithSpecialEvent(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier], (int)(QUOTE_SPOTTED_SOMETHING_ONE + Random(2)), DIALOGUE_SPECIAL_EVENT_SIGNAL_ITEM_LOCATOR_START, gTacticalStatus.usItemsSeenOnAttackGridNo, 0);
+            }
+            else
+            {
+                // Turn off item lock for locators...
+                gTacticalStatus.fLockItemLocators = false;
+                // Slide to location!
+                SlideToLocation(0, gTacticalStatus.usItemsSeenOnAttackGridNo);
+            }
+        }
+
+        if (gTacticalStatus.uiFlags & CHECK_SIGHT_AT_END_OF_ATTACK)
+        {
+            int ubLoop;
+            SOLDIERTYPE* pSightSoldier;
+
+            AllTeamsLookForAll(false);
+
+            // call fov code
+            ubLoop = gTacticalStatus.Team[gbPlayerNum].bFirstID;
+            for (pSightSoldier = MercPtrs[ubLoop]; ubLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; ubLoop++, pSightSoldier++)
+            {
+                if (pSightSoldier.bActive && pSightSoldier.bInSector)
+                {
+                    RevealRoofsAndItems(pSightSoldier, true, false, pSightSoldier.bLevel, false);
+                }
+            }
+            gTacticalStatus.uiFlags &= ~CHECK_SIGHT_AT_END_OF_ATTACK;
+        }
+
+        DequeueAllDemandGameEvents(true);
+
+        CheckForEndOfBattle(false);
+
+        // if we're in realtime, turn off the attacker's muzzle flash at this point
+        if (!(gTacticalStatus.uiFlags & INCOMBAT) && pSoldier)
+        {
+            EndMuzzleFlash(pSoldier);
+        }
+
+        if (pSoldier && pSoldier.bWeaponMode == WM_ATTACHED)
+        {
+            // change back to single shot
+            pSoldier.bWeaponMode = WM_NORMAL;
+        }
+
+        // record last target
+        // Check for valid target!
+        if (pSoldier)
+        {
+            pSoldier.sLastTarget = pSoldier.sTargetGridNo;
+        }
+
+        return (pTarget);
+    }
+
+    void SlideTo(INT16 sGridno, UINT16 usSoldierID, UINT16 usReasonID, BOOLEAN fSetLocator)
+    {
+        INT32 cnt;
+
+
+        if (usSoldierID == NOBODY)
+        {
+            return;
+        }
+
+        if (fSetLocator == SETANDREMOVEPREVIOUSLOCATOR)
+        {
+            for (cnt = 0; cnt < TOTAL_SOLDIERS; cnt++)
+            {
+                if (MercPtrs[cnt]->bActive && MercPtrs[cnt]->bInSector)
+                {
+                    // Remove all existing locators...
+                    MercPtrs[cnt]->fFlashLocator = FALSE;
+                }
+            }
+        }
+
+        // Locate even if on screen
+        if (fSetLocator)
+            ShowRadioLocator((UINT8)usSoldierID, SHOW_LOCATOR_NORMAL);
+
+        // FIRST CHECK IF WE ARE ON SCREEN
+        if (GridNoOnScreen(MercPtrs[usSoldierID]->sGridNo))
+        {
+            return;
+        }
+
+        // sGridNo here for DG compatibility
+        gTacticalStatus.sSlideTarget = MercPtrs[usSoldierID]->sGridNo;
+        gTacticalStatus.sSlideReason = usReasonID;
+
+        // Plot new path!
+        gfPlotNewMovement = TRUE;
+    }
+
+
+    void SlideToLocation(UINT16 usReasonID, INT16 sDestGridNo)
+    {
+        if (sDestGridNo == NOWHERE)
+        {
+            return;
+        }
+
+        // FIRST CHECK IF WE ARE ON SCREEN
+        if (GridNoOnScreen(sDestGridNo))
+        {
+            return;
+        }
+
+        // sGridNo here for DG compatibility
+        gTacticalStatus.sSlideTarget = sDestGridNo;
+        gTacticalStatus.sSlideReason = usReasonID;
+
+        // Plot new path!
+        gfPlotNewMovement = TRUE;
+    }
+
+
+    void RebuildAllSoldierShadeTables()
+    {
+        int cnt;
+
+        // Loop through all mercs and make go
+        foreach (var pSoldier in Menptr)//, cnt = 0; cnt < TOTAL_SOLDIERS; pSoldier++, cnt++)
+        {
+            if (pSoldier.bActive)
+            {
+                SoldierControl.CreateSoldierPalettes(pSoldier);
+            }
+        }
+
+    }
+
+    public static SOLDIERTYPE? ReduceAttackBusyCount(int ubID, bool fCalledByAttacker)
+    {
+        if (ubID == NOBODY)
+        {
+            return (InternalReduceAttackBusyCount(ubID, fCalledByAttacker, NOBODY));
+        }
+        else
+        {
+            return (InternalReduceAttackBusyCount(ubID, fCalledByAttacker, MercPtrs[ubID].ubTargetID));
         }
     }
 
@@ -640,10 +1048,10 @@ public class Overhead
             // Get animation surface...
             usAnimSurface = AnimationControl.DetermineSoldierAnimationSurface(pCurrSoldier, pCurrSoldier.usUIMovementMode);
             // Get structure ref...
-            pStructureFileRef = GetAnimationStructureRef(pCurrSoldier.ubID, usAnimSurface, pCurrSoldier.usUIMovementMode);
+            pStructureFileRef = AnimationData.GetAnimationStructureRef(pCurrSoldier.ubID, usAnimSurface, pCurrSoldier.usUIMovementMode);
 
             // opposite directions should be mirrors, so only check 4
-            if (pStructureFileRef)
+            if (pStructureFileRef is not null)
             {
                 // if ANY direction is valid, consider moving here valid
                 for (bLoop = 0; bLoop < NUM_WORLD_DIRECTIONS; bLoop++)
@@ -658,7 +1066,7 @@ public class Overhead
                         usStructureID = INVALID_STRUCTURE_ID;
                     }
 
-                    fOk = InternalOkayToAddStructureToWorld(sGridNo, bLevel, (pStructureFileRef.pDBStructureRef[bLoop]), usStructureID, (BOOLEAN)!fPeopleToo);
+                    fOk = StructureInternals.InternalOkayToAddStructureToWorld(sGridNo, bLevel, (pStructureFileRef.pDBStructureRef[bLoop]), usStructureID, (bool)!fPeopleToo);
                     if (fOk)
                     {
                         return (true);
@@ -718,12 +1126,199 @@ public class Overhead
                         }
                     }
 
-                    pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.BLOCKSMOVES);
+                    pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.BLOCKSMOVES);
                 }
             }
         }
 
         return (true);
+    }
+
+    void HandleSuppressionFire(int ubTargetedMerc, int ubCausedAttacker)
+    {
+        int bTolerance;
+        int sClosestOpponent, sClosestOppLoc;
+        int ubPointsLost, ubTotalPointsLost;
+        AnimationHeights ubNewStance;
+        int uiLoop;
+        int ubLoop2;
+        SOLDIERTYPE pSoldier;
+
+        for (uiLoop = 0; uiLoop < guiNumMercSlots; uiLoop++)
+        {
+            pSoldier = MercSlots[uiLoop];
+            if (IS_MERC_BODY_TYPE(pSoldier) && pSoldier.bLife >= OKLIFE && pSoldier.ubSuppressionPoints > 0)
+            {
+                bTolerance = CalcSuppressionTolerance(pSoldier);
+
+                // multiply by 2, add 1 and divide by 2 to round off to nearest whole number
+                ubPointsLost = (((pSoldier.ubSuppressionPoints * 6) / (bTolerance + 6)) * 2 + 1) / 2;
+
+                // reduce loss of APs based on stance
+                // ATE: Taken out because we can possibly supress ourselves...
+                //switch (gAnimControl[ pSoldier.usAnimState ].ubEndHeight)
+                //{
+                //	case ANIM_PRONE:
+                //		ubPointsLost = ubPointsLost * 2 / 4;
+                //		break;
+                //	case ANIM_CROUCH:
+                //		ubPointsLost = ubPointsLost * 3 / 4;
+                //		break;
+                //	default:
+                //		break;
+                //}
+
+                // cap the # of APs we can lose
+                if (ubPointsLost > MAX_APS_SUPPRESSED)
+                {
+                    ubPointsLost = MAX_APS_SUPPRESSED;
+                }
+
+                ubTotalPointsLost = ubPointsLost;
+
+                // Subtract off the APs lost before this point to find out how many points are lost now
+                if (pSoldier.ubAPsLostToSuppression >= ubPointsLost)
+                {
+                    continue;
+                }
+
+                // morale modifier
+                if (ubTotalPointsLost / 2 > pSoldier.ubAPsLostToSuppression / 2)
+                {
+                    for (ubLoop2 = 0; ubLoop2 < (ubTotalPointsLost / 2) - (pSoldier.ubAPsLostToSuppression / 2); ubLoop2++)
+                    {
+                        HandleMoraleEvent(pSoldier, MORALE_SUPPRESSED, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+                    }
+                }
+
+                ubPointsLost -= pSoldier.ubAPsLostToSuppression;
+                ubNewStance = 0;
+
+                // merc may get to react
+                if (pSoldier.ubSuppressionPoints >= (130 / (6 + bTolerance)))
+                {
+                    // merc gets to use APs to react!
+                    switch (gAnimControl[pSoldier.usAnimState].ubEndHeight)
+                    {
+                        case AnimationHeights.ANIM_PRONE:
+                            // can't change stance below prone!
+                            break;
+                        case AnimationHeights.ANIM_CROUCH:
+                            if (ubTotalPointsLost >= AP.PRONE && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_PRONE))
+                            {
+                                sClosestOpponent = ClosestKnownOpponent(pSoldier, out sClosestOppLoc, null);
+                                if (sClosestOpponent == NOWHERE || IsometricUtils.SpacesAway(pSoldier.sGridNo, sClosestOppLoc) > 8)
+                                {
+                                    if (ubPointsLost < AP.PRONE)
+                                    {
+                                        // Have to give APs back so that we can change stance without
+                                        // losing more APs
+                                        pSoldier.bActionPoints += (AP.PRONE - ubPointsLost);
+                                        ubPointsLost = 0;
+                                    }
+                                    else
+                                    {
+                                        ubPointsLost -= AP.PRONE;
+                                    }
+                                    ubNewStance = AnimationHeights.ANIM_PRONE;
+                                }
+                            }
+                            break;
+                        default: // standing!
+                            if (pSoldier.bOverTerrainType == TerrainTypeDefines.LOW_WATER || pSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
+                            {
+                                // can't change stance here!
+                                break;
+                            }
+                            else if (ubTotalPointsLost >= (AP.CROUCH + AP.PRONE) && (gAnimControl[pSoldier.usAnimState].ubEndHeight != ANIM_PRONE) && IsValidStance(pSoldier, ANIM_PRONE))
+                            {
+                                sClosestOpponent = AIUtils.ClosestKnownOpponent(pSoldier, out sClosestOppLoc, null);
+                                if (sClosestOpponent == NOWHERE || IsometricUtils.SpacesAway(pSoldier.sGridNo, sClosestOppLoc) > 8)
+                                {
+                                    if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND)
+                                    {
+                                        // can only crouch for now
+                                        ubNewStance = AnimationHeights.ANIM_CROUCH;
+                                    }
+                                    else
+                                    {
+                                        // lie prone!
+                                        ubNewStance = AnimationHeights.ANIM_PRONE;
+                                    }
+                                }
+                                else if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND && IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
+                                {
+                                    // crouch, at least!
+                                    ubNewStance = AnimationHeights.ANIM_CROUCH;
+                                }
+                            }
+                            else if (ubTotalPointsLost >= AP.CROUCH && (gAnimControl[pSoldier.usAnimState].ubEndHeight != AnimationHeights.ANIM_CROUCH) && IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
+                            {
+                                // crouch!
+                                ubNewStance = AnimationHeights.ANIM_CROUCH;
+                            }
+                            break;
+                    }
+                }
+
+                // Reduce action points!
+                pSoldier.bActionPoints -= ubPointsLost;
+                pSoldier.ubAPsLostToSuppression = ubTotalPointsLost;
+
+                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)) && (pSoldier.ubSuppressionPoints > 8) && (pSoldier.ubID == ubTargetedMerc))
+                {
+                    if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_BEING_PUMMELED)))
+                    {
+                        pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_BEING_PUMMELED;
+                        // say we're under heavy fire!
+
+                        // ATE: For some reason, we forgot #53!
+                        if (pSoldier.ubProfile != (NPCID)53)
+                        {
+                            TacticalCharacterDialogue(pSoldier, QUOTE.UNDER_HEAVY_FIRE);
+                        }
+                    }
+                }
+
+                if (ubNewStance != 0)
+                {
+                    // This person is going to change stance
+
+                    // This person will be busy while they crouch or go prone
+                    if ((gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT))
+                    {
+                       // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting suppression, on %d", pSoldier.ubID));
+
+                        gTacticalStatus.ubAttackBusyCount++;
+
+                        // make sure supressor ID is the same!
+                        pSoldier.ubSuppressorID = ubCausedAttacker;
+                    }
+                    pSoldier.fChangingStanceDueToSuppression = true;
+                    pSoldier.fDontChargeAPsForStanceChange = true;
+
+                    // AI people will have to have their actions cancelled
+                    if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)))
+                    {
+                        CancelAIAction(pSoldier, true);
+                        pSoldier.bAction = AI_ACTION.CHANGE_STANCE;
+                        pSoldier.usActionData = ubNewStance;
+                        pSoldier.bActionInProgress = true;
+                    }
+
+                    // go for it!
+                    // ATE: Cancel any PENDING ANIMATIONS...
+                    pSoldier.usPendingAnimation = NO_PENDING_ANIMATION;
+                    // ATE: Turn off non-interrupt flag ( this NEEDS to be done! )
+                    pSoldier.fInNonintAnim = false;
+                    pSoldier.fRTInNonintAnim = false;
+
+                    ChangeSoldierStance(pSoldier, ubNewStance);
+                }
+
+            } // end of examining one soldier
+        } // end of loop
+
     }
 
     public static bool FlatRoofAboveGridNo(int iMapIndex)

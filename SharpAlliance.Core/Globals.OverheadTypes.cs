@@ -10,6 +10,8 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const int MAX_APS_SUPPRESSED = 8;
+
     public const int REFINE_AIM_1 = 0;
     public const int REFINE_AIM_MID1 = 1;
     public const int REFINE_AIM_2 = 2;

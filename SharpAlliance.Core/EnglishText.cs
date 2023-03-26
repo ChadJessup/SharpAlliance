@@ -104,7 +104,7 @@ public static class EnglishText
     	"Bloodcats' turn",
     };
 
-public static string[] gzCopyrightText = new string[]
+    public static string[] gzCopyrightText = new string[]
     {
         "Copyright (C) 1999 Sir-tech Canada Ltd.  All rights reserved.",
     };

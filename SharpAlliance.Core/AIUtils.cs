@@ -1038,7 +1038,7 @@ public class AIUtils
     }
 
 
-    int ClosestKnownOpponent(SOLDIERTYPE pSoldier, out int psGridNo, out int pbLevel)
+    public static int ClosestKnownOpponent(SOLDIERTYPE pSoldier, out int psGridNo, out int pbLevel)
     {
         int psLastLoc, sGridNo, sClosestOpponent = NOWHERE;
         int uiLoop;

@@ -2051,7 +2051,7 @@ public class OppList
                 }
 
                 // Set levelnode shade level....
-                if (pOpponent.pLevelNode)
+                if (pOpponent.pLevelNode is not null)
                 {
                     pOpponent.pLevelNode.ubShadeLevel = pOpponent.ubFadeLevel;
                 }
@@ -2069,7 +2069,7 @@ public class OppList
             {
 
                 // Change his anim speed!
-                SetSoldierAniSpeed(pOpponent);
+                SoldierControl.SetSoldierAniSpeed(pOpponent);
 
                 // if show enemies is ON, then we must have already revealed these roofs
                 // and we're also following his movements, so don't bother sliding
@@ -6165,7 +6165,7 @@ public class OppList
             }
         }
 
-        void NoticeUnseenAttacker(SOLDIERTYPE? pAttacker, SOLDIERTYPE? pDefender, int bReason)
+        public static void NoticeUnseenAttacker(SOLDIERTYPE? pAttacker, SOLDIERTYPE? pDefender, int bReason)
         {
             int bOldOppList;
             int ubTileSightLimit;

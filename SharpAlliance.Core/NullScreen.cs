@@ -3,42 +3,41 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using Veldrid;
 
-namespace SharpAlliance.Core
+namespace SharpAlliance.Core;
+
+internal class NullScreen : IScreen
 {
-    internal class NullScreen : IScreen
+    public static IScreen Instance { get; } = new NullScreen();
+
+    public bool IsInitialized { get; set; }
+    public ScreenState State { get; set; }
+
+    public ValueTask Activate()
     {
-        public static IScreen Instance { get; } = new NullScreen();
+        return ValueTask.CompletedTask;
+    }
 
-        public bool IsInitialized { get; set; }
-        public ScreenState State { get; set; }
+    public ValueTask Deactivate()
+    {
+        throw new System.NotImplementedException();
+    }
 
-        public ValueTask Activate()
-        {
-            return ValueTask.CompletedTask;
-        }
+    public void Dispose()
+    {
+    }
 
-        public ValueTask Deactivate()
-        {
-            throw new System.NotImplementedException();
-        }
+    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    {
+        throw new System.NotImplementedException();
+    }
 
-        public void Dispose()
-        {
-        }
+    public ValueTask<ScreenName> Handle()
+    {
+        return ValueTask.FromResult(ScreenName.NullScreen);
+    }
 
-        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ValueTask<ScreenName> Handle()
-        {
-            return ValueTask.FromResult(ScreenName.NullScreen);
-        }
-
-        public ValueTask<bool> Initialize()
-        {
-            return ValueTask.FromResult(true);
-        }
+    public ValueTask<bool> Initialize()
+    {
+        return ValueTask.FromResult(true);
     }
 }

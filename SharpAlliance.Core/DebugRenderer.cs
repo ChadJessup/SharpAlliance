@@ -6,42 +6,41 @@ using Veldrid;
 using Veldrid.ImageSharp;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
-namespace SharpAlliance.Core
+namespace SharpAlliance.Core;
+
+public class DebugRenderer : SpriteRenderer
 {
-    public class DebugRenderer : SpriteRenderer
+    public DebugRenderer(GraphicsDevice gd)
+        : base(gd)
     {
-        public DebugRenderer(GraphicsDevice gd)
-            : base(gd)
+    }
+
+    public override void Draw(GraphicsDevice gd, CommandList cl, bool clearCalls = true)
+    {
+        if (this.DrawCalls.Count > 0)
         {
+
         }
 
-        public override void Draw(GraphicsDevice gd, CommandList cl, bool clearCalls = true)
+        base.Draw(gd, cl, clearCalls);
+    }
+
+    public void DrawRectangle(Rectangle regionRect, Color color)
+    {
+        var lineWidth = 2;
+        regionRect.Inflate(lineWidth, lineWidth);
+
+        var rectangle = new Image<Rgba32>(regionRect.Width, regionRect.Height);
+        var newRect = new Rectangle(0, 0, regionRect.Width, regionRect.Height);
+
+        rectangle.Mutate(ctx =>
         {
-            if (this.DrawCalls.Count > 0)
-            {
+            ctx.Draw(color, lineWidth, newRect);
+        });
 
-            }
-
-            base.Draw(gd, cl, clearCalls);
-        }
-
-        public void DrawRectangle(Rectangle regionRect, Color color)
-        {
-            var lineWidth = 2;
-            regionRect.Inflate(lineWidth, lineWidth);
-
-            var rectangle = new Image<Rgba32>(regionRect.Width, regionRect.Height);
-            var newRect = new Rectangle(0, 0, regionRect.Width, regionRect.Height);
-
-            rectangle.Mutate(ctx =>
-            {
-                ctx.Draw(color, lineWidth, newRect);
-            });
-
-            this.AddSprite(
-                regionRect,
-                texture: new ImageSharpTexture(rectangle).CreateDeviceTexture(this.gd, this.gd.ResourceFactory),
-                regionRect.GetHashCode().ToString());
-        }
+        this.AddSprite(
+            regionRect,
+            texture: new ImageSharpTexture(rectangle).CreateDeviceTexture(this.gd, this.gd.ResourceFactory),
+            regionRect.GetHashCode().ToString());
     }
 }

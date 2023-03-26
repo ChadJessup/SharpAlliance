@@ -584,7 +584,7 @@ public class StructureInternals
         return (true);
     }
 
-    private static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID, bool fIgnorePeople)
+    public static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, int sExclusionID, bool fIgnorePeople)
     {
         int ubLoop;
         STRUCTURE_ON sCubeOffset;
@@ -627,7 +627,7 @@ public class StructureInternals
         return (true);
     }
 
-    public static bool OkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID)
+    public static bool OkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, int sExclusionID)
     {
         return (InternalOkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, sExclusionID, (bool)(sExclusionID == IGNORE_PEOPLE_STRUCTURE_ID)));
     }
@@ -658,7 +658,7 @@ public class StructureInternals
     }
 
 
-    private static STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelNode)
+    private static STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, LEVELNODE? pLevelNode)
     { // Adds a complete structure to the world at a location plus all other locations covered by the structure
         int sGridNo;
         List<STRUCTURE?> ppStructure = new();
@@ -755,7 +755,7 @@ public class StructureInternals
         else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE))
         {
             // ATE: Offset IDs so they don't collide with soldiers
-            usStructureID = (int)(TOTAL_SOLDIERS + pLevelNode.pAniTile.uiUserData);
+            usStructureID = (int)(TOTAL_SOLDIERS + (int)pLevelNode.pAniTile.uiUserData);
         }
         else
         {
@@ -809,7 +809,7 @@ public class StructureInternals
         return (pBaseStructure);
     }
 
-    bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelN)
+    bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, LEVELNODE? pLevelN)
     {
         STRUCTURE? pStructure;
 

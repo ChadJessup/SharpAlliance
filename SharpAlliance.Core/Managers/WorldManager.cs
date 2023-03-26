@@ -30,6 +30,31 @@ public class WorldManager
         this.worldStructures = worldStructures;
     }
 
+    public static LEVELNODE? FindShadow(int sGridNo, TileDefines usStructIndex)
+    {
+        LEVELNODE? pLevelNode;
+        TileDefines usShadowIndex;
+
+        if (usStructIndex < TileDefines.FIRSTOSTRUCT1 || usStructIndex >= TileDefines.FIRSTSHADOW1)
+        {
+            return (null);
+        }
+
+        usShadowIndex = usStructIndex - TileDefines.FIRSTOSTRUCT1 + TileDefines.FIRSTSHADOW1;
+
+        pLevelNode = gpWorldLevelData[sGridNo].pShadowHead;
+        while (pLevelNode != null)
+        {
+            if (pLevelNode.usIndex == usShadowIndex)
+            {
+                break;
+            }
+            pLevelNode = pLevelNode.pNext;
+        }
+        return (pLevelNode);
+
+    }
+
     public static bool RemoveAllStructsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
     {
         LEVELNODE? pStruct = null;
