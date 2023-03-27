@@ -1500,7 +1500,7 @@ public class HandleUI
                 fSetCursor = HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, MOVEUI_TARGET.INTTILES);
 
                 //Set UI CURSOR
-                Globals.guiNewUICursor = GetInteractiveTileCursor(Globals.guiNewUICursor, true);
+                Globals.guiNewUICursor = InteractiveTiles.GetInteractiveTileCursor(Globals.guiNewUICursor, true);
 
                 // Make red tile under spot... if we've previously found one...
                 if (Globals.gfUIHandleShowMoveGrid > 0)
@@ -4114,7 +4114,7 @@ public class HandleUI
             }
         }
 
-        Globals.guiNewUICursor = GetInteractiveTileCursor(Globals.guiNewUICursor, false);
+        Globals.guiNewUICursor = InteractiveTiles.GetInteractiveTileCursor(guiNewUICursor, false);
 
     }
 
@@ -4209,15 +4209,14 @@ public class HandleUI
             }
         }
 
-        Globals.guiNewUICursor = GetInteractiveTileCursor(Globals.guiNewUICursor, true);
-
+        Globals.guiNewUICursor = InteractiveTiles.GetInteractiveTileCursor(Globals.guiNewUICursor, true);
     }
-
 
     ScreenName UIHandleLCOnTerrain(UI_EVENT pUIEvent)
     {
         SOLDIERTYPE? pSoldier;
-        int sFacingDir, sXPos, sYPos;
+        WorldDirections sFacingDir;
+        int sXPos, sYPos;
 
         Globals.guiNewUICursor = UICursorDefines.LOOK_UICURSOR;
 
@@ -4239,10 +4238,10 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        GetMouseXY(out sXPos, out sYPos);
+        IsometricUtils.GetMouseXY(out sXPos, out sYPos);
 
         // Get direction from mouse pos
-        sFacingDir = GetDirectionFromXY(sXPos, sYPos, pSoldier);
+        sFacingDir = SoldierControl.GetDirectionFromXY(sXPos, sYPos, pSoldier);
 
         // Set # of APs
         if (sFacingDir != pSoldier.bDirection)
@@ -4272,12 +4271,13 @@ public class HandleUI
     }
 
 
-    bool MakeSoldierTurn(SOLDIERTYPE? pSoldier, int sXPos, int sYPos)
+    bool MakeSoldierTurn(SOLDIERTYPE pSoldier, int sXPos, int sYPos)
     {
-        int sFacingDir, sAPCost;
+        WorldDirections sFacingDir;
+        int sAPCost;
 
         // Get direction from mouse pos
-        sFacingDir = GetDirectionFromXY(sXPos, sYPos, pSoldier);
+        sFacingDir = SoldierControl.GetDirectionFromXY(sXPos, sYPos, pSoldier);
 
         if (sFacingDir != pSoldier.bDirection)
         {
@@ -4318,7 +4318,7 @@ public class HandleUI
         SOLDIERTYPE? pFirstSoldier = null;
 
 
-        if (!GetMouseXY(out sXPos, out sYPos))
+        if (!IsometricUtils.GetMouseXY(out sXPos, out sYPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4370,7 +4370,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -4878,7 +4878,7 @@ public class HandleUI
                     sScreenY -= 50;
                 }
 
-                if (IsPointInScreenRect(sScreenX, sScreenY, aRect))
+                if (IsometricUtils.IsPointInScreenRect(sScreenX, sScreenY, aRect))
                 {
                     fAtLeastOne = true;
                 }
@@ -5051,7 +5051,7 @@ public class HandleUI
 
             if (Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
-                this.cursors.SetCurrentCursorFromDatabase(Globals.gUICursors[Globals.guiNewUICursor].usFreeCursorName);
+                CursorSubSystem.SetCurrentCursorFromDatabase(Globals.gUICursors[Globals.guiNewUICursor].usFreeCursorName);
             }
             Globals.guiPendingOverrideEvent = UI_EVENT_DEFINES.M_ON_TERRAIN;
             HandleTacticalUI();
@@ -5406,9 +5406,11 @@ public class HandleUI
         }
     }
 
-    void UnSetUIBusy(byte ubID)
+    public static void UnSetUIBusy(int ubID)
     {
-        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (Globals.gTacticalStatus.ubCurrentTeam == Globals.gbPlayerNum))
+        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+            && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
+            && (Globals.gTacticalStatus.ubCurrentTeam == Globals.gbPlayerNum))
         {
             if (!Globals.gTacticalStatus.fUnLockUIAfterHiddenInterrupt)
             {
@@ -5655,7 +5657,7 @@ public class HandleUI
                 HandleUIMovementCursor(pSoldier, uiCursorFlags, usMapPos, MOVEUI_TARGET.INTTILES);
 
                 //Set UI CURSOR
-                Globals.guiNewUICursor = GetInteractiveTileCursor(Globals.guiNewUICursor, fUseOKCursor);
+                Globals.guiNewUICursor = InteractiveTiles.GetInteractiveTileCursor(guiNewUICursor, fUseOKCursor);
             }
             else
             {

@@ -11,7 +11,7 @@ namespace SharpAlliance.Core.SubSystems;
 public class SOLDIERTYPE
 {
     // ID
-    public short ubID;
+    public int ubID;
     int bReserved1;
 
     // DESCRIPTION / STATS, ETC

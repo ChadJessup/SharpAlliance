@@ -867,7 +867,7 @@ public class AIMain
         }
     }
 
-    void FreeUpNPCFromAttacking(int ubID)
+    public static void FreeUpNPCFromAttacking(int ubID)
     {
         SOLDIERTYPE? pSoldier;
 

@@ -195,7 +195,7 @@ public class IsometricUtils
         sXPos *= Globals.CELL_X_SIZE;
     }
 
-    public static bool IsPointInScreenRect(int sXPos, int sYPos, Rectangle pRect)
+    public static bool IsPointInScreenRect(int? sXPos, int? sYPos, Rectangle pRect)
     {
         if ((sXPos >= pRect.Left) && (sXPos <= pRect.Right) && (sYPos >= pRect.Top) && (sYPos <= pRect.Bottom))
         {

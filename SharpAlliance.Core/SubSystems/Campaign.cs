@@ -946,8 +946,7 @@ public class Campaign
         return;
     }
 
-
-    void HandleAnyStatChangesAfterAttack()
+    public static void HandleAnyStatChangesAfterAttack()
     {
         int cnt;
         SOLDIERTYPE? pSoldier;

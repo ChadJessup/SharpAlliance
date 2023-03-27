@@ -2073,7 +2073,7 @@ public partial class Globals
 
     public const int MANLOOKSFORMAN = 0;
     public const int HEARNOISE = 1;
-    public const int NOTICEUNSEENATTACKER = 2;
+    public const int NOTICEUNSEENATTACKERS = 2;
 
     public const double MAJOR_MAP_VERSION = 5.00;
 

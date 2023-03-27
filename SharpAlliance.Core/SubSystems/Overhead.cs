@@ -27,7 +27,7 @@ public class Overhead
     }
 
     // NB if making changes don't forget to update NewOKDestination
-    public static bool NewOKDestinationAndDirection(SOLDIERTYPE pCurrSoldier, int sGridNo, int bDirection, bool fPeopleToo, int bLevel)
+    public static bool NewOKDestinationAndDirection(SOLDIERTYPE pCurrSoldier, int sGridNo, WorldDirections bDirection, bool fPeopleToo, int bLevel)
     {
         int bPerson;
         STRUCTURE? pStructure;
@@ -58,7 +58,7 @@ public class Overhead
             AnimationSurfaceTypes usAnimSurface;
             STRUCTURE_FILE_REF? pStructureFileRef;
             bool fOk;
-            int bLoop;
+            WorldDirections bLoop;
             int usStructureID = INVALID_STRUCTURE_ID;
 
             // this could be kinda slow...
@@ -81,7 +81,7 @@ public class Overhead
                         usStructureID = pCurrSoldier.pLevelNode.pStructureData.usStructureID;
                     }
 
-                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, &(pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (bool)!fPeopleToo);
+                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, (pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (bool)!fPeopleToo);
                     if (fOk)
                     {
                         return (true);
@@ -322,7 +322,7 @@ public class Overhead
         int sCloseGridNo = NOWHERE;
         FIND_SOLDIER_RESPONSES uiMercFlags;
         int usSoldierIndex;
-        int ubDir;
+        WorldDirections ubDir;
         STRUCTURE? pDoor;
         //STRUCTURE                            *pWall;
         WallOrientation ubWallOrientation;
@@ -437,7 +437,7 @@ public class Overhead
 
             if (fCheckGivenGridNo)
             {
-                sDistance = PlotPath(pSoldier, sGridNo, NO_COPYROUTE, NO_PLOT, TEMPORARY, pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
+                sDistance = PathAI.PlotPath(pSoldier, sGridNo, PlotPathDefines.NO_COPYROUTE, NO_PLOT, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sDistance > 0)
                 {
@@ -455,19 +455,19 @@ public class Overhead
         for (cnt = 0; cnt < 4; cnt++)
         {
             // MOVE OUT TWO DIRECTIONS
-            sFourGrids[cnt] = sSpot = NewGridNo(sGridNo, DirectionInc(sDirs[cnt]));
+            sFourGrids[cnt] = sSpot = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(sDirs[cnt]));
 
             ubTestDirection = sDirs[cnt];
 
             // For switches, ALLOW them to walk through walls to reach it....
-            if (pDoor && pDoor.fFlags & STRUCTURE_SWITCH)
+            if (pDoor is not null && pDoor.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
             {
                 ubTestDirection = gOppositeDirection[ubTestDirection];
             }
 
             if (fDoor)
             {
-                if (gubWorldMovementCosts[sSpot][ubTestDirection][pSoldier.bLevel] >= TRAVELCOST_BLOCKED)
+                if (gubWorldMovementCosts[sSpot, (int)ubTestDirection, pSoldier.bLevel] >= TRAVELCOST.BLOCKED)
                 {
                     // obstacle or wall there!
                     continue;
@@ -476,7 +476,7 @@ public class Overhead
             else
             {
                 // this function returns original MP cost if not a door cost
-                if (DoorTravelCost(pSoldier, sSpot, gubWorldMovementCosts[sSpot][ubTestDirection][pSoldier.bLevel], false, null) >= TRAVELCOST_BLOCKED)
+                if (PathAI.DoorTravelCost(pSoldier, sSpot, gubWorldMovementCosts[sSpot, (int)ubTestDirection, pSoldier.bLevel], false, out var _) >= TRAVELCOST.BLOCKED)
                 {
                     // obstacle or wall there!
                     continue;
@@ -490,18 +490,18 @@ public class Overhead
                 ubWallOrientation = pDoor.ubWallOrientation;
 
                 // Refuse the south and north and west  directions if our orientation is top-right
-                if (ubWallOrientation == OUTSIDE_TOP_RIGHT || ubWallOrientation == INSIDE_TOP_RIGHT)
+                if (ubWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT || ubWallOrientation == WallOrientation.INSIDE_TOP_RIGHT)
                 {
-                    if (sDirs[cnt] == NORTH || sDirs[cnt] == WEST || sDirs[cnt] == SOUTH)
+                    if (sDirs[cnt] == WorldDirections.NORTH || sDirs[cnt] == WorldDirections.WEST || sDirs[cnt] == WorldDirections.SOUTH)
                     {
                         continue;
                     }
                 }
 
                 // Refuse the north and west and east directions if our orientation is top-right
-                if (ubWallOrientation == OUTSIDE_TOP_LEFT || ubWallOrientation == INSIDE_TOP_LEFT)
+                if (ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT || ubWallOrientation == WallOrientation.INSIDE_TOP_LEFT)
                 {
-                    if (sDirs[cnt] == NORTH || sDirs[cnt] == WEST || sDirs[cnt] == EAST)
+                    if (sDirs[cnt] == WorldDirections.NORTH || sDirs[cnt] == WorldDirections.WEST || sDirs[cnt] == WorldDirections.EAST)
                     {
                         continue;
                     }
@@ -518,19 +518,19 @@ public class Overhead
                 //if ( pDoor != null )
                 {
                     // Use direction to the door!
-                    if (pubDirection)
+                    if (pubDirection > 0)
                     {
-                        (pubDirection) = (int)GetDirectionFromGridNo(sGridNo, pSoldier);
+                        (pubDirection) = SoldierControl.GetDirectionFromGridNo(sGridNo, pSoldier);
                     }
                 }
                 return (sSpot);
             }
 
             // don't store path, just measure it
-            ubDir = (int)GetDirectionToGridNoFromGridNo(sSpot, sGridNo);
+            ubDir = SoldierControl.GetDirectionToGridNoFromGridNo(sSpot, sGridNo);
 
-            if ((NewOKDestinationAndDirection(pSoldier, sSpot, ubDir, true, pSoldier.bLevel) > 0) &&
-                ((sDistance = PlotPath(pSoldier, sSpot, NO_COPYROUTE, NO_PLOT, TEMPORARY, (int)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints)) > 0))
+            if ((NewOKDestinationAndDirection(pSoldier, sSpot, ubDir, true, pSoldier.bLevel))
+                && ((sDistance = PathAI.PlotPath(pSoldier, sSpot, PlotPathDefines.NO_COPYROUTE, NO_PLOT, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints)) > 0))
             {
                 if (sDistance < sClosest)
                 {
@@ -548,23 +548,23 @@ public class Overhead
             // If our gridno is the same ( which can be if we are look at doors )
             if (sGridNo == sCloseGridNo)
             {
-                if (pubDirection)
+                if (pubDirection > 0)
                 {
                     // ATE: Only if we have a valid door!
-                    if (pDoor)
+                    if (pDoor is not null)
                     {
                         switch (pDoor.pDBStructureRef.pDBStructure.ubWallOrientation)
                         {
-                            case OUTSIDE_TOP_LEFT:
-                            case INSIDE_TOP_LEFT:
+                            case WallOrientation.OUTSIDE_TOP_LEFT:
+                            case WallOrientation.INSIDE_TOP_LEFT:
 
-                                *pubDirection = SOUTH;
+                                pubDirection = WorldDirections.SOUTH;
                                 break;
 
-                            case OUTSIDE_TOP_RIGHT:
-                            case INSIDE_TOP_RIGHT:
+                            case WallOrientation.OUTSIDE_TOP_RIGHT:
+                            case WallOrientation.INSIDE_TOP_RIGHT:
 
-                                *pubDirection = EAST;
+                                pubDirection = WorldDirections.EAST;
                                 break;
                         }
                     }
@@ -573,10 +573,10 @@ public class Overhead
             else
             {
                 // Calculate direction if our gridno is different....
-                ubDir = (int)GetDirectionToGridNoFromGridNo(sCloseGridNo, sGridNo);
-                if (pubDirection)
+                ubDir = SoldierControl.GetDirectionToGridNoFromGridNo(sCloseGridNo, sGridNo);
+                if (pubDirection > 0)
                 {
-                    *pubDirection = ubDir;
+                    pubDirection = ubDir;
                 }
             }
             //if ( psAdjustedGridNo != null )
@@ -691,32 +691,32 @@ public class Overhead
         // this is so we DON'T call freeupattacker() which will cancel
         // the AI guy's meanwhile NPC stuff.
         // OK< let's NOT do this if it was the queen attacking....
-        if (AreInMeanwhile() && pSoldier != null && pSoldier.ubProfile != QUEEN)
+        if (Meanwhile.AreInMeanwhile() && pSoldier != null && pSoldier.ubProfile != NPCID.QUEEN)
         {
             return (pTarget);
         }
 
-        if (pTarget)
+        if (pTarget is not null)
         {
             // reset # of shotgun pellets hit by
             pTarget.bNumPelletsHitBy = 0;
             // reset flag for making "ow" sound on being shot
         }
 
-        if (pSoldier)
+        if (pSoldier is not null)
         {
             // reset attacking hand
-            pSoldier.ubAttackingHand = HANDPOS;
+            pSoldier.ubAttackingHand = InventorySlot.HANDPOS;
 
             // if there is a valid target, and our attack was noticed
-            if (pTarget && (pSoldier.uiStatusFlags & SOLDIER_ATTACK_NOTICED))
+            if (pTarget is not null && (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ATTACK_NOTICED)))
             {
                 // stuff that only applies to when we attack
-                if (pTarget.ubBodyType != CROW)
+                if (pTarget.ubBodyType != SoldierBodyTypes.CROW)
                 {
                     if (pSoldier.bTeam == gbPlayerNum)
                     {
-                        fEnterCombat = ProcessImplicationsOfPCAttack(pSoldier, &pTarget, REASON_NORMAL_ATTACK);
+                        fEnterCombat = ProcessImplicationsOfPCAttack(pSoldier, out pTarget, REASON_NORMAL_ATTACK);
                         if (!fEnterCombat)
                         {
                             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Not entering combat as a result of PC attack");
@@ -789,11 +789,11 @@ public class Overhead
                 // something is wrong here!
                 if (!pTarget.bActive || !pTarget.bInSector)
                 {
-                    DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Invalid target attacked!");
+                    //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Invalid target attacked!");
                 }
-                else if (!(pSoldier.uiStatusFlags & SOLDIER_ATTACK_NOTICED))
+                else if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.ATTACK_NOTICED)))
                 {
-                    DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Attack not noticed");
+                    // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Attack not noticed");
                 }
             }
             else
@@ -805,25 +805,25 @@ public class Overhead
             if (pSoldier.fSayAmmoQuotePending)
             {
                 pSoldier.fSayAmmoQuotePending = false;
-                TacticalCharacterDialogue(pSoldier, QUOTE_OUT_OF_AMMO);
+                DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.OUT_OF_AMMO);
             }
 
-            if (pSoldier.uiStatusFlags & SOLDIER_PC)
+            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
             {
-                UnSetUIBusy(ubID);
+                HandleUI.UnSetUIBusy(ubID);
             }
             else
             {
-                FreeUpNPCFromAttacking(ubID);
+                AIMain.FreeUpNPCFromAttacking(ubID);
             }
 
             if (!fEnterCombat)
             {
-                DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Not to enter combat from this attack");
+                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Not to enter combat from this attack");
             }
 
 
-            if (fEnterCombat && !(gTacticalStatus.uiFlags & INCOMBAT))
+            if (fEnterCombat && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
             {
                 // Go into combat!
 
@@ -834,7 +834,7 @@ public class Overhead
                 }
             }
 
-            pSoldier.uiStatusFlags &= (~SOLDIER_ATTACK_NOTICED);
+            pSoldier.uiStatusFlags &= (~SOLDIER.ATTACK_NOTICED);
         }
 
         if (gTacticalStatus.fKilledEnemyOnAttack)
@@ -845,7 +845,7 @@ public class Overhead
         }
 
         // ATE: Check for stat changes....
-        HandleAnyStatChangesAfterAttack();
+        Campaign.HandleAnyStatChangesAfterAttack();
 
 
         if (gTacticalStatus.fItemsSeenOnAttack && gTacticalStatus.ubCurrentTeam == gbPlayerNum)
@@ -855,7 +855,7 @@ public class Overhead
             // Display quote!
             if (!AM_AN_EPC(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier]))
             {
-                TacticalCharacterDialogueWithSpecialEvent(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier], (int)(QUOTE_SPOTTED_SOMETHING_ONE + Random(2)), DIALOGUE_SPECIAL_EVENT_SIGNAL_ITEM_LOCATOR_START, gTacticalStatus.usItemsSeenOnAttackGridNo, 0);
+                DialogControl.TacticalCharacterDialogueWithSpecialEvent(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier], (QUOTE.SPOTTED_SOMETHING_ONE + Globals.Random.Next(2)), DIALOGUE_SPECIAL_EVENT.SIGNAL_ITEM_LOCATOR_START, gTacticalStatus.usItemsSeenOnAttackGridNo, 0);
             }
             else
             {
@@ -866,10 +866,10 @@ public class Overhead
             }
         }
 
-        if (gTacticalStatus.uiFlags & CHECK_SIGHT_AT_END_OF_ATTACK)
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.CHECK_SIGHT_AT_END_OF_ATTACK))
         {
             int ubLoop;
-            SOLDIERTYPE* pSightSoldier;
+            SOLDIERTYPE? pSightSoldier;
 
             AllTeamsLookForAll(false);
 
@@ -882,7 +882,8 @@ public class Overhead
                     RevealRoofsAndItems(pSightSoldier, true, false, pSightSoldier.bLevel, false);
                 }
             }
-            gTacticalStatus.uiFlags &= ~CHECK_SIGHT_AT_END_OF_ATTACK;
+
+            gTacticalStatus.uiFlags &= ~TacticalEngineStatus.CHECK_SIGHT_AT_END_OF_ATTACK;
         }
 
         DequeueAllDemandGameEvents(true);
@@ -890,20 +891,20 @@ public class Overhead
         CheckForEndOfBattle(false);
 
         // if we're in realtime, turn off the attacker's muzzle flash at this point
-        if (!(gTacticalStatus.uiFlags & INCOMBAT) && pSoldier)
+        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && pSoldier is not null)
         {
-            EndMuzzleFlash(pSoldier);
+            OppList.EndMuzzleFlash(pSoldier);
         }
 
-        if (pSoldier && pSoldier.bWeaponMode == WM_ATTACHED)
+        if (pSoldier is not null && pSoldier.bWeaponMode == WM.ATTACHED)
         {
             // change back to single shot
-            pSoldier.bWeaponMode = WM_NORMAL;
+            pSoldier.bWeaponMode = WM.NORMAL;
         }
 
         // record last target
         // Check for valid target!
-        if (pSoldier)
+        if (pSoldier is not null)
         {
             pSoldier.sLastTarget = pSoldier.sTargetGridNo;
         }
@@ -911,9 +912,9 @@ public class Overhead
         return (pTarget);
     }
 
-    void SlideTo(INT16 sGridno, UINT16 usSoldierID, UINT16 usReasonID, BOOLEAN fSetLocator)
+    void SlideTo(int sGridno, int usSoldierID, int usReasonID, int fSetLocator)
     {
-        INT32 cnt;
+        int cnt;
 
 
         if (usSoldierID == NOBODY)
@@ -925,34 +926,36 @@ public class Overhead
         {
             for (cnt = 0; cnt < TOTAL_SOLDIERS; cnt++)
             {
-                if (MercPtrs[cnt]->bActive && MercPtrs[cnt]->bInSector)
+                if (MercPtrs[cnt].bActive && MercPtrs[cnt].bInSector)
                 {
                     // Remove all existing locators...
-                    MercPtrs[cnt]->fFlashLocator = FALSE;
+                    MercPtrs[cnt].fFlashLocator = false;
                 }
             }
         }
 
         // Locate even if on screen
-        if (fSetLocator)
-            ShowRadioLocator((UINT8)usSoldierID, SHOW_LOCATOR_NORMAL);
+        if (fSetLocator > 0)
+        {
+            InterfacePanel.ShowRadioLocator(usSoldierID, SHOW_LOCATOR.NORMAL);
+        }
 
         // FIRST CHECK IF WE ARE ON SCREEN
-        if (GridNoOnScreen(MercPtrs[usSoldierID]->sGridNo))
+        if (SoldierFind.GridNoOnScreen(MercPtrs[usSoldierID].sGridNo))
         {
             return;
         }
 
         // sGridNo here for DG compatibility
-        gTacticalStatus.sSlideTarget = MercPtrs[usSoldierID]->sGridNo;
+        gTacticalStatus.sSlideTarget = MercPtrs[usSoldierID].sGridNo;
         gTacticalStatus.sSlideReason = usReasonID;
 
         // Plot new path!
-        gfPlotNewMovement = TRUE;
+        gfPlotNewMovement = true;
     }
 
 
-    void SlideToLocation(UINT16 usReasonID, INT16 sDestGridNo)
+    public static void SlideToLocation(int usReasonID, int sDestGridNo)
     {
         if (sDestGridNo == NOWHERE)
         {
@@ -960,7 +963,7 @@ public class Overhead
         }
 
         // FIRST CHECK IF WE ARE ON SCREEN
-        if (GridNoOnScreen(sDestGridNo))
+        if (SoldierFind.GridNoOnScreen(sDestGridNo))
         {
             return;
         }
@@ -970,7 +973,7 @@ public class Overhead
         gTacticalStatus.sSlideReason = usReasonID;
 
         // Plot new path!
-        gfPlotNewMovement = TRUE;
+        gfPlotNewMovement = true;
     }
 
 
@@ -1134,7 +1137,7 @@ public class Overhead
         return (true);
     }
 
-    void HandleSuppressionFire(int ubTargetedMerc, int ubCausedAttacker)
+    public static void HandleSuppressionFire(int ubTargetedMerc, int ubCausedAttacker)
     {
         int bTolerance;
         int sClosestOpponent, sClosestOppLoc;
@@ -1187,7 +1190,7 @@ public class Overhead
                 {
                     for (ubLoop2 = 0; ubLoop2 < (ubTotalPointsLost / 2) - (pSoldier.ubAPsLostToSuppression / 2); ubLoop2++)
                     {
-                        HandleMoraleEvent(pSoldier, MORALE_SUPPRESSED, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+                        Morale.HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_SUPPRESSED, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
                     }
                 }
 
@@ -1206,7 +1209,7 @@ public class Overhead
                         case AnimationHeights.ANIM_CROUCH:
                             if (ubTotalPointsLost >= AP.PRONE && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_PRONE))
                             {
-                                sClosestOpponent = ClosestKnownOpponent(pSoldier, out sClosestOppLoc, null);
+                                sClosestOpponent = AIUtils.ClosestKnownOpponent(pSoldier, out sClosestOppLoc, out var _);
                                 if (sClosestOpponent == NOWHERE || IsometricUtils.SpacesAway(pSoldier.sGridNo, sClosestOppLoc) > 8)
                                 {
                                     if (ubPointsLost < AP.PRONE)
@@ -1230,9 +1233,9 @@ public class Overhead
                                 // can't change stance here!
                                 break;
                             }
-                            else if (ubTotalPointsLost >= (AP.CROUCH + AP.PRONE) && (gAnimControl[pSoldier.usAnimState].ubEndHeight != ANIM_PRONE) && IsValidStance(pSoldier, ANIM_PRONE))
+                            else if (ubTotalPointsLost >= (AP.CROUCH + AP.PRONE) && (gAnimControl[pSoldier.usAnimState].ubEndHeight != AnimationHeights.ANIM_PRONE) && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_PRONE))
                             {
-                                sClosestOpponent = AIUtils.ClosestKnownOpponent(pSoldier, out sClosestOppLoc, null);
+                                sClosestOpponent = AIUtils.ClosestKnownOpponent(pSoldier, out sClosestOppLoc, out var _);
                                 if (sClosestOpponent == NOWHERE || IsometricUtils.SpacesAway(pSoldier.sGridNo, sClosestOppLoc) > 8)
                                 {
                                     if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND)
@@ -1246,13 +1249,13 @@ public class Overhead
                                         ubNewStance = AnimationHeights.ANIM_PRONE;
                                     }
                                 }
-                                else if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND && IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
+                                else if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
                                 {
                                     // crouch, at least!
                                     ubNewStance = AnimationHeights.ANIM_CROUCH;
                                 }
                             }
-                            else if (ubTotalPointsLost >= AP.CROUCH && (gAnimControl[pSoldier.usAnimState].ubEndHeight != AnimationHeights.ANIM_CROUCH) && IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
+                            else if (ubTotalPointsLost >= AP.CROUCH && (gAnimControl[pSoldier.usAnimState].ubEndHeight != AnimationHeights.ANIM_CROUCH) && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
                             {
                                 // crouch!
                                 ubNewStance = AnimationHeights.ANIM_CROUCH;
@@ -1275,7 +1278,7 @@ public class Overhead
                         // ATE: For some reason, we forgot #53!
                         if (pSoldier.ubProfile != (NPCID)53)
                         {
-                            TacticalCharacterDialogue(pSoldier, QUOTE.UNDER_HEAVY_FIRE);
+                            DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.UNDER_HEAVY_FIRE);
                         }
                     }
                 }
@@ -1285,7 +1288,7 @@ public class Overhead
                     // This person is going to change stance
 
                     // This person will be busy while they crouch or go prone
-                    if ((gTacticalStatus.uiFlags & TURNBASED) && (gTacticalStatus.uiFlags & INCOMBAT))
+                    if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                        // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting suppression, on %d", pSoldier.ubID));
 
@@ -1300,10 +1303,10 @@ public class Overhead
                     // AI people will have to have their actions cancelled
                     if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)))
                     {
-                        CancelAIAction(pSoldier, true);
+                        AIMain.CancelAIAction(pSoldier, 1);
                         pSoldier.bAction = AI_ACTION.CHANGE_STANCE;
                         pSoldier.usActionData = ubNewStance;
-                        pSoldier.bActionInProgress = true;
+                        pSoldier.bActionInProgress = 1;
                     }
 
                     // go for it!
@@ -1313,7 +1316,7 @@ public class Overhead
                     pSoldier.fInNonintAnim = false;
                     pSoldier.fRTInNonintAnim = false;
 
-                    ChangeSoldierStance(pSoldier, ubNewStance);
+                    SoldierControl.ChangeSoldierStance(pSoldier, ubNewStance);
                 }
 
             } // end of examining one soldier
@@ -1538,7 +1541,7 @@ public class TacticalStatusType
     public int bEnemyKilledOnAttackLevel;
     public int ubEnemyKilledOnAttackLocation;
     public bool fItemsSeenOnAttack;
-    public bool ubItemsSeenOnAttackSoldier;
+    public int ubItemsSeenOnAttackSoldier;
     public bool fBeenInCombatOnce;
     public bool fSaidCreatureSmellQuote;
     public int usItemsSeenOnAttackGridNo;
