@@ -1677,7 +1677,7 @@ public class TeamTurns
         }
     }
 
-    void ResolveInterruptsVs(SOLDIERTYPE? pSoldier, int ubInterruptType)
+    public static void ResolveInterruptsVs(SOLDIERTYPE? pSoldier, int ubInterruptType)
     {
         TEAM ubTeam;
         int ubOpp;

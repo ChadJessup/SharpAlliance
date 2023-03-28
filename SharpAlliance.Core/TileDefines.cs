@@ -3056,6 +3056,7 @@ public enum TileDefines
     // Add/combine new ones below the NUMBEROFTILES value
     DISPLAY_AP_INDEX = MOCKFLOOR1,
     NO_TILE = 3126,
+    UNSET = -1,
 }
 //#define BLUEFLAG_GRAPHIC FIRSTSWITCHES21
 
@@ -3259,6 +3260,8 @@ public enum TileTypeDefines
     NUMBEROFTILETYPES,
 
     LASTPOINTERS = (SELRING - 1),
+
+    UNSET = -1,
 }
 
 public enum WallOrientation

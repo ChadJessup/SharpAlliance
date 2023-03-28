@@ -610,6 +610,22 @@ public class ItemSubSystem
         return Globals.ITEM_NOT_FOUND;
     }
 
+    public static InventorySlot FindAttachment(OBJECTTYPE pObj, Items usItem)
+    {
+        int bLoop;
+
+        for (bLoop = 0; bLoop < MAX_ATTACHMENTS; bLoop++)
+        {
+            if (pObj.usAttachItem[bLoop] == usItem)
+            {
+                return ((InventorySlot)bLoop);
+            }
+        }
+
+        return (NO_SLOT);
+    }
+
+
     public static Items StandardGunListReplacement(Items usGun)
     {
         Items ubLoop;

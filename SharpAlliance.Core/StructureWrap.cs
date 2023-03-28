@@ -198,8 +198,9 @@ public class StructureWrap
     }
 
 
-    bool DoesGridnoContainHiddenStruct(int sGridNo, bool pfVisible)
+    public static bool DoesGridnoContainHiddenStruct(int sGridNo, out bool pfVisible)
     {
+        pfVisible = false;
         // ATE: These are ignored now - always return false
 
         //STRUCTURE *pStructure;

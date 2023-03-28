@@ -1082,7 +1082,7 @@ public class AIMain
 
     // threat percentage is based on the certainty of opponent knowledge:
     // opplist value:        -4  -3  -2  -1 SEEN  1    2   3   4   5
-    int[] ThreatPercent = { 20, 40, 60, 80, 25, 100, 90, 75, 60, 45 };
+    public static int[] ThreatPercent = { 20, 40, 60, 80, 25, 100, 90, 75, 60, 45 };
 
     public static void NPCDoesAct(SOLDIERTYPE pSoldier)
     {

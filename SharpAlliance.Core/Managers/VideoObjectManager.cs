@@ -605,7 +605,7 @@ public class VideoObjectManager
         return false;
     }
 
-    public bool DeleteVideoObjectFromIndex(int uiLogoID)
+    public static bool DeleteVideoObjectFromIndex(int uiLogoID)
     {
         return true;
     }

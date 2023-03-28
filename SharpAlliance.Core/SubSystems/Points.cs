@@ -10,7 +10,7 @@ public class Points
     public static void DeductPoints(SOLDIERTYPE? pSoldier, int sAPCost, int sBPCost)
     {
         int  sNewAP = 0, sNewBP = 0;
-        int bNewBreath;
+        uint bNewBreath;
 
         // in real time, there IS no AP cost, (only breath cost)
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
@@ -37,7 +37,7 @@ public class Points
 
         pSoldier.bActionPoints = sNewAP;
 
-        //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Deduct Points (%d at %d) %d %d", pSoldier->ubID, pSoldier->sGridNo, sAPCost, sBPCost));
+        //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Deduct Points (%d at %d) %d %d", pSoldier.ubID, pSoldier.sGridNo, sAPCost, sBPCost));
 
         if (AM_A_ROBOT(pSoldier))
         {
@@ -49,7 +49,7 @@ public class Points
         if (sBPCost > 0)
         {
             // Adjust breath changes due to spending or regaining of energy
-            sBPCost = AdjustBreathPts(pSoldier, sBPCost);
+            sBPCost = (int)AdjustBreathPts(pSoldier, (uint)sBPCost);
             sBPCost *= -1;
 
             pSoldier.sBreathRed -= sBPCost;
@@ -57,17 +57,17 @@ public class Points
             // CJC: moved check for high breathred to below so that negative breath can be detected
 
             // cap breathred
-            if (pSoldier->sBreathRed < 0)
+            if (pSoldier.sBreathRed < 0)
             {
-                pSoldier->sBreathRed = 0;
+                pSoldier.sBreathRed = 0;
             }
-            if (pSoldier->sBreathRed > 10000)
+            if (pSoldier.sBreathRed > 10000)
             {
-                pSoldier->sBreathRed = 10000;
+                pSoldier.sBreathRed = 10000;
             }
 
             // Get new breath
-            bNewBreath = (int)(pSoldier->bBreathMax - ((FLOAT)pSoldier->sBreathRed / (FLOAT)100));
+            bNewBreath = (pSoldier.bBreathMax - (uint)(pSoldier.sBreathRed / 100));
 
             if (bNewBreath > 100)
             {
@@ -76,31 +76,31 @@ public class Points
             if (bNewBreath < 00)
             {
                 // Take off 1 AP per 5 breath... rem adding a negative subtracts
-                pSoldier->bActionPoints += (bNewBreath / 5);
-                if (pSoldier->bActionPoints < 0)
+                pSoldier.bActionPoints += (int)(bNewBreath / 5);
+                if (pSoldier.bActionPoints < 0)
                 {
-                    pSoldier->bActionPoints = 0;
+                    pSoldier.bActionPoints = 0;
                 }
 
                 bNewBreath = 0;
             }
 
-            if (bNewBreath > pSoldier->bBreathMax)
+            if (bNewBreath > pSoldier.bBreathMax)
             {
-                bNewBreath = pSoldier->bBreathMax;
+                bNewBreath = pSoldier.bBreathMax;
             }
-            pSoldier->bBreath = bNewBreath;
+            pSoldier.bBreath = bNewBreath;
         }
 
         // UPDATE BAR
-        DirtyMercPanelInterface(pSoldier, DIRTYLEVEL1);
+        Interface.DirtyMercPanelInterface(pSoldier, DIRTYLEVEL1);
 
     }
 
-    public static int AdjustBreathPts(SOLDIERTYPE? pSold, int sBPCost)
+    public static uint AdjustBreathPts(SOLDIERTYPE? pSold, uint sBPCost)
     {
-        int sBreathFactor = 100;
-        int ubBandaged;
+        uint sBreathFactor = 100;
+        uint ubBandaged;
 
         //NumMessage("BEFORE adjustments, BREATH PTS = ",breathPts);
 
@@ -119,7 +119,7 @@ public class Points
 
         // adjust breath factor for current life deficiency (but add 1/2 bandaging)
         ubBandaged = pSold.bLifeMax - pSold.bLife - pSold.bBleeding;
-        //sBreathFactor += (pSold->bLifeMax - (pSold->bLife + (ubBandaged / 2)));
+        //sBreathFactor += (pSold.bLifeMax - (pSold.bLife + (ubBandaged / 2)));
         sBreathFactor += 100 * (pSold.bLifeMax - (pSold.bLife + (ubBandaged / 2))) / pSold.bLifeMax;
 
         if (pSold.bStrength > 80)
@@ -132,8 +132,8 @@ public class Points
 
          // apply penalty due to high temperature, heat, and hot Metaviran sun
          // if INDOORS, in DEEP WATER, or possessing HEAT TOLERANCE trait
-         if ((ptr->terrtype == FLOORTYPE) || (ptr->terr >= OCEAN21) ||
-                               (ptr->trait == HEAT_TOLERANT))
+         if ((ptr.terrtype == FLOORTYPE) || (ptr.terr >= OCEAN21) ||
+                               (ptr.trait == HEAT_TOLERANT))
            breathFactor += (Status.heatFactor / 5);	// 20% of normal heat penalty
          else
            breathFactor += Status.heatFactor;		// not used to this!
@@ -241,7 +241,7 @@ public class Points
         if (pSoldier.bTeam == gbPlayerNum)
         {
             // Is this obstcale a hidden tile that has not been revealed yet?
-            if (DoesGridnoContainHiddenStruct(sGridno, fHiddenStructVisible))
+            if (StructureWrap.DoesGridnoContainHiddenStruct(sGridno, out fHiddenStructVisible))
             {
                 // Are we not visible, if so use terrain costs!
                 if (!fHiddenStructVisible)
@@ -256,9 +256,9 @@ public class Points
             // use the cost of the terrain!
             sSwitchValue = gTileTypeMovementCost[gpWorldLevelData[sGridno].ubTerrainID];
         }
-        else if (IS_TRAVELCOST_DOOR(sSwitchValue))
+        else if (TRAVELCOST.IS_TRAVELCOST_DOOR(sSwitchValue))
         {
-            sSwitchValue = DoorTravelCost(pSoldier, sGridno, (int)sSwitchValue, (bool)(pSoldier.bTeam == gbPlayerNum), NULL);
+            sSwitchValue = PathAI.DoorTravelCost(pSoldier, sGridno, sSwitchValue, (pSoldier.bTeam == gbPlayerNum), out var _);
         }
 
         if (sSwitchValue >= TRAVELCOST.BLOCKED && sSwitchValue != TRAVELCOST.DOOR)
@@ -315,7 +315,7 @@ public class Points
 
         }
 
-        if (bDir & 1)
+        if ((bDir & 1) > 0)
         {
             sAPCost = (sAPCost * 14) / 10;
         }
@@ -425,21 +425,21 @@ public class Points
 
                 if (bAttachPos is not null)
                 {
-                    ItemSubSystem.RemoveAttachment(pObj, bAttachPos, null);
+                    ItemSubSystem.RemoveAttachment(pObj, (int)bAttachPos, null);
                 }
             }
 
             // Dirty Bars
-            DirtyMercPanelInterface(pSoldier, Globals.DIRTYLEVEL1);
+            Interface.DirtyMercPanelInterface(pSoldier, DIRTYLEVEL1);
         }
     }
 
-    public int CalcTotalAPsToAttack(SOLDIERTYPE? pSoldier, int sGridNo, int ubAddTurningCost, int bAimTime)
+    public int CalcTotalAPsToAttack(SOLDIERTYPE pSoldier, int sGridNo, int ubAddTurningCost, int bAimTime)
     {
         int sAPCost = 0;
         Items usItemNum;
         int sActionGridNo;
-        int ubDirection;
+        WorldDirections ubDirection;
         int sAdjustedGridNo;
         IC uiItemClass;
 
@@ -512,7 +512,7 @@ public class Points
 
                     if (sGotLocation == Globals.NOWHERE && pSoldier.ubBodyType != SoldierBodyTypes.BLOODCAT)
                     {
-                        sActionGridNo = FindAdjacentGridEx(pSoldier, sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
+                        sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
 
                         if (sActionGridNo == -1)
                         {
@@ -579,7 +579,42 @@ public class Points
         return sAPCost;
     }
 
-    public int MinAPsToAttack(SOLDIERTYPE? pSoldier, int sGridno, int ubAddTurningCost)
+    public static int GetAPsToReadyWeapon(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
+    {
+        Items usItem;
+
+        // If this is a dwel pistol anim
+        // ATE: What was I thinking, hooking into animations like this....
+        //if ( usAnimState == READY_DUAL_STAND || usAnimState == READY_DUAL_CROUCH )
+        //{
+        //return( AP_READY_DUAL );
+        //}
+        if (SoldierControl.IsValidSecondHandShot(pSoldier))
+        {
+            return (AP.READY_DUAL);
+        }
+
+
+        // OK, now check type of weapon
+        usItem = pSoldier.inv[InventorySlot.HANDPOS].usItem;
+
+        if (usItem == NOTHING)
+        {
+            return (0);
+        }
+        else
+        {
+            // CHECK FOR RIFLE
+            if (Item[usItem].usItemClass == IC.GUN)
+            {
+                return (Weapon[usItem].ubReadyTime);
+            }
+        }
+
+        return (0);
+    }
+
+    public int MinAPsToAttack(SOLDIERTYPE pSoldier, int sGridno, int ubAddTurningCost)
     {
         int sAPCost = 0;
         IC uiItemClass;
@@ -589,7 +624,7 @@ public class Points
             InventorySlot bAttachSlot;
             // look for an attached grenade launcher
 
-            bAttachSlot = FindAttachment((pSoldier.inv[InventorySlot.HANDPOS]), UNDER_GLAUNCHER);
+            bAttachSlot = ItemSubSystem.FindAttachment((pSoldier.inv[InventorySlot.HANDPOS]), Items.UNDER_GLAUNCHER);
             if (bAttachSlot == NO_SLOT)
             {
                 // default to hand

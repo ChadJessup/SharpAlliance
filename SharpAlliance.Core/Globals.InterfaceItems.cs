@@ -14,11 +14,11 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public static MOUSE_REGION[] gSMInvRegion = new MOUSE_REGION[(int)NUM_INV_SLOTS];
+    public static Dictionary<InventorySlot, MOUSE_REGION> gSMInvRegion = new();// MOUSE_REGION[(int)NUM_INV_SLOTS];
     public static MOUSE_REGION gKeyRingPanel;
     public static MOUSE_REGION gSMInvCamoRegion;
-    public static int[] gbCompatibleAmmo = new int[(int)NUM_INV_SLOTS];
-    public static int[] gbInvalidPlacementSlot = new int[(int)NUM_INV_SLOTS];
+    public static Dictionary<InventorySlot, int> gbCompatibleAmmo = new();// int[(int)NUM_INV_SLOTS];
+    public static Dictionary<InventorySlot, int> gbInvalidPlacementSlot = new();// int[(int)NUM_INV_SLOTS];
     public static int[] us16BPPItemCyclePlacedItemColors = new int[20];
     public static int[][] guiBodyInvVO = new int[4][];
     public static int guiGoldKeyVO;
@@ -183,10 +183,10 @@ public partial class Globals
     public static OBJECTTYPE gItemPointer;
     public static bool gfItemPointerDifferentThanDefault = false;
     public static SOLDIERTYPE? gpItemPointerSoldier;
-    public static int gbItemPointerSrcSlot;
+    public static InventorySlot gbItemPointerSrcSlot;
     public static int gusItemPointer = 255;
     public static int usItemSnapCursor;
-    public static int guiNewlyPlacedItemTimer = 0;
+    public static uint guiNewlyPlacedItemTimer = 0;
     public static bool gfBadThrowItemCTGH;
     public static bool gfDontChargeAPsToPickup = false;
     public static bool gbItemPointerLocateGood = false;
@@ -386,27 +386,27 @@ public partial class Globals
     public static bool gfItemDescHelpTextOffset = false;
 
     // ARRAY FOR INV PANEL INTERFACE ITEM POSITIONS (sX,sY get set via InitInvSlotInterface() )
-    public static INV_REGIONS[] gSMInvData =
+    public static Dictionary<InventorySlot, INV_REGIONS> gSMInvData = new()
     {
-        new(false,      INV_BAR_DX,     INV_BAR_DY,     HEAD_INV_SLOT_WIDTH,    HEAD_INV_SLOT_HEIGHT,       0,  0),			// HELMETPOS
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     VEST_INV_SLOT_WIDTH,    VEST_INV_SLOT_HEIGHT,       0,  0),			// VESTPOS
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     LEGS_INV_SLOT_WIDTH,    LEGS_INV_SLOT_HEIGHT,       0,  0),			// LEGPOS,
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// HEAD1POS
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// HEAD2POS
-    	new(true,           INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,        0,  0),			// HANDPOS,
-    	new(true,           INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,        0,  0),			// SECONDHANDPOS
-    	new(true,           INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,        0,  0),			// BIGPOCK1
-    	new(true,           INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,        0,  0),			// BIGPOCK2
-    	new(true,           INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,        0,  0),			// BIGPOCK3
-    	new(true,           INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,        0,  0),			// BIGPOCK4
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// SMALLPOCK1
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// SMALLPOCK2
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// SMALLPOCK3
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// SMALLPOCK4
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// SMALLPOCK5
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// SMALLPOCK6
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),			// SMALLPOCK7
-    	new(false,      INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,         0,  0),				// SMALLPOCK8
+        { InventorySlot.HELMETPOS,      new(false, INV_BAR_DX,     INV_BAR_DY,     HEAD_INV_SLOT_WIDTH,    HEAD_INV_SLOT_HEIGHT, 0,  0) },
+        { InventorySlot.VESTPOS,        new(false, INV_BAR_DX,     INV_BAR_DY,     VEST_INV_SLOT_WIDTH,    VEST_INV_SLOT_HEIGHT, 0,  0) },
+        { InventorySlot.LEGPOS,         new(false, INV_BAR_DX,     INV_BAR_DY,     LEGS_INV_SLOT_WIDTH,    LEGS_INV_SLOT_HEIGHT, 0,  0) },
+        { InventorySlot.HEAD1POS,       new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.HEAD2POS,       new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.HANDPOS,        new(true,  INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,  0,  0) },
+        { InventorySlot.SECONDHANDPOS,  new(true,  INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,  0,  0) },
+        { InventorySlot.BIGPOCK1POS,    new(true,  INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,  0,  0) },
+        { InventorySlot.BIGPOCK2POS,    new(true,  INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,  0,  0) },
+        { InventorySlot.BIGPOCK3POS,    new(true,  INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,  0,  0) },
+        { InventorySlot.BIGPOCK4POS,    new(true,  INV_BAR_DX,     INV_BAR_DY,     BIG_INV_SLOT_WIDTH,     BIG_INV_SLOT_HEIGHT,  0,  0) },
+        { InventorySlot.SMALLPOCK1POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.SMALLPOCK2POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.SMALLPOCK3POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.SMALLPOCK4POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.SMALLPOCK5POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.SMALLPOCK6POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.SMALLPOCK7POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
+        { InventorySlot.SMALLPOCK8POS,  new(false, INV_BAR_DX,     INV_BAR_DY,     SM_INV_SLOT_WIDTH,      SM_INV_SLOT_HEIGHT,   0,  0) },
     };
 
     // DEFINES FOR ITEM SLOT SIZES IN PIXELS

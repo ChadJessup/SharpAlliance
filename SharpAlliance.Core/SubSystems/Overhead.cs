@@ -43,7 +43,9 @@ public class Overhead
                 if (pCurrSoldier.bTeam == gbPlayerNum)
                 {
                     if ((Menptr[bPerson].bVisible >= 0) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+                    {
                         return (false);                 // if someone there it's NOT OK
+                    }
                 }
                 else
                 {
@@ -304,7 +306,7 @@ public class Overhead
         BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
     }
 
-    public static int FindAdjacentGridEx(SOLDIERTYPE pSoldier, int sGridNo, WorldDirections pubDirection, out int psAdjustedGridNo, bool fForceToPerson, bool fDoor)
+    public static int FindAdjacentGridEx(SOLDIERTYPE pSoldier, int sGridNo, ref WorldDirections pubDirection, out int psAdjustedGridNo, bool fForceToPerson, bool fDoor)
     {
         // psAdjustedGridNo gets the original gridno or the new one if updated
         // It will ONLY be updated IF we were over a merc, ( it's updated to their gridno )
@@ -912,7 +914,20 @@ public class Overhead
         return (pTarget);
     }
 
-    void SlideTo(int sGridno, int usSoldierID, int usReasonID, int fSetLocator)
+    // internal function for turning neutral to FALSE
+    public static void SetSoldierNonNeutral(SOLDIERTYPE pSoldier)
+    {
+        pSoldier.bNeutral = 0;
+
+        if (gTacticalStatus.bBoxingState == BoxingStates.NOT_BOXING)
+        {
+            // Special code for strategic implications
+            CalculateNonPersistantPBIInfo();
+        }
+    }
+
+
+    public static void SlideTo(int sGridno, int usSoldierID, int usReasonID, int fSetLocator)
     {
         int cnt;
 
@@ -1322,6 +1337,66 @@ public class Overhead
             } // end of examining one soldier
         } // end of loop
 
+    }
+
+    public static int CalcSuppressionTolerance(SOLDIERTYPE pSoldier)
+    {
+        int bTolerance;
+
+        // Calculate basic tolerance value
+        bTolerance = pSoldier.bExpLevel * 2;
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
+        {
+            // give +1 for every 10% morale from 50, for a maximum bonus/penalty of 5.
+            bTolerance += (pSoldier.bMorale - 50) / 10;
+        }
+        else
+        {
+            // give +2 for every morale category from normal, for a max change of 4 
+            bTolerance += (pSoldier.bAIMorale - MORALE.NORMAL) * 2;
+        }
+
+        if (pSoldier.ubProfile != NO_PROFILE)
+        {
+            // change tolerance based on attitude
+            switch (gMercProfiles[pSoldier.ubProfile].bAttitude)
+            {
+                case ATT.AGGRESSIVE:
+                    bTolerance += 2;
+                    break;
+                case ATT.COWARD:
+                    bTolerance += -2;
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            // generic NPC/civvie; change tolerance based on attitude
+            switch (pSoldier.bAttitude)
+            {
+                case Attitudes.BRAVESOLO:
+                case Attitudes.BRAVEAID:
+                    bTolerance += 2;
+                    break;
+                case Attitudes.AGGRESSIVE:
+                    bTolerance += 1;
+                    break;
+                case Attitudes.DEFENSIVE:
+                    bTolerance += -1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (bTolerance < 0)
+        {
+            bTolerance = 0;
+        }
+
+        return (bTolerance);
     }
 
     public static bool FlatRoofAboveGridNo(int iMapIndex)

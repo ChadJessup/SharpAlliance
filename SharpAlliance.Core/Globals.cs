@@ -672,6 +672,8 @@ public partial class Globals
     public const Items NOTHING = Items.NONE;
     public const Items ITEM_NOT_FOUND = Items.UNSET;
 
+    public const InventorySlot ITEM_SLOT_NOT_FOUND = (InventorySlot)Items.UNSET;
+
     public const int USABLE = 10;      // minimum work% of items to still be usable
 
     // border and bottom buttons
@@ -2038,7 +2040,7 @@ public partial class Globals
 
     public static Dictionary<TEAM, int[]> gbPublicOpplist = new();
     //public static int[,] gbPublicOpplist = new int[MAXTEAMS, TOTAL_SOLDIERS];
-    public static int[,] gbSeenOpponents = new int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
+    public static Dictionary<int, List<int>> gbSeenOpponents = new();// int[TOTAL_SOLDIERS, TOTAL_SOLDIERS];
     public static int[][] gsLastKnownOppLoc = new int[TOTAL_SOLDIERS][];// [TOTAL_SOLDIERS];		// merc vs. merc
     public static int[][] gbLastKnownOppLevel = new int[TOTAL_SOLDIERS][];// [TOTAL_SOLDIERS];
     public static Dictionary<TEAM, List<int>> gsPublicLastKnownOppLoc = new(); //int[MAXTEAMS, TOTAL_SOLDIERS];	// team vs. merc

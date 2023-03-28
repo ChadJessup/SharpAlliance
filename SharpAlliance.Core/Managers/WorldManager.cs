@@ -55,6 +55,28 @@ public class WorldManager
 
     }
 
+    public static bool DeepWater(int sGridNo)
+    {
+        MAP_ELEMENT pMapElement;
+
+        pMapElement = (gpWorldLevelData[sGridNo]);
+        if (pMapElement.ubTerrainID == TerrainTypeDefines.DEEP_WATER)
+        {
+            // check for a bridge!  otherwise...
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
+    }
+
+    public static bool WaterTooDeepForAttacks(int sGridNo)
+    {
+        return (DeepWater(sGridNo));
+    }
+
+
     public static bool RemoveAllStructsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
     {
         LEVELNODE? pStruct = null;
@@ -196,7 +218,7 @@ public class WorldManager
         if (usIndex < NUMBEROFTILES)
         {
             // Check flags for tiledat and set a shadow if we have a buddy
-            if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY) && gTileDatabase[usIndex].sBuddyNum != -1)
+            if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY) && gTileDatabase[usIndex].sBuddyNum != TileDefines.UNSET)
             {
                 AddShadowToHead(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
                 gpWorldLevelData[iMapIndex].pShadowHead.uiFlags |= LEVELNODEFLAGS.BUDDYSHADOW;
@@ -493,7 +515,7 @@ public class WorldManager
                 }
 
                 // Delete memory assosiated with item
-                DeleteStructureFromWorld(pStruct.pStructureData);
+                WorldStructures.DeleteStructureFromWorld(pStruct.pStructureData);
 
                 //If we have to, make sure to remove this node when we reload the map from a saved game
                 RemoveStructFromMapTempFile(iMapIndex, usIndex);
@@ -502,7 +524,7 @@ public class WorldManager
                 {
                     // Check flags for tiledat and set a shadow if we have a buddy
                     if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY)
-                        && gTileDatabase[usIndex].sBuddyNum != -1)
+                        && gTileDatabase[usIndex].sBuddyNum != TileDefines.UNSET)
                     {
                         RemoveShadow(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
                     }
@@ -609,7 +631,7 @@ public class WorldManager
                 {
                     // Check flags for tiledat and set a shadow if we have a buddy
                     if (!GridNoIndoors(iMapIndex) && gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HAS_SHADOW_BUDDY)
-                        && gTileDatabase[usIndex].sBuddyNum != -1)
+                        && gTileDatabase[usIndex].sBuddyNum != TileDefines.UNSET)
                     {
                         RemoveShadow(iMapIndex, gTileDatabase[usIndex].sBuddyNum);
                     }

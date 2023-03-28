@@ -16,5 +16,5 @@ public partial class Globals
     public static Dictionary<WorldDirections, WorldDirections> gTwoCDirection = new();
     public static Dictionary<WorldDirections, WorldDirections> gOneCDirection = new();
     public static Dictionary<WorldDirections, WorldDirections> gOneCCDirection = new();
-    public static WorldDirections[,] gPurpendicularDirection = new WorldDirections[NUM_WORLD_DIRECTIONS, NUM_WORLD_DIRECTIONS];
+    public static Dictionary<WorldDirections, List<WorldDirections>> gPurpendicularDirection = new();// WorldDirections[NUM_WORLD_DIRECTIONS, NUM_WORLD_DIRECTIONS];
 }

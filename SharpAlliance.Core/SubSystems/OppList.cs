@@ -446,7 +446,7 @@ public class OppList
         }
     }
 
-    void HandleSight(SOLDIERTYPE? pSoldier, SIGHT ubSightFlags)
+    public static void HandleSight(SOLDIERTYPE pSoldier, SIGHT ubSightFlags)
     {
         int uiLoop;
         SOLDIERTYPE? pThem;
@@ -523,7 +523,7 @@ public class OppList
            && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
            && (ubSightFlags.HasFlag(SIGHT.INTERRUPT)))
         {
-            ResolveInterruptsVs(pSoldier, SIGHTINTERRUPT);
+            TeamTurns.ResolveInterruptsVs(pSoldier, SIGHTINTERRUPT);
         }
 
         if (gubBestToMakeSightingSize == BEST_SIGHTING_ARRAY_SIZE_NONCOMBAT)
@@ -533,7 +533,7 @@ public class OppList
 
         if (pSoldier.bNewSituation > 0 && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)))
         {
-            HaultSoldierFromSighting(pSoldier, true);
+            SoldierControl.HaultSoldierFromSighting(pSoldier, true);
         }
         pSoldier.bNewSituation = Math.Max(pSoldier.bNewSituation, bTempNewSituation);
 
@@ -1707,7 +1707,7 @@ public class OppList
                                         {
                                             // didn't see anyone before!
                                             AIMain.CancelAIAction(pSoldier, 1);
-                                            SetNewSituation(pSoldier);
+                                            AIMain.SetNewSituation(pSoldier);
                                         }
                                     }
                                     break;
@@ -1946,7 +1946,7 @@ public class OppList
                 if ((pSoldier.bOppList[pOpponent.ubID] != SEEN_THIS_TURN) ||
                     (gsLastKnownOppLoc[pSoldier.ubID, pOpponent.ubID] != sOppGridno))
                 {
-                    SetNewSituation(pSoldier);  // force the looker to re-evaluate
+                    AIMain.SetNewSituation(pSoldier);  // force the looker to re-evaluate
                 }
                 else
                 {
@@ -1962,7 +1962,7 @@ public class OppList
                         case AI_ACTION.POINT_PATROL:
                         case AI_ACTION.LEAVE_WATER_GAS:
                         case AI_ACTION.SEEK_NOISE:
-                            SetNewSituation(pSoldier);  // force the looker to re-evaluate
+                            AIMain.SetNewSituation(pSoldier);  // force the looker to re-evaluate
                             break;
                     }
                 }
@@ -2094,7 +2094,7 @@ public class OppList
                 {
                     if (!pOpponent.IsNeutral && (pSoldier.bSide != pOpponent.bSide))
                     {
-                        SlideTo(0, pOpponent.ubID, pSoldier.ubID, SETLOCATOR);
+                        Overhead.SlideTo(0, pOpponent.ubID, pSoldier.ubID, SETLOCATOR);
                     }
                 }
             }
@@ -2104,7 +2104,7 @@ public class OppList
         else if (!PTR_OURTEAM(pSoldier))
         {
             // ATE: Check stance, change to threatending
-            ReevaluateEnemyStance(pSoldier, pSoldier.usAnimState);
+            SoldierControl.ReevaluateEnemyStance(pSoldier, pSoldier.usAnimState);
         }
 
     }
@@ -2151,7 +2151,7 @@ public class OppList
                     && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
                     //LocateSoldier(pSoldier.ubID,DONTSETLOCATOR);
-                    SlideTo(0, pSoldier.ubID, Globals.NOBODY, DONTSETLOCATOR);
+                    Overhead.SlideTo(0, pSoldier.ubID, Globals.NOBODY, DONTSETLOCATOR);
                 }
 
                 // follow his movement on our screen as he moves around...
@@ -2265,7 +2265,7 @@ public class OppList
 
             if (pSoldier.bAlertStatus < STATUS.RED)
             {
-                CheckForChangingOrders(pSoldier);
+                AIMain.CheckForChangingOrders(pSoldier);
             }
 
             pSoldier.bAlertStatus = STATUS.BLACK;   // force black AI status right away
@@ -2837,7 +2837,7 @@ public class OppList
             // Say quote!
             SaySeenQuote(pSoldier, gfPlayerTeamSawCreatures, true, gfPlayerTeamSawJoey);
 
-            HaultSoldierFromSighting(pSoldier, true);
+            SoldierControl.HaultSoldierFromSighting(pSoldier, true);
 
             // Set virgin sector to false....
             gTacticalStatus.fVirginSector = false;
@@ -2861,7 +2861,7 @@ public class OppList
                     SaySeenQuote(pSoldier, gfPlayerTeamSawCreatures, false, gfPlayerTeamSawJoey);
                 }
 
-                HaultSoldierFromSighting(pSoldier, true);
+                SoldierControl.HaultSoldierFromSighting(pSoldier, true);
 
                 if (gTacticalStatus.fEnemySightingOnTheirTurn)
                 {
@@ -2869,7 +2869,7 @@ public class OppList
                     Overhead.LocateSoldier(pSoldier.ubID, SETLOCATOR);
 
                     // Now slide to other guy....
-                    SlideTo(NOWHERE, gTacticalStatus.ubEnemySightingOnTheirTurnEnemyID, Globals.NOBODY, SETLOCATOR);
+                    Overhead.SlideTo(NOWHERE, gTacticalStatus.ubEnemySightingOnTheirTurnEnemyID, Globals.NOBODY, SETLOCATOR);
 
                 }
 
@@ -4214,48 +4214,48 @@ public class OppList
                 gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HANDPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(&pSoldier.inv[InventorySlot.HANDPOS], LINE_HEIGHT * ubLine);
+            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HANDPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "SECONDHANDPOS:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            if (pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem)
+            if (pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem > 0)
             {
                 gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(&pSoldier.inv[InventorySlot.SECONDHANDPOS], LINE_HEIGHT * ubLine);
+            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SECONDHANDPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK1POS:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            if (pSoldier.inv[BIGPOCK1POS].usItem)
+            if (pSoldier.inv[InventorySlot.BIGPOCK1POS].usItem > 0)
             {
-                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK1POS].usItem]);
+                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.BIGPOCK1POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK1POS], LINE_HEIGHT * ubLine);
+            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK1POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK2POS:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            if (pSoldier.inv[BIGPOCK2POS].usItem)
+            if (pSoldier.inv[InventorySlot.BIGPOCK2POS].usItem)
             {
-                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK2POS].usItem]);
+                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.BIGPOCK2POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK2POS], LINE_HEIGHT * ubLine);
+            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK2POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "BIGPOCK3POS:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            if (pSoldier.inv[BIGPOCK3POS].usItem)
+            if (pSoldier.inv[InventorySlot.BIGPOCK3POS].usItem)
             {
-                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[BIGPOCK3POS].usItem]);
+                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.BIGPOCK3POS].usItem]);
             }
 
             WriteQuantityAndAttachments(&pSoldier.inv[BIGPOCK3POS], LINE_HEIGHT * ubLine);
@@ -4563,7 +4563,7 @@ public class OppList
         if (gTacticalStatus.ubAttackBusyCount > 0)
         {
             // delay these events until the attack is over!
-            AddGameEvent(S_NOISE, DEMAND_EVENT_DELAY, &SNoise);
+            GameEvents.AddGameEvent(S_NOISE, DEMAND_EVENT_DELAY, SNoise);
         }
         else
         {
@@ -4677,7 +4677,7 @@ public class OppList
             // interrupts are possible, resolve them now (we're in control here)
             // (you can't interrupt Globals.NOBODY, even if you hear the noise)
 
-            ResolveInterruptsVs(pSoldier, NOISEINTERRUPT);
+            TeamTurns.ResolveInterruptsVs(pSoldier, NOISEINTERRUPT);
         }
 
     }
@@ -4967,7 +4967,7 @@ public class OppList
                 for (bLoop = gTacticalStatus.Team[bTeam].bFirstID, pSoldier = Menptr[bLoop]; bLoop <= gTacticalStatus.Team[bTeam].bLastID; bLoop++, pSoldier++)
                 {
                     // if this "listener" is inactive, or in no condition to care
-                    if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD) || (pSoldier.bLife < OKLIFE) || pSoldier.ubBodyType == LARVAE_MONSTER)
+                    if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD) || (pSoldier.bLife < OKLIFE) || pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER)
                     {
                         continue;          // skip him!
                     }
@@ -5459,7 +5459,7 @@ public class OppList
                         {
                             // then this soldier goes to status RED, has proof of enemy presence
                             pSoldier.bAlertStatus = STATUS.RED;
-                            CheckForChangingOrders(pSoldier);
+                            AIMain.CheckForChangingOrders(pSoldier);
                         }
                     }
                 }
@@ -5467,7 +5467,7 @@ public class OppList
             }
             else         // noise maker still can't be seen
             {
-                SetNewSituation(pSoldier); // re-evaluate situation
+                AIMain.SetNewSituation(pSoldier); // re-evaluate situation
 
                 // if noise type was unmistakably that of gunfire
                 if (((ubNoiseType == NOISE.GUNFIRE) || (ubNoiseType == NOISE.BULLET_IMPACT)) && (ubVolume >= 3))
@@ -5477,7 +5477,7 @@ public class OppList
                     {
                         // then this soldier goes to status RED, has proof of enemy presence
                         pSoldier.bAlertStatus = STATUS.RED;
-                        CheckForChangingOrders(pSoldier);
+                        AIMain.CheckForChangingOrders(pSoldier);
                     }
                 }
 
@@ -5504,7 +5504,7 @@ public class OppList
                         pSoldier.ubNoiseVolume = MAX_MISC_NOISE.DURATION;
                     }
 
-                    SetNewSituation(pSoldier);  // force a fresh AI decision to be made
+                    AIMain.SetNewSituation(pSoldier);  // force a fresh AI decision to be made
                 }
 
             }
@@ -5592,7 +5592,7 @@ public class OppList
                     {
                         // then this soldier goes to status RED, has proof of enemy presence
                         pSoldier.bAlertStatus = STATUS.RED;
-                        CheckForChangingOrders(pSoldier);
+                        AIMain.CheckForChangingOrders(pSoldier);
                     }
                 }
             }
@@ -5619,21 +5619,21 @@ public class OppList
                         pSoldier.ubNoiseVolume = MAX_MISC_NOISE.DURATION;
                     }
 
-                    SetNewSituation(pSoldier);  // force a fresh AI decision to be made
+                    AIMain.SetNewSituation(pSoldier);  // force a fresh AI decision to be made
                 }
             }
             else
             // if listener sees the source of the noise, AND it's either a grenade,
             //  or it's a rock that he watched land (didn't need to turn)
             {
-                SetNewSituation(pSoldier);  // re-evaluate situation
+                AIMain.SetNewSituation(pSoldier);  // re-evaluate situation
 
                 // if status is only GREEN or YELLOW
                 if (pSoldier.bAlertStatus < STATUS.RED)
                 {
                     // then this soldier goes to status RED, has proof of enemy presence
                     pSoldier.bAlertStatus = STATUS.RED;
-                    CheckForChangingOrders(pSoldier);
+                    AIMain.CheckForChangingOrders(pSoldier);
                 }
             }
 
@@ -6243,19 +6243,19 @@ public class OppList
             else
             {
                 // go to threatening stance
-                ReevaluateEnemyStance(pDefender, pDefender.usAnimState);
+                SoldierControl.ReevaluateEnemyStance(pDefender, pDefender.usAnimState);
             }
         }
         else  // victim NOTICED the attack, but CAN'T SEE the actual attacker
         {
-            SetNewSituation(pDefender);          // re-evaluate situation
+            AIMain.SetNewSituation(pDefender);          // re-evaluate situation
 
             // if victim's alert status is only GREEN or YELLOW
-            if (pDefender.bAlertStatus < STATUS_RED)
+            if (pDefender.bAlertStatus < STATUS.RED)
             {
                 // then this soldier goes to status RED, has proof of enemy presence
-                pDefender.bAlertStatus = STATUS_RED;
-                CheckForChangingOrders(pDefender);
+                pDefender.bAlertStatus = STATUS.RED;
+                AIMain.CheckForChangingOrders(pDefender);
             }
 
             UpdatePersonal(pDefender, pAttacker.ubID, HEARD_THIS_TURN, pAttacker.sGridNo, pAttacker.bLevel);
@@ -6332,10 +6332,10 @@ public class OppList
                 {
                     // and we can trace a line of sight to his x,y coordinates
                     // assume enemies are always aware of their buddies...
-                    if (SoldierTo3DLocationLineOfSightTest(pSoldier, pDyingSoldier.sGridNo, pDyingSoldier.bLevel, 0, (int)sDistVisible, true))
+                    if (LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, pDyingSoldier.sGridNo, pDyingSoldier.bLevel, 0, (int)sDistVisible, true))
                     {
-                        pSoldier.bAlertStatus = STATUS_RED;
-                        CheckForChangingOrders(pSoldier);
+                        pSoldier.bAlertStatus = STATUS.RED;
+                        AIMain.CheckForChangingOrders(pSoldier);
                     }
                 }
             }
@@ -6356,7 +6356,7 @@ public class OppList
             {
                 pSoldier = Globals.MercPtrs[ubID];
 
-                if (pSoldier.bActive && pSoldier.bInSector && (pSoldier.bLife >= OKLIFE) && (pSoldier.bAlertStatus >= STATUS_RED))
+                if (pSoldier.bActive && pSoldier.bInSector && (pSoldier.bLife >= OKLIFE) && (pSoldier.bAlertStatus >= STATUS.RED))
                 {
                     return (true);
                 }
@@ -6365,7 +6365,7 @@ public class OppList
         return (false);
     }
 
-    bool MercSeesCreature(SOLDIERTYPE? pSoldier)
+    public static bool MercSeesCreature(SOLDIERTYPE pSoldier)
     {
         bool fSeesCreature = false;
         int ubID;
@@ -6465,7 +6465,7 @@ public class OppList
             {
                 sDistVisible = DistanceVisible(MercPtrs[ubID], WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, gsWatchedLoc[ubID, bLoop], gbWatchedLocLevel[ubID, bLoop]);
                 // look at standing height
-                if (SoldierTo3DLocationLineOfSightTest(MercPtrs[ubID], gsWatchedLoc[ubID, bLoop], gbWatchedLocLevel[ubID, bLoop], 3, (int)sDistVisible, true))
+                if (LOS.SoldierTo3DLocationLineOfSightTest(MercPtrs[ubID], gsWatchedLoc[ubID, bLoop], gbWatchedLocLevel[ubID, bLoop], 3, (int)sDistVisible, 1))
                 {
                     bHighestLoc = bLoop;
                     bHighestPoints = gubWatchedLocPoints[ubID, bLoop];

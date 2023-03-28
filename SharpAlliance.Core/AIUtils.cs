@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 
@@ -19,12 +20,52 @@ public class AIUtils
     // InWaterOrGas - gas stuff
     // RoamingRange - point patrol stuff
 
-    public static URGENCY[,] Urgency =
+    public static Dictionary<STATUS, Dictionary<MORALE, URGENCY>> Urgency = new()
     {
-        { URGENCY.LOW,  URGENCY.LOW,  URGENCY.LOW,  URGENCY.LOW,  URGENCY.LOW }, // green
-    	{ URGENCY.HIGH, URGENCY.MED,  URGENCY.MED,  URGENCY.LOW,  URGENCY.LOW }, // yellow
-    	{ URGENCY.HIGH, URGENCY.MED,  URGENCY.MED,  URGENCY.MED,  URGENCY.MED }, // red
-    	{ URGENCY.HIGH, URGENCY.HIGH, URGENCY.HIGH, URGENCY.MED,  URGENCY.MED }  // black
+        {
+            STATUS.GREEN,
+            new()
+            {
+                { MORALE.HOPELESS,  URGENCY.LOW },
+                { MORALE.WORRIED,   URGENCY.LOW },
+                { MORALE.NORMAL,    URGENCY.LOW },
+                { MORALE.CONFIDENT, URGENCY.LOW },
+                { MORALE.FEARLESS,  URGENCY.LOW },
+            }
+        },
+        {
+            STATUS.YELLOW,
+            new()
+            {
+                { MORALE.HOPELESS,  URGENCY.HIGH },
+                { MORALE.WORRIED,   URGENCY.MED },
+                { MORALE.NORMAL,    URGENCY.MED },
+                { MORALE.CONFIDENT, URGENCY.LOW },
+                { MORALE.FEARLESS,  URGENCY.LOW }
+            }
+        },
+        {
+            STATUS.RED,
+            new()
+            {
+                { MORALE.HOPELESS,  URGENCY.HIGH },
+                { MORALE.WORRIED,   URGENCY.MED },
+                { MORALE.NORMAL,    URGENCY.MED },
+                { MORALE.CONFIDENT, URGENCY.MED },
+                { MORALE.FEARLESS,  URGENCY.MED }
+            }
+        },
+        {
+            STATUS.BLACK,
+            new()
+            {
+                { MORALE.HOPELESS,  URGENCY.HIGH },
+                { MORALE.WORRIED,   URGENCY.HIGH },
+                { MORALE.NORMAL,    URGENCY.HIGH },
+                { MORALE.CONFIDENT, URGENCY.MED },
+                { MORALE.FEARLESS,  URGENCY.MED }
+            }
+        }
     };
 
     public static AnimationStates[,] MovementMode =
@@ -62,7 +103,7 @@ public class AIUtils
             return (NOSHOOT.MYSELF);
         }
 
-        if (WaterTooDeepForAttacks(pSoldier.sGridNo))
+        if (WorldManager.WaterTooDeepForAttacks(pSoldier.sGridNo))
         {
             return (NOSHOOT.WATER);
         }
@@ -321,7 +362,7 @@ public class AIUtils
         }
         else
         {
-            if ((pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS)) && (MovementMode[bAction, Urgency[pSoldier.bAlertStatus, pSoldier.bAIMorale]] == AnimationStates.RUNNING))
+            if ((pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS)) && (MovementMode[bAction, Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]] == AnimationStates.RUNNING))
             {
                 return (AnimationStates.WALKING);
             }
@@ -346,7 +387,10 @@ public class AIUtils
         //pSoldier.sDestination = usGridNo;
         bool fSet = false;
 
-        if (IS_MERC_BODY_TYPE(pSoldier) && pSoldier.bAction == AI_ACTION.TAKE_COVER && (pSoldier.bOrders == Attitudes.DEFENSIVE || pSoldier.bOrders == Attitudes.CUNNINGSOLO || pSoldier.bOrders == Attitudes.CUNNINGAID) && (SoldierDifficultyLevel(pSoldier) >= 2))
+        if (IS_MERC_BODY_TYPE(pSoldier)
+            && pSoldier.bAction == AI_ACTION.TAKE_COVER
+            && (pSoldier.bOrders == (Orders)Attitudes.DEFENSIVE || pSoldier.bOrders == (Orders)Attitudes.CUNNINGSOLO || pSoldier.bOrders == (Orders)Attitudes.CUNNINGAID)
+            && (SoldierDifficultyLevel(pSoldier) >= 2))
         {
             AnimationStates usMovementMode;
 
@@ -417,8 +461,7 @@ public class AIUtils
         // ATE: Using this more versitile version
         // Last paramater says whether to re-start the soldier's animation
         // This should be done if buddy was paused for fNoApstofinishMove...
-        EVENT_InternalGetNewSoldierPath(pSoldier, usGridNo, pSoldier.usUIMovementMode, false, pSoldier.fNoAPToFinishMove);
-
+        SoldierControl.EVENT_InternalGetNewSoldierPath(pSoldier, usGridNo, pSoldier.usUIMovementMode, 0, pSoldier.fNoAPToFinishMove);
     }
 
 
@@ -1150,7 +1193,7 @@ public class AIUtils
         return (sClosestOpponent);
     }
 
-    int ClosestSeenOpponent(SOLDIERTYPE pSoldier, int? psGridNo, int? pbLevel)
+    int ClosestSeenOpponent(SOLDIERTYPE pSoldier, out int psGridNo, out int pbLevel)
     {
         int sGridNo, sClosestOpponent = NOWHERE;
         int uiLoop;
@@ -1231,17 +1274,17 @@ public class AIUtils
 
         if (psGridNo)
         {
-            *psGridNo = sClosestOpponent;
+            psGridNo = sClosestOpponent;
         }
         if (pbLevel)
         {
-            *pbLevel = bClosestLevel;
+            pbLevel = bClosestLevel;
         }
         return (sClosestOpponent);
     }
 
 
-    int ClosestPC(SOLDIERTYPE pSoldier, int? psDistance)
+    int ClosestPC(SOLDIERTYPE pSoldier, out int? psDistance)
     {
         // used by NPCs... find the closest PC
 
@@ -1292,21 +1335,21 @@ public class AIUtils
             }
         }
 
-        if (psDistance)
+        if (psDistance is not null)
         {
-            *psDistance = sMinDist;
+            psDistance = sMinDist;
         }
 
         return (sGridNo);
     }
 
-    int FindClosestClimbPointAvailableToAI(SOLDIERTYPE pSoldier, int sStartGridNo, int sDesiredGridNo, bool fClimbUp)
+    public static int FindClosestClimbPointAvailableToAI(SOLDIERTYPE pSoldier, int sStartGridNo, int sDesiredGridNo, bool fClimbUp)
     {
         int sGridNo;
         int sRoamingOrigin;
         int sRoamingRange;
 
-        if (pSoldier.uiStatusFlags & SOLDIER_PC)
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
         {
             sRoamingOrigin = pSoldier.sGridNo;
             sRoamingRange = 99;
@@ -1670,7 +1713,7 @@ public class AIUtils
 
     public static bool InWaterGasOrSmoke(SOLDIERTYPE pSoldier, int sGridNo)
     {
-        if (WaterTooDeepForAttacks(sGridNo))
+        if (WorldManager.WaterTooDeepForAttacks(sGridNo))
         {
             return (true);
         }
@@ -1713,7 +1756,7 @@ public class AIUtils
 
     bool InWaterOrGas(SOLDIERTYPE pSoldier, int sGridNo)
     {
-        if (WaterTooDeepForAttacks(sGridNo))
+        if (WorldManager.WaterTooDeepForAttacks(sGridNo))
         {
             return (true);
         }
@@ -1817,7 +1860,7 @@ public class AIUtils
         MORALE bMoraleCategory;
         int pSeenOpp; //,*friendOlPtr;
         int pbPersOL, pbPublOL;
-        SOLDIERTYPE pOpponent, pFriend;
+        SOLDIERTYPE? pOpponent, pFriend;
 
         // if army guy has NO weapons left then panic!
         if (pSoldier.bTeam == ENEMY_TEAM)
@@ -1838,7 +1881,7 @@ public class AIUtils
             pOpponent = MercSlots[uiLoop];
 
             // if this merc is inactive, at base, on assignment, dead, unconscious
-            if (!pOpponent || (pOpponent.bLife < OKLIFE))
+            if (pOpponent is null || (pOpponent.bLife < OKLIFE))
             {
                 continue;          // next merc
             }
@@ -1850,14 +1893,14 @@ public class AIUtils
             }
 
             // Special stuff for Carmen the bounty hunter
-            if (pSoldier.bAttitude == ATTACKSLAYONLY && pOpponent.ubProfile != 64)
+            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpponent.ubProfile != NPCID.SLAY)
             {
                 continue;  // next opponent
             }
 
-            pbPersOL = pSoldier.bOppList + pOpponent.ubID;
-            pbPublOL = gbPublicOpplist[pSoldier.bTeam] + pOpponent.ubID;
-            pSeenOpp = gbSeenOpponents[pSoldier.ubID] + pOpponent.ubID;
+            pbPersOL = pSoldier.bOppList[pOpponent.ubID];
+            pbPublOL = gbPublicOpplist[pSoldier.bTeam][pOpponent.ubID];
+            pSeenOpp = gbSeenOpponents[pSoldier.ubID][pOpponent.ubID];
 
             // if this opponent is unknown to me personally AND unknown to my team, too
             if ((pbPersOL == NOT_HEARD_OR_SEEN) && (pbPublOL == NOT_HEARD_OR_SEEN))
@@ -1874,7 +1917,7 @@ public class AIUtils
             else         // decide which opplist is more current
             {
                 // if personal knowledge is more up to date or at least equal
-                if ((gubKnowledgeValue[pbPublOL - OLDEST_HEARD_VALUE, pbPersOL - OLDEST_HEARD_VALUE] > 0) || (*pbPersOL == *pbPublOL))
+                if ((gubKnowledgeValue[pbPublOL - OLDEST_HEARD_VALUE, pbPersOL - OLDEST_HEARD_VALUE] > 0) || (pbPersOL == pbPublOL))
                 {
                     bMostRecentOpplistValue = pbPersOL;      // use personal
                 }
@@ -1884,7 +1927,7 @@ public class AIUtils
                 }
             }
 
-            iPercent = ThreatPercent[bMostRecentOpplistValue - OLDEST_HEARD_VALUE];
+            iPercent = AIMain.ThreatPercent[bMostRecentOpplistValue - OLDEST_HEARD_VALUE];
 
             sOppThreatValue = (iPercent * CalcManThreatValue(pOpponent, pSoldier.sGridNo, false, pSoldier)) / 100;
 
@@ -1906,7 +1949,7 @@ public class AIUtils
                 pFriend = MercSlots[uiLoop2];
 
                 // if this merc is inactive, at base, on assignment, dead, unconscious
-                if (!pFriend || (pFriend.bLife < OKLIFE))
+                if (pFriend is null || (pFriend.bLife < OKLIFE))
                 {
                     continue;        // next merc
                 }
@@ -1933,7 +1976,7 @@ public class AIUtils
 
                 // subtract HEARD_2_TURNS_AGO (which is negative) to make values start at 0 and
                 // be positive otherwise
-                iPercent = ThreatPercent[pFriend.bOppList[pOpponent.ubID] - OLDEST_HEARD_VALUE];
+                iPercent = AIMain.ThreatPercent[pFriend.bOppList[pOpponent.ubID] - OLDEST_HEARD_VALUE];
 
                 // reduce the percentage value based on how far away they are from the enemy, if they only hear him
                 if (pFriend.bOppList[pOpponent.ubID] <= HEARD_LAST_TURN)
@@ -2138,9 +2181,9 @@ public class AIUtils
         if (fForCreature)
         {
             // health (1-100)
-            iThreatValue += pEnemy.bLife;
+            iThreatValue += (int)pEnemy.bLife;
             // bleeding (more attactive!) (1-100)
-            iThreatValue += pEnemy.bBleeding;
+            iThreatValue += (int)pEnemy.bBleeding;
             // decrease according to distance
             iThreatValue = (iThreatValue * 10) / (10 + IsometricUtils.PythSpacesAway(sMyGrid, pEnemy.sGridNo));
 
@@ -2157,7 +2200,7 @@ public class AIUtils
             iThreatValue += (pEnemy.bActionPoints / 2);
 
             // ADD 1/10 of man's current health (0-10)
-            iThreatValue += (pEnemy.bLife / 10);
+            iThreatValue += (uint)(pEnemy.bLife / 10);
 
             if (pEnemy.bAssignment < Assignments.ON_DUTY)
             {
@@ -2253,7 +2296,7 @@ public class AIUtils
         return (iThreatValue);
     }
 
-    int RoamingRange(SOLDIERTYPE pSoldier, out int pusFromGridNo)
+    public static int RoamingRange(SOLDIERTYPE pSoldier, out int pusFromGridNo)
     {
         if (CREATURE_OR_BLOODCAT(pSoldier))
         {

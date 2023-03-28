@@ -1,4 +1,6 @@
-﻿namespace SharpAlliance.Core;
+﻿using System.Collections.Generic;
+
+namespace SharpAlliance.Core;
 
 public partial class Globals
 {
@@ -543,7 +545,7 @@ public partial class Globals
     public static int[] gTileTypeStartIndex = new int[(int)TileTypeDefines.NUMBEROFTILETYPES];
     public static int gusNumAnimatedTiles;
     public static int[] gusAnimatedTiles = new int[TileDefine.MAX_ANIMATED_TILES];
-    public static int[] gTileTypeMovementCost = new int[(int)TerrainTypeDefines.NUM_TERRAIN_TYPES];
+    public static Dictionary<TerrainTypeDefines, int> gTileTypeMovementCost = new();
 
     //==========================================================================
     // Quick defines for finding last type entry in tile types

@@ -516,7 +516,9 @@ public class StrategicPathing
         }
 
         if (iEndSectorNum < MAP_WORLD_X - 1)
+        {
             return null;
+        }
 
         iPathLength = ((int)FindStratPath(((int)iStartSectorNum), ((int)iEndSectorNum), sMvtGroupNumber, fTacticalTraversal));
         while (iPathLength > iCount)
@@ -545,9 +547,14 @@ public class StrategicPathing
                 pNode = pHeadOfPathList;
                 // intersected previous node, delete path to date
                 if (!pNode)
+                {
                     return null;
+                }
+
                 while (pNode.pNext)
+                {
                     pNode = pNode.pNext;
+                }
                 // start backing up 
                 while (pNode.uiSectorId != (int)iStartSectorNum)
                 {
@@ -582,18 +589,27 @@ public class StrategicPathing
 
             pHeadOfPathList = pNode;
             if (!pNode)
+            {
                 return null;
-            while (pNode.pNext)
-                pNode = pNode.pNext;
+            }
 
+            while (pNode.pNext)
+            {
+                pNode = pNode.pNext;
+            }
         }
 
         pNode = pHeadOfPathList;
 
         if (!pNode)
+        {
             return null;
+        }
+
         while (pNode.pNext)
+        {
             pNode = pNode.pNext;
+        }
 
         if (!pNode.pPrev)
         {
@@ -629,7 +645,9 @@ public class StrategicPathing
         pNode = pPath;
 
         if (uiSectorNum < MAP_WORLD_X - 1)
+        {
             return false;
+        }
 
         if (pNode == null)
         {

@@ -32,8 +32,8 @@ public class SOLDIERTYPE
     public FLASH_PORTRAIT bFlashPortraitFrame;
     public int sFractLife;       // fraction of life pts (in hundreths)	
     public uint bBleeding;     // blood loss control variable
-    public int bBreath;           // current breath value
-    public int bBreathMax;   // max breath, affected by fatigue/sleep
+    public uint bBreath;           // current breath value
+    public uint bBreathMax;   // max breath, affected by fatigue/sleep
     public bool bStealthMode { get; set; }
 
     public int sBreathRed;           // current breath value
@@ -279,7 +279,7 @@ public class SOLDIERTYPE
     public Orders bOrders;
     public Attitudes bAttitude;
     public int bUnderFire;
-    public int bShock;
+    public uint bShock;
     public int bUnderEscort;
     public int bBypassToGreen;
     public int ubLastMercToRadio;
@@ -442,8 +442,8 @@ public class SOLDIERTYPE
     public uint uiChangeMechanicalTime;
     public int uiUniqueSoldierIdValue; // the unique value every instance of a soldier gets - 1 is the first valid value
     public int bBeingAttackedCount;       // Being attacked counter
-    public int[] bNewItemCount = new int[(int)InventorySlot.NUM_INV_SLOTS];
-    public int[] bNewItemCycleCount = new int[(int)InventorySlot.NUM_INV_SLOTS];
+    public Dictionary<InventorySlot, int> bNewItemCount = new();// int[(int)InventorySlot.NUM_INV_SLOTS];
+    public Dictionary<InventorySlot, int> bNewItemCycleCount = new();// int[(int)InventorySlot.NUM_INV_SLOTS];
     public bool fCheckForNewlyAddedItems;
     public int bEndDoorOpenCode;
     public int ubScheduleID;

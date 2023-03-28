@@ -5066,7 +5066,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    bool IsValidTalkableNPCFromMouse(out int pubSoldierID, bool fGive, bool fAllowMercs, bool fCheckCollapsed)
+    public static bool IsValidTalkableNPCFromMouse(out int pubSoldierID, bool fGive, bool fAllowMercs, bool fCheckCollapsed)
     {
         // Check if there is a guy here to talk to!
         if (Globals.gfUIFullTargetFound)

@@ -251,43 +251,43 @@ public class InterfaceItems
 
     bool InitInvSlotInterface(INV_REGION_DESC pRegionDesc, INV_REGION_DESC pCamoRegion, MouseCallback INVMoveCallback, MouseCallback INVClickCallback, MouseCallback INVMoveCammoCallback, MouseCallback INVClickCammoCallback, bool fSetHighestPrioity)
     {
-        int cnt;
+        InventorySlot cnt;
         VOBJECT_DESC VObjectDesc;
 
         // Load all four body type images
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_large_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[1][0])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[1][0])));
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_large_male_H.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[1][1])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[1][1])));
 
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[0][0])));
+        CHECKF(AddVideoObject(VObjectDesc, guiBodyInvVO[0][0]));
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male_H.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[0][1])));
+        CHECKF(AddVideoObject(VObjectDesc, guiBodyInvVO[0][1]));
 
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[2][0])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[2][0])));
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[2][1])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[2][1])));
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_female.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[3][0])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[3][0])));
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_female_H.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(guiBodyInvVO[3][1])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[3][1])));
 
         // add gold key graphic
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
@@ -357,7 +357,7 @@ public class InterfaceItems
 
     void DisableInvRegions(bool fDisable)
     {
-        int cnt;
+        InventorySlot cnt;
 
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
         {
@@ -390,19 +390,19 @@ public class InterfaceItems
 
     void ShutdownInvSlotInterface()
     {
-        int cnt;
+        InventorySlot cnt;
 
         // Remove all body type panels
-        DeleteVideoObjectFromIndex(guiBodyInvVO[0][0]);
-        DeleteVideoObjectFromIndex(guiBodyInvVO[2][0]);
-        DeleteVideoObjectFromIndex(guiBodyInvVO[1][0]);
-        DeleteVideoObjectFromIndex(guiBodyInvVO[3][0]);
-        DeleteVideoObjectFromIndex(guiBodyInvVO[0][1]);
-        DeleteVideoObjectFromIndex(guiBodyInvVO[2][1]);
-        DeleteVideoObjectFromIndex(guiBodyInvVO[1][1]);
-        DeleteVideoObjectFromIndex(guiBodyInvVO[3][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[0][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[2][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[1][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[3][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[0][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[2][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[1][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[3][1]);
 
-        DeleteVideoObjectFromIndex(guiGoldKeyVO);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiGoldKeyVO);
 
         // Remove regions
         // Add regions for inventory slots
@@ -422,14 +422,14 @@ public class InterfaceItems
         // Blit body inv, based on body type
         int bSubImageIndex = gbCompatibleApplyItem;
 
-        BltVideoObjectFromIndex(guiSAVEBUFFER, guiBodyInvVO[pSoldier.ubBodyType][bSubImageIndex], 0, sX, sY, VO_BLT_SRCTRANSPARENCY, null);
+        BltVideoObjectFromIndex(guiSAVEBUFFER, guiBodyInvVO[pSoldier.ubBodyType][bSubImageIndex], 0, sX, sY, VO_BLT.SRCTRANSPARENCY, null);
     }
 
 
     static string pStr;
     void HandleRenderInvSlots(SOLDIERTYPE pSoldier, int fDirtyLevel)
     {
-        int cnt;
+        InventorySlot cnt;
 
         if (InItemDescriptionBox() || InItemStackPopup() || InKeyRingPopup())
         {
@@ -446,7 +446,7 @@ public class InterfaceItems
                     SetRegionFastHelpText((gSMInvRegion[cnt]), pStr);
                 }
 
-                INVRenderINVPanelItem(pSoldier, (int)cnt, fDirtyLevel);
+                INVRenderINVPanelItem(pSoldier, cnt, fDirtyLevel);
             }
 
             if (KeyExistsInKeyRing(pSoldier, ANYKEY, null))
@@ -454,12 +454,12 @@ public class InterfaceItems
                 // blit gold key here?
                 if (guiCurrentItemDescriptionScreen != ScreenName.MAP_SCREEN)
                 {
-                    BltVideoObjectFromIndex(guiSAVEBUFFER, guiGoldKeyVO, 0, 496, 446, VO_BLT_SRCTRANSPARENCY, null);
+                    BltVideoObjectFromIndex(guiSAVEBUFFER, guiGoldKeyVO, 0, 496, 446, VO_BLT.SRCTRANSPARENCY, null);
                     RestoreExternBackgroundRect(496, 446, 29, 23);
                 }
                 else
                 {
-                    BltVideoObjectFromIndex(guiSAVEBUFFER, guiGoldKeyVO, 0, 217, 271, VO_BLT_SRCTRANSPARENCY, null);
+                    BltVideoObjectFromIndex(guiSAVEBUFFER, guiGoldKeyVO, 0, 217, 271, VO_BLT.SRCTRANSPARENCY, null);
                     RestoreExternBackgroundRect(217, 271, 29, 23);
                 }
             }
@@ -467,7 +467,7 @@ public class InterfaceItems
     }
 
 
-    void INVRenderINVPanelItem(SOLDIERTYPE pSoldier, int sPocket, int fDirtyLevel)
+    void INVRenderINVPanelItem(SOLDIERTYPE pSoldier, InventorySlot sPocket, int fDirtyLevel)
     {
         int sX, sY;
         int sBarX, sBarY;
@@ -521,14 +521,14 @@ public class InterfaceItems
                     }
             */
 
-            if (gbCompatibleAmmo[sPocket])
+            if (gbCompatibleAmmo[sPocket] > 0)
             {
                 fOutline = true;
                 sOutlineColor = Get16BPPColor(FROMRGB(255, 255, 255));
             }
 
             // IF it's the second hand and this hand cannot contain anything, remove the second hand position graphic
-            if (sPocket == SECONDHANDPOS && Item[pSoldier.inv[HANDPOS].usItem].fFlags & ITEM_TWO_HANDED)
+            if (sPocket == InventorySlot.SECONDHANDPOS && Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].fFlags & ITEM_TWO_HANDED)
             {
                 //			if( guiCurrentScreen != MAP_SCREEN )
                 if (guiCurrentItemDescriptionScreen != MAP_SCREEN)
@@ -559,9 +559,9 @@ public class InterfaceItems
         //INVRenderItem( guiSAVEBUFFER, pObject, (int)(sX + gSMInvData[ sPocket ].sSubX), (int)(sY + gSMInvData[ sPocket ].sSubY), gSMInvData[ sPocket ].sWidth, gSMInvData[ sPocket ].sHeight, fDirtyLevel, &(gfSM_HandInvDispText[ sPocket ] ) );
         INVRenderItem(guiSAVEBUFFER, pSoldier, pObject, sX, sY, gSMInvData[sPocket].sWidth, gSMInvData[sPocket].sHeight, fRenderDirtyLevel, null, 0, fOutline, sOutlineColor);
 
-        if (gbInvalidPlacementSlot[sPocket])
+        if (gbInvalidPlacementSlot[sPocket] > 0)
         {
-            if (sPocket != SECONDHANDPOS)
+            if (sPocket != InventorySlot.SECONDHANDPOS)
             {
                 // If we are in inv panel and our guy is not = cursor guy...
                 if (!gfSMDisableForItems)
@@ -582,7 +582,7 @@ public class InterfaceItems
 
         if (fHatchItOut)
         {
-            int uiWhichBuffer = (guiCurrentItemDescriptionScreen == ScreenName.MAP_SCREEN) ? guiSAVEBUFFER : guiRENDERBUFFER;
+            Surfaces uiWhichBuffer = (guiCurrentItemDescriptionScreen == ScreenName.MAP_SCREEN) ? guiSAVEBUFFER : guiRENDERBUFFER;
             DrawHatchOnInventory(uiWhichBuffer, sX, sY, (int)(gSMInvData[sPocket].sWidth - 1), (int)(gSMInvData[sPocket].sHeight - 1));
         }
 
@@ -613,7 +613,7 @@ public class InterfaceItems
 
     bool CompatibleGunForAmmo(OBJECTTYPE pTryObject, OBJECTTYPE pTestObject)
     {
-        if ((Item[pTryObject.usItem].usItemClass & IC_GUN))
+        if ((Item[pTryObject.usItem].usItemClass & IC.GUN))
         {
             // CHECK
             if (Weapon[pTryObject.usItem].ubCalibre == Magazine[Item[pTestObject.usItem].ubClassIndex].ubCalibre)
@@ -626,18 +626,26 @@ public class InterfaceItems
 
     bool CompatibleItemForApplyingOnMerc(OBJECTTYPE? pTestObject)
     {
-        int usItem = pTestObject.usItem;
+        Items usItem = pTestObject.usItem;
 
         // ATE: If in mapscreen, return false always....
-        if (guiTacticalInterfaceFlags & INTERFACE_MAPSCREEN)
+        if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))
         {
             return (false);
         }
 
         // ATE: Would be nice to have flag here to check for these types....
-        if (usItem == CAMOUFLAGEKIT || usItem == ADRENALINE_BOOSTER || usItem == REGEN_BOOSTER ||
-                 usItem == SYRINGE_3 || usItem == SYRINGE_4 || usItem == SYRINGE_5 ||
-                 usItem == ALCOHOL || usItem == WINE || usItem == BEER || usItem == CANTEEN || usItem == JAR_ELIXIR)
+        if (usItem == Items.CAMOUFLAGEKIT
+            || usItem == Items.ADRENALINE_BOOSTER
+            || usItem == Items.REGEN_BOOSTER
+            || usItem == Items.SYRINGE_3
+            || usItem == Items.SYRINGE_4
+            || usItem == Items.SYRINGE_5
+            || usItem == Items.ALCOHOL
+            || usItem == Items.WINE
+            || usItem == Items.BEER
+            || usItem == Items.CANTEEN
+            || usItem == Items.JAR_ELIXIR)
         {
             return (true);
         }
@@ -651,14 +659,14 @@ public class InterfaceItems
 
     bool SoldierContainsAnyCompatibleStuff(SOLDIERTYPE pSoldier, OBJECTTYPE pTestObject)
     {
-        int cnt;
+        InventorySlot cnt;
         OBJECTTYPE pObject;
 
         if ((Item[pTestObject.usItem].usItemClass & IC.GUN))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = &(pSoldier.inv[cnt]);
+                pObject = (pSoldier.inv[cnt]);
 
                 if (CompatibleAmmoForGun(pObject, pTestObject))
                 {
@@ -686,7 +694,7 @@ public class InterfaceItems
     }
 
 
-    void HandleAnyMercInSquadHasCompatibleStuff(int ubSquad, OBJECTTYPE pObject, bool fReset)
+    void HandleAnyMercInSquadHasCompatibleStuff(SquadEnum ubSquad, OBJECTTYPE pObject, bool fReset)
     {
         int iCounter = 0;
 
@@ -716,16 +724,16 @@ public class InterfaceItems
 
     }
 
-    bool HandleCompatibleAmmoUIForMapScreen(SOLDIERTYPE pSoldier, int bInvPos, bool fOn, bool fFromMerc)
+    bool HandleCompatibleAmmoUIForMapScreen(SOLDIERTYPE pSoldier, InventorySlot bInvPos, int fOn, bool fFromMerc)
     {
         bool fFound = false;
-        int cnt;
+        InventorySlot cnt;
         OBJECTTYPE pObject, pTestObject;
         bool fFoundAttachment = false;
 
         if (fFromMerc == false)
         {
-            pTestObject = &(pInventoryPoolList[bInvPos].o);
+            pTestObject = (pInventoryPoolList[bInvPos].o);
         }
         else
         {
@@ -735,7 +743,7 @@ public class InterfaceItems
             }
             else
             {
-                pTestObject = &(pSoldier.inv[bInvPos]);
+                pTestObject = (pSoldier.inv[bInvPos]);
             }
         }
 
@@ -744,7 +752,7 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = &(pSoldier.inv[cnt]);
+                pObject = (pSoldier.inv[cnt]);
 
                 if (CompatibleItemForApplyingOnMerc(pObject))
                 {
@@ -766,7 +774,7 @@ public class InterfaceItems
                 if (CompatibleItemForApplyingOnMerc(gpItemPointer))
                 {
                     // OK, Light up portrait as well.....
-                    if (fOn)
+                    if (fOn > 0)
                     {
                         gbCompatibleApplyItem = true;
                     }
@@ -801,10 +809,10 @@ public class InterfaceItems
                     continue;
                 }
 
-                if (ValidAttachment(pObject.usItem, pTestObject.usItem) ||
-                         ValidAttachment(pTestObject.usItem, pObject.usItem) ||
-                         ValidLaunchable(pTestObject.usItem, pObject.usItem) ||
-                         ValidLaunchable(pObject.usItem, pTestObject.usItem))
+                if (ValidAttachment(pObject.usItem, pTestObject.usItem)
+                    || ValidAttachment(pTestObject.usItem, pObject.usItem)
+                    || ValidLaunchable(pTestObject.usItem, pObject.usItem)
+                    || ValidLaunchable(pObject.usItem, pTestObject.usItem))
                 {
                     fFoundAttachment = true;
 
@@ -825,7 +833,7 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = &(pSoldier.inv[cnt]);
+                pObject = (pSoldier.inv[cnt]);
 
                 if (CompatibleAmmoForGun(pObject, pTestObject))
                 {
@@ -844,7 +852,7 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = &(pSoldier.inv[cnt]);
+                pObject = (pSoldier.inv[cnt]);
 
                 if (CompatibleGunForAmmo(pObject, pTestObject))
                 {
@@ -865,7 +873,7 @@ public class InterfaceItems
         return (fFound);
     }
 
-    bool HandleCompatibleAmmoUIForMapInventory(SOLDIERTYPE pSoldier, int bInvPos, int iStartSlotNumber, bool fOn, bool fFromMerc)
+    bool HandleCompatibleAmmoUIForMapInventory(SOLDIERTYPE pSoldier, InventorySlot bInvPos, int iStartSlotNumber, bool fOn, bool fFromMerc)
     {
         // CJC: ATE, needs fixing here!
 
@@ -924,7 +932,7 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < MAP_INVENTORY_POOL_SLOT_COUNT; cnt++)
             {
-                pObject = &(pInventoryPoolList[iStartSlotNumber + cnt].o);
+                pObject = (pInventoryPoolList[iStartSlotNumber + cnt].o);
 
                 if (CompatibleAmmoForGun(pObject, pTestObject))
                 {
@@ -968,7 +976,7 @@ public class InterfaceItems
     bool InternalHandleCompatibleAmmoUI(SOLDIERTYPE pSoldier, OBJECTTYPE pTestObject, bool fOn)
     {
         bool fFound = false;
-        int cnt;
+        InventorySlot cnt;
         OBJECTTYPE pObject;
         bool fFoundAttachment = false;
 
@@ -1024,7 +1032,7 @@ public class InterfaceItems
         // First test attachments, which almost any type of item can have....
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
         {
-            pObject = &(pSoldier.inv[cnt]);
+            pObject = (pSoldier.inv[cnt]);
 
             if (Item[pObject.usItem].fFlags & ITEM_HIDDEN_ADDON)
             {
@@ -1056,7 +1064,7 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = &(pSoldier.inv[cnt]);
+                pObject = (pSoldier.inv[cnt]);
 
                 if (CompatibleAmmoForGun(pObject, pTestObject))
                 {
@@ -1072,11 +1080,11 @@ public class InterfaceItems
             }
         }
 
-        else if ((Item[pTestObject.usItem].usItemClass & IC_AMMO))
+        else if ((Item[pTestObject.usItem].usItemClass & IC.AMMO))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = &(pSoldier.inv[cnt]);
+                pObject = (pSoldier.inv[cnt]);
 
                 if (CompatibleGunForAmmo(pObject, pTestObject))
                 {
@@ -1134,20 +1142,20 @@ public class InterfaceItems
 
     void ResetCompatibleItemArray()
     {
-        int cnt = 0;
+        InventorySlot cnt = 0;
 
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
         {
             if (gbCompatibleAmmo[cnt])
             {
-                gbCompatibleAmmo[cnt] = false;
+                gbCompatibleAmmo[cnt] = 0;
             }
         }
     }
 
-    bool HandleCompatibleAmmoUI(SOLDIERTYPE pSoldier, int bInvPos, bool fOn)
+    bool HandleCompatibleAmmoUI(SOLDIERTYPE pSoldier, InventorySlot bInvPos, bool fOn)
     {
-        int cnt;
+        InventorySlot cnt;
         OBJECTTYPE pTestObject;
         bool fFound = false;
 
@@ -1156,7 +1164,7 @@ public class InterfaceItems
         {
             // if the inventory position is -1, this is a flag from the Shopkeeper interface screen
             //indicating that we are to use a different object to do the search
-            if (bInvPos == -1)
+            if (bInvPos == InventorySlot.UNSET)
             {
                 if (fOn)
                 {
@@ -1166,7 +1174,9 @@ public class InterfaceItems
                         //					gubSkiDirtyLevel = SKI_DIRTY_LEVEL2;
                     }
                     else
+                    {
                         return (false);
+                    }
                 }
                 else
                 {
@@ -1189,12 +1199,12 @@ public class InterfaceItems
             {
                 if (fOn)
                 {
-                    pTestObject = &(pSoldier.inv[bInvPos]);
+                    pTestObject = (pSoldier.inv[bInvPos]);
                     gpHighLightedItemObject = pTestObject;
                 }
                 else
                 {
-                    pTestObject = &(pSoldier.inv[bInvPos]);
+                    pTestObject = (pSoldier.inv[bInvPos]);
                     gpHighLightedItemObject = null;
                     gubSkiDirtyLevel = SKI_DIRTY_LEVEL1;
                 }
@@ -1210,7 +1220,7 @@ public class InterfaceItems
             }
             else
             {
-                pTestObject = &(pSoldier.inv[bInvPos]);
+                pTestObject = (pSoldier.inv[bInvPos]);
             }
 
         }
@@ -1219,13 +1229,13 @@ public class InterfaceItems
 
     }
 
-    void GetSlotInvXY(int ubPos, out int psX, out int psY)
+    void GetSlotInvXY(InventorySlot ubPos, out int psX, out int psY)
     {
         psX = gSMInvData[ubPos].sX;
         psY = gSMInvData[ubPos].sY;
     }
 
-    void GetSlotInvHeightWidth(int ubPos, out int psWidth, out int psHeight)
+    void GetSlotInvHeightWidth(InventorySlot ubPos, out int psWidth, out int psHeight)
     {
         psWidth = gSMInvData[ubPos].sWidth;
         psHeight = gSMInvData[ubPos].sHeight;
@@ -1234,7 +1244,7 @@ public class InterfaceItems
     void HandleNewlyAddedItems(SOLDIERTYPE pSoldier, out int fDirtyLevel)
     {
         fDirtyLevel = 0;
-        int cnt;
+        InventorySlot cnt;
         int sX, sY;
         OBJECTTYPE pObject;
 
@@ -1260,7 +1270,7 @@ public class InterfaceItems
                 sX = gSMInvData[cnt].sX;
                 sY = gSMInvData[cnt].sY;
 
-                pObject = &(pSoldier.inv[cnt]);
+                pObject = (pSoldier.inv[cnt]);
 
                 if (pObject.usItem == NOTHING)
                 {
@@ -1277,7 +1287,7 @@ public class InterfaceItems
 
     void CheckForAnyNewlyAddedItems(SOLDIERTYPE pSoldier)
     {
-        int cnt;
+        InventorySlot cnt;
 
         // OK, l0ok for any new...
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
@@ -1292,8 +1302,9 @@ public class InterfaceItems
 
     void DegradeNewlyAddedItems()
     {
-        int uiTime;
-        int cnt, cnt2;
+        uint uiTime;
+        InventorySlot cnt;
+        int cnt2;
         SOLDIERTYPE pSoldier;
 
         // If time done
@@ -1433,20 +1444,20 @@ public class InterfaceItems
 
                     switch (pObject.ubGunAmmoType)
                     {
-                        case AMMO_AP:
-                        case AMMO_SUPER_AP:
+                        case AMMO.AP:
+                        case AMMO.SUPER_AP:
                             SetFontForeground(ITEMDESC_FONTAPFORE);
                             break;
-                        case AMMO_HP:
+                        case AMMO.HP:
                             SetFontForeground(ITEMDESC_FONTHPFORE);
                             break;
-                        case AMMO_BUCKSHOT:
+                        case AMMO.BUCKSHOT:
                             SetFontForeground(ITEMDESC_FONTBSFORE);
                             break;
-                        case AMMO_HE:
+                        case AMMO.HE:
                             SetFontForeground(ITEMDESC_FONTHEFORE);
                             break;
-                        case AMMO_HEAT:
+                        case AMMO.HEAT:
                             SetFontForeground(ITEMDESC_FONTHEAPFORE);
                             break;
                         default:
@@ -1479,7 +1490,7 @@ public class InterfaceItems
                             wprintf(pStr, TacticalStr[SHORT_JAMMED_GUN]);
                         }
 
-                        VarFindFontCenterCoordinates(sX, sY, sWidth, sHeight, ITEM_FONT, &sNewX, &sNewY, pStr);
+                        VarFindFontCenterCoordinates(sX, sY, sWidth, sHeight, ITEM_FONT, out sNewX, out sNewY, pStr);
 
                         mprintf(sNewX, sNewY, pStr);
                         gprintfinvalidate(sNewX, sNewY, pStr);
@@ -1541,12 +1552,15 @@ public class InterfaceItems
 
                 }
 
-                if (pSoldier && pObject == &(pSoldier.inv[HANDPOS]) && (Item[pSoldier.inv[HANDPOS].usItem].usItemClass == IC_GUN) && pSoldier.bWeaponMode != WM_NORMAL)
+                if (pSoldier
+                    && pObject == (pSoldier.inv[InventorySlot.HANDPOS])
+                    && (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.GUN)
+                    && pSoldier.bWeaponMode != WM.NORMAL)
                 {
                     SetFontForeground(FONT_DKRED);
 
                     sNewY = sY + 13; // rather arbitrary
-                    if (pSoldier.bWeaponMode == WM_BURST)
+                    if (pSoldier.bWeaponMode == WM.BURST)
                     {
                         wprintf(pStr, "*");
                     }
@@ -1643,7 +1657,7 @@ public class InterfaceItems
         DeleteItemDescriptionBox();
 
         // Make new item....
-        usOldItem = gpItemDescSoldier.inv[HANDPOS].usItem;
+        usOldItem = gpItemDescSoldier.inv[InventorySlot.HANDPOS].usItem;
 
         if (_KeyDown(SHIFT))
         {
@@ -1749,7 +1763,7 @@ public class InterfaceItems
 
         }
         // Add region
-        if ((Item[pObject.usItem].usItemClass & IC_GUN) && pObject.usItem != ROCKET_LAUNCHER)
+        if ((Item[pObject.usItem].usItemClass & IC.GUN) && pObject.usItem != ROCKET_LAUNCHER)
         {
             // Add button
             //    if( guiCurrentScreen != MAP_SCREEN )
@@ -1760,12 +1774,12 @@ public class InterfaceItems
 
             switch (pObject.ubGunAmmoType)
             {
-                case AMMO_AP:
-                case AMMO_SUPER_AP:
+                case AMMO.AP:
+                case AMMO.SUPER_AP:
                     //sForeColour = ITEMDESC_FONTAPFORE;
                     giItemDescAmmoButtonImages = LoadButtonImage(ubString, 8, 5, -1, 7, -1);
                     break;
-                case AMMO_HP:
+                case AMMO.HP:
                     //sForeColour = ITEMDESC_FONTHPFORE;
 
                     giItemDescAmmoButtonImages = LoadButtonImage(ubString, 12, 9, -1, 11, -1);
@@ -1811,7 +1825,9 @@ public class InterfaceItems
                 SetButtonFastHelpText(giItemDescAmmoButton, "\0");
             }
             else
+            {
                 SetButtonFastHelpText(giItemDescAmmoButton, Message[STR_EJECT_AMMO]);
+            }
 
             FindFontCenterCoordinates((int)ITEMDESC_AMMO_TEXT_X, (int)ITEMDESC_AMMO_TEXT_Y, ITEMDESC_AMMO_TEXT_WIDTH, GetFontHeight(TINYFONT1), pStr, TINYFONT1, &usX, &usY);
 
@@ -1825,7 +1841,7 @@ public class InterfaceItems
         {
             if (guiCurrentItemDescriptionScreen == MAP_SCREEN)
             {
-                sProsConsIndent = __max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
+                sProsConsIndent = Math.Max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
                 for (cnt = 0; cnt < 2; cnt++)
                 {
                     // Add region for pros/cons help text 
@@ -1862,7 +1878,7 @@ public class InterfaceItems
             }
             else
             {
-                sProsConsIndent = __max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
+                sProsConsIndent = Math.Max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
                 for (cnt = 0; cnt < 2; cnt++)
                 {
                     // Add region for pros/cons help text 
@@ -1919,11 +1935,15 @@ public class InterfaceItems
                 // Build a mouse region here that is over any others.....
                 //			if (guiTacticalInterfaceFlags & INTERFACE_MAPSCREEN )
                 if (guiCurrentItemDescriptionScreen == MAP_SCREEN)
+                {
                     MSYS_DefineRegion(gItemDescAttachmentRegions[cnt], (int)(gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX), (int)(gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY), (int)(gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX + gMapItemDescAttachmentsXY[cnt].sWidth), (int)(gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY + gMapItemDescAttachmentsXY[cnt].sHeight), MSYS_PRIORITY_HIGHEST,
                                     MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescAttachmentsCallback);
+                }
                 else
+                {
                     MSYS_DefineRegion(gItemDescAttachmentRegions[cnt], (int)(gsInvDescX + gItemDescAttachmentsXY[cnt].sX), (int)(gsInvDescY + gItemDescAttachmentsXY[cnt].sY), (int)(gsInvDescX + gItemDescAttachmentsXY[cnt].sX + gItemDescAttachmentsXY[cnt].sBarDx + gItemDescAttachmentsXY[cnt].sWidth), (int)(gsInvDescY + gItemDescAttachmentsXY[cnt].sY + gItemDescAttachmentsXY[cnt].sHeight), MSYS_PRIORITY_HIGHEST,
                                     MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescAttachmentsCallback);
+                }
                 // Add region
                 MSYS_AddRegion(gItemDescAttachmentRegions[cnt]);
                 MSYS_SetRegionUserData(gItemDescAttachmentRegions[cnt], 0, cnt);
@@ -1967,11 +1987,17 @@ public class InterfaceItems
                                                                      DEFAULT_MOVE_CALLBACK, BtnMoneyButtonCallback);
                     MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
                     if (cnt == M_1000 && gRemoveMoney.uiTotalAmount < 1000)
+                    {
                         DisableButton(guiMoneyButtonBtn[cnt]);
+                    }
                     else if (cnt == M_100 && gRemoveMoney.uiTotalAmount < 100)
+                    {
                         DisableButton(guiMoneyButtonBtn[cnt]);
+                    }
                     else if (cnt == M_10 && gRemoveMoney.uiTotalAmount < 10)
+                    {
                         DisableButton(guiMoneyButtonBtn[cnt]);
+                    }
                 }
                 //Create the Done button
                 guiMoneyDoneButtonImage = UseLoadedButtonImage(guiMoneyButtonImage, -1, 3, -1, 4, -1);
@@ -1997,11 +2023,17 @@ public class InterfaceItems
                                                                      DEFAULT_MOVE_CALLBACK, BtnMoneyButtonCallback);
                     MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
                     if (cnt == M_1000 && gRemoveMoney.uiTotalAmount < 1000)
+                    {
                         DisableButton(guiMoneyButtonBtn[cnt]);
+                    }
                     else if (cnt == M_100 && gRemoveMoney.uiTotalAmount < 100)
+                    {
                         DisableButton(guiMoneyButtonBtn[cnt]);
+                    }
                     else if (cnt == M_10 && gRemoveMoney.uiTotalAmount < 10)
+                    {
                         DisableButton(guiMoneyButtonBtn[cnt]);
+                    }
                 }
 
                 //Create the Done button
@@ -2366,10 +2398,10 @@ public class InterfaceItems
 
                 DeleteItemDescriptionBox();
 
-                if (CreateItem(gpItemDescObject.usAttachItem[uiItemPos], gpItemDescObject.bAttachStatus[uiItemPos], &Object2))
+                if (CreateItem(gpItemDescObject.usAttachItem[uiItemPos], gpItemDescObject.bAttachStatus[uiItemPos], Object2))
                 {
                     gfItemDescObjectIsAttachment = true;
-                    InternalInitItemDescriptionBox(&Object2, gsInvDescX, gsInvDescY, 0, gpItemDescSoldier);
+                    InternalInitItemDescriptionBox(Object2, gsInvDescX, gsInvDescY, 0, gpItemDescSoldier);
 
                     if (fShopkeeperItem)
                     {
@@ -2381,7 +2413,6 @@ public class InterfaceItems
         }
     }
 
-    static string pStr;
     void RenderItemDescriptionBox()
     {
         ETRLEObject pTrav;
@@ -2401,8 +2432,8 @@ public class InterfaceItems
         if ((guiCurrentItemDescriptionScreen == MAP_SCREEN) && (gfInItemDescBox))
         {
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-            GetVideoObject(&hVObject, guiItemGraphic);
-            pTrav = &(hVObject.pETRLEObject[0]);
+            GetVideoObject(hVObject, guiItemGraphic);
+            pTrav = (hVObject.pETRLEObject[0]);
             usHeight = (int)pTrav.usHeight;
             usWidth = (int)pTrav.usWidth;
 
@@ -2537,7 +2568,7 @@ public class InterfaceItems
                 SetFontShadow(ITEMDESC_FONTSHADOW3);
                 mprintf((int)MAP_ITEMDESC_PROS_START_X, (int)MAP_ITEMDESC_PROS_START_Y, gzProsLabel);
 
-                sProsConsIndent = __max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
+                sProsConsIndent = Math.Max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
 
                 GenerateProsString(gzItemPros, gpItemDescObject, MAP_ITEMDESC_DESC_WIDTH - sProsConsIndent - StringPixLength(DOTDOTDOT, ITEMDESC_FONT));
                 if (gzItemPros[0] != 0)
@@ -2728,9 +2759,13 @@ public class InterfaceItems
 
                 // if the player is taking money from their account
                 if (gfAddingMoneyToMercFromPlayersAccount)
+                {
                     wprintf(pStr, "%ld", LaptopSaveInfo.iCurrentBalance);
+                }
                 else
+                {
                     wprintf(pStr, "%ld", gRemoveMoney.uiTotalAmount);
+                }
 
                 InsertCommasForDollarFigure(pStr);
                 InsertDollarSignInToString(pStr);
@@ -2874,8 +2909,8 @@ public class InterfaceItems
         {
 
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-            GetVideoObject(&hVObject, guiItemGraphic);
-            pTrav = &(hVObject.pETRLEObject[0]);
+            GetVideoObject(hVObject, guiItemGraphic);
+            pTrav = (hVObject.pETRLEObject[0]);
             usHeight = (int)pTrav.usHeight;
             usWidth = (int)pTrav.usWidth;
 
@@ -2997,7 +3032,7 @@ public class InterfaceItems
                 SetFontShadow(ITEMDESC_FONTSHADOW3);
                 mprintf((int)ITEMDESC_PROS_START_X, (int)ITEMDESC_PROS_START_Y, gzProsLabel);
 
-                sProsConsIndent = __max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
+                sProsConsIndent = Math.Max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
 
                 gzItemPros[0] = 0;
                 GenerateProsString(gzItemPros, gpItemDescObject, ITEMDESC_DESC_WIDTH - sProsConsIndent - StringPixLength(DOTDOTDOT, ITEMDESC_FONT));
@@ -3170,9 +3205,13 @@ public class InterfaceItems
 
                 //if the player is removing money from the players account
                 if (gfAddingMoneyToMercFromPlayersAccount)
+                {
                     mprintf((int)(gMoneyButtonLoc.x + gMoneyButtonOffsets[4].x), (int)(gMoneyButtonLoc.y + gMoneyButtonOffsets[4].y), gzMoneyAmounts[5]);
+                }
                 else
+                {
                     mprintf((int)(gMoneyButtonLoc.x + gMoneyButtonOffsets[4].x), (int)(gMoneyButtonLoc.y + gMoneyButtonOffsets[4].y), gzMoneyAmounts[4]);
+                }
 
 
                 // if the player is taking money from their account
@@ -3501,13 +3540,15 @@ public class InterfaceItems
         }
 
         if (gfAddingMoneyToMercFromPlayersAccount)
+        {
             gfAddingMoneyToMercFromPlayersAccount = false;
+        }
 
         gfItemDescObjectIsAttachment = false;
     }
 
 
-    void InternalBeginItemPointer(SOLDIERTYPE pSoldier, OBJECTTYPE pObject, int bHandPos)
+    void InternalBeginItemPointer(SOLDIERTYPE pSoldier, OBJECTTYPE pObject, InventorySlot bHandPos)
     {
         //	bool fOk;
 
@@ -3537,7 +3578,7 @@ public class InterfaceItems
         gfReEvaluateEveryonesNothingToDo = true;
     }
 
-    void BeginItemPointer(SOLDIERTYPE pSoldier, int ubHandPos)
+    void BeginItemPointer(SOLDIERTYPE pSoldier, InventorySlot ubHandPos)
     {
         bool fOk;
         OBJECTTYPE pObject;
@@ -3561,7 +3602,7 @@ public class InterfaceItems
     }
 
 
-    void BeginKeyRingItemPointer(SOLDIERTYPE pSoldier, int ubKeyRingPosition)
+    void BeginKeyRingItemPointer(SOLDIERTYPE pSoldier, InventorySlot ubKeyRingPosition)
     {
         bool fOk;
 
@@ -3931,17 +3972,17 @@ public class InterfaceItems
                             {
                                 switch (gAnimControl[MercPtrs[gubUIValidCatcherID].usAnimState].ubHeight)
                                 {
-                                    case ANIM_STAND:
+                                    case AnimationHeights.ANIM_STAND:
 
                                         sEndZ = 150;
                                         break;
 
-                                    case ANIM_CROUCH:
+                                    case AnimationHeights.ANIM_CROUCH:
 
                                         sEndZ = 80;
                                         break;
 
-                                    case ANIM_PRONE:
+                                    case AnimationHeights.ANIM_PRONE:
 
                                         sEndZ = 10;
                                         break;
@@ -4013,11 +4054,11 @@ public class InterfaceItems
     bool HandleItemPointerClick(int usMapPos)
     {
         // Determine what to do
-        int ubDirection;
+        WorldDirections ubDirection;
         int ubSoldierID;
-        int usItem;
+        Items usItem;
         int sAPCost;
-        SOLDIERTYPE pSoldier = null;
+        SOLDIERTYPE? pSoldier = null;
         int ubThrowActionCode = 0;
         int uiThrowActionData = 0;
         int sEndZ = 0;
@@ -4040,7 +4081,7 @@ public class InterfaceItems
         }
 
         // Don't allow if our soldier is a # of things...
-        if (AM_AN_EPC(gpItemPointerSoldier) || gpItemPointerSoldier.bLife < OKLIFE || gpItemPointerSoldier.bOverTerrainType == DEEP_WATER)
+        if (AM_AN_EPC(gpItemPointerSoldier) || gpItemPointerSoldier.bLife < OKLIFE || gpItemPointerSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
         {
             return (false);
         }
@@ -4048,7 +4089,7 @@ public class InterfaceItems
         // This implies we have no path....
         if (gsCurrentActionPoints == 0)
         {
-            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
             return (false);
         }
 
@@ -4058,7 +4099,7 @@ public class InterfaceItems
             // Force mouse position to guy...
             usMapPos = MercPtrs[gusUIFullTargetID].sGridNo;
 
-            if (gAnimControl[MercPtrs[gusUIFullTargetID].usAnimState].uiFlags & ANIM_MOVING)
+            if (gAnimControl[MercPtrs[gusUIFullTargetID].usAnimState].uiFlags.HasFlag(ANIM.MOVING))
             {
                 return (false);
             }
@@ -4068,7 +4109,7 @@ public class InterfaceItems
         // Check if we have APs....
         if (!EnoughPoints(gpItemPointerSoldier, gsCurrentActionPoints, 0, true))
         {
-            if (gfDontChargeAPsToPickup && gsCurrentActionPoints == AP_PICKUP_ITEM)
+            if (gfDontChargeAPsToPickup && gsCurrentActionPoints == AP.PICKUP_ITEM)
             {
 
             }
@@ -4079,7 +4120,7 @@ public class InterfaceItems
         }
 
         // SEE IF WE ARE OVER A TALKABLE GUY!
-        if (IsValidTalkableNPCFromMouse(&ubSoldierID, true, false, true))
+        if (HandleUI.IsValidTalkableNPCFromMouse(out ubSoldierID, true, false, true))
         {
             fGiveItem = true;
         }
@@ -4092,7 +4133,7 @@ public class InterfaceItems
 
 
         // Get Pyth spaces away.....
-        sDist = PythSpacesAway(gpItemPointerSoldier.sGridNo, gusCurMousePos);
+        sDist = IsometricUtils.PythSpacesAway(gpItemPointerSoldier.sGridNo, gusCurMousePos);
 
 
         if (fGiveItem)
@@ -4100,7 +4141,7 @@ public class InterfaceItems
             usItem = gpItemPointer.usItem;
 
             // If the target is a robot, 
-            if (MercPtrs[ubSoldierID].uiStatusFlags & SOLDIER_ROBOT)
+            if (MercPtrs[ubSoldierID].uiStatusFlags.HasFlag(SOLDIER.ROBOT))
             {
                 // Charge APs to reload robot!
                 sAPCost = GetAPsToReloadRobot(gpItemPointerSoldier, MercPtrs[ubSoldierID]);
@@ -4139,18 +4180,17 @@ public class InterfaceItems
             if (EnoughPoints(gpItemPointerSoldier, sAPCost, 0, true))
             {
                 // If we are a robot, check if this is proper item to reload!
-                if (MercPtrs[ubSoldierID].uiStatusFlags & SOLDIER_ROBOT)
+                if (MercPtrs[ubSoldierID].uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                 {
                     // Check if we can reload robot....
-                    if (IsValidAmmoToReloadRobot(MercPtrs[ubSoldierID], &TempObject))
+                    if (IsValidAmmoToReloadRobot(MercPtrs[ubSoldierID], out TempObject))
                     {
                         int sActionGridNo;
-                        int ubDirection;
                         int sAdjustedGridNo;
 
                         // Walk up to him and reload!
                         // See if we can get there to stab	
-                        sActionGridNo = FindAdjacentGridEx(gpItemPointerSoldier, MercPtrs[ubSoldierID].sGridNo, &ubDirection, &sAdjustedGridNo, true, false);
+                        sActionGridNo = Overhead.FindAdjacentGridEx(gpItemPointerSoldier, MercPtrs[ubSoldierID].sGridNo, ref ubDirection, out sAdjustedGridNo, true, false);
 
                         if (sActionGridNo != -1 && gbItemPointerSrcSlot != NO_SLOT)
                         {
@@ -4162,7 +4202,7 @@ public class InterfaceItems
                             RemoveObjs((gpItemPointerSoldier.inv[gbItemPointerSrcSlot]), 1);
 
                             gpItemPointerSoldier.sPendingActionData2 = sAdjustedGridNo;
-                            gpItemPointerSoldier.uiPendingActionData1 = gbItemPointerSrcSlot;
+                            gpItemPointerSoldier.uiPendingActionData1 = (int)gbItemPointerSrcSlot;
                             gpItemPointerSoldier.bPendingActionData3 = ubDirection;
                             gpItemPointerSoldier.ubPendingActionAnimCount = 0;
 
@@ -4170,14 +4210,14 @@ public class InterfaceItems
                             if (gpItemPointerSoldier.sGridNo != sActionGridNo)
                             {
                                 // SEND PENDING ACTION
-                                gpItemPointerSoldier.ubPendingAction = MERC_RELOADROBOT;
+                                gpItemPointerSoldier.ubPendingAction = MERC.RELOADROBOT;
 
                                 // WALK UP TO DEST FIRST
-                                EVENT_InternalGetNewSoldierPath(gpItemPointerSoldier, sActionGridNo, gpItemPointerSoldier.usUIMovementMode, false, false);
+                                SoldierControl.EVENT_InternalGetNewSoldierPath(gpItemPointerSoldier, sActionGridNo, gpItemPointerSoldier.usUIMovementMode, false, false);
                             }
                             else
                             {
-                                EVENT_SoldierBeginReloadRobot(gpItemPointerSoldier, sAdjustedGridNo, ubDirection, gbItemPointerSrcSlot);
+                                SoldierControl.EVENT_SoldierBeginReloadRobot(gpItemPointerSoldier, sAdjustedGridNo, ubDirection, gbItemPointerSrcSlot);
                             }
 
                             // OK, set UI
@@ -4194,7 +4234,7 @@ public class InterfaceItems
                     //if (gbItemPointerSrcSlot != NO_SLOT )
                     {
                         // Give guy this item.....
-                        SoldierGiveItem(gpItemPointerSoldier, MercPtrs[ubSoldierID], &TempObject, gbItemPointerSrcSlot);
+                        SoldierGiveItem(gpItemPointerSoldier, MercPtrs[ubSoldierID], out TempObject, gbItemPointerSrcSlot);
 
                         gfDontChargeAPsToPickup = false;
                         EndItemPointer();
@@ -4226,7 +4266,7 @@ public class InterfaceItems
                 if (!gfDontChargeAPsToPickup)
                 {
                     // Deduct points
-                    DeductPoints(gpItemPointerSoldier, AP_PICKUP_ITEM, 0);
+                    DeductPoints(gpItemPointerSoldier, AP.PICKUP_ITEM, 0);
                 }
 
                 SoldierDropItem(gpItemPointerSoldier, gpItemPointer);
@@ -4242,7 +4282,7 @@ public class InterfaceItems
                     if (!gfDontChargeAPsToPickup)
                     {
                         // Deduct points
-                        DeductPoints(gpItemPointerSoldier, AP_PICKUP_ITEM, 0);
+                        DeductPoints(gpItemPointerSoldier, AP.PICKUP_ITEM, 0);
                     }
 
                     // Play animation....
@@ -4252,7 +4292,7 @@ public class InterfaceItems
 
                     switch (gAnimControl[gpItemPointerSoldier.usAnimState].ubHeight)
                     {
-                        case ANIM_STAND:
+                        case AnimationHeights.ANIM_STAND:
 
                             gpItemPointerSoldier.pTempObject = MemAlloc(sizeof(OBJECTTYPE));
                             if (gpItemPointerSoldier.pTempObject != null)
@@ -4261,14 +4301,14 @@ public class InterfaceItems
                                 gpItemPointerSoldier.sPendingActionData2 = usMapPos;
 
                                 // Turn towards.....gridno	
-                                EVENT_SetSoldierDesiredDirection(gpItemPointerSoldier, (int)GetDirectionFromGridNo(usMapPos, gpItemPointerSoldier));
+                                SoldierControl.EVENT_SetSoldierDesiredDirection(gpItemPointerSoldier, GetDirectionFromGridNo(usMapPos, gpItemPointerSoldier));
 
-                                EVENT_InitNewSoldierAnim(gpItemPointerSoldier, DROP_ADJACENT_OBJECT, 0, false);
+                                SoldierControl.EVENT_InitNewSoldierAnim(gpItemPointerSoldier, AnimationStates.DROP_ADJACENT_OBJECT, 0, false);
                             }
                             break;
 
-                        case ANIM_CROUCH:
-                        case ANIM_PRONE:
+                        case AnimationHeights.ANIM_CROUCH:
+                        case AnimationHeights.ANIM_PRONE:
 
                             AddItemToPool(usMapPos, gpItemPointer, 1, gpItemPointerSoldier.bLevel, 0, -1);
                             NotifySoldiersToLookforItems();
@@ -4281,7 +4321,7 @@ public class InterfaceItems
                     if (!gfDontChargeAPsToPickup)
                     {
                         // Deduct points
-                        DeductPoints(gpItemPointerSoldier, AP_PICKUP_ITEM, 0);
+                        DeductPoints(gpItemPointerSoldier, AP.PICKUP_ITEM, 0);
                     }
 
                     SoldierDropItem(gpItemPointerSoldier, gpItemPointer);
@@ -4309,7 +4349,7 @@ public class InterfaceItems
                             return (false);
                         }
 
-                        sDistVisible = DistanceVisible(pSoldier, DIRECTION_IRRELEVANT, DIRECTION_IRRELEVANT, gpItemPointerSoldier.sGridNo, gpItemPointerSoldier.bLevel);
+                        sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, gpItemPointerSoldier.sGridNo, gpItemPointerSoldier.bLevel);
 
                         // Check LOS....
                         if (!SoldierTo3DLocationLineOfSightTest(pSoldier, gpItemPointerSoldier.sGridNo, gpItemPointerSoldier.bLevel, 3, (int)sDistVisible, true))
@@ -4326,7 +4366,7 @@ public class InterfaceItems
                         // try to auto place object....
                         if (AutoPlaceObject(pSoldier, gpItemPointer, true))
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_ITEM_PASSED_TO_MERC], ShortItemNames[usItem], pSoldier.name);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG.ITEM_PASSED_TO_MERC], ShortItemNames[usItem], pSoldier.name);
 
                             // Check if it's the same now!
                             if (gpItemPointer.ubNumberOfObjects == 0)
@@ -4336,26 +4376,26 @@ public class InterfaceItems
 
                             // OK, make guys turn towards each other and do animation...
                             {
-                                int ubFacingDirection;
+                                WorldDirections ubFacingDirection;
 
                                 // Get direction to face.....
-                                ubFacingDirection = (int)GetDirectionFromGridNo(gpItemPointerSoldier.sGridNo, pSoldier);
+                                ubFacingDirection = GetDirectionFromGridNo(gpItemPointerSoldier.sGridNo, pSoldier);
 
                                 // Stop merc first....
-                                EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
+                                SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
 
                                 // If we are standing only...
-                                if (gAnimControl[pSoldier.usAnimState].ubEndHeight == ANIM_STAND && !MercInWater(pSoldier))
+                                if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND && !MercInWater(pSoldier))
                                 {
                                     // Turn to face, then do animation....
-                                    EVENT_SetSoldierDesiredDirection(pSoldier, ubFacingDirection);
+                                    SoldierControl.EVENT_SetSoldierDesiredDirection(pSoldier, ubFacingDirection);
                                     pSoldier.fTurningUntilDone = true;
-                                    pSoldier.usPendingAnimation = PASS_OBJECT;
+                                    pSoldier.usPendingAnimation = AnimationStates.PASS_OBJECT;
                                 }
 
-                                if (gAnimControl[gpItemPointerSoldier.usAnimState].ubEndHeight == ANIM_STAND && !MercInWater(gpItemPointerSoldier))
+                                if (gAnimControl[gpItemPointerSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND && !MercInWater(gpItemPointerSoldier))
                                 {
-                                    EVENT_SetSoldierDesiredDirection(gpItemPointerSoldier, gOppositeDirection[ubFacingDirection]);
+                                    SoldierControl.EVENT_SetSoldierDesiredDirection(gpItemPointerSoldier, gOppositeDirection[ubFacingDirection]);
                                     gpItemPointerSoldier.fTurningUntilDone = true;
                                     gpItemPointerSoldier.usPendingAnimation = PASS_OBJECT;
                                 }
@@ -4408,17 +4448,17 @@ public class InterfaceItems
 
                             switch (gAnimControl[pSoldier.usAnimState].ubHeight)
                             {
-                                case ANIM_STAND:
+                                case AnimationHeights.ANIM_STAND:
 
                                     sEndZ = 150;
                                     break;
 
-                                case ANIM_CROUCH:
+                                case AnimationHeights.ANIM_CROUCH:
 
                                     sEndZ = 80;
                                     break;
 
-                                case ANIM_PRONE:
+                                case AnimationHeights.ANIM_PRONE:
 
                                     sEndZ = 10;
                                     break;
@@ -4436,7 +4476,7 @@ public class InterfaceItems
                             SoldierGotoStationaryStance(pSoldier);
 
                             // Set direction to turn...
-                            EVENT_SetSoldierDesiredDirection(pSoldier, ubDirection);
+                            SoldierControl.EVENT_SetSoldierDesiredDirection(pSoldier, ubDirection);
 
                         }
                     }
@@ -4445,7 +4485,7 @@ public class InterfaceItems
 
                 // CHANGE DIRECTION AT LEAST
                 ubDirection = (int)GetDirectionFromGridNo(sGridNo, gpItemPointerSoldier);
-                EVENT_SetSoldierDesiredDirection(gpItemPointerSoldier, ubDirection);
+                SoldierControl.EVENT_SetSoldierDesiredDirection(gpItemPointerSoldier, ubDirection);
                 gpItemPointerSoldier.fTurningUntilDone = true;
 
                 // Increment attacker count...
@@ -4495,13 +4535,13 @@ public class InterfaceItems
         return (gfInKeyRingPopup);
     }
 
-    bool InitItemStackPopup(SOLDIERTYPE pSoldier, int ubPosition, int sInvX, int sInvY, int sInvWidth, int sInvHeight)
+    bool InitItemStackPopup(SOLDIERTYPE pSoldier, InventorySlot ubPosition, int sInvX, int sInvY, int sInvWidth, int sInvHeight)
     {
         VOBJECT_DESC VObjectDesc;
         int sX, sY, sCenX, sCenY;
         SGPRect aRect;
         int ubLimit;
-        ETRLEObject* pTrav;
+        ETRLEObject? pTrav;
         HVOBJECT hVObject;
         int cnt;
         int usPopupWidth;
@@ -4519,7 +4559,7 @@ public class InterfaceItems
 
 
         // Determine # of items
-        gpItemPopupObject = &(pSoldier.inv[ubPosition]);
+        gpItemPopupObject = (pSoldier.inv[ubPosition]);
         ubLimit = ItemSlotLimit(gpItemPopupObject.usItem, ubPosition);
 
         // Return false if #objects not >1
@@ -4542,13 +4582,13 @@ public class InterfaceItems
         CHECKF(AddVideoObject(&VObjectDesc, guiItemPopupBoxes));
 
         // Get size
-        GetVideoObject(&hVObject, guiItemPopupBoxes);
-        pTrav = &(hVObject.pETRLEObject[0]);
+        GetVideoObject(hVObject, guiItemPopupBoxes);
+        pTrav = (hVObject.pETRLEObject[0]);
         usPopupWidth = pTrav.usWidth;
 
         // Determine position, height and width of mouse region, area
-        GetSlotInvXY(ubPosition, &sX, &sY);
-        GetSlotInvHeightWidth(ubPosition, &sItemSlotWidth, &sItemSlotHeight);
+        GetSlotInvXY(ubPosition, out sX, out sY);
+        GetSlotInvHeightWidth(ubPosition, out sItemSlotWidth, out sItemSlotHeight);
 
         // Get Width, Height
         gsItemPopupWidth = ubLimit * usPopupWidth;
@@ -4640,7 +4680,7 @@ public class InterfaceItems
 
     void RenderItemStackPopup(bool fFullRender)
     {
-        ETRLEObject* pTrav;
+        ETRLEObject? pTrav;
         int usHeight, usWidth;
         HVOBJECT hVObject;
         int cnt;
@@ -4660,8 +4700,8 @@ public class InterfaceItems
 
         }
         // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-        GetVideoObject(&hVObject, guiItemPopupBoxes);
-        pTrav = &(hVObject.pETRLEObject[0]);
+        GetVideoObject(hVObject, guiItemPopupBoxes);
+        pTrav = (hVObject.pETRLEObject[0]);
         usHeight = (int)pTrav.usHeight;
         usWidth = (int)pTrav.usWidth;
 
@@ -4733,7 +4773,7 @@ public class InterfaceItems
     {
         VOBJECT_DESC VObjectDesc;
         SGPRect aRect;
-        ETRLEObject* pTrav;
+        ETRLEObject? pTrav;
         HVOBJECT hVObject;
         int cnt;
         int usPopupWidth, usPopupHeight;
@@ -4770,7 +4810,7 @@ public class InterfaceItems
 
         // Get size
         GetVideoObject(&hVObject, guiItemPopupBoxes);
-        pTrav = &(hVObject.pETRLEObject[0]);
+        pTrav = (hVObject.pETRLEObject[0]);
         usPopupWidth = pTrav.usWidth;
         usPopupHeight = pTrav.usHeight;
 
@@ -4833,7 +4873,7 @@ public class InterfaceItems
 
     void RenderKeyRingPopup(bool fFullRender)
     {
-        ETRLEObject* pTrav;
+        ETRLEObject? pTrav;
         int usHeight, usWidth;
         HVOBJECT hVObject;
         int cnt;
@@ -4865,14 +4905,14 @@ public class InterfaceItems
 
         }
 
-        memset(&pObject, 0, sizeof(OBJECTTYPE));
+        //memset(&pObject, 0, sizeof(OBJECTTYPE));
 
         pObject.usItem = KEY_1;
         pObject.bStatus[0] = 100;
 
         // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-        GetVideoObject(&hVObject, guiItemPopupBoxes);
-        pTrav = &(hVObject.pETRLEObject[0]);
+        GetVideoObject(hVObject, guiItemPopupBoxes);
+        pTrav = (hVObject.pETRLEObject[0]);
         usHeight = (int)pTrav.usHeight;
         usWidth = (int)pTrav.usWidth;
 
@@ -5375,7 +5415,7 @@ public class InterfaceItems
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\itembox.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, &(gItemPickupMenu.uiPanelVo)));
+        CHECKF(AddVideoObject(&VObjectDesc, (gItemPickupMenu.uiPanelVo)));
 
         // Memalloc selection array...
         gItemPickupMenu.pfSelectedArray = MemAlloc((sizeof(int) * gItemPickupMenu.ubTotalItems));
@@ -5600,7 +5640,7 @@ public class InterfaceItems
             {
                 gItemPickupMenu.ItemPoolSlots[cnt - iStart] = pTempItemPool;
 
-                pObject = &(gWorldItems[pTempItemPool.iItemIndex].o);
+                pObject = (gWorldItems[pTempItemPool.iItemIndex].o);
 
                 sValue = pObject.bStatus[0];
 
@@ -5775,8 +5815,8 @@ public class InterfaceItems
                 if (gItemPickupMenu.ItemPoolSlots[cnt] != null)
                 {
                     // Get item to render
-                    pObject = &(gWorldItems[gItemPickupMenu.ItemPoolSlots[cnt].iItemIndex].o);
-                    pItem = &(Item[pObject.usItem]);
+                    pObject = (gWorldItems[gItemPickupMenu.ItemPoolSlots[cnt].iItemIndex].o);
+                    pItem = (Item[pObject.usItem]);
 
                     usItemTileIndex = GetTileGraphicForItem(pItem);
 
@@ -6135,7 +6175,7 @@ public class InterfaceItems
 
                     // Turn off first...
                     HandleAnyMercInSquadHasCompatibleStuff((int)CurrentSquad(), null, true);
-                    InternalHandleCompatibleAmmoUI(gpSMCurrentMerc, &(gItemPickupMenu.CompAmmoObject), true);
+                    InternalHandleCompatibleAmmoUI(gpSMCurrentMerc, (gItemPickupMenu.CompAmmoObject), true);
 
                     HandleAnyMercInSquadHasCompatibleStuff((int)CurrentSquad(), &(gWorldItems[pTempItemPool.iItemIndex].o), false);
 
@@ -6149,7 +6189,7 @@ public class InterfaceItems
         {
             gItemPickupMenu.bCurSelect = 255;
 
-            InternalHandleCompatibleAmmoUI(gpSMCurrentMerc, &(gItemPickupMenu.CompAmmoObject), false);
+            InternalHandleCompatibleAmmoUI(gpSMCurrentMerc, (gItemPickupMenu.CompAmmoObject), false);
             HandleAnyMercInSquadHasCompatibleStuff((int)CurrentSquad(), null, true);
 
             SetItemPickupMenuDirty(DIRTYLEVEL2);
@@ -6267,9 +6307,14 @@ public class InterfaceItems
                         if (gfAddingMoneyToMercFromPlayersAccount && (gRemoveMoney.uiMoneyRemoving + 1000) > MAX_MONEY_PER_SLOT)
                         {
                             if (guiCurrentScreen == SHOPKEEPER_SCREEN)
+                            {
                                 DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], SHOPKEEPER_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                            }
                             else
+                            {
                                 DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                            }
+
                             return;
                         }
 
@@ -6387,7 +6432,7 @@ public class InterfaceItems
                 gpItemDescObject.uiMoneyAmount = gRemoveMoney.uiMoneyRemaining;
 
                 //Create an item to get the money that is being removed
-                CreateItem(MONEY, 0, &InvSlot.ItemObject);
+                CreateItem(MONEY, 0, InvSlot.ItemObject);
 
                 //Set the amount thast is being removed
                 InvSlot.ItemObject.uiMoneyAmount = gRemoveMoney.uiMoneyRemoving;
@@ -6402,9 +6447,9 @@ public class InterfaceItems
                     AddTransactionToPlayersBook(TRANSFER_FUNDS_TO_MERC, gpSMCurrentMerc.ubProfile, GetWorldTotalMin(), -(int)(gpItemDescObject.uiMoneyAmount));
                 }
 
-                memcpy(gMoveingItem, &InvSlot, sizeof(INVENTORY_IN_SLOT));
+                memcpy(gMoveingItem, InvSlot, sizeof(INVENTORY_IN_SLOT));
 
-                memcpy(gItemPointer, &InvSlot.ItemObject, sizeof(OBJECTTYPE));
+                memcpy(gItemPointer, InvSlot.ItemObject, sizeof(OBJECTTYPE));
                 gpItemPointer = gItemPointer;
                 gpItemPointerSoldier = gpSMCurrentMerc;
 
@@ -6431,9 +6476,9 @@ public class InterfaceItems
                     AddTransactionToPlayersBook(TRANSFER_FUNDS_TO_MERC, gpSMCurrentMerc.ubProfile, GetWorldTotalMin(), -(int)(gpItemDescObject.uiMoneyAmount));
                 }
                 else
+                {
                     gpItemDescObject.uiMoneyAmount = gRemoveMoney.uiMoneyRemaining;
-
-
+                }
 
                 if (guiCurrentItemDescriptionScreen == MAP_SCREEN)
                 {
@@ -6461,30 +6506,30 @@ public class InterfaceItems
     }
 
 
-    void GetHelpTextForItem(int pzStr, OBJECTTYPE pObject, SOLDIERTYPE pSoldier)
+    void GetHelpTextForItem(string pzStr, OBJECTTYPE pObject, SOLDIERTYPE pSoldier)
     {
         string pStr;// [250];
-        int usItem = pObject.usItem;
+        Items usItem = pObject.usItem;
         int cnt = 0;
         int iNumAttachments = 0;
 
         if (pSoldier != null)
         {
-            if (pSoldier.uiStatusFlags & SOLDIER_DEAD)
+            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD))
             {
-                wprintf(pStr, "");
-                wprintf(pzStr, "%s", pStr);
+                pStr = wprintf("");
+                pzStr = wprintf("%s", pStr);
                 return;
             }
         }
 
-        if (usItem == MONEY)
+        if (usItem == Items.MONEY)
         {
-            wprintf(pStr, "%ld", pObject.uiMoneyAmount);
+            pStr = wprintf("%ld", pObject.uiMoneyAmount);
             InsertCommasForDollarFigure(pStr);
             InsertDollarSignInToString(pStr);
         }
-        else if (Item[usItem].usItemClass == IC_MONEY)
+        else if (Item[usItem].usItemClass == IC.MONEY)
         { // alternate money like silver or gold
             string pStr2;// [20];
             pStr2 = wprintf("%ld", pObject.uiMoneyAmount);
@@ -6495,7 +6540,10 @@ public class InterfaceItems
         }
         else if (usItem != NOTHING)
         {
-            if (!gGameOptions.fGunNut && Item[usItem].usItemClass == IC_GUN && usItem != ROCKET_LAUNCHER && usItem != ROCKET_RIFLE)
+            if (!gGameOptions.fGunNut
+                && Item[usItem].usItemClass == IC.GUN
+                && usItem != Items.ROCKET_LAUNCHER
+                && usItem != Items.ROCKET_RIFLE)
             {
                 wprintf(pStr, "%s (%s)", ItemNames[usItem], AmmoCaliber[Weapon[usItem].ubCalibre]);
             }
@@ -6504,7 +6552,8 @@ public class InterfaceItems
                 wprintf(pStr, "%s", ItemNames[usItem]);
             }
 
-            if ((pObject.usItem == ROCKET_RIFLE || pObject.usItem == AUTO_ROCKET_RIFLE) && pObject.ubImprintID < NO_PROFILE)
+            if ((pObject.usItem == Items.ROCKET_RIFLE || pObject.usItem == Items.AUTO_ROCKET_RIFLE)
+                && pObject.ubImprintID < NO_PROFILE)
             {
                 string pStr2;// [20];
                 pStr2 = wprintf(" [%s]", gMercProfiles[pObject.ubImprintID].zNickname);
@@ -6533,7 +6582,7 @@ public class InterfaceItems
 
             if (iNumAttachments > 0)
             {
-                wcscat(pStr, pMessageStrings[MSG_END_ATTACHMENT_LIST]);
+                wcscat(pStr, pMessageStrings[MSG.END_ATTACHMENT_LIST]);
             }
         }
         else
@@ -6763,7 +6812,7 @@ public unsafe struct ITEM_CURSOR_SAVE_INFO
 {
     public OBJECTTYPE ItemPointerInfo;
     public int ubSoldierID;
-    public int ubInvSlot;
+    public InventorySlot ubInvSlot;
     public bool fCursorActive;
     public fixed int bPadding[5];
 }
