@@ -10,6 +10,25 @@ public class AnimationControl
     public const int MAX_FRAMES_PER_ANIM = 100;
     public const int MAX_RANDOM_ANIMS_PER_BODYTYPE = 7;
 
+    public static AnimationSurfaceTypes LoadSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
+    {
+        AnimationSurfaceTypes usAnimSurface;
+
+        usAnimSurface = DetermineSoldierAnimationSurface(pSoldier, usAnimState);
+
+        if (usAnimSurface != INVALID_ANIMATION_SURFACE)
+        {
+            // Ensure that it's been loaded!
+            if (GetCachedAnimationSurface(pSoldier.ubID, (pSoldier.AnimCache), usAnimSurface, pSoldier.usAnimState) == false)
+            {
+                usAnimSurface = INVALID_ANIMATION_SURFACE;
+            }
+
+        }
+
+        return (usAnimSurface);
+    }
+
     bool SetSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
     {
         AnimationSurfaceTypes usAnimSurface;
@@ -17,7 +36,7 @@ public class AnimationControl
         // Delete any structure info!
         if (pSoldier.pLevelNode != null)
         {
-            DeleteStructureFromWorld(pSoldier.pLevelNode.pStructureData);
+            WorldStructures.DeleteStructureFromWorld(pSoldier.pLevelNode.pStructureData);
             pSoldier.pLevelNode.pStructureData = null;
         }
 

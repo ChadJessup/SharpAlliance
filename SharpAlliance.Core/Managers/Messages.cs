@@ -449,7 +449,7 @@ public class Messages
     }
 
     // new screen message
-    public static void ScreenMsg(FontColor usColor, int ubPriority, params object[] pStringA)
+    public static void ScreenMsg(FontColor usColor, int ubPriority, params string[] pStringA)
     {
         if (Globals.fDisableJustForIan == true)
         {
@@ -542,7 +542,7 @@ public class Messages
 
 
     // new tactical and mapscreen message system
-    private static void TacticalScreenMsg(FontColor usColor, int ubPriority, params object[] pStringA)
+    private static void TacticalScreenMsg(FontColor usColor, int ubPriority, params string[] pStringA)
     {
         // this function sets up the string into several single line structures
 
@@ -682,7 +682,7 @@ public class Messages
         return;
     }
 
-    private static void MapScreenMessage(FontColor usColor, int ubPriority, params object[] pStringA)
+    private static void MapScreenMessage(FontColor usColor, int ubPriority, params string[] pStringA)
     {
         // this function sets up the string into several single line structures
 
@@ -1324,6 +1324,11 @@ public class Messages
         }
 
         return (ubRange);
+    }
+
+    internal static void AnimDebugMsg(string v)
+    {
+        throw new NotImplementedException();
     }
 }
 

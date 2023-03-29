@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Platform.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -59,8 +60,50 @@ public class AnimationData
                 }
             }
         }
-
         return ValueTask.FromResult(true);
+    }
+
+    public static bool UnLoadAnimationSurface(int usSoldierID, AnimationSurfaceTypes usSurfaceIndex)
+    {
+        // Decrement usage flag, only if this soldier has it currently tagged
+        if (gbAnimUsageHistory[usSurfaceIndex][usSoldierID] > 0)
+        {
+            // Decrement usage count
+            Messages.AnimDebugMsg(string.Format("Surface Database: Decrementing Usage %d ( Soldier %d )", usSurfaceIndex, usSoldierID));
+            gAnimSurfaceDatabase[usSurfaceIndex].bUsageCount--;
+            // Set history for particular sodlier
+            gbAnimUsageHistory[usSurfaceIndex][usSoldierID] = 0;
+
+        }
+        else
+        {
+            // Return warning that we have not actually loaded the surface previously
+            Messages.AnimDebugMsg(string.Format("Surface Database: WARNING!!! Soldier has tried to unlock surface that he has not locked."));
+            return (false);
+        }
+
+        Messages.AnimDebugMsg(string.Format("Surface Database: MercUsage: %d, Global Uasage: %d", gbAnimUsageHistory[usSurfaceIndex][usSoldierID], gAnimSurfaceDatabase[usSurfaceIndex].bUsageCount));
+
+        // Check for < 0
+        if (gAnimSurfaceDatabase[usSurfaceIndex].bUsageCount < 0)
+        {
+            gAnimSurfaceDatabase[usSurfaceIndex].bUsageCount = 0;
+        }
+
+
+        // Check if count has reached zero and delet if so
+        if (gAnimSurfaceDatabase[usSurfaceIndex].bUsageCount == 0)
+        {
+            Messages.AnimDebugMsg(string.Format("Surface Database: Unloading Surface: %d", usSurfaceIndex));
+
+            CHECKF(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject != null);
+    
+
+            VeldridVideoManager.DeleteVideoObject(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject);
+            gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject = null;
+        }
+
+        return (true);
     }
 
     private bool LoadAnimationProfiles()
@@ -613,7 +656,7 @@ public enum AnimationSurfaceTypes : ushort
     INVALID_ANIMATION_SURFACE = 32000,
 }
 
-public struct AnimationStructureType
+public class AnimationStructureType
 {
     public AnimationStructureType(string fileName)
     {
@@ -626,7 +669,7 @@ public struct AnimationStructureType
 }
 
 // Struct for animation 'surface' information
-public struct AnimationSurfaceType
+public class AnimationSurfaceType
 {
     public int ubName;
     public string Filename;
@@ -634,7 +677,7 @@ public struct AnimationSurfaceType
     public int ubFlags;
     public int uiNumDirections;
     public int uiNumFramesPerDir;
-    public HVOBJECT hVideoObject;
+    public HVOBJECT? hVideoObject;
     public int Unused;
     public int bUsageCount;
     public NPCID bProfile;

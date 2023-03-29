@@ -5,8 +5,12 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+
+    public const string ANIMPROFILEFILENAME = "BINARYDATA\\JA2PROF.DAT";
+    public static int gubNumAnimProfiles = 0;
+
+    public static Dictionary<AnimationSurfaceTypes, List<int>> gbAnimUsageHistory = new();// [NUMANIMATIONSURFACETYPES][MAX_NUM_SOLDIERS];
     public static Dictionary<NPCID, ANIM_PROF> gpAnimProfiles = new();
-    public static int gubNumAnimProfiles;
 
     // BODY TYPES
     // RGM = Regular Male

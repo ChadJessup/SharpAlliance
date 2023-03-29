@@ -253,7 +253,7 @@ public class StructureInternals
                 uiHitPoints = 255;
             }
             */
-            pDBStructureRef[usIndex].pDBStructure.ubHitPoints = (int)uiHitPoints;
+            pDBStructureRef[usIndex].pDBStructure.ubHitPoints = uiHitPoints;
             /*
             if (pDBStructureRef[usIndex].pDBStructure.usStructureNumber + 1 == pFileRef.usNumberOfStructures)
             {
@@ -460,6 +460,12 @@ public class StructureInternals
                                     case WallOrientation.OUTSIDE_TOP_RIGHT:
                                     case WallOrientation.INSIDE_TOP_RIGHT:
                                         sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bLoop));
+                                        break;
+                                    case WallOrientation.NO_ORIENTATION:
+                                        break;
+                                    case WallOrientation.INSIDE_BOTTOM_CORNER:
+                                        break;
+                                    case WallOrientation.OUTSIDE_BOTTOM_CORNER:
                                         break;
                                     default:
                                         // @%?@#%?@%
@@ -894,7 +900,7 @@ public class StructureInternals
         {
             return (null);
         }
-        pShadowNode = FindShadow(pBaseStructure.sGridNo, pLevelNode.usIndex);
+        pShadowNode = WorldManager.FindShadow(pBaseStructure.sGridNo, pLevelNode.usIndex);
 
         // record values
         bDelta = pBaseStructure.pDBStructureRef.pDBStructure.bPartnerDelta;

@@ -50,6 +50,7 @@ public partial class Globals
     public static bool gfFirstBattleMeanwhileScenePending { get; internal set; }
     public static bool gfPlotPathToExitGrid { get; internal set; }
     public static int giNPCReferenceCount { get; internal set; }
+
     public static bool gfTimeInterruptPause = false;
     public static bool fSuperCompression = false;
     public static uint guiGameClock = STARTING_TIME;
@@ -101,53 +102,26 @@ public partial class Globals
 
     public static bool gfResetAllPlayerKnowsEnemiesFlags;
 
-    /// <summary>
-    /// This was a C macro that would return false, seeing how good an exception works here
-    /// </summary>
-    /// <param name="check"></param>
-    /// <exception cref="InvalidOperationException"></exception>
     public static void CHECKF(object? check)
     {
-        if (check is null || (check is bool truthy && !truthy))
+        if (check is null)
         {
-            throw new InvalidOperationException(nameof(CHECKF));
+            throw new ArgumentNullException(nameof(check));
+        }
+
+        if (check is bool predicate && !predicate)
+        {
+            throw new ArgumentException();
         }
     }
 
-    public static void CHECKV(bool check)
+    public static void CHECKN(object? check)
     {
-        if (!check)
+        if (check is null)
         {
-            throw new InvalidOperationException(nameof(CHECKV));
+            throw new ArgumentNullException(nameof(check));
         }
     }
-
-    public static void CHECKN(object? obj)
-    {
-        if (obj is null)
-        {
-            throw new InvalidOperationException(nameof(obj));
-        }
-    }
-
-    internal static string wcscat(string srcDestination, string strSource)
-        => srcDestination += strSource;
-
-    internal static string wprintf(string format, params object[] arguments)
-        => string.Format(format, arguments);
-
-    internal static void gprintf(int x, int y, string format, params object[] arguments)
-    {
-        
-    }
-
-    internal static void mprintf(int v1, int v2, string v3)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal static string sprintf(string format, params object[] arguments)
-        => string.Format(format, arguments);
 }
 
 public enum WARPTIME

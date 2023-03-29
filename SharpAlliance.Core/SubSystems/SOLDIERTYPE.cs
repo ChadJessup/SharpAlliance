@@ -129,7 +129,7 @@ public class SOLDIERTYPE
     public bool fContinueMoveAfterStanceChange;
 
     // 60
-    //AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
+    public AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
 
     public bool IsAlive => bLife > 0;
     public uint bLife;             // current life (hit points or health)

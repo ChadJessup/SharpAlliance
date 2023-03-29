@@ -1747,7 +1747,7 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public static void DeleteVideoObject(HVOBJECT vobj)
+    public static void DeleteVideoObject(HVOBJECT? vobj)
     {
     }
 
