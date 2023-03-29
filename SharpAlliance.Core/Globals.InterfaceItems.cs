@@ -20,7 +20,7 @@ public partial class Globals
     public static Dictionary<InventorySlot, int> gbCompatibleAmmo = new();// int[(int)NUM_INV_SLOTS];
     public static Dictionary<InventorySlot, int> gbInvalidPlacementSlot = new();// int[(int)NUM_INV_SLOTS];
     public static int[] us16BPPItemCyclePlacedItemColors = new int[20];
-    public static int[][] guiBodyInvVO = new int[4][];
+    public static Dictionary<SoldierBodyTypes, List<int>> guiBodyInvVO = new();
     public static int guiGoldKeyVO;
     public static bool gbCompatibleApplyItem = false;
     public static REMOVE_MONEY gRemoveMoney;

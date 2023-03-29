@@ -257,11 +257,11 @@ public class InterfaceItems
         // Load all four body type images
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_large_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[1][0])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[SoldierBodyTypes.BIGMALE][0])));
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_large_male_H.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[1][1])));
+        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[SoldierBodyTypes.BIGMALE][1])));
 
 
         VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
@@ -380,9 +380,9 @@ public class InterfaceItems
         }
         else
         {
-            MSYS_EnableRegion(gSMInvCamoRegion);
+            MouseSubSystem.MSYS_EnableRegion(gSMInvCamoRegion);
 
-            MSYS_EnableRegion(gSM_SELMERCMoneyRegion);
+            MouseSubSystem.MSYS_EnableRegion(gSM_SELMERCMoneyRegion);
             EnableKeyRing(true);
         }
 
@@ -393,14 +393,14 @@ public class InterfaceItems
         InventorySlot cnt;
 
         // Remove all body type panels
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[0][0]);
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[2][0]);
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[1][0]);
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[3][0]);
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[0][1]);
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[2][1]);
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[1][1]);
-        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[3][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][1]);
+        VideoObjectManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1]);
 
         VideoObjectManager.DeleteVideoObjectFromIndex(guiGoldKeyVO);
 
@@ -1187,7 +1187,7 @@ public class InterfaceItems
                         if (gbCompatibleAmmo[cnt])
                         {
                             fFound = true;
-                            gbCompatibleAmmo[cnt] = false;
+                            gbCompatibleAmmo[cnt] = 0;
                         }
                     }
 
