@@ -190,4 +190,7 @@ public enum CURSOR
     VIDEO_NO_CURSOR = 0xFFFF,
 
     None = 0x10000,
+
+    EXTERN_CURSOR = 0xFFF0,
+    EXTERN2_CURSOR = 0xFFE0,
 }

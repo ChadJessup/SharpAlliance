@@ -249,56 +249,55 @@ public class InterfaceItems
         }
     }
 
-    bool InitInvSlotInterface(INV_REGION_DESC pRegionDesc, INV_REGION_DESC pCamoRegion, MouseCallback INVMoveCallback, MouseCallback INVClickCallback, MouseCallback INVMoveCammoCallback, MouseCallback INVClickCammoCallback, bool fSetHighestPrioity)
+    bool InitInvSlotInterface(Dictionary<InventorySlot, INV_REGION_DESC> pRegionDesc, INV_REGION_DESC pCamoRegion, MouseCallback INVMoveCallback, MouseCallback INVClickCallback, MouseCallback INVMoveCammoCallback, MouseCallback INVClickCammoCallback, bool fSetHighestPrioity)
     {
         InventorySlot cnt;
-        VOBJECT_DESC VObjectDesc;
 
         // Load all four body type images
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_large_male.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[SoldierBodyTypes.BIGMALE][0])));
 
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_large_male_H.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[SoldierBodyTypes.BIGMALE][1])));
 
-
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, guiBodyInvVO[0][0]));
 
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male_H.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, guiBodyInvVO[0][1]));
 
-
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[2][0])));
 
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[2][1])));
 
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_female.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[3][0])));
 
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\inventory_figure_female_H.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[3][1])));
 
         // add gold key graphic
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         FilenameForBPP("INTERFACE\\gold_key_button.sti", VObjectDesc.ImageFile);
         CHECKF(AddVideoObject(&VObjectDesc, guiGoldKeyVO));
 
         // Add cammo region 
-        MSYS_DefineRegion(gSMInvCamoRegion, pCamoRegion.sX, pCamoRegion.sY, (int)(pCamoRegion.sX + CAMO_REGION_WIDTH), (int)(pCamoRegion.sY + CAMO_REGION_HEIGHT), MSYS_PRIORITY_HIGH,
-                             MSYS_NO_CURSOR, INVMoveCammoCallback, INVClickCammoCallback);
+        MouseSubSystem.MSYS_DefineRegion(
+            gSMInvCamoRegion,
+            new(
+                pCamoRegion.sX,
+                pCamoRegion.sY,
+                (pCamoRegion.sX + CAMO_REGION_WIDTH),
+                (pCamoRegion.sY + CAMO_REGION_HEIGHT)
+            ),
+            MSYS_PRIORITY.HIGH,
+            CURSOR.MSYS_NO_CURSOR,
+            INVMoveCammoCallback,
+            INVClickCammoCallback);
+
         // Add region
-        MSYS_AddRegion(gSMInvCamoRegion);
+        MouseSubSystem.MSYS_AddRegion(ref gSMInvCamoRegion);
 
         // Add regions for inventory slots
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
@@ -307,22 +306,38 @@ public class InterfaceItems
             gSMInvData[cnt].sX = pRegionDesc[cnt].sX;
             gSMInvData[cnt].sY = pRegionDesc[cnt].sY;
 
-            MSYS_DefineRegion(gSMInvRegion[cnt], gSMInvData[cnt].sX, gSMInvData[cnt].sY, (int)(gSMInvData[cnt].sX + gSMInvData[cnt].sWidth), (int)(gSMInvData[cnt].sY + gSMInvData[cnt].sHeight), (int)(fSetHighestPrioity ? MSYS_PRIORITY_HIGHEST : MSYS_PRIORITY_HIGH),
-                                 MSYS_NO_CURSOR, INVMoveCallback, INVClickCallback);
+            MouseSubSystem.MSYS_DefineRegion(
+                gSMInvRegion[cnt],
+                new(
+                    gSMInvData[cnt].sX,
+                    gSMInvData[cnt].sY,
+                    (gSMInvData[cnt].sX + gSMInvData[cnt].sWidth),
+                    (gSMInvData[cnt].sY + gSMInvData[cnt].sHeight)
+                ),
+                (fSetHighestPrioity ? MSYS_PRIORITY.HIGHEST : MSYS_PRIORITY.HIGH),
+                CURSOR.MSYS_NO_CURSOR,
+                INVMoveCallback,
+                INVClickCallback);
+
             // Add region
-            MSYS_AddRegion(gSMInvRegion[cnt]);
-            MSYS_SetRegionUserData(gSMInvRegion[cnt], 0, cnt);
+            MouseSubSystem.MSYS_AddRegion(ref gSMInvRegion[cnt]);
+            MouseSubSystem.MSYS_SetRegionUserData(gSMInvRegion[cnt], 0, cnt);
         }
 
-        memset(gbCompatibleAmmo, 0, sizeof(gbCompatibleAmmo));
+        gbCompatibleAmmo = new();
 
         return (true);
     }
 
     void InitKeyRingInterface(MouseCallback KeyRingClickCallback)
     {
-        MSYS_DefineRegion(gKeyRingPanel, KEYRING_X, KEYRING_Y, KEYRING_X + KEYRING_WIDTH, KEYRING_X + KEYRING_HEIGHT, MSYS_PRIORITY_HIGH,
-                             MSYS_NO_CURSOR, MSYS_NO_CALLBACK, KeyRingClickCallback);
+        MouseSubSystem.MSYS_DefineRegion(
+            gKeyRingPanel,
+            new(KEYRING_X, KEYRING_Y, KEYRING_X + KEYRING_WIDTH, KEYRING_X + KEYRING_HEIGHT),
+            MSYS_PRIORITY.HIGH,
+            CURSOR.MSYS_NO_CURSOR,
+            MSYS_NO_CALLBACK,
+            KeyRingClickCallback);
 
         SetRegionFastHelpText((gKeyRingPanel), TacticalStr[KEYRING_HELP_TEXT]);
 
@@ -330,28 +345,33 @@ public class InterfaceItems
 
     void InitMapKeyRingInterface(MouseCallback KeyRingClickCallback)
     {
-        MouseSubSystem.MSYS_DefineRegion(gKeyRingPanel, MAP_KEYRING_X, MAP_KEYRING_Y, MAP_KEYRING_X + KEYRING_WIDTH, MAP_KEYRING_Y + KEYRING_HEIGHT, MSYS_PRIORITY.HIGH,
-                             MSYS_NO_CURSOR, MSYS_NO_CALLBACK, KeyRingClickCallback);
+        MouseSubSystem.MSYS_DefineRegion(
+            gKeyRingPanel,
+            new(MAP_KEYRING_X, MAP_KEYRING_Y, MAP_KEYRING_X + KEYRING_WIDTH, MAP_KEYRING_Y + KEYRING_HEIGHT),
+            MSYS_PRIORITY.HIGH,
+            CURSOR.MSYS_NO_CURSOR,
+            MSYS_NO_CALLBACK,
+            KeyRingClickCallback);
 
-        SetRegionFastHelpText((gKeyRingPanel), TacticalStr[KEYRING_HELP_TEXT]);
+        MouseSubSystem.SetRegionFastHelpText((gKeyRingPanel), TacticalStr[KEYRING_HELP_TEXT]);
     }
 
     void EnableKeyRing(bool fEnable)
     {
         if (fEnable)
         {
-            MSYS_EnableRegion(gKeyRingPanel);
+            MouseSubSystem.MSYS_EnableRegion(gKeyRingPanel);
         }
         else
         {
-            MSYS_DisableRegion(gKeyRingPanel);
+            MouseSubSystem.MSYS_DisableRegion(gKeyRingPanel);
         }
     }
 
 
     void ShutdownKeyRingInterface()
     {
-        MSYS_RemoveRegion(gKeyRingPanel);
+        MouseSubSystem.MSYS_RemoveRegion(gKeyRingPanel);
         return;
     }
 
@@ -363,19 +383,19 @@ public class InterfaceItems
         {
             if (fDisable)
             {
-                MSYS_DisableRegion(gSMInvRegion[cnt]);
+                MouseSubSystem.MSYS_DisableRegion(gSMInvRegion[cnt]);
             }
             else
             {
-                MSYS_EnableRegion(gSMInvRegion[cnt]);
+                MouseSubSystem.MSYS_EnableRegion(gSMInvRegion[cnt]);
             }
         }
 
         if (fDisable)
         {
-            MSYS_DisableRegion(gSMInvCamoRegion);
+            MouseSubSystem.MSYS_DisableRegion(gSMInvCamoRegion);
 
-            MSYS_DisableRegion(gSM_SELMERCMoneyRegion);
+            MouseSubSystem.MSYS_DisableRegion(gSM_SELMERCMoneyRegion);
             EnableKeyRing(false);
         }
         else
@@ -409,11 +429,11 @@ public class InterfaceItems
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
         {
             // Remove region
-            MSYS_RemoveRegion(gSMInvRegion[cnt]);
+            MouseSubSystem.MSYS_RemoveRegion(gSMInvRegion[cnt]);
         }
 
         // Remove cammo
-        MSYS_RemoveRegion(gSMInvCamoRegion);
+        MouseSubSystem.MSYS_RemoveRegion(gSMInvCamoRegion);
 
     }
 
@@ -1741,29 +1761,38 @@ public class InterfaceItems
 
             //return( false );
 
-            MSYS_DefineRegion(gInvDesc, (int)gsInvDescX, (int)gsInvDescY, (int)(gsInvDescX + MAP_ITEMDESC_WIDTH), (int)(gsInvDescY + MAP_ITEMDESC_HEIGHT), MSYS_PRIORITY_HIGHEST - 2,
+            MouseSubSystem.MSYS_DefineRegion(gInvDesc, (int)gsInvDescX, (int)gsInvDescY, (int)(gsInvDescX + MAP_ITEMDESC_WIDTH), (int)(gsInvDescY + MAP_ITEMDESC_HEIGHT), MSYS_PRIORITY.HIGHEST - 2,
                                   CURSOR_NORMAL, MSYS_NO_CALLBACK, ItemDescCallback);
-            MSYS_AddRegion(gInvDesc);
+            MouseSubSystem.MSYS_AddRegion(gInvDesc);
 
             giMapInvDescButtonImage = LoadButtonImage("INTERFACE\\itemdescdonebutton.sti", -1, 0, -1, 1, -1);
 
             // create button
             giMapInvDescButton = QuickCreateButton(giMapInvDescButtonImage, (int)(gsInvDescX + 204), (int)(gsInvDescY + 107),
-                                        BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                        BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                         (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)ItemDescDoneButtonCallback);
 
             fShowDescriptionFlag = true;
         }
         else
         {
-            MSYS_DefineRegion(gInvDesc, (int)gsInvDescX, (int)gsInvDescY, (int)(gsInvDescX + ITEMDESC_WIDTH), (int)(gsInvDescY + ITEMDESC_HEIGHT), MSYS_PRIORITY_HIGHEST,
-                                 MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescCallback);
-            MSYS_AddRegion(gInvDesc);
+            MouseSubSystem.MSYS_DefineRegion(
+                gInvDesc, 
+                gsInvDescX, 
+                gsInvDescY, 
+                (gsInvDescX + ITEMDESC_WIDTH), 
+                (gsInvDescY + ITEMDESC_HEIGHT),
+                MSYS_PRIORITY.HIGHEST,
+                CURSOR.MSYS_NO_CURSOR,
+                MSYS_NO_CALLBACK,
+                ItemDescCallback);
+
+            MouseSubSystem.MSYS_AddRegion(ref gInvDesc);
 
 
         }
         // Add region
-        if ((Item[pObject.usItem].usItemClass & IC.GUN) && pObject.usItem != ROCKET_LAUNCHER)
+        if ((Item[pObject.usItem].usItemClass & IC.GUN) && pObject.usItem != Items.ROCKET_LAUNCHER)
         {
             // Add button
             //    if( guiCurrentScreen != MAP_SCREEN )
@@ -1798,7 +1827,7 @@ public class InterfaceItems
                                                                  sForeColour, FONT_MCOLOR_BLACK,
                                                                  sForeColour, FONT_MCOLOR_BLACK,
                                                                  TEXT_CJUSTIFIED,
-                                                                 (int)(ITEMDESC_AMMO_X + 18), (int)(ITEMDESC_AMMO_Y - 5), BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                                                 (int)(ITEMDESC_AMMO_X + 18), (int)(ITEMDESC_AMMO_Y - 5), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemDescAmmoCallback);
 
             }
@@ -1810,7 +1839,7 @@ public class InterfaceItems
                                                                     sForeColour, FONT_MCOLOR_BLACK,
                                                                     sForeColour, FONT_MCOLOR_BLACK,
                                                                     TEXT_CJUSTIFIED,
-                                                                    (int)(ITEMDESC_AMMO_X), (int)(ITEMDESC_AMMO_Y), BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                                                    (int)(ITEMDESC_AMMO_X), (int)(ITEMDESC_AMMO_Y), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                     DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemDescAmmoCallback);
 
                 //if we are being called from the 
@@ -1845,14 +1874,18 @@ public class InterfaceItems
                 for (cnt = 0; cnt < 2; cnt++)
                 {
                     // Add region for pros/cons help text 
-                    MSYS_DefineRegion(gProsAndConsRegions[cnt],
-                        (int)(ITEMDESC_PROS_START_X + sProsConsIndent),
-                        (int)(gsInvDescY + gMapItemDescProsConsRects[cnt].iTop),
-                        (int)(gsInvDescX + gMapItemDescProsConsRects[cnt].iRight),
-                        (int)(gsInvDescY + gMapItemDescProsConsRects[cnt].iBottom),
-                        MSYS_PRIORITY_HIGHEST, MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescCallback);
+                    MouseSubSystem.MSYS_DefineRegion(
+                        gProsAndConsRegions[cnt],
+                        (ITEMDESC_PROS_START_X + sProsConsIndent),
+                        (gsInvDescY + gMapItemDescProsConsRects[cnt].Top),
+                        (gsInvDescX + gMapItemDescProsConsRects[cnt].Right),
+                        (gsInvDescY + gMapItemDescProsConsRects[cnt].Bottom),
+                        MSYS_PRIORITY.HIGHEST,
+                        CURSOR.MSYS_NO_CURSOR,
+                        MSYS_NO_CALLBACK,
+                        ItemDescCallback);
 
-                    MSYS_AddRegion(gProsAndConsRegions[cnt]);
+                    MouseSubSystem.MSYS_AddRegion(ref gProsAndConsRegions[cnt]);
 
                     if (cnt == 0)
                     {
@@ -1872,6 +1905,7 @@ public class InterfaceItems
                         wcscat(gzFullItemCons, gzFullItemTemp);
                         SetRegionFastHelpText((gProsAndConsRegions[cnt]), gzFullItemCons);
                     }
+
                     SetRegionHelpEndCallback((gProsAndConsRegions[cnt]), HelpTextDoneCallback);
                 }
 
@@ -1882,14 +1916,15 @@ public class InterfaceItems
                 for (cnt = 0; cnt < 2; cnt++)
                 {
                     // Add region for pros/cons help text 
-                    MSYS_DefineRegion(gProsAndConsRegions[cnt],
-                        (int)(ITEMDESC_PROS_START_X + sProsConsIndent),
-                        (int)(gsInvDescY + gItemDescProsConsRects[cnt].iTop),
-                        (int)(gsInvDescX + gItemDescProsConsRects[cnt].iRight),
-                        (int)(gsInvDescY + gItemDescProsConsRects[cnt].iBottom),
-                        MSYS_PRIORITY_HIGHEST, MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescCallback);
+                    MouseSubSystem.MSYS_DefineRegion(
+                        gProsAndConsRegions[cnt],
+                        (ITEMDESC_PROS_START_X + sProsConsIndent),
+                        (gsInvDescY + gItemDescProsConsRects[cnt].Top),
+                        (gsInvDescX + gItemDescProsConsRects[cnt].Right),
+                        (gsInvDescY + gItemDescProsConsRects[cnt].Bottom),
+                        MSYS_PRIORITY.HIGHEST, CURSOR.MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescCallback);
 
-                    MSYS_AddRegion(gProsAndConsRegions[cnt]);
+                    MouseSubSystem.MSYS_AddRegion(ref gProsAndConsRegions[cnt]);
 
                     if (cnt == 0)
                     {
@@ -1936,17 +1971,27 @@ public class InterfaceItems
                 //			if (guiTacticalInterfaceFlags & INTERFACE_MAPSCREEN )
                 if (guiCurrentItemDescriptionScreen == MAP_SCREEN)
                 {
-                    MSYS_DefineRegion(gItemDescAttachmentRegions[cnt], (int)(gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX), (int)(gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY), (int)(gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX + gMapItemDescAttachmentsXY[cnt].sWidth), (int)(gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY + gMapItemDescAttachmentsXY[cnt].sHeight), MSYS_PRIORITY_HIGHEST,
-                                    MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescAttachmentsCallback);
+                    MouseSubSystem.MSYS_DefineRegion(
+                        gItemDescAttachmentRegions[cnt],
+                        new((gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX), (gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY), (gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX + gMapItemDescAttachmentsXY[cnt].sWidth), (gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY + gMapItemDescAttachmentsXY[cnt].sHeight)),
+                        MSYS_PRIORITY.HIGHEST,
+                        CURSOR.MSYS_NO_CURSOR,
+                        MSYS_NO_CALLBACK,
+                        ItemDescAttachmentsCallback);
                 }
                 else
                 {
-                    MSYS_DefineRegion(gItemDescAttachmentRegions[cnt], (int)(gsInvDescX + gItemDescAttachmentsXY[cnt].sX), (int)(gsInvDescY + gItemDescAttachmentsXY[cnt].sY), (int)(gsInvDescX + gItemDescAttachmentsXY[cnt].sX + gItemDescAttachmentsXY[cnt].sBarDx + gItemDescAttachmentsXY[cnt].sWidth), (int)(gsInvDescY + gItemDescAttachmentsXY[cnt].sY + gItemDescAttachmentsXY[cnt].sHeight), MSYS_PRIORITY_HIGHEST,
-                                    MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescAttachmentsCallback);
+                    MouseSubSystem.MSYS_DefineRegion(
+                        gItemDescAttachmentRegions[cnt],
+                        new((gsInvDescX + gItemDescAttachmentsXY[cnt].sX), (gsInvDescY + gItemDescAttachmentsXY[cnt].sY), (gsInvDescX + gItemDescAttachmentsXY[cnt].sX + gItemDescAttachmentsXY[cnt].sBarDx + gItemDescAttachmentsXY[cnt].sWidth), (gsInvDescY + gItemDescAttachmentsXY[cnt].sY + gItemDescAttachmentsXY[cnt].sHeight)),
+                        MSYS_PRIORITY.HIGHEST,
+                        CURSOR.MSYS_NO_CURSOR,
+                        MSYS_NO_CALLBACK,
+                        ItemDescAttachmentsCallback);
                 }
                 // Add region
-                MSYS_AddRegion(gItemDescAttachmentRegions[cnt]);
-                MSYS_SetRegionUserData(gItemDescAttachmentRegions[cnt], 0, cnt);
+                MouseSubSystem.MSYS_AddRegion(gItemDescAttachmentRegions[cnt]);
+                MouseSubSystem.MSYS_SetRegionUserData(gItemDescAttachmentRegions[cnt], 0, cnt);
 
                 if (gpItemDescObject.usAttachItem[cnt] != NOTHING)
                 {
@@ -1983,9 +2028,9 @@ public class InterfaceItems
                                                                      5, DEFAULT_SHADOW,
                                                                      5, DEFAULT_SHADOW,
                                                                      TEXT_CJUSTIFIED,
-                                                                     (int)(gMapMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMapMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                                                     (int)(gMapMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMapMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      DEFAULT_MOVE_CALLBACK, BtnMoneyButtonCallback);
-                    MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
+                    ButtonSubSystem.MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
                     if (cnt == M_1000 && gRemoveMoney.uiTotalAmount < 1000)
                     {
                         DisableButton(guiMoneyButtonBtn[cnt]);
@@ -2005,9 +2050,9 @@ public class InterfaceItems
                                                                  5, DEFAULT_SHADOW,
                                                                  5, DEFAULT_SHADOW,
                                                                  TEXT_CJUSTIFIED,
-                                                                 (int)(gMapMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMapMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                                                 (int)(gMapMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMapMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  DEFAULT_MOVE_CALLBACK, BtnMoneyButtonCallback);
-                MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
+                ButtonSubSystem.MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
 
             }
             else
@@ -2019,9 +2064,9 @@ public class InterfaceItems
                                                                      5, DEFAULT_SHADOW,
                                                                      5, DEFAULT_SHADOW,
                                                                      TEXT_CJUSTIFIED,
-                                                                     (int)(gMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                                                     (int)(gMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                      DEFAULT_MOVE_CALLBACK, BtnMoneyButtonCallback);
-                    MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
+                    ButtonSubSystem.MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
                     if (cnt == M_1000 && gRemoveMoney.uiTotalAmount < 1000)
                     {
                         DisableButton(guiMoneyButtonBtn[cnt]);
@@ -2042,9 +2087,9 @@ public class InterfaceItems
                                                                  5, DEFAULT_SHADOW,
                                                                  5, DEFAULT_SHADOW,
                                                                  TEXT_CJUSTIFIED,
-                                                                 (int)(gMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                                                 (int)(gMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  DEFAULT_MOVE_CALLBACK, BtnMoneyButtonCallback);
-                MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
+                ButtonSubSystem.MSYS_SetBtnUserData(guiMoneyButtonBtn[cnt], 0, cnt);
             }
         }
 
@@ -2201,8 +2246,8 @@ public class InterfaceItems
                     guiExternVo = GetInterfaceGraphicForItem((Item[gpItemPointer.usItem]));
                     gusExternVoSubIndex = Item[gpItemPointer.usItem].ubGraphicNum;
 
-                    MSYS_ChangeRegionCursor(gMPanelRegion, EXTERN_CURSOR);
-                    MSYS_SetCurrentCursor(EXTERN_CURSOR);
+                    MouseSubSystem.MSYS_ChangeRegionCursor(gMPanelRegion, CURSOR.EXTERN_CURSOR);
+                    MouseSubSystem.MSYS_SetCurrentCursor(CURSOR.EXTERN_CURSOR);
                     fMapInventoryItem = true;
                     fTeamPanelDirty = true;
                 }
@@ -2259,7 +2304,7 @@ public class InterfaceItems
                     gpItemPointer = null;
                     EnableSMPanelButtons(true, true);
 
-                    MSYS_ChangeRegionCursor(gSMPanelRegion, CURSOR_NORMAL);
+                    MouseSubSystem.MSYS_ChangeRegionCursor(gSMPanelRegion, CURSOR.NORMAL);
                     SetCurrentCursorFromDatabase(CURSOR_NORMAL);
 
                     //if we are currently in the shopkeeper interface
@@ -2299,7 +2344,7 @@ public class InterfaceItems
     }
 
     static OBJECTTYPE Object2;
-    void ItemDescAttachmentsCallback(MOUSE_REGION pRegion, int iReason)
+    void ItemDescAttachmentsCallback(MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiItemPos;
 
@@ -2309,9 +2354,9 @@ public class InterfaceItems
             return;
         }
 
-        uiItemPos = MSYS_GetRegionUserData(pRegion, 0);
+        uiItemPos = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
-        if (iReason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             // if the item being described belongs to a shopkeeper, ignore attempts to pick it up / replace it
             if ((guiTacticalInterfaceFlags & INTERFACE_SHOPKEEP_INTERFACE) && (pShopKeeperItemDescObject != null))
@@ -2338,7 +2383,7 @@ public class InterfaceItems
             else
             {
                 // ATE: Make sure we have enough AP's to drop it if we pick it up!
-                if (EnoughPoints(gpItemDescSoldier, (AP_RELOAD_GUN + AP_PICKUP_ITEM), 0, true))
+                if (EnoughPoints(gpItemDescSoldier, (AP.RELOAD_GUN + AP.PICKUP_ITEM), 0, true))
                 {
                     // Get attachment if there is one
                     // The follwing function will handle if no attachment is here
@@ -2354,8 +2399,8 @@ public class InterfaceItems
                             guiExternVo = GetInterfaceGraphicForItem((Item[gpItemPointer.usItem]));
                             gusExternVoSubIndex = Item[gpItemPointer.usItem].ubGraphicNum;
 
-                            MSYS_ChangeRegionCursor(gMPanelRegion, EXTERN_CURSOR);
-                            MSYS_SetCurrentCursor(EXTERN_CURSOR);
+                            MouseSubSystem.MSYS_ChangeRegionCursor(gMPanelRegion, CURSOR.EXTERN_CURSOR);
+                            MouseSubSystem.MSYS_SetCurrentCursor(CURSOR.EXTERN_CURSOR);
                             fMapInventoryItem = true;
                             fTeamPanelDirty = true;
                         }
@@ -2378,11 +2423,11 @@ public class InterfaceItems
                 }
             }
         }
-        else if (iReason & MSYS_CALLBACK_REASON_RBUTTON_DWN)
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_DWN))
         {
             fRightDown = true;
         }
-        else if (iReason & MSYS_CALLBACK_REASON_RBUTTON_UP && fRightDown)
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP) && fRightDown)
         {
             fRightDown = false;
 
@@ -3475,14 +3520,14 @@ public class InterfaceItems
         }
 
         // Remove region
-        MSYS_RemoveRegion(gInvDesc);
+        MouseSubSystem.MSYS_RemoveRegion(gInvDesc);
 
 
         if (gpItemDescObject.usItem != MONEY)
         {
             for (cnt = 0; cnt < MAX_ATTACHMENTS; cnt++)
             {
-                MSYS_RemoveRegion(gItemDescAttachmentRegions[cnt]);
+                MouseSubSystem.MSYS_RemoveRegion(gItemDescAttachmentRegions[cnt]);
             }
         }
         else
@@ -3497,8 +3542,8 @@ public class InterfaceItems
 
         if (ITEM_PROS_AND_CONS(gpItemDescObject.usItem))
         {
-            MSYS_RemoveRegion(gProsAndConsRegions[0]);
-            MSYS_RemoveRegion(gProsAndConsRegions[1]);
+            MouseSubSystem.MSYS_RemoveRegion(gProsAndConsRegions[0]);
+            MouseSubSystem.MSYS_RemoveRegion(gProsAndConsRegions[1]);
         }
 
         if (((Item[gpItemDescObject.usItem].usItemClass & IC_GUN) && gpItemDescObject.usItem != ROCKET_LAUNCHER))
@@ -3640,8 +3685,8 @@ public class InterfaceItems
                 gusExternVoSubIndex = Item[gpItemPointer.usItem].ubGraphicNum;
 
                 fMapInventoryItem = true;
-                MSYS_ChangeRegionCursor(gMPanelRegion, EXTERN_CURSOR);
-                MSYS_SetCurrentCursor(EXTERN_CURSOR);
+                MouseSubSystem.MSYS_ChangeRegionCursor(gMPanelRegion, CURSOR.EXTERN_CURSOR);
+                MouseSubSystem.MSYS_SetCurrentCursor(CURSOR.EXTERN_CURSOR);
             }
         }
         else
@@ -3660,12 +3705,12 @@ public class InterfaceItems
         {
             gpItemPointer = null;
             gbItemPointerSrcSlot = NO_SLOT;
-            MSYS_ChangeRegionCursor(gSMPanelRegion, CURSOR_NORMAL);
-            MSYS_SetCurrentCursor(CURSOR_NORMAL);
+            MouseSubSystem.MSYS_ChangeRegionCursor(gSMPanelRegion, CURSOR_NORMAL);
+            MouseSubSystem.MSYS_SetCurrentCursor(CURSOR_NORMAL);
 
             if (guiTacticalInterfaceFlags & INTERFACE_SHOPKEEP_INTERFACE)
             {
-                memset(gMoveingItem, 0, sizeof(INVENTORY_IN_SLOT));
+                //memset(gMoveingItem, 0, sizeof(INVENTORY_IN_SLOT));
                 SetSkiCursor(CURSOR_NORMAL);
             }
             else
@@ -3689,8 +3734,8 @@ public class InterfaceItems
         guiExternVo = GetInterfaceGraphicForItem((Item[gpItemPointer.usItem]));
         gusExternVoSubIndex = Item[gpItemPointer.usItem].ubGraphicNum;
 
-        MSYS_ChangeRegionCursor(gSMPanelRegion, EXTERN_CURSOR);
-        MSYS_SetCurrentCursor(EXTERN_CURSOR);
+        MouseSubSystem.MSYS_ChangeRegionCursor(gSMPanelRegion, EXTERN_CURSOR);
+        MouseSubSystem.MSYS_SetCurrentCursor(EXTERN_CURSOR);
     }
 
     void HideItemTileCursor()
@@ -3760,7 +3805,7 @@ public class InterfaceItems
         int sDist;
         int bLevel;
 
-        if (GetMouseMapPos(&usMapPos))
+        if (GetMouseMapPos(out usMapPos))
         {
             if (gfUIFullTargetFound)
             {
@@ -3782,7 +3827,7 @@ public class InterfaceItems
             gfUIHandleShowMoveGrid = false;
 
             // If we are over a talkable guy, set flag
-            if (IsValidTalkableNPCFromMouse(&ubSoldierID, true, false, true))
+            if (IsValidTalkableNPCFromMouse(out ubSoldierID, true, false, true))
             {
                 fGiveItem = true;
             }
@@ -3796,7 +3841,7 @@ public class InterfaceItems
 
 
             // Get recalc and cursor flags
-            fRecalc = GetMouseRecalcAndShowAPFlags(&uiCursorFlags, null);
+            fRecalc = GetMouseRecalcAndShowAPFlags(out uiCursorFlags, null);
 
             // OK, if we begin to move, reset the cursor...
             if (uiCursorFlags & MOUSE_MOVING)
@@ -3840,7 +3885,7 @@ public class InterfaceItems
                             {
                                 // OK, on a valid pass
                                 gfUIMouseOnValidCatcher = 4;
-                                gubUIValidCatcherID = (int)gusUIFullTargetID;
+                                gubUIValidCatcherID = gusUIFullTargetID;
                             }
                             else
                             {
@@ -4031,7 +4076,7 @@ public class InterfaceItems
             }
 
 
-            MSYS_ChangeRegionCursor(gViewportRegion, (int)uiCursorId);
+            MouseSubSystem.MSYS_ChangeRegionCursor(gViewportRegion, (int)uiCursorId);
 
         }
     }
@@ -4622,11 +4667,11 @@ public class InterfaceItems
         for (cnt = 0; cnt < gubNumItemPopups; cnt++)
         {
             // Build a mouse region here that is over any others.....
-            MSYS_DefineRegion(gItemPopupRegions[cnt], (int)(sCenX + (cnt * usPopupWidth)), sCenY, (int)(sCenX + ((cnt + 1) * usPopupWidth)), (int)(sCenY + gsItemPopupHeight), MSYS_PRIORITY_HIGHEST,
+            MouseSubSystem.MSYS_DefineRegion(gItemPopupRegions[cnt], (int)(sCenX + (cnt * usPopupWidth)), sCenY, (int)(sCenX + ((cnt + 1) * usPopupWidth)), (int)(sCenY + gsItemPopupHeight), MSYS_PRIORITY.HIGHEST,
                                  MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupRegionCallback);
             // Add region
-            MSYS_AddRegion(gItemPopupRegions[cnt]);
-            MSYS_SetRegionUserData(gItemPopupRegions[cnt], 0, cnt);
+            MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegions[cnt]);
+            MouseSubSystem.MSYS_SetRegionUserData(gItemPopupRegions[cnt], 0, cnt);
 
             //OK, for each item, set dirty text if applicable!
             SetRegionFastHelpText((gItemPopupRegions[cnt]), ItemNames[pSoldier.inv[ubPosition].usItem]);
@@ -4636,10 +4681,10 @@ public class InterfaceItems
 
 
         // Build a mouse region here that is over any others.....
-        MSYS_DefineRegion(gItemPopupRegion, gsItemPopupInvX, gsItemPopupInvY, (int)(gsItemPopupInvX + gsItemPopupInvWidth), (int)(gsItemPopupInvY + gsItemPopupInvHeight), MSYS_PRIORITY_HIGH,
+        MouseSubSystem.MSYS_DefineRegion(gItemPopupRegion, gsItemPopupInvX, gsItemPopupInvY, (int)(gsItemPopupInvX + gsItemPopupInvWidth), (int)(gsItemPopupInvY + gsItemPopupInvHeight), MSYS_PRIORITY.HIGH,
                              MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupFullRegionCallback);
         // Add region
-        MSYS_AddRegion(gItemPopupRegion);
+        MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegion);
 
 
         //Disable all faces
@@ -4743,14 +4788,14 @@ public class InterfaceItems
         //Remove
         DeleteVideoObjectFromIndex(guiItemPopupBoxes);
 
-        MSYS_RemoveRegion(gItemPopupRegion);
+        MouseSubSystem.MSYS_RemoveRegion(gItemPopupRegion);
 
 
         gfInItemStackPopup = false;
 
         for (cnt = 0; cnt < gubNumItemPopups; cnt++)
         {
-            MSYS_RemoveRegion(gItemPopupRegions[cnt]);
+            MouseSubSystem.MSYS_RemoveRegion(gItemPopupRegions[cnt]);
         }
 
 
@@ -4820,26 +4865,26 @@ public class InterfaceItems
         for (cnt = 0; cnt < NUMBER_KEYS_ON_KEYRING; cnt++)
         {
             // Build a mouse region here that is over any others.....
-            MSYS_DefineRegion(gKeyRingRegions[cnt],
+            MouseSubSystem.MSYS_DefineRegion(gKeyRingRegions[cnt],
                     (int)(gsKeyRingPopupInvX + (cnt % sKeyRingItemWidth * usPopupWidth) + sOffSetX), // top left
                     (int)(sInvY + sOffSetY + (cnt / sKeyRingItemWidth * usPopupHeight)), // top right
                     (int)(gsKeyRingPopupInvX + ((cnt % sKeyRingItemWidth) + 1) * usPopupWidth + sOffSetX), // bottom left
                     (int)(sInvY + ((cnt / sKeyRingItemWidth + 1) * usPopupHeight) + sOffSetY), // bottom right
-                    MSYS_PRIORITY_HIGHEST,
+                    MSYS_PRIORITY.HIGHEST,
                     MSYS_NO_CURSOR, MSYS_NO_CALLBACK, KeyRingSlotInvClickCallback);
             // Add region
-            MSYS_AddRegion(gKeyRingRegions[cnt]);
-            MSYS_SetRegionUserData(gKeyRingRegions[cnt], 0, cnt);
+            MouseSubSystem.MSYS_AddRegion(ref gKeyRingRegions[cnt]);
+            MouseSubSystem.MSYS_SetRegionUserData(gKeyRingRegions[cnt], 0, cnt);
             //gfItemPopupRegionCallbackEndFix = false;
         }
 
 
         // Build a mouse region here that is over any others.....
-        MSYS_DefineRegion(gItemPopupRegion, sInvX, sInvY, (int)(sInvX + sInvWidth), (int)(sInvY + sInvHeight), MSYS_PRIORITY_HIGH,
+        MouseSubSystem.MSYS_DefineRegion(gItemPopupRegion, sInvX, sInvY, (int)(sInvX + sInvWidth), (int)(sInvY + sInvHeight), MSYS_PRIORITY.HIGH,
                              MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupFullRegionCallback);
 
         // Add region
-        MSYS_AddRegion(gItemPopupRegion);
+        MouseSubSystem.MSYS_AddRegion(gItemPopupRegion);
 
 
         //Disable all faces
@@ -4971,14 +5016,14 @@ public class InterfaceItems
         //Remove
         DeleteVideoObjectFromIndex(guiItemPopupBoxes);
 
-        MSYS_RemoveRegion(gItemPopupRegion);
+        MouseSubSystem.MSYS_RemoveRegion(gItemPopupRegion);
 
 
         gfInKeyRingPopup = false;
 
         for (cnt = 0; cnt < NUMBER_KEYS_ON_KEYRING; cnt++)
         {
-            MSYS_RemoveRegion(gKeyRingRegions[cnt]);
+            MouseSubSystem.MSYS_RemoveRegion(gKeyRingRegions[cnt]);
         }
 
 
@@ -5116,7 +5161,7 @@ public class InterfaceItems
     }
 
     static bool fLeftDown = false;
-    void ItemDescCallback(MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
+    void ItemDescCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
@@ -5158,11 +5203,11 @@ public class InterfaceItems
     void ItemDescDoneButtonCallback(GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
 
-        if (reason & MSYS_CALLBACK_REASON.LBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= (BUTTON_CLICKED_ON);
         }
-        else if (reason & MSYS_CALLBACK_REASON.LBUTTON_UP)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (btn.uiFlags & BUTTON_CLICKED_ON)
             {
@@ -5177,11 +5222,11 @@ public class InterfaceItems
             }
         }
 
-        if (reason & MSYS_CALLBACK_REASON.RBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_DWN))
         {
             btn.uiFlags |= (BUTTON_CLICKED_ON);
         }
-        else if (reason & MSYS_CALLBACK_REASON.RBUTTON_UP)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
             if (btn.uiFlags & BUTTON_CLICKED_ON)
             {
@@ -5192,11 +5237,11 @@ public class InterfaceItems
     }
 
 
-    void ItemPopupRegionCallback(MOUSE_REGION pRegion, int iReason)
+    void ItemPopupRegionCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiItemPos;
 
-        uiItemPos = MSYS_GetRegionUserData(pRegion, 0);
+        uiItemPos = MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
         // TO ALLOW ME TO DELETE REGIONS IN CALLBACKS!
         if (gfItemPopupRegionCallbackEndFix)
@@ -5204,7 +5249,7 @@ public class InterfaceItems
             return;
         }
 
-        if (iReason & MSYS_CALLBACK_REASON_LBUTTON_DWN)
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
 
             //If one in our hand, place it
@@ -5219,7 +5264,7 @@ public class InterfaceItems
                     else
                     {
                         gpItemPointer = null;
-                        MSYS_ChangeRegionCursor(gSMPanelRegion, CURSOR_NORMAL);
+                        MouseSubSystem.MSYS_ChangeRegionCursor(gSMPanelRegion, CURSOR_NORMAL);
                         SetCurrentCursorFromDatabase(CURSOR_NORMAL);
 
                         if (guiTacticalInterfaceFlags & INTERFACE_SHOPKEEP_INTERFACE)
@@ -5282,7 +5327,7 @@ public class InterfaceItems
 
             UpdateItemHatches();
         }
-        else if (iReason & MSYS_CALLBACK_REASON_RBUTTON_UP)
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
             // Get Description....
             // Some global stuff here - for esc, etc
@@ -5310,13 +5355,13 @@ public class InterfaceItems
         }
     }
 
-    void ItemPopupFullRegionCallback(MOUSE_REGION pRegion, int iReason)
+    void ItemPopupFullRegionCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiItemPos;
 
-        uiItemPos = MSYS_GetRegionUserData(pRegion, 0);
+        uiItemPos = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
-        if (iReason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (InItemStackPopup())
             {
@@ -5331,7 +5376,7 @@ public class InterfaceItems
 
             }
         }
-        else if (iReason & MSYS_CALLBACK_REASON_RBUTTON_UP)
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
             if (InItemStackPopup())
             {
@@ -5348,7 +5393,7 @@ public class InterfaceItems
 
 
     // STUFF FOR POPUP ITEM INFO BOX
-    void SetItemPickupMenuDirty(bool fDirtyLevel)
+    void SetItemPickupMenuDirty(int fDirtyLevel)
     {
         gItemPickupMenu.fDirtyLevel = fDirtyLevel;
     }
@@ -5489,31 +5534,49 @@ public class InterfaceItems
 
 
         // Build a mouse region here that is over any others.....
-        MSYS_DefineRegion((gItemPickupMenu.BackRegion), (int)(532), (int)(367), (int)(640), (int)(480), MSYS_PRIORITY_HIGHEST,
-                             CURSOR_NORMAL, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
+        MouseSubSystem.MSYS_DefineRegion(
+            (gItemPickupMenu.BackRegion), 
+            (532),
+            (367),
+            (640),
+            (480),
+            MSYS_PRIORITY.HIGHEST,
+            CURSOR.NORMAL,
+            MSYS_NO_CALLBACK,
+            MSYS_NO_CALLBACK);
+
         // Add region
-        MSYS_AddRegion((gItemPickupMenu.BackRegion));
+        MouseSubSystem.MSYS_AddRegion(ref (gItemPickupMenu.BackRegion));
 
 
         // Build a mouse region here that is over any others.....
-        MSYS_DefineRegion((gItemPickupMenu.BackRegions), (int)(gItemPickupMenu.sX), (int)(gItemPickupMenu.sY), (int)(gItemPickupMenu.sX + gItemPickupMenu.sWidth), (int)(gItemPickupMenu.sY + gItemPickupMenu.sHeight), MSYS_PRIORITY_HIGHEST,
-                             CURSOR_NORMAL, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
+        MouseSubSystem.MSYS_DefineRegion(
+            (gItemPickupMenu.BackRegions),
+            (gItemPickupMenu.sX), 
+            (gItemPickupMenu.sY), 
+            (gItemPickupMenu.sX + gItemPickupMenu.sWidth), 
+            (gItemPickupMenu.sY + gItemPickupMenu.sHeight), 
+            MSYS_PRIORITY.HIGHEST,
+            CURSOR.NORMAL, 
+            MSYS_NO_CALLBACK, 
+            MSYS_NO_CALLBACK);
+
         // Add region
-        MSYS_AddRegion((gItemPickupMenu.BackRegions));
+        MouseSubSystem.MSYS_AddRegion(ref (gItemPickupMenu.BackRegions));
 
 
         // Create buttons
         if (gItemPickupMenu.bNumSlotsPerPage == NUM_PICKUP_SLOTS && gItemPickupMenu.ubTotalItems > NUM_PICKUP_SLOTS)
         {
             gItemPickupMenu.iUpButton = QuickCreateButton(gItemPickupMenu.iUpButtonImages, (int)(sX + ITEMPICK_UP_X), (int)(sY + gItemPickupMenu.sButtomPanelStartY + ITEMPICK_UP_Y),
-                                              BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                              BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                               DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemPickupScrollUp);
 
             SetButtonFastHelpText(gItemPickupMenu.iUpButton, ItemPickupHelpPopup[1]);
 
 
             gItemPickupMenu.iDownButton = QuickCreateButton(gItemPickupMenu.iDownButtonImages, (int)(sX + ITEMPICK_DOWN_X), (int)(sY + gItemPickupMenu.sButtomPanelStartY + ITEMPICK_DOWN_Y),
-                                              BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                              BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                               DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemPickupScrollDown);
 
             SetButtonFastHelpText(gItemPickupMenu.iDownButton, ItemPickupHelpPopup[3]);
@@ -5522,18 +5585,18 @@ public class InterfaceItems
 
 
         gItemPickupMenu.iOKButton = QuickCreateButton(gItemPickupMenu.iOKButtonImages, (int)(sX + ITEMPICK_OK_X), (int)(sY + gItemPickupMenu.sButtomPanelStartY + ITEMPICK_OK_Y),
-                                              BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                              BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                               DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemPickupOK);
         SetButtonFastHelpText(gItemPickupMenu.iOKButton, ItemPickupHelpPopup[0]);
 
 
         gItemPickupMenu.iAllButton = QuickCreateButton(gItemPickupMenu.iAllButtonImages, (int)(sX + ITEMPICK_ALL_X), (int)(sY + gItemPickupMenu.sButtomPanelStartY + ITEMPICK_ALL_Y),
-                                              BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                              BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                               DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemPickupAll);
         SetButtonFastHelpText(gItemPickupMenu.iAllButton, ItemPickupHelpPopup[2]);
 
         gItemPickupMenu.iCancelButton = QuickCreateButton(gItemPickupMenu.iCancelButtonImages, (int)(sX + ITEMPICK_CANCEL_X), (int)(sY + gItemPickupMenu.sButtomPanelStartY + ITEMPICK_CANCEL_Y),
-                                              BUTTON_TOGGLE, MSYS_PRIORITY_HIGHEST,
+                                              BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                               DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemPickupCancel);
         SetButtonFastHelpText(gItemPickupMenu.iCancelButton, ItemPickupHelpPopup[4]);
 
@@ -5549,11 +5612,20 @@ public class InterfaceItems
         for (cnt = 0; cnt < gItemPickupMenu.bNumSlotsPerPage; cnt++)
         {
             // Build a mouse region here that is over any others.....
-            MSYS_DefineRegion((gItemPickupMenu.Regions[cnt]), (int)(sCenX), (int)(sCenY + 1), (int)(sCenX + gItemPickupMenu.sWidth), (int)(sCenY + ITEMPICK_GRAPHIC_YSPACE), MSYS_PRIORITY_HIGHEST,
-                                 CURSOR_NORMAL, ItemPickMenuMouseMoveCallback, ItemPickMenuMouseClickCallback);
+            MouseSubSystem.MSYS_DefineRegion(
+                (gItemPickupMenu.Regions[cnt]), 
+                (sCenX), 
+                (sCenY + 1), 
+                (sCenX + gItemPickupMenu.sWidth), 
+                (sCenY + ITEMPICK_GRAPHIC_YSPACE), 
+                MSYS_PRIORITY.HIGHEST,
+                CURSOR.NORMAL, 
+                ItemPickMenuMouseMoveCallback, 
+                ItemPickMenuMouseClickCallback);
+
             // Add region
-            MSYS_AddRegion((gItemPickupMenu.Regions[cnt]));
-            MSYS_SetRegionUserData((gItemPickupMenu.Regions[cnt]), 0, cnt);
+            MouseSubSystem.MSYS_AddRegion(ref (gItemPickupMenu.Regions[cnt]));
+            MouseSubSystem.MSYS_SetRegionUserData((gItemPickupMenu.Regions[cnt]), 0, cnt);
 
             sCenY += ITEMPICK_GRAPHIC_YSPACE;
         }
@@ -5645,7 +5717,7 @@ public class InterfaceItems
                 sValue = pObject.bStatus[0];
 
                 // Adjust for ammo, other thingys..
-                if (Item[pObject.usItem].usItemClass & IC_AMMO || Item[pObject.usItem].usItemClass & IC_KEY)
+                if (Item[pObject.usItem].usItemClass & IC.AMMO || Item[pObject.usItem].usItemClass & IC.KEY)
                 {
                     wprintf(pStr, "");
                 }
@@ -5979,13 +6051,13 @@ public class InterfaceItems
             UnloadButtonImage(gItemPickupMenu.iCancelButtonImages);
             UnloadButtonImage(gItemPickupMenu.iOKButtonImages);
 
-            MSYS_RemoveRegion((gItemPickupMenu.BackRegions));
-            MSYS_RemoveRegion((gItemPickupMenu.BackRegion));
+            MouseSubSystem.MSYS_RemoveRegion((gItemPickupMenu.BackRegions));
+            MouseSubSystem.MSYS_RemoveRegion((gItemPickupMenu.BackRegion));
 
             // Remove regions
             for (cnt = 0; cnt < gItemPickupMenu.bNumSlotsPerPage; cnt++)
             {
-                MSYS_RemoveRegion((gItemPickupMenu.Regions[cnt]));
+                MouseSubSystem.MSYS_RemoveRegion((gItemPickupMenu.Regions[cnt]));
             }
 
             // Remove register rect
@@ -6023,18 +6095,18 @@ public class InterfaceItems
     }
 
 
-    void ItemPickupScrollUp(GUI_BUTTON btn, int reason)
+    void ItemPickupScrollUp(GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (reason & MSYS_CALLBACK_REASON_LBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= BUTTON_CLICKED_ON;
         }
-        else if (reason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
             SetupPickupPage((int)(gItemPickupMenu.bScrollPage - 1));
         }
-        else if (reason & MSYS_CALLBACK_REASON_LOST_MOUSE)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
         }
@@ -6042,33 +6114,33 @@ public class InterfaceItems
     }
 
 
-    void ItemPickupScrollDown(GUI_BUTTON btn, int reason)
+    void ItemPickupScrollDown(GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (reason & MSYS_CALLBACK_REASON_LBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= BUTTON_CLICKED_ON;
         }
-        else if (reason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
             SetupPickupPage((int)(gItemPickupMenu.bScrollPage + 1));
         }
-        else if (reason & MSYS_CALLBACK_REASON_LOST_MOUSE)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
         }
     }
 
-    void ItemPickupAll(GUI_BUTTON btn, int reason)
+    void ItemPickupAll(GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         int cnt;
 
 
-        if (reason & MSYS_CALLBACK_REASON_LBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= BUTTON_CLICKED_ON;
         }
-        else if (reason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
 
@@ -6094,22 +6166,22 @@ public class InterfaceItems
             }
 
         }
-        else if (reason & MSYS_CALLBACK_REASON_LOST_MOUSE)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
         }
     }
 
 
-    void ItemPickupOK(GUI_BUTTON btn, int reason)
+    void ItemPickupOK(GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         int cnt = 0;
 
-        if (reason & MSYS_CALLBACK_REASON_LBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= BUTTON_CLICKED_ON;
         }
-        else if (reason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
 
@@ -6119,28 +6191,28 @@ public class InterfaceItems
             // Tell our soldier to pickup this item!
             SoldierGetItemFromWorld(gItemPickupMenu.pSoldier, ITEM_PICKUP_SELECTION, gItemPickupMenu.sGridNo, gItemPickupMenu.bZLevel, gItemPickupMenu.pfSelectedArray);
         }
-        else if (reason & MSYS_CALLBACK_REASON_LOST_MOUSE)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
         }
     }
 
-    void ItemPickupCancel(GUI_BUTTON btn, int reason)
+    void ItemPickupCancel(GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         int cnt = 0;
 
-        if (reason & MSYS_CALLBACK_REASON_LBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= BUTTON_CLICKED_ON;
         }
-        else if (reason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
 
             // OK, pickup item....
             gItemPickupMenu.fHandled = true;
         }
-        else if (reason & MSYS_CALLBACK_REASON_LOST_MOUSE)
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
         }
@@ -6148,16 +6220,16 @@ public class InterfaceItems
 
 
         static bool bChecked = false;
-    void ItemPickMenuMouseMoveCallback(MOUSE_REGION pRegion, int iReason)
+    void ItemPickMenuMouseMoveCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiItemPos;
-        ITEM_POOL* pTempItemPool;
+        ITEM_POOL? pTempItemPool;
         int bPos;
 
-        uiItemPos = MSYS_GetRegionUserData(pRegion, 0);
+        uiItemPos = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
 
-        if (iReason & MSYS_CALLBACK_REASON_MOVE)
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.MOVE))
         {
             bPos = (uiItemPos + gItemPickupMenu.ubScrollAnchor);
 
@@ -6185,7 +6257,7 @@ public class InterfaceItems
                 }
             }
         }
-        else if (iReason & MSYS_CALLBACK_REASON_LOST_MOUSE)
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             gItemPickupMenu.bCurSelect = 255;
 
@@ -6201,9 +6273,9 @@ public class InterfaceItems
     }
 
 
-    void ItemPickupBackgroundClick(MOUSE_REGION pRegion, int iReason)
+    void ItemPickupBackgroundClick(MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-        if (iReason & MSYS_CALLBACK_REASON_RBUTTON_UP)
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
             // OK, goto team panel....
             ToggleTacticalPanels();
@@ -6212,16 +6284,16 @@ public class InterfaceItems
 
 
 
-    void ItemPickMenuMouseClickCallback(MOUSE_REGION pRegion, int iReason)
+    void ItemPickMenuMouseClickCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiItemPos;
         int cnt;
         bool fEnable = false;
 
-        uiItemPos = MSYS_GetRegionUserData(pRegion, 0);
+        uiItemPos = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
 
-        if (iReason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (uiItemPos + gItemPickupMenu.ubScrollAnchor < gItemPickupMenu.ubTotalItems)
             {
@@ -6256,7 +6328,7 @@ public class InterfaceItems
                 DisableButton(gItemPickupMenu.iOKButton);
             }
         }
-        else if (iReason & MSYS_CALLBACK_REASON_RBUTTON_UP)
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
 
         }
@@ -6279,22 +6351,22 @@ public class InterfaceItems
     }
 
 
-    void BtnMoneyButtonCallback(GUI_BUTTON btn, int reason)
+    void BtnMoneyButtonCallback(GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
         int i;
-        if (reason & MSYS_CALLBACK_REASON_LBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= BUTTON_CLICKED_ON;
             InvalidateRegion(btn.Area.RegionTopLeftX, btn.Area.RegionTopLeftY, btn.Area.RegionBottomRightX, btn.Area.RegionBottomRightY);
         }
-        if (reason & MSYS_CALLBACK_REASON_RBUTTON_DWN)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_DWN))
         {
             btn.uiFlags |= BUTTON_CLICKED_ON;
             InvalidateRegion(btn.Area.RegionTopLeftX, btn.Area.RegionTopLeftY, btn.Area.RegionBottomRightX, btn.Area.RegionBottomRightY);
         }
-        if (reason & MSYS_CALLBACK_REASON_LBUTTON_UP)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            int ubButton = (int)MSYS_GetBtnUserData(btn, 0);
+            int ubButton = (int)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
 
@@ -6371,9 +6443,9 @@ public class InterfaceItems
         }
 
 
-        if (reason & MSYS_CALLBACK_REASON_RBUTTON_UP)
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
-            int ubButton = (int)MSYS_GetBtnUserData(btn, 0);
+            int ubButton = (int)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
             btn.uiFlags &= (~BUTTON_CLICKED_ON);
 
@@ -6486,8 +6558,8 @@ public class InterfaceItems
                     guiExternVo = GetInterfaceGraphicForItem((Item[gpItemPointer.usItem]));
                     gusExternVoSubIndex = Item[gpItemPointer.usItem].ubGraphicNum;
 
-                    MSYS_ChangeRegionCursor(gMPanelRegion, EXTERN_CURSOR);
-                    MSYS_SetCurrentCursor(EXTERN_CURSOR);
+                    MouseSubSystem.MSYS_ChangeRegionCursor(gMPanelRegion, CURSOR.EXTERN_CURSOR);
+                    MouseSubSystem.MSYS_SetCurrentCursor(CURSOR.EXTERN_CURSOR);
                     fMapInventoryItem = true;
                     fTeamPanelDirty = true;
                 }
@@ -6791,7 +6863,7 @@ public class ITEM_PICKUP_MENU_STRUCT
     public int iCancelButton;
     public bool fCanScrollUp;
     public bool fCanScrollDown;
-    public bool fDirtyLevel;
+    public int fDirtyLevel;
     public int iDirtyRect;
     public bool fHandled;
     public int sGridNo;

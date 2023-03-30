@@ -735,7 +735,7 @@ public class CreditsScreen : IScreen
             // Add region
             //MouseSubSystem.MSYS_AddRegion(&gCrdtMouseRegions[uiCnt]);
 
-            MouseSubSystem.SetRegionUserData(Globals.gCrdtMouseRegions[(int)uiCnt], 0, (int)uiCnt);
+            MouseSubSystem.MSYS_SetRegionUserData(Globals.gCrdtMouseRegions[(int)uiCnt], 0, (int)uiCnt);
         }
 
 
@@ -792,7 +792,7 @@ public class CreditsScreen : IScreen
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
-            Globals.giCurrentlySelectedFace = (int)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+            Globals.giCurrentlySelectedFace = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.MOVE))
         {

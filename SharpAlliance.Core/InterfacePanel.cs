@@ -76,8 +76,8 @@ public class InterfacePanel
             gTeamPanel[ubPanelSlot].fOccupied = false;
             gTeamPanel[ubPanelSlot].ubID = NOBODY;
 
-            MouseSubSystem.SetRegionUserData(gTEAM_FirstHandInv[ubPanelSlot], 0, NOBODY);
-            MouseSubSystem.SetRegionUserData(gTEAM_FaceRegions[ubPanelSlot], 0, NOBODY);
+            MouseSubSystem.MSYS_SetRegionUserData(gTEAM_FirstHandInv[ubPanelSlot], 0, NOBODY);
+            MouseSubSystem.MSYS_SetRegionUserData(gTEAM_FaceRegions[ubPanelSlot], 0, NOBODY);
 
             // DIRTY INTERFACE
             fInterfacePanelDirty = DIRTYLEVEL2;

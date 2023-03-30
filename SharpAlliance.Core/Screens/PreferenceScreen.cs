@@ -595,7 +595,7 @@ public class PreferenceScreen : IScreen
                     this.SelectedOptionTextRegionMovementCallBack,
                     this.SelectedOptionTextRegionCallBack);
 
-                MouseSubSystem.SetRegionUserData(
+                MouseSubSystem.MSYS_SetRegionUserData(
                     this.gSelectedOptionTextRegion[cnt],
                     0,
                     this.guiOptionsToggles[option]);
@@ -686,7 +686,7 @@ public class PreferenceScreen : IScreen
                     this.SelectedOptionTextRegionMovementCallBack,
                     this.SelectedOptionTextRegionCallBack);
 
-                MouseSubSystem.SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, this.guiOptionsToggles[option]);
+                MouseSubSystem.MSYS_SetRegionUserData(this.gSelectedOptionTextRegion[cnt], 0, this.guiOptionsToggles[option]);
             }
             else
             {
@@ -702,7 +702,7 @@ public class PreferenceScreen : IScreen
                     this.SelectedOptionTextRegionMovementCallBack,
                     this.SelectedOptionTextRegionCallBack);
 
-                MouseSubSystem.SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, this.guiOptionsToggles[option]);
+                MouseSubSystem.MSYS_SetRegionUserData(this.gSelectedOptionTextRegion[option], 0, this.guiOptionsToggles[option]);
             }
 
             MouseSubSystem.SetRegionFastHelpText(this.gSelectedOptionTextRegion[option], EnglishText.zOptionsScreenHelpText[cnt]);
@@ -841,7 +841,7 @@ public class PreferenceScreen : IScreen
 
     private void SelectedOptionTextRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-        TOPTION ubButton = (TOPTION)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+        TOPTION ubButton = (TOPTION)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -849,7 +849,7 @@ public class PreferenceScreen : IScreen
 
             VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
         }
-        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON_LBUTTON_REPEAT || 
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON.LBUTTON_REPEAT || 
         {
             if (this.settings[ubButton])
             {
@@ -864,7 +864,7 @@ public class PreferenceScreen : IScreen
 
     private void SelectedOptionTextRegionMovementCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON reason)
     {
-        var bButton = (GUI_BUTTON)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+        var bButton = (GUI_BUTTON)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {

@@ -425,15 +425,16 @@ public partial class Globals
 
 
 // A STRUCT USED INTERNALLY FOR INV SLOT REGIONS
-public record INV_REGIONS(
-    bool fBigPocket,
-    int sBarDx,
-    int sBarDy,
-    int sWidth,
-    int sHeight,
-    int sX,               // starts at 0, gets set via InitInvSlotInterface()
-    int sY);                // starts at 0, gets set via InitInvSlotInterface()
-
+public record INV_REGIONS
+{
+    public bool fBigPocket { get; set; }
+    public int sBarDx { get; set; }
+    public int sBarDy { get; set; }
+    public int sWidth { get; set; }
+    public int sHeight { get; set; }
+    public int sX { get; set; }               // starts at 0, gets set via InitInvSlotInterface()
+    public int sY { get; set; }                // starts at 0, gets set via InitInvSlotInterface()
+}
 
 // USED TO SETUP REGION POSITIONS, ETC
 public struct INV_REGION_DESC

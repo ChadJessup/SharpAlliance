@@ -171,6 +171,32 @@ public class Weapons
     }
 }
 
+public enum AIM
+{
+    BONUS_SAME_TARGET = 10,      // chance-to-hit bonus (in %)
+    BONUS_PER_AP = 10,      // chance-to-hit bonus (in %) for aim
+    BONUS_CROUCHING = 10,
+    BONUS_PRONE = 20,
+    BONUS_TWO_HANDED_PISTOL = 5,
+    BONUS_FIRING_DOWN = 15,
+    BONUS_TARGET_HATED = 20,
+    BONUS_PSYCHO = 15,
+
+    PENALTY_ONE_HANDED_PISTOL = 5,
+    PENALTY_DUAL_PISTOLS = 20,
+    PENALTY_SMG = 5,
+    PENALTY_GASSED = 50,
+    PENALTY_GETTINGAID = 20,
+    PENALTY_PER_SHOCK = 5,     // 5% penalty per point of shock
+    PENALTY_TARGET_BUDDY = 20,
+    PENALTY_BURSTING = 10,
+    PENALTY_GENTLEMAN = 15,
+    PENALTY_TARGET_CROUCHED = 20,
+    PENALTY_TARGET_PRONE = 40,
+    PENALTY_BLIND = 80,
+    PENALTY_FIRING_UP = 25,
+}
+
 public record EXPLOSIVETYPE(
     EXPLOSV ubType,                   // type of explosive
     int ubDamage,             // damage value

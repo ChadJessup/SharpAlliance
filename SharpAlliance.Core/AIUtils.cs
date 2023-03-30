@@ -68,31 +68,27 @@ public class AIUtils
         }
     };
 
-    public static AnimationStates[,] MovementMode =
+    public static Dictionary<AI_ACTION, List<AnimationStates>> MovementMode = new()
     {
-        { AnimationStates.WALKING,   AnimationStates.WALKING,  AnimationStates.WALKING }, // AI_ACTION.NONE
-    
-    	{ AnimationStates.WALKING,  AnimationStates.WALKING,  AnimationStates.WALKING }, // AI_ACTION.RANDOM_PATROL
-    	{ AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.SEEK_FRIEND
-    	{ AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.SEEK_OPPONENT
-    	{ AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.TAKE_COVER
-    	{ AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.GET_CLOSER
-    
-    	{ AnimationStates.WALKING,  AnimationStates.WALKING,  AnimationStates.WALKING }, // AI_ACTION.POINT_PATROL,
-    	{ AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.LEAVE_WATER_GAS,
-    	{ AnimationStates.WALKING,  AnimationStates.SWATTING, AnimationStates.RUNNING }, // AI_ACTION.SEEK_NOISE,
-    	{ AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.ESCORTED_MOVE,
-    	{ AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.RUN_AWAY,
-    
-    	{ AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.KNIFE_MOVE
-    	{ AnimationStates.WALKING,  AnimationStates.WALKING,  AnimationStates.WALKING }, // AI_ACTION.APPROACH_MERC
-    	{ AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING }, // AI_ACTION.TRACK
-    	{ AnimationStates.RUNNING,   AnimationStates.RUNNING,  AnimationStates.RUNNING },// AI_ACTION.EAT 
-    	{ AnimationStates.WALKING,   AnimationStates.RUNNING,  AnimationStates.SWATTING},// AI_ACTION.PICKUP_ITEM
-    
-    	{ AnimationStates.WALKING,   AnimationStates.WALKING,  AnimationStates.WALKING}, // AI_ACTION.SCHEDULE_MOVE
-    	{ AnimationStates.WALKING,   AnimationStates.WALKING,  AnimationStates.WALKING}, // AI_ACTION.WALK
-    	{ AnimationStates.RUNNING,   AnimationStates.RUNNING,  AnimationStates.RUNNING}, // AI_ACTION.MOVE_TO_CLIMB
+        { AI_ACTION.NONE, new() { AnimationStates.WALKING,   AnimationStates.WALKING,  AnimationStates.WALKING } }, // AI_ACTION.NONE
+    	{ AI_ACTION.RANDOM_PATROL, new() { AnimationStates.WALKING,  AnimationStates.WALKING,  AnimationStates.WALKING } }, // AI_ACTION.RANDOM_PATROL
+    	{ AI_ACTION.SEEK_FRIEND, new() { AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.SEEK_FRIEND
+    	{ AI_ACTION.SEEK_OPPONENT, new() { AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.SEEK_OPPONENT
+    	{ AI_ACTION.TAKE_COVER, new() { AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.TAKE_COVER
+    	{ AI_ACTION.GET_CLOSER, new() { AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.GET_CLOSER
+    	{ AI_ACTION.POINT_PATROL, new() { AnimationStates.WALKING,  AnimationStates.WALKING,  AnimationStates.WALKING } }, // AI_ACTION.POINT_PATROL,
+    	{ AI_ACTION.LEAVE_WATER_GAS, new() { AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.LEAVE_WATER_GAS,
+    	{ AI_ACTION.SEEK_NOISE, new() { AnimationStates.WALKING,  AnimationStates.SWATTING, AnimationStates.RUNNING } }, // AI_ACTION.SEEK_NOISE,
+    	{ AI_ACTION.ESCORTED_MOVE, new() { AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.ESCORTED_MOVE,
+    	{ AI_ACTION.RUN_AWAY, new() { AnimationStates.WALKING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.RUN_AWAY,
+    	{ AI_ACTION.KNIFE_MOVE, new() { AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.KNIFE_MOVE
+    	{ AI_ACTION.APPROACH_MERC, new() { AnimationStates.WALKING,  AnimationStates.WALKING,  AnimationStates.WALKING } }, // AI_ACTION.APPROACH_MERC
+    	{ AI_ACTION.TRACK, new() { AnimationStates.RUNNING,  AnimationStates.RUNNING,  AnimationStates.RUNNING } }, // AI_ACTION.TRACK
+    	{ AI_ACTION.EAT, new() { AnimationStates.RUNNING,   AnimationStates.RUNNING,  AnimationStates.RUNNING } },// AI_ACTION.EAT 
+    	{ AI_ACTION.PICKUP_ITEM, new() { AnimationStates.WALKING,   AnimationStates.RUNNING,  AnimationStates.SWATTING} },// AI_ACTION.PICKUP_ITEM
+    	{ AI_ACTION.SCHEDULE_MOVE, new() { AnimationStates.WALKING,   AnimationStates.WALKING,  AnimationStates.WALKING} }, // AI_ACTION.SCHEDULE_MOVE
+    	{ AI_ACTION.WALK, new() { AnimationStates.WALKING,   AnimationStates.WALKING,  AnimationStates.WALKING} }, // AI_ACTION.WALK
+    	{ AI_ACTION.MOVE_TO_CLIMB, new() { AnimationStates.RUNNING,   AnimationStates.RUNNING,  AnimationStates.RUNNING} }, // AI_ACTION.MOVE_TO_CLIMB
     };
 
     NOSHOOT OKToAttack(SOLDIERTYPE pSoldier, int target)
@@ -282,9 +278,9 @@ public class AIUtils
                 switch (pSoldier.usAnimState)
                 {
                     case AnimationStates.CROUCHING:
-                        if (iRange > POINT_BLANK_RANGE + 10 * (AIM_PENALTY_TARGET_CROUCHED / 3))
+                        if (iRange > POINT_BLANK_RANGE + 10 * (AIM.PENALTY_TARGET_CROUCHED / 3))
                         {
-                            uiStanceBonus = AIM_BONUS_CROUCHING;
+                            uiStanceBonus = AIM.BONUS_CROUCHING;
                         }
                         else if (iRange > POINT_BLANK_RANGE)
                         {
@@ -362,7 +358,7 @@ public class AIUtils
         }
         else
         {
-            if ((pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS)) && (MovementMode[bAction, Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]] == AnimationStates.RUNNING))
+            if ((pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS)) && (MovementMode[bAction][(int)Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]] == AnimationStates.RUNNING))
             {
                 return (AnimationStates.WALKING);
             }
@@ -376,7 +372,7 @@ public class AIUtils
             }
             else
             {
-                return (MovementMode[bAction][Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]]);
+                return (MovementMode[bAction][(int)Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]]);
             }
         }
     }
@@ -395,7 +391,7 @@ public class AIUtils
             AnimationStates usMovementMode;
 
             // getting real movement anim for someone who is going to take cover, not just considering
-            usMovementMode = MovementMode[AI_ACTION.TAKE_COVER][Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]];
+            usMovementMode = MovementMode[AI_ACTION.TAKE_COVER][(int)Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]];
             if (usMovementMode != AnimationStates.SWATTING)
             {
                 // really want to look at path, see how far we could get on path while swatting
@@ -687,7 +683,7 @@ public class AIUtils
                     fDirChecked[usDirection] = true;
 
                     // determine the gridno 1 tile away from current friend in this direction
-                    usDest = IsometricUtils.NewGridNo(Menptr[ubFriendID].sGridNo, IsometricUtils.DirectionInc((int)(usDirection + 1)));
+                    usDest = IsometricUtils.NewGridNo(Menptr[ubFriendID].sGridNo, IsometricUtils.DirectionInc((usDirection + 1)));
 
                     // if that's out of bounds, ignore it & check next direction
                     if (usDest == Menptr[ubFriendID].sGridNo)
@@ -698,7 +694,7 @@ public class AIUtils
                     // if our movement range is NOT restricted
                     if (!fRangeRestricted || (IsometricUtils.SpacesAway(usOrigin, usDest) <= usMaxDist))
                     {
-                        if (Movement.LegalNPCDestination(pSoldier, usDest, ENSURE_PATH, NOWATER, 0))
+                        if (Movement.LegalNPCDestination(pSoldier, usDest, ENSURE_PATH, NOWATER, 0) > 0)
                         {
                             fFound = true;            // found a spot
                             pSoldier.usActionData = usDest;  // store this .sDestination

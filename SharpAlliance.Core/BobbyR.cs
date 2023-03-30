@@ -297,7 +297,7 @@ public class BobbyR
                 SelectBobbiesSignMenuRegionCallBack);
 
             MouseSubSystem.MSYS_AddRegion(ref region);
-            MouseSubSystem.SetRegionUserData(MouseRegion[i], 0, gubBobbyRPages[i]);
+            MouseSubSystem.MSYS_SetRegionUserData(MouseRegion[i], 0, gubBobbyRPages[i]);
 
             ubCount += 4;
         }
@@ -330,7 +330,7 @@ public class BobbyR
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            LAPTOP_MODE ubNewPage = (LAPTOP_MODE)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+            LAPTOP_MODE ubNewPage = (LAPTOP_MODE)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
             guiCurrentLaptopMode = ubNewPage;
             //		FindLastItemIndex(ubNewPage);
 

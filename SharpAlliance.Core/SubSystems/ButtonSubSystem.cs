@@ -508,7 +508,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             QuickButtonCallbackMButn);
 
         // Link the MOUSE_REGION with this QuickButton
-        MouseSubSystem.SetRegionUserData(b.MouseRegion, 0, b);
+        MouseSubSystem.MSYS_SetRegionUserData(b.MouseRegion, 0, b);
 
         // Set the flags for this button
         b.uiFlags |= ButtonFlags.BUTTON_ENABLED | BType | ButtonFlags.BUTTON_QUICK;
@@ -1858,7 +1858,7 @@ public class ButtonSubSystem : ISharpAllianceManager
     //
     private static void QuickButtonCallbackMouseMove(ref MOUSE_REGION reg, MSYS_CALLBACK_REASON reason)
     {
-        GUI_BUTTON b = (GUI_BUTTON)MouseSubSystem.GetRegionUserData(ref reg, 0);
+        GUI_BUTTON b = (GUI_BUTTON)MouseSubSystem.MSYS_GetRegionUserData(ref reg, 0);
 
         // sprintf(str, "QuickButtonCallbackMMove: Mouse Region #%d (%d,%d to %d,%d) has invalid buttonID %d",
         //                     reg.IDNumber, reg.Bounds.X, reg.Bounds.Y, reg.Bounds.Width, reg.Bounds.Height, iButtonID);
@@ -1960,7 +1960,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         // Assert(reg != null);
 
-        b = (GUI_BUTTON)MouseSubSystem.GetRegionUserData(ref reg, index: 0);
+        b = (GUI_BUTTON)MouseSubSystem.MSYS_GetRegionUserData(ref reg, index: 0);
 
         //      sprintf(str, "QuickButtonCallbackMButn: Mouse Region #%d (%d,%d to %d,%d) has invalid buttonID %d",
         //                          reg.IDNumber, reg.Bounds.X, reg.Bounds.Y, reg.Bounds.Width, reg.Bounds.Height, iButtonID);
@@ -2076,7 +2076,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             //Added these checks to avoid a case where it was possible to process a leftbuttonup message when
             //the button wasn't anchored, and should have been.
             Globals.gfDelayButtonDeletion = true;
-            if ((reason & MSYS_CALLBACK_REASON.LBUTTON_UP) == 0
+            if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) == 0
                 || b.MoveCallback is not null
                 && Globals.gpPrevAnchoredButton == b)
             {
@@ -2244,6 +2244,11 @@ public class ButtonSubSystem : ISharpAllianceManager
     }
 
     public ValueTask<bool> Initialize() => Initialize(gameContext);
+
+    internal static void MSYS_SetBtnUserData(int v1, int v2, int cnt)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 // GUI_BUTTON callback function type

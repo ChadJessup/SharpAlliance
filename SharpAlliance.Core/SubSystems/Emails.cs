@@ -59,7 +59,7 @@ public class Emails
                 EmailBtnCallBack);
 
             MouseSubSystem.MSYS_AddRegion(ref pEmailRegions[iCounter]);
-            MouseSubSystem.SetRegionUserData(pEmailRegions[iCounter], 0, iCounter);
+            MouseSubSystem.MSYS_SetRegionUserData(pEmailRegions[iCounter], 0, iCounter);
         }
 
         //SetUpSortRegions();
@@ -1352,7 +1352,7 @@ public class Emails
         {
 
             // error check
-            iCount = (int)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+            iCount = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
             // check for valid email
             // find surrent page
             if (pPage is null)
@@ -1390,7 +1390,7 @@ public class Emails
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
-            iCount = (int)MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+            iCount = (int)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
 
             // error check
             if (pPage is null)
@@ -1444,7 +1444,7 @@ public class Emails
         {
 
             // set highlight to current regions data, this is the message to display
-            iHighLightLine = MouseSubSystem.GetRegionUserData(ref pRegion, 0);
+            iHighLightLine = MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
         }
         if (iReason == MSYS_CALLBACK_REASON.LOST_MOUSE)
         {

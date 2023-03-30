@@ -20,6 +20,8 @@ public partial class Globals
     public static GROUP? gpTacticalTraversalGroup = null;
     public static SOLDIERTYPE? gpTacticalTraversalChosenSoldier = null;
 
+    public const CURSOR MSYS_NO_CURSOR = CURSOR.MSYS_NO_CURSOR;
+
 
     public static bool gfAutomaticallyStartAutoResolve = false;
     public static bool gfAutoAmbush = false;
