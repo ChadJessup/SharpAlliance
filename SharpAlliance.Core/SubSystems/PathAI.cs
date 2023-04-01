@@ -149,7 +149,7 @@ public class PathAI
         int sSwitchValue;
         STEPSTART[] sFootOrder = new STEPSTART[] { STEPSTART.GREEN, STEPSTART.PURPLE, STEPSTART.BLUE,
                                                     STEPSTART.ORANGE, STEPSTART.RED };
-        TileDefines usTileIndex;
+        TileIndexes usTileIndex;
         int usTileNum;
         LEVELNODE? pNode;
         AnimationStates usMovementModeToUseForAPs;
@@ -531,13 +531,13 @@ public class PathAI
         {
             Globals.gfUIHandleShowMoveGrid = 0;
 
-            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS4);
-            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS9);
-            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS2);
-            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS13);
-            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS15);
-            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS19);
-            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileDefines.FIRSTPOINTERS20);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS4);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS9);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS2);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS13);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS15);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS19);
+            WorldManager.RemoveTopmost(Globals.gsUIHandleShowMoveGridLocation, TileIndexes.FIRSTPOINTERS20);
         }
 
         if (!Globals.gusPathShown)

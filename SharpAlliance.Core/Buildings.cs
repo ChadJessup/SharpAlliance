@@ -428,7 +428,7 @@ public class Buildings
         return (sClosestSpot);
     }
 
-    bool SameBuilding(int sGridNo1, int sGridNo2)
+    public static bool SameBuilding(int sGridNo1, int sGridNo2)
     {
         if (gubBuildingInfo[sGridNo1] == NO_BUILDING)
         {

@@ -59,7 +59,7 @@ public class InteractiveTiles
         return (true);
     }
 
-    bool StartInteractiveObject(int sGridNo, int usStructureID, SOLDIERTYPE? pSoldier, int ubDirection)
+    public static bool StartInteractiveObject(int sGridNo, int usStructureID, SOLDIERTYPE pSoldier, WorldDirections ubDirection)
     {
         STRUCTURE? pStructure;
 
@@ -136,8 +136,7 @@ public class InteractiveTiles
         return (true);
     }
 
-
-    bool InteractWithInteractiveObject(SOLDIERTYPE? pSoldier, STRUCTURE? pStructure, int ubDirection)
+    public static bool InteractWithInteractiveObject(SOLDIERTYPE pSoldier, STRUCTURE pStructure, WorldDirections ubDirection)
     {
         bool fDoor = false;
 

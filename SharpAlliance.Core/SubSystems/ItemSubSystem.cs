@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -10,6 +11,92 @@ public class ItemSubSystem
     public static void DeleteObj(OBJECTTYPE? pObj)
     {
         pObj = null;
+    }
+
+    public static bool ValidLaunchable(Items usLaunchable, Items usItem)
+    {
+        Items iLoop = 0;
+
+        // look for the section of the array pertaining to this launchable item...
+        while (true)
+        {
+            if (Launchable[iLoop][0] == usLaunchable)
+            {
+                break;
+            }
+            iLoop++;
+            if (Launchable[iLoop][0] == 0)
+            {
+                // the proposed item cannot be attached to anything!
+                return (false);
+            }
+        }
+        // now look through this section for the item in question
+        while (true)
+        {
+            if (Launchable[iLoop][1] == usItem)
+            {
+                break;
+            }
+            iLoop++;
+            if (Launchable[iLoop][0] != usLaunchable)
+            {
+                // the proposed item cannot be attached to the item in question
+                return (false);
+            }
+        }
+
+        return (true);
+    }
+
+    public static InventorySlot FindLaunchable(SOLDIERTYPE pSoldier, Items usWeapon)
+    {
+        InventorySlot bLoop;
+
+        for (bLoop = 0; bLoop < NUM_INV_SLOTS; bLoop++)
+        {
+            if (ValidLaunchable(pSoldier.inv[bLoop].usItem, usWeapon))
+            {
+                return (bLoop);
+            }
+        }
+
+        return ((InventorySlot)ITEM_NOT_FOUND);
+    }
+
+
+    public static bool WeaponInHand(SOLDIERTYPE pSoldier)
+    {
+        if (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON | IC.THROWN))
+        {
+            if (pSoldier.inv[InventorySlot.HANDPOS].usItem == Items.ROCKET_RIFLE || pSoldier.inv[InventorySlot.HANDPOS].usItem == Items.AUTO_ROCKET_RIFLE)
+            {
+                if (pSoldier.inv[InventorySlot.HANDPOS].ubImprintID != NO_PROFILE)
+                {
+                    if (pSoldier.ubProfile != NO_PROFILE)
+                    {
+                        if (pSoldier.inv[InventorySlot.HANDPOS].ubImprintID != pSoldier.ubProfile)
+                        {
+                            return (false);
+                        }
+                    }
+                    else
+                    {
+                        if (pSoldier.inv[InventorySlot.HANDPOS].ubImprintID != (NO_PROFILE + 1))
+                        {
+                            return (false);
+                        }
+                    }
+                }
+            }
+            if (pSoldier.inv[InventorySlot.HANDPOS].bGunStatus >= USABLE)
+            {
+                return (true);
+            }
+        }
+
+        // return -1 or some "broken" value if weapon is broken?
+        return (false);
     }
 
     public static bool ItemIsLegal(Items usItemIndex)

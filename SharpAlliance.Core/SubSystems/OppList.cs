@@ -51,7 +51,7 @@ public class OppList
         return (sNewDist);
     }
 
-    void SwapBestSightingPositions(int bPos1, int bPos2)
+    public static void SwapBestSightingPositions(int bPos1, int bPos2)
     {
         int ubTemp;
 
@@ -60,7 +60,7 @@ public class OppList
         Globals.gubBestToMakeSighting[bPos2] = ubTemp;
     }
 
-    void ReevaluateBestSightingPosition(SOLDIERTYPE? pSoldier, int bInterruptDuelPts)
+    public static void ReevaluateBestSightingPosition(SOLDIERTYPE? pSoldier, int bInterruptDuelPts)
     {
         int ubLoop, ubLoop2;
         bool fFound = false;
@@ -171,7 +171,7 @@ public class OppList
 
     }
 
-    void HandleBestSightingPositionInRealtime()
+    public static void HandleBestSightingPositionInRealtime()
     {
         // This function is called for handling interrupts when opening a door in non-combat or
         // just sighting in non-combat, deciding who gets the first turn
@@ -238,7 +238,7 @@ public class OppList
         }
     }
 
-    void HandleBestSightingPositionInTurnbased()
+    public static void HandleBestSightingPositionInTurnbased()
     {
         // This function is called for handling interrupts when opening a door in turnbased
 
@@ -311,7 +311,7 @@ public class OppList
 
     }
 
-    void InitSightArrays()
+    public static void InitSightArrays()
     {
         int uiLoop;
 
@@ -346,7 +346,7 @@ public class OppList
         Globals.gubNumShouldBecomeHostileOrSayQuote++;
     }
 
-    int SelectSpeakerFromHostileOrSayQuoteList()
+    public static int SelectSpeakerFromHostileOrSayQuoteList()
     {
         int[] ubProfileList = new int[Globals.SHOULD_BECOME_HOSTILE_SIZE]; // NB list of merc IDs, not profiles!
         int ubLoop, ubNumProfiles = 0;
@@ -385,7 +385,7 @@ public class OppList
         }
     }
 
-    void CheckHostileOrSayQuoteList()
+    public static void CheckHostileOrSayQuoteList()
     {
         if (gubNumShouldBecomeHostileOrSayQuote == 0 || !DialogueQueueIsEmpty() || gfInTalkPanel || gfWaitingForTriggerTimer)
         {
@@ -983,7 +983,7 @@ public class OppList
 
     }
 
-    void TurnOffEveryonesMuzzleFlashes()
+    public static void TurnOffEveryonesMuzzleFlashes()
     {
         int uiLoop;
         SOLDIERTYPE? pSoldier;
@@ -999,7 +999,7 @@ public class OppList
         }
     }
 
-    void TurnOffTeamsMuzzleFlashes(int ubTeam)
+    public static void TurnOffTeamsMuzzleFlashes(int ubTeam)
     {
         int ubLoop;
         SOLDIERTYPE? pSoldier;
@@ -1015,7 +1015,7 @@ public class OppList
         }
     }
 
-    int DecideHearing(SOLDIERTYPE? pSoldier)
+    public static int DecideHearing(SOLDIERTYPE? pSoldier)
     {
         // calculate the hearing value for the merc...
 
@@ -1080,7 +1080,7 @@ public class OppList
         return (bHearing);
     }
 
-    void InitOpplistForDoorOpening()
+    public static void InitOpplistForDoorOpening()
     {
         // this is called before generating a noise for opening a door so that
         // the results of hearing the noise are lumped in with the results from AllTeamsLookForAll
@@ -1091,7 +1091,7 @@ public class OppList
         InitSightArrays();
     }
 
-    void AllTeamsLookForAll(int ubAllowInterrupts)
+    public static void AllTeamsLookForAll(int ubAllowInterrupts)
     {
         int uiLoop;
         SOLDIERTYPE? pSoldier;
@@ -1201,7 +1201,7 @@ public class OppList
         gubInterruptProvoker = Globals.NOBODY;
     }
 
-    void ManLooksForOtherTeams(SOLDIERTYPE? pSoldier)
+    public static void ManLooksForOtherTeams(SOLDIERTYPE? pSoldier)
     {
         int uiLoop;
         SOLDIERTYPE? pOpponent;
@@ -1309,7 +1309,7 @@ public class OppList
         }
     }
 
-    static int ManLooksForMan(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int ubCaller)
+    public static int ManLooksForMan(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int ubCaller)
     {
         WorldDirections bDir;
         bool bAware = false;
@@ -1563,7 +1563,7 @@ public class OppList
         return (bSuccess);
     }
 
-    static void ManSeesMan(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int sOppGridno, int bOppLevel, int ubCaller, int ubCaller2)
+    public static void ManSeesMan(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int sOppGridno, int bOppLevel, int ubCaller, int ubCaller2)
     {
         int bDoLocate = 0;
         bool fNewOpponent = false;
@@ -2110,7 +2110,7 @@ public class OppList
     }
 
 
-    void DecideTrueVisibility(SOLDIERTYPE? pSoldier, int ubLocate)
+    public static void DecideTrueVisibility(SOLDIERTYPE? pSoldier, int ubLocate)
     {
         // if his visibility is still in the special "limbo" state (false)
         if (pSoldier.bVisible == 0)
@@ -2160,7 +2160,7 @@ public class OppList
         }
     }
 
-    void OtherTeamsLookForMan(SOLDIERTYPE? pOpponent)
+    public static void OtherTeamsLookForMan(SOLDIERTYPE? pOpponent)
     {
         int uiLoop;
         int bOldOppList;
@@ -4549,7 +4549,7 @@ public class OppList
         }
     }
 
-    public static void MakeNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubVolume, int ubNoiseType)
+    public static void MakeNoise(int ubNoiseMaker, int sGridNo, int bLevel, TerrainTypeDefines ubTerrType, int ubVolume, NOISE ubNoiseType)
     {
         EV_S_NOISE SNoise;
 
@@ -5403,7 +5403,7 @@ public class OppList
             // skip LOS check if we had to turn and we're a tank.  sorry Mr Tank, no looking out of the sides for you!
             if (!(bHadToTurn > 0 && TANK(pSoldier)))
             {
-                if (SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, (int)sDistVisible, true))
+                if (LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, sDistVisible, true))
                 {
                     // he can actually see the spot where the noise came from!
                     bSourceSeen = 1;
@@ -6109,7 +6109,7 @@ public class OppList
         }
     }
 
-    void RecalculateOppCntsDueToNoLongerNeutral(SOLDIERTYPE? pSoldier)
+    public static void RecalculateOppCntsDueToNoLongerNeutral(SOLDIERTYPE pSoldier)
     {
         int uiLoop;
         SOLDIERTYPE? pOpponent;
@@ -6384,7 +6384,7 @@ public class OppList
     }
 
 
-    int FindUnusedWatchedLoc(int ubID)
+    public static int FindUnusedWatchedLoc(int ubID)
     {
         int bLoop;
 
@@ -6398,7 +6398,7 @@ public class OppList
         return (-1);
     }
 
-    int FindWatchedLocWithLessThanXPointsLeft(int ubID, int ubPointLimit)
+    public static int FindWatchedLocWithLessThanXPointsLeft(int ubID, int ubPointLimit)
     {
         int bLoop;
 
@@ -6412,7 +6412,7 @@ public class OppList
         return (-1);
     }
 
-    int FindWatchedLoc(int ubID, int sGridNo, int bLevel)
+    public static int FindWatchedLoc(int ubID, int sGridNo, int bLevel)
     {
         int bLoop;
 
@@ -6429,7 +6429,7 @@ public class OppList
         return (-1);
     }
 
-    int GetWatchedLocPoints(int ubID, int sGridNo, int bLevel)
+    public static int GetWatchedLocPoints(int ubID, int sGridNo, int bLevel)
     {
         int bLoc;
 
@@ -6452,7 +6452,7 @@ public class OppList
     }
 
 
-    int GetHighestVisibleWatchedLoc(int ubID)
+    public static int GetHighestVisibleWatchedLoc(int ubID)
     {
         int bLoop;
         int bHighestLoc = -1;
@@ -6475,7 +6475,7 @@ public class OppList
         return (bHighestLoc);
     }
 
-    int GetHighestWatchedLocPoints(int ubID)
+    public static int GetHighestWatchedLocPoints(int ubID)
     {
         int bLoop;
         int bHighestPoints = 0;
@@ -6491,7 +6491,7 @@ public class OppList
     }
 
 
-    void CommunicateWatchedLoc(int ubID, int sGridNo, int bLevel, int ubPoints)
+    public static void CommunicateWatchedLoc(int ubID, int sGridNo, int bLevel, int ubPoints)
     {
         int ubLoop;
         TEAM bTeam;
@@ -6537,7 +6537,7 @@ public class OppList
     }
 
 
-    void IncrementWatchedLoc(int ubID, int sGridNo, int bLevel)
+    public static void IncrementWatchedLoc(int ubID, int sGridNo, int bLevel)
     {
         int bPoint;
 
@@ -6576,7 +6576,7 @@ public class OppList
         }
     }
 
-    void SetWatchedLocAsUsed(int ubID, int sGridNo, int bLevel)
+    public static void SetWatchedLocAsUsed(int ubID, int sGridNo, int bLevel)
     {
         int bPoint;
 
@@ -6648,7 +6648,7 @@ public class OppList
         }
     }
 
-    void MakeBloodcatsHostile()
+    public static void MakeBloodcatsHostile()
     {
         int iLoop = gTacticalStatus.Team[TEAM.CREATURE_TEAM].bFirstID;
 

@@ -485,7 +485,7 @@ public class Smell
     {
         MAP_ELEMENT? pMapElement;
         int bValue;
-        TileDefines usIndex, usNewIndex;
+        TileIndexes usIndex, usNewIndex;
 
         // OK, based on level, type, display graphics for blood
         pMapElement = (Globals.gpWorldLevelData[sGridNo]);
@@ -524,7 +524,7 @@ public class Smell
 
                 if (bValue > 0)
                 {
-                    usIndex = (TileDefines)((Globals.Random.Next(4) * 4) + ubBloodGraphicLUT[bValue]);
+                    usIndex = (TileIndexes)((Globals.Random.Next(4) * 4) + ubBloodGraphicLUT[bValue]);
 
                     if (BLOOD_FLOOR_TYPE(pMapElement.ubSmellInfo) == 0)
                     {

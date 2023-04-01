@@ -24,7 +24,7 @@ public class ANITILE
     public MAP_ROW sRelativeY;
     public int sRelativeZ;
     public int sGridNo;
-    public TileDefines usTileIndex;
+    public TileIndexes usTileIndex;
     public int usCachedTileSubIndex;        // sub Index 
     public int ubOwner;
     public int ubKeyFrame1;
@@ -43,7 +43,7 @@ public struct ANITILE_PARAMS
     public int sStartFrame;                  // Start frame
     public int sDelay;                               // Delay time
     public TileTypeDefines usTileType;                      // Tile databse type ( optional )
-    public TileDefines usTileIndex;                 // Tile database index ( optional )
+    public TileIndexes usTileIndex;                 // Tile database index ( optional )
     public int sX;                                       // World X ( optional )
     public MAP_ROW sY;                                       // World Y ( optional )
     public int sZ;                                       // World Z ( optional )

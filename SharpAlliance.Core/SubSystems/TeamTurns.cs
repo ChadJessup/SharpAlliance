@@ -11,7 +11,7 @@ public class TeamTurns
     int InterruptOnlyGuynum = Globals.NOBODY;
     bool InterruptsAllowed = true;
 
-    void ClearIntList()
+    public static void ClearIntList()
     {
         gubOutOfTurnOrder = new int[MAXMERCS];
         gubOutOfTurnOrder[0] = END_OF_INTERRUPTS;
@@ -22,7 +22,7 @@ public class TeamTurns
     public static void REMOVE_LATEST_INTERRUPT_GUY() => DeleteFromIntList(gubOutOfTurnPersons, true);
     public static bool INTERRUPTS_OVER() => (Globals.gubOutOfTurnPersons == 1);
 
-    bool BloodcatsPresent()
+    public static bool BloodcatsPresent()
     {
         int iLoop;
         SOLDIERTYPE? pSoldier;
@@ -45,7 +45,7 @@ public class TeamTurns
         return (false);
     }
 
-    void StartPlayerTeamTurn(bool fDoBattleSnd, bool fEnteringCombatMode)
+    public static void StartPlayerTeamTurn(bool fDoBattleSnd, bool fEnteringCombatMode)
     {
         int cnt;
         //	SOLDIERTYPE		*pSoldier;
@@ -271,7 +271,7 @@ public class TeamTurns
         }
     }
 
-    void EndTurnEvents()
+    public static void EndTurnEvents()
     {
         // HANDLE END OF TURN EVENTS
         // handle team services like healing
@@ -288,7 +288,7 @@ public class TeamTurns
         DecayRottingCorpseAIWarnings();
     }
 
-    void BeginTeamTurn(TEAM ubTeam)
+    public static void BeginTeamTurn(TEAM ubTeam)
     {
         int cnt;
         int ubID;
@@ -489,7 +489,7 @@ public class TeamTurns
         FreezeInterfaceForEnemyTurn();
     }
 
-    bool EveryoneInInterruptListOnSameTeam()
+    public static bool EveryoneInInterruptListOnSameTeam()
     {
         int ubLoop;
         TEAM ubTeam = (TEAM)255;
@@ -511,7 +511,7 @@ public class TeamTurns
         return (true);
     }
 
-    void StartInterrupt()
+    public static void StartInterrupt()
     {
         int ubFirstInterrupter;
         TEAM bTeam;
@@ -727,7 +727,7 @@ public class TeamTurns
         }
     }
 
-    void EndInterrupt(bool fMarkInterruptOccurred)
+    public static void EndInterrupt(bool fMarkInterruptOccurred)
     {
         int ubInterruptedSoldier;
         SOLDIERTYPE? pSoldier;
@@ -1267,8 +1267,7 @@ public class TeamTurns
         return (true);
     }
 
-
-    int CalcInterruptDuelPts(SOLDIERTYPE? pSoldier, int ubOpponentID, bool fUseWatchSpots)
+    public static int CalcInterruptDuelPts(SOLDIERTYPE? pSoldier, int ubOpponentID, bool fUseWatchSpots)
     {
         int bPoints;
         int bLightLevel;
@@ -1427,7 +1426,7 @@ public class TeamTurns
         return (bPoints);
     }
 
-    bool InterruptDuel(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent)
+    public static bool InterruptDuel(SOLDIERTYPE pSoldier, SOLDIERTYPE pOpponent)
     {
         bool fResult = false;
 
@@ -1552,9 +1551,9 @@ public class TeamTurns
         }
     }
 
-    void VerifyOutOfTurnOrderArray()
+    public static void VerifyOutOfTurnOrderArray()
     {
-        int[] ubTeamHighest = new int[Globals.MAXTEAMS];
+        int[] ubTeamHighest = new int[(int)Globals.MAXTEAMS];
         int ubTeamsInList;
         int ubNextInArrayOnTeam, ubNextIndex;
         TEAM ubTeam;
@@ -1661,7 +1660,7 @@ public class TeamTurns
 
     }
 
-    void DoneAddingToIntList(SOLDIERTYPE? pSoldier, bool fChange, int ubInterruptType)
+    public static void DoneAddingToIntList(SOLDIERTYPE? pSoldier, bool fChange, int ubInterruptType)
     {
         if (fChange)
         {

@@ -72,6 +72,20 @@ public class IsometricUtils
     static int sSameCursorPos;
     static int uiOldFrameNumber = 99999;
 
+    public static int GetRangeInCellCoordsFromGridNoDiff(int sGridNo1, int sGridNo2)
+    {
+        int sXPos, sYPos, sXPos2, sYPos2;
+
+        // Convert our grid-not into an XY
+        ConvertGridNoToXY(sGridNo1, out sXPos, out sYPos);
+
+        // Convert our grid-not into an XY
+        ConvertGridNoToXY(sGridNo2, out sXPos2, out sYPos2);
+
+        return ((int)(Math.Sqrt((sXPos2 - sXPos) * (sXPos2 - sXPos) + (sYPos2 - sYPos) * (sYPos2 - sYPos))) * CELL_X_SIZE);
+    }
+
+
     public static void GetWorldXYAbsoluteScreenXY(int sWorldCellX, int sWorldCellY, out int psWorldScreenX, out int psWorldScreenY)
     {
         int sScreenCenterX, sScreenCenterY;

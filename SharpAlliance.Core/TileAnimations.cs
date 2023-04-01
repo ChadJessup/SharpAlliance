@@ -23,7 +23,7 @@ public class TileAnimations
         int sGridNo;
         ANI ubLevel;
         int usTileType;
-        TileDefines usTileIndex;
+        TileIndexes usTileIndex;
         int sDelay;
         int sStartFrame = -1;
         ANITILEFLAGS uiFlags;
@@ -66,7 +66,7 @@ public class TileAnimations
                     return (null);
                 }
 
-                usTileIndex = (TileDefines)(iCachedTile + TILE_CACHE_START_INDEX);
+                usTileIndex = (TileIndexes)(iCachedTile + TILE_CACHE_START_INDEX);
             }
 
             // ALLOCATE NEW TILE

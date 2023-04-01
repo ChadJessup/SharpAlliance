@@ -1406,7 +1406,7 @@ public class Overhead
         pRoof = gpWorldLevelData[iMapIndex].pRoofHead;
         while (pRoof is not null)
         {
-            if (pRoof.usIndex != TileDefines.NO_TILE)
+            if (pRoof.usIndex != TileIndexes.NO_TILE)
             {
                 TileDefine.GetTileType(pRoof.usIndex, out uiTileType);
                 if (uiTileType >= TileTypeDefines.FIRSTROOF && uiTileType <= LASTROOF)

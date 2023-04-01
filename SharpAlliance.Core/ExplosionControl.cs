@@ -287,7 +287,7 @@ public class ExplosionControl
         LEVELNODE? pFenceNode;
         int bFenceDestructionPartner = -1;
         TileTypeDefines uiFenceType;
-        TileDefines usTileIndex;
+        TileIndexes usTileIndex;
 
         pFenceStructure = WorldStructures.FindStructure(sStructGridNo, STRUCTUREFLAGS.FENCE);
 
@@ -331,9 +331,9 @@ public class ExplosionControl
         STRUCTURE? pBase, pWallStruct, pAttached, pAttachedBase;
         LEVELNODE? pNode = null, pNewNode = null, pAttachedNode;
         int sNewGridNo, sStructGridNo;
-        TileDefines sNewIndex;
+        TileIndexes sNewIndex;
         int sSubIndex;
-        TileDefines usObjectIndex, usTileIndex;
+        TileIndexes usObjectIndex, usTileIndex;
         int ubNumberOfTiles, ubLoop;
         List<DB_STRUCTURE_TILE> ppTile;
         int bDestructionPartner = -1;
@@ -3152,8 +3152,8 @@ public class ExplosionControl
         int cnt;
         SEC sSectorNo;
         bool fInSector = false;
-        TileDefines usGoodGraphic;
-        TileDefines usDamagedGraphic;
+        TileIndexes usGoodGraphic;
+        TileIndexes usDamagedGraphic;
 
         // ATE: If we are below, return right away...
         if (sSectorZ != 0)

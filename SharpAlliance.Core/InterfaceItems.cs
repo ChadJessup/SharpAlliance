@@ -253,34 +253,18 @@ public class InterfaceItems
     {
         InventorySlot cnt;
 
+        string key;
+
         // Load all four body type images
-        FilenameForBPP("INTERFACE\\inventory_figure_large_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[SoldierBodyTypes.BIGMALE][0])));
-
-        FilenameForBPP("INTERFACE\\inventory_figure_large_male_H.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[SoldierBodyTypes.BIGMALE][1])));
-
-        FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, guiBodyInvVO[0][0]));
-
-        FilenameForBPP("INTERFACE\\inventory_normal_male_H.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, guiBodyInvVO[0][1]));
-
-        FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[2][0])));
-
-        FilenameForBPP("INTERFACE\\inventory_normal_male.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[2][1])));
-
-        FilenameForBPP("INTERFACE\\inventory_figure_female.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[3][0])));
-
-        FilenameForBPP("INTERFACE\\inventory_figure_female_H.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(VObjectDesc, (guiBodyInvVO[3][1])));
-
-        // add gold key graphic
-        FilenameForBPP("INTERFACE\\gold_key_button.sti", VObjectDesc.ImageFile);
-        CHECKF(AddVideoObject(&VObjectDesc, guiGoldKeyVO));
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male.sti",     out key)); guiBodyInvVO[SoldierBodyTypes.BIGMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male_H.sti",   out key)); guiBodyInvVO[SoldierBodyTypes.BIGMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti",           out key)); guiBodyInvVO[SoldierBodyTypes.REGMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male_H.sti",         out key)); guiBodyInvVO[SoldierBodyTypes.REGMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti",           out key)); guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti",           out key)); guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female.sti",         out key)); guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female_H.sti",       out key)); guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\gold_key_button.sti",                 out guiGoldKeyVO));
 
         // Add cammo region 
         MouseSubSystem.MSYS_DefineRegion(
@@ -320,7 +304,8 @@ public class InterfaceItems
                 INVClickCallback);
 
             // Add region
-            MouseSubSystem.MSYS_AddRegion(ref gSMInvRegion[cnt]);
+            var region = gSMInvRegion[cnt];
+            MouseSubSystem.MSYS_AddRegion(ref region);
             MouseSubSystem.MSYS_SetRegionUserData(gSMInvRegion[cnt], 0, cnt);
         }
 
@@ -620,7 +605,7 @@ public class InterfaceItems
 
     bool CompatibleAmmoForGun(OBJECTTYPE pTryObject, OBJECTTYPE pTestObject)
     {
-        if ((Item[pTryObject.usItem].usItemClass & IC.AMMO))
+        if ((Item[pTryObject.usItem].usItemClass.HasFlag(IC.AMMO)))
         {
             // CHECK
             if (Weapon[pTestObject.usItem].ubCalibre == Magazine[Item[pTryObject.usItem].ubClassIndex].ubCalibre)
@@ -633,7 +618,7 @@ public class InterfaceItems
 
     bool CompatibleGunForAmmo(OBJECTTYPE pTryObject, OBJECTTYPE pTestObject)
     {
-        if ((Item[pTryObject.usItem].usItemClass & IC.GUN))
+        if ((Item[pTryObject.usItem].usItemClass.HasFlag(IC.GUN)))
         {
             // CHECK
             if (Weapon[pTryObject.usItem].ubCalibre == Magazine[Item[pTestObject.usItem].ubClassIndex].ubCalibre)
@@ -682,7 +667,7 @@ public class InterfaceItems
         InventorySlot cnt;
         OBJECTTYPE pObject;
 
-        if ((Item[pTestObject.usItem].usItemClass & IC.GUN))
+        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN)))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
@@ -695,7 +680,7 @@ public class InterfaceItems
             }
         }
 
-        if ((Item[pTestObject.usItem].usItemClass & IC.AMMO))
+        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO)))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
@@ -849,7 +834,7 @@ public class InterfaceItems
         }
 
 
-        if ((Item[pTestObject.usItem].usItemClass & IC.GUN))
+        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN)))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
@@ -868,7 +853,7 @@ public class InterfaceItems
                 }
             }
         }
-        else if ((Item[pTestObject.usItem].usItemClass & IC.AMMO))
+        else if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO)))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
@@ -948,7 +933,7 @@ public class InterfaceItems
         }
 
 
-        if ((Item[pTestObject.usItem].usItemClass & IC.GUN))
+        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN)))
         {
             for (cnt = 0; cnt < MAP_INVENTORY_POOL_SLOT_COUNT; cnt++)
             {
@@ -967,7 +952,7 @@ public class InterfaceItems
                 }
             }
         }
-        else if ((Item[pTestObject.usItem].usItemClass & IC.AMMO))
+        else if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO)))
         {
             for (cnt = 0; cnt < MAP_INVENTORY_POOL_SLOT_COUNT; cnt++)
             {
@@ -993,7 +978,7 @@ public class InterfaceItems
     }
 
 
-    bool InternalHandleCompatibleAmmoUI(SOLDIERTYPE pSoldier, OBJECTTYPE pTestObject, bool fOn)
+    bool InternalHandleCompatibleAmmoUI(SOLDIERTYPE pSoldier, OBJECTTYPE pTestObject, int fOn)
     {
         bool fFound = false;
         InventorySlot cnt;
@@ -1100,7 +1085,7 @@ public class InterfaceItems
             }
         }
 
-        else if ((Item[pTestObject.usItem].usItemClass & IC.AMMO))
+        else if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO)))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
@@ -1123,7 +1108,7 @@ public class InterfaceItems
         else if (CompatibleItemForApplyingOnMerc(pTestObject))
         {
             //If we are currently NOT in the Shopkeeper interface
-            if (!(guiTacticalInterfaceFlags & INTERFACE_SHOPKEEP_INTERFACE))
+            if (!(guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE)))
             {
                 fFound = true;
                 gbCompatibleApplyItem = fOn;
@@ -1445,7 +1430,7 @@ public class InterfaceItems
 
         }
 
-        SetFont(ITEM_FONT);
+        FontSubSystem.SetFont(ITEM_FONT);
 
         if (fDirtyLevel != DIRTYLEVEL0)
         {
@@ -1453,11 +1438,11 @@ public class InterfaceItems
             if (ubStatusIndex < RENDER_ITEM_ATTACHMENT1)
             {
 
-                SetFontBackground(FONT_MCOLOR_BLACK);
-                SetFontForeground(FONT_MCOLOR_DKGRAY);
+                FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+                FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKGRAY);
 
                 // FIRST DISPLAY FREE ROUNDS REMIANING
-                if (pItem.usItemClass == IC.GUN && pObject.usItem != ROCKET_LAUNCHER)
+                if (pItem.usItemClass == IC.GUN && pObject.usItem != Items.ROCKET_LAUNCHER)
                 {
                     sNewY = sY + sHeight - 10;
                     sNewX = sX + 1;
@@ -1466,22 +1451,22 @@ public class InterfaceItems
                     {
                         case AMMO.AP:
                         case AMMO.SUPER_AP:
-                            SetFontForeground(ITEMDESC_FONTAPFORE);
+                            FontSubSystem.SetFontForeground(ITEMDESC_FONTAPFORE);
                             break;
                         case AMMO.HP:
-                            SetFontForeground(ITEMDESC_FONTHPFORE);
+                            FontSubSystem.SetFontForeground(ITEMDESC_FONTHPFORE);
                             break;
                         case AMMO.BUCKSHOT:
-                            SetFontForeground(ITEMDESC_FONTBSFORE);
+                            FontSubSystem.SetFontForeground(ITEMDESC_FONTBSFORE);
                             break;
                         case AMMO.HE:
-                            SetFontForeground(ITEMDESC_FONTHEFORE);
+                            FontSubSystem.SetFontForeground(ITEMDESC_FONTHEFORE);
                             break;
                         case AMMO.HEAT:
-                            SetFontForeground(ITEMDESC_FONTHEAPFORE);
+                            FontSubSystem.SetFontForeground(ITEMDESC_FONTHEAPFORE);
                             break;
                         default:
-                            SetFontForeground(FONT_MCOLOR_DKGRAY);
+                            FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKGRAY);
                             break;
                     }
 
@@ -1494,12 +1479,12 @@ public class InterfaceItems
                     mprintf(sNewX, sNewY, pStr);
                     gprintfinvalidate(sNewX, sNewY, pStr);
 
-                    SetFontForeground(FONT_MCOLOR_DKGRAY);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKGRAY);
 
                     // Display 'JAMMED' if we are jammed
                     if (pObject.bGunAmmoStatus < 0)
                     {
-                        SetFontForeground(FONT_MCOLOR_RED);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_RED);
 
                         if (sWidth >= (BIG_INV_SLOT_WIDTH - 10))
                         {
@@ -1523,7 +1508,7 @@ public class InterfaceItems
                         // Now display # of items
                         if (pObject.ubNumberOfObjects > 1)
                         {
-                            SetFontForeground(FONT_GRAY4);
+                            FontSubSystem.SetFontForeground(FontColor.FONT_GRAY4);
 
                             sNewY = sY + sHeight - 10;
                             wprintf(pStr, "%d", pObject.ubNumberOfObjects);
@@ -1548,11 +1533,11 @@ public class InterfaceItems
                 {
                     if (FindAttachment(pObject, UNDER_GLAUNCHER) == NO_SLOT)
                     {
-                        SetFontForeground(FONT_GREEN);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_GREEN);
                     }
                     else
                     {
-                        SetFontForeground(FONT_YELLOW);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_YELLOW);
                     }
 
                     sNewY = sY;
@@ -1572,12 +1557,11 @@ public class InterfaceItems
 
                 }
 
-                if (pSoldier
-                    && pObject == (pSoldier.inv[InventorySlot.HANDPOS])
+                if (pObject == (pSoldier.inv[InventorySlot.HANDPOS])
                     && (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.GUN)
                     && pSoldier.bWeaponMode != WM.NORMAL)
                 {
-                    SetFontForeground(FONT_DKRED);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_DKRED);
 
                     sNewY = sY + 13; // rather arbitrary
                     if (pSoldier.bWeaponMode == WM.BURST)
@@ -1610,8 +1594,8 @@ public class InterfaceItems
 
         if (pubHighlightCounter != null)
         {
-            SetFontBackground(FONT_MCOLOR_BLACK);
-            SetFontForeground(FONT_MCOLOR_LTGRAY);
+            FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+            FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_LTGRAY);
 
             // DO HIGHLIGHT
             if (pubHighlightCounter)
@@ -1671,7 +1655,7 @@ public class InterfaceItems
 
     void CycleItemDescriptionItem()
     {
-        int usOldItem;
+        Items usOldItem;
 
         // Delete old box...
         DeleteItemDescriptionBox();
@@ -1698,7 +1682,7 @@ public class InterfaceItems
             }
         }
 
-        CreateItem((int)usOldItem, 100, (gpItemDescSoldier.inv[InventorySlot.HANDPOS]));
+        CreateItem(usOldItem, 100, (gpItemDescSoldier.inv[InventorySlot.HANDPOS]));
 
         InternalInitItemDescriptionBox((gpItemDescSoldier.inv[InventorySlot.HANDPOS]), 214, (int)(INV_INTERFACE_START_Y + 1), gubItemDescStatusIndex, gpItemDescSoldier);
     }
@@ -1740,7 +1724,7 @@ public class InterfaceItems
         int cnt;
         int[] pStr = new int[10];
         int usX, usY;
-        int sForeColour;
+        FontColor sForeColour;
         int sProsConsIndent;
 
         //Set the current screen
@@ -1763,7 +1747,7 @@ public class InterfaceItems
 
             MouseSubSystem.MSYS_DefineRegion(gInvDesc, (int)gsInvDescX, (int)gsInvDescY, (int)(gsInvDescX + MAP_ITEMDESC_WIDTH), (int)(gsInvDescY + MAP_ITEMDESC_HEIGHT), MSYS_PRIORITY.HIGHEST - 2,
                                   CURSOR_NORMAL, MSYS_NO_CALLBACK, ItemDescCallback);
-            MouseSubSystem.MSYS_AddRegion(gInvDesc);
+            MouseSubSystem.MSYS_AddRegion(ref gInvDesc);
 
             giMapInvDescButtonImage = LoadButtonImage("INTERFACE\\itemdescdonebutton.sti", -1, 0, -1, 1, -1);
 
@@ -1823,9 +1807,9 @@ public class InterfaceItems
             if (guiCurrentItemDescriptionScreen == MAP_SCREEN)
             {
                 // in mapscreen, move over a bit
-                giItemDescAmmoButton = CreateIconAndTextButton(giItemDescAmmoButtonImages, pStr, TINYFONT1,
-                                                                 sForeColour, FONT_MCOLOR_BLACK,
-                                                                 sForeColour, FONT_MCOLOR_BLACK,
+                giItemDescAmmoButton = CreateIconAndTextButton(giItemDescAmmoButtonImages, pStr, FontStyle.TINYFONT1,
+                                                                 sForeColour, FontColor.FONT_MCOLOR_BLACK,
+                                                                 sForeColour, FontColor.FONT_MCOLOR_BLACK,
                                                                  TEXT_CJUSTIFIED,
                                                                  (int)(ITEMDESC_AMMO_X + 18), (int)(ITEMDESC_AMMO_Y - 5), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                  DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemDescAmmoCallback);
@@ -1835,9 +1819,9 @@ public class InterfaceItems
             {
 
                 // not in mapscreen
-                giItemDescAmmoButton = CreateIconAndTextButton(giItemDescAmmoButtonImages, pStr, TINYFONT1,
-                                                                    sForeColour, FONT_MCOLOR_BLACK,
-                                                                    sForeColour, FONT_MCOLOR_BLACK,
+                giItemDescAmmoButton = CreateIconAndTextButton(giItemDescAmmoButtonImages, pStr, FontStyle.TINYFONT1,
+                                                                    sForeColour, FontColor.FONT_MCOLOR_BLACK,
+                                                                    sForeColour, FontColor.FONT_MCOLOR_BLACK,
                                                                     TEXT_CJUSTIFIED,
                                                                     (int)(ITEMDESC_AMMO_X), (int)(ITEMDESC_AMMO_Y), BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
                                                                     DEFAULT_MOVE_CALLBACK, (GUI_CALLBACK)ItemDescAmmoCallback);
@@ -1858,7 +1842,7 @@ public class InterfaceItems
                 SetButtonFastHelpText(giItemDescAmmoButton, Message[STR_EJECT_AMMO]);
             }
 
-            FindFontCenterCoordinates((int)ITEMDESC_AMMO_TEXT_X, (int)ITEMDESC_AMMO_TEXT_Y, ITEMDESC_AMMO_TEXT_WIDTH, GetFontHeight(TINYFONT1), pStr, TINYFONT1, &usX, &usY);
+            FontSubSystem.FindFontCenterCoordinates((int)ITEMDESC_AMMO_TEXT_X, (int)ITEMDESC_AMMO_TEXT_Y, ITEMDESC_AMMO_TEXT_WIDTH, FontSubSystem.GetFontHeight(FontStyle.TINYFONT1), pStr, FontStyle.TINYFONT1, out usX, out usY);
 
             SpecifyButtonTextOffsets(giItemDescAmmoButton, (int)usX, (int)usY, true);
 
@@ -1990,7 +1974,7 @@ public class InterfaceItems
                         ItemDescAttachmentsCallback);
                 }
                 // Add region
-                MouseSubSystem.MSYS_AddRegion(gItemDescAttachmentRegions[cnt]);
+                MouseSubSystem.MSYS_AddRegion(ref gItemDescAttachmentRegions[cnt]);
                 MouseSubSystem.MSYS_SetRegionUserData(gItemDescAttachmentRegions[cnt], 0, cnt);
 
                 if (gpItemDescObject.usAttachItem[cnt] != NOTHING)
@@ -2024,7 +2008,7 @@ public class InterfaceItems
                 guiMoneyButtonImage = LoadButtonImage("INTERFACE\\Info_bil.sti", -1, 1, -1, 2, -1);
                 for (cnt = 0; cnt < MAX_ATTACHMENTS - 1; cnt++)
                 {
-                    guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyButtonImage, gzMoneyAmounts[cnt], BLOCKFONT2,
+                    guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyButtonImage, gzMoneyAmounts[cnt], FontStyle.BLOCKFONT2,
                                                                      5, DEFAULT_SHADOW,
                                                                      5, DEFAULT_SHADOW,
                                                                      TEXT_CJUSTIFIED,
@@ -2046,7 +2030,7 @@ public class InterfaceItems
                 }
                 //Create the Done button
                 guiMoneyDoneButtonImage = UseLoadedButtonImage(guiMoneyButtonImage, -1, 3, -1, 4, -1);
-                guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyDoneButtonImage, gzMoneyAmounts[cnt], BLOCKFONT2,
+                guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyDoneButtonImage, gzMoneyAmounts[cnt], FontStyle.BLOCKFONT2,
                                                                  5, DEFAULT_SHADOW,
                                                                  5, DEFAULT_SHADOW,
                                                                  TEXT_CJUSTIFIED,
@@ -2060,7 +2044,7 @@ public class InterfaceItems
                 guiMoneyButtonImage = LoadButtonImage("INTERFACE\\Info_bil.sti", -1, 1, -1, 2, -1);
                 for (cnt = 0; cnt < MAX_ATTACHMENTS - 1; cnt++)
                 {
-                    guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyButtonImage, gzMoneyAmounts[cnt], BLOCKFONT2,
+                    guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyButtonImage, gzMoneyAmounts[cnt], FontStyle.BLOCKFONT2,
                                                                      5, DEFAULT_SHADOW,
                                                                      5, DEFAULT_SHADOW,
                                                                      TEXT_CJUSTIFIED,
@@ -2083,7 +2067,7 @@ public class InterfaceItems
 
                 //Create the Done button
                 guiMoneyDoneButtonImage = UseLoadedButtonImage(guiMoneyButtonImage, -1, 3, 6, 4, 5);
-                guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyDoneButtonImage, gzMoneyAmounts[cnt], BLOCKFONT2,
+                guiMoneyButtonBtn[cnt] = CreateIconAndTextButton(guiMoneyDoneButtonImage, gzMoneyAmounts[cnt], FontStyle.BLOCKFONT2,
                                                                  5, DEFAULT_SHADOW,
                                                                  5, DEFAULT_SHADOW,
                                                                  TEXT_CJUSTIFIED,
@@ -2117,7 +2101,7 @@ public class InterfaceItems
         }
 
 
-        if ((gpItemPointer != null) && (gfItemDescHelpTextOffset == false) && (CheckFact(FACT_ATTACHED_ITEM_BEFORE, 0) == false))
+        if ((gpItemPointer != null) && (gfItemDescHelpTextOffset == false) && (Facts.CheckFact(FACT.ATTACHED_ITEM_BEFORE, 0) == false))
         {
             // set up help text for attachments
             for (cnt = 0; cnt < NUM_INV_HELPTEXT_ENTRIES; cnt++)
@@ -2559,10 +2543,10 @@ public class InterfaceItems
 
             }
 
-            if (Item[gpItemDescObject.usItem].usItemClass & IC.GUN)
+            if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN))
             {
                 // display bullets for ROF
-                BltVideoObjectFromIndex(guiSAVEBUFFER, guiBullet, 0, MAP_BULLET_SING_X, MAP_BULLET_SING_Y, VO_BLT_SRCTRANSPARENCY, null);
+                BltVideoObjectFromIndex(guiSAVEBUFFER, guiBullet, 0, MAP_BULLET_SING_X, MAP_BULLET_SING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
                 if (Weapon[gpItemDescObject.usItem].ubShotsPerBurst > 0)
                 {
@@ -2577,10 +2561,10 @@ public class InterfaceItems
             RestoreExternBackgroundRect(gsInvDescX, gsInvDescY, MAP_ITEMDESC_WIDTH, MAP_ITEMDESC_HEIGHT);
 
             // Render font desc
-            SetFont(ITEMDESC_FONT);
-            SetFontBackground(FONT_MCOLOR_BLACK);
-            SetFontForeground(FONT_FCOLOR_WHITE);
-            SetFontShadow(ITEMDESC_FONTSHADOW3);
+            FontSubSystem.SetFont(ITEMDESC_FONT);
+            FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+            FontSubSystem.SetFontForeground(FontColor.FONT_FCOLOR_WHITE);
+            FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW3);
 
             // Render name
 # if JA2TESTVERSION 
@@ -2589,14 +2573,15 @@ public class InterfaceItems
             mprintf(MAP_ITEMDESC_NAME_X, MAP_ITEMDESC_NAME_Y, "%s", gzItemName);
 #endif
 
-            SetFontForeground(FONT_BLACK);
-            SetFontShadow(ITEMDESC_FONTSHADOW2);
+            FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+            FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
 
-            DisplayWrappedString((int)MAP_ITEMDESC_DESC_START_X, (int)MAP_ITEMDESC_DESC_START_Y, MAP_ITEMDESC_DESC_WIDTH, 2, ITEMDESC_FONT, FONT_BLACK, gzItemDesc, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
+            DisplayWrappedString((int)MAP_ITEMDESC_DESC_START_X, (int)MAP_ITEMDESC_DESC_START_Y, MAP_ITEMDESC_DESC_WIDTH, 2, ITEMDESC_FONT, FontColor.FONT_BLACK, gzItemDesc, FontColor.FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
 
             if (ITEM_PROS_AND_CONS(gpItemDescObject.usItem))
             {
-                if ((gpItemDescObject.usItem == ROCKET_RIFLE || gpItemDescObject.usItem == AUTO_ROCKET_RIFLE) && gpItemDescObject.ubImprintID < NO_PROFILE)
+                if ((gpItemDescObject.usItem == Items.ROCKET_RIFLE || gpItemDescObject.usItem == Items.AUTO_ROCKET_RIFLE)
+                    && gpItemDescObject.ubImprintID < NO_PROFILE)
                 {
                     // add name noting imprint
                     wprintf(pStr, "%s %s (%s)", AmmoCaliber[Weapon[gpItemDescObject.usItem].ubCalibre], WeaponType[Weapon[gpItemDescObject.usItem].ubWeaponType], gMercProfiles[gpItemDescObject.ubImprintID].zNickname);
@@ -2609,8 +2594,8 @@ public class InterfaceItems
                 FindFontRightCoordinates((int)MAP_ITEMDESC_CALIBER_X, (int)MAP_ITEMDESC_CALIBER_Y, MAP_ITEMDESC_CALIBER_WIDTH, ITEM_STATS_HEIGHT, pStr, ITEMDESC_FONT, &usX, &usY);
                 mprintf(usX, usY, pStr);
 
-                SetFontForeground(FONT_MCOLOR_DKWHITE2);
-                SetFontShadow(ITEMDESC_FONTSHADOW3);
+                FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKWHITE2);
+                FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW3);
                 mprintf((int)MAP_ITEMDESC_PROS_START_X, (int)MAP_ITEMDESC_PROS_START_Y, gzProsLabel);
 
                 sProsConsIndent = Math.Max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
@@ -2618,21 +2603,21 @@ public class InterfaceItems
                 GenerateProsString(gzItemPros, gpItemDescObject, MAP_ITEMDESC_DESC_WIDTH - sProsConsIndent - StringPixLength(DOTDOTDOT, ITEMDESC_FONT));
                 if (gzItemPros[0] != 0)
                 {
-                    SetFontForeground(FONT_BLACK);
-                    SetFontShadow(ITEMDESC_FONTSHADOW2);
-                    DisplayWrappedString((int)(MAP_ITEMDESC_PROS_START_X + sProsConsIndent), (int)MAP_ITEMDESC_PROS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FONT_BLACK, gzItemPros, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+                    FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
+                    DisplayWrappedString((int)(MAP_ITEMDESC_PROS_START_X + sProsConsIndent), (int)MAP_ITEMDESC_PROS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FontColor.FONT_BLACK, gzItemPros, FontColor.FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
                 }
 
-                SetFontForeground(FONT_MCOLOR_DKWHITE2);
-                SetFontShadow(ITEMDESC_FONTSHADOW3);
+                FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKWHITE2);
+                FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW3);
                 mprintf((int)MAP_ITEMDESC_CONS_START_X, (int)MAP_ITEMDESC_CONS_START_Y, gzConsLabel);
 
                 GenerateConsString(gzItemCons, gpItemDescObject, MAP_ITEMDESC_DESC_WIDTH - sProsConsIndent - StringPixLength(DOTDOTDOT, ITEMDESC_FONT));
                 if (gzItemCons[0] != 0)
                 {
-                    SetFontForeground(FONT_BLACK);
-                    SetFontShadow(ITEMDESC_FONTSHADOW2);
-                    DisplayWrappedString((int)(MAP_ITEMDESC_CONS_START_X + sProsConsIndent), (int)MAP_ITEMDESC_CONS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FONT_BLACK, gzItemCons, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+                    FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
+                    DisplayWrappedString((int)(MAP_ITEMDESC_CONS_START_X + sProsConsIndent), (int)MAP_ITEMDESC_CONS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FontColor.FONT_BLACK, gzItemCons, FontColor.FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
                 }
             }
 
@@ -2655,7 +2640,7 @@ public class InterfaceItems
 
 
             fWeight = (float)(CalculateObjectWeight(gpItemDescObject)) / 10;
-            if (!gGameSettings.fOptions[TOPTION_USE_METRIC_SYSTEM]) // metric units not enabled
+            if (!GameSettings.fOptions[TOPTION.USE_METRIC_SYSTEM]) // metric units not enabled
             {
                 fWeight = fWeight * 2.2f;
             }
@@ -2668,26 +2653,26 @@ public class InterfaceItems
             }
 
             // Render, stat  name
-            if (Item[gpItemDescObject.usItem].usItemClass & IC.WEAPON)
+            if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.WEAPON))
             {
-                SetFont(BLOCKFONT2);
-                SetFontForeground(6);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFont(FontStyle.BLOCKFONT2);
+                FontSubSystem.SetFontForeground((FontColor)6);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
                 //LABELS
                 wprintf(sTempString, gWeaponStatsDesc[0], GetWeightUnitString());
                 mprintf(gMapWeaponStats[0].sX + gsInvDescX, gMapWeaponStats[0].sY + gsInvDescY, "%s", sTempString);
                 //mprintf( gMapWeaponStats[ 2 ].sX + gsInvDescX, gMapWeaponStats[ 2 ].sY + gsInvDescY, "%s", gMapWeaponStats[ 2 ].zDesc );
-                if (Item[gpItemDescObject.usItem].usItemClass & (IC_GUN | IC_LAUNCHER))
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag((IC.GUN | IC.LAUNCHER)))
                 {
                     mprintf(gMapWeaponStats[3].sX + gsInvDescX, gMapWeaponStats[3].sY + gsInvDescY, "%s", gWeaponStatsDesc[3]);
                 }
-                if (!(Item[gpItemDescObject.usItem].usItemClass & IC_LAUNCHER) && gpItemDescObject.usItem != ROCKET_LAUNCHER)
+                if (!(Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.LAUNCHER)) && gpItemDescObject.usItem != Items.ROCKET_LAUNCHER)
                 {
                     mprintf(gMapWeaponStats[4].sX + gsInvDescX, gMapWeaponStats[4].sY + gsInvDescY, "%s", gWeaponStatsDesc[4]);
                 }
                 mprintf(gMapWeaponStats[5].sX + gsInvDescX, gMapWeaponStats[5].sY + gsInvDescY, "%s", gWeaponStatsDesc[5]);
-                if (Item[gpItemDescObject.usItem].usItemClass & IC_GUN)
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN))
                 {
                     // equals sign
                     mprintf(gMapWeaponStats[7].sX + gsInvDescX, gMapWeaponStats[7].sY + gsInvDescY, "%s", gWeaponStatsDesc[7]);
@@ -2700,61 +2685,61 @@ public class InterfaceItems
                     mprintf(gMapWeaponStats[8].sX + gsInvDescX, gMapWeaponStats[8].sY + gsInvDescY, "%s", gWeaponStatsDesc[8]);
                 }
 
-                SetFontForeground(5);
+                FontSubSystem.SetFontForeground((FontColor)5);
                 //Status
                 // This is gross, but to get the % to work out right...
                 wprintf(pStr, "%2d%%", gpItemDescObject.bStatus[gubItemDescStatusIndex]);
-                FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, &usX, &usY);
                 wcscat(pStr, "%%");
                 mprintf(usX, usY, pStr);
 
                 // Values
                 if (fWeight <= (EXCEPTIONAL_WEIGHT / 10))
                 {
-                    SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                    FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                 }
                 else
                 {
-                    SetFontForeground(5);
+                    FontSubSystem.SetFontForeground((FontColor)5);
                 }
                 //Weight
                 wprintf(pStr, "%1.1f", fWeight);
-                FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, &usX, &usY);
                 mprintf(usX, usY, pStr);
 
-                if (Item[gpItemDescObject.usItem].usItemClass & (IC_GUN | IC_LAUNCHER))
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag((IC.GUN | IC.LAUNCHER)))
                 {
 
                     if (GunRange(gpItemDescObject) >= EXCEPTIONAL_RANGE)
                     {
-                        SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                        FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                     }
                     else
                     {
-                        SetFontForeground(5);
+                        FontSubSystem.SetFontForeground((FontColor)5);
                     }
 
                     //Range
                     wprintf(pStr, "%2d", (GunRange(gpItemDescObject)) / 10);
-                    FindFontRightCoordinates((int)(gMapWeaponStats[3].sX + gsInvDescX + gMapWeaponStats[3].sValDx), (int)(gMapWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((gMapWeaponStats[3].sX + gsInvDescX + gMapWeaponStats[3].sValDx), (int)(gMapWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
-                if (!(Item[gpItemDescObject.usItem].usItemClass & IC_LAUNCHER) && gpItemDescObject.usItem != ROCKET_LAUNCHER)
+                if (!(Item[gpItemDescObject.usItem].usItemClass & IC.LAUNCHER) && gpItemDescObject.usItem != Items.ROCKET_LAUNCHER)
                 {
 
                     if (Weapon[gpItemDescObject.usItem].ubImpact >= EXCEPTIONAL_DAMAGE)
                     {
-                        SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                        FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                     }
                     else
                     {
-                        SetFontForeground(5);
+                        FontSubSystem.SetFontForeground((FontColor)5);
                     }
 
                     //Damage
                     wprintf(pStr, "%2d", Weapon[gpItemDescObject.usItem].ubImpact);
-                    FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX + gMapWeaponStats[4].sValDx), (int)(gMapWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX + gMapWeaponStats[4].sValDx), (int)(gMapWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -2762,16 +2747,16 @@ public class InterfaceItems
 
                 if (ubAttackAPs <= EXCEPTIONAL_AP_COST)
                 {
-                    SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                    FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                 }
                 else
                 {
-                    SetFontForeground(5);
+                    FontSubSystem.SetFontForeground((FontColor)5);
                 }
 
                 //Ap's
                 wprintf(pStr, "%2d", ubAttackAPs);
-                FindFontRightCoordinates((int)(gMapWeaponStats[5].sX + gsInvDescX + gMapWeaponStats[5].sValDx), (int)(gMapWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[5].sX + gsInvDescX + gMapWeaponStats[5].sValDx), (int)(gMapWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 if (Weapon[gpItemDescObject.usItem].ubShotsPerBurst > 0)
@@ -2779,24 +2764,24 @@ public class InterfaceItems
 
                     if (Weapon[gpItemDescObject.usItem].ubShotsPerBurst >= EXCEPTIONAL_BURST_SIZE || gpItemDescObject.usItem == G11)
                     {
-                        SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                        FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                     }
                     else
                     {
-                        SetFontForeground(5);
+                        FontSubSystem.SetFontForeground((FontColor)5);
                     }
 
                     wprintf(pStr, "%2d", ubAttackAPs + CalcAPsToBurst(DEFAULT_APS, gpItemDescObject));
-                    FindFontRightCoordinates((int)(gMapWeaponStats[6].sX + gsInvDescX + gMapWeaponStats[6].sValDx), (int)(gMapWeaponStats[6].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[6].sX + gsInvDescX + gMapWeaponStats[6].sValDx), (int)(gMapWeaponStats[6].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, &usX, &usY);
                     mprintf(usX, usY, pStr);
                 }
 
             }
-            else if (gpItemDescObject.usItem == MONEY)
+            else if (gpItemDescObject.usItem == Items.MONEY)
             {
 
-                SetFontForeground(FONT_FCOLOR_WHITE);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFontForeground(FontColor.FONT_FCOLOR_WHITE);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
                 //
                 // Display the total amount of money
@@ -2818,10 +2803,10 @@ public class InterfaceItems
                 sStrX = MAP_ITEMDESC_NAME_X + (245 - uiStringLength);
                 mprintf(sStrX, MAP_ITEMDESC_NAME_Y, pStr);
 
-                SetFont(BLOCKFONT2);
+                FontSubSystem.SetFont(FontStyle.BLOCKFONT2);
 
-                SetFontForeground(6);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFontForeground((FontColor)6);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
                 //Display the 'Removing'
                 mprintf(gMapMoneyStats[0].sX + gsInvDescX, gMapMoneyStats[0].sY + gsInvDescY, "%s", gMoneyStatsDesc[MONEY_DESC_AMOUNT]);
@@ -2833,7 +2818,7 @@ public class InterfaceItems
                 //Display the 'REmaining amount'
                 mprintf(gMapMoneyStats[3].sX + gsInvDescX, gMapMoneyStats[3].sY + gsInvDescY, "%s", gMoneyStatsDesc[MONEY_DESC_TO_SPLIT]);
 
-                SetFontForeground(5);
+                FontSubSystem.SetFontForeground((FontColor)5);
 
                 //Display the 'Seperate text'
                 mprintf((int)(gMapMoneyButtonLoc.x + gMoneyButtonOffsets[cnt].x), (int)(gMapMoneyButtonLoc.y + gMoneyButtonOffsets[cnt].y), gzMoneyAmounts[4]);
@@ -2848,7 +2833,7 @@ public class InterfaceItems
 
 
                 // The money removing
-                SetFontForeground(5);
+                FontSubSystem.SetFontForeground((FontColor)5);
                 wprintf(pStr, "%ld", gRemoveMoney.uiMoneyRemoving);
                 InsertCommasForDollarFigure(pStr);
                 InsertDollarSignInToString(pStr);
@@ -2863,10 +2848,10 @@ public class InterfaceItems
 
 
             }
-            else if (Item[gpItemDescObject.usItem].usItemClass == IC_MONEY)
+            else if (Item[gpItemDescObject.usItem].usItemClass == IC.MONEY)
             {
-                SetFontForeground(FONT_FCOLOR_WHITE);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFontForeground(FontColor.FONT_FCOLOR_WHITE);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
                 wprintf(pStr, "%ld", gpItemDescObject.uiMoneyAmount);
                 InsertCommasForDollarFigure(pStr);
                 InsertDollarSignInToString(pStr);
@@ -2877,10 +2862,10 @@ public class InterfaceItems
             else
             {
                 //Labels
-                SetFont(BLOCKFONT2);
+                FontSubSystem.SetFont(FontStyle.BLOCKFONT2);
 
-                SetFontForeground(6);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFontForeground((FontColor)6);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
                 if (Item[gpItemDescObject.usItem].usItemClass & IC_AMMO)
                 {
@@ -2894,7 +2879,7 @@ public class InterfaceItems
                 mprintf(gMapWeaponStats[0].sX + gsInvDescX, gMapWeaponStats[0].sY + gsInvDescY, sTempString);
 
                 // Values
-                SetFontForeground(5);
+                FontSubSystem.SetFontForeground((FontColor)5);
 
 
                 if (Item[gpItemDescObject.usItem].usItemClass & IC_AMMO)
@@ -2903,7 +2888,7 @@ public class InterfaceItems
                     wprintf(pStr, "%d/%d", gpItemDescObject.ubShotsLeft[0], Magazine[Item[gpItemDescObject.usItem].ubClassIndex].ubMagSize);
                     uiStringLength = StringPixLength(pStr, ITEMDESC_FONT);
                     //			sStrX =  gMapWeaponStats[ 0 ].sX + gsInvDescX + gMapWeaponStats[ 0 ].sValDx + ( uiRightLength - uiStringLength );
-                    FindFontRightCoordinates((int)(gMapWeaponStats[2].sX + gsInvDescX + gMapWeaponStats[2].sValDx + 6), (int)(gMapWeaponStats[2].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &sStrX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[2].sX + gsInvDescX + gMapWeaponStats[2].sValDx + 6), (int)(gMapWeaponStats[2].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                     mprintf(sStrX, gMapWeaponStats[2].sY + gsInvDescY, pStr);
                 }
                 else
@@ -2912,7 +2897,7 @@ public class InterfaceItems
                     wprintf(pStr, "%2d%%", gpItemDescObject.bStatus[gubItemDescStatusIndex]);
                     uiStringLength = StringPixLength(pStr, ITEMDESC_FONT);
                     //			sStrX =  gMapWeaponStats[ 1 ].sX + gsInvDescX + gMapWeaponStats[ 1 ].sValDx + ( uiRightLength - uiStringLength );
-                    FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &sStrX, &usY);
+                    FindFontRightCoordinates((int)(gMapWeaponStats[1].sX + gsInvDescX + gMapWeaponStats[1].sValDx + 6), (int)(gMapWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                     wcscat(pStr, "%%");
                     mprintf(sStrX, gMapWeaponStats[1].sY + gsInvDescY, pStr);
                 }
@@ -2921,34 +2906,34 @@ public class InterfaceItems
                 wprintf(pStr, "%1.1f", fWeight);
                 uiStringLength = StringPixLength(pStr, ITEMDESC_FONT);
                 //			sStrX =  gMapWeaponStats[ 0 ].sX + gsInvDescX + gMapWeaponStats[ 0 ].sValDx + ( uiRightLength - uiStringLength );
-                FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &sStrX, &usY);
+                FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                 mprintf(sStrX, gMapWeaponStats[0].sY + gsInvDescY, pStr);
 
-                if ((InKeyRingPopup() == true) || (Item[gpItemDescObject.usItem].usItemClass & IC_KEY))
+                if ((InKeyRingPopup() == true) || (Item[gpItemDescObject.usItem].usItemClass & IC.KEY))
                 {
-                    SetFontForeground(6);
+                    FontSubSystem.SetFontForeground((FontColor)6);
 
                     // build description for keys .. the sector found
                     wprintf(pStr, "%s", sKeyDescriptionStrings[0]);
                     mprintf(gMapWeaponStats[4].sX + gsInvDescX, gMapWeaponStats[4].sY + gsInvDescY, pStr);
                     wprintf(pStr, "%s", sKeyDescriptionStrings[1]);
-                    mprintf(gMapWeaponStats[4].sX + gsInvDescX, gMapWeaponStats[4].sY + gsInvDescY + GetFontHeight(BLOCKFONT) + 2, pStr);
+                    mprintf(gMapWeaponStats[4].sX + gsInvDescX, gMapWeaponStats[4].sY + gsInvDescY + GetFontHeight(FontStyle.BLOCKFONT) + 2, pStr);
 
 
-                    SetFontForeground(5);
+                    FontSubSystem.SetFontForeground((FontColor)5);
                     GetShortSectorString((int)SECTORX(KeyTable[gpItemDescObject.ubKeyID].usSectorFound), (int)SECTORY(KeyTable[gpItemDescObject.ubKeyID].usSectorFound), sTempString);
                     wprintf(pStr, "%s", sTempString);
-                    FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX), (int)(gMapWeaponStats[4].sY + gsInvDescY), 110, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX), (int)(gMapWeaponStats[4].sY + gsInvDescY), 110, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
 
                     wprintf(pStr, "%d", KeyTable[gpItemDescObject.ubKeyID].usDateFound);
-                    FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX), (int)(gMapWeaponStats[4].sY + gsInvDescY + GetFontHeight(BLOCKFONT) + 2), 110, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gMapWeaponStats[4].sX + gsInvDescX), (int)(gMapWeaponStats[4].sY + gsInvDescY + GetFontHeight(FontStyle.BLOCKFONT) + 2), 110, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, &usX, &usY);
                     mprintf(usX, usY, pStr);
                 }
 
             }
 
-            SetFontShadow(DEFAULT_SHADOW);
+            FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
         }
         else if (gfInItemDescBox)
         {
@@ -3038,10 +3023,10 @@ public class InterfaceItems
             RestoreExternBackgroundRect(gsInvDescX, gsInvDescY, ITEMDESC_WIDTH, ITEMDESC_HEIGHT);
 
             // Render font desc
-            SetFont(ITEMDESC_FONT);
-            SetFontBackground(FONT_MCOLOR_BLACK);
-            SetFontForeground(FONT_FCOLOR_WHITE);
-            SetFontShadow(ITEMDESC_FONTSHADOW3);
+            FontSubSystem.SetFont(ITEMDESC_FONT);
+            FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+            FontSubSystem.SetFontForeground(FontColor.FONT_FCOLOR_WHITE);
+            FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW3);
 
             // Render name
             // SET CLIPPING RECT FOR FONTS
@@ -3053,10 +3038,10 @@ public class InterfaceItems
 
             // Render caliber and description
 
-            SetFontForeground(FONT_BLACK);
-            SetFontShadow(ITEMDESC_FONTSHADOW2);
+            FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+            FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
 
-            DisplayWrappedString((int)ITEMDESC_DESC_START_X, (int)ITEMDESC_DESC_START_Y, ITEMDESC_DESC_WIDTH, 2, ITEMDESC_FONT, FONT_BLACK, gzItemDesc, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
+            DisplayWrappedString((int)ITEMDESC_DESC_START_X, (int)ITEMDESC_DESC_START_Y, ITEMDESC_DESC_WIDTH, 2, ITEMDESC_FONT, FontColor.FONT_BLACK, gzItemDesc, FontColor.FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
 
             if (ITEM_PROS_AND_CONS(gpItemDescObject.usItem))
             {
@@ -3070,11 +3055,11 @@ public class InterfaceItems
                     wprintf(pStr, "%s %s", AmmoCaliber[Weapon[gpItemDescObject.usItem].ubCalibre], WeaponType[Weapon[gpItemDescObject.usItem].ubWeaponType]);
                 }
 
-                FindFontRightCoordinates((int)ITEMDESC_CALIBER_X, (int)ITEMDESC_CALIBER_Y, ITEMDESC_CALIBER_WIDTH, ITEM_STATS_HEIGHT, pStr, ITEMDESC_FONT, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)ITEMDESC_CALIBER_X, (int)ITEMDESC_CALIBER_Y, ITEMDESC_CALIBER_WIDTH, ITEM_STATS_HEIGHT, pStr, ITEMDESC_FONT, &usX, &usY);
                 mprintf(usX, usY, pStr);
 
-                SetFontForeground(FONT_MCOLOR_DKWHITE2);
-                SetFontShadow(ITEMDESC_FONTSHADOW3);
+                FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKWHITE2);
+                FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW3);
                 mprintf((int)ITEMDESC_PROS_START_X, (int)ITEMDESC_PROS_START_Y, gzProsLabel);
 
                 sProsConsIndent = Math.Max(StringPixLength(gzProsLabel, ITEMDESC_FONT), StringPixLength(gzConsLabel, ITEMDESC_FONT)) + 10;
@@ -3083,21 +3068,21 @@ public class InterfaceItems
                 GenerateProsString(gzItemPros, gpItemDescObject, ITEMDESC_DESC_WIDTH - sProsConsIndent - StringPixLength(DOTDOTDOT, ITEMDESC_FONT));
                 if (gzItemPros[0] != 0)
                 {
-                    SetFontForeground(FONT_BLACK);
-                    SetFontShadow(ITEMDESC_FONTSHADOW2);
-                    DisplayWrappedString((int)(ITEMDESC_PROS_START_X + sProsConsIndent), (int)ITEMDESC_PROS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FONT_BLACK, gzItemPros, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+                    FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
+                    DisplayWrappedString((int)(ITEMDESC_PROS_START_X + sProsConsIndent), (int)ITEMDESC_PROS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FontColor.FONT_BLACK, gzItemPros, FontColor.FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
                 }
 
-                SetFontForeground(FONT_MCOLOR_DKWHITE2);
-                SetFontShadow(ITEMDESC_FONTSHADOW3);
+                FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_DKWHITE2);
+                FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW3);
                 mprintf((int)ITEMDESC_CONS_START_X, (int)ITEMDESC_CONS_START_Y, gzConsLabel);
 
                 GenerateConsString(gzItemCons, gpItemDescObject, ITEMDESC_DESC_WIDTH - sProsConsIndent - StringPixLength(DOTDOTDOT, ITEMDESC_FONT));
                 if (gzItemCons[0] != 0)
                 {
-                    SetFontForeground(FONT_BLACK);
-                    SetFontShadow(ITEMDESC_FONTSHADOW2);
-                    DisplayWrappedString((int)(ITEMDESC_CONS_START_X + sProsConsIndent), (int)ITEMDESC_CONS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FONT_BLACK, gzItemCons, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
+                    FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+                    FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
+                    DisplayWrappedString((int)(ITEMDESC_CONS_START_X + sProsConsIndent), (int)ITEMDESC_CONS_START_Y, (int)(ITEMDESC_DESC_WIDTH - sProsConsIndent), 2, ITEMDESC_FONT, FontColor.FONT_BLACK, gzItemCons, FontColor.FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED);
                 }
 
 
@@ -3120,28 +3105,28 @@ public class InterfaceItems
             }
 
             // Render, stat  name
-            if (Item[gpItemDescObject.usItem].usItemClass & IC_WEAPON)
+            if (Item[gpItemDescObject.usItem].usItemClass & IC.WEAPON)
             {
 
-                SetFont(BLOCKFONT2);
-                SetFontForeground(6);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFont(FontStyle.BLOCKFONT2);
+                FontSubSystem.SetFontForeground((FontColor)6);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
                 //LABELS
                 wprintf(sTempString, gWeaponStatsDesc[0], GetWeightUnitString());
                 mprintf(gWeaponStats[0].sX + gsInvDescX, gWeaponStats[0].sY + gsInvDescY, sTempString);
                 //		mprintf( gWeaponStats[ 1 ].sX + gsInvDescX, gWeaponStats[ 1 ].sY + gsInvDescY, "%s", gWeaponStatsDesc[ 1 ].zDesc );
                 //		mprintf( gWeaponStats[ 2 ].sX + gsInvDescX, gWeaponStats[ 2 ].sY + gsInvDescY, "%s", gWeaponStats[ 2 ].zDesc );
-                if (Item[gpItemDescObject.usItem].usItemClass & (IC_GUN | IC_LAUNCHER))
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN | IC.LAUNCHER))
                 {
                     mprintf(gWeaponStats[3].sX + gsInvDescX, gWeaponStats[3].sY + gsInvDescY, "%s", gWeaponStatsDesc[3]);
                 }
-                if (!(Item[gpItemDescObject.usItem].usItemClass & IC_LAUNCHER) && gpItemDescObject.usItem != ROCKET_LAUNCHER)
+                if (!(Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.LAUNCHER)) && gpItemDescObject.usItem != Items.ROCKET_LAUNCHER)
                 {
                     mprintf(gWeaponStats[4].sX + gsInvDescX, gWeaponStats[4].sY + gsInvDescY, "%s", gWeaponStatsDesc[4]);
                 }
                 mprintf(gWeaponStats[5].sX + gsInvDescX, gWeaponStats[5].sY + gsInvDescY, "%s", gWeaponStatsDesc[5]);
-                if (Item[gpItemDescObject.usItem].usItemClass & IC_GUN)
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN))
                 {
                     mprintf(gWeaponStats[7].sX + gsInvDescX, gWeaponStats[7].sY + gsInvDescY, "%s", gWeaponStatsDesc[7]);
                 }
@@ -3155,54 +3140,54 @@ public class InterfaceItems
                 // Values
                 if (fWeight <= (EXCEPTIONAL_WEIGHT / 10))
                 {
-                    SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                    FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                 }
                 else
                 {
-                    SetFontForeground(5);
+                    FontSubSystem.SetFontForeground((FontColor)5);
                 }
 
                 //Status
                 wprintf(pStr, "%2d%%", gpItemDescObject.bGunStatus);
-                FindFontRightCoordinates((int)(gWeaponStats[1].sX + gsInvDescX + gWeaponStats[1].sValDx), (int)(gWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[1].sX + gsInvDescX + gWeaponStats[1].sValDx), (int)(gWeaponStats[1].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 wcscat(pStr, "%%");
                 mprintf(usX, usY, pStr);
 
                 //Wieght
                 wprintf(pStr, "%1.1f", fWeight);
-                FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
-                if (Item[gpItemDescObject.usItem].usItemClass & (IC_GUN | IC_LAUNCHER))
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN | IC.LAUNCHER))
                 {
                     if (GunRange(gpItemDescObject) >= EXCEPTIONAL_RANGE)
                     {
-                        SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                        FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                     }
                     else
                     {
-                        SetFontForeground(5);
+                        FontSubSystem.SetFontForeground((FontColor)5);
                     }
 
                     wprintf(pStr, "%2d", (GunRange(gpItemDescObject)) / 10);
-                    FindFontRightCoordinates((int)(gWeaponStats[3].sX + gsInvDescX + gWeaponStats[3].sValDx), (int)(gWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[3].sX + gsInvDescX + gWeaponStats[3].sValDx), (int)(gWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
-                if (!(Item[gpItemDescObject.usItem].usItemClass & IC_LAUNCHER) && gpItemDescObject.usItem != ROCKET_LAUNCHER)
+                if (!(Item[gpItemDescObject.usItem].usItemClass & IC.LAUNCHER) && gpItemDescObject.usItem != ROCKET_LAUNCHER)
                 {
 
                     if (Weapon[gpItemDescObject.usItem].ubImpact >= EXCEPTIONAL_DAMAGE)
                     {
-                        SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                        FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                     }
                     else
                     {
-                        SetFontForeground(5);
+                        FontSubSystem.SetFontForeground(5);
                     }
 
                     wprintf(pStr, "%2d", Weapon[gpItemDescObject.usItem].ubImpact);
-                    FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX + gWeaponStats[4].sValDx), (int)(gWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX + gWeaponStats[4].sValDx), (int)(gWeaponStats[4].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -3210,41 +3195,41 @@ public class InterfaceItems
 
                 if (ubAttackAPs <= EXCEPTIONAL_AP_COST)
                 {
-                    SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                    FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                 }
                 else
                 {
-                    SetFontForeground(5);
+                    FontSubSystem.SetFontForeground((FontColor)5);
                 }
 
                 wprintf(pStr, "%2d", ubAttackAPs);
-                FindFontRightCoordinates((int)(gWeaponStats[5].sX + gsInvDescX + gWeaponStats[5].sValDx), (int)(gWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[5].sX + gsInvDescX + gWeaponStats[5].sValDx), (int)(gWeaponStats[5].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                 mprintf(usX, usY, pStr);
 
                 if (Weapon[gpItemDescObject.usItem].ubShotsPerBurst > 0)
                 {
                     if (Weapon[gpItemDescObject.usItem].ubShotsPerBurst >= EXCEPTIONAL_BURST_SIZE || gpItemDescObject.usItem == G11)
                     {
-                        SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
+                        FontSubSystem.SetFontForeground(ITEMDESC_FONTHIGHLIGHT);
                     }
                     else
                     {
-                        SetFontForeground(5);
+                        FontSubSystem.SetFontForeground((FontColor)5);
                     }
 
                     wprintf(pStr, "%2d", ubAttackAPs + CalcAPsToBurst(DEFAULT_APS, gpItemDescObject));
-                    FindFontRightCoordinates((int)(gWeaponStats[6].sX + gsInvDescX + gWeaponStats[6].sValDx), (int)(gWeaponStats[6].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[6].sX + gsInvDescX + gWeaponStats[6].sValDx), (int)(gWeaponStats[6].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                     mprintf(usX, usY, pStr);
                 }
 
             }
-            else if (gpItemDescObject.usItem == MONEY)
+            else if (gpItemDescObject.usItem == Items.MONEY)
             {
                 //Labels
-                SetFont(BLOCKFONT2);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFont(FontStyle.BLOCKFONT2);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
-                SetFontForeground(6);
+                FontSubSystem.SetFontForeground((FontColor)6);
 
                 //Display the 'Seperate text'
 
@@ -3276,14 +3261,14 @@ public class InterfaceItems
                 }
 
                 // Total Amount 
-                SetFontForeground(FONT_WHITE);
+                FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
                 wprintf(pStr, "%d", gRemoveMoney.uiTotalAmount);
                 InsertCommasForDollarFigure(pStr);
                 InsertDollarSignInToString(pStr);
-                FindFontRightCoordinates((int)(ITEMDESC_NAME_X), (int)(ITEMDESC_NAME_Y), 295, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(ITEMDESC_NAME_X), (int)(ITEMDESC_NAME_Y), 295, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                 mprintf(usX, usY, pStr);
 
-                SetFontForeground(6);
+                FontSubSystem.SetFontForeground((FontColor)6);
 
                 // if the player is taking money from their account
                 if (gfAddingMoneyToMercFromPlayersAccount)
@@ -3304,43 +3289,43 @@ public class InterfaceItems
 
 
                 // Values
-                SetFontForeground(5);
+                FontSubSystem.SetFontForeground((FontColor)5);
 
                 //Display the total amount of money remaining
                 wprintf(pStr, "%ld", gRemoveMoney.uiMoneyRemaining);
                 InsertCommasForDollarFigure(pStr);
                 InsertDollarSignInToString(pStr);
-                FindFontRightCoordinates((int)(gMoneyStats[1].sX + gsInvDescX + gMoneyStats[1].sValDx), (int)(gMoneyStats[1].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMoneyStats[1].sX + gsInvDescX + gMoneyStats[1].sValDx), (int)(gMoneyStats[1].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                 mprintf(usX, usY, pStr);
 
                 //Display the total amount of money removing
                 wprintf(pStr, "%ld", gRemoveMoney.uiMoneyRemoving);
                 InsertCommasForDollarFigure(pStr);
                 InsertDollarSignInToString(pStr);
-                FindFontRightCoordinates((int)(gMoneyStats[3].sX + gsInvDescX + gMoneyStats[3].sValDx), (int)(gMoneyStats[3].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gMoneyStats[3].sX + gsInvDescX + gMoneyStats[3].sValDx), (int)(gMoneyStats[3].sY + gsInvDescY), (int)(ITEM_STATS_WIDTH - 3), ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                 mprintf(usX, usY, pStr);
 
             }
-            else if (Item[gpItemDescObject.usItem].usItemClass == IC_MONEY)
+            else if (Item[gpItemDescObject.usItem].usItemClass == IC.MONEY)
             {
-                SetFontForeground(FONT_FCOLOR_WHITE);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFontForeground(FONT_FCOLOR_WHITE);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
                 wprintf(pStr, "%ld", gpItemDescObject.uiMoneyAmount);
                 InsertCommasForDollarFigure(pStr);
                 InsertDollarSignInToString(pStr);
 
-                FindFontRightCoordinates((int)(ITEMDESC_NAME_X), (int)(ITEMDESC_NAME_Y), 295, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(ITEMDESC_NAME_X), (int)(ITEMDESC_NAME_Y), 295, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                 mprintf(usX, usY, pStr);
             }
             else
             {
                 //Labels
-                SetFont(BLOCKFONT2);
-                SetFontForeground(6);
-                SetFontShadow(DEFAULT_SHADOW);
+                FontSubSystem.SetFont(BLOCKFONT2);
+                FontSubSystem.SetFontForeground(6);
+                FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
 
-                if (Item[gpItemDescObject.usItem].usItemClass & IC_AMMO)
+                if (Item[gpItemDescObject.usItem].usItemClass & IC.AMMO)
                 {
                     //Status
                     mprintf(gWeaponStats[2].sX + gsInvDescX, gWeaponStats[2].sY + gsInvDescY, "%s", gWeaponStatsDesc[2]);
@@ -3355,9 +3340,9 @@ public class InterfaceItems
                 mprintf(gWeaponStats[0].sX + gsInvDescX, gWeaponStats[0].sY + gsInvDescY, sTempString);
 
                 // Values
-                SetFontForeground(5);
+                FontSubSystem.SetFontForeground(5);
 
-                if (Item[gpItemDescObject.usItem].usItemClass & IC_AMMO)
+                if (Item[gpItemDescObject.usItem].usItemClass & IC.AMMO)
                 {
                     // Ammo - print amount
                     //Status
@@ -3376,7 +3361,7 @@ public class InterfaceItems
 
                 if ((InKeyRingPopup() == true) || (Item[gpItemDescObject.usItem].usItemClass & IC_KEY))
                 {
-                    SetFontForeground(6);
+                    FontSubSystem.SetFontForeground(6);
 
                     // build description for keys .. the sector found
                     wprintf(pStr, "%s", sKeyDescriptionStrings[0]);
@@ -3385,14 +3370,14 @@ public class InterfaceItems
                     mprintf(gWeaponStats[4].sX + gsInvDescX, gWeaponStats[4].sY + gsInvDescY + GetFontHeight(BLOCKFONT) + 2, pStr);
 
 
-                    SetFontForeground(5);
+                    FontSubSystem.SetFontForeground(5);
                     GetShortSectorString((int)SECTORX(KeyTable[gpItemDescObject.ubKeyID].usSectorFound), (int)SECTORY(KeyTable[gpItemDescObject.ubKeyID].usSectorFound), sTempString);
                     wprintf(pStr, "%s", sTempString);
-                    FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX), (int)(gWeaponStats[4].sY + gsInvDescY), 110, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX), (int)(gWeaponStats[4].sY + gsInvDescY), 110, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                     mprintf(usX, usY, pStr);
 
                     wprintf(pStr, "%d", KeyTable[gpItemDescObject.ubKeyID].usDateFound);
-                    FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX), (int)(gWeaponStats[4].sY + gsInvDescY + GetFontHeight(BLOCKFONT) + 2), 110, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                    FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[4].sX + gsInvDescX), (int)(gWeaponStats[4].sY + gsInvDescY + GetFontHeight(BLOCKFONT) + 2), 110, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -3401,11 +3386,11 @@ public class InterfaceItems
 
                 //Weight
                 wprintf(pStr, "%1.1f", fWeight);
-                FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
+                FontSubSystem.FindFontRightCoordinates((int)(gWeaponStats[0].sX + gsInvDescX + gWeaponStats[0].sValDx), (int)(gWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, BLOCKFONT2, &usX, &usY);
                 mprintf(usX, usY, pStr);
             }
 
-            SetFontShadow(DEFAULT_SHADOW);
+            FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
         }
 
@@ -3794,7 +3779,7 @@ public class InterfaceItems
         int ubSoldierID;
         int sAPCost;
         bool fRecalc;
-        int uiCursorFlags;
+        MOUSE uiCursorFlags;
         int sFinalGridNo;
         int uiCursorId = CURSOR_ITEM_GOOD_THROW;
         SOLDIERTYPE pSoldier;
@@ -3879,7 +3864,7 @@ public class InterfaceItems
 
                         // Are they on our team?
                         // ATE: Can't be an EPC
-                        if (pSoldier.bTeam == gbPlayerNum && !AM_AN_EPC(pSoldier) && !(pSoldier.uiStatusFlags & SOLDIER_VEHICLE))
+                        if (pSoldier.bTeam == gbPlayerNum && !AM_AN_EPC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
                         {
                             if (sDist <= PASSING_ITEM_DISTANCE_OKLIFE)
                             {
@@ -3894,7 +3879,7 @@ public class InterfaceItems
                                 {
                                     // OK, set global that this buddy can see catch...
                                     gfUIMouseOnValidCatcher = true;
-                                    gubUIValidCatcherID = (int)gusUIFullTargetID;
+                                    gubUIValidCatcherID = gusUIFullTargetID;
                                 }
                             }
                         }
@@ -3912,11 +3897,11 @@ public class InterfaceItems
                 // If we are tossing...
                 if (sDist <= 1 && gfUIMouseOnValidCatcher == 0 || gfUIMouseOnValidCatcher == 4)
                 {
-                    gsCurrentActionPoints = AP_PICKUP_ITEM;
+                    gsCurrentActionPoints = AP.PICKUP_ITEM;
                 }
                 else
                 {
-                    gsCurrentActionPoints = AP_TOSS_ITEM;
+                    gsCurrentActionPoints = AP.TOSS_ITEM;
                 }
 
             }
@@ -3931,15 +3916,15 @@ public class InterfaceItems
                     gubUIValidCatcherID = (int)gusUIFullTargetID;
 
                     // If this is a robot, change to say 'reload'
-                    if (MercPtrs[gusUIFullTargetID].uiStatusFlags & SOLDIER_ROBOT)
+                    if (MercPtrs[gusUIFullTargetID].uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                     {
                         gfUIMouseOnValidCatcher = 3;
                     }
 
-                    if (!(uiCursorFlags & MOUSE_MOVING))
+                    if (!(uiCursorFlags.HasFlag(MOUSE.MOVING)))
                     {
                         // Find adjacent gridno...
-                        sActionGridNo = FindAdjacentGridEx(gpItemPointerSoldier, gusCurMousePos, &ubDirection, null, false, false);
+                        sActionGridNo = Overhead.FindAdjacentGridEx(gpItemPointerSoldier, gusCurMousePos, ref ubDirection, null, false, false);
                         if (sActionGridNo == -1)
                         {
                             sActionGridNo = gusCurMousePos;
@@ -3947,11 +3932,11 @@ public class InterfaceItems
 
                         // Display location...
                         gsUIHandleShowMoveGridLocation = sActionGridNo;
-                        gfUIHandleShowMoveGrid = true;
+                        gfUIHandleShowMoveGrid = 1;
 
 
                         // Get AP cost
-                        if (MercPtrs[gusUIFullTargetID].uiStatusFlags & SOLDIER_ROBOT)
+                        if (MercPtrs[gusUIFullTargetID].uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                         {
                             sAPCost = GetAPsToReloadRobot(gpItemPointerSoldier, MercPtrs[gusUIFullTargetID]);
                         }
@@ -4084,10 +4069,10 @@ public class InterfaceItems
 
     bool IsValidAmmoToReloadRobot(SOLDIERTYPE pSoldier, OBJECTTYPE pObject)
     {
-        if (!CompatibleAmmoForGun(pObject, &(pSoldier.inv[HANDPOS])))
+        if (!CompatibleAmmoForGun(pObject, (pSoldier.inv[HANDPOS])))
         {
             // Build string...
-            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[ROBOT_NEEDS_GIVEN_CALIBER_STR], AmmoCaliber[Weapon[pSoldier.inv[HANDPOS].usItem].ubCalibre]);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[ROBOT_NEEDS_GIVEN_CALIBER_STR], AmmoCaliber[Weapon[pSoldier.inv[HANDPOS].usItem].ubCalibre]);
 
             return (false);
         }
@@ -4397,7 +4382,7 @@ public class InterfaceItems
                         sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, gpItemPointerSoldier.sGridNo, gpItemPointerSoldier.bLevel);
 
                         // Check LOS....
-                        if (!SoldierTo3DLocationLineOfSightTest(pSoldier, gpItemPointerSoldier.sGridNo, gpItemPointerSoldier.bLevel, 3, (int)sDistVisible, true))
+                        if (!LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, gpItemPointerSoldier.sGridNo, gpItemPointerSoldier.bLevel, 3, (int)sDistVisible, true))
                         {
                             return (false);
                         }
@@ -4450,7 +4435,7 @@ public class InterfaceItems
                         }
                         else
                         {
-                            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_NO_ROOM_TO_PASS_ITEM], ShortItemNames[usItem], pSoldier.name);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_NO_ROOM_TO_PASS_ITEM], ShortItemNames[usItem], pSoldier.name);
                             return (false);
                         }
                     }
@@ -4461,7 +4446,7 @@ public class InterfaceItems
                 // CHECK FOR VALID CTGH
                 if (gfBadThrowItemCTGH)
                 {
-                    ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[CANNOT_THROW_TO_DEST_STR]);
+                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[CANNOT_THROW_TO_DEST_STR]);
                     return (false);
                 }
 
@@ -4884,7 +4869,7 @@ public class InterfaceItems
                              MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupFullRegionCallback);
 
         // Add region
-        MouseSubSystem.MSYS_AddRegion(gItemPopupRegion);
+        MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegion);
 
 
         //Disable all faces
@@ -5817,7 +5802,7 @@ public class InterfaceItems
     void RenderItemPickupMenu()
     {
         int cnt;
-        int usItemTileIndex;
+        TileIndexes usItemTileIndex;
         int sX, sY, sCenX, sCenY, sFontX, sFontY, sNewX, sNewY;
         int uiDestPitchBYTES;
         int? pDestBuf;
@@ -5876,11 +5861,11 @@ public class InterfaceItems
             sX = ITEMPICK_GRAPHIC_X + gItemPickupMenu.sX;
             sY = ITEMPICK_GRAPHIC_Y + gItemPickupMenu.sY;
 
-            pDestBuf = LockVideoSurface(FRAME_BUFFER, &uiDestPitchBYTES);
+            pDestBuf = LockVideoSurface(FRAME_BUFFER, out uiDestPitchBYTES);
 
-            SetFont(ITEMDESC_FONT);
-            SetFontBackground(FONT_MCOLOR_BLACK);
-            SetFontShadow(ITEMDESC_FONTSHADOW2);
+            FontSubSystem.SetFont(ITEMDESC_FONT);
+            FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+            FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
 
             for (cnt = 0; cnt < gItemPickupMenu.bNumSlotsPerPage; cnt++)
             {
@@ -5913,33 +5898,34 @@ public class InterfaceItems
                         {
                             //SetFontForeground( FONT_BLACK );
                             //SetFontShadow( ITEMDESC_FONTSHADOW2 );
-                            Blt8BPPDataTo16BPPBufferOutline((int*)pDestBuf, uiDestPitchBYTES, gTileDatabase[usItemTileIndex].hTileSurface, sCenX, sCenY, gTileDatabase[usItemTileIndex].usRegionIndex, 0, false);
+                            Blt8BPPDataTo16BPPBufferOutline(pDestBuf, uiDestPitchBYTES, gTileDatabase[usItemTileIndex].hTileSurface, sCenX, sCenY, gTileDatabase[usItemTileIndex].usRegionIndex, 0, false);
                         }
                     }
 
                     // Draw text.....
-                    SetFont(ITEM_FONT);
+                    FontSubSystem.SetFont(ITEM_FONT);
                     if (pObject.ubNumberOfObjects > 1)
                     {
-                        SetFontForeground(FONT_GRAY4);
-                        SetFontShadow(DEFAULT_SHADOW);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_GRAY4);
+                        FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
                         sCenX = sX - 4;
                         sCenY = sY + 14;
 
                         wprintf(pStr, "%d", pObject.ubNumberOfObjects);
 
-                        VarFindFontRightCoordinates(sCenX, sCenY, 42, 1, ITEM_FONT, &sFontX, &sFontY, pStr);
+                        VarFindFontRightCoordinates(sCenX, sCenY, 42, 1, ITEM_FONT, out sFontX, out sFontY, pStr);
                         mprintf_buffer(pDestBuf, uiDestPitchBYTES, ITEM_FONT, sFontX, sFontY, pStr);
                     }
-                    SetFont(ITEMDESC_FONT);
+
+                    FontSubSystem.SetFont(ITEMDESC_FONT);
 
 
                     // Render attachment symbols
                     if (ItemHasAttachments(pObject))
                     {
-                        SetFontForeground(FONT_GREEN);
-                        SetFontShadow(DEFAULT_SHADOW);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_GREEN);
+                        FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
                         sNewY = sCenY + 2;
                         wprintf(pStr, "*");
@@ -5963,16 +5949,16 @@ public class InterfaceItems
                         //}
                         //else
                         //{
-                        SetFontForeground(FONT_WHITE);
-                        SetFontShadow(DEFAULT_SHADOW);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_WHITE);
+                        FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
                         //}
                         // Blt8BPPDataTo16BPPBufferOutline( (int*)pDestBuf, uiDestPitchBYTES, gTileDatabase[ usItemTileIndex ].hTileSurface, sCenX, sCenY, gTileDatabase[ usItemTileIndex ].usRegionIndex, Get16BPPColor( FROMRGB( 255, 0, 0 ) ), true );
                         // Blt8BPPDataTo16BPPBufferOutline( (int*)pDestBuf, uiDestPitchBYTES, gTileDatabase[ usItemTileIndex ].hTileSurface, sCenX, sCenY, gTileDatabase[ usItemTileIndex ].usRegionIndex, Get16BPPColor( FROMRGB( 255, 0, 0 ) ), true );
                     }
                     else
                     {
-                        SetFontForeground(FONT_BLACK);
-                        SetFontShadow(ITEMDESC_FONTSHADOW2);
+                        FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
+                        FontSubSystem.SetFontShadow(ITEMDESC_FONTSHADOW2);
                     }
 
                     // Render name
@@ -5980,7 +5966,7 @@ public class InterfaceItems
                     sCenY = ITEMPICK_TEXT_Y + gItemPickupMenu.sY + (ITEMPICK_TEXT_YSPACE * (int)cnt);
 
                     // If we are money...
-                    if (Item[pObject.usItem].usItemClass == IC_MONEY)
+                    if (Item[pObject.usItem].usItemClass == IC.MONEY)
                     {
                         string pStr2;// [20];
                         pStr2 = wprintf("%ld", pObject.uiMoneyAmount);
@@ -5993,14 +5979,14 @@ public class InterfaceItems
                     {
                         pStr = wprintf("%s", ShortItemNames[pObject.usItem]);
                     }
-                    VarFindFontCenterCoordinates(sCenX, sCenY, ITEMPICK_TEXT_WIDTH, 1, ITEMDESC_FONT, &sFontX, &sFontY, pStr);
+                    VarFindFontCenterCoordinates(sCenX, sCenY, ITEMPICK_TEXT_WIDTH, 1, ITEMDESC_FONT, out sFontX, out sFontY, pStr);
                     mprintf_buffer(pDestBuf, uiDestPitchBYTES, ITEMDESC_FONT, sFontX, sFontY, pStr);
 
                     sY += ITEMPICK_GRAPHIC_YSPACE;
                 }
             }
 
-            SetFontShadow(DEFAULT_SHADOW);
+            FontSubSystem.SetFontShadow(DEFAULT_SHADOW);
 
 
             UnLockVideoSurface(FRAME_BUFFER);

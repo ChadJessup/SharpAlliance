@@ -1783,7 +1783,7 @@ public class AIMain
     }
 
 
-    void AIDecideRadioAnimation(SOLDIERTYPE? pSoldier)
+    public static void AIDecideRadioAnimation(SOLDIERTYPE? pSoldier)
     {
         if (pSoldier.ubBodyType != SoldierBodyTypes.REGMALE && pSoldier.ubBodyType != SoldierBodyTypes.BIGMALE)
         {
@@ -2436,7 +2436,7 @@ public class AIMain
         };
     }
 
-    void HandleInitialRedAlert(TEAM bTeam, int ubCommunicate)
+    public static void HandleInitialRedAlert(TEAM bTeam, int ubCommunicate)
     {
         /*
          if (ubCommunicate)

@@ -719,7 +719,7 @@ public class HandleUI
     }
 
 
-    void ClearEvent(UI_EVENT pUIEvent)
+    public static void ClearEvent(UI_EVENT pUIEvent)
     {
         //memset(pUIEvent.uiParams, 0, sizeof(pUIEvent.uiParams) );
         pUIEvent.fDoneMenu = false;
@@ -1046,7 +1046,7 @@ public class HandleUI
     static uint uiItemsOverTimer;
     static bool fOverItems;
 
-    ScreenName UIHandleMOnTerrain(UI_EVENT? pUIEvent)
+    public static ScreenName UIHandleMOnTerrain(UI_EVENT? pUIEvent)
     {
         SOLDIERTYPE? pSoldier;
         int usMapPos;
@@ -1544,7 +1544,7 @@ public class HandleUI
         int sDestGridNo;
         int sActionGridNo;
         STRUCTURE? pStructure;
-        byte ubDirection;
+        WorldDirections ubDirection;
         int fAllMove;
         int bLoop;
         LEVELNODE? pIntTile;
@@ -1646,12 +1646,12 @@ public class HandleUI
 
 
                     // Get structure info for in tile!
-                    pIntTile = GetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure);
+                    pIntTile = InteractiveTiles.GetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure);
 
                     // We should not have null here if we are given this flag...
                     if (pIntTile != null)
                     {
-                        sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, out ubDirection, null, false, true);
+                        sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sIntTileGridNo, ref ubDirection, out var _, false, true);
                         if (sActionGridNo != -1)
                         {
                             SetUIBusy(pSoldier.ubID);
@@ -1662,8 +1662,8 @@ public class HandleUI
                             // check if we are at this location
                             if (pSoldier.sGridNo == sDestGridNo)
                             {
-                                StartInteractiveObject(sIntTileGridNo, pStructure.usStructureID, pSoldier, ubDirection);
-                                InteractWithInteractiveObject(pSoldier, pStructure, ubDirection);
+                                InteractiveTiles.StartInteractiveObject(sIntTileGridNo, pStructure.usStructureID, pSoldier, ubDirection);
+                                InteractiveTiles.InteractWithInteractiveObject(pSoldier, pStructure, ubDirection);
                                 return (ScreenName.GAME_SCREEN);
                             }
                         }
@@ -2833,7 +2833,7 @@ public class HandleUI
         }
     }
 
-    bool UIHandleOnMerc(bool fMovementMode)
+    public static bool UIHandleOnMerc(bool fMovementMode)
     {
         SOLDIERTYPE? pSoldier;
         int usSoldierIndex;
@@ -3244,7 +3244,7 @@ public class HandleUI
     static int usTargetID = Globals.NOBODY;
     static bool fTargetFound = false;
 
-    bool HandleUIMovementCursor(SOLDIERTYPE? pSoldier, MOUSE uiCursorFlags, int usMapPos, MOVEUI_TARGET uiFlags)
+    public static bool HandleUIMovementCursor(SOLDIERTYPE? pSoldier, MOUSE uiCursorFlags, int usMapPos, MOVEUI_TARGET uiFlags)
     {
         bool fSetCursor = false;
         bool fCalculated = false;
@@ -3423,7 +3423,7 @@ public class HandleUI
         return (fSetCursor);
     }
 
-    byte DrawUIMovementPath(SOLDIERTYPE? pSoldier, int usMapPos, MOVEUI_TARGET uiFlags)
+    public static byte DrawUIMovementPath(SOLDIERTYPE? pSoldier, int usMapPos, MOVEUI_TARGET uiFlags)
     {
         int sAPCost;
         BP sBPCost;
@@ -3464,7 +3464,7 @@ public class HandleUI
             // We should not have null here if we are given this flag...
             if (pIntTile != null)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, out ubDirection, null, false, true);
+                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref sIntTileGridNo, out ubDirection, null, false, true);
                 if (sActionGridNo == -1)
                 {
                     sActionGridNo = sIntTileGridNo;
@@ -3489,7 +3489,7 @@ public class HandleUI
         }
         else if (uiFlags == MOVEUI_TARGET.WIREFENCE)
         {
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
+            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref usMapPos, out ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sAPCost = 0;
@@ -3509,7 +3509,7 @@ public class HandleUI
         }
         else if (uiFlags == MOVEUI_TARGET.JAR)
         {
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
+            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
@@ -3542,7 +3542,7 @@ public class HandleUI
             // We should not have null here if we are given this flag...
             if (pIntTile != null)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, sIntTileGridNo, out ubDirection, null, false, true);
+                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref sIntTileGridNo, out ubDirection, null, false, true);
                 if (sActionGridNo != -1)
                 {
                     sAPCost = AP.ATTACH_CAN;
@@ -3576,7 +3576,7 @@ public class HandleUI
                 }
             }
 
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
+            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref usMapPos, out ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
@@ -3607,7 +3607,7 @@ public class HandleUI
                 }
             }
 
-            sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, null, false, true);
+            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref usMapPos, out ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
@@ -3662,7 +3662,7 @@ public class HandleUI
 
                 if (sGotLocation == (int)Globals.NOWHERE)
                 {
-                    sActionGridNo = FindAdjacentGridEx(pSoldier, Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
+                    sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
 
                     if (sActionGridNo == -1)
                     {
@@ -3708,12 +3708,12 @@ public class HandleUI
             // Check if we are on a target
             if (Globals.gfUIFullTargetFound)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
+                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
                 if (sActionGridNo == -1)
                 {
                     sActionGridNo = sAdjustedGridNo;
                 }
-                sAPCost += (int)AP.STEAL_ITEM;
+                sAPCost += AP.STEAL_ITEM;
                 // CJC August 13 2002: take into account stance in AP prediction
                 if (!(PTR_STANDING))
                 {
@@ -3740,12 +3740,12 @@ public class HandleUI
         {
             if (Globals.gfUIFullTargetFound)
             {
-                sActionGridNo = FindAdjacentGridEx(pSoldier, Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
+                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
 
                 // Try again at another gridno...
                 if (sActionGridNo == -1)
                 {
-                    sActionGridNo = FindAdjacentGridEx(pSoldier, usMapPos, out ubDirection, out sAdjustedGridNo, true, false);
+                    sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref usMapPos, out ubDirection, out sAdjustedGridNo, true, false);
 
                     if (sActionGridNo == -1)
                     {
@@ -4065,7 +4065,7 @@ public class HandleUI
     }
 
 
-    void SetMovementModeCursor(SOLDIERTYPE? pSoldier)
+    public static void SetMovementModeCursor(SOLDIERTYPE pSoldier)
     {
         if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
@@ -4431,7 +4431,7 @@ public class HandleUI
 
         if (fValidTalkableGuy)
         {
-            if (!SoldierTo3DLocationLineOfSightTest(pSoldier, sTargetGridNo, pSoldier.bLevel, 3, (byte)sDistVisible, true))
+            if (!LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, sTargetGridNo, pSoldier.bLevel, 3, (byte)sDistVisible, true))
             {
                 //. ATE: Make range far, so we alternate cursors...
                 Globals.guiNewUICursor = UICursorDefines.TALK_OUT_RANGE_A_UICURSOR;
@@ -4512,7 +4512,7 @@ public class HandleUI
         return (ScreenName.GAME_SCREEN);
     }
 
-    ScreenName UIHandleLUIEndLock(UI_EVENT? pUIEvent)
+    public static ScreenName UIHandleLUIEndLock(UI_EVENT? pUIEvent)
     {
         if (Globals.gfDisableRegionActive)
         {
@@ -4799,7 +4799,7 @@ public class HandleUI
     }
 
 
-    void ResetMultiSelection()
+    public static void ResetMultiSelection()
     {
         SOLDIERTYPE? pSoldier;
         int cnt;
@@ -4821,8 +4821,6 @@ public class HandleUI
 
         Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect = false;
     }
-
-
 
     ScreenName UIHandleRubberBandOnTerrain(UI_EVENT pUIEvent)
     {
@@ -5079,8 +5077,7 @@ public class HandleUI
         return (false);
     }
 
-
-    bool IsValidTalkableNPC(int ubSoldierID, bool fGive, bool fAllowMercs, bool fCheckCollapsed)
+    public static bool IsValidTalkableNPC(int ubSoldierID, bool fGive, bool fAllowMercs, bool fCheckCollapsed)
     {
         SOLDIERTYPE pSoldier = Globals.MercPtrs[ubSoldierID];
         bool fValidGuy = false;
@@ -5214,7 +5211,7 @@ public class HandleUI
                     sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pTSoldier.sGridNo, pTSoldier.bLevel);
 
                     // Check LOS!
-                    if (!SoldierTo3DLocationLineOfSightTest(pSoldier, pTSoldier.sGridNo, pTSoldier.bLevel, 3, (byte)sDistVisible, true))
+                    if (!LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, pTSoldier.sGridNo, pTSoldier.bLevel, 3, (byte)sDistVisible, true))
                     {
                         if (pTSoldier.ubProfile != NPCID.NO_PROFILE)
                         {
@@ -5323,7 +5320,7 @@ public class HandleUI
                 if (uiRange > NPC_TALK_RADIUS)
                 {
                     // First get an adjacent gridno....
-                    sActionGridNo = FindAdjacentGridEx(pSoldier, pTSoldier.sGridNo, out ubDirection, null, false, true);
+                    sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, pTSoldier.sGridNo, ref ubDirection, out var _, false, true);
 
                     if (sActionGridNo == -1)
                     {
@@ -5439,7 +5436,7 @@ public class HandleUI
     static bool fOverPool = false;
     static bool fOverEnemy = false;
 
-    byte UIHandleInteractiveTilesAndItemsOnTerrain(SOLDIERTYPE pSoldier, int usMapPos, bool fUseOKCursor, bool fItemsOnlyIfOnIntTiles)
+    public static byte UIHandleInteractiveTilesAndItemsOnTerrain(SOLDIERTYPE pSoldier, int usMapPos, bool fUseOKCursor, bool fItemsOnlyIfOnIntTiles)
     {
         ITEM_POOL? pItemPool;
         bool fSetCursor;
@@ -5847,7 +5844,7 @@ public class HandleUI
                 Globals.gsRenderHeight += Globals.ROOF_LEVEL_HEIGHT;
             }
 
-            RenderWorld.RenderWorld.SetRenderFlags(RenderingFlags.FULL);
+            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             PathAI.ErasePath(false);
 
             sOldHeight = sHeight;
@@ -5856,7 +5853,7 @@ public class HandleUI
 
     static bool fOldOnValidGuy = false;
 
-    bool ValidQuickExchangePosition()
+    public static bool ValidQuickExchangePosition()
     {
         SOLDIERTYPE? pSoldier, pOverSoldier;
         int sDistVisible = 0;
@@ -5882,7 +5879,7 @@ public class HandleUI
                             // Check if we have LOS to them....
                             sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, pOverSoldier.sGridNo, pOverSoldier.bLevel);
 
-                            if (SoldierTo3DLocationLineOfSightTest(pSoldier, pOverSoldier.sGridNo, pOverSoldier.bLevel, (byte)3, (byte)sDistVisible, true))
+                            if (LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, pOverSoldier.sGridNo, pOverSoldier.bLevel, (byte)3, (byte)sDistVisible, true))
                             {
                                 // ATE:
                                 // Check that the path is good!

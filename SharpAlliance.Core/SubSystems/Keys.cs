@@ -407,7 +407,7 @@ public class Keys
 
             // Loop through and and find closed graphic for the opend one....
             cnt = 0;
-            while (gClosedDoorList[cnt] != (TileDefines)(-1))
+            while (gClosedDoorList[cnt] != (TileIndexes)(-1))
             {
                 // IF WE ARE A SHADOW TYPE
                 if (pNode.usIndex == gClosedDoorList[cnt])

@@ -575,7 +575,7 @@ public class SOLDIERTYPE
     public int bYetAnotherPaddingSpace;
     public int iPositionSndID;
     public int iTuringSoundID;
-    public int ubLastDamageReason;
+    public TAKE_DAMAGE ubLastDamageReason;
     public bool fComplainedThatTired;
     public int[] sLastTwoLocations = new int[2];
     public int bFillerDude;

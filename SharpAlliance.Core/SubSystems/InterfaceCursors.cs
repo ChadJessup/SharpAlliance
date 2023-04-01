@@ -33,7 +33,7 @@ public class InterfaceCursors
         this.inputs = inputManager;
     }
 
-    public const int DISPLAY_AP_INDEX = (int)TileDefines.MOCKFLOOR1;
+    public const int DISPLAY_AP_INDEX = (int)TileIndexes.MOCKFLOOR1;
 
     public const int SNAPCURSOR_AP_X_STARTVAL = 18;
     public const int SNAPCURSOR_AP_Y_STARTVAL = 9;
@@ -57,7 +57,7 @@ public class InterfaceCursors
     {
         int usMapPos;
         LEVELNODE? pNode;
-        TileDefines usTileCursor; // might be ushort, but testing this out.
+        TileIndexes usTileCursor; // might be ushort, but testing this out.
 
         //RaiseMouseToLevel( (byte)gsInterfaceLevel );
 
@@ -95,7 +95,7 @@ public class InterfaceCursors
             {
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
-                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(TileDefines.FIRSTPOINTERS3));
+                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(TileIndexes.FIRSTPOINTERS3));
                 }
                 else
                 {
@@ -129,7 +129,7 @@ public class InterfaceCursors
                     }
 
                     // Put tile on the floor
-                    this.world.AddTopmostToTail(Globals.gusTargetDropPos, TileDefines.FIRSTPOINTERS14);
+                    this.world.AddTopmostToTail(Globals.gusTargetDropPos, TileIndexes.FIRSTPOINTERS14);
                     Globals.gpWorldLevelData[Globals.gusTargetDropPos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusTargetDropPos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
@@ -146,27 +146,27 @@ public class InterfaceCursors
                 {
                     if (Globals.MercPtrs[Globals.gusSelectedSoldier].bStealthMode)
                     {
-                        usTileCursor = TileDefines.FIRSTPOINTERS9;
+                        usTileCursor = TileIndexes.FIRSTPOINTERS9;
                     }
                 }
 
                 if (Globals.gfUIDisplayActionPointsInvalid || Globals.gsCurrentActionPoints == 0)
                 {
-                    usTileCursor = TileDefines.FIRSTPOINTERS6;
+                    usTileCursor = TileIndexes.FIRSTPOINTERS6;
 
                     // ATE; Is the current guy in steath mode?
                     if (Globals.gusSelectedSoldier != Globals.NOBODY)
                     {
                         if (Globals.MercPtrs[Globals.gusSelectedSoldier].bStealthMode)
                         {
-                            usTileCursor = TileDefines.FIRSTPOINTERS10;
+                            usTileCursor = TileIndexes.FIRSTPOINTERS10;
                         }
                     }
                 }
 
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
-                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(TileDefines.FIRSTPOINTERS14));
+                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(TileIndexes.FIRSTPOINTERS14));
                 }
                 else
                 {
@@ -291,13 +291,13 @@ public class InterfaceCursors
         {
             if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
             {
-                WorldManager.RemoveTopmost(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS14);
-                WorldManager.RemoveTopmost(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS9);
+                WorldManager.RemoveTopmost(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS14);
+                WorldManager.RemoveTopmost(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS9);
 
                 if (Globals.gfTargetDropPos)
                 {
-                    WorldManager.RemoveTopmost(Globals.gusTargetDropPos, TileDefines.FIRSTPOINTERS14);
-                    WorldManager.RemoveTopmost(Globals.gusTargetDropPos, TileDefines.FIRSTPOINTERS9);
+                    WorldManager.RemoveTopmost(Globals.gusTargetDropPos, TileIndexes.FIRSTPOINTERS14);
+                    WorldManager.RemoveTopmost(Globals.gusTargetDropPos, TileIndexes.FIRSTPOINTERS9);
                 }
             }
 
@@ -340,7 +340,7 @@ public class InterfaceCursors
 
             case UICursorDefines.NORMAL_SNAPUICURSOR:
 
-                this.world.AddTopmostToHead(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS1);
+                this.world.AddTopmostToHead(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS1);
                 Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 break;
@@ -349,11 +349,11 @@ public class InterfaceCursors
             case UICursorDefines.CONFIRM_MOVE_RUN_UICURSOR:
                 if (Globals.gsInterfaceLevel > 0)
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODRUN1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODRUN1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
                 }
                 else
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODRUN1, 0, 0, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODRUN1, 0, 0, out newUIElem);
                 }
 
                 newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -364,11 +364,11 @@ public class InterfaceCursors
             case UICursorDefines.CONFIRM_MOVE_WALK_UICURSOR:
                 if (Globals.gsInterfaceLevel > 0)
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODWALK1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODWALK1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
                 }
                 else
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODWALK1, 0, 0, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODWALK1, 0, 0, out newUIElem);
                 }
 
                 newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -379,11 +379,11 @@ public class InterfaceCursors
             case UICursorDefines.CONFIRM_MOVE_SWAT_UICURSOR:
                 if (Globals.gsInterfaceLevel > 0)
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODSWAT1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODSWAT1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
                 }
                 else
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODSWAT1, 0, 0, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODSWAT1, 0, 0, out newUIElem);
                 }
 
                 newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -394,11 +394,11 @@ public class InterfaceCursors
             case UICursorDefines.CONFIRM_MOVE_PRONE_UICURSOR:
                 if (Globals.gsInterfaceLevel > 0)
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODPRONE1, 0, -TileDefine.WALL_HEIGHT - 8 - 6, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODPRONE1, 0, -TileDefine.WALL_HEIGHT - 8 - 6, out newUIElem);
                 }
                 else
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.GOODPRONE1, 0, -6, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.GOODPRONE1, 0, -6, out newUIElem);
                 }
 
                 newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -409,11 +409,11 @@ public class InterfaceCursors
             case UICursorDefines.CONFIRM_MOVE_VEHICLE_UICURSOR:
                 if (Globals.gsInterfaceLevel > 0)
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.VEHICLEMOVE1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.VEHICLEMOVE1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
                 }
                 else
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.VEHICLEMOVE1, 0, 0, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.VEHICLEMOVE1, 0, 0, out newUIElem);
                 }
 
                 newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -427,31 +427,31 @@ public class InterfaceCursors
 
                 if (Globals.gsInterfaceLevel > 0)
                 {
-                    this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.BADMARKER1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
+                    this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.BADMARKER1, 0, -TileDefine.WALL_HEIGHT - 8, out newUIElem);
                     newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     newUIElem.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
                     if (GameSettings.fOptions[TOPTION.CURSOR_3D])
                     {
-                        this.world.AddTopmostToHead(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS13);
+                        this.world.AddTopmostToHead(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS13);
                         Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     }
 
-                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS14);
+                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS14);
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
                 }
                 else
                 {
-                    this.world.AddTopmostToHead(Globals.gusCurMousePos, TileDefines.BADMARKER1);
+                    this.world.AddTopmostToHead(Globals.gusCurMousePos, TileIndexes.BADMARKER1);
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
 
                     if (GameSettings.fOptions[TOPTION.CURSOR_3D])
                     {
-                        this.world.AddTopmostToHead(Globals.gusCurMousePos, TileDefines.FIRSTPOINTERS13);
+                        this.world.AddTopmostToHead(Globals.gusCurMousePos, TileIndexes.FIRSTPOINTERS13);
                         Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                         Globals.gpWorldLevelData[Globals.gusCurMousePos].pTopmostHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     }
@@ -479,11 +479,11 @@ public class InterfaceCursors
 
             if (Globals.gsInterfaceLevel > 0)
             {
-                this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.DISPLAY_AP_INDEX, SNAPCURSOR_AP_X_STARTVAL, SNAPCURSOR_AP_Y_STARTVAL - TileDefine.WALL_HEIGHT - 10, out newUIElem);
+                this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.DISPLAY_AP_INDEX, SNAPCURSOR_AP_X_STARTVAL, SNAPCURSOR_AP_Y_STARTVAL - TileDefine.WALL_HEIGHT - 10, out newUIElem);
             }
             else
             {
-                this.world.AddUIElem(Globals.gusCurMousePos, TileDefines.DISPLAY_AP_INDEX, SNAPCURSOR_AP_X_STARTVAL, SNAPCURSOR_AP_Y_STARTVAL, out newUIElem);
+                this.world.AddUIElem(Globals.gusCurMousePos, TileIndexes.DISPLAY_AP_INDEX, SNAPCURSOR_AP_X_STARTVAL, SNAPCURSOR_AP_Y_STARTVAL, out newUIElem);
             }
 
             newUIElem.uiFlags |= LEVELNODEFLAGS.DISPLAY_AP;
@@ -524,7 +524,7 @@ public class InterfaceCursors
 
         if (gfLooseCursorOn)
         {
-            this.world.AddUIElem(gsLooseCursorGridNo, TileDefines.FIRSTPOINTERS4, 0, 0, out LEVELNODE newUIElem);
+            this.world.AddUIElem(gsLooseCursorGridNo, TileIndexes.FIRSTPOINTERS4, 0, 0, out LEVELNODE newUIElem);
             newUIElem.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
             newUIElem.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
         }
@@ -534,25 +534,25 @@ public class InterfaceCursors
     {
         if (gfLooseCursorOn)
         {
-            WorldManager.RemoveTopmost(gsLooseCursorGridNo, TileDefines.FIRSTPOINTERS4);
+            WorldManager.RemoveTopmost(gsLooseCursorGridNo, TileIndexes.FIRSTPOINTERS4);
         }
     }
 
-    TileDefines GetSnapCursorIndex(TileDefines usAdditionalData)
+    TileIndexes GetSnapCursorIndex(TileIndexes usAdditionalData)
     {
         // OK, this function will get the 'true' index for drawing the cursor....
         if (GameSettings.fOptions[TOPTION.CURSOR_3D])
         {
             return usAdditionalData switch
             {
-                TileDefines.FIRSTPOINTERS2 => TileDefines.FIRSTPOINTERS13,
-                TileDefines.FIRSTPOINTERS3 => TileDefines.FIRSTPOINTERS14,
-                TileDefines.FIRSTPOINTERS4 => TileDefines.FIRSTPOINTERS15,
-                TileDefines.FIRSTPOINTERS5 => TileDefines.FIRSTPOINTERS16,
-                TileDefines.FIRSTPOINTERS6 => TileDefines.FIRSTPOINTERS17,
-                TileDefines.FIRSTPOINTERS7 => TileDefines.FIRSTPOINTERS18,
-                TileDefines.FIRSTPOINTERS9 => TileDefines.FIRSTPOINTERS19,
-                TileDefines.FIRSTPOINTERS10 => TileDefines.FIRSTPOINTERS20,
+                TileIndexes.FIRSTPOINTERS2 => TileIndexes.FIRSTPOINTERS13,
+                TileIndexes.FIRSTPOINTERS3 => TileIndexes.FIRSTPOINTERS14,
+                TileIndexes.FIRSTPOINTERS4 => TileIndexes.FIRSTPOINTERS15,
+                TileIndexes.FIRSTPOINTERS5 => TileIndexes.FIRSTPOINTERS16,
+                TileIndexes.FIRSTPOINTERS6 => TileIndexes.FIRSTPOINTERS17,
+                TileIndexes.FIRSTPOINTERS7 => TileIndexes.FIRSTPOINTERS18,
+                TileIndexes.FIRSTPOINTERS9 => TileIndexes.FIRSTPOINTERS19,
+                TileIndexes.FIRSTPOINTERS10 => TileIndexes.FIRSTPOINTERS20,
                 _ => usAdditionalData,
             };
         }
@@ -568,14 +568,14 @@ public record UICursor(
     UICursorDefines uiCursorID,
     UICURSOR uiFlags,
     CURSOR usFreeCursorName,
-    TileDefines usAdditionalData)
+    TileIndexes usAdditionalData)
 {
     public UICursor(
         UICursorDefines uiCursorID,
         UICURSOR uiFlags,
         CURSOR usFreeCursorName,
         int usAdditionalData)
-        : this(uiCursorID, uiFlags, usFreeCursorName, (TileDefines)usAdditionalData)
+        : this(uiCursorID, uiFlags, usFreeCursorName, (TileIndexes)usAdditionalData)
     { }
 }
 

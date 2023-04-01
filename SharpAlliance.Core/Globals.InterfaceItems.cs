@@ -20,9 +20,9 @@ public partial class Globals
     public static Dictionary<InventorySlot, int> gbCompatibleAmmo = new();// int[(int)NUM_INV_SLOTS];
     public static Dictionary<InventorySlot, int> gbInvalidPlacementSlot = new();// int[(int)NUM_INV_SLOTS];
     public static int[] us16BPPItemCyclePlacedItemColors = new int[20];
-    public static Dictionary<SoldierBodyTypes, List<int>> guiBodyInvVO = new();
-    public static int guiGoldKeyVO;
-    public static bool gbCompatibleApplyItem = false;
+    public static Dictionary<SoldierBodyTypes, List<string>> guiBodyInvVO = new();
+    public static string guiGoldKeyVO;
+    public static int gbCompatibleApplyItem = 0;
     public static REMOVE_MONEY gRemoveMoney;
 
     public const int NUM_PICKUP_SLOTS = 6;
@@ -55,16 +55,16 @@ public partial class Globals
 
     public const FontStyle ITEMDESC_FONT = FontStyle.BLOCKFONT2;
     public const FontShadow ITEMDESC_FONTSHADOW1 = FontShadow.MILITARY_SHADOW;
-    public const int ITEMDESC_FONTSHADOW2 = 32;
-    public const int ITEMDESC_FONTSHADOW3 = 34;
-    public const int ITEMDESC_FONTFORE1 = 33;
-    public const int ITEMDESC_FONTFORE2 = 32;
-    public const int ITEMDESC_FONTAPFORE = 218;
-    public const int ITEMDESC_FONTHPFORE = 24;
-    public const int ITEMDESC_FONTBSFORE = 125;
-    public const int ITEMDESC_FONTHEFORE = 75;
-    public const int ITEMDESC_FONTHEAPFORE = 76;
-    public const int ITEMDESC_AMMO_FORE = 209;
+    public const FontShadow ITEMDESC_FONTSHADOW2 = (FontShadow)32;
+    public const FontShadow ITEMDESC_FONTSHADOW3 = (FontShadow)34;
+    public const FontColor ITEMDESC_FONTFORE1 = (FontColor)33;
+    public const FontColor ITEMDESC_FONTFORE2 = (FontColor)32;
+    public const FontColor ITEMDESC_FONTAPFORE = (FontColor)218;
+    public const FontColor ITEMDESC_FONTHPFORE = (FontColor)24;
+    public const FontColor ITEMDESC_FONTBSFORE = (FontColor)125;
+    public const FontColor ITEMDESC_FONTHEFORE = (FontColor)75;
+    public const FontColor ITEMDESC_FONTHEAPFORE = (FontColor)76;
+    public const FontColor ITEMDESC_AMMO_FORE = (FontColor)209;
     public const FontColor ITEMDESC_FONTHIGHLIGHT = FontColor.FONT_MCOLOR_WHITE;
     public static readonly int STATUS_BAR_SHADOW = FROMRGB(140, 136, 119);
     public static readonly int STATUS_BAR = FROMRGB(201, 172, 133);
@@ -223,8 +223,8 @@ public partial class Globals
     public static int guiMoneyButtonImage;
     public static int guiMoneyDoneButtonImage;
 
-    public static int[] gusOriginalAttachItem = new int[MAX_ATTACHMENTS];
-    public static int[] gbOriginalAttachStatus = new int[MAX_ATTACHMENTS];
+    public static Items[] gusOriginalAttachItem = new Items[MAX_ATTACHMENTS];
+    public static Items[] gbOriginalAttachStatus = new Items[MAX_ATTACHMENTS];
     public static SOLDIERTYPE? gpAttachSoldier;
 
     public static MoneyLoc gMoneyButtonLoc = new(343, 351);
@@ -427,6 +427,24 @@ public partial class Globals
 // A STRUCT USED INTERNALLY FOR INV SLOT REGIONS
 public record INV_REGIONS
 {
+    public INV_REGIONS(
+        bool a,
+        int b,
+        int c,
+        int d,
+        int e,
+        int f,
+        int g)
+    {
+        fBigPocket = a;
+        sBarDx = b;
+        sBarDy = c;
+        sWidth = d;
+        sHeight = e;
+        sX = f;
+        sY = g;
+    }
+
     public bool fBigPocket { get; set; }
     public int sBarDx { get; set; }
     public int sBarDy { get; set; }

@@ -28,13 +28,13 @@ public class TileCache
         return ValueTask.FromResult(true);
     }
 
-    public static void CheckForAndDeleteTileCacheStructInfo(LEVELNODE? pNode, TileDefines usIndex)
+    public static void CheckForAndDeleteTileCacheStructInfo(LEVELNODE? pNode, TileIndexes usIndex)
     {
         ArgumentNullException.ThrowIfNull(pNode);
 
         STRUCTURE_FILE_REF? pStructureFileRef;
 
-        if (usIndex >= (TileDefines)TILE_CACHE_START_INDEX)
+        if (usIndex >= (TileIndexes)TILE_CACHE_START_INDEX)
         {
             pStructureFileRef = GetCachedTileStructureRef((usIndex - TILE_CACHE_START_INDEX));
 
@@ -45,9 +45,9 @@ public class TileCache
         }
     }
 
-    public static STRUCTURE_FILE_REF? GetCachedTileStructureRef(TileDefines iIndex)
+    public static STRUCTURE_FILE_REF? GetCachedTileStructureRef(TileIndexes iIndex)
     {
-        if (iIndex == (TileDefines)(-1))
+        if (iIndex == (TileIndexes)(-1))
         {
             return null;
         }

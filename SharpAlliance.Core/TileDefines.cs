@@ -14,25 +14,25 @@ public class TileDefine
     public static int WALL_HEIGHT = 50;
     // Globals used
     
-    public static bool GetTileIndexFromTypeSubIndex(TileTypeDefines uiCheckType, int usSubIndex, out TileDefines pusTileIndex)
+    public static bool GetTileIndexFromTypeSubIndex(TileTypeDefines uiCheckType, int usSubIndex, out TileIndexes pusTileIndex)
     {
         // Tile database is zero-based, Type indecies are 1-based!
 
         if (uiCheckType > TileTypeDefines.NUMBEROFTILETYPES)
         {
-            pusTileIndex = (TileDefines)(-1);
+            pusTileIndex = (TileIndexes)(-1);
             return false;
         }
 
-        pusTileIndex = (TileDefines)(usSubIndex + gTileTypeStartIndex[(int)uiCheckType] - 1);
+        pusTileIndex = (TileIndexes)(usSubIndex + gTileTypeStartIndex[(int)uiCheckType] - 1);
         return (true);
     }
 
-    public static bool GetWallOrientation(TileDefines usIndex, out WallOrientation pusWallOrientation)
+    public static bool GetWallOrientation(TileIndexes usIndex, out WallOrientation pusWallOrientation)
     {
         TILE_ELEMENT TileElem;
 
-        CHECKF(usIndex != TileDefines.NO_TILE);
+        CHECKF(usIndex != TileIndexes.NO_TILE);
 
         // Get tile element
         TileElem = gTileDatabase[usIndex];
@@ -43,7 +43,7 @@ public class TileDefine
     }
 
     // Database access functions
-    public static bool GetTileType(TileDefines usIndex, out TileTypeDefines puiType)
+    public static bool GetTileType(TileIndexes usIndex, out TileTypeDefines puiType)
     {
         TILE_ELEMENT TileElem;
 
@@ -57,7 +57,7 @@ public class TileDefine
         return true;
     }
 
-    public static bool GetSubIndexFromTileIndex(TileDefines usTileIndex, out int? pusSubIndex)
+    public static bool GetSubIndexFromTileIndex(TileIndexes usTileIndex, out int? pusSubIndex)
     {
         pusSubIndex = null;
 
@@ -70,7 +70,7 @@ public class TileDefine
         return false;
     }
 
-    public static bool GetTileFlags(TileDefines usIndex, out TileCategory puiFlags)
+    public static bool GetTileFlags(TileIndexes usIndex, out TileCategory puiFlags)
     {
         TILE_ELEMENT TileElem;
 
@@ -141,8 +141,7 @@ public enum TileCategory
     UNDERFLOW_FILLER = 0x00010000,
 }
 
-// chad: TileIndexes might be a better name.
-public enum TileDefines
+public enum TileIndexes
 {
     FIRSTTEXTURE1 = 0,
     FIRSTTEXTURE2,
@@ -3284,7 +3283,7 @@ public class TILE_ELEMENT
     public TileCategory uiFlags;
     public RelTileLoc? pTileLocData;
     public ushort usRegionIndex;
-    public TileDefines sBuddyNum;
+    public TileIndexes sBuddyNum;
     public byte ubTerrainID;
     public byte ubNumberOfTiles;
 

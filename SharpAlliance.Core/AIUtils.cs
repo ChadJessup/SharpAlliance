@@ -105,7 +105,7 @@ public class AIUtils
         }
 
         // make sure a weapon is in hand (FEB.8 ADDITION: tossable items are also OK)
-        if (!WeaponInHand(pSoldier))
+        if (!ItemSubSystem.WeaponInHand(pSoldier))
         {
             return (NOSHOOT.NOWEAPON);
         }
@@ -117,7 +117,7 @@ public class AIUtils
             if (pSoldier.inv[InventorySlot.HANDPOS].usItem == Items.TANK_CANNON)
             {
                 // look for another tank shell ELSEWHERE IN INVENTORY
-                if (FindLaunchable(pSoldier, Items.TANK_CANNON) == NO_SLOT)
+                if (ItemSubSystem.FindLaunchable(pSoldier, Items.TANK_CANNON) == NO_SLOT)
                 //if ( !ItemHasAttachments( &(pSoldier.inv[HANDPOS]) ) )
                 {
                     return (NOSHOOT.NOLOAD);
@@ -130,7 +130,7 @@ public class AIUtils
         }
         else if (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.LAUNCHER)
         {
-            if (FindLaunchable(pSoldier, pSoldier.inv[InventorySlot.HANDPOS].usItem) == NO_SLOT)
+            if (ItemSubSystem.FindLaunchable(pSoldier, pSoldier.inv[InventorySlot.HANDPOS].usItem) == NO_SLOT)
             //if ( !ItemHasAttachments( &(pSoldier.inv[HANDPOS]) ) )
             {
                 return (NOSHOOT.NOLOAD);
@@ -210,7 +210,7 @@ public class AIUtils
         bStanceNum = 0;
         uiCurrChanceOfDamage = 0;
 
-        bAPsAfterAttack = pSoldier.bActionPoints - pAttack.ubAPCost - GetAPsToReadyWeapon(pSoldier, pSoldier.usAnimState);
+        bAPsAfterAttack = pSoldier.bActionPoints - pAttack.ubAPCost - Points.GetAPsToReadyWeapon(pSoldier, pSoldier.usAnimState);
         if (bAPsAfterAttack < AP.CROUCH)
         {
             return (0);
@@ -220,7 +220,7 @@ public class AIUtils
         usRealAnimState = pSoldier.usAnimState;
         usBestAnimState = pSoldier.usAnimState;
         uiBestChanceOfDamage = 0;
-        iRange = GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, pAttack.sTarget);
+        iRange = IsometricUtils.GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, pAttack.sTarget);
 
         switch (gAnimControl[usRealAnimState].ubEndHeight)
         {
@@ -278,9 +278,9 @@ public class AIUtils
                 switch (pSoldier.usAnimState)
                 {
                     case AnimationStates.CROUCHING:
-                        if (iRange > POINT_BLANK_RANGE + 10 * (AIM.PENALTY_TARGET_CROUCHED / 3))
+                        if (iRange > POINT_BLANK_RANGE + 10 * ((int)AIM.PENALTY_TARGET_CROUCHED / 3))
                         {
-                            uiStanceBonus = AIM.BONUS_CROUCHING;
+                            uiStanceBonus = (int)AIM.BONUS_CROUCHING;
                         }
                         else if (iRange > POINT_BLANK_RANGE)
                         {
@@ -426,7 +426,7 @@ public class AIUtils
                         if (PreRandom(5 - SoldierDifficultyLevel(pSoldier)) == 0)
                         {
                             int sClosestNoise = (int)MostImportantNoiseHeard(pSoldier, null, null, null);
-                            if (sClosestNoise != NOWHERE && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestNoise) < MaxDistanceVisible() + 10)
+                            if (sClosestNoise != NOWHERE && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestNoise) < OppList.MaxDistanceVisible() + 10)
                             {
                                 pSoldier.usUIMovementMode = AnimationStates.SWATTING;
                                 fSet = true;
@@ -623,7 +623,7 @@ public class AIUtils
             pFriend = MercSlots[uiLoop];
 
             // if this merc is inactive, not in sector, or dead
-            if (!pFriend)
+            if (pFriend is null)
             {
                 continue;
             }
@@ -903,7 +903,7 @@ public class AIUtils
             pOpp = MercSlots[uiLoop];
 
             // if this merc is inactive, at base, on assignment, or dead
-            if (!pOpp)
+            if (pOpp is null)
             {
                 continue;          // next merc
             }
@@ -914,10 +914,10 @@ public class AIUtils
                 continue;          // next merc
             }
 
-            pbPersOL = pSoldier.bOppList + pOpp.ubID;
-            pbPublOL = gbPublicOpplist[pSoldier.bTeam] + pOpp.ubID;
-            psLastLoc = gsLastKnownOppLoc[pSoldier.ubID] + pOpp.ubID;
-            pbLastLevel = gbLastKnownOppLevel[pSoldier.ubID] + pOpp.ubID;
+            pbPersOL = pSoldier.bOppList[pOpp.ubID];
+            pbPublOL = gbPublicOpplist[pSoldier.bTeam][pOpp.ubID];
+            psLastLoc = gsLastKnownOppLoc[pSoldier.ubID][pOpp.ubID];
+            pbLastLevel = gbLastKnownOppLevel[pSoldier.ubID][pOpp.ubID];
 
             // if this opponent is unknown personally and publicly
             if ((pbPersOL == NOT_HEARD_OR_SEEN) && (pbPublOL == NOT_HEARD_OR_SEEN))
@@ -1037,7 +1037,7 @@ public class AIUtils
             bLevel = pbNoiseLevel;
 
             // if we are not NEAR the noise gridno...
-            if (pSoldier.bLevel != bLevel || IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) >= 6 || SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, (int)MaxDistanceVisible(), false) == 0)
+            if (pSoldier.bLevel != bLevel || IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) >= 6 || LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, OppList.MaxDistanceVisible(), false) == 0)
             // if we are NOT there (at the noise gridno)
             //	if (sGridNo != pSoldier.sGridNo)
             {
@@ -1090,7 +1090,7 @@ public class AIUtils
 
 
         // NOTE: THIS FUNCTION ALLOWS RETURN OF UNCONSCIOUS AND UNREACHABLE OPPONENTS
-        psLastLoc = (gsLastKnownOppLoc[pSoldier.ubID, 0]);
+        psLastLoc = (gsLastKnownOppLoc[pSoldier.ubID][0]);
 
         // hang pointers at start of this guy's personal and public opponent opplists
         pbPersOL = pSoldier.bOppList[0];
@@ -1119,9 +1119,9 @@ public class AIUtils
                 continue;  // next opponent
             }
 
-            pbPersOL = pSoldier.bOppList + pOpp.ubID;
-            pbPublOL = gbPublicOpplist[pSoldier.bTeam] + pOpp.ubID;
-            psLastLoc = gsLastKnownOppLoc[pSoldier.ubID] + pOpp.ubID;
+            pbPersOL = pSoldier.bOppList[pOpp.ubID];
+            pbPublOL = gbPublicOpplist[pSoldier.bTeam][pOpp.ubID];
+            psLastLoc = gsLastKnownOppLoc[pSoldier.ubID][pOpp.ubID];
 
             // if this opponent is unknown personally and publicly
             if ((pbPersOL == NOT_HEARD_OR_SEEN) && (pbPublOL == NOT_HEARD_OR_SEEN))
@@ -1134,8 +1134,8 @@ public class AIUtils
                  (pbPersOL == pbPublOL))
             {
                 // using personal knowledge, obtain opponent's "best guess" gridno
-                sGridNo = gsLastKnownOppLoc[pSoldier.ubID, pOpp.ubID];
-                bLevel = gbLastKnownOppLevel[pSoldier.ubID, pOpp.ubID];
+                sGridNo = gsLastKnownOppLoc[pSoldier.ubID][pOpp.ubID];
+                bLevel = gbLastKnownOppLevel[pSoldier.ubID][pOpp.ubID];
             }
             else
             {
@@ -1153,14 +1153,14 @@ public class AIUtils
             // this function is used only for turning towards closest opponent or changing stance
             // as such, if they AI is in a building, 
             // we should ignore people who are on the roof of the same building as the AI
-            if ((bLevel != pSoldier.bLevel) && SameBuilding(pSoldier.sGridNo, sGridNo))
+            if ((bLevel != pSoldier.bLevel) && Buildings.SameBuilding(pSoldier.sGridNo, sGridNo))
             {
                 continue;
             }
 
             // I hope this will be good enough; otherwise we need a fractional/world-units-based 2D distance function
             //sRange = PythSpacesAway( pSoldier.sGridNo, sGridNo);
-            iRange = GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, sGridNo);
+            iRange = IsometricUtils.GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, sGridNo);
 
             if (iRange < iClosestRange)
             {
@@ -1223,7 +1223,7 @@ public class AIUtils
                 continue;  // next opponent
             }
 
-            pbPersOL = pSoldier.bOppList + pOpp.ubID;
+            pbPersOL = pSoldier.bOppList[pOpp.ubID];
 
             // if this opponent is not seen personally
             if (pbPersOL != SEEN_CURRENTLY)
@@ -1244,14 +1244,14 @@ public class AIUtils
             // this function is used only for turning towards closest opponent or changing stance
             // as such, if they AI is in a building, 
             // we should ignore people who are on the roof of the same building as the AI
-            if ((bLevel != pSoldier.bLevel) && SameBuilding(pSoldier.sGridNo, sGridNo))
+            if ((bLevel != pSoldier.bLevel) && Buildings.SameBuilding(pSoldier.sGridNo, sGridNo))
             {
                 continue;
             }
 
             // I hope this will be good enough; otherwise we need a fractional/world-units-based 2D distance function
             //sRange = PythSpacesAway( pSoldier.sGridNo, sGridNo);
-            iRange = GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, sGridNo);
+            iRange = IsometricUtils.GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, sGridNo);
 
             if (iRange < iClosestRange)
             {
@@ -2040,26 +2040,26 @@ public class AIUtils
 
         switch (pSoldier.bAttitude)
         {
-            case DEFENSIVE:
+            case Attitudes.DEFENSIVE:
                 bMoraleCategory--;
                 break;
-            case BRAVESOLO:
+            case Attitudes.BRAVESOLO:
                 bMoraleCategory += 2;
                 break;
-            case BRAVEAID:
+            case Attitudes.BRAVEAID:
                 bMoraleCategory += 2;
                 break;
-            case CUNNINGSOLO:
+            case Attitudes.CUNNINGSOLO:
                 break;
-            case CUNNINGAID:
+            case Attitudes.CUNNINGAID:
                 break;
-            case AGGRESSIVE:
+            case Attitudes.AGGRESSIVE:
                 bMoraleCategory++;
                 break;
         }
 
         // make idiot administrators much more aggressive
-        if (pSoldier.ubSoldierClass == SOLDIER_CLASS_ADMINISTRATOR)
+        if (pSoldier.ubSoldierClass == SOLDIER_CLASS.ADMINISTRATOR)
         {
             bMoraleCategory += 2;
         }
@@ -2140,7 +2140,7 @@ public class AIUtils
 
         // brave guys never get hopeless, at worst they get worried
         if (bMoraleCategory == MORALE.HOPELESS &&
-            (pSoldier.bAttitude == BRAVESOLO || pSoldier.bAttitude == BRAVEAID))
+            (pSoldier.bAttitude == Attitudes.BRAVESOLO || pSoldier.bAttitude == Attitudes.BRAVEAID))
         {
             bMoraleCategory = MORALE.WORRIED;
         }
@@ -2196,7 +2196,7 @@ public class AIUtils
             iThreatValue += (pEnemy.bActionPoints / 2);
 
             // ADD 1/10 of man's current health (0-10)
-            iThreatValue += (uint)(pEnemy.bLife / 10);
+            iThreatValue += (int)(pEnemy.bLife / 10);
 
             if (pEnemy.bAssignment < Assignments.ON_DUTY)
             {
@@ -2214,13 +2214,13 @@ public class AIUtils
             }
 
             // SUBTRACT 1/5 of man's bleeding (0-20)
-            iThreatValue -= (pEnemy.bBleeding / 5);
+            iThreatValue -= (int)(pEnemy.bBleeding / 5);
 
             // SUBTRACT 1/10 of man's breath deficiency (0-10)
-            iThreatValue -= ((100 - pEnemy.bBreath) / 10);
+            iThreatValue -= (int)((100 - pEnemy.bBreath) / 10);
 
             // SUBTRACT man's current shock value
-            iThreatValue -= pEnemy.bShock;
+            iThreatValue -= (int)pEnemy.bShock;
         }
 
         // if I have a specifically defined spot where I'm at (sometime I don't!)
@@ -2259,7 +2259,7 @@ public class AIUtils
             if (iThreatValue > 0)
             {
                 // drastically reduce his threat value (divide by 5 to 18)
-                iThreatValue /= (4 + (OKLIFE - pEnemy.bLife));
+                iThreatValue /= (int)(4 + (OKLIFE - pEnemy.bLife));
             }
         }
 

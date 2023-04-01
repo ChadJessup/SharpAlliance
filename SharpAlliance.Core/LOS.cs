@@ -12,12 +12,12 @@ namespace SharpAlliance.Core;
 
 public class LOS
 {
-    public static bool SoldierToLocationLineOfSightTest(SOLDIERTYPE? pStartSoldier, int sGridNo, int ubTileSightLimit, int bAware)
+    public static bool SoldierToLocationLineOfSightTest(SOLDIERTYPE pStartSoldier, int sGridNo, int ubTileSightLimit, int bAware)
     {
         return (SoldierTo3DLocationLineOfSightTest(pStartSoldier, sGridNo, 0, 0, ubTileSightLimit, bAware));
     }
 
-    public static bool SoldierTo3DLocationLineOfSightTest(SOLDIERTYPE? pStartSoldier, int sGridNo, int bLevel, int bCubeLevel, int ubTileSightLimit, int bAware)
+    public static bool SoldierTo3DLocationLineOfSightTest(SOLDIERTYPE pStartSoldier, int sGridNo, int bLevel, int bCubeLevel, int ubTileSightLimit, int bAware)
     {
         float dStartZPos, dEndZPos;
         int sXPos, sYPos;

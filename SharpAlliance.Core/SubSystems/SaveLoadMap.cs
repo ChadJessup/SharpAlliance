@@ -24,7 +24,7 @@ public class SaveLoadMap
         gfApplyChangesToTempFile = fAddToMap;
     }
 
-    public static void AddObjectToMapTempFile(int uiMapIndex, TileDefines usIndex)
+    public static void AddObjectToMapTempFile(int uiMapIndex, TileIndexes usIndex)
     {
         MODIFY_MAP Map;
         TileTypeDefines uiType;
@@ -51,6 +51,17 @@ public class SaveLoadMap
             usSubImageIndex = usSubIndex,
 
             ubType = SLM.OBJECT,
+        };
+
+        SaveModifiedMapStructToMapTempFile(Map, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+    }
+
+    public static void AddWindowHitToMapTempFile(int uiMapIndex)
+    {
+        MODIFY_MAP Map = new()
+        {
+            usGridNo = uiMapIndex,
+            ubType = SLM.WINDOW_HIT,
         };
 
         SaveModifiedMapStructToMapTempFile(Map, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
@@ -97,7 +108,7 @@ public class SaveLoadMap
         return (true);
     }
 
-    public static void AddRemoveObjectToMapTempFile(int uiMapIndex, TileDefines usIndex)
+    public static void AddRemoveObjectToMapTempFile(int uiMapIndex, TileIndexes usIndex)
     {
         MODIFY_MAP Map;
         TileTypeDefines uiType;

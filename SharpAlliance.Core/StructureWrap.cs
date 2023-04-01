@@ -225,7 +225,7 @@ public class StructureWrap
     }
 
 
-    bool IsHiddenStructureVisible(int sGridNo, TileDefines usIndex)
+    bool IsHiddenStructureVisible(int sGridNo, TileIndexes usIndex)
     {
         // Check if it's a hidden struct and we have not revealed anything!
         if (gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HIDDEN_TILE))
