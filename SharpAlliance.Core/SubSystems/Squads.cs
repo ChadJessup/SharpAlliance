@@ -13,7 +13,6 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Squads
 {
-    public static SquadEnum iCurrentTacticalSquad = SquadEnum.FIRST_SQUAD;
     public static bool fExitingVehicleToSquad = false;
 
 

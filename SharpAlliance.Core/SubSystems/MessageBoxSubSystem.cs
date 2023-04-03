@@ -81,7 +81,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         return true;
     }
 
-    public static int DoMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MessageBoxFlags usFlags, MSGBOX_CALLBACK ReturnCallback, ref Rectangle? pCenteringRect)
+    public static int DoMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK ReturnCallback, ref Rectangle? pCenteringRect)
     {
         VSURFACE_DESC vs_desc;
         int usTextBoxWidth;
@@ -102,7 +102,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         //this variable can be unset if ur in a non gamescreen and DONT want the msg box to use the save buffer
         gfDontOverRideSaveBuffer = true;
 
-        cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
+        CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
         if (gMsgBox.BackRegion.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
         {
@@ -196,7 +196,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 break;
         }
 
-        if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_USE_CENTERING_RECT) && pCenteringRect is not null)
+        if (usFlags.HasFlag(MSG_BOX_FLAG.USE_CENTERING_RECT) && pCenteringRect is not null)
         {
             aRect.Y = pCenteringRect.Value.Y;
             aRect.X = pCenteringRect.Value.X;
@@ -281,7 +281,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
         if (gGameSettings[TOPTION.DONT_MOVE_MOUSE] == false)
         {
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.OK))
             {
                 MouseSubSystem.SimulateMouseMovement((gMsgBox.sX + (usTextBoxWidth / 2) + 27), (gMsgBox.sY + (usTextBoxHeight - 10)));
             }
@@ -303,7 +303,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         }
 
         // Create four numbered buttons
-        if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        if (usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
         {
             // This is exclusive of any other buttons... no ok, no cancel, no nothing
 
@@ -365,7 +365,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         {
 
             // Create text button
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.OK))
             {
 
 
@@ -387,7 +387,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
 
             // Create text button
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CANCEL))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.CANCEL))
             {
                 sButtonX = (usTextBoxWidth - GetMSgBoxButtonWidth(gMsgBox.iButtonImages)) / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -403,7 +403,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
             }
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -429,7 +429,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
             }
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.CONTINUESTOP))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -455,7 +455,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
             }
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.OKCONTRACT))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -481,7 +481,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
             }
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.YESNOCONTRACT))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 3;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -517,7 +517,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
             }
 
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.GENERICCONTRACT))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 3;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -552,7 +552,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
             }
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.GENERIC))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -578,7 +578,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
             }
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.YESNOLIE))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 3;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -613,7 +613,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
             }
 
-            if (usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
+            if (usFlags.HasFlag(MSG_BOX_FLAG.OKSKIP))
             {
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
@@ -824,7 +824,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         gMsgBox.iBoxId = -1;
 
         //Delete buttons!
-        if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
         {
             ButtonSubSystem.RemoveButton(gMsgBox.uiButton[0]);
             ButtonSubSystem.RemoveButton(gMsgBox.uiButton[1]);
@@ -833,57 +833,57 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         }
         else
         {
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OKCONTRACT))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
-            {
-                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
-                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
-                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
-            }
-
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNOCONTRACT))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
-            {
-                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
-                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
-            }
-
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.GENERICCONTRACT))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.GENERIC))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNOLIE))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.CONTINUESTOP))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OKSKIP))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
@@ -981,7 +981,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
 public class MessageBox
 {
-    public MessageBoxFlags usFlags;
+    public MSG_BOX_FLAG usFlags;
     public ScreenName uiExitScreen;
     public MSGBOX_CALLBACK? ExitCallback;
     public int sX;
@@ -1011,20 +1011,20 @@ public enum MessageBoxReturnCode
 }
 
 [Flags]
-public enum MessageBoxFlags
+public enum MSG_BOX_FLAG
 {
-    MSG_BOX_FLAG_USE_CENTERING_RECT = 0x0001,// Pass in a rect to center in
-    MSG_BOX_FLAG_OK = 0x0002,	// Displays OK button
-    MSG_BOX_FLAG_YESNO = 0x0004,// Displays YES NO buttons
-    MSG_BOX_FLAG_CANCEL = 0x0008,// Displays YES NO buttons
-    MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS = 0x0010,// Displays four numbered buttons, 1-4
-    MSG_BOX_FLAG_YESNOCONTRACT = 0x0020,     // yes no and contract buttons
-    MSG_BOX_FLAG_OKCONTRACT = 0x0040,	// ok and contract buttons
-    MSG_BOX_FLAG_YESNOLIE = 0x0080,		// ok and contract buttons
-    MSG_BOX_FLAG_CONTINUESTOP = 0x0100,	// continue stop box
-    MSG_BOX_FLAG_OKSKIP = 0x0200,		// Displays ok or skip (meanwhile) buttons
-    MSG_BOX_FLAG_GENERICCONTRACT = 0x0400,// displays contract buttoin + 2 user-defined text buttons
-    MSG_BOX_FLAG_GENERIC = 0x0800,			// 2 user-defined text buttons
+    USE_CENTERING_RECT = 0x0001,// Pass in a rect to center in
+    OK = 0x0002,	// Displays OK button
+    YESNO = 0x0004,// Displays YES NO buttons
+    CANCEL = 0x0008,// Displays YES NO buttons
+    FOUR_NUMBERED_BUTTONS = 0x0010,// Displays four numbered buttons, 1-4
+    YESNOCONTRACT = 0x0020,     // yes no and contract buttons
+    OKCONTRACT = 0x0040,	// ok and contract buttons
+    YESNOLIE = 0x0080,		// ok and contract buttons
+    CONTINUESTOP = 0x0100,	// continue stop box
+    OKSKIP = 0x0200,		// Displays ok or skip (meanwhile) buttons
+    GENERICCONTRACT = 0x0400,// displays contract buttoin + 2 user-defined text buttons
+    GENERIC = 0x0800,			// 2 user-defined text buttons
 }
 
 public enum MessageBoxStyle

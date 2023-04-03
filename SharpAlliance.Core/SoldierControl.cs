@@ -5082,7 +5082,7 @@ int	gOrangeGlowG[]=
 
     }
 
-    void BeginSoldierClimbUpRoof(SOLDIERTYPE? pSoldier)
+    public static void BeginSoldierClimbUpRoof(SOLDIERTYPE pSoldier)
     {
         WorldDirections bNewDirection;
 
@@ -8003,13 +8003,12 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     }
 
 
-    public static void ReceivingSoldierCancelServices(SOLDIERTYPE? pSoldier)
+    public static void ReceivingSoldierCancelServices(SOLDIERTYPE pSoldier)
     {
         InternalReceivingSoldierCancelServices(pSoldier, true);
     }
 
-
-    private static void InternalGivingSoldierCancelServices(SOLDIERTYPE? pSoldier, bool fPlayEndAnim)
+    public static void InternalGivingSoldierCancelServices(SOLDIERTYPE pSoldier, bool fPlayEndAnim)
     {
         SOLDIERTYPE? pTSoldier;
 
@@ -9603,7 +9602,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 return (false);
             }
 
-            uiRange = GetRangeFromGridNoDiff(pSoldier.sGridNo, pTSoldier.sGridNo);
+            uiRange = IsometricUtils.GetRangeFromGridNoDiff(pSoldier.sGridNo, pTSoldier.sGridNo);
 
             if (uiRange > (NPC_TALK_RADIUS * 2))
             {

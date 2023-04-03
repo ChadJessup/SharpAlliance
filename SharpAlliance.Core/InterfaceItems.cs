@@ -256,15 +256,23 @@ public class InterfaceItems
         string key;
 
         // Load all four body type images
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male.sti",     out key)); guiBodyInvVO[SoldierBodyTypes.BIGMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male_H.sti",   out key)); guiBodyInvVO[SoldierBodyTypes.BIGMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti",           out key)); guiBodyInvVO[SoldierBodyTypes.REGMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male_H.sti",         out key)); guiBodyInvVO[SoldierBodyTypes.REGMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti",           out key)); guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti",           out key)); guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female.sti",         out key)); guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female_H.sti",       out key)); guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\gold_key_button.sti",                 out guiGoldKeyVO));
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.BIGMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.BIGMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.REGMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male_H.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.REGMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female_H.sti", out key));
+        guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1] = key;
+        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\gold_key_button.sti", out guiGoldKeyVO));
 
         // Add cammo region 
         MouseSubSystem.MSYS_DefineRegion(
@@ -733,7 +741,8 @@ public class InterfaceItems
     {
         bool fFound = false;
         InventorySlot cnt;
-        OBJECTTYPE pObject, pTestObject;
+        OBJECTTYPE pObject;
+        OBJECTTYPE? pTestObject;
         bool fFoundAttachment = false;
 
         if (fFromMerc == false)
@@ -781,11 +790,11 @@ public class InterfaceItems
                     // OK, Light up portrait as well.....
                     if (fOn > 0)
                     {
-                        gbCompatibleApplyItem = true;
+                        gbCompatibleApplyItem = 1;
                     }
                     else
                     {
-                        gbCompatibleApplyItem = false;
+                        gbCompatibleApplyItem = 0;
                     }
 
                     fFound = true;
@@ -1012,13 +1021,13 @@ public class InterfaceItems
                 if (CompatibleItemForApplyingOnMerc(gpItemPointer))
                 {
                     // OK, Light up portrait as well.....
-                    if (fOn)
+                    if (fOn > 0)
                     {
-                        gbCompatibleApplyItem = true;
+                        gbCompatibleApplyItem = 1;
                     }
                     else
                     {
-                        gbCompatibleApplyItem = false;
+                        gbCompatibleApplyItem = 0;
                     }
 
                     fFound = true;
@@ -1065,7 +1074,7 @@ public class InterfaceItems
 
         //if ( !fFoundAttachment )
         //{
-        if ((Item[pTestObject.usItem].usItemClass & IC_GUN))
+        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN)))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
@@ -1121,16 +1130,16 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                if (gbCompatibleAmmo[cnt])
+                if (gbCompatibleAmmo[cnt] > 0)
                 {
                     fFound = true;
-                    gbCompatibleAmmo[cnt] = false;
+                    gbCompatibleAmmo[cnt] = 0;
                 }
 
-                if (gbCompatibleApplyItem)
+                if (gbCompatibleApplyItem > 0)
                 {
                     fFound = true;
-                    gbCompatibleApplyItem = false;
+                    gbCompatibleApplyItem = 0;
                 }
             }
         }
@@ -1151,21 +1160,21 @@ public class InterfaceItems
 
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
         {
-            if (gbCompatibleAmmo[cnt])
+            if (gbCompatibleAmmo[cnt] > 0)
             {
                 gbCompatibleAmmo[cnt] = 0;
             }
         }
     }
 
-    bool HandleCompatibleAmmoUI(SOLDIERTYPE pSoldier, InventorySlot bInvPos, bool fOn)
+    bool HandleCompatibleAmmoUI(SOLDIERTYPE pSoldier, InventorySlot bInvPos, int fOn)
     {
         InventorySlot cnt;
-        OBJECTTYPE pTestObject;
+        OBJECTTYPE? pTestObject;
         bool fFound = false;
 
         //if we are in the shopkeeper interface
-        if (guiTacticalInterfaceFlags & INTERFACE_SHOPKEEP_INTERFACE)
+        if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE))
         {
             // if the inventory position is -1, this is a flag from the Shopkeeper interface screen
             //indicating that we are to use a different object to do the search
@@ -1173,7 +1182,7 @@ public class InterfaceItems
             {
                 if (fOn)
                 {
-                    if (gpHighLightedItemObject)
+                    if (gpHighLightedItemObject is not null)
                     {
                         pTestObject = gpHighLightedItemObject;
                         //					gubSkiDirtyLevel = SKI_DIRTY_LEVEL2;
@@ -1189,7 +1198,7 @@ public class InterfaceItems
 
                     for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
                     {
-                        if (gbCompatibleAmmo[cnt])
+                        if (gbCompatibleAmmo[cnt] > 0)
                         {
                             fFound = true;
                             gbCompatibleAmmo[cnt] = 0;
@@ -1379,7 +1388,7 @@ public class InterfaceItems
         ETRLEObject pTrav;
         int usHeight, usWidth;
         int sCenX, sCenY, sNewY, sNewX;
-        HVOBJECT hVObject;
+        HVOBJECT? hVObject;
         bool fLineSplit = false;
         int sFontX2, sFontY2;
         int sFontX, sFontY;
@@ -1401,7 +1410,7 @@ public class InterfaceItems
         if (fDirtyLevel == DIRTYLEVEL2)
         {
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-            GetVideoObject(hVObject, GetInterfaceGraphicForItem(pItem));
+            VeldridVideoManager.GetVideoObject(out hVObject, GetInterfaceGraphicForItem(pItem));
             pTrav = (hVObject.pETRLEObject[pItem.ubGraphicNum]);
             usHeight = (int)pTrav.usHeight;
             usWidth = (int)pTrav.usWidth;
@@ -1745,8 +1754,17 @@ public class InterfaceItems
 
             //return( false );
 
-            MouseSubSystem.MSYS_DefineRegion(gInvDesc, (int)gsInvDescX, (int)gsInvDescY, (int)(gsInvDescX + MAP_ITEMDESC_WIDTH), (int)(gsInvDescY + MAP_ITEMDESC_HEIGHT), MSYS_PRIORITY.HIGHEST - 2,
-                                  CURSOR_NORMAL, MSYS_NO_CALLBACK, ItemDescCallback);
+            MouseSubSystem.MSYS_DefineRegion(
+                gInvDesc,
+                gsInvDescX, 
+                gsInvDescY, 
+                (gsInvDescX + MAP_ITEMDESC_WIDTH), 
+                (gsInvDescY + MAP_ITEMDESC_HEIGHT),
+                MSYS_PRIORITY.HIGHEST - 2,
+                CURSOR.NORMAL,
+                MSYS_NO_CALLBACK,
+                ItemDescCallback);
+
             MouseSubSystem.MSYS_AddRegion(ref gInvDesc);
 
             giMapInvDescButtonImage = LoadButtonImage("INTERFACE\\itemdescdonebutton.sti", -1, 0, -1, 1, -1);
@@ -1761,10 +1779,10 @@ public class InterfaceItems
         else
         {
             MouseSubSystem.MSYS_DefineRegion(
-                gInvDesc, 
-                gsInvDescX, 
-                gsInvDescY, 
-                (gsInvDescX + ITEMDESC_WIDTH), 
+                gInvDesc,
+                gsInvDescX,
+                gsInvDescY,
+                (gsInvDescX + ITEMDESC_WIDTH),
                 (gsInvDescY + ITEMDESC_HEIGHT),
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.MSYS_NO_CURSOR,
@@ -2353,11 +2371,11 @@ public class InterfaceItems
             if (gpItemPointer != null)
             {
                 // nb pointer could be null because of inventory manipulation in mapscreen from sector inv
-                if (!gpItemPointerSoldier || EnoughPoints(gpItemPointerSoldier, AP_RELOAD_GUN, 0, true))
+                if (gpItemPointerSoldier is null || EnoughPoints(gpItemPointerSoldier, AP.RELOAD_GUN, 0, true))
                 {
-                    if ((Item[gpItemPointer.usItem].fFlags & ITEM_INSEPARABLE) && ValidAttachment(gpItemPointer.usItem, gpItemDescObject.usItem))
+                    if ((Item[gpItemPointer.usItem].fFlags.HasFlag(ItemAttributes.ITEM_INSEPARABLE) && ValidAttachment(gpItemPointer.usItem, gpItemDescObject.usItem))
                     {
-                        DoScreenIndependantMessageBox(Message[STR_PERMANENT_ATTACHMENT], (int)MSG_BOX_FLAG_YESNO, PermanantAttachmentMessageBoxCallBack);
+                        DoScreenIndependantMessageBox(Message[STR_PERMANENT_ATTACHMENT], MSG_BOX_FLAG.YESNO, PermanantAttachmentMessageBoxCallBack);
                         return;
                     }
 
@@ -4541,7 +4559,7 @@ public class InterfaceItems
     bool ItemCursorInLobRange(int usMapPos)
     {
         // Draw item depending on distance from buddy
-        if (GetRangeFromGridNoDiff(usMapPos, gpItemPointerSoldier.sGridNo) > MIN_LOB_RANGE)
+        if (IsometricUtils.GetRangeFromGridNoDiff(usMapPos, gpItemPointerSoldier.sGridNo) > MIN_LOB_RANGE)
         {
             return (false);
         }
@@ -5520,7 +5538,7 @@ public class InterfaceItems
 
         // Build a mouse region here that is over any others.....
         MouseSubSystem.MSYS_DefineRegion(
-            (gItemPickupMenu.BackRegion), 
+            (gItemPickupMenu.BackRegion),
             (532),
             (367),
             (640),
@@ -5537,13 +5555,13 @@ public class InterfaceItems
         // Build a mouse region here that is over any others.....
         MouseSubSystem.MSYS_DefineRegion(
             (gItemPickupMenu.BackRegions),
-            (gItemPickupMenu.sX), 
-            (gItemPickupMenu.sY), 
-            (gItemPickupMenu.sX + gItemPickupMenu.sWidth), 
-            (gItemPickupMenu.sY + gItemPickupMenu.sHeight), 
+            (gItemPickupMenu.sX),
+            (gItemPickupMenu.sY),
+            (gItemPickupMenu.sX + gItemPickupMenu.sWidth),
+            (gItemPickupMenu.sY + gItemPickupMenu.sHeight),
             MSYS_PRIORITY.HIGHEST,
-            CURSOR.NORMAL, 
-            MSYS_NO_CALLBACK, 
+            CURSOR.NORMAL,
+            MSYS_NO_CALLBACK,
             MSYS_NO_CALLBACK);
 
         // Add region
@@ -5598,14 +5616,14 @@ public class InterfaceItems
         {
             // Build a mouse region here that is over any others.....
             MouseSubSystem.MSYS_DefineRegion(
-                (gItemPickupMenu.Regions[cnt]), 
-                (sCenX), 
-                (sCenY + 1), 
-                (sCenX + gItemPickupMenu.sWidth), 
-                (sCenY + ITEMPICK_GRAPHIC_YSPACE), 
+                (gItemPickupMenu.Regions[cnt]),
+                (sCenX),
+                (sCenY + 1),
+                (sCenX + gItemPickupMenu.sWidth),
+                (sCenY + ITEMPICK_GRAPHIC_YSPACE),
                 MSYS_PRIORITY.HIGHEST,
-                CURSOR.NORMAL, 
-                ItemPickMenuMouseMoveCallback, 
+                CURSOR.NORMAL,
+                ItemPickMenuMouseMoveCallback,
                 ItemPickMenuMouseClickCallback);
 
             // Add region
@@ -6205,7 +6223,7 @@ public class InterfaceItems
     }
 
 
-        static bool bChecked = false;
+    static bool bChecked = false;
     void ItemPickMenuMouseMoveCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiItemPos;
@@ -6366,11 +6384,11 @@ public class InterfaceItems
                         {
                             if (guiCurrentScreen == SHOPKEEPER_SCREEN)
                             {
-                                DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], SHOPKEEPER_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                                MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], SHOPKEEPER_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
                             }
                             else
                             {
-                                DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                                MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
                             }
 
                             return;
@@ -6386,7 +6404,7 @@ public class InterfaceItems
                         //if the player is removing money from their account, and they are removing more then $20,000
                         if (gfAddingMoneyToMercFromPlayersAccount && (gRemoveMoney.uiMoneyRemoving + 100) > MAX_MONEY_PER_SLOT)
                         {
-                            DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                            MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
                             return;
                         }
 
@@ -6400,7 +6418,7 @@ public class InterfaceItems
                         //if the player is removing money from their account, and they are removing more then $20,000
                         if (gfAddingMoneyToMercFromPlayersAccount && (gRemoveMoney.uiMoneyRemoving + 10) > MAX_MONEY_PER_SLOT)
                         {
-                            DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                            MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
                             return;
                         }
 

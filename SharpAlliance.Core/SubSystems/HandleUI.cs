@@ -2220,9 +2220,9 @@ public class HandleUI
         Globals.gfUIForceReExamineCursorData = true;
     }
 
-    void AttackRequesterCallback(byte bExitValue)
+    void AttackRequesterCallback(MessageBoxReturnCode bExitValue)
     {
-        if (bExitValue == MSG_BOX_RETURN_YES)
+        if (bExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
         {
             Globals.gTacticalStatus.ubLastRequesterTargetID = Globals.gpRequesterTargetMerc.ubProfile;
 
@@ -2275,7 +2275,15 @@ public class HandleUI
 
                         // wprintf(zStr, Globals.TacticalStr[ATTACK_OWN_GUY_PROMPT], pTSoldier.name);
 
-                        MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, ScreenName.GAME_SCREEN, MessageBoxFlags.MSG_BOX_FLAG_YESNO, AttackRequesterCallback, null);
+                        Rectangle? _ = null;
+
+                        MessageBoxSubSystem.DoMessageBox(
+                            MessageBoxStyle.MSG_BOX_BASIC_STYLE,
+                            zStr,
+                            ScreenName.GAME_SCREEN,
+                            MSG_BOX_FLAG.YESNO,
+                            AttackRequesterCallback,
+                            ref _);
                     }
                 }
 
@@ -2314,7 +2322,7 @@ public class HandleUI
                     IsometricUtils.ConvertGridNoToXY(usMapPos, out sTargetXPos, out sTargetYPos);
 
                     // UNReady weapon
-                    SoldierReadyWeapon(pSoldier, sTargetXPos, sTargetYPos, true);
+                    SoldierControl.SoldierReadyWeapon(pSoldier, sTargetXPos, sTargetYPos, true);
 
                     Globals.gUITargetReady = false;
                 }
@@ -3089,7 +3097,7 @@ public class HandleUI
             {
                 // Adjust stance
                 //ChangeSoldierStance( pSoldier, bNewStance );
-                SendChangeSoldierStanceEvent(pSoldier, bNewStance);
+                SoldierControl.SendChangeSoldierStanceEvent(pSoldier, bNewStance);
 
                 pSoldier.sFinalDestination = pSoldier.sGridNo;
                 pSoldier.bGoodContPath = 0;
@@ -3109,7 +3117,7 @@ public class HandleUI
             if (Globals.gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.STATIONARY))
             {
                 // Change stance normally
-                SendChangeSoldierStanceEvent(pSoldier, bNewStance);
+                SoldierControl.SendChangeSoldierStanceEvent(pSoldier, bNewStance);
             }
             else
             {
@@ -3128,9 +3136,7 @@ public class HandleUI
                     pSoldier.usDontUpdateNewGridNoOnMoveAnimChange = 1;
                 }
 
-
-                ChangeSoldierState(pSoldier, pSoldier.usUIMovementMode, 0, false);
-
+                SoldierControl.ChangeSoldierState(pSoldier, pSoldier.usUIMovementMode, 0, false);
             }
         }
 
@@ -3141,7 +3147,7 @@ public class HandleUI
 
         // ATE: If we are being serviced...stop...
         // InternalReceivingSoldierCancelServices( pSoldier, false );
-        InternalGivingSoldierCancelServices(pSoldier, false);
+        SoldierControl.InternalGivingSoldierCancelServices(pSoldier, false);
         //gfPlotNewMovement   = true;
 
     }
@@ -4398,7 +4404,7 @@ public class HandleUI
             sTargetGridNo = Globals.MercPtrs[ubTargID].sGridNo;
         }
 
-        uiRange = GetRangeFromGridNoDiff(pSoldier.sGridNo, sTargetGridNo);
+        uiRange = IsometricUtils.GetRangeFromGridNoDiff(pSoldier.sGridNo, sTargetGridNo);
 
 
         //ATE: Check if we have good LOS
@@ -5305,7 +5311,7 @@ public class HandleUI
                 }
 
                 // Check distance
-                uiRange = GetRangeFromGridNoDiff(pSoldier.sGridNo, usMapPos);
+                uiRange = IsometricUtils.GetRangeFromGridNoDiff(pSoldier.sGridNo, (int)usMapPos);
 
                 // Double check path
                 if (GetCivType(pTSoldier) != CIV_TYPE_NA)

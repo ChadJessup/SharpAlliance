@@ -70,7 +70,7 @@ public class MessageBoxScreen : IScreen
         // Render the box!
         if (gMsgBox.fRenderBox)
         {
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiButton[0]);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiButton[1]);
@@ -78,63 +78,63 @@ public class MessageBoxScreen : IScreen
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiButton[3]);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CANCEL))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.CANCEL))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OKCONTRACT))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
-            {
-                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
-                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
-                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
-            }
-
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNOCONTRACT))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.GENERICCONTRACT))
+            {
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
+                ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.GENERIC))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.CONTINUESTOP))
             {
                 // Exit messagebox
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNOLIE))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OKSKIP))
             {
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiYESButton);
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
@@ -269,7 +269,7 @@ public class MessageBoxScreen : IScreen
         gMsgBox.iBoxId = -1;
 
         //Delete buttons!
-        if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
         {
             ButtonSubSystem.RemoveButton(gMsgBox.uiButton[0]);
             ButtonSubSystem.RemoveButton(gMsgBox.uiButton[1]);
@@ -278,57 +278,57 @@ public class MessageBoxScreen : IScreen
         }
         else
         {
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKCONTRACT))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OKCONTRACT))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOCONTRACT))
-            {
-                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
-                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
-                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
-            }
-
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERICCONTRACT))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNOCONTRACT))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_GENERIC))
-            {
-                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
-                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
-            }
-
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNOLIE))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.GENERICCONTRACT))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.GENERIC))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
             }
 
-            if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OKSKIP))
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNOLIE))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiOKButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.CONTINUESTOP))
+            {
+                ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
+                ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);
+            }
+
+            if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OKSKIP))
             {
                 ButtonSubSystem.RemoveButton(gMsgBox.uiYESButton);
                 ButtonSubSystem.RemoveButton(gMsgBox.uiNOButton);

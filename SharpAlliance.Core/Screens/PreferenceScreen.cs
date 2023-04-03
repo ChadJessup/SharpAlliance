@@ -1003,7 +1003,7 @@ public class PreferenceScreen : IScreen
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
             //Confirm the Exit to the main menu screen
-            DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MessageBoxFlags.MSG_BOX_FLAG_YESNO, ConfirmQuitToMainMenuMessageBoxCallBack);
+            DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmQuitToMainMenuMessageBoxCallBack);
 
             ///		SetOptionsExitScreen( MAINMENU_SCREEN );
 
@@ -1134,7 +1134,7 @@ public class PreferenceScreen : IScreen
                         this.guiOptionsToggles[ubButton].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
 
                         //Confirm the Exit to the main menu screen
-                        this.DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_NEED_AT_LEAST_SPEECH_OR_SUBTITLE_OPTION_ON], ScreenName.OPTIONS_SCREEN, MessageBoxFlags.MSG_BOX_FLAG_OK, null);
+                        this.DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_NEED_AT_LEAST_SPEECH_OR_SUBTITLE_OPTION_ON], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG.OK, null);
                         this.gfExitOptionsDueToMessageBox = false;
                     }
                 }
@@ -1167,7 +1167,7 @@ public class PreferenceScreen : IScreen
         MessageBoxStyle ubStyle, 
         string zString, 
         ScreenName uiExitScreen, 
-        MessageBoxFlags usFlags, 
+        MSG_BOX_FLAG usFlags, 
         MSGBOX_CALLBACK ReturnCallback)
     {
         Rectangle? CenteringRect = new(0, 0, 639, 479);
@@ -1176,7 +1176,7 @@ public class PreferenceScreen : IScreen
         gfExitOptionsDueToMessageBox = true;
 
         // do message box and return
-        this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MessageBoxFlags.MSG_BOX_FLAG_USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
+        this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
 
         // send back return state
         return ((giOptionsMessageBox != -1));

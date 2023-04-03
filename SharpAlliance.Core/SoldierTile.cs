@@ -362,7 +362,7 @@ public class SoldierTile
 
                             // Change height to stand
                             pSoldier.fContinueMoveAfterStanceChange = true;
-                            SendChangeSoldierStanceEvent(pSoldier, AnimationHeights.ANIM_STAND);
+                            SoldierControl.SendChangeSoldierStanceEvent(pSoldier, AnimationHeights.ANIM_STAND);
                             break;
                     }
 
@@ -370,7 +370,7 @@ public class SoldierTile
                     // Change to walking
                     if (pSoldier.usAnimState == AnimationStates.RUNNING)
                     {
-                        ChangeSoldierState(pSoldier, AnimationStates.WALKING, 0, false);
+                        SoldierControl.ChangeSoldierState(pSoldier, AnimationStates.WALKING, 0, false);
                     }
                 }
             }

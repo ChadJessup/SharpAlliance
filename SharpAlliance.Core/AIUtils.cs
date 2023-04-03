@@ -152,7 +152,7 @@ public class AIUtils
         }
         // We don't want to go prone if there is a nearby enemy
         ClosestKnownOpponent(pSoldier, out sOpponentGridNo, out bOpponentLevel);
-        iRange = GetRangeFromGridNoDiff(pSoldier.sGridNo, sOpponentGridNo);
+        iRange = IsometricUtils.GetRangeFromGridNoDiff(pSoldier.sGridNo, sOpponentGridNo);
         if (iRange > 10)
         {
             return (true);

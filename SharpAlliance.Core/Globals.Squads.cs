@@ -10,6 +10,8 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public static SquadEnum iCurrentTacticalSquad = SquadEnum.FIRST_SQUAD;
+
     public static bool gfPausedTacticalRenderFlags;
     public static int gfPausedTacticalRenderInterfaceFlags;
 

@@ -237,11 +237,11 @@ public class Meanwhile
 
         if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
         {
-            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, ref toss);
+            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG.OKSKIP, BeginMeanwhileCallBack, ref toss);
         }
         else
         {
-            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MessageBoxFlags.MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, ref toss);
+            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG.OK, BeginMeanwhileCallBack, ref toss);
         }
     }
 
