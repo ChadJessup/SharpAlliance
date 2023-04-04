@@ -4802,7 +4802,7 @@ int	gOrangeGlowG[]=
         Stream hFile;
         int cnt, cnt2;
 
-        hFile = FileManager.FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, FALSE);
+        hFile = FileManager.FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, false);
 
         // Read # of types
         if (!FileManager.FileRead(hFile, ref guiNumPaletteSubRanges, sizeof(guiNumPaletteSubRanges), null))
@@ -4826,11 +4826,11 @@ int	gOrangeGlowG[]=
         // Loop for each one, read in data
         for (cnt = 0; cnt < guiNumPaletteSubRanges; cnt++)
         {
-            if (!FileManager.FileRead(hFile, &gpPaletteSubRanges[cnt].ubStart, sizeof(int), null))
+            if (!FileManager.FileRead(hFile, out gpPaletteSubRanges[cnt].ubStart, sizeof(int), null))
             {
                 return (false);
             }
-            if (!FileManager.FileRead(hFile, &gpPaletteSubRanges[cnt].ubEnd, sizeof(int), null))
+            if (!FileManager.FileRead(hFile, out gpPaletteSubRanges[cnt].ubEnd, sizeof(int), null))
             {
                 return (false);
             }
@@ -4838,7 +4838,7 @@ int	gOrangeGlowG[]=
 
 
         // Read # of palettes
-        if (!FileManager.FileRead(hFile, &guiNumReplacements, sizeof(guiNumReplacements), null))
+        if (!FileManager.FileRead(hFile, ref guiNumReplacements, sizeof(guiNumReplacements), null))
         {
             return (false);
         }

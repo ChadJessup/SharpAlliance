@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
@@ -287,6 +288,8 @@ public class FileManager : IFileManager
         var buffer = new byte[uiFileSectionSize];
         uiBytesRead = stream.Read(buffer, 0, uiFileSectionSize);
         var bufferSpan = new ReadOnlySpan<byte>(buffer);
+
+        //Unsafe.As().CopyBlock()
 
         var tSpan = MemoryMarshal.Cast<byte, T>(bufferSpan);
 

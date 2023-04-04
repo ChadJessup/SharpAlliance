@@ -840,8 +840,8 @@ public class CivQuotes
     {
         int uiNumBytesRead;
 
-        FileRead(hFile, &gCivQuotes, sizeof(gCivQuotes), &uiNumBytesRead);
-        if (uiNumBytesRead != sizeof(gCivQuotes))
+        CIV_QUOTEStruct[] quotes = new CIV_QUOTEStruct[(int)CIV_QUOTE.NUM_CIV_QUOTES];
+        if (FileManager.FileRead<CIV_QUOTEStruct[]>(hFile, ref quotes, (int)CIV_QUOTE.NUM_CIV_QUOTES, out uiNumBytesRead))
         {
             return (false);
         }
@@ -850,13 +850,12 @@ public class CivQuotes
 
         return (true);
     }
-
 }
 
-public class CIV_QUOTEStruct
+public struct CIV_QUOTEStruct
 {
-    public int ubNumEntries;
-    public int ubUnusedCurrentEntry;
+    public byte ubNumEntries;
+    public byte ubUnusedCurrentEntry;
 }
 
 public enum CIV_QUOTE
