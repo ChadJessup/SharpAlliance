@@ -82,7 +82,7 @@ public class PathAI
     }
 
 
-    public int UIPlotPath(
+    public static int UIPlotPath(
         SOLDIERTYPE? pSold,
         int sDestGridno,
         PlotPathDefines bCopyRoute,

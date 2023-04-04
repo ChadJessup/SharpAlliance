@@ -168,7 +168,7 @@ public class SOLDIERTYPE
     public bool fTurningToShoot;
     public bool fTurningToFall;
     public bool fTurningUntilDone;
-    public bool fGettingHit;
+    public int fGettingHit;
     public bool fInNonintAnim;
     public bool fFlashLocator;
     public int sLocatorFrame;
@@ -536,7 +536,7 @@ public class SOLDIERTYPE
     //TIMECOUNTER PanelAnimateCounter;
     public int uiMercChecksum;
 
-    public int bCurrentCivQuote;
+    public CIV_QUOTE bCurrentCivQuote;
     public int bCurrentCivQuoteDelta;
     public SOLDIER_MISC ubMiscSoldierFlags;
     public REASON_STOPPED ubReasonCantFinishMove;

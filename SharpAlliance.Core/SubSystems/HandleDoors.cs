@@ -10,6 +10,46 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class HandleDoors
 {
+    public static void HandleDoorChangeFromGridNo(SOLDIERTYPE? pSoldier, int sGridNo, bool fNoAnimations)
+    {
+        STRUCTURE? pStructure = null;
+        DOOR_STATUS? pDoorStatus = null;
+        bool fDoorsAnimated = false;
+
+        pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
+
+        if (pStructure == null)
+        {
+# if JA2TESTVERSION
+            Messages.ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, L"ERROR: Told to handle door that does not exist at %d.", sGridNo);
+#endif
+            return;
+        }
+
+//        fDoorsAnimated = HandleDoorsOpenClose(pSoldier, sGridNo, pStructure, fNoAnimations);
+//        if (SwapStructureForPartner(sGridNo, pStructure) != null)
+//        {
+//            RecompileLocalMovementCosts(sGridNo);
+//        }
+
+
+        // set door busy
+//        pDoorStatus = GetDoorStatus(sGridNo);
+        if (pDoorStatus == null)
+        {
+# if JA2TESTVERSION
+            ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, L"ERROR: Told to set door busy but can't get door status at %d!", sGridNo);
+#endif
+            return;
+        }
+
+        // ATE: Only do if animated.....
+        if (fDoorsAnimated)
+        {
+            pDoorStatus.ubFlags |= DOOR_STATUS_FLAGS.BUSY;
+        }
+    }
+
     public static void SetDoorString(int sGridNo)
     {
         DOOR? pDoor;
@@ -138,7 +178,7 @@ public class DOOR
     public int sGridNo;
     public bool fLocked;                            // is the door locked
     public int ubTrapLevel;                  // difficulty of finding the trap, 0-10
-    public int ubTrapID;                         // the trap type (0 is no trap)
+    public DoorTrapTypes ubTrapID;                         // the trap type (0 is no trap)
     public int ubLockID;                         // the lock (0 is no lock)
     public DOOR_PERCEIVED bPerceivedLocked;          // The perceived lock value can be different than the fLocked.
                                           // Values for this include the fact that we don't know the status of

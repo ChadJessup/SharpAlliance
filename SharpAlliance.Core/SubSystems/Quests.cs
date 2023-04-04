@@ -633,8 +633,8 @@ public class Quests
         {
             // cheap hack to try to prevent Madame Layla from thinking that you are
             // still in the brothel with Maria...
-            Globals.gMercProfiles[NPCID.MADAME].bNPCData = 0;
-            Globals.gMercProfiles[NPCID.MADAME].bNPCData2 = 0;
+            gMercProfiles[NPCID.MADAME].bNPCData = 0;
+            gMercProfiles[NPCID.MADAME].bNPCData2 = 0;
         }
     }
 }

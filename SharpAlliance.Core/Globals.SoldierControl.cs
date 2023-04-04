@@ -40,6 +40,58 @@ public partial class Globals
         { BATTLE_SOUND.LOCKED, new() { zName = "locked", ubRandomVal = 0, fPreload = false,fBadGuy = false, fDontAllowTwoInRow = true, fStopDialogue = 0 } },
         { BATTLE_SOUND.ENEMY, new() { zName = "enem",   ubRandomVal = 0, fPreload =  true,fBadGuy = true, fDontAllowTwoInRow = true,  fStopDialogue = 0 } },
     };
+
+    public static int[] gRedGlowR =
+    {
+        0,			// Normal shades
+    	25,
+        50,
+        75,
+        100,
+        125,
+        150,
+        175,
+        200,
+        225,
+    
+        0,		// For gray palettes
+    	25,
+        50,
+        75,
+        100,
+        125,
+        150,
+        175,
+        200,
+        225,
+    
+    };
+
+    public static int[] gOrangeGlowR =
+    {
+        0,			// Normal shades
+    	25,
+        50,
+        75,
+        100,
+        125,
+        150,
+        175,
+        200,
+        225,
+    
+        0,		// For gray palettes
+    	25,
+        50,
+        75,
+        100,
+        125,
+        150,
+        175,
+        200,
+        225,
+    
+    };
 }
 
 

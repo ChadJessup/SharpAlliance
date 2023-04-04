@@ -203,7 +203,7 @@ public class AIUtils
         AnimationStates usBestAnimState;
         int bBestStanceDiff = -1;
         int bLoop, bStanceNum, bStanceDiff, bAPsAfterAttack;
-        int uiChanceOfDamage, uiBestChanceOfDamage, uiCurrChanceOfDamage;
+        int uiChanceOfDamage = 0, uiBestChanceOfDamage, uiCurrChanceOfDamage;
         int uiStanceBonus, uiMinimumStanceBonusPerChange = 20 - 3 * (int)pAttack.ubAimTime;
         int iRange;
 
@@ -270,7 +270,7 @@ public class AIUtils
                     break;
             }
 
-            uiChanceOfDamage = SoldierToLocationChanceToGetThrough(pSoldier, pAttack.sTarget, pSoldier.bTargetLevel, pSoldier.bTargetCubeLevel, pAttack.ubOpponent) * CalcChanceToHitGun(pSoldier, pAttack.sTarget, pAttack.ubAimTime, AIM_SHOT_TORSO) / 100;
+//            uiChanceOfDamage = SoldierToLocationChanceToGetThrough(pSoldier, pAttack.sTarget, pSoldier.bTargetLevel, pSoldier.bTargetCubeLevel, pAttack.ubOpponent) * CalcChanceToHitGun(pSoldier, pAttack.sTarget, pAttack.ubAimTime, AIM_SHOT_TORSO) / 100;
             if (uiChanceOfDamage > 0)
             {
                 uiStanceBonus = 0;
@@ -395,11 +395,11 @@ public class AIUtils
             if (usMovementMode != AnimationStates.SWATTING)
             {
                 // really want to look at path, see how far we could get on path while swatting
-                if (EnoughPoints(pSoldier, RecalculatePathCost(pSoldier, AnimationStates.SWATTING), 0, false) || (pSoldier.bLastAction == AI_ACTION.TAKE_COVER && pSoldier.usUIMovementMode == AnimationStates.SWATTING))
+//                if (EnoughPoints(pSoldier, RecalculatePathCost(pSoldier, AnimationStates.SWATTING), 0, false) || (pSoldier.bLastAction == AI_ACTION.TAKE_COVER && pSoldier.usUIMovementMode == AnimationStates.SWATTING))
                 {
                     pSoldier.usUIMovementMode = AnimationStates.SWATTING;
                 }
-                else
+//                else
                 {
                     pSoldier.usUIMovementMode = usMovementMode;
                 }
@@ -425,8 +425,8 @@ public class AIUtils
                     default:
                         if (PreRandom(5 - SoldierDifficultyLevel(pSoldier)) == 0)
                         {
-                            int sClosestNoise = (int)MostImportantNoiseHeard(pSoldier, null, null, null);
-                            if (sClosestNoise != NOWHERE && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestNoise) < OppList.MaxDistanceVisible() + 10)
+//                            int sClosestNoise = (int)MostImportantNoiseHeard(pSoldier, null, null, null);
+//                            if (sClosestNoise != NOWHERE && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestNoise) < OppList.MaxDistanceVisible() + 10)
                             {
                                 pSoldier.usUIMovementMode = AnimationStates.SWATTING;
                                 fSet = true;
@@ -474,7 +474,7 @@ public class AIUtils
                 break;
 
             case AI_ACTION.CHANGE_FACING:         // turn to face another direction
-                bMinPointsNeeded = (int)GetAPsToLook(pSoldier);
+//                bMinPointsNeeded = (int)GetAPsToLook(pSoldier);
                 break;
 
             case AI_ACTION.RANDOM_PATROL:         // move towards a particular location
@@ -494,17 +494,17 @@ public class AIUtils
             case AI_ACTION.WALK:
             case AI_ACTION.MOVE_TO_CLIMB:
                 // for movement, must have enough APs to move at least 1 tile's worth
-                bMinPointsNeeded = MinPtsToMove(pSoldier);
+//                bMinPointsNeeded = MinPtsToMove(pSoldier);
                 break;
 
             case AI_ACTION.PICKUP_ITEM:           // grab things lying on the ground
-                bMinPointsNeeded = Math.Max(MinPtsToMove(pSoldier), AP.PICKUP_ITEM);
+//                bMinPointsNeeded = Math.Max(MinPtsToMove(pSoldier), AP.PICKUP_ITEM);
                 break;
 
             case AI_ACTION.OPEN_OR_CLOSE_DOOR:
             case AI_ACTION.UNLOCK_DOOR:
             case AI_ACTION.LOCK_DOOR:
-                bMinPointsNeeded = MinPtsToMove(pSoldier);
+//                bMinPointsNeeded = MinPtsToMove(pSoldier);
                 break;
 
             case AI_ACTION.DROP_ITEM:
@@ -516,7 +516,7 @@ public class AIUtils
             case AI_ACTION.KNIFE_MOVE:            // preparing to stab adjacent opponent
             case AI_ACTION.THROW_KNIFE:
                 // only FIRE_GUN currently actually pays extra turning costs!
-                bMinPointsNeeded = MinAPsToAttack(pSoldier, pSoldier.usActionData, ADDTURNCOST);
+//                bMinPointsNeeded = MinAPsToAttack(pSoldier, pSoldier.usActionData, ADDTURNCOST);
                 break;
 
             case AI_ACTION.PULL_TRIGGER:          // activate an adjacent panic trigger
@@ -585,7 +585,8 @@ public class AIUtils
         int usDirection;
         int ubDirsLeft;
         bool[] fDirChecked = new bool[8];
-        bool fRangeRestricted = false, fFound = false;
+        bool fRangeRestricted = false;
+        int fFound = 0;
         int usDest, usOrigin;
         SOLDIERTYPE pFriend;
 
@@ -649,7 +650,7 @@ public class AIUtils
         }
 
 
-        while (ubFriendCount > 0 && !fFound)
+        while (ubFriendCount > 0 && fFound == 0)
         {
             // randomly select one of the remaining friends in the list
             ubFriendID = ubFriendIDs[PreRandom(ubFriendCount)];
@@ -671,7 +672,7 @@ public class AIUtils
 
                 // examine all 8 spots around 'ubFriendID'
                 // keep looking while directions remain and a satisfactory one not found
-                while ((ubDirsLeft--) > 0 && !fFound)
+                while ((ubDirsLeft--) > 0 && fFound == 0)
                 {
                     // randomly select a direction which hasn't been 'checked' yet
                     do
@@ -696,7 +697,7 @@ public class AIUtils
                     {
                         if (Movement.LegalNPCDestination(pSoldier, usDest, ENSURE_PATH, NOWATER, 0) > 0)
                         {
-                            fFound = true;            // found a spot
+                            fFound = 1;            // found a spot
                             pSoldier.usActionData = usDest;  // store this .sDestination
                             pSoldier.bPathStored = true;  // optimization - Ian
                             break;                   // stop checking in other directions
@@ -705,7 +706,7 @@ public class AIUtils
                 }
             }
 
-            if (!fFound)
+            if (fFound == 0)
             {
                 ubFriendCount--;
 
@@ -868,7 +869,7 @@ public class AIUtils
         int psLastLoc, pusNoiseGridNo;
         int pbLastLevel;
         int sGridNo = -1;
-        int bLevel, bClosestLevel;
+        int bLevel, bClosestLevel = 0;
         bool fClimbingNecessary, fClosestClimbingNecessary = false;
         int iPathCost;
         int sClosestDisturbance = NOWHERE;
@@ -1037,7 +1038,8 @@ public class AIUtils
             bLevel = pbNoiseLevel;
 
             // if we are not NEAR the noise gridno...
-            if (pSoldier.bLevel != bLevel || IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) >= 6 || LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, OppList.MaxDistanceVisible(), false) == 0)
+            if (pSoldier.bLevel != bLevel || IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo) >= 6
+                || !LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, OppList.MaxDistanceVisible(), 0))
             // if we are NOT there (at the noise gridno)
             //	if (sGridNo != pSoldier.sGridNo)
             {
@@ -1079,6 +1081,9 @@ public class AIUtils
 
     public static int ClosestKnownOpponent(SOLDIERTYPE pSoldier, out int psGridNo, out int pbLevel)
     {
+        psGridNo = 0;
+        pbLevel = 0;
+
         int psLastLoc, sGridNo, sClosestOpponent = NOWHERE;
         int uiLoop;
         int iRange, iClosestRange = 1500;
@@ -1102,7 +1107,7 @@ public class AIUtils
             pOpp = MercSlots[uiLoop];
 
             // if this merc is inactive, at base, on assignment, or dead
-            if (!pOpp)
+            if (pOpp is null)
             {
                 continue;          // next merc
             }
@@ -1177,11 +1182,11 @@ public class AIUtils
     }
 #endif
 
-        if (psGridNo)
+        if (psGridNo > 0)
         {
             psGridNo = sClosestOpponent;
         }
-        if (pbLevel)
+        if (pbLevel > 0)
         {
             pbLevel = bClosestLevel;
         }
@@ -1191,6 +1196,9 @@ public class AIUtils
 
     int ClosestSeenOpponent(SOLDIERTYPE pSoldier, out int psGridNo, out int pbLevel)
     {
+        psGridNo = 0;
+        pbLevel = 0;
+
         int sGridNo, sClosestOpponent = NOWHERE;
         int uiLoop;
         int iRange, iClosestRange = 1500;
@@ -1206,7 +1214,7 @@ public class AIUtils
             pOpp = MercSlots[uiLoop];
 
             // if this merc is inactive, at base, on assignment, or dead
-            if (!pOpp)
+            if (pOpp is null)
             {
                 continue;          // next merc
             }
@@ -1218,7 +1226,7 @@ public class AIUtils
             }
 
             // Special stuff for Carmen the bounty hunter
-            if (pSoldier.bAttitude == ATTACKSLAYONLY && pOpp.ubProfile != NPCID.SLAY)
+            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpp.ubProfile != NPCID.SLAY)
             {
                 continue;  // next opponent
             }
@@ -1268,20 +1276,24 @@ public class AIUtils
     }
 #endif
 
-        if (psGridNo)
+        if (psGridNo > 0)
         {
             psGridNo = sClosestOpponent;
         }
-        if (pbLevel)
+        if (pbLevel > 0)
         {
             pbLevel = bClosestLevel;
         }
+
+
         return (sClosestOpponent);
     }
 
 
     int ClosestPC(SOLDIERTYPE pSoldier, out int? psDistance)
     {
+        psDistance = null;
+
         // used by NPCs... find the closest PC
 
         // NOTE: skips EPCs!
@@ -1341,7 +1353,7 @@ public class AIUtils
 
     public static int FindClosestClimbPointAvailableToAI(SOLDIERTYPE pSoldier, int sStartGridNo, int sDesiredGridNo, bool fClimbUp)
     {
-        int sGridNo;
+        int sGridNo = 0;
         int sRoamingOrigin;
         int sRoamingRange;
 
@@ -1358,7 +1370,7 @@ public class AIUtils
         // since climbing necessary involves going an extra tile, we compare against 1 less than the roam range... 
         // or add 1 to the distance to the climb point
 
-        sGridNo = FindClosestClimbPoint(sStartGridNo, sDesiredGridNo, fClimbUp);
+//        sGridNo = FindClosestClimbPoint(sStartGridNo, sDesiredGridNo, fClimbUp);
 
 
         if (IsometricUtils.PythSpacesAway(sRoamingOrigin, sGridNo) + 1 > sRoamingRange)
@@ -1430,7 +1442,7 @@ public class AIUtils
         pfClimbingNecessary = false;
         psClimbGridNo = -1;
 
-        int sPathCost;
+        int sPathCost = 0;
         int sClimbGridNo;
 
         if (pSoldier.bLevel == bDestLevel)
@@ -1438,7 +1450,7 @@ public class AIUtils
             if ((pSoldier.bLevel == 0) || (gubBuildingInfo[pSoldier.sGridNo] == gubBuildingInfo[sDestGridNo]))
             {
                 // on ground or same building... normal!
-                sPathCost = EstimatePlotPath(pSoldier, sDestGridNo, false, false, false, AnimationStates.WALKING, false, false, 0);
+//                sPathCost = EstimatePlotPath(pSoldier, sDestGridNo, false, false, false, AnimationStates.WALKING, false, false, 0);
                 pfClimbingNecessary = false;
                 psClimbGridNo = NOWHERE;
             }
@@ -1821,13 +1833,13 @@ public class AIUtils
             return (false);
         }
 
-        ubBackgroundLightLevel = GetTimeOfDayAmbientLightLevel();
+//        ubBackgroundLightLevel = GetTimeOfDayAmbientLightLevel();
 
-        if (ubBackgroundLightLevel < NORMAL_LIGHTLEVEL_DAY + 2)
-        {
-            // don't consider it nighttime, too close to daylight levels
-            return (false);
-        }
+//        if (ubBackgroundLightLevel < NORMAL_LIGHTLEVEL_DAY + 2)
+//        {
+//            // don't consider it nighttime, too close to daylight levels
+//            return (false);
+//        }
 
         // could've been placed here, ignore the light
         if (RenderFun.InARoom(sGridNo, out var _))
@@ -1838,10 +1850,10 @@ public class AIUtils
         // NB light levels are backwards, so a lower light level means the 
         // spot in question is BRIGHTER
 
-        if (LightTrueLevel(sGridNo, bLevel) < ubBackgroundLightLevel)
-        {
-            return (true);
-        }
+//        if (LightTrueLevel(sGridNo, bLevel) < ubBackgroundLightLevel)
+//        {
+//            return (true);
+//        }
 
         return (false);
     }
@@ -1861,10 +1873,10 @@ public class AIUtils
         // if army guy has NO weapons left then panic!
         if (pSoldier.bTeam == ENEMY_TEAM)
         {
-            if (FindAIUsableObjClass(pSoldier, IC.WEAPON) == NO_SLOT)
-            {
-                return (MORALE.HOPELESS);
-            }
+//            if (FindAIUsableObjClass(pSoldier, IC.WEAPON) == NO_SLOT)
+//            {
+//                return (MORALE.HOPELESS);
+//            }
         }
 
         // hang pointers to my personal opplist, my team's public opplist, and my
@@ -2003,7 +2015,7 @@ public class AIUtils
 
 
         // if they are no threat whatsoever
-        if (!iTheirTotalThreat)
+        if (iTheirTotalThreat == 0)
         {
             sMorale = 500;        // our morale is just incredible
         }
@@ -2108,7 +2120,7 @@ public class AIUtils
 
 
         // if soldier is currently not under fire
-        if (!pSoldier.bUnderFire)
+        if (pSoldier.bUnderFire == 0)
         {
             bMoraleCategory++;
         }
@@ -2190,7 +2202,7 @@ public class AIUtils
             iThreatValue += pEnemy.bExpLevel;
 
             // ADD man's total action points (10-35)
-            iThreatValue += CalcActionPoints(pEnemy);
+//            iThreatValue += CalcActionPoints(pEnemy);
 
             // ADD 1/2 of man's current action points (4-17)
             iThreatValue += (pEnemy.bActionPoints / 2);
@@ -2201,7 +2213,7 @@ public class AIUtils
             if (pEnemy.bAssignment < Assignments.ON_DUTY)
             {
                 // ADD 1/4 of man's protection percentage (0-25)
-                iThreatValue += ArmourPercent(pEnemy) / 4;
+//                iThreatValue += ArmourPercent(pEnemy) / 4;
 
                 // ADD 1/5 of man's marksmanship skill (0-20)
                 iThreatValue += (pEnemy.bMarksmanship / 5);
@@ -2209,7 +2221,7 @@ public class AIUtils
                 if (Item[pEnemy.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
                 {
                     // ADD the deadliness of the item(weapon) he's holding (0-50)
-                    iThreatValue += Weapon[pEnemy.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
+//                    iThreatValue += Weapon[pEnemy.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
                 }
             }
 
@@ -2245,12 +2257,12 @@ public class AIUtils
         if (pEnemy.bLife >= OKLIFE)
         {
             // and we were told to reduce threat for my cover
-            if (ubReduceForCover > 0 && (sMyGrid != NOWHERE))
+            if (ubReduceForCover && (sMyGrid != NOWHERE))
             {
                 // Reduce iThreatValue to same % as the chance HE has shoot through at ME
                 //iThreatValue = (iThreatValue * ChanceToGetThrough( pEnemy, myGrid, FAKE, ACTUAL, TESTWALLS, 9999, M9PISTOL, NOT_FOR_LOS)) / 100;
                 //iThreatValue = (iThreatValue * SoldierTo3DLocationChanceToGetThrough( pEnemy, myGrid, FAKE, ACTUAL, TESTWALLS, 9999, M9PISTOL, NOT_FOR_LOS)) / 100;
-                iThreatValue = (iThreatValue * SoldierToLocationChanceToGetThrough(pEnemy, sMyGrid, pMe.bLevel, 0, pMe.ubID)) / 100;
+//                iThreatValue = (iThreatValue * SoldierToLocationChanceToGetThrough(pEnemy, sMyGrid, pMe.bLevel, 0, pMe.ubID)) / 100;
             }
         }
         else
@@ -2363,7 +2375,7 @@ public class AIUtils
     public static void RearrangePocket(SOLDIERTYPE pSoldier, InventorySlot bPocket1, InventorySlot bPocket2, bool bPermanent)
     {
         // NB there's no such thing as a temporary swap for now...
-        SwapObjs((pSoldier.inv[bPocket1]), (pSoldier.inv[bPocket2]));
+//        SwapObjs((pSoldier.inv[bPocket1]), (pSoldier.inv[bPocket2]));
     }
 
     bool FindBetterSpotForItem(SOLDIERTYPE pSoldier, InventorySlot bSlot)
@@ -2383,15 +2395,15 @@ public class AIUtils
         if (Item[pSoldier.inv[bSlot].usItem].ubPerPocket == 0)
         {
             // then we're looking for a big pocket
-            bSlot = FindEmptySlotWithin(pSoldier, InventorySlot.BIGPOCK1POS, InventorySlot.BIGPOCK4POS);
+//            bSlot = FindEmptySlotWithin(pSoldier, InventorySlot.BIGPOCK1POS, InventorySlot.BIGPOCK4POS);
         }
         else
         {
             // try a small pocket first
-            bSlot = FindEmptySlotWithin(pSoldier, InventorySlot.SMALLPOCK1POS, InventorySlot.SMALLPOCK8POS);
+//            bSlot = FindEmptySlotWithin(pSoldier, InventorySlot.SMALLPOCK1POS, InventorySlot.SMALLPOCK8POS);
             if (bSlot == NO_SLOT)
             {
-                bSlot = FindEmptySlotWithin(pSoldier, InventorySlot.BIGPOCK1POS, InventorySlot.BIGPOCK4POS);
+//                bSlot = FindEmptySlotWithin(pSoldier, InventorySlot.BIGPOCK1POS, InventorySlot.BIGPOCK4POS);
             }
         }
         if (bSlot == NO_SLOT)
@@ -2426,13 +2438,13 @@ public class AIUtils
 
     public static int SoldierDifficultyLevel(SOLDIERTYPE pSoldier)
     {
-        int bDifficultyBase;
+        int bDifficultyBase = 0;
         int bDifficulty;
 
         // difficulty modifier ranges from 0 to 100
         // and we want to end up with a number between 0 and 4 (4=hardest)
         // to a base of 1, divide by 34 to get a range from 1 to 3
-        bDifficultyBase = 1 + (CalcDifficultyModifier(pSoldier.ubSoldierClass) / 34);
+//        bDifficultyBase = 1 + (CalcDifficultyModifier(pSoldier.ubSoldierClass) / 34);
 
         switch (pSoldier.ubSoldierClass)
         {
@@ -2482,12 +2494,12 @@ public class AIUtils
 
     bool ValidCreatureTurn(SOLDIERTYPE pCreature, WorldDirections bNewDirection)
     {
-        int bDirChange;
+        WorldDirections bDirChange = 0;
         WorldDirections bTempDir;
         int bLoop;
         bool fFound;
 
-        bDirChange = (int)QuickestDirection(pCreature.bDirection, bNewDirection);
+//        bDirChange = QuickestDirection(pCreature.bDirection, bNewDirection);
 
         for (bLoop = 0; bLoop < 2; bLoop++)
         {
@@ -2498,7 +2510,7 @@ public class AIUtils
             do
             {
 
-                bTempDir += bDirChange;
+//                bTempDir += bDirChange;
                 if (bTempDir < WorldDirections.NORTH)
                 {
                     bTempDir = WorldDirections.NORTHWEST;
@@ -2527,7 +2539,7 @@ public class AIUtils
             else
             {
                 // try the other direction
-                bDirChange = bDirChange * -1;
+                bDirChange = (WorldDirections)((int)bDirChange * -1);
             }
         }
 

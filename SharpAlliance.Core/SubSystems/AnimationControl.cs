@@ -704,7 +704,7 @@ public struct ANIMCONTROLTYPE
 {
     public string zAnimStr;
     public int sAP;
-    public int sSpeed;
+    public uint sSpeed;
     public float dMovementChange;
     public ANIM uiFlags;
     public AnimationHeights ubHeight;

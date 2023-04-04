@@ -8,7 +8,7 @@ using SharpAlliance.Core;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
-
+using SixLabors.ImageSharp;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -18,7 +18,6 @@ public partial class Globals
     public const int DIALOGUE_DEFAULT_WIDTH = 200;
     public const int EXTREAMLY_LOW_TOWN_LOYALTY = 20;
     public const int HIGH_TOWN_LOYALTY = 80;
-    public const int CIV_QUOTE_HINT = 99;
 
     public static bool gfSurrendered = false;
 
@@ -95,7 +94,7 @@ public struct QUOTE_SYSTEM_STRUCT
     public MOUSE_REGION MouseRegion;
     public int iVideoOverlay;
     public int iDialogueBox;
-    public int uiTimeOfCreation;
+    public uint uiTimeOfCreation;
     public int uiDelayTime;
     public SOLDIERTYPE pCiv;
 }
@@ -110,19 +109,19 @@ public class CivQuotes
 
         for (cnt = 0; cnt < CIV_QUOTE.NUM_CIV_QUOTES; cnt++)
         {
-            gCivQuotes[cnt].ubNumEntries = gubNumEntries[(int)cnt];
+            //gCivQuotes[cnt].ubNumEntries = gubNumEntries[(int)cnt];
         }
 
     }
 
 
-    public static bool GetCivQuoteText(int ubCivQuoteID, int ubEntryID, out string zQuote)
+    public static bool GetCivQuoteText(CIV_QUOTE ubCivQuoteID, int ubEntryID, out string zQuote)
     {
         zQuote = string.Empty;
         string zFileName;// [164];
 
         // Build filename....
-        if (ubCivQuoteID == CIV_QUOTE_HINT)
+        if (ubCivQuoteID == CIV_QUOTE.HINT)
         {
             if (gbWorldSectorZ > 0)
             {
@@ -139,10 +138,10 @@ public class CivQuotes
             zFileName = sprintf("NPCDATA\\CIV%02d.edt", ubCivQuoteID);
         }
 
-        CHECKF(FileExists(zFileName));
+//        CHECKF(FileExists(zFileName));
 
         // Get data...
-        LoadEncryptedDataFromFile(zFileName, zQuote, ubEntryID * 320, 320);
+//        LoadEncryptedDataFromFile(zFileName, zQuote, ubEntryID * 320, 320);
 
         if (zQuote == string.Empty)
         {
@@ -159,7 +158,7 @@ public class CivQuotes
         if (ubExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
         {
             // CJC Dec 1 2002: fix multiple captures
-            BeginCaptureSquence();
+//            BeginCaptureSquence();
 
             // Do capture....
             cnt = gTacticalStatus.Team[gbPlayerNum].bFirstID;
@@ -172,17 +171,17 @@ public class CivQuotes
                 {
                     if (pTeamSoldier.bLife != 0)
                     {
-                        EnemyCapturesPlayerSoldier(pTeamSoldier);
-
-                        RemoveSoldierFromTacticalSector(pTeamSoldier, true);
+//                        EnemyCapturesPlayerSoldier(pTeamSoldier);
+//
+//                        RemoveSoldierFromTacticalSector(pTeamSoldier, true);
                     }
                 }
             }
 
-            EndCaptureSequence();
-
-            gfSurrendered = true;
-            SetCustomizableTimerCallbackAndDelay(3000, CaptureTimerCallback, false);
+//            EndCaptureSequence();
+//
+//            gfSurrendered = true;
+//            SetCustomizableTimerCallbackAndDelay(3000, CaptureTimerCallback, false);
 
             AIMain.ActionDone(gCivQuoteData.pCiv);
         }
@@ -215,13 +214,14 @@ public class CivQuotes
             // do we need to do anything at the end of the civ quote?
             if (gCivQuoteData.pCiv is not null && gCivQuoteData.pCiv.bAction == AI_ACTION.OFFER_SURRENDER)
             {
+                Rectangle? _ = null;
                 MessageBoxSubSystem.DoMessageBox(
                     MessageBoxStyle.MSG_BOX_BASIC_STYLE,
-                    Message[STR_SURRENDER],
+                    "",//Message[STR_SURRENDER],
                     ScreenName.GAME_SCREEN,
                     MSG_BOX_FLAG.YESNO,
                     SurrenderMessageBoxCallBack,
-                    null);
+                    ref _);
             }
         }
     }
@@ -337,9 +337,9 @@ public class CivQuotes
     }
 
 
-    void BeginCivQuote(SOLDIERTYPE pCiv, int ubCivQuoteID, int ubEntryID, int sX, int sY)
+    void BeginCivQuote(SOLDIERTYPE pCiv, CIV_QUOTE ubCivQuoteID, int ubEntryID, int sX, int sY)
     {
-        VIDEO_OVERLAY_DESC VideoOverlayDesc;
+        VIDEO_OVERLAY_DESC VideoOverlayDesc = new();
         string zQuote;// [320];
 
         // OK, do we have another on?
@@ -350,31 +350,31 @@ public class CivQuotes
         }
 
         // get text
-        if (!GetCivQuoteText(ubCivQuoteID, ubEntryID, zQuote))
+        if (!GetCivQuoteText(ubCivQuoteID, ubEntryID, out zQuote))
         {
             return;
         }
 
-# ifdef TAIWANESE
-        wprintf(gzCivQuote, L"%s", zQuote);
+# if TAIWANESE
+        wprintf(gzCivQuote, "%s", zQuote);
 #else
-        wprintf(gzCivQuote, L"\"%s\"", zQuote);
+       // gzCivQuote = wprintf("\"%s\"", zQuote);
 #endif
 
 
-        if (ubCivQuoteID == CIV_QUOTE_HINT)
+        if (ubCivQuoteID == CIV_QUOTE.HINT)
         {
-            MapScreenMessage(FONT_MCOLOR_WHITE, MSG_DIALOG, L"%s", gzCivQuote);
+            // MapScreenMessage(FONT_MCOLOR_WHITE, MSG_DIALOG, "%s", gzCivQuote);
         }
 
         // Create video oeverlay....
-        memset(&VideoOverlayDesc, 0, sizeof(VIDEO_OVERLAY_DESC));
+        // memset(&VideoOverlayDesc, 0, sizeof(VIDEO_OVERLAY_DESC));
 
         // Prepare text box
-        SET_USE_WINFONTS(true);
-        SET_WINFONT(giSubTitleWinFont);
-        gCivQuoteData.iDialogueBox = PrepareMercPopupBox(gCivQuoteData.iDialogueBox, BASIC_MERC_POPUP_BACKGROUND, BASIC_MERC_POPUP_BORDER, gzCivQuote, DIALOGUE_DEFAULT_WIDTH, 0, 0, 0, &gusCivQuoteBoxWidth, &gusCivQuoteBoxHeight);
-        SET_USE_WINFONTS(false);
+        //SET_USE_WINFONTS(true);
+        //SET_WINFONT(giSubTitleWinFont);
+        //gCivQuoteData.iDialogueBox = PrepareMercPopupBox(gCivQuoteData.iDialogueBox, BASIC_MERC_POPUP_BACKGROUND, BASIC_MERC_POPUP_BORDER, gzCivQuote, DIALOGUE_DEFAULT_WIDTH, 0, 0, 0, &gusCivQuoteBoxWidth, &gusCivQuoteBoxHeight);
+        //SET_USE_WINFONTS(false);
 
         // OK, find center for box......
         sX = sX - (gusCivQuoteBoxWidth / 2);
@@ -414,235 +414,237 @@ public class CivQuotes
         VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
         VideoOverlayDesc.BltCallback = RenderCivQuoteBoxOverlay;
 
-        gCivQuoteData.iVideoOverlay = RegisterVideoOverlay(0, &VideoOverlayDesc);
+        //        gCivQuoteData.iVideoOverlay = RegisterVideoOverlay(0, &VideoOverlayDesc);
 
 
         //Define main region
-        MSYS_DefineRegion(&(gCivQuoteData.MouseRegion), VideoOverlayDesc.sLeft, VideoOverlayDesc.sTop, VideoOverlayDesc.sRight, VideoOverlayDesc.sBottom, MSYS_PRIORITY_HIGHEST,
-                             CURSOR_NORMAL, MSYS_NO_CALLBACK, QuoteOverlayClickCallback);
+        //        MSYS_DefineRegion(&(gCivQuoteData.MouseRegion), VideoOverlayDesc.sLeft, VideoOverlayDesc.sTop, VideoOverlayDesc.sRight, VideoOverlayDesc.sBottom, MSYS_PRIORITY_HIGHEST,
+        //                             CURSOR_NORMAL, MSYS_NO_CALLBACK, QuoteOverlayClickCallback);
         // Add region
-        MSYS_AddRegion(&(gCivQuoteData.MouseRegion));
+        //        MSYS_AddRegion(&(gCivQuoteData.MouseRegion));
 
 
         gCivQuoteData.bActive = true;
 
         gCivQuoteData.uiTimeOfCreation = GetJA2Clock();
 
-        gCivQuoteData.uiDelayTime = FindDelayForString(gzCivQuote) + 500;
+        //        gCivQuoteData.uiDelayTime = FindDelayForString(gzCivQuote) + 500;
 
         gCivQuoteData.pCiv = pCiv;
 
     }
 
-    int DetermineCivQuoteEntry(SOLDIERTYPE pCiv, int* pubCivHintToUse, bool fCanUseHints)
+    CIV_QUOTE DetermineCivQuoteEntry(SOLDIERTYPE pCiv, out int pubCivHintToUse, bool fCanUseHints)
     {
-        int ubCivType;
+        CIV_TYPE ubCivType;
         int bTownId;
         bool bCivLowLoyalty = false;
         bool bCivHighLoyalty = false;
-        int bCivHint;
+        CIV_TYPE bCivHint;
         int bMineId;
         bool bMiners = false;
 
-        (*pubCivHintToUse) = 0;
+        (pubCivHintToUse) = 0;
 
         ubCivType = GetCivType(pCiv);
 
-        if (ubCivType == CIV_TYPE_ENEMY)
+        if (ubCivType == CIV_TYPE.ENEMY)
         {
             // Determine what type of quote to say...
             // Are are we going to attack?
 
-            if (pCiv.bAction == AI_ACTION_TOSS_PROJECTILE || pCiv.bAction == AI_ACTION_FIRE_GUN ||
-                                pCiv.bAction == AI_ACTION_FIRE_GUN || pCiv.bAction == AI_ACTION_KNIFE_MOVE)
+            if (pCiv.bAction == AI_ACTION.TOSS_PROJECTILE
+                || pCiv.bAction == AI_ACTION.FIRE_GUN
+                || pCiv.bAction == AI_ACTION.FIRE_GUN
+                || pCiv.bAction == AI_ACTION.KNIFE_MOVE)
             {
-                return (CIV_QUOTE_ENEMY_THREAT);
+                return (CIV_QUOTE.ENEMY_THREAT);
             }
-            else if (pCiv.bAction == AI_ACTION_OFFER_SURRENDER)
+            else if (pCiv.bAction == AI_ACTION.OFFER_SURRENDER)
             {
-                return (CIV_QUOTE_ENEMY_OFFER_SURRENDER);
+                return (CIV_QUOTE.ENEMY_OFFER_SURRENDER);
             }
             // Hurt?
             else if (pCiv.bLife < 30)
             {
-                return (CIV_QUOTE_ENEMY_HURT);
+                return (CIV_QUOTE.ENEMY_HURT);
             }
             // elite?
-            else if (pCiv.ubSoldierClass == SOLDIER_CLASS_ELITE)
+            else if (pCiv.ubSoldierClass == SOLDIER_CLASS.ELITE)
             {
-                return (CIV_QUOTE_ENEMY_ELITE);
+                return (CIV_QUOTE.ENEMY_ELITE);
             }
             else
             {
-                return (CIV_QUOTE_ENEMY_ADMIN);
+                return (CIV_QUOTE.ENEMY_ADMIN);
             }
         }
 
         // Are we in a town sector?
         // get town id
-        bTownId = GetTownIdForSector(gWorldSectorX, gWorldSectorY);
+        // bTownId = GetTownIdForSector(gWorldSectorX, gWorldSectorY);
 
 
         // If a married PC...
-        if (ubCivType == CIV_TYPE_MARRIED_PC)
+        if (ubCivType == CIV_TYPE.MARRIED_PC)
         {
-            return (CIV_QUOTE_PC_MARRIED);
+            return (CIV_QUOTE.PC_MARRIED);
         }
 
         // CIV GROUPS FIRST!
         // Hicks.....
-        if (pCiv.ubCivilianGroup == HICKS_CIV_GROUP)
+        if (pCiv.ubCivilianGroup == CIV_GROUP.HICKS_CIV_GROUP)
         {
             // Are they friendly?
             //if ( gTacticalStatus.fCivGroupHostile[ HICKS_CIV_GROUP ] < CIV_GROUP_WILL_BECOME_HOSTILE )
-            if (pCiv.bNeutral)
+            if (pCiv.IsNeutral)
             {
-                return (CIV_QUOTE_HICKS_FRIENDLY);
+                return (CIV_QUOTE.HICKS_FRIENDLY);
             }
             else
             {
-                return (CIV_QUOTE_HICKS_ENEMIES);
+                return (CIV_QUOTE.HICKS_ENEMIES);
             }
         }
 
         // Goons.....
-        if (pCiv.ubCivilianGroup == KINGPIN_CIV_GROUP)
+        if (pCiv.ubCivilianGroup == CIV_GROUP.KINGPIN_CIV_GROUP)
         {
             // Are they friendly?
             //if ( gTacticalStatus.fCivGroupHostile[ KINGPIN_CIV_GROUP ] < CIV_GROUP_WILL_BECOME_HOSTILE )
-            if (pCiv.bNeutral)
+            if (pCiv.IsNeutral)
             {
-                return (CIV_QUOTE_GOONS_FRIENDLY);
+                return (CIV_QUOTE.GOONS_FRIENDLY);
             }
             else
             {
-                return (CIV_QUOTE_GOONS_ENEMIES);
+                return (CIV_QUOTE.GOONS_ENEMIES);
             }
         }
 
         // ATE: Cowering people take precedence....
-        if ((pCiv.uiStatusFlags & SOLDIER_COWERING) || (pCiv.bTeam == CIV_TEAM && (gTacticalStatus.uiFlags & INCOMBAT)))
+        //  if ((pCiv.uiStatusFlags & SOLDIER.COWERING) || (pCiv.bTeam == CIV_TEAM && (gTacticalStatus.uiFlags & INCOMBAT)))
         {
-            if (ubCivType == CIV_TYPE_ADULT)
+            // if (ubCivType == CIV_TYPE_ADULT)
             {
-                return (CIV_QUOTE_ADULTS_COWER);
+                return (CIV_QUOTE.ADULTS_COWER);
             }
-            else
+            //     else
             {
-                return (CIV_QUOTE_KIDS_COWER);
+                return (CIV_QUOTE.KIDS_COWER);
             }
         }
 
         // Kid slaves...
-        if (pCiv.ubCivilianGroup == FACTORY_KIDS_GROUP)
-        {
-            // Check fact.....
-            if (CheckFact(FACT_DOREEN_HAD_CHANGE_OF_HEART, 0) || !CheckFact(FACT_DOREEN_ALIVE, 0))
-            {
-                return (CIV_QUOTE_KID_SLAVES_FREE);
-            }
-            else
-            {
-                return (CIV_QUOTE_KID_SLAVES);
-            }
-        }
+        //   if (pCiv.ubCivilianGroup == FACTORY_KIDS_GROUP)
+        //   {
+        //       // Check fact.....
+        //       if (CheckFact(FACT_DOREEN_HAD_CHANGE_OF_HEART, 0) || !CheckFact(FACT_DOREEN_ALIVE, 0))
+        //       {
+        //           return (CIV_QUOTE_KID_SLAVES_FREE);
+        //       }
+        //       else
+        //       {
+        //           return (CIV_QUOTE_KID_SLAVES);
+        //       }
+        //   }
 
         // BEGGERS
-        if (pCiv.ubCivilianGroup == BEGGARS_CIV_GROUP)
-        {
-            // Check if we are in a town...
-            if (bTownId != BLANK_SECTOR && gbWorldSectorZ == 0)
-            {
-                if (bTownId == SAN_MONA && ubCivType == CIV_TYPE_ADULT)
-                {
-                    return (CIV_QUOTE_SAN_MONA_BEGGERS);
-                }
-            }
-
-            // DO normal beggers...
-            if (ubCivType == CIV_TYPE_ADULT)
-            {
-                return (CIV_QUOTE_ADULTS_BEGGING);
-            }
-            else
-            {
-                return (CIV_QUOTE_KIDS_BEGGING);
-            }
-        }
+        //        if (pCiv.ubCivilianGroup == BEGGARS_CIV_GROUP)
+        //        {
+        //            // Check if we are in a town...
+        //            if (bTownId != BLANK_SECTOR && gbWorldSectorZ == 0)
+        //            {
+        //                if (bTownId == SAN_MONA && ubCivType == CIV_TYPE_ADULT)
+        //                {
+        //                    return (CIV_QUOTE_SAN_MONA_BEGGERS);
+        //                }
+        //            }
+        //
+        //            // DO normal beggers...
+        //            if (ubCivType == CIV_TYPE_ADULT)
+        //            {
+        //                return (CIV_QUOTE_ADULTS_BEGGING);
+        //            }
+        //            else
+        //            {
+        //                return (CIV_QUOTE_KIDS_BEGGING);
+        //            }
+        //        }
 
         // REBELS
-        if (pCiv.ubCivilianGroup == REBEL_CIV_GROUP)
-        {
-            // DO normal beggers...
-            if (ubCivType == CIV_TYPE_ADULT)
-            {
-                return (CIV_QUOTE_ADULTS_REBELS);
-            }
-            else
-            {
-                return (CIV_QUOTE_KIDS_REBELS);
-            }
-        }
+        //        if (pCiv.ubCivilianGroup == REBEL_CIV_GROUP)
+        //        {
+        //            // DO normal beggers...
+        //            if (ubCivType == CIV_TYPE_ADULT)
+        //            {
+        //                return (CIV_QUOTE_ADULTS_REBELS);
+        //            }
+        //            else
+        //            {
+        //                return (CIV_QUOTE_KIDS_REBELS);
+        //            }
+        //        }
 
         // Do miltitia...
         if (pCiv.bTeam == MILITIA_TEAM)
         {
             // Different types....
-            if (pCiv.ubSoldierClass == SOLDIER_CLASS_GREEN_MILITIA)
-            {
-                return (CIV_QUOTE_GREEN_MILITIA);
-            }
-            if (pCiv.ubSoldierClass == SOLDIER_CLASS_REG_MILITIA)
-            {
-                return (CIV_QUOTE_MEDIUM_MILITIA);
-            }
-            if (pCiv.ubSoldierClass == SOLDIER_CLASS_ELITE_MILITIA)
-            {
-                return (CIV_QUOTE_ELITE_MILITIA);
-            }
+            //            if (pCiv.ubSoldierClass == SOLDIER_CLASS_GREEN_MILITIA)
+            //            {
+            //                return (CIV_QUOTE_GREEN_MILITIA);
+            //            }
+            //            if (pCiv.ubSoldierClass == SOLDIER_CLASS_REG_MILITIA)
+            //            {
+            //                return (CIV_QUOTE_MEDIUM_MILITIA);
+            //            }
+            //            if (pCiv.ubSoldierClass == SOLDIER_CLASS_ELITE_MILITIA)
+            //            {
+            //                return (CIV_QUOTE_ELITE_MILITIA);
+            //            }
         }
 
         // If we are in medunna, and queen is dead, use these...
-        if (bTownId == MEDUNA && CheckFact(FACT_QUEEN_DEAD, 0))
-        {
-            return (CIV_QUOTE_DEIDRANNA_DEAD);
-        }
+        //        if (bTownId == MEDUNA && CheckFact(FACT_QUEEN_DEAD, 0))
+        //        {
+        //            return (CIV_QUOTE_DEIDRANNA_DEAD);
+        //        }
 
         // if in a town
-        if ((bTownId != BLANK_SECTOR) && (gbWorldSectorZ == 0) && gfTownUsesLoyalty[bTownId])
-        {
-            // Check loyalty special quotes.....
-            // EXTREMELY LOW TOWN LOYALTY...
-            if (gTownLoyalty[bTownId].ubRating < EXTREAMLY_LOW_TOWN_LOYALTY)
-            {
-                bCivLowLoyalty = true;
-            }
-
-            // HIGH TOWN LOYALTY...
-            if (gTownLoyalty[bTownId].ubRating >= HIGH_TOWN_LOYALTY)
-            {
-                bCivHighLoyalty = true;
-            }
-        }
+        //        if ((bTownId != BLANK_SECTOR) && (gbWorldSectorZ == 0) && gfTownUsesLoyalty[bTownId])
+        //        {
+        //            // Check loyalty special quotes.....
+        //            // EXTREMELY LOW TOWN LOYALTY...
+        //            if (gTownLoyalty[bTownId].ubRating < EXTREAMLY_LOW_TOWN_LOYALTY)
+        //            {
+        //                bCivLowLoyalty = true;
+        //            }
+        //
+        //            // HIGH TOWN LOYALTY...
+        //            if (gTownLoyalty[bTownId].ubRating >= HIGH_TOWN_LOYALTY)
+        //            {
+        //                bCivHighLoyalty = true;
+        //            }
+        //        }
 
 
         // ATE: OK, check if we should look for a civ hint....
         if (fCanUseHints)
         {
-            bCivHint = ConsiderCivilianQuotes(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, false);
+            //            bCivHint = ConsiderCivilianQuotes(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, false);
         }
         else
         {
-            bCivHint = -1;
+            //            bCivHint = -1;
         }
 
         // ATE: check miners......
-        if (pCiv.ubSoldierClass == SOLDIER_CLASS_MINER)
+        //        if (pCiv.ubSoldierClass == SOLDIER_CLASS_MINER)
         {
             bMiners = true;
 
             // If not a civ hint available...
-            if (bCivHint == -1)
+            //            if (bCivHint == -1)
             {
                 // Check if they are under our control...
 
@@ -650,81 +652,82 @@ public class CivQuotes
                 // Not done yet.
 
                 // Are they working for us?
-                bMineId = GetIdOfMineForSector(gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
-
-                if (PlayerControlsMine(bMineId))
-                {
-                    return (CIV_QUOTE_MINERS_FOR_PLAYER);
-                }
-                else
-                {
-                    return (CIV_QUOTE_MINERS_NOT_FOR_PLAYER);
-                }
+                //                bMineId = GetIdOfMineForSector(gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+                //
+                //                if (PlayerControlsMine(bMineId))
+                //                {
+                //                    return (CIV_QUOTE_MINERS_FOR_PLAYER);
+                //                }
+                //                else
+                //                {
+                //                    return (CIV_QUOTE_MINERS_NOT_FOR_PLAYER);
+                //                }
+                //            }
             }
+
+
+            // Is one availible?
+            // If we are to say low loyalty, do chance
+            //        if (bCivHint != -1 && bCivLowLoyalty && !bMiners)
+            //        {
+            //            if (Random(100) < 25)
+            //            {
+            //                // Get rid of hint...
+            //                bCivHint = -1;
+            //            }
+            //        }
+
+            // Say hint if availible...
+            //        if (bCivHint != -1)
+            //        {
+            //            if (ubCivType == CIV_TYPE_ADULT)
+            //            {
+            //                (*pubCivHintToUse) = bCivHint;
+            //
+            //                // Set quote as used...
+            //                ConsiderCivilianQuotes(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, true);
+            //
+            //                // retrun value....
+            //                return (CIV_QUOTE_HINT);
+            //            }
+            //        }
+            //
+            //        if (bCivLowLoyalty)
+            //        {
+            //            if (ubCivType == CIV_TYPE_ADULT)
+            //            {
+            //                return (CIV_QUOTE_ADULTS_EXTREMLY_LOW_LOYALTY);
+            //            }
+            //            else
+            //            {
+            //                return (CIV_QUOTE_KIDS_EXTREMLY_LOW_LOYALTY);
+            //            }
+            //        }
+            //
+            //        if (bCivHighLoyalty)
+            //        {
+            //            if (ubCivType == CIV_TYPE_ADULT)
+            //            {
+            //                return (CIV_QUOTE_ADULTS_HIGH_LOYALTY);
+            //            }
+            //            else
+            //            {
+            //                return (CIV_QUOTE_KIDS_HIGH_LOYALTY);
+            //            }
+            //        }
+            //
+            //
+            //        // All purpose quote here....
+            //        if (ubCivType == CIV_TYPE_ADULT)
+            //        {
+            //            return (CIV_QUOTE_ADULTS_ALL_PURPOSE);
+            //        }
+            //        else
+            //        {
+            //            return (CIV_QUOTE_KIDS_ALL_PURPOSE);
+            //        }
+            //
         }
-
-
-        // Is one availible?
-        // If we are to say low loyalty, do chance
-        if (bCivHint != -1 && bCivLowLoyalty && !bMiners)
-        {
-            if (Random(100) < 25)
-            {
-                // Get rid of hint...
-                bCivHint = -1;
-            }
-        }
-
-        // Say hint if availible...
-        if (bCivHint != -1)
-        {
-            if (ubCivType == CIV_TYPE_ADULT)
-            {
-                (*pubCivHintToUse) = bCivHint;
-
-                // Set quote as used...
-                ConsiderCivilianQuotes(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, true);
-
-                // retrun value....
-                return (CIV_QUOTE_HINT);
-            }
-        }
-
-        if (bCivLowLoyalty)
-        {
-            if (ubCivType == CIV_TYPE_ADULT)
-            {
-                return (CIV_QUOTE_ADULTS_EXTREMLY_LOW_LOYALTY);
-            }
-            else
-            {
-                return (CIV_QUOTE_KIDS_EXTREMLY_LOW_LOYALTY);
-            }
-        }
-
-        if (bCivHighLoyalty)
-        {
-            if (ubCivType == CIV_TYPE_ADULT)
-            {
-                return (CIV_QUOTE_ADULTS_HIGH_LOYALTY);
-            }
-            else
-            {
-                return (CIV_QUOTE_KIDS_HIGH_LOYALTY);
-            }
-        }
-
-
-        // All purpose quote here....
-        if (ubCivType == CIV_TYPE_ADULT)
-        {
-            return (CIV_QUOTE_ADULTS_ALL_PURPOSE);
-        }
-        else
-        {
-            return (CIV_QUOTE_KIDS_ALL_PURPOSE);
-        }
-
     }
 
 
@@ -743,40 +746,40 @@ public class CivQuotes
 
     void StartCivQuote(SOLDIERTYPE pCiv)
     {
-        int ubCivQuoteID;
-        int sX, sY;
+        CIV_QUOTE ubCivQuoteID;
+        int sX = 0, sY = 0;
         int ubEntryID = 0;
-        int sScreenX, sScreenY;
+        int sScreenX, sScreenY = 0;
         int ubCivHintToUse;
 
         // ATE: Check for old quote.....
         // This could have been stored on last attempt...
-        if (pCiv.bCurrentCivQuote == CIV_QUOTE_HINT)
+        if (pCiv.bCurrentCivQuote == CIV_QUOTE.HINT)
         {
             // Determine which quote to say.....
             // CAN'T USE HINTS, since we just did one...
-            pCiv.bCurrentCivQuote = -1;
+            pCiv.bCurrentCivQuote = (CIV_QUOTE)(-1);
             pCiv.bCurrentCivQuoteDelta = 0;
-            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, &ubCivHintToUse, false);
+            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, out ubCivHintToUse, false);
         }
         else
         {
             // Determine which quote to say.....
-            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, &ubCivHintToUse, true);
+            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, out ubCivHintToUse, true);
         }
 
         // Determine entry id
         // ATE: Try and get entry from soldier pointer....
-        if (ubCivQuoteID != CIV_QUOTE_HINT)
+        if (ubCivQuoteID != CIV_QUOTE.HINT)
         {
-            if (pCiv.bCurrentCivQuote == -1)
+            if (pCiv.bCurrentCivQuote == CIV_QUOTE.UNSET)
             {
                 // Pick random one
-                pCiv.bCurrentCivQuote = (int)Random(gCivQuotes[ubCivQuoteID].ubNumEntries - 2);
+                //                pCiv.bCurrentCivQuote = (int)Random(gCivQuotes[ubCivQuoteID].ubNumEntries - 2);
                 pCiv.bCurrentCivQuoteDelta = 0;
             }
 
-            ubEntryID = pCiv.bCurrentCivQuote + pCiv.bCurrentCivQuoteDelta;
+           // ubEntryID = pCiv.bCurrentCivQuote + pCiv.bCurrentCivQuoteDelta;
         }
         else
         {
@@ -790,15 +793,15 @@ public class CivQuotes
 
         // Determine location...
         // Get location of civ on screen.....
-        GetSoldierScreenPos(pCiv, &sScreenX, &sScreenY);
-        sX = sScreenX;
-        sY = sScreenY;
+        //        GetSoldierScreenPos(pCiv, &sScreenX, &sScreenY);
+//sX = sScreenX;
+//sY = sScreenY;
 
         // begin quote
         BeginCivQuote(pCiv, ubCivQuoteID, ubEntryID, sX, sY);
 
         // Increment use
-        if (ubCivQuoteID != CIV_QUOTE_HINT)
+        if (ubCivQuoteID != CIV_QUOTE.HINT)
         {
             pCiv.bCurrentCivQuoteDelta++;
 
@@ -812,10 +815,10 @@ public class CivQuotes
 
     void InitCivQuoteSystem()
     {
-        memset(&gCivQuotes, 0, sizeof(gCivQuotes));
+        //memset(&gCivQuotes, 0, sizeof(gCivQuotes));
         CopyNumEntriesIntoQuoteStruct();
 
-        memset(&gCivQuoteData, 0, sizeof(gCivQuoteData));
+        //memset(&gCivQuoteData, 0, sizeof(gCivQuoteData));
         gCivQuoteData.bActive = false;
         gCivQuoteData.iVideoOverlay = -1;
         gCivQuoteData.iDialogueBox = -1;
@@ -826,8 +829,8 @@ public class CivQuotes
     {
         int uiNumBytesWritten;
 
-        FileWrite(hFile, &gCivQuotes, sizeof(gCivQuotes), &uiNumBytesWritten);
-        if (uiNumBytesWritten != sizeof(gCivQuotes))
+        //FileWrite(hFile, &gCivQuotes, sizeof(gCivQuotes), &uiNumBytesWritten);
+        //if (uiNumBytesWritten != sizeof(gCivQuotes))
         {
             return (false);
         }
@@ -841,7 +844,7 @@ public class CivQuotes
         int uiNumBytesRead;
 
         CIV_QUOTEStruct[] quotes = new CIV_QUOTEStruct[(int)CIV_QUOTE.NUM_CIV_QUOTES];
-        if (FileManager.FileRead<CIV_QUOTEStruct[]>(hFile, ref quotes, (int)CIV_QUOTE.NUM_CIV_QUOTES, out uiNumBytesRead))
+        //        if (FileManager.FileRead<CIV_QUOTEStruct[]>(hFile, ref quotes, (int)CIV_QUOTE.NUM_CIV_QUOTES, out uiNumBytesRead))
         {
             return (false);
         }
@@ -913,7 +916,10 @@ public enum CIV_QUOTE
     CIV_QUOTE_48,
     CIV_QUOTE_49,
 
-    NUM_CIV_QUOTES
+    NUM_CIV_QUOTES,
+
+    HINT = 99,
+    UNSET = -1,
 };
 
 

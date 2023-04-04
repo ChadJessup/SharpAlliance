@@ -240,15 +240,15 @@ public class ExplosionControl
         if (pExplosion.iLightID == -1)
         {
             // DO ONLY IF WE'RE AT A GOOD LEVEL
-            if (ubAmbientLightLevel >= MIN_AMB_LEVEL_FOR_MERC_LIGHTS)
-            {
-                if ((pExplosion.iLightID = LightSpriteCreate("L-R04.LHT", 0)) != (-1))
-                {
-                    LightSpritePower(pExplosion.iLightID, true);
-
-                    LightSpritePosition(pExplosion.iLightID, (int)(sX / CELL_X_SIZE), ((int)sY / CELL_Y_SIZE));
-                }
-            }
+            //            if (ubAmbientLightLevel >= MIN_AMB_LEVEL_FOR_MERC_LIGHTS)
+            //            {
+            //                if ((pExplosion.iLightID = LightSpriteCreate("L-R04.LHT", 0)) != (-1))
+            //                {
+            //                    LightSpritePower(pExplosion.iLightID, true);
+            //
+            //                    LightSpritePosition(pExplosion.iLightID, (int)(sX / CELL_X_SIZE), ((int)sY / CELL_Y_SIZE));
+            //                }
+            //            }
         }
 
         uiSoundID = uiExplosionSoundID[(int)ubTypeID];
@@ -277,7 +277,7 @@ public class ExplosionControl
 
         if (gExplosionData[iIndex].iLightID != -1)
         {
-            LightSpriteDestroy(gExplosionData[iIndex].iLightID);
+            //            LightSpriteDestroy(gExplosionData[iIndex].iLightID);
         }
     }
 
@@ -328,7 +328,7 @@ public class ExplosionControl
     {
         pfRecompileMovementCosts = false;
         int sX, sY;
-        STRUCTURE? pBase, pWallStruct, pAttached, pAttachedBase;
+        STRUCTURE? pBase, pWallStruct = null, pAttached, pAttachedBase;
         LEVELNODE? pNode = null, pNewNode = null, pAttachedNode;
         int sNewGridNo, sStructGridNo;
         TileIndexes sNewIndex;
@@ -346,11 +346,11 @@ public class ExplosionControl
         // ATE: Check for O3 statue for special damage..
         // note we do this check every time explosion goes off in game, but it's
         // an effiecnent check...
-        if (DoesO3SectorStatueExistHere(sGridNo) && uiDist <= 1)
-        {
-            ChangeO3SectorStatue(true);
-            return (1);
-        }
+        //        if (DoesO3SectorStatueExistHere(sGridNo) && uiDist <= 1)
+        //        {
+        //            ChangeO3SectorStatue(true);
+        //            return (1);
+        //        }
 
         // Get xy
         sX = IsometricUtils.CenterX(sGridNo);
@@ -376,7 +376,7 @@ public class ExplosionControl
             if (uiDist <= 1)
             {
                 // Remove corpse...
-                VaporizeCorpse(sGridNo, pCurrent.usStructureID);
+                //                VaporizeCorpse(sGridNo, pCurrent.usStructureID);
             }
         }
         else if (!(pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.PERSON)))
@@ -394,7 +394,7 @@ public class ExplosionControl
                 if (pBase.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE)
                     && !(pBase.fFlags.HasFlag(STRUCTUREFLAGS.DOOR)))
                 {
-                    RemoveAllUnburiedItems(pBase.sGridNo, bLevel);
+                    //                    RemoveAllUnburiedItems(pBase.sGridNo, bLevel);
                 }
 
                 fExplosive = ((pCurrent.fFlags & STRUCTUREFLAGS.EXPLOSIVE) != 0);
@@ -846,7 +846,7 @@ public class ExplosionControl
 
                             if (fInRoom && IN_BROTHEL(ubRoom))
                             {
-                                CivilianGroupChangesSides(CIV_GROUP.KINGPIN_CIV_GROUP);
+                                //                                CivilianGroupChangesSides(CIV_GROUP.KINGPIN_CIV_GROUP);
                             }
                         }
 
@@ -880,7 +880,7 @@ public class ExplosionControl
 
                     if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                     {
-                        RecompileLocalMovementCostsForWall(pBase.sGridNo, pBase.ubWallOrientation);
+                        //                        RecompileLocalMovementCostsForWall(pBase.sGridNo, pBase.ubWallOrientation);
                     }
 
                     // Remove!
@@ -945,10 +945,10 @@ public class ExplosionControl
         STRUCTURE_ON sDesiredLevel;
         DB_STRUCTURE_TILE[] ppTile;
         int ubLoop, ubLoop2;
-        int sNewGridNo, sNewGridNo2, sBaseGridNo;
+        int sNewGridNo, sNewGridNo2, sBaseGridNo = 0;
         bool fToBreak = false;
         bool fMultiStructure = false;
-        int ubNumberOfTiles;
+        int ubNumberOfTiles = 0;
         int fMultiStructSpecialFlag = 0;
         int fExplodeDamageReturn = 0;
 
@@ -1036,7 +1036,8 @@ public class ExplosionControl
 
                     for (ubLoop = BASE_TILE; ubLoop < ubNumberOfTiles; ubLoop++)
                     {
-                        sNewGridNo = sBaseGridNo + ppTile[ubLoop].sPosRelToBase;
+                        sNewGridNo = 0;
+                        //                        sNewGridNo = sBaseGridNo + ppTile[ubLoop].sPosRelToBase;
 
                         // look in adjacent tiles
                         for (ubLoop2 = 0; ubLoop2 < NUM_WORLD_DIRECTIONS; ubLoop2++)
@@ -1062,7 +1063,7 @@ public class ExplosionControl
                                         }
 
                                         {
-                                            InternalIgniteExplosion(ubOwner, CenterX(sNewGridNo2), CenterY(sNewGridNo2), 0, sNewGridNo2, RDX, false, bLevel);
+                                            //                                            InternalIgniteExplosion(ubOwner, CenterX(sNewGridNo2), CenterY(sNewGridNo2), 0, sNewGridNo2, RDX, false, bLevel);
                                         }
 
                                         fToBreak = true;
@@ -1115,19 +1116,19 @@ public class ExplosionControl
         gTacticalStatus.ubAttackBusyCount++;
         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Incrementing Attack: Explosion dishing out damage, Count now %d", gTacticalStatus.ubAttackBusyCount));
 
-        sNewWoundAmt = sWoundAmt - Math.Min(sWoundAmt, 35) * ArmourVersusExplosivesPercent(pSoldier) / 100;
+        //        sNewWoundAmt = sWoundAmt - Math.Min(sWoundAmt, 35) * ArmourVersusExplosivesPercent(pSoldier) / 100;
         if (sNewWoundAmt < 0)
         {
             sNewWoundAmt = 0;
         }
 
-        SoldierControl.EVENT_SoldierGotHit(pSoldier, usItem, sNewWoundAmt, sBreathAmt, ubDirection, (int)uiDist, ubOwner, 0, AnimationHeights.ANIM_CROUCH, sSubsequent, sBombGridNo);
+        //        SoldierControl.EVENT_SoldierGotHit(pSoldier, usItem, sNewWoundAmt, sBreathAmt, ubDirection, (int)uiDist, ubOwner, 0, AnimationHeights.ANIM_CROUCH, sSubsequent, sBombGridNo);
 
         pSoldier.ubMiscSoldierFlags |= SOLDIER_MISC.HURT_BY_EXPLOSION;
 
         if (ubOwner != NOBODY && MercPtrs[ubOwner].bTeam == gbPlayerNum && pSoldier.bTeam != gbPlayerNum)
         {
-            ProcessImplicationsOfPCAttack(MercPtrs[ubOwner], pSoldier, REASON_EXPLOSION);
+            //            ProcessImplicationsOfPCAttack(MercPtrs[ubOwner], pSoldier, REASON_EXPLOSION);
         }
         return (true);
     }
@@ -1197,7 +1198,7 @@ public class ExplosionControl
 
             if (bPosOfMask != NO_SLOT)
             {
-                if (pSoldier.inv[bPosOfMask].bStatus[0] < GASMASK_MIN_STATUS)
+                //                if (pSoldier.inv[bPosOfMask].bStatus[0] < GASMASK_MIN_STATUS)
                 {
                     // GAS MASK reduces breath loss by its work% (it leaks if not at least 70%)
                     sBreathAmt = (sBreathAmt * (100 - pSoldier.inv[bPosOfMask].bStatus[0])) / 100;
@@ -1223,7 +1224,7 @@ public class ExplosionControl
                         }
                     }
                 }
-                else
+                //                else
                 {
                     sBreathAmt = 0;
                     if (sWoundAmt > 0)
@@ -1264,12 +1265,12 @@ public class ExplosionControl
             SoldierControl.SoldierTakeDamage(pSoldier, AnimationHeights.ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE.GAS, NOBODY, NOWHERE, 0, true);
             if (pSoldier.bLife >= CONSCIOUSNESS)
             {
-                DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
+                //                DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
             }
 
             if (ubOwner != NOBODY && MercPtrs[ubOwner].bTeam == gbPlayerNum && pSoldier.bTeam != gbPlayerNum)
             {
-                ProcessImplicationsOfPCAttack(MercPtrs[ubOwner], out pSoldier, REASON_EXPLOSION);
+                //                ProcessImplicationsOfPCAttack(MercPtrs[ubOwner], out pSoldier, REASON_EXPLOSION);
             }
         }
         return (fRecompileMovementCosts);
@@ -1454,7 +1455,7 @@ public class ExplosionControl
                     if (ItemSubSystem.DamageItemOnGround((gWorldItems[pItemPool.iItemIndex].o), sGridNo, bLevel, (int)(sWoundAmt * 2), ubOwner))
                     {
                         // item was destroyed
-                        RemoveItemFromPool(sGridNo, pItemPool.iItemIndex, bLevel);
+                        //                        RemoveItemFromPool(sGridNo, pItemPool.iItemIndex, bLevel);
                     }
                     pItemPool = pItemPoolNext;
                 }
@@ -1492,18 +1493,18 @@ public class ExplosionControl
             // If tear gar, determine turns to spread.....
             if (sSubsequent == ERASE_SPREAD_EFFECT)
             {
-                RemoveSmokeEffectFromTile(sGridNo, bLevel);
+                //                RemoveSmokeEffectFromTile(sGridNo, bLevel);
             }
             else if (sSubsequent != REDO_SPREAD_EFFECT)
             {
-                AddSmokeEffectToTile(iSmokeEffectID, bSmokeEffectType, sGridNo, bLevel);
+                //                AddSmokeEffectToTile(iSmokeEffectID, bSmokeEffectType, sGridNo, bLevel);
             }
         }
         else
         {
             // Drop blood ....
             // Get blood quantity....
-            InternalDropBlood(sGridNo, 0, 0, (int)(Math.Max((MAXBLOODQUANTITY - (uiDist * 2)), 0)), 1);
+            //            InternalDropBlood(sGridNo, 0, 0, (int)(Math.Max((MAXBLOODQUANTITY - (uiDist * 2)), 0)), 1);
         }
 
         if (sSubsequent != ERASE_SPREAD_EFFECT && sSubsequent != BLOOD_SPREAD_EFFECT)
@@ -1542,6 +1543,7 @@ public class ExplosionControl
             {
                 if ((ubPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) >= NOBODY)
                 {
+                    pfMercHit = false;
                     return (fRecompileMovementCosts);
                 }
 
@@ -1681,6 +1683,8 @@ public class ExplosionControl
 
             (pfMercHit) = true;
         }
+
+        pfMercHit = false;
         return (fRecompileMovementCosts);
     }
 
@@ -1701,7 +1705,7 @@ public class ExplosionControl
 
         if (TRAVELCOST.IS_TRAVELCOST_DOOR(ubMovementCost))
         {
-            ubMovementCost = DoorTravelCost(null, uiNewSpot, ubMovementCost, false, null);
+            //            ubMovementCost = DoorTravelCost(null, uiNewSpot, ubMovementCost, false, null);
             // If we have hit a wall, STOP HERE
             if (ubMovementCost >= TRAVELCOST.BLOCKED)
             {
@@ -1900,7 +1904,7 @@ public class ExplosionControl
     {
         int uiNewSpot, uiTempSpot, uiBranchSpot, cnt, branchCnt;
         int? uiTempRange;
-        int ubBranchRange;
+        int? ubBranchRange;
         WorldDirections ubDir, ubBranchDir;
         int ubKeepGoing;
         int sRange;
@@ -2034,7 +2038,7 @@ public class ExplosionControl
                                 }
                             }
 
-                            if (ubBranchDir & 1)
+                            if ((ubBranchDir & (WorldDirections)1) > 0)
                             {
                                 branchCnt += 3;
                             }
@@ -2071,19 +2075,18 @@ public class ExplosionControl
 
             // DO wireframes as well
             ConvertGridNoToXY((int)sGridNo, out sX, out sY);
-            SetRecalculateWireFrameFlagRadius(sX, sY, ubRadius);
-            CalculateWorldWireFrameTiles(false);
+            // SetRecalculateWireFrameFlagRadius(sX, sY, ubRadius);
+            // CalculateWorldWireFrameTiles(false);
 
-            RecompileLocalMovementCostsInAreaWithFlags();
-            RecompileLocalMovementCostsFromRadius(sGridNo, MAX_DISTANCE_EXPLOSIVE_CAN_DESTROY_STRUCTURES);
+            // RecompileLocalMovementCostsInAreaWithFlags();
+            // RecompileLocalMovementCostsFromRadius(sGridNo, MAX_DISTANCE_EXPLOSIVE_CAN_DESTROY_STRUCTURES);
 
             // if anything has been done to change movement costs and this is a potential POW situation, check
             // paths for POWs
             if (gWorldSectorX == 13 && gWorldSectorY == MAP_ROW.I)
             {
-                DoPOWPathChecks();
+                // DoPOWPathChecks();
             }
-
         }
 
         // do sight checks if something damaged or smoke stuff involved
@@ -2114,8 +2117,7 @@ public class ExplosionControl
 
         if (fSubsequent != BLOOD_SPREAD_EFFECT)
         {
-            MakeNoise(NOBODY, sGridNo, bLevel, gpWorldLevelData[sGridNo].ubTerrainID, Explosive[Item[usItem].ubClassIndex].ubVolume, NOISE.EXPLOSION);
-
+//            MakeNoise(NOBODY, sGridNo, bLevel, gpWorldLevelData[sGridNo].ubTerrainID, Explosive[Item[usItem].ubClassIndex].ubVolume, NOISE.EXPLOSION);
         }
     }
 
@@ -2188,7 +2190,7 @@ public class ExplosionControl
         else
         {
             // delay further!
-            SetCustomizableTimerCallbackAndDelay(1000, DelayedBillyTriggerToBlockOnExit, true);
+//            SetCustomizableTimerCallbackAndDelay(1000, DelayedBillyTriggerToBlockOnExit, true);
         }
     }
 
@@ -2219,7 +2221,7 @@ public class ExplosionControl
         return (false);
     }
 
-    void PerformItemAction(int sGridNo, OBJECTTYPE? pObj)
+    void PerformItemAction(int sGridNo, OBJECTTYPE pObj)
     {
         STRUCTURE? pStructure;
 
@@ -2238,12 +2240,13 @@ public class ExplosionControl
                     {
                         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
                         {
-                            HandleDoorChangeFromGridNo(null, sGridNo, false);
+                            HandleDoors.HandleDoorChangeFromGridNo(null, sGridNo, false);
                         }
                         else
                         {
-                            HandleDoorChangeFromGridNo(null, pStructure.sBaseGridNo, false);
+                            HandleDoors.HandleDoorChangeFromGridNo(null, pStructure.sBaseGridNo, false);
                         }
+
                         gfExplosionQueueMayHaveChangedSight = true;
                     }
                 }
@@ -2260,11 +2263,11 @@ public class ExplosionControl
                     {
                         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
                         {
-                            HandleDoorChangeFromGridNo(null, sGridNo, false);
+                            HandleDoors.HandleDoorChangeFromGridNo(null, sGridNo, false);
                         }
                         else
                         {
-                            HandleDoorChangeFromGridNo(null, pStructure.sBaseGridNo, false);
+                            HandleDoors.HandleDoorChangeFromGridNo(null, pStructure.sBaseGridNo, false);
                         }
                         gfExplosionQueueMayHaveChangedSight = true;
                     }
@@ -2285,11 +2288,11 @@ public class ExplosionControl
                 {
                     if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
                     {
-                        HandleDoorChangeFromGridNo(null, sGridNo, false);
+                        HandleDoors.HandleDoorChangeFromGridNo(null, sGridNo, false);
                     }
                     else
                     {
-                        HandleDoorChangeFromGridNo(null, pStructure.sBaseGridNo, false);
+                        HandleDoors.HandleDoorChangeFromGridNo(null, pStructure.sBaseGridNo, false);
                     }
                     gfExplosionQueueMayHaveChangedSight = true;
                 }
@@ -2302,7 +2305,7 @@ public class ExplosionControl
                 {
                     DOOR? pDoor;
 
-                    pDoor = FindDoorInfoAtGridNo(sGridNo);
+                    pDoor = Keys.FindDoorInfoAtGridNo(sGridNo);
                     if (pDoor is not null)
                     {
                         pDoor.fLocked = false;
@@ -2313,7 +2316,7 @@ public class ExplosionControl
                 {
                     DOOR? pDoor;
 
-                    pDoor = FindDoorInfoAtGridNo(sGridNo);
+                    pDoor = Keys.FindDoorInfoAtGridNo(sGridNo);
                     if (pDoor is not null)
                     {
                         if (pDoor.fLocked)
@@ -2331,21 +2334,21 @@ public class ExplosionControl
                 {
                     DOOR? pDoor;
 
-                    pDoor = FindDoorInfoAtGridNo(sGridNo);
+                    pDoor = Keys.FindDoorInfoAtGridNo(sGridNo);
                     if (pDoor is not null)
                     {
                         pDoor.ubTrapLevel = 0;
-                        pDoor.ubTrapID = NO_TRAP;
+                        pDoor.ubTrapID = DoorTrapTypes.NO_TRAP;
                     }
                 }
                 break;
             case ACTION_ITEM.SMALL_PIT:
-                Add3X3Pit(sGridNo);
-                SearchForOtherMembersWithinPitRadiusAndMakeThemFall(sGridNo, 1);
+//                Add3X3Pit(sGridNo);
+//                SearchForOtherMembersWithinPitRadiusAndMakeThemFall(sGridNo, 1);
                 break;
             case ACTION_ITEM.LARGE_PIT:
-                Add5X5Pit(sGridNo);
-                SearchForOtherMembersWithinPitRadiusAndMakeThemFall(sGridNo, 2);
+//                Add5X5Pit(sGridNo);
+//                SearchForOtherMembersWithinPitRadiusAndMakeThemFall(sGridNo, 2);
                 break;
             case ACTION_ITEM.TOGGLE_ACTION1:
                 ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 1);
@@ -2462,7 +2465,7 @@ public class ExplosionControl
                 break;
             case ACTION_ITEM.KINGPIN_ALARM:
                 //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
-                CallAvailableKingpinMenTo(sGridNo);
+//                CallAvailableKingpinMenTo(sGridNo);
 
                 gTacticalStatus.fCivGroupHostile[CIV_GROUP.KINGPIN_CIV_GROUP] = CIV_GROUP_HOSTILE;
 
@@ -2478,7 +2481,7 @@ public class ExplosionControl
                             {
                                 if (MercPtrs[ubID].bOppList[ubID2] == SEEN_CURRENTLY)
                                 {
-                                    MakeCivHostile(MercPtrs[ubID], 2);
+//                                    MakeCivHostile(MercPtrs[ubID], 2);
                                     fEnterCombat = true;
                                 }
                             }
@@ -2487,7 +2490,7 @@ public class ExplosionControl
 
                     if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
-                        EnterCombatMode(CIV_TEAM);
+//                        EnterCombatMode(CIV_TEAM);
                     }
                 }
 
@@ -2574,27 +2577,27 @@ public class ExplosionControl
             case ACTION_ITEM.REVEAL_ROOM:
                 {
                     int ubRoom;
-                    if (InAHiddenRoom(sGridNo, out ubRoom))
-                    {
-                        RemoveRoomRoof(sGridNo, ubRoom, null);
-                    }
+//                    if (InAHiddenRoom(sGridNo, out ubRoom))
+//                    {
+//                        RemoveRoomRoof(sGridNo, ubRoom, null);
+//                    }
                 }
                 break;
             case ACTION_ITEM.LOCAL_ALARM:
-                MakeNoise(NOBODY, sGridNo, 0, gpWorldLevelData[sGridNo].ubTerrainID, 30, NOISE.SILENT_ALARM);
+//                MakeNoise(NOBODY, sGridNo, 0, gpWorldLevelData[sGridNo].ubTerrainID, 30, NOISE.SILENT_ALARM);
                 break;
             case ACTION_ITEM.GLOBAL_ALARM:
-                CallAvailableEnemiesTo(sGridNo);
+//                CallAvailableEnemiesTo(sGridNo);
                 break;
             case ACTION_ITEM.BLOODCAT_ALARM:
-                CallAvailableTeamEnemiesTo(sGridNo, CREATURE_TEAM);
+//                CallAvailableTeamEnemiesTo(sGridNo, CREATURE_TEAM);
                 break;
             case ACTION_ITEM.KLAXON:
                 //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
                 break;
             case ACTION_ITEM.MUSEUM_ALARM:
                 //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
-                CallEldinTo(sGridNo);
+//                CallEldinTo(sGridNo);
                 break;
             default:
                 // error message here
@@ -2615,9 +2618,9 @@ public class ExplosionControl
         if (!gfExplosionQueueActive)
         {
             // lock UI
-            guiPendingOverrideEvent = LU_BEGINUILOCK;
+            guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_BEGINUILOCK;
             // disable sight
-            gTacticalStatus.uiFlags |= DISALLOW_SIGHT;
+            gTacticalStatus.uiFlags |= TacticalEngineStatus.DISALLOW_SIGHT;
         }
         gubElementsOnExplosionQueue++;
         gfExplosionQueueActive = true;
@@ -2657,13 +2660,13 @@ public class ExplosionControl
                 else if (pObj.usBombItem == Items.TRIP_KLAXON)
                 {
                     //PlayJA2Sample(KLAXON_ALARM, RATE_11025, SoundVolume(MIDVOLUME, sGridNo), 5, SoundDir(sGridNo));
-                    CallAvailableEnemiesTo(sGridNo);
+                    //                    CallAvailableEnemiesTo(sGridNo);
                     //RemoveItemFromPool( sGridNo, gWorldBombs[ uiWorldBombIndex ].iItemIndex, 0 );
                 }
                 else if (pObj.usBombItem == Items.TRIP_FLARE)
                 {
-                    NewLightEffect(sGridNo, LIGHT_FLARE_MARK_1);
-                    RemoveItemFromPool(sGridNo, gWorldBombs[uiWorldBombIndex].iItemIndex, ubLevel);
+                    //                    NewLightEffect(sGridNo, LIGHT_FLARE_MARK_1);
+                    //                    RemoveItemFromPool(sGridNo, gWorldBombs[uiWorldBombIndex].iItemIndex, ubLevel);
                 }
                 else
                 {
@@ -2671,12 +2674,12 @@ public class ExplosionControl
 
                     // We have to remove the item first to prevent the explosion from detonating it
                     // a second time :-)
-                    RemoveItemFromPool(sGridNo, gWorldBombs[uiWorldBombIndex].iItemIndex, ubLevel);
+                    //                    RemoveItemFromPool(sGridNo, gWorldBombs[uiWorldBombIndex].iItemIndex, ubLevel);
 
                     // make sure no one thinks there is a bomb here any more!
                     if (gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.PLAYER_MINE_PRESENT))
                     {
-                        RemoveBlueFlag(sGridNo, ubLevel);
+                        //                        RemoveBlueFlag(sGridNo, ubLevel);
                     }
                     gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.ENEMY_MINE_PRESENT);
 
@@ -2715,25 +2718,26 @@ public class ExplosionControl
 
             if (gubPersonToSetOffExplosions != NOBODY && !(MercPtrs[gubPersonToSetOffExplosions].uiStatusFlags.HasFlag(SOLDIER.PC)))
             {
-                FreeUpNPCFromPendingAction(MercPtrs[gubPersonToSetOffExplosions]);
+                //                FreeUpNPCFromPendingAction(MercPtrs[gubPersonToSetOffExplosions]);
             }
 
             if (gfExplosionQueueMayHaveChangedSight)
             {
                 int ubLoop;
-                SOLDIERTYPE? pTeamSoldier;
+//                SOLDIERTYPE? pTeamSoldier;
 
                 // set variable so we may at least have someone to resolve interrupts vs
                 gubInterruptProvoker = gubPersonToSetOffExplosions;
-                AllTeamsLookForAll(true);
+                //                AllTeamsLookForAll(true);
 
                 // call fov code
                 ubLoop = gTacticalStatus.Team[gbPlayerNum].bFirstID;
-                for (pTeamSoldier = MercPtrs[ubLoop]; ubLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; ubLoop++, pTeamSoldier++)
+//                for (pTeamSoldier = MercPtrs[ubLoop]; ubLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; ubLoop++, pTeamSoldier++)
+                foreach (var pTeamSoldier in MercPtrs)
                 {
                     if (pTeamSoldier.bActive && pTeamSoldier.bInSector)
                     {
-                        RevealRoofsAndItems(pTeamSoldier, true, false, pTeamSoldier.bLevel, false);
+//                        RevealRoofsAndItems(pTeamSoldier, true, false, pTeamSoldier.bLevel, false);
                     }
                 }
 
@@ -2863,7 +2867,7 @@ public class ExplosionControl
         if (gTacticalStatus.fPanicFlags > 0)
         {
             // find a new "closest one"
-            MakeClosestEnemyChosenOne();
+//            MakeClosestEnemyChosenOne();
         }
     }
 
@@ -3141,7 +3145,7 @@ public class ExplosionControl
         }
 
         // SAM site may have been put out of commission...
-        UpdateAirspaceControl();
+//        UpdateAirspaceControl();
 
         // ATE: GRAPHICS UPDATE WILL GET DONE VIA NORMAL EXPLOSION CODE.....
     }
@@ -3198,15 +3202,15 @@ public class ExplosionControl
                 {
                     // We add temp changes to map not loaded....
                     // Remove old
-                    RemoveStructFromUnLoadedMapTempFile(pSamGridNoAList[cnt], usDamagedGraphic, sSectorX, sSectorY, (int)sSectorZ);
+//                    RemoveStructFromUnLoadedMapTempFile(pSamGridNoAList[cnt], usDamagedGraphic, sSectorX, sSectorY, (int)sSectorZ);
                     // Add new
-                    AddStructToUnLoadedMapTempFile(pSamGridNoAList[cnt], usGoodGraphic, sSectorX, sSectorY, (int)sSectorZ);
+//                    AddStructToUnLoadedMapTempFile(pSamGridNoAList[cnt], usGoodGraphic, sSectorX, sSectorY, (int)sSectorZ);
                 }
             }
         }
 
         // SAM site may have been put back into working order...
-        UpdateAirspaceControl();
+//        UpdateAirspaceControl();
     }
 
 
@@ -3239,10 +3243,10 @@ public class ExplosionControl
                         continue;
                     }
 
-                    if (DoesNPCOwnBuilding(pSoldier, sGridNo))
-                    {
-                        MakeNPCGrumpyForMinorOffense(pSoldier, MercPtrs[ubOwner]);
-                    }
+//                    if (DoesNPCOwnBuilding(pSoldier, sGridNo))
+//                    {
+//                        MakeNPCGrumpyForMinorOffense(pSoldier, MercPtrs[ubOwner]);
+//                    }
                 }
             }
         }

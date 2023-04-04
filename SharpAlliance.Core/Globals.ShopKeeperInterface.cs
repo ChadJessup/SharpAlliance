@@ -41,7 +41,7 @@ public enum SKI_DIRTY
 public struct INVENTORY_IN_SLOT
 {
     public bool fActive;
-    public int sItemIndex;
+    public Items sItemIndex;
     public int uiFlags;
     OBJECTTYPE ItemObject;
     public int ubLocationOfObject;                   //An enum value for the location of the item ( either in the arms dealers inventory, one of the offer areas or in the users inventory)

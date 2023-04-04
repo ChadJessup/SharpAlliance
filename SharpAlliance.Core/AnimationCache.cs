@@ -38,7 +38,7 @@ public class AnimationCache
         pAnimCache.ubCacheSize = 0;
 
         // Zero surface databse history for this soldeir
-        ClearAnimationSurfacesUsageHistory(usSoldierID);
+//        ClearAnimationSurfacesUsageHistory(usSoldierID);
 
         return (true);
     }
@@ -110,7 +110,7 @@ public class AnimationCache
 
             // Bump off lowest index
             Messages.AnimDebugMsg(string.Format("Anim Cache: Bumping %d ( Soldier %d )", ubLowestIndex, usSoldierID));
-            UnLoadAnimationSurface(usSoldierID, pAnimCache.usCachedSurfaces[ubLowestIndex]);
+//            UnLoadAnimationSurface(usSoldierID, pAnimCache.usCachedSurfaces[ubLowestIndex]);
 
             // Decrement
             pAnimCache.sCacheHits[ubLowestIndex] = 0;
@@ -128,7 +128,7 @@ public class AnimationCache
                 Messages.AnimDebugMsg(string.Format("Anim Cache: Loading Surface %d ( Soldier %d )", usSurfaceIndex, usSoldierID));
 
                 // Insert here
-                CHECKF(LoadAnimationSurface(usSoldierID, usSurfaceIndex, usCurrentAnimation) != false);
+//                CHECKF(LoadAnimationSurface(usSoldierID, usSurfaceIndex, usCurrentAnimation) != false);
                 pAnimCache.sCacheHits[cnt] = 0;
                 pAnimCache.usCachedSurfaces[cnt] = usSurfaceIndex;
                 pAnimCache.ubCacheSize++;
@@ -142,7 +142,7 @@ public class AnimationCache
 
 
 
-    void UnLoadCachedAnimationSurfaces(int usSoldierID, AnimationSurfaceCacheType* pAnimCache)
+    void UnLoadCachedAnimationSurfaces(int usSoldierID, AnimationSurfaceCacheType pAnimCache)
     {
         int cnt;
 
@@ -151,7 +151,7 @@ public class AnimationCache
         {
             if (pAnimCache.usCachedSurfaces[cnt] != EMPTY_CACHE_ENTRY)
             {
-                UnLoadAnimationSurface(usSoldierID, pAnimCache.usCachedSurfaces[cnt]);
+//                UnLoadAnimationSurface(usSoldierID, pAnimCache.usCachedSurfaces[cnt]);
             }
         }
 

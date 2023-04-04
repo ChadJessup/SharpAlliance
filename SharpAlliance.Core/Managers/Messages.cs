@@ -628,9 +628,7 @@ public class Messages
             usColor = Globals.INTERFACE_COLOR;
         }
 
-
-
-        pStringWrapperHead = LineWrap(uiFont, LINE_WIDTH, usLineWidthIfWordIsWiderThenWidth, DestString);
+//        pStringWrapperHead = LineWrap(uiFont, LINE_WIDTH, usLineWidthIfWordIsWiderThenWidth, DestString);
         pStringWrapper = pStringWrapperHead;
         if (pStringWrapper is null)
         {
@@ -738,7 +736,7 @@ public class Messages
             //vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
             //va_end(argptr);
 
-            BeginUIMessage(DestString);
+//            BeginUIMessage(DestString);
             return;
         }
 
@@ -748,7 +746,7 @@ public class Messages
             // vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
             // va_end(argptr);
 
-            InternalBeginUIMessage(true, DestString);
+//           InternalBeginUIMessage(true, DestString);
             return;
         }
 
@@ -761,7 +759,7 @@ public class Messages
 
             // wprintf(DestStringA, "DEBUG: %s", DestString);
 
-            BeginUIMessage(DestStringA);
+//            BeginUIMessage(DestStringA);
             WriteMessageToFile(DestStringA);
 
             return;
@@ -777,7 +775,7 @@ public class Messages
             // vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
             // va_end(argptr);
 
-            BeginMapUIMessage(ubPriority, DestString);
+//            BeginMapUIMessage(ubPriority, DestString);
             return;
         }
 
@@ -819,7 +817,7 @@ public class Messages
             usColor = Globals.INTERFACE_COLOR;
         }
 
-        pStringWrapperHead = LineWrap(uiFont, Globals.MAP_LINE_WIDTH, usLineWidthIfWordIsWiderThenWidth, DestString);
+//        pStringWrapperHead = LineWrap(uiFont, Globals.MAP_LINE_WIDTH, usLineWidthIfWordIsWiderThenWidth, DestString);
         pStringWrapper = pStringWrapperHead;
         if (pStringWrapper is null)
         {
@@ -1326,7 +1324,7 @@ public class Messages
         return (ubRange);
     }
 
-    internal static void AnimDebugMsg(string v)
+    public static void AnimDebugMsg(string v)
     {
         throw new NotImplementedException();
     }

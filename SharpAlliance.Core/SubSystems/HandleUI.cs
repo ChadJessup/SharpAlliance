@@ -93,7 +93,7 @@ public class HandleUI
         this.points = points;
         this.inputs = inputManager;
         this.cursors = cursorSubSystem;
-        this.pathAI = pathAI;
+        PathAI = pathAI;
         this.gGameSettings = gameSettings;
         this.renderWorld = renderWorld;
         this.soldierFind = soldierFind;
@@ -3436,7 +3436,7 @@ public class HandleUI
         int sActionGridNo;
         STRUCTURE? pStructure;
         bool fOnInterTile = false;
-        byte ubDirection;
+        WorldDirections ubDirection;
         //	ITEM_POOL					*pItemPool;
         int sAdjustedGridNo;
         int sIntTileGridNo;
@@ -3470,14 +3470,14 @@ public class HandleUI
             // We should not have null here if we are given this flag...
             if (pIntTile != null)
             {
-                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref sIntTileGridNo, out ubDirection, null, false, true);
+                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sIntTileGridNo, ref ubDirection, null, false, true);
                 if (sActionGridNo == -1)
                 {
                     sActionGridNo = sIntTileGridNo;
                 }
-                CalcInteractiveObjectAPs(sIntTileGridNo, pStructure, out sAPCost, out sBPCost);
+//                CalcInteractiveObjectAPs(sIntTileGridNo, pStructure, out sAPCost, out sBPCost);
                 //sAPCost += UIPlotPath( pSoldier, sActionGridNo, NO_COPYROUTE, PLOT, TEMPORARY, (uint)pSoldier.usUIMovementMode, NOT_STEALTH, FORWARD, pSoldier.bActionPoints);
-                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
@@ -3486,25 +3486,25 @@ public class HandleUI
                 }
 
                 // Add cost for stance change....
-                sAPCost += GetAPsToChangeStance(pSoldier, AnimationHeights.ANIM_STAND);
+//                sAPCost += GetAPsToChangeStance(pSoldier, AnimationHeights.ANIM_STAND);
             }
             else
             {
-                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
             }
         }
         else if (uiFlags == MOVEUI_TARGET.WIREFENCE)
         {
-            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref usMapPos, out ubDirection, null, false, true);
+            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sAPCost = 0;
             }
             else
             {
-                sAPCost = GetAPsToCutFence(pSoldier);
+//                sAPCost = GetAPsToCutFence(pSoldier);
 
-                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
@@ -3521,9 +3521,9 @@ public class HandleUI
                 sActionGridNo = usMapPos;
             }
 
-            sAPCost = GetAPsToUseJar(pSoldier, sActionGridNo);
+//            sAPCost = GetAPsToUseJar(pSoldier, sActionGridNo);
 
-            sAPCost += this.pathAI.UIPlotPath(
+            sAPCost += PathAI.UIPlotPath(
                 pSoldier,
                 sActionGridNo,
                 PlotPathDefines.NO_COPYROUTE,
@@ -3543,16 +3543,16 @@ public class HandleUI
         else if (uiFlags == MOVEUI_TARGET.CAN)
         {
             // Get structure info for in tile!
-            pIntTile = GetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure);
+//            pIntTile = GetCurInteractiveTileGridNoAndStructure(out sIntTileGridNo, out pStructure);
 
             // We should not have null here if we are given this flag...
             if (pIntTile != null)
             {
-                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref sIntTileGridNo, out ubDirection, null, false, true);
+                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sIntTileGridNo, ref ubDirection, null, false, true);
                 if (sActionGridNo != -1)
                 {
                     sAPCost = AP.ATTACH_CAN;
-                    sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                    sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                     if (sActionGridNo != pSoldier.sGridNo)
                     {
@@ -3563,7 +3563,7 @@ public class HandleUI
             }
             else
             {
-                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
             }
 
         }
@@ -3582,7 +3582,7 @@ public class HandleUI
                 }
             }
 
-            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref usMapPos, out ubDirection, null, false, true);
+            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
@@ -3590,7 +3590,7 @@ public class HandleUI
 
             sAPCost = GetAPsToBeginRepair(pSoldier);
 
-            sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+            sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
             if (sActionGridNo != pSoldier.sGridNo)
             {
@@ -3605,7 +3605,7 @@ public class HandleUI
             {
                 int sNewGridNo;
 
-                sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, out ubDirection, 0, Globals.MercPtrs[ubMercID]);
+//                sNewGridNo = FindGridNoFromSweetSpotWithStructDataFromSoldier(pSoldier, pSoldier.usUIMovementMode, 5, out ubDirection, 0, Globals.MercPtrs[ubMercID]);
 
                 if (sNewGridNo != Globals.NOWHERE)
                 {
@@ -3613,15 +3613,15 @@ public class HandleUI
                 }
             }
 
-            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref usMapPos, out ubDirection, null, false, true);
+            sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, usMapPos, ref ubDirection, null, false, true);
             if (sActionGridNo == -1)
             {
                 sActionGridNo = usMapPos;
             }
 
-            sAPCost = GetAPsToRefuelVehicle(pSoldier);
+//            sAPCost = GetAPsToRefuelVehicle(pSoldier);
 
-            sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+            sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
             if (sActionGridNo != pSoldier.sGridNo)
             {
@@ -3691,7 +3691,7 @@ public class HandleUI
             if (sGotLocation != (int)Globals.NOWHERE)
             {
                 sAPCost += MinAPsToAttack(pSoldier, out sAdjustedGridNo, true);
-                sAPCost += this.pathAI.UIPlotPath(
+                sAPCost += PathAI.UIPlotPath(
                     pSoldier,
                     sGotLocation,
                     PlotPathDefines.NO_COPYROUTE,
@@ -3714,18 +3714,24 @@ public class HandleUI
             // Check if we are on a target
             if (Globals.gfUIFullTargetFound)
             {
-                sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, ref Globals.MercPtrs[Globals.gusUIFullTargetID].sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
+                sActionGridNo = Overhead.FindAdjacentGridEx(
+                    pSoldier, 
+                    MercPtrs[gusUIFullTargetID].sGridNo, 
+                    ref ubDirection, 
+                    out sAdjustedGridNo, 
+                    true, 
+                    false);
                 if (sActionGridNo == -1)
                 {
                     sActionGridNo = sAdjustedGridNo;
                 }
                 sAPCost += AP.STEAL_ITEM;
                 // CJC August 13 2002: take into account stance in AP prediction
-                if (!(PTR_STANDING))
+                if (!(PTR_STANDING(pSoldier)))
                 {
-                    sAPCost += GetAPsToChangeStance(pSoldier, AnimationHeights.ANIM_STAND);
+//                    sAPCost += GetAPsToChangeStance(pSoldier, AnimationHeights.ANIM_STAND);
                 }
-                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
@@ -3737,7 +3743,7 @@ public class HandleUI
         else if (uiFlags == MOVEUI_TARGET.BOMB)
         {
             sAPCost += GetAPsToDropBomb(pSoldier);
-            sAPCost += this.pathAI.UIPlotPath(pSoldier, usMapPos, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+            sAPCost += PathAI.UIPlotPath(pSoldier, usMapPos, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
 
             Globals.gfUIHandleShowMoveGrid = 1;
             Globals.gsUIHandleShowMoveGridLocation = usMapPos;
@@ -3759,7 +3765,7 @@ public class HandleUI
                     }
                 }
                 sAPCost += GetAPsToBeginFirstAid(pSoldier);
-                sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
                 if (sActionGridNo != pSoldier.sGridNo)
                 {
                     Globals.gfUIHandleShowMoveGrid = 1;
@@ -3777,7 +3783,7 @@ public class HandleUI
 
                     if (pSoldier.sGridNo != sActionGridNo)
                     {
-                        sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+                        sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
                         if (sAPCost != 0)
                         {
                             sAPCost += (int)AP.PICKUP_ITEM;
@@ -3799,7 +3805,7 @@ public class HandleUI
         }
         else
         {
-            sAPCost += this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
+            sAPCost += PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, fPlot, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints);
         }
 
         if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_AP_LEFT))
@@ -5334,7 +5340,7 @@ public class HandleUI
                         return (false);
                     }
 
-                    if (this.pathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, false, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints) == 0)
+                    if (PathAI.UIPlotPath(pSoldier, sActionGridNo, PlotPathDefines.NO_COPYROUTE, false, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints) == 0)
                     {
                         Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_UI_FEEDBACK, Globals.TacticalStr[NO_PATH]);
                         return (false);
@@ -5698,7 +5704,7 @@ public class HandleUI
         }
     }
 
-    bool SelectedGuyInBusyAnimation()
+    public static bool SelectedGuyInBusyAnimation()
     {
         SOLDIERTYPE? pSoldier;
 

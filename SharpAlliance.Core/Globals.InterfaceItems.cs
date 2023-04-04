@@ -184,7 +184,7 @@ public partial class Globals
     public static bool gfItemPointerDifferentThanDefault = false;
     public static SOLDIERTYPE? gpItemPointerSoldier;
     public static InventorySlot gbItemPointerSrcSlot;
-    public static int gusItemPointer = 255;
+    public static TileIndexes gusItemPointer = (TileIndexes)255;
     public static int usItemSnapCursor;
     public static uint guiNewlyPlacedItemTimer = 0;
     public static bool gfBadThrowItemCTGH;
