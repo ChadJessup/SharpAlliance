@@ -5,6 +5,14 @@ public partial class Globals
     public const int NEW_ROTATION_ARRAY_SIZE = 49;
     public const int BASE_NUMBER_OF_ROTATION_ARRAYS = 19;
 
+    public const int NETWORK_PATH_DATA_SIZE = 6;
+
+    // This definition is used to denote events with a special delay value;
+    // it indicates that these events will not be processed until specifically
+    // called for in a special loop.
+    public const int DEMAND_EVENT_DELAY = 0xFFFF;
+
+
     public static int[,] gubEncryptionArray4 =
     {
         {

@@ -106,7 +106,7 @@ public class TeamTurns
                         if (fDoBattleSnd)
                         {
                             // Say ATTENTION SOUND...
-                            DoMercBattleSound(Globals.MercPtrs[gusSelectedSoldier], BATTLE_SOUND_ATTN1);
+                            DoMercBattleSound(Globals.MercPtrs[gusSelectedSoldier], BATTLE_SOUND.ATTN1);
                         }
 
                         if (gsInterfaceLevel == 1)
@@ -879,7 +879,7 @@ public class TeamTurns
                         SlideTo(Globals.NOWHERE, gusSelectedSoldier, Globals.NOBODY, SETLOCATOR);
 
                         // Say ATTENTION SOUND...
-                        DoMercBattleSound(Globals.MercPtrs[gusSelectedSoldier], BATTLE_SOUND_ATTN1);
+                        DoMercBattleSound(Globals.MercPtrs[gusSelectedSoldier], BATTLE_SOUND.ATTN1);
 
                         if (gsInterfaceLevel == 1)
                         {

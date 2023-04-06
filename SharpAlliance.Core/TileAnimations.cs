@@ -265,7 +265,7 @@ public class TileAnimations
     }
 
     // Loop throug all ani tiles and remove...
-    void DeleteAniTiles()
+    public static void DeleteAniTiles()
     {
         ANITILE? pAniNode = null;
         ANITILE? pNode = null;
@@ -284,7 +284,7 @@ public class TileAnimations
     }
 
 
-    void DeleteAniTile(ANITILE? pAniTile)
+    public static void DeleteAniTile(ANITILE? pAniTile)
     {
         ANITILE? pAniNode = null;
         ANITILE? pOldAniNode = null;
@@ -354,7 +354,7 @@ public class TileAnimations
                     if (pAniNode.uiFlags.HasFlag(ANITILEFLAGS.EXPLOSION))
                     {
                         // Talk to the explosion data...
-                        RemoveExplosionData(pAniNode.uiUserData3);
+                        ExplosionControl.RemoveExplosionData((int)pAniNode.uiUserData3);
 
                         if (!gfExplosionQueueActive)
                         {
@@ -365,17 +365,17 @@ public class TileAnimations
 
                         // Freeup attacker from explosion
                         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("@@@@@@@ Reducing attacker busy count..., EXPLOSION effect gone off"));
-                        ReduceAttackBusyCount((int)pAniNode.ubUserData2, false);
+                        Overhead.ReduceAttackBusyCount(pAniNode.ubUserData2, false);
                     }
 
 
                     if (pAniNode.uiFlags.HasFlag(ANITILEFLAGS.RELEASE_ATTACKER_WHEN_DONE))
                     {
                         // First delete the bullet!
-                        RemoveBullet(pAniNode.uiUserData3);
+                        // RemoveBullet(pAniNode.uiUserData3);
 
                         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("@@@@@@@ Freeing up attacker - miss finished animation"));
-                        FreeUpAttacker((int)pAniNode.ubAttackerMissed);
+                        // FreeUpAttacker((int)pAniNode.ubAttackerMissed);
                     }
 
                 }

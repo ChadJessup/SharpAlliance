@@ -250,7 +250,7 @@ public class InteractiveTiles
                     if (Globals.gWorldItems[pItemPool.iItemIndex].o.usItem == Items.OWNERSHIP)
                     {
                         fDoHumm = false;
-                        TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_NOTHING, 500);
+                        TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.NOTHING, 500);
                     }
 
                     // If now open, set visible...
@@ -268,14 +268,14 @@ public class InteractiveTiles
                             {
                                 fDoHumm = false;
 
-                                TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_COOL1, 500);
+                                TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.COOL1, 500);
 
                             }
                         }
 
                         if (fDoHumm)
                         {
-                            TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_HUMM, 500);
+                            TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.HUMM, 500);
                         }
                     }
                 }
@@ -288,7 +288,7 @@ public class InteractiveTiles
             {
                 if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
                 {
-                    TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND_NOTHING, 500);
+                    TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.NOTHING, 500);
                 }
             }
         }

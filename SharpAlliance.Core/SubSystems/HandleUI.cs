@@ -92,7 +92,7 @@ public class HandleUI
         this.rnd = Globals.Random;
         this.points = points;
         this.inputs = inputManager;
-        this.cursors = cursorSubSystem;
+        CursorSubSystem = cursorSubSystem;
         PathAI = pathAI;
         this.gGameSettings = gameSettings;
         this.renderWorld = renderWorld;
@@ -586,7 +586,7 @@ public class HandleUI
                                              CURSOR.VIDEO_NO_CURSOR, MSYS_NO_CALLBACK, MSYS_NO_CALLBACK);
 
                         Globals.gsGlobalCursorYOffset = (480 - Globals.gsVIEWPORT_WINDOW_END_Y);
-                        this.cursors.SetCurrentCursorFromDatabase(Globals.gUICursors[Globals.guiNewUICursor].usFreeCursorName);
+                        CursorSubSystem.SetCurrentCursorFromDatabase(Globals.gUICursors[Globals.guiNewUICursor].usFreeCursorName);
 
                         Globals.gfViewPortAdjustedForSouth = true;
 
@@ -610,7 +610,7 @@ public class HandleUI
 
                     // Adjust where we blit our cursor!
                     Globals.gsGlobalCursorYOffset = 0;
-                    this.cursors.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
+                    CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
                     Globals.gfViewPortAdjustedForSouth = false;
                 }
@@ -619,12 +619,12 @@ public class HandleUI
             if (Globals.gfUIShowExitExitGrid)
             {
                 int usMapPos;
-                int? ubRoomNum;
+                int ubRoomNum;
 
                 Globals.gfUIDisplayActionPoints = false;
                 PathAI.ErasePath(true);
 
-                if (GetMouseMapPos(out usMapPos))
+                if (IsometricUtils.GetMouseMapPos(out usMapPos))
                 {
                     if (Globals.gusSelectedSoldier != Globals.NOBODY && Globals.MercPtrs[Globals.gusSelectedSoldier].bLevel == 0)
                     {
@@ -1349,11 +1349,11 @@ public class HandleUI
 
     ScreenName UIHandleAOnTerrain(UI_EVENT pUIEvent)
     {
-        uint usMapPos;
+        int usMapPos;
         SOLDIERTYPE? pSoldier;
         //	int							sTargetXPos, sTargetYPos;
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -1610,7 +1610,7 @@ public class HandleUI
                         //else					
                         if (SoldierControl.EVENT_InternalGetNewSoldierPath(pSoldier, usMapPos, pSoldier.usUIMovementMode, 1, false))
                         {
-                            InternalDoMercBattleSound(pSoldier, BATTLE_SOUND_OK1, BATTLE_SND_LOWER_VOLUME);
+//                            InternalDoMercBattleSound(pSoldier, BATTLE_SOUND.OK1, BATTLE_SND_LOWER_VOLUME);
                         }
                         else
                         {
@@ -1713,7 +1713,7 @@ public class HandleUI
 
                         if (pSoldier.usPathDataSize > 5)
                         {
-                            DoMercBattleSound(pSoldier, BATTLE_SOUND_OK1);
+                            DoMercBattleSound(pSoldier, BATTLE_SOUND.OK1);
                         }
 
                         // HANDLE ANY INTERACTIVE OBJECTS HERE!
@@ -2623,7 +2623,7 @@ public class HandleUI
                     else
                     {
                         // Play curse....
-                        DoMercBattleSound(pSoldier, BATTLE_SOUND_CURSE1);
+                        DoMercBattleSound(pSoldier, BATTLE_SOUND.CURSE1);
                     }
                 }
             }
@@ -4663,7 +4663,7 @@ public class HandleUI
 
                     if (!GameSettings.fOptions[TOPTION.MUTE_CONFIRMATIONS] && fAcknowledge)
                     {
-                        InternalDoMercBattleSound(pSoldier, BATTLE_SOUND_ATTN1, BATTLE_SND_LOWER_VOLUME);
+                        InternalDoMercBattleSound(pSoldier, BATTLE_SOUND.ATTN1, BATTLE_SND_LOWER_VOLUME);
                     }
 
                     if (pSoldier.fMercAsleep)
@@ -4793,7 +4793,7 @@ public class HandleUI
 
                     if (SoldierControl.EVENT_InternalGetNewSoldierPath(pSoldier, sDestGridNo, pSoldier.usUIMovementMode, 1, pSoldier.fNoAPToFinishMove))
                     {
-                        InternalDoMercBattleSound(pSoldier, BATTLE_SOUND_OK1, BATTLE_SND_LOWER_VOLUME);
+                        InternalDoMercBattleSound(pSoldier, BATTLE_SOUND.OK1, BATTLE_SND_LOWER_VOLUME);
                     }
                     else
                     {
@@ -4977,7 +4977,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (ScreenName.GAME_SCREEN);
         }
@@ -5188,7 +5188,7 @@ public class HandleUI
         SOLDIERTYPE? pSoldier;
         SOLDIERTYPE? pTSoldier;
         uint uiRange;
-        uint usMapPos;
+        int usMapPos;
         int sGoodGridNo;
         byte ubNewDirection;
         QUOTE ubQuoteNum;
@@ -5203,7 +5203,7 @@ public class HandleUI
             return (false);
         }
 
-        if (!GetMouseMapPos(out usMapPos))
+        if (!IsometricUtils.GetMouseMapPos(out usMapPos))
         {
             return (false);
         }

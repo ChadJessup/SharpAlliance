@@ -964,7 +964,7 @@ public class AIMain
     }
 
 
-    void FreeUpNPCFromStanceChange(SOLDIERTYPE? pSoldier)
+    public static void FreeUpNPCFromStanceChange(SOLDIERTYPE? pSoldier)
     {
         // are we/were we doing something?
         if (pSoldier.bActionInProgress > 0)

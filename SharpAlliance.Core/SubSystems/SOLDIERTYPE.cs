@@ -27,7 +27,7 @@ public class SOLDIERTYPE
     // KEY_ON_RING pKeyRing;
 
     public uint bOldLife;          // life at end of last turn, recorded for monster AI
-                                  // attributes
+                                   // attributes
     public bool bInSector { get; set; }
     public FLASH_PORTRAIT bFlashPortraitFrame;
     public int sFractLife;       // fraction of life pts (in hundreths)	
@@ -85,11 +85,11 @@ public class SOLDIERTYPE
     public int sTempNewGridNo;                   // New grid no for advanced animations
     public int sRoomNo;
     public TerrainTypeDefines bOverTerrainType;
-    public int bOldOverTerrainType;
+    public TerrainTypeDefines bOldOverTerrainType;
 
     public bool bCollapsed;                    // collapsed due to being out of APs
     public int bBreathCollapsed;                  // collapsed due to being out of APs
-                                           // 50 bytes so far
+                                                  // 50 bytes so far
 
     public AnimationHeights ubDesiredHeight;
     public AnimationStates usPendingAnimation;
@@ -205,7 +205,7 @@ public class SOLDIERTYPE
     public int bMarksmanship;
     public int bExplosive;
     // THROW_PARAMS pThrowParams;
-    public bool fTurningFromPronePosition;
+    public TURNING_FROM_PRONE fTurningFromPronePosition;
     public bool bReverse;
     public LEVELNODE? pLevelNode;
     public LEVELNODE? pExternShadowLevelNode;
@@ -456,7 +456,7 @@ public class SOLDIERTYPE
     public int ubTargetID;
     public int bAIScheduleProgress;
     public int sOffWorldGridNo;
-    //TAG_anitile                 pAniTile;	
+    public ANITILE? pAniTile;
     public int bCamo;
     public int sAbsoluteFinalDestination;
     public int ubHiResDirection;
@@ -505,7 +505,7 @@ public class SOLDIERTYPE
     public int ubHoursOnAssignment;                      // used for assignments handled only every X hours
 
     public int ubMercJustFired;   // the merc was just fired..there may be dialogue events occuring, this flag will prevent any interaction with contracts
-                           // until after the merc leaves	
+                                  // until after the merc leaves	
     public int ubTurnsUntilCanSayHeardNoise;
     public SOLDIER_QUOTE usQuoteSaidExtFlags;
 

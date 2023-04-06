@@ -31,7 +31,7 @@ public class StructureWrap
     }
 
 
-    bool IsJumpableFencePresentAtGridno(int sGridNo)
+    public static bool IsJumpableFencePresentAtGridno(int sGridNo)
     {
         STRUCTURE? pStructure;
 

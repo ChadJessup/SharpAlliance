@@ -2817,7 +2817,7 @@ public class OppList
             {
                 if (Globals.Random.Next(100) < 30)
                 {
-                    DoMercBattleSound(pSoldier, BATTLE_SOUND_ENEMY);
+                    DoMercBattleSound(pSoldier, BATTLE_SOUND.ENEMY);
                 }
                 else
                 {
@@ -2854,7 +2854,7 @@ public class OppList
                 /// Speek up!
                 if (bNumReRevealed > 0 && bNumNewEnemies == 0)
                 {
-//                    DoMercBattleSound(pSoldier, BATTLE_SOUND_CURSE1);
+//                    DoMercBattleSound(pSoldier, BATTLE_SOUND.CURSE1);
                 }
                 else
                 {

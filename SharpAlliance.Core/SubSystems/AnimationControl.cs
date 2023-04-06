@@ -29,7 +29,7 @@ public class AnimationControl
         return (usAnimSurface);
     }
 
-    bool SetSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
+    public static bool SetSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
     {
         AnimationSurfaceTypes usAnimSurface;
 

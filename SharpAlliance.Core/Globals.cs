@@ -2015,7 +2015,6 @@ public partial class Globals
     public const AI_ACTION FIRST_MOVEMENT_ACTION = AI_ACTION.RANDOM_PATROL;
     public const AI_ACTION LAST_MOVEMENT_ACTION = AI_ACTION.MOVE_TO_CLIMB;
 
-    public const int NO_PENDING_ACTION = 255;
     public const AnimationStates NO_PENDING_ANIMATION = (AnimationStates)32001;
     public const WorldDirections NO_PENDING_DIRECTION = (WorldDirections)253;
     public const int NO_PENDING_STANCE = 254;

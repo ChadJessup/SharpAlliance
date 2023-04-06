@@ -263,7 +263,7 @@ public class Overhead
         {
             if (!GameSettings.fOptions[TOPTION.MUTE_CONFIRMATIONS])
             {
-                DoMercBattleSound(pSoldier, BATTLE_SOUND_ATTN1);
+                DoMercBattleSound(pSoldier, BATTLE_SOUND.ATTN1);
             }
         }
 

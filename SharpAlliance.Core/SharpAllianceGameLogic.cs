@@ -56,7 +56,7 @@ public class SharpAllianceGameLogic : IGameLogic
 
         // These should be initialized already
         this.mouse = mouseSubSystem;
-        this.cursors = cursorSubSystem;
+        CursorSubSystem = cursorSubSystem;
         this.helpScreen = helpScreenSubSystem;
         this.inputs = inputManager;
         this.saves = saveGameSubSystem;

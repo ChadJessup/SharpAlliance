@@ -2031,7 +2031,7 @@ public class StrategicAI
 
     //Periodically does a general poll and check on each of the groups and garrisons, determines
     //reinforcements, new patrol groups, planned assaults, etc.
-    void EvaluateQueenSituation()
+    public static void EvaluateQueenSituation()
     {
         int i, iRandom;
         int iWeight;

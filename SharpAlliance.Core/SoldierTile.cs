@@ -85,14 +85,14 @@ public class SoldierTile
         pSoldier.sReservedMovementGridNo = sGridNo;
     }
 
-    void UnMarkMovementReserved(SOLDIERTYPE? pSoldier)
+    public static void UnMarkMovementReserved(SOLDIERTYPE pSoldier)
     {
-        int sNewGridNo;
+        int sNewGridNo = -1;
 
-        sNewGridNo = GETWORLDINDEXFROMWORLDCOORDS(pSoldier.dYPos, pSoldier.dXPos);
+//        sNewGridNo = GETWORLDINDEXFROMWORLDCOORDS(pSoldier.dYPos, pSoldier.dXPos);
 
         // OK, if NOT in fence anim....
-        if (pSoldier.usAnimState == HOPFENCE && pSoldier.sReservedMovementGridNo != sNewGridNo)
+        if (pSoldier.usAnimState == AnimationStates.HOPFENCE && pSoldier.sReservedMovementGridNo != sNewGridNo)
         {
             return;
         }
@@ -107,7 +107,7 @@ public class SoldierTile
         }
     }
 
-    int TileIsClear(SOLDIERTYPE? pSoldier, int bDirection, int sGridNo, int bLevel)
+    int TileIsClear(SOLDIERTYPE pSoldier, int bDirection, int sGridNo, int bLevel)
     {
         int ubPerson;
         int sTempDestGridNo;

@@ -8,7 +8,7 @@ namespace SharpAlliance.Core;
 
 public class IsometricUtils
 {
-    static int[] DirIncrementer = new int[8]
+    public static int[] DirIncrementer = new int[8]
     {
         -Globals.MAPWIDTH,        //N
 	    1-Globals.MAPWIDTH,       //NE

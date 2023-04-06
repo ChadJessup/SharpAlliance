@@ -130,10 +130,7 @@ public partial class Globals
 
     public const int MAX_DISTANCE_FOR_PROXIMITY_SIGHT = 15;
 
-    // DEFINES FOR BODY TYPE SUBSTITUTIONS
-    public const int SUB_ANIM_BIGGUYSHOOT2 = 0x00000001;
-    public const int SUB_ANIM_BIGGUYTHREATENSTANCE = 0x00000002;
-
+   
     // DEFINE TEAMS
     public const TEAM OUR_TEAM = 0;
     public const TEAM ENEMY_TEAM = TEAM.ENEMY_TEAM;

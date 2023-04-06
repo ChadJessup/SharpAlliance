@@ -251,7 +251,7 @@ public class Smell
         }
     }
 
-    void DropSmell(SOLDIERTYPE? pSoldier)
+    public static void DropSmell(SOLDIERTYPE? pSoldier)
     {
         MAP_ELEMENT? pMapElement;
         int ubOldSmell;

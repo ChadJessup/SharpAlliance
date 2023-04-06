@@ -11,6 +11,11 @@ using static SharpAlliance.Core.IsometricUtils;
 
 namespace SharpAlliance.Core;
 
+public partial class Globals
+{
+    public const int GASMASK_MIN_STATUS = 70;
+}
+
 public class ExplosionControl
 {
     public static int GetFreeExplosion()
@@ -271,7 +276,7 @@ public class ExplosionControl
         gExplosionData[iIndex].sCurrentFrame = (short)sCurrentFrame;
     }
 
-    void RemoveExplosionData(int iIndex)
+    public static void RemoveExplosionData(int iIndex)
     {
         gExplosionData[iIndex].fAllocated = false;
 
@@ -1265,7 +1270,7 @@ public class ExplosionControl
             SoldierControl.SoldierTakeDamage(pSoldier, AnimationHeights.ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE.GAS, NOBODY, NOWHERE, 0, true);
             if (pSoldier.bLife >= CONSCIOUSNESS)
             {
-                //                DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND_HIT1 + Globals.Random.Next(2)));
+                //                DoMercBattleSound(pSoldier, (int)(BATTLE_SOUND.HIT1 + Globals.Random.Next(2)));
             }
 
             if (ubOwner != NOBODY && MercPtrs[ubOwner].bTeam == gbPlayerNum && pSoldier.bTeam != gbPlayerNum)
@@ -1675,7 +1680,7 @@ public class ExplosionControl
                                 SoldierTakeDamage( pSoldier, ANIM_STAND, sWoundAmt, sBreathAmt, TAKE_DAMAGE.GAS, NOBODY, NOWHERE, 0, true );
                                 if ( pSoldier.bLife >= CONSCIOUSNESS )
                                 {
-                                    DoMercBattleSound( pSoldier, (int)( BATTLE_SOUND_HIT1 + Globals.Random.Next( 2 ) ) );
+                                    DoMercBattleSound( pSoldier, (int)( BATTLE_SOUND.HIT1 + Globals.Random.Next( 2 ) ) );
                                 }
                             }
                             */

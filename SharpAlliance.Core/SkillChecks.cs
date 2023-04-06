@@ -457,7 +457,7 @@ public class SkillChecks
                         // silent check
                         break;
                     default:
-                        DoMercBattleSound(pSoldier, BATTLE_SOUND_CURSE1);
+                        DoMercBattleSound(pSoldier, BATTLE_SOUND.CURSE1);
                         break;
                 }
             }

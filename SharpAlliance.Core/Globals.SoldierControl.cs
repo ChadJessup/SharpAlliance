@@ -41,6 +41,8 @@ public partial class Globals
         { BATTLE_SOUND.ENEMY, new() { zName = "enem",   ubRandomVal = 0, fPreload =  true,fBadGuy = true, fDontAllowTwoInRow = true,  fStopDialogue = 0 } },
     };
 
+    public const uint INJURED_CHANGE_THREASHOLD = 30;
+
     public static int[] gRedGlowR =
     {
         0,			// Normal shades

@@ -32,7 +32,7 @@ public class ANITILE
     public int ubKeyFrame2;
     public ANI_KEYFRAME uiKeyFrame2Code;
     public int ubUserData2;
-    public WorldDirections uiUserData3;
+    public object uiUserData3;
     public int bFrameCountAfterStart;
 }
 
