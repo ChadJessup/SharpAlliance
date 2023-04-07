@@ -41,6 +41,12 @@ public partial class Globals
         { BATTLE_SOUND.ENEMY, new() { zName = "enem",   ubRandomVal = 0, fPreload =  true,fBadGuy = true, fDontAllowTwoInRow = true,  fStopDialogue = 0 } },
     };
 
+    public const int MIN_SUBSEQUENT_SNDS_DELAY = 2000;
+
+    public const uint MIN_BLEEDING_THRESHOLD = 12;      // you're OK while <4 Yellow life bars
+
+    public const int LOW_MORALE_BATTLE_SND_THREASHOLD = 35;
+
     public const uint INJURED_CHANGE_THREASHOLD = 30;
 
     public static int[] gRedGlowR =
@@ -55,7 +61,7 @@ public partial class Globals
         175,
         200,
         225,
-    
+
         0,		// For gray palettes
     	25,
         50,
@@ -66,7 +72,7 @@ public partial class Globals
         175,
         200,
         225,
-    
+
     };
 
     public static int[] gOrangeGlowR =
@@ -81,7 +87,7 @@ public partial class Globals
         175,
         200,
         225,
-    
+
         0,		// For gray palettes
     	25,
         50,
@@ -92,7 +98,7 @@ public partial class Globals
         175,
         200,
         225,
-    
+
     };
 }
 

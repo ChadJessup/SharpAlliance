@@ -43,7 +43,8 @@ public class StructureWrap
             {
                 return (true);
             }
-            if (pStructure.pDBStructureRef.pDBStructure.ubArmour == MATERIAL.SANDBAG && StructureHeight(pStructure) < 2)
+            if (pStructure.pDBStructureRef.pDBStructure.ubArmour == MATERIAL.SANDBAG
+                && StructureInternals.StructureHeight(pStructure) < 2)
             {
                 return (true);
             }
@@ -127,14 +128,15 @@ public class StructureWrap
             if (pStructure.ubWallOrientation == ubOrientation)
             {
                 pBaseStructure = WorldStructures.FindBaseStructure(pStructure);
-                if (pBaseStructure)
+//                if (pBaseStructure)
                 {
                     pNode = WorldStructures.FindLevelNodeBasedOnStructure(pBaseStructure.sGridNo, pBaseStructure);
                     (ppStructure) = pBaseStructure;
                     return (pNode);
                 }
             }
-            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
+
+//            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
         }
 
         return (null);
@@ -159,12 +161,12 @@ public class StructureWrap
                     // Here, check north direction
                     sNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.NORTH));
 
-                    if (IsRoofVisible2(sNewGridNo))
+//                    if (IsRoofVisible2(sNewGridNo))
                     {
                         // OK, now check south, if true, she's not visible
                         sNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.SOUTH));
 
-                        if (IsRoofVisible2(sNewGridNo))
+//                        if (IsRoofVisible2(sNewGridNo))
                         {
                             return (false);
                         }
@@ -177,12 +179,12 @@ public class StructureWrap
                     // Here, check west direction
                     sNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.WEST));
 
-                    if (IsRoofVisible2(sNewGridNo))
+//                    if (IsRoofVisible2(sNewGridNo))
                     {
                         // OK, now check south, if true, she's not visible
                         sNewGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.EAST));
 
-                        if (IsRoofVisible2(sNewGridNo))
+//                        if (IsRoofVisible2(sNewGridNo))
                         {
                             return (false);
                         }
@@ -224,7 +226,6 @@ public class StructureWrap
         return (false);
     }
 
-
     bool IsHiddenStructureVisible(int sGridNo, TileIndexes usIndex)
     {
         // Check if it's a hidden struct and we have not revealed anything!
@@ -240,7 +241,6 @@ public class StructureWrap
 
         return (true);
     }
-
 
     public static bool WallExistsOfTopLeftOrientation(int sGridNo)
     {
@@ -308,7 +308,7 @@ public class StructureWrap
                 }
             }
 
-            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
+//            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
 
         }
 
@@ -334,7 +334,7 @@ public class StructureWrap
                 }
             }
 
-            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
+//            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
 
         }
 
@@ -407,12 +407,12 @@ public class StructureWrap
         STRUCTURE? pStructure;
 
         pStructure = FindCuttableWireFenceAtGridNo(sGridNo);
-        if (pStructure)
+        if (pStructure is not null)
         {
-            pStructure = SwapStructureForPartnerAndStoreChangeInMap(sGridNo, pStructure);
-            if (pStructure)
+//            pStructure = SwapStructureForPartnerAndStoreChangeInMap(sGridNo, pStructure);
+            if (pStructure is not null)
             {
-                RecompileLocalMovementCosts(sGridNo);
+//                RecompileLocalMovementCosts(sGridNo);
                 RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                 return (true);
             }
@@ -428,10 +428,10 @@ public class StructureWrap
 
     int IsRepairableStructAtGridNo(int sGridNo, int? pubID)
     {
-        int ubMerc;
+        int ubMerc = 0;
 
         // OK, first look for a vehicle....
-        ubMerc = WhoIsThere2(sGridNo, 0);
+//        ubMerc = WhoIsThere2(sGridNo, 0);
 
         if (pubID != null)
         {
@@ -448,7 +448,7 @@ public class StructureWrap
         // Then for over a robot....
 
         // then for SAM site....
-        if (DoesSAMExistHere(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, sGridNo))
+//        if (DoesSAMExistHere(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, sGridNo))
         {
             return (3);
         }
@@ -460,10 +460,10 @@ public class StructureWrap
 
     bool IsRefuelableStructAtGridNo(int sGridNo, int? pubID)
     {
-        int ubMerc;
+        int ubMerc = 0;
 
         // OK, first look for a vehicle....
-        ubMerc = WhoIsThere2(sGridNo, 0);
+//        ubMerc = WhoIsThere2(sGridNo, 0);
 
         if (pubID != null)
         {
@@ -549,7 +549,7 @@ public class StructureWrap
         STRUCTURE? pNewStructure;
 
         pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.OPENABLE);
-        if (!pStructure)
+        if (pStructure is null)
         {
             return (false);
         }
@@ -559,7 +559,7 @@ public class StructureWrap
             pNewStructure = StructureInternals.SwapStructureForPartner(sGridNo, pStructure);
             if (pNewStructure != null)
             {
-                RecompileLocalMovementCosts(sGridNo);
+//                RecompileLocalMovementCosts(sGridNo);
                 RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             }
         }

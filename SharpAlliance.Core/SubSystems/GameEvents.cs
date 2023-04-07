@@ -25,24 +25,24 @@ public class GameEvents
         return false;
     }
 
-    public static bool AddGameEvent(int uiEvent, int usDelay, object pEventData)
+    public static bool AddGameEvent(eJA2Events uiEvent, int usDelay, object pEventData)
     {
         if (usDelay == DEMAND_EVENT_DELAY)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local and network #%d", uiEvent));
             return (AddGameEventToQueue(uiEvent, 0, pEventData, EVENT_QUEUE.DEMAND_EVENT_QUEUE));
         }
-        else if (uiEvent < EVENTS_LOCAL_AND_NETWORK)
+        else if (uiEvent < eJA2Events.EVENTS_LOCAL_AND_NETWORK)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local and network #%d", uiEvent));
             return (AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE));
         }
-        else if (uiEvent < EVENTS_ONLY_USED_LOCALLY)
+        else if (uiEvent < eJA2Events.EVENTS_ONLY_USED_LOCALLY)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local #%d", uiEvent));
             return (AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE));
         }
-        else if (uiEvent < EVENTS_ONLY_SENT_OVER_NETWORK)
+        else if (uiEvent < eJA2Events.EVENTS_ONLY_SENT_OVER_NETWORK)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending network #%d", uiEvent));
             return (true);
@@ -54,12 +54,12 @@ public class GameEvents
         }
     }
 
-    public static bool AddGameEventToQueue(int  uiEvent, int usDelay, object pEventData, EVENT_QUEUE ubQueueID)
+    public static bool AddGameEventToQueue(eJA2Events uiEvent, int usDelay, object pEventData, EVENT_QUEUE ubQueueID)
     {
         int uiDataSize;
 
         // Check range of Event ui
-        if (uiEvent < 0 || uiEvent > NUM_EVENTS)
+        if (uiEvent < 0 || uiEvent > eJA2Events.NUM_EVENTS)
         {
             // Set debug message!
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Event Pump: Unknown event type");
@@ -69,95 +69,95 @@ public class GameEvents
         // Switch on event type and set size accordingly
         switch (uiEvent)
         {
-            case E_PLAYSOUND:
+            case eJA2Events.E_PLAYSOUND:
 
-                uiDataSize = sizeof(EV_E_PLAYSOUND);
+//                uiDataSize = sizeof(EV_E_PLAYSOUND);
                 break;
 
-            case S_CHANGESTATE:
+            case eJA2Events.S_CHANGESTATE:
 
-                uiDataSize = sizeof(EV_S_CHANGESTATE);
-                break;
-
-
-            case S_CHANGEDEST:
-
-                uiDataSize = sizeof(EV_S_CHANGEDEST);
+//                uiDataSize = sizeof(EV_S_CHANGESTATE);
                 break;
 
 
-            case S_SETPOSITION:
+            case eJA2Events.S_CHANGEDEST:
 
-                uiDataSize = sizeof(EV_S_SETPOSITION);
+//                uiDataSize = sizeof(EV_S_CHANGEDEST);
                 break;
 
-            case S_GETNEWPATH:
 
-                uiDataSize = sizeof(EV_S_GETNEWPATH);
+            case eJA2Events.S_SETPOSITION:
+
+//                uiDataSize = sizeof(EV_S_SETPOSITION);
                 break;
 
-            case S_BEGINTURN:
+            case eJA2Events.S_GETNEWPATH:
 
-                uiDataSize = sizeof(EV_S_BEGINTURN);
+//                uiDataSize = sizeof(EV_S_GETNEWPATH);
                 break;
 
-            case S_CHANGESTANCE:
+            case eJA2Events.S_BEGINTURN:
 
-                uiDataSize = sizeof(EV_S_CHANGESTANCE);
+//                uiDataSize = sizeof(EV_S_BEGINTURN);
                 break;
 
-            case S_SETDIRECTION:
+            case eJA2Events.S_CHANGESTANCE:
 
-                uiDataSize = sizeof(EV_S_SETDIRECTION);
+//                uiDataSize = sizeof(EV_S_CHANGESTANCE);
                 break;
 
-            case S_SETDESIREDDIRECTION:
+            case eJA2Events.S_SETDIRECTION:
 
-                uiDataSize = sizeof(EV_S_SETDESIREDDIRECTION);
+//                uiDataSize = sizeof(EV_S_SETDIRECTION);
                 break;
 
-            case S_FIREWEAPON:
+            case eJA2Events.S_SETDESIREDDIRECTION:
 
-                uiDataSize = sizeof(EV_S_FIREWEAPON);
+//                uiDataSize = sizeof(EV_S_SETDESIREDDIRECTION);
                 break;
 
-            case S_BEGINFIREWEAPON:
+            case eJA2Events.S_FIREWEAPON:
 
-                uiDataSize = sizeof(EV_S_BEGINFIREWEAPON);
+//                uiDataSize = sizeof(EV_S_FIREWEAPON);
+                break;
+
+            case eJA2Events.S_BEGINFIREWEAPON:
+
+//                uiDataSize = sizeof(EV_S_BEGINFIREWEAPON);
                 //Delay this event
                 break;
 
-            case S_WEAPONHIT:
+            case eJA2Events.S_WEAPONHIT:
 
-                uiDataSize = sizeof(EV_S_WEAPONHIT);
+//                uiDataSize = sizeof(EV_S_WEAPONHIT);
                 break;
 
-            case S_STRUCTUREHIT:
-                uiDataSize = sizeof(EV_S_STRUCTUREHIT);
+            case eJA2Events.S_STRUCTUREHIT:
+//                uiDataSize = sizeof(EV_S_STRUCTUREHIT);
                 break;
 
-            case S_WINDOWHIT:
-                uiDataSize = sizeof(EV_S_STRUCTUREHIT);
+            case eJA2Events.S_WINDOWHIT:
+//                uiDataSize = sizeof(EV_S_STRUCTUREHIT);
                 break;
 
-            case S_MISS:
-                uiDataSize = sizeof(EV_S_MISS);
+            case eJA2Events.S_MISS:
+//                uiDataSize = sizeof(EV_S_MISS);
                 break;
 
-            case S_NOISE:
-                uiDataSize = sizeof(EV_S_NOISE);
+            case eJA2Events.S_NOISE:
+//                uiDataSize = sizeof(EV_S_NOISE);
                 break;
 
-            case S_STOP_MERC:
-                uiDataSize = sizeof(EV_S_STOP_MERC);
+            case eJA2Events.S_STOP_MERC:
+//                uiDataSize = sizeof(EV_S_STOP_MERC);
                 break;
 
-            case S_SENDPATHTONETWORK:
-                uiDataSize = sizeof(EV_S_SENDPATHTONETWORK);
+            case eJA2Events.S_SENDPATHTONETWORK:
+//                uiDataSize = sizeof(EV_S_SENDPATHTONETWORK);
                 break;
 
-            case S_UPDATENETWORKSOLDIER:
-                uiDataSize = sizeof(EV_S_UPDATENETWORKSOLDIER);
+            case eJA2Events.S_UPDATENETWORKSOLDIER:
+//                uiDataSize = sizeof(EV_S_UPDATENETWORKSOLDIER);
                 break;
 
             default:
@@ -169,7 +169,7 @@ public class GameEvents
         }
 
 
-        CHECKF(AddEvent(uiEvent, usDelay, pEventData, uiDataSize, ubQueueID));
+//        CHECKF(AddEvent(uiEvent, usDelay, pEventData, uiDataSize, ubQueueID));
 
         // successful
         return (true);

@@ -151,7 +151,7 @@ public class CivQuotes
         return (true);
     }
 
-    void SurrenderMessageBoxCallBack(MessageBoxReturnCode ubExitValue)
+    public static void SurrenderMessageBoxCallBack(MessageBoxReturnCode ubExitValue)
     {
         int cnt = 0;
 
@@ -191,7 +191,7 @@ public class CivQuotes
         }
     }
 
-    void ShutDownQuoteBox(bool fForce)
+    public static void ShutDownQuoteBox(bool fForce)
     {
         if (!gCivQuoteData.bActive)
         {
@@ -238,8 +238,7 @@ public class CivQuotes
         return (false);
     }
 
-
-    CIV_TYPE GetCivType(SOLDIERTYPE pCiv)
+    public static CIV_TYPE GetCivType(SOLDIERTYPE pCiv)
     {
         if (pCiv.ubProfile != NO_PROFILE)
         {
@@ -305,7 +304,7 @@ public class CivQuotes
     }
 
 
-    void RenderCivQuoteBoxOverlay(VIDEO_OVERLAY pBlitter)
+    public static void RenderCivQuoteBoxOverlay(VIDEO_OVERLAY pBlitter)
     {
         if (gCivQuoteData.iVideoOverlay != -1)
         {
@@ -337,7 +336,7 @@ public class CivQuotes
     }
 
 
-    void BeginCivQuote(SOLDIERTYPE pCiv, CIV_QUOTE ubCivQuoteID, int ubEntryID, int sX, int sY)
+    public static void BeginCivQuote(SOLDIERTYPE pCiv, CIV_QUOTE ubCivQuoteID, int ubEntryID, int sX, int sY)
     {
         VIDEO_OVERLAY_DESC VideoOverlayDesc = new();
         string zQuote;// [320];
@@ -434,7 +433,7 @@ public class CivQuotes
 
     }
 
-    CIV_QUOTE DetermineCivQuoteEntry(SOLDIERTYPE pCiv, out int pubCivHintToUse, bool fCanUseHints)
+    public static CIV_QUOTE DetermineCivQuoteEntry(SOLDIERTYPE pCiv, out int pubCivHintToUse, bool fCanUseHints)
     {
         CIV_TYPE ubCivType;
         int bTownId;
@@ -744,7 +743,7 @@ public class CivQuotes
         }
     }
 
-    void StartCivQuote(SOLDIERTYPE pCiv)
+    public static void StartCivQuote(SOLDIERTYPE pCiv)
     {
         CIV_QUOTE ubCivQuoteID;
         int sX = 0, sY = 0;

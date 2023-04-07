@@ -369,6 +369,11 @@ public class DialogControl
     {
         return ValueTask.FromResult(true);
     }
+
+    internal static bool DialogueQueueIsEmpty()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public enum ExternalFaces

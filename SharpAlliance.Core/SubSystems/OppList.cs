@@ -193,28 +193,27 @@ public class OppList
                 if (gubBestToMakeSighting[1] == Globals.NOBODY)
                 {
                     // award turn
-                    EnterCombatMode(Globals.MercPtrs[gubBestToMakeSighting[0]].bTeam);
+//                    EnterCombatMode(Globals.MercPtrs[gubBestToMakeSighting[0]].bTeam);
                 }
                 else
                 {
                     // if 1st and 2nd on same team, or 1st and 3rd on same team, or there IS no 3rd, award turn to 1st
                     if ((Globals.MercPtrs[gubBestToMakeSighting[0]].bTeam == Globals.MercPtrs[gubBestToMakeSighting[1]].bTeam) ||
-                                ((gubBestToMakeSighting[2] == Globals.NOBODY) || (Globals.MercPtrs[gubBestToMakeSighting[0]].bTeam == Globals.MercPtrs[gubBestToMakeSighting[2]].bTeam))
-                         )
+                                ((gubBestToMakeSighting[2] == Globals.NOBODY) || (Globals.MercPtrs[gubBestToMakeSighting[0]].bTeam == Globals.MercPtrs[gubBestToMakeSighting[2]].bTeam)))
                     {
-                        EnterCombatMode(Globals.MercPtrs[gubBestToMakeSighting[0]].bTeam);
+//                        EnterCombatMode(Globals.MercPtrs[gubBestToMakeSighting[0]].bTeam);
                     }
                     else // give turn to 2nd best but interrupt to 1st
                     {
                         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Entering combat mode: turn for 2nd best, int for best");
 
-                        EnterCombatMode(Globals.MercPtrs[gubBestToMakeSighting[1]].bTeam);
+//                        EnterCombatMode(Globals.MercPtrs[gubBestToMakeSighting[1]].bTeam);
                         // 2nd guy loses control
-                        AddToIntList(gubBestToMakeSighting[1], false, true);
+//                        AddToIntList(gubBestToMakeSighting[1], false, true);
                         // 1st guy gains control
-                        AddToIntList(gubBestToMakeSighting[0], true, true);
+//                        AddToIntList(gubBestToMakeSighting[0], true, true);
                         // done
-                        DoneAddingToIntList(Globals.MercPtrs[gubBestToMakeSighting[0]], true, SIGHTINTERRUPT);
+//                        DoneAddingToIntList(Globals.MercPtrs[gubBestToMakeSighting[0]], true, SIGHTINTERRUPT);
                     }
                 }
             }
@@ -279,13 +278,13 @@ public class OppList
                 if (fOk)
                 {
                     // this is the guy who gets "interrupted"; all else before him interrupted him
-                    AddToIntList(Globals.gubBestToMakeSighting[ubLoop], false, true);
-                    for (ubLoop2 = 0; ubLoop2 < ubLoop; ubLoop2++)
-                    {
-                        AddToIntList(Globals.gubBestToMakeSighting[ubLoop2], true, true);
-                    }
-                    // done
-                    DoneAddingToIntList(Globals.MercPtrs[Globals.gubBestToMakeSighting[ubLoop]], true, SIGHTINTERRUPT);
+//                    AddToIntList(Globals.gubBestToMakeSighting[ubLoop], false, true);
+//                    for (ubLoop2 = 0; ubLoop2 < ubLoop; ubLoop2++)
+//                    {
+//                        AddToIntList(Globals.gubBestToMakeSighting[ubLoop2], true, true);
+//                    }
+//                    // done
+//                    DoneAddingToIntList(Globals.MercPtrs[Globals.gubBestToMakeSighting[ubLoop]], true, SIGHTINTERRUPT);
                 }
 
             }
@@ -361,16 +360,16 @@ public class OppList
                 // make sure person can say quote!!!!
                 gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= ProfileMiscFlags2.PROFILE_MISC_FLAG2_NEEDS_TO_SAY_HOSTILE_QUOTE;
 
-                if (NPCHasUnusedHostileRecord(pSoldier.ubProfile, APPROACH_DECLARATION_OF_HOSTILITY))
-                {
-                    ubProfileList[ubNumProfiles] = gubShouldBecomeHostileOrSayQuote[ubLoop];
-                    ubNumProfiles++;
-                }
-                else
-                {
-                    // turn flag off again
-                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 &= ~ProfileMiscFlags2.PROFILE_MISC_FLAG2_NEEDS_TO_SAY_HOSTILE_QUOTE;
-                }
+//                if (NPCHasUnusedHostileRecord(pSoldier.ubProfile, APPROACH_DECLARATION_OF_HOSTILITY))
+//                {
+//                    ubProfileList[ubNumProfiles] = gubShouldBecomeHostileOrSayQuote[ubLoop];
+//                    ubNumProfiles++;
+//                }
+//                else
+//                {
+//                    // turn flag off again
+//                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 &= ~ProfileMiscFlags2.PROFILE_MISC_FLAG2_NEEDS_TO_SAY_HOSTILE_QUOTE;
+//                }
 
             }
         }
@@ -387,7 +386,10 @@ public class OppList
 
     public static void CheckHostileOrSayQuoteList()
     {
-        if (gubNumShouldBecomeHostileOrSayQuote == 0 || !DialogueQueueIsEmpty() || gfInTalkPanel || gfWaitingForTriggerTimer)
+        if (gubNumShouldBecomeHostileOrSayQuote == 0
+            || !DialogControl.DialogueQueueIsEmpty()
+            || gfInTalkPanel
+            || gfWaitingForTriggerTimer)
         {
             return;
         }
@@ -424,13 +426,13 @@ public class OppList
                 //and return/go into combat
                 if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
-                    EnterCombatMode(CIV_TEAM);
+//                    EnterCombatMode(CIV_TEAM);
                 }
             }
             else
             {
                 // pause all AI
-                PauseAIUntilManuallyUnpaused();
+//                PauseAIUntilManuallyUnpaused();
                 // stop everyone?
 
                 // We want to make this guy visible to the player.
@@ -481,7 +483,7 @@ public class OppList
             gfWatchedLocHasBeenIncremented[pSoldier.ubID, uiLoop] = false;
         }
 
-        gfPlayerTeamSawCreatures = false;
+        gfPlayerTeamSawCreatures = 0;
 
         // store new situation value
         bTempNewSituation = pSoldier.bNewSituation;
@@ -911,9 +913,9 @@ public class OppList
             }
 
             // give one step better vision for people with nightops
-            if (HAS_SKILL_TRAIT(pSoldier, NIGHTOPS))
+            if (HAS_SKILL_TRAIT(pSoldier, SkillTrait.NIGHTOPS))
             {
-                sDistVisible += 1 * NUM_SKILL_TRAITS(pSoldier, NIGHTOPS);
+                sDistVisible += 1 * NUM_SKILL_TRAITS(pSoldier, SkillTrait.NIGHTOPS);
             }
 
         }
@@ -973,13 +975,13 @@ public class OppList
                         //			  #else
                         else if (pOtherSoldier.bTeam == gbPlayerNum)
                         {
-                            pSoldier.bVisible = true; // yes, still seen
+                            pSoldier.bVisible = 1; // yes, still seen
                         }
                     }
                 }
             }
         }
-        DecideTrueVisibility(pSoldier, false);
+        DecideTrueVisibility(pSoldier, 0);
 
     }
 
@@ -999,7 +1001,7 @@ public class OppList
         }
     }
 
-    public static void TurnOffTeamsMuzzleFlashes(int ubTeam)
+    public static void TurnOffTeamsMuzzleFlashes(TEAM ubTeam)
     {
         int ubLoop;
         SOLDIERTYPE? pSoldier;
@@ -1423,7 +1425,9 @@ public class OppList
           return(success);
        */
 
-        if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE && pSoldier.bTeam == OUR_TEAM)))
+        if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER
+            || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)
+            && pSoldier.bTeam == OUR_TEAM))
         {
             // don't do sight for these
             return (0);
@@ -1641,7 +1645,7 @@ public class OppList
                         // this fact hasn't been revealed, change the side of these people now. This will
                         // make them non-neutral so AddOneOpponent will be called, and the guy will say his
                         // "I hate you" quote
-                        if (pSoldier.IsNeutral)
+//                        if (pSoldier.IsNeutral)
                         {
                             if (pSoldier.ubCivilianGroup != CIV_GROUP.NON_CIV_GROUP && gTacticalStatus.fCivGroupHostile[pSoldier.ubCivilianGroup] >= CIV_GROUP_WILL_BECOME_HOSTILE)
                             {
@@ -1649,7 +1653,7 @@ public class OppList
                                 fNotAddedToList = false;
                             }
                         }
-                        else if (NPCHasUnusedRecordWithGivenApproach(pSoldier.ubProfile, APPROACH_DECLARATION_OF_HOSTILITY))
+//                        else if (NPCHasUnusedRecordWithGivenApproach(pSoldier.ubProfile, APPROACH_DECLARATION_OF_HOSTILITY))
                         {
                             // only add if have something to say
                             AddToShouldBecomeHostileOrSayQuoteList(pSoldier.ubID);
@@ -2127,7 +2131,7 @@ public class OppList
         //	pSoldier.bLocator = false;
 
 
-        if (ubLocate)
+        if (ubLocate > 0)
         {
             // if he remains visible (or ShowEnemies ON)
             if ((pSoldier.bVisible >= 0) || gbShowEnemies)
@@ -2746,7 +2750,7 @@ public class OppList
         }
 
 
-        if (fSeenCreature == true)
+        if (fSeenCreature > 0)
         {
             // Is this our first time seeing them?
             if (gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE))
@@ -2767,7 +2771,8 @@ public class OppList
                         {
                             if (OK_ENEMY_MERC(pTeamSoldier))
                             {
-                                if (pTeamSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER && pSoldier.bOppList[pTeamSoldier.ubID] == SEEN_CURRENTLY))
+                                if (pTeamSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER)
+                                    && pSoldier.bOppList[pTeamSoldier.ubID] == SEEN_CURRENTLY)
                                 {
                                     ubNumEnemies++;
                                 }
@@ -3116,7 +3121,7 @@ public class OppList
                             }
 
                             // ATE: Added for bloodcat...
-                            if (pOpponent.ubBodyType == BLOODCAT)
+                            if (pOpponent.ubBodyType == SoldierBodyTypes.BLOODCAT)
                             {
                                 // 2 is for bloodcat
                                 gfPlayerTeamSawCreatures = 2;
@@ -3126,7 +3131,7 @@ public class OppList
 
                         if (pOpponent.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
                         {
-                            if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags & ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE))
+//                            if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags & ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE))
                             {
                                 fSawCreatureForFirstTime = true;
                             }
@@ -3140,7 +3145,7 @@ public class OppList
                     if (gTacticalStatus.Team[MILITIA_TEAM].bTeamActive > 0
                         && gTacticalStatus.Team[MILITIA_TEAM].bAwareOfOpposition == 0)
                     {
-                        HandleInitialRedAlert(MILITIA_TEAM, false);
+//                        HandleInitialRedAlert(MILITIA_TEAM, false);
                     }
                 }
             }   // end of our team's merc sees new opponent
@@ -3198,12 +3203,12 @@ public class OppList
     void DebugSoldierPage1()
     {
         SOLDIERTYPE? pSoldier;
-        int usSoldierIndex;
+        int usSoldierIndex = 0;
         int uiMercFlags;
         int usMapPos;
         int ubLine = 0;
 
-        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
+//        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
             Overhead.GetSoldier(out pSoldier, usSoldierIndex);
@@ -3360,7 +3365,7 @@ public class OppList
             gprintf(400, LINE_HEIGHT * ubLine, "%d", pSoldier.bHasKeys);
             ubLine++;
         }
-        else if (GetMouseMapPos(out usMapPos))
+//        else if (GetMouseMapPos(out usMapPos))
         {
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG LAND PAGE ONE");
@@ -4374,7 +4379,7 @@ public class OppList
     int MovementNoise(SOLDIERTYPE? pSoldier)
     {
         int iStealthSkill, iRoll;
-        int ubMaxVolume, ubVolume, ubBandaged, ubEffLife;
+        int ubMaxVolume, ubVolume, ubBandaged, ubEffLife = 0;
         int bInWater = 0;
 
         if (pSoldier.bTeam == ENEMY_TEAM)
@@ -4385,21 +4390,21 @@ public class OppList
         iStealthSkill = 20 + 4 * SkillChecks.EffectiveExpLevel(pSoldier) + ((SkillChecks.EffectiveDexterity(pSoldier) * 4) / 10); // 24-100
 
         // big bonus for those "extra stealthy" mercs
-        if (pSoldier.ubBodyType == BLOODCAT)
+        if (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
         {
             iStealthSkill += 50;
         }
-        else if (HAS_SKILL_TRAIT(pSoldier, STEALTHY))
+        else if (HAS_SKILL_TRAIT(pSoldier, SkillTrait.STEALTHY))
         {
-            iStealthSkill += 25 * NUM_SKILL_TRAITS(pSoldier, STEALTHY);
+            iStealthSkill += 25 * NUM_SKILL_TRAITS(pSoldier, SkillTrait.STEALTHY);
         }
 
 
         //NumMessage("Base Stealth = ",stealthSkill);
 
 
-        ubBandaged = pSoldier.bLifeMax - pSoldier.bLife - pSoldier.bBleeding;
-        ubEffLife = pSoldier.bLife + (ubBandaged / 2);
+//        ubBandaged = pSoldier.bLifeMax - pSoldier.bLife - pSoldier.bBleeding;
+//        ubEffLife = pSoldier.bLife + (ubBandaged / 2);
 
         // IF "SNEAKER'S" "EFFECTIVE LIFE" IS AT LESS THAN 50
         if (ubEffLife < 50)
@@ -4412,24 +4417,24 @@ public class OppList
         if (pSoldier.bBreath < 50)
         {
             // reduce effective stealth skill by up to 50%
-            iStealthSkill -= (iStealthSkill * (50 - pSoldier.bBreath)) / 100;
+//            iStealthSkill -= (iStealthSkill * (50 - pSoldier.bBreath)) / 100;
         }
 
         // if sneaker is moving through water
-        if (Water(pSoldier.sGridNo))
-        {
-            iStealthSkill -= 10; // 10% penalty
-        }
-        else if (DeepWater(pSoldier.sGridNo))
-        {
-            iStealthSkill -= 20; // 20% penalty
-        }
-
-        if (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE])
-        {
-            // minus 3 percent per bonus AP from adrenaline
-            iStealthSkill -= 3 * pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE];
-        }
+//        if (Water(pSoldier.sGridNo))
+//        {
+//            iStealthSkill -= 10; // 10% penalty
+//        }
+//        else if (DeepWater(pSoldier.sGridNo))
+//        {
+//            iStealthSkill -= 20; // 20% penalty
+//        }
+//
+//        if (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE])
+//        {
+//            // minus 3 percent per bonus AP from adrenaline
+//            iStealthSkill -= 3 * pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE];
+//        }
 
         /*
             // if sneaker is too eager and impatient to "do it right"
@@ -4524,17 +4529,17 @@ public class OppList
         int ubDoorNoise;
 
         // door being opened gridno is always the pending-action-data2 value
-        sGridNo = pSoldier.sPendingActionData2;
-        pDoorStatus = GetDoorStatus(sGridNo);
+//        sGridNo = pSoldier.sPendingActionData2;
+//        pDoorStatus = GetDoorStatus(sGridNo);
 
-        if (pDoorStatus && pDoorStatus.ubFlags & DOOR_HAS_TIN_CAN)
+        if (pDoorStatus is not null && pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.HAS_TIN_CAN))
         {
             // double noise possible!
-            ubDoorNoise = DOOR_NOISE.VOLUME * 3;
+//            ubDoorNoise = DOOR_NOISE.VOLUME * 3;
         }
         else
         {
-            ubDoorNoise = DOOR_NOISE.VOLUME;
+//            ubDoorNoise = DOOR_NOISE.VOLUME;
         }
         if (MovementNoise(pSoldier) > 0)
         {
@@ -4555,21 +4560,21 @@ public class OppList
         SNoise.ubNoiseMaker = ubNoiseMaker;
         SNoise.sGridNo = sGridNo;
         SNoise.bLevel = bLevel;
-        SNoise.ubTerrType = ubTerrType;
-        SNoise.ubVolume = ubVolume;
-        SNoise.ubNoiseType = ubNoiseType;
+//        SNoise.ubTerrType = ubTerrType;
+//        SNoise.ubVolume = ubVolume;
+//        SNoise.ubNoiseType = ubNoiseType;
 
         if (gTacticalStatus.ubAttackBusyCount > 0)
         {
             // delay these events until the attack is over!
-            GameEvents.AddGameEvent(S_NOISE, DEMAND_EVENT_DELAY, SNoise);
+//            GameEvents.AddGameEvent(S_NOISE, DEMAND_EVENT_DELAY, SNoise);
         }
         else
         {
             // AddGameEvent( S_NOISE, 0, &SNoise );
 
             // now call directly
-            OurNoise(SNoise.ubNoiseMaker, SNoise.sGridNo, SNoise.bLevel, SNoise.ubTerrType, SNoise.ubVolume, SNoise.ubNoiseType);
+//            OurNoise(SNoise.ubNoiseMaker, SNoise.sGridNo, SNoise.bLevel, SNoise.ubTerrType, SNoise.ubVolume, SNoise.ubNoiseType);
 
         }
 
@@ -5344,7 +5349,7 @@ public class OppList
 
         if (pSoldier.ubBodyType == SoldierBodyTypes.CROW)
         {
-            CrowsFlyAway(pSoldier.bTeam);
+//            CrowsFlyAway(pSoldier.bTeam);
             return;
         }
 
@@ -5402,7 +5407,7 @@ public class OppList
             // skip LOS check if we had to turn and we're a tank.  sorry Mr Tank, no looking out of the sides for you!
             if (!(bHadToTurn > 0 && TANK(pSoldier)))
             {
-                if (LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, sDistVisible, true))
+                if (LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, bLevel, 0, sDistVisible, 1))
                 {
                     // he can actually see the spot where the noise came from!
                     bSourceSeen = 1;
@@ -5494,14 +5499,14 @@ public class OppList
                     pSoldier.bNoiseLevel = bLevel;
 
                     // no matter how loud noise was, don't remember it for than 12 turns!
-                    if (ubVolume < MAX_MISC_NOISE.DURATION)
-                    {
-                        pSoldier.ubNoiseVolume = ubVolume;
-                    }
-                    else
-                    {
-                        pSoldier.ubNoiseVolume = MAX_MISC_NOISE.DURATION;
-                    }
+//                    if (ubVolume < MAX_MISC_NOISE.DURATION)
+//                    {
+//                        pSoldier.ubNoiseVolume = ubVolume;
+//                    }
+//                    else
+//                    {
+//                        pSoldier.ubNoiseVolume = MAX_MISC_NOISE.DURATION;
+//                    }
 
                     AIMain.SetNewSituation(pSoldier);  // force a fresh AI decision to be made
                 }
@@ -5533,13 +5538,13 @@ public class OppList
                 // as long as listener meets minimum interrupt conditions
                 if (gfDelayResolvingBestSightingDueToDoor)
                 {
-                    if (bSourceSeen && (!((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))) || (gubSightFlags.HasFlag(SIGHT.INTERRUPT) && StandardInterruptConditionsMet(pSoldier, ubNoiseMaker, bOldOpplist))))
+//                    if (bSourceSeen && (!((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))) || (gubSightFlags.HasFlag(SIGHT.INTERRUPT)&& StandardInterruptConditionsMet(pSoldier, ubNoiseMaker, bOldOpplist))))
                     {
                         // we should be adding this to the array for the AllTeamLookForAll to handle				
                         // since this is a door opening noise, add a bonus equal to half the door volume
-                        int ubPoints;
+                        int ubPoints = 0;
 
-                        ubPoints = CalcInterruptDuelPts(pSoldier, ubNoiseMaker, true);
+//                        ubPoints = CalcInterruptDuelPts(pSoldier, ubNoiseMaker, true);
                         if (ubPoints != Globals.NO_INTERRUPT)
                         {
                             // require the enemy not to be dying if we are the sighter; in other words,
@@ -5555,16 +5560,16 @@ public class OppList
                 {
                     if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
-                        if (StandardInterruptConditionsMet(pSoldier, ubNoiseMaker, bOldOpplist))
-                        {
-                            // he gets a chance to interrupt the noisemaker
-                            pSoldier.bInterruptDuelPts = CalcInterruptDuelPts(pSoldier, ubNoiseMaker, true);
-                            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calculating int duel pts in noise code, %d has %d points", pSoldier.ubID, pSoldier.bInterruptDuelPts));
-                        }
-                        else
-                        {
-                            pSoldier.bInterruptDuelPts = Globals.NO_INTERRUPT;
-                        }
+//                        if (StandardInterruptConditionsMet(pSoldier, ubNoiseMaker, bOldOpplist))
+//                        {
+//                            // he gets a chance to interrupt the noisemaker
+//                            pSoldier.bInterruptDuelPts = CalcInterruptDuelPts(pSoldier, ubNoiseMaker, true);
+//                            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calculating int duel pts in noise code, %d has %d points", pSoldier.ubID, pSoldier.bInterruptDuelPts));
+//                        }
+//                        else
+//                        {
+//                            pSoldier.bInterruptDuelPts = Globals.NO_INTERRUPT;
+//                        }
                     }
                     else if (bSourceSeen > 0)
                     {
@@ -5846,7 +5851,7 @@ public class OppList
         }
     }
 
-    void DecayIndividualOpplist(SOLDIERTYPE? pSoldier)
+    public static void DecayIndividualOpplist(SOLDIERTYPE? pSoldier)
     {
         int uiLoop;
         int? pPersOL;           // pointer into soldier's opponent list
@@ -6289,13 +6294,13 @@ public class OppList
 
             // calculate active soldier's dueling pts for the upcoming interrupt duel
             //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Calculating int duel pts for attacker in NUA");
-            pAttacker.bInterruptDuelPts = CalcInterruptDuelPts(pAttacker, pDefender.ubID, false);
-            if (InterruptDuel(pDefender, pAttacker))
+//            pAttacker.bInterruptDuelPts = CalcInterruptDuelPts(pAttacker, pDefender.ubID, false);
+//            if (InterruptDuel(pDefender, pAttacker))
             {
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: NoticeUnseenAttacker, defender pts %d, attacker pts %d, defender gets interrupt", pDefender.bInterruptDuelPts, pAttacker.bInterruptDuelPts));
-                AddToIntList(pAttacker.ubID, false, true);
-                AddToIntList(pDefender.ubID, true, true);
-                DoneAddingToIntList(pDefender, true, SIGHTINTERRUPT);
+//                AddToIntList(pAttacker.ubID, false, true);
+//                AddToIntList(pDefender.ubID, true, true);
+//                DoneAddingToIntList(pDefender, true, SIGHTINTERRUPT);
             }
             // either way, clear out both sides' duelPts fields to prepare next duel
             pDefender.bInterruptDuelPts = Globals.NO_INTERRUPT;
@@ -6317,7 +6322,11 @@ public class OppList
 
             pSoldier = Globals.MercPtrs[ubID];
 
-            if (pSoldier.bActive && pSoldier.bInSector && (pSoldier != pDyingSoldier) && (pSoldier.bLife >= OKLIFE) && (pSoldier.bAlertStatus < STATUS_RED))
+            if (pSoldier.bActive
+                & pSoldier.bInSector
+                && (pSoldier != pDyingSoldier)
+                && (pSoldier.bLife >= OKLIFE)
+                && (pSoldier.bAlertStatus < STATUS.RED))
             {
                 // this guy might have seen the man die
 

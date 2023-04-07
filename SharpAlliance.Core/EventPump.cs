@@ -85,7 +85,7 @@ public struct EV_S_GETNEWPATH
     public int usSoldierID;
     public int uiUniqueId;
     public int sDestGridNo;
-    public int usMovementAnim;
+    public AnimationStates usMovementAnim;
 }
 
 public struct EV_S_BEGINTURN
@@ -114,7 +114,7 @@ public struct EV_S_SETDESIREDDIRECTION
 {
     public int usSoldierID;
     public int uiUniqueId;
-    public int usDesiredDirection;
+    public WorldDirections usDesiredDirection;
 }
 
 public struct EV_S_BEGINFIREWEAPON

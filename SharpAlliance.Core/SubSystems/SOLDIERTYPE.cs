@@ -192,7 +192,7 @@ public class SOLDIERTYPE
     public int[] usFrontArcFullTileGridNos = new int[MAX_FULLTILE_DIRECTIONS];
 
 
-    public SGPPaletteEntry? p8BPPPalette; // 4
+    public List<SGPPaletteEntry> p8BPPPalette = new(); // 4
     public int p16BPPPalette;
     public int[] pShades = new int[Globals.NUM_SOLDIER_SHADES]; // Shading tables
     public int[] pGlowShades = new int[20]; // 
@@ -450,7 +450,7 @@ public class SOLDIERTYPE
     public int sEndDoorOpenCodeData;
     public TIMECOUNTER NextTileCounter;
     public bool fBlockedByAnotherMerc;
-    public int bBlockedByAnotherMercDirection;
+    public WorldDirections bBlockedByAnotherMercDirection;
     public Items usAttackingWeapon;
     public WM bWeaponMode;
     public int ubTargetID;

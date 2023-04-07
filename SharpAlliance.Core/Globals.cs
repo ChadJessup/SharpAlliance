@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 using static SharpAlliance.Core.InteractiveTiles;
 using static SharpAlliance.Core.Screens.CreditsScreen;
+using static SharpAlliance.Core.SubSystems.StrategicAI;
 
 namespace SharpAlliance.Core;
 
@@ -291,10 +292,10 @@ public partial class Globals
     public static int[,] gusAnimInst = new int[AnimationControl.MAX_ANIMATIONS, AnimationControl.MAX_FRAMES_PER_ANIM];
     public static Dictionary<AnimationStates, ANIMCONTROLTYPE> gAnimControl = new();
 
-    public static ANI_SPEED_DEF[] gubAnimWalkSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static Dictionary<SoldierBodyTypes, ANI_SPEED_DEF> gubAnimWalkSpeeds = new();// ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
     public static Dictionary<SoldierBodyTypes, ANI_SPEED_DEF> gubAnimRunSpeeds = new();
-    public static ANI_SPEED_DEF[] gubAnimSwatSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
-    public static ANI_SPEED_DEF[] gubAnimCrawlSpeeds = new ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static Dictionary<SoldierBodyTypes, ANI_SPEED_DEF> gubAnimSwatSpeeds = new();// ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
+    public static Dictionary<SoldierBodyTypes, ANI_SPEED_DEF> gubAnimCrawlSpeeds = new();// ANI_SPEED_DEF[(int)SoldierBodyTypes.TOTALBODYTYPES];
     public static int[] gubMaxActionPoints = new int[(int)SoldierBodyTypes.TOTALBODYTYPES];
 
     public static Dictionary<SEC, SECTORINFO> SectorInfo = new();
@@ -2098,7 +2099,7 @@ public partial class Globals
 
     // this variable is a flag used in HandleSight to determine whether (while in non-combat RT)
     // someone has just been seen, EITHER THE MOVER OR SOMEONE THE MOVER SEES
-    public static bool gfPlayerTeamSawCreatures = false;
+    public static int gfPlayerTeamSawCreatures = 0;
 
     public static int[] gubBestToMakeSighting = new int[BEST_SIGHTING_ARRAY_SIZE];
     public static int gubBestToMakeSightingSize = 0;

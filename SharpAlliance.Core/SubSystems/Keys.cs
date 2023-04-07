@@ -100,15 +100,15 @@ public class Keys
                 {
                     // and we can trace a line of sight to his x,y coordinates?
                     // (taking into account we are definitely aware of this guy now)
-                    if (SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, 0, 0, (int)sDistVisible, true))
-                    {
-                        // Update status...
-                        if (fUpdateValue)
-                        {
-                            InternalUpdateDoorsPerceivedValue(pDoorStatus);
-                        }
-                        return (true);
-                    }
+//                    if (SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, 0, 0, (int)sDistVisible, true))
+//                    {
+//                        // Update status...
+//                        if (fUpdateValue)
+//                        {
+//                            InternalUpdateDoorsPerceivedValue(pDoorStatus);
+//                        }
+//                        return (true);
+//                    }
                 }
 
                 // Now try other adjacent gridnos...
@@ -121,15 +121,15 @@ public class Keys
                     {
                         // and we can trace a line of sight to his x,y coordinates?
                         // (taking into account we are definitely aware of this guy now)
-                        if (SoldierTo3DLocationLineOfSightTest(pSoldier, usNewGridNo, 0, 0, (int)sDistVisible, true))
-                        {
-                            // Update status...
-                            if (fUpdateValue)
-                            {
-                                InternalUpdateDoorsPerceivedValue(pDoorStatus);
-                            }
-                            return (true);
-                        }
+//                        if (SoldierTo3DLocationLineOfSightTest(pSoldier, usNewGridNo, 0, 0, (int)sDistVisible, true))
+//                        {
+//                            // Update status...
+//                            if (fUpdateValue)
+//                            {
+//                                InternalUpdateDoorsPerceivedValue(pDoorStatus);
+//                            }
+//                            return (true);
+//                        }
                     }
                 }
             }
@@ -173,18 +173,18 @@ public class Keys
             {
                 // and we can trace a line of sight to his x,y coordinates?
                 // (taking into account we are definitely aware of this guy now)
-                if (SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, 0, 0, (int)sDistVisible, true))
-                {
-                    // OK, here... update perceived value....
-                    if (fUpdateValue)
-                    {
-                        InternalUpdateDoorsPerceivedValue(pDoorStatus);
-
-                        // Update graphic....
-                        InternalUpdateDoorGraphicFromStatus(pDoorStatus, true, true);
-                    }
-                    return (true);
-                }
+//                if (SoldierTo3DLocationLineOfSightTest(pSoldier, sGridNo, 0, 0, (int)sDistVisible, true))
+//                {
+//                    // OK, here... update perceived value....
+//                    if (fUpdateValue)
+//                    {
+//                        InternalUpdateDoorsPerceivedValue(pDoorStatus);
+//
+//                        // Update graphic....
+//                        InternalUpdateDoorGraphicFromStatus(pDoorStatus, true, true);
+//                    }
+//                    return (true);
+//                }
             }
 
             // Now try other adjacent gridnos...
@@ -196,19 +196,19 @@ public class Keys
                 {
                     // and we can trace a line of sight to his x,y coordinates?
                     // (taking into account we are definitely aware of this guy now)
-                    if (SoldierTo3DLocationLineOfSightTest(pSoldier, usNewGridNo, 0, 0, (int)sDistVisible, true))
-                    {
-                        // Update status...
-                        if (fUpdateValue)
-                        {
-                            InternalUpdateDoorsPerceivedValue(pDoorStatus);
-
-                            // Update graphic....
-                            InternalUpdateDoorGraphicFromStatus(pDoorStatus, true, true);
-
-                        }
-                        return (true);
-                    }
+//                    if (SoldierTo3DLocationLineOfSightTest(pSoldier, usNewGridNo, 0, 0, (int)sDistVisible, true))
+//                    {
+//                        // Update status...
+//                        if (fUpdateValue)
+//                        {
+//                            InternalUpdateDoorsPerceivedValue(pDoorStatus);
+//
+//                            // Update graphic....
+//                            InternalUpdateDoorGraphicFromStatus(pDoorStatus, true, true);
+//
+//                        }
+//                        return (true);
+//                    }
                 }
             }
 
@@ -254,23 +254,23 @@ public class Keys
         // the struct data value - if not - change ( REGARDLESS of perceived being used or not... )
         // 
         // Check for opened...
-        if (pDoorStatus.ubFlags & DOOR_OPEN)
+        if (pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN))
         {
             // IF closed.....
-            if (!(pStructure.fFlags & STRUCTUREFLAGS.OPEN))
+            if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
             {
                 // Swap!
-                SwapStructureForPartner(sBaseGridNo, pBaseStructure);
-                RecompileLocalMovementCosts(sBaseGridNo);
+//                SwapStructureForPartner(sBaseGridNo, pBaseStructure);
+//                RecompileLocalMovementCosts(sBaseGridNo);
             }
         }
         else
         {
-            if ((pStructure.fFlags & STRUCTUREFLAGS.OPEN))
+            if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
             {
                 // Swap!
-                SwapStructureForPartner(sBaseGridNo, pBaseStructure);
-                RecompileLocalMovementCosts(sBaseGridNo);
+//                SwapStructureForPartner(sBaseGridNo, pBaseStructure);
+//                RecompileLocalMovementCosts(sBaseGridNo);
             }
         }
     }
@@ -348,7 +348,7 @@ public class Keys
         // First look for an opened door
         // get what it is now...
         cnt = 0;
-        while (Globals.gClosedDoorList[cnt] != -1)
+        while (Globals.gClosedDoorList[cnt] != TileIndexes.UNSET)
         {
             // IF WE ARE A SHADOW TYPE
             if (pNode.usIndex == Globals.gClosedDoorList[cnt])
@@ -366,14 +366,14 @@ public class Keys
 
         // OK, we now need to test these things against the true structure data
         // we may need to only adjust the graphic here....
-        if (fWantToBeOpen && (pStructure.fFlags & STRUCTUREFLAGS.OPEN))
+        if (fWantToBeOpen && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
         {
             bool fFound = false;
             // Adjust graphic....
 
             // Loop through and and find opened graphic for the closed one....
             cnt = 0;
-            while (gOpenDoorList[cnt] != -1)
+            while (gOpenDoorList[cnt] != TileIndexes.UNSET)
             {
                 // IF WE ARE A SHADOW TYPE
                 if (pNode.usIndex == gOpenDoorList[cnt])
@@ -444,7 +444,7 @@ public class Keys
         {
             // Find the closed door graphic and adjust....
             cnt = 0;
-            while (gOpenDoorList[cnt] != -1)
+            while (gOpenDoorList[cnt] != TileIndexes.UNSET)
             {
                 // IF WE ARE A SHADOW TYPE
                 if (pNode.usIndex == gOpenDoorList[cnt])
@@ -460,9 +460,8 @@ public class Keys
 
         if (fDifferent)
         {
-            SwapStructureForPartner(sBaseGridNo, pBaseStructure);
-
-            RecompileLocalMovementCosts(sBaseGridNo);
+//            SwapStructureForPartner(sBaseGridNo, pBaseStructure);
+//            RecompileLocalMovementCosts(sBaseGridNo);
 
             if (fDirty)
             {
@@ -481,8 +480,10 @@ public class Keys
         }
 
         // Compare flags....
-        if ((pDoorStatus.ubFlags & DOOR_STATUS_FLAGS.OPEN && pDoorStatus.ubFlags & DOOR_STATUS_FLAGS.PERCEIVED_OPEN) ||
-                 (!(pDoorStatus.ubFlags & DOOR_STATUS_FLAGS.OPEN) && !(pDoorStatus.ubFlags & DOOR_STATUS_FLAGS.PERCEIVED_OPEN)))
+        if ((pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN)
+            && pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN))
+            || (!(pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN))
+            && !(pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN))))
         {
             return (false);
         }
@@ -575,7 +576,7 @@ public class Keys
 
         pDoorStatus = GetDoorStatus(sGridNo);
 
-        if (pDoorStatus)
+        if (pDoorStatus is not null)
         {
             if (fOpen)
             {
@@ -615,24 +616,24 @@ public class Keys
         //add the 'm' for 'Modifed Map' to the front of the map name
         //	sprintf( zMapName, "%s\\ds_%s", MAPS_DIR, zTempName);
 
-        GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
+        //GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
 
 
         //Open the file for writing, Create it if it doesnt exist
-        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
-        if (hFile == 0)
-        {
-            //Error opening map modification file
-            return (false);
-        }
+//        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+//        if (hFile == 0)
+//        {
+//            //Error opening map modification file
+//            return (false);
+//        }
 
 
         //Save the number of elements in the door array
-        FileManager.FileWrite(hFile, gubNumDoorStatus, sizeof(int), out uiNumBytesWritten);
-        if (uiNumBytesWritten != sizeof(int))
+//        FileManager.FileWrite(hFile, gubNumDoorStatus, sizeof(int), out uiNumBytesWritten);
+//        if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of array to disk
-            FileManager.FileClose(hFile);
+//            FileManager.FileClose(hFile);
             return (false);
         }
 
@@ -640,8 +641,8 @@ public class Keys
         if (gubNumDoorStatus != 0)
         {
             //Save the door array
-            FileManager.FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesWritten);
-            if (uiNumBytesWritten != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
+//            FileManager.FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesWritten);
+//            if (uiNumBytesWritten != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
             {
                 //Error Writing size of array to disk
                 FileManager.FileClose(hFile);
@@ -652,7 +653,7 @@ public class Keys
         FileManager.FileClose(hFile);
 
         //Set the flag indicating that there is a door status array
-        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.DOOR_STATUS_TEMP_FILE_EXISTS);
+//        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.DOOR_STATUS_TEMP_FILE_EXISTS);
 
         return (true);
     }
@@ -671,14 +672,14 @@ public class Keys
         //add the 'm' for 'Modifed Map' to the front of the map name
         //	sprintf( zMapName, "%s\\ds_%s", MAPS_DIR, zTempName);
 
-        GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+//        GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
 
         //Get rid of the existing door array
-        TrashDoorStatusArray();
+//        TrashDoorStatusArray();
 
         //Open the file for reading
-        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
-        if (hFile == 0)
+//        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
+//        if (hFile == 0)
         {
             //Error opening map modification file,
             return (false);
@@ -701,7 +702,7 @@ public class Keys
 
 
         //Allocate space for the door status array
-        gpDoorStatus = MemAlloc(sizeof(DOOR_STATUS) * gubNumDoorStatus);
+//        gpDoorStatus = MemAlloc(sizeof(DOOR_STATUS) * gubNumDoorStatus);
         if (gpDoorStatus == null)
         {
             //AssertMsg(0, "Error Allocating memory for the gpDoorStatus");
@@ -711,8 +712,8 @@ public class Keys
 
 
         // Load the number of elements in the door status array
-        FileManager.FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesRead);
-        if (uiNumBytesRead != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
+//        FileManager.FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesRead);
+//        if (uiNumBytesRead != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
         {
             FileManager.FileClose(hFile);
             return (false);
@@ -740,8 +741,8 @@ public class Keys
 
 
         // Save the KeyTable
-        FileManager.FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
-        if (uiNumBytesWritten != sizeof(KEY) * NUM_KEYS)
+//        FileManager.FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
+//        if (uiNumBytesWritten != sizeof(KEY) * NUM_KEYS)
         {
             return (false);
         }
@@ -755,8 +756,8 @@ public class Keys
 
 
         // Load the KeyTable
-        FileManager.FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
-        if (uiNumBytesRead != sizeof(KEY) * NUM_KEYS)
+//        FileManager.FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
+//        if (uiNumBytesRead != sizeof(KEY) * NUM_KEYS)
         {
             return (false);
         }
@@ -770,15 +771,15 @@ public class Keys
     {
         int cnt;
         DOOR_STATUS? pDoorStatus;
-        SOLDIERTYPE? pSoldier;
+//        SOLDIERTYPE? pSoldier;
         bool fOK = false;
-        int bTownId;
+        TOWNS bTownId = 0;
 
         // OK, only do this if conditions are met....
         // If this is any omerta tow, don't do it...
-        bTownId = GetTownIdForSector(gWorldSectorX, gWorldSectorY);
+//        bTownId = GetTownIdForSector(gWorldSectorX, gWorldSectorY);
 
-        if (bTownId == OMERTA)
+        if (bTownId == TOWNS.OMERTA)
         {
             return;
         }
@@ -793,7 +794,8 @@ public class Keys
         // check for civ
         cnt = gTacticalStatus.Team[ENEMY_TEAM].bFirstID;
         // look for all mercs on the same team, 
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[LAST_TEAM].bLastID; cnt++, pSoldier++)
+//        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[LAST_TEAM].bLastID; cnt++, pSoldier++)
+        foreach(var pSoldier in MercPtrs)
         {
             if (pSoldier.bActive)
             {
@@ -810,14 +812,14 @@ public class Keys
         {
             for (cnt = 0; cnt < gubNumDoorStatus; cnt++)
             {
-                pDoorStatus = &(gpDoorStatus[cnt]);
+                pDoorStatus = (gpDoorStatus[cnt]);
 
                 // Get status of door....
-                if (pDoorStatus.ubFlags & DOOR_STATUS_FLAGS.OPEN)
-                {
-                    // If open, close!
-                    HandleDoorChangeFromGridNo(null, pDoorStatus.sGridNo, true);
-                }
+//                if (pDoorStatus.ubFlags & DOOR_STATUS_FLAGS.OPEN)
+//                {
+//                    // If open, close!
+//                    HandleDoorChangeFromGridNo(null, pDoorStatus.sGridNo, true);
+//                }
             }
         }
     }
@@ -826,7 +828,7 @@ public class Keys
     {
         int cnt;
         DOOR_STATUS? pDoorStatus;
-        SOLDIERTYPE? pSoldier;
+//        SOLDIERTYPE? pSoldier;
         bool fOK = false;
         int iNumNewMercs = 0;
         TOWNS bTownId;
@@ -834,7 +836,7 @@ public class Keys
         // OK, only do this if conditions are met....
 
         // If this is any omerta tow, don't do it...
-        bTownId = GetTownIdForSector(gWorldSectorX, gWorldSectorY);
+        bTownId = StrategicMap.GetTownIdForSector(gWorldSectorX, gWorldSectorY);
 
         if (bTownId == TOWNS.OMERTA)
         {
@@ -852,7 +854,8 @@ public class Keys
         }
 
         // look for all mercs on the same team, 
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[LAST_TEAM].bLastID; cnt++, pSoldier++)
+//        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[LAST_TEAM].bLastID; cnt++, pSoldier++)
+        foreach(var pSoldier in MercPtrs)
         {
             if (pSoldier.bActive && pSoldier.bInSector)
             {
@@ -863,7 +866,7 @@ public class Keys
 
         // Loop through our team now....
         cnt = gTacticalStatus.Team[gbPlayerNum].bFirstID;
-        for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[gbPlayerNum].bLastID; cnt++, pSoldier++)
+        foreach (var pSoldier in MercPtrs)//[cnt]; cnt <= gTacticalStatus.Team[gbPlayerNum].bLastID; cnt++, pSoldier++)
         {
             if (pSoldier.bActive && pSoldier.bInSector && gbMercIsNewInThisSector[cnt] > 0)
             {
@@ -882,17 +885,17 @@ public class Keys
         {
             for (cnt = 0; cnt < gubNumDoorStatus; cnt++)
             {
-                pDoorStatus = &(gpDoorStatus[cnt]);
+                pDoorStatus = (gpDoorStatus[cnt]);
 
                 // Get status of door....
-                if (pDoorStatus.ubFlags & DOOR_OPEN)
+                if (pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN))
                 {
                     // If open, close!
-                    gfSetPerceivedDoorState = true;
-
-                    HandleDoorChangeFromGridNo(null, pDoorStatus.sGridNo, true);
-
-                    gfSetPerceivedDoorState = false;
+//                    gfSetPerceivedDoorState = true;
+//
+//                    HandleDoorChangeFromGridNo(null, pDoorStatus.sGridNo, true);
+//
+//                    gfSetPerceivedDoorState = false;
 
                     AllMercsLookForDoor(pDoorStatus.sGridNo, true);
 
@@ -910,42 +913,42 @@ public class Keys
         int ubItem;
         OBJECTTYPE Object;
 
-        if (!(pSoldier.pKeyRing))
-        {
-            // no key ring!
-            return;
-        }
-        for (ubLoop = 0; ubLoop < NUM_KEYS; ubLoop++)
-        {
-            ubItem = pSoldier.pKeyRing[ubLoop].ubKeyID;
-
-            if (pSoldier.pKeyRing[ubLoop].ubNumber > 0)
-            {
-                CreateKeyObject(out Object, pSoldier.pKeyRing[ubLoop].ubNumber, ubItem);
-
-                // Zero out entry
-                pSoldier.pKeyRing[ubLoop].ubNumber = 0;
-                pSoldier.pKeyRing[ubLoop].ubKeyID = INVALID_KEY_NUMBER;
-
-                if (fAddToDropList)
-                {
-                    AddItemToLeaveIndex(out Object, iDropListSlot);
-                }
-                else
-                {
-                    if (pSoldier.sSectorX != gWorldSectorX || pSoldier.sSectorY != gWorldSectorY || pSoldier.bSectorZ != gbWorldSectorZ || fUseUnLoaded)
-                    {
-                        // Set flag for item...
-                        AddItemsToUnLoadedSector(pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ, sGridNo, 1, out Object, bLevel, WOLRD_ITEM_FIND_SWEETSPOT_FROM_GRIDNO | WORLD_ITEM_REACHABLE, 0, bVisible, false);
-                    }
-                    else
-                    {
-                        // Add to pool
-                        AddItemToPool(sGridNo, out Object, bVisible, bLevel, 0, 0);
-                    }
-                }
-            }
-        }
+//        if (!(pSoldier.pKeyRing))
+//        {
+//            // no key ring!
+//            return;
+//        }
+//        for (ubLoop = 0; ubLoop < NUM_KEYS; ubLoop++)
+//        {
+//            ubItem = pSoldier.pKeyRing[ubLoop].ubKeyID;
+//
+//            if (pSoldier.pKeyRing[ubLoop].ubNumber > 0)
+//            {
+//                CreateKeyObject(out Object, pSoldier.pKeyRing[ubLoop].ubNumber, ubItem);
+//
+//                // Zero out entry
+//                pSoldier.pKeyRing[ubLoop].ubNumber = 0;
+//                pSoldier.pKeyRing[ubLoop].ubKeyID = INVALID_KEY_NUMBER;
+//
+//                if (fAddToDropList)
+//                {
+//                    AddItemToLeaveIndex(out Object, iDropListSlot);
+//                }
+//                else
+//                {
+//                    if (pSoldier.sSectorX != gWorldSectorX || pSoldier.sSectorY != gWorldSectorY || pSoldier.bSectorZ != gbWorldSectorZ || fUseUnLoaded)
+//                    {
+//                        // Set flag for item...
+//                        AddItemsToUnLoadedSector(pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ, sGridNo, 1, out Object, bLevel, WOLRD_ITEM_FIND_SWEETSPOT_FROM_GRIDNO | WORLD_ITEM_REACHABLE, 0, bVisible, false);
+//                    }
+//                    else
+//                    {
+//                        // Add to pool
+//                        AddItemToPool(sGridNo, out Object, bVisible, bLevel, 0, 0);
+//                    }
+//                }
+//            }
+//        }
     }
 }
 

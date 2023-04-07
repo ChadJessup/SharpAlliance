@@ -19,7 +19,7 @@ public class AnimationControl
         if (usAnimSurface != INVALID_ANIMATION_SURFACE)
         {
             // Ensure that it's been loaded!
-            if (GetCachedAnimationSurface(pSoldier.ubID, (pSoldier.AnimCache), usAnimSurface, pSoldier.usAnimState) == false)
+//            if (GetCachedAnimationSurface(pSoldier.ubID, (pSoldier.AnimCache), usAnimSurface, pSoldier.usAnimState) == false)
             {
                 usAnimSurface = INVALID_ANIMATION_SURFACE;
             }
@@ -46,7 +46,7 @@ public class AnimationControl
         // Add structure info!
         if (pSoldier.pLevelNode != null && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PAUSEANIMOVE)))
         {
-            AddMercStructureInfoFromAnimSurface(pSoldier.sGridNo, pSoldier, usAnimSurface, usAnimState);
+//            AddMercStructureInfoFromAnimSurface(pSoldier.sGridNo, pSoldier, usAnimSurface, usAnimState);
         }
 
         // Set
@@ -62,31 +62,31 @@ public class AnimationControl
 
     public static AnimationSurfaceTypes DetermineSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
     {
-        AnimationSurfaceTypes usAnimSurface;
-        AnimationSurfaceTypes usAltAnimSurface;
+        AnimationSurfaceTypes usAnimSurface = 0;
+        AnimationSurfaceTypes usAltAnimSurface = 0;
         SoldierBodyTypes ubBodyType;
         Items usItem;
         int ubWaterHandIndex = 1;
         int cnt;
         bool fAdjustedForItem = false;
-        AnimationStates usNewAnimState;
+        AnimationStates usNewAnimState = 0;
 
         ubBodyType = pSoldier.ubBodyType;
 
-        if (SubstituteBodyTypeAnimation(pSoldier, usAnimState, out usNewAnimState))
+//        if (SubstituteBodyTypeAnimation(pSoldier, usAnimState, out usNewAnimState))
         {
             usAnimState = usNewAnimState;
         }
 
-        usAnimSurface = gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState];
+//        usAnimSurface = gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState];
 
         // CHECK IF WE CAN DO THIS ANIMATION, IE WE HAVE IT AVAILIBLE
         if (usAnimSurface == AnimationSurfaceTypes.INVALID_ANIMATION)
         {
             // WE SHOULD NOT BE USING THIS ANIMATION
-            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG_BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier.ubBodyType, gAnimControl[usAnimState].zAnimStr);
+//            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG_BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier.ubBodyType, gAnimControl[usAnimState].zAnimStr);
             // Set index to FOUND_INVALID_ANIMATION
-            gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState] = AnimationStates.FOUND_INVALID_ANIMATION;
+//            gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState] = AnimationStates.FOUND_INVALID_ANIMATION;
             return (AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE);
         }
 
@@ -109,7 +109,7 @@ public class AnimationControl
             // ATE: use +2 in gridno because here head is far from body
             bDir = SoldierControl.GetDirectionToGridNoFromGridNo((pSoldier.sGridNo + 2), pSoldier.sTargetGridNo);
 
-            return (gusQueenMonsterSpitAnimPerDir[bDir]);
+            return 0;//(gusQueenMonsterSpitAnimPerDir[bDir]);
         }
 
 
@@ -183,7 +183,7 @@ public class AnimationControl
             }
 
             // CHANGE BASED ON HIEGHT OF WATER
-            usAltAnimSurface = gubAnimSurfaceMidWaterSubIndex[pSoldier.ubBodyType][usAnimState][ubWaterHandIndex];
+//            usAltAnimSurface = gubAnimSurfaceMidWaterSubIndex[pSoldier.ubBodyType][usAnimState][ubWaterHandIndex];
 
             if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
             {
@@ -200,12 +200,12 @@ public class AnimationControl
             {
                 if (usAnimState == AnimationStates.STANDING)
                 {
-                    usAnimSurface = gusNothingBreath[pSoldier.ubBodyType];
+//                    usAnimSurface = gusNothingBreath[pSoldier.ubBodyType];
                     fAdjustedForItem = true;
                 }
                 else
                 {
-                    usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
+//                    usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
 
                     if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
                     {
@@ -221,20 +221,20 @@ public class AnimationControl
                 {
                     if (!(Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)))
                     {
-                        usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
-                        if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
+//                        usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
+//                        if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
                         {
                             usAnimSurface = usAltAnimSurface;
                             fAdjustedForItem = true;
                         }
 
                         // Look for good two pistols sub anim.....
-                        if (gDoubleHandledSub.usAnimState == usAnimState)
+//                        if (gDoubleHandledSub.usAnimState == usAnimState)
                         {
                             // Do we carry two pistols...
                             if (Item[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem].usItemClass == IC.GUN)
                             {
-                                usAnimSurface = gDoubleHandledSub.usAnimationSurfaces[pSoldier.ubBodyType];
+//                                usAnimSurface = gDoubleHandledSub.usAnimationSurfaces[pSoldier.ubBodyType];
                                 fAdjustedForItem = true;
                             }
                         }
@@ -243,7 +243,7 @@ public class AnimationControl
                 }
                 else
                 {
-                    usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
+//                    usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
 
                     if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
                     {
@@ -260,11 +260,11 @@ public class AnimationControl
                 if (pSoldier.bLife < INJURED_CHANGE_THREASHOLD)
                 {
                     // ADJUST FOR INJURED....
-                    for (cnt = 0; cnt < NUM_INJURED_SUBS; cnt++)
+//                    for (cnt = 0; cnt < NUM_INJURED_SUBS; cnt++)
                     {
-                        if (gNothingInjuredSub[cnt].usAnimState == usAnimState)
+//                        if (gNothingInjuredSub[cnt].usAnimState == usAnimState)
                         {
-                            usAnimSurface = gNothingInjuredSub[cnt].usAnimationSurfaces[pSoldier.ubBodyType];
+//                            usAnimSurface = gNothingInjuredSub[cnt].usAnimationSurfaces[pSoldier.ubBodyType];
                         }
                     }
                 }
@@ -275,11 +275,11 @@ public class AnimationControl
                 if (pSoldier.bLife < INJURED_CHANGE_THREASHOLD)
                 {
                     // ADJUST FOR INJURED....
-                    for (cnt = 0; cnt < NUM_INJURED_SUBS; cnt++)
+//                    for (cnt = 0; cnt < NUM_INJURED_SUBS; cnt++)
                     {
-                        if (gRifleInjuredSub[cnt].usAnimState == usAnimState)
+//                        if (gRifleInjuredSub[cnt].usAnimState == usAnimState)
                         {
-                            usAnimSurface = gRifleInjuredSub[cnt].usAnimationSurfaces[pSoldier.ubBodyType];
+//                            usAnimSurface = gRifleInjuredSub[cnt].usAnimationSurfaces[pSoldier.ubBodyType];
                         }
                     }
                 }

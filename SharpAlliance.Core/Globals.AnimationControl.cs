@@ -5,6 +5,8 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const uint FAST_TURN_ANIM_SPEED = 30;
+
     public const int TOTALBODYTYPES = (int)SoldierBodyTypes.TOTALBODYTYPES;
     public const int NUMANIMATIONSTATES = (int)AnimationStates.NUMANIMATIONSTATES;
 

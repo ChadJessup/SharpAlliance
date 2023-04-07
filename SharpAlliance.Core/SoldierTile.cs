@@ -61,7 +61,7 @@ public class SoldierTile
 
         if (pSoldier.bTeam == gbPlayerNum && fGivenUp)
         {
-            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[NO_PATH_FOR_MERC], pSoldier.name);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[(int)STR.NO_PATH_FOR_MERC], pSoldier.name);
         }
 
         SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
@@ -107,7 +107,7 @@ public class SoldierTile
         }
     }
 
-    int TileIsClear(SOLDIERTYPE pSoldier, int bDirection, int sGridNo, int bLevel)
+    int TileIsClear(SOLDIERTYPE pSoldier, WorldDirections bDirection, int sGridNo, int bLevel)
     {
         int ubPerson;
         int sTempDestGridNo;
@@ -171,9 +171,9 @@ public class SoldierTile
                                 pSoldier.fBlockedByAnotherMerc = false;
 
                                 // Is the next tile blocked too?
-                                sNewGridNo = IsometricUtils.NewGridNo((int)pSoldier.sGridNo, IsometricUtils.DirectionInc((int)guiPathingData[0]));
+                                sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(guiPathingData[0]));
 
-                                return (TileIsClear(pSoldier, (int)guiPathingData[0], sNewGridNo, pSoldier.bLevel));
+                                return (TileIsClear(pSoldier, (WorldDirections)guiPathingData[0], sNewGridNo, pSoldier.bLevel));
                             }
                             else
                             {
@@ -182,7 +182,7 @@ public class SoldierTile
                                 if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)))
                                 {
                                     // Is the next movement cost for a door?
-                                    if (PathAI.DoorTravelCost(pSoldier, sGridNo, gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel], (bool)(pSoldier.bTeam == gbPlayerNum), out var _) == TRAVELCOST.DOOR)
+//                                    if (PathAI.DoorTravelCost(pSoldier, sGridNo, gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel], (bool)(pSoldier.bTeam == gbPlayerNum), out var _) == TRAVELCOST.DOOR)
                                     {
                                         fSwapInDoor = true;
                                     }
@@ -242,22 +242,22 @@ public class SoldierTile
         if (!Overhead.NewOKDestination(pSoldier, sGridNo, false, pSoldier.bLevel))
         {
             // ATE: Fence cost is an exclusiuon here....
-            if (gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel] != TRAVELCOST.FENCE)
+//            if (gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel] != TRAVELCOST.FENCE)
             {
                 // ATE: HIdden structs - we do something here... reveal it!
-                if (gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel] == TRAVELCOST.HIDDENOBSTACLE)
+//                if (gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel] == TRAVELCOST.HIDDENOBSTACLE)
                 {
                     gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENTFLAGS.REVEALED;
                     gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENTFLAGS.REDRAW;
                     RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
-                    RecompileLocalMovementCosts((int)sGridNo);
+//                    RecompileLocalMovementCosts((int)sGridNo);
                 }
 
                 // Unset flag for blocked by soldier...
                 pSoldier.fBlockedByAnotherMerc = false;
                 return (MOVE_TILE_STATIONARY_BLOCKED);
             }
-            else
+//            else
             {
             }
         }
@@ -268,7 +268,7 @@ public class SoldierTile
         return (MOVE_TILE_CLEAR);
     }
 
-    bool HandleNextTile(SOLDIERTYPE? pSoldier, int bDirection, int sGridNo, int sFinalDestTile)
+    bool HandleNextTile(SOLDIERTYPE? pSoldier, WorldDirections bDirection, int sGridNo, int sFinalDestTile)
     {
         int bBlocked;
         TerrainTypeDefines bOverTerrainType;
@@ -380,13 +380,14 @@ public class SoldierTile
 
 
 
-    bool HandleNextTileWaiting(SOLDIERTYPE? pSoldier)
+    bool HandleNextTileWaiting(SOLDIERTYPE pSoldier)
     {
         // Buddy is waiting to continue his path
-        int bBlocked, bPathBlocked;
-        int sCost;
-        int sNewGridNo, sCheckGridNo;
-        int ubDirection, bCauseDirection;
+        int bBlocked, bPathBlocked = 0;
+        int sCost = 0;
+        int sNewGridNo, sCheckGridNo = 0;
+        int ubDirection;
+        WorldDirections bCauseDirection;
         int ubPerson;
         PATH fFlags = 0;
 
@@ -398,7 +399,7 @@ public class SoldierTile
                 RESETTIMECOUNTER(ref pSoldier.NextTileCounter, NEXT_TILE_CHECK_DELAY);
 
                 // Get direction from gridno...
-                bCauseDirection = (int)GetDirectionToGridNoFromGridNo(pSoldier.sGridNo, pSoldier.sDelayedMovementCauseGridNo);
+                bCauseDirection = SoldierControl.GetDirectionToGridNoFromGridNo(pSoldier.sGridNo, pSoldier.sDelayedMovementCauseGridNo);
 
                 bBlocked = TileIsClear(pSoldier, bCauseDirection, pSoldier.sDelayedMovementCauseGridNo, pSoldier.bLevel);
 
@@ -451,23 +452,23 @@ public class SoldierTile
                         if (pSoldier.fDelayedMovement >= 150)
                         {
                             // OK, look around dest for the first one!
-                            sCheckGridNo = FindGridNoFromSweetSpot(pSoldier, pSoldier.sFinalDestination, 6, &ubDirection);
+//                            sCheckGridNo = FindGridNoFromSweetSpot(pSoldier, pSoldier.sFinalDestination, 6, ubDirection);
 
                             if (sCheckGridNo == NOWHERE)
                             {
                                 // If this is nowhere, try harder!
-                                sCheckGridNo = FindGridNoFromSweetSpot(pSoldier, pSoldier.sFinalDestination, 16, &ubDirection);
+//                                sCheckGridNo = FindGridNoFromSweetSpot(pSoldier, pSoldier.sFinalDestination, 16, &ubDirection);
                             }
                         }
                         else
                         {
                             // OK, look around dest for the first one!
-                            sCheckGridNo = FindGridNoFromSweetSpotThroughPeople(pSoldier, pSoldier.sFinalDestination, 6, &ubDirection);
+//                            sCheckGridNo = FindGridNoFromSweetSpotThroughPeople(pSoldier, pSoldier.sFinalDestination, 6, &ubDirection);
 
                             if (sCheckGridNo == NOWHERE)
                             {
                                 // If this is nowhere, try harder!
-                                sCheckGridNo = FindGridNoFromSweetSpotThroughPeople(pSoldier, pSoldier.sFinalDestination, 16, &ubDirection);
+//                                sCheckGridNo = FindGridNoFromSweetSpotThroughPeople(pSoldier, pSoldier.sFinalDestination, 16, &ubDirection);
                             }
                         }
                     }
@@ -478,12 +479,12 @@ public class SoldierTile
 
                     // Try another path to destination
                     // ATE: Allow path to exit grid!
-                    if (pSoldier.ubWaitActionToDo == 1 && gubWaitingForAllMercsToExitCode == WAIT_FOR_MERCS_TO_WALK_TO_GRIDNO)
+//                    if (pSoldier.ubWaitActionToDo == 1 && gubWaitingForAllMercsToExitCode == WAIT_FOR_MERCS_TO_WALK_TO_GRIDNO)
                     {
                         gfPlotPathToExitGrid = true;
                     }
 
-                    sCost = (int)FindBestPath(pSoldier, sCheckGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, NO_COPYROUTE, fFlags);
+//                    sCost = (int)FindBestPath(pSoldier, sCheckGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, NO_COPYROUTE, fFlags);
                     gfPlotPathToExitGrid = false;
 
                     // Can we get there
@@ -492,35 +493,35 @@ public class SoldierTile
                         // Is the next tile blocked too?
                         sNewGridNo = IsometricUtils.NewGridNo((int)pSoldier.sGridNo, IsometricUtils.DirectionInc((int)guiPathingData[0]));
 
-                        bPathBlocked = TileIsClear(pSoldier, (int)guiPathingData[0], sNewGridNo, pSoldier.bLevel);
+//                        bPathBlocked = TileIsClear(pSoldier, guiPathingData[0], sNewGridNo, pSoldier.bLevel);
 
                         if (bPathBlocked == MOVE_TILE_STATIONARY_BLOCKED)
                         {
                             // Try to path around everyone except dest person
 
-                            if (pSoldier.ubWaitActionToDo == 1 && gubWaitingForAllMercsToExitCode == WAIT_FOR_MERCS_TO_WALK_TO_GRIDNO)
+//                            if (pSoldier.ubWaitActionToDo == 1 && gubWaitingForAllMercsToExitCode == WAIT_FOR_MERCS_TO_WALK_TO_GRIDNO)
                             {
                                 gfPlotPathToExitGrid = true;
                             }
 
-                            sCost = (int)FindBestPath(pSoldier, sCheckGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, NO_COPYROUTE, PATH.IGNORE_PERSON_AT_DEST);
+//                            sCost = (int)FindBestPath(pSoldier, sCheckGridNo, pSoldier.bLevel, pSoldier.usUIMovementMode, NO_COPYROUTE, PATH.IGNORE_PERSON_AT_DEST);
 
                             gfPlotPathToExitGrid = false;
 
                             // Is the next tile in this new path blocked too?
                             sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(guiPathingData[0]));
 
-                            bPathBlocked = TileIsClear(pSoldier, (int)guiPathingData[0], sNewGridNo, pSoldier.bLevel);
+//                            bPathBlocked = TileIsClear(pSoldier, (int)guiPathingData[0], sNewGridNo, pSoldier.bLevel);
 
                             // now working with a path which does not go through people				
-                            pSoldier.ubDelayedMovementFlags &= (~DELAYED_MOVEMENT_FLAG_PATH_THROUGH_PEOPLE);
+//                            pSoldier.ubDelayedMovementFlags &= (~DELAYED_MOVEMENT_FLAG_PATH_THROUGH_PEOPLE);
                         }
                         else
                         {
                             // path through people worked fine
                             if (pSoldier.fDelayedMovement < 150)
                             {
-                                pSoldier.ubDelayedMovementFlags |= DELAYED_MOVEMENT_FLAG_PATH_THROUGH_PEOPLE;
+//                                pSoldier.ubDelayedMovementFlags |= DELAYED_MOVEMENT_FLAG_PATH_THROUGH_PEOPLE;
                             }
                         }
 
@@ -528,7 +529,7 @@ public class SoldierTile
                         if (bPathBlocked == MOVE_TILE_CLEAR)
                         {
                             // Go for it path!
-                            if (pSoldier.ubWaitActionToDo == 1 && gubWaitingForAllMercsToExitCode == WAIT_FOR_MERCS_TO_WALK_TO_GRIDNO)
+//                            if (pSoldier.ubWaitActionToDo == 1 && gubWaitingForAllMercsToExitCode == WAIT_FOR_MERCS_TO_WALK_TO_GRIDNO)
                             {
                                 gfPlotPathToExitGrid = true;
                             }
@@ -561,7 +562,15 @@ public class SoldierTile
                         ubPerson = WorldManager.WhoIsThere2(pSoldier.sDelayedMovementCauseGridNo, pSoldier.bLevel);
 
                         // if either on a mission from god, or two AI guys not on stationary...
-                        if (ubPerson != NOBODY && (pSoldier.ubQuoteRecord != 0 || (pSoldier.bTeam != gbPlayerNum && pSoldier.bOrders != STATIONARY && MercPtrs[ubPerson].bTeam != gbPlayerNum && MercPtrs[ubPerson].bOrders != STATIONARY) || (pSoldier.bTeam == gbPlayerNum && gTacticalStatus.fAutoBandageMode && !(MercPtrs[ubPerson].bTeam == CIV_TEAM && MercPtrs[ubPerson].bOrders == STATIONARY))))
+                        if (ubPerson != NOBODY
+                            && (pSoldier.ubQuoteRecord != 0
+                                || (pSoldier.bTeam != gbPlayerNum
+                                && pSoldier.bOrders != Orders.STATIONARY
+                                && MercPtrs[ubPerson].bTeam != gbPlayerNum
+                                && MercPtrs[ubPerson].bOrders != Orders.STATIONARY)
+                            || (pSoldier.bTeam == gbPlayerNum && gTacticalStatus.fAutoBandageMode
+                                && !(MercPtrs[ubPerson].bTeam == CIV_TEAM
+                                && MercPtrs[ubPerson].bOrders == Orders.STATIONARY))))
                         {
                             // Swap now!
                             //MercPtrs[ ubPerson ].fBlockedByAnotherMerc = false;
@@ -576,11 +585,11 @@ public class SoldierTile
                             pSoldier.fDelayedMovement = 0;
 
                             // We must calculate the path here so that we can give it the "through people" parameter
-                            if (gTacticalStatus.fAutoBandageMode && pSoldier.sAbsoluteFinalDestination == NOWHERE)
+//                            if (gTacticalStatus.fAutoBandageMode && pSoldier.sAbsoluteFinalDestination == NOWHERE)
                             {
-                                FindBestPath(pSoldier, pSoldier.sFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH.THROUGH_PEOPLE);
+//                                FindBestPath(pSoldier, pSoldier.sFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH.THROUGH_PEOPLE);
                             }
-                            else if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !FindBestPath(pSoldier, pSoldier.sAbsoluteFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH.THROUGH_PEOPLE))
+//                            else if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !FindBestPath(pSoldier, pSoldier.sAbsoluteFinalDestination, pSoldier.bLevel, pSoldier.usUIMovementMode, COPYROUTE, PATH.THROUGH_PEOPLE))
                             {
                                 // check to see if we're there now!
                                 if (pSoldier.sGridNo == pSoldier.sAbsoluteFinalDestination)
@@ -644,27 +653,27 @@ public class SoldierTile
             pSoldier.sFinalDestination = sGridNo;
 
             // Make call to FOV to update items...
-            RevealRoofsAndItems(pSoldier, true, true, pSoldier.bLevel, true);
+//            RevealRoofsAndItems(pSoldier, true, true, pSoldier.bLevel, true);
 
             // Handle sight!
-            HandleSight(pSoldier, SIGHT.LOOK | SIGHT.RADIO);
+//            HandleSight(pSoldier, SIGHT.LOOK | SIGHT.RADIO);
 
             // Cancel services...
-            GivingSoldierCancelServices(pSoldier);
+//            GivingSoldierCancelServices(pSoldier);
 
             // Change light....
             if (pSoldier.bLevel == 0)
             {
                 if (pSoldier.iLight != (-1))
                 {
-                    LightSpriteRoofStatus(pSoldier.iLight, false);
+//                    LightSpriteRoofStatus(pSoldier.iLight, false);
                 }
             }
             else
             {
                 if (pSoldier.iLight != (-1))
                 {
-                    LightSpriteRoofStatus(pSoldier.iLight, true);
+//                    LightSpriteRoofStatus(pSoldier.iLight, true);
                 }
             }
             return (true);
@@ -674,7 +683,7 @@ public class SoldierTile
     }
 
     // Swaps 2 soldier positions...
-    void SwapMercPositions(SOLDIERTYPE? pSoldier1, SOLDIERTYPE? pSoldier2)
+    void SwapMercPositions(SOLDIERTYPE pSoldier1, SOLDIERTYPE pSoldier2)
     {
         int sGridNo1, sGridNo2;
 
@@ -683,8 +692,8 @@ public class SoldierTile
         sGridNo2 = pSoldier2.sGridNo;
 
         // OK, remove each.....
-        RemoveSoldierFromGridNo(pSoldier1);
-        RemoveSoldierFromGridNo(pSoldier2);
+        SoldierControl.RemoveSoldierFromGridNo(pSoldier1);
+        SoldierControl.RemoveSoldierFromGridNo(pSoldier2);
 
         // OK, test OK destination for each.......
         if (Overhead.NewOKDestination(pSoldier1, sGridNo2, true, 0) && Overhead.NewOKDestination(pSoldier2, sGridNo1, true, 0))
@@ -702,12 +711,12 @@ public class SoldierTile
     }
 
 
-    bool CanExchangePlaces(SOLDIERTYPE? pSoldier1, SOLDIERTYPE? pSoldier2, bool fShow)
+    bool CanExchangePlaces(SOLDIERTYPE pSoldier1, SOLDIERTYPE pSoldier2, bool fShow)
     {
         // NB checks outside of this function 
-        if (EnoughPoints(pSoldier1, AP.EXCHANGE_PLACES, 0, fShow))
+//        if (EnoughPoints(pSoldier1, AP.EXCHANGE_PLACES, 0, fShow))
         {
-            if (EnoughPoints(pSoldier2, AP.EXCHANGE_PLACES, 0, fShow))
+//            if (EnoughPoints(pSoldier2, AP.EXCHANGE_PLACES, 0, fShow))
             {
                 if ((gAnimControl[pSoldier2.usAnimState].uiFlags.HasFlag(ANIM.MOVING)))
                 {
@@ -743,7 +752,7 @@ public class SoldierTile
                 {
                     if (pSoldier2.ubProfile == NO_PROFILE)
                     {
-                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[REFUSE_EXCHANGE_PLACES]);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[(int)STR.REFUSE_EXCHANGE_PLACES]);
                     }
                     else
                     {
@@ -756,12 +765,12 @@ public class SoldierTile
 
                 return (false);
             }
-            else
+//            else
             {
                 return (false);
             }
         }
-        else
+//        else
         {
             return (false);
         }

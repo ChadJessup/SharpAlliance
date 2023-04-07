@@ -175,7 +175,7 @@ public class AIMain
         }
 
         // if this NPC is getting hit, abort
-        if (pSoldier.fGettingHit)
+        if (pSoldier.fGettingHit > 0)
         {
             return;
         }
@@ -255,7 +255,7 @@ public class AIMain
         if (pSoldier.ubProfile != NO_PROFILE
             && (pSoldier.ubProfile == NPCID.SERGEANT || pSoldier.ubProfile == NPCID.MIKE || pSoldier.ubProfile == NPCID.JOE)
             && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
-            && (gfInTalkPanel || gfWaitingForTriggerTimer || !DialogueQueueIsEmpty()))
+            && (gfInTalkPanel || gfWaitingForTriggerTimer || !DialogControl.DialogueQueueIsEmpty()))
         {
             return;
         }
@@ -374,7 +374,7 @@ public class AIMain
             }
             else
             {
-                RTHandleAI(pSoldier);
+//                RTHandleAI(pSoldier);
             }
 
         }
@@ -463,7 +463,7 @@ public class AIMain
                 //*** TRICK- TAKE INTO ACCOUNT PAUSED FOR NO TIME ( FOR NOW )
                 if (pSoldier.fNoAPToFinishMove)
                 {
-                    SoldierTriesToContinueAlongPath(pSoldier);
+//                    SoldierTriesToContinueAlongPath(pSoldier);
                 }
                 // ATE: Let's also test if we are in any stationary animation...
                 else if ((gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.STATIONARY)))
@@ -485,7 +485,7 @@ public class AIMain
                             DebugMsg(TOPIC_JA2AI, DBG_LEVEL_0, String("GONNA TRY TO CONTINUE PATH FOR %d", pSoldier.ubID));
 #endif
 
-                            SoldierTriesToContinueAlongPath(pSoldier);
+//                            SoldierTriesToContinueAlongPath(pSoldier);
                         }
                     }
                 }
@@ -540,10 +540,10 @@ public class AIMain
                 {
                     NPCID ubFirstProfile;
 
-                    ubFirstProfile = CivilianGroupMembersChangeSidesWithinProximity(pSoldier);
-                    if (ubFirstProfile != NPCID.NO_PROFILE)
+//                    ubFirstProfile = CivilianGroupMembersChangeSidesWithinProximity(pSoldier);
+//                    if (ubFirstProfile != NPCID.NO_PROFILE)
                     {
-                        TriggerFriendWithHostileQuote(ubFirstProfile);
+//                        TriggerFriendWithHostileQuote(ubFirstProfile);
                     }
                 }
             }
@@ -557,14 +557,14 @@ public class AIMain
             }
 
             // End this NPC's control, move to next dude
-            EndRadioLocator(pSoldier.ubID);
+//            EndRadioLocator(pSoldier.ubID);
             pSoldier.uiStatusFlags &= (~SOLDIER.UNDERAICONTROL);
             pSoldier.fTurnInProgress = false;
             pSoldier.bMoved = 1;
             pSoldier.bBypassToGreen = 0;
 
             // find the next AI guy
-            ubID = RemoveFirstAIListEntry();
+//            ubID = RemoveFirstAIListEntry();
             if (ubID != NOBODY)
             {
                 StartNPCAI(MercPtrs[ubID]);
@@ -619,7 +619,7 @@ public class AIMain
 
         if (bFound == 0)
         {
-            StartPlayerTeamTurn(true, false);
+//            StartPlayerTeamTurn(true, false);
         }
     }
 
@@ -637,7 +637,7 @@ public class AIMain
 
 
         //pSoldier.uiStatusFlags |= SOLDIER_UNDERAICONTROL;
-        SetSoldierAsUnderAiControl(pSoldier);
+//        SetSoldierAsUnderAiControl(pSoldier);
 
         pSoldier.fTurnInProgress = true;
 
@@ -659,7 +659,7 @@ public class AIMain
 
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
         {
-            if (GetNumberInVehicle(pSoldier.bVehicleID) == 0)
+//            if (GetNumberInVehicle(pSoldier.bVehicleID) == 0)
             {
                 fInValidSoldier = true;
             }
@@ -702,12 +702,12 @@ public class AIMain
 				*/
             }
 
-            UpdateEnemyUIBar();
+//            UpdateEnemyUIBar();
 
         }
 
         // Remove deadlock message
-        EndDeadlockMsg();
+//        EndDeadlockMsg();
         DecideAction.DecideAlertStatus(pSoldier);
 
     }
@@ -750,7 +750,7 @@ public class AIMain
             sTempGridno = sGridno + mods[cnt];
             if (!OutOfBounds(sGridno, sTempGridno))
             {
-                if (Overhead.NewOKDestination(pSoldier, sTempGridno, PEOPLETOO, pSoldier.bLevel) && DestNotSpokenFor(pSoldier, sTempGridno))
+//                if (Overhead.NewOKDestination(pSoldier, sTempGridno, PEOPLETOO, pSoldier.bLevel) && DestNotSpokenFor(pSoldier, sTempGridno))
                 {
                     sMovementCost = PathAI.PlotPath(
                         pSoldier,
@@ -762,6 +762,7 @@ public class AIMain
                         null,
                         null,
                         0);
+
                     if (sMovementCost < sCheapestCost)
                     {
                         sCheapestCost = sMovementCost;
@@ -779,7 +780,7 @@ public class AIMain
     int GetMostThreateningOpponent(SOLDIERTYPE? pSoldier)
     {
         int uiLoop;
-        int iThreatVal, iMinThreat = 30000;
+        int iThreatVal = 0, iMinThreat = 30000;
         SOLDIERTYPE? pTargetSoldier;
         int ubTargetSoldier = NO_SOLDIER;
 
@@ -817,7 +818,7 @@ public class AIMain
                 continue;  // next opponent
             }
 
-            iThreatVal = CalcManThreatValue(pTargetSoldier, pSoldier.sGridNo, true, pSoldier);
+//            iThreatVal = CalcManThreatValue(pTargetSoldier, pSoldier.sGridNo, true, pSoldier);
             if (iThreatVal < iMinThreat)
             {
                 iMinThreat = iThreatVal;
@@ -854,12 +855,12 @@ public class AIMain
                     }
                     else if (pSoldier.usAnimState == AnimationStates.END_OPENSTRUCT)
                     {
-                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH.DONE_OPEN_STRUCTURE, true);
+//                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH.DONE_OPEN_STRUCTURE, true);
                         //TriggerNPCWithGivenApproach( pSoldier.ubProfile, APPROACH_DONE_OPEN_STRUCTURE, false );
                     }
                     else if (pSoldier.usAnimState == AnimationStates.PICKUP_ITEM || pSoldier.usAnimState == AnimationStates.ADJACENT_GET_ITEM)
                     {
-                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH.DONE_GET_ITEM, true);
+//                        TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH.DONE_GET_ITEM, true);
                     }
                 }
                 ActionDone(pSoldier);
@@ -1028,7 +1029,7 @@ public class AIMain
             if (!pSoldier.fNoAPToFinishMove)
             {
                 SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
-                AdjustNoAPToFinishMove(pSoldier, false);
+//                AdjustNoAPToFinishMove(pSoldier, false);
             }
 
             // cancel current action
@@ -1091,12 +1092,12 @@ public class AIMain
             && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)
             && (pSoldier.bAction == AI_ACTION.FIRE_GUN || pSoldier.bAction == AI_ACTION.TOSS_PROJECTILE || pSoldier.bAction == AI_ACTION.KNIFE_MOVE || pSoldier.bAction == AI_ACTION.KNIFE_STAB || pSoldier.bAction == AI_ACTION.THROW_KNIFE)))
         {
-            DisplayHiddenTurnbased(pSoldier);
+//            DisplayHiddenTurnbased(pSoldier);
         }
 
         if (gfHiddenInterrupt)
         {
-            DisplayHiddenInterrupt(pSoldier);
+//            DisplayHiddenInterrupt(pSoldier);
         }
         //StartInterruptVisually(pSoldier.ubID);
         // *** IAN deleted lots of interrupt related code here to simplify JA2	development
@@ -1292,7 +1293,7 @@ public class AIMain
         if ((pSoldier.sFinalDestination != NOWHERE) && (pSoldier.sDestination != pSoldier.sFinalDestination))
         {
             // return success (true) if we successfully resume the movement
-            return (TryToResumeMovement(pSoldier, pSoldier.sFinalDestination));
+            return 0;//(TryToResumeMovement(pSoldier, pSoldier.sFinalDestination));
         }
 
 
@@ -1674,7 +1675,7 @@ public class AIMain
                 {
                     if (CREATURE_OR_BLOODCAT(pSoldier))
                     {
-                        pSoldier.bAction = CreatureDecisions(pSoldier);
+//                        pSoldier.bAction = CreatureDecisions(pSoldier);
                     }
                     else if (pSoldier.ubBodyType == SoldierBodyTypes.CROW)
                     {
@@ -1682,7 +1683,7 @@ public class AIMain
                     }
                     else
                     {
-                        pSoldier.bAction = DecideAction(pSoldier);
+//                        pSoldier.bAction = DecideAction(pSoldier);
                     }
                 }
             }
@@ -1821,7 +1822,7 @@ public class AIMain
 
     public static int ExecuteAction(SOLDIERTYPE? pSoldier)
     {
-        ITEM_HAND iRetCode;
+        ITEM_HANDLE iRetCode = 0;
         //NumMessage("ExecuteAction - Guy#",pSoldier.ubID);
 
         // in most cases, merc will change location, or may cause damage to opponents,
@@ -1838,7 +1839,7 @@ public class AIMain
         }
 #endif
 
-        DebugAI(string.Format("%d does %s (a.d. %d) at time %ld", pSoldier.ubID, gzActionStr[pSoldier.bAction], pSoldier.usActionData, GetJA2Clock()));
+//        DebugAI(string.Format("%d does %s (a.d. %d) at time %ld", pSoldier.ubID, gzActionStr[pSoldier.bAction], pSoldier.usActionData, GetJA2Clock()));
 
         switch (pSoldier.bAction)
         {
@@ -1873,7 +1874,7 @@ public class AIMain
 #endif
 
                 //			pSoldier.bDesiredDirection = (int) ;   // turn to face direction in actionData
-                SendSoldierSetDesiredDirectionEvent(pSoldier, pSoldier.usActionData);
+//                SendSoldierSetDesiredDirectionEvent(pSoldier, pSoldier.usActionData);
                 // now we'll have to wait for the turning to finish; no need to call TurnSoldier here
                 //TurnSoldier( pSoldier );
                 /*
@@ -1902,11 +1903,11 @@ public class AIMain
                 break;
 
             case AI_ACTION.PICKUP_ITEM:                  // grab something!
-                SoldierPickupItem(pSoldier, pSoldier.uiPendingActionData1, pSoldier.usActionData, 0);
+//                SoldierPickupItem(pSoldier, pSoldier.uiPendingActionData1, pSoldier.usActionData, 0);
                 break;
 
             case AI_ACTION.DROP_ITEM:                    // drop item in hand
-                SoldierDropItem(pSoldier, (pSoldier.inv[InventorySlot.HANDPOS]));
+//                SoldierDropItem(pSoldier, (pSoldier.inv[InventorySlot.HANDPOS]));
                 ItemSubSystem.DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
                 pSoldier.bAction = AI_ACTION.PENDING_ACTION;
                 break;
@@ -1996,7 +1997,7 @@ public class AIMain
                     if ((pSoldier.sAbsoluteFinalDestination != NOWHERE || gTacticalStatus.fAutoBandageMode) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         // NPC system move, allow path through
-                        if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE))
+                        if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE) > 0)
                         {
                             // optimization - Ian: prevent another path call in SetNewCourse()
                             pSoldier.bPathStored = true;
@@ -2004,7 +2005,7 @@ public class AIMain
                     }
                     else
                     {
-                        if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, 0))
+                        if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, 0) > 0)
                         {
                             // optimization - Ian: prevent another path call in SetNewCourse()
                             pSoldier.bPathStored = true;
@@ -2024,17 +2025,17 @@ public class AIMain
                             {
                                 // This is close enough...
                                 NPC.ReplaceLocationInNPCDataFromProfileID(pSoldier.ubProfile, pSoldier.sAbsoluteFinalDestination, pSoldier.sGridNo);
-                                NPCGotoGridNo(pSoldier.ubProfile, pSoldier.sGridNo, (int)(pSoldier.ubQuoteRecord - 1));
+//                                NPCGotoGridNo(pSoldier.ubProfile, pSoldier.sGridNo, (int)(pSoldier.ubQuoteRecord - 1));
                             }
                             else
                             {
                                 // This is important, so try taking a path through people (and bumping them aside)
-                                if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE))
+//                                if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE))
                                 {
                                     // optimization - Ian: prevent another path call in SetNewCourse()
                                     pSoldier.bPathStored = true;
                                 }
-                                else
+//                                else
                                 {
                                     // Have buddy wait a while...
                                     pSoldier.bNextAction = AI_ACTION.WAIT;
@@ -2061,19 +2062,19 @@ public class AIMain
                 {
                     case QUOTE_ACTION_ID.TRAVERSE_EAST:
                         pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
-                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.EAST);
+//                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.EAST);
                         break;
                     case QUOTE_ACTION_ID.TRAVERSE_SOUTH:
                         pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
-                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.SOUTH);
+//                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.SOUTH);
                         break;
                     case QUOTE_ACTION_ID.TRAVERSE_WEST:
                         pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
-                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.WEST);
+//                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.WEST);
                         break;
                     case QUOTE_ACTION_ID.TRAVERSE_NORTH:
                         pSoldier.sOffWorldGridNo = (int)pSoldier.usActionData;
-                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.NORTH);
+//                        AdjustSoldierPathToGoOffEdge(pSoldier, pSoldier.usActionData, WorldDirections.NORTH);
                         break;
                     default:
                         break;
@@ -2101,7 +2102,7 @@ public class AIMain
                                                   // since this is a delayed move, gotta make sure that it hasn't become
                                                   // illegal since escort orders were issued (.sDestination/route blocked).
                                                   // So treat it like a CONTINUE movement, and handle errors that way
-                if (!TryToResumeMovement(pSoldier, pSoldier.usActionData))
+//                if (!TryToResumeMovement(pSoldier, pSoldier.usActionData))
                 {
                     // don't black-list anything here, and action already got canceled
                     return (0);         // nothing is in progress
@@ -2112,15 +2113,15 @@ public class AIMain
                 break;
 
             case AI_ACTION.TOSS_PROJECTILE:       // throw grenade at/near opponent(s)
-                LoadWeaponIfNeeded(pSoldier);
-            // drop through here...
-
+//                LoadWeaponIfNeeded(pSoldier);
+                                                  // drop through here...
+                break;
             case AI_ACTION.KNIFE_MOVE:            // preparing to stab opponent
                 if (pSoldier.bAction == AI_ACTION.KNIFE_MOVE) // if statement because toss falls through
                 {
-                    pSoldier.usUIMovementMode = DetermineMovementMode(pSoldier, AI_ACTION.KNIFE_MOVE);
+//                    pSoldier.usUIMovementMode = DetermineMovementMode(pSoldier, AI_ACTION.KNIFE_MOVE);
                 }
-
+                break;
             // fall through
             case AI_ACTION.FIRE_GUN:              // shoot at nearby opponent
             case AI_ACTION.THROW_KNIFE:                     // throw knife at nearby opponent
@@ -2133,18 +2134,18 @@ public class AIMain
                         // CC, ATE here - I put in some TEMP randomness...
                         if (Globals.Random.Next(50) == 0)
                         {
-                            StartCivQuote(pSoldier);
+//                            StartCivQuote(pSoldier);
                         }
                     }
                 }
 
-                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, pSoldier.bTargetLevel, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
+//                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, pSoldier.bTargetLevel, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
                 if (iRetCode != ITEM_HANDLE.OK)
                 {
                     if (iRetCode != ITEM_HANDLE.BROKEN) // if the item broke, this is 'legal' and doesn't need reporting
                     {
                         DebugAI(string.Format("AI %d got error code %ld from HandleItem, doing action %d, has %d APs... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction, pSoldier.bActionPoints));
-                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
+//                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
                     }
 
                     CancelAIAction(pSoldier, FORCE);
@@ -2180,7 +2181,7 @@ public class AIMain
                 // grab detonator and set off bomb(s)
                 Points.DeductPoints(pSoldier, AP.USE_REMOTE, BP.USE_DETONATOR);// pay for it!
                                                                         //SetOffPanicBombs(1000,COMMUNICATE);    // BOOOOOOOOOOOOOOOOOOOOM!!!!!
-                SetOffPanicBombs(pSoldier.ubID, 0);
+//                SetOffPanicBombs(pSoldier.ubID, 0);
 
                 // action completed immediately, cancel it right away
                 pSoldier.usActionData = NOWHERE;
@@ -2196,8 +2197,9 @@ public class AIMain
                 {
                     HandleInitialRedAlert(pSoldier.bTeam, 1);
                 }
-            //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Debug: AI radios your position!" );
-            // DROP THROUGH HERE!
+                //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Debug: AI radios your position!" );
+                // DROP THROUGH HERE!
+                break;
             case AI_ACTION.YELLOW_ALERT:          // tell friends opponent(s) heard
                                                   //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Debug: AI radios about a noise!" );
                 /*
@@ -2207,7 +2209,7 @@ public class AIMain
                             SendNetData(ALL_NODES);
                 */
                 Points.DeductPoints(pSoldier, AP.RADIO, BP.RADIO);// pay for it!
-                RadioSightings(pSoldier, EVERYBODY, pSoldier.bTeam);      // about everybody
+               // RadioSightings(pSoldier, EVERYBODY, pSoldier.bTeam);      // about everybody
                                                                           // action completed immediately, cancel it right away
 
                 // ATE: Change to an animation!
@@ -2217,7 +2219,7 @@ public class AIMain
 
             case AI_ACTION.CREATURE_CALL:                                   // creature calling to others
                 Points.DeductPoints(pSoldier, AP.RADIO, BP.RADIO);// pay for it!
-                CreatureCall(pSoldier);
+                //CreatureCall(pSoldier);
                 //return( false ); // no longer in progress
                 break;
 
@@ -2269,7 +2271,7 @@ public class AIMain
 
             case AI_ACTION.GIVE_AID:              // help injured/dying friend
                                                   //pSoldier.usUIMovementMode = RUNNING;
-                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, 0, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
+//                iRetCode = HandleItem(pSoldier, pSoldier.usActionData, 0, pSoldier.inv[InventorySlot.HANDPOS].usItem, false);
                 if (iRetCode != ITEM_HANDLE.OK)
                 {
                     CancelAIAction(pSoldier, FORCE);
@@ -2282,10 +2284,10 @@ public class AIMain
             case AI_ACTION.LOCK_DOOR:
                 {
                     STRUCTURE? pStructure;
-                    WorldDirections bDirection;
+                    WorldDirections bDirection = 0;
                     int sDoorGridNo;
 
-                    bDirection = GetDirectionFromGridNo(pSoldier.usActionData, pSoldier);
+//                    bDirection = GetDirectionFromGridNo(pSoldier.usActionData, pSoldier);
                     if (bDirection == WorldDirections.EAST || bDirection == WorldDirections.SOUTH)
                     {
                         sDoorGridNo = pSoldier.sGridNo;
@@ -2302,8 +2304,8 @@ public class AIMain
                         EndAIGuysTurn(pSoldier);
                     }
 
-                    StartInteractiveObject(sDoorGridNo, pStructure.usStructureID, pSoldier, bDirection);
-                    InteractWithInteractiveObject(pSoldier, pStructure, bDirection);
+//                    StartInteractiveObject(sDoorGridNo, pStructure.usStructureID, pSoldier, bDirection);
+//                    InteractWithInteractiveObject(pSoldier, pStructure, bDirection);
                 }
                 break;
 
@@ -2315,11 +2317,11 @@ public class AIMain
             case AI_ACTION.CLIMB_ROOF:
                 if (pSoldier.bLevel == 0)
                 {
-                    BeginSoldierClimbUpRoof(pSoldier);
+//                    BeginSoldierClimbUpRoof(pSoldier);
                 }
                 else
                 {
-                    BeginSoldierClimbDownRoof(pSoldier);
+//                    BeginSoldierClimbDownRoof(pSoldier);
                 }
                 break;
 
@@ -2343,14 +2345,14 @@ public class AIMain
                     gMercProfiles[pSoldier.ubProfile].fUseProfileInsertionInfo = false;
                 }
                 
-                TacticalRemoveSoldier(pSoldier.ubID);
-                CheckForEndOfBattle(true);
+//                TacticalRemoveSoldier(pSoldier.ubID);
+//                CheckForEndOfBattle(true);
 
                 return (0);         // nothing is in progress
 
             case AI_ACTION.OFFER_SURRENDER:
                 // start the offer of surrender!
-                StartCivQuote(pSoldier);
+//                StartCivQuote(pSoldier);
                 break;
 
             default:
@@ -2415,7 +2417,7 @@ public class AIMain
                 if (pSoldier.ubProfile == NPCID.WARDEN)
                 {
                     // Tixa
-                    MakeClosestEnemyChosenOne();
+//                    MakeClosestEnemyChosenOne();
                 }
                 break;
         }
@@ -2453,7 +2455,7 @@ public class AIMain
         if (bTeam == ENEMY_TEAM && (gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE)))
         {
             // they're going to be aware of us now!
-            MakeClosestEnemyChosenOne();
+//            MakeClosestEnemyChosenOne();
         }
 
         if (bTeam == ENEMY_TEAM && gWorldSectorX == 3 && gWorldSectorY == MAP_ROW.P && gbWorldSectorZ == 0)
@@ -2519,7 +2521,7 @@ public class AIMain
             {
                 // and can trace a line of sight to his x,y coordinates
                 //if (1) //*** SoldierToSoldierLineOfSightTest(pSoldier,pFriend,STRAIGHT,true))
-                if (SoldierToSoldierLineOfSightTest(pSoldier, pFriend, (int)sDistVisible, true))
+//                if (SoldierToSoldierLineOfSightTest(pSoldier, pFriend, (int)sDistVisible, true))
                 {
                     // if my friend is in battle or something is clearly happening there
                     if ((pFriend.bAlertStatus >= STATUS.RED) || pFriend.bUnderFire > 0 || (pFriend.bLife < OKLIFE))
@@ -2584,13 +2586,13 @@ public class AIMain
 
     void HandleAITacticalTraversal(SOLDIERTYPE? pSoldier)
     {
-        HandleNPCChangesForTacticalTraversal(pSoldier);
+//        HandleNPCChangesForTacticalTraversal(pSoldier);
 
-        if (pSoldier.ubProfile != NO_PROFILE && NPCHasUnusedRecordWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_TRAVERSAL))
+//        if (pSoldier.ubProfile != NO_PROFILE && NPCHasUnusedRecordWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_TRAVERSAL))
         {
             gMercProfiles[pSoldier.ubProfile].ubMiscFlags3 |= ProfileMiscFlags3.PROFILE_MISC_FLAG3_HANDLE_DONE_TRAVERSAL;
         }
-        else
+//        else
         {
             pSoldier.ubQuoteActionID = 0;
         }
@@ -2603,19 +2605,19 @@ public class AIMain
 #endif
 
         EndAIGuysTurn(pSoldier);
-        RemoveManAsTarget(pSoldier);
+//        RemoveManAsTarget(pSoldier);
         if (pSoldier.bTeam == TEAM.CIV_TEAM && pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE))
         {
-            MoveSoldierFromMercToAwaySlot(pSoldier);
+//            MoveSoldierFromMercToAwaySlot(pSoldier);
             pSoldier.bInSector = false;
         }
         else
         {
-            ProcessQueenCmdImplicationsOfDeath(pSoldier);
-            TacticalRemoveSoldier(pSoldier.ubID);
+//            ProcessQueenCmdImplicationsOfDeath(pSoldier);
+//            TacticalRemoveSoldier(pSoldier.ubID);
         }
 
-        CheckForEndOfBattle(true);
+//        CheckForEndOfBattle(true);
     }
 }
 
