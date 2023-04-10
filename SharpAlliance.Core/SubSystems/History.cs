@@ -772,7 +772,7 @@ public class History
             pCurHistory = pCurHistory.Next;
 
             // last page, no Historys left, return
-            if (!pCurHistory)
+//            if (!pCurHistory)
             {
 
                 // restore shadow

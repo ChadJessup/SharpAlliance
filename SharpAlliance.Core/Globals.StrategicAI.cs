@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SharpAlliance.Core.SubSystems;
+using static SharpAlliance.Core.SubSystems.StrategicAI;
 
 namespace SharpAlliance.Core;
 

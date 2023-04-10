@@ -30,4 +30,9 @@ public partial class Globals
     public SOLDIERINITNODE? gSoldierInitTail;
 
     public static bool gfEstimatePath { get; internal set; }
+
+    internal static void mprintf(int sNewX, int sNewY, string format, params object?[] args)
+    {
+        throw new NotImplementedException();
+    }
 }

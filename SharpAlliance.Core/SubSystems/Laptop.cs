@@ -289,7 +289,7 @@ public class Laptop
         int pDestBuf;
         int pSrcBuf;
         
-        Rectangle clip = new()
+        SixLabors.ImageSharp.Rectangle clip = new()
         {
             // set clipping region
             X = 0,
@@ -346,20 +346,20 @@ public class Laptop
 
         if (guiCurrentLaptopMode == LAPTOP_MODE.WWW)
         {
-            mprintf(140, 33, pWebTitle[0]);
+//            mprintf(140, 33, pWebTitle[0]);
         }
 
         else
         {
             iIndex = guiCurrentLaptopMode - LAPTOP_MODE.WWW - 1;
 
-            wprintf(sString, "%s  -  %s", pWebTitle[0], pWebPagesTitles[iIndex]);
+//            wprintf(sString, "%s  -  %s", pWebTitle[0], pWebPagesTitles[iIndex]);
             mprintf(140, 33, sString);
         }
 
         BlitTitleBarIcons();
 
-        DisplayProgramBoundingBox(false);
+//        DisplayProgramBoundingBox(false);
 
         //InvalidateRegion( 0, 0, 640, 480 );
         return (true);

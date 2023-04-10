@@ -23,6 +23,8 @@ public partial class Globals
 
     public static Dictionary<CIV_QUOTE, CIV_QUOTEStruct> gCivQuotes = new();// CIV_QUOTEStruct[(int)CIV_QUOTE.NUM_CIV_QUOTES];
 
+    public static string sprintf(string format, params object?[] args) => string.Format(format, args);
+
     public static int[] gubNumEntries =
     {
         15,

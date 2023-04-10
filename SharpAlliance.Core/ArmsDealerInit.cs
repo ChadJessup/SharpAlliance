@@ -510,12 +510,10 @@ public class ArmsDealerInit
         return (CompareItemsForSorting(usItem1Index, usItem2Index, ubItem1Quality, ubItem2Quality));
     }
 
-
-
     int RepairmanItemQsortCompare(INVENTORY_IN_SLOT pArg1, INVENTORY_IN_SLOT pArg2)
     {
-        INVENTORY_IN_SLOT? pInvSlot1;
-        INVENTORY_IN_SLOT? pInvSlot2;
+        INVENTORY_IN_SLOT pInvSlot1;
+        INVENTORY_IN_SLOT pInvSlot2;
         int uiRepairTime1;
         int uiRepairTime2;
 
@@ -523,24 +521,23 @@ public class ArmsDealerInit
         pInvSlot1 = pArg1;
         pInvSlot2 = pArg2;
 
-        Debug.Assert(pInvSlot1.sSpecialItemElement != -1);
-        Debug.Assert(pInvSlot2.sSpecialItemElement != -1);
-
-        uiRepairTime1 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot1.sItemIndex].SpecialItem[pInvSlot1.sSpecialItemElement].uiRepairDoneTime;
-        uiRepairTime2 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot2.sItemIndex].SpecialItem[pInvSlot2.sSpecialItemElement].uiRepairDoneTime;
+//        Debug.Assert(pInvSlot1.sSpecialItemElement != -1);
+//        Debug.Assert(pInvSlot2.sSpecialItemElement != -1);
+//
+//        uiRepairTime1 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot1.sItemIndex].SpecialItem[pInvSlot1.sSpecialItemElement].uiRepairDoneTime;
+//        uiRepairTime2 = gArmsDealersInventory[gbSelectedArmsDealerID][pInvSlot2.sItemIndex].SpecialItem[pInvSlot2.sSpecialItemElement].uiRepairDoneTime;
 
 
         // lower reapir time first
-        if (uiRepairTime1 < uiRepairTime2)
-        {
-            return (-1);
-        }
-        else
-        if (uiRepairTime1 > uiRepairTime2)
-        {
-            return (1);
-        }
-        else
+//        if (uiRepairTime1 < uiRepairTime2)
+//        {
+//            return (-1);
+//        }
+//        else if (uiRepairTime1 > uiRepairTime2)
+//        {
+//            return (1);
+//        }
+//        else
         {
             return (0);
         }
@@ -689,7 +686,7 @@ public class ArmsDealerInit
 
         if (usItemIndex < Items.MAX_WEAPONS)
         {
-            ubWeaponClass = WeaponTypes.Weapon[(int)usItemIndex].ubWeaponClass;
+            ubWeaponClass = WeaponTypes.Weapon[usItemIndex].ubWeaponClass;
         }
         else
         {

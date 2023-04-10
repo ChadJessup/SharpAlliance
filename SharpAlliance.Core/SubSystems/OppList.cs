@@ -407,7 +407,7 @@ public class OppList
                     pSoldier = Globals.MercPtrs[gubShouldBecomeHostileOrSayQuote[ubLoop]];
                     if (pSoldier.bNeutral > 0)
                     {
-                        MakeCivHostile(pSoldier, 2);
+//                        MakeCivHostile(pSoldier, 2);
                         // make civ group, if any, hostile
                         if (pSoldier.bTeam == TEAM.CIV_TEAM
                             && pSoldier.ubCivilianGroup != CIV_GROUP.NON_CIV_GROUP
@@ -419,7 +419,7 @@ public class OppList
                 }
 
                 // unpause all AI
-                UnPauseAI();
+//                UnPauseAI();
                 // reset the list 
                 gubShouldBecomeHostileOrSayQuote = new int[SHOULD_BECOME_HOSTILE_SIZE];
                 gubNumShouldBecomeHostileOrSayQuote = 0;
@@ -443,7 +443,7 @@ public class OppList
                 }
 
                 // trigger hater
-                TriggerNPCWithIHateYouQuote(Globals.MercPtrs[ubSpeaker].ubProfile);
+                NPC.TriggerNPCWithIHateYouQuote(Globals.MercPtrs[ubSpeaker].ubProfile);
             }
         }
     }
@@ -551,7 +551,7 @@ public class OppList
                 if (PTR_OURTEAM(pSoldier))
                 {
                     // revealing roofs and looking for items handled here, too
-                    RevealRoofsAndItems(pSoldier, true, true, pSoldier.bLevel, false);
+//                    RevealRoofsAndItems(pSoldier, true, true, pSoldier.bLevel, false);
                 }
             }
             // unless in easy mode allow alerted enemies to radio
@@ -625,8 +625,6 @@ public class OppList
         int iLoop;
         int radioCnt = 0;
         int[] radioMan = new int[20];
-        SOLDIERTYPE? pSoldier;
-
 
         // Temporary for opplist synching - disable random order radioing
         // # if RECORDOPPLIST
@@ -648,7 +646,8 @@ public class OppList
         iLoop = gTacticalStatus.Team[gbPlayerNum].bFirstID;
 
         // make a list of all of our team's mercs
-        for (pSoldier = Globals.MercPtrs[iLoop]; iLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; iLoop++, pSoldier++)
+//        for (pSoldier = Globals.MercPtrs[iLoop]; iLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; iLoop++, pSoldier++)
+        foreach(var pSoldier in MercPtrs)
         {
             // if this merc is active, in this sector, and well enough to look
             if (pSoldier.bActive && pSoldier.bInSector && (pSoldier.bLife >= OKLIFE))
@@ -687,13 +686,12 @@ public class OppList
     public static bool TeamNoLongerSeesMan(TEAM ubTeam, SOLDIERTYPE? pOpponent, int ubExcludeID, int bIteration)
     {
         int bLoop;
-        SOLDIERTYPE? pMate;
-
 
         bLoop = gTacticalStatus.Team[ubTeam].bFirstID;
 
         // look for all mercs on the same team, check opplists for this soldier
-        for (pMate = Globals.MercPtrs[bLoop]; bLoop <= gTacticalStatus.Team[ubTeam].bLastID; bLoop++, pMate++)
+//        for (pMate = Globals.MercPtrs[bLoop]; bLoop <= gTacticalStatus.Team[ubTeam].bLastID; bLoop++, pMate++)
+            foreach(var pMate in MercPtrs)
         {
             // if this "teammate" is me, myself, or I (whom we want to exclude)
             if (bLoop == ubExcludeID)
@@ -1315,9 +1313,9 @@ public class OppList
     {
         WorldDirections bDir;
         bool bAware = false;
-        bool bSuccess = false;
+        int bSuccess = 0;
         int sDistVisible, sDistAway;
-        int? pPersOL, pbPublOL;
+        int pPersOL, pbPublOL;
 
 
         /*
@@ -1507,10 +1505,10 @@ public class OppList
         {
             // and we can trace a line of sight to his x,y coordinates
             // must use the REAL opplist value here since we may or may not know of him
-            if (SoldierToSoldierLineOfSightTest(pSoldier, pOpponent, (int)sDistVisible, bAware))
+            if (LOS.SoldierToSoldierLineOfSightTest(pSoldier, pOpponent, (int)sDistVisible, bAware))
             {
                 ManSeesMan(pSoldier, pOpponent, pOpponent.sGridNo, pOpponent.bLevel, MANLOOKSFORMAN, ubCaller);
-                bSuccess = true;
+                bSuccess = 1;
             }
             // # if TESTOPPLIST
             //                 else
@@ -1542,13 +1540,13 @@ public class OppList
         */
 
         // if soldier seen personally LAST time could not be seen THIS time
-        if (!bSuccess && (pPersOL == SEEN_CURRENTLY))
+        if (bSuccess == 0 && (pPersOL == SEEN_CURRENTLY))
         {
             HandleManNoLongerSeen(pSoldier, pOpponent, pPersOL, pbPublOL);
         }
         else
         {
-            if (!bSuccess)
+            if (bSuccess == 0)
             {
                 // # if TESTOPPLIST
                 //                     DebugMsg(TOPIC_JA2OPPLIST, DBG_LEVEL_3, String("NO LONGER VISIBLE ID %d (%S)to ID %d Personally %d, public %d success: %d", pSoldier.ubID, pSoldier.name, pOpponent.ubID, *pPersOL, *pbPublOL, bSuccess));
@@ -2573,7 +2571,7 @@ public class OppList
     */
 
 
-    void ResetLastKnownLocs(SOLDIERTYPE? pSoldier)
+    void ResetLastKnownLocs(SOLDIERTYPE pSoldier)
     {
         int uiLoop;
 
@@ -2581,10 +2579,10 @@ public class OppList
         {
             if (MercSlots[uiLoop] is not null)
             {
-                gsLastKnownOppLoc[pSoldier.ubID, MercSlots[uiLoop].ubID] = NOWHERE;
+                gsLastKnownOppLoc[pSoldier.ubID][MercSlots[uiLoop].ubID] = NOWHERE;
 
                 // IAN added this June 14/97
-                gsPublicLastKnownOppLoc[pSoldier.bTeam, MercSlots[uiLoop].ubID] = NOWHERE;
+                gsPublicLastKnownOppLoc[pSoldier.bTeam][MercSlots[uiLoop].ubID] = NOWHERE;
             }
         }
     }
@@ -4752,7 +4750,6 @@ public class OppList
     void ProcessNoise(int ubNoiseMaker, int sGridNo, int bLevel, int ubTerrType, int ubBaseVolume, NOISE ubNoiseType)
     {
         SOLDIERTYPE? pSoldier;
-        int bLoop;
         TEAM bTeam;
         int ubLoudestEffVolume, ubEffVolume;
         //	int ubPlayVolume;
@@ -4968,8 +4965,12 @@ public class OppList
                 ubHeardLoudestBy = Globals.NOBODY;
 
                 // All mercs on this team check if they are eligible to hear this noise
-                for (bLoop = gTacticalStatus.Team[bTeam].bFirstID, pSoldier = Menptr[bLoop]; bLoop <= gTacticalStatus.Team[bTeam].bLastID; bLoop++, pSoldier++)
+//                for (bLoop = gTacticalStatus.Team[bTeam].bFirstID, pSoldier = Menptr[bLoop]; bLoop <= gTacticalStatus.Team[bTeam].bLastID; bLoop++, pSoldier++)
+//                foreach(var bLoop in gTacticalStatus.Team[bTeam])
                 {
+                    var bLoop = gTacticalStatus.Team[bTeam].bFirstID;
+                    pSoldier = Menptr[bLoop];
+
                     // if this "listener" is inactive, or in no condition to care
                     if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD) || (pSoldier.bLife < OKLIFE) || pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER)
                     {
@@ -6215,7 +6216,7 @@ public class OppList
             }
 
             ubTileSightLimit = DistanceVisible(pDefender, WorldDirections.DIRECTION_IRRELEVANT, 0, pAttacker.sGridNo, pAttacker.bLevel);
-            if (SoldierToSoldierLineOfSightTest(pDefender, pAttacker, ubTileSightLimit, true) != 0)
+            if (LOS.SoldierToSoldierLineOfSightTest(pDefender, pAttacker, ubTileSightLimit, 1) != 0)
             {
                 fSeesAttacker = true;
             }

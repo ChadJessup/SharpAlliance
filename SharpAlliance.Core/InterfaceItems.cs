@@ -1484,6 +1484,7 @@ public class InterfaceItems
                     {
                         //                        RestoreExternBackgroundRect(sNewX, sNewY, 20, 15);
                     }
+                    
                     mprintf(sNewX, sNewY, pStr);
                     //                    gprintfinvalidate(sNewX, sNewY, pStr);
 

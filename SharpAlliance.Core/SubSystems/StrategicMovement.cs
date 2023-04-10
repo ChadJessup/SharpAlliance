@@ -164,7 +164,7 @@ public class StrategicMovement
         return true;
     }
 
-    bool RemovePlayerFromPGroup(GROUP? pGroup, SOLDIERTYPE? pSoldier)
+    public static bool RemovePlayerFromPGroup(GROUP? pGroup, SOLDIERTYPE? pSoldier)
     {
         //AssertMsg(pGroup.fPlayer, "Attempting RemovePlayerFromGroup() on an ENEMY group!");
 
@@ -235,7 +235,7 @@ public class StrategicMovement
 
 
 
-    bool GroupReversingDirectionsBetweenSectors(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY, bool fBuildingWaypoints)
+    public static bool GroupReversingDirectionsBetweenSectors(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY, bool fBuildingWaypoints)
     {
         // if we're not between sectors, or we are but we're continuing in the same direction as before
         if (!GroupBetweenSectorsAndSectorXYIsInDifferentDirection(pGroup, ubSectorX, ubSectorY))
@@ -305,7 +305,7 @@ public class StrategicMovement
 
 
 
-    bool GroupBetweenSectorsAndSectorXYIsInDifferentDirection(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY)
+    public static bool GroupBetweenSectorsAndSectorXYIsInDifferentDirection(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY)
     {
         int currDX, currDY, newDX, newDY;
         int ubNumUnalignedAxes = 0;
@@ -326,12 +326,12 @@ public class StrategicMovement
         newDY = ubSectorY - pGroup.ubSectorY;
 
         // clip the new dx/dy values to +/- 1
-        if (newDX)
+        //        if (newDX)
         {
             ubNumUnalignedAxes++;
             newDX /= Math.Abs(newDX);
         }
-        if (newDY)
+        //        if (newDY)
         {
             ubNumUnalignedAxes++;
             newDY /= Math.Abs(newDY);
@@ -361,7 +361,7 @@ public class StrategicMovement
 
     //Appends a waypoint to the end of the list.  Waypoint MUST be on the
     //same horizontal or vertical level as the last waypoint added.
-    bool AddWaypointToPGroup(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY) //Same, but overloaded
+    public static bool AddWaypointToPGroup(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY) //Same, but overloaded
     {
         List<WAYPOINT> pWay;
         int ubNumAlignedAxes = 0;
@@ -387,7 +387,7 @@ public class StrategicMovement
                 if (pGroup.fPlayer)
                 {
                     // because we reversed, we must add the new current sector back at the head of everyone's mercpath
-                    AddSectorToFrontOfMercPathForAllSoldiersInGroup(pGroup, pGroup.ubSectorX, pGroup.ubSectorY);
+                    //                    AddSectorToFrontOfMercPathForAllSoldiersInGroup(pGroup, pGroup.ubSectorX, pGroup.ubSectorY);
                 }
 
                 //Very special case that requiring specific coding.  Check out the comments
@@ -409,19 +409,19 @@ public class StrategicMovement
         }
         else
         {   //we do have a waypoint list, so go to the last entry
-            while (pWay.next)
-            {
-                pWay = pWay.next;
-            }
-            //now, we are pointing to the last waypoint in the list
-            if (pWay.x == ubSectorX)
-            {
-                ubNumAlignedAxes++;
-            }
-            if (pWay.y == ubSectorY)
-            {
-                ubNumAlignedAxes++;
-            }
+            //            while (pWay.next)
+            //            {
+            //                pWay = pWay.next;
+            //            }
+            //            //now, we are pointing to the last waypoint in the list
+            //            if (pWay.x == ubSectorX)
+            //            {
+            //                ubNumAlignedAxes++;
+            //            }
+            //            if (pWay.y == ubSectorY)
+            //            {
+            //                ubNumAlignedAxes++;
+            //            }
         }
 
         if (!fReversingDirection)
@@ -450,17 +450,17 @@ public class StrategicMovement
         }
         else
         { //Add the waypoint to the end of the list
-            pWay.next = new WAYPOINT();
-            pWay = pWay.next;
+          //            pWay.next = new WAYPOINT();
+          //            pWay = pWay.next;
         }
 
         //AssertMsg(pWay, "Failed to allocate memory for waypoint.");
 
         //Fill in the information for the new waypoint.
-        pWay.x = ubSectorX;
-        pWay.y = ubSectorY;
-        pWay.next = null;
-
+        //        pWay.x = ubSectorX;
+        //        pWay.y = ubSectorY;
+        //        pWay.next = null;
+        //
         //IMPORTANT:
         //The first waypoint added actually initiates the group's movement to the next sector.
         if (pWay == pGroup.pWaypoints)
@@ -477,12 +477,12 @@ public class StrategicMovement
         {
             PLAYERGROUP? curr;
             //Also, nuke any previous "tactical traversal" information.
-            curr = pGroup.pPlayerList;
-            while (curr)
-            {
-                curr.pSoldier.ubStrategicInsertionCode = 0;
-                curr = curr.next;
-            }
+            //            curr = pGroup.pPlayerList;
+            //            while (curr)
+            //            {
+            //                curr.pSoldier.ubStrategicInsertionCode = 0;
+            //                curr = curr.next;
+            //            }
         }
 
         return true;
@@ -530,7 +530,7 @@ public class StrategicMovement
 
     //Enemy grouping functions -- private use by the strategic AI.
     //............................................................
-    private static GROUP? CreateNewEnemyGroupDepartingFromSector(SEC uiSector, int ubNumAdmins, int ubNumTroops, int ubNumElites)
+    public static GROUP? CreateNewEnemyGroupDepartingFromSector(SEC uiSector, int ubNumAdmins, int ubNumTroops, int ubNumElites)
     {
         GROUP pNew = new GROUP
         {
@@ -591,29 +591,29 @@ public class StrategicMovement
             index = ID / 32;
             bit = ID % 32;
             mask = 1 << bit;
-            if (!(uniqueIDMask[index] & mask))
-            { //found a free ID
-                pGroup.ubGroupID = ID;
-                uniqueIDMask[index] += mask;
-                //add group to list now.
-                curr = gpGroupList;
-                if (curr)
-                { //point to the last item in list.
-                    while (curr.next)
-                    {
-                        curr = curr.next;
-                    }
-
-                    curr.next = pGroup;
-                }
-                else //new list
-                {
-                    gpGroupList = pGroup;
-                }
-
-                pGroup.next = null;
-                return ID;
-            }
+            //            if (!(uniqueIDMask[index] & mask))
+            //            { //found a free ID
+            //                pGroup.ubGroupID = ID;
+            //                uniqueIDMask[index] += mask;
+            //                //add group to list now.
+            //                curr = gpGroupList;
+            //                if (curr)
+            //                { //point to the last item in list.
+            //                    while (curr.next)
+            //                    {
+            //                        curr = curr.next;
+            //                    }
+            //
+            //                    curr.next = pGroup;
+            //                }
+            //                else //new list
+            //                {
+            //                    gpGroupList = pGroup;
+            //                }
+            //
+            //                pGroup.next = null;
+            //                return ID;
+            //            }
         }
 
         return 0;
@@ -643,58 +643,58 @@ public class StrategicMovement
     public static void RemoveGroupFromList(GROUP? pGroup)
     {
         GROUP? curr, temp;
-        curr = gpGroupList;
-        if (curr is null)
-        {
-            return;
-        }
-
-        if (curr == pGroup)
-        { //Removing head
-            gpGroupList = curr.next;
-        }
-        else
-        {
-            while (curr.next)
-            { //traverse the list
-                if (curr.next == pGroup)
-                { //the next node is the one we want to remove
-                    temp = curr;
-                    //curr now points to the nod we want to remove
-                    curr = curr.next;
-                    //detach the node from the list
-                    temp.next = curr.next;
-                    break;
-                }
-                curr = curr.next;
-            }
-        }
-
-        if (curr == pGroup)
-        { //we found the group, so now remove it.
-            int bit, index, mask;
-
-            //clear the unique group ID
-            index = pGroup.ubGroupID / 32;
-            bit = pGroup.ubGroupID % 32;
-            mask = 1 << bit;
-
-            if (!(uniqueIDMask[index] & mask))
-            {
-                mask = mask;
-            }
-
-            uniqueIDMask[index] -= mask;
-
-            MemFree(curr);
-            curr = null;
-        }
+        //        curr = gpGroupList;
+        //        if (curr is null)
+        //        {
+        //            return;
+        //        }
+        //
+        //        if (curr == pGroup)
+        //        { //Removing head
+        //            gpGroupList = curr.next;
+        //        }
+        //        else
+        //        {
+        //            while (curr.next)
+        //            { //traverse the list
+        //                if (curr.next == pGroup)
+        //                { //the next node is the one we want to remove
+        //                    temp = curr;
+        //                    //curr now points to the nod we want to remove
+        //                    curr = curr.next;
+        //                    //detach the node from the list
+        //                    temp.next = curr.next;
+        //                    break;
+        //                }
+        //                curr = curr.next;
+        //            }
+        //        }
+        //
+        //        if (curr == pGroup)
+        //        { //we found the group, so now remove it.
+        //            int bit, index, mask;
+        //
+        //            //clear the unique group ID
+        //            index = pGroup.ubGroupID / 32;
+        //            bit = pGroup.ubGroupID % 32;
+        //            mask = 1 << bit;
+        //
+        //            if (!(uniqueIDMask[index] & mask))
+        //            {
+        //                mask = mask;
+        //            }
+        //
+        //            uniqueIDMask[index] -= mask;
+        //
+        //            MemFree(curr);
+        //            curr = null;
+        //        }
     }
 
     public static GROUP? GetGroup(int ubGroupID)
     {
-        GROUP? curr;
-        curr = gpGroupList;
+        GROUP? curr = null;
+        //        curr = gpGroupList;
         while (curr is not null)
         {
             if (curr.ubGroupID == ubGroupID)
@@ -708,25 +708,25 @@ public class StrategicMovement
         return null;
     }
 
-    void HandleImportantPBIQuote(SOLDIERTYPE? pSoldier, GROUP? pInitiatingBattleGroup)
+    public static void HandleImportantPBIQuote(SOLDIERTYPE? pSoldier, GROUP? pInitiatingBattleGroup)
     {
         // wake merc up for THIS quote
         if (pSoldier.fMercAsleep)
         {
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 0, 0);
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 1, 0);
+            //            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 0, 0);
+            //            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
+            //            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_SLEEP, 1, 0);
         }
         else
         {
-            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
+            //            TacticalCharacterDialogueWithSpecialEvent(pSoldier, QUOTE.ENEMY_PRESENCE, DIALOGUE_SPECIAL_EVENT_BEGINPREBATTLEINTERFACE, (int)pInitiatingBattleGroup, 0);
         }
     }
 
     //If this is called, we are setting the game up to bring up the prebattle interface.  Before doing so,
     //one of the involved mercs will pipe up.  When he is finished, we automatically go into the mapscreen,
     //regardless of the mode we are in.
-    void PrepareForPreBattleInterface(GROUP? pPlayerDialogGroup, GROUP? pInitiatingBattleGroup)
+    public static void PrepareForPreBattleInterface(GROUP? pPlayerDialogGroup, GROUP? pInitiatingBattleGroup)
     {
         // ATE; Changed alogrithm here...
         // We first loop through the group and save ubID's ov valid guys to talk....
@@ -746,7 +746,7 @@ public class StrategicMovement
         // Pipe up with quote...
         //AssertMsg(pPlayerDialogGroup, "Didn't get a player dialog group for prebattle interface.");
 
-        pPlayer = pPlayerDialogGroup.pPlayerList;
+        //        pPlayer = pPlayerDialogGroup.pPlayerList;
         //AssertMsg(pPlayer, String("Player group %d doesn't have *any* players in it!  (Finding dialog group)", pPlayerDialogGroup.ubGroupID));
 
 
@@ -765,50 +765,50 @@ public class StrategicMovement
         }
 
         //Set music
-        SetMusicMode(MUSIC_TACTICAL_ENEMYPRESENT);
-
-        if (gfTacticalTraversal && pInitiatingBattleGroup == gpTacticalTraversalGroup ||
-                pInitiatingBattleGroup && !pInitiatingBattleGroup.fPlayer &&
-                pInitiatingBattleGroup.ubSectorX == gWorldSectorX &&
-              pInitiatingBattleGroup.ubSectorY == gWorldSectorY && !gbWorldSectorZ)
-        {   // At least say quote....
-            if (ubNumMercs > 0)
-            {
-                if (pPlayerDialogGroup.uiFlags & GROUPFLAG_JUST_RETREATED_FROM_BATTLE)
-                {
-                    gfCantRetreatInPBI = true;
-                }
-
-                ubChosenMerc = (int)Globals.Random.Next(ubNumMercs);
-
-                pSoldier = MercPtrs[ubMercsInGroup[ubChosenMerc]];
-                gpTacticalTraversalChosenSoldier = pSoldier;
-
-                if (!gfTacticalTraversal)
-                {
-                    HandleImportantPBIQuote(pSoldier, pInitiatingBattleGroup);
-                }
-
-                GameClock.InterruptTime();
-                GameClock.PauseGame();
-                GameClock.LockPauseState(11);
-
-                if (!gfTacticalTraversal)
-                {
-                    fDisableMapInterfaceDueToBattle = true;
-                }
-            }
-            return;
-        }
+        //        SetMusicMode(MUSIC_TACTICAL_ENEMYPRESENT);
+        //
+        //        if (gfTacticalTraversal && pInitiatingBattleGroup == gpTacticalTraversalGroup ||
+        //                pInitiatingBattleGroup && !pInitiatingBattleGroup.fPlayer &&
+        //                pInitiatingBattleGroup.ubSectorX == gWorldSectorX &&
+        //              pInitiatingBattleGroup.ubSectorY == gWorldSectorY && !gbWorldSectorZ)
+        //        {   // At least say quote....
+        //            if (ubNumMercs > 0)
+        //            {
+        //                if (pPlayerDialogGroup.uiFlags & GROUPFLAG_JUST_RETREATED_FROM_BATTLE)
+        //                {
+        //                    gfCantRetreatInPBI = true;
+        //                }
+        //
+        //                ubChosenMerc = (int)Globals.Random.Next(ubNumMercs);
+        //
+        //                pSoldier = MercPtrs[ubMercsInGroup[ubChosenMerc]];
+        //                gpTacticalTraversalChosenSoldier = pSoldier;
+        //
+        //                if (!gfTacticalTraversal)
+        //                {
+        //                    HandleImportantPBIQuote(pSoldier, pInitiatingBattleGroup);
+        //                }
+        //
+        //                GameClock.InterruptTime();
+        //                GameClock.PauseGame();
+        //                GameClock.LockPauseState(11);
+        //
+        //                if (!gfTacticalTraversal)
+        //                {
+        //                    fDisableMapInterfaceDueToBattle = true;
+        //                }
+        //            }
+        //            return;
+        //        }
 
 
         // Randomly pick a valid merc from the list we have created!
         if (ubNumMercs > 0)
         {
-            if (pPlayerDialogGroup.uiFlags & GROUPFLAG_JUST_RETREATED_FROM_BATTLE)
-            {
-                gfCantRetreatInPBI = true;
-            }
+            //            if (pPlayerDialogGroup.uiFlags & GROUPFLAG_JUST_RETREATED_FROM_BATTLE)
+            //            {
+            //                gfCantRetreatInPBI = true;
+            //            }
 
             ubChosenMerc = (int)Globals.Random.Next(ubNumMercs);
 
@@ -826,15 +826,11 @@ public class StrategicMovement
         {
             // ATE: What if we have unconscious guys, etc....
             // We MUST start combat, but donot play quote...
-            InitPreBattleInterface(pInitiatingBattleGroup, true);
+            //            InitPreBattleInterface(pInitiatingBattleGroup, true);
         }
     }
 
-
-
-
-
-    bool CheckConditionsForBattle(GROUP? pGroup)
+    public static bool CheckConditionsForBattle(GROUP? pGroup)
     {
         GROUP? curr;
         GROUP? pPlayerDialogGroup = null;
@@ -849,8 +845,8 @@ public class StrategicMovement
 
         if (gfWorldLoaded)
         { //look for people arriving in the currently loaded sector.  This handles reinforcements.
-            curr = FindMovementGroupInSector((int)gWorldSectorX, (int)gWorldSectorY, true);
-            if (!gbWorldSectorZ && PlayerMercsInSector((int)gWorldSectorX, (int)gWorldSectorY, gbWorldSectorZ) &&
+            curr = FindMovementGroupInSector((int)gWorldSectorX, gWorldSectorY, true);
+            if (!gbWorldSectorZ && PlayerMercsInSector((int)gWorldSectorX, gWorldSectorY, gbWorldSectorZ) &&
                     pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY &&
                     curr)
             { //Reinforcements have arrived!
@@ -870,98 +866,98 @@ public class StrategicMovement
 
         HandleOtherGroupsArrivingSimultaneously(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ);
 
-        curr = gpGroupList;
-        while (curr)
-        {
-            if (curr.fPlayer && curr.ubGroupSize)
-            {
-                if (!curr.fBetweenSectors)
-                {
-                    if (curr.ubSectorX == pGroup.ubSectorX && curr.ubSectorY == pGroup.ubSectorY && !curr.ubSectorZ)
-                    {
-                        if (!GroupHasInTransitDeadOrPOWMercs(curr) &&
-                                (!IsGroupTheHelicopterGroup(curr) || !fHelicopterIsAirBorne) &&
-                                (!curr.fVehicle || NumberMercsInVehicleGroup(curr)))
-                        {
-                            //Now, a player group is in this sector.  Determine if the group contains any mercs that can fight.  
-                            //Vehicles, EPCs and the robot doesn't count.  Mercs below OKLIFE do.
-                            pPlayer = curr.pPlayerList;
-                            while (pPlayer)
-                            {
-                                pSoldier = pPlayer.pSoldier;
-                                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
-                                {
-                                    if (!AM_A_ROBOT(pSoldier) &&
-                                            !AM_AN_EPC(pSoldier) &&
-                                            pSoldier.bLife >= OKLIFE)
-                                    {
-                                        fCombatAbleMerc = true;
-                                    }
-                                    if (pSoldier.IsAlive)
-                                    {
-                                        fAliveMerc = true;
-                                    }
-                                }
-                                pPlayer = pPlayer.next;
-                            }
-                            if (pPlayerDialogGroup is null && fCombatAbleMerc)
-                            {
-                                pPlayerDialogGroup = curr;
-                            }
-                            if (fCombatAbleMerc)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            curr = curr.next;
-        }
-
-        if (pGroup.fPlayer)
-        {
-            pPlayerDialogGroup = pGroup;
-
-            if (NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY))
-            {
-                fBattlePending = true;
-            }
-
-            if (pGroup.uiFlags & GROUPFLAG_HIGH_POTENTIAL_FOR_AMBUSH && fBattlePending)
-            { //This group has just arrived in a new sector from an adjacent sector that he retreated from
-              //If this battle is an encounter type battle, then there is a 90% chance that the battle will
-              //become an ambush scenario.
-                gfHighPotentialForAmbush = true;
-            }
-
-            //If there are bloodcats in this sector, then it internally checks and handles it
-            if (TestForBloodcatAmbush(pGroup))
-            {
-                fBloodCatAmbush = true;
-                fBattlePending = true;
-            }
-
-            if (fBattlePending && (!fBloodCatAmbush || gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE))
-            {
-                if (PossibleToCoordinateSimultaneousGroupArrivals(pGroup))
-                {
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            if (CountAllMilitiaInSector(pGroup.ubSectorX, pGroup.ubSectorY))
-            {
-                fMilitiaPresent = true;
-                fBattlePending = true;
-            }
-            if (fAliveMerc)
-            {
-                fBattlePending = true;
-            }
-        }
+        //        curr = gpGroupList;
+        //        while (curr)
+        //        {
+        //            if (curr.fPlayer && curr.ubGroupSize)
+        //            {
+        //                if (!curr.fBetweenSectors)
+        //                {
+        //                    if (curr.ubSectorX == pGroup.ubSectorX && curr.ubSectorY == pGroup.ubSectorY && !curr.ubSectorZ)
+        //                    {
+        //                        if (!GroupHasInTransitDeadOrPOWMercs(curr) &&
+        //                                (!IsGroupTheHelicopterGroup(curr) || !fHelicopterIsAirBorne) &&
+        //                                (!curr.fVehicle || NumberMercsInVehicleGroup(curr)))
+        //                        {
+        //                            //Now, a player group is in this sector.  Determine if the group contains any mercs that can fight.  
+        //                            //Vehicles, EPCs and the robot doesn't count.  Mercs below OKLIFE do.
+        //                            pPlayer = curr.pPlayerList;
+        //                            while (pPlayer)
+        //                            {
+        //                                pSoldier = pPlayer.pSoldier;
+        //                                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+        //                                {
+        //                                    if (!AM_A_ROBOT(pSoldier) &&
+        //                                            !AM_AN_EPC(pSoldier) &&
+        //                                            pSoldier.bLife >= OKLIFE)
+        //                                    {
+        //                                        fCombatAbleMerc = true;
+        //                                    }
+        //                                    if (pSoldier.IsAlive)
+        //                                    {
+        //                                        fAliveMerc = true;
+        //                                    }
+        //                                }
+        //                                pPlayer = pPlayer.next;
+        //                            }
+        //                            if (pPlayerDialogGroup is null && fCombatAbleMerc)
+        //                            {
+        //                                pPlayerDialogGroup = curr;
+        //                            }
+        //                            if (fCombatAbleMerc)
+        //                            {
+        //                                break;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            curr = curr.next;
+        //        }
+        //
+        //        if (pGroup.fPlayer)
+        //        {
+        //            pPlayerDialogGroup = pGroup;
+        //
+        //            if (NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY))
+        //            {
+        //                fBattlePending = true;
+        //            }
+        //
+        //            if (pGroup.uiFlags & GROUPFLAG_HIGH_POTENTIAL_FOR_AMBUSH && fBattlePending)
+        //            { //This group has just arrived in a new sector from an adjacent sector that he retreated from
+        //              //If this battle is an encounter type battle, then there is a 90% chance that the battle will
+        //              //become an ambush scenario.
+        //                gfHighPotentialForAmbush = true;
+        //            }
+        //
+        //            //If there are bloodcats in this sector, then it internally checks and handles it
+        //            if (TestForBloodcatAmbush(pGroup))
+        //            {
+        //                fBloodCatAmbush = true;
+        //                fBattlePending = true;
+        //            }
+        //
+        //            if (fBattlePending && (!fBloodCatAmbush || gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE))
+        //            {
+        //                if (PossibleToCoordinateSimultaneousGroupArrivals(pGroup))
+        //                {
+        //                    return false;
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (CountAllMilitiaInSector(pGroup.ubSectorX, pGroup.ubSectorY))
+        //            {
+        //                fMilitiaPresent = true;
+        //                fBattlePending = true;
+        //            }
+        //            if (fAliveMerc)
+        //            {
+        //                fBattlePending = true;
+        //            }
+        //        }
 
         if (!fAliveMerc && !fMilitiaPresent)
         { //empty vehicle, everyone dead, don't care.  Enemies don't care.
@@ -977,19 +973,19 @@ public class StrategicMovement
             //this, and continue on.
 
 
-            if (gubNumGroupsArrivedSimultaneously)
-            { //Because this is a battle case, clear all the group flags 
-                curr = gpGroupList;
-                while (curr && gubNumGroupsArrivedSimultaneously)
-                {
-                    if (curr.uiFlags & GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY)
-                    {
-                        curr.uiFlags &= ~GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY;
-                        gubNumGroupsArrivedSimultaneously--;
-                    }
-                    curr = curr.next;
-                }
-            }
+            //            if (gubNumGroupsArrivedSimultaneously)
+            //            { //Because this is a battle case, clear all the group flags 
+            //                curr = gpGroupList;
+            //                while (curr && gubNumGroupsArrivedSimultaneously)
+            //                {
+            //                    if (curr.uiFlags & GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY)
+            //                    {
+            //                        curr.uiFlags &= ~GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY;
+            //                        gubNumGroupsArrivedSimultaneously--;
+            //                    }
+            //                    curr = curr.next;
+            //                }
+            //            }
 
             gpInitPrebattleGroup = pGroup;
 
@@ -1011,9 +1007,9 @@ public class StrategicMovement
                 {
                     string str;
                     string pSectorStr = string.Empty;
-                    StrategicMap.GetSectorIDString(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, pSectorStr, true);
-                    str = wprintf(gpStrategicString[STR_DIALOG_ENEMIES_ATTACK_UNCONCIOUSMERCS], pSectorStr);
-                    DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
+                    StrategicMap.GetSectorIDString(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, out pSectorStr, true);
+                    //                    str = wprintf(gpStrategicString[STR_DIALOG_ENEMIES_ATTACK_UNCONCIOUSMERCS], pSectorStr);
+                    //                    DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
                 }
             }
 
@@ -1030,8 +1026,8 @@ public class StrategicMovement
 
     void TriggerPrebattleInterface(int ubResult)
     {
-        StopTimeCompression();
-        SpecialCharacterDialogueEvent(DIALOGUE_SPECIAL_EVENT_TRIGGERPREBATTLEINTERFACE, (int)gpInitPrebattleGroup, 0, 0, 0, 0);
+        //        StopTimeCompression();
+        //        SpecialCharacterDialogueEvent(DIALOGUE_SPECIAL_EVENT_TRIGGERPREBATTLEINTERFACE, (int)gpInitPrebattleGroup, 0, 0, 0, 0);
         gpInitPrebattleGroup = null;
     }
 
@@ -1083,67 +1079,67 @@ public class StrategicMovement
         wp = pGroup.pWaypoints;
         while (i-- > 0)
         { //Traverse through the waypoint list to the next waypoint ID
-            Debug.Assert(wp);
-            wp = wp.next;
+          //            Debug.Assert(wp);
+          //            wp = wp.next;
         }
-        Debug.Assert(wp);
+        //        Debug.Assert(wp);
 
         //We have the next waypoint, now check if we are actually there.
-        if (pGroup.ubSectorX == wp.x && pGroup.ubSectorY == wp.y)
-        { //We have reached the next waypoint, so now determine what the next waypoint is.
-            switch (pGroup.ubMoveType)
-            {
-                case MOVE_TYPES.ONE_WAY:
-                    if (!wp.next)
-                    { //No more waypoints, so we've reached the destination.
-                        DeployGroupToSector(pGroup);
-                        return;
-                    }
-                    //Advance destination to next waypoint ID
-                    pGroup.ubNextWaypointID++;
-                    break;
-                case MOVE_TYPES.CIRCULAR:
-                    wp = wp.next;
-                    if (!wp)
-                    {   //reached the end of the patrol route.  Set to the first waypoint in list, indefinately.
-                        //NOTE:  If the last waypoint isn't exclusively aligned to the x or y axis of the first 
-                        //			 waypoint, there will be an assertion failure inside the waypoint movement code.
-                        pGroup.ubNextWaypointID = 0;
-                    }
-                    else
-                    {
-                        pGroup.ubNextWaypointID++;
-                    }
-
-                    break;
-                case MOVE_TYPES.ENDTOEND_FORWARDS:
-                    wp = wp.next;
-                    if (!wp)
-                    {
-                        //AssertMsg(pGroup.ubNextWaypointID, "EndToEnd patrol group needs more than one waypoint!");
-                        pGroup.ubNextWaypointID--;
-                        pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_BACKWARDS;
-                    }
-                    else
-                    {
-                        pGroup.ubNextWaypointID++;
-                    }
-
-                    break;
-                case MOVE_TYPES.ENDTOEND_BACKWARDS:
-                    if (!pGroup.ubNextWaypointID)
-                    {
-                        pGroup.ubNextWaypointID++;
-                        pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_FORWARDS;
-                    }
-                    else
-                    {
-                        pGroup.ubNextWaypointID--;
-                    }
-
-                    break;
-            }
-        }
+        //        if (pGroup.ubSectorX == wp.x && pGroup.ubSectorY == wp.y)
+        //        { //We have reached the next waypoint, so now determine what the next waypoint is.
+        //            switch (pGroup.ubMoveType)
+        //            {
+        //                case MOVE_TYPES.ONE_WAY:
+        //                    if (!wp.next)
+        //                    { //No more waypoints, so we've reached the destination.
+        //                        DeployGroupToSector(pGroup);
+        //                        return;
+        //                    }
+        //                    //Advance destination to next waypoint ID
+        //                    pGroup.ubNextWaypointID++;
+        //                    break;
+        //                case MOVE_TYPES.CIRCULAR:
+        //                    wp = wp.next;
+        //                    if (!wp)
+        //                    {   //reached the end of the patrol route.  Set to the first waypoint in list, indefinately.
+        //                        //NOTE:  If the last waypoint isn't exclusively aligned to the x or y axis of the first 
+        //                        //			 waypoint, there will be an assertion failure inside the waypoint movement code.
+        //                        pGroup.ubNextWaypointID = 0;
+        //                    }
+        //                    else
+        //                    {
+        //                        pGroup.ubNextWaypointID++;
+        //                    }
+        //
+        //                    break;
+        //                case MOVE_TYPES.ENDTOEND_FORWARDS:
+        //                    wp = wp.next;
+        //                    if (!wp)
+        //                    {
+        //                        //AssertMsg(pGroup.ubNextWaypointID, "EndToEnd patrol group needs more than one waypoint!");
+        //                        pGroup.ubNextWaypointID--;
+        //                        pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_BACKWARDS;
+        //                    }
+        //                    else
+        //                    {
+        //                        pGroup.ubNextWaypointID++;
+        //                    }
+        //
+        //                    break;
+        //                case MOVE_TYPES.ENDTOEND_BACKWARDS:
+        //                    if (!pGroup.ubNextWaypointID)
+        //                    {
+        //                        pGroup.ubNextWaypointID++;
+        //                        pGroup.ubMoveType = MOVE_TYPES.ENDTOEND_FORWARDS;
+        //                    }
+        //                    else
+        //                    {
+        //                        pGroup.ubNextWaypointID--;
+        //                    }
+        //
+        //                    break;
+        //            }
+        //        }
         InitiateGroupMovementToNextSector(pGroup);
     }
 
@@ -1157,7 +1153,7 @@ public class StrategicMovement
         return false;
     }
 
-    void AwardExperienceForTravelling(GROUP? pGroup)
+    public static void AwardExperienceForTravelling(GROUP? pGroup)
     {
         // based on how long movement took, mercs gain a bit of life experience for travelling
         PLAYERGROUP? pPlayerGroup;
@@ -1170,8 +1166,8 @@ public class StrategicMovement
             return;
         }
 
-        pPlayerGroup = pGroup.pPlayerList;
-        while (pPlayerGroup)
+        //        pPlayerGroup = pGroup.pPlayerList;
+        //        while (pPlayerGroup)
         {
             pSoldier = pPlayerGroup.pSoldier;
             if (pSoldier is not null
@@ -1218,10 +1214,10 @@ public class StrategicMovement
             bVisible = 1
         };
 
-        SET_PALETTEREP_ID(Corpse.HeadPal, "BROWNHEAD");
-        SET_PALETTEREP_ID(Corpse.VestPal, "YELLOWVEST");
-        SET_PALETTEREP_ID(Corpse.SkinPal, "PINKSKIN");
-        SET_PALETTEREP_ID(Corpse.PantsPal, "GREENPANTS");
+        //        SET_PALETTEREP_ID(Corpse.HeadPal, "BROWNHEAD");
+        //        SET_PALETTEREP_ID(Corpse.VestPal, "YELLOWVEST");
+        //        SET_PALETTEREP_ID(Corpse.SkinPal, "PINKSKIN");
+        //        SET_PALETTEREP_ID(Corpse.PantsPal, "GREENPANTS");
 
 
         Corpse.bDirection = (int)Globals.Random.Next(8);
@@ -1230,7 +1226,7 @@ public class StrategicMovement
         // Make sure they will be rotting!
         Corpse.uiTimeOfDeath = GameClock.GetWorldTotalMin() - (2 * NUM_SEC_IN_DAY / 60);
         // Set type
-        Corpse.ubType = (int)SMERC_JFK;
+        //        Corpse.ubType = (int)SMERC_JFK;
         Corpse.usFlags = ROTTING_CORPSE_FIND_SWEETSPOT_FROM_GRIDNO;
 
         // 1st gridno
@@ -1240,7 +1236,7 @@ public class StrategicMovement
         Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
-        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
+        //        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
 
 
         // 2nd gridno
@@ -1250,7 +1246,7 @@ public class StrategicMovement
         Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
-        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
+        //        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
 
 
         // 3rd gridno
@@ -1260,7 +1256,7 @@ public class StrategicMovement
         Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
-        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
+        //      AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
 
     }
 
@@ -1299,26 +1295,26 @@ public class StrategicMovement
         if (pGroup.fPlayer)
         {
             //Set the fact we have visited the  sector
-            curr = pGroup.pPlayerList;
-            if (curr)
-            {
-                if (curr.pSoldier.bAssignment < Assignments.ON_DUTY)
-                {
-                    ResetDeadSquadMemberList(curr.pSoldier.bAssignment);
-                }
-            }
+            //            curr = pGroup.pPlayerList;
+            //            if (curr)
+            //            {
+            //                if (curr.pSoldier.bAssignment < Assignments.ON_DUTY)
+            //                {
+            //                    ResetDeadSquadMemberList(curr.pSoldier.bAssignment);
+            //                }
+            //            }
 
 
 
-            while (curr)
-            {
-                curr.pSoldier.uiStatusFlags &= ~SOLDIER.SHOULD_BE_TACTICALLY_VALID;
-                curr = curr.next;
-            }
+            //            while (curr)
+            //            {
+            //                curr.pSoldier.uiStatusFlags &= ~SOLDIER.SHOULD_BE_TACTICALLY_VALID;
+            //                curr = curr.next;
+            //            }
 
             if (pGroup.fVehicle)
             {
-                if ((iVehId = (GivenMvtGroupIdFindVehicleId(ubGroupID))) != -1)
+                //                if ((iVehId = (GivenMvtGroupIdFindVehicleId(ubGroupID))) != -1)
                 {
                     if (iVehId != iHelicopterVehicleId)
                     {
@@ -1360,8 +1356,8 @@ public class StrategicMovement
             ||
                 //KM : Aug 11, 1999 -- Patch fix:  Added additional checks to prevent a 2nd battle in the case
                 //     where the player is involved in a potential battle with bloodcats/civilians
-                fCheckForBattle && HostileCiviliansPresent()
-                || fCheckForBattle && HostileBloodcatsPresent()
+                //                fCheckForBattle && HostileCiviliansPresent()
+                //                || fCheckForBattle && HostileBloodcatsPresent()
             )
         {
             //QUEUE BATTLE!
@@ -1417,25 +1413,25 @@ public class StrategicMovement
                 // gotta be walking to get tougher
                 AwardExperienceForTravelling(pGroup);
             }
-            else if (!IsGroupTheHelicopterGroup(pGroup))
-            {
-                SOLDIERTYPE? pSoldier;
-                int iVehicleID;
-                iVehicleID = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
-                //AssertMsg(iVehicleID != -1, "GroupArrival for vehicle group.  Invalid iVehicleID. ");
-
-                pSoldier = GetSoldierStructureForVehicle(iVehicleID);
-                //AssertMsg(pSoldier, "GroupArrival for vehicle group.  Invalid soldier pointer.");
-
-                SpendVehicleFuel(pSoldier, (int)(pGroup.uiTraverseTime * 6));
-
-                if (VehicleFuelRemaining(pSoldier) == 0)
-                {
-                    ReportVehicleOutOfGas(iVehicleID, pGroup.ubSectorX, pGroup.ubSectorY);
-                    //Nuke the group's path, so they don't continue moving.
-                    ClearMercPathsAndWaypointsForAllInGroup(pGroup);
-                }
-            }
+            //            else if (!IsGroupTheHelicopterGroup(pGroup))
+            //            {
+            //                SOLDIERTYPE? pSoldier;
+            //                int iVehicleID;
+            //                iVehicleID = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
+            //                //AssertMsg(iVehicleID != -1, "GroupArrival for vehicle group.  Invalid iVehicleID. ");
+            //
+            //                pSoldier = GetSoldierStructureForVehicle(iVehicleID);
+            //                //AssertMsg(pSoldier, "GroupArrival for vehicle group.  Invalid soldier pointer.");
+            //
+            //                SpendVehicleFuel(pSoldier, (int)(pGroup.uiTraverseTime * 6));
+            //
+            //                if (VehicleFuelRemaining(pSoldier) == 0)
+            //                {
+            //                    ReportVehicleOutOfGas(iVehicleID, pGroup.ubSectorX, pGroup.ubSectorY);
+            //                    //Nuke the group's path, so they don't continue moving.
+            //                    ClearMercPathsAndWaypointsForAllInGroup(pGroup);
+            //                }
+            //            }
         }
 
         pGroup.uiTraverseTime = 0;
@@ -1453,7 +1449,7 @@ public class StrategicMovement
             if (GroupAtFinalDestination(pGroup))
             {
                 // clear their strategic movement (mercpaths and waypoints)
-                ClearMercPathsAndWaypointsForAllInGroup(pGroup);
+                //                ClearMercPathsAndWaypointsForAllInGroup(pGroup);
             }
 
             // if on surface
@@ -1464,16 +1460,16 @@ public class StrategicMovement
 
                 if (bTownId == TOWNS.TIXA)
                 {
-                    SetTixaAsFound();
+                    //                    SetTixaAsFound();
                 }
                 else if (bTownId == TOWNS.ORTA)
                 {
-                    SetOrtaAsFound();
+                    //                    SetOrtaAsFound();
                 }
-                else if (IsThisSectorASAMSector(pGroup.ubSectorX, pGroup.ubSectorY, 0))
-                {
-                    SetSAMSiteAsFound(GetSAMIdFromSector(pGroup.ubSectorX, pGroup.ubSectorY, 0));
-                }
+                //                else if (IsThisSectorASAMSector(pGroup.ubSectorX, pGroup.ubSectorY, 0))
+                //                {
+                //                    SetSAMSiteAsFound(GetSAMIdFromSector(pGroup.ubSectorX, pGroup.ubSectorY, 0));
+                //                }
             }
 
 
@@ -1508,8 +1504,8 @@ public class StrategicMovement
             {
                 // non-vehicle player group
 
-                curr = pGroup.pPlayerList;
-                while (curr)
+                //                curr = pGroup.pPlayerList;
+                //                while (curr)
                 {
                     curr.pSoldier.fBetweenSectors = false;
                     curr.pSoldier.sSectorX = pGroup.ubSectorX;
@@ -1525,266 +1521,263 @@ public class StrategicMovement
                         curr.pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
                     }
 
-                    if (curr.pSoldier.pMercPath)
-                    {
-                        // remove head from their mapscreen path list
-                        curr.pSoldier.pMercPath = RemoveHeadFromStrategicPath(curr.pSoldier.pMercPath);
-                    }
+                    //                    if (curr.pSoldier.pMercPath)
+                    //                    {
+                    //                        // remove head from their mapscreen path list
+                    //                        curr.pSoldier.pMercPath = RemoveHeadFromStrategicPath(curr.pSoldier.pMercPath);
+                    //                    }
 
                     // ATE: Alrighty, check if this sector is currently loaded, if so, 
                     // add them to the tactical engine!
                     if (pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY && pGroup.ubSectorZ == gbWorldSectorZ)
                     {
-                        UpdateMercInSector(curr.pSoldier, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+                        //                        UpdateMercInSector(curr.pSoldier, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
                     }
                     curr = curr.next;
                 }
 
                 // if there's anybody in the group
-                if (pGroup.pPlayerList)
+                //                if (pGroup.pPlayerList)
                 {
                     // don't print any messages when arriving underground (there's no delay involved) or if we never left (cancel)
                     if (GroupAtFinalDestination(pGroup) && (pGroup.ubSectorZ == 0) && !fNeverLeft)
                     {
                         // if assigned to a squad
-                        if (pGroup.pPlayerList.pSoldier.bAssignment < Assignments.ON_DUTY)
-                        {
-                            // squad
-                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pAssignmentStrings[pGroup.pPlayerList.pSoldier.bAssignment], pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
-                        }
-                        else
-                        {
-                            // a loner
-                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pGroup.pPlayerList.pSoldier.name, pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
-                        }
+                        //                        if (pGroup.pPlayerList.pSoldier.bAssignment < Assignments.ON_DUTY)
+                        //                        {
+                        //                            // squad
+                        //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pAssignmentStrings[pGroup.pPlayerList.pSoldier.bAssignment], pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
+                        //                        }
+                        //                        else
+                        //                        {
+                        //                            // a loner
+                        //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pGroup.pPlayerList.pSoldier.name, pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
+                        //                        }
                     }
                 }
             }
             else    // vehicle player group
             {
-                iVehId = GivenMvtGroupIdFindVehicleId(ubGroupID);
+                //                iVehId = GivenMvtGroupIdFindVehicleId(ubGroupID);
                 Debug.Assert(iVehId != -1);
 
-                if (pVehicleList[iVehId].pMercPath)
-                {
-                    // remove head from vehicle's mapscreen path list
-                    pVehicleList[iVehId].pMercPath = RemoveHeadFromStrategicPath(pVehicleList[iVehId].pMercPath);
-                }
+                //                if (pVehicleList[iVehId].pMercPath)
+                //                {
+                //                    // remove head from vehicle's mapscreen path list
+                //                    pVehicleList[iVehId].pMercPath = RemoveHeadFromStrategicPath(pVehicleList[iVehId].pMercPath);
+                //                }
 
                 // update vehicle position
-                SetVehicleSectorValues(iVehId, pGroup.ubSectorX, pGroup.ubSectorY);
-                pVehicleList[iVehId].fBetweenSectors = false;
-
-                // update passengers position
-                UpdatePositionOfMercsInVehicle(iVehId);
-
-
-                if (iVehId != iHelicopterVehicleId)
-                {
-                    pSoldier = GetSoldierStructureForVehicle(iVehId);
-                    Debug.Assert(pSoldier is not null);
-
-                    pSoldier.fBetweenSectors = false;
-                    pSoldier.sSectorX = pGroup.ubSectorX;
-                    pSoldier.sSectorY = pGroup.ubSectorY;
-                    pSoldier.bSectorZ = pGroup.ubSectorZ;
-                    pSoldier.ubInsertionDirection = ubInsertionDirection;
-
-                    // ATE: Removed, may 21 - sufficient to use insertion direction...
-                    //pSoldier.bDesiredDirection = ubInsertionDirection;
-
-                    pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
-
-                    // if this sector is currently loaded
-                    if (pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY && pGroup.ubSectorZ == gbWorldSectorZ)
-                    {
-                        // add vehicle to the tactical engine!
-                        UpdateMercInSector(pSoldier, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
-                    }
-
-
-
-                    // set directions of insertion
-                    curr = pGroup.pPlayerList;
-                    while (curr)
-                    {
-                        curr.pSoldier.fBetweenSectors = false;
-                        curr.pSoldier.sSectorX = pGroup.ubSectorX;
-                        curr.pSoldier.sSectorY = pGroup.ubSectorY;
-                        curr.pSoldier.bSectorZ = pGroup.ubSectorZ;
-                        curr.pSoldier.ubInsertionDirection = ubInsertionDirection;
-
-                        // ATE: Removed, may 21 - sufficient to use insertion direction...
-                        // curr.pSoldier.bDesiredDirection = ubInsertionDirection;
-
-                        curr.pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
-
-                        // if this sector is currently loaded
-                        if (pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY && pGroup.ubSectorZ == gbWorldSectorZ)
-                        {
-                            // add passenger to the tactical engine!
-                            UpdateMercInSector(curr.pSoldier, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
-                        }
-
-                        curr = curr.next;
-                    }
-                }
-                else
-                {
-                    if (HandleHeliEnteringSector(pVehicleList[iVehId].sSectorX, pVehicleList[iVehId].sSectorY) == true)
-                    {
-                        // helicopter destroyed
-                        fGroupDestroyed = true;
-                    }
-                }
-
-
-                if (!fGroupDestroyed)
-                {
-                    // don't print any messages when arriving underground, there's no delay involved
-                    if (GroupAtFinalDestination(pGroup) && (pGroup.ubSectorZ == 0) && !fNeverLeft)
-                    {
-                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG.ARRIVE], pVehicleStrings[pVehicleList[iVehId].ubVehicleType], pMapVertIndex[pGroup.ubSectorY], pMapHortIndex[pGroup.ubSectorX]);
-                    }
-                }
+                //                SetVehicleSectorValues(iVehId, pGroup.ubSectorX, pGroup.ubSectorY);
+                //                pVehicleList[iVehId].fBetweenSectors = false;
+                //
+                //                // update passengers position
+                //                UpdatePositionOfMercsInVehicle(iVehId);
+                //
+                //
+                //                if (iVehId != iHelicopterVehicleId)
+                //                {
+                //                    pSoldier = GetSoldierStructureForVehicle(iVehId);
+                //                    Debug.Assert(pSoldier is not null);
+                //
+                //                    pSoldier.fBetweenSectors = false;
+                //                    pSoldier.sSectorX = pGroup.ubSectorX;
+                //                    pSoldier.sSectorY = pGroup.ubSectorY;
+                //                    pSoldier.bSectorZ = pGroup.ubSectorZ;
+                //                    pSoldier.ubInsertionDirection = ubInsertionDirection;
+                //
+                //                    // ATE: Removed, may 21 - sufficient to use insertion direction...
+                //                    //pSoldier.bDesiredDirection = ubInsertionDirection;
+                //
+                //                    pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
+                //
+                //                    // if this sector is currently loaded
+                //                    if (pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY && pGroup.ubSectorZ == gbWorldSectorZ)
+                //                    {
+                //                        // add vehicle to the tactical engine!
+                //                        UpdateMercInSector(pSoldier, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+                //                    }
+                //
+                //
+                //
+                //                    // set directions of insertion
+                //                    curr = pGroup.pPlayerList;
+                //                    while (curr)
+                //                    {
+                //                        curr.pSoldier.fBetweenSectors = false;
+                //                        curr.pSoldier.sSectorX = pGroup.ubSectorX;
+                //                        curr.pSoldier.sSectorY = pGroup.ubSectorY;
+                //                        curr.pSoldier.bSectorZ = pGroup.ubSectorZ;
+                //                        curr.pSoldier.ubInsertionDirection = ubInsertionDirection;
+                //
+                //                        // ATE: Removed, may 21 - sufficient to use insertion direction...
+                //                        // curr.pSoldier.bDesiredDirection = ubInsertionDirection;
+                //
+                //                        curr.pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
+                //
+                //                        // if this sector is currently loaded
+                //                        if (pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY && pGroup.ubSectorZ == gbWorldSectorZ)
+                //                        {
+                //                            // add passenger to the tactical engine!
+                //                            UpdateMercInSector(curr.pSoldier, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+                //                        }
+                //
+                //                        curr = curr.next;
+                //                    }
+                //                }
+                //                else
+                //                {
+                //                    if (HandleHeliEnteringSector(pVehicleList[iVehId].sSectorX, pVehicleList[iVehId].sSectorY) == true)
+                //                    {
+                //                        // helicopter destroyed
+                //                        fGroupDestroyed = true;
+                //                    }
+                //                }
+                //
+                //
+                //                if (!fGroupDestroyed)
+                //                {
+                //                    // don't print any messages when arriving underground, there's no delay involved
+                //                    if (GroupAtFinalDestination(pGroup) && (pGroup.ubSectorZ == 0) && !fNeverLeft)
+                //                    {
+                //                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG.ARRIVE], pVehicleStrings[pVehicleList[iVehId].ubVehicleType], pMapVertIndex[pGroup.ubSectorY], pMapHortIndex[pGroup.ubSectorX]);
+                //                    }
+                //                }
+                //            }
+                //
+                //
+                //            if (!fGroupDestroyed)
+                //            {
+                //                // check if sector had been visited previously
+                //                fFirstTimeInSector = !GetSectorFlagStatus(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF.ALREADY_VISITED);
+                //
+                //                // on foot, or in a vehicle other than the chopper
+                //                if (!pGroup.fVehicle || !IsGroupTheHelicopterGroup(pGroup))
+                //                {
+                //
+                //                    // ATE: Add a few corpse to the bloodcat lair...
+                //                    if (SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) == SEC.I16 && fFirstTimeInSector)
+                //                    {
+                //                        AddCorpsesToBloodcatLair(pGroup.ubSectorX, pGroup.ubSectorY);
+                //                    }
+                //
+                //                    // mark the sector as visited already
+                //                    SetSectorFlag(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF.ALREADY_VISITED);
+                //                }
+                //            }
+                //
+                //            // update character info
+                //            fTeamPanelDirty = true;
+                //            fCharacterInfoPanelDirty = true;
+                //        }
+                //
+                //        if (!fGroupDestroyed)
+                //        {
+                //            //Determine if a battle should start.
+                //            //if a battle does start, or get's delayed, then we will keep the group in memory including
+                //            //all waypoints, until after the battle is resolved.  At that point, we will continue the processing.
+                //            if (fCheckForBattle && !CheckConditionsForBattle(pGroup) && !gfWaitingForInput)
+                //            {
+                //                GROUP? next;
+                //                HandleNonCombatGroupArrival(pGroup, true, fNeverLeft);
+                //
+                ////                if (gubNumGroupsArrivedSimultaneously)
+                ////                {
+                ////                    pGroup = gpGroupList;
+                ////                    while (gubNumGroupsArrivedSimultaneously && pGroup)
+                ////                    {
+                ////                        next = pGroup.next;
+                ////                        if (pGroup.uiFlags & GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY)
+                ////                        {
+                ////                            gubNumGroupsArrivedSimultaneously--;
+                ////                            HandleNonCombatGroupArrival(pGroup, false, false);
+                ////                        }
+                ////                        pGroup = next;
+                ////                    }
+                ////                }
+                //            }
+                //            else
+                //            { //Handle cases for pre battle conditions
+                //                pGroup.uiFlags = 0;
+                ////                if (gubNumAwareBattles)
+                //                { //When the AI is looking for the players, and a battle is initiated, then 
+                //                  //decrement the value, otherwise the queen will continue searching to infinity.
+                //                    gubNumAwareBattles--;
+                //                }
+                //            }
+                //        }
+                //        gfWaitingForInput = false;
             }
-
-
-            if (!fGroupDestroyed)
-            {
-                // check if sector had been visited previously
-                fFirstTimeInSector = !GetSectorFlagStatus(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF.ALREADY_VISITED);
-
-                // on foot, or in a vehicle other than the chopper
-                if (!pGroup.fVehicle || !IsGroupTheHelicopterGroup(pGroup))
-                {
-
-                    // ATE: Add a few corpse to the bloodcat lair...
-                    if (SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) == SEC.I16 && fFirstTimeInSector)
-                    {
-                        AddCorpsesToBloodcatLair(pGroup.ubSectorX, pGroup.ubSectorY);
-                    }
-
-                    // mark the sector as visited already
-                    SetSectorFlag(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, SF.ALREADY_VISITED);
-                }
-            }
-
-            // update character info
-            fTeamPanelDirty = true;
-            fCharacterInfoPanelDirty = true;
         }
-
-        if (!fGroupDestroyed)
-        {
-            //Determine if a battle should start.
-            //if a battle does start, or get's delayed, then we will keep the group in memory including
-            //all waypoints, until after the battle is resolved.  At that point, we will continue the processing.
-            if (fCheckForBattle && !CheckConditionsForBattle(pGroup) && !gfWaitingForInput)
-            {
-                GROUP? next;
-                HandleNonCombatGroupArrival(pGroup, true, fNeverLeft);
-
-                if (gubNumGroupsArrivedSimultaneously)
-                {
-                    pGroup = gpGroupList;
-                    while (gubNumGroupsArrivedSimultaneously && pGroup)
-                    {
-                        next = pGroup.next;
-                        if (pGroup.uiFlags & GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY)
-                        {
-                            gubNumGroupsArrivedSimultaneously--;
-                            HandleNonCombatGroupArrival(pGroup, false, false);
-                        }
-                        pGroup = next;
-                    }
-                }
-            }
-            else
-            { //Handle cases for pre battle conditions
-                pGroup.uiFlags = 0;
-                if (gubNumAwareBattles)
-                { //When the AI is looking for the players, and a battle is initiated, then 
-                  //decrement the value, otherwise the queen will continue searching to infinity.
-                    gubNumAwareBattles--;
-                }
-            }
-        }
-        gfWaitingForInput = false;
     }
 
-
-
-
-    void HandleNonCombatGroupArrival(GROUP? pGroup, bool fMainGroup, bool fNeverLeft)
+    public static void HandleNonCombatGroupArrival(GROUP? pGroup, bool fMainGroup, bool fNeverLeft)
     {
-        // if any mercs are actually in the group
-
-        if (StrategicAILookForAdjacentGroups(pGroup))
-        { //The routine actually just deleted the enemy group (player's don't get deleted), so we are done!
-            return;
-        }
-
-        if (pGroup.fPlayer)
-        {
-            //The group will always exist after the AI was processed.
-
-            //Determine if the group should rest, change routes, or continue moving.
-            // if on foot, or in a vehicle other than the helicopter
-            if (!pGroup.fVehicle || !IsGroupTheHelicopterGroup(pGroup))
-            {
-                // take control of sector
-                SetThisSectorAsPlayerControlled(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, false);
-            }
-
-            // if this is the last sector along their movement path (no more waypoints)
-            if (GroupAtFinalDestination(pGroup))
-            {
-                // if currently selected sector has nobody in it
-                if (PlayerMercsInSector((int)sSelMapX, (int)sSelMapY, (int)iCurrentMapSectorZ) == 0)
-                {
-                    // make this sector strategically selected
-                    ChangeSelectedMapSector(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ);
-                }
-
-                // if on foot or in a vehicle other than the helicopter (Skyrider speaks for heli movement)
-                if (!pGroup.fVehicle || !IsGroupTheHelicopterGroup(pGroup))
-                {
-                    StopTimeCompression();
-
-                    // if traversing tactically, or we never left (just canceling), don't do this
-                    if (!gfTacticalTraversal && !fNeverLeft)
-                    {
-                        RandomMercInGroupSaysQuote(pGroup, QUOTE_MERC_REACHED_DESTINATION);
-                    }
-                }
-            }
-            // look for NPCs to stop for, anyone is too tired to keep going, if all OK rebuild waypoints & continue movement
-            // NOTE: Only the main group (first group arriving) will stop for NPCs, it's just too much hassle to stop them all
-            PlayerGroupArrivedSafelyInSector(pGroup, fMainGroup);
-        }
-        else
-        {
-            if (!pGroup.fDebugGroup)
-            {
-                CalculateNextMoveIntention(pGroup);
-            }
-            else
-            {
-                RemovePGroup(pGroup);
-            }
-        }
-        //Clear the non-persistant flags.
-        pGroup.uiFlags = 0;
+//        // if any mercs are actually in the group
+//
+//        //        if (StrategicAILookForAdjacentGroups(pGroup))
+//        { //The routine actually just deleted the enemy group (player's don't get deleted), so we are done!
+//            return;
+//        }
+//
+//        if (pGroup.fPlayer)
+//        {
+//            //The group will always exist after the AI was processed.
+//
+//            //Determine if the group should rest, change routes, or continue moving.
+//            // if on foot, or in a vehicle other than the helicopter
+//            if (!pGroup.fVehicle || !IsGroupTheHelicopterGroup(pGroup))
+//            {
+//                // take control of sector
+//                SetThisSectorAsPlayerControlled(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, false);
+//            }
+//
+//            // if this is the last sector along their movement path (no more waypoints)
+//            if (GroupAtFinalDestination(pGroup))
+//            {
+//                // if currently selected sector has nobody in it
+//                if (PlayerMercsInSector((int)sSelMapX, (int)sSelMapY, (int)iCurrentMapSectorZ) == 0)
+//                {
+//                    // make this sector strategically selected
+//                    ChangeSelectedMapSector(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ);
+//                }
+//
+//                // if on foot or in a vehicle other than the helicopter (Skyrider speaks for heli movement)
+//                if (!pGroup.fVehicle || !IsGroupTheHelicopterGroup(pGroup))
+//                {
+//                    StopTimeCompression();
+//
+//                    // if traversing tactically, or we never left (just canceling), don't do this
+//                    if (!gfTacticalTraversal && !fNeverLeft)
+//                    {
+//                        RandomMercInGroupSaysQuote(pGroup, QUOTE_MERC_REACHED_DESTINATION);
+//                    }
+//                }
+//            }
+//            // look for NPCs to stop for, anyone is too tired to keep going, if all OK rebuild waypoints & continue movement
+//            // NOTE: Only the main group (first group arriving) will stop for NPCs, it's just too much hassle to stop them all
+//            PlayerGroupArrivedSafelyInSector(pGroup, fMainGroup);
+//        }
+//        else
+//        {
+//            if (!pGroup.fDebugGroup)
+//            {
+//                CalculateNextMoveIntention(pGroup);
+//            }
+//            else
+//            {
+//                RemovePGroup(pGroup);
+//            }
+//        }
+//        //Clear the non-persistant flags.
+//        pGroup.uiFlags = 0;
     }
-
-
 
     //Because a battle is about to start, we need to go through the event list and look for other
     //groups that may arrive at the same time -- enemies or players, and blindly add them to the sector
     //without checking for battle conditions, as it has already determined that a new battle is about to 
     //start.
-    void HandleOtherGroupsArrivingSimultaneously(int ubSectorX, MAP_ROW ubSectorY, int ubSectorZ)
+    public static void HandleOtherGroupsArrivingSimultaneously(int ubSectorX, MAP_ROW ubSectorY, int ubSectorZ)
     {
         STRATEGICEVENT? pEvent;
         uint uiCurrTimeStamp;
@@ -1792,18 +1785,18 @@ public class StrategicMovement
         uiCurrTimeStamp = GameClock.GetWorldTotalSeconds();
         pEvent = gpEventList;
         gubNumGroupsArrivedSimultaneously = 0;
-        while (pEvent && pEvent.uiTimeStamp <= uiCurrTimeStamp)
+        while (pEvent.uiTimeStamp <= uiCurrTimeStamp)
         {
             if (pEvent.ubCallbackID == EVENT.GROUP_ARRIVAL && !(pEvent.ubFlags.HasFlag(SEF.DELETION_PENDING)))
             {
                 pGroup = GetGroup((int)pEvent.uiParam);
-                Debug.Assert(pGroup);
+                //       Debug.Assert(pGroup);
                 if (pGroup.ubNextX == ubSectorX && pGroup.ubNextY == ubSectorY && pGroup.ubSectorZ == ubSectorZ)
                 {
                     if (pGroup.fBetweenSectors)
                     {
                         GroupArrivedAtSector((int)pEvent.uiParam, false, false);
-                        pGroup.uiFlags |= GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY;
+                        //                        pGroup.uiFlags |= GROUPFLAG_GROUP_ARRIVED_SIMULTANEOUSLY;
                         gubNumGroupsArrivedSimultaneously++;
                         GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
                         pEvent = gpEventList;
@@ -1819,89 +1812,89 @@ public class StrategicMovement
     //groups so that they arrive at the same time (which is the time the final group would arrive).  
     void PrepareGroupsForSimultaneousArrival()
     {
-        GROUP? pGroup;
-        uint uiLatestArrivalTime = 0;
-        SOLDIERTYPE? pSoldier = null;
-        int iVehId = 0;
-
-        pGroup = gpGroupList;
-        while (pGroup)
-        { //For all of the groups that haven't arrived yet, determine which one is going to take the longest.
-            if (pGroup != gpPendingSimultaneousGroup
-                  && pGroup.fPlayer
-                    && pGroup.fBetweenSectors
-                    && pGroup.ubNextX == gpPendingSimultaneousGroup.ubSectorX
-                    && pGroup.ubNextY == gpPendingSimultaneousGroup.ubSectorY &&
-                    !IsGroupTheHelicopterGroup(pGroup))
-            {
-                uiLatestArrivalTime = Math.Max(pGroup.uiArrivalTime, uiLatestArrivalTime);
-                pGroup.uiFlags |= GROUPFLAG_SIMULTANEOUSARRIVAL_APPROVED | GROUPFLAG_MARKER;
-            }
-            pGroup = pGroup.next;
-        }
-        //Now, go through the list again, and reset their arrival event to the latest arrival time.
-        pGroup = gpGroupList;
-        while (pGroup)
-        {
-            if (pGroup.uiFlags & GROUPFLAG_MARKER)
-            {
-                GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
-
-                // NOTE: This can cause the arrival time to be > GetWorldTotalMin() + TraverseTime, so keep that in mind
-                // if you have any code that uses these 3 values to figure out how far along its route a group is!
-                SetGroupArrivalTime(pGroup, uiLatestArrivalTime);
-                GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
-
-                if (pGroup.fPlayer)
-                {
-                    if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
-                    {
-                        GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
-                    }
-                }
-
-                DelayEnemyGroupsIfPathsCross(pGroup);
-
-                pGroup.uiFlags &= ~GROUPFLAG_MARKER;
-            }
-            pGroup = pGroup.next;
-        }
-        //We still have the first group that has arrived.  Because they are set up to be in the destination
-        //sector, we will "warp" them back to the last sector, and also setup a new arrival time for them.
-        pGroup = gpPendingSimultaneousGroup;
-        pGroup.ubNextX = pGroup.ubSectorX;
-        pGroup.ubNextY = pGroup.ubSectorY;
-        pGroup.ubSectorX = pGroup.ubPrevX;
-        pGroup.ubSectorY = pGroup.ubPrevY;
-        SetGroupArrivalTime(pGroup, uiLatestArrivalTime);
-        pGroup.fBetweenSectors = true;
-
-        if (pGroup.fVehicle)
-        {
-            if ((iVehId = (GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID))) != -1)
-            {
-                pVehicleList[iVehId].fBetweenSectors = true;
-
-                // set up vehicle soldier
-                pSoldier = GetSoldierStructureForVehicle(iVehId);
-
-                if (pSoldier)
-                {
-                    pSoldier.fBetweenSectors = true;
-                }
-            }
-        }
-
-        GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
-
-        if (pGroup.fPlayer)
-        {
-            if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
-            {
-                GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
-            }
-        }
-        DelayEnemyGroupsIfPathsCross(pGroup);
+        //        GROUP? pGroup;
+        //        uint uiLatestArrivalTime = 0;
+        //        SOLDIERTYPE? pSoldier = null;
+        //        int iVehId = 0;
+        //
+        //        pGroup = gpGroupList;
+        //        while (pGroup)
+        //        { //For all of the groups that haven't arrived yet, determine which one is going to take the longest.
+        //            if (pGroup != gpPendingSimultaneousGroup
+        //                  && pGroup.fPlayer
+        //                    && pGroup.fBetweenSectors
+        //                    && pGroup.ubNextX == gpPendingSimultaneousGroup.ubSectorX
+        //                    && pGroup.ubNextY == gpPendingSimultaneousGroup.ubSectorY &&
+        //                    !IsGroupTheHelicopterGroup(pGroup))
+        //            {
+        //                uiLatestArrivalTime = Math.Max(pGroup.uiArrivalTime, uiLatestArrivalTime);
+        //                pGroup.uiFlags |= GROUPFLAG_SIMULTANEOUSARRIVAL_APPROVED | GROUPFLAG_MARKER;
+        //            }
+        //            pGroup = pGroup.next;
+        //        }
+        //        //Now, go through the list again, and reset their arrival event to the latest arrival time.
+        //        pGroup = gpGroupList;
+        //        while (pGroup)
+        //        {
+        //            if (pGroup.uiFlags & GROUPFLAG_MARKER)
+        //            {
+        //                GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
+        //
+        //                // NOTE: This can cause the arrival time to be > GetWorldTotalMin() + TraverseTime, so keep that in mind
+        //                // if you have any code that uses these 3 values to figure out how far along its route a group is!
+        //                SetGroupArrivalTime(pGroup, uiLatestArrivalTime);
+        //                GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
+        //
+        //                if (pGroup.fPlayer)
+        //                {
+        //                    if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
+        //                    {
+        //                        GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+        //                    }
+        //                }
+        //
+        //                DelayEnemyGroupsIfPathsCross(pGroup);
+        //
+        //                pGroup.uiFlags &= ~GROUPFLAG_MARKER;
+        //            }
+        //            pGroup = pGroup.next;
+        //        }
+        //        //We still have the first group that has arrived.  Because they are set up to be in the destination
+        //        //sector, we will "warp" them back to the last sector, and also setup a new arrival time for them.
+        //        pGroup = gpPendingSimultaneousGroup;
+        //        pGroup.ubNextX = pGroup.ubSectorX;
+        //        pGroup.ubNextY = pGroup.ubSectorY;
+        //        pGroup.ubSectorX = pGroup.ubPrevX;
+        //        pGroup.ubSectorY = pGroup.ubPrevY;
+        //        SetGroupArrivalTime(pGroup, uiLatestArrivalTime);
+        //        pGroup.fBetweenSectors = true;
+        //
+        //        if (pGroup.fVehicle)
+        //        {
+        //            if ((iVehId = (GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID))) != -1)
+        //            {
+        //                pVehicleList[iVehId].fBetweenSectors = true;
+        //
+        //                // set up vehicle soldier
+        //                pSoldier = GetSoldierStructureForVehicle(iVehId);
+        //
+        //                if (pSoldier)
+        //                {
+        //                    pSoldier.fBetweenSectors = true;
+        //                }
+        //            }
+        //        }
+        //
+        //        GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID);
+        //
+        //        if (pGroup.fPlayer)
+        //        {
+        //            if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
+        //            {
+        //                GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+        //            }
+        //        }
+        //        DelayEnemyGroupsIfPathsCross(pGroup);
     }
 
     //See if there are other groups OTW.  If so, and if we haven't asked the user yet to plan
@@ -1909,319 +1902,319 @@ public class StrategicMovement
     //to do so, then we will set up the gui, and postpone the prebattle interface.
     bool PossibleToCoordinateSimultaneousGroupArrivals(GROUP? pFirstGroup)
     {
-        GROUP? pGroup;
-        int ubNumNearbyGroups = 0;
-
-        //If the user has already been asked, then don't ask the question again!
-        if (pFirstGroup.uiFlags & (GROUPFLAG_SIMULTANEOUSARRIVAL_APPROVED | GROUPFLAG_SIMULTANEOUSARRIVAL_CHECKED) ||
-            IsGroupTheHelicopterGroup(pFirstGroup))
-        {
-            return false;
-        }
-
-        //We can't coordinate simultaneous attacks on a sector without any stationary forces!  Otherwise, it
-        //is possible that they will be gone when you finally arrive.
-        //if( !NumStationaryEnemiesInSector( pFirstGroup.ubSectorX, pFirstGroup.ubSectorY ) )
-        //	return false;
-
-        //Count the number of groups that are scheduled to arrive in the same sector and are currently
-        //adjacent to the sector in question.
-        pGroup = gpGroupList;
-        while (pGroup)
-        {
-            if (pGroup != pFirstGroup && pGroup.fPlayer && pGroup.fBetweenSectors &&
-                  pGroup.ubNextX == pFirstGroup.ubSectorX && pGroup.ubNextY == pFirstGroup.ubSectorY &&
-                    !(pGroup.uiFlags & GROUPFLAG_SIMULTANEOUSARRIVAL_CHECKED) &&
-                    !IsGroupTheHelicopterGroup(pGroup))
-            {
-                pGroup.uiFlags |= GROUPFLAG_SIMULTANEOUSARRIVAL_CHECKED;
-                ubNumNearbyGroups++;
-            }
-            pGroup = pGroup.next;
-        }
-
-        if (ubNumNearbyGroups)
-        { //postpone the battle until the user answers the dialog.
-            string str;
-            int? pStr, pEnemyType;
-            GameClock.InterruptTime();
-            GameClock.PauseGame();
-            GameClock.LockPauseState(13);
-            gpPendingSimultaneousGroup = pFirstGroup;
-            //Build the string
-            if (ubNumNearbyGroups == 1)
-            {
-                pStr = gpStrategicString[STR_DETECTED_SINGULAR];
-            }
-            else
-            {
-                pStr = gpStrategicString[STR_DETECTED_PLURAL];
-            }
-            if (gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE)
-            {
-                pEnemyType = gpStrategicString[STR_PB_BLOODCATS];
-            }
-            else
-            {
-                pEnemyType = gpStrategicString[STR_PB_ENEMIES];
-            }
-            //header, sector, singular/plural str, confirmation string.
-            //Ex:  Enemies have been detected in sector J9 and another squad is 
-            //     about to arrive.  Do you wish to coordinate a simultaneous arrival?
-            wprintf(str, pStr,
-                pEnemyType, //Enemy type (Enemies or bloodcats)
-                'A' + gpPendingSimultaneousGroup.ubSectorY - 1, gpPendingSimultaneousGroup.ubSectorX); //Sector location
-            wcscat(str, "  ");
-            wcscat(str, gpStrategicString[STR_COORDINATE]);
-            //Setup the dialog
-
-            //Kris August 03, 1999 Bug fix:  Changed 1st line to 2nd line to fix game breaking if this dialog came up while in tactical.
-            //                               It would kick you to mapscreen, where things would break...
-            //DoMapMessageBox( MSG_BOX_BASIC_STYLE, str, MAP_SCREEN, MSG_BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback );
-            DoMapMessageBox(MSG_BOX_BASIC_STYLE, str, guiCurrentScreen, MSG_BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback);
-
-            gfWaitingForInput = true;
-            return true;
-        }
+        //        GROUP? pGroup;
+        //        int ubNumNearbyGroups = 0;
+        //
+        //        //If the user has already been asked, then don't ask the question again!
+        //        if (pFirstGroup.uiFlags & (GROUPFLAG_SIMULTANEOUSARRIVAL_APPROVED | GROUPFLAG_SIMULTANEOUSARRIVAL_CHECKED) ||
+        //            IsGroupTheHelicopterGroup(pFirstGroup))
+        //        {
+        //            return false;
+        //        }
+        //
+        //        //We can't coordinate simultaneous attacks on a sector without any stationary forces!  Otherwise, it
+        //        //is possible that they will be gone when you finally arrive.
+        //        //if( !NumStationaryEnemiesInSector( pFirstGroup.ubSectorX, pFirstGroup.ubSectorY ) )
+        //        //	return false;
+        //
+        //        //Count the number of groups that are scheduled to arrive in the same sector and are currently
+        //        //adjacent to the sector in question.
+        //        pGroup = gpGroupList;
+        //        while (pGroup)
+        //        {
+        //            if (pGroup != pFirstGroup && pGroup.fPlayer && pGroup.fBetweenSectors &&
+        //                  pGroup.ubNextX == pFirstGroup.ubSectorX && pGroup.ubNextY == pFirstGroup.ubSectorY &&
+        //                    !(pGroup.uiFlags & GROUPFLAG_SIMULTANEOUSARRIVAL_CHECKED) &&
+        //                    !IsGroupTheHelicopterGroup(pGroup))
+        //            {
+        //                pGroup.uiFlags |= GROUPFLAG_SIMULTANEOUSARRIVAL_CHECKED;
+        //                ubNumNearbyGroups++;
+        //            }
+        //            pGroup = pGroup.next;
+        //        }
+        //
+        //        if (ubNumNearbyGroups)
+        //        { //postpone the battle until the user answers the dialog.
+        //            string str;
+        //            int? pStr, pEnemyType;
+        //            GameClock.InterruptTime();
+        //            GameClock.PauseGame();
+        //            GameClock.LockPauseState(13);
+        //            gpPendingSimultaneousGroup = pFirstGroup;
+        //            //Build the string
+        //            if (ubNumNearbyGroups == 1)
+        //            {
+        //                pStr = gpStrategicString[STR_DETECTED_SINGULAR];
+        //            }
+        //            else
+        //            {
+        //                pStr = gpStrategicString[STR_DETECTED_PLURAL];
+        //            }
+        //            if (gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE)
+        //            {
+        //                pEnemyType = gpStrategicString[STR_PB_BLOODCATS];
+        //            }
+        //            else
+        //            {
+        //                pEnemyType = gpStrategicString[STR_PB_ENEMIES];
+        //            }
+        //            //header, sector, singular/plural str, confirmation string.
+        //            //Ex:  Enemies have been detected in sector J9 and another squad is 
+        //            //     about to arrive.  Do you wish to coordinate a simultaneous arrival?
+        //            wprintf(str, pStr,
+        //                pEnemyType, //Enemy type (Enemies or bloodcats)
+        //                'A' + gpPendingSimultaneousGroup.ubSectorY - 1, gpPendingSimultaneousGroup.ubSectorX); //Sector location
+        //            wcscat(str, "  ");
+        //            wcscat(str, gpStrategicString[STR_COORDINATE]);
+        //            //Setup the dialog
+        //
+        //            //Kris August 03, 1999 Bug fix:  Changed 1st line to 2nd line to fix game breaking if this dialog came up while in tactical.
+        //            //                               It would kick you to mapscreen, where things would break...
+        //            //DoMapMessageBox( MSG_BOX_BASIC_STYLE, str, MAP_SCREEN, MSG_BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback );
+        //            DoMapMessageBox(MSG_BOX_BASIC_STYLE, str, guiCurrentScreen, MSG_BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback);
+        //
+        //            gfWaitingForInput = true;
+        //            return true;
+        //        }
         return false;
     }
 
     void PlanSimultaneousGroupArrivalCallback(int bMessageValue)
     {
-        if (bMessageValue == MSG_BOX_RETURN_YES)
-        {
-            PrepareGroupsForSimultaneousArrival();
-        }
-        else
-        {
-            PrepareForPreBattleInterface(gpPendingSimultaneousGroup, gpPendingSimultaneousGroup);
-        }
-        UnLockPauseState();
-        UnPauseGame();
+        //        if (bMessageValue == MSG_BOX_RETURN_YES)
+        //        {
+        //            PrepareGroupsForSimultaneousArrival();
+        //        }
+        //        else
+        //        {
+        //            PrepareForPreBattleInterface(gpPendingSimultaneousGroup, gpPendingSimultaneousGroup);
+        //        }
+        //        UnLockPauseState();
+        //        UnPauseGame();
     }
 
     void DelayEnemyGroupsIfPathsCross(GROUP? pPlayerGroup)
     {
-        GROUP? pGroup;
-        pGroup = gpGroupList;
-        while (pGroup)
-        {
-            if (!pGroup.fPlayer)
-            { //then check to see if this group will arrive in next sector before the player group.
-                if (pGroup.uiArrivalTime < pPlayerGroup.uiArrivalTime)
-                { //check to see if enemy group will cross paths with player group.
-                    if (pGroup.ubNextX == pPlayerGroup.ubSectorX &&
-                            pGroup.ubNextY == pPlayerGroup.ubSectorY &&
-                            pGroup.ubSectorX == pPlayerGroup.ubNextX &&
-                            pGroup.ubSectorY == pPlayerGroup.ubNextY)
-                    { //Okay, the enemy group will cross paths with the player, so find and delete the arrival event
-                      //and repost it in the future (like a minute or so after the player arrives)
-                        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
-
-                        // NOTE: This can cause the arrival time to be > GetWorldTotalMin() + TraverseTime, so keep that in mind
-                        // if you have any code that uses these 3 values to figure out how far along its route a group is!
-                        SetGroupArrivalTime(pGroup, pPlayerGroup.uiArrivalTime + 1 + Globals.Random.Next(10));
-                        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
-                        {
-                            //AssertMsg(0, "Failed to add movement event.");
-                        }
-                    }
-                }
-            }
-            pGroup = pGroup.next;
-        }
+        //        GROUP? pGroup;
+        //        pGroup = gpGroupList;
+        //        while (pGroup)
+        //        {
+        //            if (!pGroup.fPlayer)
+        //            { //then check to see if this group will arrive in next sector before the player group.
+        //                if (pGroup.uiArrivalTime < pPlayerGroup.uiArrivalTime)
+        //                { //check to see if enemy group will cross paths with player group.
+        //                    if (pGroup.ubNextX == pPlayerGroup.ubSectorX &&
+        //                            pGroup.ubNextY == pPlayerGroup.ubSectorY &&
+        //                            pGroup.ubSectorX == pPlayerGroup.ubNextX &&
+        //                            pGroup.ubSectorY == pPlayerGroup.ubNextY)
+        //                    { //Okay, the enemy group will cross paths with the player, so find and delete the arrival event
+        //                      //and repost it in the future (like a minute or so after the player arrives)
+        //                        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
+        //
+        //                        // NOTE: This can cause the arrival time to be > GetWorldTotalMin() + TraverseTime, so keep that in mind
+        //                        // if you have any code that uses these 3 values to figure out how far along its route a group is!
+        //                        SetGroupArrivalTime(pGroup, pPlayerGroup.uiArrivalTime + 1 + Globals.Random.Next(10));
+        //                        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
+        //                        {
+        //                            //AssertMsg(0, "Failed to add movement event.");
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            pGroup = pGroup.next;
+        //        }
     }
 
 
-    void InitiateGroupMovementToNextSector(GROUP? pGroup)
+    public static void InitiateGroupMovementToNextSector(GROUP? pGroup)
     {
-        int dx, dy;
-        int i;
-        STRATEGIC_MOVE ubDirection;
-        SEC ubSector;
-        WAYPOINT? wp;
-        int iVehId = -1;
-        SOLDIERTYPE? pSoldier = null;
-        int uiSleepMinutes = 0;
-
-
-        Debug.Assert(pGroup);
-        i = pGroup.ubNextWaypointID;
-        wp = pGroup.pWaypoints;
-        while (i-- > 0)
-        { //Traverse through the waypoint list to the next waypoint ID
-            Debug.Assert(wp);
-            wp = wp.next;
-        }
-        Debug.Assert(wp);
-        //We now have the correct waypoint.
-        //Analyse the group and determine which direction it will move from the current sector.
-        dx = wp.x - pGroup.ubSectorX;
-        dy = wp.y - pGroup.ubSectorY;
-        if (dx && dy)
-        { //Can't move diagonally!
-          //AssertMsg(0, String("Attempting to move to waypoint in a diagonal direction from sector %d,%d to sector %d,%d",
-          //   pGroup.ubSectorX, pGroup.ubSectorY, wp.x, wp.y));
-        }
-        if (!dx && !dy) //Can't move to position currently at!
-        {
-            //AssertMsg(0, String("Attempting to move to waypoint %d, %d that you are already at!", wp.x, wp.y));
-        }
-
-        //Clip dx/dy value so that the move is for only one sector.
-        if (dx >= 1)
-        {
-            ubDirection = STRATEGIC_MOVE.EAST_STRATEGIC_MOVE;
-            dx = 1;
-        }
-        else if (dy >= 1)
-        {
-            ubDirection = STRATEGIC_MOVE.SOUTH_STRATEGIC_MOVE;
-            dy = 1;
-        }
-        else if (dx <= -1)
-        {
-            ubDirection = STRATEGIC_MOVE.WEST_STRATEGIC_MOVE;
-            dx = -1;
-        }
-        else if (dy <= -1)
-        {
-            ubDirection = STRATEGIC_MOVE.NORTH_STRATEGIC_MOVE;
-            dy = -1;
-        }
-        else
-        {
-            Debug.Assert(false);
-            return;
-        }
-        //All conditions for moving to the next waypoint are now good.
-        pGroup.ubNextX = (int)(dx + pGroup.ubSectorX);
-        pGroup.ubNextY = (dy + pGroup.ubSectorY);
-        //Calc time to get to next waypoint...
-        ubSector = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
-        if (!pGroup.ubSectorZ)
-        {
-            bool fCalcRegularTime = true;
-            if (!pGroup.fPlayer)
-            { //Determine if the enemy group is "sleeping".  If so, then simply delay their arrival time by the amount of time
-              //they are going to be sleeping for.
-                if (GetWorldHour() >= 21 || GetWorldHour() <= 4)
-                { //It is definitely night time.
-                    if (Chance(67))
-                    { //2 in 3 chance of going to sleep.
-                        pGroup.uiTraverseTime = GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup);
-                        uiSleepMinutes = 360 + Globals.Random.Next(121); //6-8 hours sleep 
-                        fCalcRegularTime = false;
-                    }
-                }
-            }
-            if (fCalcRegularTime)
-            {
-                pGroup.uiTraverseTime = GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup);
-            }
-        }
-        else
-        {
-            pGroup.uiTraverseTime = 1;
-        }
-
-        if (pGroup.uiTraverseTime == 0xffffffff)
-        {
-            //AssertMsg(0, String("Group %d (%s) attempting illegal move from %c%d to %c%d (%s).",
-            //pGroup.ubGroupID, (pGroup.fPlayer) ? "Player" : "AI",
-            //        pGroup.ubSectorY + 'A', pGroup.ubSectorX, pGroup.ubNextY + 'A', pGroup.ubNextX,
-            //        gszTerrain[SectorInfo[ubSector].ubTraversability[ubDirection]]));
-        }
-
-        // add sleep, if any
-        pGroup.uiTraverseTime += uiSleepMinutes;
-
-        if (gfTacticalTraversal && gpTacticalTraversalGroup == pGroup)
-        {
-            if (gfUndergroundTacticalTraversal)
-            {   //underground movement between sectors takes 1 minute.
-                pGroup.uiTraverseTime = 1;
-            }
-            else
-            { //strategic movement between town sectors takes 5 minutes.
-                pGroup.uiTraverseTime = 5;
-            }
-        }
-
-        // if group isn't already between sectors
-        if (!pGroup.fBetweenSectors)
-        {
-            // put group between sectors
-            pGroup.fBetweenSectors = true;
-            // and set it's arrival time
-            SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
-        }
-        // NOTE: if the group is already between sectors, DON'T MESS WITH ITS ARRIVAL TIME!  THAT'S NOT OUR JOB HERE!!!
-
-
-        // special override for AI patrol initialization only
-        if (gfRandomizingPatrolGroup)
-        { //We're initializing the patrol group, so randomize the enemy groups to have extremely quick and varying
-          //arrival times so that their initial positions aren't easily determined.
-            pGroup.uiTraverseTime = 1 + Globals.Random.Next(pGroup.uiTraverseTime - 1);
-            SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
-        }
-
-
-        if (pGroup.fVehicle == true)
-        {
-            // vehicle, set fact it is between sectors too
-            if ((iVehId = (GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID))) != -1)
-            {
-                pVehicleList[iVehId].fBetweenSectors = true;
-                pSoldier = GetSoldierStructureForVehicle(iVehId);
-
-                if (pSoldier)
-                {
-                    pSoldier.fBetweenSectors = true;
-
-                    // OK, Remove the guy from tactical engine!
-                    RemoveSoldierFromTacticalSector(pSoldier, true);
-
-                }
-            }
-        }
-
-        //Post the event!
-        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
-        {
-            //AssertMsg(0, "Failed to add movement event.");
-
-            //For the case of player groups, we need to update the information of the soldiers.
-            if (pGroup.fPlayer)
-            {
-                PLAYERGROUP? curr;
-
-                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
-                {
-                    GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
-                }
-
-                curr = pGroup.pPlayerList;
-                while (curr)
-                {
-                    curr.pSoldier.fBetweenSectors = true;
-
-                    // OK, Remove the guy from tactical engine!
-                    RemoveSoldierFromTacticalSector(curr.pSoldier, true);
-
-                    curr = curr.next;
-                }
-                CheckAndHandleUnloadingOfCurrentWorld();
-
-                //If an enemy group will be crossing paths with the player group, delay the enemy group's arrival time so that
-                //the player will always encounter that group.
-                if (!pGroup.ubSectorZ)
-                {
-                    DelayEnemyGroupsIfPathsCross(pGroup);
-                }
-            }
-        }
+        //        int dx, dy;
+        //        int i;
+        //        STRATEGIC_MOVE ubDirection;
+        //        SEC ubSector;
+        //        WAYPOINT? wp;
+        //        int iVehId = -1;
+        //        SOLDIERTYPE? pSoldier = null;
+        //        int uiSleepMinutes = 0;
+        //
+        //
+        //        Debug.Assert(pGroup);
+        //        i = pGroup.ubNextWaypointID;
+        //        wp = pGroup.pWaypoints;
+        //        while (i-- > 0)
+        //        { //Traverse through the waypoint list to the next waypoint ID
+        //            Debug.Assert(wp);
+        //            wp = wp.next;
+        //        }
+        //        Debug.Assert(wp);
+        //        //We now have the correct waypoint.
+        //        //Analyse the group and determine which direction it will move from the current sector.
+        //        dx = wp.x - pGroup.ubSectorX;
+        //        dy = wp.y - pGroup.ubSectorY;
+        //        if (dx && dy)
+        //        { //Can't move diagonally!
+        //          //AssertMsg(0, String("Attempting to move to waypoint in a diagonal direction from sector %d,%d to sector %d,%d",
+        //          //   pGroup.ubSectorX, pGroup.ubSectorY, wp.x, wp.y));
+        //        }
+        //        if (!dx && !dy) //Can't move to position currently at!
+        //        {
+        //            //AssertMsg(0, String("Attempting to move to waypoint %d, %d that you are already at!", wp.x, wp.y));
+        //        }
+        //
+        //        //Clip dx/dy value so that the move is for only one sector.
+        //        if (dx >= 1)
+        //        {
+        //            ubDirection = STRATEGIC_MOVE.EAST_STRATEGIC_MOVE;
+        //            dx = 1;
+        //        }
+        //        else if (dy >= 1)
+        //        {
+        //            ubDirection = STRATEGIC_MOVE.SOUTH_STRATEGIC_MOVE;
+        //            dy = 1;
+        //        }
+        //        else if (dx <= -1)
+        //        {
+        //            ubDirection = STRATEGIC_MOVE.WEST_STRATEGIC_MOVE;
+        //            dx = -1;
+        //        }
+        //        else if (dy <= -1)
+        //        {
+        //            ubDirection = STRATEGIC_MOVE.NORTH_STRATEGIC_MOVE;
+        //            dy = -1;
+        //        }
+        //        else
+        //        {
+        //            Debug.Assert(false);
+        //            return;
+        //        }
+        //        //All conditions for moving to the next waypoint are now good.
+        //        pGroup.ubNextX = (int)(dx + pGroup.ubSectorX);
+        //        pGroup.ubNextY = (dy + pGroup.ubSectorY);
+        //        //Calc time to get to next waypoint...
+        //        ubSector = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
+        //        if (!pGroup.ubSectorZ)
+        //        {
+        //            bool fCalcRegularTime = true;
+        //            if (!pGroup.fPlayer)
+        //            { //Determine if the enemy group is "sleeping".  If so, then simply delay their arrival time by the amount of time
+        //              //they are going to be sleeping for.
+        //                if (GetWorldHour() >= 21 || GetWorldHour() <= 4)
+        //                { //It is definitely night time.
+        //                    if (Chance(67))
+        //                    { //2 in 3 chance of going to sleep.
+        //                        pGroup.uiTraverseTime = GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup);
+        //                        uiSleepMinutes = 360 + Globals.Random.Next(121); //6-8 hours sleep 
+        //                        fCalcRegularTime = false;
+        //                    }
+        //                }
+        //            }
+        //            if (fCalcRegularTime)
+        //            {
+        //                pGroup.uiTraverseTime = GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            pGroup.uiTraverseTime = 1;
+        //        }
+        //
+        //        if (pGroup.uiTraverseTime == 0xffffffff)
+        //        {
+        //            //AssertMsg(0, String("Group %d (%s) attempting illegal move from %c%d to %c%d (%s).",
+        //            //pGroup.ubGroupID, (pGroup.fPlayer) ? "Player" : "AI",
+        //            //        pGroup.ubSectorY + 'A', pGroup.ubSectorX, pGroup.ubNextY + 'A', pGroup.ubNextX,
+        //            //        gszTerrain[SectorInfo[ubSector].ubTraversability[ubDirection]]));
+        //        }
+        //
+        //        // add sleep, if any
+        //        pGroup.uiTraverseTime += uiSleepMinutes;
+        //
+        //        if (gfTacticalTraversal && gpTacticalTraversalGroup == pGroup)
+        //        {
+        //            if (gfUndergroundTacticalTraversal)
+        //            {   //underground movement between sectors takes 1 minute.
+        //                pGroup.uiTraverseTime = 1;
+        //            }
+        //            else
+        //            { //strategic movement between town sectors takes 5 minutes.
+        //                pGroup.uiTraverseTime = 5;
+        //            }
+        //        }
+        //
+        //        // if group isn't already between sectors
+        //        if (!pGroup.fBetweenSectors)
+        //        {
+        //            // put group between sectors
+        //            pGroup.fBetweenSectors = true;
+        //            // and set it's arrival time
+        //            SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
+        //        }
+        //        // NOTE: if the group is already between sectors, DON'T MESS WITH ITS ARRIVAL TIME!  THAT'S NOT OUR JOB HERE!!!
+        //
+        //
+        //        // special override for AI patrol initialization only
+        //        if (gfRandomizingPatrolGroup)
+        //        { //We're initializing the patrol group, so randomize the enemy groups to have extremely quick and varying
+        //          //arrival times so that their initial positions aren't easily determined.
+        //            pGroup.uiTraverseTime = 1 + Globals.Random.Next(pGroup.uiTraverseTime - 1);
+        //            SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
+        //        }
+        //
+        //
+        //        if (pGroup.fVehicle == true)
+        //        {
+        //            // vehicle, set fact it is between sectors too
+        //            if ((iVehId = (GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID))) != -1)
+        //            {
+        //                pVehicleList[iVehId].fBetweenSectors = true;
+        //                pSoldier = GetSoldierStructureForVehicle(iVehId);
+        //
+        //                if (pSoldier)
+        //                {
+        //                    pSoldier.fBetweenSectors = true;
+        //
+        //                    // OK, Remove the guy from tactical engine!
+        //                    RemoveSoldierFromTacticalSector(pSoldier, true);
+        //
+        //                }
+        //            }
+        //        }
+        //
+        //        //Post the event!
+        //        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
+        //        {
+        //            //AssertMsg(0, "Failed to add movement event.");
+        //
+        //            //For the case of player groups, we need to update the information of the soldiers.
+        //            if (pGroup.fPlayer)
+        //            {
+        //                PLAYERGROUP? curr;
+        //
+        //                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
+        //                {
+        //                    GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+        //                }
+        //
+        ////                curr = pGroup.pPlayerList;
+        ////                while (curr)
+        //                {
+        //                    curr.pSoldier.fBetweenSectors = true;
+        //
+        //                    // OK, Remove the guy from tactical engine!
+        ////                    RemoveSoldierFromTacticalSector(curr.pSoldier, true);
+        //
+        //                    curr = curr.next;
+        //                }
+        ////                CheckAndHandleUnloadingOfCurrentWorld();
+        //
+        //                //If an enemy group will be crossing paths with the player group, delay the enemy group's arrival time so that
+        //                //the player will always encounter that group.
+        ////                if (!pGroup.ubSectorZ)
+        ////                {
+        ////                    DelayEnemyGroupsIfPathsCross(pGroup);
+        ////                }
+        //            }
+        //        }
     }
 
     public static void RemoveGroupWaypoints(int ubGroupID)
@@ -2236,17 +2229,17 @@ public class StrategicMovement
         WAYPOINT? wp;
         //if there aren't any waypoints to delete, then return.  This also avoids setting
         //the fWaypointsCancelled flag.
-        if (!pGroup.pWaypoints)
-        {
-            return;
-        }
+        //        if (!pGroup.pWaypoints)
+        //        {
+        //            return;
+        //        }
         //remove all of the waypoints.
-        while (pGroup.pWaypoints)
-        {
-            wp = pGroup.pWaypoints;
-            pGroup.pWaypoints = pGroup.pWaypoints.next;
-            MemFree(wp);
-        }
+        //        while (pGroup.pWaypoints)
+        //        {
+        //            wp = pGroup.pWaypoints;
+        //            pGroup.pWaypoints = pGroup.pWaypoints.next;
+        //            MemFree(wp);
+        //        }
         pGroup.ubNextWaypointID = 0;
         pGroup.pWaypoints = null;
 
@@ -2263,7 +2256,7 @@ public class StrategicMovement
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
-        Debug.Assert(pGroup);
+        //        Debug.Assert(pGroup);
 
         //pGroup . fWaypointsCancelled = true;
 
@@ -2276,7 +2269,7 @@ public class StrategicMovement
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
-        Debug.Assert(pGroup);
+        //        Debug.Assert(pGroup);
 
         // since we have a group, set prev sector's x and y
         pGroup.ubPrevX = ubX;
@@ -2295,69 +2288,69 @@ public class StrategicMovement
             int i = 0;
         }
 
-        Debug.Assert(pGroup);
+        //        Debug.Assert(pGroup);
         RemovePGroup(pGroup);
     }
 
     bool gfRemovingAllGroups = false;
 
-    void RemovePGroup(GROUP? pGroup)
+    public static void RemovePGroup(GROUP? pGroup)
     {
         int bit, index, mask;
 
-        if (pGroup.fPersistant && !gfRemovingAllGroups)
-        {
-            CancelEmptyPersistentGroupMovement(pGroup);
-            return;
-            DoScreenIndependantMessageBox("Strategic Info Warning:  Attempting to delete a persistant group.", MSG_BOX_FLAG_OK, null);
-        }
-        //if removing head, then advance head first.
-        if (pGroup == gpGroupList)
-        {
-            gpGroupList = gpGroupList.next;
-        }
-        else
-        { //detach this node from the list.
-            GROUP? curr;
-            curr = gpGroupList;
-            while (curr.next && curr.next != pGroup)
-            {
-                curr = curr.next;
-            }
-            //AssertMsg(curr.next == pGroup, "Trying to remove a strategic group that isn't in the list!");
-            curr.next = pGroup.next;
-        }
+        //        if (pGroup.fPersistant && !gfRemovingAllGroups)
+        //        {
+        //            CancelEmptyPersistentGroupMovement(pGroup);
+        //            return;
+        ////            DoScreenIndependantMessageBox("Strategic Info Warning:  Attempting to delete a persistant group.", MSG_BOX_FLAG_OK, null);
+        //        }
+        //        //if removing head, then advance head first.
+        //        if (pGroup == gpGroupList)
+        //        {
+        //            gpGroupList = gpGroupList.next;
+        //        }
+        //        else
+        //        { //detach this node from the list.
+        //            GROUP? curr;
+        //            curr = gpGroupList;
+        //            while (curr.next && curr.next != pGroup)
+        //            {
+        //                curr = curr.next;
+        //            }
+        //            //AssertMsg(curr.next == pGroup, "Trying to remove a strategic group that isn't in the list!");
+        //            curr.next = pGroup.next;
+        //        }
 
 
         //Remove the waypoints.
         RemovePGroupWaypoints(pGroup);
 
         //Remove the arrival event if applicable.
-        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
+        //        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Determine what type of group we have (because it requires different methods)
-        if (pGroup.fPlayer)
-        { //Remove player group
-            PLAYERGROUP? pPlayer;
-            while (pGroup.pPlayerList)
-            {
-                pPlayer = pGroup.pPlayerList;
-                pGroup.pPlayerList = pGroup.pPlayerList.next;
-                MemFree(pPlayer);
-            }
-        }
-        else
-        {
-            RemoveGroupFromStrategicAILists(pGroup.ubGroupID);
-            MemFree(pGroup.pEnemyGroup);
-        }
+        //        if (pGroup.fPlayer)
+        //        { //Remove player group
+        //            PLAYERGROUP? pPlayer;
+        //            while (pGroup.pPlayerList)
+        //            {
+        //                pPlayer = pGroup.pPlayerList;
+        //                pGroup.pPlayerList = pGroup.pPlayerList.next;
+        //                MemFree(pPlayer);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            RemoveGroupFromStrategicAILists(pGroup.ubGroupID);
+        //            MemFree(pGroup.pEnemyGroup);
+        //        }
 
         //clear the unique group ID
         index = pGroup.ubGroupID / 32;
         bit = pGroup.ubGroupID % 32;
         mask = 1 << bit;
 
-        if (!(uniqueIDMask[index] & mask))
+        //        if (!(uniqueIDMask[index] & mask))
         {
             mask = mask;
         }
@@ -2373,8 +2366,9 @@ public class StrategicMovement
         gfRemovingAllGroups = true;
         while (gpGroupList is not null)
         {
-            RemovePGroup(gpGroupList);
+            //            RemovePGroup(gpGroupList);
         }
+
         gfRemovingAllGroups = false;
     }
 
@@ -2403,8 +2397,8 @@ public class StrategicMovement
         GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         // set all of the mercs in the group so that they are in the new sector too.
-        pPlayer = pGroup.pPlayerList;
-        while (pPlayer)
+        //        pPlayer = pGroup.pPlayerList;
+        //        while (pPlayer)
         {
             pPlayer.pSoldier.sSectorX = sSectorX;
             pPlayer.pSoldier.sSectorY = sSectorY;
@@ -2414,13 +2408,13 @@ public class StrategicMovement
             pPlayer = pPlayer.next;
         }
 
-        CheckAndHandleUnloadingOfCurrentWorld();
+        //        CheckAndHandleUnloadingOfCurrentWorld();
     }
 
     void SetEnemyGroupSector(GROUP? pGroup, SEC ubSectorID)
     {
         // make sure it is valid
-        Debug.Assert(pGroup);
+        //        Debug.Assert(pGroup);
         GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Remove waypoints
@@ -2446,7 +2440,7 @@ public class StrategicMovement
         pGroup = GetGroup(ubGroupID);
 
         // make sure it is valid
-        Debug.Assert(pGroup);
+        //        Debug.Assert(pGroup);
 
         //Remove waypoints
         RemovePGroupWaypoints(pGroup);
@@ -2494,7 +2488,7 @@ public class StrategicMovement
         }
 
         // set up next node
-        pNode = pGroup.pWaypoints;
+        //        pNode = pGroup.pWaypoints;
 
         // now get the delta in current sector and next sector
         iDelta = (SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) - SECTORINFO.SECTOR(pGroup.ubNextX, pGroup.ubNextY));
@@ -2512,27 +2506,27 @@ public class StrategicMovement
             // to get travel time to the first sector, use the arrival time, this way it accounts for delays due to simul. arrival
             if (pGroup.uiArrivalTime >= GameClock.GetWorldTotalMin())
             {
-                uiEtaTime += (pGroup.uiArrivalTime - GameClock.GetWorldTotalMin());
+                //                uiEtaTime += (pGroup.uiArrivalTime - GameClock.GetWorldTotalMin());
             }
 
             // first waypoint is NEXT sector
-            pCurrent.x = pGroup.ubNextX;
-            pCurrent.y = pGroup.ubNextY;
+            //            pCurrent.x = pGroup.ubNextX;
+            //            pCurrent.y = pGroup.ubNextY;
         }
         else
         {
             // first waypoint is CURRENT sector
-            pCurrent.x = pGroup.ubSectorX;
-            pCurrent.y = pGroup.ubSectorY;
+            //            pCurrent.x = pGroup.ubSectorX;
+            //            pCurrent.y = pGroup.ubSectorY;
         }
 
-        while (pNode)
+        //        while (pNode)
         {
-            pDest.x = pNode.x;
-            pDest.y = pNode.y;
+            //            pDest.x = pNode.x;
+            //            pDest.y = pNode.y;
 
             // update eta time by the path between these 2 waypts
-            uiEtaTime += FindTravelTimeBetweenWaypoints(pCurrent, pDest, pGroup);
+            //            uiEtaTime += FindTravelTimeBetweenWaypoints(pCurrent, pDest, pGroup);
 
             pCurrent.x = pNode.x;
             pCurrent.y = pNode.y;
@@ -2555,11 +2549,11 @@ public class StrategicMovement
 
 
         // find travel time between waypoints
-        if (!pSource || !pDest)
-        {
-            // no change
-            return (iCurrentCostInTime);
-        }
+        //        if (!pSource || !pDest)
+        //        {
+        //            // no change
+        //            return (iCurrentCostInTime);
+        //        }
 
         // get start and end setor values
         ubStart = SECTORINFO.SECTOR(pSource.x, pSource.y);
@@ -2888,7 +2882,7 @@ public class StrategicMovement
     }
 
     // is the player group in motion?
-    bool PlayerGroupInMotion(GROUP? pGroup)
+    public static bool PlayerGroupInMotion(GROUP? pGroup)
     {
         return (pGroup.fBetweenSectors);
     }
@@ -2924,7 +2918,7 @@ public class StrategicMovement
     //NOTE:  For enemies, only MAX_STRATEGIC_TEAM_SIZE at a time can be in a battle, so
     //if it ever gets past that, god help the player, but we'll have to insert them
     //as those slots free up.
-    void HandleArrivalOfReinforcements(GROUP? pGroup)
+    public static void HandleArrivalOfReinforcements(GROUP? pGroup)
     {
         SOLDIERTYPE? pSoldier;
         SECTORINFO? pSector;
@@ -2958,7 +2952,7 @@ public class StrategicMovement
                 Debug.Assert(false);
                 return;
             }
-            pPlayer = pGroup.pPlayerList;
+            //            pPlayer = pGroup.pPlayerList;
 
             cnt = 0;
 
@@ -2967,7 +2961,7 @@ public class StrategicMovement
                 pSoldier = pPlayer.pSoldier;
                 Debug.Assert(pSoldier is not null);
                 pSoldier.ubStrategicInsertionCode = ubStrategicInsertionCode;
-                UpdateMercInSector(pSoldier, pGroup.ubSectorX, pGroup.ubSectorY, 0);
+                //                UpdateMercInSector(pSoldier, pGroup.ubSectorX, pGroup.ubSectorY, 0);
                 pPlayer = pPlayer.next;
 
                 // DO arrives quote....
@@ -3006,111 +3000,111 @@ public class StrategicMovement
 
     public static bool PlayersBetweenTheseSectors(SEC sSource, SEC sDest, out int iCountEnter, out int iCountExit, out bool fAboutToArriveEnter)
     {
-        GROUP? curr = gpGroupList;
-        SEC sBattleSector = SEC.UNSET;
-        bool fMayRetreatFromBattle = false;
-        bool fRetreatingFromBattle = false;
-        bool fHandleRetreats = false;
-        bool fHelicopterGroup = false;
-        int ubMercsInGroup = 0;
+        //        GROUP? curr = gpGroupList;
+        //        SEC sBattleSector = SEC.UNSET;
+        //        bool fMayRetreatFromBattle = false;
+        //        bool fRetreatingFromBattle = false;
+        //        bool fHandleRetreats = false;
+        //        bool fHelicopterGroup = false;
+        //        int ubMercsInGroup = 0;
 
         iCountEnter = 0;
         iCountExit = 0;
         fAboutToArriveEnter = false;
 
-        if (gpBattleGroup is not null)
-        {
-            //Debug.Assert( gfPreBattleInterfaceActive );
-            sBattleSector = SECTORINFO.SECTOR(gpBattleGroup.ubSectorX, gpBattleGroup.ubSectorY);
-        }
-
-        // debug only
-        if (gfDisplayPotentialRetreatPaths == true)
-        {
-            //Debug.Assert( gfPreBattleInterfaceActive );
-        }
-
-
-        // get number of characters entering/existing between these two sectors.  Special conditions during 
-        // pre-battle interface to return where this function is used to show potential retreating directions instead!
-
-        //	check all groups
-        while (curr)
-        {
-            // if player group
-            if (curr.fPlayer == true)
-            {
-                fHelicopterGroup = IsGroupTheHelicopterGroup(curr);
-
-                // if this group is aboard the helicopter and we're showing the airspace layer, don't count any mercs aboard the
-                // chopper, because the chopper icon itself serves the function of showing the location/size of this group
-                if (!fHelicopterGroup || !fShowAircraftFlag)
-                {
-                    // if only showing retreat paths, ignore groups not in the battle sector
-                    // if NOT showing retreat paths, ignore groups not between sectors
-                    if ((gfDisplayPotentialRetreatPaths == true) && (sBattleSector == sSource) ||
-                             (gfDisplayPotentialRetreatPaths == false) && (curr.fBetweenSectors == true))
-                    {
-                        fMayRetreatFromBattle = false;
-                        fRetreatingFromBattle = false;
-
-                        if ((sBattleSector == sSource) && (SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTORINFO.SECTOR(curr.ubPrevX, curr.ubPrevY) == sDest))
-                        {
-                            fMayRetreatFromBattle = true;
-                        }
-
-                        if ((sBattleSector == sDest) && (SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTORINFO.SECTOR(curr.ubPrevX, curr.ubPrevY) == sSource))
-                        {
-                            fRetreatingFromBattle = true;
-                        }
-
-                        ubMercsInGroup = curr.ubGroupSize;
-
-                        if (((SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTORINFO.SECTOR(curr.ubNextX, curr.ubNextY) == sDest)) || (fMayRetreatFromBattle == true))
-                        {
-                            // if it's a valid vehicle, but not the helicopter (which can fly empty)
-                            if (curr.fVehicle && !fHelicopterGroup && (GivenMvtGroupIdFindVehicleId(curr.ubGroupID) != -1))
-                            {
-                                // make sure empty vehicles (besides helicopter) aren't in motion!
-                                Debug.Assert(ubMercsInGroup > 0);
-                                // subtract 1, we don't wanna count the vehicle itself for purposes of showing a number on the map
-                                ubMercsInGroup--;
-                            }
-
-                            iCountEnter += ubMercsInGroup;
-
-                            if ((curr.uiArrivalTime - GameClock.GetWorldTotalMin() <= ABOUT_TO_ARRIVE_DELAY) || (fMayRetreatFromBattle == true))
-                            {
-                                fAboutToArriveEnter = true;
-                            }
-                        }
-                        else if ((SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTORINFO.SECTOR(curr.ubNextX, curr.ubNextY) == sSource) || (fRetreatingFromBattle == true))
-                        {
-                            // if it's a valid vehicle, but not the helicopter (which can fly empty)
-                            if (curr.fVehicle && !fHelicopterGroup && (GivenMvtGroupIdFindVehicleId(curr.ubGroupID) != -1))
-                            {
-                                // make sure empty vehicles (besides helicopter) aren't in motion!
-                                Debug.Assert(ubMercsInGroup > 0);
-                                // subtract 1, we don't wanna count the vehicle itself for purposes of showing a number on the map
-                                ubMercsInGroup--;
-                            }
-
-                            iCountExit += ubMercsInGroup;
-                        }
-                    }
-                }
-            }
-
-            // next group
-            curr = curr.next;
-        }
-
-        // if there was actually anyone leaving this sector and entering next
-        if (iCountEnter > 0)
-        {
-            return (true);
-        }
-        else
+        //        if (gpBattleGroup is not null)
+        //        {
+        //            //Debug.Assert( gfPreBattleInterfaceActive );
+        //            sBattleSector = SECTORINFO.SECTOR(gpBattleGroup.ubSectorX, gpBattleGroup.ubSectorY);
+        //        }
+        //
+        //        // debug only
+        //        if (gfDisplayPotentialRetreatPaths == true)
+        //        {
+        //            //Debug.Assert( gfPreBattleInterfaceActive );
+        //        }
+        //
+        //
+        //        // get number of characters entering/existing between these two sectors.  Special conditions during 
+        //        // pre-battle interface to return where this function is used to show potential retreating directions instead!
+        //
+        //        //	check all groups
+        //        while (curr)
+        //        {
+        //            // if player group
+        //            if (curr.fPlayer == true)
+        //            {
+        //                fHelicopterGroup = IsGroupTheHelicopterGroup(curr);
+        //
+        //                // if this group is aboard the helicopter and we're showing the airspace layer, don't count any mercs aboard the
+        //                // chopper, because the chopper icon itself serves the function of showing the location/size of this group
+        //                if (!fHelicopterGroup || !fShowAircraftFlag)
+        //                {
+        //                    // if only showing retreat paths, ignore groups not in the battle sector
+        //                    // if NOT showing retreat paths, ignore groups not between sectors
+        //                    if ((gfDisplayPotentialRetreatPaths == true) && (sBattleSector == sSource) ||
+        //                             (gfDisplayPotentialRetreatPaths == false) && (curr.fBetweenSectors == true))
+        //                    {
+        //                        fMayRetreatFromBattle = false;
+        //                        fRetreatingFromBattle = false;
+        //
+        //                        if ((sBattleSector == sSource) && (SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTORINFO.SECTOR(curr.ubPrevX, curr.ubPrevY) == sDest))
+        //                        {
+        //                            fMayRetreatFromBattle = true;
+        //                        }
+        //
+        //                        if ((sBattleSector == sDest) && (SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTORINFO.SECTOR(curr.ubPrevX, curr.ubPrevY) == sSource))
+        //                        {
+        //                            fRetreatingFromBattle = true;
+        //                        }
+        //
+        //                        ubMercsInGroup = curr.ubGroupSize;
+        //
+        //                        if (((SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sSource) && (SECTORINFO.SECTOR(curr.ubNextX, curr.ubNextY) == sDest)) || (fMayRetreatFromBattle == true))
+        //                        {
+        //                            // if it's a valid vehicle, but not the helicopter (which can fly empty)
+        //                            if (curr.fVehicle && !fHelicopterGroup && (GivenMvtGroupIdFindVehicleId(curr.ubGroupID) != -1))
+        //                            {
+        //                                // make sure empty vehicles (besides helicopter) aren't in motion!
+        //                                Debug.Assert(ubMercsInGroup > 0);
+        //                                // subtract 1, we don't wanna count the vehicle itself for purposes of showing a number on the map
+        //                                ubMercsInGroup--;
+        //                            }
+        //
+        //                            iCountEnter += ubMercsInGroup;
+        //
+        //                            if ((curr.uiArrivalTime - GameClock.GetWorldTotalMin() <= ABOUT_TO_ARRIVE_DELAY) || (fMayRetreatFromBattle == true))
+        //                            {
+        //                                fAboutToArriveEnter = true;
+        //                            }
+        //                        }
+        //                        else if ((SECTORINFO.SECTOR(curr.ubSectorX, curr.ubSectorY) == sDest) && (SECTORINFO.SECTOR(curr.ubNextX, curr.ubNextY) == sSource) || (fRetreatingFromBattle == true))
+        //                        {
+        //                            // if it's a valid vehicle, but not the helicopter (which can fly empty)
+        //                            if (curr.fVehicle && !fHelicopterGroup && (GivenMvtGroupIdFindVehicleId(curr.ubGroupID) != -1))
+        //                            {
+        //                                // make sure empty vehicles (besides helicopter) aren't in motion!
+        //                                Debug.Assert(ubMercsInGroup > 0);
+        //                                // subtract 1, we don't wanna count the vehicle itself for purposes of showing a number on the map
+        //                                ubMercsInGroup--;
+        //                            }
+        //
+        //                            iCountExit += ubMercsInGroup;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //
+        //            // next group
+        //            curr = curr.next;
+        //        }
+        //
+        //        // if there was actually anyone leaving this sector and entering next
+        //        if (iCountEnter > 0)
+        //        {
+        //            return (true);
+        //        }
+        //        else
         {
             return (false);
         }
@@ -3180,11 +3174,10 @@ public class StrategicMovement
 
 
     // this is only for grunts who were in mvt groups between sectors and are set to a new squad...NOTHING ELSE!!!!!
-    public static void SetGroupPosition(int ubNextX, int ubNextY, int ubPrevX, int ubPrevY, int uiTraverseTime, int uiArriveTime, int ubGroupId)
+    public static void SetGroupPosition(int ubNextX, MAP_ROW ubNextY, int ubPrevX, MAP_ROW ubPrevY, int uiTraverseTime, int uiArriveTime, int ubGroupId)
     {
         GROUP? pGroup;
         PLAYERGROUP? pPlayer;
-
 
         // get the group
         pGroup = GetGroup(ubGroupId);
@@ -3201,8 +3194,8 @@ public class StrategicMovement
         pGroup.ubNextY = ubNextY;
         pGroup.ubPrevX = ubPrevX;
         pGroup.ubPrevY = ubPrevY;
-        pGroup.uiTraverseTime = uiTraverseTime;
-        SetGroupArrivalTime(pGroup, uiArriveTime);
+        //        pGroup.uiTraverseTime = uiTraverseTime;
+        //        SetGroupArrivalTime(pGroup, uiArriveTime);
         pGroup.fBetweenSectors = true;
 
 
@@ -3210,12 +3203,12 @@ public class StrategicMovement
         //now, if player group set all grunts in the group to be between secotrs
         if (pGroup.fPlayer == true)
         {
-            pPlayer = pGroup.pPlayerList;
-            while (pPlayer)
-            {
-                pPlayer.pSoldier.fBetweenSectors = true;
-                pPlayer = pPlayer.next;
-            }
+            //            pPlayer = pGroup.pPlayerList;
+            //            while (pPlayer)
+            //            {
+            //                pPlayer.pSoldier.fBetweenSectors = true;
+            //                pPlayer = pPlayer.next;
+            //            }
         }
 
 
@@ -3253,12 +3246,12 @@ public class StrategicMovement
         while (pGroup is not null)
         {
             // Save each node in the LL
-            FileManager.FileWrite(hFile, pGroup, sizeof(GROUP), &uiNumBytesWritten);
-            if (uiNumBytesWritten != sizeof(GROUP))
-            {
-                //Error Writing group node to disk
-                return (false);
-            }
+//            FileManager.FileWrite(hFile, pGroup, sizeof(GROUP), &uiNumBytesWritten);
+//            if (uiNumBytesWritten != sizeof(GROUP))
+//            {
+//                //Error Writing group node to disk
+//                return (false);
+//            }
 
             //
             // Save the linked list, for the current type of group
@@ -3292,7 +3285,7 @@ public class StrategicMovement
         }
 
         // Save the unique id mask
-        FileManager.FileWrite(hFile, uniqueIDMask, sizeof(int) * 8, &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * 8)
         {
             //Error Writing size of L.L. to disk
@@ -3322,27 +3315,27 @@ public class StrategicMovement
 
 
         //delete the existing group list
-        while (gpGroupList)
-        {
-            RemoveGroupFromList(gpGroupList);
-        }
+        //        while (gpGroupList)
+        //        {
+        //            RemoveGroupFromList(gpGroupList);
+        //        }
 
 
         //load the number of nodes in the list
-        FileManager.FileRead(hFile, &uiNumberOfGroups, sizeof(int), &uiNumBytesRead);
+        //        FileManager.FileRead(hFile, uiNumberOfGroups, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
             return (false);
         }
 
-        pGroup = gpGroupList;
+        //        pGroup = gpGroupList;
 
         //loop through all the nodes and add them to the LL
         for (cnt = 0; cnt < uiNumberOfGroups; cnt++)
         {
             //allocate memory for the node
-            pTemp = MemAlloc(sizeof(GROUP));
+            //            pTemp = MemAlloc(sizeof(GROUP));
             if (pTemp == null)
             {
                 return (false);
@@ -3351,11 +3344,11 @@ public class StrategicMovement
             //memset(pTemp, 0, sizeof(GROUP));
 
             //Read in the node
-            FileManager.FileRead(hFile, pTemp, sizeof(GROUP), &uiNumBytesRead);
-            if (uiNumBytesRead != sizeof(GROUP))
+            //            FileManager.FileRead(hFile, pTemp, sizeof(GROUP), &uiNumBytesRead);
+            //            if (uiNumBytesRead != sizeof(GROUP))
             {
                 //Error Writing size of L.L. to disk
-                return (false);
+                //                return (false);
             }
 
 
@@ -3366,11 +3359,11 @@ public class StrategicMovement
             if (pTemp.fPlayer)
             {
                 //if there is a player list, add it
-                if (pTemp.ubGroupSize)
-                {
-                    //Save the player group list
-                    LoadPlayerGroupList(hFile, &pTemp);
-                }
+                //                if (pTemp.ubGroupSize)
+                //                {
+                //                    //Save the player group list
+                //                    LoadPlayerGroupList(hFile, &pTemp);
+                //                }
             }
             else //else its an enemy group
             {
@@ -3389,57 +3382,57 @@ public class StrategicMovement
             //if its the firs node
             if (cnt == 0)
             {
-                gpGroupList = pTemp;
-                pGroup = gpGroupList;
+                //                gpGroupList = pTemp;
+                //                pGroup = gpGroupList;
             }
             else
             {
-                pGroup.next = pTemp;
-                pGroup = pGroup.next;
+                //                pGroup.next = pTemp;
+                //                pGroup = pGroup.next;
             }
         }
 
         // Load the unique id mask
-        FileManager.FileRead(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesRead);
+        //        FileManager.FileRead(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesRead);
 
         //@@@ TEMP!
         //Rebuild the uniqueIDMask as a very old bug broke the uniqueID assignments in extremely rare cases.
         //memset(uniqueIDMask, 0, sizeof(int) * 8);
-        pGroup = gpGroupList;
-        while (pGroup)
-        {
-            if (pGroup.fPlayer)
-            {
-                if (pGroup.ubGroupSize)
-                {
-                    ubNumPlayerGroupsFull++;
-                }
-                else
-                {
-                    ubNumPlayerGroupsEmpty++;
-                }
-            }
-            else
-            {
-                if (pGroup.ubGroupSize)
-                {
-                    ubNumEnemyGroupsFull++;
-                }
-                else
-                {
-                    ubNumEnemyGroupsEmpty++;
-                }
-            }
-            if (ubNumPlayerGroupsEmpty || ubNumEnemyGroupsEmpty)
-            {
-                //report error?
-            }
-            index = pGroup.ubGroupID / 32;
-            bit = pGroup.ubGroupID % 32;
-            mask = 1 << bit;
-            uniqueIDMask[index] += mask;
-            pGroup = pGroup.next;
-        }
+        //        pGroup = gpGroupList;
+        //        while (pGroup)
+        //        {
+        //            if (pGroup.fPlayer)
+        //            {
+        //                if (pGroup.ubGroupSize)
+        //                {
+        //                    ubNumPlayerGroupsFull++;
+        //                }
+        //                else
+        //                {
+        //                    ubNumPlayerGroupsEmpty++;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (pGroup.ubGroupSize)
+        //                {
+        //                    ubNumEnemyGroupsFull++;
+        //                }
+        //                else
+        //                {
+        //                    ubNumEnemyGroupsEmpty++;
+        //                }
+        //            }
+        //            if (ubNumPlayerGroupsEmpty || ubNumEnemyGroupsEmpty)
+        //            {
+        //                //report error?
+        //            }
+        //            index = pGroup.ubGroupID / 32;
+        //            bit = pGroup.ubGroupID % 32;
+        //            mask = 1 << bit;
+        //            uniqueIDMask[index] += mask;
+        //            pGroup = pGroup.next;
+        //        }
 
         if (uiNumBytesRead != sizeof(int) * 8)
         {
@@ -3458,38 +3451,38 @@ public class StrategicMovement
         int uiNumBytesWritten = 0;
         int uiProfileID;
 
-        pTemp = pGroup.pPlayerList;
-
-        while (pTemp)
-        {
-            uiNumberOfNodesInList++;
-            pTemp = pTemp.next;
-        }
+//        pTemp = pGroup.pPlayerList;
+//
+//        while (pTemp)
+//        {
+//            uiNumberOfNodesInList++;
+//            pTemp = pTemp.next;
+//        }
 
         //Save the number of nodes in the list
-        FileManager.FileWrite(hFile, &uiNumberOfNodesInList, sizeof(int), &uiNumBytesWritten);
-        if (uiNumBytesWritten != sizeof(int))
-        {
-            //Error Writing size of L.L. to disk
-            return (false);
-        }
-
-        pTemp = pGroup.pPlayerList;
+//        FileManager.FileWrite(hFile, ref uiNumberOfNodesInList, sizeof(int), out uiNumBytesWritten);
+//        if (uiNumBytesWritten != sizeof(int))
+//        {
+//            //Error Writing size of L.L. to disk
+//            return (false);
+//        }
+//
+//        pTemp = pGroup.pPlayerList;
 
         //Loop trhough and save only the players profile id
-        while (pTemp)
-        {
-            // Save the ubProfile ID for this node
-            uiProfileID = pTemp.ubProfileID;
-            FileManager.FileWrite(hFile, uiProfileID, sizeof(int), out uiNumBytesWritten);
-            if (uiNumBytesWritten != sizeof(int))
-            {
-                //Error Writing size of L.L. to disk
-                return (false);
-            }
-
-            pTemp = pTemp.next;
-        }
+//        while (pTemp)
+//        {
+//            // Save the ubProfile ID for this node
+//            uiProfileID = pTemp.ubProfileID;
+//            FileManager.FileWrite(hFile, uiProfileID, sizeof(int), out uiNumBytesWritten);
+//            if (uiNumBytesWritten != sizeof(int))
+//            {
+//                //Error Writing size of L.L. to disk
+//                return (false);
+//            }
+//
+//            pTemp = pTemp.next;
+//        }
 
         return (true);
     }
@@ -3502,7 +3495,7 @@ public class StrategicMovement
         PLAYERGROUP? pTemp = null;
         PLAYERGROUP? pHead = null;
         int uiNumberOfNodes = 0;
-        int uiProfileID = 0;
+        NPCID uiProfileID = 0;
         int uiNumBytesRead;
         int cnt = 0;
         int sTempID;
@@ -3513,7 +3506,7 @@ public class StrategicMovement
         //	pHead = *pGroup.pPlayerList;
 
         // Load the number of nodes in the player list
-        FileManager.FileRead(hFile, &uiNumberOfNodes, sizeof(int), &uiNumBytesRead);
+        FileManager.FileRead(hFile, ref uiNumberOfNodes, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3525,7 +3518,7 @@ public class StrategicMovement
         for (cnt = 0; cnt < uiNumberOfNodes; cnt++)
         {
             //allcate space for the current node
-            pTemp = MemAlloc(sizeof(PLAYERGROUP));
+//            pTemp = MemAlloc(sizeof(PLAYERGROUP));
             if (pTemp == null)
             {
                 return (false);
@@ -3533,7 +3526,7 @@ public class StrategicMovement
 
 
             // Load the ubProfile ID for this node
-            FileManager.FileRead(hFile, &uiProfileID, sizeof(int), &uiNumBytesRead);
+            FileManager.FileRead(hFile, ref uiProfileID, sizeof(int), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(int))
             {
                 //Error Writing size of L.L. to disk
@@ -3541,7 +3534,7 @@ public class StrategicMovement
             }
 
             //Set up the current node
-            pTemp.ubProfileID = (int)uiProfileID;
+            pTemp.ubProfileID = uiProfileID;
             sTempID = GetSoldierIDFromMercID(pTemp.ubProfileID);
 
             //Should never happen
@@ -3577,12 +3570,12 @@ public class StrategicMovement
         int uiNumBytesWritten = 0;
 
         //Save the enemy struct info to the saved game file
-        FileManager.FileWrite(hFile, pGroup.pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesWritten);
-        if (uiNumBytesWritten != sizeof(ENEMYGROUP))
-        {
-            //Error Writing size of L.L. to disk
-            return (false);
-        }
+//        FileManager.FileWrite(hFile, pGroup.pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesWritten);
+//        if (uiNumBytesWritten != sizeof(ENEMYGROUP))
+//        {
+//            //Error Writing size of L.L. to disk
+//            return (false);
+//        }
 
         return (true);
     }
@@ -3596,15 +3589,15 @@ public class StrategicMovement
         ENEMYGROUP pEnemyGroup;
 
         //Load the enemy struct
-        FileManager.FileRead(hFile, ref pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesRead);
-        if (uiNumBytesRead != sizeof(ENEMYGROUP))
-        {
-            //Error Writing size of L.L. to disk
-            return (false);
-        }
+//        FileManager.FileRead(hFile, ref pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesRead);
+//        if (uiNumBytesRead != sizeof(ENEMYGROUP))
+//        {
+//            //Error Writing size of L.L. to disk
+//            return (false);
+//        }
 
         //Assign the struct to the group list
-        pGroup.pEnemyGroup = pEnemyGroup;
+//        pGroup.pEnemyGroup = pEnemyGroup;
 
         return (true);
     }
@@ -3672,7 +3665,7 @@ public class StrategicMovement
         uiNumberOfWayPoints = pWayPoints.Count;
 
         //Save the number of waypoints
-        FileManager.FileWrite(hFile, &uiNumberOfWayPoints, sizeof(int), &uiNumBytesWritten);
+        FileManager.FileWrite(hFile, ref uiNumberOfWayPoints, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3686,15 +3679,15 @@ public class StrategicMovement
             for (cnt = 0; cnt < uiNumberOfWayPoints; cnt++)
             {
                 //Save the waypoint node
-                FileManager.FileWrite(hFile, pWayPoints, sizeof(WAYPOINT), &uiNumBytesWritten);
-                if (uiNumBytesWritten != sizeof(WAYPOINT))
-                {
-                    //Error Writing size of L.L. to disk
-                    return (false);
-                }
-
-                //Advance to the next waypoint
-                pWayPoints = pWayPoints.next;
+//                FileManager.FileWrite(hFile, pWayPoints, sizeof(WAYPOINT), &uiNumBytesWritten);
+//                if (uiNumBytesWritten != sizeof(WAYPOINT))
+//                {
+//                    //Error Writing size of L.L. to disk
+//                    return (false);
+//                }
+//
+//                //Advance to the next waypoint
+//                pWayPoints = pWayPoints.next;
             }
         }
 
@@ -3713,7 +3706,7 @@ public class StrategicMovement
 
 
         //Load the number of waypoints
-        FileManager.FileRead(hFile, &uiNumberOfWayPoints, sizeof(int), &uiNumBytesRead);
+        FileManager.FileRead(hFile, ref uiNumberOfWayPoints, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3721,51 +3714,51 @@ public class StrategicMovement
         }
 
 
-        if (uiNumberOfWayPoints)
-        {
-            pWayPoints = pGroup.pWaypoints;
-            for (cnt = 0; cnt < uiNumberOfWayPoints; cnt++)
-            {
-                //Allocate memory for the node
-                pTemp = MemAlloc(sizeof(WAYPOINT));
-                if (pTemp == null)
-                {
-                    return (false);
-                }
-
-                memset(pTemp, 0, sizeof(WAYPOINT));
-
-                //Load the waypoint node
-                FileManager.FileRead(hFile, pTemp, sizeof(WAYPOINT), &uiNumBytesRead);
-                if (uiNumBytesRead != sizeof(WAYPOINT))
-                {
-                    //Error Writing size of L.L. to disk
-                    return (false);
-                }
-
-
-                pTemp.next = null;
-
-
-                //if its the first node
-                if (cnt == 0)
-                {
-                    pGroup.pWaypoints = pTemp;
-                    pWayPoints = pTemp;
-                }
-                else
-                {
-                    pWayPoints.next = pTemp;
-
-                    //Advance to the next waypoint
-                    pWayPoints = pWayPoints.next;
-                }
-            }
-        }
-        else
-        {
-            pGroup.pWaypoints = null;
-        }
+//        if (uiNumberOfWayPoints)
+//        {
+//            pWayPoints = pGroup.pWaypoints;
+//            for (cnt = 0; cnt < uiNumberOfWayPoints; cnt++)
+//            {
+//                //Allocate memory for the node
+//                pTemp = MemAlloc(sizeof(WAYPOINT));
+//                if (pTemp == null)
+//                {
+//                    return (false);
+//                }
+//
+//                memset(pTemp, 0, sizeof(WAYPOINT));
+//
+//                //Load the waypoint node
+//                FileManager.FileRead(hFile, pTemp, sizeof(WAYPOINT), &uiNumBytesRead);
+//                if (uiNumBytesRead != sizeof(WAYPOINT))
+//                {
+//                    //Error Writing size of L.L. to disk
+//                    return (false);
+//                }
+//
+//
+//                pTemp.next = null;
+//
+//
+//                //if its the first node
+//                if (cnt == 0)
+//                {
+//                    pGroup.pWaypoints = pTemp;
+//                    pWayPoints = pTemp;
+//                }
+//                else
+//                {
+//                    pWayPoints.next = pTemp;
+//
+//                    //Advance to the next waypoint
+//                    pWayPoints = pWayPoints.next;
+//                }
+//            }
+//        }
+//        else
+//        {
+//            pGroup.pWaypoints = null;
+//        }
 
         return (true);
     }
@@ -3775,153 +3768,153 @@ public class StrategicMovement
         SECTORINFO? pSector;
         int uiSectorID;
 
-        uiSectorID = SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
-        pSector = &SectorInfo[uiSectorID];
-
-        if (pSector.ubTraversability[NORTH_STRATEGIC_MOVE] != GROUNDBARRIER &&
-                pSector.ubTraversability[NORTH_STRATEGIC_MOVE] != EDGEOFWORLD)
-        {
-            pGroup.ubPrevX = pGroup.ubSectorX;
-            pGroup.ubPrevY = pGroup.ubSectorY - 1;
-        }
-        else if (pSector.ubTraversability[EAST_STRATEGIC_MOVE] != GROUNDBARRIER &&
-                pSector.ubTraversability[EAST_STRATEGIC_MOVE] != EDGEOFWORLD)
-        {
-            pGroup.ubPrevX = pGroup.ubSectorX + 1;
-            pGroup.ubPrevY = pGroup.ubSectorY;
-        }
-        else if (pSector.ubTraversability[WEST_STRATEGIC_MOVE] != GROUNDBARRIER &&
-                pSector.ubTraversability[WEST_STRATEGIC_MOVE] != EDGEOFWORLD)
-        {
-            pGroup.ubPrevX = pGroup.ubSectorX - 1;
-            pGroup.ubPrevY = pGroup.ubSectorY;
-        }
-        else if (pSector.ubTraversability[SOUTH_STRATEGIC_MOVE] != GROUNDBARRIER &&
-                pSector.ubTraversability[SOUTH_STRATEGIC_MOVE] != EDGEOFWORLD)
-        {
-            pGroup.ubPrevX = pGroup.ubSectorX;
-            pGroup.ubPrevY = pGroup.ubSectorY + 1;
-        }
-        else
-        {
-            //AssertMsg(0, String("Player group cannot retreat from sector %c%d ", pGroup.ubSectorY + 'A' - 1, pGroup.ubSectorX));
-            return;
-        }
-        if (pGroup.fPlayer)
-        { //update the previous sector for the mercs
-            PLAYERGROUP? pPlayer;
-            pPlayer = pGroup.pPlayerList;
-            while (pPlayer)
-            {
-                pPlayer.pSoldier.ubPrevSectorID = (int)SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
-                pPlayer = pPlayer.next;
-            }
-        }
+//        uiSectorID = SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
+//        pSector = &SectorInfo[uiSectorID];
+//
+//        if (pSector.ubTraversability[NORTH_STRATEGIC_MOVE] != GROUNDBARRIER &&
+//                pSector.ubTraversability[NORTH_STRATEGIC_MOVE] != EDGEOFWORLD)
+//        {
+//            pGroup.ubPrevX = pGroup.ubSectorX;
+//            pGroup.ubPrevY = pGroup.ubSectorY - 1;
+//        }
+//        else if (pSector.ubTraversability[EAST_STRATEGIC_MOVE] != GROUNDBARRIER &&
+//                pSector.ubTraversability[EAST_STRATEGIC_MOVE] != EDGEOFWORLD)
+//        {
+//            pGroup.ubPrevX = pGroup.ubSectorX + 1;
+//            pGroup.ubPrevY = pGroup.ubSectorY;
+//        }
+//        else if (pSector.ubTraversability[WEST_STRATEGIC_MOVE] != GROUNDBARRIER &&
+//                pSector.ubTraversability[WEST_STRATEGIC_MOVE] != EDGEOFWORLD)
+//        {
+//            pGroup.ubPrevX = pGroup.ubSectorX - 1;
+//            pGroup.ubPrevY = pGroup.ubSectorY;
+//        }
+//        else if (pSector.ubTraversability[SOUTH_STRATEGIC_MOVE] != GROUNDBARRIER &&
+//                pSector.ubTraversability[SOUTH_STRATEGIC_MOVE] != EDGEOFWORLD)
+//        {
+//            pGroup.ubPrevX = pGroup.ubSectorX;
+//            pGroup.ubPrevY = pGroup.ubSectorY + 1;
+//        }
+//        else
+//        {
+//            //AssertMsg(0, String("Player group cannot retreat from sector %c%d ", pGroup.ubSectorY + 'A' - 1, pGroup.ubSectorX));
+//            return;
+//        }
+//        if (pGroup.fPlayer)
+//        { //update the previous sector for the mercs
+//            PLAYERGROUP? pPlayer;
+//            pPlayer = pGroup.pPlayerList;
+//            while (pPlayer)
+//            {
+//                pPlayer.pSoldier.ubPrevSectorID = (int)SECTOR(pGroup.ubPrevX, pGroup.ubPrevY);
+//                pPlayer = pPlayer.next;
+//            }
+//        }
     }
 
     //Called when all checks have been made for the group (if possible to retreat, etc.)  This function
     //blindly determines where to move the group.
     void RetreatGroupToPreviousSector(GROUP? pGroup)
     {
-        int ubSector, ubDirection = 255;
-        int iVehId, dx, dy;
-        Debug.Assert(pGroup);
-        //AssertMsg(!pGroup.fBetweenSectors, "Can't retreat a group when between sectors!");
-
-        if (pGroup.ubPrevX != 16 || pGroup.ubPrevY != 16)
-        { //Group has a previous sector
-            pGroup.ubNextX = pGroup.ubPrevX;
-            pGroup.ubNextY = pGroup.ubPrevY;
-
-            //Determine the correct direction.
-            dx = pGroup.ubNextX - pGroup.ubSectorX;
-            dy = pGroup.ubNextY - pGroup.ubSectorY;
-            if (dy == -1 && !dx)
-            {
-                ubDirection = NORTH_STRATEGIC_MOVE;
-            }
-            else if (dx == 1 && !dy)
-            {
-                ubDirection = EAST_STRATEGIC_MOVE;
-            }
-            else if (dy == 1 && !dx)
-            {
-                ubDirection = SOUTH_STRATEGIC_MOVE;
-            }
-            else if (dx == -1 && !dy)
-            {
-                ubDirection = WEST_STRATEGIC_MOVE;
-            }
-            else
-            {
-
-                //AssertMsg(0, String("Player group attempting illegal retreat from %c%d to %c%d.",
-                //pGroup.ubSectorY + 'A' - 1, pGroup.ubSectorX, pGroup.ubNextY + 'A' - 1, pGroup.ubNextX));
-            }
-        }
-        else
-        { //Group doesn't have a previous sector.  Create one, then recurse
-            CalculateGroupRetreatSector(pGroup);
-            RetreatGroupToPreviousSector(pGroup);
-        }
-
-        //Calc time to get to next waypoint...
-        ubSector = (int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
-        pGroup.uiTraverseTime = GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup);
-        if (pGroup.uiTraverseTime == 0xffffffff)
-        {
-            //AssertMsg(0, String("Group %d (%s) attempting illegal move from %c%d to %c%d (%s).",
-            // pGroup.ubGroupID, (pGroup.fPlayer) ? "Player" : "AI",
-            //         pGroup.ubSectorY + 'A', pGroup.ubSectorX, pGroup.ubNextY + 'A', pGroup.ubNextX,
-            //         gszTerrain[SectorInfo[ubSector].ubTraversability[ubDirection]]));
-        }
-
-        if (!pGroup.uiTraverseTime)
-        { //Because we are in the strategic layer, don't make the arrival instantaneous (towns).
-            pGroup.uiTraverseTime = 5;
-        }
-
-        SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
-        pGroup.fBetweenSectors = true;
-        pGroup.uiFlags |= GROUPFLAG_JUST_RETREATED_FROM_BATTLE;
-
-        if (pGroup.fVehicle == true)
-        {
-            // vehicle, set fact it is between sectors too
-            if ((iVehId = (GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID))) != -1)
-            {
-                pVehicleList[iVehId].fBetweenSectors = true;
-            }
-        }
-
-        //Post the event!
-        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
-        {
-            //AssertMsg(0, "Failed to add movement event.");
-
-            //For the case of player groups, we need to update the information of the soldiers.
-            if (pGroup.fPlayer)
-            {
-                PLAYERGROUP? curr;
-                curr = pGroup.pPlayerList;
-
-                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
-                {
-                    GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
-                }
-
-
-                while (curr)
-                {
-                    curr.pSoldier.fBetweenSectors = true;
-
-                    // OK, Remove the guy from tactical engine!
-                    RemoveSoldierFromTacticalSector(curr.pSoldier, true);
-
-                    curr = curr.next;
-                }
-            }
-        }
+//        int ubSector, ubDirection = 255;
+//        int iVehId, dx, dy;
+//        Debug.Assert(pGroup);
+//        //AssertMsg(!pGroup.fBetweenSectors, "Can't retreat a group when between sectors!");
+//
+//        if (pGroup.ubPrevX != 16 || pGroup.ubPrevY != 16)
+//        { //Group has a previous sector
+//            pGroup.ubNextX = pGroup.ubPrevX;
+//            pGroup.ubNextY = pGroup.ubPrevY;
+//
+//            //Determine the correct direction.
+//            dx = pGroup.ubNextX - pGroup.ubSectorX;
+//            dy = pGroup.ubNextY - pGroup.ubSectorY;
+//            if (dy == -1 && !dx)
+//            {
+//                ubDirection = NORTH_STRATEGIC_MOVE;
+//            }
+//            else if (dx == 1 && !dy)
+//            {
+//                ubDirection = EAST_STRATEGIC_MOVE;
+//            }
+//            else if (dy == 1 && !dx)
+//            {
+//                ubDirection = SOUTH_STRATEGIC_MOVE;
+//            }
+//            else if (dx == -1 && !dy)
+//            {
+//                ubDirection = WEST_STRATEGIC_MOVE;
+//            }
+//            else
+//            {
+//
+//                //AssertMsg(0, String("Player group attempting illegal retreat from %c%d to %c%d.",
+//                //pGroup.ubSectorY + 'A' - 1, pGroup.ubSectorX, pGroup.ubNextY + 'A' - 1, pGroup.ubNextX));
+//            }
+//        }
+//        else
+//        { //Group doesn't have a previous sector.  Create one, then recurse
+//            CalculateGroupRetreatSector(pGroup);
+//            RetreatGroupToPreviousSector(pGroup);
+//        }
+//
+//        //Calc time to get to next waypoint...
+//        ubSector = (int)SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
+//        pGroup.uiTraverseTime = GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup);
+//        if (pGroup.uiTraverseTime == 0xffffffff)
+//        {
+//            //AssertMsg(0, String("Group %d (%s) attempting illegal move from %c%d to %c%d (%s).",
+//            // pGroup.ubGroupID, (pGroup.fPlayer) ? "Player" : "AI",
+//            //         pGroup.ubSectorY + 'A', pGroup.ubSectorX, pGroup.ubNextY + 'A', pGroup.ubNextX,
+//            //         gszTerrain[SectorInfo[ubSector].ubTraversability[ubDirection]]));
+//        }
+//
+//        if (!pGroup.uiTraverseTime)
+//        { //Because we are in the strategic layer, don't make the arrival instantaneous (towns).
+//            pGroup.uiTraverseTime = 5;
+//        }
+//
+//        SetGroupArrivalTime(pGroup, GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime);
+//        pGroup.fBetweenSectors = true;
+//        pGroup.uiFlags |= GROUPFLAG_JUST_RETREATED_FROM_BATTLE;
+//
+//        if (pGroup.fVehicle == true)
+//        {
+//            // vehicle, set fact it is between sectors too
+//            if ((iVehId = (GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID))) != -1)
+//            {
+//                pVehicleList[iVehId].fBetweenSectors = true;
+//            }
+//        }
+//
+//        //Post the event!
+//        if (!GameEvents.AddStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.uiArrivalTime, pGroup.ubGroupID))
+//        {
+//            //AssertMsg(0, "Failed to add movement event.");
+//
+//            //For the case of player groups, we need to update the information of the soldiers.
+//            if (pGroup.fPlayer)
+//            {
+//                PLAYERGROUP? curr;
+//                curr = pGroup.pPlayerList;
+//
+//                if (pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY > GameClock.GetWorldTotalMin())
+//                {
+//                    GameEvents.AddStrategicEvent(EVENT.GROUP_ABOUT_TO_ARRIVE, pGroup.uiArrivalTime - ABOUT_TO_ARRIVE_DELAY, pGroup.ubGroupID);
+//                }
+//
+//
+//                while (curr)
+//                {
+//                    curr.pSoldier.fBetweenSectors = true;
+//
+//                    // OK, Remove the guy from tactical engine!
+//                    RemoveSoldierFromTacticalSector(curr.pSoldier, true);
+//
+//                    curr = curr.next;
+//                }
+//            }
+//        }
     }
 
     public static GROUP? FindMovementGroupInSector(int ubSectorX, MAP_ROW ubSectorY, bool fPlayer)
@@ -3979,23 +3972,23 @@ public class StrategicMovement
         return false;
     }
 
-    WAYPOINT? GetFinalWaypoint(GROUP? pGroup)
+    public static WAYPOINT? GetFinalWaypoint(GROUP? pGroup)
     {
-        WAYPOINT? wp;
-
-        Debug.Assert(pGroup);
-
-        //Make sure they're on a one way route, otherwise this request is illegal
-        Debug.Assert(pGroup.ubMoveType == ONE_WAY);
-
-        wp = pGroup.pWaypoints;
-        if (wp)
-        {
-            while (wp.next)
-            {
-                wp = wp.next;
-            }
-        }
+        WAYPOINT? wp = null;
+        //
+        //        Debug.Assert(pGroup);
+        //
+        //        //Make sure they're on a one way route, otherwise this request is illegal
+        //        Debug.Assert(pGroup.ubMoveType == ONE_WAY);
+        //
+        //        wp = pGroup.pWaypoints;
+        //        if (wp)
+        //        {
+        //            while (wp.next)
+        //            {
+        //                wp = wp.next;
+        //            }
+        //        }
 
         return (wp);
     }
@@ -4009,20 +4002,20 @@ public class StrategicMovement
         int sSectorX, sSectorZ;
         MAP_ROW sSectorY;
 
-        GetCurrentBattleSectorXYZ(out sSectorX, out sSectorY, out sSectorZ);
-        pGroup = gpGroupList;
-        while (pGroup)
-        {
-            next = pGroup.next;
-            if (!pGroup.fPlayer)
-            {
-                if (pGroup.ubSectorX == sSectorX && pGroup.ubSectorY == sSectorY)
-                {
-                    ResetMovementForEnemyGroup(pGroup);
-                }
-            }
-            pGroup = next;
-        }
+        //        GetCurrentBattleSectorXYZ(out sSectorX, out sSectorY, out sSectorZ);
+        //        pGroup = gpGroupList;
+        //        while (pGroup)
+        //        {
+        //            next = pGroup.next;
+        //            if (!pGroup.fPlayer)
+        //            {
+        //                if (pGroup.ubSectorX == sSectorX && pGroup.ubSectorY == sSectorY)
+        //                {
+        //                    ResetMovementForEnemyGroup(pGroup);
+        //                }
+        //            }
+        //            pGroup = next;
+        //        }
     }
 
 
@@ -4038,14 +4031,15 @@ public class StrategicMovement
         {
             return;
         }
-        if (!pGroup.fBetweenSectors || !pGroup.ubNextX || !pGroup.ubNextY)
-        { //Reset the group's assignment by moving it to the group's original sector as it's pending group.
-            RepollSAIGroup(pGroup);
-            return;
-        }
 
-        //Cancel the event that is posted.
-        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
+        //        if (!pGroup.fBetweenSectors || !pGroup.ubNextX || !pGroup.ubNextY)
+        //        { //Reset the group's assignment by moving it to the group's original sector as it's pending group.
+        //            RepollSAIGroup(pGroup);
+        //            return;
+        //        }
+        //
+        //        //Cancel the event that is posted.
+        //        DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //Calculate the new arrival time (all data pertaining to movement should be valid)
         if (pGroup.uiTraverseTime > 400)
@@ -4096,15 +4090,15 @@ public class StrategicMovement
                 }
             }
 
-            for (cnt = 0; cnt < MAX_VEHICLES; cnt++)
-            {
-                pGroup = GetGroup(gubVehicleMovementGroups[cnt]);
-
-                if (pGroup != null)
-                {
-                    pGroup.fPersistant = true;
-                }
-            }
+            //            for (cnt = 0; cnt < MAX_VEHICLES; cnt++)
+            //            {
+            //                pGroup = GetGroup(gubVehicleMovementGroups[cnt]);
+            //
+            //                if (pGroup != null)
+            //                {
+            //                    pGroup.fPersistant = true;
+            //                }
+            //            }
 
             fDoChange = true;
         }
@@ -4115,7 +4109,7 @@ public class StrategicMovement
             fDone = false;
             while (!fDone)
             {
-                pGroup = gpGroupList;
+                //                pGroup = gpGroupList;
                 while (pGroup is not null)
                 {
                     if (pGroup.ubGroupSize == 0 && !pGroup.fPersistant)
@@ -4138,99 +4132,99 @@ public class StrategicMovement
     //IN the sector, or just left the sector, it will return false.
     bool GroupWillMoveThroughSector(GROUP? pGroup, int ubSectorX, MAP_ROW ubSectorY)
     {
-        WAYPOINT? wp;
-        int i, dx, dy;
-        int ubOrigX;
-        MAP_ROW ubOrigY;
-
-        Debug.Assert(pGroup);
-        //AssertMsg(pGroup.ubMoveType == ONE_WAY, String("GroupWillMoveThroughSector() -- Attempting to test group with an invalid move type.  ubGroupID: %d, ubMoveType: %d, sector: %c%d -- KM:0",
-        //pGroup.ubGroupID, pGroup.ubMoveType, pGroup.ubSectorY + 'A' - 1, pGroup.ubSectorX));
-
-        //Preserve the original sector values, as we will be temporarily modifying the group's ubSectorX/Y values
-        //as we traverse the waypoints.
-        ubOrigX = pGroup.ubSectorX;
-        ubOrigY = pGroup.ubSectorY;
-
-        i = pGroup.ubNextWaypointID;
-        wp = pGroup.pWaypoints;
-
-        if (!wp)
-        { //This is a floating group!?
-            return false;
-        }
-        while (i--)
-        { //Traverse through the waypoint list to the next waypoint ID
-            Debug.Assert(wp);
-            wp = wp.next;
-        }
-        Debug.Assert(wp);
-
-
-        while (wp)
-        {
-            while (pGroup.ubSectorX != wp.x || pGroup.ubSectorY != wp.y)
-            {
-                //We now have the correct waypoint.
-                //Analyse the group and determine which direction it will move from the current sector.
-                dx = wp.x - pGroup.ubSectorX;
-                dy = wp.y - pGroup.ubSectorY;
-                if (dx && dy)
-                { //Can't move diagonally!
-                  //AssertMsg(0, String("GroupWillMoveThroughSector() -- Attempting to process waypoint in a diagonal direction from sector %c%d to sector %c%d for group at sector %c%d -- KM:0",
-                  // pGroup.ubSectorY + 'A', pGroup.ubSectorX, wp.y + 'A' - 1, wp.x, ubOrigY + 'A' - 1, ubOrigX));
-                  // pGroup.ubSectorX = ubOrigX;
-                  // pGroup.ubSectorY = ubOrigY;
-                    return true;
-                }
-                if (!dx && !dy) //Can't move to position currently at!
-                {
-                    //AssertMsg(0, String("GroupWillMoveThroughSector() -- Attempting to process same waypoint at %c%d for group at %c%d -- KM:0",
-                    //wp.y + 'A' - 1, wp.x, ubOrigY + 'A' - 1, ubOrigX));
-                    //pGroup.ubSectorX = ubOrigX;
-                    //pGroup.ubSectorY = ubOrigY;
-                    return true;
-                }
-                //Clip dx/dy value so that the move is for only one sector.
-                if (dx >= 1)
-                {
-                    dx = 1;
-                }
-                else if (dy >= 1)
-                {
-                    dy = 1;
-                }
-                else if (dx <= -1)
-                {
-                    dx = -1;
-                }
-                else if (dy <= -1)
-                {
-                    dy = -1;
-                }
-                else
-                {
-                    Debug.Assert(false);
-                    pGroup.ubSectorX = ubOrigX;
-                    pGroup.ubSectorY = ubOrigY;
-                    return true;
-                }
-                //Advance the sector value
-                pGroup.ubSectorX = (int)(dx + pGroup.ubSectorX);
-                pGroup.ubSectorY = (MAP_ROW)(dy + (int)pGroup.ubSectorY);
-                //Check to see if it the sector we are checking to see if this group will be moving through.
-                if (pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY)
-                {
-                    pGroup.ubSectorX = ubOrigX;
-                    pGroup.ubSectorY = ubOrigY;
-                    return true;
-                }
-            }
-            //Advance to the next waypoint.
-            wp = wp.next;
-        }
-        pGroup.ubSectorX = ubOrigX;
-        pGroup.ubSectorY = ubOrigY;
+        //        WAYPOINT? wp;
+        //        int i, dx, dy;
+        //        int ubOrigX;
+        //        MAP_ROW ubOrigY;
+        //
+        //        Debug.Assert(pGroup);
+        //        //AssertMsg(pGroup.ubMoveType == ONE_WAY, String("GroupWillMoveThroughSector() -- Attempting to test group with an invalid move type.  ubGroupID: %d, ubMoveType: %d, sector: %c%d -- KM:0",
+        //        //pGroup.ubGroupID, pGroup.ubMoveType, pGroup.ubSectorY + 'A' - 1, pGroup.ubSectorX));
+        //
+        //        //Preserve the original sector values, as we will be temporarily modifying the group's ubSectorX/Y values
+        //        //as we traverse the waypoints.
+        //        ubOrigX = pGroup.ubSectorX;
+        //        ubOrigY = pGroup.ubSectorY;
+        //
+        //        i = pGroup.ubNextWaypointID;
+        //        wp = pGroup.pWaypoints;
+        //
+        //        if (!wp)
+        //        { //This is a floating group!?
+        //            return false;
+        //        }
+        //        while (i--)
+        //        { //Traverse through the waypoint list to the next waypoint ID
+        //            Debug.Assert(wp);
+        //            wp = wp.next;
+        //        }
+        //        Debug.Assert(wp);
+        //
+        //
+        //        while (wp)
+        //        {
+        //            while (pGroup.ubSectorX != wp.x || pGroup.ubSectorY != wp.y)
+        //            {
+        //                //We now have the correct waypoint.
+        //                //Analyse the group and determine which direction it will move from the current sector.
+        //                dx = wp.x - pGroup.ubSectorX;
+        //                dy = wp.y - pGroup.ubSectorY;
+        //                if (dx && dy)
+        //                { //Can't move diagonally!
+        //                  //AssertMsg(0, String("GroupWillMoveThroughSector() -- Attempting to process waypoint in a diagonal direction from sector %c%d to sector %c%d for group at sector %c%d -- KM:0",
+        //                  // pGroup.ubSectorY + 'A', pGroup.ubSectorX, wp.y + 'A' - 1, wp.x, ubOrigY + 'A' - 1, ubOrigX));
+        //                  // pGroup.ubSectorX = ubOrigX;
+        //                  // pGroup.ubSectorY = ubOrigY;
+        //                    return true;
+        //                }
+        //                if (!dx && !dy) //Can't move to position currently at!
+        //                {
+        //                    //AssertMsg(0, String("GroupWillMoveThroughSector() -- Attempting to process same waypoint at %c%d for group at %c%d -- KM:0",
+        //                    //wp.y + 'A' - 1, wp.x, ubOrigY + 'A' - 1, ubOrigX));
+        //                    //pGroup.ubSectorX = ubOrigX;
+        //                    //pGroup.ubSectorY = ubOrigY;
+        //                    return true;
+        //                }
+        //                //Clip dx/dy value so that the move is for only one sector.
+        //                if (dx >= 1)
+        //                {
+        //                    dx = 1;
+        //                }
+        //                else if (dy >= 1)
+        //                {
+        //                    dy = 1;
+        //                }
+        //                else if (dx <= -1)
+        //                {
+        //                    dx = -1;
+        //                }
+        //                else if (dy <= -1)
+        //                {
+        //                    dy = -1;
+        //                }
+        //                else
+        //                {
+        //                    Debug.Assert(false);
+        //                    pGroup.ubSectorX = ubOrigX;
+        //                    pGroup.ubSectorY = ubOrigY;
+        //                    return true;
+        //                }
+        //                //Advance the sector value
+        //                pGroup.ubSectorX = (int)(dx + pGroup.ubSectorX);
+        //                pGroup.ubSectorY = (MAP_ROW)(dy + (int)pGroup.ubSectorY);
+        //                //Check to see if it the sector we are checking to see if this group will be moving through.
+        //                if (pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY)
+        //                {
+        //                    pGroup.ubSectorX = ubOrigX;
+        //                    pGroup.ubSectorY = ubOrigY;
+        //                    return true;
+        //                }
+        //            }
+        //            //Advance to the next waypoint.
+        //            wp = wp.next;
+        //        }
+        //        pGroup.ubSectorX = ubOrigX;
+        //        pGroup.ubSectorY = ubOrigY;
         return false;
     }
 
@@ -4303,31 +4297,31 @@ public class StrategicMovement
     {
         string str = string.Empty;
         //Report that the vehicle that just arrived is out of gas.
-        wprintf(str, gzLateLocalizedString[5],
-            pVehicleStrings[pVehicleList[iVehicleID].ubVehicleType],
-            ubSectorY + 'A' - 1, ubSectorX);
-        DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, null);
+        //        wprintf(str, gzLateLocalizedString[5],
+        //            pVehicleStrings[pVehicleList[iVehicleID].ubVehicleType],
+        //            ubSectorY + 'A' - 1, ubSectorX);
+        //        DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, null);
     }
 
-    void SetLocationOfAllPlayerSoldiersInGroup(GROUP? pGroup, int sSectorX, MAP_ROW sSectorY, int bSectorZ)
+    public static void SetLocationOfAllPlayerSoldiersInGroup(GROUP? pGroup, int sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
         PLAYERGROUP? pPlayer = null;
         SOLDIERTYPE? pSoldier = null;
 
-        pPlayer = pGroup.pPlayerList;
-        while (pPlayer)
-        {
-            pSoldier = pPlayer.pSoldier;
-
-            if (pSoldier != null)
-            {
-                pSoldier.sSectorX = sSectorX;
-                pSoldier.sSectorY = sSectorY;
-                pSoldier.bSectorZ = bSectorZ;
-            }
-
-            pPlayer = pPlayer.next;
-        }
+        //        pPlayer = pGroup.pPlayerList;
+        //        while (pPlayer)
+        //        {
+        //            pSoldier = pPlayer.pSoldier;
+        //
+        //            if (pSoldier != null)
+        //            {
+        //                pSoldier.sSectorX = sSectorX;
+        //                pSoldier.sSectorY = sSectorY;
+        //                pSoldier.bSectorZ = bSectorZ;
+        //            }
+        //
+        //            pPlayer = pPlayer.next;
+        //        }
 
 
         // if it's a vehicle
@@ -4336,7 +4330,7 @@ public class StrategicMovement
             int iVehicleId = -1;
             VEHICLETYPE? pVehicle = null;
 
-            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
+            //            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicleId != -1);
 
             pVehicle = (pVehicleList[iVehicleId]);
@@ -4348,8 +4342,8 @@ public class StrategicMovement
             // if it ain't the chopper
             if (iVehicleId != iHelicopterVehicleId)
             {
-                pSoldier = GetSoldierStructureForVehicle(iVehicleId);
-                Debug.Assert(pSoldier);
+                //                pSoldier = GetSoldierStructureForVehicle(iVehicleId);
+                //                Debug.Assert(pSoldier);
 
                 // these are apparently unnecessary, since vehicles are part of the pPlayerList in a vehicle group.  Oh well. 
                 pSoldier.sSectorX = sSectorX;
@@ -4366,27 +4360,27 @@ public class StrategicMovement
         int ubMaxWaypointID = 0;
         int ubTotalWaypoints;
         int ubChosen;
-        SEC ubSectorID;
+        SEC ubSectorID = 0;
 
         //return; //disabled for now
 
         Debug.Assert(!pGroup.fPlayer);
         Debug.Assert(pGroup.ubMoveType == MOVE_TYPES.ENDTOEND_FORWARDS);
-        Debug.Assert(pGroup.pEnemyGroup.ubIntention == PATROL);
+        //        Debug.Assert(pGroup.pEnemyGroup.ubIntention == PATROL);
 
         //Search for the event, and kill it (if it exists)!
         GameEvents.DeleteStrategicEvent(EVENT.GROUP_ARRIVAL, pGroup.ubGroupID);
 
         //count the group's waypoints
-        wp = pGroup.pWaypoints;
-        while (wp)
-        {
-            if (wp.next)
-            {
-                ubMaxWaypointID++;
-            }
-            wp = wp.next;
-        }
+        //        wp = pGroup.pWaypoints;
+        //        while (wp)
+        //        {
+        //            if (wp.next)
+        //            {
+        //                ubMaxWaypointID++;
+        //            }
+        //            wp = wp.next;
+        //        }
         //double it (they go back and forth) -- it's using zero based indices, so you have to add one to get the number of actual
         //waypoints in one direction.
         ubTotalWaypoints = (int)((ubMaxWaypointID) * 2);
@@ -4408,19 +4402,19 @@ public class StrategicMovement
         }
 
         //Traverse through the waypoint list again, to extract the location they are at.
-        wp = pGroup.pWaypoints;
-        while (wp && ubChosen)
+        //        wp = pGroup.pWaypoints;
+        //        while (wp && ubChosen)
         {
             ubChosen--;
-            wp = wp.next;
+            //            wp = wp.next;
         }
 
         //logic error if this fails.  We should have a null value for ubChosen
-        Debug.Assert(!ubChosen);
-        Debug.Assert(wp);
+        //        Debug.Assert(!ubChosen);
+        //        Debug.Assert(wp);
 
         //Move the group to the location of this chosen waypoint.
-        ubSectorID = SECTORINFO.SECTOR(wp.x, wp.y);
+        //        ubSectorID = SECTORINFO.SECTOR(wp.x, wp.y);
 
         //Set up this global var to randomize the arrival time of the group from
         //1 minute to actual traverse time between the sectors.
@@ -4475,7 +4469,7 @@ public class StrategicMovement
         }
         else if (pSector.bBloodCats == -1)
         { //If we haven't been ambushed by bloodcats yet...
-            if (gfAutoAmbush || PreChance(ubChance))
+          //            if (gfAutoAmbush || PreChance(ubChance))
             {
                 //randomly choose from 5-8, 7-10, 9-12 bloodcats based on easy, normal, and hard, respectively
                 bDifficultyMaxCats = (int)(Globals.Random.Next(4) + (int)gGameOptions.ubDifficultyLevel * 2 + 3);
@@ -4501,61 +4495,61 @@ public class StrategicMovement
         }
         else if (ubSectorID != SEC.I16)
         {
-            if (!gfAutoAmbush && PreChance(95))
+            //            if (!gfAutoAmbush && PreChance(95))
             { //already ambushed here.  But 5% chance of getting ambushed again!
                 fAlreadyAmbushed = true;
             }
         }
 
-        if (!fAlreadyAmbushed && ubSectorID != SEC.N5 && pSector.bBloodCats > 0 &&
-                !pGroup.fVehicle && !NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY))
-        {
-            if (ubSectorID != SEC.I16 || gubFact[FACT.PLAYER_KNOWS_ABOUT_BLOODCAT_LAIR] == 0)
-            {
-                gubEnemyEncounterCode = BLOODCAT_AMBUSH_CODE;
-            }
-            else
-            {
-                gubEnemyEncounterCode = ENTERING_BLOODCAT_LAIR_CODE;
-            }
-            return true;
-        }
-        else
+        //        if (!fAlreadyAmbushed && ubSectorID != SEC.N5 && pSector.bBloodCats > 0 &&
+        //                !pGroup.fVehicle && !NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY))
+        //        {
+        //            if (ubSectorID != SEC.I16 || gubFact[FACT.PLAYER_KNOWS_ABOUT_BLOODCAT_LAIR] == 0)
+        //            {
+        //                gubEnemyEncounterCode = BLOODCAT_AMBUSH_CODE;
+        //            }
+        //            else
+        //            {
+        //                gubEnemyEncounterCode = ENTERING_BLOODCAT_LAIR_CODE;
+        //            }
+        //            return true;
+        //        }
+        //        else
         {
             gubEnemyEncounterCode = ENCOUNTER_CODE.NO_ENCOUNTER_CODE;
             return false;
         }
     }
 
-    void NotifyPlayerOfBloodcatBattle(int ubSectorX, MAP_ROW ubSectorY)
+    public static void NotifyPlayerOfBloodcatBattle(int ubSectorX, MAP_ROW ubSectorY)
     {
         string str = string.Empty;
         string zTempString = string.Empty;
         if (gubEnemyEncounterCode == ENCOUNTER_CODE.BLOODCAT_AMBUSH_CODE)
         {
-            StrategicMap.GetSectorIDString(ubSectorX, ubSectorY, 0, zTempString, true);
-            wprintf(str, pMapErrorString[12], zTempString);
+            //            StrategicMap.GetSectorIDString(ubSectorX, ubSectorY, 0, zTempString, true);
+            //            wprintf(str, pMapErrorString[12], zTempString);
         }
         else if (gubEnemyEncounterCode == ENCOUNTER_CODE.ENTERING_BLOODCAT_LAIR_CODE)
         {
-            wcscpy(str, pMapErrorString[13]);
+            //            wcscpy(str, pMapErrorString[13]);
         }
 
         if (guiCurrentScreen == ScreenName.MAP_SCREEN)
         {   //Force render mapscreen (need to update the position of the group before the dialog appears.
             fMapPanelDirty = true;
-            MapScreenHandle();
-            InvalidateScreen();
-            RefreshScreen(null);
+            //            MapScreenHandle();
+            //            InvalidateScreen();
+            //            RefreshScreen(null);
         }
 
         gfUsePersistantPBI = true;
-        DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
+        //        DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
     }
 
     public static void PlaceGroupInSector(int ubGroupID, int sPrevX, MAP_ROW sPrevY, int sNextX, MAP_ROW sNextY, int bZ, bool fCheckForBattle)
     {
-        ClearMercPathsAndWaypointsForAllInGroup(GetGroup(ubGroupID));
+        //        ClearMercPathsAndWaypointsForAllInGroup(GetGroup(ubGroupID));
 
         // change where they are and where they're going
         SetGroupPrevSectors(ubGroupID, sPrevX, sPrevY);
@@ -4569,7 +4563,7 @@ public class StrategicMovement
 
 
     // ARM: centralized it so we can do a comprehensive Debug.Assert on it.  Causing problems with helicopter group!
-    void SetGroupArrivalTime(GROUP? pGroup, uint uiArrivalTime)
+    public static void SetGroupArrivalTime(GROUP? pGroup, uint uiArrivalTime)
     {
         // PLEASE CENTRALIZE ALL CHANGES TO THE ARRIVAL TIMES OF GROUPS THROUGH HERE, ESPECIALLY THE HELICOPTER GROUP!!!
 
@@ -4580,7 +4574,7 @@ public class StrategicMovement
         // Also note that non-chopper groups can currently be delayed such that this assetion would fail - enemy groups by
         // DelayEnemyGroupsIfPathsCross(), and player groups via PrepareGroupsForSimultaneousArrival().  So we skip the assert.
 
-        if (IsGroupTheHelicopterGroup(pGroup))
+        //        if (IsGroupTheHelicopterGroup(pGroup))
         {
             // make sure it's valid (NOTE: the correct traverse time must be set first!)
             if (uiArrivalTime > (GameClock.GetWorldTotalMin() + pGroup.uiTraverseTime))
@@ -4598,7 +4592,7 @@ public class StrategicMovement
 
 
     // non-persistent groups should be simply removed instead!
-    void CancelEmptyPersistentGroupMovement(GROUP? pGroup)
+    public static void CancelEmptyPersistentGroupMovement(GROUP? pGroup)
     {
         Debug.Assert(pGroup is not null);
         Debug.Assert(pGroup.ubGroupSize == 0);
@@ -4747,18 +4741,18 @@ public class StrategicMovement
         gpGroupPrompting = pGroup;
 
         // build string for squad
-        StrategicMap.GetSectorIDString(sSectorX, sSectorY, bSectorZ, out wSectorName, false);
-        sString = wprintf(pLandMarkInSectorString[0], pGroup.pPlayerList.pSoldier.bAssignment + 1, wSectorName);
+//        StrategicMap.GetSectorIDString(sSectorX, sSectorY, bSectorZ, out wSectorName, false);
+//        sString = wprintf(pLandMarkInSectorString[0], pGroup.pPlayerList.pSoldier.bAssignment + 1, wSectorName);
 
         if (GroupAtFinalDestination(pGroup))
         {
             // do an OK message box
-            DoScreenIndependantMessageBox(sString, MSG_BOX_FLAG_OK, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
+//            DoScreenIndependantMessageBox(sString, MSG_BOX_FLAG_OK, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
         }
         else
         {
             // do a CONTINUE/STOP message box
-            DoScreenIndependantMessageBox(sString, MSG_BOX_FLAG_CONTINUESTOP, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
+//            DoScreenIndependantMessageBox(sString, MSG_BOX_FLAG_CONTINUESTOP, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
         }
 
         // wait, we're prompting the player
