@@ -10,7 +10,7 @@ public class WordWrap
     {
         string OneChar;
         string zTemp = string.Empty;
-        string zStrDots;
+        string zStrDots = string.Empty;
         int uiDotWidth;
         int uiTempStringPixWidth = 0;
         int uiStringPixWidth;
@@ -18,32 +18,32 @@ public class WordWrap
         int uiSrcStringCntr = 0;
         int uiOneCharWidth = 0;
 
-        uiStringPixWidth = WFStringPixLength(pString, uiFont);
+//        uiStringPixWidth = WFStringPixLength(pString, uiFont);
 
         OneChar = "\0";
         //zTemp[0] = '\0';
 
         //if the string is wider then the loaction
-        if (uiStringPixWidth <= uiWidthToFitIn)
-        {
-            //leave
-            return (true);
-        }
+//        if (uiStringPixWidth <= uiWidthToFitIn)
+//        {
+//            //leave
+//            return (true);
+//        }
 
         //addd the '...' to the string
-        wcscpy(zStrDots, "...");
+//        wcscpy(zStrDots, "...");
 
         //get the width of the '...'
-        uiDotWidth = FontSubSystem.StringPixLength(zStrDots, uiFont);
+//        uiDotWidth = FontSubSystem.StringPixLength(zStrDots, uiFont);
 
         //since the temp strig will contain the '...' add the '...' width to the temp string now
-        uiTempStringPixWidth = uiDotWidth;
+//        uiTempStringPixWidth = uiDotWidth;
 
         //loop through and add each character, 1 at a time
         while (!fDone)
         {
             //get the next char
-            OneChar = pString[uiSrcStringCntr];
+//            OneChar = pString[uiSrcStringCntr];
 
             //get the width of the character
             uiOneCharWidth = FontSubSystem.StringPixLength(OneChar.ToString(), uiFont);
@@ -52,7 +52,7 @@ public class WordWrap
             if ((uiTempStringPixWidth + uiOneCharWidth) <= uiWidthToFitIn)
             {
                 //add the new char to the string
-                zTemp = wcscat(OneChar);
+//                zTemp = wcscat(OneChar);
 
                 //add the new char width to the string width
                 uiTempStringPixWidth += uiOneCharWidth;

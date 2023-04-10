@@ -4746,7 +4746,7 @@ int	gOrangeGlowG[]=
 
         AdjustAniSpeed(pSoldier);
 
-        //if (_KeyDown(SPACE))
+//        if (_KeyDown(SPACE))
         {
             //pSoldier.sAniDelay = 1000;
         }

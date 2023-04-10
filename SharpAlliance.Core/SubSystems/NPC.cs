@@ -259,7 +259,7 @@ public class NPC
         pFileData = MemAlloc(uiFileSize);
         if (pFileData)
         {
-            if (!FileManager.FileRead(hFile, ref pFileData, uiFileSize, out uiBytesRead) || uiBytesRead != uiFileSize)
+//            if (!FileManager.FileRead(hFile, ref pFileData, uiFileSize, out uiBytesRead) || uiBytesRead != uiFileSize)
             {
                 MemFree(pFileData);
                 pFileData = null;

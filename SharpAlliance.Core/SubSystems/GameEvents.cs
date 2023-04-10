@@ -688,7 +688,7 @@ public class GameEvents
 
 
         //write the number of strategic events
-        //FileWrite(hFile, out uiNumGameEvents, sizeof(int), &uiNumBytesWritten);
+        //FileWrite(hFile, out uiNumGameEvents, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
@@ -703,7 +703,7 @@ public class GameEvents
             sGameEvent = pTempEvent;
 
             //write the current strategic event
-            //FileWrite(hFile, &sGameEvent, sizeof(STRATEGICEVENT), &uiNumBytesWritten);
+            //FileWrite(hFile, &sGameEvent, sizeof(STRATEGICEVENT), out uiNumBytesWritten);
             if (uiNumBytesWritten != 0)//sizeof(STRATEGICEVENT))
             {
                 return (false);

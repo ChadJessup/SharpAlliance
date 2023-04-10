@@ -25,7 +25,7 @@ public class StrategicStatus
         int uiNumBytesWritten = 10;
 
         //Save the Strategic Status structure to the saved game file
-        //FileWrite(hFile, &gStrategicStatus, sizeof(STRATEGIC_STATUS), &uiNumBytesWritten);
+        //FileWrite(hFile, &gStrategicStatus, sizeof(STRATEGIC_STATUS), out uiNumBytesWritten);
         if (uiNumBytesWritten != 10)//sizeof(STRATEGIC_STATUS))
         {
             return (false);

@@ -44,32 +44,32 @@ public class BobbyR
         InitBobbyRWoodBackground();
 
         // load the Bobbyname graphic and add it
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.BOBBYNAME);
         VeldridVideoManager.AddVideoObject(imageFile, out guiBobbyName);
 
         // load the plaque graphic and add it
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         //FilenameForBPP("LAPTOP\\BobbyPlaques.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
 
         // load the TopHinge graphic and add it
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         //FilenameForBPP("LAPTOP\\BobbyTopHinge.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
 
         // load the BottomHinge graphic and add it
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         //Utils.FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
 
         // load the Store Plaque graphic and add it
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.STOREPLAQUE);
         VeldridVideoManager.AddVideoObject(imageFile, out guiStorePlaque);
 
         // load the Handle graphic and add it
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         //FilenameForBPP("LAPTOP\\BobbyHandle.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
 
@@ -80,7 +80,7 @@ public class BobbyR
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
             // load the Handle graphic and add it
-            //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+            //
             //Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
 
             var hvobject = VeldridVideoManager.AddVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
@@ -239,7 +239,7 @@ public class BobbyR
     {
         //VOBJECT_DESC VObjectDesc;
         // load the Wood bacground graphic and add it
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         string filename = Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti");
         VeldridVideoManager.AddVideoObject(filename, out guiWoodBackground);
 

@@ -220,18 +220,18 @@ public class History
         // load History video objects into memory
 
         // title bar
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTITLE);
 
         // top portion of the screen background
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         Utils.FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTOP);
 
 
         // shaded line
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         Utils.FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject(VObjectDesc, out guiSHADELINE);
 
@@ -243,7 +243,7 @@ public class History
             CHECKF(AddVideoObject(&VObjectDesc, &guiVERTLINE));
         */
         // black divider line - long ( 480 length)
-        //VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //
         Utils.FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
         VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiLONGLINE);
 

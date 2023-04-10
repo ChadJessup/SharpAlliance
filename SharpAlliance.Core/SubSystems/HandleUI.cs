@@ -943,27 +943,27 @@ public class HandleUI
             Overhead.GetSoldier(out pSoldier, Globals.gusUIFullTargetID);
 
 //            if (_KeyDown(SHIFT))
-            {
-                pSoldier.bBreath -= 30;
-
-                if (pSoldier.bBreath < 0)
-                {
-                    pSoldier.bBreath = 0;
-                }
-
-                bDamage = 1;
-            }
+//            {
+//                pSoldier.bBreath -= 30;
+//
+//                if (pSoldier.bBreath < 0)
+//                {
+//                    pSoldier.bBreath = 0;
+//                }
+//
+//                bDamage = 1;
+//            }
 //            else
-            {
-                if (this.rnd.Next(2) > 0)
-                {
-                    bDamage = 20;
-                }
-                else
-                {
-                    bDamage = 25;
-                }
-            }
+//            {
+//                if (this.rnd.Next(2) > 0)
+//                {
+//                    bDamage = 20;
+//                }
+//                else
+//                {
+//                    bDamage = 25;
+//                }
+//            }
 
             Globals.gTacticalStatus.ubAttackBusyCount++;
 

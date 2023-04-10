@@ -357,25 +357,25 @@ public class CivQuotes
         }
 
 # if TAIWANESE
-        wprintf(gzCivQuote, "%s", zQuote);
+        wprintf(gzCivQuote, L"%s", zQuote);
 #else
-       // gzCivQuote = wprintf("\"%s\"", zQuote);
+        wprintf(gzCivQuote, "\"%s\"", zQuote);
 #endif
 
 
         if (ubCivQuoteID == CIV_QUOTE.HINT)
         {
-            // MapScreenMessage(FONT_MCOLOR_WHITE, MSG_DIALOG, "%s", gzCivQuote);
+//            MapScreenMessage(FONT_MCOLOR_WHITE, MSG_DIALOG, "%s", gzCivQuote);
         }
 
         // Create video oeverlay....
-        // memset(&VideoOverlayDesc, 0, sizeof(VIDEO_OVERLAY_DESC));
+//        memset(&VideoOverlayDesc, 0, sizeof(VIDEO_OVERLAY_DESC));
 
         // Prepare text box
-        //SET_USE_WINFONTS(true);
-        //SET_WINFONT(giSubTitleWinFont);
-        //gCivQuoteData.iDialogueBox = PrepareMercPopupBox(gCivQuoteData.iDialogueBox, BASIC_MERC_POPUP_BACKGROUND, BASIC_MERC_POPUP_BORDER, gzCivQuote, DIALOGUE_DEFAULT_WIDTH, 0, 0, 0, &gusCivQuoteBoxWidth, &gusCivQuoteBoxHeight);
-        //SET_USE_WINFONTS(false);
+//        SET_USE_WINFONTS(true);
+//        SET_WINFONT(giSubTitleWinFont);
+//        gCivQuoteData.iDialogueBox = PrepareMercPopupBox(gCivQuoteData.iDialogueBox, BASIC_MERC_POPUP_BACKGROUND, BASIC_MERC_POPUP_BORDER, gzCivQuote, DIALOGUE_DEFAULT_WIDTH, 0, 0, 0, gusCivQuoteBoxWidth, gusCivQuoteBoxHeight);
+//        SET_USE_WINFONTS(false);
 
         // OK, find center for box......
         sX = sX - (gusCivQuoteBoxWidth / 2);
@@ -415,27 +415,27 @@ public class CivQuotes
         VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
         VideoOverlayDesc.BltCallback = RenderCivQuoteBoxOverlay;
 
-        //        gCivQuoteData.iVideoOverlay = RegisterVideoOverlay(0, &VideoOverlayDesc);
+//        gCivQuoteData.iVideoOverlay = RegisterVideoOverlay(0, &VideoOverlayDesc);
 
 
         //Define main region
-        //        MSYS_DefineRegion(&(gCivQuoteData.MouseRegion), VideoOverlayDesc.sLeft, VideoOverlayDesc.sTop, VideoOverlayDesc.sRight, VideoOverlayDesc.sBottom, MSYS_PRIORITY_HIGHEST,
-        //                             CURSOR_NORMAL, MSYS_NO_CALLBACK, QuoteOverlayClickCallback);
+//        MSYS_DefineRegion((gCivQuoteData.MouseRegion), VideoOverlayDesc.sLeft, VideoOverlayDesc.sTop, VideoOverlayDesc.sRight, VideoOverlayDesc.sBottom, MSYS_PRIORITY_HIGHEST,
+//                             CURSOR_NORMAL, MSYS_NO_CALLBACK, QuoteOverlayClickCallback);
         // Add region
-        //        MSYS_AddRegion(&(gCivQuoteData.MouseRegion));
+//        MSYS_AddRegion((gCivQuoteData.MouseRegion));
 
 
         gCivQuoteData.bActive = true;
 
-        gCivQuoteData.uiTimeOfCreation = GetJA2Clock();
+//        gCivQuoteData.uiTimeOfCreation = GetJA2Clock();
 
-        //        gCivQuoteData.uiDelayTime = FindDelayForString(gzCivQuote) + 500;
+//        gCivQuoteData.uiDelayTime = FindDelayForString(gzCivQuote) + 500;
 
         gCivQuoteData.pCiv = pCiv;
 
     }
 
-    public static CIV_QUOTE DetermineCivQuoteEntry(SOLDIERTYPE pCiv, out int pubCivHintToUse, bool fCanUseHints)
+    int DetermineCivQuoteEntry(SOLDIERTYPE pCiv, ref int pubCivHintToUse, bool fCanUseHints)
     {
         CIV_TYPE ubCivType;
         int bTownId;
@@ -454,31 +454,29 @@ public class CivQuotes
             // Determine what type of quote to say...
             // Are are we going to attack?
 
-            if (pCiv.bAction == AI_ACTION.TOSS_PROJECTILE
-                || pCiv.bAction == AI_ACTION.FIRE_GUN
-                || pCiv.bAction == AI_ACTION.FIRE_GUN
-                || pCiv.bAction == AI_ACTION.KNIFE_MOVE)
-            {
-                return (CIV_QUOTE.ENEMY_THREAT);
-            }
-            else if (pCiv.bAction == AI_ACTION.OFFER_SURRENDER)
-            {
-                return (CIV_QUOTE.ENEMY_OFFER_SURRENDER);
-            }
-            // Hurt?
-            else if (pCiv.bLife < 30)
-            {
-                return (CIV_QUOTE.ENEMY_HURT);
-            }
-            // elite?
-            else if (pCiv.ubSoldierClass == SOLDIER_CLASS.ELITE)
-            {
-                return (CIV_QUOTE.ENEMY_ELITE);
-            }
-            else
-            {
-                return (CIV_QUOTE.ENEMY_ADMIN);
-            }
+//            if (pCiv.bAction == AI_ACTION_TOSS_PROJECTILE || pCiv.bAction == AI_ACTION_FIRE_GUN ||
+//                                pCiv.bAction == AI_ACTION_FIRE_GUN || pCiv.bAction == AI_ACTION_KNIFE_MOVE)
+//            {
+//                return (CIV_QUOTE_ENEMY_THREAT);
+//            }
+//            else if (pCiv.bAction == AI_ACTION_OFFER_SURRENDER)
+//            {
+//                return (CIV_QUOTE_ENEMY_OFFER_SURRENDER);
+//            }
+//            // Hurt?
+//            else if (pCiv.bLife < 30)
+//            {
+//                return (CIV_QUOTE_ENEMY_HURT);
+//            }
+//            // elite?
+//            else if (pCiv.ubSoldierClass == SOLDIER_CLASS_ELITE)
+//            {
+//                return (CIV_QUOTE_ENEMY_ELITE);
+//            }
+//            else
+//            {
+//                return (CIV_QUOTE_ENEMY_ADMIN);
+//            }
         }
 
         // Are we in a town sector?
@@ -816,10 +814,10 @@ public class CivQuotes
 
     void InitCivQuoteSystem()
     {
-        //memset(&gCivQuotes, 0, sizeof(gCivQuotes));
+//        memset(&gCivQuotes, 0, sizeof(gCivQuotes));
         CopyNumEntriesIntoQuoteStruct();
 
-        //memset(&gCivQuoteData, 0, sizeof(gCivQuoteData));
+//        memset(&gCivQuoteData, 0, sizeof(gCivQuoteData));
         gCivQuoteData.bActive = false;
         gCivQuoteData.iVideoOverlay = -1;
         gCivQuoteData.iDialogueBox = -1;
@@ -830,11 +828,11 @@ public class CivQuotes
     {
         int uiNumBytesWritten;
 
-        //FileWrite(hFile, &gCivQuotes, sizeof(gCivQuotes), &uiNumBytesWritten);
-        //if (uiNumBytesWritten != sizeof(gCivQuotes))
-        {
-            return (false);
-        }
+//        FileWrite(hFile, gCivQuotes, sizeof(gCivQuotes), out uiNumBytesWritten);
+//        if (uiNumBytesWritten != sizeof(gCivQuotes))
+//        {
+//            return (false);
+//        }
 
         return (true);
     }
@@ -844,11 +842,11 @@ public class CivQuotes
     {
         int uiNumBytesRead;
 
-        CIV_QUOTEStruct[] quotes = new CIV_QUOTEStruct[(int)CIV_QUOTE.NUM_CIV_QUOTES];
-        //        if (FileManager.FileRead<CIV_QUOTEStruct[]>(hFile, ref quotes, (int)CIV_QUOTE.NUM_CIV_QUOTES, out uiNumBytesRead))
-        {
-            return (false);
-        }
+//        FileRead(hFile, gCivQuotes, sizeof(gCivQuotes), out uiNumBytesRead);
+//        if (uiNumBytesRead != sizeof(gCivQuotes))
+//        {
+//            return (false);
+//        }
 
         CopyNumEntriesIntoQuoteStruct();
 

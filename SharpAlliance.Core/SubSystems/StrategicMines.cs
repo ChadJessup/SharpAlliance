@@ -731,7 +731,7 @@ public class StrategicMines
         int uiNumBytesWritten;
 
         //Save the MineStatus
-        // FileWrite(hFile, Globals.gMineStatus, sizeof(MINE_STATUS_TYPE) * MAX_NUMBER_OF_MINES, &uiNumBytesWritten);
+        // FileWrite(hFile, Globals.gMineStatus, sizeof(MINE_STATUS_TYPE) * MAX_NUMBER_OF_MINES, out uiNumBytesWritten);
         //if (uiNumBytesWritten != sizeof(MINE_STATUS_TYPE) * MAX_NUMBER_OF_MINES)
         {
             return (false);

@@ -557,7 +557,7 @@ public class FindLocations
             else
             {
                 fNight = true;
-                ubBackgroundLightPercent = gbLightSighting[0][ubBackgroundLightLevel];
+                ubBackgroundLightPercent = gbLightSighting[0, ubBackgroundLightLevel];
             }
         }
 
@@ -583,7 +583,7 @@ public class FindLocations
         pbPublOL = (gbPublicOpplist[pSoldier.bTeam][0]);
 
         // decide how far we're gonna be looking
-        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE][SoldierDifficultyLevel(pSoldier)];
+        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE, SoldierDifficultyLevel(pSoldier)];
 
         /*
             switch (pSoldier.bAttitude)
@@ -964,7 +964,7 @@ public class FindLocations
                     // reduce cover at nighttime based on how bright the light is at that location
                     // using the difference in sighting distance between the background and the
                     // light for this tile
-                    ubLightPercentDifference = (gbLightSighting[0][LightTrueLevel(sGridNo, pSoldier.bLevel)] - ubBackgroundLightPercent);
+                    ubLightPercentDifference = (gbLightSighting[0, LightTrueLevel(sGridNo, pSoldier.bLevel)] - ubBackgroundLightPercent);
                     if (iCoverValue >= 0)
                     {
                         iCoverValue -= (iCoverValue / 100) * ubLightPercentDifference;
@@ -1131,17 +1131,17 @@ public class FindLocations
             }
 
             // if the opponent is no threat at all for some reason
-            if (CalcManThreatValue(pOpponent, pSoldier.sGridNo, false, pSoldier) == -999)
-            {
-                continue;          // check next opponent
-            }
+//            if (CalcManThreatValue(pOpponent, pSoldier.sGridNo, false, pSoldier) == -999)
+//            {
+//                continue;          // check next opponent
+//            }
 
             // if personal knowledge is more up to date or at least equal
             if ((gubKnowledgeValue[pbPublOL - OLDEST_HEARD_VALUE, pbPersOL - OLDEST_HEARD_VALUE] > 0) ||
            (pbPersOL == pbPublOL))
             {
                 // using personal knowledge, obtain opponent's "best guess" gridno
-                sThreatLoc = gsLastKnownOppLoc[pSoldier.ubID, pOpponent.ubID];
+                sThreatLoc = gsLastKnownOppLoc[pSoldier.ubID][pOpponent.ubID];
             }
             else
             {
@@ -1150,7 +1150,7 @@ public class FindLocations
             }
 
             // calculate how far away this threat is (in adjusted pixels)
-            iThreatRange = GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, sThreatLoc);
+//            iThreatRange = GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, sThreatLoc);
 
             if (iThreatRange < iClosestThreatRange)
             {
@@ -1571,7 +1571,7 @@ public class FindLocations
                     // screen out anything brighter than our current best spot
                     bLightLevel = LightTrueLevel(sGridNo, pSoldier.bLevel);
 
-                    bLightDiff = gbLightSighting[0][bCurrLightLevel] - gbLightSighting[0][bLightLevel];
+                    bLightDiff = gbLightSighting[0, bCurrLightLevel] - gbLightSighting[0, bLightLevel];
 
                     // if the spot is darker than our current location, then bLightDiff > 0
                     // plus ignore differences of just 1 light level
@@ -1797,18 +1797,18 @@ public class FindLocations
                                     }
                                     else if (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
                                     {
-                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
-                                        {
-                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
-                                        }
-                                        else
-                                        {
-                                            iTempValue = 0;
-                                        }
+//                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
+//                                        {
+//                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
+//                                        }
+//                                        else
+//                                        {
+//                                            iTempValue = 0;
+//                                        }
                                     }
                                     else
                                     {
-                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
+//                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
                                     }
                                 }
                                 else
@@ -1828,78 +1828,78 @@ public class FindLocations
                             {
                                 pObj = (gWorldItems[pItemPool.iItemIndex].o);
                                 pItem = (Item[pObj.usItem]);
-                                if (pItem.usItemClass & IC.WEAPON && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
+                                if (pItem.usItemClass.HasFlag(IC.WEAPON) && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
                                 {
-                                    if ((pItem.usItemClass & IC.GUN) && (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0 || ((pObj.usItem == Items.ROCKET_RIFLE || pObj.usItem == Items.AUTO_ROCKET_RIFLE) && pObj.ubImprintID != NOBODY && pObj.ubImprintID != pSoldier.ubID)))
+                                    if ((pItem.usItemClass.HasFlag(IC.GUN)) && (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0 || ((pObj.usItem == Items.ROCKET_RIFLE || pObj.usItem == Items.AUTO_ROCKET_RIFLE) && pObj.ubImprintID != NOBODY && pObj.ubImprintID != pSoldier.ubID)))
                                     {
                                         // jammed or out of ammo, skip it!
                                         iTempValue = 0;
                                     }
                                     else if ((Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON)))
                                     {
-                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
-                                        {
-                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
-                                        }
-                                        else
-                                        {
-                                            iTempValue = 0;
-                                        }
+//                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
+//                                        {
+//                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
+//                                        }
+//                                        else
+//                                        {
+//                                            iTempValue = 0;
+//                                        }
                                     }
                                     else
                                     {
-                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
+//                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
                                     }
                                 }
                                 else if (pItem.usItemClass == IC.ARMOUR && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
                                 {
-                                    switch (Armour[pItem.ubClassIndex].ubArmourClass)
-                                    {
-                                        case ARMOURCLASS_HELMET:
-                                            if (pSoldier.inv[InventorySlot.HELMETPOS].usItem == NOTHING)
-                                            {
-                                                iTempValue = 200 + EffectiveArmour(pObj);
-                                            }
-                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
-                                            {
-                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS]));
-                                            }
-                                            else
-                                            {
-                                                iTempValue = 0;
-                                            }
-                                            break;
-                                        case ARMOURCLASS_VEST:
-                                            if (pSoldier.inv[VESTPOS].usItem == NOTHING)
-                                            {
-                                                iTempValue = 200 + EffectiveArmour(pObj);
-                                            }
-                                            else if (EffectiveArmour(&(pSoldier.inv[HELMETPOS])) > EffectiveArmour(pObj))
-                                            {
-                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.VESTPOS]));
-                                            }
-                                            else
-                                            {
-                                                iTempValue = 0;
-                                            }
-                                            break;
-                                        case ARMOURCLASS_LEGGINGS:
-                                            if (pSoldier.inv[InventorySlot.LEGPOS].usItem == NOTHING)
-                                            {
-                                                iTempValue = 200 + EffectiveArmour(pObj);
-                                            }
-                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
-                                            {
-                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.LEGPOS]));
-                                            }
-                                            else
-                                            {
-                                                iTempValue = 0;
-                                            }
-                                            break;
-                                        default:
-                                            break;
-                                    }
+//                                    switch (Armour[pItem.ubClassIndex].ubArmourClass)
+//                                    {
+//                                        case ARMOURCLASS_HELMET:
+//                                            if (pSoldier.inv[InventorySlot.HELMETPOS].usItem == NOTHING)
+//                                            {
+//                                                iTempValue = 200 + EffectiveArmour(pObj);
+//                                            }
+//                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
+//                                            {
+//                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS]));
+//                                            }
+//                                            else
+//                                            {
+//                                                iTempValue = 0;
+//                                            }
+//                                            break;
+//                                        case ARMOURCLASS_VEST:
+//                                            if (pSoldier.inv[VESTPOS].usItem == NOTHING)
+//                                            {
+//                                                iTempValue = 200 + EffectiveArmour(pObj);
+//                                            }
+//                                            else if (EffectiveArmour(&(pSoldier.inv[HELMETPOS])) > EffectiveArmour(pObj))
+//                                            {
+//                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.VESTPOS]));
+//                                            }
+//                                            else
+//                                            {
+//                                                iTempValue = 0;
+//                                            }
+//                                            break;
+//                                        case ARMOURCLASS_LEGGINGS:
+//                                            if (pSoldier.inv[InventorySlot.LEGPOS].usItem == NOTHING)
+//                                            {
+//                                                iTempValue = 200 + EffectiveArmour(pObj);
+//                                            }
+//                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
+//                                            {
+//                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.LEGPOS]));
+//                                            }
+//                                            else
+//                                            {
+//                                                iTempValue = 0;
+//                                            }
+//                                            break;
+//                                        default:
+//                                            break;
+//                                    }
                                 }
                                 else
                                 {

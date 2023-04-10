@@ -49,6 +49,9 @@ public partial class Globals
     public const int ITEMPICK_TEXT_HEIGHT = 17;
     public static ITEM_PICKUP_MENU_STRUCT gItemPickupMenu;
 
+    public static string wprintf(string format, params object?[] args) => string.Format(format, args);
+
+
     // This definition mimics what is found in WINDOWS.H ( for Direct Draw compatiblity )
     // From RGB to COLORVAL
     public static int FROMRGB(byte r, byte g, byte b) => ((int)(((r) | ((g) << 8)) | ((b)) << 16));

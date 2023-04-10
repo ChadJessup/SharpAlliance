@@ -2487,6 +2487,8 @@ public class InterfaceItems
 
             //            BltVideoObjectFromIndex(guiSAVEBUFFER, guiMapItemDescBox, 0, gsInvDescX, gsInvDescY, VO_BLT.SRCTRANSPARENCY, null);
 
+            BltVideoObjectFromIndex(guiSAVEBUFFER, guiMapItemDescBox, 0, gsInvDescX, gsInvDescY, VO_BLT.SRCTRANSPARENCY, null);
+
             //Display the money 'seperating' border
             if (gpItemDescObject.usItem == Items.MONEY)
             {
@@ -6727,7 +6729,7 @@ public class InterfaceItems
     {
         int uiLoadSize = 0;
         int uiNumBytesRead = 0;
-        ITEM_CURSOR_SAVE_INFO SaveStruct;
+        ITEM_CURSOR_SAVE_INFO SaveStruct = new();
 
         // Load structure
         //        uiLoadSize = sizeof(ITEM_CURSOR_SAVE_INFO);
@@ -6736,6 +6738,12 @@ public class InterfaceItems
         {
             return (false);
         }
+//        uiLoadSize = sizeof(ITEM_CURSOR_SAVE_INFO);
+//        FileRead(hFile, SaveStruct, uiLoadSize, out uiNumBytesRead);
+//        if (uiNumBytesRead != uiLoadSize)
+//        {
+//            return (false);
+//        }
 
         // Now set things up.....
         // Copy object
@@ -6803,12 +6811,12 @@ public class InterfaceItems
         }
 
         // save locations of watched points
-        //        uiSaveSize = sizeof(ITEM_CURSOR_SAVE_INFO);
-        //        FileWrite(hFile, SaveStruct, uiSaveSize, out uiNumBytesWritten);
-        //        if (uiNumBytesWritten != uiSaveSize)
-        {
-            return (false);
-        }
+//        uiSaveSize = sizeof(ITEM_CURSOR_SAVE_INFO);
+//        FileWrite(hFile, SaveStruct, uiSaveSize, out uiNumBytesWritten);
+//        if (uiNumBytesWritten != uiSaveSize)
+//        {
+//            return (false);
+//        }
 
         // All done...
 

@@ -1081,9 +1081,8 @@ public class AIUtils
 
     public static int ClosestKnownOpponent(SOLDIERTYPE pSoldier, out int psGridNo, out int pbLevel)
     {
-        psGridNo = 0;
-        pbLevel = 0;
-
+        psGridNo = -1;
+        pbLevel = -1;
         int psLastLoc, sGridNo, sClosestOpponent = NOWHERE;
         int uiLoop;
         int iRange, iClosestRange = 1500;

@@ -1209,7 +1209,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
+                ubShapeValue = (pShape)[ubLoopX, ubLoopY];
                 // loop DOWN vertically so that we find the tallest point first
                 // and don't need to check any below it
                 for (bLoopZ = 0; bLoopZ < bLowestHeight; bLoopZ++)
@@ -1248,7 +1248,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
+                ubShapeValue = (pShape)[ubLoopX, ubLoopY];
                 if (ubShapeValue & AtHeight[0])
                 {
                     (pubLevel0)++;

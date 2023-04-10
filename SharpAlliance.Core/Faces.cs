@@ -110,7 +110,7 @@ public class Faces
         }
 
         // Load face file
-        // VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        // 
 
         // ATE: If we are merc profile ID #151-154, all use 151's protrait....
         if (usMercProfileID >= (NPCID)151 && usMercProfileID <= (NPCID)154)
@@ -854,7 +854,7 @@ public class Faces
                 {
                     if (pFace.fAnimatingTalking)
                     {
-                        PollAudioGap(pFace.uiSoundID, &(pFace.GapList));
+                        PollAudioGap(pFace.uiSoundID, (pFace.GapList));
 
                         // Check if we have an audio gap
                         if (pFace.GapList.audio_gap_active)
@@ -968,7 +968,7 @@ public class Faces
                         pFace.fAnimatingTalking = false;
 
                         // Remove gap info
-                        AudioGapListDone(&(pFace.GapList));
+                        AudioGapListDone((pFace.GapList));
 
                         // Remove video overlay is present....
                         if (pFace.iVideoOverlay != -1)

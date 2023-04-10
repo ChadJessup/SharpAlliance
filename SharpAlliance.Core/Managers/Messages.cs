@@ -986,14 +986,14 @@ public class Messages
             return (false);
         }
 
-        //FileWrite(hFile, &gubStartOfMapScreenMessageList, sizeof(int), &uiNumBytesWritten);
+        //FileWrite(hFile, &gubStartOfMapScreenMessageList, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
         }
 
         //	write the current message string
-        //FileWrite(hFile, &gubCurrentMapMessageString, sizeof(int), &uiNumBytesWritten);
+        //FileWrite(hFile, &gubCurrentMapMessageString, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             return (false);
@@ -1013,7 +1013,7 @@ public class Messages
             }
 
             //	write to the file the size of the message
-            //FileWrite(hFile, &uiSizeOfString, sizeof(int), &uiNumBytesWritten);
+            //FileWrite(hFile, &uiSizeOfString, sizeof(int), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(int))
             {
                 return (false);
@@ -1023,7 +1023,7 @@ public class Messages
             if (uiSizeOfString > 0)
             {
                 //	write the message to the file
-                //FileWrite(hFile, gMapScreenMessageList[uiCount].pString16, uiSizeOfString, &uiNumBytesWritten);
+                //FileWrite(hFile, gMapScreenMessageList[uiCount].pString16, uiSizeOfString, out uiNumBytesWritten);
                 if (uiNumBytesWritten != uiSizeOfString)
                 {
                     return (false);
@@ -1038,7 +1038,7 @@ public class Messages
 
 
                 //Write the rest of the message information to the saved game file
-                //FileWrite(hFile, &StringSave, sizeof(StringSaveStruct), &uiNumBytesWritten);
+                //FileWrite(hFile, &StringSave, sizeof(StringSaveStruct), out uiNumBytesWritten);
                 // if (uiNumBytesWritten != sizeof(StringSaveStruct))
                 {
                     return (false);
