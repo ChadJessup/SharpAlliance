@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
 
 using static SharpAlliance.Core.Globals;
@@ -11,7 +12,7 @@ using static SharpAlliance.Core.Globals;
 namespace SharpAlliance.Core.Managers.Image;
 
 // Image header structure
-public class HIMAGE
+public class HIMAGE : IImageFormat
 {
     public int usWidth;
     public int usHeight;
@@ -35,6 +36,11 @@ public class HIMAGE
     public ushort usNumberOfObjects;
 
     public List<Image<Rgba32>> ParsedImages { get; set; }
+    public string Name { get; } = "Jagged Alliance 2 STI";
+    public string DefaultMimeType { get; }
+    public IEnumerable<string> MimeTypes { get; } = new List<string>() { "BLAH" };
+    public IEnumerable<string> FileExtensions { get; } = new List<string> { "sti" };
+
     public const ushort BLACK_SUBSTITUTE = 0x0001;
 
     public static HIMAGE CreateImage(string imageFilePath, HIMAGECreateFlags createFlags, IFileManager fileManager)

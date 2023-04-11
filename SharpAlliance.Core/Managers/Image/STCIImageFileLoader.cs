@@ -9,6 +9,7 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 
 using static SharpAlliance.Core.Globals;
@@ -38,6 +39,9 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         config.Properties.Add(stream, hImage);
         config.Properties.Add(typeof(IFileManager), fileManager);
         config.Properties.Add(typeof(HIMAGECreateFlags), flags);
+        config.ImageFormatsManager.AddImageFormat(new HIMAGE());
+
+        config.ImageFormatsManager.SetDecoder(new HIMAGE(), new STCIImageFileLoader());
 
         var dopt = new DecoderOptions()
         {

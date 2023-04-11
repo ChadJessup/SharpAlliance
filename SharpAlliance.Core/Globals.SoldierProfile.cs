@@ -4,6 +4,8 @@ using SharpAlliance.Core.SubSystems;
 
 namespace SharpAlliance.Core;
 
+public record MapPoint(int X, MAP_ROW Y);
+
 public partial class Globals
 {
     // the values for categories of stats
@@ -74,29 +76,29 @@ public partial class Globals
 
     public static int gubNumTerrorists = 0;
 
-    public static Dictionary<NPCID, Dictionary<int, MAP_ROW>> gsTerroristSector = new()
+    public static Dictionary<NPCID, List<MapPoint>> gsTerroristSector = new()
     {
         {
             // Elgin... preplaced
             NPCID.DRUGGIST,
             new()
             {
-                { 0, 0 },
-                { 0, 0 },
-                { 0, 0 },
-                { 0, 0 },
-                { 0, 0 },
+                new(0, 0),
+                new(0, 0),
+                new(0, 0),
+                new(0, 0),
+                new(0, 0),
             }
         },
         {
             NPCID.SLAY,
             new()
             {
-                { 9,    MAP_ROW.F },
-                { 14,   MAP_ROW.I },
-                { 1,    MAP_ROW.G },
-                { 2,    MAP_ROW.G },
-                { 8,    MAP_ROW.G }
+                new(9,  MAP_ROW.F),
+                new(14, MAP_ROW.I),
+                new(1,  MAP_ROW.G),
+                new(2,  MAP_ROW.G),
+                new(8,  MAP_ROW.G),
             }
         },
         {
@@ -104,11 +106,11 @@ public partial class Globals
             NPCID.ANNIE,
             new()
             {
-                { 14,   MAP_ROW.I },
-                { 6,    MAP_ROW.C },
-                { 2,    MAP_ROW.B },
-                { 11,   MAP_ROW.L },
-                { 8,    MAP_ROW.G },
+                new(14, MAP_ROW.I),
+                new(6,  MAP_ROW.C),
+                new(2,  MAP_ROW.B),
+                new(11, MAP_ROW.L),
+                new(8,  MAP_ROW.G),
             }
         },
         {
@@ -116,11 +118,11 @@ public partial class Globals
             NPCID.CHRIS,
             new()
             {
-                { 1,    MAP_ROW.G },
-                { 9,    MAP_ROW.F },
-                { 11,   MAP_ROW.L },
-                { 8,    MAP_ROW.G },
-                { 2,    MAP_ROW.G },
+                new(1,  MAP_ROW.G),
+                new(9,  MAP_ROW.F),
+                new(11, MAP_ROW.L),
+                new(8,  MAP_ROW.G),
+                new(2,  MAP_ROW.G),
             }
         },
         {
@@ -128,11 +130,11 @@ public partial class Globals
             NPCID.TIFFANY,
             new()
             {
-                { 14,   MAP_ROW.I },
-                { 2,    MAP_ROW.G },
-                { 14,   MAP_ROW.H },
-                { 6,    MAP_ROW.C },
-                { 2,    MAP_ROW.B },
+                new(14, MAP_ROW.I),
+                new(2,  MAP_ROW.G),
+                new(14, MAP_ROW.H),
+                new(6,  MAP_ROW.C),
+                new(2,  MAP_ROW.B),
             }
         },
         {
@@ -140,11 +142,11 @@ public partial class Globals
             NPCID.T_REX,
             new()
             {
-                { 9,    MAP_ROW.F },
-                { 14,   MAP_ROW.H },
-                { 2,    MAP_ROW.H },
-                { 1,    MAP_ROW.G },
-                { 2,    MAP_ROW.B }
+                new(9,  MAP_ROW.F),
+                new(14, MAP_ROW.H),
+                new(2,  MAP_ROW.H),
+                new(1,  MAP_ROW.G),
+                new(2,  MAP_ROW.B),
             }
         }
     };

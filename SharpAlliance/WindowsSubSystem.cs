@@ -37,12 +37,12 @@ namespace SharpAlliance
             ILogger<WindowsSubSystem> logger,
             GameContext context,
             IInputManager inputManager,
-//            IVideoManager videoManager,
+            IVideoManager videoManager,
             FontSubSystem fontSubSystem)
         {
             this.context = context;
             this.logger = logger;
-//            this.video = videoManager;
+            this.video = videoManager;
             this.input = inputManager;
             this.fonts = fontSubSystem;
             this.Initialize().AsTask().Wait();

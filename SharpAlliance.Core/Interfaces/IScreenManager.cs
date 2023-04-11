@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
@@ -18,11 +19,11 @@ public interface IScreenManager : ISharpAllianceManager
     ValueTask<TScreen> GetScreen<TScreen>(ScreenName screenName, bool activate) where TScreen : IScreen;
     ValueTask<IScreen> GetScreen(ScreenName screenName, bool activate);
     IScreenManager AddScreen<TScreen>(ScreenName screenName) where TScreen : IScreen;
-    static abstract IScreen CurrentScreen { get; }
+    static IScreen CurrentScreen { get; }
     IScreen guiPendingScreen { get; set; }
     ScreenName CurrentScreenName { get; }
 
-    static abstract void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl);
+    static void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl) => throw new NotImplementedException();
     void EndMapScreen(bool v);
     void ExitLaptop();
     ValueTask SetPendingNewScreen(ScreenName pendingScreen);

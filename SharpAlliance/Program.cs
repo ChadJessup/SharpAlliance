@@ -66,14 +66,14 @@ namespace SharpAlliance
         public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
             builder.AddDependency<IOSManager, WindowsSubSystem>();
-            //builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
-            //builder.AddDependency<IScreenManager, ScreenManager>();
-//            builder.AddDependency<IFileManager, FileManager>();
+//            builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
+            builder.AddDependency<IScreenManager, ScreenManager>();
+            builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
-            //builder.AddDependency<IVideoManager, VeldridVideoManager>();
+            builder.AddDependency<IVideoManager, VeldridVideoManager>();
             builder.AddDependency<ISoundManager, SoundManager>();
             builder.AddDependency<IInputManager, InputManager>();
-            //builder.AddDependency<IClockManager, ClockManager>();
+            builder.AddDependency<IClockManager, ClockManager>();
 
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<Messages>();

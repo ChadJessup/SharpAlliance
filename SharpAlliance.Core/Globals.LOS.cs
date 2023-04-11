@@ -59,10 +59,7 @@ public partial class Globals
     {
         { (AnimationHeights)0, 0 },
         { AnimationHeights.ANIM_PRONE, 8 }, // prone
-    	{ (AnimationHeights)0, 0 },
         { AnimationHeights.ANIM_CROUCH, 7 }, // crouched
-    	{ (AnimationHeights)0, 0 },
-        { (AnimationHeights)0, 0 },
         { AnimationHeights.ANIM_STAND , 6 } // standing
     };
 

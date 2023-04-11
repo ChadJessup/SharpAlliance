@@ -469,6 +469,8 @@ public class LibraryFileManager : ILibraryManager
         var seekedAmount = libraryHeader.hLibraryHandle.Seek(pFileHeader.Value.uiFileOffset, SeekOrigin.Begin);
         libraryHeader.hLibraryHandle.CopyTo(ms, pFileHeader.Value.uiFileLength);
 
+        System.IO.Directory.CreateDirectory("c:\\assets");
+
         using FileStream fs = new(System.IO.Path.Combine("C:\\assets", pFileHeader.Value.pFileName), FileMode.OpenOrCreate);
         ms.Seek(0, SeekOrigin.Begin);
         ms.CopyTo(fs);
@@ -509,7 +511,7 @@ public class LibraryFileManager : ILibraryManager
         { LibraryNames.CURSORS, new("Cursors.slf", false, true) },
         { LibraryNames.FACES, new("Faces.slf", false, true) },
         { LibraryNames.FONTS, new("Fonts.slf", false, true) },
-        { LibraryNames.INTERFACE, new("Globals.slf", false, true) },
+        { LibraryNames.INTERFACE, new("Interface.slf", false, true) },
         { LibraryNames.LAPTOP, new("Laptop.slf", false, true) },
         { LibraryNames.MAPS, new("Maps.slf", true, true) },
         { LibraryNames.MERCEDT, new("MercEdt.slf", false, true) },

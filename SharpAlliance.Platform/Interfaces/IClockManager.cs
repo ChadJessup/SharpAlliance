@@ -1,15 +1,17 @@
-﻿namespace SharpAlliance.Platform.Interfaces;
+﻿using System;
+
+namespace SharpAlliance.Platform.Interfaces;
 
 public interface IClockManager : ISharpAllianceManager
 {
-    static abstract long GetClock();
-    static abstract long GetTickCount();
-    static abstract void UpdateClock();
-    static abstract uint GetJA2Clock();
-    static abstract void UnPauseGame();
-    static abstract void PauseGame();
-    static abstract void RemoveMouseRegionForPauseOfClock();
-    static abstract void InterruptTime();
-    static abstract void LockPauseState(int v);
-    static abstract void UnLockPauseState();
+    static long GetClock()  => throw new NotImplementedException();
+    static long GetTickCount()  => throw new NotImplementedException();
+    static void UpdateClock()  => throw new NotImplementedException();
+    static uint GetJA2Clock()  => throw new NotImplementedException();
+    static void UnPauseGame()  => throw new NotImplementedException();
+    static void PauseGame()  => throw new NotImplementedException();
+    static void RemoveMouseRegionForPauseOfClock()  => throw new NotImplementedException();
+    static void InterruptTime()  => throw new NotImplementedException();
+    static void LockPauseState(int v)  => throw new NotImplementedException();
+    static void UnLockPauseState() => throw new NotImplementedException();
 }

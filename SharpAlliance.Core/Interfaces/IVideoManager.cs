@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
@@ -22,42 +23,42 @@ public interface IVideoManager : ISharpAllianceManager
     // TODO move to better area
     public static Veldrid.GraphicsDevice GraphicDevice { get; }
 
-    static abstract void DrawFrame();
-    static abstract void RefreshScreen();
-    static abstract void InvalidateScreen();
-    static abstract void InvalidateRegion(Rectangle bounds);
-    static abstract void EndFrameBufferRender();
-    static abstract HVOBJECT? AddVideoObject(string assetPath, out string key);
-    static abstract HVOBJECT? GetVideoObject(string key);
-    static abstract void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
-    static abstract bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
-    static abstract bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);
-    static abstract int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap);
-    static abstract void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette);
-    static abstract ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono);
-    static abstract void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap);
-    static abstract void DeleteVideoObjectFromIndex(string logoKey);
-    static abstract void RestoreBackgroundRects();
-    static abstract void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
-    static abstract HVOBJECT CreateVideoObject(string assetPath);
-    static abstract void LineDraw(int v2, int v3, int v4, int v5, Color v6, Image<Rgba32> image);
-    static abstract void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4);
-    static abstract void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
-    static abstract void GetClippingRect(out Rectangle clipRect);
-    static abstract void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32);
-    static abstract void SaveBackgroundRects();
-    static abstract void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
-    static abstract void ExecuteBaseDirtyRectQueue();
-    static abstract void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
-    static abstract void SetClippingRect(ref Rectangle newClip);
+    static void DrawFrame() => throw new NotImplementedException();
+    static void RefreshScreen() => throw new NotImplementedException();
+    static void InvalidateScreen() => throw new NotImplementedException();
+    static void InvalidateRegion(Rectangle bounds) => throw new NotImplementedException();
+    static void EndFrameBufferRender() => throw new NotImplementedException();
+    static HVOBJECT? AddVideoObject(string assetPath, out string key) => throw new NotImplementedException();
+    static HVOBJECT? GetVideoObject(string key) => throw new NotImplementedException();
+    static void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex) => throw new NotImplementedException();
+    static bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification) => throw new NotImplementedException();
+    static bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap) => throw new NotImplementedException();
+    static int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap) => throw new NotImplementedException();
+    static void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette) => throw new NotImplementedException();
+    static ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono) => throw new NotImplementedException();
+    static void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap) => throw new NotImplementedException();
+    static void DeleteVideoObjectFromIndex(string logoKey) => throw new NotImplementedException();
+    static void RestoreBackgroundRects() => throw new NotImplementedException();
+    static void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth) => throw new NotImplementedException();
+    static HVOBJECT CreateVideoObject(string assetPath) => throw new NotImplementedException();
+    static void LineDraw(int v2, int v3, int v4, int v5, Color v6, Image<Rgba32> image) => throw new NotImplementedException();
+    static void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4) => throw new NotImplementedException();
+    static void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect) => throw new NotImplementedException();
+    static void GetClippingRect(out Rectangle clipRect) => throw new NotImplementedException();
+    static void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32) => throw new NotImplementedException();
+    static void SaveBackgroundRects() => throw new NotImplementedException();
+    static void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5) => throw new NotImplementedException();
+    static void ExecuteBaseDirtyRectQueue() => throw new NotImplementedException();
+    static void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect) => throw new NotImplementedException();
+    static void SetClippingRect(ref Rectangle newClip) => throw new NotImplementedException();
 
     // SpriteRenderer SpriteRenderer { get; }
     static DebugRenderer DebugRenderer { get; protected set; }
 
-    static abstract void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color);
-    static abstract void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle);
-    static abstract void DeleteVideoObject(HVOBJECT vobj);
-    static abstract void BlitBufferToBuffer(int left, int top, int v1, int v2);
-    static abstract void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v);
-    static abstract void ClearElements();
+    static void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color) => throw new NotImplementedException();
+    static void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle) => throw new NotImplementedException();
+    static void DeleteVideoObject(HVOBJECT vobj) => throw new NotImplementedException();
+    static void BlitBufferToBuffer(int left, int top, int v1, int v2) => throw new NotImplementedException();
+    static void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v) => throw new NotImplementedException();
+    static void ClearElements() => throw new NotImplementedException();
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.SubSystems;
 
 using static SharpAlliance.Core.EnglishText;
@@ -11,6 +12,11 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    static Globals()
+    {
+
+    }
+
     public static int giMessageId = -1;
     public static int giPrevMessageId = -1;
     public static int giMessagePage = -1;
@@ -165,7 +171,7 @@ public partial class Globals
 
 
     // maximum size of a email message page, so not to overrun the bottom of the screen
-    public static int MAX_EMAIL_MESSAGE_PAGE_SIZE = (FontSubSystem.GetFontHeight(MESSAGE_FONT) + MESSAGE_GAP) * 20;
+    public static int MAX_EMAIL_MESSAGE_PAGE_SIZE => (FontSubSystem.GetFontHeight(MESSAGE_FONT) + MESSAGE_GAP) * 20;
 
     // X button position
     public const int BUTTON_X = VIEWER_X + 396;
@@ -205,10 +211,10 @@ public partial class Globals
     public const int RECD_X = 550;
 
     // size of prev/next strings
-    public static int PREVIOUS_WIDTH = FontSubSystem.StringPixLength(pTraverseStrings[(int)EMAILTRAVERSALBUTTON.PREVIOUS_BUTTON], TRAVERSE_EMAIL_FONT);
-    public static int NEXT_WIDTH = FontSubSystem.StringPixLength(pTraverseStrings[(int)EMAILTRAVERSALBUTTON.NEXT_BUTTON], TRAVERSE_EMAIL_FONT);
-    public static int PREVIOUS_HEIGHT = FontSubSystem.GetFontHeight(TRAVERSE_EMAIL_FONT);
-    public static int NEXT_HEIGHT = FontSubSystem.GetFontHeight(TRAVERSE_EMAIL_FONT);
+    public static int PREVIOUS_WIDTH => FontSubSystem.StringPixLength(pTraverseStrings[(int)EMAILTRAVERSALBUTTON.PREVIOUS_BUTTON], TRAVERSE_EMAIL_FONT);
+    public static int NEXT_WIDTH => FontSubSystem.StringPixLength(pTraverseStrings[(int)EMAILTRAVERSALBUTTON.NEXT_BUTTON], TRAVERSE_EMAIL_FONT);
+    public static int PREVIOUS_HEIGHT => FontSubSystem.GetFontHeight(TRAVERSE_EMAIL_FONT);
+    public static int NEXT_HEIGHT => FontSubSystem.GetFontHeight(TRAVERSE_EMAIL_FONT);
 
     // defines
     public const int MAX_EMAIL_LINES = 10; //max number of lines can be shown in a message
