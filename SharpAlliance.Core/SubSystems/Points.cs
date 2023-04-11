@@ -453,7 +453,7 @@ public class Points
 
             if (pSoldier.bDoBurst)
             {
-                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), (pSoldier.inv[InventorySlot.HANDPOS]));
+//                sAPCost += CalcAPsToBurst(CalcActionPoints(pSoldier), (pSoldier.inv[InventorySlot.HANDPOS]));
             }
             else
             {
@@ -498,7 +498,7 @@ public class Points
 
                         if (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
                         {
-                            sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
+//                            sGotLocation = FindNextToAdjacentGridEx(pSoldier, sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
                             if (sGotLocation == -1)
                             {
                                 sGotLocation = Globals.NOWHERE;
@@ -506,13 +506,13 @@ public class Points
                         }
                         else
                         {
-                            sGotLocation = FindAdjacentPunchTarget(pSoldier, pTarget, out sAdjustedGridNo, out ubDirection);
+//                            sGotLocation = FindAdjacentPunchTarget(pSoldier, pTarget, out sAdjustedGridNo, out ubDirection);
                         }
                     }
 
                     if (sGotLocation == Globals.NOWHERE && pSoldier.ubBodyType != SoldierBodyTypes.BLOODCAT)
                     {
-                        sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sGridNo, out ubDirection, out sAdjustedGridNo, true, false);
+                        sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sGridNo, ref ubDirection, out sAdjustedGridNo, true, false);
 
                         if (sActionGridNo == -1)
                         {
@@ -644,15 +644,15 @@ public class Points
 
         if (uiItemClass == IC.BLADE || uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
         {
-            sAPCost = MinAPsToShootOrStab(pSoldier, sGridno, ubAddTurningCost);
+//            sAPCost = MinAPsToShootOrStab(pSoldier, sGridno, ubAddTurningCost);
         }
         else if (uiItemClass.HasFlag(IC.GRENADE | IC.THROWN))
         {
-            sAPCost = MinAPsToThrow(pSoldier, sGridno, ubAddTurningCost);
+//            sAPCost = MinAPsToThrow(pSoldier, sGridno, ubAddTurningCost);
         }
         else if (uiItemClass == IC.PUNCH)
         {
-            sAPCost = MinAPsToPunch(pSoldier, sGridno, ubAddTurningCost);
+//            sAPCost = MinAPsToPunch(pSoldier, sGridno, ubAddTurningCost);
         }
 
         return (sAPCost);
@@ -666,8 +666,6 @@ public class AP
     public const int MONSTER_MAXIMUM = 40;      // no monster can have more for his turn
     public const int VEHICLE_MAXIMUM = 50;      // no merc can have more for his turn
     public const int INCREASE = 10;      // optional across-the-board AP boost
-    public const int MAX_AP_CARRIED = 5;      // APs carried from turn-to-turn
-                                              // monster AP bonuses; expressed in 10ths (12 = 120% normal) 
     public const int YOUNG_MONST_FACTOR = 15;
     public const int ADULT_MONST_FACTOR = 12;
     public const int MONST_FRENZY_FACTOR = 13;

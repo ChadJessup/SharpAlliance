@@ -991,7 +991,7 @@ public class StrategicMovement
 
             gpInitPrebattleGroup = pGroup;
 
-            if (gubEnemyEncounterCode == ENCOUNTER_CODE.BLOODCAT_AMBUSH_CODE || gubEnemyEncounterCode == ENTERING_BLOODCAT_LAIR_CODE)
+            if (gubEnemyEncounterCode == ENCOUNTER_CODE.BLOODCAT_AMBUSH_CODE || gubEnemyEncounterCode == ENCOUNTER_CODE.ENTERING_BLOODCAT_LAIR_CODE)
             {
                 NotifyPlayerOfBloodcatBattle(pGroup.ubSectorX, pGroup.ubSectorY);
                 return true;
@@ -1003,7 +1003,7 @@ public class StrategicMovement
                 gfUsePersistantPBI = true;
                 if (fMilitiaPresent)
                 {
-                    NotifyPlayerOfInvasionByEnemyForces(pGroup.ubSectorX, pGroup.ubSectorY, 0, TriggerPrebattleInterface);
+//                    NotifyPlayerOfInvasionByEnemyForces(pGroup.ubSectorX, pGroup.ubSectorY, 0, TriggerPrebattleInterface);
                 }
                 else
                 {
@@ -3114,9 +3114,9 @@ public class StrategicMovement
 
     void MoveAllGroupsInCurrentSectorToSector(int ubSectorX, MAP_ROW ubSectorY, int ubSectorZ)
     {
-        GROUP? pGroup;
-        PLAYERGROUP? pPlayer;
-        pGroup = gpGroupList;
+        GROUP? pGroup = null;
+        PLAYERGROUP? pPlayer = null;
+//        pGroup = gpGroupList;
         while (pGroup is not null)
         {
             if (pGroup.fPlayer && pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY &&
@@ -3125,7 +3125,7 @@ public class StrategicMovement
                 pGroup.ubSectorX = ubSectorX;
                 pGroup.ubSectorY = ubSectorY;
                 pGroup.ubSectorZ = ubSectorZ;
-                pPlayer = pGroup.pPlayerList;
+//                pPlayer = pGroup.pPlayerList;
                 while (pPlayer is not null)
                 {
                     pPlayer.pSoldier.sSectorX = ubSectorX;
@@ -3137,7 +3137,8 @@ public class StrategicMovement
             }
             pGroup = pGroup.next;
         }
-        CheckAndHandleUnloadingOfCurrentWorld();
+
+//        CheckAndHandleUnloadingOfCurrentWorld();
     }
 
 
@@ -3223,10 +3224,10 @@ public class StrategicMovement
         int uiNumberOfGroups = 0;
         int uiNumBytesWritten = 0;
 
-        pGroup = gpGroupList;
+//        pGroup = gpGroupList;
 
         //Count the number of active groups
-        while (pGroup)
+        while (pGroup is not null)
         {
             uiNumberOfGroups++;
             pGroup = pGroup.next;
@@ -3242,7 +3243,7 @@ public class StrategicMovement
         }
 
 
-        pGroup = gpGroupList;
+//        pGroup = gpGroupList;
 
         //Loop through the linked lists and add each node
         while (pGroup is not null)
@@ -3263,7 +3264,7 @@ public class StrategicMovement
             if (pGroup.fPlayer)
             {
                 //if there is a player list, add it
-                if (pGroup.ubGroupSize)
+                if (pGroup.ubGroupSize > 0)
                 {
                     //Save the player group list
                     SavePlayerGroupList(hFile, pGroup);
@@ -3272,7 +3273,7 @@ public class StrategicMovement
             else //else its an enemy group
             {
                 //Make sure the pointer is valid
-                Debug.Assert(pGroup.pEnemyGroup);
+//                Debug.Assert(pGroup.pEnemyGroup);
 
                 // 
                 SaveEnemyGroupStruct(hFile, pGroup);
@@ -3498,9 +3499,9 @@ public class StrategicMovement
         PLAYERGROUP? pHead = null;
         int uiNumberOfNodes = 0;
         NPCID uiProfileID = 0;
-        int uiNumBytesRead;
+        int uiNumBytesRead = 0;
         int cnt = 0;
-        int sTempID;
+        int sTempID = 0;
         GROUP? pTempGroup = pGroup;
 
         //	pTemp = pGroup;
@@ -3537,7 +3538,7 @@ public class StrategicMovement
 
             //Set up the current node
             pTemp.ubProfileID = uiProfileID;
-            sTempID = GetSoldierIDFromMercID(pTemp.ubProfileID);
+//            sTempID = GetSoldierIDFromMercID(pTemp.ubProfileID);
 
             //Should never happen
             //Debug.Assert( sTempID != -1 );
@@ -3550,7 +3551,7 @@ public class StrategicMovement
             //if its the first time through
             if (cnt == 0)
             {
-                pTempGroup.pPlayerList = pTemp;
+//                pTempGroup.pPlayerList = pTemp;
                 pHead = pTemp;
             }
             else
@@ -3628,7 +3629,7 @@ public class StrategicMovement
         }
 
         // make sure there are members in the group..if so, then run through and make each bleeder compain
-        pPlayer = pGroup.pPlayerList;
+//        pPlayer = pGroup.pPlayerList;
 
         // is there a player list?
         if (pPlayer == null)
@@ -3636,9 +3637,9 @@ public class StrategicMovement
             return;
         }
 
-        BeginLoggingForBleedMeToos(true);
+//        BeginLoggingForBleedMeToos(true);
 
-        while (pPlayer)
+        while (pPlayer is not null)
         {
             pCurrentSoldier = pPlayer.pSoldier;
 
@@ -3651,7 +3652,7 @@ public class StrategicMovement
 
         }
 
-        BeginLoggingForBleedMeToos(false);
+//        BeginLoggingForBleedMeToos(false);
 
     }
 
@@ -3667,7 +3668,7 @@ public class StrategicMovement
         uiNumberOfWayPoints = pWayPoints.Count;
 
         //Save the number of waypoints
-        FileManager.FileWrite(hFile, ref uiNumberOfWayPoints, sizeof(int), out uiNumBytesWritten);
+        FileManager.FileWrite(hFile, uiNumberOfWayPoints, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3922,27 +3923,27 @@ public class StrategicMovement
     public static GROUP? FindMovementGroupInSector(int ubSectorX, MAP_ROW ubSectorY, bool fPlayer)
     {
         GROUP? pGroup;
-        pGroup = gpGroupList;
-        while (pGroup)
-        {
-            if (pGroup.fPlayer)
-            {
-                // NOTE: These checks must always match the INVOLVED group checks in PBI!!!
-                if (fPlayer && pGroup.ubGroupSize && !pGroup.fBetweenSectors &&
-                        pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY && !pGroup.ubSectorZ &&
-                        !GroupHasInTransitDeadOrPOWMercs(pGroup) &&
-                    (!IsGroupTheHelicopterGroup(pGroup) || !fHelicopterIsAirBorne))
-                {
-                    return pGroup;
-                }
-            }
-            else if (!fPlayer && pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY && !pGroup.ubSectorZ)
-            {
-                return pGroup;
-            }
-
-            pGroup = pGroup.next;
-        }
+//        pGroup = gpGroupList;
+//        while (pGroup)
+//        {
+//            if (pGroup.fPlayer)
+//            {
+//                // NOTE: These checks must always match the INVOLVED group checks in PBI!!!
+//                if (fPlayer && pGroup.ubGroupSize && !pGroup.fBetweenSectors &&
+//                        pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY && !pGroup.ubSectorZ &&
+//                        !GroupHasInTransitDeadOrPOWMercs(pGroup) &&
+//                    (!IsGroupTheHelicopterGroup(pGroup) || !fHelicopterIsAirBorne))
+//                {
+//                    return pGroup;
+//                }
+//            }
+//            else if (!fPlayer && pGroup.ubSectorX == ubSectorX && pGroup.ubSectorY == ubSectorY && !pGroup.ubSectorZ)
+//            {
+//                return pGroup;
+//            }
+//
+//            pGroup = pGroup.next;
+//        }
         return null;
     }
 
@@ -4278,14 +4279,14 @@ public class StrategicMovement
         { //Message for vehicle full?
             return;
         }
-        if (pItem.bStatus)
+        if (pItem.bStatus is not null)
         { //Fill 'er up.
             sFuelNeeded = 10000 - pVehicle.sBreathRed;
             sFuelAvailable = pItem.bStatus[0] * 50;
             sFuelAdded = Math.Min(sFuelNeeded, sFuelAvailable);
             //Add to vehicle
             pVehicle.sBreathRed += sFuelAdded;
-            pVehicle.bBreath = (int)(pVehicle.sBreathRed / 100);
+            pVehicle.bBreath = (uint)(pVehicle.sBreathRed / 100);
             //Subtract from item
             pItem.bStatus[0] = (int)(pItem.bStatus[0] - sFuelAdded / 50);
             if (pItem.bStatus[0] == 0)
@@ -4692,10 +4693,10 @@ public class StrategicMovement
         }
 
         // chopper doesn't stop for NPCs
-        if (IsGroupTheHelicopterGroup(pGroup))
-        {
-            return (false);
-        }
+//        if (IsGroupTheHelicopterGroup(pGroup))
+//        {
+//            return (false);
+//        }
 
         // if we're already in the middle of a prompt (possible with simultaneously group arrivals!), don't try to prompt again
         if (gpGroupPrompting != null)
@@ -4726,10 +4727,10 @@ public class StrategicMovement
         }
 
         // skip SAM-sites
-        if (IsThisSectorASAMSector(sSectorX, sSectorY, bSectorZ))
-        {
-            return (false);
-        }
+//        if (IsThisSectorASAMSector(sSectorX, sSectorY, bSectorZ))
+//        {
+//            return (false);
+//        }
 
 
         // check for profiled NPCs in sector
@@ -4769,7 +4770,7 @@ public class StrategicMovement
         bool fFoundSomebody = false;
 
 
-        for (ubProfile = FIRST_RPC; ubProfile < NUM_PROFILES; ubProfile++)
+        for (ubProfile = FIRST_RPC; ubProfile < (NPCID)NUM_PROFILES; ubProfile++)
         {
             pProfile = gMercProfiles[ubProfile];
 
@@ -4789,8 +4790,8 @@ public class StrategicMovement
             if (pProfile.sSectorX == sSectorX && pProfile.sSectorY == sSectorY && pProfile.bSectorZ == bSectorZ)
             {
                 // if we haven't talked to him yet, and he's not currently recruired/escorted by player (!)
-                if ((pProfile.ubLastDateSpokenTo == 0) &&
-                        !(pProfile.ubMiscFlags & (ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED | ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE)))
+                if ((pProfile.ubLastDateSpokenTo == 0)
+                    && !(pProfile.ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED | ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE)))
                 {
                     // then this is a guy we need to stop for...
                     fFoundSomebody = true;
@@ -4861,22 +4862,22 @@ public class StrategicMovement
     {
         PLAYERGROUP? pPlayer;
 
-        pPlayer = pGroup.pPlayerList;
-        while (pPlayer)
-        {
-            if (pPlayer.pSoldier)
-            {
-                if ((pPlayer.pSoldier.bAssignment == Assignments.IN_TRANSIT) ||
-                        (pPlayer.pSoldier.bAssignment == Assignments.ASSIGNMENT_POW) ||
-                        (pPlayer.pSoldier.bAssignment == Assignments.ASSIGNMENT_DEAD))
-                {
-                    // yup!
-                    return (true);
-                }
-            }
-
-            pPlayer = pPlayer.next;
-        }
+//        pPlayer = pGroup.pPlayerList;
+//        while (pPlayer)
+//        {
+//            if (pPlayer.pSoldier)
+//            {
+//                if ((pPlayer.pSoldier.bAssignment == Assignments.IN_TRANSIT) ||
+//                        (pPlayer.pSoldier.bAssignment == Assignments.ASSIGNMENT_POW) ||
+//                        (pPlayer.pSoldier.bAssignment == Assignments.ASSIGNMENT_DEAD))
+//                {
+//                    // yup!
+//                    return (true);
+//                }
+//            }
+//
+//            pPlayer = pPlayer.next;
+//        }
 
         // nope
         return (false);
@@ -4884,12 +4885,12 @@ public class StrategicMovement
 
     int NumberMercsInVehicleGroup(GROUP? pGroup)
     {
-        int iVehicleID;
-        iVehicleID = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
-        Debug.Assert(iVehicleID != -1);
+        int iVehicleID = 0;
+//        iVehicleID = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
+//        Debug.Assert(iVehicleID != -1);
         if (iVehicleID != -1)
         {
-            return (int)GetNumberInVehicle(iVehicleID);
+//            return (int)GetNumberInVehicle(iVehicleID);
         }
         return 0;
     }

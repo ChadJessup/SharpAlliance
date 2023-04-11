@@ -45,7 +45,7 @@ public class LibraryFileManager : ILibraryManager
     public string ManagerName { get; set; }
     public Dictionary<LibraryNames, LibraryHeader> Libraries { get; set; } = new();
     public int NumberOfLibraries => this.Libraries.Count;
-    public bool IsInitialized { get; set; }
+    public static bool IsInitialized { get; set; }
     public RealFileHeader RealFiles { get; } = new RealFileHeader();
     public string DataDirectory { get; init; }
 
@@ -79,7 +79,7 @@ public class LibraryFileManager : ILibraryManager
         }
 
         //signify that the database has been initialized ( only if there was a library loaded )
-        this.IsInitialized = fLibraryInited;
+        LibraryFileManager.IsInitialized = fLibraryInited;
 
         return ValueTask.FromResult(true);
     }
@@ -265,7 +265,7 @@ public class LibraryFileManager : ILibraryManager
     public bool IsLibraryOpened(LibraryNames sLibraryID)
     {
         //if the database is not initialized
-        if (!this.IsInitialized)
+        if (!LibraryFileManager.IsInitialized)
         {
             return false;
         }

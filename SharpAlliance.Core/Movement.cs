@@ -228,7 +228,7 @@ public class Movement
             {
                 sPatrolPoint = NextPatrolPoint(pSoldier);
             }
-            while ((sPatrolPoint != NOWHERE) && (Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1));
+            while ((sPatrolPoint != NOWHERE) && (!Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel)));
 
             // if we're back where we started, then ALL other patrol points are junk!
             if (pSoldier.sGridNo == sPatrolPoint)
@@ -298,7 +298,8 @@ public class Movement
                 sPatrolPoint = pSoldier.usPatrolGrid[bPatrolIndex];
                 bCnt++;
             }
-            while ((sPatrolPoint == pSoldier.sGridNo) || ((sPatrolPoint != NOWHERE) && (bCnt < pSoldier.bPatrolCnt) && (Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1)));
+            while ((sPatrolPoint == pSoldier.sGridNo) || ((sPatrolPoint != NOWHERE) && (bCnt < pSoldier.bPatrolCnt)
+            && (!Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel))));
 
             if (bCnt == pSoldier.bPatrolCnt)
             {
@@ -308,7 +309,8 @@ public class Movement
                 {
                     sPatrolPoint = NextPatrolPoint(pSoldier);
                 }
-                while ((sPatrolPoint != NOWHERE) && (Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel) < 1));
+                while ((sPatrolPoint != NOWHERE)
+                && (!Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel)));
             }
 
             // do nothing this time around
@@ -399,7 +401,7 @@ public class Movement
             }
         }
 
-        pSoldier.usUIMovementMode = DetermineMovementMode(pSoldier, bAction);
+//        pSoldier.usUIMovementMode = DetermineMovementMode(pSoldier, bAction);
         if (pSoldier.usUIMovementMode == AnimationStates.RUNNING && fFlags.HasFlag(FLAG.CAUTIOUS))
         {
             pSoldier.usUIMovementMode = AnimationStates.WALKING;
@@ -544,10 +546,10 @@ public class Movement
                 }
             }
 
-            if ((fFlags.HasFlag(FLAG.STOPSHORT)) && IsometricUtils.SpacesAway(sDesGrid, sTempDest) <= STOPSHORTDIST)
-            {
-                break;           // quit here, sGoToGrid is where we are going
-            }
+//            if ((fFlags.HasFlag(FLAG.STOPSHORT)) && IsometricUtils.SpacesAway(sDesGrid, sTempDest) <= STOPSHORTDIST)
+//            {
+//                break;           // quit here, sGoToGrid is where we are going
+//            }
 
             // if this gridno is NOT a legal NPC destination
             // DONT'T test path again - that would replace the traced path! - Ian
@@ -600,7 +602,7 @@ public class Movement
                 }
 
                 // ATE: Direction here?
-                sAPCost += EstimateActionPointCost(pSoldier, sTempDest, (int)pSoldier.usPathingData[sLoop], pSoldier.usUIMovementMode, (int)sLoop, (int)pSoldier.usPathDataSize);
+//                sAPCost += EstimateActionPointCost(pSoldier, sTempDest, (int)pSoldier.usPathingData[sLoop], pSoldier.usUIMovementMode, (int)sLoop, (int)pSoldier.usPathDataSize);
 
                 bAPsLeft = pSoldier.bActionPoints - sAPCost;
             }
@@ -657,10 +659,9 @@ public class Movement
         return (InternalGoAsFarAsPossibleTowards(pSoldier, sDesGrid, -1, bAction, 0));
     }
 
-    void SoldierTriesToContinueAlongPath(SOLDIERTYPE? pSoldier)
+    void SoldierTriesToContinueAlongPath(SOLDIERTYPE pSoldier)
     {
-        int usNewGridNo, bAPCost;
-
+        int usNewGridNo, bAPCost = 0;
 
         // turn off the flag now that we're going to do something about it...
         // ATE: USed to be redundent, now if called befroe NewDest can cause some side efects...
@@ -708,7 +709,7 @@ public class Movement
         usNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(pSoldier.usPathingData[pSoldier.usPathIndex]));
 
         // Find out how much it takes to move here!
-        bAPCost = EstimateActionPointCost(pSoldier, usNewGridNo, (int)pSoldier.usPathingData[pSoldier.usPathIndex], pSoldier.usUIMovementMode, (int)pSoldier.usPathIndex, (int)pSoldier.usPathDataSize);
+//        bAPCost = EstimateActionPointCost(pSoldier, usNewGridNo, (int)pSoldier.usPathingData[pSoldier.usPathIndex], pSoldier.usUIMovementMode, (int)pSoldier.usPathIndex, (int)pSoldier.usPathDataSize);
 
         if (pSoldier.bActionPoints >= bAPCost)
         {
@@ -732,7 +733,7 @@ public class Movement
         }
 
         // record that this merc can no longer animate and why...
-        AdjustNoAPToFinishMove(pSoldier, true);
+//        AdjustNoAPToFinishMove(pSoldier, true);
 
         // We'll keep his action intact though...
         //DebugAI(String("NO AP TO FINISH MOVE for %d (%d APs left)", pSoldier.ubID, pSoldier.bActionPoints));

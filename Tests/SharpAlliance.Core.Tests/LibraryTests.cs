@@ -27,7 +27,7 @@ namespace SharpAlliance.Core.Tests
             var library = new LibraryFileManager(null, context, null);
             Assert.True(await library.Initialize());
 
-            Assert.True(library.IsInitialized);
+            Assert.True(LibraryFileManager.IsInitialized);
             Assert.All(library.Libraries.Values, l => Assert.True(l.fLibraryOpen));
         }
     }

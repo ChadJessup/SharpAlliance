@@ -1036,7 +1036,7 @@ public class GameClock
     }
 
 
-    void PauseOfClockBtnCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
+    public static void PauseOfClockBtnCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -1045,7 +1045,7 @@ public class GameClock
     }
 
 
-    void HandlePlayerPauseUnPauseOfGame()
+    public static void HandlePlayerPauseUnPauseOfGame()
     {
         if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV))
         {

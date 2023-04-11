@@ -101,7 +101,7 @@ public class GameInitOptionsScreen : IScreen
     {
         int usPosY;
 
-        this.cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
+        CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
         // load the Main trade screen backgroiund image
         VeldridVideoManager.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);

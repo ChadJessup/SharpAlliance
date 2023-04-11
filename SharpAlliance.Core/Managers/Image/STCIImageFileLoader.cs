@@ -39,7 +39,12 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         config.Properties.Add(typeof(IFileManager), fileManager);
         config.Properties.Add(typeof(HIMAGECreateFlags), flags);
 
-        var i = Image<Rgba32>.Load(config, stream, this);
+        var dopt = new DecoderOptions()
+        {
+            Configuration = config,
+        };
+
+        var i = Image<Rgba32>.Load(dopt, stream);
 
         // parsing the image modifies the hImage, so reassign back.
         hImage = (HIMAGE)config.Properties[stream];
@@ -87,7 +92,7 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         Image<TPixel> image = new(configuration, pHeader.usWidth, pHeader.usHeight);
 
         uint uiFileSectionSize;
-        uint uiBytesRead;
+        int uiBytesRead;
         byte[]? pSTCIPalette = null;
 
         if (fContents.HasFlag(HIMAGECreateFlags.IMAGE_PALETTE))
@@ -106,20 +111,20 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
             //memset(pSTCIPalette, 0, uiFileSectionSize);
 
             // Read in the palette
-            if (!FileManager.FileRead(stream, ref pSTCIPalette, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
-            {
-                //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading palette!");
-                //FileClose(hFile);
-                //MemFree(pSTCIPalette);
-                return null;
-            }
-            else if (!this.STCISetPalette(ref pSTCIPalette, ref hImage))
-            {
-                // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem setting hImage-format palette!");
-                // FileClose(hFile);
-                // MemFree(pSTCIPalette);
-                return null;
-            }
+//            if (!FileManager.FileRead(stream, ref pSTCIPalette, (int)uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
+//            {
+//                //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading palette!");
+//                //FileClose(hFile);
+//                //MemFree(pSTCIPalette);
+//                return null;
+//            }
+//            else if (!this.STCISetPalette(ref pSTCIPalette, ref hImage))
+//            {
+//                // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem setting hImage-format palette!");
+//                // FileClose(hFile);
+//                // MemFree(pSTCIPalette);
+//                return null;
+//            }
 
             hImage.fFlags |= HIMAGECreateFlags.IMAGE_PALETTE;
         }
@@ -143,20 +148,20 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
                 hImage.usNumberOfObjects = pHeader.Indexed.usNumberOfSubImages;
                 uiFileSectionSize = hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
 
-                if (!FileManager.FileRead<ETRLEObject>(stream, ref hImage.pETRLEObject, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
-                {
-                    return null;
-                }
+//                if (!FileManager.FileRead(stream, ref hImage.pETRLEObject, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
+//                {
+//                    return null;
+//                }
 
                 hImage.uiSizePixData = pHeader.uiStoredSize;
                 hImage.fFlags |= HIMAGECreateFlags.IMAGE_TRLECOMPRESSED;
             }
 
-            hImage.pImageData = new byte[pHeader.uiStoredSize];
-            if (!FileManager.FileRead(stream, ref hImage.pImageData, pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
-            {
-                return null;
-            }
+//            hImage.pImageData = new byte[pHeader.uiStoredSize];
+//            if (!FileManager.FileRead(stream, ref hImage.pImageData, pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
+//            {
+//                return null;
+//            }
 
             hImage.fFlags |= HIMAGECreateFlags.IMAGE_BITMAPDATA;
         }
@@ -174,10 +179,10 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         {
             // load application-specific data
             hImage.pAppData = new byte[pHeader.uiAppDataSize];
-            if (!FileManager.FileRead(stream, ref hImage.pAppData, pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
-            {
-
-            }
+//            if (!FileManager.FileRead(stream, ref hImage.pAppData, pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
+//            {
+//
+//            }
 
             hImage.uiAppDataSize = pHeader.uiAppDataSize;
 
@@ -395,4 +400,34 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
 
     public SixLabors.ImageSharp.Image Decode(Configuration configuration, Stream stream, CancellationToken cancellationToken)
     => Decode(configuration, stream);
+
+    public ImageInfo Identify(DecoderOptions options, Stream stream)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ImageInfo> IdentifyAsync(DecoderOptions options, Stream stream, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Image<TPixel> Decode<TPixel>(DecoderOptions options, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
+    {
+        throw new NotImplementedException();
+    }
+
+    public SixLabors.ImageSharp.Image Decode(DecoderOptions options, Stream stream)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Image<TPixel>> DecodeAsync<TPixel>(DecoderOptions options, Stream stream, CancellationToken cancellationToken = default) where TPixel : unmanaged, IPixel<TPixel>
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<SixLabors.ImageSharp.Image> DecodeAsync(DecoderOptions options, Stream stream, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -776,9 +776,9 @@ public class OppList
         return (STRAIGHT * 2);
     }
 
-    public static int DistanceVisible(SOLDIERTYPE? pSoldier, WorldDirections bFacingDir, WorldDirections bSubjectDir, int sSubjectGridNo, int bLevel)
+    public static int DistanceVisible(SOLDIERTYPE pSoldier, WorldDirections bFacingDir, WorldDirections bSubjectDir, int sSubjectGridNo, int bLevel)
     {
-        int sDistVisible;
+        int sDistVisible = 0;
         int bLightLevel;
         SOLDIERTYPE? pSubject = null;
 
@@ -786,7 +786,7 @@ public class OppList
 
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
         {
-            if (!pSubject)
+            if (pSubject is null)
             {
                 return (0);
             }
@@ -804,11 +804,12 @@ public class OppList
         {
             // always calculate direction for tanks so we have something to work with
             bFacingDir = pSoldier.bDesiredDirection;
-            bSubjectDir = (int)GetDirectionToGridNoFromGridNo(pSoldier.sGridNo, sSubjectGridNo);
+//            bSubjectDir = (int)GetDirectionToGridNoFromGridNo(pSoldier.sGridNo, sSubjectGridNo);
             //bSubjectDir = atan8(pSoldier.sX,pSoldier.sY,pOpponent.sX,pOpponent.sY);
         }
 
-        if (!TANK(pSoldier) && (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT)) || (pSubject && pSubject.fMuzzleFlash)))
+        if (!TANK(pSoldier) && (bFacingDir == WorldDirections.DIRECTION_IRRELEVANT || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
+            || (pSubject is not null && pSubject.fMuzzleFlash)))
         {
             sDistVisible = MaxDistanceVisible();
         }
@@ -822,7 +823,7 @@ public class OppList
             }
             else
             {
-                sDistVisible = gbLookDistance[bFacingDir, bSubjectDir];
+//                sDistVisible = gbLookDistance[bFacingDir, bSubjectDir];
 
                 if (sDistVisible == ANGLE && (pSoldier.bTeam == OUR_TEAM || pSoldier.bAlertStatus >= STATUS.RED))
                 {
@@ -833,12 +834,12 @@ public class OppList
 
                 if (pSoldier.usAnimState == AnimationStates.RUNNING)
                 {
-                    if (gbLookDistance[bFacingDir, bSubjectDir] != STRAIGHT)
-                    {
-                        // reduce sight when we're not looking in that direction...
-                        // (20%?)
-                        sDistVisible = (sDistVisible * 8) / 10;
-                    }
+//                    if (gbLookDistance[bFacingDir, bSubjectDir] != STRAIGHT)
+//                    {
+//                        // reduce sight when we're not looking in that direction...
+//                        // (20%?)
+//                        sDistVisible = (sDistVisible * 8) / 10;
+//                    }
                 }
             }
         }
@@ -851,55 +852,57 @@ public class OppList
 
         // now reduce based on light level; SHADE_MIN is the define for the
         // highest number the light can be
-        bLightLevel = LightTrueLevel(sSubjectGridNo, bLevel);
+//        bLightLevel = LightTrueLevel(sSubjectGridNo, bLevel);
 
 
-        if (pSubject && !(pSubject.fMuzzleFlash && (bLightLevel > NORMAL_LIGHTLEVEL_DAY)))
-        {
-            // ATE: Made function to adjust light distence...
-            sDistVisible = AdjustMaxSightRangeForEnvEffects(pSoldier, bLightLevel, sDistVisible);
-        }
+//        if (pSubject && !(pSubject.fMuzzleFlash && (bLightLevel > NORMAL_LIGHTLEVEL_DAY)))
+//        {
+//            // ATE: Made function to adjust light distence...
+//            sDistVisible = AdjustMaxSightRangeForEnvEffects(pSoldier, bLightLevel, sDistVisible);
+//        }
 
         // if we wanted to simulate desert-blindness, we'd bump up the light level 
         // under certain conditions (daytime in the desert, for instance)
-        if (bLightLevel < NORMAL_LIGHTLEVEL_DAY)
+//        if (bLightLevel < NORMAL_LIGHTLEVEL_DAY)
+//        {
+//            // greater than normal daylight level; check for sun goggles
+//            if (pSoldier.inv[HEAD1POS].usItem == Items.SUNGOGGLES || pSoldier.inv[HEAD2POS].usItem == Items.SUNGOGGLES)
+//            {
+//                // increase sighting distance by up to 2 tiles
+//                sDistVisible++;
+//                if (bLightLevel < NORMAL_LIGHTLEVEL_DAY - 1)
+//                {
+//                    sDistVisible++;
+//                    ;
+//                }
+//            }
+//        }
+//        else if (bLightLevel > NORMAL_LIGHTLEVEL_DAY + 5)
         {
-            // greater than normal daylight level; check for sun goggles
-            if (pSoldier.inv[HEAD1POS].usItem == Items.SUNGOGGLES || pSoldier.inv[HEAD2POS].usItem == Items.SUNGOGGLES)
-            {
-                // increase sighting distance by up to 2 tiles
-                sDistVisible++;
-                if (bLightLevel < NORMAL_LIGHTLEVEL_DAY - 1)
-                {
-                    sDistVisible++;
-                    ;
-                }
-            }
-        }
-        else if (bLightLevel > NORMAL_LIGHTLEVEL_DAY + 5)
-        {
-            if ((pSoldier.inv[HEAD1POS].usItem == Items.NIGHTGOGGLES
-                || pSoldier.inv[HEAD2POS].usItem == Items.NIGHTGOGGLES
-                || pSoldier.inv[HEAD1POS].usItem == Items.UVGOGGLES
-                || pSoldier.inv[HEAD2POS].usItem == Items.UVGOGGLES)
+            if ((pSoldier.inv[InventorySlot.HEAD1POS].usItem == Items.NIGHTGOGGLES
+                || pSoldier.inv[InventorySlot.HEAD2POS].usItem == Items.NIGHTGOGGLES
+                || pSoldier.inv[InventorySlot.HEAD1POS].usItem == Items.UVGOGGLES
+                || pSoldier.inv[InventorySlot.HEAD2POS].usItem == Items.UVGOGGLES)
                 || (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT
                 || AM_A_ROBOT(pSoldier)))
             {
-                if (pSoldier.inv[HEAD1POS].usItem == Items.NIGHTGOGGLES || pSoldier.inv[HEAD2POS].usItem == Items.NIGHTGOGGLES || AM_A_ROBOT(pSoldier))
+                if (pSoldier.inv[InventorySlot.HEAD1POS].usItem == Items.NIGHTGOGGLES
+                    || pSoldier.inv[InventorySlot.HEAD2POS].usItem == Items.NIGHTGOGGLES
+                    || AM_A_ROBOT(pSoldier))
                 {
-                    if (bLightLevel > NORMAL_LIGHTLEVEL_NIGHT)
-                    {
-                        // when it gets really dark, light-intensification goggles become less effective
-                        if (bLightLevel < NORMAL_LIGHTLEVEL_NIGHT + 3)
-                        {
-                            sDistVisible += (NIGHTSIGHTGOGGLES_BONUS / 2);
-                        }
-                        // else no help at all!
-                    }
-                    else
-                    {
-                        sDistVisible += NIGHTSIGHTGOGGLES_BONUS;
-                    }
+//                    if (bLightLevel > NORMAL_LIGHTLEVEL_NIGHT)
+//                    {
+//                        // when it gets really dark, light-intensification goggles become less effective
+//                        if (bLightLevel < NORMAL_LIGHTLEVEL_NIGHT + 3)
+//                        {
+//                            sDistVisible += (NIGHTSIGHTGOGGLES_BONUS / 2);
+//                        }
+//                        // else no help at all!
+//                    }
+//                    else
+//                    {
+//                        sDistVisible += NIGHTSIGHTGOGGLES_BONUS;
+//                    }
 
                 }
                 // UV goggles only function above ground... ditto for bloodcats
@@ -1241,7 +1244,7 @@ public class OppList
         }
     }
 
-    public static void HandleManNoLongerSeen(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int pPersOL, int pbPublOL)
+    public static void HandleManNoLongerSeen(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int? pPersOL, int? pbPublOL)
     {
         // if neither side is neutral AND
         // if this soldier is an opponent (fights for different side)
@@ -1312,10 +1315,10 @@ public class OppList
     public static int ManLooksForMan(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pOpponent, int ubCaller)
     {
         WorldDirections bDir;
-        bool bAware = false;
+        int bAware = 0;
         int bSuccess = 0;
         int sDistVisible, sDistAway;
-        int pPersOL, pbPublOL;
+        int? pPersOL, pbPublOL;
 
 
         /*
@@ -1471,7 +1474,7 @@ public class OppList
         // if soldier is known about (SEEN or HEARD within last few turns)
         if (pPersOL is not null || pbPublOL is not null)
         {
-            bAware = true;
+            bAware = 1;
 
             // then we look for him full viewing distance in EVERY direction
             sDistVisible = DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, 0, pOpponent.sGridNo, pOpponent.bLevel);
@@ -1946,7 +1949,7 @@ public class OppList
                 // if the looker hasn't seen this opponent at all earlier this turn, OR
                 // if the opponent is not where the looker last thought him to be
                 if ((pSoldier.bOppList[pOpponent.ubID] != SEEN_THIS_TURN) ||
-                    (gsLastKnownOppLoc[pSoldier.ubID, pOpponent.ubID] != sOppGridno))
+                    (gsLastKnownOppLoc[pSoldier.ubID][pOpponent.ubID] != sOppGridno))
                 {
                     AIMain.SetNewSituation(pSoldier);  // force the looker to re-evaluate
                 }
@@ -2220,16 +2223,16 @@ public class OppList
                             && pSoldier.bNewOppCnt > 0)
                         {
                             // as long as viewer meets minimum interrupt conditions
-                            if (gubSightFlags.HasFlag(SIGHT.INTERRUPT) && StandardInterruptConditionsMet(pSoldier, pOpponent.ubID, bOldOppList))
-                            {
-                                // calculate the interrupt duel points						
-                                pSoldier.bInterruptDuelPts = CalcInterruptDuelPts(pSoldier, pOpponent.ubID, true);
-                                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calculating int duel pts in OtherTeamsLookForMan, %d has %d points", pSoldier.ubID, pSoldier.bInterruptDuelPts));
-                            }
-                            else
-                            {
-                                pSoldier.bInterruptDuelPts = Globals.NO_INTERRUPT;
-                            }
+//                            if (gubSightFlags.HasFlag(SIGHT.INTERRUPT) && StandardInterruptConditionsMet(pSoldier, pOpponent.ubID, bOldOppList))
+//                            {
+//                                // calculate the interrupt duel points						
+//                                pSoldier.bInterruptDuelPts = CalcInterruptDuelPts(pSoldier, pOpponent.ubID, true);
+//                                //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calculating int duel pts in OtherTeamsLookForMan, %d has %d points", pSoldier.ubID, pSoldier.bInterruptDuelPts));
+//                            }
+//                            else
+//                            {
+//                                pSoldier.bInterruptDuelPts = Globals.NO_INTERRUPT;
+//                            }
                         }
                     }
                 }
@@ -2348,15 +2351,16 @@ public class OppList
             pOpponent = MercSlots[ubLoop];
 
             // if the target is active, a true opponent and currently seen by this merc
-            if (pOpponent)
+            if (pOpponent is not null)
             {
                 // check to see if OPPONENT considers US neutral
-                if ((pOpponent.bOppList[ubTarget] == SEEN_CURRENTLY) && !pOpponent.bNeutral && !CONSIDERED_NEUTRAL(pOpponent, pSoldier) && (pSoldier.bSide != pOpponent.bSide))
+                if ((pOpponent.bOppList[ubTarget] == SEEN_CURRENTLY) && pOpponent.bNeutral == 0 && !CONSIDERED_NEUTRAL(pOpponent, pSoldier) && (pSoldier.bSide != pOpponent.bSide))
                 {
                     RemoveOneOpponent(pOpponent);
                 }
+
                 UpdatePersonal(pOpponent, ubTarget, NOT_HEARD_OR_SEEN, NOWHERE, 0);
-                gbSeenOpponents[ubLoop, ubTarget] = 0;
+                gbSeenOpponents[ubLoop][ubTarget] = 0;
             }
         }
 
@@ -2820,7 +2824,7 @@ public class OppList
             {
                 if (Globals.Random.Next(100) < 30)
                 {
-                    DoMercBattleSound(pSoldier, BATTLE_SOUND.ENEMY);
+//                    DoMercBattleSound(pSoldier, BATTLE_SOUND.ENEMY);
                 }
                 else
                 {
@@ -3115,7 +3119,7 @@ public class OppList
 
                             if (pOpponent.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
                             {
-                                gfPlayerTeamSawCreatures = true;
+                                gfPlayerTeamSawCreatures = 1;
                             }
 
                             // ATE: Added for bloodcat...
@@ -3384,14 +3388,14 @@ public class OppList
     void DebugSoldierPage2()
     {
         SOLDIERTYPE? pSoldier;
-        int usSoldierIndex;
+        int usSoldierIndex = 0;
         int uiMercFlags;
         int usMapPos;
         TILE_ELEMENT TileElem;
         LEVELNODE? pNode = null;
         int ubLine;
 
-        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
+//        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
             Overhead.GetSoldier(out pSoldier, usSoldierIndex);
@@ -3449,13 +3453,13 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "Direction:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzDirectionStr[pSoldier.bDirection]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzDirectionStr[pSoldier.bDirection]);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "DesDirection:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzDirectionStr[pSoldier.bDesiredDirection]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzDirectionStr[pSoldier.bDesiredDirection]);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -3513,13 +3517,13 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "Main hand:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HANDPOS].usItem]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HANDPOS].usItem]);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "Second hand:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem]);
             ubLine++;
 
             if (GetMouseMapPos(out usMapPos))
@@ -3532,7 +3536,7 @@ public class OppList
             }
 
         }
-        else if (GetMouseMapPos(out usMapPos))
+//        else if (GetMouseMapPos(out usMapPos))
         {
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG LAND PAGE TWO");
@@ -3654,13 +3658,13 @@ public class OppList
 
     void DebugSoldierPage3()
     {
-        SOLDIERTYPE? pSoldier;
-        int usSoldierIndex;
+        SOLDIERTYPE? pSoldier = null;
+        int usSoldierIndex = 0;
         int uiMercFlags;
-        int usMapPos;
+        int usMapPos = 0;
         int ubLine;
 
-        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
+//        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
             Overhead.GetSoldier(out pSoldier, usSoldierIndex);
@@ -3680,10 +3684,10 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "Action:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzActionStr[pSoldier.bAction]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzActionStr[pSoldier.bAction]);
             if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ENEMY))
             {
-                gprintf(350, LINE_HEIGHT * ubLine, "Alert %S", gzAlertStr[pSoldier.bAlertStatus]);
+//                gprintf(350, LINE_HEIGHT * ubLine, "Alert %S", gzAlertStr[pSoldier.bAlertStatus]);
             }
             ubLine++;
 
@@ -3734,7 +3738,7 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "Last Action:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzActionStr[pSoldier.bLastAction]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%S", gzActionStr[pSoldier.bLastAction]);
             ubLine++;
 
             if (gubWatchedLocPoints[pSoldier.ubID, 2] > 0)
@@ -3801,7 +3805,7 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "PrevAniCode:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%d", gusAnimInst[pSoldier.usOldAniState, pSoldier.sOldAniCode]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%d", gusAnimInst[pSoldier.usOldAniState, pSoldier.sOldAniCode]);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -3813,7 +3817,7 @@ public class OppList
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
             gprintf(0, LINE_HEIGHT * ubLine, "AniCode:");
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.NEUTRAL);
-            gprintf(150, LINE_HEIGHT * ubLine, "%d", gusAnimInst[pSoldier.usAnimState, pSoldier.usAniCode]);
+//            gprintf(150, LINE_HEIGHT * ubLine, "%d", gusAnimInst[pSoldier.usAnimState, pSoldier.usAniCode]);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -3863,17 +3867,17 @@ public class OppList
             }
 
         }
-        else if (GetMouseMapPos(out usMapPos))
+//        else if (GetMouseMapPos(out usMapPos))
         {
-            DOOR_STATUS? pDoorStatus;
-            STRUCTURE? pStructure;
+            DOOR_STATUS? pDoorStatus = null;
+            STRUCTURE? pStructure = null;
 
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG LAND PAGE THREE");
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
             // OK, display door information here.....
-            pDoorStatus = GetDoorStatus(usMapPos);
+//            pDoorStatus = GetDoorStatus(usMapPos);
 
             ubLine = 1;
 
@@ -3973,27 +3977,29 @@ public class OppList
 
     void WriteQuantityAndAttachments(OBJECTTYPE? pObject, int yp)
     {
-        int[] szAttach = new int[30];
+        string szAttach = string.Empty;
         bool fAttachments;
         //100%  Qty: 2  Attach:
         //100%  Qty: 2  
         //100%  Attach:
         //100%
-        if (!pObject.usItem)
+        if (pObject.usItem == 0)
         {
             return;
         }
         //Build attachment string
         fAttachments = false;
-        if (pObject.usAttachItem[0] || pObject.usAttachItem[1] ||
-              pObject.usAttachItem[2] || pObject.usAttachItem[3])
+        if (pObject.usAttachItem[0] > 0
+            || pObject.usAttachItem[1] > 0
+            || pObject.usAttachItem[2] > 0
+            || pObject.usAttachItem[3] > 0)
         {
             fAttachments = true;
             szAttach = wprintf("(");
-            AppendAttachmentCode(pObject.usAttachItem[0], szAttach);
-            AppendAttachmentCode(pObject.usAttachItem[1], szAttach);
-            AppendAttachmentCode(pObject.usAttachItem[2], szAttach);
-            AppendAttachmentCode(pObject.usAttachItem[3], szAttach);
+            AppendAttachmentCode(pObject.usAttachItem[0], ref szAttach);
+            AppendAttachmentCode(pObject.usAttachItem[1], ref szAttach);
+            AppendAttachmentCode(pObject.usAttachItem[2], ref szAttach);
+            AppendAttachmentCode(pObject.usAttachItem[3], ref szAttach);
             wcscat(szAttach, " )");
         }
 
@@ -4172,7 +4178,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[VESTPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(&pSoldier.inv[InventorySlot.VESTPOS], LINE_HEIGHT * ubLine);
+            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.VESTPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4326,7 +4332,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK5POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(&pSoldier.inv[InventorySlot.SMALLPOCK5POS], LINE_HEIGHT * ubLine);
+            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK5POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4757,7 +4763,7 @@ public class OppList
         TerrainTypeDefines ubSourceTerrType;
         int ubSource;
         bool bTellPlayer = false, bHeard;
-        bool bSeen;
+        bool? bSeen;
         int ubHeardLoudestBy;
         WorldDirections ubLoudestNoiseDir = 0;
         WorldDirections ubNoiseDir = 0;
@@ -5081,7 +5087,9 @@ public class OppList
                         ubNoiseDir = SoldierControl.atan8(CenterX(pSoldier.sGridNo), CenterY(pSoldier.sGridNo), CenterX(sGridNo), CenterY(sGridNo));
 
                         // check the 'noise heard & reported' bit for that soldier & direction
-                        if (ubNoiseType != NOISE.MOVEMENT || bTeam != OUR_TEAM || (pSoldier.bInterruptDuelPts != Globals.NO_INTERRUPT) || !(pSoldier.ubMovementNoiseHeard & (1 << ubNoiseDir)))
+                        if (ubNoiseType != NOISE.MOVEMENT || bTeam != OUR_TEAM || (pSoldier.bInterruptDuelPts != Globals.NO_INTERRUPT)
+//                            || !(pSoldier.ubMovementNoiseHeard & (1 << ubNoiseDir)))
+                        )
                         {
                             if (ubEffVolume > ubLoudestEffVolume)
                             {
@@ -5141,7 +5149,7 @@ public class OppList
                 if (gTacticalStatus.Team[bTeam].IsHuman && (ubSource < NOBODY))
                 {
                     // if ubNoiseMaker was seen by at least one member of this team
-                    if (bSeen)
+                    if (bSeen ?? false)
                     {
                         // Temporary for opplist synching - disable random order radioing
                         //# if RECORDOPPLIST
@@ -5334,7 +5342,7 @@ public class OppList
 
 
 
-    void HearNoise(SOLDIERTYPE? pSoldier, int ubNoiseMaker, int sGridNo, int bLevel, int ubVolume, NOISE ubNoiseType, out int? ubSeen)
+    void HearNoise(SOLDIERTYPE? pSoldier, int ubNoiseMaker, int sGridNo, int bLevel, int ubVolume, NOISE ubNoiseType, out bool? ubSeen)
     {
         ubSeen = null;
 
@@ -5450,7 +5458,7 @@ public class OppList
                     pSoldier.bNewOppCnt = 0;
                 }
 
-                ubSeen = 1;
+                ubSeen = true;
                 // RadioSightings() must only be called later on by ProcessNoise() itself
                 // because we want the soldier who heard noise the LOUDEST to report it
 
@@ -5615,14 +5623,14 @@ public class OppList
                     pSoldier.bNoiseLevel = bLevel;
 
                     // no matter how loud noise was, don't remember it for than 12 turns!
-                    if (ubVolume < MAX_MISC_NOISE.DURATION)
-                    {
-                        pSoldier.ubNoiseVolume = ubVolume;
-                    }
-                    else
-                    {
-                        pSoldier.ubNoiseVolume = MAX_MISC_NOISE.DURATION;
-                    }
+//                    if (ubVolume < MAX_MISC_NOISE.DURATION)
+//                    {
+//                        pSoldier.ubNoiseVolume = ubVolume;
+//                    }
+//                    else
+//                    {
+//                        pSoldier.ubNoiseVolume = MAX_MISC_NOISE.DURATION;
+//                    }
 
                     AIMain.SetNewSituation(pSoldier);  // force a fresh AI decision to be made
                 }
@@ -5649,15 +5657,15 @@ public class OppList
                 {
                     // give every ELIGIBLE listener an automatic interrupt, since it's
                     // reasonable to assume the guy throwing wants to wait for their reaction!
-                    if (StandardInterruptConditionsMet(pSoldier, Globals.NOBODY, false))
-                    {
-                        pSoldier.bInterruptDuelPts = AUTOMATIC_INTERRUPT;          // force automatic interrupt
-                                                                                   //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calculating int duel pts in noise code, %d has %d points", pSoldier.ubID, pSoldier.bInterruptDuelPts));
-                    }
-                    else
-                    {
-                        pSoldier.bInterruptDuelPts = Globals.NO_INTERRUPT;
-                    }
+//                    if (StandardInterruptConditionsMet(pSoldier, Globals.NOBODY, false))
+//                    {
+//                        pSoldier.bInterruptDuelPts = AUTOMATIC_INTERRUPT;          // force automatic interrupt
+//                                                                                   //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calculating int duel pts in noise code, %d has %d points", pSoldier.ubID, pSoldier.bInterruptDuelPts));
+//                    }
+//                    else
+//                    {
+//                        pSoldier.bInterruptDuelPts = Globals.NO_INTERRUPT;
+//                    }
                 }
             }
         }
@@ -5698,17 +5706,17 @@ public class OppList
 
         if (bLevel == pSoldier.bLevel || ubNoiseType == NOISE.EXPLOSION || ubNoiseType == NOISE.SCREAM || ubNoiseType == NOISE.ROCK_IMPACT || ubNoiseType == NOISE.GRENADE_IMPACT)
         {
-            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], pDirectionStr[ubNoiseDir]);
+//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], pDirectionStr[ubNoiseDir]);
         }
         else if (bLevel > pSoldier.bLevel)
         {
             // from above!
-            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[6]);
+//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[6]);
         }
         else
         {
             // from below!
-            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[7]);
+//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[7]);
         }
 
         // if the quote was faint, say something
@@ -6073,12 +6081,12 @@ public class OppList
         }
 
         // if all opponents are publicly unknown (NOT_HEARD_OR_SEEN)
-        if (bNoPubliclyKnownOpponents)
-        {
-            // forget about the last radio alert (ie. throw away who made the call)
-            // this is mainly so POINT_PATROL guys don't SEEK_FRIEND forever after
-            gTacticalStatus.Team[bTeam].ubLastMercToRadio = Globals.NOBODY;
-        }
+//        if (bNoPubliclyKnownOpponents)
+//        {
+//            // forget about the last radio alert (ie. throw away who made the call)
+//            // this is mainly so POINT_PATROL guys don't SEEK_FRIEND forever after
+//            gTacticalStatus.Team[bTeam].ubLastMercToRadio = Globals.NOBODY;
+//        }
 
         // decay watched locs as well
         DecayWatchedLocs(bTeam);
@@ -6128,7 +6136,9 @@ public class OppList
                 pOpponent = MercSlots[uiLoop];
 
                 // for every active, living soldier on ANOTHER team
-                if (pOpponent && pOpponent.IsAlive && !pOpponent.bNeutral && (pOpponent.bTeam != pSoldier.bTeam) && (!CONSIDERED_NEUTRAL(pOpponent, pSoldier) && !CONSIDERED_NEUTRAL(pSoldier, pOpponent) && (pSoldier.bSide != pOpponent.bSide)))
+                if (pOpponent is not null && pOpponent.IsAlive
+                    && pOpponent.bNeutral == 0 
+                    && (pOpponent.bTeam != pSoldier.bTeam) && (!CONSIDERED_NEUTRAL(pOpponent, pSoldier) && !CONSIDERED_NEUTRAL(pSoldier, pOpponent) && (pSoldier.bSide != pOpponent.bSide)))
                 {
                     if (pSoldier.bOppList[pOpponent.ubID] == SEEN_CURRENTLY)
                     {
@@ -6158,7 +6168,12 @@ public class OppList
                 pOpponent = MercSlots[uiLoop];
 
                 // for every active, living soldier on ANOTHER team
-                if (pOpponent && pOpponent.IsAlive && !pOpponent.bNeutral && (pOpponent.bTeam != pSoldier.bTeam) && !CONSIDERED_NEUTRAL(pSoldier, pOpponent) && (pSoldier.bSide != pOpponent.bSide))
+                if (pOpponent is not null
+                    && pOpponent.IsAlive
+                    && pOpponent.bNeutral == 0 
+                    && (pOpponent.bTeam != pSoldier.bTeam)
+                    && !CONSIDERED_NEUTRAL(pSoldier, pOpponent)
+                    && (pSoldier.bSide != pOpponent.bSide))
                 {
                     if (pOpponent.bOppList[pSoldier.ubID] == SEEN_CURRENTLY)
                     {
@@ -6216,10 +6231,11 @@ public class OppList
             }
 
             ubTileSightLimit = DistanceVisible(pDefender, WorldDirections.DIRECTION_IRRELEVANT, 0, pAttacker.sGridNo, pAttacker.bLevel);
-            if (LOS.SoldierToSoldierLineOfSightTest(pDefender, pAttacker, ubTileSightLimit, 1) != 0)
+            if (LOS.SoldierToSoldierLineOfSightTest(pDefender, pAttacker, ubTileSightLimit, 1))
             {
                 fSeesAttacker = true;
             }
+
             if (fMuzzleFlash)
             {
                 pAttacker.fMuzzleFlash = true;
@@ -6238,7 +6254,7 @@ public class OppList
             if (pDefender.bTeam == gbPlayerNum)
             {
                 // EXPERIENCE GAIN (5): Victim notices/sees a previously UNSEEN attacker
-                Campaign.StatChange(pDefender, Stat.EXPERAMT, 5, false);
+                Campaign.StatChange(pDefender, Stat.EXPERAMT, 5, 0);
 
                 // mark attacker as being SEEN right now
                 RadioSightings(pDefender, pAttacker.ubID, pDefender.bTeam);
@@ -6273,18 +6289,18 @@ public class OppList
             }
         }
 
-        if (StandardInterruptConditionsMet(pDefender, pAttacker.ubID, bOldOppList))
-        {
-            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: NoticeUnseenAttacker, standard conditions are met; defender %d, attacker %d", pDefender.ubID, pAttacker.ubID));
-
-            // calculate the interrupt duel points
-            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Calculating int duel pts for defender in NUA");
-            pDefender.bInterruptDuelPts = CalcInterruptDuelPts(pDefender, pAttacker.ubID, false);
-        }
-        else
-        {
-            pDefender.bInterruptDuelPts = Globals.NO_INTERRUPT;
-        }
+//        if (StandardInterruptConditionsMet(pDefender, pAttacker.ubID, bOldOppList))
+//        {
+//            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: NoticeUnseenAttacker, standard conditions are met; defender %d, attacker %d", pDefender.ubID, pAttacker.ubID));
+//
+//            // calculate the interrupt duel points
+//            //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Calculating int duel pts for defender in NUA");
+//            pDefender.bInterruptDuelPts = CalcInterruptDuelPts(pDefender, pAttacker.ubID, false);
+//        }
+//        else
+//        {
+//            pDefender.bInterruptDuelPts = Globals.NO_INTERRUPT;
+//        }
 
         // say quote
 
@@ -6341,7 +6357,7 @@ public class OppList
                 {
                     // and we can trace a line of sight to his x,y coordinates
                     // assume enemies are always aware of their buddies...
-                    if (LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, pDyingSoldier.sGridNo, pDyingSoldier.bLevel, 0, (int)sDistVisible, true))
+                    if (LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, pDyingSoldier.sGridNo, pDyingSoldier.bLevel, 0, (int)sDistVisible, 1))
                     {
                         pSoldier.bAlertStatus = STATUS.RED;
                         AIMain.CheckForChangingOrders(pSoldier);
@@ -6667,11 +6683,11 @@ public class OppList
             if (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT
                 && pSoldier.bActive && pSoldier.bInSector && pSoldier.IsAlive)
             {
-                SetSoldierNonNeutral(pSoldier);
+//                SetSoldierNonNeutral(pSoldier);
                 RecalculateOppCntsDueToNoLongerNeutral(pSoldier);
                 if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
-                    CheckForPotentialAddToBattleIncrement(pSoldier);
+//                    CheckForPotentialAddToBattleIncrement(pSoldier);
                 }
             }
         }

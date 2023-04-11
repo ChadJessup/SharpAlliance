@@ -69,10 +69,10 @@ public class RenderWorld : IDisposable
             gfScrollPending = false;
 
             // Restore Interface!
-            RestoreInterface();
+//            RestoreInterface();
 
             // Delete Topmost blitters saved areas
-            DeleteVideoOverlaysArea();
+//            DeleteVideoOverlaysArea();
 
         }
 
@@ -89,20 +89,20 @@ public class RenderWorld : IDisposable
         bool fOutBottom = false;
 
 
-        double dOpp, dAdj, dAngle;
+        double dOpp, dAdj, dAngle = 0;
 
         int sTopLeftWorldX, sTopLeftWorldY;
         int sTopRightWorldX, sTopRightWorldY;
         int sBottomLeftWorldX, sBottomLeftWorldY;
         int sBottomRightWorldX, sBottomRightWorldY;
-        int sTempPosX_W, sTempPosY_W;
+        int sTempPosX_W = 0, sTempPosY_W = 0;
 
 
         // For debug text for all 4 angles
         double at1, at2, at3, at4;
 
         int sX_S, sY_S;
-        int sScreenCenterX, sScreenCenterY;
+        int sScreenCenterX = 0, sScreenCenterY = 0;
         int sDistToCenterY, sDistToCenterX;
         int sNewScreenX, sNewScreenY;
         int sMult;
@@ -122,7 +122,7 @@ public class RenderWorld : IDisposable
         sDistToCenterY = sTempRenderCenterY - gCenterWorldY;
 
         // From render center in world coords, convert to render center in "screen" coords
-        FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out sScreenCenterX, out sScreenCenterY);
+//        FromCellToScreenCoordinates(sDistToCenterX, sDistToCenterY, out sScreenCenterX, out sScreenCenterY);
 
         // Subtract screen center
         sScreenCenterX += gsCX;
@@ -155,7 +155,7 @@ public class RenderWorld : IDisposable
         dOpp = sTopLeftWorldY - gsTLY;
         dAdj = sTopLeftWorldX - gsTLX;
 
-        dAngle = (double)atan2(dAdj, dOpp);
+//        dAngle = (double)atan2(dAdj, dOpp);
         at1 = dAngle * 180 / Math.PI;
 
         if (dAngle < 0)
@@ -171,7 +171,7 @@ public class RenderWorld : IDisposable
         dOpp = sTopRightWorldY - gsTRY;
         dAdj = gsTRX - sTopRightWorldX;
 
-        dAngle = (double)atan2(dAdj, dOpp);
+//        dAngle = (double)atan2(dAdj, dOpp);
         at2 = dAngle * 180 / Math.PI;
 
         if (dAngle < 0)
@@ -188,7 +188,7 @@ public class RenderWorld : IDisposable
         dOpp = gsBLY - sBottomLeftWorldY;
         dAdj = sBottomLeftWorldX - gsBLX;
 
-        dAngle = (double)atan2(dAdj, dOpp);
+//        dAngle = (double)atan2(dAdj, dOpp);
         at3 = dAngle * 180 / Math.PI;
 
         if (dAngle < 0)
@@ -204,7 +204,7 @@ public class RenderWorld : IDisposable
         dOpp = gsBRY - sBottomRightWorldY;
         dAdj = gsBRX - sBottomRightWorldX;
 
-        dAngle = (double)atan2(dAdj, dOpp);
+//        dAngle = (double)atan2(dAdj, dOpp);
         at4 = dAngle * 180 / Math.PI;
 
         if (dAngle < 0)
@@ -244,8 +244,8 @@ public class RenderWorld : IDisposable
                 if (fOutTop)
                 {
                     // Adjust screen coordinates on the Y!
-                    CorrectRenderCenter(sScreenCenterX, (int)(gsTLY + sY_S), out sNewScreenX, out sNewScreenY);
-                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
+//                    CorrectRenderCenter(sScreenCenterX, (int)(gsTLY + sY_S), out sNewScreenX, out sNewScreenY);
+//                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
 
                     sTempRenderCenterX = sTempPosX_W;
                     sTempRenderCenterY = sTempPosY_W;
@@ -255,8 +255,8 @@ public class RenderWorld : IDisposable
                 if (fOutBottom)
                 {
                     // OK, Ajust this since we get rounding errors in our two different calculations.
-                    CorrectRenderCenter(sScreenCenterX, (int)(gsBLY - sY_S - 50), out sNewScreenX, out sNewScreenY);
-                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
+//                    CorrectRenderCenter(sScreenCenterX, (int)(gsBLY - sY_S - 50), out sNewScreenX, out sNewScreenY);
+//                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
 
                     sTempRenderCenterX = sTempPosX_W;
                     sTempRenderCenterY = sTempPosY_W;
@@ -265,8 +265,8 @@ public class RenderWorld : IDisposable
 
                 if (fOutLeft)
                 {
-                    CorrectRenderCenter((int)(gsTLX + sX_S), sScreenCenterY, out sNewScreenX, out sNewScreenY);
-                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
+//                    CorrectRenderCenter((int)(gsTLX + sX_S), sScreenCenterY, out sNewScreenX, out sNewScreenY);
+//                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
 
                     sTempRenderCenterX = sTempPosX_W;
                     sTempRenderCenterY = sTempPosY_W;
@@ -275,8 +275,8 @@ public class RenderWorld : IDisposable
 
                 if (fOutRight)
                 {
-                    CorrectRenderCenter((int)(gsTRX - sX_S), sScreenCenterY, out sNewScreenX, out sNewScreenY);
-                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
+//                    CorrectRenderCenter((int)(gsTRX - sX_S), sScreenCenterY, out sNewScreenX, out sNewScreenY);
+//                    FromScreenToCellCoordinates(sNewScreenX, sNewScreenY, out sTempPosX_W, out sTempPosY_W);
 
                     sTempRenderCenterX = sTempPosX_W;
                     sTempRenderCenterY = sTempPosY_W;
@@ -355,7 +355,7 @@ public class RenderWorld : IDisposable
                 gsBottomRightWorldX = sBottomRightWorldX - gsTLX;
                 gsBottomRightWorldY = sBottomRightWorldY - gsTLY;
 
-                SetPositionSndsVolumeAndPanning();
+//                SetPositionSndsVolumeAndPanning();
             }
 
             return (true);

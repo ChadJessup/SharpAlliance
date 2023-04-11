@@ -336,31 +336,31 @@ public enum QUOTEID//StandardQuoteIDs
     GETLOST,
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 32)]
-public struct NPCQuoteInfo
+//[StructLayout(LayoutKind.Explicit, Size = 32)]
+public class NPCQuoteInfo
 {
-    [FieldOffset(00)] public ushort fFlags;
-    [FieldOffset(02)] public short sRequiredItem;            // item NPC must have to say quote
-    [FieldOffset(04)] public short sRequiredGridno;		// location for NPC req'd to say quote
-    [FieldOffset(06)] public ushort usFactMustBeTrue;        // ...before saying quote
-    [FieldOffset(08)] public ushort usFactMustBeFalse;   // ...before saying quote
-    [FieldOffset(10)] public byte ubQuest;                      // quest must be current to say quote
-    [FieldOffset(11)] public byte ubFirstDay;                   // first day quote can be said
-    [FieldOffset(12)] public byte ubLastDay;                    // last day quote can be said
-    [FieldOffset(13)] public byte ubApproachRequired;   // must use this approach to generate quote
-    [FieldOffset(14)] public byte ubOpinionRequired;    // opinion needed for this quote     13 bytes
-    [FieldOffset(15)] public byte ubQuoteNum;                   // this is the quote to say
-    [FieldOffset(16)] public byte ubNumQuotes;              // total # of quotes to say          15 bytes
-    [FieldOffset(17)] public byte ubStartQuest;
-    [FieldOffset(18)] public byte ubEndQuest;
-    [FieldOffset(19)] public byte ubTriggerNPC;
-    [FieldOffset(20)] public byte ubTriggerNPCRec;
-    [FieldOffset(21)] public byte ubFiller;             //                                       20 bytes
-    [FieldOffset(22)] public ushort usSetFactTrue;
-    [FieldOffset(24)] public ushort usGiftItem;          // item NPC gives to merc after saying quote
-    [FieldOffset(26)] public ushort usGoToGridno;
-    [FieldOffset(28)] public short sActionData;      // special action value
+    /*[FieldOffset(00)]*/ public ushort fFlags;
+    /*[FieldOffset(02)]*/ public short sRequiredItem;            // item NPC must have to say quote
+    /*[FieldOffset(04)]*/ public short sRequiredGridno;		// location for NPC req'd to say quote
+    /*[FieldOffset(06)]*/ public ushort usFactMustBeTrue;        // ...before saying quote
+    /*[FieldOffset(08)]*/ public ushort usFactMustBeFalse;   // ...before saying quote
+    /*[FieldOffset(10)]*/ public byte ubQuest;                      // quest must be current to say quote
+    /*[FieldOffset(11)]*/ public byte ubFirstDay;                   // first day quote can be said
+    /*[FieldOffset(12)]*/ public byte ubLastDay;                    // last day quote can be said
+    /*[FieldOffset(13)]*/ public byte ubApproachRequired;   // must use this approach to generate quote
+    /*[FieldOffset(14)]*/ public byte ubOpinionRequired;    // opinion needed for this quote     13 bytes
+    /*[FieldOffset(15)]*/ public byte ubQuoteNum;                   // this is the quote to say
+    /*[FieldOffset(16)]*/ public byte ubNumQuotes;              // total # of quotes to say          15 bytes
+    /*[FieldOffset(17)]*/ public byte ubStartQuest;
+    /*[FieldOffset(18)]*/ public byte ubEndQuest;
+    /*[FieldOffset(19)]*/ public byte ubTriggerNPC;
+    /*[FieldOffset(20)]*/ public byte ubTriggerNPCRec;
+    /*[FieldOffset(21)]*/ public byte ubFiller;             //                                       20 bytes
+    /*[FieldOffset(22)]*/ public ushort usSetFactTrue;
+    /*[FieldOffset(24)]*/ public ushort usGiftItem;          // item NPC gives to merc after saying quote
+    /*[FieldOffset(26)]*/ public ushort usGoToGridno;
+    /*[FieldOffset(28)]*/ public short sActionData;      // special action value
 
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-    [FieldOffset(30)] public byte[] ubUnused;
+//    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+    /*[FieldOffset(30)]*/ public byte[] ubUnused;
 } // 32 bytes

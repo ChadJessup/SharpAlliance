@@ -72,11 +72,11 @@ public class InterfaceCursors
             // Check if we are in the viewport region...
             if (Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
-                DrawItemTileCursor();
+//                DrawItemTileCursor();
             }
             else
             {
-                DrawItemFreeCursor();
+//                DrawItemFreeCursor();
             }
             return true;
         }
@@ -268,7 +268,7 @@ public class InterfaceCursors
             // Check if we are in the viewport region...
             if (gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
-                HideItemTileCursor();
+//                HideItemTileCursor();
                 return true;
             }
         }

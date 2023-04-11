@@ -127,7 +127,7 @@ public class Knowledge
             pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.ELDIN, false);
             if (pSoldier is not null && pSoldier.IsActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && (pSoldier.bAlertStatus == STATUS.GREEN || pSoldier.ubNoiseVolume < (MAX_MISC_NOISE_DURATION / 2)))
             {
-                if (LOS.SoldierToLocationLineOfSightTest(pSoldier, sGridNo, OppList.MaxDistanceVisible(), 1) > 0)
+                if (LOS.SoldierToLocationLineOfSightTest(pSoldier, sGridNo, OppList.MaxDistanceVisible(), 1))
                 {
                     // sees the player now!
                     NPC.TriggerNPCWithIHateYouQuote(NPCID.ELDIN);

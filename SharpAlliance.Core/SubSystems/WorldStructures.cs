@@ -98,7 +98,7 @@ public class WorldStructures
         return (null);
     }
 
-    public static bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelN)
+    public static bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, LEVELNODE? pLevelN)
     {
         STRUCTURE? pStructure;
 
@@ -112,8 +112,9 @@ public class WorldStructures
         return true;
     }
 
-    private static STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, LEVELNODE? pLevelNode)
-    { // Adds a complete structure to the world at a location plus all other locations covered by the structure
+    private static STRUCTURE? InternalAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, LEVELNODE? pLevelNode)
+    {
+        // Adds a complete structure to the world at a location plus all other locations covered by the structure
         int sGridNo;
         List<STRUCTURE> ppStructure = new();
         STRUCTURE? pBaseStructure;
@@ -122,10 +123,9 @@ public class WorldStructures
         int ubLoop;
         int ubLoop2;
         int sBaseTileHeight = -1;
-        int usStructureID;
+        int usStructureID = 0;
 
-        if (pDBStructureRef is null
-            || pLevelNode is null)
+        if (pLevelNode is null)
         {
             return null;
         }
@@ -183,11 +183,11 @@ public class WorldStructures
 
             if (ppTile[ubLoop].fFlags.HasFlag(TILE.ON_ROOF))
             {
-                ppStructure[ubLoop].sCubeOffset = (bLevel + 1) * PROFILE.Z_SIZE;
+//                ppStructure[ubLoop].sCubeOffset = (bLevel + 1) * PROFILE.Z_SIZE;
             }
             else
             {
-                ppStructure[ubLoop].sCubeOffset = bLevel * PROFILE.Z_SIZE;
+//                ppStructure[ubLoop].sCubeOffset = bLevel * PROFILE.Z_SIZE;
             }
             if (ppTile[ubLoop].fFlags.HasFlag(TILE.PASSABLE))
             {
@@ -224,7 +224,7 @@ public class WorldStructures
         else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE))
         {
             // ATE: Offset IDs so they don't collide with soldiers
-            usStructureID = (Globals.TOTAL_SOLDIERS + pLevelNode.pAniTile.uiUserData);
+//            usStructureID = (Globals.TOTAL_SOLDIERS + pLevelNode.pAniTile.uiUserData);
         }
         else
         {
@@ -257,6 +257,7 @@ public class WorldStructures
                     return (null);
                 }
             }
+
             if (AddStructureToTile((Globals.gpWorldLevelData[sGridNo]), ppStructure[ubLoop], usStructureID) == false)
             {
                 // error! abort!
@@ -311,7 +312,7 @@ public class WorldStructures
         return (true);
     }
 
-    public static STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF? pDBStructureRef, int ubTileNum)
+    public static STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF pDBStructureRef, int ubTileNum)
     {
         // Creates a STRUCTURE struct for one tile of a structure
         STRUCTURE? pStructure;
@@ -319,7 +320,7 @@ public class WorldStructures
         DB_STRUCTURE_TILE? pTile;
 
         // set pointers to the DBStructure and Tile
-        if (pDBStructureRef?.pDBStructure is null)
+        if (pDBStructureRef.pDBStructure is null)
         {
             return null;
         }
@@ -375,7 +376,7 @@ public class WorldStructures
     public static bool OkayToAddStructureToWorld(
         int sBaseGridNo,
         int bLevel,
-        DB_STRUCTURE_REF? pDBStructureRef,
+        DB_STRUCTURE_REF pDBStructureRef,
         int sExclusionID)
     {
         return (InternalOkayToAddStructureToWorld(
@@ -388,13 +389,13 @@ public class WorldStructures
 
     public static bool OkayToAddStructureToTile(
         int sBaseGridNo,
-        int sCubeOffset,
-        DB_STRUCTURE_REF? pDBStructureRef,
+        STRUCTURE_ON sCubeOffset,
+        DB_STRUCTURE_REF pDBStructureRef,
         int ubTileIndex,
         int sExclusionID,
         bool fIgnorePeople)
     {
-        ArgumentNullException.ThrowIfNull(pDBStructureRef?.ppTile);
+        ArgumentNullException.ThrowIfNull(pDBStructureRef.ppTile);
 
         // Verifies whether a structure is blocked from being added to the map at a particular point
         DB_STRUCTURE? pDBStructure;
@@ -407,7 +408,7 @@ public class WorldStructures
 
         ppTile = pDBStructureRef.ppTile;
         sGridNo = sBaseGridNo + ppTile[ubTileIndex].sPosRelToBase;
-        if (sGridNo < 0 || sGridNo > World.WORLD_MAX)
+        if (sGridNo < 0 || sGridNo > WORLD_MAX)
         {
             return (false);
         }
@@ -627,12 +628,12 @@ public class WorldStructures
         return (true);
     }
 
-    private static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF? pDBStructureRef, int sExclusionID, bool fIgnorePeople)
+    private static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, int sExclusionID, bool fIgnorePeople)
     {
         int ubLoop;
-        int sCubeOffset;
+        STRUCTURE_ON sCubeOffset;
 
-        if (pDBStructureRef?.pDBStructure is null
+        if (pDBStructureRef.pDBStructure is null
             || pDBStructureRef.pDBStructure.ubNumberOfTiles > 0
             || pDBStructureRef.ppTile is null)
         {
@@ -653,7 +654,7 @@ public class WorldStructures
             {
                 if (bLevel == 0)
                 {
-                    sCubeOffset = PROFILE.Z_SIZE;
+                    sCubeOffset = (STRUCTURE_ON)PROFILE.Z_SIZE;
                 }
                 else
                 {
@@ -662,7 +663,7 @@ public class WorldStructures
             }
             else
             {
-                sCubeOffset = bLevel * PROFILE.Z_SIZE;
+                sCubeOffset = (STRUCTURE_ON)(bLevel * PROFILE.Z_SIZE);
             }
             if (!OkayToAddStructureToTile(sBaseGridNo, sCubeOffset, pDBStructureRef, ubLoop, sExclusionID, fIgnorePeople))
             {

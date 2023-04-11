@@ -47,8 +47,8 @@ public class SharpAllianceGameLogic : IGameLogic
         SaveGameSubSystem saveGameSubSystem,
         MessageBoxSubSystem messageBoxSubSystem,
         IOSManager OSManager,
-        IScreenManager screenManager,
-        IVideoManager videoManager,
+//        IScreenManager screenManager,
+//        IVideoManager videoManager,
         IMusicManager musicManager)
     {
         this.context = context;
@@ -56,14 +56,14 @@ public class SharpAllianceGameLogic : IGameLogic
 
         // These should be initialized already
         this.mouse = mouseSubSystem;
-        CursorSubSystem = cursorSubSystem;
+        this.cursors = cursorSubSystem;
         this.helpScreen = helpScreenSubSystem;
         this.inputs = inputManager;
         this.saves = saveGameSubSystem;
         this.music = musicManager;
         this.messageBox = messageBoxSubSystem;
         this.os = OSManager;
-        this.screen = screenManager;
+//        this.screen = screenManager;
     }
 
     public async ValueTask<bool> Initialize()

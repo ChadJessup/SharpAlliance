@@ -149,62 +149,62 @@ public class StrategicMines
             }
 
             // check if the mine has any monster creatures in it
-            if (MineClearOfMonsters(ubMineIndex))
-            {
-                // if it's shutdown, but not permanently
-                if (IsMineShutDown(ubMineIndex) && !pMineStatus.fShutDownIsPermanent)
-                {
-                    // if we control production in it
-                    if (PlayerControlsMine(ubMineIndex))
-                    {
-                        IssueHeadMinerQuote(ubMineIndex, HEAD_MINER_STRATEGIC_QUOTE.CREATURES_GONE);
-                    }
-
-                    //Force the creatures to avoid the mine for a period of time.  This gives the 
-                    //player a chance to rest and decide how to deal with the problem.
-                    ForceCreaturesToAvoidMineTemporarily(ubMineIndex);
-
-                    // put mine back in service
-                    RestartMineProduction(ubMineIndex);
-                }
-            }
-            else    // mine is monster infested
-            {
-                // 'Der be monsters crawling around in there, lad!!!
-
-                // if it's still producing
-                if (!IsMineShutDown(ubMineIndex))
-                {
-                    // gotta put a stop to that!
-
-                    // if we control production in it
-                    if (PlayerControlsMine(ubMineIndex))
-                    {
-                        // 2 different quotes, depends whether or not it's the first time this has happened
-                        if (pMineStatus.fPrevInvadedByMonsters)
-                        {
-                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE.CREATURES_AGAIN;
-                        }
-                        else
-                        {
-                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE.CREATURES_ATTACK;
-                            pMineStatus.fPrevInvadedByMonsters = true;
-
-                            if (Globals.gubQuest[QUEST.CREATURES] == Globals.QUESTNOTSTARTED)
-                            {
-                                // start it now!
-                                Quests.StartQuest(QUEST.CREATURES, Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
-                            }
-                        }
-
-                        // tell player the good news...
-                        IssueHeadMinerQuote(ubMineIndex, ubQuoteType);
-                    }
-
-                    // and immediately halt all work at the mine (whether it's ours or the queen's).  This is a temporary shutdown
-                    ShutOffMineProduction(ubMineIndex);
-                }
-            }
+//            if (MineClearOfMonsters(ubMineIndex))
+//            {
+//                // if it's shutdown, but not permanently
+//                if (IsMineShutDown(ubMineIndex) && !pMineStatus.fShutDownIsPermanent)
+//                {
+//                    // if we control production in it
+//                    if (PlayerControlsMine(ubMineIndex))
+//                    {
+//                        IssueHeadMinerQuote(ubMineIndex, HEAD_MINER_STRATEGIC_QUOTE.CREATURES_GONE);
+//                    }
+//
+//                    //Force the creatures to avoid the mine for a period of time.  This gives the 
+//                    //player a chance to rest and decide how to deal with the problem.
+////                    ForceCreaturesToAvoidMineTemporarily(ubMineIndex);
+//
+//                    // put mine back in service
+//                    RestartMineProduction(ubMineIndex);
+//                }
+//            }
+//            else    // mine is monster infested
+//            {
+//                // 'Der be monsters crawling around in there, lad!!!
+//
+//                // if it's still producing
+//                if (!IsMineShutDown(ubMineIndex))
+//                {
+//                    // gotta put a stop to that!
+//
+//                    // if we control production in it
+//                    if (PlayerControlsMine(ubMineIndex))
+//                    {
+//                        // 2 different quotes, depends whether or not it's the first time this has happened
+//                        if (pMineStatus.fPrevInvadedByMonsters)
+//                        {
+//                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE.CREATURES_AGAIN;
+//                        }
+//                        else
+//                        {
+//                            ubQuoteType = HEAD_MINER_STRATEGIC_QUOTE.CREATURES_ATTACK;
+//                            pMineStatus.fPrevInvadedByMonsters = true;
+//
+//                            if (Globals.gubQuest[QUEST.CREATURES] == Globals.QUESTNOTSTARTED)
+//                            {
+//                                // start it now!
+//                                Quests.StartQuest(QUEST.CREATURES, Globals.gMineLocation[ubMineIndex].sSectorX, Globals.gMineLocation[ubMineIndex].sSectorY);
+//                            }
+//                        }
+//
+//                        // tell player the good news...
+//                        IssueHeadMinerQuote(ubMineIndex, ubQuoteType);
+//                    }
+//
+//                    // and immediately halt all work at the mine (whether it's ours or the queen's).  This is a temporary shutdown
+//                    ShutOffMineProduction(ubMineIndex);
+//                }
+//            }
         }
     }
 
@@ -325,7 +325,7 @@ public class StrategicMines
 
             // tell the strategic AI about this, that mine's and town's value is greatly reduced
             GetMineSector(bMineIndex, out sSectorX, out sSectorY);
-            StrategicHandleMineThatRanOut(SECTORINFO.SECTOR(sSectorX, sSectorY));
+//            StrategicHandleMineThatRanOut(SECTORINFO.SECTOR(sSectorX, sSectorY));
 
             History.AddHistoryToPlayersLog(
                 HISTORY.MINE_RAN_OUT,
@@ -362,7 +362,7 @@ public class StrategicMines
                         // that mine's head miner tells player that the mine is running out
                         IssueHeadMinerQuote(bMineIndex, HEAD_MINER_STRATEGIC_QUOTE.RUNNING_OUT);
                         mineStatus.fWarnedOfRunningOut = true;
-                        AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
+//                        AddHistoryToPlayersLog(HISTORY.MINE_RUNNING_OUT, Globals.gMineLocation[bMineIndex].bAssociatedTown, GameClock.GetWorldTotalMin(), Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY);
                     }
                 }
             }
@@ -562,7 +562,7 @@ public class StrategicMines
         }
         if (iIncome > 0)
         {
-            AddTransactionToPlayersBook(DEPOSIT_FROM_SILVER_MINE, 0, GameClock.GetWorldTotalMin(), iIncome);
+//            AddTransactionToPlayersBook(DEPOSIT_FROM_SILVER_MINE, 0, GameClock.GetWorldTotalMin(), iIncome);
         }
     }
 
@@ -852,7 +852,7 @@ public class StrategicMines
         if (Globals.gMercProfiles[usHeadMinerProfileId].bLife < Globals.OKLIFE)
         {
             // debug message
-            Messages.ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
+//            Messages.ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
             return;
         }
 
@@ -901,10 +901,10 @@ public class StrategicMines
                 break;
         }
 
-        SetExternMapscreenSpeechPanelXY(sXPos, sYPos);
+//        SetExternMapscreenSpeechPanelXY(sXPos, sYPos);
 
         // cause this quote to come up for this profile id and an indicator to flash over the mine sector
-        HandleMinerEvent(Globals.gHeadMinerData[ubHeadMinerIndex].ubExternalFace, Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY, (int)bQuoteNum, fForceMapscreen);
+//        HandleMinerEvent(Globals.gHeadMinerData[ubHeadMinerIndex].ubExternalFace, Globals.gMineLocation[bMineIndex].sSectorX, Globals.gMineLocation[bMineIndex].sSectorY, (int)bQuoteNum, fForceMapscreen);
 
         // stop time compression with any miner quote - these are important events.
         GameClock.StopTimeCompression();
@@ -1079,7 +1079,7 @@ public class StrategicMines
             // get the index of his town
             bTownId = GetTownAssociatedWithMine(ubMineIndex);
             // penalize associated town's loyalty
-            DecrementTownLoyalty(bTownId, LOYALTY_PENALTY_HEAD_MINER_ATTACKED);
+//            DecrementTownLoyalty(bTownId, LOYALTY_PENALTY_HEAD_MINER_ATTACKED);
 
             // don't allow this more than once
             Globals.gMineStatus[ubMineIndex].fAttackedHeadMiner = true;
@@ -1193,7 +1193,7 @@ public class StrategicMines
              (!pMineStatus.fEmpty) &&
              (!pMineStatus.fSpokeToHeadMiner) &&
              (!pMineStatus.fAttackedHeadMiner) &&
-             (Globals.gMercProfiles[GetHeadMinerProfileIdForMine(ubMineIndex)].IsAlive))
+             (Globals.gMercProfiles[GetHeadMinerProfileIdForMine(ubMineIndex)].bLife > 0))
         {
             return (true);
         }

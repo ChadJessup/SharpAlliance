@@ -94,18 +94,18 @@ public class Facts
                         gubFact[FACT.BOBBYRAY_SHIPMENT_IN_TRANSIT] = false;
                         gubFact[FACT.NEW_BOBBYRAY_SHIPMENT_WAITING] = true;
                     }
-                    else if (CountNumberOfBobbyPurchasesThatAreInTransit() > 0) // if stuff in transit
-                    {
-                        if (gubFact[FACT.PACKAGE_DAMAGED] == true)
-                        {
-                            gubFact[FACT.BOBBYRAY_SHIPMENT_IN_TRANSIT] = false;
-                        }
-                        else
-                        {
-                            gubFact[FACT.BOBBYRAY_SHIPMENT_IN_TRANSIT] = true;
-                        }
-                        gubFact[FACT.NEW_BOBBYRAY_SHIPMENT_WAITING] = false;
-                    }
+//                    else if (CountNumberOfBobbyPurchasesThatAreInTransit() > 0) // if stuff in transit
+//                    {
+//                        if (gubFact[FACT.PACKAGE_DAMAGED] == true)
+//                        {
+//                            gubFact[FACT.BOBBYRAY_SHIPMENT_IN_TRANSIT] = false;
+//                        }
+//                        else
+//                        {
+//                            gubFact[FACT.BOBBYRAY_SHIPMENT_IN_TRANSIT] = true;
+//                        }
+//                        gubFact[FACT.NEW_BOBBYRAY_SHIPMENT_WAITING] = false;
+//                    }
                     else
                     {
                         gubFact[FACT.BOBBYRAY_SHIPMENT_IN_TRANSIT] = false;
@@ -255,10 +255,10 @@ public class Facts
                 gubFact[usFact] = Globals.gMercProfiles[NPCID.JOEY].bMercStatus == MercStatus.MERC_IS_DEAD;
                 break;
             case FACT.MERC_NEAR_MARTHA:
-                gubFact[usFact] = (NumMercsNear(ubProfileID, 5) > 0);
+//                gubFact[usFact] = (NumMercsNear(ubProfileID, 5) > 0);
                 break;
             case FACT.REBELS_HATE_PLAYER:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE);
+                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE);
                 break;
             case FACT.CURRENT_SECTOR_G9:
                 gubFact[usFact] = (Globals.gWorldSectorX == 9 && Globals.gWorldSectorY == MAP_ROW.G && Globals.gbWorldSectorZ == 0);
@@ -294,7 +294,9 @@ public class Facts
                 gubFact[usFact] = StrategicMines.IsHisMineRunningOut(ubProfileID);
                 break;
             case FACT.MINE_PRODUCING_BUT_LOYALTY_LOW:
-                gubFact[usFact] = StrategicMines.HasHisMineBeenProducingForPlayerForSomeTime(ubProfileID) && IsHisMineDisloyal(ubProfileID);
+                gubFact[usFact] = StrategicMines.HasHisMineBeenProducingForPlayerForSomeTime(ubProfileID)
+//                    && IsHisMineDisloyal(ubProfileID)
+                    ;
                 break;
             case FACT.CREATURES_IN_MINE:
                 gubFact[usFact] = StrategicMines.IsHisMineInfested(ubProfileID);
@@ -340,7 +342,7 @@ public class Facts
                 break;
 
             case FACT.ANOTHER_FIGHT_POSSIBLE:
-                gubFact[usFact] = AnotherFightPossible();
+//                gubFact[usFact] = AnotherFightPossible();
                 break;
 
             case FACT.RECEIVING_INCOME_FROM_DCAC:
@@ -355,8 +357,8 @@ public class Facts
                 {
                     UNDERGROUND_SECTORINFO? pUnderGroundSector;
 
-                    pUnderGroundSector = FindUnderGroundSector(4, MAP_ROW.K, 1);
-                    gubFact[usFact] = pUnderGroundSector.fVisited > 0;
+//                    pUnderGroundSector = FindUnderGroundSector(4, MAP_ROW.K, 1);
+//                    gubFact[usFact] = pUnderGroundSector.fVisited > 0;
                 }
                 break;
             case FACT.WARDEN_DEAD:
@@ -419,7 +421,7 @@ public class Facts
                 break;
 
             case FACT.SPEAKER_AIM_OR_AIM_NEARBY:
-                gubFact[usFact] = Globals.gpDestSoldier && AIMMercWithin(Globals.gpDestSoldier.sGridNo, 10);
+//                gubFact[usFact] = Globals.gpDestSoldier && AIMMercWithin(Globals.gpDestSoldier.sGridNo, 10);
                 break;
 
             case FACT.MALE_SPEAKING_FEMALE_PRESENT:
@@ -439,7 +441,7 @@ public class Facts
                 break;
 
             case FACT.PLAYER_FOUGHT_THREE_TIMES_TODAY:
-                gubFact[usFact] = !BoxerAvailable();
+//                gubFact[usFact] = !BoxerAvailable();
                 break;
 
             case FACT.PLAYER_DOING_POORLY:
@@ -459,12 +461,13 @@ public class Facts
                 break;
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:
-                gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED)
-                    && (GameClock.GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN));
+                gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED))
+                    //&& (GameClock.GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN))
+                    ;
                 break;
 
             case FACT.NOTHING_REPAIRED_YET:
-                gubFact[usFact] = RepairmanIsFixingItemsButNoneAreDoneYet(ubProfileID);
+//                gubFact[usFact] = RepairmanIsFixingItemsButNoneAreDoneYet(ubProfileID);
                 break;
 
             case FACT.NPC_COWERING:
@@ -524,7 +527,9 @@ public class Facts
                 break;
 
             case FACT.PC_HAS_CONRADS_RECRUIT_OPINION:
-                gubFact[usFact] = (Globals.gpDestSoldier && (CalcDesireToTalk(Globals.gpDestSoldier.ubProfile, Globals.gubSrcSoldierProfile, APPROACH_RECRUIT) >= 50));
+                gubFact[usFact] = Globals.gpDestSoldier is not null
+//                    && (CalcDesireToTalk(Globals.gpDestSoldier.ubProfile, Globals.gubSrcSoldierProfile, APPROACH_RECRUIT) >= 50))
+                    ;
                 break;
 
             case FACT.NPC_HOSTILE_OR_PISSED_OFF:
@@ -540,7 +545,7 @@ public class Facts
                 break;
 
             case FACT.ROCKET_RIFLE_EXISTS:
-                gubFact[usFact] = HandleItems.ItemTypeExistsAtLocation(10472, Items.ROCKET_RIFLE, 0, null);
+                gubFact[usFact] = HandleItems.ItemTypeExistsAtLocation(10472, Items.ROCKET_RIFLE, 0, out var _);
                 break;
 
             case FACT.DOREEN_ALIVE:

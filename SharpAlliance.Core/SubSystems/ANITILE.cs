@@ -16,7 +16,7 @@ public class ANITILE
     public int sCurrentFrame;
     public int sStartFrame;
     public int sDelay;
-    public int usTileType;
+    public TileTypeDefines usTileType;
     public int usNumFrames;
     public int usMissAnimationPlayed;
     public int ubAttackerMissed;

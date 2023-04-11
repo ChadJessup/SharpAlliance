@@ -9,112 +9,113 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Core
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core;
+
+public class TextUtils
 {
-    public class TextUtils
+    private readonly IFileManager files;
+
+    public TextUtils(IFileManager fileManager)
+        => this.files = fileManager;
+
+    public async ValueTask LoadAllExternalText()
     {
-        private readonly IFileManager files;
+        await this.LoadAllItemNames();
+    }
 
-        public TextUtils(IFileManager fileManager)
-            => this.files = fileManager;
+    private ValueTask LoadAllItemNames()
+    {
+        var maxItems = (int)Items.MAXITEMS;
+        List<string> itemNames = new(maxItems);
+        List<string> itemDescriptions = new(maxItems);
+        List<string> shortItemNames = new(maxItems);
 
-        public async ValueTask LoadAllExternalText()
+        for (ushort loop = 0; loop < maxItems; loop++)
         {
-            await this.LoadAllItemNames();
+            var (itemName, shortItemName, itemDescription) = this.LoadItemInfo(loop);
+            itemNames.Add(itemName);
+            shortItemNames.Add(shortItemName);
+            itemDescriptions.Add(itemDescription);
+
+            // Load short item info
         }
 
-        private ValueTask LoadAllItemNames()
-        {
-            var maxItems = (int)Items.MAXITEMS;
-            List<string> itemNames = new(maxItems);
-            List<string> itemDescriptions = new(maxItems);
-            List<string> shortItemNames = new(maxItems);
+        return ValueTask.CompletedTask;
+    }
 
-            for (ushort loop = 0; loop < maxItems; loop++)
+    private string LoadShortNameItemInfo(ushort ubIndex)
+    {
+        using var stream = FileManager.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
+
+        // Get current mercs bio info
+        uint uiStartSeekAmount = (uint)((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
+
+        FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+
+        Span<byte> itemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
+        FileManager.FileRead(stream, itemNameBuffer, out _);
+
+        var shortItemName = TextUtils.ExtractString(itemNameBuffer);
+
+        return shortItemName;
+    }
+
+    private (string itemName, string shortItemName, string itemDescription) LoadItemInfo(ushort ubIndex)
+    {
+        using var stream = FileManager.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
+
+        // Get current mercs bio info
+        uint uiStartSeekAmount = (uint)((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
+
+        FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+
+        Span<byte> shortItemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
+        FileManager.FileRead(stream, shortItemNameBuffer, out _);
+
+        var shortItemName = TextUtils.ExtractString(shortItemNameBuffer);
+
+        Span<byte> itemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
+        FileManager.FileRead(stream, itemNameBuffer, out _);
+
+        var itemName = TextUtils.ExtractString(itemNameBuffer);
+
+        // condition added by Chris - so we can get the name without the item info
+        // when desired, by passing in a null pInfoString
+
+        // Get the additional info
+//            uiStartSeekAmount = (uint)((Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex) + Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME;
+        FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+
+        Span<byte> itemInfoBuffer = stackalloc byte[SIZE_ITEM_INFO];
+        FileManager.FileRead(stream, itemInfoBuffer, out _);
+
+        var itemDescription = TextUtils.ExtractString(itemInfoBuffer);
+
+        return (itemName, shortItemName, itemDescription);
+    }
+
+    public static string ExtractString(Span<byte> span)
+        => ExtractString((ReadOnlySpan<byte>)span);
+
+    public static string ExtractString(ReadOnlySpan<byte> span)
+    {
+        var buffer = MemoryMarshal.Cast<byte, char>(span);
+        Span<char> mutated = stackalloc char[buffer.Length];
+
+        buffer.CopyTo(mutated);
+
+        int i;
+        // Decrement, by 1, any value > 32
+        for (i = 0; (i < buffer.Length) && (mutated[i] != 0); i++)
+        {
+            if (mutated[i] > 33)
             {
-                var (itemName, shortItemName, itemDescription) = this.LoadItemInfo(loop);
-                itemNames.Add(itemName);
-                shortItemNames.Add(shortItemName);
-                itemDescriptions.Add(itemDescription);
-
-                // Load short item info
+                mutated[i] -= (char)1;
             }
-
-            return ValueTask.CompletedTask;
         }
 
-        private string LoadShortNameItemInfo(ushort ubIndex)
-        {
-            using var stream = FileManager.FileOpen(Text.ITEMSTRINGFILENAME, FileAccess.Read, false);
-
-            // Get current mercs bio info
-            uint uiStartSeekAmount = (uint)((Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex);
-
-            FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
-
-            Span<byte> itemNameBuffer = stackalloc byte[Text.SIZE_ITEM_NAME];
-            FileManager.FileRead(stream, itemNameBuffer, out _);
-
-            var shortItemName = TextUtils.ExtractString(itemNameBuffer);
-
-            return shortItemName;
-        }
-
-        private (string itemName, string shortItemName, string itemDescription) LoadItemInfo(ushort ubIndex)
-        {
-            using var stream = FileManager.FileOpen(Text.ITEMSTRINGFILENAME, FileAccess.Read, false);
-
-            // Get current mercs bio info
-            uint uiStartSeekAmount = (uint)((Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex);
-
-            FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
-
-            Span<byte> shortItemNameBuffer = stackalloc byte[Text.SIZE_ITEM_NAME];
-            FileManager.FileRead(stream, shortItemNameBuffer, out _);
-
-            var shortItemName = TextUtils.ExtractString(shortItemNameBuffer);
-
-            Span<byte> itemNameBuffer = stackalloc byte[Text.SIZE_ITEM_NAME];
-            FileManager.FileRead(stream, itemNameBuffer, out _);
-
-            var itemName = TextUtils.ExtractString(itemNameBuffer);
-
-            // condition added by Chris - so we can get the name without the item info
-            // when desired, by passing in a null pInfoString
-
-            // Get the additional info
-            uiStartSeekAmount = (uint)((Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex) + Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME;
-            FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
-
-            Span<byte> itemInfoBuffer = stackalloc byte[Text.SIZE_ITEM_INFO];
-            FileManager.FileRead(stream, itemInfoBuffer, out _);
-
-            var itemDescription = TextUtils.ExtractString(itemInfoBuffer);
-
-            return (itemName, shortItemName, itemDescription);
-        }
-
-        public static string ExtractString(Span<byte> span)
-            => ExtractString((ReadOnlySpan<byte>)span);
-
-        public static string ExtractString(ReadOnlySpan<byte> span)
-        {
-            var buffer = MemoryMarshal.Cast<byte, char>(span);
-            Span<char> mutated = stackalloc char[buffer.Length];
-
-            buffer.CopyTo(mutated);
-
-            int i;
-            // Decrement, by 1, any value > 32
-            for (i = 0; (i < buffer.Length) && (mutated[i] != 0); i++)
-            {
-                if (mutated[i] > 33)
-                {
-                    mutated[i] -= (char)1;
-                }
-            }
-
-            return new String(mutated.Slice(0, i));
-        }
+        return new String(mutated.Slice(0, i));
     }
 }

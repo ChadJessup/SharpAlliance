@@ -35,7 +35,7 @@ public class StrategicMap
 
         // the gfUseAlternateMap flag is set in the loading saved games.  When starting a new game the underground sector
         //info has not been initialized, so we need the flag to load an alternate sector.
-        if (gfUseAlternateMap | GetSectorFlagStatus(sMapX, sMapY, bSectorZ, SF.USE_ALTERNATE_MAP))
+//        if (gfUseAlternateMap | GetSectorFlagStatus(sMapX, sMapY, bSectorZ, SF.USE_ALTERNATE_MAP))
         {
             gfUseAlternateMap = false;
 
@@ -178,16 +178,16 @@ public class StrategicMap
                     ubNumMercs++;
                 }
 
-                if (SoldierOKForSectorExit(pSoldier, bExitDirection, usAdditionalData))
-                {
-                    fAtLeastOneMercControllable++;
-
-                    if (cnt == Globals.gusSelectedSoldier)
-                    {
-                        fOnlySelectedGuy = true;
-                    }
-                }
-                else
+//                if (SoldierOKForSectorExit(pSoldier, bExitDirection, usAdditionalData))
+//                {
+//                    fAtLeastOneMercControllable++;
+//
+//                    if (cnt == Globals.gusSelectedSoldier)
+//                    {
+//                        fOnlySelectedGuy = true;
+//                    }
+//                }
+//                else
                 {
                     GROUP? pGroup;
 
@@ -212,7 +212,7 @@ public class StrategicMap
                             return 0;
                         }
                     }
-                    else
+//                    else
                     {
                         puiTraverseTimeInMinutes = 0; //exit grid travel is instantaneous
                     }
@@ -453,14 +453,14 @@ public class StrategicMap
 
                         break;
                     case SEC.J9: //Tixa
-                        if (!fFoundTixa)
-                        {
-                            wcscat(zString, pLandTypeStrings[Traversability.SAND]);
-                        }
-                        else
-                        {
-                            wcscat(zString, pTownNames[TOWNS.TIXA]);
-                        }
+//                        if (!fFoundTixa)
+//                        {
+//                            wcscat(zString, pLandTypeStrings[Traversability.SAND]);
+//                        }
+//                        else
+//                        {
+//                            wcscat(zString, pTownNames[TOWNS.TIXA]);
+//                        }
 
                         break;
                     case SEC.K4: //Orta

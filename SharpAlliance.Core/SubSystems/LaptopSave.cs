@@ -61,7 +61,7 @@ public class LaptopSave
         for (i = 0; i < Items.MAX_WEAPONS; i++)
         {
             //if it's the class we are looking for 
-            if (WeaponTypes.Weapon[(int)i].ubWeaponClass == ubItemIndex)
+            if (WeaponTypes.Weapon[i].ubWeaponClass == ubItemIndex)
             {
                 // and it's a sufficiently cool gun to be counted as good
                 if (Item[i].ubCoolness >= 4)

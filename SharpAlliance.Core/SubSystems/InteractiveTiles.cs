@@ -150,7 +150,7 @@ public class InteractiveTiles
             fDoor = true;
         }
 
-        InteractWithOpenableStruct(pSoldier, pStructure, ubDirection, fDoor);
+//        InteractWithOpenableStruct(pSoldier, pStructure, ubDirection, fDoor);
 
         return (true);
     }
@@ -160,10 +160,7 @@ public class InteractiveTiles
     {
         STRUCTURE? pStructure;
         int usStructureID;
-        int sGridNo;
-
-
-        sGridNo = pSoldier.sPendingActionData2;
+        int sGridNo = (int)pSoldier.sPendingActionData2;
         usStructureID = (int)pSoldier.uiPendingActionData1;
 
         // HANDLE SOLDIER ACTIONS
@@ -174,7 +171,7 @@ public class InteractiveTiles
             return (false);
         }
 
-        return (HandleOpenableStruct(pSoldier, sGridNo, pStructure));
+        return false;//(HandleOpenableStruct(pSoldier, sGridNo, pStructure));
     }
 
     void HandleStructChangeFromGridNo(SOLDIERTYPE? pSoldier, int sGridNo)
@@ -218,7 +215,7 @@ public class InteractiveTiles
                     && Facts.CheckFact(FACT.PABLOS_STOLE_FROM_LATEST_SHIPMENT, 0)
                     && !(Facts.CheckFact(FACT.PLAYER_FOUND_ITEMS_MISSING, 0)))
                 {
-                    SayQuoteFromNearbyMercInSector(BOBBYR_SHIPPING_DEST_GRIDNO, 3, QUOTE.STUFF_MISSING_DRASSEN);
+//                    SayQuoteFromNearbyMercInSector(BOBBYR_SHIPPING_DEST_GRIDNO, 3, QUOTE.STUFF_MISSING_DRASSEN);
                     fDidMissingQuote = true;
                 }
             }
@@ -391,10 +388,10 @@ public class InteractiveTiles
 
     void GetLevelNodeScreenRect(LEVELNODE? pNode, out Rectangle pRect, int sXPos, int sYPos, int sGridNo)
     {
-        int sScreenX, sScreenY;
-        int sOffsetX, sOffsetY;
-        int sTempX_S, sTempY_S;
-        ETRLEObject? pTrav;
+        int sScreenX = 0, sScreenY = 0;
+        int sOffsetX = 0, sOffsetY = 0;
+        int sTempX_S = 0, sTempY_S = 0;
+        ETRLEObject pTrav = new();
         int usHeight, usWidth;
         TILE_ELEMENT? TileElem;
 
@@ -402,7 +399,7 @@ public class InteractiveTiles
         sOffsetX = sXPos - Globals.gsRenderCenterX;
         sOffsetY = sYPos - Globals.gsRenderCenterY;
 
-        FromCellToScreenCoordinates(sOffsetX, sOffsetY, out sTempX_S, out sTempY_S);
+//        FromCellToScreenCoordinates(sOffsetX, sOffsetY, out sTempX_S, out sTempY_S);
 
         if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.CACHEDANITILE))
         {
@@ -413,17 +410,17 @@ public class InteractiveTiles
             TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
             //Adjust for current frames and animations....
-            if (TileElem.uiFlags.HasFlag(ANIMATEDTILE))
+            if (TileElem.uiFlags.HasFlag(TileCategory.ANIMATED_TILE))
             {
-                Debug.Assert(TileElem.pAnimData != null);
-                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
+//                Debug.Assert(TileElem.pAnimData != null);
+//                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
             else if ((pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION)))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
-                    Debug.Assert(TileElem.pAnimData != null);
-                    TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
+//                    Debug.Assert(TileElem.pAnimData != null);
+//                    TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
                 }
             }
 
@@ -453,11 +450,11 @@ public class InteractiveTiles
         usWidth = (int)pTrav.usWidth;
 
         // Add to start position of dest buffer
-        sScreenX += (pTrav.sOffsetX - (World.WORLD_TILE_X / 2));
-        sScreenY += (pTrav.sOffsetY - (World.WORLD_TILE_Y / 2));
+        sScreenX += (pTrav.sOffsetX - (WORLD_TILE_X / 2));
+        sScreenY += (pTrav.sOffsetY - (WORLD_TILE_Y / 2));
 
         // Adjust y offset!
-        sScreenY += (World.WORLD_TILE_Y / 2);
+        sScreenY += (WORLD_TILE_Y / 2);
 
         pRect = new(sScreenX, sScreenY, sScreenX + usWidth, sScreenY + usHeight);
     }
@@ -501,43 +498,43 @@ public class InteractiveTiles
                 GetLevelNodeScreenRect(pNode, out aRect, sXMapPos, sYMapPos, sGridNo);
 
                 // Make sure we are always on guy if we are on same gridno
-                if (IsPointInScreenRect(sScreenX, sScreenY, aRect))
-                {
-                    // OK refine it!
-                    if (RefinePointCollisionOnStruct(sGridNo, sScreenX, sScreenY, (int)aRect.Left, (int)aRect.Bottom, pNode))
-                    {
-                        // Do some additional checks here!
-                        if (RefineLogicOnStruct(sGridNo, pNode))
-                        {
-
-                            Globals.gCurIntTile.fFound = true;
-
-                            // Only if we are not currently cycling....
-                            if (!Globals.gfCycleIntTile)
-                            {
-                                // Accumulate them!
-                                Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bNum].pFoundNode = pNode;
-                                Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bNum].sFoundGridNo = sGridNo;
-                                Globals.gCurIntTileStack.bNum++;
-
-
-                                // Determine if it's the best one
-                                if (aRect.Bottom > Globals.gCurIntTile.sHeighestScreenY)
-                                {
-                                    Globals.gCurIntTile.sMaxScreenY = (int)aRect.Bottom;
-                                    Globals.gCurIntTile.sHeighestScreenY = Globals.gCurIntTile.sMaxScreenY;
-
-                                    // Set it!
-                                    Globals.gCurIntTile.pFoundNode = pNode;
-                                    Globals.gCurIntTile.sFoundGridNo = sGridNo;
-
-                                    // Set stack current one...
-                                    Globals.gCurIntTileStack.bCur = Globals.gCurIntTileStack.bNum - 1;
-                                }
-                            }
-                        }
-                    }
-                }
+//                if (IsPointInScreenRect(sScreenX, sScreenY, aRect))
+//                {
+//                    // OK refine it!
+//                    if (RefinePointCollisionOnStruct(sGridNo, sScreenX, sScreenY, (int)aRect.Left, (int)aRect.Bottom, pNode))
+//                    {
+//                        // Do some additional checks here!
+//                        if (RefineLogicOnStruct(sGridNo, pNode))
+//                        {
+//
+//                            Globals.gCurIntTile.fFound = true;
+//
+//                            // Only if we are not currently cycling....
+//                            if (!Globals.gfCycleIntTile)
+//                            {
+//                                // Accumulate them!
+//                                Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bNum].pFoundNode = pNode;
+//                                Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bNum].sFoundGridNo = sGridNo;
+//                                Globals.gCurIntTileStack.bNum++;
+//
+//
+//                                // Determine if it's the best one
+//                                if (aRect.Bottom > Globals.gCurIntTile.sHeighestScreenY)
+//                                {
+//                                    Globals.gCurIntTile.sMaxScreenY = (int)aRect.Bottom;
+//                                    Globals.gCurIntTile.sHeighestScreenY = Globals.gCurIntTile.sMaxScreenY;
+//
+//                                    // Set it!
+//                                    Globals.gCurIntTile.pFoundNode = pNode;
+//                                    Globals.gCurIntTile.sFoundGridNo = sGridNo;
+//
+//                                    // Set stack current one...
+//                                    Globals.gCurIntTileStack.bCur = Globals.gCurIntTileStack.bNum - 1;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
 
                 pNode = pNode.pNext;
             }
@@ -554,7 +551,7 @@ public class InteractiveTiles
         // OK, Look for our tile!
 
         // Check for shift down!
-        if (_KeyDown(SHIFT))
+        if (_KeyDown(Veldrid.Key.LShift | Veldrid.Key.RShift))
         {
             return (null);
         }
@@ -706,18 +703,18 @@ public class InteractiveTiles
                 pCurIntTile = Globals.gCurIntTile;
             }
 
-            Globals.gCurIntTile.sGridNo = pCurIntTile.sFoundGridNo;
-            Globals.gCurIntTile.sTileIndex = pCurIntTile.pFoundNode.usIndex;
+//            Globals.gCurIntTile.sGridNo = pCurIntTile.sFoundGridNo;
+//            Globals.gCurIntTile.sTileIndex = pCurIntTile.pFoundNode.usIndex;
 
-            if (pCurIntTile.pFoundNode.pStructureData != null)
-            {
-                Globals.gCurIntTile.usStructureID = pCurIntTile.pFoundNode.pStructureData.usStructureID;
-                Globals.gCurIntTile.fStructure = true;
-            }
-            else
-            {
-                Globals.gCurIntTile.fStructure = false;
-            }
+//            if (pCurIntTile.pFoundNode.pStructureData != null)
+//            {
+//                Globals.gCurIntTile.usStructureID = pCurIntTile.pFoundNode.pStructureData.usStructureID;
+//                Globals.gCurIntTile.fStructure = true;
+//            }
+//            else
+//            {
+//                Globals.gCurIntTile.fStructure = false;
+//            }
 
 
             Globals.gfOverIntTile = true;
@@ -773,10 +770,10 @@ public class InteractiveTiles
             // If we are a door, we need a different definition of being visible than other structs
             if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
             {
-                if (!IsDoorVisibleAtGridNo(sGridNo))
-                {
-                    return (false);
-                }
+//                if (!IsDoorVisibleAtGridNo(sGridNo))
+//                {
+//                    return (false);
+//                }
 
                 // OK, For a OPENED door, addition requirements are: need to be in 'HAND CURSOR' mode...
                 if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
@@ -827,32 +824,32 @@ public class InteractiveTiles
                     if (sNewGridNo != Globals.NOWHERE)
                     {
                         // If we are hidden by a roof, reject it!
-                        if (!Environment.gfBasement && IsRoofVisible2(sNewGridNo) 
-                            && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)))
-                        {
-                            return (false);
-                        }
+//                        if (!Environment.gfBasement && IsRoofVisible2(sNewGridNo) 
+//                            && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)))
+//                        {
+//                            return (false);
+//                        }
                     }
                 }
                 else
                 {
                     // If we are hidden by a roof, reject it!
-                    if (!Environment.gfBasement && IsRoofVisible(sGridNo)
-                        && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)))
-                    {
-                        return (false);
-                    }
+//                    if (!Environment.gfBasement && IsRoofVisible(sGridNo)
+//                        && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)))
+//                    {
+//                        return (false);
+//                    }
                 }
             }
 
             // Check if it's a hidden struct and we have not revealed anything!
-            if (TileElem.uiFlags.HasFlag(HIDDEN_TILE))
+            if (TileElem.uiFlags.HasFlag(TileCategory.HIDDEN_TILE))
             {
-                if (!IsHiddenStructureVisible(sGridNo, pNode.usIndex))
-                {
-                    // Return false
-                    return (false);
-                }
+//                if (!IsHiddenStructureVisible(sGridNo, pNode.usIndex))
+//                {
+//                    // Return false
+//                    return (false);
+//                }
             }
         }
 
@@ -875,17 +872,17 @@ public class InteractiveTiles
             TileElem = (Globals.gTileDatabase[pNode.usIndex]);
 
             //Adjust for current frames and animations....
-            if (TileElem.uiFlags.HasFlag(ANIMATED_TILE))
+            if (TileElem.uiFlags.HasFlag(TileCategory.ANIMATED_TILE))
             {
-                Debug.Assert(TileElem.pAnimData != null);
-                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
+//                Debug.Assert(TileElem.pAnimData != null);
+//                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
             else if ((pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION)))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
-                    Debug.Assert(TileElem.pAnimData != null);
-                    TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
+//                    Debug.Assert(TileElem.pAnimData != null);
+//                    TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[pNode.sCurrentFrame]];
                 }
             }
 
@@ -900,7 +897,7 @@ public class InteractiveTiles
     bool CheckVideoObjectScreenCoordinateInData(HVOBJECT hSrcVObject, int usIndex, int iTestX, int iTestY)
     {
         uint uiOffset;
-        int usHeight, usWidth;
+        int usHeight = 0, usWidth = 0;
         int SrcPtr;
         int LineSkip;
         ETRLEObject? pTrav;
@@ -912,9 +909,9 @@ public class InteractiveTiles
 
         // Get Offsets from Index into structure
         pTrav = (hSrcVObject.pETRLEObject[usIndex]);
-        usHeight = (int)pTrav.usHeight;
-        usWidth = (int)pTrav.usWidth;
-        uiOffset = pTrav.uiDataOffset;
+//        usHeight = (int)pTrav.usHeight;
+//        usWidth = (int)pTrav.usWidth;
+//        uiOffset = pTrav.uiDataOffset;
 
         // Calculate test position we are looking for!
         // Calculate from 0, 0 at top left!
@@ -1161,7 +1158,7 @@ public class InteractiveTiles
     {
         public int sGridNo;
         public int ubFlags;
-        public int sTileIndex;
+        public TileIndexes sTileIndex;
         public int sMaxScreenY;
         public int sHeighestScreenY;
         public bool fFound;
@@ -1174,7 +1171,7 @@ public class InteractiveTiles
     public class INTERACTIVE_TILE_STACK_TYPE
     {
         public int bNum;
-        public CUR_INTERACTIVE_TILE[] bTiles = new CUR_INTERACTIVE_TILE[InteractiveTiles.MAX_INTTILE_STACK];
+        public CUR_INTERACTIVE_TILE[] bTiles = new CUR_INTERACTIVE_TILE[MAX_INTTILE_STACK];
         public int bCur;
     }
 }

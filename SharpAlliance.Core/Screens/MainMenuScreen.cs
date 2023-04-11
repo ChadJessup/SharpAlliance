@@ -82,7 +82,7 @@ public class MainMenuScreen : IScreen
 
         if (Globals.guiSplashStartTime + 4000 > Globals.GetJA2Clock())
         {
-            this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+            CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
             this.music.SetMusicMode(MusicMode.NONE);
 
             //The splash screen hasn't been up long enough yet.
@@ -114,12 +114,12 @@ public class MainMenuScreen : IScreen
             // VeldridVideoManager.InvalidateScreen();
             // VeldridVideoManager.EndFrameBufferRender();
 
-            this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+            CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
             return ScreenName.MAINMENU_SCREEN;
         }
 
-        this.cursor.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
+        CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
         if (Globals.gfMainMenuScreenEntry)
         {

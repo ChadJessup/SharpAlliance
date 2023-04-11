@@ -1176,7 +1176,7 @@ public class PreferenceScreen : IScreen
         gfExitOptionsDueToMessageBox = true;
 
         // do message box and return
-        this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
+        this.giOptionsMessageBox = MessageBoxSubSystem.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
 
         // send back return state
         return ((giOptionsMessageBox != -1));

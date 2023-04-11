@@ -59,7 +59,7 @@ public class VeldridVideoManager : IVideoManager
     private static Sdl2Window window;
     public static Sdl2Window Window { get => window; }
     public static GraphicsDevice GraphicDevice { get; private set; }
-    public ResourceFactory Factory { get; private set; }
+    public static ResourceFactory Factory { get; private set; }
     protected static SpriteRenderer SpriteRenderer { get; private set; }
 
     private static Swapchain mainSwapchain;
@@ -80,7 +80,7 @@ public class VeldridVideoManager : IVideoManager
     private ResourceLayout _graphicsLayout;
     private float _ticks;
 
-    private bool _colorSrgb = true;
+    private static bool _colorSrgb = true;
 
     private static FadeScreen? fadeScreen;
 
@@ -113,7 +113,7 @@ public class VeldridVideoManager : IVideoManager
     //private Surface2? gpPrimarySurface = null;
     //private Surface2? gpBackBuffer = null
 
-    public bool IsInitialized { get; private set; }
+    public static bool IsInitialized { get; private set; }
     public uint guiBOTTOMPANEL { get; set; }
     public uint guiRIGHTPANEL { get; set; }
     public uint guiRENDERBUFFER { get; set; }
@@ -133,7 +133,7 @@ public class VeldridVideoManager : IVideoManager
     static Rectangle Region;
     static Point MousePos;
     static bool fFirstTime = true;
-    private bool windowResized;
+    private static bool windowResized;
 
     private static Texture backBuffer;
     public VeldridVideoManager(
@@ -159,7 +159,7 @@ public class VeldridVideoManager : IVideoManager
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
 
-    public async ValueTask<bool> Initialize()
+    public static async ValueTask<bool> Initialize()
     {
         WindowCreateInfo windowCI = new()
         {

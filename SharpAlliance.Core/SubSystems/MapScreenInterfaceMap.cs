@@ -407,7 +407,7 @@ public class MapScreenInterfaceMap
         for (int iCounter = 0; iCounter < Globals.NUM_LEAVE_LIST_SLOTS; iCounter++)
         {
             this.gpLeaveList[iCounter] = null;
-            this.guiLeaveListOwnerProfileId[iCounter] = SoldierControl.NO_PROFILE;
+            this.guiLeaveListOwnerProfileId[iCounter] = (int)NO_PROFILE;
         }
     }
 
@@ -426,16 +426,23 @@ public class MapScreenInterfaceMap
         if (fShowMapInventoryPool)
         {
             // render background, then leave
-            BlitInventoryPoolGraphic();
+//            BlitInventoryPoolGraphic();
             return;
         }
 
         // get and blt border
         VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiMapBorder);
-        VeldridVideoManager.BltVideoObject(Globals.guiSAVEBUFFER, hHandle, 0, Globals.MAP_BORDER_X, Globals.MAP_BORDER_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(
+            Globals.guiSAVEBUFFER, 
+            hHandle, 
+            0, 
+            Globals.MAP_BORDER_X, 
+            Globals.MAP_BORDER_Y, 
+            VO_BLT.SRCTRANSPARENCY, 
+            null);
 
         // show the level marker
-        DisplayCurrentLevelMarker();
+//        DisplayCurrentLevelMarker();
 
 
         return;

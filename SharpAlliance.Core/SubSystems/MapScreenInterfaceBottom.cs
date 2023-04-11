@@ -59,26 +59,26 @@ public class MapScreenInterfaceBottom
         }
 
         // someone has something to say
-        if (!DialogueQueueIsEmpty())
-        {
-            return (false);
-        }
+//        if (!DialogueQueueIsEmpty())
+//        {
+//            return (false);
+//        }
 
         // moving / confirming movement
-        if ((bSelectedDestChar != -1) || fPlotForHelicopter || gfInConfirmMapMoveMode || fShowMapScreenMovementList)
-        {
-            return (false);
-        }
+//        if ((bSelectedDestChar != -1) || fPlotForHelicopter || gfInConfirmMapMoveMode || fShowMapScreenMovementList)
+//        {
+//            return (false);
+//        }
 
-        if (fShowAssignmentMenu || fShowTrainingMenu || fShowAttributeMenu || fShowSquadMenu || fShowContractMenu || fShowRemoveMenu)
-        {
-            return (false);
-        }
+//        if (fShowAssignmentMenu || fShowTrainingMenu || fShowAttributeMenu || fShowSquadMenu || fShowContractMenu || fShowRemoveMenu)
+//        {
+//            return (false);
+//        }
 
-        if (fShowUpdateBox || fShowTownInfo || (sSelectedMilitiaTown != 0))
-        {
-            return (false);
-        }
+//        if (fShowUpdateBox || fShowTownInfo || (sSelectedMilitiaTown != 0))
+//        {
+//            return (false);
+//        }
 
         // renewing contracts
         if (gfContractRenewalSquenceOn)
@@ -120,16 +120,16 @@ public class MapScreenInterfaceBottom
         */
 
         // no usable mercs on team!
-        if (!AnyUsableRealMercenariesOnTeam())
-        {
-            return (false);
-        }
+//        if (!AnyUsableRealMercenariesOnTeam())
+//        {
+//            return (false);
+//        }
 
         // must wait till bombs go off
-        if (ActiveTimedBombExists())
-        {
-            return (false);
-        }
+//        if (ActiveTimedBombExists())
+//        {
+//            return (false);
+//        }
 
         // hostile sector / in battle
         if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
@@ -138,10 +138,10 @@ public class MapScreenInterfaceBottom
             return (false);
         }
 
-        if (PlayerGroupIsInACreatureInfestedMine())
-        {
-            return false;
-        }
+//        if (PlayerGroupIsInACreatureInfestedMine())
+//        {
+//            return false;
+//        }
 
         return (true);
     }

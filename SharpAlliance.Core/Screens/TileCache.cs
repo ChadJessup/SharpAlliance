@@ -157,12 +157,12 @@ public class TileCache
                 // ATE: Add z-strip info
                 if (gpTileCache[cnt].sStructRefID != -1)
                 {
-                    StructureInternals.AddZStripInfoToVObject(gpTileCache[cnt].pImagery.vo, gpTileCacheStructInfo[gpTileCache[cnt].sStructRefID].pStructureFileRef, true, 0);
+//                    StructureInternals.AddZStripInfoToVObject(gpTileCache[cnt].pImagery.vo, gpTileCacheStructInfo[gpTileCache[cnt].sStructRefID].pStructureFileRef, true, 0);
                 }
 
                 if (gpTileCache[cnt].pImagery.pAuxData != null)
                 {
-                    gpTileCache[cnt].ubNumFrames = gpTileCache[cnt].pImagery.pAuxData.ubNumberOfFrames;
+//                    gpTileCache[cnt].ubNumFrames = gpTileCache[cnt].pImagery.pAuxData.ubNumberOfFrames;
                 }
                 else
                 {

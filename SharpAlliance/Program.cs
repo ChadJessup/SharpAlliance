@@ -68,7 +68,7 @@ namespace SharpAlliance
             builder.AddDependency<IOSManager, WindowsSubSystem>();
             //builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
             //builder.AddDependency<IScreenManager, ScreenManager>();
-            builder.AddDependency<IFileManager, FileManager>();
+//            builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
             //builder.AddDependency<IVideoManager, VeldridVideoManager>();
             builder.AddDependency<ISoundManager, SoundManager>();

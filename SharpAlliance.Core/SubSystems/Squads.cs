@@ -231,7 +231,7 @@ public class Squads
                     // if creating a new squad from guys exiting the chopper			
                     fNewSquad = SquadIsEmpty(bSquadValue);
 
-                    RemoveSoldierFromHelicopter(pCharacter);
+//                    RemoveSoldierFromHelicopter(pCharacter);
 
                     StrategicMovement.AddPlayerToGroup(SquadMovementGroups[bSquadValue], pCharacter);
                     StrategicMovement.SetGroupSectorValue(pCharacter.sSectorX, pCharacter.sSectorY, pCharacter.bSectorZ, SquadMovementGroups[bSquadValue]);
@@ -255,7 +255,7 @@ public class Squads
                 {
                     fExitingVehicleToSquad = true;
                     // remove from vehicle
-                    TakeSoldierOutOfVehicle(pCharacter);
+//                    TakeSoldierOutOfVehicle(pCharacter);
                     fExitingVehicleToSquad = false;
 
 
@@ -280,13 +280,14 @@ public class Squads
                     if (pCharacter.fMercAsleep)
                     {
                         // try to wake him up
-                        SetMercAwake(pCharacter, false, false);
+//                        SetMercAwake(pCharacter, false, false);
                     }
-                    SetTimeOfAssignmentChangeForMerc(pCharacter);
+
+//                    SetTimeOfAssignmentChangeForMerc(pCharacter);
                 }
 
                 // set squad value
-                ChangeSoldiersAssignment(pCharacter, bSquadValue);
+//                ChangeSoldiersAssignment(pCharacter, bSquadValue);
                 if (pCharacter.bOldAssignment < Assignments.ON_DUTY)
                 {
                     pCharacter.bOldAssignment = (Assignments)bSquadValue;
@@ -300,7 +301,7 @@ public class Squads
 
                 if (bSquadValue == iCurrentTacticalSquad)
                 {
-                    CheckForAndAddMercToTeamPanel(Squad[iCurrentTacticalSquad][bCounter]);
+//                    CheckForAndAddMercToTeamPanel(Squad[iCurrentTacticalSquad][bCounter]);
                 }
 
                 if (pCharacter.ubID == gusSelectedSoldier)
@@ -432,7 +433,7 @@ public class Squads
 
                     // Release memory for his personal path, BUT DON'T CLEAR HIS GROUP'S PATH/WAYPOINTS (pass in groupID -1).
                     // Just because one guy leaves a group is no reason to cancel movement for the rest of the group.
-                    pCharacter.pMercPath = ClearStrategicPathList(pCharacter.pMercPath, -1);
+//                    pCharacter.pMercPath = ClearStrategicPathList(pCharacter.pMercPath, -1);
 
                     // remove character from mvt group
                     StrategicMovement.RemovePlayerFromGroup(SquadMovementGroups[iCounterA], pCharacter);
@@ -489,7 +490,7 @@ public class Squads
                 Squad[bSquadValue][iCounter] = null;
 
                 // remove character from mvt group
-                RemovePlayerFromGroup(SquadMovementGroups[bSquadValue], pCharacter);
+//                RemovePlayerFromGroup(SquadMovementGroups[bSquadValue], pCharacter);
 
 
                 if (pCharacter.bLife == 0)
@@ -661,7 +662,7 @@ public class Squads
             if ((Squad[bSquadValue][bCounter] != pCharacter) && (Squad[bSquadValue][bCounter] != null))
             {
                 // valid character, copy paths
-                pCharacter.pMercPath = CopyPaths(Squad[bSquadValue][bCounter].pMercPath, pCharacter.pMercPath);
+//                pCharacter.pMercPath = CopyPaths(Squad[bSquadValue][bCounter].pMercPath, pCharacter.pMercPath);
 
                 // return success
                 return (true);
@@ -696,10 +697,10 @@ public class Squads
                 // valid character, copy paths
 
                 // first empty path
-                Squad[bSquadValue][bCounter].pMercPath = ClearStrategicPathList(Squad[bSquadValue][bCounter].pMercPath, -1);
+//                Squad[bSquadValue][bCounter].pMercPath = ClearStrategicPathList(Squad[bSquadValue][bCounter].pMercPath, -1);
 
                 // then copy
-                Squad[bSquadValue][bCounter].pMercPath = CopyPaths(pCharacter.pMercPath, Squad[bSquadValue][bCounter].pMercPath);
+//                Squad[bSquadValue][bCounter].pMercPath = CopyPaths(pCharacter.pMercPath, Squad[bSquadValue][bCounter].pMercPath);
 
                 // successful at least once
                 fSuccess = true;
@@ -768,7 +769,7 @@ public class Squads
                 if (Squad[iCurrentTacticalSquad][iCounter] != null)
                 {
                     // squad set, now add soldiers in 
-                    CheckForAndAddMercToTeamPanel(Squad[iCurrentTacticalSquad][iCounter]);
+//                    CheckForAndAddMercToTeamPanel(Squad[iCurrentTacticalSquad][iCounter]);
                 }
             }
         }
@@ -779,13 +780,13 @@ public class Squads
             if (Menptr[gusSelectedSoldier].bAssignment != (Assignments)iCurrentTacticalSquad)
             {
                 // ATE: Changed this to false for ackoledgement sounds.. sounds bad if just starting/entering sector..
-                SelectSoldier(Squad[iCurrentTacticalSquad][0].ubID, false, true);
+//                SelectSoldier(Squad[iCurrentTacticalSquad][0].ubID, false, true);
             }
         }
         else
         {
             // ATE: Changed this to false for ackoledgement sounds.. sounds bad if just starting/entering sector..
-            SelectSoldier(Squad[iCurrentTacticalSquad][0].ubID, false, true);
+//            SelectSoldier(Squad[iCurrentTacticalSquad][0].ubID, false, true);
         }
 
         return (true);
@@ -823,7 +824,7 @@ public class Squads
                 if (Squad[iCurrentTacticalSquad][iCounter] != null)
                 {
                     // squad set, now add soldiers in 
-                    CheckForAndAddMercToTeamPanel(Squad[iCurrentTacticalSquad][iCounter]);
+//                    CheckForAndAddMercToTeamPanel(Squad[iCurrentTacticalSquad][iCounter]);
                 }
             }
 
@@ -836,7 +837,7 @@ public class Squads
                     if (pDeadSoldier is not null)
                     {
                         // squad set, now add soldiers in 
-                        CheckForAndAddMercToTeamPanel(pDeadSoldier);
+//                        CheckForAndAddMercToTeamPanel(pDeadSoldier);
                     }
                 }
             }
@@ -856,7 +857,7 @@ public class Squads
         {
             if (MercPtrs[ubLoop].bInSector && MercPtrs[ubLoop].bLife >= OKLIFE)
             {
-                PositionSoldierLight(MercPtrs[ubLoop]);
+//                PositionSoldierLight(MercPtrs[ubLoop]);
             }
         }
 
@@ -983,7 +984,7 @@ public class Squads
     }
 
 
-    public static void GetSquadPosition(out int ubNextX, out MAP_ROW ubNextY, out int ubPrevX, out int ubPrevY, out uint uiTraverseTime, out uint uiArriveTime, SquadEnum ubSquadValue)
+    public static void GetSquadPosition(out int ubNextX, out MAP_ROW ubNextY, out int ubPrevX, out MAP_ROW ubPrevY, out uint uiTraverseTime, out uint uiArriveTime, SquadEnum ubSquadValue)
     {
         // grab the mvt group for this squad and find all this information
 
@@ -1014,9 +1015,9 @@ public class Squads
 
     private static void SetSquadPositionBetweenSectors(
         int ubNextX,
-        int ubNextY,
+        MAP_ROW ubNextY,
         int ubPrevX,
-        int ubPrevY,
+        MAP_ROW ubPrevY,
         int uiTraverseTime,
         int uiArriveTime,
         SquadEnum ubSquadValue)
@@ -1202,7 +1203,7 @@ public class Squads
 
     public static void UpdateCurrentlySelectedMerc(SOLDIERTYPE? pSoldier, SquadEnum bSquadValue)
     {
-        int ubID;
+        int ubID = 0;
 
         // if this squad is the current one and and the psoldier is the currently selected soldier, get rid of 'em
         if (bSquadValue != iCurrentTacticalSquad)
@@ -1213,7 +1214,7 @@ public class Squads
         // Are we the selected guy?
         if (gusSelectedSoldier == pSoldier.ubID)
         {
-            ubID = FindNextActiveAndAliveMerc(pSoldier, false, false);
+//            ubID = FindNextActiveAndAliveMerc(pSoldier, false, false);
 
             if (ubID != NOBODY && ubID != gusSelectedSoldier)
             {
@@ -1224,7 +1225,7 @@ public class Squads
                 gusSelectedSoldier = NOBODY;
 
                 // ATE: Make sure we are in TEAM panel at this point!
-                SetCurrentInterfacePanel(TEAM_PANEL);
+//                SetCurrentInterfacePanel(TEAM_PANEL);
             }
         }
 
@@ -1596,7 +1597,7 @@ public enum SquadEnum
 
 public class SAVE_SQUAD_INFO_STRUCT
 {
-    public short uiID;                     // The soldiers ID
+    public int uiID;                     // The soldiers ID
     public short[] sPadding = new short[5];
     //	int	bSquadValue;		// The squad id
 

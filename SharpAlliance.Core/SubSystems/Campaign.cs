@@ -167,7 +167,7 @@ public class Campaign
                 break;
 
             case Stat.STRAMT:
-                bCurrentRating = pProfile.bStrength;
+                bCurrentRating = (int)pProfile.bStrength;
                 psStatGainPtr = (pProfile.sStrengthGain);
                 fAffectedByWisdom = false;
                 break;
@@ -578,7 +578,7 @@ public class Campaign
                 //if ( (ubStat != EXPERAMT) && (ubStat != HEALTHAMT) && ( Globals.Random.Next( 100 ) < 25 ) )
                 {
                     // Pipe up with "I'm getting better at this!"
-                    TacticalCharacterDialogueWithSpecialEventEx(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DISPLAY_STAT_CHANGE, fChangeTypeIncrease, sPtsChanged, ubStat);
+//                    TacticalCharacterDialogueWithSpecialEventEx(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DISPLAY_STAT_CHANGE, fChangeTypeIncrease, sPtsChanged, ubStat);
                     DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.EXPERIENCE_GAIN);
                 }
                 else
@@ -716,7 +716,7 @@ public class Campaign
     {
         // this function will run through the soldier's profile and update their stats based on any accumulated gain pts.
         Stat ubStat = 0;
-        int? psStatGainPtr = null;
+        int psStatGainPtr = 0;
         int pbStatPtr = 0;
         int pbSoldierStatPtr;
         int pbStatDeltaPtr;
@@ -1339,7 +1339,7 @@ public class Campaign
             // at 35% start the Madlab quest
             if (ubCurrentProgress >= 35 && Globals.gStrategicStatus.ubHighestProgress < 35)
             {
-                HandleScientistAWOLMeanwhileScene();
+//                HandleScientistAWOLMeanwhileScene();
             }
 
             // at 50% make Mike available to the strategic AI
@@ -1498,7 +1498,9 @@ public class Campaign
                     ubGuynum <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID;
                     ubGuynum++)//, pSoldier++)
         {
-            if (pSoldier.bActive && pSoldier.bInSector && IsMercOnCurrentSquad(pSoldier) && (pSoldier.bLife >= Globals.CONSCIOUSNESS) &&
+            if (pSoldier.bActive && pSoldier.bInSector
+//                && IsMercOnCurrentSquad(pSoldier)
+                && (pSoldier.bLife >= Globals.CONSCIOUSNESS) &&
                      !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !AM_A_ROBOT(pSoldier))
             {
                 StatChange(pSoldier, Stat.EXPERAMT, usXPs, 0);
@@ -1555,16 +1557,16 @@ public class Campaign
                 if (Globals.strategicMap[StrategicMap.CALCULATE_STRATEGIC_INDEX(ubMapX, ubMapY)].fEnemyControlled == false)
                 {
                     // towns where militia can be trained and SAM sites are important sectors
-                    if (MilitiaTrainingAllowedInSector(ubMapX, ubMapY, 0))
-                    {
-                        ubSectorControlPts++;
-
-                        // SAM sites count double - they have no income, but have significant air control value
-                        if (IsThisSectorASAMSector(ubMapX, ubMapY, 0))
-                        {
-                            ubSectorControlPts++;
-                        }
-                    }
+//                    if (MilitiaTrainingAllowedInSector(ubMapX, ubMapY, 0))
+//                    {
+//                        ubSectorControlPts++;
+//
+//                        // SAM sites count double - they have no income, but have significant air control value
+//                        if (IsThisSectorASAMSector(ubMapX, ubMapY, 0))
+//                        {
+//                            ubSectorControlPts++;
+//                        }
+//                    }
                 }
             }
         }

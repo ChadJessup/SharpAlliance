@@ -17,7 +17,7 @@ public class StrategicStatus
         gStrategicStatus = new STRATEGIC_STATUS();
         //Add special non-zero start conditions here...
 
-        InitArmyGunTypes();
+//        InitArmyGunTypes();
     }
 
     bool SaveStrategicStatusToSaveGameFile(Stream hFile)
@@ -321,12 +321,12 @@ public class StrategicStatus
                 // penalize loyalty!
                 if (gStrategicStatus.usEnricoEmailFlags.HasFlag(ENRICO_EMAIL.SENT_LACK_PROGRESS2))
                 {
-                    DecrementTownLoyaltyEverywhere(LOYALTY_PENALTY_INACTIVE * (gStrategicStatus.ubNumberOfDaysOfInactivity - LackOfProgressTolerance() + 1));
+//                    DecrementTownLoyaltyEverywhere(LOYALTY_PENALTY_INACTIVE * (gStrategicStatus.ubNumberOfDaysOfInactivity - LackOfProgressTolerance() + 1));
                 }
                 else
                 {
                     // on first complaint, give a day's grace...
-                    DecrementTownLoyaltyEverywhere(LOYALTY_PENALTY_INACTIVE * (gStrategicStatus.ubNumberOfDaysOfInactivity - LackOfProgressTolerance()));
+//                    DecrementTownLoyaltyEverywhere(LOYALTY_PENALTY_INACTIVE * (gStrategicStatus.ubNumberOfDaysOfInactivity - LackOfProgressTolerance()));
                 }
             }
         }
@@ -353,10 +353,10 @@ public class StrategicStatus
 
         gStrategicStatus.usEnemiesKilled[ubKilledHow, bRankIndex]++;
 
-        if (ubKilledHow != ENEMY_KILLED_TOTAL)
-        {
-            gStrategicStatus.usEnemiesKilled[ENEMY_KILLED_TOTAL, bRankIndex]++;
-        }
+//        if (ubKilledHow != ENEMY_KILLED_TOTAL)
+//        {
+//            gStrategicStatus.usEnemiesKilled[ENEMY_KILLED_TOTAL, bRankIndex]++;
+//        }
     }
 
 
@@ -391,7 +391,7 @@ public class StrategicStatus
     {
         SOLDIER_CLASS ubSoldierClass = 0;
 
-        Debug.Assert(ubRankIndex < NUM_ENEMY_RANKS);
+//        Debug.Assert(ubRankIndex < NUM_ENEMY_RANKS);
 
         switch (ubRankIndex)
         {

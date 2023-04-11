@@ -66,7 +66,7 @@ public class Laptop
         }
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
-            HandleRightButtonUpEvent();
+//            HandleRightButtonUpEvent();
             return;
         }
 
@@ -137,127 +137,127 @@ public class Laptop
                 DrawDeskTopBackground();
                 break;
             case LAPTOP_MODE.AIM:
-                RenderAIM();
+//                RenderAIM();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS:
-                RenderAIMMembers();
+//                RenderAIMMembers();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_FACIAL_INDEX:
-                RenderAimFacialIndex();
+//                RenderAimFacialIndex();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_SORTED_FILES:
-                RenderAimSort();
+//                RenderAimSort();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_ARCHIVES:
-                RenderAimArchives();
+//                RenderAimArchives();
                 break;
             case LAPTOP_MODE.AIM_POLICIES:
-                RenderAimPolicies();
+//                RenderAimPolicies();
                 break;
             case LAPTOP_MODE.AIM_LINKS:
-                RenderAimLinks();
+//                RenderAimLinks();
                 break;
             case LAPTOP_MODE.AIM_HISTORY:
-                RenderAimHistory();
+//                RenderAimHistory();
                 break;
             case LAPTOP_MODE.MERC:
-                RenderMercs();
+//                RenderMercs();
                 break;
             case LAPTOP_MODE.MERC_FILES:
-                RenderMercsFiles();
+//                RenderMercsFiles();
                 break;
             case LAPTOP_MODE.MERC_ACCOUNT:
-                RenderMercsAccount();
+//                RenderMercsAccount();
                 break;
             case LAPTOP_MODE.MERC_NO_ACCOUNT:
-                RenderMercsNoAccount();
+//                RenderMercsNoAccount();
                 break;
 
             case LAPTOP_MODE.BOBBY_R:
-                RenderBobbyR();
+//                RenderBobbyR();
                 break;
 
             case LAPTOP_MODE.BOBBY_R_GUNS:
-                RenderBobbyRGuns();
+//                RenderBobbyRGuns();
                 break;
             case LAPTOP_MODE.BOBBY_R_AMMO:
-                RenderBobbyRAmmo();
+//                RenderBobbyRAmmo();
                 break;
             case LAPTOP_MODE.BOBBY_R_ARMOR:
-                RenderBobbyRArmour();
+//                RenderBobbyRArmour();
                 break;
             case LAPTOP_MODE.BOBBY_R_MISC:
-                RenderBobbyRMisc();
+//                RenderBobbyRMisc();
                 break;
             case LAPTOP_MODE.BOBBY_R_USED:
-                RenderBobbyRUsed();
+//                RenderBobbyRUsed();
                 break;
             case LAPTOP_MODE.BOBBY_R_MAILORDER:
-                RenderBobbyRMailOrder();
+//                RenderBobbyRMailOrder();
                 break;
             case LAPTOP_MODE.CHAR_PROFILE:
-                RenderCharProfile();
+//                RenderCharProfile();
                 break;
             case LAPTOP_MODE.FLORIST:
-                RenderFlorist();
+//                RenderFlorist();
                 break;
             case LAPTOP_MODE.FLORIST_FLOWER_GALLERY:
-                RenderFloristGallery();
+//                RenderFloristGallery();
                 break;
             case LAPTOP_MODE.FLORIST_ORDERFORM:
-                RenderFloristOrderForm();
+//                RenderFloristOrderForm();
                 break;
             case LAPTOP_MODE.FLORIST_CARD_GALLERY:
-                RenderFloristCards();
+//                RenderFloristCards();
                 break;
 
             case LAPTOP_MODE.INSURANCE:
-                RenderInsurance();
+//                RenderInsurance();
                 break;
 
             case LAPTOP_MODE.INSURANCE_INFO:
-                RenderInsuranceInfo();
+//                RenderInsuranceInfo();
                 break;
 
             case LAPTOP_MODE.INSURANCE_CONTRACT:
-                RenderInsuranceContract();
+//                RenderInsuranceContract();
                 break;
 
             case LAPTOP_MODE.INSURANCE_COMMENTS:
-                RenderInsuranceComments();
+//                RenderInsuranceComments();
                 break;
 
             case LAPTOP_MODE.FUNERAL:
-                RenderFuneral();
+//                RenderFuneral();
                 break;
             case LAPTOP_MODE.SIRTECH:
-                RenderSirTech();
+//                RenderSirTech();
                 break;
             case LAPTOP_MODE.FINANCES:
-                RenderFinances();
+//                RenderFinances();
                 break;
             case LAPTOP_MODE.PERSONNEL:
-                RenderPersonnel();
+//                RenderPersonnel();
                 break;
             case LAPTOP_MODE.HISTORY:
-                RenderHistory();
+//                RenderHistory();
                 break;
             case LAPTOP_MODE.FILES:
-                RenderFiles();
+//                RenderFiles();
                 break;
             case LAPTOP_MODE.EMAIL:
-                RenderEmail();
+//                RenderEmail();
                 break;
             case (LAPTOP_MODE.WWW):
                 DrawDeskTopBackground();
                 RenderWWWProgramTitleBar();
                 break;
             case (LAPTOP_MODE.BROKEN_LINK):
-                RenderBrokenLink();
+//                RenderBrokenLink();
                 break;
 
             case LAPTOP_MODE.BOBBYR_SHIPMENTS:
-                RenderBobbyRShipments();
+//                RenderBobbyRShipments();
                 break;
         }
 
@@ -275,7 +275,7 @@ public class Laptop
             return;
         }
 
-        DisplayProgramBoundingBox(false);
+//        DisplayProgramBoundingBox(false);
 
         // mark the buttons dirty at this point
         ButtonSubSystem.MarkButtonsDirty();
@@ -372,23 +372,23 @@ public class Laptop
         switch (guiCurrentLaptopMode)
         {
             case (LAPTOP_MODE.HISTORY):
-                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                hHandle = hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.EMAIL):
-                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                hHandle = hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.PERSONNEL):
-                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.FINANCES):
-                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                hHandle = hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.FILES):
-                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.NONE):
@@ -396,7 +396,7 @@ public class Laptop
                 break;
             default:
                 // www pages
-                VeldridVideoManager.GetVideoObject(out hHandle, guiTITLEBARICONS);
+                hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
         }

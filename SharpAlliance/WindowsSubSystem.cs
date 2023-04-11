@@ -37,14 +37,14 @@ namespace SharpAlliance
             ILogger<WindowsSubSystem> logger,
             GameContext context,
             IInputManager inputManager,
-            IVideoManager videoManager,
+//            IVideoManager videoManager,
             FontSubSystem fontSubSystem)
         {
             this.context = context;
             this.logger = logger;
-            VeldridVideoManager = videoManager;
+//            this.video = videoManager;
             this.input = inputManager;
-            FontSubSystem = fontSubSystem;
+            this.fonts = fontSubSystem;
             this.Initialize().AsTask().Wait();
         }
 
@@ -52,7 +52,7 @@ namespace SharpAlliance
         {
             await VeldridVideoManager.Initialize();
             await this.input.Initialize();
-            await FontSubSystem.Initialize();
+            await this.fonts.Initialize();
 
             this.PlatformConstruct();
 
@@ -63,8 +63,8 @@ namespace SharpAlliance
 
             if (this.MainWindow is not null)
             {
-                VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<IVideoManager>();
-                this.MainWindow = vorticeVideoManager.Window;
+                VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<VeldridVideoManager>();
+                this.MainWindow = VeldridVideoManager.Window;
 
 //                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
             }
@@ -77,8 +77,8 @@ namespace SharpAlliance
 
         public Sdl2Window CreateWindow(string name = "Vortice")
         {
-            VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<IVideoManager>();
-            return vorticeVideoManager.Window;
+            VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<VeldridVideoManager>();
+            return VeldridVideoManager.Window;
         }
 
         private void PlatformConstruct()

@@ -7075,7 +7075,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // Get Surface Index
         usAnimSurface = AnimationControl.DetermineSoldierAnimationSurface(pSoldier, usAnimState);
 
-        CHECKV(usAnimSurface != INVALID_ANIMATION_SURFACE);
+//        CHECKV(usAnimSurface != INVALID_ANIMATION_SURFACE);
 
         bProfileID = gAnimSurfaceDatabase[usAnimSurface].bProfile;
 

@@ -22,7 +22,7 @@ public class TileAnimations
         int iCachedTile = -1;
         int sGridNo;
         ANI ubLevel;
-        int usTileType;
+        TileTypeDefines usTileType;
         TileIndexes usTileIndex;
         int sDelay;
         int sStartFrame = -1;
@@ -30,7 +30,7 @@ public class TileAnimations
         LEVELNODE? pGivenNode;
         int sX, sZ;
         MAP_ROW sY;
-        WorldDirections ubTempDir;
+        WorldDirections ubTempDir = 0;
 
         // Get some parameters from structure sent in...
         sGridNo = pAniParams.sGridNo;
@@ -59,7 +59,7 @@ public class TileAnimations
         {
             if ((uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE)))
             {
-                iCachedTile = GetCachedTile(pAniParams.zCachedFile);
+//                iCachedTile = GetCachedTile(pAniParams.zCachedFile);
 
                 if (iCachedTile == -1)
                 {
@@ -74,36 +74,36 @@ public class TileAnimations
             {
                 case ANI.STRUCT_LEVEL:
 
-                    pNode = ForceStructToTail(sGridNo, usTileIndex);
+//                    pNode = ForceStructToTail(sGridNo, usTileIndex);
                     break;
 
                 case ANI.SHADOW_LEVEL:
 
-                    AddShadowToHead(sGridNo, usTileIndex);
+//                    AddShadowToHead(sGridNo, usTileIndex);
                     pNode = gpWorldLevelData[sGridNo].pShadowHead;
                     break;
 
                 case ANI.OBJECT_LEVEL:
 
-                    AddObjectToHead(sGridNo, usTileIndex);
+//                    AddObjectToHead(sGridNo, usTileIndex);
                     pNode = gpWorldLevelData[sGridNo].pObjectHead;
                     break;
 
                 case ANI.ROOF_LEVEL:
 
-                    AddRoofToHead(sGridNo, usTileIndex);
+//                    AddRoofToHead(sGridNo, usTileIndex);
                     pNode = gpWorldLevelData[sGridNo].pRoofHead;
                     break;
 
                 case ANI.ONROOF_LEVEL:
 
-                    AddOnRoofToHead(sGridNo, usTileIndex);
+//                    AddOnRoofToHead(sGridNo, usTileIndex);
                     pNode = gpWorldLevelData[sGridNo].pOnRoofHead;
                     break;
 
                 case ANI.TOPMOST_LEVEL:
 
-                    AddTopmostToHead(sGridNo, usTileIndex);
+//                    AddTopmostToHead(sGridNo, usTileIndex);
                     pNode = gpWorldLevelData[sGridNo].pTopmostHead;
                     break;
 
@@ -113,16 +113,16 @@ public class TileAnimations
             }
 
             // SET NEW TILE VALUES
-            pNode.ubShadeLevel = DEFAULT_SHADE_LEVEL;
-            pNode.ubNaturalShadeLevel = DEFAULT_SHADE_LEVEL;
+//            pNode.ubShadeLevel = DEFAULT_SHADE_LEVEL;
+//            pNode.ubNaturalShadeLevel = DEFAULT_SHADE_LEVEL;
 
-            pNewAniNode.pLevelNode = pNode;
+//            pNewAniNode.pLevelNode = pNode;
 
             if ((uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE)))
             {
                 pNewAniNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.CACHEDANITILE);
                 pNewAniNode.sCachedTileID = (int)iCachedTile;
-                pNewAniNode.usCachedTileSubIndex = usTileType;
+                pNewAniNode.usCachedTileSubIndex = (int)usTileType;
                 pNewAniNode.pLevelNode.pAniTile = pNewAniNode;
                 pNewAniNode.sRelativeX = sX;
                 pNewAniNode.sRelativeY = sY;
@@ -220,8 +220,8 @@ public class TileAnimations
         }
         else
         {
-            Debug.Assert(gTileDatabase[usTileIndex].pAnimData != null);
-            pNewAniNode.usNumFrames = gTileDatabase[usTileIndex].pAnimData.ubNumFrames;
+//            Debug.Assert(gTileDatabase[usTileIndex].pAnimData != null);
+//            pNewAniNode.usNumFrames = gTileDatabase[usTileIndex].pAnimData.ubNumFrames;
         }
 
         if ((uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
@@ -234,7 +234,7 @@ public class TileAnimations
         if ((uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
         {
             // Our start frame is actually a direction indicator
-            ubTempDir = gb4DirectionsFrom8[pAniParams.uiUserData3];
+//            ubTempDir = gb4DirectionsFrom8[pAniParams.uiUserData3];
             sStartFrame = (int)sStartFrame + (pNewAniNode.usNumFrames * (int)ubTempDir);
         }
 
@@ -316,39 +316,39 @@ public class TileAnimations
                     {
                         case ANI.STRUCT_LEVEL:
 
-                            RemoveStructFromLevelNode(pAniNode.sGridNo, pAniNode.pLevelNode);
+//                            RemoveStructFromLevelNode(pAniNode.sGridNo, pAniNode.pLevelNode);
                             break;
 
                         case ANI.SHADOW_LEVEL:
 
-                            RemoveShadowFromLevelNode(pAniNode.sGridNo, pAniNode.pLevelNode);
+//                            RemoveShadowFromLevelNode(pAniNode.sGridNo, pAniNode.pLevelNode);
                             break;
 
                         case ANI.OBJECT_LEVEL:
 
-                            RemoveObject(pAniNode.sGridNo, pAniNode.usTileIndex);
+//                            RemoveObject(pAniNode.sGridNo, pAniNode.usTileIndex);
                             break;
 
                         case ANI.ROOF_LEVEL:
 
-                            RemoveRoof(pAniNode.sGridNo, pAniNode.usTileIndex);
+//                            RemoveRoof(pAniNode.sGridNo, pAniNode.usTileIndex);
                             break;
 
                         case ANI.ONROOF_LEVEL:
 
-                            RemoveOnRoof(pAniNode.sGridNo, pAniNode.usTileIndex);
+//                            RemoveOnRoof(pAniNode.sGridNo, pAniNode.usTileIndex);
                             break;
 
                         case ANI.TOPMOST_LEVEL:
 
-                            RemoveTopmostFromLevelNode(pAniNode.sGridNo, pAniNode.pLevelNode);
+//                            RemoveTopmostFromLevelNode(pAniNode.sGridNo, pAniNode.pLevelNode);
                             break;
 
                     }
 
                     if ((pAniNode.uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE)))
                     {
-                        RemoveCachedTile(pAniNode.sCachedTileID);
+//                        RemoveCachedTile(pAniNode.sCachedTileID);
                     }
 
                     if (pAniNode.uiFlags.HasFlag(ANITILEFLAGS.EXPLOSION))
@@ -384,8 +384,8 @@ public class TileAnimations
                     TileElem = (gTileDatabase[pAniNode.usTileIndex]);
 
                     // OK, update existing tile usIndex....
-                    Debug.Assert(TileElem.pAnimData != null);
-                    pAniNode.pLevelNode.usIndex = TileElem.pAnimData.pusFrames[pAniNode.pLevelNode.sCurrentFrame];
+//                    Debug.Assert(TileElem.pAnimData != null);
+//                    pAniNode.pLevelNode.usIndex = TileElem.pAnimData.pusFrames[pAniNode.pLevelNode.sCurrentFrame];
 
                     // OK, set our frame data back to zero....
                     pAniNode.pLevelNode.sCurrentFrame = 0;
@@ -405,10 +405,10 @@ public class TileAnimations
                             pDoorStatus.ubFlags &= ~(DOOR_STATUS_FLAGS.BUSY);
                         }
 
-                        if (GridNoOnScreen(pAniNode.sGridNo))
-                        {
-                            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-                        }
+//                        if (GridNoOnScreen(pAniNode.sGridNo))
+//                        {
+//                            RenderWorld.SetRenderFlags(RenderingFlags.FULL);
+//                        }
 
                     }
                 }
@@ -431,7 +431,7 @@ public class TileAnimations
         ANITILE? pNode = null;
         uint uiClock = GetJA2Clock();
         int usMaxFrames, usMinFrames;
-        WorldDirections ubTempDir;
+        WorldDirections ubTempDir = 0;
 
         // LOOP THROUGH EACH NODE
         pAniNode = pAniTileHead;
@@ -464,13 +464,13 @@ public class TileAnimations
 
                     if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME))
                     {
-                        ubTempDir = gOneCDirection[pNode.uiUserData3];
+                        ubTempDir = gOneCDirection[(WorldDirections)pNode.uiUserData3];
                         usMaxFrames = (int)usMaxFrames + (pNode.usNumFrames * (int)ubTempDir);
                     }
 
                     if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME))
                     {
-                        ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
+//                        ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
                         usMaxFrames = (int)usMaxFrames + (pNode.usNumFrames * (int)ubTempDir);
                     }
 
@@ -511,13 +511,13 @@ public class TileAnimations
                         // CHECK IF WE SHOULD BE DISPLAYING TRANSLUCENTLY!
                         if (pNode.sCurrentFrame == pNode.ubKeyFrame2)
                         {
-                            EXPLOSV ubExpType;
+                            EXPLOSV ubExpType = 0;
 
                             switch (pNode.uiKeyFrame2Code)
                             {
                                 case ANI_KEYFRAME.BEGIN_DAMAGE:
 
-                                    ubExpType = Explosive[Item[(Items)pNode.uiUserData].ubClassIndex].ubType;
+//                                    ubExpType = Explosive[Item[(Items)pNode.uiUserData].ubClassIndex].ubType;
 
                                     if (ubExpType == EXPLOSV.TEARGAS || ubExpType == EXPLOSV.MUSTGAS ||
                                          ubExpType == EXPLOSV.SMOKE)
@@ -547,14 +547,14 @@ public class TileAnimations
                             if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
                             {
                                 // Our start frame is actually a direction indicator
-                                ubTempDir = gOneCDirection[pNode.uiUserData3];
+                                ubTempDir = gOneCDirection[(WorldDirections)pNode.uiUserData3];
                                 pNode.sCurrentFrame = (int)(pNode.usNumFrames * (int)ubTempDir);
                             }
 
                             if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
                             {
                                 // Our start frame is actually a direction indicator
-                                ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
+//                                ubTempDir = gb4DirectionsFrom8[(WorldDirections)pNode.uiUserData3];
                                 pNode.sCurrentFrame = (int)(pNode.usNumFrames * (int)ubTempDir);
                             }
 
@@ -601,13 +601,13 @@ public class TileAnimations
 
                     if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME))
                     {
-                        ubTempDir = gOneCDirection[pNode.uiUserData3];
+                        ubTempDir = gOneCDirection[(WorldDirections)pNode.uiUserData3];
                         usMinFrames = (pNode.usNumFrames * (int)ubTempDir);
                     }
 
                     if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME))
                     {
-                        ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
+//                        ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
                         usMinFrames = (pNode.usNumFrames * (int)ubTempDir);
                     }
 
@@ -642,13 +642,13 @@ public class TileAnimations
                             if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
                             {
                                 // Our start frame is actually a direction indicator
-                                ubTempDir = gOneCDirection[pNode.uiUserData3];
+                                ubTempDir = gOneCDirection[(WorldDirections)pNode.uiUserData3];
                                 pNode.sCurrentFrame = (int)(pNode.usNumFrames * (int)ubTempDir);
                             }
                             if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
                             {
                                 // Our start frame is actually a direction indicator
-                                ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
+//                                ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
                                 pNode.sCurrentFrame = (int)(pNode.usNumFrames * (int)ubTempDir);
                             }
 
@@ -717,20 +717,20 @@ public class TileAnimations
 
     void SetAniTileFrame(ANITILE? pAniTile, int sFrame)
     {
-        WorldDirections ubTempDir;
+        WorldDirections ubTempDir = 0;
         int sStartFrame = 0;
 
         if ((pAniTile.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
         {
             // Our start frame is actually a direction indicator
-            ubTempDir = gOneCDirection[pAniTile.uiUserData3];
+            ubTempDir = gOneCDirection[(WorldDirections)pAniTile.uiUserData3];
             sStartFrame = sFrame + (pAniTile.usNumFrames * (int)ubTempDir);
         }
 
         if ((pAniTile.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
         {
             // Our start frame is actually a direction indicator
-            ubTempDir = gb4DirectionsFrom8[pAniTile.uiUserData3];
+//            ubTempDir = gb4DirectionsFrom8[pAniTile.uiUserData3];
             sStartFrame = sFrame + (pAniTile.usNumFrames * (int)ubTempDir);
         }
 

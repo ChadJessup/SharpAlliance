@@ -3279,7 +3279,7 @@ public class TILE_ELEMENT
 {
     public TileTypeDefines fType;
     public HVOBJECT hTileSurface;
-    public DB_STRUCTURE_REF? pDBStructureRef;
+    public DB_STRUCTURE_REF pDBStructureRef;
     public TileCategory uiFlags;
     public RelTileLoc? pTileLocData;
     public ushort usRegionIndex;
@@ -3297,7 +3297,7 @@ public class TILE_ELEMENT
     public byte ubFullTile;
 
     // For animated tiles
-    public TILE_ANIMATION_DATA? pAnimData;
+    public TILE_ANIMATION_DATA pAnimData;
 
     // Reserved for added room and 32-byte boundaries
     byte[] bReserved;// [3];

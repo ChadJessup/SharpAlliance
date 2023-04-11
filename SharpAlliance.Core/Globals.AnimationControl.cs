@@ -61,11 +61,9 @@ public partial class Globals
     };
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 4)]
-public struct ANIMSUBTYPE
+//[StructLayout(LayoutKind.Explicit, Size = 4)]
+public class ANIMSUBTYPE
 {
-    [FieldOffset(00)] public AnimationStates usAnimState;
-
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-    [FieldOffset(02)] public AnimationSurfaceTypes[] usAnimationSurfaces;// [4];
+    public AnimationStates usAnimState { get; set; }
+    public AnimationSurfaceTypes[] usAnimationSurfaces { get; set; }// [4];
 }

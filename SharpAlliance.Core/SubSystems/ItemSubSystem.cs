@@ -195,7 +195,7 @@ public class ItemSubSystem
             return (0);
         }
 
-        pWeapon = (WeaponTypes.Weapon[(int)usItem]);
+        pWeapon = (WeaponTypes.Weapon[usItem]);
         usLoop = 0;
         while (WeaponTypes.Magazine[usLoop].ubCalibre != CaliberType.NOAMMO)
         {
@@ -583,9 +583,9 @@ public class ItemSubSystem
             ubWeight = CalculateObjectWeight(pObj),
         };
 
-        if (WeaponTypes.Weapon[(int)usItem].ubWeaponClass == WeaponClass.MONSTERCLASS)
+        if (WeaponTypes.Weapon[usItem].ubWeaponClass == WeaponClass.MONSTERCLASS)
         {
-            pObj.ubGunShotsLeft = WeaponTypes.Weapon[(int)usItem].ubMagSize;
+            pObj.ubGunShotsLeft = WeaponTypes.Weapon[usItem].ubMagSize;
             pObj.ubGunAmmoType = AMMO.MONSTER;
         }
         else if (EXPLOSIVE_GUN(usItem))
@@ -769,13 +769,13 @@ public class ItemSubSystem
     public static Items FindReplacementMagazineIfNecessary(Items usOldGun, Items usOldAmmo, Items usNewGun)
     {
         Items usNewAmmo = Items.NONE;
-        int oldGunIdx = (int)usOldGun;
+        Items oldGunIdx = usOldGun;
 
         if ((WeaponTypes.Magazine[Globals.Item[usOldAmmo].ubClassIndex].ubCalibre == WeaponTypes.Weapon[oldGunIdx].ubCalibre)
             && (WeaponTypes.Magazine[Globals.Item[usOldAmmo].ubClassIndex].ubMagSize == WeaponTypes.Weapon[oldGunIdx].ubMagSize))
         {
             // must replace this!
-            usNewAmmo = FindReplacementMagazine(WeaponTypes.Weapon[(int)usNewGun].ubCalibre, WeaponTypes.Weapon[(int)usNewGun].ubMagSize, WeaponTypes.Magazine[Globals.Item[usOldAmmo].ubClassIndex].ubAmmoType);
+            usNewAmmo = FindReplacementMagazine(WeaponTypes.Weapon[usNewGun].ubCalibre, WeaponTypes.Weapon[usNewGun].ubMagSize, WeaponTypes.Magazine[Globals.Item[usOldAmmo].ubClassIndex].ubAmmoType);
         }
 
         return usNewAmmo;

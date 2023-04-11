@@ -668,6 +668,8 @@ public enum MAP_ROW : short
     N = 14,
     O = 15,
     P = 16,
+    Q = 17,
+    R = 18,
 
     UNSET = -1,
 }

@@ -21,7 +21,7 @@ public class SoundManager : ISoundManager
     private static SOUNDTAG[] pSoundList = new SOUNDTAG[SOUND_MAX_CHANNELS];
 
 
-    public SoundManager(IFileManager fileManager) => this.files = fileManager;
+//    public SoundManager(IFileManager fileManager) => this.files = fileManager;
 
     public bool IsInitialized { get; }
 
@@ -924,6 +924,8 @@ public enum SoundDefine
     NUM_SAMPLES,
 
     NO_WEAPON_SOUND = 0,
+
+    UNSET = -1,
 };
 
 // Struct definition for sample slots in the cache

@@ -19,11 +19,11 @@ public class HandleItems
     {
         ITEM_POOL? pItemPool;
         ITEM_POOL? pItemPoolTemp;
-        int iWorldItem;
+        int iWorldItem = 0;
         STRUCTURE? pStructure, pBase;
         STRUCTURE_ON sDesiredLevel;
         int sNewGridNo = psGridNo;
-        LEVELNODE? pNode;
+        LEVELNODE? pNode = null;
         bool fForceOnGround = false;
         bool fObjectInOpenable = false;
         TerrainTypeDefines bTerrainID;
@@ -62,7 +62,7 @@ public class HandleItems
         // On a structure?
         //Locations on roofs without a roof is not possible, so
         //we convert the onroof intention to ground.
-        if (ubLevel && !FlatRoofAboveGridNo(psGridNo))
+        if (ubLevel > 0 && !Overhead.FlatRoofAboveGridNo(psGridNo))
         {
             ubLevel = 0;
         }
@@ -112,10 +112,10 @@ public class HandleItems
                         if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
                         {
                             // -2 means - don't reveal!
-                            bVisible = -2;
+                            bVisible = (ItemVisibility.HIDDEN_IN_OBJECT);
                         }
 
-                        bRenderZHeightAboveLevel = CONVERT_INDEX_TO_PIXELS(StructureHeight(pStructure));
+                        bRenderZHeightAboveLevel = CONVERT_INDEX_TO_PIXELS(StructureInternals.StructureHeight(pStructure));
                         break;
 
                     }
@@ -156,7 +156,7 @@ public class HandleItems
                         }
 
                         // Set flag indicating it has an item on top!
-                        pStructure.fFlags |= STRUCTURE_HASITEMONTOP;
+                        pStructure.fFlags |= STRUCTUREFLAGS.HASITEMONTOP;
                         break;
                     }
 
@@ -168,7 +168,7 @@ public class HandleItems
 
         if (pObject.usItem == Items.SWITCH && !fObjectInOpenable)
         {
-            if (bVisible != -2)
+            if (bVisible != (ItemVisibility)(-2))
             {
                 // switch items which are not hidden inside objects should be considered buried
                 bVisible = ItemVisibility.BURIED;
@@ -210,7 +210,7 @@ public class HandleItems
 
         //First add the item to the global list.  This is so the game can keep track 
         //of where the items are, for file i/o, etc.
-        iWorldItem = AddItemToWorld(psGridNo, pObject, ubLevel, usFlags, bRenderZHeightAboveLevel, bVisible);
+//        iWorldItem = AddItemToWorld(psGridNo, pObject, ubLevel, usFlags, bRenderZHeightAboveLevel, bVisible);
 
         // Check for and existing pool on the object layer
         if (GetItemPool(psGridNo, out pItemPool, ubLevel))
@@ -218,7 +218,7 @@ public class HandleItems
 
             // Add to exitsing pool
             // Add graphic
-            pNode = AddItemGraphicToWorld((Item[pObject.usItem]), psGridNo, ubLevel);
+//            pNode = AddItemGraphicToWorld((Item[pObject.usItem]), psGridNo, ubLevel);
 
             // Set pool head value in levelnode
             pNode.pItemPool = pItemPool;
@@ -252,7 +252,7 @@ public class HandleItems
         }
         else
         {
-            pNode = AddItemGraphicToWorld((Item[pObject.usItem]), psGridNo, ubLevel);
+//            pNode = AddItemGraphicToWorld((Item[pObject.usItem]), psGridNo, ubLevel);
 
             // Create new pool
             pItemPool = new ITEM_POOL();
@@ -276,7 +276,7 @@ public class HandleItems
         pItemPool.bVisible = bVisible;
 
         // If bbisible is true, render makered world
-        if (bVisible == 1 && GridNoOnScreen((psGridNo)))
+        if (bVisible == (ItemVisibility)1 && SoldierFind.GridNoOnScreen((psGridNo)))
         {
             //gpWorldLevelData[*psGridNo].uiFlags|=MAPELEMENTFLAGS.REDRAW;
             //RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
@@ -294,7 +294,7 @@ public class HandleItems
         // ATE: Get head of pool again....
         if (GetItemPool(psGridNo, out pItemPool, ubLevel))
         {
-            AdjustItemPoolVisibility(pItemPool);
+//            AdjustItemPoolVisibility(pItemPool);
         }
 
         if (piItemIndex is not null)

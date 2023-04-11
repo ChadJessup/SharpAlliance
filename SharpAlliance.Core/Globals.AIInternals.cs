@@ -28,7 +28,9 @@ public partial class Globals
     public const int ADDTURNCOST = 1;
     public static bool PTR_CIV_OR_MILITIA(SOLDIERTYPE pSoldier) => (PTR_CIVILIAN(pSoldier) || (pSoldier.bTeam == MILITIA_TEAM));
     public static int REALTIME_AI_DELAY = (10000 + Globals.Random.Next(1000));
-    public static int REALTIME_CIV_AI_DELAY = (1000 * (gTacticalStatus.Team[MILITIA_TEAM].bMenInSector + gTacticalStatus.Team[CIV_TEAM].bMenInSector) + 5000 + 2000 * Globals.Random.Next(3));
+    public static TacticalStatusType gTacticalStatus = new TacticalStatusType();
+
+    public static int REALTIME_CIV_AI_DELAY { get; } = (1000 * (gTacticalStatus.Team[MILITIA_TEAM].bMenInSector + gTacticalStatus.Team[CIV_TEAM].bMenInSector) + 5000 + 2000 * Globals.Random.Next(3));
     public static int REALTIME_CREATURE_AI_DELAY = (10000 + 1000 * Globals.Random.Next(3));
     public const int ENEMYDIFFICULTY = 8;   // this is being used in this module;
     public const int MAXGAMEOPTIONS = 14;

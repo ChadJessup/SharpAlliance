@@ -117,7 +117,7 @@ public class Morale
     void DecayTacticalMoraleModifiers()
     {
         int ubLoop, ubLoop2;
-        bool fHandleNervous;
+        bool fHandleNervous = false;
 
         ubLoop = gTacticalStatus.Team[gbPlayerNum].bFirstID;
 
@@ -153,14 +153,14 @@ public class Morale
                         {
                             if (pSoldier.ubGroupID != 0 && StrategicMovement.PlayerIDGroupInMotion(pSoldier.ubGroupID))
                             {
-                                if (NumberOfPeopleInSquad(pSoldier.bAssignment) == 1)
-                                {
-                                    fHandleNervous = true;
-                                }
-                                else
-                                {
-                                    fHandleNervous = false;
-                                }
+//                                if (NumberOfPeopleInSquad(pSoldier.bAssignment) == 1)
+//                                {
+//                                    fHandleNervous = true;
+//                                }
+//                                else
+//                                {
+//                                    fHandleNervous = false;
+//                                }
                             }
                             else if (pSoldier.bActive && pSoldier.bInSector)
                             {
@@ -382,7 +382,7 @@ public class Morale
                         gfSomeoneSaidMoraleQuote = true;
 
                         // ATE: Amde it a DELAYED QUOTE - will be delayed by the dialogue Q until it's our turn...
-                        DelayedTacticalCharacterDialogue(pSoldier, QUOTE.STARTING_TO_WHINE);
+//                        DelayedTacticalCharacterDialogue(pSoldier, QUOTE.STARTING_TO_WHINE);
                         pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_LOW_MORAL;
                     }
                 }
@@ -724,9 +724,9 @@ public class Morale
         int bLastTeamID;
         //SOLDIERTYPE? pOtherSoldier;
         MERCPROFILESTRUCT? pProfile;
-        bool fSameGroupOnly;
+        bool fSameGroupOnly = false;
         bool fFoundHated = false;
-        int bHated;
+        int bHated = 0;
 
         bMercID = gTacticalStatus.Team[gbPlayerNum].bFirstID;
         bLastTeamID = gTacticalStatus.Team[gbPlayerNum].bLastID;
@@ -747,15 +747,15 @@ public class Morale
                 pProfile = (gMercProfiles[pSoldier.ubProfile]);
 
                 // if we're moving
-                if (pSoldier.ubGroupID != 0 && PlayerIDGroupInMotion(pSoldier.ubGroupID))
-                {
-                    // we only check our opinions of people in our squad
-                    fSameGroupOnly = true;
-                }
-                else
-                {
-                    fSameGroupOnly = false;
-                }
+//                if (pSoldier.ubGroupID != 0 && PlayerIDGroupInMotion(pSoldier.ubGroupID))
+//                {
+//                    // we only check our opinions of people in our squad
+//                    fSameGroupOnly = true;
+//                }
+//                else
+//                {
+//                    fSameGroupOnly = false;
+//                }
                 fFoundHated = false;
 
                 // reset counts to calculate average opinion
@@ -798,17 +798,17 @@ public class Morale
                             }
 
                             // if the OTHER soldier is in motion then we don't do anything!
-                            if (pOtherSoldier.ubGroupID != 0 && PlayerIDGroupInMotion(pOtherSoldier.ubGroupID))
-                            {
-                                continue;
-                            }
+//                            if (pOtherSoldier.ubGroupID != 0 && PlayerIDGroupInMotion(pOtherSoldier.ubGroupID))
+//                            {
+//                                continue;
+//                            }
                         }
 
                         bOpinion = pProfile.bMercOpinion[pOtherSoldier.ubProfile];
                         if (bOpinion == HATED_OPINION)
                         {
 
-                            bHated = SoldierProfileSubSystem.WhichHated(pSoldier.ubProfile, pOtherSoldier.ubProfile);
+//                            bHated = SoldierProfileSubSystem.WhichHated(pSoldier.ubProfile, pOtherSoldier.ubProfile);
                             if (bHated >= 2)
                             {
                                 // learn to hate which has become full-blown hatred, full strength
@@ -935,23 +935,23 @@ public class Morale
         */
 
         // check death rate vs. merc's tolerance once/day (ignores buddies!)
-        if (MercThinksDeathRateTooHigh(pSoldier.ubProfile))
-        {
-            // too high, morale takes a hit
-            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_HIGH_DEATHRATE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
-        }
+//        if (MercThinksDeathRateTooHigh(pSoldier.ubProfile))
+//        {
+//            // too high, morale takes a hit
+//            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_HIGH_DEATHRATE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+//        }
 
         // check his morale vs. his morale tolerance once/day (ignores buddies!)
-        if (MercThinksHisMoraleIsTooLow(pSoldier))
-        {
-            // too low, morale sinks further (merc's in a funk and things aren't getting better)
-            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_POOR_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
-        }
-        else if (pSoldier.bMorale >= 75)
-        {
-            // very high morale, merc is cheerleading others
-            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_GREAT_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
-        }
+//        if (MercThinksHisMoraleIsTooLow(pSoldier))
+//        {
+//            // too low, morale sinks further (merc's in a funk and things aren't getting better)
+//            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_POOR_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+//        }
+//        else if (pSoldier.bMorale >= 75)
+//        {
+//            // very high morale, merc is cheerleading others
+//            HandleMoraleEvent(pSoldier, MoraleEventNames.MORALE_GREAT_MORALE, pSoldier.sSectorX, pSoldier.sSectorY, pSoldier.bSectorZ);
+//        }
 
     }
 }

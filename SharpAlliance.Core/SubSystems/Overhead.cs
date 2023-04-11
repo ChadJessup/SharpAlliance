@@ -12,11 +12,11 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class Overhead
 {
-    public void InitOverhead()
+    public static void InitOverhead()
     {
     }
 
-    public ValueTask<bool> InitTacticalEngine()
+    public static ValueTask<bool> InitTacticalEngine()
     {
         return ValueTask.FromResult(true);
     }
@@ -59,7 +59,7 @@ public class Overhead
         {
             AnimationSurfaceTypes usAnimSurface;
             STRUCTURE_FILE_REF? pStructureFileRef;
-            bool fOk;
+            bool fOk = false;
             WorldDirections bLoop;
             int usStructureID = INVALID_STRUCTURE_ID;
 
@@ -83,7 +83,7 @@ public class Overhead
                         usStructureID = pCurrSoldier.pLevelNode.pStructureData.usStructureID;
                     }
 
-                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, (pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (bool)!fPeopleToo);
+                    //                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, (pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (bool)!fPeopleToo);
                     if (fOk)
                     {
                         return (true);
@@ -196,7 +196,7 @@ public class Overhead
             // OK, we want to display message that we can't....
             if (fFromUI)
             {
-                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[MERC_IS_UNAVAILABLE_STR], pSoldier.name);
+                //                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[MERC_IS_UNAVAILABLE_STR], pSoldier.name);
             }
             return;
         }
@@ -210,10 +210,10 @@ public class Overhead
         }
 
         // CANCEL FROM PLANNING MODE!
-        if (InUIPlanMode())
-        {
-            EndUIPlan();
-        }
+        //        if (InUIPlanMode())
+        //        {
+        //            EndUIPlan();
+        //        }
 
         // Unselect old selected guy
         if (gusSelectedSoldier != NO_SOLDIER)
@@ -234,11 +234,11 @@ public class Overhead
 
             if (pOldSoldier.uiStatusFlags.HasFlag(SOLDIER.GREEN_RAY))
             {
-                LightHideRays((pOldSoldier.dXPos / CELL_X_SIZE), (pOldSoldier.dYPos / CELL_Y_SIZE));
+                //                LightHideRays((pOldSoldier.dXPos / CELL_X_SIZE), (pOldSoldier.dYPos / CELL_Y_SIZE));
                 pOldSoldier.uiStatusFlags &= (~SOLDIER.GREEN_RAY);
             }
 
-//            UpdateForContOverPortrait(pOldSoldier, false);
+            //            UpdateForContOverPortrait(pOldSoldier, false);
         }
 
         gusSelectedSoldier = usSoldierID;
@@ -256,14 +256,14 @@ public class Overhead
         //SetCheckSoldierLightFlag( pSoldier );
 
         // Set interface to reflect new selection!
-        SetCurrentTacticalPanelCurrentMerc(usSoldierID);
+        //        SetCurrentTacticalPanelCurrentMerc(usSoldierID);
 
         // PLay ATTN SOUND
         if (fAcknowledge)
         {
             if (!GameSettings.fOptions[TOPTION.MUTE_CONFIRMATIONS])
             {
-                DoMercBattleSound(pSoldier, BATTLE_SOUND.ATTN1);
+                //                DoMercBattleSound(pSoldier, BATTLE_SOUND.ATTN1);
             }
         }
 
@@ -276,11 +276,11 @@ public class Overhead
             guiPendingOverrideEvent = UI_EVENT_DEFINES.M_ON_TERRAIN;
         }
 
-//        ChangeInterfaceLevel(pSoldier.bLevel);
+        //        ChangeInterfaceLevel(pSoldier.bLevel);
 
         if (pSoldier.fMercAsleep)
         {
-//            PutMercInAwakeState(pSoldier);
+            //            PutMercInAwakeState(pSoldier);
         }
 
         // possibly say personality quote
@@ -300,10 +300,10 @@ public class Overhead
             }
         }
 
-//        UpdateForContOverPortrait(pSoldier, true);
+        //        UpdateForContOverPortrait(pSoldier, true);
 
         // Remove any interactive tiles we could be over!
-//        BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
+        //        BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
     }
 
     public static int FindAdjacentGridEx(SOLDIERTYPE pSoldier, int sGridNo, ref WorldDirections pubDirection, out int psAdjustedGridNo, bool fForceToPerson, bool fDoor)
@@ -430,11 +430,11 @@ public class Overhead
             }
 
             // If there is an exit grid....
-            if (GetExitGrid(sGridNo, out ExitGrid))
-            {
-                // Don't continuel
-                fCheckGivenGridNo = false;
-            }
+            //            if (GetExitGrid(sGridNo, out ExitGrid))
+            //            {
+            //                // Don't continuel
+            //                fCheckGivenGridNo = false;
+            //            }
 
 
             if (fCheckGivenGridNo)
@@ -656,7 +656,7 @@ public class Overhead
             gTacticalStatus.ubAttackBusyCount--;
         }
 
-       // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Ending attack, attack count now %d", gTacticalStatus.ubAttackBusyCount));
+        // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Ending attack, attack count now %d", gTacticalStatus.ubAttackBusyCount));
         //	}
 
         if (gTacticalStatus.ubAttackBusyCount > 0)
@@ -718,7 +718,7 @@ public class Overhead
                 {
                     if (pSoldier.bTeam == gbPlayerNum)
                     {
-                        fEnterCombat = ProcessImplicationsOfPCAttack(pSoldier, out pTarget, REASON_NORMAL_ATTACK);
+                        //                        fEnterCombat = ProcessImplicationsOfPCAttack(pSoldier, out pTarget, REASON_NORMAL_ATTACK);
                         if (!fEnterCombat)
                         {
                             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Not entering combat as a result of PC attack");
@@ -740,7 +740,8 @@ public class Overhead
 
                         ubTeam = pTarget.bTeam;
 
-                        for (cnt = gTacticalStatus.Team[ubTeam].bFirstID, pTeamSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[ubTeam].bLastID; cnt++, pTeamSoldier++)
+                        for (cnt = gTacticalStatus.Team[ubTeam].bFirstID, pTeamSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[ubTeam].bLastID; cnt++)//, pTeamSoldier++)
+
                         {
                             if (pTeamSoldier.bActive && pTeamSoldier.bInSector)
                             {
@@ -752,7 +753,7 @@ public class Overhead
 
                                         //MakeCivHostile( pTeamSoldier, 2 );
 
-                                        HandleCrowFlyAway(pTeamSoldier);
+                                        //                                        HandleCrowFlyAway(pTeamSoldier);
 
                                     }
                                 }
@@ -769,7 +770,7 @@ public class Overhead
                     if (pTarget is not null && pTarget.bLife <= 0)
                     {
                         // someone has won!
-                        EndBoxingMatch(pTarget);
+                        //                        EndBoxingMatch(pTarget);
                     }
                 }
 
@@ -830,10 +831,10 @@ public class Overhead
                 // Go into combat!
 
                 // If we are in a meanwhile... don't enter combat here...
-                if (!AreInMeanwhile())
-                {
-                    EnterCombatMode(pSoldier.bTeam);
-                }
+                //                if (!AreInMeanwhile())
+                //                {
+                //                    EnterCombatMode(pSoldier.bTeam);
+                //                }
             }
 
             pSoldier.uiStatusFlags &= (~SOLDIER.ATTACK_NOTICED);
@@ -842,7 +843,7 @@ public class Overhead
         if (gTacticalStatus.fKilledEnemyOnAttack)
         {
             // Check for death quote...
-            HandleKilledQuote(MercPtrs[gTacticalStatus.ubEnemyKilledOnAttack], MercPtrs[gTacticalStatus.ubEnemyKilledOnAttackKiller], gTacticalStatus.ubEnemyKilledOnAttackLocation, gTacticalStatus.bEnemyKilledOnAttackLevel);
+            //            HandleKilledQuote(MercPtrs[gTacticalStatus.ubEnemyKilledOnAttack], MercPtrs[gTacticalStatus.ubEnemyKilledOnAttackKiller], gTacticalStatus.ubEnemyKilledOnAttackLocation, gTacticalStatus.bEnemyKilledOnAttackLevel);
             gTacticalStatus.fKilledEnemyOnAttack = false;
         }
 
@@ -873,24 +874,24 @@ public class Overhead
             int ubLoop;
             SOLDIERTYPE? pSightSoldier;
 
-            AllTeamsLookForAll(false);
+            //            AllTeamsLookForAll(false);
 
             // call fov code
             ubLoop = gTacticalStatus.Team[gbPlayerNum].bFirstID;
-            for (pSightSoldier = MercPtrs[ubLoop]; ubLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; ubLoop++, pSightSoldier++)
+            for (pSightSoldier = MercPtrs[ubLoop]; ubLoop <= gTacticalStatus.Team[gbPlayerNum].bLastID; ubLoop++)//, pSightSoldier++)
             {
                 if (pSightSoldier.bActive && pSightSoldier.bInSector)
                 {
-                    RevealRoofsAndItems(pSightSoldier, true, false, pSightSoldier.bLevel, false);
+                    //                    RevealRoofsAndItems(pSightSoldier, true, false, pSightSoldier.bLevel, false);
                 }
             }
 
             gTacticalStatus.uiFlags &= ~TacticalEngineStatus.CHECK_SIGHT_AT_END_OF_ATTACK;
         }
 
-        DequeueAllDemandGameEvents(true);
+        //        DequeueAllDemandGameEvents(true);
 
-        CheckForEndOfBattle(false);
+        //        CheckForEndOfBattle(false);
 
         // if we're in realtime, turn off the attacker's muzzle flash at this point
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && pSoldier is not null)
@@ -922,7 +923,7 @@ public class Overhead
         if (gTacticalStatus.bBoxingState == BoxingStates.NOT_BOXING)
         {
             // Special code for strategic implications
-            CalculateNonPersistantPBIInfo();
+            //            CalculateNonPersistantPBIInfo();
         }
     }
 
@@ -1057,7 +1058,7 @@ public class Overhead
         {
             AnimationSurfaceTypes usAnimSurface;
             STRUCTURE_FILE_REF? pStructureFileRef;
-            bool fOk;
+            bool fOk = false;
             int bLoop;
             int usStructureID = INVALID_STRUCTURE_ID;
 
@@ -1084,7 +1085,7 @@ public class Overhead
                         usStructureID = INVALID_STRUCTURE_ID;
                     }
 
-                    fOk = StructureInternals.InternalOkayToAddStructureToWorld(sGridNo, bLevel, (pStructureFileRef.pDBStructureRef[bLoop]), usStructureID, (bool)!fPeopleToo);
+                    //                    fOk = StructureInternals.InternalOkayToAddStructureToWorld(sGridNo, bLevel, (pStructureFileRef.pDBStructureRef[bLoop]), usStructureID, (bool)!fPeopleToo);
                     if (fOk)
                     {
                         return (true);
@@ -1305,7 +1306,7 @@ public class Overhead
                     // This person will be busy while they crouch or go prone
                     if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
-                       // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting suppression, on %d", pSoldier.ubID));
+                        // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting suppression, on %d", pSoldier.ubID));
 
                         gTacticalStatus.ubAttackBusyCount++;
 
@@ -1557,7 +1558,16 @@ public class TacticalStatusType
 {
     public TEAM ubCurrentTeam { get; set; }
 
-    public Dictionary<TEAM, TacticalTeamType> Team = new();
+    public Dictionary<TEAM, TacticalTeamType> Team = new()
+    {
+        { TEAM.OUR_TEAM, new() },
+        { TEAM.ENEMY_TEAM, new() },
+        { TEAM.CREATURE_TEAM, new() },
+        { TEAM.MILITIA_TEAM, new() },
+        { TEAM.CIV_TEAM, new() },
+        { TEAM.PLAYER_PLAN, new() },
+    };
+
     public bool fHasAGameBeenStarted { get; set; }
     public int ubAttackBusyCount { get; set; }
     public TacticalEngineStatus uiFlags { get; set; }

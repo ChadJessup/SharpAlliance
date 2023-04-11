@@ -683,7 +683,7 @@ public struct ZStripInfo
     public int bInitialZChange;       // difference in Z value between the leftmost and base strips
     public int ubFirstZStripWidth;   // # of pixels in the leftmost strip
     public int ubNumberOfZChanges;   // number of strips (after the first)
-    public int pbZChange;            // change to the Z value in each strip (after the first)
+    public List<int> pbZChange;            // change to the Z value in each strip (after the first)
 }
 
 public struct SixteenBPPObjectInfo

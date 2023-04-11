@@ -47,15 +47,15 @@ public class QueenCommand
         }
         else
         {
-            SECTORINFO? pSector;
-            GROUP? pGroup;
+            SECTORINFO? pSector = null;
+            GROUP? pGroup = null;
 
             //Count stationary enemies
             pSector = Globals.SectorInfo[SECTORINFO.SECTOR(sSectorX, sSectorY)];
             ubNumEnemies = (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);
 
             //Count mobile enemies
-            pGroup = Globals.gpGroupList;
+//            pGroup = Globals.gpGroupList;
             while (pGroup is not null)
             {
                 if (!pGroup.fPlayer && !pGroup.fVehicle && pGroup.ubSectorX == sSectorX && pGroup.ubSectorY == sSectorY)
@@ -71,15 +71,15 @@ public class QueenCommand
 
     public static int NumEnemiesInSector(int sSectorX, MAP_ROW sSectorY)
     {
-        SECTORINFO? pSector;
-        GROUP? pGroup;
+        SECTORINFO? pSector = null;
+        GROUP? pGroup = null;
         int ubNumTroops;
         Debug.Assert(sSectorX >= 1 && sSectorX <= 16);
         Debug.Assert(sSectorY >= (MAP_ROW)1 && sSectorY <= (MAP_ROW)16);
         pSector = SectorInfo[SECTORINFO.SECTOR(sSectorX, sSectorY)];
         ubNumTroops = (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);
 
-        pGroup = Globals.gpGroupList;
+//        pGroup = Globals.gpGroupList;
         while (pGroup is not null)
         {
             if (!pGroup.fPlayer

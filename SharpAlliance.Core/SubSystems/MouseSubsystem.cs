@@ -74,17 +74,17 @@ public class MouseSubSystem : ISharpAllianceManager
     public bool IsInitialized { get; }
 
     public MouseSubSystem(
-        ILogger<MouseSubSystem> logger,
-        GameContext gameContext,
-        IClockManager clockManager,
-        CursorSubSystem cursorSubSystem)
+        ILogger<MouseSubSystem> logger)
+//        GameContext gameContext,
+//        IClockManager clockManager,
+//        CursorSubSystem cursorSubSystem)
     {
         logger = logger;
 
         DefaultMoveCallback = BtnGenericMouseMoveButtonCallback;
         logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
-        this.clock = clockManager;
-        cursors = cursorSubSystem;
+     //   this.clock = clockManager;
+     //   cursors = cursorSubSystem;
         gameContext = gameContext;
 
         if (RegionList is not null)
@@ -568,7 +568,7 @@ public class MouseSubSystem : ISharpAllianceManager
     //
     public static void MSYS_DisableRegion(ref MOUSE_REGION region)
     {
-        region.uiFlags &= (~MouseRegionFlags.REGION_ENABLED);
+        region.uiFlags &= (~MouseRegionFlags.MSYS_REGION_ENABLED);
     }
 
     public static void SetRegionFastHelpText(MOUSE_REGION region, string fastHelpText)
@@ -619,10 +619,10 @@ public class MouseSubSystem : ISharpAllianceManager
     //
     private static void SetCurrentCursor(CURSOR cursor)
     {
-        cursors.SetCurrentCursorFromDatabase(cursor);
+        CursorSubSystem.SetCurrentCursorFromDatabase(cursor);
     }
 
-    public static void SetRegionUserData(MOUSE_REGION region, int index, object userdata)
+    public static void MSYS_SetRegionUserData(MOUSE_REGION region, int index, object userdata)
         => SetRegionUserData(ref region, index, userdata);
 
     public static void SetRegionUserData(ref MOUSE_REGION region, int index, object userdata)
@@ -708,7 +708,7 @@ public class MouseSubSystem : ISharpAllianceManager
         Regions.Add(region);
     }
 
-    public static object GetRegionUserData(ref MOUSE_REGION reg, int index)
+    public static object MSYS_GetRegionUserData(ref MOUSE_REGION reg, int index)
         => reg.UserData[index];
 
     //======================================================================================================
@@ -856,12 +856,17 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public static void MSYS_SetCurrentCursor(CURSOR crsr)
     {
-        cursors.SetCurrentCursorFromDatabase(crsr);
+        CursorSubSystem.SetCurrentCursorFromDatabase(crsr);
     }
 
-    internal static void MSYS_DisableRegion(MOUSE_REGION mOUSE_REGION)
+    internal static void MSYS_DisableRegion(MOUSE_REGION region)
     {
-        throw new NotImplementedException();
+        region.uiFlags &= (~MouseRegionFlags.MSYS_REGION_ENABLED);
+    }
+
+    internal static void MSYS_EnableRegion(MOUSE_REGION region)
+    {
+            region.uiFlags |= MouseRegionFlags.MSYS_REGION_ENABLED;
     }
 }
 

@@ -139,7 +139,7 @@ public class PathAI
         PlotPathDefines? bReverse,
         int sAPBudget)
     {
-        int sTileCost, sPoints = 0, sTempGrid, sAnimCost = 0;
+        int sTileCost = 0, sPoints = 0, sTempGrid, sAnimCost = 0;
         int sPointsWalk = 0, sPointsCrawl = 0, sPointsRun = 0, sPointsSwat = 0;
         int sExtraCostStand, sExtraCostSwat, sExtraCostCrawl;
         int iLastGrid;
@@ -171,7 +171,7 @@ public class PathAI
         // distance limit to reduce the cost of plotting a path to a location we can't reach
 
         // For now, use known hight adjustment
-        if (Globals.gfRecalculatingExistingPathCost || FindBestPath(pSold, sDestGridno, (byte)pSold.bLevel, usMovementMode, bCopyRoute, 0))
+        if (Globals.gfRecalculatingExistingPathCost)// || FindBestPath(pSold, sDestGridno, (byte)pSold.bLevel, usMovementMode, bCopyRoute, 0))
         {
             // if soldier would be STARTING to run then he pays a penalty since it takes time to 
             // run full speed
@@ -182,7 +182,7 @@ public class PathAI
             }
 
             // Add to points, those needed to start from different stance!
-            sPoints += MinAPsToStartMovement(pSold, usMovementMode);
+//            sPoints += MinAPsToStartMovement(pSold, usMovementMode);
 
 
             // We should reduce points for starting to run if first tile is a fence...
@@ -241,7 +241,7 @@ public class PathAI
                 sSwitchValue = Globals.gubWorldMovementCosts[sTempGrid, Globals.guiPathingData[iCnt], pSold.bLevel];
 
                 // get the tile cost for that tile based on WALKING
-                sTileCost = TerrainActionPoints(pSold, sTempGrid, Globals.guiPathingData[iCnt], pSold.bLevel);
+//                sTileCost = TerrainActionPoints(pSold, sTempGrid, Globals.guiPathingData[iCnt], pSold.bLevel);
 
                 usMovementModeToUseForAPs = usMovementMode;
 
@@ -718,7 +718,7 @@ public class PathAI
             {
                 if (fDoorIsObstacleIfClosed)
                 {
-                    ubMovementCost = Globals.gTileTypeMovementCost[(int)Globals.gpWorldLevelData[iGridNo].ubTerrainID];
+                    ubMovementCost = Globals.gTileTypeMovementCost[gpWorldLevelData[iGridNo].ubTerrainID];
                 }
                 else
                 {
@@ -748,7 +748,7 @@ public class PathAI
                             if ((!pDoor.fLocked
                                 || (pSoldier is not null && pSoldier.bHasKeys > 0)) && !fReturnDoorCost)
                             {
-                                ubMovementCost = Globals.gTileTypeMovementCost[(int)Globals.gpWorldLevelData[iGridNo].ubTerrainID];
+                                ubMovementCost = Globals.gTileTypeMovementCost[gpWorldLevelData[iGridNo].ubTerrainID];
                             }
                             else
                             {
@@ -763,7 +763,7 @@ public class PathAI
                 }
                 else
                 {
-                    ubMovementCost = Globals.gTileTypeMovementCost[(int)Globals.gpWorldLevelData[iGridNo].ubTerrainID];
+                    ubMovementCost = Globals.gTileTypeMovementCost[gpWorldLevelData[iGridNo].ubTerrainID];
                 }
             }
 

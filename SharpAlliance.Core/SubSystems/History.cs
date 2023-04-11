@@ -672,7 +672,7 @@ public class History
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[3]);
 
         // event header
-        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, usX, usY);
+        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[4]);
         // reset shadow
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -727,7 +727,7 @@ public class History
 
 
         // loop through record list
-        for (iCounter; iCounter < NUM_RECORDS_PER_PAGE; iCounter++)
+        for (iCounter = 0; iCounter < NUM_RECORDS_PER_PAGE; iCounter++)
         {
             if (pCurHistory.ubColor == 0)
             {
@@ -752,13 +752,13 @@ public class History
             // no location
             if ((pCurHistory.sSectorX == -1) || (pCurHistory.sSectorY == (MAP_ROW)(-1)))
             {
-                FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
-                mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, pHistoryLocations[0]);
+//                FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + Globals.RECORD_DATE_WIDTH, 0, Globals.RECORD_LOCATION_WIDTH + 10, 0, pHistoryLocations[0], Globals.HISTORY_TEXT_FONT, out sX, out sY);
+//                mprintf(sX, RECORD_Y + (iCounter * (BOX_HEIGHT)) + 3, pHistoryLocations[0]);
             }
             else
             {
-                StrategicMap.GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, sString, true);
-                FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, sX, sY);
+                StrategicMap.GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, out sString, true);
+                FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, out sX, out sY);
 
                 WordWrap.ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
 
@@ -1092,13 +1092,13 @@ public class History
         if (iCurrentHistoryPage == 1)
         {
             // first page, disable left buttons
-            DisableButton(giHistoryButton[PREV_PAGE_BUTTON]);
+//            DisableButton(giHistoryButton[PREV_PAGE_BUTTON]);
 
         }
         else
         {
             // enable buttons
-            EnableButton(giHistoryButton[PREV_PAGE_BUTTON]);
+//            EnableButton(giHistoryButton[PREV_PAGE_BUTTON]);
 
         }
 
@@ -1109,12 +1109,12 @@ public class History
             DrawAPageofHistoryRecords();
 
             // enable buttons
-            EnableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
+//            EnableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
 
         }
         else
         {
-            DisableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
+//            DisableButton(giHistoryButton[NEXT_PAGE_BUTTON]);
         }
     }
 
@@ -1226,7 +1226,7 @@ public class History
         // no file, return
         bool fOkToContinue = true;
         int iCount = 0;
-        Stream hFileHandle;
+        Stream hFileHandle = Stream.Null;
         history pList;
         int iBytesRead = 0;
         int uiByteCount = 0;
@@ -1244,28 +1244,28 @@ public class History
         }
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_WRITE), false);
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_WRITE), false);
 
         // failed to get file, return
-        if (!hFileHandle)
-        {
-            return (false);
-        }
+//        if (!hFileHandle)
+//        {
+//            return (false);
+//        }
 
         // make sure file is more than 0 length
-        if (FileManager.FileGetSize(hFileHandle) == 0)
-        {
-            FileManager.FileClose(hFileHandle);
-            return (false);
-        }
+//        if (FileManager.FileGetSize(hFileHandle) == 0)
+//        {
+//            FileManager.FileClose(hFileHandle);
+//            return (false);
+//        }
 
         // is the file long enough?
-        if ((FileManager.FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
-        {
-            // nope
-            FileManager.FileClose(hFileHandle);
-            return (false);
-        }
+//        if ((FileManager.FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
+//        {
+//            // nope
+//            FileManager.FileClose(hFileHandle);
+//            return (false);
+//        }
 
         pList = pHistoryListHead;
 
@@ -1274,9 +1274,9 @@ public class History
             return (false);
         }
 
-        FileManager.FileSeek(hFileHandle, sizeof(int) + (uiPage - 1) * NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD, FILE_SEEK_FROM_START);
+//        FileManager.FileSeek(hFileHandle, sizeof(int) + (uiPage - 1) * NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD, FILE_SEEK_FROM_START);
 
-        uiByteCount = /*sizeof( int )+ */(uiPage - 1) * NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD;
+//        uiByteCount = /*sizeof( int )+ */(uiPage - 1) * NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD;
         // file exists, read in data, continue until end of page
 
         var doncare = 0;
@@ -1360,7 +1360,7 @@ public class History
     public static void SetLastPageInHistoryRecords()
     {
         // grabs the size of the file and interprets number of pages it will take up
-        Stream hFileHandle;
+        Stream hFileHandle = Stream.Null;
         int iBytesRead = 0;
 
         // no file, return
@@ -1370,7 +1370,7 @@ public class History
         }
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
         if (hFileHandle.Position < 0)
@@ -1380,12 +1380,12 @@ public class History
         }
 
         // make sure file is more than 0 length
-        if (FileManager.FileGetSize(hFileHandle) == 0)
-        {
-            FileManager.FileClose(hFileHandle);
-            guiLastPageInHistoryRecordsList = 1;
-            return;
-        }
+//        if (FileManager.FileGetSize(hFileHandle) == 0)
+//        {
+//            FileManager.FileClose(hFileHandle);
+//            guiLastPageInHistoryRecordsList = 1;
+//            return;
+//        }
 
 
         // done with file, close it
@@ -1412,57 +1412,57 @@ public class History
         }
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (!hFileHandle)
-        {
-            return 0;
-        }
+//        if (!hFileHandle)
+//        {
+//            return 0;
+//        }
 
         // make sure file is more than balance size + length of 1 record - 1 byte
-        if (FileManager.FileGetSize(hFileHandle) < SIZE_OF_HISTORY_FILE_RECORD)
-        {
-            FileManager.FileClose(hFileHandle);
-            return 0;
-        }
+//        if (FileManager.FileGetSize(hFileHandle) < SIZE_OF_HISTORY_FILE_RECORD)
+//        {
+//            FileManager.FileClose(hFileHandle);
+//            return 0;
+//        }
 
         // size is?
-        iFileSize = FileGetSize(hFileHandle);
+//        iFileSize = FileGetSize(hFileHandle);
 
         // done with file, close it
-        FileManager.FileClose(hFileHandle);
+//        FileManager.FileClose(hFileHandle);
 
         // file size  / sizeof record in bytes is id
-        return ((iFileSize) / (SIZE_OF_HISTORY_FILE_RECORD));
-
+//        return ((iFileSize) / (SIZE_OF_HISTORY_FILE_RECORD));
+        return 0;
     }
 
 
     public static bool AppendHistoryToEndOfFile(history? pHistory)
     {
         // will write the current finance to disk
-        Stream hFileHandle;
+        Stream hFileHandle = Stream.Null;
         int iBytesWritten = 0;
         history? pHistoryList = pHistoryListHead;
 
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
 
         // if no file exits, do nothing
-        if (!hFileHandle)
-        {
-            return (false);
-        }
+//        if (!hFileHandle)
+//        {
+//            return (false);
+//        }
 
         // go to the end
-        if (FileManager.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
-        {
-            // error
-            FileManager.FileClose(hFileHandle);
-            return (false);
-        }
+//        if (FileManager.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
+//        {
+//            // error
+//            FileManager.FileClose(hFileHandle);
+//            return (false);
+//        }
 
         // now write date and amount, and code
         var doncare = 0;
@@ -1590,7 +1590,7 @@ public class History
 
     int GetNumberOfHistoryPages()
     {
-        Stream hFileHandle;
+        Stream hFileHandle = Stream.Null;
         int uiFileSize = 0;
         int uiSizeOfRecordsOnEachPage = 0;
         int iNumberOfHistoryPages = 0;
@@ -1601,22 +1601,22 @@ public class History
         }
 
         // open file
-        hFileHandle = FileManager.FileOpen(Globals.HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+//        hFileHandle = FileManager.FileOpen(Globals.HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
 
         // failed to get file, return
-        if (!hFileHandle)
-        {
-            return (0);
-        }
+//        if (!hFileHandle)
+//        {
+//            return (0);
+//        }
 
         // make sure file is more than 0 length
-        if (FileManager.FileGetSize(hFileHandle) == 0)
-        {
-            FileManager.FileClose(hFileHandle);
-            return (0);
-        }
+//        if (FileManager.FileGetSize(hFileHandle) == 0)
+//        {
+//            FileManager.FileClose(hFileHandle);
+//            return (0);
+//        }
 
-        uiFileSize = FileManager.FileGetSize(hFileHandle) - 1;
+//        uiFileSize = FileManager.FileGetSize(hFileHandle) - 1;
         uiSizeOfRecordsOnEachPage = (Globals.NUM_RECORDS_PER_PAGE * (sizeof(int) + sizeof(int) + 3 * sizeof(int) + sizeof(int) + sizeof(int)));
 
         iNumberOfHistoryPages = (int)(uiFileSize / uiSizeOfRecordsOnEachPage);

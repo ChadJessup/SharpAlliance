@@ -54,7 +54,8 @@ public class LOS
         sXPos = sXPos * CELL_X_SIZE + (CELL_X_SIZE / 2);
         sYPos = sYPos * CELL_Y_SIZE + (CELL_Y_SIZE / 2);
 
-        return (LineOfSightTest(IsometricUtils.CenterX(pStartSoldier.sGridNo), IsometricUtils.CenterY(pStartSoldier.sGridNo), dStartZPos, sXPos, sYPos, dEndZPos, ubTileSightLimit, gubTreeSightReduction[AnimationHeights.ANIM_STAND], bAware, 0, false, null));
+        //        return (LineOfSightTest(IsometricUtils.CenterX(pStartSoldier.sGridNo), IsometricUtils.CenterY(pStartSoldier.sGridNo), dStartZPos, sXPos, sYPos, dEndZPos, ubTileSightLimit, gubTreeSightReduction[AnimationHeights.ANIM_STAND], bAware, 0, false, null));
+        return false;
     }
 
     public static bool CalculateSoldierZPos(SOLDIERTYPE? pSoldier, POS ubPosType, out float pdZPos)
@@ -357,7 +358,8 @@ public class LOS
             ubTreeReduction = gubTreeSightReduction[gAnimControl[pEndSoldier.usAnimState].ubEndHeight];
         }
 
-        return (LineOfSightTest(IsometricUtils.CenterX(pStartSoldier.sGridNo), IsometricUtils.CenterY(pStartSoldier.sGridNo), dStartZPos, IsometricUtils.CenterX(pEndSoldier.sGridNo), IsometricUtils.CenterY(pEndSoldier.sGridNo), dEndZPos, ubTileSightLimit, ubTreeReduction, bAware, bEffectiveCamo, fSmell, null));
+//        return (LineOfSightTest(IsometricUtils.CenterX(pStartSoldier.sGridNo), IsometricUtils.CenterY(pStartSoldier.sGridNo), dStartZPos, IsometricUtils.CenterX(pEndSoldier.sGridNo), IsometricUtils.CenterY(pEndSoldier.sGridNo), dEndZPos, ubTileSightLimit, ubTreeReduction, bAware, bEffectiveCamo, fSmell, null));
+        return false;
     }
 }
 

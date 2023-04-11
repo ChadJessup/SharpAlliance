@@ -163,7 +163,7 @@ public class IntroScreen : IScreen
         // var mm = new MainMenuScreen();
         // mm.ClearMainMenu();
 
-        this.cursor.SetCurrentCursorFromDatabase(0);// VIDEO_NO_CURSOR);
+        CursorSubSystem.SetCurrentCursorFromDatabase(0);// VIDEO_NO_CURSOR);
 
         // Don't play music....
         this.music.SetMusicMode(MusicMode.NONE);

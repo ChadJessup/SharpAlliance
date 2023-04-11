@@ -749,7 +749,7 @@ public class CivQuotes
         int sX = 0, sY = 0;
         int ubEntryID = 0;
         int sScreenX, sScreenY = 0;
-        int ubCivHintToUse;
+        int ubCivHintToUse = 0;
 
         // ATE: Check for old quote.....
         // This could have been stored on last attempt...

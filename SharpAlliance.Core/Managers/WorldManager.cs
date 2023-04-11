@@ -196,14 +196,14 @@ public class WorldManager
 
         if (usIndex < NUMBEROFTILES)
         {
-            if (gTileDatabase[usIndex].pDBStructureRef != null)
+            //            if (gTileDatabase[usIndex].pDBStructureRef != null)
             {
-                if (WorldStructures.AddStructureToWorld(iMapIndex, 0, gTileDatabase[usIndex].pDBStructureRef, pNextStruct) == false)
-                {
-                    MemFree(pNextStruct);
-                    guiLevelNodes--;
-                    return (false);
-                }
+                //                if (WorldStructures.AddStructureToWorld(iMapIndex, 0, gTileDatabase[usIndex].pDBStructureRef, pNextStruct) == false)
+                //                {
+                //                    MemFree(pNextStruct);
+                //                    guiLevelNodes--;
+                //                    return (false);
+                //                }
             }
         }
 
@@ -225,25 +225,24 @@ public class WorldManager
             }
 
             //Check for special flag to stop burn-through on same-tile structs...
-            if (gTileDatabase[usIndex].pDBStructureRef != null)
-            {
-                pDBStructure = gTileDatabase[usIndex].pDBStructureRef.pDBStructure;
-
-                // Default to off....
-                gpWorldLevelData[iMapIndex].ubExtFlags[0] &= (~MAPELEMENTFLAGS_EXT.NOBURN_STRUCT);
-
-                // If we are NOT a wall and NOT multi-tiles, set mapelement flag...
-                if (WorldStructures.FindStructure(iMapIndex, STRUCTUREFLAGS.WALLSTUFF) is null && pDBStructure.ubNumberOfTiles == 1)
-                {
-                    // Set flag...
-                    gpWorldLevelData[iMapIndex].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.NOBURN_STRUCT;
-                }
-            }
-
+            //            if (gTileDatabase[usIndex].pDBStructureRef != null)
+            //            {
+            //                pDBStructure = gTileDatabase[usIndex].pDBStructureRef.pDBStructure;
+            //
+            //                // Default to off....
+            //                gpWorldLevelData[iMapIndex].ubExtFlags[0] &= (~MAPELEMENTFLAGS_EXT.NOBURN_STRUCT);
+            //
+            //                // If we are NOT a wall and NOT multi-tiles, set mapelement flag...
+            //                if (WorldStructures.FindStructure(iMapIndex, STRUCTUREFLAGS.WALLSTUFF) is null && pDBStructure.ubNumberOfTiles == 1)
+            //                {
+            //                    // Set flag...
+            //                    gpWorldLevelData[iMapIndex].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.NOBURN_STRUCT;
+            //                }
+            //            }
         }
 
         //Add the structure the maps temp file
-        AddStructToMapTempFile(iMapIndex, usIndex);
+        //        AddStructToMapTempFile(iMapIndex, usIndex);
 
         //CheckForAndAddTileCacheStructInfo( pNextStruct, (INT16)iMapIndex, usIndex );
 
@@ -381,7 +380,7 @@ public class WorldManager
                 // Same, if replace, replace here
                 if (fReplace)
                 {
-                    return (ReplaceStructIndex(iMapIndex, pStruct.usIndex, usIndex));
+                    return (false);//ReplaceStructIndex(iMapIndex, pStruct.usIndex, usIndex));
                 }
                 else
                 {
@@ -411,7 +410,7 @@ public class WorldManager
             }
             else
             {
-                AddStructToTail(iMapIndex, usIndex);
+                //                AddStructToTail(iMapIndex, usIndex);
             }
         }
 
@@ -465,7 +464,6 @@ public class WorldManager
 
         if (usIndex < NUMBEROFTILES)
         {
-            if (gTileDatabase[usIndex].pDBStructureRef != null)
             {
                 if (WorldStructures.AddStructureToWorld(iMapIndex, 0, gTileDatabase[usIndex].pDBStructureRef, pNextStruct) == false)
                 {
@@ -518,7 +516,7 @@ public class WorldManager
                 WorldStructures.DeleteStructureFromWorld(pStruct.pStructureData);
 
                 //If we have to, make sure to remove this node when we reload the map from a saved game
-                RemoveStructFromMapTempFile(iMapIndex, usIndex);
+                //                RemoveStructFromMapTempFile(iMapIndex, usIndex);
 
                 if (pNode.usIndex < TileIndexes.NUMBEROFTILES)
                 {
@@ -541,7 +539,7 @@ public class WorldManager
         }
 
         // Could not find it, return false
-        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
+        //        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
 
         return (false);
 
@@ -625,7 +623,7 @@ public class WorldManager
                 WorldStructures.DeleteStructureFromWorld(pStruct.pStructureData);
 
                 //If we have to, make sure to remove this node when we reload the map from a saved game
-                RemoveStructFromMapTempFile(iMapIndex, usIndex);
+                //                RemoveStructFromMapTempFile(iMapIndex, usIndex);
 
                 if (usIndex < TileIndexes.NUMBEROFTILES)
                 {
@@ -648,7 +646,7 @@ public class WorldManager
         }
 
         // Could not find it, return false
-        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
+        //        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
 
         return (false);
     }
@@ -786,14 +784,11 @@ public class WorldManager
 
             if (usIndex < TileIndexes.NUMBEROFTILES)
             {
-                if (Globals.gTileDatabase[usIndex].pDBStructureRef != null)
+                if (WorldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pOnRoof) == false)
                 {
-                    if (WorldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pOnRoof) == false)
-                    {
-                        // MemFree(pOnRoof);
-                        Globals.guiLevelNodes--;
-                        return (null);
-                    }
+                    // MemFree(pOnRoof);
+                    Globals.guiLevelNodes--;
+                    return (null);
                 }
             }
             pOnRoof.usIndex = usIndex;
@@ -818,14 +813,11 @@ public class WorldManager
 
                     if (usIndex < TileIndexes.NUMBEROFTILES)
                     {
-                        if (Globals.gTileDatabase[usIndex].pDBStructureRef != null)
+                        if (WorldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pNextOnRoof) == false)
                         {
-                            if (WorldStructures.AddStructureToWorld(iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pNextOnRoof) == false)
-                            {
-                                // MemFree(pNextOnRoof);
-                                Globals.guiLevelNodes--;
-                                return (null);
-                            }
+                            // MemFree(pNextOnRoof);
+                            Globals.guiLevelNodes--;
+                            return (null);
                         }
                     }
 
@@ -1183,7 +1175,6 @@ public class WorldManager
 
         if (usIndex < TileIndexes.NUMBEROFTILES)
         {
-            if (gTileDatabase[usIndex].pDBStructureRef != null)
             {
                 if (WorldStructures.AddStructureToWorld((short)iMapIndex, 1, Globals.gTileDatabase[usIndex].pDBStructureRef, pNextOnRoof) == false)
                 {

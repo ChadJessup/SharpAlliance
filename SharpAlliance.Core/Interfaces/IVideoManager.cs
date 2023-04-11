@@ -13,6 +13,8 @@ namespace SharpAlliance.Core.Interfaces;
 
 public interface IVideoManager : ISharpAllianceManager
 {
+    ValueTask<bool> ISharpAllianceManager.Initialize() => ValueTask.FromResult(true);
+
     public const int MAX_CURSOR_WIDTH = 64;
     public const int MAX_CURSOR_HEIGHT = 64;
     public static Rgba32 AlphaPixel = new(255, 255, 255, 0);

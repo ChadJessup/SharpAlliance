@@ -23,7 +23,7 @@ public class FileManager : IFileManager
         library = libraryFileManager;
     }
 
-    public bool IsInitialized { get; private set; }
+    public static bool IsInitialized { get; private set; }
 
     public ValueTask<bool> Initialize()
     {
@@ -197,7 +197,7 @@ public class FileManager : IFileManager
         exists = File.Exists(pFilename);
 
         // look through libraries for file...
-        if (!exists && library.IsInitialized)
+        if (!exists && LibraryFileManager.IsInitialized)
         {
             exists = library.CheckIfFileExistsInLibrary(pFilename);
         }

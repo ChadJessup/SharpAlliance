@@ -84,7 +84,7 @@ public class SoldierFind
         return (false);
     }
 
-    FIND_SOLDIER_RESPONSES GetSoldierFindFlags(int ubID)
+    public static FIND_SOLDIER_RESPONSES GetSoldierFindFlags(int ubID)
     {
         FIND_SOLDIER_RESPONSES MercFlags = 0;
         SOLDIERTYPE? pSoldier;
@@ -99,20 +99,20 @@ public class SoldierFind
         }
         if (ubID >= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bFirstID && ubID <= Globals.gTacticalStatus.Team[Globals.gbPlayerNum].bLastID)
         {
-            if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !GetNumberInVehicle(pSoldier.bVehicleID))
-            {
-                // Don't do anything!
-            }
-            else
-            {
-                // It's our own merc
-                MercFlags |= FIND_SOLDIER_RESPONSES.OWNED_MERC;
-
-                if (pSoldier.bAssignment < Assignments.ON_DUTY)
-                {
-                    MercFlags |= FIND_SOLDIER_RESPONSES.ONDUTY_MERC;
-                }
-            }
+//            if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !GetNumberInVehicle(pSoldier.bVehicleID))
+//            {
+//                // Don't do anything!
+//            }
+//            else
+//            {
+//                // It's our own merc
+//                MercFlags |= FIND_SOLDIER_RESPONSES.OWNED_MERC;
+//
+//                if (pSoldier.bAssignment < Assignments.ON_DUTY)
+//                {
+//                    MercFlags |= FIND_SOLDIER_RESPONSES.ONDUTY_MERC;
+//                }
+//            }
         }
         else
         {
@@ -164,7 +164,7 @@ public class SoldierFind
         int sMaxScreenMercY, sHeighestMercScreenY = -32000;
         bool fDoFull;
         int ubBestMerc = Globals.NOBODY;
-        AnimationSurfaceTypes usAnimSurface;
+        AnimationSurfaceTypes usAnimSurface = 0;
         int iMercScreenX, iMercScreenY;
         bool fInScreenRect = false;
         bool fInGridNo = false;
@@ -172,7 +172,7 @@ public class SoldierFind
         pusSoldierIndex = Globals.NOBODY;
         pMercFlags = 0;
 
-        if (_KeyDown(SHIFT))
+        if (_KeyDown(Veldrid.Key.LShift | Veldrid.Key.RShift))
         {
             uiFlags = FIND_SOLDIER.GRIDNO;
         }
@@ -252,10 +252,10 @@ public class SoldierFind
                         sScreenX = Globals.gusMouseXPos;
                         sScreenY = Globals.gusMouseYPos;
 
-                        if (IsPointInScreenRect(sScreenX, sScreenY, aRect))
-                        {
-                            fInScreenRect = true;
-                        }
+//                        if (IsPointInScreenRect(sScreenX, sScreenY, aRect))
+//                        {
+//                            fInScreenRect = true;
+//                        }
 
                         if (pSoldier.sGridNo == sGridNo)
                         {
@@ -286,11 +286,11 @@ public class SoldierFind
                                 || Globals.gCurrentUIMode == UI_MODE.CONFIRM_ACTION_MODE)
                             {
                                 // Are we in medic mode?
-                                if (GetActionModeCursor(pSoldier) != AIDCURS)
-                                {
-                                    fInScreenRect = false;
-                                    fInGridNo = false;
-                                }
+//                                if (GetActionModeCursor(pSoldier) != CURSOR.AIDCURS)
+//                                {
+//                                    fInScreenRect = false;
+//                                    fInGridNo = false;
+//                                }
                             }
                         }
 
@@ -300,17 +300,17 @@ public class SoldierFind
                             // Check if we are a vehicle and refine if so....
                             if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                             {
-                                usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+//                                usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
                                 if (usAnimSurface != Globals.INVALID_ANIMATION_SURFACE)
                                 {
                                     iMercScreenX = (int)(sScreenX - aRect.Left);
                                     iMercScreenY = (int)(-1 * (sScreenY - aRect.Bottom));
 
-                                    if (!CheckVideoObjectScreenCoordinateInData(Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject, pSoldier.usAniFrame, iMercScreenX, iMercScreenY))
-                                    {
-                                        continue;
-                                    }
+//                                    if (!CheckVideoObjectScreenCoordinateInData(Globals.gAnimSurfaceDatabase[usAnimSurface].hVideoObject, pSoldier.usAniFrame, iMercScreenX, iMercScreenY))
+//                                    {
+//                                        continue;
+//                                    }
                                 }
                             }
 
@@ -526,7 +526,7 @@ public class SoldierFind
     bool IsGridNoInScreenRect(int sGridNo, Rectangle pRect)
     {
         int iXTrav, iYTrav;
-        int sMapPos;
+        int sMapPos = 0;
 
         // Start with top left corner
         iXTrav = pRect.Left;
@@ -536,18 +536,18 @@ public class SoldierFind
         {
             do
             {
-                GetScreenXYGridNo((int)iXTrav, (int)iYTrav, out sMapPos);
+//                GetScreenXYGridNo((int)iXTrav, (int)iYTrav, out sMapPos);
 
                 if (sMapPos == sGridNo)
                 {
                     return (true);
                 }
 
-                iXTrav += World.WORLD_TILE_X;
+                iXTrav += WORLD_TILE_X;
 
             } while (iXTrav < pRect.Right);
 
-            iYTrav += World.WORLD_TILE_Y;
+            iYTrav += WORLD_TILE_Y;
             iXTrav = pRect.Left;
 
         } while (iYTrav < pRect.Bottom);
@@ -555,8 +555,7 @@ public class SoldierFind
         return (false);
     }
 
-
-    void GetSoldierScreenRect(SOLDIERTYPE? pSoldier, out Rectangle pRect)
+    public static void GetSoldierScreenRect(SOLDIERTYPE? pSoldier, out Rectangle pRect)
     {
         int usAnimSurface;
         //		ETRLEObject *pTrav;
@@ -564,13 +563,13 @@ public class SoldierFind
 
         GetSoldierScreenPos(pSoldier, out int sMercScreenX, out int sMercScreenY);
 
-        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
-        if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
-        {
-            pRect = new(sMercScreenX, sMercScreenY, sMercScreenX + 5, sMercScreenY + 5);
-
-            return;
-        }
+//        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+//        if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
+//        {
+//            pRect = new(sMercScreenX, sMercScreenY, sMercScreenX + 5, sMercScreenY + 5);
+//
+//            return;
+//        }
 
         //pTrav = &(gAnimSurfaceDatabase[ usAnimSurface ].hVideoObject.pETRLEObject[ pSoldier.usAniFrame ] );
         //usHeight				= (int)pTrav.usHeight;
@@ -611,7 +610,7 @@ public class SoldierFind
 
     void GetSoldierAnimOffsets(SOLDIERTYPE? pSoldier, out int sOffsetX, out int sOffsetY)
     {
-        AnimationSurfaceTypes usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+        AnimationSurfaceTypes usAnimSurface = AnimationControl.GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
@@ -625,15 +624,15 @@ public class SoldierFind
         sOffsetY = pSoldier.sBoundingBoxOffsetY;
     }
 
-    void GetSoldierScreenPos(SOLDIERTYPE? pSoldier, out int psScreenX, out int psScreenY)
+    public static void GetSoldierScreenPos(SOLDIERTYPE? pSoldier, out int psScreenX, out int psScreenY)
     {
         int sMercScreenX, sMercScreenY;
         float dOffsetX, dOffsetY;
         float dTempX_S, dTempY_S;
-        AnimationSurfaceTypes usAnimSurface;
+        AnimationSurfaceTypes usAnimSurface = 0;
         //		ETRLEObject *pTrav;
 
-        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+//        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
@@ -682,7 +681,7 @@ public class SoldierFind
         float dTempX_S, dTempY_S;
         AnimationSurfaceTypes usAnimSurface;
 
-        usAnimSurface = GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
+        usAnimSurface = AnimationControl.GetSoldierAnimationSurface(pSoldier, pSoldier.usAnimState);
 
         if (usAnimSurface == Globals.INVALID_ANIMATION_SURFACE)
         {
@@ -819,7 +818,7 @@ public class SoldierFind
             && sWorldY <= (Globals.gsBottomRightWorldY + 20))
         {
             // CHECK IF WE ARE DONE...
-            if (fCountdown > gScrollSlideInertiaDirection[pbDirection])
+            if (fCountdown > gScrollSlideInertiaDirection[(int)pbDirection])
             {
                 fCountdown = 0;
                 return (false);

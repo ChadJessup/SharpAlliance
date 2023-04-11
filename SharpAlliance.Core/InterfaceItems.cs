@@ -1752,10 +1752,10 @@ public class InterfaceItems
 
             MouseSubSystem.MSYS_DefineRegion(
                 gInvDesc,
-                gsInvDescX,
-                gsInvDescY,
-                (gsInvDescX + MAP_ITEMDESC_WIDTH),
-                (gsInvDescY + MAP_ITEMDESC_HEIGHT),
+                new(gsInvDescX,
+                    gsInvDescY,
+                    (gsInvDescX + MAP_ITEMDESC_WIDTH),
+                    (gsInvDescY + MAP_ITEMDESC_HEIGHT)),
                 MSYS_PRIORITY.HIGHEST - 2,
                 CURSOR.NORMAL,
                 MSYS_NO_CALLBACK,
@@ -1776,10 +1776,10 @@ public class InterfaceItems
         {
             MouseSubSystem.MSYS_DefineRegion(
                 gInvDesc,
-                gsInvDescX,
+                new(gsInvDescX,
                 gsInvDescY,
                 (gsInvDescX + ITEMDESC_WIDTH),
-                (gsInvDescY + ITEMDESC_HEIGHT),
+                (gsInvDescY + ITEMDESC_HEIGHT)),
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.MSYS_NO_CURSOR,
                 MSYS_NO_CALLBACK,
@@ -1874,10 +1874,10 @@ public class InterfaceItems
                     // Add region for pros/cons help text 
                     MouseSubSystem.MSYS_DefineRegion(
                         gProsAndConsRegions[cnt],
-                        (ITEMDESC_PROS_START_X + sProsConsIndent),
-                        (gsInvDescY + gMapItemDescProsConsRects[cnt].Top),
-                        (gsInvDescX + gMapItemDescProsConsRects[cnt].Right),
-                        (gsInvDescY + gMapItemDescProsConsRects[cnt].Bottom),
+                        new((ITEMDESC_PROS_START_X + sProsConsIndent),
+                            (gsInvDescY + gMapItemDescProsConsRects[cnt].Top),
+                            (gsInvDescX + gMapItemDescProsConsRects[cnt].Right),
+                            (gsInvDescY + gMapItemDescProsConsRects[cnt].Bottom)),
                         MSYS_PRIORITY.HIGHEST,
                         CURSOR.MSYS_NO_CURSOR,
                         MSYS_NO_CALLBACK,
@@ -1916,10 +1916,10 @@ public class InterfaceItems
                     // Add region for pros/cons help text 
                     MouseSubSystem.MSYS_DefineRegion(
                         gProsAndConsRegions[cnt],
-                        (ITEMDESC_PROS_START_X + sProsConsIndent),
-                        (gsInvDescY + gItemDescProsConsRects[cnt].Top),
-                        (gsInvDescX + gItemDescProsConsRects[cnt].Right),
-                        (gsInvDescY + gItemDescProsConsRects[cnt].Bottom),
+                        new((ITEMDESC_PROS_START_X + sProsConsIndent),
+                            (gsInvDescY + gItemDescProsConsRects[cnt].Top),
+                            (gsInvDescX + gItemDescProsConsRects[cnt].Right),
+                            (gsInvDescY + gItemDescProsConsRects[cnt].Bottom)),
                         MSYS_PRIORITY.HIGHEST, CURSOR.MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescCallback);
 
                     MouseSubSystem.MSYS_AddRegion(ref gProsAndConsRegions[cnt]);
@@ -2487,7 +2487,7 @@ public class InterfaceItems
 
             //            BltVideoObjectFromIndex(guiSAVEBUFFER, guiMapItemDescBox, 0, gsInvDescX, gsInvDescY, VO_BLT.SRCTRANSPARENCY, null);
 
-            BltVideoObjectFromIndex(guiSAVEBUFFER, guiMapItemDescBox, 0, gsInvDescX, gsInvDescY, VO_BLT.SRCTRANSPARENCY, null);
+//            BltVideoObjectFromIndex(guiSAVEBUFFER, guiMapItemDescBox, 0, gsInvDescX, gsInvDescY, VO_BLT.SRCTRANSPARENCY, null);
 
             //Display the money 'seperating' border
             if (gpItemDescObject.usItem == Items.MONEY)
@@ -4670,8 +4670,17 @@ public class InterfaceItems
         for (cnt = 0; cnt < gubNumItemPopups; cnt++)
         {
             // Build a mouse region here that is over any others.....
-            MouseSubSystem.MSYS_DefineRegion(gItemPopupRegions[cnt], (int)(sCenX + (cnt * usPopupWidth)), sCenY, (int)(sCenX + ((cnt + 1) * usPopupWidth)), (int)(sCenY + gsItemPopupHeight), MSYS_PRIORITY.HIGHEST,
-                                 MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupRegionCallback);
+            MouseSubSystem.MSYS_DefineRegion(
+                gItemPopupRegions[cnt], 
+                new((sCenX + (cnt * usPopupWidth)),
+                    sCenY,
+                    (sCenX + ((cnt + 1) * usPopupWidth)),
+                    (sCenY + gsItemPopupHeight)),
+                MSYS_PRIORITY.HIGHEST,
+                MSYS_NO_CURSOR,
+                MSYS_NO_CALLBACK,
+                ItemPopupRegionCallback);
+
             // Add region
             MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegions[cnt]);
             MouseSubSystem.MSYS_SetRegionUserData(gItemPopupRegions[cnt], 0, cnt);
@@ -4684,8 +4693,17 @@ public class InterfaceItems
 
 
         // Build a mouse region here that is over any others.....
-        MouseSubSystem.MSYS_DefineRegion(gItemPopupRegion, gsItemPopupInvX, gsItemPopupInvY, (int)(gsItemPopupInvX + gsItemPopupInvWidth), (int)(gsItemPopupInvY + gsItemPopupInvHeight), MSYS_PRIORITY.HIGH,
-                             MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupFullRegionCallback);
+        MouseSubSystem.MSYS_DefineRegion(
+            gItemPopupRegion, 
+            new(gsItemPopupInvX, 
+                gsItemPopupInvY, 
+                (gsItemPopupInvX + gsItemPopupInvWidth), 
+                (gsItemPopupInvY + gsItemPopupInvHeight)),
+            MSYS_PRIORITY.HIGH,
+            MSYS_NO_CURSOR,
+            MSYS_NO_CALLBACK,
+            ItemPopupFullRegionCallback);
+
         // Add region
         MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegion);
 
@@ -4883,7 +4901,8 @@ public class InterfaceItems
 
 
         // Build a mouse region here that is over any others.....
-        MouseSubSystem.MSYS_DefineRegion(gItemPopupRegion, sInvX, sInvY, (int)(sInvX + sInvWidth), (int)(sInvY + sInvHeight), MSYS_PRIORITY.HIGH,
+        MouseSubSystem.MSYS_DefineRegion(
+            gItemPopupRegion, new(sInvX, sInvY, (int)(sInvX + sInvWidth), (int)(sInvY + sInvHeight)), MSYS_PRIORITY.HIGH,
                              MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupFullRegionCallback);
 
         // Add region
@@ -5539,10 +5558,7 @@ public class InterfaceItems
         // Build a mouse region here that is over any others.....
         MouseSubSystem.MSYS_DefineRegion(
             (gItemPickupMenu.BackRegion),
-            (532),
-            (367),
-            (640),
-            (480),
+            new((532), (367), (640), (480)),
             MSYS_PRIORITY.HIGHEST,
             CURSOR.NORMAL,
             MSYS_NO_CALLBACK,
@@ -5555,10 +5571,10 @@ public class InterfaceItems
         // Build a mouse region here that is over any others.....
         MouseSubSystem.MSYS_DefineRegion(
             (gItemPickupMenu.BackRegions),
-            (gItemPickupMenu.sX),
-            (gItemPickupMenu.sY),
-            (gItemPickupMenu.sX + gItemPickupMenu.sWidth),
-            (gItemPickupMenu.sY + gItemPickupMenu.sHeight),
+            new((gItemPickupMenu.sX),
+                (gItemPickupMenu.sY),
+                (gItemPickupMenu.sX + gItemPickupMenu.sWidth),
+                (gItemPickupMenu.sY + gItemPickupMenu.sHeight)),
             MSYS_PRIORITY.HIGHEST,
             CURSOR.NORMAL,
             MSYS_NO_CALLBACK,
@@ -5617,10 +5633,10 @@ public class InterfaceItems
             // Build a mouse region here that is over any others.....
             MouseSubSystem.MSYS_DefineRegion(
                 (gItemPickupMenu.Regions[cnt]),
-                (sCenX),
-                (sCenY + 1),
-                (sCenX + gItemPickupMenu.sWidth),
-                (sCenY + ITEMPICK_GRAPHIC_YSPACE),
+                new((sCenX),
+                    (sCenY + 1),
+                    (sCenX + gItemPickupMenu.sWidth),
+                    (sCenY + ITEMPICK_GRAPHIC_YSPACE)),
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.NORMAL,
                 ItemPickMenuMouseMoveCallback,

@@ -109,7 +109,7 @@ public class InitScreen : IScreen
             }
             else
             {
-                this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+                CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
                 return ScreenName.INTRO_SCREEN;
             }
         }
@@ -156,7 +156,7 @@ public class InitScreen : IScreen
             // this.videoSurface.DeleteVideoSurface(hVSurface);
             //ATE: Set to true to reset before going into main screen!
 
-            this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+            CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
             return ScreenName.InitScreen;
         }
@@ -181,13 +181,13 @@ public class InitScreen : IScreen
         {
             ubCurrentScreen = 4;
 
-            this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+            CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
             return ScreenName.InitScreen;
         }
 
         if (ubCurrentScreen == 4)
         {
-            this.cursor.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+            CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
             // TODO: Strategic stuff
             await this.gameInit.InitNewGame(false);
         }

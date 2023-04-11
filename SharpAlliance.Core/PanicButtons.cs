@@ -154,10 +154,10 @@ public class PanicButtons
             if (pSoldier.bAlertStatus < STATUS.RED)
             {
                 pSoldier.bAlertStatus = STATUS.RED;
-                CheckForChangingOrders(pSoldier);
+//                CheckForChangingOrders(pSoldier);
             }
 
-            SetNewSituation(pSoldier);    // set new situation for the chosen one
+//            SetNewSituation(pSoldier);    // set new situation for the chosen one
             pSoldier.bHasKeys = (pSoldier.bHasKeys << 1) | 1; // cheat and give him keys to every door
                                                               //pSoldier.bHasKeys = true;         
         }
@@ -216,12 +216,12 @@ public class PanicButtons
 
         }
 
-        if (iAPCost <= CalcActionPoints(pSoldier) * 2)
-        {
-            // go!!!
-            gTacticalStatus.ubTheChosenOne = pSoldier.ubID;
-            return;
-        }
+//        if (iAPCost <= CalcActionPoints(pSoldier) * 2)
+//        {
+//            // go!!!
+//            gTacticalStatus.ubTheChosenOne = pSoldier.ubID;
+//            return;
+//        }
         // else return keys to normal
         //pSoldier.bHasKeys = bOldKeys;
         pSoldier.bHasKeys = (pSoldier.bHasKeys >> 1);
@@ -339,18 +339,18 @@ public class PanicButtons
                         {
                             // if we can get to the HandGrid spot to yank the trigger
                             // animations don't allow trigger-pulling from water, so we won't!
-                            if (Movement.LegalNPCDestination(pSoldier, sPanicTriggerGridNo, ENSURE_PATH, NOWATER, 0))
-                            {
-                                pSoldier.usActionData = sPanicTriggerGridNo;
-                                pSoldier.bPathStored = true;
-
-                                return (AI_ACTION.GET_CLOSER);
-                            }
-                            else       // Oh oh, the chosen one can't get to the trigger!
-                            {
-                                gTacticalStatus.ubTheChosenOne = NOBODY;   // strip him of his Chosen One status
-                                MakeClosestEnemyChosenOne();     // and replace him!
-                            }
+//                            if (Movement.LegalNPCDestination(pSoldier, sPanicTriggerGridNo, ENSURE_PATH, NOWATER, 0))
+//                            {
+//                                pSoldier.usActionData = sPanicTriggerGridNo;
+//                                pSoldier.bPathStored = true;
+//
+//                                return (AI_ACTION.GET_CLOSER);
+//                            }
+//                            else       // Oh oh, the chosen one can't get to the trigger!
+//                            {
+//                                gTacticalStatus.ubTheChosenOne = NOBODY;   // strip him of his Chosen One status
+//                                MakeClosestEnemyChosenOne();     // and replace him!
+//                            }
                         }
                         else         // can't move, wait 1 turn
                         {
@@ -485,11 +485,11 @@ public class PanicButtons
         }
         else
         {
-            if (Movement.LegalNPCDestination(pSoldier, STAIRCASE_GRIDNO, ENSURE_PATH, WATEROK, 0))
-            {
-                pSoldier.usActionData = STAIRCASE_GRIDNO;
-                return (AI_ACTION.GET_CLOSER);
-            }
+//            if (Movement.LegalNPCDestination(pSoldier, STAIRCASE_GRIDNO, ENSURE_PATH, WATEROK, 0))
+//            {
+//                pSoldier.usActionData = STAIRCASE_GRIDNO;
+//                return (AI_ACTION.GET_CLOSER);
+//            }
         }
         return (AI_ACTION.NONE);
     }

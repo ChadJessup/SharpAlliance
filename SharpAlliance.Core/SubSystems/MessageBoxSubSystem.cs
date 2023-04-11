@@ -49,9 +49,9 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         CursorSubSystem cursorSubSystem,
         MercTextBox mercTextBox,
         RenderWorld renderWorld,
-        IInputManager inputManager,
-        IScreenManager screenManager,
-        IClockManager clockManager,
+//        IInputManager inputManager,
+//        IScreenManager screenManager,
+//        IClockManager clockManager,
         Overhead overhead,
         GameSettings gameSettings)
     {
@@ -59,10 +59,10 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         mercTextBox = mercTextBox;
         renderWorld = renderWorld;
         cursor = cursorSubSystem;
-        screens = screenManager;
         mouse = mouseSubSystem;
-        inputs = inputManager;
-        clock = clockManager;
+//        screens = screenManager;
+//        inputs = inputManager;
+//        clock = clockManager;
         overhead = overhead;
         context = context;
     }

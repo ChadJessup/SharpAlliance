@@ -16,6 +16,9 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const int MAX_AP_CARRIED = 5;      // APs carried from turn-to-turn
+                                              // monster AP bonuses; expressed in 10ths (12 = 120% normal) 
+
     public const TileIndexes NUMBEROFTILES = TileIndexes.NUMBEROFTILES;
     public static bool gfTacticalTraversal = false;
     public static GROUP? gpTacticalTraversalGroup = null;
@@ -265,7 +268,6 @@ public partial class Globals
 
     public static Dictionary<NPCID, MERCPROFILESTRUCT> gMercProfiles { get; } = new();
 
-    public static TacticalStatusType gTacticalStatus { get; set; } = new TacticalStatusType();
     public static Dictionary<TileIndexes, TILE_ELEMENT> gTileDatabase = new();
 
 
@@ -851,7 +853,7 @@ public partial class Globals
         { UICursorDefines.ACTION_TARGETAIM6_UICURSOR, new (UICursorDefines.ACTION_TARGETAIM6_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETON6, 0) },
         { UICursorDefines.ACTION_TARGETAIM7_UICURSOR, new (UICursorDefines.ACTION_TARGETAIM7_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETON7, 0) },
         { UICursorDefines.ACTION_TARGETAIM8_UICURSOR, new (UICursorDefines.ACTION_TARGETAIM8_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETON8, 0) },
-        { UICursorDefines.ACTION_TARGETAIM8_UICURSOR, new (UICursorDefines.ACTION_TARGETAIM8_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETON9, 0) },
+        { UICursorDefines.ACTION_TARGETAIM9_UICURSOR, new (UICursorDefines.ACTION_TARGETAIM9_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETON9, 0) },
         { UICursorDefines.ACTION_TARGETAIMCANT1_UICURSOR, new (UICursorDefines.ACTION_TARGETAIMCANT1_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETW1, 0) },
         { UICursorDefines.ACTION_TARGETAIMCANT2_UICURSOR, new (UICursorDefines.ACTION_TARGETAIMCANT2_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETW2, 0) },
         { UICursorDefines.ACTION_TARGETAIMCANT3_UICURSOR, new (UICursorDefines.ACTION_TARGETAIMCANT3_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.TARGETW3, 0) },
@@ -929,7 +931,7 @@ public partial class Globals
         { UICursorDefines.ACTION_THROWAIM6_UICURSOR, new (UICursorDefines.ACTION_THROWAIM6_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKON6, 0) },
         { UICursorDefines.ACTION_THROWAIM7_UICURSOR, new (UICursorDefines.ACTION_THROWAIM7_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKON7, 0) },
         { UICursorDefines.ACTION_THROWAIM8_UICURSOR, new (UICursorDefines.ACTION_THROWAIM8_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKON8, 0) },
-        { UICursorDefines.ACTION_THROWAIM8_UICURSOR, new (UICursorDefines.ACTION_THROWAIM8_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKON9, 0) },
+        { UICursorDefines.ACTION_THROWAIM9_UICURSOR, new (UICursorDefines.ACTION_THROWAIM9_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKON9, 0) },
         { UICursorDefines.ACTION_THROWAIMCANT1_UICURSOR, new (UICursorDefines.ACTION_THROWAIMCANT1_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKW1, 0) },
         { UICursorDefines.ACTION_THROWAIMCANT2_UICURSOR, new (UICursorDefines.ACTION_THROWAIMCANT2_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKW2, 0) },
         { UICursorDefines.ACTION_THROWAIMCANT3_UICURSOR, new (UICursorDefines.ACTION_THROWAIMCANT3_UICURSOR, UICURSOR.FREEFLOWING, CURSOR.THROWKW3, 0) },
@@ -1915,7 +1917,19 @@ public partial class Globals
 
     public static void MemFree(object? _) => _ = null;
 
-    public static Random Random { get; set; } = new Random();
+    public static Random _random = new Random();
+    public static Random Random
+    {
+        get
+        {
+            if (_random is null)
+            {
+                _random = new Random();
+            }
+
+            return _random;
+        }
+    }
 
     public static INTERACTIVE_TILE_STACK_TYPE? gCurIntTileStack;
     public static bool gfCycleIntTile = false;

@@ -129,7 +129,7 @@ public class TileSurface
     {
         if (pTileSurf.pStructureFileRef != null)
         {
-            FreeStructureFile(pTileSurf.pStructureFileRef);
+//            FreeStructureFile(pTileSurf.pStructureFileRef);
         }
         else
         {
@@ -172,13 +172,13 @@ public class TileSurface
             || pTileSurf.fType == TileTypeDefines.DEBRIS2MISC
             || pTileSurf.fType == TileTypeDefines.ANOTHERDEBRIS)
         {
-            GetRootName(cRootFile, cFilename);
+//            GetRootName(cRootFile, cFilename);
             while (ubRaisedObjectFiles[cnt][0] != '1')
             {
-                if (stricmp(ubRaisedObjectFiles[cnt], cRootFile) == 0)
-                {
-                    pTileSurf.bRaisedObjectType = 1;
-                }
+//                if (stricmp(ubRaisedObjectFiles[cnt], cRootFile) == 0)
+//                {
+//                    pTileSurf.bRaisedObjectType = 1;
+//                }
 
                 cnt++;
             }
