@@ -79,7 +79,7 @@ public partial class Globals
     public static int guiEnvTime;
     public static int guiEnvDay;
 
-    public static int[] gswzWorldTimeStr = new int[20]; //Day 99, 23:55
+    public static string gswzWorldTimeStr = string.Empty; //Day 99, 23:55
     public static uint guiDay;
     public static uint guiHour;
     public static uint guiMin;

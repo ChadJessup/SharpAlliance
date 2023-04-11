@@ -80,7 +80,7 @@ public class Movement
                     {
                         return (1);        // legal destination
                     }
-                    else // got this far, but found no clear path,
+//                    else // got this far, but found no clear path,
                     {
                         // so test fails
                         return (1);

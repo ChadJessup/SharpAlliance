@@ -359,7 +359,7 @@ public class CivQuotes
 # if TAIWANESE
         wprintf(gzCivQuote, L"%s", zQuote);
 #else
-        wprintf(gzCivQuote, "\"%s\"", zQuote);
+//        wprintf(gzCivQuote, "\"%s\"", zQuote);
 #endif
 
 
@@ -435,7 +435,7 @@ public class CivQuotes
 
     }
 
-    int DetermineCivQuoteEntry(SOLDIERTYPE pCiv, ref int pubCivHintToUse, bool fCanUseHints)
+    public static CIV_QUOTE DetermineCivQuoteEntry(SOLDIERTYPE pCiv, ref int pubCivHintToUse, bool fCanUseHints)
     {
         CIV_TYPE ubCivType;
         int bTownId;
@@ -759,12 +759,12 @@ public class CivQuotes
             // CAN'T USE HINTS, since we just did one...
             pCiv.bCurrentCivQuote = (CIV_QUOTE)(-1);
             pCiv.bCurrentCivQuoteDelta = 0;
-            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, out ubCivHintToUse, false);
+            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, ref ubCivHintToUse, false);
         }
         else
         {
             // Determine which quote to say.....
-            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, out ubCivHintToUse, true);
+            ubCivQuoteID = DetermineCivQuoteEntry(pCiv, ref ubCivHintToUse, true);
         }
 
         // Determine entry id

@@ -14,7 +14,7 @@ namespace SharpAlliance.Core;
 public class GameClock
 {
     // is the clock pause region created currently?
-    bool fClockMouseRegionCreated = false;
+    public static bool fClockMouseRegionCreated = false;
 
     bool fTimeCompressHasOccured = false;
 
@@ -25,7 +25,7 @@ public class GameClock
         guiDay = (guiGameClock / NUM_SEC_IN_DAY);
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
-        gswzWorldTimeStr = wprintf("%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
+//        gswzWorldTimeStr = wprintf("%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
         guiTimeCurrentSectorWasLastLoaded = 0;
         guiGameSecondsPerRealSecond = 0;
         gubClockResolution = 1;
@@ -151,16 +151,16 @@ public class GameClock
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
 
-        wprintf(gswzWorldTimeStr, "%s %d, %02d:%02d", gpGameClockString[(int)STR_GAMECLOCK.DAY_NAME], guiDay, guiHour, guiMin);
+        gswzWorldTimeStr = wprintf("%s %d, %02d:%02d", gpGameClockString[(int)STR_GAMECLOCK.DAY_NAME], guiDay, guiHour, guiMin);
 
         if (gfResetAllPlayerKnowsEnemiesFlags && !gTacticalStatus.fEnemyInSector)
         {
-            ClearAnySectorsFlashingNumberOfEnemies();
+//            ClearAnySectorsFlashingNumberOfEnemies();
 
             gfResetAllPlayerKnowsEnemiesFlags = false;
         }
 
-        ForecastDayEvents();
+//        ForecastDayEvents();
     }
 
 
@@ -173,7 +173,7 @@ public class GameClock
         uiDiff = uiTomorrowTimeInSec - guiGameClock;
         WarpGameTime(uiDiff, WARPTIME.PROCESS_EVENTS_NORMALLY);
 
-        ForecastDayEvents();
+//        ForecastDayEvents();
     }
 
 
@@ -220,11 +220,11 @@ public class GameClock
 
         if ((gfPauseDueToPlayerGamePause == false))
         {
-            mprintf(sX + (CLOCK_STRING_WIDTH - StringPixLength(gswzWorldTimeStr, CLOCK_FONT)) / 2, sY, gswzWorldTimeStr);
+//            mprintf(sX + (CLOCK_STRING_WIDTH - StringPixLength(gswzWorldTimeStr, CLOCK_FONT)) / 2, sY, gswzWorldTimeStr);
         }
         else
         {
-            mprintf(sX + (CLOCK_STRING_WIDTH - StringPixLength(pPausedGameText[0], CLOCK_FONT)) / 2, sY, pPausedGameText[0]);
+//            mprintf(sX + (CLOCK_STRING_WIDTH - StringPixLength(pPausedGameText[0], CLOCK_FONT)) / 2, sY, pPausedGameText[0]);
         }
 
     }
@@ -461,7 +461,7 @@ public class GameClock
             gfTimeCompressionOn = true;
 
             // handle the player just starting a game
-            HandleTimeCompressWithTeamJackedInAndGearedToGo();
+//            HandleTimeCompressWithTeamJackedInAndGearedToGo();
         }
 
         fMapScreenBottomDirty = true;
@@ -653,7 +653,9 @@ public class GameClock
             return;
         }
 
-        if (gfGamePaused || gfTimeInterruptPause || (gubClockResolution == 0) || guiGameSecondsPerRealSecond == 0 || ARE_IN_FADE_IN() || gfFadeOut)
+        if (gfGamePaused || gfTimeInterruptPause || (gubClockResolution == 0) || guiGameSecondsPerRealSecond == 0
+            //|| ARE_IN_FADE_IN()
+            || gfFadeOut)
         {
             uiLastSecondTime = GetJA2Clock();
             gfTimeInterruptPause = false;
@@ -1000,7 +1002,7 @@ public class GameClock
     }
 
 
-    void CreateMouseRegionForPauseOfClock(int sX, int sY)
+    public static void CreateMouseRegionForPauseOfClock(int sX, int sY)
     {
         if (fClockMouseRegionCreated == false)
         {
@@ -1022,7 +1024,7 @@ public class GameClock
     }
 
 
-    void RemoveMouseRegionForPauseOfClock()
+    public static void RemoveMouseRegionForPauseOfClock()
     {
         // remove pause region
         if (fClockMouseRegionCreated == true)
@@ -1084,7 +1086,7 @@ public class GameClock
 
 
     static bool fCreated = false;
-    void CreateDestroyScreenMaskForPauseGame()
+    public static void CreateDestroyScreenMaskForPauseGame()
     {
         int sX = 0, sY = 0;
 
@@ -1092,7 +1094,7 @@ public class GameClock
         {
             fCreated = false;
             MouseSubSystem.MSYS_RemoveRegion(gClockScreenMaskMouseRegion);
-            RemoveMercPopupBoxFromIndex(iPausedPopUpBox);
+//            RemoveMercPopupBoxFromIndex(iPausedPopUpBox);
             iPausedPopUpBox = -1;
             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             fTeamPanelDirty = true;
@@ -1117,19 +1119,19 @@ public class GameClock
             RemoveMouseRegionForPauseOfClock();
             CreateMouseRegionForPauseOfClock(sX, sY);
 
-            SetRegionFastHelpText(gClockMouseRegion, pPausedGameText[1]);
+//            SetRegionFastHelpText(gClockMouseRegion, pPausedGameText[1]);
 
             fMapScreenBottomDirty = true;
 
             //UnMarkButtonsDirty( );
 
             // now create the pop up box to say the game is paused
-            iPausedPopUpBox = PrepareMercPopupBox(iPausedPopUpBox, BASIC_MERC_POPUP_BACKGROUND, BASIC_MERC_POPUP_BORDER, pPausedGameText[0], 300, 0, 0, 0, usPausedActualWidth, usPausedActualHeight);
+//            iPausedPopUpBox = PrepareMercPopupBox(iPausedPopUpBox, BASIC_MERC_POPUP_BACKGROUND, BASIC_MERC_POPUP_BORDER, pPausedGameText[0], 300, 0, 0, 0, usPausedActualWidth, usPausedActualHeight);
         }
     }
 
 
-    void ScreenMaskForGamePauseBtnCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
+    public static void ScreenMaskForGamePauseBtnCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -1138,7 +1140,7 @@ public class GameClock
         }
     }
 
-    void RenderPausedGameBox()
+    public static void RenderPausedGameBox()
     {
         if ((gfPauseDueToPlayerGamePause == true) && (gfGamePaused == true) && (iPausedPopUpBox != -1))
         {
@@ -1172,15 +1174,15 @@ public class GameClock
         if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))
         {
             // clear tactical event queue
-            ClearEventQueue();
+//            ClearEventQueue();
 
             // clear tactical message queue
-            ClearTacticalMessageQueue();
+//            ClearTacticalMessageQueue();
 
             if (gfWorldLoaded)
             {
                 // clear tactical actions
-                CencelAllActionsForTimeCompression();
+//                CencelAllActionsForTimeCompression();
             }
         }
     }

@@ -147,5 +147,5 @@ public enum NPCID
     NO_PROFILE = 200,
 
     UNSET = -1,
-    NOBODY = (NPCID)Globals.NOBODY,
+    NOBODY = Globals.NOBODY,
 }

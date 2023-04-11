@@ -15,7 +15,7 @@ public partial class Globals
     public static int giPrevMessageId = -1;
     public static int giMessagePage = -1;
     public static int giNumberOfPagesToCurrentEmail = -1;
-    public static int guiEmailWarning;
+    public static string guiEmailWarning;
 
     public const int EMAIL_TOP_BAR_HEIGHT = 22;
 

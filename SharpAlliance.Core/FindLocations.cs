@@ -667,7 +667,7 @@ public class FindLocations
             }
 
             // Special stuff for Carmen the bounty hunter
-            if (pSoldier.bAttitude == ATTACKSLAYONLY && pOpponent.ubProfile != 64)
+            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpponent.ubProfile != 64)
             {
                 continue;  // next opponent
             }

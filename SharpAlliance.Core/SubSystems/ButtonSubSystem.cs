@@ -2076,7 +2076,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             //Added these checks to avoid a case where it was possible to process a leftbuttonup message when
             //the button wasn't anchored, and should have been.
             Globals.gfDelayButtonDeletion = true;
-            if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) == 0
+            if ((!reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
                 || b.MoveCallback is not null
                 && Globals.gpPrevAnchoredButton == b)
             {
