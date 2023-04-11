@@ -238,7 +238,7 @@ public class Overhead
                 pOldSoldier.uiStatusFlags &= (~SOLDIER.GREEN_RAY);
             }
 
-            UpdateForContOverPortrait(pOldSoldier, false);
+//            UpdateForContOverPortrait(pOldSoldier, false);
         }
 
         gusSelectedSoldier = usSoldierID;
@@ -276,15 +276,15 @@ public class Overhead
             guiPendingOverrideEvent = UI_EVENT_DEFINES.M_ON_TERRAIN;
         }
 
-        ChangeInterfaceLevel(pSoldier.bLevel);
+//        ChangeInterfaceLevel(pSoldier.bLevel);
 
         if (pSoldier.fMercAsleep)
         {
-            PutMercInAwakeState(pSoldier);
+//            PutMercInAwakeState(pSoldier);
         }
 
         // possibly say personality quote
-        if ((pSoldier.bTeam == gbPlayerNum) && (pSoldier.ubProfile != NO_PROFILE && pSoldier.ubWhatKindOfMercAmI != MERC_TYPE__PLAYER_CHARACTER) && !(pSoldier.usQuoteSaidFlags & SOLDIER_QUOTE_SAID_PERSONALITY))
+        if ((pSoldier.bTeam == gbPlayerNum) && (pSoldier.ubProfile != NO_PROFILE && pSoldier.ubWhatKindOfMercAmI != MERC_TYPE.PLAYER_CHARACTER) && !(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY)))
         {
             switch (gMercProfiles[pSoldier.ubProfile].bPersonalityTrait)
             {
@@ -300,10 +300,10 @@ public class Overhead
             }
         }
 
-        UpdateForContOverPortrait(pSoldier, true);
+//        UpdateForContOverPortrait(pSoldier, true);
 
         // Remove any interactive tiles we could be over!
-        BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
+//        BeginCurInteractiveTileCheck(INTILE_CHECK_SELECTIVE);
     }
 
     public static int FindAdjacentGridEx(SOLDIERTYPE pSoldier, int sGridNo, ref WorldDirections pubDirection, out int psAdjustedGridNo, bool fForceToPerson, bool fDoor)

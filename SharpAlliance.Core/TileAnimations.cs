@@ -482,7 +482,7 @@ public class TileAnimations
                         if (pNode.uiFlags.HasFlag(ANITILEFLAGS.EXPLOSION))
                         {
                             // Talk to the explosion data...
-                            UpdateExplosionFrame(pNode.uiUserData3, pNode.sCurrentFrame);
+//                            UpdateExplosionFrame(pNode.uiUserData3, pNode.sCurrentFrame);
                         }
 
                         // CHECK IF WE SHOULD BE DISPLAYING TRANSLUCENTLY!
@@ -524,11 +524,11 @@ public class TileAnimations
                                     {
                                         // Do sound....
                                         // PlayJA2Sample( AIR_ESCAPING_1, RATE_11025, SoundVolume( HIGHVOLUME, pNode.sGridNo ), 1, SoundDir( pNode.sGridNo ) );			
-                                        NewSmokeEffect(pNode.sGridNo, (int)pNode.uiUserData, gExplosionData[(int)pNode.uiUserData3].Params.bLevel, (int)pNode.ubUserData2);
+//                                        NewSmokeEffect(pNode.sGridNo, (int)pNode.uiUserData, gExplosionData[(int)pNode.uiUserData3].Params.bLevel, (int)pNode.ubUserData2);
                                     }
                                     else
                                     {
-                                        SpreadEffect(pNode.sGridNo, Explosive[Item[(Items)pNode.uiUserData].ubClassIndex].ubRadius, (int)pNode.uiUserData, (int)pNode.ubUserData2, false, gExplosionData[pNode.uiUserData3].Params.bLevel, -1);
+//                                        SpreadEffect(pNode.sGridNo, Explosive[Item[(Items)pNode.uiUserData].ubClassIndex].ubRadius, (int)pNode.uiUserData, (int)pNode.ubUserData2, false, gExplosionData[pNode.uiUserData3].Params.bLevel, -1);
                                     }
                                     // Forfait any other animations this frame....
                                     return;
@@ -619,7 +619,7 @@ public class TileAnimations
                         if (pNode.uiFlags.HasFlag(ANITILEFLAGS.EXPLOSION))
                         {
                             // Talk to the explosion data...
-                            UpdateExplosionFrame(pNode.uiUserData3, pNode.sCurrentFrame);
+//                            UpdateExplosionFrame(pNode.uiUserData3, pNode.sCurrentFrame);
                         }
 
                     }

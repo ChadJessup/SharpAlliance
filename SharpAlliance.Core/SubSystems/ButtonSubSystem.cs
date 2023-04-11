@@ -416,8 +416,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         Point loc,
         ButtonFlags Type,
         MSYS_PRIORITY Priority,
-        GuiCallback? MoveCallback,
-        GuiCallback ClickCallback)
+        GUI_CALLBACK? MoveCallback,
+        GUI_CALLBACK ClickCallback)
     {
         GUI_BUTTON b;
         ButtonFlags BType;
@@ -580,7 +580,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         Point loc,
         string filename,
         MSYS_PRIORITY Priority,
-        GuiCallback ClickCallback)
+        GUI_CALLBACK ClickCallback)
     {
         ButtonPic ButPic;
 
@@ -1740,8 +1740,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         Point loc,
         ButtonFlags Type,
         MSYS_PRIORITY Priority,
-        GuiCallback? MoveCallback,
-        GuiCallback ClickCallback)
+        GUI_CALLBACK? MoveCallback,
+        GUI_CALLBACK ClickCallback)
     {
         GUI_BUTTON b = new();
         int ButtonNum;
@@ -2252,15 +2252,15 @@ public class ButtonSubSystem : ISharpAllianceManager
 }
 
 // GUI_BUTTON callback function type
-public delegate void GuiCallback(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason);
+public delegate void GUI_CALLBACK(ref GUI_BUTTON button, MSYS_CALLBACK_REASON reason);
 
 public class GUI_BUTTON
 {
     // public int IdNum;                        // ID Number, contains it's own button number
     public ButtonPic ButtonPicture;                    // Image number to use (see DOCs for details)
     public MOUSE_REGION MouseRegion = new(nameof(GUI_BUTTON.MouseRegion)); // Mouse System's mouse region to use for this button
-    public GuiCallback? ClickCallback;     // Button Callback when button is clicked
-    public GuiCallback? MoveCallback;          // Button Callback when mouse moved on this region
+    public GUI_CALLBACK? ClickCallback;     // Button Callback when button is clicked
+    public GUI_CALLBACK? MoveCallback;          // Button Callback when mouse moved on this region
     public CURSOR Cursor;                       // Cursor to use for this button
     public ButtonFlags uiFlags;                 // Button state flags etc.( 32-bit )
     public ButtonFlags uiOldFlags;              // Old flags from previous render loop

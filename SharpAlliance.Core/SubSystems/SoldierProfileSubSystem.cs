@@ -93,7 +93,7 @@ public class SoldierProfileSubSystem
         //    return false;
         //}
 
-        for (uiLoop = 0; uiLoop < Constants.NUM_PROFILES; uiLoop++)
+        for (uiLoop = 0; uiLoop < NUM_PROFILES; uiLoop++)
         {
             var npcId = (NPCID)uiLoop;
 
@@ -179,7 +179,7 @@ public class SoldierProfileSubSystem
                     // Check if it's a gun
                     if (Globals.Item[usItem].usItemClass.HasFlag(IC.GUN))
                     {
-                        Globals.gMercProfiles[npcId].bMainGunAttractiveness = WeaponTypes.Weapon[(int)usItem].ubDeadliness;
+                        Globals.gMercProfiles[npcId].bMainGunAttractiveness = WeaponTypes.Weapon[usItem].ubDeadliness;
                     }
 
                     // If it's armour
@@ -246,7 +246,7 @@ public class SoldierProfileSubSystem
         int uiChance;
 
         // some randomly picked A.I.M. mercs will start off "on assignment" at the beginning of each new game
-        for (uiCnt = 0; uiCnt < (NPCID)Constants.AIM_AND_MERC_MERCS; uiCnt++)
+        for (uiCnt = 0; uiCnt < (NPCID)AIM_AND_MERC_MERCS; uiCnt++)
         {
             pProfile = Globals.gMercProfiles[uiCnt];
 
@@ -283,12 +283,12 @@ public class SoldierProfileSubSystem
 
     private int CalcCompetence(ref MERCPROFILESTRUCT profile)
     {
-        int uiStats, uiSkills, uiActionPoints, uiSpecialSkills;
+        int uiStats = 0, uiSkills, uiActionPoints, uiSpecialSkills;
         int usCompetence;
 
         // count life twice 'cause it's also hit points
         // mental skills are halved 'cause they're actually not that important within the game
-        uiStats = ((2 * profile.bLifeMax) + profile.bStrength + profile.bAgility + profile.bDexterity + ((profile.bLeadership + profile.bWisdom) / 2)) / 3;
+//        uiStats = ((2 * profile.bLifeMax) + profile.bStrength + profile.bAgility + profile.bDexterity + ((profile.bLeadership + profile.bWisdom) / 2)) / 3;
 
         // marksmanship is very important, count it double
         uiSkills = (int)((2 * (Math.Pow(profile.bMarksmanship, 3) / 10000)) +
@@ -401,12 +401,12 @@ public class SoldierProfileSubSystem
         pSoldier.ubProfile = ubDestProfile;
 
         // create new face
-        pSoldier.iFaceIndex = InitSoldierFace(pSoldier);
+//        pSoldier.iFaceIndex = InitSoldierFace(pSoldier);
 
         // replace profile in group
-        ReplaceSoldierProfileInPlayerGroup(pSoldier.ubGroupID, ubSrcProfile, ubDestProfile);
+//        ReplaceSoldierProfileInPlayerGroup(pSoldier.ubGroupID, ubSrcProfile, ubDestProfile);
 
-        pSoldier.bStrength = pNewProfile.bStrength + pNewProfile.bStrengthDelta;
+        pSoldier.bStrength = pNewProfile.bStrength + (uint)pNewProfile.bStrengthDelta;
         pSoldier.bDexterity = pNewProfile.bDexterity + pNewProfile.bDexterityDelta;
         pSoldier.bAgility = pNewProfile.bAgility + pNewProfile.bAgilityDelta;
         pSoldier.bWisdom = pNewProfile.bWisdom + pNewProfile.bWisdomDelta;
@@ -439,7 +439,7 @@ public class SoldierProfileSubSystem
         int ubNumAdditionalTerrorists, ubNumTerroristsAdded = 0;
         int uiChance, uiLocationChoice;
         bool fFoundSpot;
-        int[,] sTerroristPlacement = new int[Constants.MAX_ADDITIONAL_TERRORISTS, 2]
+        int[,] sTerroristPlacement = new int[MAX_ADDITIONAL_TERRORISTS, 2]
         {
             { 0, 0},
             { 0, 0},
@@ -469,7 +469,7 @@ public class SoldierProfileSubSystem
 
         // add at least 2 more
         ubNumAdditionalTerrorists = 2;
-        for (ubLoop = 0; ubLoop < (Constants.MAX_ADDITIONAL_TERRORISTS - 2); ubLoop++)
+        for (ubLoop = 0; ubLoop < (MAX_ADDITIONAL_TERRORISTS - 2); ubLoop++)
         {
             if (this.rnd.GetRandom(100) < uiChance)
             {
@@ -499,7 +499,7 @@ public class SoldierProfileSubSystem
                     do
                     {
                         // pick a random spot, see if it's already been used by another terrorist
-                        uiLocationChoice = this.rnd.GetRandom(Constants.NUM_TERRORIST_POSSIBLE_LOCATIONS);
+                        uiLocationChoice = this.rnd.GetRandom(NUM_TERRORIST_POSSIBLE_LOCATIONS);
                         for (ubLoop2 = 0; ubLoop2 < ubNumTerroristsAdded; ubLoop2++)
                         {
                             if (sTerroristPlacement[ubLoop2, 0] == this.gsTerroristSector[ubLoop, uiLocationChoice, 0])
@@ -536,7 +536,7 @@ public class SoldierProfileSubSystem
         this.gubNumTerrorists = 1 + ubNumAdditionalTerrorists;
     }
 
-    private int[,,] gsTerroristSector = new int[Constants.NUM_TERRORISTS, Constants.NUM_TERRORIST_POSSIBLE_LOCATIONS, 2]
+    private int[,,] gsTerroristSector = new int[NUM_TERRORISTS, NUM_TERRORIST_POSSIBLE_LOCATIONS, 2]
     {
     	// Elgin... preplaced
 	        {

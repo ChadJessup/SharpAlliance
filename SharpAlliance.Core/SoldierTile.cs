@@ -274,7 +274,7 @@ public class SoldierTile
         TerrainTypeDefines bOverTerrainType;
 
         // Check for blocking if in realtime 
-        ///if ( ( gTacticalStatus.uiFlags & REALTIME ) || !( gTacticalStatus.uiFlags & INCOMBAT ) )
+        //if ( ( gTacticalStatus.uiFlags & REALTIME ) || !( gTacticalStatus.uiFlags & INCOMBAT ) )
 
         // ATE: If not on visible tile, return clear ( for path out of map )
         if (!IsometricUtils.GridNoOnVisibleWorldTile(sGridNo))

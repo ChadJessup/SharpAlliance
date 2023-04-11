@@ -107,11 +107,11 @@ public class History
         if ((FileManager.FileExists(HISTORY_DATA_FILE)))
         {
             // unlink history file
-            FileManager.FileClearAttributes(HISTORY_DATA_FILE);
-            FileManager.FileDelete(HISTORY_DATA_FILE);
+//            FileManager.FileClearAttributes(HISTORY_DATA_FILE);
+//            FileManager.FileDelete(HISTORY_DATA_FILE);
         }
 
-        AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GameClock.GetWorldTotalMin(), -1, -1);
+        AddHistoryToPlayersLog(HISTORY.ACCEPTED_ASSIGNMENT_FROM_ENRICO, 0, GameClock.GetWorldTotalMin(), -1, MAP_ROW.UNSET);
 
     }
 
@@ -208,7 +208,7 @@ public class History
         DisplayPageNumberAndDateRange();
 
         // title bar icon
-        BlitTitleBarIcons();
+//        BlitTitleBarIcons();
 
         return;
     }
@@ -216,36 +216,36 @@ public class History
 
     bool LoadHistory()
     {
-        VOBJECT_DESC VObjectDesc;
+        VOBJECT_DESC VObjectDesc = new();
         // load History video objects into memory
 
         // title bar
         //
-        Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTITLE);
+//        Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
+//        VeldridVideoManager.AddVideoObject(VObjectDesc.ImageFile, out guiTITLE);
 
         // top portion of the screen background
         //
-        Utils.FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiTOP);
+//        Utils.FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
+//        VeldridVideoManager.AddVideoObject(VObjectDesc.ImageFile, out guiTOP);
 
 
         // shaded line
         //
-        Utils.FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiSHADELINE);
+//        Utils.FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
+//        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiSHADELINE);
 
         /*
         Not being used???  DF commented out	
           // vert  line
           VObjectDesc.fCreateFlags=VOBJECT_CREATE_FROMFILE;
             FilenameForBPP("LAPTOP\\historyvertline.sti", VObjectDesc.ImageFile);
-            CHECKF(AddVideoObject(&VObjectDesc, &guiVERTLINE));
+            CHECKF(AddVideoObject(VObjectDesc.ImageFile, &guiVERTLINE));
         */
         // black divider line - long ( 480 length)
         //
-        Utils.FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject(&VObjectDesc, out guiLONGLINE);
+//        Utils.FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
+//        VeldridVideoManager.AddVideoObject(VObjectDesc.ImageFile, out guiLONGLINE);
 
         return (true);
     }
@@ -254,10 +254,10 @@ public class History
     {
 
         // delete history video objects from memory
-        DeleteVideoObjectFromIndex(Globals.guiLONGLINE);
-        DeleteVideoObjectFromIndex(Globals.guiTOP);
-        DeleteVideoObjectFromIndex(Globals.guiTITLE);
-        DeleteVideoObjectFromIndex(Globals.guiSHADELINE);
+//        DeleteVideoObjectFromIndex(Globals.guiLONGLINE);
+//        DeleteVideoObjectFromIndex(Globals.guiTOP);
+//        DeleteVideoObjectFromIndex(Globals.guiTITLE);
+//        DeleteVideoObjectFromIndex(Globals.guiSHADELINE);
 
         return;
     }
@@ -302,21 +302,21 @@ public class History
     {
 
         // the prev page button
-        Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
-        Globals.giHistoryButton[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = QuickCreateButton(Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON], Globals.PREV_BTN_X, Globals.BTN_Y,
-                                            BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayPrevPageCallBack);
+//        Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 0, -1, 1, -1);
+//        Globals.giHistoryButton[(int)PAGE_BUTTON.PREV_PAGE_BUTTON] = QuickCreateButton(Globals.giHistoryButtonImage[(int)PAGE_BUTTON.PREV_PAGE_BUTTON], Globals.PREV_BTN_X, Globals.BTN_Y,
+//                                            BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
+//                                            (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayPrevPageCallBack);
 
         // the next page button
-        Globals.giHistoryButtonImage[NEXT_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 6, -1, 7, -1);
-        Globals.giHistoryButton[NEXT_PAGE_BUTTON] = QuickCreateButton(giHistoryButtonImage[NEXT_PAGE_BUTTON], NEXT_BTN_X, BTN_Y,
-                                            BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                                (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayNextPageCallBack);
+//        Globals.giHistoryButtonImage[NEXT_PAGE_BUTTON] = LoadButtonImage("LAPTOP\\arrows.sti", -1, 6, -1, 7, -1);
+//        Globals.giHistoryButton[NEXT_PAGE_BUTTON] = QuickCreateButton(giHistoryButtonImage[NEXT_PAGE_BUTTON], NEXT_BTN_X, BTN_Y,
+//                                            BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
+//                                                (GUI_CALLBACK)BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnHistoryDisplayNextPageCallBack);
 
 
         // set buttons
-        SetButtonCursor(giHistoryButton[0], CURSOR_LAPTOP_SCREEN);
-        SetButtonCursor(giHistoryButton[1], CURSOR_LAPTOP_SCREEN);
+//        SetButtonCursor(giHistoryButton[0], CURSOR_LAPTOP_SCREEN);
+//        SetButtonCursor(giHistoryButton[1], CURSOR_LAPTOP_SCREEN);
 
         return;
     }
@@ -328,12 +328,12 @@ public class History
         // remove History buttons and images from memory
 
         // next page button
-        RemoveButton(giHistoryButton[1]);
-        UnloadButtonImage(giHistoryButtonImage[1]);
+//        RemoveButton(giHistoryButton[1]);
+//        UnloadButtonImage(giHistoryButtonImage[1]);
 
         // prev page button
-        RemoveButton(giHistoryButton[0]);
-        UnloadButtonImage(giHistoryButtonImage[0]);
+//        RemoveButton(giHistoryButton[0]);
+//        UnloadButtonImage(giHistoryButtonImage[0]);
 
         return;
     }
@@ -408,22 +408,22 @@ public class History
         }
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
-
-        // failed to get file, return
-        if (!hFileHandle)
-        {
-            return (false);
-        }
-
-        // make sure file is more than 0 length
-        if (FileManager.FileGetSize(hFileHandle) == 0)
-        {
-            FileManager.FileClose(hFileHandle);
-            return (false);
-        }
-
-        uiFileSize = FileManager.FileGetSize(hFileHandle) - 1;
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+//
+//        // failed to get file, return
+//        if (!hFileHandle)
+//        {
+//            return (false);
+//        }
+//
+//        // make sure file is more than 0 length
+//        if (FileManager.FileGetSize(hFileHandle) == 0)
+//        {
+//            FileManager.FileClose(hFileHandle);
+//            return (false);
+//        }
+//
+//        uiFileSize = FileManager.FileGetSize(hFileHandle) - 1;
         uiSizeOfRecordsOnEachPage = (NUM_RECORDS_PER_PAGE * (sizeof(int) + sizeof(int) + 3 * sizeof(int) + sizeof(int) + sizeof(int)));
 
         // is the file long enough?
@@ -431,13 +431,13 @@ public class History
         if (uiFileSize / uiSizeOfRecordsOnEachPage + 1 < (int)(iCurrentHistoryPage + 1))
         {
             // nope
-            FileManager.FileClose(hFileHandle);
+//            FileManager.FileClose(hFileHandle);
             return (false);
         }
         else
         {
             iCurrentHistoryPage++;
-            FileManager.FileClose(hFileHandle);
+//            FileManager.FileClose(hFileHandle);
         }
 
 
@@ -543,42 +543,42 @@ public class History
         }
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
-
-        // failed to get file, return
-        if (!hFileHandle)
-        {
-            return;
-        }
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+//
+//        // failed to get file, return
+//        if (!hFileHandle)
+//        {
+//            return;
+//        }
 
         // make sure file is more than 0 length
-        if (FileManager.FileGetSize(hFileHandle) == 0)
-        {
-            FileManager.FileClose(hFileHandle);
-            return;
-        }
+//        if (FileManager.FileGetSize(hFileHandle) == 0)
+//        {
+//            FileManager.FileClose(hFileHandle);
+//            return;
+//        }
 
         // file exists, read in data, continue until file end
-        while (FileManager.FileGetSize(hFileHandle) > uiByteCount)
-        {
-            // read in other data
-            FileManager.FileRead<HISTORY>(hFileHandle, ref ubCode, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ubSecondCode, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, uiDate, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, sSectorX, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, sSectorY, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, bSectorZ, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ubColor, sizeof(int), out iBytesRead);
-
-            // add transaction
-            ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
-
-            // increment byte counter
-            uiByteCount += SIZE_OF_HISTORY_FILE_RECORD;
-        }
+//        while (FileManager.FileGetSize(hFileHandle) > uiByteCount)
+//        {
+//            // read in other data
+//            FileManager.FileRead<HISTORY>(hFileHandle, ref ubCode, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ubSecondCode, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, uiDate, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, sSectorX, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, sSectorY, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, bSectorZ, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ubColor, sizeof(int), out iBytesRead);
+//
+//            // add transaction
+//            ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
+//
+//            // increment byte counter
+//            uiByteCount += SIZE_OF_HISTORY_FILE_RECORD;
+//        }
 
         // close file 
-        FileManager.FileClose(hFileHandle);
+//        FileManager.FileClose(hFileHandle);
 
         return;
     }
@@ -587,19 +587,19 @@ public class History
     {
         // this procedure will open and write out data from the History list
 
-        Stream hFileHandle;
+        Stream? hFileHandle = null;
         int iBytesWritten = 0;
         history? pHistoryList = pHistoryListHead;
 
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, FileAccess.Write | FILE_CREATE_ALWAYS, false);
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, FileAccess.Write | FILE_CREATE_ALWAYS, false);
 
         // if no file exits, do nothing
-        if (!hFileHandle)
-        {
-            return (false);
-        }
+//        if (!hFileHandle)
+//        {
+//            return (false);
+//        }
         // write info, while there are elements left in the list
         var doncare = 0;
         while (pHistoryList is not null)
@@ -831,7 +831,7 @@ public class History
         int iCounter = 0;
         uint uiLastDate;
         history pTempHistory = pHistoryListHead;
-        string sString;
+        string sString = string.Empty;
 
 
 
@@ -1148,73 +1148,73 @@ public class History
         }
 
         // open file
-        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
-
-        // failed to get file, return
-        if (!hFileHandle)
-        {
-            return (false);
-        }
-
-        // make sure file is more than 0 length
-        if (FileManager.FileGetSize(hFileHandle) == 0)
-        {
-            FileManager.FileClose(hFileHandle);
-            return (false);
-        }
-
-        // is the file long enough?
-        if ((FileManager.FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
-        {
-            // nope
-            FileManager.FileClose(hFileHandle);
-            return (false);
-        }
-
-        FileManager.FileSeek(hFileHandle, (uiPage - 1) * NUM_RECORDS_PER_PAGE * (SIZE_OF_HISTORY_FILE_RECORD), FILE_SEEK_FROM_START);
-
-        uiByteCount = (uiPage - 1) * NUM_RECORDS_PER_PAGE * (SIZE_OF_HISTORY_FILE_RECORD);
-        // file exists, read in data, continue until end of page
-        while ((iCount < NUM_RECORDS_PER_PAGE) && (fOkToContinue))
-        {
-
-            // read in other data
-            FileManager.FileRead(hFileHandle, ref ubCode, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ref ubSecondCode, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ref uiDate, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ref sSectorX, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ref sSectorY, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ref bSectorZ, sizeof(int), out iBytesRead);
-            FileManager.FileRead(hFileHandle, ref ubColor, sizeof(int), out iBytesRead);
-
-            // add transaction
-            ProcessAndEnterAHistoryRecord((HISTORY)ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
-
-            // increment byte counter
-            uiByteCount += SIZE_OF_HISTORY_FILE_RECORD;
-
-            // we've overextended our welcome, and bypassed end of file, get out
-            if (uiByteCount >= FileManager.FileGetSize(hFileHandle))
-            {
-                // not ok to continue
-                fOkToContinue = false;
-            }
-
-            iCount++;
-        }
-
-        // close file 
-        FileManager.FileClose(hFileHandle);
-
-        // check to see if we in fact have a list to display
-        if (pHistoryListHead == null)
-        {
-            // got no records, return false
-            return (false);
-        }
-
-        // set up current finance
-        pCurrentHistory = pHistoryListHead;
+//        hFileHandle = FileManager.FileOpen(HISTORY_DATA_FILE, (FILE_OPEN_EXISTING | FILE_ACCESS_READ), false);
+//
+//        // failed to get file, return
+//        if (!hFileHandle)
+//        {
+//            return (false);
+//        }
+//
+//        // make sure file is more than 0 length
+//        if (FileManager.FileGetSize(hFileHandle) == 0)
+//        {
+//            FileManager.FileClose(hFileHandle);
+//            return (false);
+//        }
+//
+//        // is the file long enough?
+//        if ((FileManager.FileGetSize(hFileHandle) - 1) / (NUM_RECORDS_PER_PAGE * SIZE_OF_HISTORY_FILE_RECORD) + 1 < uiPage)
+//        {
+//            // nope
+//            FileManager.FileClose(hFileHandle);
+//            return (false);
+//        }
+//
+//        FileManager.FileSeek(hFileHandle, (uiPage - 1) * NUM_RECORDS_PER_PAGE * (SIZE_OF_HISTORY_FILE_RECORD), FILE_SEEK_FROM_START);
+//
+//        uiByteCount = (uiPage - 1) * NUM_RECORDS_PER_PAGE * (SIZE_OF_HISTORY_FILE_RECORD);
+//        // file exists, read in data, continue until end of page
+//        while ((iCount < NUM_RECORDS_PER_PAGE) && (fOkToContinue))
+//        {
+//
+//            // read in other data
+//            FileManager.FileRead(hFileHandle, ref ubCode, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ref ubSecondCode, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ref uiDate, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ref sSectorX, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ref sSectorY, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ref bSectorZ, sizeof(int), out iBytesRead);
+//            FileManager.FileRead(hFileHandle, ref ubColor, sizeof(int), out iBytesRead);
+//
+//            // add transaction
+//            ProcessAndEnterAHistoryRecord((HISTORY)ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, bSectorZ, ubColor);
+//
+//            // increment byte counter
+//            uiByteCount += SIZE_OF_HISTORY_FILE_RECORD;
+//
+//            // we've overextended our welcome, and bypassed end of file, get out
+//            if (uiByteCount >= FileManager.FileGetSize(hFileHandle))
+//            {
+//                // not ok to continue
+//                fOkToContinue = false;
+//            }
+//
+//            iCount++;
+//        }
+//
+//        // close file 
+//        FileManager.FileClose(hFileHandle);
+//
+//        // check to see if we in fact have a list to display
+//        if (pHistoryListHead == null)
+//        {
+//            // got no records, return false
+//            return (false);
+//        }
+//
+//        // set up current finance
+//        pCurrentHistory = pHistoryListHead;
 
         return (true);
     }

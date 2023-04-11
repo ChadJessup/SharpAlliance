@@ -195,16 +195,16 @@ public class StrategicMap
                     if (bExitDirection != (StrategicMove)(-1))
                     {
                         //Now, determine if this is a valid path.
-                        pGroup = GetGroup(pValidSoldier.ubGroupID);
+//                        pGroup = GetGroup(pValidSoldier.ubGroupID);
                         //AssertMsg(pGroup, string.Format("%S is not in a valid group (pSoldier.ubGroupID is %d)", pValidSoldier.name, pValidSoldier.ubGroupID));
                         if (Globals.gbWorldSectorZ == 0)
                         {
-                            puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
+//                            puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
                         }
                         else if (Globals.gbWorldSectorZ > 1)
                         { //We are attempting to traverse in an underground environment.  We need to use a complete different
                           //method.  When underground, all sectors are instantly adjacent.
-                            puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
+//                            puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
                         }
                         if (puiTraverseTimeInMinutes == 0xffffffff)
                         {
@@ -223,7 +223,7 @@ public class StrategicMap
         // If we are here, at least one guy is controllable in this sector, at least he can go!
         if (fAtLeastOneMercControllable > 0)
         {
-            ubPlayerControllableMercsInSquad = NumberOfPlayerControllableMercsInSquad(Globals.MercPtrs[Globals.gusSelectedSoldier].bAssignment);
+//            ubPlayerControllableMercsInSquad = NumberOfPlayerControllableMercsInSquad(Globals.MercPtrs[Globals.gusSelectedSoldier].bAssignment);
             if (fAtLeastOneMercControllable <= ubPlayerControllableMercsInSquad)
             { //if the selected merc is an EPC and we can only leave with that merc, then prevent it
               //as EPCs aren't allowed to leave by themselves.  Instead of restricting this in the 
@@ -253,18 +253,18 @@ public class StrategicMap
             }
             if (bExitDirection != (StrategicMove)(-1))
             {
-                GROUP? pGroup;
+                GROUP? pGroup = null;
                 //Now, determine if this is a valid path.
-                pGroup = GetGroup(pValidSoldier.ubGroupID);
+//                pGroup = GetGroup(pValidSoldier.ubGroupID);
                 //AssertMsg(pGroup, string.Format("%S is not in a valid group (pSoldier.ubGroupID is %d)", pValidSoldier.name, pValidSoldier.ubGroupID));
                 if (Globals.gbWorldSectorZ == 0)
                 {
-                    puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
+//                    puiTraverseTimeInMinutes = GetSectorMvtTimeForGroup(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), bExitDirection, pGroup);
                 }
                 else if (Globals.gbWorldSectorZ > 0)
                 { //We are attempting to traverse in an underground environment.  We need to use a complete different
                   //method.  When underground, all sectors are instantly adjacent.
-                    puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
+//                    puiTraverseTimeInMinutes = UndergroundTacticalTraversalTime(bExitDirection);
                 }
                 if (puiTraverseTimeInMinutes == 0xffffffff)
                 {

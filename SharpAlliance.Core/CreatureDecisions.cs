@@ -81,7 +81,7 @@ public class CreatureDecisions
                         pReceiver.ubCaller = pCaller.ubID;
                         pReceiver.sCallerGridNo = pCaller.sGridNo;
                         pReceiver.bCallActedUpon = 0;
-                        CancelAIAction(pReceiver, FORCE);
+//                        CancelAIAction(pReceiver, FORCE);
                         if ((bPriority > FRENZY_THRESHOLD) && (pReceiver.ubBodyType == SoldierBodyTypes.ADULTFEMALEMONSTER || pReceiver.ubBodyType == SoldierBodyTypes.YAF_MONSTER))
                         {
                             // go berzerk!
@@ -114,7 +114,7 @@ public class CreatureDecisions
         if (pSoldier.bMobility == CREATURE.MOBILE)
         {
 
-            if (TrackScent(pSoldier))
+            if (Movement.TrackScent(pSoldier) > 0)
             {
                 return (AI_ACTION.TRACK);
             }
@@ -127,32 +127,32 @@ public class CreatureDecisions
             // from island to island, and through gas covered areas, too
             if ((pSoldier.bOrders == Orders.POINTPATROL) && (pSoldier.bBreath >= 50))
             {
-                if (PointPatrolAI(pSoldier))
-                {
-                    if (!gfTurnBasedAI)
-                    {
-                        // pause at the end of the walk!
-                        pSoldier.bNextAction = AI_ACTION.WAIT;
-                        pSoldier.usNextActionData = (int)REALTIME_CREATURE_AI_DELAY;
-                    }
-
-                    return (AI_ACTION.POINT_PATROL);
-                }
+//                if (PointPatrolAI(pSoldier))
+//                {
+//                    if (!gfTurnBasedAI)
+//                    {
+//                        // pause at the end of the walk!
+//                        pSoldier.bNextAction = AI_ACTION.WAIT;
+//                        pSoldier.usNextActionData = (int)REALTIME_CREATURE_AI_DELAY;
+//                    }
+//
+//                    return (AI_ACTION.POINT_PATROL);
+//                }
             }
 
             if ((pSoldier.bOrders == Orders.RNDPTPATROL) && (pSoldier.bBreath >= 50))
             {
-                if (RandomPointPatrolAI(pSoldier))
-                {
-                    if (!gfTurnBasedAI)
-                    {
-                        // pause at the end of the walk!
-                        pSoldier.bNextAction = AI_ACTION.WAIT;
-                        pSoldier.usNextActionData = (int)REALTIME_CREATURE_AI_DELAY;
-                    }
-
-                    return (AI_ACTION.POINT_PATROL);
-                }
+//                if (RandomPointPatrolAI(pSoldier))
+//                {
+//                    if (!gfTurnBasedAI)
+//                    {
+//                        // pause at the end of the walk!
+//                        pSoldier.bNextAction = AI_ACTION.WAIT;
+//                        pSoldier.usNextActionData = (int)REALTIME_CREATURE_AI_DELAY;
+//                    }
+//
+//                    return (AI_ACTION.POINT_PATROL);
+//                }
             }
 
             ////////////////////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ public class CreatureDecisions
 
             if ( /*bInWater || */ bInGas)
             {
-                pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
+//                pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
@@ -244,13 +244,13 @@ public class CreatureDecisions
             iChance -= (int)(pSoldier.bLifeMax - pSoldier.bLife);
 
             // reduce chance if breath is down, less likely to wander around when tired
-            iChance -= (100 - pSoldier.bBreath);
+            iChance -= (int)(100 - pSoldier.bBreath);
 
             // if we're in water with land miles (> 25 tiles) away,
             // OR if we roll under the chance calculated
             if ( /*bInWater ||*/ (PreRandom(100) < iChance))
             {
-                pSoldier.usActionData = RandDestWithinRange(pSoldier);
+//                pSoldier.usActionData = RandDestWithinRange(pSoldier);
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
@@ -334,59 +334,59 @@ public class CreatureDecisions
             ////////////////////////////////////////////////////////////////////////////
 
             // avoid 2 consecutive random turns in a row
-            if (pSoldier.bLastAction != AI_ACTION.CHANGE_FACING && (GetAPsToLook(pSoldier) <= pSoldier.bActionPoints))
-            {
-                iChance = 25;
-
-                // set base chance according to orders
-                if (pSoldier.bOrders == Orders.STATIONARY)
-                {
-                    iChance += 25;
-                }
-
-                if (pSoldier.bOrders == Orders.ONGUARD)
-                {
-                    iChance += 20;
-                }
-
-                if (pSoldier.bAttitude == Attitudes.DEFENSIVE)
-                {
-                    iChance += 25;
-                }
-
-                if (PreRandom(100) < iChance)
-                {
-                    // roll random directions (stored in actionData) until different from current
-                    do
-                    {
-                        // if man has a LEGAL dominant facing, and isn't facing it, he will turn
-                        // back towards that facing 50% of the time here (normally just enemies)
-                        if ((pSoldier.bDominantDir >= 0) && (pSoldier.bDominantDir <= (WorldDirections)8)
-                            && (pSoldier.bDirection != pSoldier.bDominantDir) && PreRandom(2) > 0)
-                        {
-                            pSoldier.usActionData = pSoldier.bDominantDir;
-                        }
-                        else
-                        {
-                            pSoldier.usActionData = PreRandom(8);
-                        }
-                    } while ((WorldDirections)pSoldier.usActionData == pSoldier.bDirection);
-
-                    if (ValidCreatureTurn(pSoldier, (int)pSoldier.usActionData))
-
-                    //InternalIsValidStance( pSoldier, (int) pSoldier.usActionData, ANIM_STAND ) )
-                    {
-                        if (!gfTurnBasedAI)
-                        {
-                            // pause at the end of the turn!
-                            pSoldier.bNextAction = AI_ACTION.WAIT;
-                            pSoldier.usNextActionData = (int)REALTIME_CREATURE_AI_DELAY;
-                        }
-
-                        return (AI_ACTION.CHANGE_FACING);
-                    }
-                }
-            }
+//            if (pSoldier.bLastAction != AI_ACTION.CHANGE_FACING && (GetAPsToLook(pSoldier) <= pSoldier.bActionPoints))
+//            {
+//                iChance = 25;
+//
+//                // set base chance according to orders
+//                if (pSoldier.bOrders == Orders.STATIONARY)
+//                {
+//                    iChance += 25;
+//                }
+//
+//                if (pSoldier.bOrders == Orders.ONGUARD)
+//                {
+//                    iChance += 20;
+//                }
+//
+//                if (pSoldier.bAttitude == Attitudes.DEFENSIVE)
+//                {
+//                    iChance += 25;
+//                }
+//
+//                if (PreRandom(100) < iChance)
+//                {
+//                    // roll random directions (stored in actionData) until different from current
+//                    do
+//                    {
+//                        // if man has a LEGAL dominant facing, and isn't facing it, he will turn
+//                        // back towards that facing 50% of the time here (normally just enemies)
+//                        if ((pSoldier.bDominantDir >= 0) && (pSoldier.bDominantDir <= (WorldDirections)8)
+//                            && (pSoldier.bDirection != pSoldier.bDominantDir) && PreRandom(2) > 0)
+//                        {
+//                            pSoldier.usActionData = pSoldier.bDominantDir;
+//                        }
+//                        else
+//                        {
+//                            pSoldier.usActionData = PreRandom(8);
+//                        }
+//                    } while ((WorldDirections)pSoldier.usActionData == pSoldier.bDirection);
+//
+//                    if (AIUtils.ValidCreatureTurn(pSoldier, (WorldDirections)pSoldier.usActionData))
+//
+//                    //InternalIsValidStance( pSoldier, (int) pSoldier.usActionData, ANIM_STAND ) )
+//                    {
+//                        if (!gfTurnBasedAI)
+//                        {
+//                            // pause at the end of the turn!
+//                            pSoldier.bNextAction = AI_ACTION.WAIT;
+//                            pSoldier.usNextActionData = (int)REALTIME_CREATURE_AI_DELAY;
+//                        }
+//
+//                        return (AI_ACTION.CHANGE_FACING);
+//                    }
+//                }
+//            }
         }
 
         ////////////////////////////////////////////////////////////////////////////
@@ -402,12 +402,12 @@ public class CreatureDecisions
     public static AI_ACTION CreatureDecideActionYellow(SOLDIERTYPE pSoldier)
     {
         // monster AI - heard something 
-        WorldDirections ubNoiseDir;
-        int sNoiseGridNo;
-        int iNoiseValue;
-        int iChance, iSneaky;
-        bool fClimb;
-        bool fReachable;
+        WorldDirections ubNoiseDir = 0;
+        int sNoiseGridNo = 0;
+        int iNoiseValue = 0;
+        int iChance = 0, iSneaky = 0;
+        bool fClimb = false;
+        bool fReachable = false;
         //	int sClosestFriend;
 
         if (pSoldier.bMobility == CREATURE.CRAWLER && pSoldier.bActionPoints < pSoldier.bInitialActionPoints)
@@ -416,7 +416,7 @@ public class CreatureDecisions
         }
 
         // determine the most important noise heard, and its relative value
-        sNoiseGridNo = MostImportantNoiseHeard(pSoldier, out iNoiseValue, out fClimb, out fReachable);
+//        sNoiseGridNo = MostImportantNoiseHeard(pSoldier, out iNoiseValue, out fClimb, out fReachable);
         //NumMessage("iNoiseValue = ",iNoiseValue);
 
         if (sNoiseGridNo == NOWHERE)
@@ -436,35 +436,35 @@ public class CreatureDecisions
 
             // if soldier is not already facing in that direction,
             // and the noise source is close enough that it could possibly be seen
-            if ((GetAPsToLook(pSoldier) <= pSoldier.bActionPoints)
-                && (pSoldier.bDirection != ubNoiseDir)
-                && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sNoiseGridNo) <= STRAIGHT)
-            {
-                // set base chance according to orders
-                if ((pSoldier.bOrders == Orders.STATIONARY) || (pSoldier.bOrders == Orders.ONGUARD))
-                {
-                    iChance = 60;
-                }
-                else           // all other orders
-                {
-                    iChance = 35;
-                }
-
-                if (pSoldier.bAttitude == Attitudes.DEFENSIVE)
-                {
-                    iChance += 15;
-                }
-
-                if ((int)PreRandom(100) < iChance)
-                {
-                    pSoldier.usActionData = ubNoiseDir;
-                    //if ( InternalIsValidStance( pSoldier, (int) pSoldier.usActionData, ANIM_STAND ) )
-                    if (ValidCreatureTurn(pSoldier, (int)pSoldier.usActionData))
-                    {
-                        return (AI_ACTION.CHANGE_FACING);
-                    }
-                }
-            }
+//            if ((GetAPsToLook(pSoldier) <= pSoldier.bActionPoints)
+//                && (pSoldier.bDirection != ubNoiseDir)
+//                && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sNoiseGridNo) <= STRAIGHT)
+//            {
+//                // set base chance according to orders
+//                if ((pSoldier.bOrders == Orders.STATIONARY) || (pSoldier.bOrders == Orders.ONGUARD))
+//                {
+//                    iChance = 60;
+//                }
+//                else           // all other orders
+//                {
+//                    iChance = 35;
+//                }
+//
+//                if (pSoldier.bAttitude == Attitudes.DEFENSIVE)
+//                {
+//                    iChance += 15;
+//                }
+//
+//                if ((int)PreRandom(100) < iChance)
+//                {
+//                    pSoldier.usActionData = ubNoiseDir;
+//                    //if ( InternalIsValidStance( pSoldier, (int) pSoldier.usActionData, ANIM_STAND ) )
+//                    if (AIUtils.ValidCreatureTurn(pSoldier, (int)pSoldier.usActionData))
+//                    {
+//                        return (AI_ACTION.CHANGE_FACING);
+//                    }
+//                }
+//            }
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -541,7 +541,7 @@ public class CreatureDecisions
             }
 
             // reduce chance if breath is down, less likely to wander around when tired
-            iChance -= (100 - pSoldier.bBreath);
+            iChance -= (int)(100 - pSoldier.bBreath);
 
             if (PreRandom(100) < iChance)
             {
@@ -554,7 +554,7 @@ public class CreatureDecisions
             }
             // Okay, we're not following up on the noise... but let's follow any
             // scent trails available
-            if (TrackScent(pSoldier))
+            if (Movement.TrackScent(pSoldier) > 0)
             {
                 return (AI_ACTION.TRACK);
             }
@@ -574,16 +574,16 @@ public class CreatureDecisions
     public static AI_ACTION CreatureDecideActionRed(SOLDIERTYPE pSoldier, int ubUnconsciousOK)
     {
         // monster AI - hostile mammals somewhere around!
-        int iChance, sClosestOpponent /*,sClosestOpponent,sClosestFriend*/;
-        int sClosestDisturbance;
-        int sDistVisible;
-        int ubCanMove;
-        WorldDirections ubOpponentDir;
+        int iChance = 0, sClosestOpponent = 0/*,sClosestOpponent,sClosestFriend*/;
+        int sClosestDisturbance = 0;
+        int sDistVisible = 0;
+        int ubCanMove = 0;
+        WorldDirections ubOpponentDir = 0;
         //int bInWater;
-        bool bInGas;
+        bool bInGas = false;
         int bSeekPts = 0, bHelpPts = 0, bHidePts = 0;
-        int sAdjustedGridNo;
-        bool fChangeLevel;
+        int sAdjustedGridNo = 0;
+        bool fChangeLevel = false;
 
         // if we have absolutely no action points, we can't do a thing under RED!
         if (pSoldier.bActionPoints == 0)
@@ -599,7 +599,7 @@ public class CreatureDecisions
 
 
         // can this guy move to any of the neighbouring squares ? (sets true/false)
-        ubCanMove = ((pSoldier.bMobility != CREATURE.IMMOBILE) && (pSoldier.bActionPoints >= MinPtsToMove(pSoldier)));
+//        ubCanMove = ((pSoldier.bMobility != CREATURE.IMMOBILE) && (pSoldier.bActionPoints >= MinPtsToMove(pSoldier)));
 
         // determine if we happen to be in water (in which case we're in BIG trouble!)
         //bInWater = MercInWater(pSoldier);
@@ -614,7 +614,7 @@ public class CreatureDecisions
 
         if (bInGas && ubCanMove > 0)
         {
-            pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
+//            pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
 
             if ((int)pSoldier.usActionData != NOWHERE)
             {
@@ -690,44 +690,44 @@ public class CreatureDecisions
 
         if (pSoldier.bMobility != CREATURE.IMMOBILE)
         {
-            if (FindAIUsableObjClass(pSoldier, IC.WEAPON) == ITEM_NOT_FOUND)
-            {
-                // probably a baby bug... run away! run away!
-                // look for best place to RUN AWAY to (farthest from the closest threat)
-                pSoldier.usActionData = FindSpotMaxDistFromOpponents(pSoldier);
-
-                if ((int)pSoldier.usActionData != NOWHERE)
-                {
-                    return (AI_ACTION.RUN_AWAY);
-                }
-                else
-                {
-                    return (AI_ACTION.NONE);
-                }
-
-            }
+//            if (FindAIUsableObjClass(pSoldier, IC.WEAPON) == ITEM_NOT_FOUND)
+//            {
+//                // probably a baby bug... run away! run away!
+//                // look for best place to RUN AWAY to (farthest from the closest threat)
+//                pSoldier.usActionData = FindSpotMaxDistFromOpponents(pSoldier);
+//
+//                if ((int)pSoldier.usActionData != NOWHERE)
+//                {
+//                    return (AI_ACTION.RUN_AWAY);
+//                }
+//                else
+//                {
+//                    return (AI_ACTION.NONE);
+//                }
+//
+//            }
 
             // Respond to call if any
             if (CAN_LISTEN_TO_CALL(pSoldier) && pSoldier.ubCaller != NOBODY)
             {
-                if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pSoldier.sCallerGridNo) <= STOPSHORTDIST)
-                {
-                    // call completed... hmm, nothing found
-                    pSoldier.ubCaller = NOBODY;
-                }
-                else
-                {
-                    pSoldier.usActionData = Movement.InternalGoAsFarAsPossibleTowards(pSoldier, pSoldier.sCallerGridNo, -1, AI_ACTION.SEEK_FRIEND, FLAG.STOPSHORT);
-
-                    if ((int)pSoldier.usActionData != NOWHERE)
-                    {
-                        return (AI_ACTION.SEEK_FRIEND);
-                    }
-                }
+//                if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pSoldier.sCallerGridNo) <= STOPSHORTDIST)
+//                {
+//                    // call completed... hmm, nothing found
+//                    pSoldier.ubCaller = NOBODY;
+//                }
+//                else
+//                {
+//                    pSoldier.usActionData = Movement.InternalGoAsFarAsPossibleTowards(pSoldier, pSoldier.sCallerGridNo, -1, AI_ACTION.SEEK_FRIEND, FLAG.STOPSHORT);
+//
+//                    if ((int)pSoldier.usActionData != NOWHERE)
+//                    {
+//                        return (AI_ACTION.SEEK_FRIEND);
+//                    }
+//                }
             }
 
             // get the location of the closest reachable opponent
-            sClosestDisturbance = ClosestReachableDisturbance(pSoldier, ubUnconsciousOK, out fChangeLevel);
+//            sClosestDisturbance = ClosestReachableDisturbance(pSoldier, ubUnconsciousOK, out fChangeLevel);
             // if there is an opponent reachable
             if (sClosestDisturbance != NOWHERE)
             {
@@ -750,13 +750,13 @@ public class CreatureDecisions
             ////////////////////////////////////////////////////////////////////////////		
             if (pSoldier.bHunting > 0)
             {
-                pSoldier.usActionData = FindNearestRottingCorpse(pSoldier);
+//                pSoldier.usActionData = FindNearestRottingCorpse(pSoldier);
                 // need smell/visibility check?
                 if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, (int)pSoldier.usActionData) < MAX_EAT_DIST)
                 {
-                    int sGridNo;
+                    int sGridNo = 0;
 
-                    sGridNo = FindAdjacentGridEx(pSoldier, pSoldier.usActionData, out ubOpponentDir, out sAdjustedGridNo, false, false);
+//                    sGridNo = FindAdjacentGridEx(pSoldier, pSoldier.usActionData, out ubOpponentDir, out sAdjustedGridNo, false, false);
 
                     if (sGridNo != -1)
                     {
@@ -769,7 +769,7 @@ public class CreatureDecisions
             ////////////////////////////////////////////////////////////////////////////
             // TRACK A SCENT, IF ONE IS PRESENT
             ////////////////////////////////////////////////////////////////////////////		
-            if (TrackScent(pSoldier))
+            if (Movement.TrackScent(pSoldier) > 0)
             {
                 return (AI_ACTION.TRACK);
             }
@@ -778,48 +778,48 @@ public class CreatureDecisions
             ////////////////////////////////////////////////////////////////////////////
             // LOOK AROUND TOWARD CLOSEST KNOWN OPPONENT, IF KNOWN
             ////////////////////////////////////////////////////////////////////////////
-            if (GetAPsToLook(pSoldier) <= pSoldier.bActionPoints)
-            {
-                // determine the location of the known closest opponent
-                // (don't care if he's conscious, don't care if he's reachable at all)
-                sClosestOpponent = ClosestKnownOpponent(pSoldier, null, null);
-
-                if (sClosestOpponent != NOWHERE)
-                {
-                    // determine direction from this soldier to the closest opponent
-                    ubOpponentDir = SoldierControl.atan8(IsometricUtils.CenterX(pSoldier.sGridNo), IsometricUtils.CenterY(pSoldier.sGridNo), IsometricUtils.CenterX(sClosestOpponent), IsometricUtils.CenterY(sClosestOpponent));
-
-                    // if soldier is not already facing in that direction,
-                    // and the opponent is close enough that he could possibly be seen
-                    // note, have to change this to use the level returned from ClosestKnownOpponent
-                    sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, sClosestOpponent, 0);
-
-                    if ((pSoldier.bDirection != ubOpponentDir) && (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) <= sDistVisible))
-                    {
-                        // set base chance according to orders
-                        if ((pSoldier.bOrders == Orders.STATIONARY) || (pSoldier.bOrders == Orders.ONGUARD))
-                        {
-                            iChance = 50;
-                        }
-                        else           // all other orders
-                        {
-                            iChance = 25;
-                        }
-
-                        if (pSoldier.bAttitude == Attitudes.DEFENSIVE)
-                        {
-                            iChance += 25;
-                        }
-
-                        //if ( (int)PreRandom(100) < iChance && InternalIsValidStance( pSoldier, ubOpponentDir, ANIM_STAND ) )
-                        if ((int)PreRandom(100) < iChance && ValidCreatureTurn(pSoldier, ubOpponentDir))
-                        {
-                            pSoldier.usActionData = ubOpponentDir;
-                            return (AI_ACTION.CHANGE_FACING);
-                        }
-                    }
-                }
-            }
+//            if (GetAPsToLook(pSoldier) <= pSoldier.bActionPoints)
+//            {
+//                // determine the location of the known closest opponent
+//                // (don't care if he's conscious, don't care if he's reachable at all)
+//                sClosestOpponent = ClosestKnownOpponent(pSoldier, null, null);
+//
+//                if (sClosestOpponent != NOWHERE)
+//                {
+//                    // determine direction from this soldier to the closest opponent
+//                    ubOpponentDir = SoldierControl.atan8(IsometricUtils.CenterX(pSoldier.sGridNo), IsometricUtils.CenterY(pSoldier.sGridNo), IsometricUtils.CenterX(sClosestOpponent), IsometricUtils.CenterY(sClosestOpponent));
+//
+//                    // if soldier is not already facing in that direction,
+//                    // and the opponent is close enough that he could possibly be seen
+//                    // note, have to change this to use the level returned from ClosestKnownOpponent
+//                    sDistVisible = OppList.DistanceVisible(pSoldier, WorldDirections.DIRECTION_IRRELEVANT, WorldDirections.DIRECTION_IRRELEVANT, sClosestOpponent, 0);
+//
+//                    if ((pSoldier.bDirection != ubOpponentDir) && (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) <= sDistVisible))
+//                    {
+//                        // set base chance according to orders
+//                        if ((pSoldier.bOrders == Orders.STATIONARY) || (pSoldier.bOrders == Orders.ONGUARD))
+//                        {
+//                            iChance = 50;
+//                        }
+//                        else           // all other orders
+//                        {
+//                            iChance = 25;
+//                        }
+//
+//                        if (pSoldier.bAttitude == Attitudes.DEFENSIVE)
+//                        {
+//                            iChance += 25;
+//                        }
+//
+//                        //if ( (int)PreRandom(100) < iChance && InternalIsValidStance( pSoldier, ubOpponentDir, ANIM_STAND ) )
+//                        if ((int)PreRandom(100) < iChance && AIUtils.ValidCreatureTurn(pSoldier, ubOpponentDir))
+//                        {
+//                            pSoldier.usActionData = ubOpponentDir;
+//                            return (AI_ACTION.CHANGE_FACING);
+//                        }
+//                    }
+//                }
+//            }
         }
 
         ////////////////////////////////////////////////////////////////////////////
@@ -842,19 +842,19 @@ public class CreatureDecisions
     public static AI_ACTION CreatureDecideActionBlack(SOLDIERTYPE? pSoldier)
     {
         // monster AI - hostile mammals in sense range
-        int sClosestOpponent, sBestCover = NOWHERE;
-        int sClosestDisturbance;
-        int ubMinAPCost, ubCanMove/*,bInWater*/;
-        bool bInGas;
-        WorldDirections bDirection;
-        AI_ACTION ubBestAttackAction;
-        int bCanAttack;
-        InventorySlot bSpitIn;
-        InventorySlot bWeaponIn;
-        int uiChance;
-        ATTACKTYPE BestShot, BestStab, BestAttack, CurrStab;
+        int sClosestOpponent = 0, sBestCover = NOWHERE;
+        int sClosestDisturbance = 0;
+        int ubMinAPCost = 0, ubCanMove = 0/*,bInWater*/;
+        bool bInGas =false;
+        WorldDirections bDirection = 0;
+        AI_ACTION ubBestAttackAction = 0;
+        int bCanAttack = 0;
+        InventorySlot bSpitIn = 0;
+        InventorySlot bWeaponIn = 0;
+        int uiChance = 0;
+        ATTACKTYPE BestShot = new(), BestStab = new(), BestAttack, CurrStab;
         bool fRunAway = false;
-        bool fChangeLevel;
+        bool fChangeLevel = false;
 
         // if we have absolutely no action points, we can't do a thing under BLACK!
         if (pSoldier.bActionPoints == 0)
@@ -929,7 +929,7 @@ public class CreatureDecisions
         }
 
         // can this guy move to any of the neighbouring squares ? (sets true/false)
-        ubCanMove = ((pSoldier.bMobility != CREATURE.IMMOBILE) && (pSoldier.bActionPoints >= MinPtsToMove(pSoldier)));
+//        ubCanMove = ((pSoldier.bMobility != CREATURE.IMMOBILE) && (pSoldier.bActionPoints >= MinPtsToMove(pSoldier)));
 
         // determine if we happen to be in water (in which case we're in BIG trouble!)
         //bInWater = MercInWater(pSoldier);
@@ -949,7 +949,7 @@ public class CreatureDecisions
             if (ubCanMove > 0)
             {
                 // look for best place to RUN AWAY to (farthest from the closest threat)
-                pSoldier.usActionData = FindSpotMaxDistFromOpponents(pSoldier);
+//                pSoldier.usActionData = FindSpotMaxDistFromOpponents(pSoldier);
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
@@ -967,7 +967,7 @@ public class CreatureDecisions
         // if soldier in water/gas has enough APs left to move at least 1 square
         if ((/*bInWater ||*/ bInGas) && ubCanMove > 0)
         {
-            pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
+//            pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
 
             if ((int)pSoldier.usActionData != NOWHERE)
             {
@@ -986,42 +986,42 @@ public class CreatureDecisions
         }
         else
         {
-            bCanAttack = CanNPCAttack(pSoldier);
-            if (bCanAttack != true)
-            {
-                if (bCanAttack == NOSHOOT_NOAMMO)
-                {
-                    pSoldier.inv[InventorySlot.HANDPOS].fFlags |= OBJECT.AI_UNUSABLE;
-
-                    // try to find a bladed weapon
-                    if (pSoldier.ubBodyType == SoldierBodyTypes.QUEENMONSTER)
-                    {
-                        bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.TENTACLES);
-                    }
-                    else
-                    {
-                        bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.BLADE);
-                    }
-
-                    if (bWeaponIn != NO_SLOT)
-                    {
-                        AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, FOREVER);
-                        bCanAttack = 1;
-                    }
-                    else
-                    {
-                        // infants who exhaust their spit should flee!
-                        fRunAway = true;
-                        bCanAttack = 0;
-                    }
-
-                }
-                else
-                {
-                    bCanAttack = 0;
-                }
-
-            }
+//            bCanAttack = CanNPCAttack(pSoldier);
+//            if (bCanAttack != true)
+//            {
+//                if (bCanAttack == NOSHOOT_NOAMMO)
+//                {
+//                    pSoldier.inv[InventorySlot.HANDPOS].fFlags |= OBJECT.AI_UNUSABLE;
+//
+//                    // try to find a bladed weapon
+//                    if (pSoldier.ubBodyType == SoldierBodyTypes.QUEENMONSTER)
+//                    {
+//                        bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.TENTACLES);
+//                    }
+//                    else
+//                    {
+//                        bWeaponIn = ItemSubSystem.FindObjClass(pSoldier, IC.BLADE);
+//                    }
+//
+//                    if (bWeaponIn != NO_SLOT)
+//                    {
+//                        AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, FOREVER);
+//                        bCanAttack = 1;
+//                    }
+//                    else
+//                    {
+//                        // infants who exhaust their spit should flee!
+//                        fRunAway = true;
+//                        bCanAttack = 0;
+//                    }
+//
+//                }
+//                else
+//                {
+//                    bCanAttack = 0;
+//                }
+//
+//            }
         }
 
 
@@ -1060,13 +1060,13 @@ public class CreatureDecisions
                         // now it better be a gun, or the guy can't shoot (but has other attack(s))
 
                         // get the minimum cost to attack the same target with this gun
-                        ubMinAPCost = MinAPsToAttack(pSoldier, pSoldier.sLastTarget, DONTADDTURNCOST);
+//                        ubMinAPCost = MinAPsToAttack(pSoldier, pSoldier.sLastTarget, DONTADDTURNCOST);
 
                         // if we have enough action points to shoot with this gun
                         if (pSoldier.bActionPoints >= ubMinAPCost)
                         {
                             // look around for a worthy target (which sets BestShot.ubPossible)
-                            CalcBestShot(pSoldier, out BestShot);
+//                            CalcBestShot(pSoldier, out BestShot);
 
                             if (BestShot.ubPossible > 0)
                             {
@@ -1082,7 +1082,7 @@ public class CreatureDecisions
                                     if (pSoldier.bAttitude != Attitudes.AGGRESSIVE)
                                     {
                                         // get the location of the closest CONSCIOUS reachable opponent
-                                        sClosestDisturbance = ClosestReachableDisturbance(pSoldier, false, fChangeLevel);
+//                                        sClosestDisturbance = ClosestReachableDisturbance(pSoldier, false, fChangeLevel);
 
                                         // if we found one
                                         if (sClosestDisturbance != NOWHERE)
@@ -1090,7 +1090,7 @@ public class CreatureDecisions
                                             // don't bother checking GRENADES/KNIVES, he can't have conscious targets
                                             // then make decision as if at alert status RED, but make sure
                                             // we don't try to SEEK OPPONENT the unconscious guy!
-                                            return (DecideActionRed(pSoldier, false));
+//                                            return (DecideActionRed(pSoldier, false));
                                         }
                                         // else kill the guy, he could be the last opponent alive in this sector
                                     }
@@ -1167,7 +1167,7 @@ public class CreatureDecisions
                 }
 
                 // get the minimum cost to attack with this knife
-                ubMinAPCost = MinAPsToAttack(pSoldier, pSoldier.sLastTarget, DONTADDTURNCOST);
+//                ubMinAPCost = MinAPsToAttack(pSoldier, pSoldier.sLastTarget, DONTADDTURNCOST);
 
                 //sprintf(tempstr,"%s - ubMinAPCost = %d",pSoldier.name,ubMinAPCost);
                 //PopMessage(tempstr);
@@ -1179,14 +1179,14 @@ public class CreatureDecisions
 
                     if (pSoldier.ubBodyType == SoldierBodyTypes.QUEENMONSTER)
                     {
-                        CalcTentacleAttack(pSoldier, out CurrStab);
+//                        CalcTentacleAttack(pSoldier, out CurrStab);
                     }
                     else
                     {
-                        CalcBestStab(pSoldier, out CurrStab, true);
+//                        CalcBestStab(pSoldier, out CurrStab, true);
                     }
 
-                    if (CurrStab.ubPossible > 0)
+//                    if (CurrStab.ubPossible > 0)
                     {
                         // now we KNOW FOR SURE that we will do something (stab, at least)
                         AIMain.NPCDoesAct(pSoldier);
@@ -1198,7 +1198,7 @@ public class CreatureDecisions
                         AIUtils.RearrangePocket(pSoldier, InventorySlot.HANDPOS, bWeaponIn, TEMPORARILY);
                     }
 
-                    if (CurrStab.iAttackValue > BestStab.iAttackValue)
+//                    if (CurrStab.iAttackValue > BestStab.iAttackValue)
                     {
                         CurrStab.bWeaponIn = bWeaponIn;
                         //memcpy(&BestStab, &CurrStab, sizeof(BestStab));
@@ -1221,7 +1221,7 @@ public class CreatureDecisions
                 BestAttack.iAttackValue = 0;
                 ubBestAttackAction = AI_ACTION.NONE;
             }
-            if (BestStab.ubPossible && BestStab.iAttackValue > (BestAttack.iAttackValue * 12) / 10)
+            if (BestStab.ubPossible > 0 && BestStab.iAttackValue > (BestAttack.iAttackValue * 12) / 10)
             {
                 BestAttack.iAttackValue = BestStab.iAttackValue;
                 ubBestAttackAction = AI_ACTION.KNIFE_MOVE;
@@ -1245,6 +1245,7 @@ public class CreatureDecisions
 
                 }
 
+                BestAttack.bWeaponIn = 0;
                 // if necessary, swap the weapon into the hand position
                 if (BestAttack.bWeaponIn != InventorySlot.HANDPOS)
                 {
@@ -1255,6 +1256,10 @@ public class CreatureDecisions
                 //////////////////////////////////////////////////////////////////////////
                 // GO AHEAD & ATTACK!
                 //////////////////////////////////////////////////////////////////////////
+
+                // chad: these next two lines are temp!
+                BestAttack.sTarget = 0;
+                BestAttack.ubAimTime = 0;
 
                 pSoldier.usActionData = BestAttack.sTarget;
                 pSoldier.bAimTime = BestAttack.ubAimTime;
@@ -1280,52 +1285,52 @@ public class CreatureDecisions
 
         if (!fRunAway)
         {
-            if ((GetAPsToLook(pSoldier) <= pSoldier.bActionPoints))
-            {
-                // determine the location of the known closest opponent
-                // (don't care if he's conscious, don't care if he's reachable at all)	 
-                sClosestOpponent = ClosestKnownOpponent(pSoldier, null, null);
-                // if we have a closest reachable opponent
-                if (sClosestOpponent != NOWHERE)
-                {
-                    if (ubCanMove > 0 && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) > 2)
-                    {
-                        if (bSpitIn != NO_SLOT)
-                        {
-                            pSoldier.usActionData = AdvanceToFiringRange(pSoldier, sClosestOpponent);
-                            if (pSoldier.usActionData == NOWHERE)
-                            {
-                                pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
-                            }
-                        }
-                        else
-                        {
-                            pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
-                        }
-                    }
-                    else
-                    {
-                        pSoldier.usActionData = NOWHERE;
-                    }
-
-                    if ((int)pSoldier.usActionData != NOWHERE) // charge!
-                    {
-                        return (AI_ACTION.SEEK_OPPONENT);
-                    }
-                    else if (GetAPsToLook(pSoldier) <= pSoldier.bActionPoints) // turn to face enemy
-                    {
-                        bDirection = SoldierControl.atan8(IsometricUtils.CenterX(pSoldier.sGridNo), IsometricUtils.CenterY(pSoldier.sGridNo), IsometricUtils.CenterX(sClosestOpponent), IsometricUtils.CenterY(sClosestOpponent));
-
-                        // if we're not facing towards him
-                        if (pSoldier.bDirection != bDirection && ValidCreatureTurn(pSoldier, bDirection))
-                        {
-                            pSoldier.usActionData = bDirection;
-
-                            return (AI_ACTION.CHANGE_FACING);
-                        }
-                    }
-                }
-            }
+//            if ((GetAPsToLook(pSoldier) <= pSoldier.bActionPoints))
+//            {
+//                // determine the location of the known closest opponent
+//                // (don't care if he's conscious, don't care if he's reachable at all)	 
+//                sClosestOpponent = ClosestKnownOpponent(pSoldier, null, null);
+//                // if we have a closest reachable opponent
+//                if (sClosestOpponent != NOWHERE)
+//                {
+//                    if (ubCanMove > 0 && IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sClosestOpponent) > 2)
+//                    {
+//                        if (bSpitIn != NO_SLOT)
+//                        {
+//                            pSoldier.usActionData = AdvanceToFiringRange(pSoldier, sClosestOpponent);
+//                            if (pSoldier.usActionData == NOWHERE)
+//                            {
+//                                pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
+//                            }
+//                        }
+//                        else
+//                        {
+//                            pSoldier.usActionData = Movement.GoAsFarAsPossibleTowards(pSoldier, sClosestOpponent, AI_ACTION.SEEK_OPPONENT);
+//                        }
+//                    }
+//                    else
+//                    {
+//                        pSoldier.usActionData = NOWHERE;
+//                    }
+//
+//                    if ((int)pSoldier.usActionData != NOWHERE) // charge!
+//                    {
+//                        return (AI_ACTION.SEEK_OPPONENT);
+//                    }
+////                    else if (GetAPsToLook(pSoldier) <= pSoldier.bActionPoints) // turn to face enemy
+//                    {
+//                        bDirection = SoldierControl.atan8(IsometricUtils.CenterX(pSoldier.sGridNo), IsometricUtils.CenterY(pSoldier.sGridNo), IsometricUtils.CenterX(sClosestOpponent), IsometricUtils.CenterY(sClosestOpponent));
+//
+//                        // if we're not facing towards him
+//                        if (pSoldier.bDirection != bDirection && AIUtils.ValidCreatureTurn(pSoldier, bDirection))
+//                        {
+//                            pSoldier.usActionData = bDirection;
+//
+//                            return (AI_ACTION.CHANGE_FACING);
+//                        }
+//                    }
+//                }
+//            }
         }
         else
         {
@@ -1334,7 +1339,7 @@ public class CreatureDecisions
             {
                 // look for best place to RUN AWAY to (farthest from the closest threat)
                 //pSoldier.usActionData = RunAway( pSoldier );
-                pSoldier.usActionData = FindSpotMaxDistFromOpponents(pSoldier);
+//                pSoldier.usActionData = FindSpotMaxDistFromOpponents(pSoldier);
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
@@ -1461,7 +1466,7 @@ public class CreatureDecisions
                         // if we are NOT aware of any uninvestigated noises right now
                         // and we are not currently in the middle of an action
                         // (could still be on his way heading to investigate a noise!)
-                        if ((MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE) && !pSoldier.bActionInProgress)
+//                        if ((MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE) && !pSoldier.bActionInProgress)
                         {
                             // then drop back to GREEN status
                             pSoldier.bAlertStatus = STATUS.GREEN;
@@ -1478,7 +1483,7 @@ public class CreatureDecisions
                     else
                     {
                         // if we ARE aware of any uninvestigated noises right now
-                        if (MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) != NOWHERE)
+//                        if (MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) != NOWHERE)
                         {
                             // then move up to YELLOW status
                             pSoldier.bAlertStatus = STATUS.YELLOW;
@@ -1497,14 +1502,14 @@ public class CreatureDecisions
             if ((bOldStatus < STATUS.RED) || (pSoldier.bAlertStatus < STATUS.RED))
             {
                 // force a NEW action decision on next pass through HandleManAI()
-                SetNewSituation(pSoldier);
+//                SetNewSituation(pSoldier);
             }
 
             // if this guy JUST discovered that there were opponents here for sure...
             if ((bOldStatus < STATUS.RED) && (pSoldier.bAlertStatus >= STATUS.RED))
             {
                 // might want to make custom to let them go anywhere
-                CheckForChangingOrders(pSoldier);
+//                CheckForChangingOrders(pSoldier);
             }
         }
         else   // status didn't change
@@ -1517,16 +1522,16 @@ public class CreatureDecisions
                 if (!SoldierControl.MercInWater(pSoldier))
                 {
                     // force a NEW decision so that he can get some rest
-                    SetNewSituation(pSoldier);
+//                    SetNewSituation(pSoldier);
 
                     // current action will be canceled. if noise is no longer important
-                    if ((pSoldier.bAlertStatus == STATUS.YELLOW) &&
-                        (MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE))
-                    {
-                        // then drop back to GREEN status
-                        pSoldier.bAlertStatus = STATUS.GREEN;
-                        CheckForChangingOrders(pSoldier);
-                    }
+//                    if ((pSoldier.bAlertStatus == STATUS.YELLOW) &&
+//                        (MostImportantNoiseHeard(pSoldier, out iDummy, out fClimbDummy, out fReachableDummy) == NOWHERE))
+//                    {
+//                        // then drop back to GREEN status
+//                        pSoldier.bAlertStatus = STATUS.GREEN;
+//                        CheckForChangingOrders(pSoldier);
+//                    }
                 }
             }
         }
@@ -1549,12 +1554,12 @@ public class CreatureDecisions
 
     public static AI_ACTION CrowDecideActionGreen(SOLDIERTYPE pSoldier)
     {
-        int sCorpseGridNo;
-        WorldDirections ubDirection;
-        WorldDirections sFacingDir;
+        int sCorpseGridNo = 0;
+        WorldDirections ubDirection = 0;
+        WorldDirections sFacingDir = 0;
 
         // Look for a corse!
-        sCorpseGridNo = FindNearestRottingCorpse(pSoldier);
+//        sCorpseGridNo = FindNearestRottingCorpse(pSoldier);
 
         if (sCorpseGridNo != NOWHERE)
         {
@@ -1582,7 +1587,7 @@ public class CreatureDecisions
             else
             {
                 // Walk to nearest one!
-                pSoldier.usActionData = FindGridNoFromSweetSpot(pSoldier, sCorpseGridNo, 4, out ubDirection);
+//                pSoldier.usActionData = FindGridNoFromSweetSpot(pSoldier, sCorpseGridNo, 4, out ubDirection);
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
                     return (AI_ACTION.GET_CLOSER);

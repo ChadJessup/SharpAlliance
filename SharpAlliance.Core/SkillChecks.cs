@@ -13,14 +13,14 @@ public class SkillChecks
 
     public static int EffectiveStrength(SOLDIERTYPE? pSoldier)
     {
-        int bBandaged;
-        int iEffStrength;
+        uint bBandaged;
+        uint iEffStrength;
 
         // Effective strength is:
         // 1/2 full strength
         // plus 1/2 strength scaled according to how hurt we are
-        bBandaged = pSoldier.bLifeMax - pSoldier.bLife - pSoldier.bBleeding;
-        iEffStrength = pSoldier.bStrength / 2;
+        bBandaged = (uint)pSoldier.bLifeMax - pSoldier.bLife - pSoldier.bBleeding;
+        iEffStrength = (uint)pSoldier.bStrength / 2;
         iEffStrength += (pSoldier.bStrength / 2) * (pSoldier.bLife + bBandaged / 2) / (pSoldier.bLifeMax);
 
         // ATE: Make sure at least 2...
@@ -225,7 +225,7 @@ public class SkillChecks
         int iRoll, iMadeItBy;
         InventorySlot bSlot;
         int iLoop;
-        int bBuddyIndex;
+        int bBuddyIndex = 0;
         bool fForceDamnSound = false;
 
         iReportChance = -1;
@@ -406,7 +406,7 @@ public class SkillChecks
                 break;
             // else fall through
             default:
-                iChance += GetMoraleModifier(pSoldier);
+//                iChance += GetMoraleModifier(pSoldier);
                 break;
         }
 
@@ -457,7 +457,7 @@ public class SkillChecks
                         // silent check
                         break;
                     default:
-                        DoMercBattleSound(pSoldier, BATTLE_SOUND.CURSE1);
+//                        DoMercBattleSound(pSoldier, BATTLE_SOUND.CURSE1);
                         break;
                 }
             }
@@ -476,7 +476,7 @@ public class SkillChecks
                 {
                     if (OK_INSECTOR_MERC(pTeamSoldier))
                     {
-                        bBuddyIndex = WhichBuddy(pTeamSoldier.ubProfile, pSoldier.ubProfile);
+//                        bBuddyIndex = WhichBuddy(pTeamSoldier.ubProfile, pSoldier.ubProfile);
                         if (bBuddyIndex >= 0 && IsometricUtils.SpacesAway(pSoldier.sGridNo, pTeamSoldier.sGridNo) < 15)
                         {
                             switch (bBuddyIndex)

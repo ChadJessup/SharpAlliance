@@ -933,8 +933,8 @@ public class HandleUI
 
     ScreenName UIHandleTestHit(UI_EVENT pUIEvent)
     {
-        SOLDIERTYPE? pSoldier;
-        byte bDamage;
+        SOLDIERTYPE? pSoldier = null;
+        byte bDamage = 0;
 
         // CHECK IF WE'RE ON A GUY ( EITHER SELECTED, OURS, OR THEIRS
         if (Globals.gfUIFullTargetFound)

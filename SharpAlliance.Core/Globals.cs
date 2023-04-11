@@ -693,7 +693,7 @@ public partial class Globals
 
     public const Surfaces BUTTON_USE_DEFAULT = Surfaces.Unknown;
     public static readonly int? BUTTON_NO_FILENAME = null;
-    public static readonly GuiCallback BUTTON_NO_CALLBACK = (ref GUI_BUTTON o, MSYS_CALLBACK_REASON r) => { };
+    public static readonly GUI_CALLBACK BUTTON_NO_CALLBACK = (ref GUI_BUTTON o, MSYS_CALLBACK_REASON r) => { };
     //public const int MAX_NUMBER_OF_MINES = (int)MINE.MAX_NUMBER_OF_MINES;
     public const int BUTTON_NO_IMAGE = -1;
     public const int BUTTON_NO_SLOT = -1;

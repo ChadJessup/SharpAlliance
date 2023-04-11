@@ -25,7 +25,7 @@ public class TurnBasedInput
                 {
                     if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTI_SELECTED))
                     {
-                        UIHandleSoldierStanceChange(pSoldier.ubID, ubAnimHeight);
+//                        UIHandleSoldierStanceChange(pSoldier.ubID, ubAnimHeight);
                     }
                 }
             }
@@ -34,7 +34,7 @@ public class TurnBasedInput
         {
             if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
             {
-                UIHandleSoldierStanceChange(Globals.gusSelectedSoldier, ubAnimHeight);
+//                UIHandleSoldierStanceChange(Globals.gusSelectedSoldier, ubAnimHeight);
             }
         }
     }

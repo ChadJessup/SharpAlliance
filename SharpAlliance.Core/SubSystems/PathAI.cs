@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
-
+using Veldrid;
 using static SharpAlliance.Core.Globals;
 
 using TRAILCELLTYPE = System.Int32;
@@ -57,8 +57,8 @@ public class PathAI
         gubBuildingInfoToSet = ubBuildingID;
 
         ReconfigurePathAI(ABSMAX_SKIPLIST_LEVEL, ABSMAX_TRAIL_TREE, ABSMAX_PATHQ);
-        FindBestPath(s, NOWHERE, 1, WALKING, COPYREACHABLE, 0);
-        RestorePathAIToDefaults();
+//        FindBestPath(s, NOWHERE, 1, WALKING, COPYREACHABLE, 0);
+//        RestorePathAIToDefaults();
 
         // set start position to reachable since path code sets it unreachable
         gpWorldLevelData[sStartGridNo].uiFlags |= MAPELEMENTFLAGS.REACHABLE;
@@ -78,7 +78,7 @@ public class PathAI
         iMaxTrailTree = iNewMaxTrailTree;
         iMaxPathQ = iNewMaxPathQ;
         // relocate the head of the closed list to the end of the array portion being used
-        pClosedHead = (pathQ[QPOOLNDX]);
+//        pClosedHead = (pathQ[QPOOLNDX]);
     }
 
 
@@ -97,7 +97,7 @@ public class PathAI
         // check whether the shift key is pressed, etc.
         int sRet;
 
-        if (_KeyDown(SHIFT))
+        if (Globals._KeyDown(Key.LShift | Key.RShift))
         {
             Globals.gfPlotDirectPath = true;
         }

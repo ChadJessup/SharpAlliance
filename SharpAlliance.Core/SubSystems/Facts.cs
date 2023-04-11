@@ -345,10 +345,10 @@ public class Facts
 
             case FACT.RECEIVING_INCOME_FROM_DCAC:
                 gubFact[usFact] = (
-                    (PredictDailyIncomeFromAMine(MINE.DRASSEN) > 0) &&
-                    (PredictDailyIncomeFromAMine(MINE.ALMA) > 0) &&
-                    (PredictDailyIncomeFromAMine(MINE.CAMBRIA) > 0) &&
-                    (PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0));
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.DRASSEN) > 0) &&
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.ALMA) > 0) &&
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CAMBRIA) > 0) &&
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0));
                 break;
 
             case FACT.PLAYER_BEEN_TO_K4:

@@ -21,7 +21,7 @@ namespace SharpAlliance.Core.SubSystems;
 public delegate void ButtonCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason);
 public class MouseSubSystem : ISharpAllianceManager
 {
-    public static GuiCallback DefaultMoveCallback { get; private set; }
+    public static GUI_CALLBACK DefaultMoveCallback { get; private set; }
     private readonly ILogger<MouseSubSystem> logger;
     private readonly IClockManager clock;
     private static CursorSubSystem cursors;
@@ -568,7 +568,7 @@ public class MouseSubSystem : ISharpAllianceManager
     //
     public static void MSYS_DisableRegion(ref MOUSE_REGION region)
     {
-        region.uiFlags &= (~MouseRegionFlags.MSYS_REGION_ENABLED);
+        region.uiFlags &= (~MouseRegionFlags.REGION_ENABLED);
     }
 
     public static void SetRegionFastHelpText(MOUSE_REGION region, string fastHelpText)
@@ -619,10 +619,10 @@ public class MouseSubSystem : ISharpAllianceManager
     //
     private static void SetCurrentCursor(CURSOR cursor)
     {
-        CursorSubSystem.SetCurrentCursorFromDatabase(cursor);
+        cursors.SetCurrentCursorFromDatabase(cursor);
     }
 
-    public static void MSYS_SetRegionUserData(MOUSE_REGION region, int index, object userdata)
+    public static void SetRegionUserData(MOUSE_REGION region, int index, object userdata)
         => SetRegionUserData(ref region, index, userdata);
 
     public static void SetRegionUserData(ref MOUSE_REGION region, int index, object userdata)
@@ -708,7 +708,7 @@ public class MouseSubSystem : ISharpAllianceManager
         Regions.Add(region);
     }
 
-    public static object MSYS_GetRegionUserData(ref MOUSE_REGION reg, int index)
+    public static object GetRegionUserData(ref MOUSE_REGION reg, int index)
         => reg.UserData[index];
 
     //======================================================================================================
@@ -739,25 +739,6 @@ public class MouseSubSystem : ISharpAllianceManager
             crsr,
             movecallback,
             buttoncallback);
-
-
-    public static void MSYS_DefineRegion(
-        MOUSE_REGION region,
-        int x,
-        int y,
-        int width,
-        int height,
-        MSYS_PRIORITY priority,
-        CURSOR cursor,
-        MouseCallback? movecallback,
-        MouseCallback? buttoncallback)
-    => MSYS_DefineRegion(
-        region,
-        new Rectangle(x, y, width, height),
-        priority,
-        cursor,
-        movecallback,
-        buttoncallback);
 
     public static void MSYS_DefineRegion(
         ref MOUSE_REGION region,
@@ -875,15 +856,10 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public static void MSYS_SetCurrentCursor(CURSOR crsr)
     {
-        CursorSubSystem.SetCurrentCursorFromDatabase(crsr);
+        cursors.SetCurrentCursorFromDatabase(crsr);
     }
 
     internal static void MSYS_DisableRegion(MOUSE_REGION mOUSE_REGION)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal static void MSYS_EnableRegion(MOUSE_REGION gSMInvCamoRegion)
     {
         throw new NotImplementedException();
     }

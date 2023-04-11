@@ -179,7 +179,7 @@ public class InteractiveTiles
 
     void HandleStructChangeFromGridNo(SOLDIERTYPE? pSoldier, int sGridNo)
     {
-        STRUCTURE? pStructure, pNewStructure;
+        STRUCTURE? pStructure, pNewStructure = null;
         int sAPCost = 0, sBPCost = 0;
         ITEM_POOL? pItemPool;
         bool fDidMissingQuote = false;
@@ -226,7 +226,7 @@ public class InteractiveTiles
             {
                 if (pSoldier.ubProfile != NPCID.NO_PROFILE)
                 {
-                    TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_OPEN_STRUCTURE, false);
+//                    TriggerNPCWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_OPEN_STRUCTURE, false);
                 }
             }
 
@@ -250,11 +250,11 @@ public class InteractiveTiles
                     if (Globals.gWorldItems[pItemPool.iItemIndex].o.usItem == Items.OWNERSHIP)
                     {
                         fDoHumm = false;
-                        TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.NOTHING, 500);
+//                        TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.NOTHING, 500);
                     }
 
                     // If now open, set visible...
-                    SetItemPoolVisibilityOn(pItemPool, ANY_VISIBILITY_VALUE, fDoLocators);
+//                    SetItemPoolVisibilityOn(pItemPool, ANY_VISIBILITY_VALUE, fDoLocators);
 
                     // Display quote!
                     //TacticalCharacterDialogue( pSoldier, (int)( QUOTE_SPOTTED_SOMETHING_ONE + Globals.Random.Next( 2 ) ) );
@@ -268,27 +268,27 @@ public class InteractiveTiles
                             {
                                 fDoHumm = false;
 
-                                TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.COOL1, 500);
+//                                TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.COOL1, 500);
 
                             }
                         }
 
                         if (fDoHumm)
                         {
-                            TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.HUMM, 500);
+//                            TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.HUMM, 500);
                         }
                     }
                 }
                 else
                 {
-                    SetItemPoolVisibilityHidden(pItemPool);
+//                    SetItemPoolVisibilityHidden(pItemPool);
                 }
             }
             else
             {
                 if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
                 {
-                    TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.NOTHING, 500);
+//                    TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.NOTHING, 500);
                 }
             }
         }
@@ -299,15 +299,15 @@ public class InteractiveTiles
 
 
 
-        pNewStructure = SwapStructureForPartner(sGridNo, pStructure);
+//        pNewStructure = SwapStructureForPartner(sGridNo, pStructure);
         if (pNewStructure != null)
         {
-            RecompileLocalMovementCosts(sGridNo);
+//            RecompileLocalMovementCosts(sGridNo);
             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
             if (pNewStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
             {
                 // just turned a switch on!
-                ActivateSwitchInGridNo(pSoldier.ubID, sGridNo);
+//                ActivateSwitchInGridNo(pSoldier.ubID, sGridNo);
             }
         }
 

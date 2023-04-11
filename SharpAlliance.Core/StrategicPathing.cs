@@ -79,24 +79,24 @@ public partial class Globals
 
     public static void INSQUENODEPREV(TRAILCELLTYPE newNode, TRAILCELLTYPE curNode)
     {
-        pathQB[newNode].nextLink = curNode;
-        pathQB[newNode].prevLink = pathQB[curNode].prevLink;
-        pathQB[pathQB[curNode].prevLink].nextLink = newNode;
-        pathQB[curNode].prevLink = newNode;
+//        pathQB[newNode].nextLink = curNode;
+//        pathQB[newNode].prevLink = pathQB[curNode].prevLink;
+//        pathQB[pathQB[curNode].prevLink].nextLink = newNode;
+//        pathQB[curNode].prevLink = newNode;
     }
 
     public static void INSQUENODE(TRAILCELLTYPE newNode, TRAILCELLTYPE curNode)
     {
-        pathQB[newNode].prevLink = curNode;
-        pathQB[newNode].NextLink = pathQB[curNode].nextLink;
-        pathQB[pathQB[curNode].nextLink].prevLink = newNode;
-        pathQB[curNode].nextLink = newNode;
+//        pathQB[newNode].prevLink = curNode;
+//        pathQB[newNode].NextLink = pathQB[curNode].nextLink;
+//        pathQB[pathQB[curNode].nextLink].prevLink = newNode;
+//        pathQB[curNode].nextLink = newNode;
     }
 
 
-    public static void DELQUENODE(int ndx)
+    public static void DELQUENODE(uint ndx)
     {
-        REMQUENODE(ndx);
+        REMQUENODE((int)ndx);
         INSQUENODEPREV(ndx, QPOOLNDX);
         pathQB[ndx].location = -1;
     }
@@ -136,11 +136,11 @@ public partial class Globals
     }
 
     public const int MAXCOST = (99900);
-    public static int TOTALCOST(int ndx) => (pathQB[ndx].costSoFar + pathQB[ndx].costToGo);
+    public static int TOTALCOST(int ndx) => (int)(pathQB[ndx].costSoFar + pathQB[ndx].costToGo);
     public static int XLOC(int a) => (a % MAP_WIDTH);
     public static int YLOC(int a) => (a / MAP_WIDTH);
     public static int LEGDISTANCE(int a, int b) => (Math.Abs(XLOC(b) - XLOC(a)) + Math.Abs(YLOC(b) - YLOC(a)));
-    public static int FARTHER(int ndx, int NDX) => (LEGDISTANCE(pathQB[ndx].location, sDestination) > LEGDISTANCE(pathQB[NDX].location, sDestination));
+    public static bool FARTHER(int ndx, int NDX, int sDestination) => (LEGDISTANCE(pathQB[ndx].location, sDestination) > LEGDISTANCE(pathQB[NDX].location, sDestination));
 
     public const int FLAT_STRATEGIC_TRAVEL_TIME = 60;
 
@@ -153,7 +153,7 @@ public partial class Globals
             NDX = pathQB[NDX].nextLink;
         }
 
-        while (NDX > 0 && (k == TOTALCOST(NDX)) && FARTHER(ndx, NDX) > 0)
+//        while (NDX > 0 && (k == TOTALCOST(NDX)) && FARTHER(ndx, NDX, 0) > 0)
         {
             NDX = pathQB[NDX].nextLink;
         }
@@ -197,18 +197,18 @@ public class StrategicPathing
     };
 
     // this will find if a shortest strategic path
-    int FindStratPath(int sStart, int sDestination, int sMvtGroupNumber, bool fTacticalTraversal)
+    int FindStratPath(int sStart, uint sDestination, int sMvtGroupNumber, bool fTacticalTraversal)
     {
-        int iCnt, ndx, insertNdx, qNewNdx;
-        int iDestX, iDestY, locX, locY, dx, dy;
-        int sSectorX;
-        MAP_ROW sSectorY;
-        int newLoc, curLoc;
-        TRAILCELLTYPE curCost, newTotCost, nextCost;
-        int sOrigination;
+        int iCnt = 0, ndx = 0, insertNdx = 0, qNewNdx = 0;
+        int iDestX = 0, iDestY = 0, locX = 0, locY = 0, dx = 0, dy = 0;
+        int sSectorX = 0;
+        MAP_ROW sSectorY = 0;
+        int newLoc = 0, curLoc = 0;
+        TRAILCELLTYPE curCost = 0, newTotCost = 0, nextCost = 0;
+        int sOrigination = 0;
         int iCounter = 0;
         bool fPlotDirectPath = false;
-        GROUP? pGroup;
+        GROUP? pGroup = null;
 
         // ******** Fudge by Bret (for now), curAPcost is never initialized in this function, but should be!
         // so this is just to keep things happy!
@@ -218,7 +218,7 @@ public class StrategicPathing
         if (pGroup.fPlayer)
         {
             // if player is holding down SHIFT key, find the shortest route instead of the quickest route!
-            if (_KeyDown(SHIFT))
+            if (_KeyDown(Veldrid.Key.LShift | Veldrid.Key.RShift))
             {
                 fPlotDirectPath = true;
             }
@@ -250,8 +250,8 @@ public class StrategicPathing
         sOrigination = sStart;
 
 
-        iDestY = (sDestination / MAP_WIDTH);
-        iDestX = (sDestination % MAP_WIDTH);
+//        iDestY = (sDestination / MAP_WIDTH);
+//        iDestX = (sDestination % MAP_WIDTH);
 
 
         // if origin and dest is water, then user wants to stay in water!
@@ -274,7 +274,7 @@ public class StrategicPathing
         pathQB[1].location = sOrigination;
         pathQB[1].pathNdx = 0;
         pathQB[1].costSoFar = 0;
-        pathQB[1].costToGo = REMAININGCOST(1, iDestX, iDestY);
+        pathQB[1].costToGo = (uint)REMAININGCOST(1, iDestX, iDestY);
 
 
         trailStratTreedxB = 0;
@@ -291,7 +291,7 @@ public class StrategicPathing
             curLoc = pathQB[ndx].location;
             curCost = pathQB[ndx].costSoFar;
             // = totAPCostB[ndx];
-            DELQUENODE(ndx);
+            DELQUENODE((uint)ndx);
 
             if (trailCostB[curLoc] < curCost)
             {
@@ -314,16 +314,16 @@ public class StrategicPathing
                 if (gfPlotToAvoidPlayerInfuencedSectors && newLoc != sDestination)
                 {
                     sSectorX = (int)(newLoc % MAP_WORLD_X);
-                    sSectorY = (int)(newLoc / MAP_WORLD_X);
+                    sSectorY = (MAP_ROW)(newLoc / MAP_WORLD_X);
 
-                    if (IsThereASoldierInThisSector(sSectorX, sSectorY, 0))
-                    {
-                        continue;
-                    }
-                    if (GetNumberOfMilitiaInSector(sSectorX, sSectorY, 0))
-                    {
-                        continue;
-                    }
+//                    if (IsThereASoldierInThisSector(sSectorX, sSectorY, 0))
+//                    {
+//                        continue;
+//                    }
+//                    if (GetNumberOfMilitiaInSector(sSectorX, sSectorY, 0))
+//                    {
+//                        continue;
+//                    }
                     if (!StrategicAI.OkayForEnemyToMoveThroughSector(SECTORINFO.SECTOR(sSectorX, sSectorY)))
                     {
                         continue;
@@ -335,29 +335,29 @@ public class StrategicPathing
                 {
                     if (iHelicopterVehicleId != -1)
                     {
-                        nextCost = GetTravelTimeForGroup((int)(SECTORINFO.SECTOR((curLoc % MAP_WORLD_X), (curLoc / MAP_WORLD_X))), (int)(iCnt / 2), (int)sMvtGroupNumber);
+//                        nextCost = GetTravelTimeForGroup((int)(SECTORINFO.SECTOR((curLoc % MAP_WORLD_X), (curLoc / MAP_WORLD_X))), (int)(iCnt / 2), (int)sMvtGroupNumber);
                         if (nextCost != 0xffffffff && sMvtGroupNumber == pVehicleList[iHelicopterVehicleId].ubMovementGroup)
                         {
                             // is a heli, its pathing is determined not by time (it's always the same) but by total cost
                             // Skyrider will avoid uncontrolled airspace as much as possible...
                             if (strategicMap[curLoc].fEnemyAirControlled == true)
                             {
-                                nextCost = COST_AIRSPACE_UNSAFE;
+//                                nextCost = COST_AIRSPACE_UNSAFE;
                             }
                             else
                             {
-                                nextCost = COST_AIRSPACE_SAFE;
+//                                nextCost = COST_AIRSPACE_SAFE;
                             }
                         }
                     }
                     else
                     {
-                        nextCost = GetTravelTimeForGroup((int)(SECTOR((curLoc % MAP_WORLD_X), (curLoc / MAP_WORLD_X))), (int)(iCnt / 2), (int)sMvtGroupNumber);
+//                        nextCost = GetTravelTimeForGroup((int)(SECTORINFO.SECTOR((curLoc % MAP_WORLD_X), (curLoc / MAP_WORLD_X))), (int)(iCnt / 2), (int)sMvtGroupNumber);
                     }
                 }
                 else
                 {
-                    nextCost = GetTravelTimeForFootTeam((int)(SECTOR(curLoc % MAP_WORLD_X, curLoc / MAP_WORLD_X)), (int)(iCnt / 2));
+//                    nextCost = GetTravelTimeForFootTeam((int)(SECTORINFO.SECTOR(curLoc % MAP_WORLD_X, curLoc / MAP_WORLD_X)), (int)(iCnt / 2));
                 }
 
                 if (nextCost == 0xffffffff)
@@ -374,7 +374,7 @@ public class StrategicPathing
                     // if it's the first sector only (no cost yet)
                     if (curCost == 0 && (newLoc == sDestination))
                     {
-                        if (GetTraversability((int)(SECTOR(curLoc % 18, curLoc / 18)), (int)(SECTOR(newLoc % 18, newLoc / 18))) != GROUNDBARRIER)
+//                        if (GetTraversability((int)(SECTORINFO.SECTOR(curLoc % 18, curLoc / 18)), (int)(SECTORINFO.SECTOR(newLoc % 18, newLoc / 18))) != GROUNDBARRIER)
                         {
                             nextCost = 0;
                         }
@@ -405,7 +405,7 @@ public class StrategicPathing
                 newTotCost = curCost + nextCost;
                 if (newTotCost < trailCostB[newLoc])
                 {
-                    NEWQUENODE;
+                    NEWQUENODE(qNewNdx);
 
                     if (qNewNdx == QHEADNDX)
                     {
@@ -419,8 +419,8 @@ public class StrategicPathing
                     }
 
                     //make new path to current location
-                    trailStratTreeB[trailStratTreedxB].nextLink = pathQB[ndx].pathNdx;
-                    trailStratTreeB[trailStratTreedxB].diStratDelta = (int)iCnt;
+                    trailStratTreeB[trailStratTreedxB].nextLink = (short)pathQB[ndx].pathNdx;
+                    trailStratTreeB[trailStratTreedxB].diStratDelta = (short)iCnt;
                     pathQB[qNewNdx].pathNdx = trailStratTreedxB;
                     trailStratTreedxB++;
 
@@ -432,27 +432,27 @@ public class StrategicPathing
 
                     pathQB[qNewNdx].location = (int)newLoc;
                     pathQB[qNewNdx].costSoFar = newTotCost;
-                    pathQB[qNewNdx].costToGo = REMAININGCOST(qNewNdx);
-                    trailCostB[newLoc] = newTotCost;
+                    pathQB[qNewNdx].costToGo = (uint)REMAININGCOST(qNewNdx,iDestX, iDestY);
+                    trailCostB[newLoc] = (int)newTotCost;
                     //do a sorted que insert of the new path
                     QUESEARCH(qNewNdx, insertNdx);
-                    INSQUENODEPREV((int)qNewNdx, (int)insertNdx);
+                    INSQUENODEPREV((uint)qNewNdx, (uint)insertNdx);
                 }
             }
         }
-        while (pathQNotEmpty && pathNotYetFound);
+        while (pathQNotEmpty() && pathNotYetFound(sDestination));
         // work finished. Did we find a path?
-        if (pathFound)
+        if (pathFound(sDestination))
         {
-            int z, _z, _nextLink; //,tempgrid;
+            int? z, _z, _nextLink; //,tempgrid;
 
             _z = 0;
             z = pathQB[pathQB[QHEADNDX].nextLink].pathNdx;
 
-            while (z)
+            while (z > 0)
             {
-                _nextLink = trailStratTreeB[z].nextLink;
-                trailStratTreeB[z].nextLink = _z;
+                _nextLink = trailStratTreeB[(int)z].nextLink;
+                trailStratTreeB[(int)z].nextLink = (short)_z;
                 _z = z;
                 z = _nextLink;
             }
@@ -464,11 +464,11 @@ public class StrategicPathing
 
             z = _z;
 
-            for (iCnt = 0; z && (iCnt < MAX_PATH_LIST_SIZE); iCnt++)
+            for (iCnt = 0; z is not null && (iCnt < MAX_PATH_LIST_SIZE); iCnt++)
             {
-                gusMapPathingData[iCnt] = trailStratTreeB[z].diStratDelta;
+                gusMapPathingData[iCnt] = trailStratTreeB[(int)z].diStratDelta;
 
-                z = trailStratTreeB[z].nextLink;
+                z = trailStratTreeB[(int)z].nextLink;
             }
 
             gusPathDataSize = (int)iCnt;
@@ -501,17 +501,17 @@ public class StrategicPathing
         if (pNode == null)
         {
             // start new path list
-            pNode = MemAlloc(sizeof(PathSt));
+//            pNode = MemAlloc(sizeof(PathSt));
             /*
                if ( _KeyDown( CTRL ))
                      pNode.fSpeed=SLOW_MVT;
                  else
             */
-            pNode.fSpeed = NORMAL_MVT;
-            pNode.uiSectorId = iStartSectorNum;
-            pNode.pNext = null;
-            pNode.pPrev = null;
-            pNode.uiEta = GetWorldTotalMin();
+//            pNode.fSpeed = NORMAL_MVT;
+//            pNode.uiSectorId = iStartSectorNum;
+//            pNode.pNext = null;
+//            pNode.pPrev = null;
+//            pNode.uiEta = GetWorldTotalMin();
             pHeadOfPathList = pNode;
         }
 
@@ -520,24 +520,24 @@ public class StrategicPathing
             return null;
         }
 
-        iPathLength = ((int)FindStratPath(((int)iStartSectorNum), ((int)iEndSectorNum), sMvtGroupNumber, fTacticalTraversal));
+        iPathLength = ((int)FindStratPath(((int)iStartSectorNum), ((uint)iEndSectorNum), sMvtGroupNumber, fTacticalTraversal));
         while (iPathLength > iCount)
         {
-            switch (gusMapPathingData[iCount])
-            {
-                case (NORTH):
-                    iDelta = NORTH_MOVE;
-                    break;
-                case (SOUTH):
-                    iDelta = SOUTH_MOVE;
-                    break;
-                case (EAST):
-                    iDelta = EAST_MOVE;
-                    break;
-                case (WEST):
-                    iDelta = WEST_MOVE;
-                    break;
-            }
+//            switch (gusMapPathingData[iCount])
+//            {
+//                case (NORTH):
+//                    iDelta = NORTH_MOVE;
+//                    break;
+//                case (SOUTH):
+//                    iDelta = SOUTH_MOVE;
+//                    break;
+//                case (EAST):
+//                    iDelta = EAST_MOVE;
+//                    break;
+//                case (WEST):
+//                    iDelta = WEST_MOVE;
+//                    break;
+//            }
             iCount++;
             // create new node
             iCurrentSectorNum += iDelta;
@@ -546,15 +546,15 @@ public class StrategicPathing
             {
                 pNode = pHeadOfPathList;
                 // intersected previous node, delete path to date
-                if (!pNode)
-                {
-                    return null;
-                }
+//                if (!pNode)
+//                {
+//                    return null;
+//                }
 
-                while (pNode.pNext)
-                {
-                    pNode = pNode.pNext;
-                }
+//                while (pNode.pNext)
+//                {
+//                    pNode = pNode.pNext;
+//                }
                 // start backing up 
                 while (pNode.uiSectorId != (int)iStartSectorNum)
                 {
@@ -588,36 +588,36 @@ public class StrategicPathing
 
 
             pHeadOfPathList = pNode;
-            if (!pNode)
-            {
-                return null;
-            }
+//            if (!pNode)
+//            {
+//                return null;
+//            }
 
-            while (pNode.pNext)
-            {
-                pNode = pNode.pNext;
-            }
+//            while (pNode.pNext)
+//            {
+//                pNode = pNode.pNext;
+//            }
         }
 
         pNode = pHeadOfPathList;
 
-        if (!pNode)
-        {
-            return null;
-        }
+//        if (!pNode)
+//        {
+//            return null;
+//        }
+//
+//        while (pNode.pNext)
+//        {
+//            pNode = pNode.pNext;
+//        }
 
-        while (pNode.pNext)
-        {
-            pNode = pNode.pNext;
-        }
-
-        if (!pNode.pPrev)
-        {
-            MemFree(pNode);
-            pHeadOfPathList = null;
-            pPath = pHeadOfPathList;
-            return false;
-        }
+//        if (!pNode.pPrev)
+//        {
+//            MemFree(pNode);
+//            pHeadOfPathList = null;
+//            pPath = pHeadOfPathList;
+//            return false;
+//        }
 
         /*
         // ok add last waypt
@@ -630,12 +630,7 @@ public class StrategicPathing
 
         pPath = pHeadOfPathList;
         return pPath;
-
     }
-
-
-
-
 
     bool AddSectorToPathList(Path pPath, int uiSectorNum)
     {
@@ -651,12 +646,12 @@ public class StrategicPathing
 
         if (pNode == null)
         {
-            pNode = MemAlloc(sizeof(PathSt));
+//            pNode = MemAlloc(sizeof(PathSt));
 
             // Implement EtaCost Array as base EtaCosts of sectors
             // pNode.uiEtaCost=EtaCost[uiSectorNum];
             pNode.uiSectorId = uiSectorNum;
-            pNode.uiEta = GetWorldTotalMin();
+//            pNode.uiEta = GetWorldTotalMin();
             pNode.pNext = null;
             pNode.pPrev = null;
             /*
@@ -664,7 +659,7 @@ public class StrategicPathing
                        pNode.fSpeed=SLOW_MVT;
                    else
             */
-            pNode.fSpeed = NORMAL_MVT;
+//            pNode.fSpeed = NORMAL_MVT;
 
 
             return true;
@@ -673,7 +668,7 @@ public class StrategicPathing
         {
             //if (pNode.uiSectorId==uiSectorNum)
             //	  return false;
-            while (pNode.pNext)
+            while (pNode.pNext is not null)
             {
                 //  if (pNode.uiSectorId==uiSectorNum)
                 //	  return false;
@@ -681,7 +676,7 @@ public class StrategicPathing
 
             }
 
-            pTempNode = MemAlloc(sizeof(PathSt));
+//            pTempNode = MemAlloc(sizeof(PathSt));
             pTempNode.uiEta = 0;
             pNode.pNext = pTempNode;
             pTempNode.uiSectorId = uiSectorNum;
@@ -692,7 +687,7 @@ public class StrategicPathing
                    pTempNode.fSpeed=SLOW_MVT;
                   else 
             */
-            pTempNode.fSpeed = NORMAL_MVT;
+//            pTempNode.fSpeed = NORMAL_MVT;
             pNode = pTempNode;
 
         }
@@ -852,10 +847,10 @@ public class StrategicPathing
 
 
         // is there in fact a list to append to
-        if (pNode)
+        if (pNode is not null)
         {
             // move to tail of old list
-            while (pNode.pNext)
+            while (pNode.pNext is not null)
             {
                 // next node in list
                 pNode = pNode.pNext;
@@ -898,7 +893,7 @@ public class StrategicPathing
         }
 
         // clear list
-        while (pNode.pNext)
+        while (pNode.pNext is not null)
         {
             // set up delete node
             pDeleteNode = pNode;
@@ -954,7 +949,7 @@ public class StrategicPathing
         sCurrentSector = (int)pNode.uiSectorId;
 
         // move through list
-        while ((pNode) && (sSector != sCurrentSector))
+        while ((pNode is not null) && (sSector != sCurrentSector))
         {
 
             // next value
@@ -987,7 +982,7 @@ public class StrategicPathing
 
 
         // if we're NOT about to clear the head (there's a previous entry)
-        if (pNode.pPrev)
+        if (pNode.pPrev is not null)
         {
             // set next for tail to null
             pNode.pPrev.pNext = null;
@@ -1001,7 +996,7 @@ public class StrategicPathing
         }
 
         // clear list
-        while (pNode.pNext)
+        while (pNode.pNext is not null)
         {
             // set up delete node
             pDeleteNode = pNode;
@@ -1041,7 +1036,7 @@ public class StrategicPathing
         }
 
         // move to beginning of list
-        while (pList.pPrev)
+        while (pList.pPrev is not null)
         {
             pList = pList.pPrev;
         }
@@ -1061,7 +1056,7 @@ public class StrategicPathing
         }
 
         // move to beginning of list
-        while (pList.pNext)
+        while (pList.pNext is not null)
         {
             pList = pList.pNext;
         }
@@ -1083,7 +1078,7 @@ public class StrategicPathing
             return (null);
         }
 
-        while (pNode.pNext)
+        while (pNode.pNext is not null)
         {
             pLastNode = pNode;
             pNode = pNode.pNext;
@@ -1117,7 +1112,7 @@ public class StrategicPathing
         }
 
         // move to head of list
-        while (pNode.pPrev)
+        while (pNode.pPrev is not null)
         {
             // back one node
             pNode = pNode.pPrev;
@@ -1125,7 +1120,7 @@ public class StrategicPathing
 
         // set up new head
         pNewHead = pNode.pNext;
-        if (pNewHead)
+        if (pNewHead is not null)
         {
             pNewHead.pPrev = null;
         }
@@ -1165,7 +1160,7 @@ public class StrategicPathing
         pNode = MoveToEndOfPathList(pNode);
 
         // move through list
-        while ((pNode) && (sSector != sCurrentSector))
+        while ((pNode is not null) && (sSector != sCurrentSector))
         {
             // set past node up
             pPastNode = pNode;
@@ -1201,12 +1196,12 @@ public class StrategicPathing
     int GetLastSectorIdInCharactersPath(SOLDIERTYPE? pCharacter)
     {
         // will return the last sector of the current path, or the current sector if there's no path
-        int sLastSector = (pCharacter.sSectorX) + (pCharacter.sSectorY) * (MAP_WORLD_X);
+        int sLastSector = (pCharacter.sSectorX) + ((int)pCharacter.sSectorY) * (MAP_WORLD_X);
         Path pNode = null;
 
         pNode = GetSoldierMercPathPtr(pCharacter);
 
-        while (pNode)
+        while (pNode is not null)
         {
             sLastSector = (int)(pNode.uiSectorId);
             pNode = pNode.pNext;
@@ -1232,11 +1227,11 @@ public class StrategicPathing
         }
 
         // get current last sector
-        sLastSector = (pVehicleList[iId].sSectorX) + (pVehicleList[iId].sSectorY * MAP_WORLD_X);
+        sLastSector = (pVehicleList[iId].sSectorX) + ((int)pVehicleList[iId].sSectorY * MAP_WORLD_X);
 
         pNode = pVehicleList[iId].pMercPath;
 
-        while (pNode)
+        while (pNode is not null)
         {
             sLastSector = (int)(pNode.uiSectorId);
             pNode = pNode.pNext;
@@ -1264,7 +1259,7 @@ public class StrategicPathing
         // start list off
         if (pCurNode != null)
         {
-            pDestNode = MemAlloc(sizeof(PathSt));
+//            pDestNode = MemAlloc(sizeof(PathSt));
 
             // set next and prev nodes
             pDestNode.pPrev = null;
@@ -1281,7 +1276,7 @@ public class StrategicPathing
         while (pCurNode != null)
         {
 
-            pDestNode.pNext = MemAlloc(sizeof(PathSt));
+//            pDestNode.pNext = MemAlloc(sizeof(PathSt));
 
             // set next's previous to current
             pDestNode.pNext.pPrev = pDestNode;
@@ -1610,7 +1605,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
             // allows assignments to flash right away if their subject moves away/returns (robot/vehicle being repaired), or
             // patient/doctor/student/trainer being automatically put on a squad via the movement menu.
-            gfReEvaluateEveryonesNothingToDo = true;
+//            gfReEvaluateEveryonesNothingToDo = true;
         }
 
 
@@ -1622,7 +1617,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             if (pGroup.fPlayer && pGroup.fBetweenSectors)
             {
                 // send the group right back to its current sector by reversing directions
-                GroupReversingDirectionsBetweenSectors(pGroup, pGroup.ubSectorX, pGroup.ubSectorY, false);
+//                GroupReversingDirectionsBetweenSectors(pGroup, pGroup.ubSectorX, pGroup.ubSectorY, false);
             }
 
             return;
@@ -1637,7 +1632,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         }
 
         // build a brand new list of waypoints, one for initial direction, and another for every "direction change" thereafter
-        while (pNode.pNext)
+        while (pNode.pNext is not null)
         {
             iDelta = pNode.pNext.uiSectorId - pNode.uiSectorId;
             Debug.Assert(iDelta != 0);        // same sector should never repeat in the path list
@@ -1648,7 +1643,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             if ((iOldDelta != 0) && (iDelta != iOldDelta))
             {
                 // add this strategic sector as a waypoint
-                AddWaypointStrategicIDToPGroup(pGroup, pNode.uiSectorId);
+//                AddWaypointStrategicIDToPGroup(pGroup, pNode.uiSectorId);
             }
 
             // remember this delta
@@ -1663,20 +1658,20 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         Debug.Assert(!fFirstNode);
 
         // the final destination sector - always add a waypoint for it
-        AddWaypointStrategicIDToPGroup(pGroup, pNode.uiSectorId);
+//        AddWaypointStrategicIDToPGroup(pGroup, pNode.uiSectorId);
 
         // at this point, the final sector in the path must be identical to this group's last waypoint
-        wp = GetFinalWaypoint(pGroup);
+//        wp = GetFinalWaypoint(pGroup);
         // AssertMsg(wp, "Path exists, but no waypoints were added!  AM-0");
         // AssertMsg(pNode.uiSectorId == (int)CALCULATE_STRATEGIC_INDEX(wp.x, wp.y), "Last waypoint differs from final path sector!  AM-0");
 
 
         // see if we've already reached the first sector in the path (we never actually left the sector and reversed back to it)
-        if (pGroup.uiArrivalTime == GetWorldTotalMin())
-        {
-            // never really left.  Must set check for battle true in order for HandleNonCombatGroupArrival() to run!
-            GroupArrivedAtSector(pGroup.ubGroupID, true, true);
-        }
+//        if (pGroup.uiArrivalTime == GetWorldTotalMin())
+//        {
+//            // never really left.  Must set check for battle true in order for HandleNonCombatGroupArrival() to run!
+//            GroupArrivedAtSector(pGroup.ubGroupID, true, true);
+//        }
     }
 
 
@@ -1699,7 +1694,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
 
-    bool MoveGroupFromSectorToSector(int ubGroupID, int sStartX, int sStartY, int sDestX, int sDestY)
+    bool MoveGroupFromSectorToSector(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
     {
         Path pNode = null;
 
@@ -1723,7 +1718,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
     }
 
 
-    bool MoveGroupFromSectorToSectorButAvoidLastSector(int ubGroupID, int sStartX, int sStartY, int sDestX, int sDestY)
+    bool MoveGroupFromSectorToSectorButAvoidLastSector(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
     {
         Path pNode = null;
 
@@ -1749,15 +1744,15 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         return (true);
     }
 
-    bool MoveGroupFromSectorToSectorButAvoidPlayerInfluencedSectors(int ubGroupID, int sStartX, int sStartY, int sDestX, int sDestY)
+    bool MoveGroupFromSectorToSectorButAvoidPlayerInfluencedSectors(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
     {
         Path pNode = null;
 
         // init sectors with soldiers in them
-        InitSectorsWithSoldiersList();
+//        InitSectorsWithSoldiersList();
 
         // build the list of sectors with soldier in them
-        BuildSectorsWithSoldiersList();
+//        BuildSectorsWithSoldiersList();
 
         // turn on the avoid flag
         gfPlotToAvoidPlayerInfuencedSectors = true;
@@ -1791,15 +1786,15 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         return (true);
     }
 
-    bool MoveGroupFromSectorToSectorButAvoidPlayerInfluencedSectorsAndStopOneSectorBeforeEnd(int ubGroupID, int sStartX, int sStartY, int sDestX, int sDestY)
+    bool MoveGroupFromSectorToSectorButAvoidPlayerInfluencedSectorsAndStopOneSectorBeforeEnd(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
     {
-        Path pNode = null;
+        Path? pNode = null;
 
         // init sectors with soldiers in them
-        InitSectorsWithSoldiersList();
+//        InitSectorsWithSoldiersList();
 
         // build the list of sectors with soldier in them
-        BuildSectorsWithSoldiersList();
+//        BuildSectorsWithSoldiersList();
 
         // turn on the avoid flag
         gfPlotToAvoidPlayerInfuencedSectors = true;
@@ -1855,9 +1850,9 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
     int GetLengthOfPath(Path pHeadPath)
     {
         int iLength = 0;
-        Path pNode = pHeadPath;
+        Path? pNode = pHeadPath;
 
-        while (pNode)
+        while (pNode is not null)
         {
             pNode = pNode.pNext;
             iLength++;
@@ -1896,19 +1891,17 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
 
-    Path GetSoldierMercPathPtr(SOLDIERTYPE? pSoldier)
+    Path GetSoldierMercPathPtr(SOLDIERTYPE pSoldier)
     {
-        Path pMercPath = null;
-
-        Debug.Assert(pSoldier);
+        Path? pMercPath = null;
 
         // IN a vehicle?
-        if (pSoldier.bAssignment == VEHICLE)
+        if (pSoldier.bAssignment == Assignments.VEHICLE)
         {
             pMercPath = pVehicleList[pSoldier.iVehicleId].pMercPath;
         }
         // IS a vehicle?
-        else if (pSoldier.uiStatusFlags & SOLDIER_VEHICLE)
+        else if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
         {
             pMercPath = pVehicleList[pSoldier.bVehicleID].pMercPath;
         }
@@ -1935,7 +1928,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
         if (pGroup.fVehicle)
         {
-            iVehicledId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
+//            iVehicledId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicledId != -1);
 
             pMercPath = pVehicleList[iVehicledId].pMercPath;
@@ -1943,10 +1936,10 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         else
         {
             // value returned will be null if there's nobody in the group!
-            if (pGroup.pPlayerList && pGroup.pPlayerList.pSoldier)
-            {
-                pMercPath = pGroup.pPlayerList.pSoldier.pMercPath;
-            }
+//            if (pGroup.pPlayerList && pGroup.pPlayerList.pSoldier)
+//            {
+//                pMercPath = pGroup.pPlayerList.pSoldier.pMercPath;
+//            }
         }
 
         return (pMercPath);
@@ -1984,18 +1977,18 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         PLAYERGROUP? pPlayer = null;
         SOLDIERTYPE? pSoldier = null;
 
-        pPlayer = pGroup.pPlayerList;
-        while (pPlayer)
-        {
-            pSoldier = pPlayer.pSoldier;
-
-            if (pSoldier != null)
-            {
-                ClearPathForSoldier(pSoldier);
-            }
-
-            pPlayer = pPlayer.next;
-        }
+//        pPlayer = pGroup.pPlayerList;
+//        while (pPlayer)
+//        {
+//            pSoldier = pPlayer.pSoldier;
+//
+//            if (pSoldier != null)
+//            {
+//                ClearPathForSoldier(pSoldier);
+//            }
+//
+//            pPlayer = pPlayer.next;
+//        }
 
         // if it's a vehicle
         if (pGroup.fVehicle)
@@ -2003,7 +1996,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             int iVehicleId = -1;
             VEHICLETYPE? pVehicle = null;
 
-            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
+//            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicleId != -1);
 
             pVehicle = (pVehicleList[iVehicleId]);
@@ -2013,7 +2006,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         }
 
         // clear the waypoints for this group too - no mercpath = no waypoints!
-        RemovePGroupWaypoints(pGroup);
+//        RemovePGroupWaypoints(pGroup);
         // not used anymore
         //SetWayPointsAsCanceled( pCurrentMerc.ubGroupID );
     }
@@ -2021,7 +2014,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
 
     // clears the contents of the soldier's mercpPath, as well as his vehicle path if he is a / or is in a vehicle
-    void ClearPathForSoldier(SOLDIERTYPE? pSoldier)
+    void ClearPathForSoldier(SOLDIERTYPE pSoldier)
     {
         VEHICLETYPE? pVehicle = null;
 
@@ -2055,18 +2048,18 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         PLAYERGROUP? pPlayer = null;
         SOLDIERTYPE? pSoldier = null;
 
-        pPlayer = pGroup.pPlayerList;
-        while (pPlayer)
-        {
-            pSoldier = pPlayer.pSoldier;
-
-            if (pSoldier != null)
-            {
-                AddSectorToFrontOfMercPath((pSoldier.pMercPath), ubSectorX, ubSectorY);
-            }
-
-            pPlayer = pPlayer.next;
-        }
+//        pPlayer = pGroup.pPlayerList;
+//        while (pPlayer)
+//        {
+//            pSoldier = pPlayer.pSoldier;
+//
+//            if (pSoldier != null)
+//            {
+//                AddSectorToFrontOfMercPath((pSoldier.pMercPath), ubSectorX, ubSectorY);
+//            }
+//
+//            pPlayer = pPlayer.next;
+//        }
 
         // if it's a vehicle
         if (pGroup.fVehicle)
@@ -2074,7 +2067,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             int iVehicleId = -1;
             VEHICLETYPE? pVehicle = null;
 
-            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
+//            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicleId != -1);
 
             pVehicle = (pVehicleList[iVehicleId]);
@@ -2094,7 +2087,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             pNext = ppMercPath,
             pPrev = null,
             uiEta = GameClock.GetWorldTotalMin(),
-            fSpeed = NORMAL_MVT,
+//            fSpeed = NORMAL_MVT,
         };
 
         // if path wasn't null

@@ -983,7 +983,7 @@ public class Squads
     }
 
 
-    public static void GetSquadPosition(out int ubNextX, out MAP_ROW ubNextY, out int ubPrevX, out int ubPrevY, out uint uiTraverseTime, out int uiArriveTime, SquadEnum ubSquadValue)
+    public static void GetSquadPosition(out int ubNextX, out MAP_ROW ubNextY, out int ubPrevX, out int ubPrevY, out uint uiTraverseTime, out uint uiArriveTime, SquadEnum ubSquadValue)
     {
         // grab the mvt group for this squad and find all this information
 

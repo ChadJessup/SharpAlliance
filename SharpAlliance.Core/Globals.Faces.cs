@@ -193,7 +193,7 @@ public class FACETYPE
     public int bOldActionPoints;
     public bool fOldHandleUIHatch;
     public bool fOldShowHighlight;
-    public int bOldAssignment;
+    public Assignments bOldAssignment;
     public int ubOldServiceCount;
     public int ubOldServicePartner;
     public bool fOldShowMoveHilight;

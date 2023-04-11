@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using SharpAlliance.Core.Managers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -15,7 +16,7 @@ public class NPC
     public static bool TriggerNPCWithIHateYouQuote(NPCID ubTriggerNPC)
     {
         // Check if we have a quote to trigger...
-        NPCQuoteInfo pNPCQuoteInfoArray;
+        List<NPCQuoteInfo> pNPCQuoteInfoArray;
         NPCQuoteInfo pQuotePtr;
         bool fDisplayDialogue = true;
         int ubLoop;
@@ -31,15 +32,15 @@ public class NPC
         for (ubLoop = 0; ubLoop < NUM_NPC_QUOTE_RECORDS; ubLoop++)
         {
             pQuotePtr = (pNPCQuoteInfoArray[ubLoop]);
-            if (NPCConsiderQuote(ubTriggerNPC, 0, APPROACH_DECLARATION_OF_HOSTILITY, ubLoop, 0, pNPCQuoteInfoArray))
-            {
-                // trigger this quote!
-                // reset approach required value so that we can trigger it
-                //pQuotePtr->ubApproachRequired = TRIGGER_NPC;
-                NPCTriggerNPC(ubTriggerNPC, ubLoop, APPROACH_DECLARATION_OF_HOSTILITY, TRUE);
-                gMercProfiles[ubTriggerNPC].ubMiscFlags |= PROFILE_MISC_FLAG_SAID_HOSTILE_QUOTE;
-                return (true);
-            }
+//            if (NPCConsiderQuote(ubTriggerNPC, 0, APPROACH_DECLARATION_OF_HOSTILITY, ubLoop, 0, pNPCQuoteInfoArray))
+//            {
+//                // trigger this quote!
+//                // reset approach required value so that we can trigger it
+//                //pQuotePtr->ubApproachRequired = TRIGGER_NPC;
+//                NPCTriggerNPC(ubTriggerNPC, ubLoop, APPROACH_DECLARATION_OF_HOSTILITY, true);
+//                gMercProfiles[ubTriggerNPC].ubMiscFlags |= PROFILE_MISC_FLAG_SAID_HOSTILE_QUOTE;
+//                return (true);
+//            }
         }
         return (false);
 
@@ -81,7 +82,7 @@ public class NPC
         }
 
         pNPCQuoteInfoArray = gpNPCQuoteInfoArray[ubNPC];
-        pQuotePtr = (pNPCQuoteInfoArray[ubQuoteRecord]);
+        pQuotePtr = (pNPCQuoteInfoArray[(int)ubQuoteRecord]);
         // either we are supposed to consider a new quote record
         // (indicated by a negative gridno in the has-item field)
         // or an action to perform once we reached this gridno
@@ -91,7 +92,7 @@ public class NPC
             // check for an after-move action
             if (pQuotePtr.sActionData > 0)
             {
-                NPCDoAction(ubNPC, pQuotePtr.sActionData, ubQuoteRecord);
+//                NPCDoAction(ubNPC, pQuotePtr.sActionData, ubQuoteRecord);
             }
         }
 
@@ -100,19 +101,19 @@ public class NPC
             pQuotePtr = (pNPCQuoteInfoArray[ubLoop]);
             if (pNPC.sGridNo == -(pQuotePtr.sRequiredGridno))
             {
-                if (NPCConsiderQuote(ubNPC, 0, TRIGGER_NPC, ubLoop, 0, pNPCQuoteInfoArray))
-                {
-                    if (fAlreadyThere)
-                    {
-                        TriggerNPCRecord(ubNPC, ubLoop);
-                    }
-                    else
-                    {
-                        // trigger this quote
-                        TriggerNPCRecordImmediately(ubNPC, ubLoop);
-                    }
-                    return;
-                }
+//                if (NPCConsiderQuote(ubNPC, 0, TRIGGER_NPC, ubLoop, 0, pNPCQuoteInfoArray))
+//                {
+//                    if (fAlreadyThere)
+//                    {
+//                        TriggerNPCRecord(ubNPC, ubLoop);
+//                    }
+//                    else
+//                    {
+//                        // trigger this quote
+//                        TriggerNPCRecordImmediately(ubNPC, ubLoop);
+//                    }
+//                    return;
+//                }
             }
         }
     }
@@ -127,13 +128,13 @@ public class NPC
 
         var pNPCQuoteInfoArray = gpNPCQuoteInfoArray[ubNPC];
 
-        ReplaceLocationInNPCData(pNPCQuoteInfoArray, sOldGridNo, sNewGridNo);
+//        ReplaceLocationInNPCData(pNPCQuoteInfoArray, sOldGridNo, sNewGridNo);
     }
 
     public static void TriggerNPCRecord(NPCID ubTriggerNPC, int ubTriggerNPCRec)
     {
         // Check if we have a quote to trigger...
-        NPCQuoteInfo? pQuotePtr;
+        NPCQuoteInfo pQuotePtr;
         bool fDisplayDialogue = true;
 
         if (EnsureQuoteFileLoaded(ubTriggerNPC) == false)
@@ -142,20 +143,20 @@ public class NPC
             return;
         }
         pQuotePtr = (gpNPCQuoteInfoArray[ubTriggerNPC][ubTriggerNPCRec]);
-        if (pQuotePtr.ubQuoteNum == IRRELEVANT)
-        {
-            fDisplayDialogue = false;
-        }
-
-        if (NPCConsiderQuote(ubTriggerNPC, 0, TRIGGER_NPC, ubTriggerNPCRec, 0, gpNPCQuoteInfoArray[ubTriggerNPC]))
-        {
-            NPCTriggerNPC(ubTriggerNPC, ubTriggerNPCRec, TRIGGER_NPC, fDisplayDialogue);
-        }
-        else
-        {
-            // don't do anything
-            // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("WARNING: trigger of %d, record %d cannot proceed, possible error", ubTriggerNPC, ubTriggerNPCRec));
-        }
+//        if (pQuotePtr.ubQuoteNum == IRRELEVANT)
+//        {
+//            fDisplayDialogue = false;
+//        }
+//
+//        if (NPCConsiderQuote(ubTriggerNPC, 0, TRIGGER_NPC, ubTriggerNPCRec, 0, gpNPCQuoteInfoArray[ubTriggerNPC]))
+//        {
+//            NPCTriggerNPC(ubTriggerNPC, ubTriggerNPCRec, TRIGGER_NPC, fDisplayDialogue);
+//        }
+//        else
+//        {
+//            // don't do anything
+//            // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("WARNING: trigger of %d, record %d cannot proceed, possible error", ubTriggerNPC, ubTriggerNPCRec));
+//        }
     }
 
     public static bool EnsureQuoteFileLoaded(NPCID ubNPC)
@@ -182,7 +183,7 @@ public class NPC
                     // no backup stored of current script, so need to backup
                     fLoadFile = true;
                     // set pointer to back up script!
-                    BackupOriginalQuoteFile(ubNPC);
+//                    BackupOriginalQuoteFile(ubNPC);
                 }
                 // else have backup, are recruited, nothing special
             }
@@ -192,7 +193,7 @@ public class NPC
                 if (gpBackupNPCQuoteInfoArray[ubNPC] != null)
                 {
                     // backup stored, restore backup
-                    RevertToOriginalQuoteFile(ubNPC);
+//                    RevertToOriginalQuoteFile(ubNPC);
                 }
                 // else are no backup, nothing special
             }
@@ -200,7 +201,7 @@ public class NPC
 
         if (fLoadFile)
         {
-            gpNPCQuoteInfoArray[ubNPC] = LoadQuoteFile(ubNPC);
+            gpNPCQuoteInfoArray[ubNPC] = new() { LoadQuoteFile(ubNPC) };
             if (gpNPCQuoteInfoArray[ubNPC] == null)
             {
                 // error message at this point!
@@ -211,7 +212,7 @@ public class NPC
         return (true);
     }
 
-    public NPCQuoteInfo LoadQuoteFile(NPCID ubNPC)
+    public static NPCQuoteInfo LoadQuoteFile(NPCID ubNPC)
     {
         string zFileName;
         Stream hFile;
@@ -224,7 +225,7 @@ public class NPC
             // use a copy of Herve's data file instead!
             zFileName = sprintf("NPCData\\%03d.npc", NPCID.HERVE);
         }
-        else if (ubNPC < FIRST_RPC || (ubNPC < FIRST_NPC && gMercProfiles[ubNPC].ubMiscFlags.HasFlag(ProfileMiscFlags1.ROFILE_MISC_FLAG_RECRUITED)))
+        else if (ubNPC < FIRST_RPC || (ubNPC < FIRST_NPC && gMercProfiles[ubNPC].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)))
         {
             zFileName = sprintf("NPCData\\000.npc", ubNPC);
         }
@@ -252,21 +253,21 @@ public class NPC
 
         CHECKN(FileManager.FileExists(zFileName));
 
-        hFile = FileManager.FileOpen(zFileName, FILE_ACCESS_READ, false);
-        CHECKN(hFile);
+//        hFile = FileManager.FileOpen(zFileName, FILE_ACCESS_READ, false);
+//        CHECKN(hFile);
 
-        uiFileSize = sizeof(NPCQuoteInfo) * NUM_NPC_QUOTE_RECORDS;
-        pFileData = MemAlloc(uiFileSize);
-        if (pFileData)
-        {
+//        uiFileSize = sizeof(NPCQuoteInfo) * NUM_NPC_QUOTE_RECORDS;
+//        pFileData = MemAlloc(uiFileSize);
+//        if (pFileData)
+//        {
 //            if (!FileManager.FileRead(hFile, ref pFileData, uiFileSize, out uiBytesRead) || uiBytesRead != uiFileSize)
-            {
-                MemFree(pFileData);
-                pFileData = null;
-            }
-        }
-
-        FileClose(hFile);
+//            {
+//                MemFree(pFileData);
+//                pFileData = null;
+//            }
+//        }
+//
+//        FileClose(hFile);
 
         return (pFileData);
     }

@@ -378,7 +378,7 @@ public class SoldierFind
                         //Otherwise, look for a bad guy by way of gridno]
                         // Selective means don't give out enemy mercs if they are not visible
 
-                        ///&& !NewOKDestination( pSoldier, sGridNo, true, (int)gsInterfaceLevel )
+                        //&& !NewOKDestination( pSoldier, sGridNo, true, (int)gsInterfaceLevel )
                         if (pSoldier.sGridNo == sGridNo && !Overhead.NewOKDestination(pSoldier, sGridNo, true, (int)Globals.gsInterfaceLevel))
                         {
                             // Set it!

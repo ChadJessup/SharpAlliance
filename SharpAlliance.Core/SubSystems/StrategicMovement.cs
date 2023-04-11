@@ -733,9 +733,9 @@ public class StrategicMovement
         // ( Can't if sleeping, unconscious, and EPC, etc....
         int[] ubMercsInGroup = new int[20];
         int ubNumMercs = 0;
-        int ubChosenMerc;
-        SOLDIERTYPE? pSoldier;
-        PLAYERGROUP? pPlayer;
+        int ubChosenMerc = 0;
+        SOLDIERTYPE? pSoldier = null;
+        PLAYERGROUP? pPlayer = null;
 
         if (fDisableMapInterfaceDueToBattle)
         {
@@ -846,9 +846,11 @@ public class StrategicMovement
         if (gfWorldLoaded)
         { //look for people arriving in the currently loaded sector.  This handles reinforcements.
             curr = FindMovementGroupInSector((int)gWorldSectorX, gWorldSectorY, true);
-            if (!gbWorldSectorZ && PlayerMercsInSector((int)gWorldSectorX, gWorldSectorY, gbWorldSectorZ) &&
-                    pGroup.ubSectorX == gWorldSectorX && pGroup.ubSectorY == gWorldSectorY &&
-                    curr)
+            if (gbWorldSectorZ == 0
+                && PlayerMercsInSector((int)gWorldSectorX, gWorldSectorY, gbWorldSectorZ) > 0
+                && pGroup.ubSectorX == gWorldSectorX
+                && pGroup.ubSectorY == gWorldSectorY
+                && curr is not null)
             { //Reinforcements have arrived!
 
                 if (gTacticalStatus.fEnemyInSector)
@@ -859,10 +861,10 @@ public class StrategicMovement
             }
         }
 
-        if (!DidGameJustStart())
-        {
-            gubEnemyEncounterCode = NO_ENCOUNTER_CODE;
-        }
+//        if (!DidGameJustStart())
+//        {
+//            gubEnemyEncounterCode = NO_ENCOUNTER_CODE;
+//        }
 
         HandleOtherGroupsArrivingSimultaneously(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ);
 
@@ -1156,10 +1158,10 @@ public class StrategicMovement
     public static void AwardExperienceForTravelling(GROUP? pGroup)
     {
         // based on how long movement took, mercs gain a bit of life experience for travelling
-        PLAYERGROUP? pPlayerGroup;
-        SOLDIERTYPE? pSoldier;
-        uint uiPoints;
-        int uiCarriedPercent;
+        PLAYERGROUP? pPlayerGroup = null;
+        SOLDIERTYPE? pSoldier = null;
+        uint uiPoints = 0;
+        int uiCarriedPercent = 0;
 
         if (pGroup is null || !pGroup.fPlayer)
         {
@@ -1270,11 +1272,11 @@ public class StrategicMovement
     //aren't at the final destination, they will move to the next sector. 
     public static void GroupArrivedAtSector(int ubGroupID, bool fCheckForBattle, bool fNeverLeft)
     {
-        GROUP? pGroup;
+        GROUP? pGroup = null;
         int iVehId = -1;
-        PLAYERGROUP? curr;
-        WorldDirections ubInsertionDirection;
-        INSERTION_CODE ubStrategicInsertionCode;
+        PLAYERGROUP? curr = null;
+        WorldDirections ubInsertionDirection = 0;
+        INSERTION_CODE ubStrategicInsertionCode = 0;
         SOLDIERTYPE? pSoldier = null;
         bool fExceptionQueue = false;
         bool fFirstTimeInSector = false;
@@ -1353,7 +1355,7 @@ public class StrategicMovement
             && FindMovementGroupInSector(gWorldSectorX, gWorldSectorY, true) is not null
             && (pGroup.ubNextX != gWorldSectorX || pGroup.ubNextY != gWorldSectorY || gbWorldSectorZ > 0)
             || Meanwhile.AreInMeanwhile()
-            ||
+            //||
                 //KM : Aug 11, 1999 -- Patch fix:  Added additional checks to prevent a 2nd battle in the case
                 //     where the player is involved in a potential battle with bloodcats/civilians
                 //                fCheckForBattle && HostileCiviliansPresent()
@@ -2375,7 +2377,7 @@ public class StrategicMovement
     public static void SetGroupSectorValue(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int ubGroupID)
     {
         GROUP? pGroup;
-        PLAYERGROUP? pPlayer;
+        PLAYERGROUP? pPlayer = null;
 
         // get the group
         pGroup = GetGroup(ubGroupID);
@@ -2528,11 +2530,11 @@ public class StrategicMovement
             // update eta time by the path between these 2 waypts
             //            uiEtaTime += FindTravelTimeBetweenWaypoints(pCurrent, pDest, pGroup);
 
-            pCurrent.x = pNode.x;
-            pCurrent.y = pNode.y;
+            //pCurrent.x = pNode.x;
+            //pCurrent.y = pNode.y;
 
             // next waypt
-            pNode = pNode.next;
+            //pNode = pNode.next;
         }
 
         return (uiEtaTime);
@@ -2928,7 +2930,7 @@ public class StrategicMovement
         if (pGroup.fPlayer)
         { //We don't have to worry about filling up the player slots, because it is impossible
           //to have more player's in the game then the number of slots available for the player.
-            PLAYERGROUP? pPlayer;
+            PLAYERGROUP? pPlayer = null;
             INSERTION_CODE ubStrategicInsertionCode;
             //First, determine which entrypoint to use, based on the travel direction of the group.
             if (pGroup.ubSectorX < pGroup.ubPrevX)
@@ -2972,30 +2974,30 @@ public class StrategicMovement
                 cnt++;
             }
 
-            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG_INTERFACE, Message[STR_PLAYER_REINFORCEMENTS]);
+//            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG_INTERFACE, Message[STR_PLAYER_REINFORCEMENTS]);
 
         }
         else
         {
             gfPendingEnemies = true;
-            ResetMortarsOnTeamCount();
-            AddPossiblePendingEnemiesToBattle();
+//            ResetMortarsOnTeamCount();
+//            AddPossiblePendingEnemiesToBattle();
         }
         //Update the known number of enemies in the sector.
         pSector = SectorInfo[SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY)];
-        iNumEnemiesInSector = NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY);
-        if (iNumEnemiesInSector)
-        {
-            if (pSector.bLastKnownEnemies >= 0)
-            {
-                pSector.bLastKnownEnemies = (int)iNumEnemiesInSector;
-            }
-            //if we don't know how many enemies there are, then we can't update this value.
-        }
-        else
-        {
-            pSector.bLastKnownEnemies = 0;
-        }
+//        iNumEnemiesInSector = NumEnemiesInSector(pGroup.ubSectorX, pGroup.ubSectorY);
+//        if (iNumEnemiesInSector)
+//        {
+//            if (pSector.bLastKnownEnemies >= 0)
+//            {
+//                pSector.bLastKnownEnemies = (int)iNumEnemiesInSector;
+//            }
+//            //if we don't know how many enemies there are, then we can't update this value.
+//        }
+//        else
+//        {
+//            pSector.bLastKnownEnemies = 0;
+//        }
     }
 
     public static bool PlayersBetweenTheseSectors(SEC sSource, SEC sDest, out int iCountEnter, out int iCountExit, out bool fAboutToArriveEnter)
@@ -3946,9 +3948,9 @@ public class StrategicMovement
 
     public static bool GroupAtFinalDestination(GROUP? pGroup)
     {
-        WAYPOINT? wp;
+        WAYPOINT? wp = null;
 
-        if (pGroup.ubMoveType != ONE_WAY)
+        if (pGroup.ubMoveType != MOVE_TYPES.ONE_WAY)
         {
             return false; //Group will continue to patrol, hence never stops.
         }
@@ -3956,7 +3958,7 @@ public class StrategicMovement
         //Determine if we are at the final waypoint.
         wp = GetFinalWaypoint(pGroup);
 
-        if (!wp)
+        if (wp is null)
         { //no waypoints, so the group is at it's destination.  This happens when
           //an enemy group is created in the destination sector (which is legal for
           //staging groups which always stop adjacent to their real sector destination)
@@ -4256,7 +4258,7 @@ public class StrategicMovement
         Debug.Assert(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
         pSoldier.sBreathRed -= sFuelSpent;
         pSoldier.sBreathRed = (int)Math.Max(0, pSoldier.sBreathRed);
-        pSoldier.bBreath = (int)((pSoldier.sBreathRed + 99) / 100);
+        pSoldier.bBreath = (uint)((pSoldier.sBreathRed + 99) / 100);
         return (false);
     }
 
@@ -4647,10 +4649,10 @@ public class StrategicMovement
             // and we're not at the end of our road
             if (!GroupAtFinalDestination(pGroup))
             {
-                if (AnyMercInGroupCantContinueMoving(pGroup))
+//                if (AnyMercInGroupCantContinueMoving(pGroup))
                 {
                     // stop: clear their strategic movement (mercpaths and waypoints)
-                    ClearMercPathsAndWaypointsForAllInGroup(pGroup);
+//                    ClearMercPathsAndWaypointsForAllInGroup(pGroup);
 
                     // NOTE: Of course, it would be better if they continued onwards once everyone was ready to go again, in which
                     // case we'd want to preserve the plotted path, but since the player can mess with the squads, etc.
@@ -4659,12 +4661,12 @@ public class StrategicMovement
                     // It's a wish list task for AM...
 
                     // stop time so player can react if group was already on the move and suddenly halts
-                    StopTimeCompression();
+//                    StopTimeCompression();
                 }
-                else
+//                else
                 {
                     // continue onwards: rebuild way points, initiate movement
-                    RebuildWayPointsForGroupPath(GetGroupMercPathPtr(pGroup), pGroup.ubGroupID);
+//                    RebuildWayPointsForGroupPath(GetGroupMercPathPtr(pGroup), pGroup.ubGroupID);
                 }
             }
         }
@@ -4823,16 +4825,16 @@ public class StrategicMovement
             // stop here
 
             // clear their strategic movement (mercpaths and waypoints)
-            ClearMercPathsAndWaypointsForAllInGroup(gpGroupPrompting);
+//            ClearMercPathsAndWaypointsForAllInGroup(gpGroupPrompting);
 
             //		// if currently selected sector has nobody in it
             //		if ( PlayerMercsInSector( ( int ) sSelMapX, ( int ) sSelMapY, ( int ) iCurrentMapSectorZ ) == 0 )
             // New: ALWAYS make this sector strategically selected, even if there were mercs in the previously selected one
             {
-                ChangeSelectedMapSector(gpGroupPrompting.ubSectorX, gpGroupPrompting.ubSectorY, gpGroupPrompting.ubSectorZ);
+//                ChangeSelectedMapSector(gpGroupPrompting.ubSectorX, gpGroupPrompting.ubSectorY, gpGroupPrompting.ubSectorZ);
             }
 
-            StopTimeCompression();
+//            StopTimeCompression();
         }
 
         gpGroupPrompting = null;

@@ -25,7 +25,7 @@ public class GameClock
         guiDay = (guiGameClock / NUM_SEC_IN_DAY);
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
-        WORLDTIMESTR = wprintf("%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
+        gswzWorldTimeStr = wprintf("%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
         guiTimeCurrentSectorWasLastLoaded = 0;
         guiGameSecondsPerRealSecond = 0;
         gubClockResolution = 1;
@@ -151,7 +151,7 @@ public class GameClock
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
 
-        wprintf(WORLDTIMESTR, "%s %d, %02d:%02d", gpGameClockString[(int)STR_GAMECLOCK.DAY_NAME], guiDay, guiHour, guiMin);
+        wprintf(gswzWorldTimeStr, "%s %d, %02d:%02d", gpGameClockString[(int)STR_GAMECLOCK.DAY_NAME], guiDay, guiHour, guiMin);
 
         if (gfResetAllPlayerKnowsEnemiesFlags && !gTacticalStatus.fEnemyInSector)
         {
@@ -220,7 +220,7 @@ public class GameClock
 
         if ((gfPauseDueToPlayerGamePause == false))
         {
-            mprintf(sX + (CLOCK_STRING_WIDTH - StringPixLength(WORLDTIMESTR, CLOCK_FONT)) / 2, sY, WORLDTIMESTR);
+            mprintf(sX + (CLOCK_STRING_WIDTH - StringPixLength(gswzWorldTimeStr, CLOCK_FONT)) / 2, sY, gswzWorldTimeStr);
         }
         else
         {
@@ -301,7 +301,7 @@ public class GameClock
             if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
-                TellPlayerWhyHeCantCompressTime();
+//                TellPlayerWhyHeCantCompressTime();
                 return;
             }
 
@@ -357,7 +357,7 @@ public class GameClock
             if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
-                TellPlayerWhyHeCantCompressTime();
+//                TellPlayerWhyHeCantCompressTime();
                 return;
             }
 
@@ -384,7 +384,7 @@ public class GameClock
             if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
-                TellPlayerWhyHeCantCompressTime();
+//                TellPlayerWhyHeCantCompressTime();
                 return;
             }
 
@@ -428,7 +428,7 @@ public class GameClock
             if (!MapScreenInterfaceBottom.AllowedToTimeCompress())
             {
                 // not allowed to compress time
-                TellPlayerWhyHeCantCompressTime();
+//                TellPlayerWhyHeCantCompressTime();
                 return;
             }
         }
@@ -989,7 +989,7 @@ public class GameClock
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
 
-        //wprintf(WORLDTIMESTR, "%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
+        //wprintf(gswzWorldTimeStr, "%s %d, %02d:%02d", pDayStrings[0], guiDay, guiHour, guiMin);
 
         if (!gfBasement && !gfCaves)
         {

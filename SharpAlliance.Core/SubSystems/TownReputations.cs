@@ -31,7 +31,7 @@ public class TownReputations
     public void InitializeProfilesForTownReputation()
     {
         // initialize the town opinion values in each recruitable merc's profile structure
-        for (int uiProfileId = 0; uiProfileId < SoldierProfileSubSystem.Constants.FIRST_NPC; uiProfileId++)
+        for (NPCID uiProfileId = 0; uiProfileId < FIRST_NPC; uiProfileId++)
         {
             var npcId = (NPCID)uiProfileId;
             // set to 0 by default

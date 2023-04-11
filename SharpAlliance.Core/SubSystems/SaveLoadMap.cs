@@ -69,7 +69,7 @@ public class SaveLoadMap
 
     public static bool SaveModifiedMapStructToMapTempFile(MODIFY_MAP pMap, int sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
-        string zMapName;
+        string zMapName = string.Empty;
         Stream hFile;
         int uiNumBytesWritten;
 
@@ -79,31 +79,31 @@ public class SaveLoadMap
         //add the 'm' for 'Modifed Map' to the front of the map name
         //	sprintf( zMapName, "%s\\m_%s", MAPS_DIR, zTempName);
 
-        GetMapTempFileName(SF.MAP_MODIFICATIONS_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
+//        GetMapTempFileName(SF.MAP_MODIFICATIONS_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
 
         //Open the file for writing, Create it if it doesnt exist
-        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, FALSE);
-        if (hFile == 0)
-        {
-            //Error opening map modification file
-            return (false);
-        }
+//        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, FALSE);
+//        if (hFile == 0)
+//        {
+//            //Error opening map modification file
+//            return (false);
+//        }
 
         //Move to the end of the file
-        FileSeek(hFile, 0, FILE_SEEK_FROM_END);
+//        FileSeek(hFile, 0, FILE_SEEK_FROM_END);
+//
+//
+//        FileWrite(hFile, pMap, sizeof(MODIFY_MAP), out uiNumBytesWritten);
+//        if (uiNumBytesWritten != sizeof(MODIFY_MAP))
+//        {
+//            //Error Writing size of array to disk
+//            FileClose(hFile);
+//            return (false);
+//        }
 
-
-        FileWrite(hFile, pMap, sizeof(MODIFY_MAP), out uiNumBytesWritten);
-        if (uiNumBytesWritten != sizeof(MODIFY_MAP))
-        {
-            //Error Writing size of array to disk
-            FileClose(hFile);
-            return (false);
-        }
-
-        FileClose(hFile);
-
-        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.MAP_MODIFICATIONS_TEMP_FILE_EXISTS);
+//        FileClose(hFile);
+//
+//        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.MAP_MODIFICATIONS_TEMP_FILE_EXISTS);
 
         return (true);
     }
@@ -133,7 +133,7 @@ public class SaveLoadMap
         {
             usGridNo = uiMapIndex,
             //	Map.usIndex		= usIndex;
-            usImageType = (int)uiType,
+            usImageType = uiType,
             usSubImageIndex = (int)usSubIndex!,
 
             ubType = SLM.REMOVE_OBJECT

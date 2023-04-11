@@ -2491,7 +2491,7 @@ public class AIUtils
         return bDifficulty;
     }
 
-    bool ValidCreatureTurn(SOLDIERTYPE pCreature, WorldDirections bNewDirection)
+    public static bool ValidCreatureTurn(SOLDIERTYPE pCreature, WorldDirections bNewDirection)
     {
         WorldDirections bDirChange = 0;
         WorldDirections bTempDir;

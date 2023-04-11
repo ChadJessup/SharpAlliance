@@ -506,7 +506,7 @@ public class StrategicMines
             if (iAmtExtracted > 0)
             {
                 // debug message
-                //			Messages.ScreenMsg( MSG_FONT_RED, MSG_DEBUG, "%s - Mine income from %s = $%d", WORLDTIMESTR, pTownNames[ GetTownAssociatedWithMine( bMineIndex ) ], iAmtExtracted );
+                //			Messages.ScreenMsg( MSG_FONT_RED, MSG_DEBUG, "%s - Mine income from %s = $%d", gswzWorldTimeStr, pTownNames[ GetTownAssociatedWithMine( bMineIndex ) ], iAmtExtracted );
 
                 // check type of mine
                 bMineType = Globals.gMineStatus[bMineIndex].ubMineType;
@@ -859,7 +859,7 @@ public class StrategicMines
         bQuoteNum = Globals.gHeadMinerData[ubHeadMinerIndex].bQuoteNum[(int)ubQuoteType];
         Debug.Assert(bQuoteNum != -1);
 
-        ubFaceIndex = (int)uiExternalStaticNPCFaces[Globals.gHeadMinerData[ubHeadMinerIndex].ubExternalFace];
+//        ubFaceIndex = (int)uiExternalStaticNPCFaces[Globals.gHeadMinerData[ubHeadMinerIndex].ubExternalFace];
 
         // transition to mapscreen is not necessary for "creatures gone" quote - player is IN that mine, so he'll know
         if (ubQuoteType != HEAD_MINER_STRATEGIC_QUOTE.CREATURES_GONE)

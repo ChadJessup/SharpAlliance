@@ -13,7 +13,7 @@ public class TileDefine
     public static int MAX_ANIMATED_TILES = 200;
     public static int WALL_HEIGHT = 50;
     // Globals used
-    
+
     public static bool GetTileIndexFromTypeSubIndex(TileTypeDefines uiCheckType, int usSubIndex, out TileIndexes pusTileIndex)
     {
         // Tile database is zero-based, Type indecies are 1-based!

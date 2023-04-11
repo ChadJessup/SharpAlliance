@@ -350,15 +350,16 @@ public class StructureInternals
         return (pStructure);
     }
 
-    private static bool OkayToAddStructureToTile(int sBaseGridNo, STRUCTURE_ON sCubeOffset, DB_STRUCTURE_REF? pDBStructureRef, int ubTileIndex, int sExclusionID, bool fIgnorePeople)
-    { // Verifies whether a structure is blocked from being added to the map at a particular point
-        DB_STRUCTURE? pDBStructure;
-        List<DB_STRUCTURE_TILE> ppTile;
-        STRUCTURE? pExistingStructure;
-        STRUCTURE? pOtherExistingStructure;
-        int bLoop, bLoop2;
-        int sGridNo;
-        int sOtherGridNo;
+    private static bool OkayToAddStructureToTile(int sBaseGridNo, STRUCTURE_ON sCubeOffset, DB_STRUCTURE_REF pDBStructureRef, int ubTileIndex, int sExclusionID, bool fIgnorePeople)
+    {
+        // Verifies whether a structure is blocked from being added to the map at a particular point
+        DB_STRUCTURE? pDBStructure = null;
+        List<DB_STRUCTURE_TILE> ppTile = new();
+        STRUCTURE? pExistingStructure = null;
+        STRUCTURE? pOtherExistingStructure = null;
+        int bLoop = 0, bLoop2 = 0;
+        int sGridNo = 0;
+        int sOtherGridNo = 0;
 
         ppTile = pDBStructureRef.ppTile;
         sGridNo = sBaseGridNo + ppTile[ubTileIndex].sPosRelToBase;
@@ -550,7 +551,9 @@ public class StructureInternals
                     }
 
                     // ATE: Added check here - UNLESS the part we are trying to add is PASSABLE!
-                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)) && !(ppTile[ubTileIndex].fFlags & TILE_PASSABLE))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)
+                        && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
+                        && !(ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE)))
                     {
                         // don't allow 2 people in the same tile
                         return (false);
@@ -1371,7 +1374,7 @@ public class StructureInternals
         }
 
         // OK, LOOK FOR A SAM SITE, UPDATE....
-        UpdateAndDamageSAMIfFound(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, sGridNo, ubDamage);
+//        UpdateAndDamageSAMIfFound(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, sGridNo, ubDamage);
 
         // find the base so we can reduce the hit points!
         pBase = FindBaseStructure(pStructure);
@@ -1637,7 +1640,7 @@ public class StructureInternals
             return (true);
         }
 
-        hVObject.ppZStripInfo = MemAlloc(sizeof(ZStripInfo?) * hVObject.usNumberOfObjects);
+//        hVObject.ppZStripInfo = MemAlloc(sizeof(ZStripInfo?) * hVObject.usNumberOfObjects);
         if (hVObject.ppZStripInfo == null)
         {
             return (false);
@@ -1712,7 +1715,7 @@ public class StructureInternals
                         || ((pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)))
                         && (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.SLIDINGDOOR))))
                     {
-                        hVObject.ppZStripInfo[uiDestVoIndex] = MemAlloc(sizeof(ZStripInfo));
+//                        hVObject.ppZStripInfo[uiDestVoIndex] = MemAlloc(sizeof(ZStripInfo));
                         if (hVObject.ppZStripInfo[uiDestVoIndex] == null)
                         {
                             // augh!! out of memory!  free everything allocated and abort
@@ -1849,7 +1852,7 @@ public class StructureInternals
 
                             // now create the array!
                             pCurr.ubNumberOfZChanges = ubNumIncreasing + ubNumStable + ubNumDecreasing;
-                            pCurr.pbZChange = MemAlloc(pCurr.ubNumberOfZChanges);
+//                            pCurr.pbZChange = MemAlloc(pCurr.ubNumberOfZChanges);
                             if (pCurr.pbZChange == null)
                             {
                                 // augh!
@@ -1911,7 +1914,7 @@ public class StructureInternals
 
     public static BLOCKING GetBlockingStructureInfo(int sGridNo, WorldDirections bDir, int bNextDir, int bLevel, out int pStructHeight, out STRUCTURE? ppTallestStructure, bool fWallsBlock)
     {
-        STRUCTURE? pCurrent, pStructure;
+        STRUCTURE? pCurrent, pStructure = null;
         STRUCTURE_ON sDesiredLevel;
         bool fOKStructOnLevel = false;
         bool fMinimumBlockingFound = false;

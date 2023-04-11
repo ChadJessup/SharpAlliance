@@ -22,104 +22,104 @@ public class TileSurface
         VOBJECT_DESC VObjectDesc;
         HVOBJECT hVObject;
         HIMAGE hImage;
-        SGPFILENAME cStructureFilename;
+        string cStructureFilename;
         STR cEndOfName;
         STRUCTURE_FILE_REF? pStructureFileRef;
         bool fOk;
 
 
-        hImage = CreateImage(cFilename, IMAGE_ALLDATA);
-        if (hImage == null)
-        {
-            // Report error
-            SET_ERROR("Could not load tile file: %s", cFilename);
-            return (null);
-        }
+//        hImage = CreateImage(cFilename, IMAGE_ALLDATA);
+//        if (hImage == null)
+//        {
+//            // Report error
+//            SET_ERROR("Could not load tile file: %s", cFilename);
+//            return (null);
+//        }
 
-        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMHIMAGE;
-        VObjectDesc.hImage = hImage;
+//        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMHIMAGE;
+//        VObjectDesc.hImage = hImage;
 
-        hVObject = CreateVideoObject(&VObjectDesc);
+//        hVObject = CreateVideoObject(&VObjectDesc);
 
-        if (hVObject == null)
-        {
-            // Report error
-            SET_ERROR("Could not load tile file: %s", cFilename);
-            // Video Object will set error conition.]
-            DestroyImage(hImage);
-            return (null);
-        }
+//        if (hVObject == null)
+//        {
+//            // Report error
+//            SET_ERROR("Could not load tile file: %s", cFilename);
+//            // Video Object will set error conition.]
+//            DestroyImage(hImage);
+//            return (null);
+//        }
 
         // Load structure data, if any.
         // Start by hacking the image filename into that for the structure data
-        strcpy(cStructureFilename, cFilename);
-        cEndOfName = strchr(cStructureFilename, '.');
-        if (cEndOfName != null)
-        {
-            cEndOfName++;
-        }
-        else
-        {
-            strcat(cStructureFilename, ".");
-        }
+//        strcpy(cStructureFilename, cFilename);
+//        cEndOfName = strchr(cStructureFilename, '.');
+//        if (cEndOfName != null)
+//        {
+//            cEndOfName++;
+//        }
+//        else
+//        {
+//            strcat(cStructureFilename, ".");
+//        }
 
-        strcat(cStructureFilename, STRUCTURE_FILE_EXTENSION);
-        if (FileManager.FileExists(cStructureFilename))
-        {
-            pStructureFileRef = LoadStructureFile(cStructureFilename);
-            if (pStructureFileRef == null || hVObject.usNumberOfObjects != pStructureFileRef.usNumberOfStructures)
-            {
-                DestroyImage(hImage);
-                DeleteVideoObject(hVObject);
-                SET_ERROR("Structure file error: %s", cStructureFilename);
-                return (null);
-            }
-
-            // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, cStructureFilename);
-
-            fOk = AddZStripInfoToVObject(hVObject, pStructureFileRef, false, 0);
-            if (fOk == false)
-            {
-                DestroyImage(hImage);
-                DeleteVideoObject(hVObject);
-                SET_ERROR("ZStrip creation error: %s", cStructureFilename);
-                return (null);
-            }
-
-        }
-        else
-        {
-            pStructureFileRef = null;
-        }
+//        strcat(cStructureFilename, STRUCTURE_FILE_EXTENSION);
+//        if (FileManager.FileExists(cStructureFilename))
+//        {
+//            pStructureFileRef = LoadStructureFile(cStructureFilename);
+//            if (pStructureFileRef == null || hVObject.usNumberOfObjects != pStructureFileRef.usNumberOfStructures)
+//            {
+//                DestroyImage(hImage);
+//                DeleteVideoObject(hVObject);
+//                SET_ERROR("Structure file error: %s", cStructureFilename);
+//                return (null);
+//            }
+//
+//            // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, cStructureFilename);
+//
+//            fOk = AddZStripInfoToVObject(hVObject, pStructureFileRef, false, 0);
+//            if (fOk == false)
+//            {
+//                DestroyImage(hImage);
+//                DeleteVideoObject(hVObject);
+//                SET_ERROR("ZStrip creation error: %s", cStructureFilename);
+//                return (null);
+//            }
+//
+//        }
+//        else
+//        {
+//            pStructureFileRef = null;
+//        }
 
         pTileSurf = new();
 
-        pTileSurf.vo = hVObject;
-        pTileSurf.pStructureFileRef = pStructureFileRef;
-
-        if (pStructureFileRef is not null && pStructureFileRef.pAuxData != null)
-        {
-            pTileSurf.pAuxData = pStructureFileRef.pAuxData;
-            pTileSurf.pTileLocData = pStructureFileRef.pTileLocData;
-        }
-        else if (hImage.uiAppDataSize == hVObject.usNumberOfObjects * sizeof(AuxObjectData))
-        {
-            // Valid auxiliary data, so make a copy of it for TileSurf
-            pTileSurf.pAuxData = MemAlloc(hImage.uiAppDataSize);
-            if (pTileSurf.pAuxData == null)
-            {
-                DestroyImage(hImage);
-                DeleteVideoObject(hVObject);
-                return (null);
-            }
-            memcpy(pTileSurf.pAuxData, hImage.pAppData, hImage.uiAppDataSize);
-        }
-        else
-        {
-            pTileSurf.pAuxData = null;
-        }
-        // the hImage is no longer needed
-        DestroyImage(hImage);
+//        pTileSurf.vo = hVObject;
+//        pTileSurf.pStructureFileRef = pStructureFileRef;
+//
+//        if (pStructureFileRef is not null && pStructureFileRef.pAuxData != null)
+//        {
+//            pTileSurf.pAuxData = pStructureFileRef.pAuxData;
+//            pTileSurf.pTileLocData = pStructureFileRef.pTileLocData;
+//        }
+//        else if (hImage.uiAppDataSize == hVObject.usNumberOfObjects * sizeof(AuxObjectData))
+//        {
+//            // Valid auxiliary data, so make a copy of it for TileSurf
+//            pTileSurf.pAuxData = MemAlloc(hImage.uiAppDataSize);
+//            if (pTileSurf.pAuxData == null)
+//            {
+//                DestroyImage(hImage);
+//                DeleteVideoObject(hVObject);
+//                return (null);
+//            }
+//            memcpy(pTileSurf.pAuxData, hImage.pAppData, hImage.uiAppDataSize);
+//        }
+//        else
+//        {
+//            pTileSurf.pAuxData = null;
+//        }
+//        // the hImage is no longer needed
+//        DestroyImage(hImage);
 
         return (pTileSurf);
     }
@@ -149,7 +149,7 @@ public class TileSurface
     void SetRaisedObjectFlag(string cFilename, TILE_IMAGERY? pTileSurf)
     {
         int cnt = 0;
-        string cRootFile;
+        string cRootFile = string.Empty;
         string[] ubRaisedObjectFiles =
         {
             "bones",

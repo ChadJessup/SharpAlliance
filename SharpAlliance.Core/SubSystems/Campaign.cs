@@ -451,7 +451,7 @@ public class Campaign
             case Stat.STRAMT:
                 psStatGainPtr = (pProfile.sStrengthGain);
                 pbStatDeltaPtr = (pProfile.bStrengthDelta);
-                pbStatPtr = (pProfile.bStrength);
+                pbStatPtr = (int?)(pProfile.bStrength);
                 break;
 
             case Stat.LDRAMT:
@@ -469,7 +469,7 @@ public class Campaign
             switch (ubStat)
             {
                 case Stat.HEALTHAMT:
-                    pbSoldierStatPtr = (pSoldier.bLifeMax);
+                    pbSoldierStatPtr = (int?)(pSoldier.bLifeMax);
                     puiStatTimerPtr = (pSoldier.uiChangeHealthTime);
                     usIncreaseValue = Globals.HEALTH_INCREASE;
                     break;
@@ -523,7 +523,7 @@ public class Campaign
                     break;
 
                 case Stat.STRAMT:
-                    pbSoldierStatPtr = (pSoldier.bStrength);
+                    pbSoldierStatPtr = ((int?)pSoldier.bStrength);
                     puiStatTimerPtr = (pSoldier.uiChangeStrengthTime);
                     usIncreaseValue = Globals.STRENGTH_INCREASE;
                     break;
@@ -625,7 +625,7 @@ public class Campaign
                 if (pSoldier != null)
                 {
                     // adjust current health by the same amount as max health
-                    pSoldier.bLife += sPtsChanged;
+                    pSoldier.bLife += (uint)sPtsChanged;
 
                     // don't let this kill a guy or knock him out!!!
                     if (pSoldier.bLife < Globals.OKLIFE)
@@ -717,7 +717,7 @@ public class Campaign
         // this function will run through the soldier's profile and update their stats based on any accumulated gain pts.
         Stat ubStat = 0;
         int? psStatGainPtr = null;
-        int pbStatPtr;
+        int pbStatPtr = 0;
         int pbSoldierStatPtr;
         int pbStatDeltaPtr;
         int bMinStatValue;
@@ -850,7 +850,7 @@ public class Campaign
 
                 case Stat.STRAMT:
                     psStatGainPtr = (pProfile.sStrengthGain);
-                    pbStatPtr = (pProfile.bStrength);
+                    pbStatPtr = ((int)pProfile.bStrength);
                     break;
 
                 case Stat.LDRAMT:
@@ -867,7 +867,7 @@ public class Campaign
                 switch (ubStat)
                 {
                     case Stat.HEALTHAMT:
-                        pbSoldierStatPtr = (pSoldier.bLifeMax);
+                        pbSoldierStatPtr = ((int)pSoldier.bLifeMax);
                         break;
 
                     case Stat.AGILAMT:
@@ -903,7 +903,7 @@ public class Campaign
                         break;
 
                     case Stat.STRAMT:
-                        pbSoldierStatPtr = (pSoldier.bStrength);
+                        pbSoldierStatPtr = ((int)pSoldier.bStrength);
                         break;
 
                     case Stat.LDRAMT:

@@ -321,7 +321,7 @@ public class Laptop
         string uiTITLEFORWWW;
         HVOBJECT hHandle;
         int iIndex = 0;
-        string sString;
+        string sString = string.Empty;
 
         // title bar - load
         CHECKF(VeldridVideoManager.AddVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));

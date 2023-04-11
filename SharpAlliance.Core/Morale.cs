@@ -614,11 +614,11 @@ public class Morale
                 {
                     if (pTeamSoldier.bActive && pTeamSoldier.ubProfile != NO_PROFILE)
                     {
-                        if (WhichHated(pTeamSoldier.ubProfile, pSoldier.ubProfile) != -1)
-                        {
-                            // we hate 'em anyways
-                            continue;
-                        }
+//                        if (SoldierProfileSubSystem.WhichHated(pTeamSoldier.ubProfile, pSoldier.ubProfile) != -1)
+//                        {
+//                            // we hate 'em anyways
+//                            continue;
+//                        }
 
                         if (gMercProfiles[pTeamSoldier.ubProfile].bSex == Sexes.FEMALE)
                         {
@@ -808,7 +808,7 @@ public class Morale
                         if (bOpinion == HATED_OPINION)
                         {
 
-                            bHated = WhichHated(pSoldier.ubProfile, pOtherSoldier.ubProfile);
+                            bHated = SoldierProfileSubSystem.WhichHated(pSoldier.ubProfile, pOtherSoldier.ubProfile);
                             if (bHated >= 2)
                             {
                                 // learn to hate which has become full-blown hatred, full strength

@@ -829,8 +829,8 @@ public class Emails
     {
         email? pA = pEmailList;
         email? pB = pEmailList;
-        string pSubjectA;
-        string pSubjectB;
+        string pSubjectA = string.Empty;
+        string pSubjectB = string.Empty;
         int iId = 0;
 
         // no messages to sort?
@@ -920,8 +920,8 @@ public class Emails
                     while (pB is not null)
                     {
                         // clear out control codes
-                        CleanOutControlCodesFromString(pA.pSubject, pSubjectA);
-                        CleanOutControlCodesFromString(pB.pSubject, pSubjectB);
+//                        CleanOutControlCodesFromString(pA.pSubject, pSubjectA);
+//                        CleanOutControlCodesFromString(pB.pSubject, pSubjectB);
 
                         // lesser string?...need sorting  
                         if (fSortSubjectUpwards)
@@ -1195,7 +1195,7 @@ public class Emails
 
     void DrawDate(int iCounter, int iDate, bool fRead)
     {
-        string sString;
+        string sString = string.Empty;
 
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
@@ -1521,7 +1521,7 @@ public class Emails
         int iOffSet = 0;
         int iHeightTemp = 0;
         int iHeightSoFar = 0;
-        RecordPtr pTempRecord;
+        RecordPtr? pTempRecord;
         int iPageSize = 0;
         int iPastHeight = 0;
         int iYPositionOnPage = 0;
@@ -1643,10 +1643,10 @@ public class Emails
 
 
                 // copy over string 
-                wcscpy(pString, pTempRecord.pRecord);
+                pString = wcscpy(pTempRecord.pRecord);
 
                 // get the height of the string, ONLY!...must redisplay ON TOP OF background graphic
-                iHeight += IanDisplayWrappedString(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + iViewerPositionY), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, IAN_WRAP_NO_SHADOW);
+//                iHeight += IanDisplayWrappedString(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + iViewerPositionY), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, IAN_WRAP_NO_SHADOW);
 
                 // increment email record ptr
                 pTempRecord = pTempRecord.Next;
@@ -1795,7 +1795,7 @@ public class Emails
             giMessageButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\X.sti", -1, 0, -1, 1, -1);
             giMessageButton[0] = ButtonSubSystem.QuickCreateButton(giMessageButtonImage[0], new(BUTTON_X + 2, (int)(BUTTON_Y + (int)iViewerY + 1)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnMessageXCallback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnMessageXCallback);
             ButtonSubSystem.SetButtonCursor(giMessageButton[0], CURSOR.LAPTOP_SCREEN);
 
             if (giNumberOfPagesToCurrentEmail > 2)
@@ -1804,12 +1804,12 @@ public class Emails
                 giMailMessageButtonsImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
                 giMailMessageButtons[0] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[0], new(PREVIOUS_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                    (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnPreviousEmailPageCallback);
+                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnPreviousEmailPageCallback);
 
                 giMailMessageButtonsImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
                 giMailMessageButtons[1] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[1], new(NEXT_PAGE_BUTTON_X, (int)(LOWER_BUTTON_Y + (int)iViewerY + 2)),
                     ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                    (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnNextEmailPageCallback);
+                    (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnNextEmailPageCallback);
 
                 gfPageButtonsWereCreated = true;
             }
@@ -1817,7 +1817,7 @@ public class Emails
             giMailMessageButtonsImage[2] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 2, -1, 5, -1);
             giMailMessageButtons[2] = ButtonSubSystem.QuickCreateButton(giMailMessageButtonsImage[2], new(DELETE_BUTTON_X, (int)(BUTTON_LOWER_Y + (int)iViewerY + 2)),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnDeleteCallback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteCallback);
             /*
                     // set up disable methods
                     SpecifyDisabledButtonStyle( giMailMessageButtons[1], DISABLED_STYLE_SHADED );
@@ -1879,7 +1879,7 @@ public class Emails
             giNewMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
             giNewMailButton[0] = ButtonSubSystem.QuickCreateButton(giNewMailButtonImage[0], new(NEW_BTN_X + 10, NEW_BTN_Y),
                                                   ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                                                  (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnNewOkback);
+                                                  (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnNewOkback);
 
             // set cursor
             ButtonSubSystem.SetButtonCursor(giNewMailButton[0], CURSOR.LAPTOP_SCREEN);
@@ -2357,13 +2357,13 @@ public class Emails
             giDeleteMailButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 0, -1, 1, -1);
             giDeleteMailButton[0] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[0], new(NEW_BTN_X + 1, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnDeleteYesback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteYesback);
 
             // NO button
             giDeleteMailButtonImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\YesNoButtons.sti", -1, 2, -1, 3, -1);
             giDeleteMailButton[1] = ButtonSubSystem.QuickCreateButton(giDeleteMailButtonImage[1], new(NEW_BTN_X + 40, NEW_BTN_Y),
                 ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 2,
-                (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)BtnDeleteNoback);
+                (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)BtnDeleteNoback);
 
             // set up cursors
             ButtonSubSystem.SetButtonCursor(giDeleteMailButton[0], CURSOR.LAPTOP_SCREEN);
@@ -2553,7 +2553,7 @@ public class Emails
             // sort message on subject and reorder list
             fSortSubjectUpwards = !fSortSubjectUpwards;
 
-            SortMessages(SUBJECT);
+            SortMessages(EmailFields.SUBJECT);
             fJustStartedEmail = false;
             PlaceMessagesinPages();
 
@@ -2725,7 +2725,7 @@ public class Emails
         giSortButtonImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 0, -1, 4, -1);
         giSortButton[0] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[0], new(ENVELOPE_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)ReadCallback);
+                                            (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)ReadCallback);
         ButtonSubSystem.SetButtonCursor(giSortButton[0], CURSOR.LAPTOP_SCREEN);
 
 
@@ -2733,22 +2733,22 @@ public class Emails
         giSortButtonImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 1, -1, 5, -1);
         giSortButton[1] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[1], new(FROM_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)FromCallback);
+                                            (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)FromCallback);
         ButtonSubSystem.SetButtonCursor(giSortButton[1], CURSOR.LAPTOP_SCREEN);
-        SpecifyFullButtonTextAttributes(giSortButton[1], pEmailHeaders[FROM_HEADER], EMAIL_WARNING_FONT,
-                                                                               FontColor.FONT_BLACK, FontColor.FONT_BLACK,
-                                                                                 FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
+//        SpecifyFullButtonTextAttributes(giSortButton[1], pEmailHeaders[FROM_HEADER], EMAIL_WARNING_FONT,
+//                                                                               FontColor.FONT_BLACK, FontColor.FONT_BLACK,
+//                                                                                 FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
 
 
         // sender sort
         giSortButtonImage[2] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 2, -1, 6, -1);
         giSortButton[2] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[2], new(SUBJECT_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)SubjectCallback);
+                                            (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)SubjectCallback);
         ButtonSubSystem.SetButtonCursor(giSortButton[2], CURSOR.LAPTOP_SCREEN);
-        SpecifyFullButtonTextAttributes(giSortButton[2], pEmailHeaders[SUBJECT_HEADER], EMAIL_WARNING_FONT,
-                                                                              FontColor.FONT_BLACK, FontColor.FONT_BLACK,
-                                                                                FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
+//        SpecifyFullButtonTextAttributes(giSortButton[2], pEmailHeaders[SUBJECT_HEADER], EMAIL_WARNING_FONT,
+//                                                                              FontColor.FONT_BLACK, FontColor.FONT_BLACK,
+//                                                                                FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
 
 
 
@@ -2756,13 +2756,11 @@ public class Emails
         giSortButtonImage[3] = ButtonSubSystem.LoadButtonImage("LAPTOP\\mailbuttons.sti", -1, 3, -1, 7, -1);
         giSortButton[3] = ButtonSubSystem.QuickCreateButton(giSortButtonImage[3], new(DATE_BOX_X, FROM_BOX_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)DateCallback);
+                                            (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)DateCallback);
         ButtonSubSystem.SetButtonCursor(giSortButton[3], CURSOR.LAPTOP_SCREEN);
-        SpecifyFullButtonTextAttributes(giSortButton[3], pEmailHeaders[RECD_HEADER], EMAIL_WARNING_FONT,
-                                                                              FontColor.FONT_BLACK, FontColor.FONT_BLACK,
-                                                                                FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
-
-
+//        SpecifyFullButtonTextAttributes(giSortButton[3], pEmailHeaders[RECD_HEADER], EMAIL_WARNING_FONT,
+//                                                                              FontColor.FONT_BLACK, FontColor.FONT_BLACK,
+//                                                                                FontColor.FONT_BLACK, FontColor.FONT_BLACK, TEXT_CJUSTIFIED);
         return;
     }
 
@@ -2879,28 +2877,28 @@ public class Emails
 
     void AddEmailRecordToList(string pString)
     {
-        RecordPtr pTempRecord;
+        RecordPtr? pTempRecord = null;
 
         // set to head of list
-        pTempRecord = pMessageRecordList;
+//        pTempRecord = pMessageRecordList;
 
-        if (!pTempRecord)
+        if (pTempRecord is null)
         {
 
             // list empty, set this node to head
-            pTempRecord = MemAlloc(sizeof(Record));
-            pMessageRecordList = pTempRecord;
+//            pTempRecord = MemAlloc(sizeof(Record));
+//            pMessageRecordList = pTempRecord;
         }
         else
         {
             // run to end of list
-            while (pTempRecord.Next)
-            {
-                pTempRecord = pTempRecord.Next;
-            }
+//            while (pTempRecord.Next)
+//            {
+//                pTempRecord = pTempRecord.Next;
+//            }
 
             // found, alloc
-            pTempRecord.Next = MemAlloc(sizeof(Record));
+//            pTempRecord.Next = MemAlloc(sizeof(Record));
 
             // move to node
             pTempRecord = pTempRecord.Next;
@@ -3046,7 +3044,7 @@ public class Emails
         int iViewerY = 0;
         int iHeightTemp = 0;
         int iHeightSoFar = 0;
-        RecordPtr pTempRecord;
+        RecordPtr? pTempRecord = null;
         int iEndOfSection = 0;
         int iRand = 0;
         bool fSufficientMechSkill = false, fSufficientMarkSkill = false, fSufficientMedSkill = false, fSufficientExplSkill = false;
@@ -3055,7 +3053,7 @@ public class Emails
         iRand = Globals.Random.Next(32767);
 
         // set record ptr to head of list
-        pTempRecord = pMessageRecordList;
+//        pTempRecord = pMessageRecordList;
 
         // increment height for size of one line
         iHeight += FontSubSystem.GetFontHeight(MESSAGE_FONT);
@@ -3064,7 +3062,7 @@ public class Emails
         iEndOfSection = IMP_RESULTS_INTRO_LENGTH;
 
         // list doesn't exist, reload
-        if (!pTempRecord)
+        if (pTempRecord is null)
         {
 
             while (iEndOfSection > iCounter)
@@ -3075,7 +3073,7 @@ public class Emails
                 // have to place players name into string for first record
                 if (iCounter == 0)
                 {
-                    string zTemp;
+                    string zTemp = string.Empty;
 
                     wprintf(zTemp, " %s", gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].zName);
                     wcscat(pString, zTemp);
@@ -3109,28 +3107,28 @@ public class Emails
             switch (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bPersonalityTrait)
             {
                 // normal as can be
-                case (NO_PERSONALITYTRAIT):
+                case (PersonalityTrait.NO_PERSONALITYTRAIT):
                     iOffSet = IMP_PERSONALITY_NORMAL;
                     break;
-                case (HEAT_INTOLERANT):
+                case (PersonalityTrait.HEAT_INTOLERANT):
                     iOffSet = IMP_PERSONALITY_HEAT;
                     break;
-                case (NERVOUS):
+                case (PersonalityTrait.NERVOUS):
                     iOffSet = IMP_PERSONALITY_NERVOUS;
                     break;
-                case (CLAUSTROPHOBIC):
+                case (PersonalityTrait.CLAUSTROPHOBIC):
                     iOffSet = IMP_PERSONALITY_CLAUSTROPHOBIC;
                     break;
-                case (NONSWIMMER):
+                case (PersonalityTrait.NONSWIMMER):
                     iOffSet = IMP_PERSONALITY_NONSWIMMER;
                     break;
-                case (FEAR_OF_INSECTS):
+                case (PersonalityTrait.FEAR_OF_INSECTS):
                     iOffSet = IMP_PERSONALITY_FEAR_OF_INSECTS;
                     break;
-                case (FORGETFUL):
+                case (PersonalityTrait.FORGETFUL):
                     iOffSet = IMP_PERSONALITY_FORGETFUL;
                     break;
-                case (PSYCHO):
+                case (PersonalityTrait.PSYCHO):
                     iOffSet = IMP_PERSONALITY_PSYCHO;
                     break;
             }
@@ -3178,31 +3176,31 @@ public class Emails
             switch (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bAttitude)
             {
                 // normal as can be
-                case (ATT_NORMAL):
+                case (ATT.NORMAL):
                     iOffSet = IMP_ATTITUDE_NORMAL;
                     break;
-                case (ATT_FRIENDLY):
+                case (ATT.FRIENDLY):
                     iOffSet = IMP_ATTITUDE_FRIENDLY;
                     break;
-                case (ATT_LONER):
+                case (ATT.LONER):
                     iOffSet = IMP_ATTITUDE_LONER;
                     break;
-                case (ATT_OPTIMIST):
+                case (ATT.OPTIMIST):
                     iOffSet = IMP_ATTITUDE_OPTIMIST;
                     break;
-                case (ATT_PESSIMIST):
+                case (ATT.PESSIMIST):
                     iOffSet = IMP_ATTITUDE_PESSIMIST;
                     break;
-                case (ATT_AGGRESSIVE):
+                case (ATT.AGGRESSIVE):
                     iOffSet = IMP_ATTITUDE_AGGRESSIVE;
                     break;
-                case (ATT_ARROGANT):
+                case (ATT.ARROGANT):
                     iOffSet = IMP_ATTITUDE_ARROGANT;
                     break;
-                case (ATT_ASSHOLE):
+                case (ATT.ASSHOLE):
                     iOffSet = IMP_ATTITUDE_ASSHOLE;
                     break;
-                case (ATT_COWARD):
+                case (ATT.COWARD):
                     iOffSet = IMP_ATTITUDE_COWARD;
                     break;
 
@@ -3350,29 +3348,29 @@ public class Emails
 
 
             // now the needs training values
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMarksmanship > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMarksmanship <= NEEDS_TRAINING_SKILL_VALUE))
-            {
-                fSufficientMarkSkill = true;
-                iEndOfSection = 1;
-            }
-
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMedical > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMedical <= NEEDS_TRAINING_SKILL_VALUE))
-            {
-                fSufficientMedSkill = true;
-                iEndOfSection = 1;
-            }
-
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMechanical > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMechanical <= NEEDS_TRAINING_SKILL_VALUE))
-            {
-                fSufficientMechSkill = true;
-                iEndOfSection = 1;
-            }
-
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bExplosive > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bExplosive <= NEEDS_TRAINING_SKILL_VALUE))
-            {
-                fSufficientExplSkill = true;
-                iEndOfSection = 1;
-            }
+//            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMarksmanship > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMarksmanship <= NEEDS_TRAINING_SKILL_VALUE))
+//            {
+//                fSufficientMarkSkill = true;
+//                iEndOfSection = 1;
+//            }
+//
+//            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMedical > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMedical <= NEEDS_TRAINING_SKILL_VALUE))
+//            {
+//                fSufficientMedSkill = true;
+//                iEndOfSection = 1;
+//            }
+//
+//            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMechanical > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bMechanical <= NEEDS_TRAINING_SKILL_VALUE))
+//            {
+//                fSufficientMechSkill = true;
+//                iEndOfSection = 1;
+//            }
+//
+//            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bExplosive > NO_CHANCE_IN_HELL_SKILL_VALUE) && (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bExplosive <= NEEDS_TRAINING_SKILL_VALUE))
+//            {
+//                fSufficientExplSkill = true;
+//                iEndOfSection = 1;
+//            }
 
             while (iEndOfSection > iCounter)
             {
@@ -3523,7 +3521,7 @@ public class Emails
                 iCounter++;
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == KNIFING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == KNIFING))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.KNIFING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.KNIFING))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_KNIFE), MAIL_STRING_SIZE);
@@ -3533,7 +3531,7 @@ public class Emails
             }
 
             // lockpick     
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == LOCKPICKING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == LOCKPICKING))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.LOCKPICKING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.LOCKPICKING))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_LOCK), MAIL_STRING_SIZE);
@@ -3543,7 +3541,7 @@ public class Emails
             }
 
             // hand to hand
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == HANDTOHAND) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == HANDTOHAND))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HANDTOHAND) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HANDTOHAND))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HAND), MAIL_STRING_SIZE);
@@ -3553,7 +3551,7 @@ public class Emails
             }
 
             // electronics
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == ELECTRONICS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == ELECTRONICS))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.ELECTRONICS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.ELECTRONICS))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_ELEC), MAIL_STRING_SIZE);
@@ -3562,7 +3560,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == NIGHTOPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == NIGHTOPS))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.NIGHTOPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.NIGHTOPS))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_NIGHT), MAIL_STRING_SIZE);
@@ -3571,7 +3569,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == THROWING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == THROWING))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THROWING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THROWING))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THROW), MAIL_STRING_SIZE);
@@ -3580,7 +3578,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == TEACHING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == TEACHING))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.TEACHING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.TEACHING))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_TEACH), MAIL_STRING_SIZE);
@@ -3589,7 +3587,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == HEAVY_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == HEAVY_WEAPS))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HEAVY_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HEAVY_WEAPS))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HEAVY), MAIL_STRING_SIZE);
@@ -3598,7 +3596,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == AUTO_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == AUTO_WEAPS))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AUTO_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AUTO_WEAPS))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AUTO), MAIL_STRING_SIZE);
@@ -3607,7 +3605,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == STEALTHY) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == STEALTHY))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.STEALTHY) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.STEALTHY))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_STEALTH), MAIL_STRING_SIZE);
@@ -3616,7 +3614,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == AMBIDEXT) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == AMBIDEXT))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AMBIDEXT) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AMBIDEXT))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AMBI), MAIL_STRING_SIZE);
@@ -3625,7 +3623,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == THIEF) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == THIEF))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THIEF) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THIEF))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THIEF), MAIL_STRING_SIZE);
@@ -3634,7 +3632,7 @@ public class Emails
                 AddEmailRecordToList(pString);
             }
 
-            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == MARTIALARTS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == MARTIALARTS))
+            if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.MARTIALARTS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.MARTIALARTS))
             {
                 // read one record from email file
                 FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_MARTIAL), MAIL_STRING_SIZE);
@@ -4242,14 +4240,14 @@ public class Emails
         giMailPageButtonsImage[0] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 1, -1, 4, -1);
         giMailPageButtons[0] = ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[0], new(NEXT_PAGE_X, NEXT_PAGE_Y),
                                             ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                            (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)NextRegionButtonCallback);
+                                            (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)NextRegionButtonCallback);
         ButtonSubSystem.SetButtonCursor(giMailPageButtons[0], CURSOR.LAPTOP_SCREEN);
 
         // previous button
         giMailPageButtonsImage[1] = ButtonSubSystem.LoadButtonImage("LAPTOP\\NewMailButtons.sti", -1, 0, -1, 3, -1);
         giMailPageButtons[1] = ButtonSubSystem.QuickCreateButton(giMailPageButtonsImage[1], new(PREVIOUS_PAGE_X, NEXT_PAGE_Y),
                                         ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST - 1,
-                                        (GuiCallback)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GuiCallback)PreviousRegionButtonCallback);
+                                        (GUI_CALLBACK)MouseSubSystem.BtnGenericMouseMoveButtonCallback, (GUI_CALLBACK)PreviousRegionButtonCallback);
         ButtonSubSystem.SetButtonCursor(giMailPageButtons[1], CURSOR.LAPTOP_SCREEN);
 
         /*
@@ -4285,7 +4283,7 @@ public class Emails
     void DisplayWhichPageOfEmailProgramIsDisplayed()
     {
         // will draw the number of the email program we are viewing right now
-        string sString;
+        string sString = string.Empty;
 
         // font stuff	
         FontSubSystem.SetFont(MESSAGE_FONT);
@@ -4325,7 +4323,7 @@ public class Emails
             if ((pB.iDate < iLowestDate) && (pB.fRead == false))
             {
                 iMostRecentMailId = pB.iId;
-                iLowestDate = pB.iDate;
+                iLowestDate = (int)pB.iDate;
             }
 
             // next in B's list
@@ -4352,7 +4350,7 @@ public class Emails
 
         int iCounter = 0;
         int sX = 0, sY = 0;
-        string sString;
+        string sString = string.Empty;
 
 
         // get and blt the email list background
@@ -4435,7 +4433,7 @@ public class Emails
 
     void PreProcessEmail(email pMail)
     {
-        RecordPtr? pTempRecord, pCurrentRecord, pLastRecord, pTempList;
+        RecordPtr? pTempRecord = null, pCurrentRecord = null, pLastRecord, pTempList;
         string pString;
         int iCounter = 0, iHeight = 0, iOffSet = 0;
         bool fGoingOffCurrentPage = false;
@@ -4444,7 +4442,7 @@ public class Emails
         iOffSet = (int)pMail.usOffset;
 
         // set record ptr to head of list
-        pTempRecord = pMessageRecordList;
+//        pTempRecord = pMessageRecordList;
 
         if (pEmailPageInfo[0].pFirstRecord != null)
         {
@@ -4471,7 +4469,7 @@ public class Emails
         }
 
         // set record ptr to head of list
-        pTempRecord = pMessageRecordList;
+//        pTempRecord = pMessageRecordList;
         //def removed
         // pass the subject line
         if (pTempRecord is not null && pMail.usOffset != IMP_EMAIL_PROFILE_RESULTS)
@@ -4487,10 +4485,10 @@ public class Emails
         {
 
             // copy over string
-            wcscpy(pString, pTempRecord.pRecord);
+            pString = wcscpy(pTempRecord.pRecord);
 
             // get the height of the string, ONLY!...must redisplay ON TOP OF background graphic
-            iHeight += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + FontSubSystem.GetFontHeight(MESSAGE_FONT)), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, 0);
+//            iHeight += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + iHeight + FontSubSystem.GetFontHeight(MESSAGE_FONT)), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, 0);
 
             // next message record string
             pTempRecord = pTempRecord.Next;
@@ -4506,7 +4504,7 @@ public class Emails
         }
 
         // set total height to height of records displayed
-        iTotalHeight = iHeight;
+//        iTotalHeight = iHeight;
 
         // if the message background is less than MIN_MESSAGE_HEIGHT_IN_LINES, set to that number
         if ((iTotalHeight / FontSubSystem.GetFontHeight(MESSAGE_FONT)) < MIN_MESSAGE_HEIGHT_IN_LINES)
@@ -4607,7 +4605,7 @@ public class Emails
                 while (pTempRecord is not null)
                 {
                     // copy over string 
-                    wcscpy(pString, pTempRecord.pRecord);
+                    pString = wcscpy(pTempRecord.pRecord);
 
                     if (pString[0] == 0)
                     {
@@ -4616,19 +4614,19 @@ public class Emails
                     }
 
 
-                    if ((iYPositionOnPage + IanWrappedStringHeight(0, 0, MESSAGE_WIDTH, MESSAGE_GAP,
-                                                                        MESSAGE_FONT, 0, pTempRecord.pRecord,
-                                                                     0, 0, 0)) <= MAX_EMAIL_MESSAGE_PAGE_SIZE)
-                    {
-                        // now print it
-                        iYPositionOnPage += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + 10 + iYPositionOnPage + iViewerPositionY), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, IAN_WRAP_NO_SHADOW);
-                        fGoingOffCurrentPage = false;
-                    }
-                    else
-                    {
-                        // gonna get cut off...end now
-                        fGoingOffCurrentPage = true;
-                    }
+//                    if ((iYPositionOnPage + IanWrappedStringHeight(0, 0, MESSAGE_WIDTH, MESSAGE_GAP,
+//                                                                        MESSAGE_FONT, 0, pTempRecord.pRecord,
+//                                                                     0, 0, 0)) <= MAX_EMAIL_MESSAGE_PAGE_SIZE)
+//                    {
+//                        // now print it
+//                        iYPositionOnPage += IanWrappedStringHeight(VIEWER_X + MESSAGE_X + 4, (int)(VIEWER_MESSAGE_BODY_START_Y + 10 + iYPositionOnPage + iViewerPositionY), MESSAGE_WIDTH, MESSAGE_GAP, MESSAGE_FONT, MESSAGE_COLOR, pString, 0, false, IAN_WRAP_NO_SHADOW);
+//                        fGoingOffCurrentPage = false;
+//                    }
+//                    else
+//                    {
+//                        // gonna get cut off...end now
+//                        fGoingOffCurrentPage = true;
+//                    }
 
 
 
@@ -4702,7 +4700,7 @@ public class Emails
     private static bool ReplaceMercNameAndAmountWithProperData(string? pFinishedString, email pMail)
     {
         //	string		pTempString[MAIL_STRING_SIZE/2 + 1];
-        string pTempString;
+        string pTempString = string.Empty;
         int iLength = 0;
         int iCurLocInSourceString = 0;
         int iLengthOfSourceString = wcslen(pFinishedString);      //Get the length of the source string
@@ -4713,7 +4711,7 @@ public class Emails
 
         string sMercName = "$MERCNAME$";   //Doesnt need to be translated, inside Email.txt and will be replaced by the mercs name
         string sAmount = "$AMOUN$";        //Doesnt need to be translated, inside Email.txt and will be replaced by a dollar amount
-        string sSearchString;
+        string sSearchString = string.Empty;
 
         //Copy the original string over to the temp string
         wcscpy(pTempString, pFinishedString);
@@ -4729,24 +4727,24 @@ public class Emails
             pSubString = null;
 
             //Find out if the $MERCNAME$ is in the string
-            pMercNameString = wcsstr(pTempString[iCurLocInSourceString], sMercName);
+            pMercNameString = Globals.wcsstr(pTempString[iCurLocInSourceString], sMercName);
 
             pAmountString = wcsstr(pTempString[iCurLocInSourceString], sAmount);
 
             if (pMercNameString != null && pAmountString != null)
             {
-                if (pMercNameString < pAmountString)
-                {
-                    fReplacingMercName = true;
-                    pSubString = pMercNameString;
-                    wcscpy(sSearchString, sMercName);
-                }
-                else
-                {
-                    fReplacingMercName = false;
-                    pSubString = pAmountString;
-                    wcscpy(sSearchString, sAmount);
-                }
+//                if (pMercNameString < pAmountString)
+//                {
+//                    fReplacingMercName = true;
+//                    pSubString = pMercNameString;
+//                    wcscpy(sSearchString, sMercName);
+//                }
+//                else
+//                {
+//                    fReplacingMercName = false;
+//                    pSubString = pAmountString;
+//                    wcscpy(sSearchString, sAmount);
+//                }
             }
             else if (pMercNameString != null)
             {
@@ -4769,10 +4767,10 @@ public class Emails
             // if there is a substring
             if (pSubString != null)
             {
-                iLength = pSubString - pTempString[iCurLocInSourceString];
+//                iLength = pSubString - pTempString[iCurLocInSourceString];
 
                 //Copy the part of the source string upto the keyword
-                wcsncat(pFinishedString, pTempString[iCurLocInSourceString], iLength);
+                Globals.wcsncat(pFinishedString, pTempString[iCurLocInSourceString], iLength);
 
                 //increment the source string counter by how far in the keyword is and by the length of the keyword
                 iCurLocInSourceString += iLength + wcslen(sSearchString);
@@ -4786,10 +4784,10 @@ public class Emails
                 {
                     string sDollarAmount;
 
-                    wprintf(sDollarAmount, "%d", pMail.iFirstData);
+                    sDollarAmount = wprintf("%d", pMail.iFirstData);
 
-                    InsertCommasForDollarFigure(sDollarAmount);
-                    InsertDollarSignInToString(sDollarAmount);
+//                    InsertCommasForDollarFigure(sDollarAmount);
+//                    InsertDollarSignInToString(sDollarAmount);
 
                     //add the mercs name to the string
                     wcscat(pFinishedString, sDollarAmount);

@@ -6,6 +6,14 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    // the values for categories of stats
+    public const int SUPER_STAT_VALUE = 80;
+    public const int NEEDS_TRAINING_STAT_VALUE = 50;
+    public const int NO_CHANCE_IN_HELL_STAT_VALUE = 40;
+    public const int SUPER_SKILL_VALUE = 80;
+    public const int NEEDS_TRAINING_SKILL_VALUE = 50;
+    public const int NO_CHANCE_IN_HELL_SKILL_VALUE = 0;
+
     public const int NUM_TERRORISTS = 6;
 
     public const int NERVOUS_RADIUS = 10;

@@ -62,7 +62,7 @@ public class Movement
         {
 
             // if water's a problem, and gridno is in a water tile (bridges are OK)
-            if (ubWaterOK == 0 && Water(sGridno))
+//            if (ubWaterOK == 0 && Water(sGridno))
             {
                 return (0);
             }
@@ -76,7 +76,7 @@ public class Movement
                     return (1);
 
                 case ENSURE_PATH:
-                    if (FindBestPath(pSoldier, sGridno, pSoldier.bLevel, AnimationStates.WALKING, COPYROUTE, fFlags))
+//                    if (FindBestPath(pSoldier, sGridno, pSoldier.bLevel, AnimationStates.WALKING, COPYROUTE, fFlags))
                     {
                         return (1);        // legal destination
                     }
@@ -104,7 +104,7 @@ public class Movement
 
     int TryToResumeMovement(SOLDIERTYPE? pSoldier, int sGridno)
     {
-        bool ubGottaCancel;
+        bool ubGottaCancel = false;
         int ubSuccess = 0;
 
 
@@ -365,7 +365,7 @@ public class Movement
         int ubDirection, ubDirsLeft;
         int[] ubDirChecked = new int[8];
         int fFound = 0;
-        int bAPsLeft;
+        int bAPsLeft = 0;
         PATH fPathFlags;
         int ubRoomRequired = 0, ubTempRoom;
 
@@ -385,7 +385,7 @@ public class Movement
         sTempDest = -1;
 
         // obtain maximum roaming distance from soldier's sOrigin
-        usMaxDist = RoamingRange(pSoldier, out sOrigin);
+        usMaxDist = AIUtils.RoamingRange(pSoldier, out sOrigin);
 
         if (pSoldier.bOrders <= Orders.CLOSEPATROL && (pSoldier.bTeam == CIV_TEAM || pSoldier.ubProfile != NO_PROFILE))
         {
@@ -413,10 +413,10 @@ public class Movement
 
         // don't try to approach go after noises or enemies actually in water
         // would be too easy to throw rocks in water, etc. & distract the AI
-        if (Water(sDesGrid))
-        {
-            return (NOWHERE);
-        }
+//        if (Water(sDesGrid))
+//        {
+//            return (NOWHERE);
+//        }
 
         fPathFlags = 0;
         if (CREATURE_OR_BLOODCAT(pSoldier))
@@ -792,7 +792,7 @@ public class Movement
         */
     }
 
-    int TrackScent(SOLDIERTYPE? pSoldier)
+    public static int TrackScent(SOLDIERTYPE? pSoldier)
     {
         // This function returns the best gridno to go to based on the scent being followed,
         // and the soldier (creature/animal)'s current direction (which is used to resolve

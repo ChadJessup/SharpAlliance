@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 
@@ -82,20 +83,20 @@ public class FindLocations
     {
         // When considering a gridno for cover, we want to take into account cover if we
         // lie down, so we return the LOWEST chance to get through for that location.
-        int bCubeLevel, bThisCTGT, bWorstCTGT = 100;
+        int bCubeLevel, bThisCTGT = 0, bWorstCTGT = 100;
 
         for (bCubeLevel = 1; bCubeLevel <= 3; bCubeLevel++)
         {
             switch (bCubeLevel)
             {
                 case 1:
-                    if (iMyAPsLeft < AP_CROUCH + AP_PRONE)
+                    if (iMyAPsLeft < AP.CROUCH + AP.PRONE)
                     {
                         continue;
                     }
                     break;
                 case 2:
-                    if (iMyAPsLeft < AP_CROUCH)
+                    if (iMyAPsLeft < AP.CROUCH)
                     {
                         continue;
                     }
@@ -104,7 +105,7 @@ public class FindLocations
                     break;
             }
 
-            bThisCTGT = SoldierToLocationChanceToGetThrough(pSoldier, sOppGridNo, bLevel, bCubeLevel, ubOppID);
+//            bThisCTGT = SoldierToLocationChanceToGetThrough(pSoldier, sOppGridNo, bLevel, bCubeLevel, ubOppID);
             if (bThisCTGT < bWorstCTGT)
             {
                 bWorstCTGT = bThisCTGT;
@@ -132,13 +133,13 @@ public class FindLocations
             switch (bCubeLevel)
             {
                 case 1:
-                    if (iMyAPsLeft < AP_CROUCH + AP_PRONE)
+                    if (iMyAPsLeft < AP.CROUCH + AP.PRONE)
                     {
                         continue;
                     }
                     break;
                 case 2:
-                    if (iMyAPsLeft < AP_CROUCH)
+                    if (iMyAPsLeft < AP.CROUCH)
                     {
                         continue;
                     }
@@ -146,7 +147,7 @@ public class FindLocations
                 default:
                     break;
             }
-            iTotalCTGT += SoldierToLocationChanceToGetThrough(pSoldier, sOppGridNo, bLevel, bCubeLevel, ubOppID);
+//            iTotalCTGT += SoldierToLocationChanceToGetThrough(pSoldier, sOppGridNo, bLevel, bCubeLevel, ubOppID);
             bValidCubeLevels++;
         }
         iTotalCTGT /= bValidCubeLevels;
@@ -171,7 +172,7 @@ public class FindLocations
 
         // precalculate these for speed
         // what was struct for?
-        sOKTest = Overhead.NewOKDestination(pSoldier, sCentralGridNo, IGNOREPEOPLE, bLevel);
+//        sOKTest = Overhead.NewOKDestination(pSoldier, sCentralGridNo, IGNOREPEOPLE, bLevel);
         sNorthGridNo = IsometricUtils.NewGridNo(sCentralGridNo, IsometricUtils.DirectionInc(WorldDirections.NORTH));
         sSouthGridNo = IsometricUtils.NewGridNo(sCentralGridNo, IsometricUtils.DirectionInc(WorldDirections.SOUTH));
 
@@ -185,7 +186,7 @@ public class FindLocations
             if (sAdjSpot != sCentralGridNo)
             {
                 // if the adjacent spot can we walked on and isn't in water or gas
-                if ((Overhead.NewOKDestination(pSoldier, sAdjSpot, IGNOREPEOPLE, bLevel) > 0) && !InWaterOrGas(pSoldier, sAdjSpot))
+//                if ((Overhead.NewOKDestination(pSoldier, sAdjSpot, IGNOREPEOPLE, bLevel) > 0) && !InWaterOrGas(pSoldier, sAdjSpot))
                 {
                     switch (sDir)
                     {
@@ -246,8 +247,8 @@ public class FindLocations
         int sHisGridNo, sMyRealGridNo = NOWHERE, sHisRealGridNo = NOWHERE;
         int sTempX, sTempY;
         float dMyX, dMyY, dHisX, dHisY;
-        int bHisBestCTGT, bHisActualCTGT, bHisCTGT, bMyCTGT;
-        int iRangeChange, iRangeFactor, iRangeFactorMultiplier;
+        int bHisBestCTGT, bHisActualCTGT = 0, bHisCTGT, bMyCTGT;
+        int iRangeChange, iRangeFactor, iRangeFactorMultiplier = 0;
         SOLDIERTYPE? pHim;
 
         dMyX = dMyY = dHisX = dHisY = -1.0f;
@@ -285,17 +286,17 @@ public class FindLocations
         }
 
 
-        if (InWaterOrGas(pHim, sHisGridNo))
-        {
-            bHisActualCTGT = 0;
-        }
-        else
-        {
-            // optimistically assume we'll be behind the best cover available at this spot
+        //if (InWaterOrGas(pHim, sHisGridNo))
+        //{
+        //    bHisActualCTGT = 0;
+        //}
+        //else
+        //{
+        //    // optimistically assume we'll be behind the best cover available at this spot
 
-            //bHisActualCTGT = ChanceToGetThrough(pHim,sMyGridNo,FAKE,ACTUAL,TESTWALLS,9999,M9PISTOL,NOT_FOR_LOS); // assume a gunshot		
-            bHisActualCTGT = CalcWorstCTGTForPosition(pHim, pMe.ubID, sMyGridNo, pMe.bLevel, iMyAPsLeft);
-        }
+        //    //bHisActualCTGT = ChanceToGetThrough(pHim,sMyGridNo,FAKE,ACTUAL,TESTWALLS,9999,M9PISTOL,NOT_FOR_LOS); // assume a gunshot		
+        //    bHisActualCTGT = CalcWorstCTGTForPosition(pHim, pMe.ubID, sMyGridNo, pMe.bLevel, iMyAPsLeft);
+        //}
 
         // normally, that will be the cover I'll use, unless worst case over-rides it
         bHisCTGT = bHisActualCTGT;
@@ -398,7 +399,7 @@ public class FindLocations
             {
                 // subtract another 1 % penalty for NOT being able to crouch per tile
                 // the farther away we are, the bigger a difference crouching will make!
-                iMyPosValue -= ((iMyPosValue * (AIM_PENALTY_TARGET_CROUCHED + (iRange / CELL_X_SIZE))) / 100);
+//                iMyPosValue -= ((iMyPosValue * (AIM_PENALTY_TARGET_CROUCHED + (iRange / CELL_X_SIZE))) / 100);
             }
         }
 
@@ -409,7 +410,7 @@ public class FindLocations
         //	if (bHisCTGT < 100 || (morale - 1 < 0))
         {
 
-            iRangeFactorMultiplier = RangeChangeDesire(pMe);
+//            iRangeFactorMultiplier = RangeChangeDesire(pMe);
 
             if (iRangeFactorMultiplier > 0)
             {
@@ -425,7 +426,7 @@ public class FindLocations
 #endif
 
                     // aggression booster for stupider enemies
-                    iMyPosValue += 100 * iRangeFactor * (5 - SoldierDifficultyLevel(pMe)) / 5;
+//                    iMyPosValue += 100 * iRangeFactor * (5 - SoldierDifficultyLevel(pMe)) / 5;
 
                     // if factor is positive increase positional value, else decrease it
                     // change both values, since one or the other could be 0
@@ -490,7 +491,7 @@ public class FindLocations
             }
 
             {
-                ubWhoIsThere = WhoIsThere2(sGridNo, pSoldier.bLevel);
+                ubWhoIsThere = WorldManager.WhoIsThere2(sGridNo, pSoldier.bLevel);
                 if (ubWhoIsThere != NOBODY && ubWhoIsThere != pSoldier.ubID && MercPtrs[ubWhoIsThere].bTeam == pSoldier.bTeam)
                 {
                     ubCount++;
@@ -506,30 +507,30 @@ public class FindLocations
         // all 32-bit integers for Math.Max. speed
         int uiLoop;
         int iCurrentCoverValue, iCoverValue, iBestCoverValue;
-        int iCurrentScale, iCoverScale, iBestCoverScale;
+        int iCurrentScale, iCoverScale, iBestCoverScale = 0;
         int iDistFromOrigin, iDistCoverFromOrigin, iThreatCertainty;
         int sGridNo, sBestCover = NOWHERE;
         int iPathCost;
         int iThreatRange, iClosestThreatRange = 1500;
         //	int sClosestThreatGridno = NOWHERE;
         int iMyThreatValue;
-        int sThreatLoc;
+        int? sThreatLoc;
         int iMaxThreatRange;
         int uiThreatCnt = 0;
-        int iMaxMoveTilesLeft, iSearchRange, iRoamRange;
+        int iMaxMoveTilesLeft = 0, iSearchRange = 0, iRoamRange;
         int sMaxLeft, sMaxRight, sMaxUp, sMaxDown, sXOffset, sYOffset;
         int sOrigin;  // has to be a short, need a pointer
         int? pusLastLoc;
         int? pbPersOL;
         int? pbPublOL;
         SOLDIERTYPE? pOpponent;
-        int usMovementMode;
+        int usMovementMode = 0;
         bool fHasGasMask;
 
         int ubBackgroundLightLevel;
         int ubBackgroundLightPercent = 0;
         int ubLightPercentDifference;
-        bool fNight;
+        bool fNight = false;
 
         switch (ItemSubSystem.FindObj(pSoldier, Items.GASMASK))
         {
@@ -548,17 +549,17 @@ public class FindLocations
         }
         else
         {
-            ubBackgroundLightLevel = GetTimeOfDayAmbientLightLevel();
+//            ubBackgroundLightLevel = GetTimeOfDayAmbientLightLevel();
 
-            if (ubBackgroundLightLevel < NORMAL_LIGHTLEVEL_DAY + 2)
-            {
-                fNight = false;
-            }
-            else
-            {
-                fNight = true;
-                ubBackgroundLightPercent = gbLightSighting[0, ubBackgroundLightLevel];
-            }
+//            if (ubBackgroundLightLevel < NORMAL_LIGHTLEVEL_DAY + 2)
+//            {
+//                fNight = false;
+//            }
+//            else
+//            {
+//                fNight = true;
+//                ubBackgroundLightPercent = gbLightSighting[0, ubBackgroundLightLevel];
+//            }
         }
 
 
@@ -583,7 +584,7 @@ public class FindLocations
         pbPublOL = (gbPublicOpplist[pSoldier.bTeam][0]);
 
         // decide how far we're gonna be looking
-        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE, SoldierDifficultyLevel(pSoldier)];
+//        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE, SoldierDifficultyLevel(pSoldier)];
 
         /*
             switch (pSoldier.bAttitude)
@@ -609,14 +610,14 @@ public class FindLocations
             iSearchRange /= 2;
         }
 
-        usMovementMode = DetermineMovementMode(pSoldier, AI_ACTION.TAKE_COVER);
+//        usMovementMode = DetermineMovementMode(pSoldier, AI_ACTION.TAKE_COVER);
 
         if (pSoldier.bAlertStatus >= STATUS.RED)          // if already in battle
         {
             // must be able to reach the cover, so it can't possibly be more than
             // action points left (rounded down) tiles away, since minimum
             // cost to move per tile is 1 points.
-            iMaxMoveTilesLeft = Math.Max(0, pSoldier.bActionPoints - MinAPsToStartMovement(pSoldier, usMovementMode));
+//            iMaxMoveTilesLeft = Math.Max(0, pSoldier.bActionPoints - MinAPsToStartMovement(pSoldier, usMovementMode));
             //NumMessage("In BLACK, maximum tiles to move left = ",maxMoveTilesLeft);
 
             // if we can't go as far as the usual full search range
@@ -677,13 +678,13 @@ public class FindLocations
             {
                 // using personal knowledge, obtain opponent's "best guess" gridno
                 sThreatLoc = pusLastLoc;
-                iThreatCertainty = ThreatPercent[pbPersOL - OLDEST_HEARD_VALUE];
+                iThreatCertainty = AIMain.ThreatPercent[pbPersOL - OLDEST_HEARD_VALUE];
             }
             else
             {
                 // using public knowledge, obtain opponent's "best guess" gridno
                 sThreatLoc = gsPublicLastKnownOppLoc[pSoldier.bTeam][pOpponent.ubID];
-                iThreatCertainty = ThreatPercent[pbPublOL - OLDEST_HEARD_VALUE];
+                iThreatCertainty = AIMain.ThreatPercent[pbPublOL - OLDEST_HEARD_VALUE];
             }
 
             // calculate how far away this threat is (in adjusted pixels)
@@ -781,7 +782,7 @@ public class FindLocations
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
         //NumMessage("sMaxDown = ",sMaxDown);
 
-        iRoamRange = RoamingRange(pSoldier, out sOrigin);
+        iRoamRange = AIUtils.RoamingRange(pSoldier, out sOrigin);
 
         // if status isn't black (life & death combat), and roaming range is limited
         if ((pSoldier.bAlertStatus != STATUS.BLACK) && (iRoamRange < MAX_ROAMING_RANGE) &&
@@ -1074,7 +1075,7 @@ public class FindLocations
         return (NOWHERE);       // return that no suitable cover was found
     }
 
-    int FindSpotMaxDistFromOpponents(SOLDIERTYPE? pSoldier)
+    int FindSpotMaxDistFromOpponents(SOLDIERTYPE pSoldier)
     {
         int sGridNo;
         int sBestSpot = NOWHERE;
@@ -1085,7 +1086,7 @@ public class FindLocations
         int uiThreatCnt = 0;
         int iSearchRange;
         int sMaxLeft, sMaxRight, sMaxUp, sMaxDown, sXOffset, sYOffset;
-        int? pbPersOL, pbPublOL, bEscapeDirection, bBestEscapeDirection = -1;
+        int? pbPersOL = null, pbPublOL = null, bEscapeDirection = null, bBestEscapeDirection = -1;
         SOLDIERTYPE? pOpponent;
         int sOrigin;
         int iRoamRange;
@@ -1152,11 +1153,11 @@ public class FindLocations
             // calculate how far away this threat is (in adjusted pixels)
 //            iThreatRange = GetRangeInCellCoordsFromGridNoDiff(pSoldier.sGridNo, sThreatLoc);
 
-            if (iThreatRange < iClosestThreatRange)
-            {
-                iClosestThreatRange = iThreatRange;
-                //NumMessage("New Closest Threat Range = ",iClosestThreatRange);
-            }
+//            if (iThreatRange < iClosestThreatRange)
+//            {
+//                iClosestThreatRange = iThreatRange;
+//                //NumMessage("New Closest Threat Range = ",iClosestThreatRange);
+//            }
 
             // remember this threat's gridno
             sThreatGridNo[uiThreatCnt] = sThreatLoc;
@@ -1173,7 +1174,7 @@ public class FindLocations
         // get roaming range here; for civilians, running away is limited by roam range
         if (pSoldier.bTeam == CIV_TEAM)
         {
-            iRoamRange = RoamingRange(pSoldier, out sOrigin);
+            iRoamRange = AIUtils.RoamingRange(pSoldier, out sOrigin);
             if (iRoamRange == 0)
             {
                 return (sBestSpot);
@@ -1296,7 +1297,7 @@ public class FindLocations
 
                 if (pSoldier.bTeam == CIV_TEAM)
                 {
-                    iRoamRange = RoamingRange(pSoldier, out sOrigin);
+                    iRoamRange = AIUtils.RoamingRange(pSoldier, out sOrigin);
                     if (IsometricUtils.PythSpacesAway(sOrigin, sGridNo) > iRoamRange)
                     {
                         continue;
@@ -1358,7 +1359,7 @@ public class FindLocations
 
         }
 
-        gubNPCAPBudget = 0;
+//        gubNPCAPBudget = 0;
         gubNPCDistLimit = 0;
 
         if (bBestEscapeDirection != -1)
@@ -1487,13 +1488,13 @@ public class FindLocations
         int iSpotValue, iBestSpotValue = 1000;
         int sMaxLeft, sMaxRight, sMaxUp, sMaxDown, sXOffset, sYOffset;
         int iSearchRange;
-        int bLightLevel, bCurrLightLevel, bLightDiff;
+        int bLightLevel, bCurrLightLevel, bLightDiff = 0;
         int iRoamRange;
         int sOrigin;
 
-        bCurrLightLevel = LightTrueLevel(pSoldier.sGridNo, pSoldier.bLevel);
+//        bCurrLightLevel = LightTrueLevel(pSoldier.sGridNo, pSoldier.bLevel);
 
-        iRoamRange = RoamingRange(pSoldier, &sOrigin);
+        iRoamRange = AIUtils.RoamingRange(pSoldier, out sOrigin);
 
         // start with a small search area, and expand it if we're unsuccessful
         // this should almost never need to search farther than 5 or 10 squares...
@@ -1569,9 +1570,9 @@ public class FindLocations
                     }
 
                     // screen out anything brighter than our current best spot
-                    bLightLevel = LightTrueLevel(sGridNo, pSoldier.bLevel);
-
-                    bLightDiff = gbLightSighting[0, bCurrLightLevel] - gbLightSighting[0, bLightLevel];
+//                    bLightLevel = LightTrueLevel(sGridNo, pSoldier.bLevel);
+//
+//                    bLightDiff = gbLightSighting[0, bCurrLightLevel] - gbLightSighting[0, bLightLevel];
 
                     // if the spot is darker than our current location, then bLightDiff > 0
                     // plus ignore differences of just 1 light level
@@ -1614,17 +1615,17 @@ public class FindLocations
         return (sClosestSpot);
     }
 
-    public static AI_ACTION SearchForItems(SOLDIERTYPE? pSoldier, int bReason, int usItem)
+    public static AI_ACTION SearchForItems(SOLDIERTYPE pSoldier, int bReason, int usItem)
     {
-        int iSearchRange;
-        int sMaxLeft, sMaxRight, sMaxUp, sMaxDown, sXOffset, sYOffset;
-        int sGridNo;
+        int iSearchRange = 0;
+        int sMaxLeft = 0, sMaxRight = 0, sMaxUp = 0, sMaxDown = 0, sXOffset = 0, sYOffset = 0;
+        int sGridNo = 0;
         int sBestSpot = NOWHERE;
-        int iTempValue, iValue, iBestValue = 0;
-        ITEM_POOL? pItemPool;
-        OBJECTTYPE? pObj;
-        INVTYPE? pItem;
-        int iItemIndex, iBestItemIndex;
+        int iTempValue = 0, iValue = 0, iBestValue = 0;
+        ITEM_POOL? pItemPool = null;
+        OBJECTTYPE? pObj = null;
+        INVTYPE? pItem = null;
+        int iItemIndex = 0, iBestItemIndex = 0;
 
         iTempValue = -1;
         iItemIndex = iBestItemIndex = -1;
@@ -1639,7 +1640,7 @@ public class FindLocations
             return (AI_ACTION.NONE);
         }
 
-        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE, SoldierDifficultyLevel(pSoldier)];
+//        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE, SoldierDifficultyLevel(pSoldier)];
 
         switch (pSoldier.bAttitude)
         {
@@ -1698,7 +1699,7 @@ public class FindLocations
 
         // set an AP limit too, to our APs less the cost of picking up an item
         // and less the cost of dropping an item since we might need to do that
-        gubNPCAPBudget = pSoldier.bActionPoints - AP.PICKUP_ITEM;
+//        gubNPCAPBudget = pSoldier.bActionPoints - AP.PICKUP_ITEM;
 
         // reset the "reachable" flags in the region we're looking at
         for (sYOffset = -sMaxUp; sYOffset <= sMaxDown; sYOffset++)
@@ -1715,7 +1716,7 @@ public class FindLocations
             }
         }
 
-        FindBestPath(pSoldier, NOWHERE, pSoldier.bLevel, DetermineMovementMode(pSoldier, AI_ACTION.PICKUP_ITEM), COPYREACHABLE, 0);
+//        FindBestPath(pSoldier, NOWHERE, pSoldier.bLevel, DetermineMovementMode(pSoldier, AI_ACTION.PICKUP_ITEM), COPYREACHABLE, 0);
 
         // SET UP DOUBLE-LOOP TO STEP THROUGH POTENTIAL GRID #s
         for (sYOffset = -sMaxUp; sYOffset <= sMaxDown; sYOffset++)
@@ -1746,174 +1747,177 @@ public class FindLocations
                     }
 
                     iValue = 0;
-                    GetItemPool(sGridNo, out pItemPool, pSoldier.bLevel);
+//                    GetItemPool(sGridNo, out pItemPool, pSoldier.bLevel);
                     switch (bReason)
                     {
-                        case SEARCH_AMMO:
-                            // we are looking for ammo to match the gun in usItem
-                            while (pItemPool)
-                            {
-                                pObj = (gWorldItems[pItemPool.iItemIndex].o);
-                                pItem = (Item[pObj.usItem]);
-                                if (pItem.usItemClass == IC.GUN && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
-                                {
-                                    // maybe this gun has ammo (adjust for whether it is better than ours!)
-                                    if (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0 || (pObj.usItem == Items.ROCKET_RIFLE && pObj.ubImprintID != NOBODY && pObj.ubImprintID != pSoldier.ubID))
-                                    {
-                                        iTempValue = 0;
-                                    }
-                                    else
-                                    {
-                                        iTempValue = pObj.ubGunShotsLeft * Weapon[pObj.usItem].ubDeadliness / Weapon[usItem].ubDeadliness;
-                                    }
-                                }
-                                else if (ValidAmmoType(usItem, pObj.usItem))
-                                {
-                                    iTempValue = TotalPoints(pObj);
-                                }
-                                else
-                                {
-                                    iTempValue = 0;
-                                }
-                                if (iTempValue > iValue)
-                                {
-                                    iValue = iTempValue;
-                                    iItemIndex = pItemPool.iItemIndex;
-                                }
-                                pItemPool = pItemPool.pNext;
-                            }
-                            break;
-                        case SEARCH_WEAPONS:
-                            while (pItemPool)
-                            {
-                                pObj = (gWorldItems[pItemPool.iItemIndex].o);
-                                pItem = (Item[pObj.usItem]);
-                                if (pItem.usItemClass & IC.WEAPON && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
-                                {
-                                    if ((pItem.usItemClass & IC.GUN) && (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0 || ((pObj.usItem == ROCKET_RIFLE || pObj.usItem == AUTO_ROCKET_RIFLE) && pObj.ubImprintID != NOBODY && pObj.ubImprintID != pSoldier.ubID)))
-                                    {
-                                        // jammed or out of ammo, skip it!
-                                        iTempValue = 0;
-                                    }
-                                    else if (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
-                                    {
-//                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
-//                                        {
-//                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
-//                                        }
-//                                        else
-//                                        {
-//                                            iTempValue = 0;
-//                                        }
-                                    }
-                                    else
-                                    {
-//                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
-                                    }
-                                }
-                                else
-                                {
-                                    iTempValue = 0;
-                                }
-                                if (iTempValue > iValue)
-                                {
-                                    iValue = iTempValue;
-                                    iItemIndex = pItemPool.iItemIndex;
-                                }
-                                pItemPool = pItemPool.pNext;
-                            }
-                            break;
-                        default:
-                            while (pItemPool)
-                            {
-                                pObj = (gWorldItems[pItemPool.iItemIndex].o);
-                                pItem = (Item[pObj.usItem]);
-                                if (pItem.usItemClass.HasFlag(IC.WEAPON) && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
-                                {
-                                    if ((pItem.usItemClass.HasFlag(IC.GUN)) && (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0 || ((pObj.usItem == Items.ROCKET_RIFLE || pObj.usItem == Items.AUTO_ROCKET_RIFLE) && pObj.ubImprintID != NOBODY && pObj.ubImprintID != pSoldier.ubID)))
-                                    {
-                                        // jammed or out of ammo, skip it!
-                                        iTempValue = 0;
-                                    }
-                                    else if ((Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON)))
-                                    {
-//                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
-//                                        {
-//                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
-//                                        }
-//                                        else
-//                                        {
-//                                            iTempValue = 0;
-//                                        }
-                                    }
-                                    else
-                                    {
-//                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
-                                    }
-                                }
-                                else if (pItem.usItemClass == IC.ARMOUR && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
-                                {
-//                                    switch (Armour[pItem.ubClassIndex].ubArmourClass)
+//                        case SEARCH_AMMO:
+//                            // we are looking for ammo to match the gun in usItem
+//                            while (pItemPool)
+//                            {
+//                                pObj = (gWorldItems[pItemPool.iItemIndex].o);
+//                                pItem = (Item[pObj.usItem]);
+//                                if (pItem.usItemClass == IC.GUN && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
+//                                {
+//                                    // maybe this gun has ammo (adjust for whether it is better than ours!)
+//                                    if (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0
+//                                        || (pObj.usItem == Items.ROCKET_RIFLE
+//                                            && pObj.ubImprintID != NPCID.NOBODY
+//                                            && pObj.ubImprintID != (NPCID)pSoldier.ubID))
 //                                    {
-//                                        case ARMOURCLASS_HELMET:
-//                                            if (pSoldier.inv[InventorySlot.HELMETPOS].usItem == NOTHING)
-//                                            {
-//                                                iTempValue = 200 + EffectiveArmour(pObj);
-//                                            }
-//                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
-//                                            {
-//                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS]));
-//                                            }
-//                                            else
-//                                            {
-//                                                iTempValue = 0;
-//                                            }
-//                                            break;
-//                                        case ARMOURCLASS_VEST:
-//                                            if (pSoldier.inv[VESTPOS].usItem == NOTHING)
-//                                            {
-//                                                iTempValue = 200 + EffectiveArmour(pObj);
-//                                            }
-//                                            else if (EffectiveArmour(&(pSoldier.inv[HELMETPOS])) > EffectiveArmour(pObj))
-//                                            {
-//                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.VESTPOS]));
-//                                            }
-//                                            else
-//                                            {
-//                                                iTempValue = 0;
-//                                            }
-//                                            break;
-//                                        case ARMOURCLASS_LEGGINGS:
-//                                            if (pSoldier.inv[InventorySlot.LEGPOS].usItem == NOTHING)
-//                                            {
-//                                                iTempValue = 200 + EffectiveArmour(pObj);
-//                                            }
-//                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
-//                                            {
-//                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.LEGPOS]));
-//                                            }
-//                                            else
-//                                            {
-//                                                iTempValue = 0;
-//                                            }
-//                                            break;
-//                                        default:
-//                                            break;
+//                                        iTempValue = 0;
 //                                    }
-                                }
-                                else
-                                {
-                                    iTempValue = 0;
-                                }
+//                                    else
+//                                    {
+////                                        iTempValue = pObj.ubGunShotsLeft * Weapon[pObj.usItem].ubDeadliness / Weapon[usItem].ubDeadliness;
+//                                    }
+//                                }
+////                                else if (ValidAmmoType(usItem, pObj.usItem))
+////                                {
+////                                    iTempValue = TotalPoints(pObj);
+////                                }
+//                                else
+//                                {
+//                                    iTempValue = 0;
+//                                }
+//                                if (iTempValue > iValue)
+//                                {
+//                                    iValue = iTempValue;
+//                                    iItemIndex = pItemPool.iItemIndex;
+//                                }
+//                                pItemPool = pItemPool.pNext;
+//                            }
+//                            break;
+//                        case SEARCH_WEAPONS:
+//                            while (pItemPool)
+//                            {
+//                                pObj = (gWorldItems[pItemPool.iItemIndex].o);
+//                                pItem = (Item[pObj.usItem]);
+//                                if (pItem.usItemClass & IC.WEAPON && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
+//                                {
+//                                    if ((pItem.usItemClass & IC.GUN) && (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0 || ((pObj.usItem == ROCKET_RIFLE || pObj.usItem == AUTO_ROCKET_RIFLE) && pObj.ubImprintID != NOBODY && pObj.ubImprintID != pSoldier.ubID)))
+//                                    {
+//                                        // jammed or out of ammo, skip it!
+//                                        iTempValue = 0;
+//                                    }
+//                                    else if (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
+//                                    {
+////                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
+////                                        {
+////                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
+////                                        }
+////                                        else
+////                                        {
+////                                            iTempValue = 0;
+////                                        }
+//                                    }
+//                                    else
+//                                    {
+////                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
+//                                    }
+//                                }
+//                                else
+//                                {
+//                                    iTempValue = 0;
+//                                }
+//                                if (iTempValue > iValue)
+//                                {
+//                                    iValue = iTempValue;
+//                                    iItemIndex = pItemPool.iItemIndex;
+//                                }
+//                                pItemPool = pItemPool.pNext;
+//                            }
+//                            break;
+//                        default:
+//                            while (pItemPool)
+//                            {
+//                                pObj = (gWorldItems[pItemPool.iItemIndex].o);
+//                                pItem = (Item[pObj.usItem]);
+//                                if (pItem.usItemClass.HasFlag(IC.WEAPON) && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
+//                                {
+//                                    if ((pItem.usItemClass.HasFlag(IC.GUN)) && (pObj.bGunAmmoStatus < 0 || pObj.ubGunShotsLeft == 0 || ((pObj.usItem == Items.ROCKET_RIFLE || pObj.usItem == Items.AUTO_ROCKET_RIFLE) && pObj.ubImprintID != NOBODY && pObj.ubImprintID != pSoldier.ubID)))
+//                                    {
+//                                        // jammed or out of ammo, skip it!
+//                                        iTempValue = 0;
+//                                    }
+//                                    else if ((Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON)))
+//                                    {
+////                                        if (Weapon[pObj.usItem].ubDeadliness > Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness)
+////                                        {
+////                                            iTempValue = 100 * Weapon[pObj.usItem].ubDeadliness / Weapon[pSoldier.inv[InventorySlot.HANDPOS].usItem].ubDeadliness;
+////                                        }
+////                                        else
+////                                        {
+////                                            iTempValue = 0;
+////                                        }
+//                                    }
+//                                    else
+//                                    {
+////                                        iTempValue = 200 + Weapon[pObj.usItem].ubDeadliness;
+//                                    }
+//                                }
+//                                else if (pItem.usItemClass == IC.ARMOUR && pObj.bStatus[0] >= MINIMUM_REQUIRED_STATUS)
+//                                {
+////                                    switch (Armour[pItem.ubClassIndex].ubArmourClass)
+////                                    {
+////                                        case ARMOURCLASS_HELMET:
+////                                            if (pSoldier.inv[InventorySlot.HELMETPOS].usItem == NOTHING)
+////                                            {
+////                                                iTempValue = 200 + EffectiveArmour(pObj);
+////                                            }
+////                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
+////                                            {
+////                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS]));
+////                                            }
+////                                            else
+////                                            {
+////                                                iTempValue = 0;
+////                                            }
+////                                            break;
+////                                        case ARMOURCLASS_VEST:
+////                                            if (pSoldier.inv[VESTPOS].usItem == NOTHING)
+////                                            {
+////                                                iTempValue = 200 + EffectiveArmour(pObj);
+////                                            }
+////                                            else if (EffectiveArmour(&(pSoldier.inv[HELMETPOS])) > EffectiveArmour(pObj))
+////                                            {
+////                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.VESTPOS]));
+////                                            }
+////                                            else
+////                                            {
+////                                                iTempValue = 0;
+////                                            }
+////                                            break;
+////                                        case ARMOURCLASS_LEGGINGS:
+////                                            if (pSoldier.inv[InventorySlot.LEGPOS].usItem == NOTHING)
+////                                            {
+////                                                iTempValue = 200 + EffectiveArmour(pObj);
+////                                            }
+////                                            else if (EffectiveArmour((pSoldier.inv[InventorySlot.HELMETPOS])) > EffectiveArmour(pObj))
+////                                            {
+////                                                iTempValue = 100 * EffectiveArmour(pObj) / EffectiveArmour((pSoldier.inv[InventorySlot.LEGPOS]));
+////                                            }
+////                                            else
+////                                            {
+////                                                iTempValue = 0;
+////                                            }
+////                                            break;
+////                                        default:
+////                                            break;
+////                                    }
+//                                }
+//                                else
+//                                {
+//                                    iTempValue = 0;
+//                                }
 
-                                if (iTempValue > iValue)
-                                {
-                                    iValue = iTempValue;
-                                    iItemIndex = pItemPool.iItemIndex;
-                                }
-                                pItemPool = pItemPool.pNext;
-                            }
-                            break;
+//                                if (iTempValue > iValue)
+//                                {
+//                                    iValue = iTempValue;
+//                                    iItemIndex = pItemPool.iItemIndex;
+//                                }
+//                                pItemPool = pItemPool.pNext;
+//                            }
+//                            break;
                     }
                     iValue = (3 * iValue) / (3 + IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo));
                     if (iValue > iBestValue)
@@ -1931,30 +1935,30 @@ public class FindLocations
             // DebugAI(String("%d decides to pick up %S", pSoldier.ubID, ItemNames[gWorldItems[iBestItemIndex].o.usItem]));
             if (Item[gWorldItems[iBestItemIndex].o.usItem].usItemClass == IC.GUN)
             {
-                if (FindBetterSpotForItem(pSoldier, InventorySlot.HANDPOS) == false)
-                {
-                    if (pSoldier.bActionPoints < AP.PICKUP_ITEM + AP.PICKUP_ITEM)
-                    {
-                        return (AI_ACTION.NONE);
-                    }
-                    if (pSoldier.inv[InventorySlot.HANDPOS].fFlags.HasFlag(OBJECT.UNDROPPABLE))
-                    {
-                        // destroy this item!
-                        // DebugAI(String("%d decides he must drop %S first so destroys it", pSoldier.ubID, ItemNames[pSoldier.inv[HANDPOS].usItem]));
-                        DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
-                        DeductPoints(pSoldier, AP.PICKUP_ITEM, 0);
-                    }
-                    else
-                    {
-                        // we want to drop this item!
-                        //DebugAI(String("%d decides he must drop %S first", pSoldier.ubID, ItemNames[pSoldier.inv[HANDPOS].usItem]));
-
-                        pSoldier.bNextAction = AI_ACTION.PICKUP_ITEM;
-                        pSoldier.usNextActionData = sBestSpot;
-                        pSoldier.iNextActionSpecialData = iBestItemIndex;
-                        return (AI_ACTION.DROP_ITEM);
-                    }
-                }
+//                if (FindBetterSpotForItem(pSoldier, InventorySlot.HANDPOS) == false)
+//                {
+//                    if (pSoldier.bActionPoints < AP.PICKUP_ITEM + AP.PICKUP_ITEM)
+//                    {
+//                        return (AI_ACTION.NONE);
+//                    }
+//                    if (pSoldier.inv[InventorySlot.HANDPOS].fFlags.HasFlag(OBJECT.UNDROPPABLE))
+//                    {
+//                        // destroy this item!
+//                        // DebugAI(String("%d decides he must drop %S first so destroys it", pSoldier.ubID, ItemNames[pSoldier.inv[HANDPOS].usItem]));
+//                        DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
+//                        DeductPoints(pSoldier, AP.PICKUP_ITEM, 0);
+//                    }
+//                    else
+//                    {
+//                        // we want to drop this item!
+//                        //DebugAI(String("%d decides he must drop %S first", pSoldier.ubID, ItemNames[pSoldier.inv[HANDPOS].usItem]));
+//
+//                        pSoldier.bNextAction = AI_ACTION.PICKUP_ITEM;
+//                        pSoldier.usNextActionData = sBestSpot;
+//                        pSoldier.iNextActionSpecialData = iBestItemIndex;
+//                        return (AI_ACTION.DROP_ITEM);
+//                    }
+//                }
             }
             pSoldier.uiPendingActionData1 = iBestItemIndex;
             pSoldier.usActionData = sBestSpot;
@@ -1992,7 +1996,7 @@ public class FindLocations
             {
                 // calculate the next potential gridno
                 sGridNo = pSoldier.sGridNo + sXOffset + (MAXCOL * sYOffset);
-                if (FindStructure(sGridNo, STRUCTURE_ANYDOOR) != null)
+//                if (FindStructure(sGridNo, STRUCTURE_ANYDOOR) != null)
                 {
                     iDist = IsometricUtils.PythSpacesAway(pSoldier.sGridNo, sGridNo);
                     if (iDist < iClosestDist)
@@ -2016,22 +2020,22 @@ public class FindLocations
 
         switch (bEdgeCode)
         {
-            case NORTH_EDGEPOINT_SEARCH:
-                psEdgepointArray = gps1stNorthEdgepointArray;
-                iEdgepointArraySize = gus1stNorthEdgepointArraySize;
-                break;
-            case EAST_EDGEPOINT_SEARCH:
-                psEdgepointArray = gps1stEastEdgepointArray;
-                iEdgepointArraySize = gus1stEastEdgepointArraySize;
-                break;
-            case SOUTH_EDGEPOINT_SEARCH:
-                psEdgepointArray = gps1stSouthEdgepointArray;
-                iEdgepointArraySize = gus1stSouthEdgepointArraySize;
-                break;
-            case WEST_EDGEPOINT_SEARCH:
-                psEdgepointArray = gps1stWestEdgepointArray;
-                iEdgepointArraySize = gus1stWestEdgepointArraySize;
-                break;
+//            case NORTH_EDGEPOINT_SEARCH:
+//                psEdgepointArray = gps1stNorthEdgepointArray;
+//                iEdgepointArraySize = gus1stNorthEdgepointArraySize;
+//                break;
+//            case EAST_EDGEPOINT_SEARCH:
+//                psEdgepointArray = gps1stEastEdgepointArray;
+//                iEdgepointArraySize = gus1stEastEdgepointArraySize;
+//                break;
+//            case SOUTH_EDGEPOINT_SEARCH:
+//                psEdgepointArray = gps1stSouthEdgepointArray;
+//                iEdgepointArraySize = gus1stSouthEdgepointArraySize;
+//                break;
+//            case WEST_EDGEPOINT_SEARCH:
+//                psEdgepointArray = gps1stWestEdgepointArray;
+//                iEdgepointArraySize = gus1stWestEdgepointArraySize;
+//                break;
             default:
                 // WTF???
                 return (NOWHERE);
@@ -2042,7 +2046,7 @@ public class FindLocations
 
         for (iLoop = 0; iLoop < iEdgepointArraySize; iLoop++)
         {
-            sTempDist = IsometricUtils.PythSpacesAway(sGridNo, psEdgepointArray[iLoop]);
+//            sTempDist = IsometricUtils.PythSpacesAway(sGridNo, psEdgepointArray[iLoop]);
             if (sTempDist < sClosestDist)
             {
                 sClosestDist = sTempDist;
@@ -2076,35 +2080,35 @@ public class FindLocations
         sDist[3] = sScreenY;                                    // north
         sDist[4] = sMaxScreenY - sScreenY;      // south
 
-        sMinDist = sDist[0];
+//        sMinDist = sDist[0];
         bMinIndex = 0;
         for (iLoop = 1; iLoop < 5; iLoop++)
         {
-            if (sDist[iLoop] < sMinDist)
-            {
-                sMinDist = sDist[iLoop];
-                bMinIndex = (int)iLoop;
-            }
+//            if (sDist[iLoop] < sMinDist)
+//            {
+//                sMinDist = sDist[iLoop];
+//                bMinIndex = (int)iLoop;
+//            }
         }
 
         switch (bMinIndex)
         {
-            case 1:
-                psEdgepointArray = gps1stWestEdgepointArray;
-                iEdgepointArraySize = gus1stWestEdgepointArraySize;
-                break;
-            case 2:
-                psEdgepointArray = gps1stEastEdgepointArray;
-                iEdgepointArraySize = gus1stEastEdgepointArraySize;
-                break;
-            case 3:
-                psEdgepointArray = gps1stNorthEdgepointArray;
-                iEdgepointArraySize = gus1stNorthEdgepointArraySize;
-                break;
-            case 4:
-                psEdgepointArray = gps1stSouthEdgepointArray;
-                iEdgepointArraySize = gus1stSouthEdgepointArraySize;
-                break;
+//            case 1:
+//                psEdgepointArray = gps1stWestEdgepointArray;
+//                iEdgepointArraySize = gus1stWestEdgepointArraySize;
+//                break;
+//            case 2:
+//                psEdgepointArray = gps1stEastEdgepointArray;
+//                iEdgepointArraySize = gus1stEastEdgepointArraySize;
+//                break;
+//            case 3:
+//                psEdgepointArray = gps1stNorthEdgepointArray;
+//                iEdgepointArraySize = gus1stNorthEdgepointArraySize;
+//                break;
+//            case 4:
+//                psEdgepointArray = gps1stSouthEdgepointArray;
+//                iEdgepointArraySize = gus1stSouthEdgepointArraySize;
+//                break;
             default:
                 // WTF???
                 return (NOWHERE);
@@ -2171,7 +2175,7 @@ public class FindLocations
             }
         }
 
-        FindBestPath(pSoldier, NOWHERE, pSoldier.bLevel, WALKING, COPYREACHABLE, 0);
+//        FindBestPath(pSoldier, NOWHERE, pSoldier.bLevel, WALKING, COPYREACHABLE, 0);
 
         // Turn off the "reachable" flag for his current location
         // so we don't consider it
@@ -2219,15 +2223,15 @@ public class FindLocations
         // values
 
         // well, let's TRY just taking a path to the place we're supposed to go...
-        if (FindBestPath(pSoldier, sDestGridNo, pSoldier.bLevel, WALKING, COPYROUTE, 0))
-        {
-            pSoldier.bPathStored = true;
-            return (sDestGridNo);
-        }
-        else
-        {
-            return (NOWHERE);
-        }
+//        if (FindBestPath(pSoldier, sDestGridNo, pSoldier.bLevel, WALKING, COPYROUTE, 0))
+//        {
+//            pSoldier.bPathStored = true;
+//            return (sDestGridNo);
+//        }
+//        else
+//        {
+//            return (NOWHERE);
+//        }
 
     }
 
@@ -2271,7 +2275,7 @@ public class FindLocations
                     if ((fInRing && ubRoom == BOXING_RING) || (!fInRing && ubRoom != BOXING_RING) && Movement.LegalNPCDestination(pSoldier, sGridNo, IGNORE_PATH, NOWATER, 0) > 0)
                     {
                         iDistance = Math.Abs(sXOffset) + Math.Abs(sYOffset);
-                        if (iDistance < iClosestDistance && WhoIsThere2(sGridNo, 0) == NOBODY)
+                        if (iDistance < iClosestDistance && WorldManager.WhoIsThere2(sGridNo, 0) == NOBODY)
                         {
                             sClosestSpot = sGridNo;
                             iClosestDistance = iDistance;

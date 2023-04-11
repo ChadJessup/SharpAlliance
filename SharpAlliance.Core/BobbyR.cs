@@ -556,7 +556,7 @@ public class BobbyR
 
 # if BR_INVENTORY_TURNOVER_DEBUG
                             if (usItemIndex == ROCKET_LAUNCHER)
-                                MapScreenMessage(0, MSG_DEBUG, "%s: BR Ordered %d, Has %d", WORLDTIMESTR, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand);
+                                MapScreenMessage(0, MSG_DEBUG, "%s: BR Ordered %d, Has %d", gswzWorldTimeStr, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand);
 #endif
                         }
                     }

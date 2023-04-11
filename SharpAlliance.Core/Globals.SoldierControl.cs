@@ -5,6 +5,8 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const NPCID PLAYER_GENERATED_CHARACTER_ID = (NPCID)51;
+
     // This macro should be used whenever we want to see if someone is neutral
     // IF WE ARE CONSIDERING ATTACKING THEM.  Creatures & bloodcats will attack neutrals
     // but they can't attack empty vehicles!!

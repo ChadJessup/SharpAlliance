@@ -437,11 +437,11 @@ public class Points
     public int CalcTotalAPsToAttack(SOLDIERTYPE pSoldier, int sGridNo, int ubAddTurningCost, int bAimTime)
     {
         int sAPCost = 0;
-        Items usItemNum;
-        int sActionGridNo;
-        WorldDirections ubDirection;
-        int sAdjustedGridNo;
-        IC uiItemClass;
+        Items usItemNum = 0;
+        int sActionGridNo = 0;
+        WorldDirections ubDirection = 0;
+        int sAdjustedGridNo = 0;
+        IC uiItemClass = 0;
 
         // LOOK IN BUDDY'S HAND TO DETERMINE WHAT TO DO HERE
         usItemNum = pSoldier.inv[InventorySlot.HANDPOS].usItem;
@@ -607,7 +607,7 @@ public class Points
             // CHECK FOR RIFLE
             if (Item[usItem].usItemClass == IC.GUN)
             {
-                return (Weapon[usItem].ubReadyTime);
+                return (WeaponTypes.Weapon[usItem].ubReadyTime);
             }
         }
 

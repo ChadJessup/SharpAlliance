@@ -235,14 +235,14 @@ public class Meanwhile
         zStr = wprintf("%s.....", pMessageStrings[MSG.MEANWHILE]);
         Rectangle? toss = new();
 
-        if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
-        {
-            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG.OKSKIP, BeginMeanwhileCallBack, ref toss);
-        }
-        else
-        {
-            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG.OK, BeginMeanwhileCallBack, ref toss);
-        }
+//        if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION && MeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID))
+//        {
+//            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG_OKSKIP, BeginMeanwhileCallBack, ref toss);
+//        }
+//        else
+//        {
+//            MessageBoxSubSystem.DoMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, zStr, guiCurrentScreen, MSG_BOX_FLAG_OK, BeginMeanwhileCallBack, ref toss);
+//        }
     }
 
     void CheckForMeanwhileOKStart()
@@ -250,20 +250,20 @@ public class Meanwhile
         if (gfMeanwhileTryingToStart)
         {
             // Are we in prebattle interface?
-            if (gfPreBattleInterfaceActive)
-            {
-                return;
-            }
-
-            if (!InterfaceOKForMeanwhilePopup())
-            {
-                return;
-            }
-
-            if (!DialogueQueueIsEmptyOrSomebodyTalkingNow())
-            {
-                return;
-            }
+//            if (gfPreBattleInterfaceActive)
+//            {
+//                return;
+//            }
+//
+//            if (!InterfaceOKForMeanwhilePopup())
+//            {
+//                return;
+//            }
+//
+//            if (!DialogueQueueIsEmptyOrSomebodyTalkingNow())
+//            {
+//                return;
+//            }
 
             gfMeanwhileTryingToStart = false;
 
@@ -271,14 +271,14 @@ public class Meanwhile
 
             if (guiCurrentScreen == ScreenName.GAME_SCREEN)
             {
-                LeaveTacticalScreen(ScreenName.GAME_SCREEN);
+//                LeaveTacticalScreen(ScreenName.GAME_SCREEN);
             }
 
 
 
             // We need to make sure we have no item - at least in tactical
             // In mapscreen, time is paused when manipulating items...
-            CancelItemPointer();
+//            CancelItemPointer();
 
             BringupMeanwhileBox();
         }
@@ -297,20 +297,20 @@ public class Meanwhile
             gsOldSectorZ = gbWorldSectorZ;
         }
 
-        gsOldSelectedSectorX = sSelMapX;
-        gsOldSelectedSectorY = sSelMapY;
-        gsOldSelectedSectorZ = (int)iCurrentMapSectorZ;
+//        gsOldSelectedSectorX = sSelMapX;
+//        gsOldSelectedSectorY = sSelMapY;
+//        gsOldSelectedSectorZ = (int)iCurrentMapSectorZ;
 
         gfInMeanwhile = true;
 
         // ATE: Change music before load
-        SetMusicMode(MUSIC_MAIN_MENU);
+//        SetMusicMode(MUSIC_MAIN_MENU);
 
 
         gfWorldWasLoaded = gfWorldLoaded;
 
         // OK, we have been told to start.....
-        SetCurrentInterfacePanel((int)TEAM_PANEL);
+//        SetCurrentInterfacePanel((int)TEAM_PANEL);
 
         // Setup NPC locations, depending on meanwhile type...
         switch (gCurrentMeanwhileDef.ubMeanwhileID)
@@ -343,9 +343,9 @@ public class Meanwhile
                     gNPCSaveData[iIndex].sGridNo = gMercProfiles[NPCID.QUEEN].sGridNo;
 
                     // Force reload of NPC files...
-                    ReloadQuoteFile(NPCID.QUEEN);
+//                    ReloadQuoteFile(NPCID.QUEEN);
 
-                    ChangeNpcToDifferentSector(NPCID.QUEEN, 3, 16, 0);
+//                    ChangeNpcToDifferentSector(NPCID.QUEEN, 3, 16, 0);
                 }
 
                 // SAVE MESSANGER!
@@ -359,9 +359,9 @@ public class Meanwhile
                     gNPCSaveData[iIndex].sGridNo = gMercProfiles[NPCID.ELLIOT].sGridNo;
 
                     // Force reload of NPC files...
-                    ReloadQuoteFile(NPCID.ELLIOT);
+//                    ReloadQuoteFile(NPCID.ELLIOT);
 
-                    ChangeNpcToDifferentSector(NPCID.ELLIOT, 3, 16, 0);
+//                    ChangeNpcToDifferentSector(NPCID.ELLIOT, 3, 16, 0);
                 }
 
                 if (gCurrentMeanwhileDef.ubMeanwhileID == Meanwhiles.OUTSKIRTS_MEDUNA)
@@ -377,9 +377,9 @@ public class Meanwhile
                         gNPCSaveData[iIndex].sGridNo = gMercProfiles[NPCID.JOE].sGridNo;
 
                         // Force reload of NPC files...
-                        ReloadQuoteFile(NPCID.JOE);
+//                        ReloadQuoteFile(NPCID.JOE);
 
-                        ChangeNpcToDifferentSector(NPCID.JOE, 3, 16, 0);
+//                        ChangeNpcToDifferentSector(NPCID.JOE, 3, 16, 0);
                     }
                 }
 
@@ -399,9 +399,9 @@ public class Meanwhile
                     gNPCSaveData[iIndex].sGridNo = gMercProfiles[NPCID.QUEEN].sGridNo;
 
                     // Force reload of NPC files...
-                    ReloadQuoteFile(NPCID.QUEEN);
+//                    ReloadQuoteFile(NPCID.QUEEN);
 
-                    ChangeNpcToDifferentSector(NPCID.QUEEN, 7, 14, 0);
+//                    ChangeNpcToDifferentSector(NPCID.QUEEN, 7, 14, 0);
                 }
 
                 // SAVE MESSANGER!
@@ -415,9 +415,9 @@ public class Meanwhile
                     gNPCSaveData[iIndex].sGridNo = gMercProfiles[NPCID.ELLIOT].sGridNo;
 
                     // Force reload of NPC files...
-                    ReloadQuoteFile(NPCID.ELLIOT);
+//                    ReloadQuoteFile(NPCID.ELLIOT);
 
-                    ChangeNpcToDifferentSector(NPCID.ELLIOT, 7, 14, 0);
+//                    ChangeNpcToDifferentSector(NPCID.ELLIOT, 7, 14, 0);
                 }
 
                 // SAVE JOE!
@@ -431,9 +431,9 @@ public class Meanwhile
                     gNPCSaveData[iIndex].sGridNo = gMercProfiles[NPCID.JOE].sGridNo;
 
                     // Force reload of NPC files...
-                    ReloadQuoteFile(NPCID.JOE);
+//                    ReloadQuoteFile(NPCID.JOE);
 
-                    ChangeNpcToDifferentSector(NPCID.JOE, 7, 14, 0);
+//                    ChangeNpcToDifferentSector(NPCID.JOE, 7, 14, 0);
                 }
 
                 break;
@@ -442,10 +442,10 @@ public class Meanwhile
         }
 
         // fade out old screen....
-        FadeOutNextFrame();
+//        FadeOutNextFrame();
 
         // Load new map....
-        gFadeOutDoneCallback = DoneFadeOutMeanwhile;
+//        gFadeOutDoneCallback = DoneFadeOutMeanwhile;
 
 
     }
@@ -455,14 +455,14 @@ public class Meanwhile
     {
         // OK, insertion data found, enter sector!
 
-        SetCurrentWorldSector(gCurrentMeanwhileDef.sSectorX, gCurrentMeanwhileDef.sSectorY, 0);
+//        SetCurrentWorldSector(gCurrentMeanwhileDef.sSectorX, gCurrentMeanwhileDef.sSectorY, 0);
 
         //LocateToMeanwhileCharacter( );
         LocateMeanWhileGrid();
 
-        gFadeInDoneCallback = DoneFadeInMeanwhile;
+//        gFadeInDoneCallback = DoneFadeInMeanwhile;
 
-        FadeInNextFrame();
+//        FadeInNextFrame();
     }
 
 
@@ -551,29 +551,29 @@ public class Meanwhile
             case Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE:
                 if (gGameOptions.ubDifficultyLevel == DifficultyLevel.Hard)
                 { //Wake up the queen earlier to punish the good players!
-                    ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
+//                    ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
                 }
-                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.SEND_SOLDIERS_TO_BATTLE_LOCATION, 0);
+//                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.SEND_SOLDIERS_TO_BATTLE_LOCATION, 0);
                 break;
             case Meanwhiles.CAMBRIA_LIBERATED:
             case Meanwhiles.ALMA_LIBERATED:
             case Meanwhiles.GRUMM_LIBERATED:
             case Meanwhiles.CHITZENA_LIBERATED:
             case Meanwhiles.BALIME_LIBERATED:
-                ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
+//                ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
                 break;
             case Meanwhiles.DRASSEN_LIBERATED:
-                ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
-                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.SEND_SOLDIERS_TO_DRASSEN, 0);
+//                ExecuteStrategicAIAction(NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN, 0, 0);
+//                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.SEND_SOLDIERS_TO_DRASSEN, 0);
                 break;
             case Meanwhiles.CREATURES:
                 // add Rat
-                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.ADD_RAT, 0);
+//                HandleNPCDoAction(NPCID.QUEEN, NPC_ACTION.ADD_RAT, 0);
                 break;
             case Meanwhiles.AWOL_SCIENTIST:
                 {
-                    int sSectorX;
-                    MAP_ROW sSectorY;
+                    int sSectorX = 0;
+                    MAP_ROW sSectorY = 0;
 
                     Quests.StartQuest(QUEST.FIND_SCIENTIST, -1, (MAP_ROW)(-1));
                     // place Madlab and robot!
@@ -611,13 +611,13 @@ public class Meanwhile
                 }
                 break;
             case Meanwhiles.NW_SAM:
-                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_1_X, SAM.SAM_1_Y);
+//                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_1_X, SAM.SAM_1_Y);
                 break;
             case Meanwhiles.NE_SAM:
-                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_2_X, SAM.SAM_2_Y);
+//                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_2_X, SAM.SAM_2_Y);
                 break;
             case Meanwhiles.CENTRAL_SAM:
-                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_3_X, SAM.SAM_3_X);
+//                ExecuteStrategicAIAction(NPC_ACTION.SEND_TROOPS_TO_SAM, SAM.SAM_3_X, SAM.SAM_3_X);
                 break;
 
             default:
@@ -630,9 +630,9 @@ public class Meanwhile
         int cnt;
         NPCID ubProfile;
 
-        EmptyDialogueQueue();
+//        EmptyDialogueQueue();
         ProcessImplicationsOfMeanwhile();
-        SetMeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID);
+//        SetMeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID);
 
         gfInMeanwhile = false;
         giNPCReferenceCount = 0;
@@ -643,23 +643,23 @@ public class Meanwhile
         GameClock.UnPauseGame();
 
         // ATE: Make sure!
-        TurnOffSectorLocator();
+//        TurnOffSectorLocator();
 
         if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION)
         {
             gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_MERCS);
 
             // OK, load old sector again.....
-            FadeOutNextFrame();
+//            FadeOutNextFrame();
 
             // Load new map....
-            gFadeOutDoneCallback = DoneFadeOutMeanwhileOnceDone;
+//            gFadeOutDoneCallback = DoneFadeOutMeanwhileOnceDone;
         }
         else
         {
             // We leave this sector open for our POWs to escape!
             // Set music mode to enemy present!
-            SetMusicMode(MUSIC_TACTICAL_ENEMYPRESENT);
+//            SetMusicMode(MUSIC_TACTICAL_ENEMYPRESENT);
 
             // ATE: Restore people to saved positions...
             // OK, restore NPC save info...
@@ -675,7 +675,7 @@ public class Meanwhile
                     gMercProfiles[ubProfile].sGridNo = (int)gNPCSaveData[cnt].sGridNo;
 
                     // Ensure NPC files loaded...
-                    ReloadQuoteFile(ubProfile);
+//                    ReloadQuoteFile(ubProfile);
                 }
             }
 
@@ -694,20 +694,20 @@ public class Meanwhile
 
         if (gfWorldWasLoaded)
         {
-            SetCurrentWorldSector(gsOldSectorX, gsOldSectorY, (int)gsOldSectorZ);
+//            SetCurrentWorldSector(gsOldSectorX, gsOldSectorY, (int)gsOldSectorZ);
 
-            ExamineCurrentSquadLights();
+//            ExamineCurrentSquadLights();
         }
         else
         {
-            TrashWorld();
+//            TrashWorld();
             // NB no world is loaded!
             gWorldSectorX = 0;
             gWorldSectorY = 0;
             gbWorldSectorZ = -1;
         }
 
-        ChangeSelectedMapSector(gsOldSelectedSectorX, gsOldSelectedSectorY, (int)gsOldSelectedSectorZ);
+//        ChangeSelectedMapSector(gsOldSelectedSectorX, gsOldSelectedSectorY, (int)gsOldSelectedSectorZ);
 
         gfReloadingScreenFromMeanwhile = false;
 
@@ -724,27 +724,27 @@ public class Meanwhile
                 gMercProfiles[ubProfile].sGridNo = (int)gNPCSaveData[cnt].sGridNo;
 
                 // Ensure NPC files loaded...
-                ReloadQuoteFile(ubProfile);
+//                ReloadQuoteFile(ubProfile);
             }
         }
 
-        gFadeInDoneCallback = DoneFadeInMeanwhileOnceDone;
+//        gFadeInDoneCallback = DoneFadeInMeanwhileOnceDone;
 
         // OK, based on screen we were in....
         switch (guiOldScreen)
         {
             case ScreenName.MAP_SCREEN:
-                InternalLeaveTacticalScreen(ScreenName.MAP_SCREEN);
+//                InternalLeaveTacticalScreen(ScreenName.MAP_SCREEN);
                 //gfEnteringMapScreen = true;
                 break;
 
             case ScreenName.GAME_SCREEN:
                 // restore old interface panel flag
-                SetCurrentInterfacePanel((int)TEAM_PANEL);
+//                SetCurrentInterfacePanel((int)TEAM_PANEL);
                 break;
         }
 
-        FadeInNextFrame();
+//        FadeInNextFrame();
 
     }
 
@@ -760,7 +760,7 @@ public class Meanwhile
         // go to the approp. gridno
         sGridNo = gusMeanWhileGridNo[(int)ubCurrentMeanWhileId];
 
-        InternalLocateGridNo(sGridNo, true);
+//        InternalLocateGridNo(sGridNo, true);
 
         return;
     }
