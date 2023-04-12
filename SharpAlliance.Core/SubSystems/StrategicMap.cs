@@ -67,7 +67,7 @@ public class StrategicMap
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string.Format("Map does not exist for %s, using default.", bTestString));
             // Set to a string we know!
             bString = sprintf("H10.DAT", pVertStrings[sMapY], pHortStrings[sMapX]);
-            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG_DEBUG, "Using PLACEHOLDER map!");
+            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG.DEBUG, "Using PLACEHOLDER map!");
         }
         return;
     }

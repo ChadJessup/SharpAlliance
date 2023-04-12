@@ -235,7 +235,7 @@ public class GameClock
         // Display message
         if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
-            //ScreenMsg( MSG_FONT_YELLOW, MSG_INTERFACE, "Cannot toggle compression in Combat Mode."  );
+            //ScreenMsg( MSG_FONT_YELLOW, MSG.INTERFACE, "Cannot toggle compression in Combat Mode."  );
             return;
         }
 
@@ -247,14 +247,14 @@ public class GameClock
             giTimeCompressMode = TIME_COMPRESS.TIME_SUPER_COMPRESS;
             guiGameSecondsPerRealSecond = giTimeCompressSpeeds[giTimeCompressMode] * SECONDS_PER_COMPRESSION;
 
-            //ScreenMsg( MSG_FONT_YELLOW, MSG_INTERFACE, "Time compression ON."  );
+            //ScreenMsg( MSG_FONT_YELLOW, MSG.INTERFACE, "Time compression ON."  );
         }
         else
         {
             giTimeCompressMode = uiOldTimeCompressMode;
             guiGameSecondsPerRealSecond = giTimeCompressSpeeds[giTimeCompressMode] * SECONDS_PER_COMPRESSION;
 
-            //ScreenMsg( MSG_FONT_YELLOW, MSG_INTERFACE, "Time compression OFF."  );
+            //ScreenMsg( MSG_FONT_YELLOW, MSG.INTERFACE, "Time compression OFF."  );
         }
     }
 
@@ -549,7 +549,7 @@ public class GameClock
             // ignore request if locked
             if (gfLockPauseState)
             {
-                Messages.ScreenMsg(FontColor.FONT_ORANGE, MSG_TESTVERSION, "Call to UnPauseGame() while Pause State is LOCKED! AM-4");
+                Messages.ScreenMsg(FontColor.FONT_ORANGE, MSG.TESTVERSION, "Call to UnPauseGame() while Pause State is LOCKED! AM-4");
                 return;
             }
 

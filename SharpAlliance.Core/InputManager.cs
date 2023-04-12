@@ -22,7 +22,7 @@ public class InputManager : IInputManager
     private readonly ILogger<InputManager> logger;
     public MouseSubSystem Mouse { get; init; }
     public ButtonSubSystem buttonSystem { get; init; }
-    private readonly GameContext context;
+    private readonly GameContext context2;
     //private VeldridVideoManager video;
     private int[] gsKeyTranslationTable = new int[1024];
     private bool gfApplicationActive;
@@ -88,13 +88,11 @@ public class InputManager : IInputManager
     public InputManager(
         ILogger<InputManager> logger,
         MouseSubSystem mouseSubSystem,
-        ButtonSubSystem buttonSubsystem,
-        GameContext gameContext)
+        ButtonSubSystem buttonSubsystem)
     {
         this.logger = logger;
         this.Mouse = mouseSubSystem;
         this.buttonSystem = buttonSubsystem;
-        this.context = gameContext;
     }
 
     public void GetCursorPosition(out Point mousePos)
@@ -150,7 +148,7 @@ public class InputManager : IInputManager
 
         ////gpCurrentStringDescriptor = null;
 
-        this.IsInitialized = await this.buttonSystem.Initialize(this.context);
+        this.IsInitialized = await this.buttonSystem.Initialize(this.Mouse, this);
 
         return this.IsInitialized;
     }

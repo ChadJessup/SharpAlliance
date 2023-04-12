@@ -197,11 +197,11 @@ public class DrugsAndAlcohol
 
         if (ubDrugType == DRUG_TYPE_ALCOHOL)
         {
-            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG.DRANK_SOME], pSoldier.name, ShortItemNames[usItem]);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, pMessageStrings[MSG.DRANK_SOME], pSoldier.name, ShortItemNames[usItem]);
         }
         else
         {
-            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG.MERC_TOOK_DRUG], pSoldier.name);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, pMessageStrings[MSG.MERC_TOOK_DRUG], pSoldier.name);
         }
 
         // Dirty panel

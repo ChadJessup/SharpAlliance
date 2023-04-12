@@ -238,7 +238,7 @@ public enum ProfileMiscFlags2
 public enum ProfileMiscFlags3
 {
     // In the aimscreen, the merc was away and the player left a message
-    PROFILE_MISC_FLAG3_PLAYER_LEFT_MSG_FOR_MERC_AT_AIM = 0x01,
+    PROFILE_MISC_FLAG3_PLAYER_LEFT_MSG.FOR_MERC_AT_AIM = 0x01,
     PROFILE_MISC_FLAG3_PERMANENT_INSERTION_CODE = 0x02,
 
     // player's had a chance to hire this merc

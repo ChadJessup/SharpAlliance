@@ -1508,19 +1508,6 @@ public partial class Globals
 
     public static STRATEGIC_STATUS gStrategicStatus;
 
-    public const int MSG_INTERFACE = 0;
-    public const int MSG_DIALOG = 1;
-    public const int MSG_CHAT = 2;
-    public const int MSG_DEBUG = 3;
-    public const int MSG_UI_FEEDBACK = 4;
-    public const int MSG_ERROR = 5;
-    public const int MSG_BETAVERSION = 6;
-    public const int MSG_TESTVERSION = 7;
-    public const int MSG_MAP_UI_POSITION_MIDDLE = 8;
-    public const int MSG_MAP_UI_POSITION_UPPER = 9;
-    public const int MSG_MAP_UI_POSITION_LOWER = 10;
-    public const int MSG_SKULL_UI_FEEDBACK = 11;
-
     // stat change causes
     public const int FROM_SUCCESS = 0;
     public const int FROM_TRAINING = 1;

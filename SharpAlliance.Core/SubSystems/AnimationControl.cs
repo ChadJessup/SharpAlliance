@@ -84,7 +84,7 @@ public class AnimationControl
         if (usAnimSurface == AnimationSurfaceTypes.INVALID_ANIMATION)
         {
             // WE SHOULD NOT BE USING THIS ANIMATION
-//            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG_BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier.ubBodyType, gAnimControl[usAnimState].zAnimStr);
+//            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG.BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier.ubBodyType, gAnimControl[usAnimState].zAnimStr);
             // Set index to FOUND_INVALID_ANIMATION
 //            gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState] = AnimationStates.FOUND_INVALID_ANIMATION;
             return (AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE);
@@ -298,7 +298,7 @@ public class AnimationControl
             // Ensure that it's loaded!
             if (gAnimSurfaceDatabase[usAnimSurface].hVideoObject == null)
             {
-                Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, Globals.MSG_BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType.ToString(),
+                Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG.BETAVERSION, "IAnimation Surface for Body %d, animation %S, surface %d not loaded.", pSoldier.ubBodyType.ToString(),
                     Globals.gAnimControl[usAnimState].zAnimStr, usAnimSurface.ToString());
                 //AnimDebugMsg("Surface Database: PROBLEMS!!!!!!");
                 usAnimSurface = Globals.INVALID_ANIMATION_SURFACE;

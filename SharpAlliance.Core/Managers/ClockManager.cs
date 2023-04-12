@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
@@ -20,12 +21,16 @@ public class ClockManager : IClockManager
 
     public bool IsInitialized { get; private set; }
 
+    private readonly ILogger<ClockManager> logger;
     private readonly GameContext context;
     private IInputManager inputs;
 
-    public ClockManager(GameContext context)
+    public ClockManager(
+        ILogger<ClockManager> logger,
+        GameContext context)
     {
-        context = context;
+        this.logger = logger;
+        this.context = context;
     }
 
     public ValueTask<bool> Initialize()
@@ -93,7 +98,7 @@ public class ClockManager : IClockManager
             // ignore request if locked
             if (Globals.gfLockPauseState)
             {
-                //Messages.ScreenMsg(FONT_ORANGE, MSG_TESTVERSION, "Call to UnPauseGame() while Pause State is LOCKED! AM-4");
+                //Messages.ScreenMsg(FONT_ORANGE, MSG.TESTVERSION, "Call to UnPauseGame() while Pause State is LOCKED! AM-4");
                 return;
             }
 

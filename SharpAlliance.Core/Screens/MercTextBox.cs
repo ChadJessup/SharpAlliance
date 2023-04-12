@@ -15,8 +15,9 @@ public class MercTextBox
         return ValueTask.FromResult(true);
     }
 
-    public static void RemoveMercPopupBoxFromIndex(int iBoxId)
+    public static bool RemoveMercPopupBoxFromIndex(int iBoxId)
     {
+        return true;
     }
 
     public static bool SetPrepareMercPopupFlags(MERC_POPUP_PREPARE_FLAGS uiFlags)
@@ -40,7 +41,7 @@ public class MercTextBox
         //make sure the box id is valid
         if (uiId == (int)-1)
         {
-            //Messages.ScreenMsg( FONT_MCOLOR_WHITE, MSG_BETAVERSION, "Error: Trying to set Current Popup Box using -1 as an ID" );
+            //Messages.ScreenMsg( FONT_MCOLOR_WHITE, MSG.BETAVERSION, "Error: Trying to set Current Popup Box using -1 as an ID" );
             return (false);
         }
 

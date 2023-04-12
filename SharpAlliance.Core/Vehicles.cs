@@ -165,11 +165,11 @@ public class VEHICLETYPE
 }
 
 // vehicle/human path structure
-public class Path
+public struct Path
 {
-    public int uiSectorId;
+    public uint uiSectorId;
     public uint uiEta;
     public bool fSpeed;
-    public Path? pNext;
-	public Path? pPrev;
+//    public Path? pNext;
+//	public Path? pPrev;
 };

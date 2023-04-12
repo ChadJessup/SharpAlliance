@@ -88,10 +88,10 @@ namespace SharpAlliance.Platform
 
             this.GameContext = provider.GetRequiredService<GameContext>();
 
-            // this.GameContext.FileManager = provider.GetRequiredService<IFileManager>();
+            this.GameContext.FileManager = provider.GetRequiredService<IFileManager>();
             this.GameContext.SoundManager = provider.GetRequiredService<ISoundManager>();
             this.GameContext.TimerManager = provider.GetRequiredService<ITimerManager>();
-            //this.GameContext.ClockManager = provider.GetRequiredService<IClockManager>();
+            this.GameContext.ClockManager = provider.GetRequiredService<IClockManager>();
             this.GameContext.GameLogic = provider.GetRequiredService<IGameLogic>();
             this.GameContext.OSManager = provider.GetRequiredService<IOSManager>();
             this.GameContext.MusicManager = provider.GetRequiredService<IMusicManager>();

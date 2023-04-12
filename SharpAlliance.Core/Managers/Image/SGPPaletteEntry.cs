@@ -58,8 +58,8 @@ public struct ETRLEObject
     public uint uiDataLength;
     public short sOffsetX;
     public short sOffsetY;
-    public int usHeight;
-    public int usWidth;
+    public ushort usHeight;
+    public ushort usWidth;
 }
 
 public struct ETRLEData

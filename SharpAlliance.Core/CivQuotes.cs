@@ -365,7 +365,7 @@ public class CivQuotes
 
         if (ubCivQuoteID == CIV_QUOTE.HINT)
         {
-//            MapScreenMessage(FONT_MCOLOR_WHITE, MSG_DIALOG, "%s", gzCivQuote);
+//            MapScreenMessage(FONT_MCOLOR_WHITE, MSG.DIALOG, "%s", gzCivQuote);
         }
 
         // Create video oeverlay....

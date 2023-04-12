@@ -506,7 +506,7 @@ public class StrategicMines
             if (iAmtExtracted > 0)
             {
                 // debug message
-                //			Messages.ScreenMsg( MSG_FONT_RED, MSG_DEBUG, "%s - Mine income from %s = $%d", gswzWorldTimeStr, pTownNames[ GetTownAssociatedWithMine( bMineIndex ) ], iAmtExtracted );
+                //			Messages.ScreenMsg( MSG_FONT_RED, MSG.DEBUG, "%s - Mine income from %s = $%d", gswzWorldTimeStr, pTownNames[ GetTownAssociatedWithMine( bMineIndex ) ], iAmtExtracted );
 
                 // check type of mine
                 bMineType = Globals.gMineStatus[bMineIndex].ubMineType;
@@ -852,7 +852,7 @@ public class StrategicMines
         if (Globals.gMercProfiles[usHeadMinerProfileId].bLife < Globals.OKLIFE)
         {
             // debug message
-//            Messages.ScreenMsg(MSG_FONT_RED, Globals.MSG_DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
+//            Messages.ScreenMsg(MSG_FONT_RED, MSG.DEBUG, "Head Miner #%s can't talk (quote #%d)", Globals.gMercProfiles[usHeadMinerProfileId].zNickname, ubQuoteType);
             return;
         }
 

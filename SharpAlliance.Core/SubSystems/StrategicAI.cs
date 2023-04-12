@@ -3291,7 +3291,7 @@ public class StrategicAI
                 }
                 break;
             default:
-                Messages.ScreenMsg(FontColor.FONT_RED, MSG_DEBUG, "QueenAI failed to handle action code %d.", usActionCode.ToString());
+                Messages.ScreenMsg(FontColor.FONT_RED, MSG.DEBUG, "QueenAI failed to handle action code %d.", usActionCode.ToString());
                 break;
         }
     }
@@ -4591,7 +4591,7 @@ public class StrategicAI
 
         //        if (ubNumGroupsRedirected)
         //        {
-        //            Messages.ScreenMsg(FontColor.FONT_LTBLUE, MSG_BETAVERSION, "Test message for new feature:  %d enemy groups were redirected away from moving through sector %c%d.  Please don't report unless this number is greater than 5.",
+        //            Messages.ScreenMsg(FontColor.FONT_LTBLUE, MSG.BETAVERSION, "Test message for new feature:  %d enemy groups were redirected away from moving through sector %c%d.  Please don't report unless this number is greater than 5.",
         //                ubNumGroupsRedirected, ubSectorY.ToString() + "A", ubSectorX.ToString());
         //        }
         return ubNumGroupsRedirected;

@@ -357,7 +357,7 @@ public class Smell
         // ATE: Send warning if dropping blood nowhere....
         if (sGridNo == NOWHERE)
         {
-            // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "Attempting to drop blood NOWHERE");
+            // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.TESTVERSION, "Attempting to drop blood NOWHERE");
             return;
         }
 

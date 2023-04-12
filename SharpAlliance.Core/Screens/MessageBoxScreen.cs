@@ -158,7 +158,7 @@ public class MessageBoxScreen : IScreen
         //     {
         //         if ((InputEvent.usParam == ESC) || (InputEvent.usParam == 'n'))
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_YESNO))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
@@ -167,17 +167,17 @@ public class MessageBoxScreen : IScreen
         // 
         //         if (InputEvent.usParam == ENTER)
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_YESNO))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
         //             }
-        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_OK))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
         //             }
-        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_CONTINUESTOP))
+        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_CONTINUESTOP))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
@@ -185,7 +185,7 @@ public class MessageBoxScreen : IScreen
         //         }
         //         if (InputEvent.usParam == 'o')
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_OK))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_OK))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
@@ -193,7 +193,7 @@ public class MessageBoxScreen : IScreen
         //         }
         //         if (InputEvent.usParam == 'y')
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_YESNO))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_YESNO))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
@@ -201,7 +201,7 @@ public class MessageBoxScreen : IScreen
         //         }
         //         if (InputEvent.usParam == '1')
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
@@ -209,7 +209,7 @@ public class MessageBoxScreen : IScreen
         //         }
         //         if (InputEvent.usParam == '2')
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
@@ -217,7 +217,7 @@ public class MessageBoxScreen : IScreen
         //         }
         //         if (InputEvent.usParam == '3')
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
@@ -225,7 +225,7 @@ public class MessageBoxScreen : IScreen
         //         }
         //         if (InputEvent.usParam == '4')
         //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG_BOX_FLAG_FOUR_NUMBERED_BUTTONS))
+        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
         //             {
         //                 // Exit messagebox
         //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;

@@ -13,11 +13,16 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SixLabors.ImageSharp;
+using SharpAlliance.Core.Interfaces;
 
 namespace SharpAlliance.Core;
 
 public class InterfaceItems
 {
+    private readonly IVideoManager video;
+
+    public InterfaceItems(IVideoManager videoManager) => this.video = videoManager;
+
     bool AttemptToAddSubstring(string zDest, string zTemp, ref int puiStringLength, int uiPixLimit)
     {
         int uiRequiredStringLength, uiTempStringLength;
@@ -257,23 +262,23 @@ public class InterfaceItems
         string key;
 
         // Load all four body type images
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_large_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male_H.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_female.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\inventory_figure_female_H.sti", out key));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_female_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1] = key;
-        CHECKF(VeldridVideoManager.AddVideoObject("INTERFACE\\gold_key_button.sti", out guiGoldKeyVO));
+        CHECKF(this.video.AddVideoObject("INTERFACE\\gold_key_button.sti", out guiGoldKeyVO));
 
         // Add cammo region 
         MouseSubSystem.MSYS_DefineRegion(
@@ -406,16 +411,16 @@ public class InterfaceItems
         InventorySlot cnt;
 
         // Remove all body type panels
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][0]);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0]);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][0]);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0]);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][1]);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1]);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][1]);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][0]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][0]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGMALE][1]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.BIGMALE][1]);
+        this.video.DeleteVideoObjectFromIndex(guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1]);
 
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiGoldKeyVO);
+        this.video.DeleteVideoObjectFromIndex(guiGoldKeyVO);
 
         // Remove regions
         // Add regions for inventory slots
@@ -3987,7 +3992,7 @@ public class InterfaceItems
                 // OK, we want to drop.....
 
                 // Write the word 'drop' on cursor...
-                //                    wcscpy(gzIntTileLocation, pMessageStrings[MSG_DROP]);
+                //                    wcscpy(gzIntTileLocation, pMessageStrings[MSG.DROP]);
                 gfUIIntTileLocation = true;
             }
             else
@@ -4007,7 +4012,7 @@ public class InterfaceItems
                     // Write the word 'drop' on cursor...
                     if (gfUIMouseOnValidCatcher == 0)
                     {
-                        //                            wcscpy(gzIntTileLocation, pMessageStrings[MSG_THROW]);
+                        //                            wcscpy(gzIntTileLocation, pMessageStrings[MSG.THROW]);
                         gfUIIntTileLocation = true;
                     }
 
@@ -4087,7 +4092,7 @@ public class InterfaceItems
         //        if (!CompatibleAmmoForGun(pObject, (pSoldier.inv[InventorySlot.HANDPOS])))
         {
             // Build string...
-            //            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[ROBOT_NEEDS_GIVEN_CALIBER_STR], AmmoCaliber[Weapon[pSoldier.inv[HANDPOS].usItem].ubCalibre]);
+            //            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[ROBOT_NEEDS_GIVEN_CALIBER_STR], AmmoCaliber[Weapon[pSoldier.inv[HANDPOS].usItem].ubCalibre]);
 
             return (false);
         }
@@ -4134,7 +4139,7 @@ public class InterfaceItems
         // This implies we have no path....
         if (gsCurrentActionPoints == 0)
         {
-            //            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[NO_PATH]);
+            //            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[NO_PATH]);
             return (false);
         }
 
@@ -4414,7 +4419,7 @@ public class InterfaceItems
                         // try to auto place object....
                         //                        if (AutoPlaceObject(pSoldier, gpItemPointer, true))
                         {
-                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG.ITEM_PASSED_TO_MERC], ShortItemNames[usItem], pSoldier.name);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, pMessageStrings[MSG.ITEM_PASSED_TO_MERC], ShortItemNames[usItem], pSoldier.name);
 
                             // Check if it's the same now!
                             if (gpItemPointer.ubNumberOfObjects == 0)
@@ -4453,7 +4458,7 @@ public class InterfaceItems
                         }
                         // else
                         {
-                            //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, pMessageStrings[MSG_NO_ROOM_TO_PASS_ITEM], ShortItemNames[usItem], pSoldier.name);
+                            //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, pMessageStrings[MSG.NO_ROOM_TO_PASS_ITEM], ShortItemNames[usItem], pSoldier.name);
                             return (false);
                         }
                     }
@@ -4464,7 +4469,7 @@ public class InterfaceItems
                 // CHECK FOR VALID CTGH
                 if (gfBadThrowItemCTGH)
                 {
-                    //                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[CANNOT_THROW_TO_DEST_STR]);
+                    //                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[CANNOT_THROW_TO_DEST_STR]);
                     return (false);
                 }
 
@@ -6241,6 +6246,7 @@ public class InterfaceItems
 
 
     static bool bChecked = false;
+
     void ItemPickMenuMouseMoveCallback(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
         int uiItemPos;
@@ -6401,11 +6407,11 @@ public class InterfaceItems
                         {
                             if (guiCurrentScreen == ScreenName.SHOPKEEPER_SCREEN)
                             {
-                                //                                MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.SHOPKEEPER_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                                //                                MessageBoxSubSystem.DoMessageBox(MSG.BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.SHOPKEEPER_SCREEN, (int)MSG.BOX_FLAG_OK, null, null);
                             }
                             else
                             {
-                                //                                MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                                //                                MessageBoxSubSystem.DoMessageBox(MSG.BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.GAME_SCREEN, (int)MSG.BOX_FLAG_OK, null, null);
                             }
 
                             return;
@@ -6421,7 +6427,7 @@ public class InterfaceItems
                         //if the player is removing money from their account, and they are removing more then $20,000
                         if (gfAddingMoneyToMercFromPlayersAccount && (gRemoveMoney.uiMoneyRemoving + 100) > MAX_MONEY_PER_SLOT)
                         {
-                            //                            MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                            //                            MessageBoxSubSystem.DoMessageBox(MSG.BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.GAME_SCREEN, (int)MSG.BOX_FLAG_OK, null, null);
                             return;
                         }
 
@@ -6435,7 +6441,7 @@ public class InterfaceItems
                         //if the player is removing money from their account, and they are removing more then $20,000
                         if (gfAddingMoneyToMercFromPlayersAccount && (gRemoveMoney.uiMoneyRemoving + 10) > MAX_MONEY_PER_SLOT)
                         {
-                            //                            MessageBoxSubSystem.DoMessageBox(MSG_BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.GAME_SCREEN, (int)MSG_BOX_FLAG_OK, null, null);
+                            //                            MessageBoxSubSystem.DoMessageBox(MSG.BOX_BASIC_STYLE, gzMoneyWithdrawMessageText[MONEY_TEXT_WITHDRAW_MORE_THEN_MAXIMUM], ScreenName.GAME_SCREEN, (int)MSG.BOX_FLAG_OK, null, null);
                             return;
                         }
 

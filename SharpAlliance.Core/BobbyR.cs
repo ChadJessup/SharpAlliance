@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
@@ -10,6 +12,14 @@ namespace SharpAlliance.Core;
 
 public class BobbyR
 {
+    public BobbyR(
+        ILogger<BobbyR> logger,
+        IVideoManager videoManager)
+    {
+        this.logger = logger;
+        this.video = videoManager;
+    }
+
     bool EnterBobbyR()
     {
         //VOBJECT_DESC VObjectDesc;
@@ -46,32 +56,32 @@ public class BobbyR
         // load the Bobbyname graphic and add it
         //
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.BOBBYNAME);
-        VeldridVideoManager.AddVideoObject(imageFile, out guiBobbyName);
+        this.video.AddVideoObject(imageFile, out guiBobbyName);
 
         // load the plaque graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyPlaques.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
+        this.video.AddVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
 
         // load the TopHinge graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyTopHinge.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
+        this.video.AddVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
 
         // load the BottomHinge graphic and add it
         //
         //Utils.FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
+        this.video.AddVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
 
         // load the Store Plaque graphic and add it
         //
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.STOREPLAQUE);
-        VeldridVideoManager.AddVideoObject(imageFile, out guiStorePlaque);
+        this.video.AddVideoObject(imageFile, out guiStorePlaque);
 
         // load the Handle graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyHandle.sti", VObjectDesc.ImageFile);
-        VeldridVideoManager.AddVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
+        this.video.AddVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
 
 
         InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, usMouseRegionPosArray, gSelectedBobbiesSignMenuRegion);
@@ -83,7 +93,7 @@ public class BobbyR
             //
             //Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
 
-            var hvobject = VeldridVideoManager.AddVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
+            var hvobject = this.video.AddVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
 
             for (i = 0; i < BOBBIES_NUMBER_SIGNS; i++)
             {
@@ -105,16 +115,16 @@ public class BobbyR
     void ExitBobbyR()
     {
 
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBobbyName);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiPlaque);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiTopHinge);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiBottomHinge);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiStorePlaque);
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiHandle);
+        this.video.DeleteVideoObjectFromIndex(guiBobbyName);
+        this.video.DeleteVideoObjectFromIndex(guiPlaque);
+        this.video.DeleteVideoObjectFromIndex(guiTopHinge);
+        this.video.DeleteVideoObjectFromIndex(guiBottomHinge);
+        this.video.DeleteVideoObjectFromIndex(guiStorePlaque);
+        this.video.DeleteVideoObjectFromIndex(guiHandle);
 
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
-            VeldridVideoManager.DeleteVideoObjectFromIndex(guiUnderConstructionImage);
+            this.video.DeleteVideoObjectFromIndex(guiUnderConstructionImage);
         }
 
 
@@ -241,14 +251,14 @@ public class BobbyR
         // load the Wood bacground graphic and add it
         //
         string filename = Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti");
-        VeldridVideoManager.AddVideoObject(filename, out guiWoodBackground);
+        this.video.AddVideoObject(filename, out guiWoodBackground);
 
         return (true);
     }
 
     bool DeleteBobbyRWoodBackground()
     {
-        VeldridVideoManager.DeleteVideoObjectFromIndex(guiWoodBackground);
+        this.video.DeleteVideoObjectFromIndex(guiWoodBackground);
         return (true);
     }
 
@@ -368,6 +378,9 @@ public class BobbyR
 
     static uint uiLastTime = 1;
     static ushort usCount = 0;
+    private readonly ILogger<BobbyR> logger;
+    private readonly IVideoManager video;
+
     void HandleBobbyRUnderConstructionAni(bool fReset)
     {
         HVOBJECT hPixHandle;
@@ -556,7 +569,7 @@ public class BobbyR
 
 # if BR_INVENTORY_TURNOVER_DEBUG
                             if (usItemIndex == ROCKET_LAUNCHER)
-                                MapScreenMessage(0, MSG_DEBUG, "%s: BR Ordered %d, Has %d", gswzWorldTimeStr, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand);
+                                MapScreenMessage(0, MSG.DEBUG, "%s: BR Ordered %d, Has %d", gswzWorldTimeStr, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand);
 #endif
                         }
                     }

@@ -1921,7 +1921,7 @@ public class OppList
                 {
                     fNewOpponent = true;
                     pSoldier.bNewOppCnt++;        // increment looker's NEW opponent count
-                                                  //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "Soldier %d sees soldier %d!", pSoldier.ubID, pOpponent.ubID );
+                                                  //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, "Soldier %d sees soldier %d!", pSoldier.ubID, pOpponent.ubID );
 
                     //ExtMen[ptr.guynum].lastCaller = caller;
                     //ExtMen[ptr.guynum].lastCaller2 = caller2;
@@ -2299,7 +2299,7 @@ public class OppList
         {
             //             DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Oppcnt for %d (%s) tried to go below 0", pSoldier.ubID, pSoldier.name));
             // # if JA2BETAVERSION
-            //                 ScreenMsg(MSG_FONT_YELLOW, MSG_UI_FEEDBACK, "Opponent counter dropped below 0 for person %d (%s).  Please inform Sir-tech of this, and what has just been happening in the game.", pSoldier.ubID, pSoldier.name);
+            //                 ScreenMsg(MSG_FONT_YELLOW, MSG.UI_FEEDBACK, "Opponent counter dropped below 0 for person %d (%s).  Please inform Sir-tech of this, and what has just been happening in the game.", pSoldier.ubID, pSoldier.name);
             // #endif
             pSoldier.bOppCnt = 0;
         }
@@ -4950,7 +4950,7 @@ public class OppList
                 //                             /*
                 //                             else if ( (Menptr[ubNoiseMaker].bVisible == true) && (bTeam == gbPlayerNum) )
                 //                             {
-                //                                 ScreenMsg( MSG_FONT_YELLOW, MSG_TESTVERSION, "Handling noise from person not currently seen in player's public opplist" );
+                //                                 ScreenMsg( MSG_FONT_YELLOW, MSG.TESTVERSION, "Handling noise from person not currently seen in player's public opplist" );
                 //                             }
                 //                             */
                 // 
@@ -5699,24 +5699,24 @@ public class OppList
         if (ubNoiseMaker != Globals.NOBODY && pSoldier.bTeam == gbPlayerNum && pSoldier.bTeam == Menptr[ubNoiseMaker].bTeam)
         {
             // # if JA2BETAVERSION
-            //                 ScreenMsg(MSG_FONT_RED, MSG_ERROR, "ERROR! TAKE SCREEN CAPTURE AND TELL CAMFIELD NOW!");
-            //                 ScreenMsg(MSG_FONT_RED, MSG_ERROR, "%s (%d) heard noise from %s (%d), noise at %dL%d, type %d", pSoldier.name, pSoldier.ubID, Menptr[ubNoiseMaker].name, ubNoiseMaker, sGridNo, bLevel, ubNoiseType);
+            //                 ScreenMsg(MSG_FONT_RED, MSG.ERROR, "ERROR! TAKE SCREEN CAPTURE AND TELL CAMFIELD NOW!");
+            //                 ScreenMsg(MSG_FONT_RED, MSG.ERROR, "%s (%d) heard noise from %s (%d), noise at %dL%d, type %d", pSoldier.name, pSoldier.ubID, Menptr[ubNoiseMaker].name, ubNoiseMaker, sGridNo, bLevel, ubNoiseType);
             // #endif
         }
 
         if (bLevel == pSoldier.bLevel || ubNoiseType == NOISE.EXPLOSION || ubNoiseType == NOISE.SCREAM || ubNoiseType == NOISE.ROCK_IMPACT || ubNoiseType == NOISE.GRENADE_IMPACT)
         {
-//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], pDirectionStr[ubNoiseDir]);
+//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG.INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], pDirectionStr[ubNoiseDir]);
         }
         else if (bLevel > pSoldier.bLevel)
         {
             // from above!
-//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[6]);
+//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG.INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[6]);
         }
         else
         {
             // from below!
-//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG_INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[7]);
+//            Messages.ScreenMsg(MSG_FONT_YELLOW, MSG.INTERFACE, pNewNoiseStr[ubNoiseType], pSoldier.name, pNoiseVolStr[ubVolumeIndex], gzLateLocalizedString[7]);
         }
 
         // if the quote was faint, say something
@@ -6464,7 +6464,7 @@ public class OppList
             /*
             if (gubWatchedLocPoints[ ubID ,  bLoc ] > 1)
             {
-                ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Soldier %d getting %d points for interrupt in watched location", ubID, gubWatchedLocPoints[ ubID ,  bLoc ] - 1 );
+                ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Soldier %d getting %d points for interrupt in watched location", ubID, gubWatchedLocPoints[ ubID ,  bLoc ] - 1 );
             }
             */
             // one loc point is worth nothing, so return number minus 1

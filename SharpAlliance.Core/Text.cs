@@ -80,3 +80,30 @@ public enum STRINGS
     RELOAD_ONLY_ONE_GUN,
     BLOODCATS_TURN,
 };
+
+//enums for the above text
+public enum SLG
+{
+    SAVE_GAME,
+    LOAD_GAME,
+    CANCEL,
+    SAVE_SELECTED,
+    LOAD_SELECTED,
+    SAVE_GAME_OK,               //5
+    SAVE_GAME_ERROR,
+    LOAD_GAME_OK,
+    LOAD_GAME_ERROR,
+    GAME_VERSION_DIF,
+    DELETE_ALL_SAVE_GAMES,  //10
+    SAVED_GAME_VERSION_DIF,
+    BOTH_GAME_AND_SAVED_GAME_DIF,
+    CONFIRM_SAVE,
+    CONFIRM_LOAD,
+    NOT_ENOUGH_HARD_DRIVE_SPACE,        //15
+    SAVING_GAME_MESSAGE,
+    NORMAL_GUNS,
+    ADDITIONAL_GUNS,
+    REALISTIC,
+    SCIFI,      //20
+    DIFF,
+};

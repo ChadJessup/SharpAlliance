@@ -42,7 +42,7 @@ public class History
             ubColor = 1;
         }
         uiId = ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, 0, ubColor);
-        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
+        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
 
         // history list head
         pHistory = pHistoryListHead;
@@ -78,7 +78,7 @@ public class History
 
         // process the actual data
         uiId = ProcessAndEnterAHistoryRecord(ubCode, uiDate, ubSecondCode, sSectorX, sSectorY, 0, 0);
-        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
+        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, pMessageStrings[MSG.HISTORY_UPDATED]);
 
         // history list head
         pHistory = pHistoryListHead;
@@ -222,18 +222,18 @@ public class History
         // title bar
         //
 //        Utils.FilenameForBPP("LAPTOP\\programtitlebar.sti", VObjectDesc.ImageFile);
-//        VeldridVideoManager.AddVideoObject(VObjectDesc.ImageFile, out guiTITLE);
+//        this.video.AddVideoObject(VObjectDesc.ImageFile, out guiTITLE);
 
         // top portion of the screen background
         //
 //        Utils.FilenameForBPP("LAPTOP\\historywindow.sti", VObjectDesc.ImageFile);
-//        VeldridVideoManager.AddVideoObject(VObjectDesc.ImageFile, out guiTOP);
+//        this.video.AddVideoObject(VObjectDesc.ImageFile, out guiTOP);
 
 
         // shaded line
         //
 //        Utils.FilenameForBPP("LAPTOP\\historylines.sti", VObjectDesc.ImageFile);
-//        VeldridVideoManager.AddVideoObject(VObjectDesc, out guiSHADELINE);
+//        this.video.AddVideoObject(VObjectDesc, out guiSHADELINE);
 
         /*
         Not being used???  DF commented out	
@@ -245,7 +245,7 @@ public class History
         // black divider line - long ( 480 length)
         //
 //        Utils.FilenameForBPP("LAPTOP\\divisionline480.sti", VObjectDesc.ImageFile);
-//        VeldridVideoManager.AddVideoObject(VObjectDesc.ImageFile, out guiLONGLINE);
+//        this.video.AddVideoObject(VObjectDesc.ImageFile, out guiLONGLINE);
 
         return (true);
     }

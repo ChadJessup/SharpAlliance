@@ -10,13 +10,16 @@ namespace SharpAlliance.Core.Screens;
 
 public class MapScreen : IScreen
 {
+    private readonly IVideoManager video;
     private readonly MapScreenInterfaceMap mapScreenInterface;
     private readonly MessageSubSystem messages;
 
     public MapScreen(
         MapScreenInterfaceMap mapScreenInterfaceMap,
+        IVideoManager videoManager,
         MessageSubSystem messageSubSystem)
     {
+        this.video = videoManager;
         this.mapScreenInterface = mapScreenInterfaceMap;
         this.messages = messageSubSystem;
     }
@@ -51,10 +54,10 @@ public class MapScreen : IScreen
         // set up leave list arrays for dismissed mercs
         this.mapScreenInterface.InitLeaveList();
 
-        VeldridVideoManager.AddVideoObject("INTERFACE\\group_confirm.sti", out var idx1);
+        this.video.AddVideoObject("INTERFACE\\group_confirm.sti", out var idx1);
         this.mapScreenInterface.guiUpdatePanel = idx1;
 
-        VeldridVideoManager.AddVideoObject("INTERFACE\\group_confirm_tactical.sti", out var idx2);
+        this.video.AddVideoObject("INTERFACE\\group_confirm_tactical.sti", out var idx2);
         this.mapScreenInterface.guiUpdatePanelTactical = idx2;
 
         return ValueTask.FromResult(true);

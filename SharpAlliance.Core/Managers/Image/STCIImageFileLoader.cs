@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform.Interfaces;
+using SharpGen.Runtime;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
 
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers.Image;
 
-public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
+public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFileLoader
 {
     public const int STCI_HEADER_SIZE = 64;
     public const string STCI_ID_STRING = "STCI";
     public const int STCI_ID_LEN = 4;
-    public const uint STCI_SUBIMAGE_SIZE = 16;
+    public const int STCI_SUBIMAGE_SIZE = 16;
     public const int STCI_PALETTE_ELEMENT_SIZE = 3;
     public const int STCI_8BIT_PALETTE_SIZE = 768;
 
@@ -41,7 +44,8 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         config.Properties.Add(typeof(HIMAGECreateFlags), flags);
         config.ImageFormatsManager.AddImageFormat(new HIMAGE());
 
-        config.ImageFormatsManager.SetDecoder(new HIMAGE(), new STCIImageFileLoader());
+        config.ImageFormatsManager.SetDecoder(HIMAGE.Instance, STCIImageFileLoader.Instance);
+        config.ImageFormatsManager.AddImageFormatDetector(STCIImageFileLoader.Instance);
 
         var dopt = new DecoderOptions()
         {
@@ -59,7 +63,10 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         return true;
     }
 
-    public Image<TPixel> Decode<TPixel>(Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
+    protected override SixLabors.ImageSharp.Image Decode(DecoderOptions options, Stream stream, CancellationToken cancellationToken)
+        => Decode<Rgba32>(options, stream, cancellationToken);
+
+    protected override Image<TPixel> Decode<TPixel>(DecoderOptions configuration, Stream stream, CancellationToken token)
     {
         Span<byte> buffer = stackalloc byte[Marshal.SizeOf<STCIHeader>()];
         stream.Read(buffer);
@@ -87,13 +94,13 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         return image;
     }
 
-    private Image<TPixel> DecodeIndexed<TPixel>(STCIHeader pHeader, Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
+    private Image<TPixel> DecodeIndexed<TPixel>(STCIHeader pHeader, DecoderOptions options, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
     {
-        IFileManager files = (IFileManager)configuration.Properties[typeof(IFileManager)];
-        HIMAGE hImage = (HIMAGE)configuration.Properties[stream];
-        HIMAGECreateFlags fContents = (HIMAGECreateFlags)configuration.Properties[typeof(HIMAGECreateFlags)];
+        IFileManager files = (IFileManager)options.Configuration.Properties[typeof(IFileManager)];
+        HIMAGE hImage = (HIMAGE)options.Configuration.Properties[stream];
+        HIMAGECreateFlags fContents = (HIMAGECreateFlags)options.Configuration.Properties[typeof(HIMAGECreateFlags)];
 
-        Image<TPixel> image = new(configuration, pHeader.usWidth, pHeader.usHeight);
+        Image<TPixel> image = new(options.Configuration, pHeader.usWidth, pHeader.usHeight);
 
         uint uiFileSectionSize;
         int uiBytesRead;
@@ -115,20 +122,20 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
             //memset(pSTCIPalette, 0, uiFileSectionSize);
 
             // Read in the palette
-//            if (!FileManager.FileRead(stream, ref pSTCIPalette, (int)uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
-//            {
-//                //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading palette!");
-//                //FileClose(hFile);
-//                //MemFree(pSTCIPalette);
-//                return null;
-//            }
-//            else if (!this.STCISetPalette(ref pSTCIPalette, ref hImage))
-//            {
-//                // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem setting hImage-format palette!");
-//                // FileClose(hFile);
-//                // MemFree(pSTCIPalette);
-//                return null;
-//            }
+            if (!FileManager.FileRead(stream, ref pSTCIPalette, (int)uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
+            {
+                //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading palette!");
+                //FileClose(hFile);
+                //MemFree(pSTCIPalette);
+                return null;
+            }
+            else if (!this.STCISetPalette(ref pSTCIPalette, ref hImage))
+            {
+                // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem setting hImage-format palette!");
+                // FileClose(hFile);
+                // MemFree(pSTCIPalette);
+                return null;
+            }
 
             hImage.fFlags |= HIMAGECreateFlags.IMAGE_PALETTE;
         }
@@ -150,22 +157,23 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
             {
                 // load data for the subimage (object) structures
                 hImage.usNumberOfObjects = pHeader.Indexed.usNumberOfSubImages;
-                uiFileSectionSize = hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
+                uiFileSectionSize = (uint)hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
 
-//                if (!FileManager.FileRead(stream, ref hImage.pETRLEObject, uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
-//                {
-//                    return null;
-//                }
+                if (!FileManager.FileRead(stream, ref hImage.pETRLEObject, (int)uiFileSectionSize, out uiBytesRead)
+                    || uiBytesRead != uiFileSectionSize)
+                {
+                    return null;
+                }
 
                 hImage.uiSizePixData = pHeader.uiStoredSize;
                 hImage.fFlags |= HIMAGECreateFlags.IMAGE_TRLECOMPRESSED;
             }
 
-//            hImage.pImageData = new byte[pHeader.uiStoredSize];
-//            if (!FileManager.FileRead(stream, ref hImage.pImageData, pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
-//            {
-//                return null;
-//            }
+            hImage.pImageData = new byte[pHeader.uiStoredSize];
+            if (!FileManager.FileRead(stream, ref hImage.pImageData, (int)pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
+            {
+                return null;
+            }
 
             hImage.fFlags |= HIMAGECreateFlags.IMAGE_BITMAPDATA;
         }
@@ -183,10 +191,10 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         {
             // load application-specific data
             hImage.pAppData = new byte[pHeader.uiAppDataSize];
-//            if (!FileManager.FileRead(stream, ref hImage.pAppData, pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
-//            {
-//
-//            }
+            if (!FileManager.FileRead(stream, ref hImage.pAppData, (int)pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
+            {
+            
+            }
 
             hImage.uiAppDataSize = pHeader.uiAppDataSize;
 
@@ -199,7 +207,7 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         }
 
         hImage.ubBitDepth = pHeader.ubDepth;
-        configuration.Properties[stream] = hImage;
+        options.Configuration.Properties[stream] = hImage;
 
         return image;
     }
@@ -338,17 +346,17 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         return true;
     }
 
-    private Image<TPixel> DecodeRgba<TPixel>(STCIHeader header, Configuration configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
+    private Image<TPixel> DecodeRgba<TPixel>(STCIHeader header, DecoderOptions configuration, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
     {
         var rgba32 = new Rgba32();
         TPixel color = default;
 
         var numOfPixels = header.usHeight * header.usWidth;
 
-        using var byteBuffer = configuration.MemoryAllocator.Allocate<byte>(numOfPixels * header.ubDepth);
+        using var byteBuffer = configuration.Configuration.MemoryAllocator.Allocate<byte>(numOfPixels * header.ubDepth);
         stream.Read(byteBuffer.Memory.Span);
 
-        var image = new Image<TPixel>(configuration, header.usWidth, header.usHeight);
+        var image = new Image<TPixel>(configuration.Configuration, header.usWidth, header.usHeight);
 
         int idx = 0;
 
@@ -379,15 +387,12 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         return image;
     }
 
-    public SixLabors.ImageSharp.Image Decode(Configuration configuration, Stream stream)
-        => this.Decode<Rgba32>(configuration, stream);
-
-    public Task<Image<TPixel>> DecodeAsync<TPixel>(Configuration configuration, Stream stream, CancellationToken cancellationToken) where TPixel : unmanaged, IPixel<TPixel>
+    public Task<Image<TPixel>> DecodeAsync<TPixel>(DecoderOptions configuration, Stream stream, CancellationToken cancellationToken) where TPixel : unmanaged, IPixel<TPixel>
     {
         throw new NotImplementedException();
     }
 
-    public async Task<SixLabors.ImageSharp.Image> DecodeAsync(Configuration configuration, Stream stream, CancellationToken cancellationToken)
+    public async Task<SixLabors.ImageSharp.Image> DecodeAsync(DecoderOptions configuration, Stream stream, CancellationToken cancellationToken)
         => await this.DecodeAsync<Rgba32>(configuration, stream, cancellationToken);
 
     public List<Image<Rgba32>> ApplyPalette(ref HVOBJECT hVObject, ref HIMAGE hImage)
@@ -397,40 +402,25 @@ public class STCIImageFileLoader : IImageFileLoader, IImageDecoder
         return hImage.ParsedImages;
     }
 
-    public Image<TPixel> Decode<TPixel>(Configuration configuration, Stream stream, CancellationToken cancellationToken) where TPixel : unmanaged, IPixel<TPixel>
+    public static STCIImageFileLoader Instance { get; } = new();
+
+    public int HeaderSize { get; } = STCI_HEADER_SIZE;
+
+    public bool TryDetectFormat(ReadOnlySpan<byte> header, [NotNullWhen(true)] out IImageFormat? format)
     {
-        throw new NotImplementedException();
+        if (header.Length >= STCI_HEADER_SIZE)
+        {
+            format = HIMAGE.Instance;
+            var id = Encoding.ASCII.GetString(header.Slice(0, STCI_ID_LEN));
+
+            return id.Equals(STCI_ID_STRING);
+        }
+
+        format = null;
+        return false;
     }
 
-    public SixLabors.ImageSharp.Image Decode(Configuration configuration, Stream stream, CancellationToken cancellationToken)
-    => Decode(configuration, stream);
-
-    public ImageInfo Identify(DecoderOptions options, Stream stream)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<ImageInfo> IdentifyAsync(DecoderOptions options, Stream stream, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Image<TPixel> Decode<TPixel>(DecoderOptions options, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
-    {
-        throw new NotImplementedException();
-    }
-
-    public SixLabors.ImageSharp.Image Decode(DecoderOptions options, Stream stream)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Image<TPixel>> DecodeAsync<TPixel>(DecoderOptions options, Stream stream, CancellationToken cancellationToken = default) where TPixel : unmanaged, IPixel<TPixel>
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<SixLabors.ImageSharp.Image> DecodeAsync(DecoderOptions options, Stream stream, CancellationToken cancellationToken = default)
+    protected override ImageInfo Identify(DecoderOptions options, Stream stream, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

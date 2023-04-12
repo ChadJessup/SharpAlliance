@@ -83,6 +83,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<RenderWorld>();
             builder.Services.AddSingleton<MercTextBox>();
             builder.Services.AddSingleton<EventManager>();
+            builder.Services.AddSingleton<SaveLoadGame>();
             builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<MouseSubSystem>();
             builder.Services.AddSingleton<SliderSubSystem>();
@@ -116,6 +117,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<NPC>();
             builder.Services.AddSingleton<ShopKeeper>();
             builder.Services.AddSingleton<World>();
+            builder.Services.AddSingleton<WorldStructures>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
             builder.Services.AddSingleton<DialogControl>();
             builder.Services.AddSingleton<AirRaid>();

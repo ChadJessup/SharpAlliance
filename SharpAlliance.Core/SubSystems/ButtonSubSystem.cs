@@ -84,19 +84,21 @@ public class ButtonSubSystem : ISharpAllianceManager
 
     public ButtonSubSystem(
         ILogger<ButtonSubSystem> logger,
+        IVideoManager videoManager,
         GameContext gameContext,
         FontSubSystem fontSubSystem)
     {
-        logger = logger;
-        gameContext = gameContext;
+        this.logger = logger;
+        video = videoManager;
+        this.gameContext = gameContext;
         fonts = fontSubSystem;
     }
 
-    public async ValueTask<bool> Initialize(GameContext gameContext)
+    public async ValueTask<bool> Initialize(MouseSubSystem mouseSubSystem, IInputManager input)
     {
         //video = (gameContext.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
-        mouse = gameContext.Services.GetRequiredService<MouseSubSystem>();
-        inputs = gameContext.Services.GetRequiredService<IInputManager>();
+        mouse = mouseSubSystem;
+        inputs = input;
 
         IsInitialized = await InitializeButtonImageManager(
             Surfaces.Unknown,
@@ -208,14 +210,14 @@ public class ButtonSubSystem : ISharpAllianceManager
         // }
 
         // Load the default generic button images
-        GenericButtonOffNormal.Add(bp, VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF));
+        GenericButtonOffNormal.Add(bp, video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF));
         if (GenericButtonOffNormal[bp] == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_OFF);
             return false;
         }
 
-        if ((GenericButtonOnNormal[bp] = VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON)) == null)
+        if ((GenericButtonOnNormal[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON)) == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_ON);
             return false;
@@ -224,9 +226,9 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Load up the off hilite and on hilite images. We won't check for errors because if the file
         // doesn't exists, the system simply ignores that file. These are only here as extra images, they
         // aren't required for operation (only OFF Normal and ON Normal are required).
-        GenericButtonOffHilite[bp] = VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
+        GenericButtonOffHilite[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
 
-        GenericButtonOnHilite[bp] = VeldridVideoManager.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
+        GenericButtonOnHilite[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
 
         Pix = 0;
         if (!GetETRLEPixelValue(ref Pix, GenericButtonOffNormal[bp], 8, 0, 0))
@@ -1598,7 +1600,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         // }
 
         // Load the image
-        if ((buttonPic.vobj = VeldridVideoManager.CreateVideoObject(filename)) == null)
+        if ((buttonPic.vobj = video.CreateVideoObject(filename)) == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, String("Couldn't create VOBJECT for %s", filename));
             return null;
@@ -2243,7 +2245,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
     }
 
-    public ValueTask<bool> Initialize() => Initialize(gameContext);
+    public ValueTask<bool> Initialize() => Initialize(mouse, inputs);
 
     internal static void MSYS_SetBtnUserData(int v1, int v2, int cnt)
     {

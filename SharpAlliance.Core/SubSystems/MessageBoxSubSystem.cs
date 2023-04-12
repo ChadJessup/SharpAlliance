@@ -679,7 +679,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     {
         // if (iReason & MouseCallbackReasons.RBUTTON_UP)
         // {
-        //     gMsgBox.bHandled = MSG_BOX_RETURN_NO;
+        //     gMsgBox.bHandled = MSG.BOX_RETURN_NO;
         // }
         //
     }

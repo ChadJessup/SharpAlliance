@@ -2018,7 +2018,7 @@ public class AIMain
                         // Check if we were told to move by NPC stuff
                         if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                         {
-                            //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_ERROR, "AI %s failed to get path for dialogue-related move!", pSoldier.name );
+                            //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.ERROR, "AI %s failed to get path for dialogue-related move!", pSoldier.name );
 
                             // Are we close enough?
                             if (!ACTING_ON_SCHEDULE(pSoldier) && SpacesAway(pSoldier.sGridNo, pSoldier.sAbsoluteFinalDestination) < 4)
@@ -2145,7 +2145,7 @@ public class AIMain
                     if (iRetCode != ITEM_HANDLE.BROKEN) // if the item broke, this is 'legal' and doesn't need reporting
                     {
                         DebugAI(string.Format("AI %d got error code %ld from HandleItem, doing action %d, has %d APs... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction, pSoldier.bActionPoints));
-//                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
+//                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "AI %d got error code %ld from HandleItem, doing action %d... aborting deadlock!", pSoldier.ubID, iRetCode, pSoldier.bAction);
                     }
 
                     CancelAIAction(pSoldier, FORCE);
@@ -2197,11 +2197,11 @@ public class AIMain
                 {
                     HandleInitialRedAlert(pSoldier.bTeam, 1);
                 }
-                //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Debug: AI radios your position!" );
+                //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Debug: AI radios your position!" );
                 // DROP THROUGH HERE!
                 break;
             case AI_ACTION.YELLOW_ALERT:          // tell friends opponent(s) heard
-                                                  //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Debug: AI radios about a noise!" );
+                                                  //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Debug: AI radios about a noise!" );
                 /*
                             NetSend.msgType = NET_RADIO_SIGHTINGS;
                             NetSend.ubID  = pSoldier.ubID;

@@ -13,13 +13,13 @@ namespace SharpAlliance.Platform
 {
     public class GameContext : IDisposable
     {
-        private readonly ILogger<GameContext>? logger;
+        private readonly ILogger<GameContext> logger;
 
         // protect against double dispose.
         private bool disposedValue;
 
         public GameContext(
-            ILogger<GameContext>? logger,
+            ILogger<GameContext> logger,
             IServiceProvider services,
             IConfiguration configuration)
         {
@@ -27,7 +27,7 @@ namespace SharpAlliance.Platform
             this.Services = services;
             this.Configuration = configuration;
 
-            this.logger?.LogDebug($"Initialized {nameof(GameContext)}");
+            this.logger.LogDebug($"Initialized {nameof(GameContext)}");
         }
 
         public GameState State { get; set; } = GameState.Unknown;

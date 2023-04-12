@@ -30,7 +30,9 @@ public class InitScreen : IScreen
     private readonly DialogControl dialogs;
     private readonly IMusicManager music;
     private readonly World world;
+    private readonly IVideoManager video;
     private readonly Shading shading;
+    private readonly SaveLoadGame saveLoadGame;
     private readonly StrategicMap strategicMap;
     private readonly EventManager eventManager;
     private readonly GameInit gameInit;
@@ -54,17 +56,21 @@ public class InitScreen : IScreen
         TileCache tileCache,
         MercTextBox mercTextBox,
         LightingSystem lightingSystem,
+        IVideoManager videoManager,
         DialogControl dialogControl,
+        SaveLoadGame saveLoadGame,
         IMusicManager musicManager)
     {
         this.overhead = overhead;
         this.eventManager = eventManager;
         this.shading = shading;
+        this.saveLoadGame = saveLoadGame;
         this.strategicMap = strategicMap;
         this.world = world;
+        this.video = videoManager;
         this.context = context;
         this.cursor = cursorSubSystem;
-        // this.videoSurface = videoSurfaceManager;
+//        this.videoSurface = videoSurfaceManager;
         this.font = fontSubSystem;
         this.tileCache = tileCache;
         this.mercTextBox = mercTextBox;
@@ -90,7 +96,7 @@ public class InitScreen : IScreen
 
     public ValueTask<bool> Initialize()
     {
-        hVObject = VeldridVideoManager.AddVideoObject("ja2_logo.STI", out var key);
+        hVObject = this.video.AddVideoObject("ja2_logo.STI", out var key);
 
         return ValueTask.FromResult(true);
     }
@@ -120,7 +126,7 @@ public class InitScreen : IScreen
             //vs_desc.fCreateFlags = VideoObjectCreateFlags.VOBJECT_CREATE_FROMFILE;// | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
 
             // vs_desc.ImageFile = "ja2_logo.STI";
-            // hVObject = VeldridVideoManager.AddVideoObject(ref vs_desc, out var key);
+            // hVObject = this.video.AddVideoObject(ref vs_desc, out var key);
             // 
             // if (hVObject is null)
             // {
@@ -140,7 +146,7 @@ public class InitScreen : IScreen
 
             //mprintf( 10, 420, zVersionLabel );
 
-            //mprintf(10, 430, "%s: %s (Debug %S)", pMessageStrings[MSG_VERSION], zVersionLabel, czVersionNumber);
+            //mprintf(10, 430, "%s: %s (Debug %S)", pMessageStrings[MSG.VERSION], zVersionLabel, czVersionNumber);
 
 
             //mprintf(10, 440, "SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
@@ -150,7 +156,7 @@ public class InitScreen : IScreen
             //  //  mprintf(10, 450, "SOLDIERTYPE: %d bytes", sizeof(SOLDIERTYPE));
             //}
 
-            VeldridVideoManager.InvalidateScreen();
+            this.video.InvalidateScreen();
 
             // Delete video Surface
             // this.videoSurface.DeleteVideoSurface(hVSurface);
@@ -199,9 +205,10 @@ public class InitScreen : IScreen
     {
         await this.textUtils.LoadAllExternalText();
         await this.sounds.InitSound();
+        this.dialogs.InitalizeStaticExternalNPCFaces();
 
-        Globals.gsRenderCenterX = 805;
-        Globals.gsRenderCenterY = 805;
+        gsRenderCenterX = 805;
+        gsRenderCenterY = 805;
 
         if (!await this.animationData.InitAnimationSystem())
         {

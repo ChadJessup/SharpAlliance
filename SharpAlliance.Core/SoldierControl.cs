@@ -2905,7 +2905,7 @@ public class SoldierControl
                         if (gAnimControl[pSoldier.usAnimState].ubEndHeight == AnimationHeights.ANIM_STAND && !MercInWater(pSoldier))
                         {
                             fFallenOver = true;
-                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, gzLateLocalizedString[20], pSoldier.name);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, gzLateLocalizedString[20], pSoldier.name);
                         }
                     }
                 }
@@ -3998,7 +3998,7 @@ public class SoldierControl
         if (pSoldier.usAniFrame >= gAnimSurfaceDatabase[usAnimSurface].hVideoObject.usNumberOfObjects)
         {
             // Debug msg here....
-            //		ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Soldier Animation: Wrong Number of frames per number of objects: %d vs %d, %S",  gAnimSurfaceDatabase[ usAnimSurface ].uiNumFramesPerDir, gAnimSurfaceDatabase[ usAnimSurface ].hVideoObject.usNumberOfObjects, gAnimControl[ pSoldier.usAnimState ].zAnimStr );	
+            //		ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Soldier Animation: Wrong Number of frames per number of objects: %d vs %d, %S",  gAnimSurfaceDatabase[ usAnimSurface ].uiNumFramesPerDir, gAnimSurfaceDatabase[ usAnimSurface ].hVideoObject.usNumberOfObjects, gAnimControl[ pSoldier.usAnimState ].zAnimStr );	
 
             pSoldier.usAniFrame = 0;
         }
@@ -7632,12 +7632,12 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                     {
                         // nope!!
                         fRefused = true;
-                        //                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Message[STR_REFUSE_FIRSTAID_FOR_CREATURE]);
+                        //                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, Message[STR_REFUSE_FIRSTAID_FOR_CREATURE]);
                     }
                     else if (!pTSoldier.IsNeutral && pTSoldier.bLife >= OKLIFE && pTSoldier.bSide != pSoldier.bSide)
                     {
                         fRefused = true;
-                        //                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, Message[STR_REFUSE_FIRSTAID]);
+                        //                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, Message[STR_REFUSE_FIRSTAID]);
                     }
 
                 }
@@ -8497,7 +8497,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
                 // Something gone funny here....
                 usAnimState = pSoldier.usAnimState;
-//                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Wrong desired stance given: %d, %d.", bNewStance, pSoldier.usAnimState);
+//                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Wrong desired stance given: %d, %d.", bNewStance, pSoldier.usAnimState);
                 break;
         }
 
@@ -10097,9 +10097,9 @@ void DebugValidateSoldierData()
             SAIReportError(sString);
             /*
                         if ( guiCurrentScreen == MAP.SCREEN )
-                            DoMapMessageBox( MSG_BOX_BASIC_STYLE, sString, MAP.SCREEN, MSG_BOX_FLAG_OK, MapScreenDefaultOkBoxCallback );
+                            DoMapMessageBox( MSG.BOX_BASIC_STYLE, sString, MAP.SCREEN, MSG.BOX_FLAG_OK, MapScreenDefaultOkBoxCallback );
                         else
-                            DoMessageBox( MSG_BOX_BASIC_STYLE, sString, GAME_SCREEN, ( int )MSG_BOX_FLAG_OK, null, null );
+                            DoMessageBox( MSG.BOX_BASIC_STYLE, sString, GAME_SCREEN, ( int )MSG.BOX_FLAG_OK, null, null );
             */
             break;
         }

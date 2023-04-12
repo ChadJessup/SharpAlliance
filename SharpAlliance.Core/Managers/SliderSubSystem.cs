@@ -13,14 +13,17 @@ public delegate void SliderChangeCallback(int newValue);
 
 public class SliderSubSystem
 {
+    private readonly IVideoManager video;
     private readonly IInputManager inputs;
 
     private string guiSliderBoxImageTag;
     private bool gfSliderInited;
 
     public SliderSubSystem(
-        IInputManager inputManager)
+        IInputManager inputManager,
+        IVideoManager videoManager)
     {
+        this.video = videoManager;
         this.inputs = inputManager;
     }
 
@@ -284,7 +287,7 @@ public class SliderSubSystem
     public void InitSliderSystem()
     {
         // load Slider Box Graphic graphic and add it
-        VeldridVideoManager.AddVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
+        this.video.AddVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
 
         this.gfSliderInited = true;
     }

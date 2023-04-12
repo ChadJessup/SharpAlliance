@@ -105,6 +105,7 @@ public class PreferenceScreen : IScreen
     public const int OPT_FIRST_COLUMN_TOGGLE_CUT_OFF = 10;//8
 
     private readonly IClockManager clock;
+    private readonly IVideoManager video;
     private readonly MessageBoxSubSystem messageBox;
     private readonly GameSettings settings;
     private readonly FontSubSystem fonts;
@@ -173,6 +174,7 @@ public class PreferenceScreen : IScreen
         this.sound = soundManager;
         this.inputs = inputManager;
         this.clock = clockManager;
+        this.video = videoManager;
         this.messageBox = messageBoxSubSystem;
     }
 
@@ -198,10 +200,10 @@ public class PreferenceScreen : IScreen
 
     public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
     {
-        var background = VeldridVideoManager.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
+        var background = this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
         // load button, title graphic and add it
-        var options = VeldridVideoManager.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
+        var options = this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
         this.RenderOptionsScreen();
 
@@ -446,10 +448,10 @@ public class PreferenceScreen : IScreen
         this.gfExitOptionsDueToMessageBox = false;
 
         // load the options screen background graphic and add it
-        VeldridVideoManager.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
+        this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
         // load button, title graphic and add it
-        VeldridVideoManager.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
+        this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
         //Save game button
         this.giOptionsButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);

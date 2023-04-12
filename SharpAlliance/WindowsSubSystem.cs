@@ -50,7 +50,7 @@ namespace SharpAlliance
 
         public async ValueTask<bool> Initialize()
         {
-            await VeldridVideoManager.Initialize();
+            await this.video.Initialize();
             await this.input.Initialize();
             await this.fonts.Initialize();
 

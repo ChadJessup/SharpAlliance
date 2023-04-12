@@ -25,6 +25,7 @@ public class IntroScreen : IScreen
     private readonly CursorSubSystem cursor;
     private readonly RenderDirty renderDirty;
     private readonly IMusicManager music;
+    private readonly IVideoManager video;
     private readonly ILibraryManager library;
     private readonly CinematicsSubSystem cinematics;
     private readonly SoldierProfileSubSystem soldiers;
@@ -57,6 +58,7 @@ public class IntroScreen : IScreen
         ILibraryManager libraryManager,
         CinematicsSubSystem cinematics,
         SoldierProfileSubSystem soldierSubSystem,
+        IVideoManager videoManager,
         IScreenManager screenManager,
         GameInit gameInit)
     {
@@ -67,6 +69,7 @@ public class IntroScreen : IScreen
         this.cursor = cursorSubSystem;
         this.renderDirty = renderDirtySubSystem;
         this.music = musicManager;
+        this.video = videoManager;
         this.library = libraryManager;
         this.cinematics = cinematics;
         this.soldiers = soldierSubSystem;
@@ -144,7 +147,7 @@ public class IntroScreen : IScreen
             }
         }
 
-        VeldridVideoManager.InvalidateScreen();
+        this.video.InvalidateScreen();
     }
 
     private bool SmkPollFlics()
@@ -349,7 +352,7 @@ public class IntroScreen : IScreen
         //memset(&VObjectDesc, 0, sizeof(VOBJECT_DESC));
         
         //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
-        var videoObject = VeldridVideoManager.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
+        var videoObject = this.video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
 
         //VeldridVideoManager.BltVideoObject(
         //    0,
@@ -360,10 +363,9 @@ public class IntroScreen : IScreen
         //    VideoObjectManager.VO_BLT.SRCTRANSPARENCY,
         //    null);
 
-        VeldridVideoManager.DeleteVideoObjectFromIndex(logoKey);
-
-        VeldridVideoManager.InvalidateScreen();
-        VeldridVideoManager.RefreshScreen();
+        this.video.DeleteVideoObjectFromIndex(logoKey);
+        this.video.InvalidateScreen();
+        this.video.RefreshScreen();
     }
 
     public ValueTask<bool> Initialize()

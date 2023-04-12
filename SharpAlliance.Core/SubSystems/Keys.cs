@@ -238,14 +238,14 @@ public class Keys
 
         if (pBaseStructure == null)
         {
-		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Door structure data at %d was not found", pDoorStatus.sGridNo );
+		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Door structure data at %d was not found", pDoorStatus.sGridNo );
             return;
         }
 
         pNode = WorldStructures.FindLevelNodeBasedOnStructure(sBaseGridNo, pBaseStructure);
         if (pNode is null)
         {
-            // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
+            // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
             return;
         }
 
@@ -318,14 +318,14 @@ public class Keys
 
         if (pBaseStructure == null)
         {
-		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Door structure data at %d was not found", pDoorStatus.sGridNo );
+		//ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Door structure data at %d was not found", pDoorStatus.sGridNo );
             return;
         }
 
         pNode = WorldStructures.FindLevelNodeBasedOnStructure(sBaseGridNo, pBaseStructure);
         if (pNode is null)
         {
-            //ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
+            //ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Could not find levelnode from door structure at %d", pDoorStatus.sGridNo);
             return;
         }
 
@@ -531,7 +531,7 @@ public class Keys
         {
             if (pDoorStatus is null)
             {
-                // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_TESTVERSION, "WARNING! Failed to find the Perceived Open Door Status on Gridno %s", sGridNo);
+                // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.TESTVERSION, "WARNING! Failed to find the Perceived Open Door Status on Gridno %s", sGridNo);
             }
 
             return (false);

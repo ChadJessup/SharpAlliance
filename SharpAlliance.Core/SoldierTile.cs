@@ -61,7 +61,7 @@ public class SoldierTile
 
         if (pSoldier.bTeam == gbPlayerNum && fGivenUp)
         {
-            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, TacticalStr[(int)STR.NO_PATH_FOR_MERC], pSoldier.name);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, TacticalStr[(int)STR.NO_PATH_FOR_MERC], pSoldier.name);
         }
 
         SoldierControl.EVENT_StopMerc(pSoldier, pSoldier.sGridNo, pSoldier.bDirection);
@@ -752,11 +752,11 @@ public class SoldierTile
                 {
                     if (pSoldier2.ubProfile == NO_PROFILE)
                     {
-                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[(int)STR.REFUSE_EXCHANGE_PLACES]);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[(int)STR.REFUSE_EXCHANGE_PLACES]);
                     }
                     else
                     {
-                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, gzLateLocalizedString[3], pSoldier2.name);
+                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, gzLateLocalizedString[3], pSoldier2.name);
                     }
                 }
 

@@ -21,6 +21,7 @@ public class CreditsScreen : IScreen
     private readonly GameContext context;
     private readonly IInputManager inputs;
     private readonly IFileManager files;
+    private readonly IVideoManager video;
 
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
@@ -30,8 +31,10 @@ public class CreditsScreen : IScreen
         IInputManager inputManager,
         IClockManager clockManager,
         IFileManager fileManager,
+        IVideoManager videoManager,
         GuiManager guiManager)
     {
+        this.video = videoManager;
         this.gui = guiManager;
         this.clock = clockManager;
         this.context = gameContext;
@@ -652,7 +655,7 @@ public class CreditsScreen : IScreen
             ButtonSubSystem.UnmarkButtonsDirty();
         }
 
-        VeldridVideoManager.InvalidateScreen();
+        this.video.InvalidateScreen();
     }
 
     private void GetCreditScreenUserInput()
@@ -683,8 +686,8 @@ public class CreditsScreen : IScreen
 
     private bool EnterCreditsScreen()
     {
-        VeldridVideoManager.AddVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
-        VeldridVideoManager.AddVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
+        this.video.AddVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
+        this.video.AddVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
 
         //Initialize the root credit node
 
@@ -803,8 +806,8 @@ public class CreditsScreen : IScreen
     {
         Globals.gfCreditsScreenEntry = true;
 
-        VeldridVideoManager.AddVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
-        VeldridVideoManager.AddVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
+        this.video.AddVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
+        this.video.AddVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
 
         return ValueTask.FromResult(true);
     }

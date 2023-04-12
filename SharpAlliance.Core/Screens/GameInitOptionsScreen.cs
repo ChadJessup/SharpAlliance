@@ -47,7 +47,7 @@ public class GameInitOptionsScreen : IScreen
     public const int GIO_IRON_MAN_SETTING_X = GIO_DIF_SETTINGS_X;
     public const int GIO_IRON_MAN_SETTING_Y = GIO_GAME_SETTINGS_Y;
     public const int GIO_IRON_MAN_SETTING_WIDTH = GIO_DIF_SETTINGS_WIDTH;
-
+    private readonly IVideoManager video;
     private readonly FadeScreen fade;
     private readonly GameOptions gGameOptions;
     private readonly CursorSubSystem cursor;
@@ -79,11 +79,13 @@ public class GameInitOptionsScreen : IScreen
         IScreenManager screenManager,
         IInputManager inputManager,
         GuiManager guiManager,
+        IVideoManager videoManager,
         FontSubSystem fontSubSystem,
         CursorSubSystem cursorSubSystem,
         GameOptions gameOptions,
         FadeScreen fadeScreen)
     {
+        this.video = videoManager;
         this.fade = fadeScreen;
         this.fonts = fontSubSystem;
         this.gGameOptions = gameOptions;
@@ -104,7 +106,7 @@ public class GameInitOptionsScreen : IScreen
         CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
         // load the Main trade screen backgroiund image
-        VeldridVideoManager.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
+        this.video.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
 
         //Ok button
         this.giGIODoneBtnImage = ButtonSubSystem.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);

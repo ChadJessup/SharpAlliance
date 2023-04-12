@@ -74,18 +74,18 @@ public class MouseSubSystem : ISharpAllianceManager
     public bool IsInitialized { get; }
 
     public MouseSubSystem(
-        ILogger<MouseSubSystem> logger)
+        ILogger<MouseSubSystem> logger,
 //        GameContext gameContext,
 //        IClockManager clockManager,
-//        CursorSubSystem cursorSubSystem)
+        CursorSubSystem cursorSubSystem)
     {
-        logger = logger;
+        this.logger = logger;
 
         DefaultMoveCallback = BtnGenericMouseMoveButtonCallback;
         logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
      //   this.clock = clockManager;
-     //   cursors = cursorSubSystem;
-        gameContext = gameContext;
+        cursors = cursorSubSystem;
+        //gameContext = gameContext;
 
         if (RegionList is not null)
         {

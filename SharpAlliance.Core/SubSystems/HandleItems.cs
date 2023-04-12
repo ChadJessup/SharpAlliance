@@ -34,7 +34,7 @@ public class HandleItems
         if ((psGridNo) == NOWHERE)
         {
             // Display warning.....
-            //Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, "Error: Item %d was given invalid grid location %d for item pool. Please Report.", pObject.usItem.ToString(), (psGridNo));
+            //Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Error: Item %d was given invalid grid location %d for item pool. Please Report.", pObject.usItem.ToString(), (psGridNo));
 
             (psGridNo) = sNewGridNo = gMapInformation.sCenterGridNo;
 

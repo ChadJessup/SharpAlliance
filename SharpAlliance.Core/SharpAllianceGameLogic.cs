@@ -41,14 +41,13 @@ public class SharpAllianceGameLogic : IGameLogic
         IStringLocalizer<string> strings,
         MouseSubSystem mouseSubSystem,
         CursorSubSystem cursorSubSystem,
-        FontSubSystem fontSubSystem,
         HelpScreenSubSystem helpScreenSubSystem,
         IInputManager inputManager,
         SaveGameSubSystem saveGameSubSystem,
         MessageBoxSubSystem messageBoxSubSystem,
         IOSManager OSManager,
-//        IScreenManager screenManager,
-//        IVideoManager videoManager,
+        IScreenManager screenManager,
+        IVideoManager videoManager,
         IMusicManager musicManager)
     {
         this.context = context;
@@ -63,7 +62,8 @@ public class SharpAllianceGameLogic : IGameLogic
         this.music = musicManager;
         this.messageBox = messageBoxSubSystem;
         this.os = OSManager;
-//        this.screen = screenManager;
+        this.screen = screenManager;
+        this.video = videoManager;
     }
 
     public async ValueTask<bool> Initialize()
@@ -182,9 +182,8 @@ public class SharpAllianceGameLogic : IGameLogic
                 await sm.ActivateScreen(nextScreen);
             }
 
-            VeldridVideoManager.RefreshScreen();
-
-            VeldridVideoManager.DrawFrame();
+            this.video.RefreshScreen();
+            this.video.DrawFrame();
 
             Globals.guiGameCycleCounter++;
 
@@ -263,12 +262,12 @@ public class SharpAllianceGameLogic : IGameLogic
         //            //
         //            //    wprintf(zSpaceOnDrive, "%.2f", uiSpaceOnDrive / (FLOAT)BYTESINMEGABYTE);
         //            //
-        //            //    wprintf(zText, pMessageStrings[MSG_LOWDISKSPACE_WARNING], zSpaceOnDrive, zSizeNeeded);
+        //            //    wprintf(zText, pMessageStrings[MSG.LOWDISKSPACE_WARNING], zSpaceOnDrive, zSizeNeeded);
         //            //
         //            //    if (guiPreviousOptionScreen == MAP_SCREEN)
-        //            //        DoMapMessageBox(MSG_BOX_BASIC_STYLE, zText, MAP_SCREEN, MSG_BOX_FLAG_OK, null);
+        //            //        DoMapMessageBox(MSG.BOX_BASIC_STYLE, zText, MAP_SCREEN, MSG.BOX_FLAG_OK, null);
         //            //    else
-        //            //        DoMessageBox(MSG_BOX_BASIC_STYLE, zText, GAME_SCREEN, MSG_BOX_FLAG_OK, null, null);
+        //            //        DoMessageBox(MSG.BOX_BASIC_STYLE, zText, GAME_SCREEN, MSG.BOX_FLAG_OK, null, null);
         //            //}
         //            //gubCheckForFreeSpaceOnHardDriveCount = DONT_CHECK_FOR_FREE_SPACE;
         //        }

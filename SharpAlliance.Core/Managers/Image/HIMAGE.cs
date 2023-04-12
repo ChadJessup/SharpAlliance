@@ -35,8 +35,10 @@ public class HIMAGE : IImageFormat
     public ETRLEObject[] pETRLEObject;
     public ushort usNumberOfObjects;
 
+    public static HIMAGE Instance { get; } = new();
+
     public List<Image<Rgba32>> ParsedImages { get; set; }
-    public string Name { get; } = "Jagged Alliance 2 STI";
+    public string Name { get; } = "STI";
     public string DefaultMimeType { get; }
     public IEnumerable<string> MimeTypes { get; } = new List<string>() { "BLAH" };
     public IEnumerable<string> FileExtensions { get; } = new List<string> { "sti" };

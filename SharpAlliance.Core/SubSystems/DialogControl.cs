@@ -40,9 +40,6 @@ public class DialogControl
         this.quests = questEngine;
         this.interfaceDialog = interfaceDialogSubSystem;
         this.faces = faces;
-
-        // no better place..heh?.. will load faces for profiles that are 'extern'.....won't have soldiertype instances
-        this.InitalizeStaticExternalNPCFaces();
     }
 
 
@@ -105,7 +102,6 @@ public class DialogControl
             return (false);
         }
 
-
         // If we are a robot, play the controller's quote!
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
         {
@@ -142,6 +138,7 @@ public class DialogControl
 
         return (CharacterDialogue(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false));
     }
+
     public static bool CharacterDialogue(NPCID ubCharacterNum, QUOTE usQuoteNum, int iFaceIndex, int bUIHandlerID, bool fFromSoldier, bool fDelayed)
     {
         // Allocate new item
@@ -173,7 +170,7 @@ public class DialogControl
         return (true);
     }
 
-    public static bool TacticalCharacterDialogueWithSpecialEvent(SOLDIERTYPE? pSoldier, QUOTE usQuoteNum, DIALOGUE_SPECIAL_EVENT uiFlag, object uiData1, int uiData2)
+    public static bool TacticalCharacterDialogueWithSpecialEvent(SOLDIERTYPE pSoldier, QUOTE usQuoteNum, DIALOGUE_SPECIAL_EVENT uiFlag, object uiData1, int uiData2)
     {
         if (pSoldier.ubProfile == NO_PROFILE)
         {

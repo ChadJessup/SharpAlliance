@@ -37,7 +37,7 @@ public class Messages
         return pStringSt.uiFont;
     }
 
-    private static ScrollStringStPtr AddString(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, int ubPriority)
+    private static ScrollStringStPtr AddString(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, MSG ubPriority)
     {
         // add a new string to the list of strings
         ScrollStringStPtr pStringSt = new();
@@ -449,35 +449,35 @@ public class Messages
     }
 
     // new screen message
-    public static void ScreenMsg(FontColor usColor, int ubPriority, params object?[] pStringA)
+    public static void ScreenMsg(FontColor usColor, MSG ubPriority, params object?[] pStringA)
     {
         if (Globals.fDisableJustForIan == true)
         {
-            if (ubPriority == Globals.MSG_BETAVERSION)
+            if (ubPriority == MSG.BETAVERSION)
             {
                 return;
             }
-            else if (ubPriority == Globals.MSG_TESTVERSION)
+            else if (ubPriority == MSG.TESTVERSION)
             {
                 return;
             }
-            else if (ubPriority == Globals.MSG_DEBUG)
+            else if (ubPriority == MSG.DEBUG)
             {
                 return;
             }
         }
 
-        if (ubPriority == Globals.MSG_DEBUG)
+        if (ubPriority == MSG.DEBUG)
         {
             usColor = Globals.DEBUG_COLOR;
         }
 
-        if (ubPriority == Globals.MSG_BETAVERSION)
+        if (ubPriority == MSG.BETAVERSION)
         {
             usColor = Globals.BETAVERSION_COLOR;
         }
 
-        if (ubPriority == Globals.MSG_TESTVERSION)
+        if (ubPriority == MSG.TESTVERSION)
         {
             usColor = Globals.TESTVERSION_COLOR;
         }
@@ -489,7 +489,7 @@ public class Messages
         // pass onto tactical message and mapscreen message
         TacticalScreenMsg(usColor, ubPriority, pStringA);
 
-        //	if( ( ubPriority != MSG_DEBUG ) && ( ubPriority != MSG_TESTVERSION ) )
+        //	if( ( ubPriority != MSG.DEBUG ) && ( ubPriority != MSG.TESTVERSION ) )
         {
             MapScreenMessage(usColor, ubPriority, pStringA);
         }
@@ -542,7 +542,7 @@ public class Messages
 
 
     // new tactical and mapscreen message system
-    private static void TacticalScreenMsg(FontColor usColor, int ubPriority, params object?[] pStringA)
+    private static void TacticalScreenMsg(FontColor usColor, MSG ubPriority, params object?[] pStringA)
     {
         // this function sets up the string into several single line structures
 
@@ -569,19 +569,19 @@ public class Messages
             return;
         }
 
-        if (Globals.fDisableJustForIan == true && ubPriority != Globals.MSG_ERROR && ubPriority != Globals.MSG_INTERFACE)
+        if (Globals.fDisableJustForIan == true && ubPriority != MSG.ERROR && ubPriority != MSG.INTERFACE)
         {
             return;
         }
 
-        if (ubPriority == Globals.MSG_BETAVERSION)
+        if (ubPriority == MSG.BETAVERSION)
         {
             usColor = Globals.BETAVERSION_COLOR;
             WriteMessageToFile(DestString);
 
         }
 
-        if (ubPriority == Globals.MSG_TESTVERSION)
+        if (ubPriority == MSG.TESTVERSION)
         {
             usColor = Globals.TESTVERSION_COLOR;
 
@@ -610,7 +610,7 @@ public class Messages
         //vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
         //va_end(argptr);
 
-        if (ubPriority == Globals.MSG_DEBUG)
+        if (ubPriority == MSG.DEBUG)
         {
             usColor = Globals.DEBUG_COLOR;
             DestStringA = DestString;
@@ -618,12 +618,12 @@ public class Messages
             WriteMessageToFile(DestStringA);
         }
 
-        if (ubPriority == Globals.MSG_DIALOG)
+        if (ubPriority == MSG.DIALOG)
         {
             usColor = Globals.DIALOGUE_COLOR;
         }
 
-        if (ubPriority == Globals.MSG_INTERFACE)
+        if (ubPriority == MSG.INTERFACE)
         {
             usColor = Globals.INTERFACE_COLOR;
         }
@@ -680,7 +680,7 @@ public class Messages
         return;
     }
 
-    private static void MapScreenMessage(FontColor usColor, int ubPriority, params object?[] pStringA)
+    private static void MapScreenMessage(FontColor usColor, MSG ubPriority, params object?[] pStringA)
     {
         // this function sets up the string into several single line structures
 
@@ -702,35 +702,35 @@ public class Messages
 
         if (Globals.fDisableJustForIan == true)
         {
-            if (ubPriority == Globals.MSG_BETAVERSION)
+            if (ubPriority == MSG.BETAVERSION)
             {
                 return;
             }
-            else if (ubPriority == Globals.MSG_TESTVERSION)
+            else if (ubPriority == MSG.TESTVERSION)
             {
                 return;
             }
-            else if (ubPriority == Globals.MSG_DEBUG)
+            else if (ubPriority == MSG.DEBUG)
             {
                 return;
             }
         }
 
-        if (ubPriority == Globals.MSG_BETAVERSION)
+        if (ubPriority == MSG.BETAVERSION)
         {
             usColor = Globals.BETAVERSION_COLOR;
 
             WriteMessageToFile(DestString);
         }
 
-        if (ubPriority == Globals.MSG_TESTVERSION)
+        if (ubPriority == MSG.TESTVERSION)
         {
             usColor = Globals.TESTVERSION_COLOR;
 
             WriteMessageToFile(DestString);
         }
         // OK, check if we are ani imeediate feedback message, if so, do something else!
-        if (ubPriority == Globals.MSG_UI_FEEDBACK)
+        if (ubPriority == MSG.UI_FEEDBACK)
         {
             //va_start(argptr, pStringA);         // Set up variable argument pointer
             //vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
@@ -740,7 +740,7 @@ public class Messages
             return;
         }
 
-        if (ubPriority == Globals.MSG_SKULL_UI_FEEDBACK)
+        if (ubPriority == MSG.SKULL_UI_FEEDBACK)
         {
             // va_start(argptr, pStringA);         // Set up variable argument pointer
             // vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
@@ -751,7 +751,7 @@ public class Messages
         }
 
         // check if error
-        if (ubPriority == Globals.MSG_ERROR)
+        if (ubPriority == MSG.ERROR)
         {
             // va_start(argptr, pStringA);         // Set up variable argument pointer
             // vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
@@ -767,9 +767,9 @@ public class Messages
 
 
         // OK, check if we are an immediate MAP feedback message, if so, do something else!
-        if ((ubPriority == Globals.MSG_MAP_UI_POSITION_UPPER) ||
-                 (ubPriority == Globals.MSG_MAP_UI_POSITION_MIDDLE) ||
-                 (ubPriority == Globals.MSG_MAP_UI_POSITION_LOWER))
+        if ((ubPriority == MSG.MAP_UI_POSITION_UPPER) ||
+                 (ubPriority == MSG.MAP_UI_POSITION_MIDDLE) ||
+                 (ubPriority == MSG.MAP_UI_POSITION_LOWER))
         {
             // va_start(argptr, pStringA);         // Set up variable argument pointer
             // vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
@@ -800,19 +800,19 @@ public class Messages
         //vwprintf(DestString, pStringA, argptr); // process gprintf string (get output str)
         //va_end(argptr);
 
-        if (ubPriority == Globals.MSG_DEBUG)
+        if (ubPriority == MSG.DEBUG)
         {
             usColor = Globals.DEBUG_COLOR;
             // wcscpy(DestStringA, DestString);
             // wprintf(DestString, "Debug: %s", DestStringA);
         }
 
-        if (ubPriority == Globals.MSG_DIALOG)
+        if (ubPriority == MSG.DIALOG)
         {
             usColor = Globals.DIALOGUE_COLOR;
         }
 
-        if (ubPriority == Globals.MSG_INTERFACE)
+        if (ubPriority == MSG.INTERFACE)
         {
             usColor = Globals.INTERFACE_COLOR;
         }
@@ -851,7 +851,7 @@ public class Messages
 
 
     // add string to the map screen message list
-    private static void AddStringToMapScreenMessageList(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, int ubPriority)
+    private static void AddStringToMapScreenMessageList(string pString, FontColor usColor, FontStyle uiFont, bool fStartOfNewString, MSG ubPriority)
     {
         int ubSlotIndex = 0;
         ScrollStringStPtr? pStringSt = null;
@@ -1336,7 +1336,7 @@ public class ScrollStringStPtr
     public int iVideoOverlay;
     public FontStyle uiFont;
     public FontColor usColor;
-    public int uiFlags;
+    public MSG uiFlags;
     public bool fBeginningOfNewString;
     public uint uiTimeOfLastUpdate;
     public int[] uiPadding = new int[5];
@@ -1348,7 +1348,7 @@ public struct StringSaveStruct
 {
     public FontStyle uiFont;
     public uint uiTimeOfLastUpdate;
-    public int uiFlags;
+    public MSG uiFlags;
     public int[] uiPadding;// [3];
     public FontColor usColor;
     public bool fBeginningOfNewString;

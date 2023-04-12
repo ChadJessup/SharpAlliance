@@ -68,8 +68,8 @@ public class Faces
 
     public static int InitFace(NPCID usMercProfileID, int ubSoldierID, FACE uiInitFlags)
     {
-        int uiBlinkFrequency;
-        int uiExpressionFrequency;
+        int uiBlinkFrequency = 0;
+        int uiExpressionFrequency = 0;
 
         if (usMercProfileID == NO_PROFILE)
         {
@@ -172,14 +172,14 @@ public class Faces
         }
 
         // Load
-        //        if (VeldridVideoManager.AddVideoObject(VObjectDesc, out uiVideoObject) == false)
+        //        if (this.video.AddVideoObject(VObjectDesc, out uiVideoObject) == false)
         //        {
         //            // If we are a big face, use placeholder...
         //            if (uiInitFlags.HasFlag(FACE.BIGFACE))
         //            {
         //                sprintf(VObjectDesc.ImageFile, "FACES\\placeholder.sti");
         //
-        //                if (VeldridVideoManager.AddVideoObject(VObjectDesc, uiVideoObject) == false)
+        //                if (this.video.AddVideoObject(VObjectDesc, uiVideoObject) == false)
         //                {
         //                    return (-1);
         //                }

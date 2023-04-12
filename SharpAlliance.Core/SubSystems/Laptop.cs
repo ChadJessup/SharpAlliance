@@ -6,11 +6,15 @@ using Veldrid.MetalBindings;
 using Veldrid;
 
 using static SharpAlliance.Core.Globals;
+using SharpAlliance.Core.Interfaces;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Laptop
 {
+    private static IVideoManager video;
+
+    public Laptop(IVideoManager videoManager) => video = videoManager;
     internal void LaptopScreenInit()
     {
         throw new NotImplementedException();
@@ -324,7 +328,7 @@ public class Laptop
         string sString = string.Empty;
 
         // title bar - load
-        CHECKF(VeldridVideoManager.AddVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));
+        CHECKF(video.AddVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));
 
         // blit title
         hHandle = VeldridVideoManager.GetVideoObject(uiTITLEFORWWW);
@@ -332,7 +336,7 @@ public class Laptop
 
 
         // now delete
-        VeldridVideoManager.DeleteVideoObjectFromIndex(uiTITLEFORWWW);
+        video.DeleteVideoObjectFromIndex(uiTITLEFORWWW);
 
         // now slapdown text
         FontSubSystem.SetFont(FontStyle.FONT14ARIAL);

@@ -41,20 +41,19 @@ public class VeldridVideoManager : IVideoManager
     const int DDERR_WASSTILLDRAWING = 0x8700000; // not real value
     const int DDERR_SURFACELOST = 0x9700000;
 
-    private static readonly ILogger<VeldridVideoManager> logger;
+    private readonly ILogger<VeldridVideoManager> logger;
 
     private static bool clearScreen;
 
     private static Dictionary<string, HVOBJECT> loadedTextures = new();
 
     // private readonly WindowsSubSystem windows;
-    private readonly IInputManager inputs;
     private readonly RenderWorld renderWorld;
     private readonly ScreenManager screenManager;
-    private static GameContext context;
-    private static IFileManager files;
-    private static Shading shading;
-    private static readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
+    private readonly GameContext context;
+    private readonly IFileManager files;
+    private readonly Shading shading = new();
+    private readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
 
     private static Sdl2Window window;
     public static Sdl2Window Window { get => window; }
@@ -139,19 +138,17 @@ public class VeldridVideoManager : IVideoManager
     public VeldridVideoManager(
         ILogger<VeldridVideoManager> logger,
         GameContext context,
-        IInputManager inputManager,
         IFileManager fileManager,
         RenderWorld renderWorld,
         IScreenManager screenManager,
         Shading shading)
     {
-        logger = logger;
-        context = context;
-        files = fileManager;
-        inputs = (inputManager as InputManager)!;
-        renderWorld = renderWorld;
-        screenManager = (screenManager as ScreenManager)!;
-        shading = shading;
+        this.logger = logger;
+        this.context = context;
+        this.files = fileManager;
+        this.renderWorld = renderWorld;
+        this.screenManager = (screenManager as ScreenManager)!;
+        this.shading = shading;
 
         Globals.gpPrimarySurface = new(SCREEN_WIDTH, SCREEN_HEIGHT);
         Globals.gpFrameBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -159,7 +156,7 @@ public class VeldridVideoManager : IVideoManager
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
 
-    public static async ValueTask<bool> Initialize()
+    public async ValueTask<bool> Initialize()
     {
         WindowCreateInfo windowCI = new()
         {
@@ -183,7 +180,7 @@ public class VeldridVideoManager : IVideoManager
 #if DEBUG
         gdOptions.Debug = true;
 #endif
-        static SDL_WindowFlags GetWindowFlags(WindowState state)
+        SDL_WindowFlags GetWindowFlags(WindowState state)
             => state switch
             {
                 WindowState.Normal => 0,
@@ -322,7 +319,7 @@ public class VeldridVideoManager : IVideoManager
         return true;
     }
 
-    public static void DrawFrame()
+    public void DrawFrame()
     {
         commandList.Begin();
 
@@ -364,7 +361,7 @@ public class VeldridVideoManager : IVideoManager
     public static Stream OpenEmbeddedAssetStream(string name)
         => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
-    public static HVOBJECT AddVideoObject(string assetPath, out string key)
+    public HVOBJECT AddVideoObject(string assetPath, out string key)
     {
         key = assetPath;
 
@@ -381,7 +378,7 @@ public class VeldridVideoManager : IVideoManager
         return hVObject;
     }
 
-    public static HVOBJECT CreateVideoObject(string assetPath)
+    public HVOBJECT CreateVideoObject(string assetPath)
     {
         HVOBJECT hVObject = new();
         hVObject.Name = assetPath;
@@ -486,7 +483,7 @@ public class VeldridVideoManager : IVideoManager
         return true;
     }
 
-    public static void RefreshScreen()
+    public void RefreshScreen()
     {
         int usScreenWidth;
         int usScreenHeight;
@@ -1086,7 +1083,7 @@ public class VeldridVideoManager : IVideoManager
         SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
     }
 
-    private static void ScrollJA2Background(
+    private void ScrollJA2Background(
         ScrollDirection uiDirection,
         int sScrollXIncrement,
         int sScrollYIncrement,
@@ -1513,7 +1510,7 @@ public class VeldridVideoManager : IVideoManager
         ubBitDepth = 0;
     }
 
-    public static void InvalidateScreen()
+    public void InvalidateScreen()
     {
         clearScreen = true;
 
@@ -1681,7 +1678,7 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public static void DeleteVideoObjectFromIndex(string key)
+    public void DeleteVideoObjectFromIndex(string key)
     {
         //loadedTextures.Remove(logoKey);
     }
@@ -1807,7 +1804,7 @@ public class VeldridVideoManager : IVideoManager
         throw new NotImplementedException();
     }
 
-    internal static void DeleteVideoObjectFromIndex(int guiWoodBackground)
+    internal void DeleteVideoObjectFromIndex(int guiWoodBackground)
     {
         throw new NotImplementedException();
     }

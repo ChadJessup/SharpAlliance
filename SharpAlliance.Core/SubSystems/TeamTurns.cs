@@ -591,7 +591,7 @@ public class TeamTurns
                             // flush... display string, then clear it (we could have 20 names!)
                             // add comma to end, we know we have another person after this...
                             // wcscat(sTemp, ", ");
-                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, sTemp);
+                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, sTemp);
                             // wcscpy(sTemp, "");
                             ubInterrupters = 1;
                         }
@@ -606,7 +606,7 @@ public class TeamTurns
                 }
             }
 
-            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, Globals.MSG_INTERFACE, sTemp);
+            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, sTemp);
 
             //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: starting interrupt for %d", ubFirstInterrupter));
             // gusSelectedSoldier should become the topmost guy on the interrupt list
@@ -1452,7 +1452,7 @@ public class TeamTurns
                 fResult = true;
             }
         }
-        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "Interrupt duel %d (%d pts) vs %d (%d pts)", pSoldier.ubID, pSoldier.bInterruptDuelPts, pOpponent.ubID, pOpponent.bInterruptDuelPts );
+        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, "Interrupt duel %d (%d pts) vs %d (%d pts)", pSoldier.ubID, pSoldier.bInterruptDuelPts, pOpponent.ubID, pOpponent.bInterruptDuelPts );
         return (fResult);
     }
 
@@ -1470,7 +1470,7 @@ public class TeamTurns
         // remember who we're getting rid of
         ubID = Globals.gubOutOfTurnOrder[ubIndex];
 
-        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "%d removed from int list", ubID );
+        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, "%d removed from int list", ubID );
         // if we're NOT deleting the LAST entry in the int list
         if (ubIndex < Globals.gubOutOfTurnPersons)
         {
@@ -1499,7 +1499,7 @@ public class TeamTurns
     {
         int ubLoop;
 
-        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "%d added to int list", ubID );
+        //	Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, "%d added to int list", ubID );
         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("INTERRUPT: adding ID %d who %s", ubID, fGainControl ? "gains control" : "loses control"));
 
         // check whether 'who' is already anywhere on the queue after the first index
@@ -1761,7 +1761,7 @@ public class TeamTurns
                                 /*
                                     if (pOpponent.bInterruptDuelPts != NO_INTERRUPT)
                                     {
-                                        Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG_INTERFACE, "%d fails to interrupt %d (%d vs %d pts)", pOpponent.ubID, pSoldier.ubID, pOpponent.bInterruptDuelPts, pSoldier.bInterruptDuelPts);
+                                        Messages.ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, "%d fails to interrupt %d (%d vs %d pts)", pOpponent.ubID, pSoldier.ubID, pOpponent.bInterruptDuelPts, pSoldier.bInterruptDuelPts);
                                     }
                                     */
                             }

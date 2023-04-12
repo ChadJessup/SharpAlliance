@@ -1011,7 +1011,7 @@ public class StrategicMovement
                     string pSectorStr = string.Empty;
                     StrategicMap.GetSectorIDString(pGroup.ubSectorX, pGroup.ubSectorY, pGroup.ubSectorZ, out pSectorStr, true);
                     //                    str = wprintf(gpStrategicString[STR_DIALOG_ENEMIES_ATTACK_UNCONCIOUSMERCS], pSectorStr);
-                    //                    DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
+                    //                    DoScreenIndependantMessageBox(str, MSG.BOX_FLAG_OK, TriggerPrebattleInterface);
                 }
             }
 
@@ -1548,12 +1548,12 @@ public class StrategicMovement
                         //                        if (pGroup.pPlayerList.pSoldier.bAssignment < Assignments.ON_DUTY)
                         //                        {
                         //                            // squad
-                        //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pAssignmentStrings[pGroup.pPlayerList.pSoldier.bAssignment], pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
+                        //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG.INTERFACE, pMessageStrings[MSG.ARRIVE], pAssignmentStrings[pGroup.pPlayerList.pSoldier.bAssignment], pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
                         //                        }
                         //                        else
                         //                        {
                         //                            // a loner
-                        //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG_ARRIVE], pGroup.pPlayerList.pSoldier.name, pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
+                        //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG.INTERFACE, pMessageStrings[MSG.ARRIVE], pGroup.pPlayerList.pSoldier.name, pMapVertIndex[pGroup.pPlayerList.pSoldier.sSectorY], pMapHortIndex[pGroup.pPlayerList.pSoldier.sSectorX]);
                         //                        }
                     }
                 }
@@ -1642,7 +1642,7 @@ public class StrategicMovement
                 //                    // don't print any messages when arriving underground, there's no delay involved
                 //                    if (GroupAtFinalDestination(pGroup) && (pGroup.ubSectorZ == 0) && !fNeverLeft)
                 //                    {
-                //                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG_INTERFACE, pMessageStrings[MSG.ARRIVE], pVehicleStrings[pVehicleList[iVehId].ubVehicleType], pMapVertIndex[pGroup.ubSectorY], pMapHortIndex[pGroup.ubSectorX]);
+                //                        Messages.ScreenMsg(FontColor.FONT_MCOLOR_DKRED, MSG.INTERFACE, pMessageStrings[MSG.ARRIVE], pVehicleStrings[pVehicleList[iVehId].ubVehicleType], pMapVertIndex[pGroup.ubSectorY], pMapHortIndex[pGroup.ubSectorX]);
                 //                    }
                 //                }
                 //            }
@@ -1972,8 +1972,8 @@ public class StrategicMovement
         //
         //            //Kris August 03, 1999 Bug fix:  Changed 1st line to 2nd line to fix game breaking if this dialog came up while in tactical.
         //            //                               It would kick you to mapscreen, where things would break...
-        //            //DoMapMessageBox( MSG_BOX_BASIC_STYLE, str, MAP_SCREEN, MSG_BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback );
-        //            DoMapMessageBox(MSG_BOX_BASIC_STYLE, str, guiCurrentScreen, MSG_BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback);
+        //            //DoMapMessageBox( MSG.BOX_BASIC_STYLE, str, MAP_SCREEN, MSG.BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback );
+        //            DoMapMessageBox(MSG.BOX_BASIC_STYLE, str, guiCurrentScreen, MSG.BOX_FLAG_YESNO, PlanSimultaneousGroupArrivalCallback);
         //
         //            gfWaitingForInput = true;
         //            return true;
@@ -1983,7 +1983,7 @@ public class StrategicMovement
 
     void PlanSimultaneousGroupArrivalCallback(int bMessageValue)
     {
-        //        if (bMessageValue == MSG_BOX_RETURN_YES)
+        //        if (bMessageValue == MSG.BOX_RETURN_YES)
         //        {
         //            PrepareGroupsForSimultaneousArrival();
         //        }
@@ -2304,7 +2304,7 @@ public class StrategicMovement
         //        {
         //            CancelEmptyPersistentGroupMovement(pGroup);
         //            return;
-        ////            DoScreenIndependantMessageBox("Strategic Info Warning:  Attempting to delete a persistant group.", MSG_BOX_FLAG_OK, null);
+        ////            DoScreenIndependantMessageBox("Strategic Info Warning:  Attempting to delete a persistant group.", MSG.BOX_FLAG_OK, null);
         //        }
         //        //if removing head, then advance head first.
         //        if (pGroup == gpGroupList)
@@ -2974,7 +2974,7 @@ public class StrategicMovement
                 cnt++;
             }
 
-//            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG_INTERFACE, Message[STR_PLAYER_REINFORCEMENTS]);
+//            Messages.ScreenMsg(FontColor.FONT_YELLOW, MSG.INTERFACE, Message[STR_PLAYER_REINFORCEMENTS]);
 
         }
         else
@@ -4303,7 +4303,7 @@ public class StrategicMovement
         //        wprintf(str, gzLateLocalizedString[5],
         //            pVehicleStrings[pVehicleList[iVehicleID].ubVehicleType],
         //            ubSectorY + 'A' - 1, ubSectorX);
-        //        DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, null);
+        //        DoScreenIndependantMessageBox(str, MSG.BOX_FLAG_OK, null);
     }
 
     public static void SetLocationOfAllPlayerSoldiersInGroup(GROUP? pGroup, int sSectorX, MAP_ROW sSectorY, int bSectorZ)
@@ -4547,7 +4547,7 @@ public class StrategicMovement
         }
 
         gfUsePersistantPBI = true;
-        //        DoScreenIndependantMessageBox(str, MSG_BOX_FLAG_OK, TriggerPrebattleInterface);
+        //        DoScreenIndependantMessageBox(str, MSG.BOX_FLAG_OK, TriggerPrebattleInterface);
     }
 
     public static void PlaceGroupInSector(int ubGroupID, int sPrevX, MAP_ROW sPrevY, int sNextX, MAP_ROW sNextY, int bZ, bool fCheckForBattle)
@@ -4750,12 +4750,12 @@ public class StrategicMovement
         if (GroupAtFinalDestination(pGroup))
         {
             // do an OK message box
-//            DoScreenIndependantMessageBox(sString, MSG_BOX_FLAG_OK, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
+//            DoScreenIndependantMessageBox(sString, MSG.BOX_FLAG_OK, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
         }
         else
         {
             // do a CONTINUE/STOP message box
-//            DoScreenIndependantMessageBox(sString, MSG_BOX_FLAG_CONTINUESTOP, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
+//            DoScreenIndependantMessageBox(sString, MSG.BOX_FLAG_CONTINUESTOP, HandlePlayerGroupEnteringSectorToCheckForNPCsOfNoteCallback);
         }
 
         // wait, we're prompting the player

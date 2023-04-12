@@ -654,7 +654,7 @@ public class Morale
 
             default:
                 // debug message
-                Messages.ScreenMsg(MSG_FONT_RED, MSG_BETAVERSION, "Invalid morale event type = %d.  AM/CC-1", bMoraleEvent.ToString());
+                Messages.ScreenMsg(MSG_FONT_RED, MSG.BETAVERSION, "Invalid morale event type = %d.  AM/CC-1", bMoraleEvent.ToString());
                 break;
         }
 

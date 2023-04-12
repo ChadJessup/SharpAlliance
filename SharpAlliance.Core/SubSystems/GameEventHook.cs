@@ -147,7 +147,7 @@ public class GameEventHook
                 break;
             case EVENT.HANDLE_MINE_INCOME:
 //                HandleIncomeFromMines();
-                //ScreenMsg( FONT_MCOLOR_DKRED, MSG_INTERFACE, "Income From Mines at %d", GetWorldTotalMin( ) );
+                //ScreenMsg( FONT_MCOLOR_DKRED, MSG.INTERFACE, "Income From Mines at %d", GetWorldTotalMin( ) );
                 break;
             case EVENT.SETUP_MINE_INCOME:
 //                PostEventsForMineProduction();

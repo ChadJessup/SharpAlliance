@@ -196,7 +196,7 @@ public class Overhead
             // OK, we want to display message that we can't....
             if (fFromUI)
             {
-                //                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG_UI_FEEDBACK, TacticalStr[MERC_IS_UNAVAILABLE_STR], pSoldier.name);
+                //                Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[MERC_IS_UNAVAILABLE_STR], pSoldier.name);
             }
             return;
         }
@@ -647,7 +647,7 @@ public class Overhead
             {
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! &&&&&&& Problem with attacker busy count decrementing past 0.... preventing wrap-around."));
 # if JA2BETAVERSION
-                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG_BETAVERSION, L"Attack busy problem. Save, exit and send debug.txt + save file to Sir-Tech.");
+                ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, L"Attack busy problem. Save, exit and send debug.txt + save file to Sir-Tech.");
 #endif
             }
         }
