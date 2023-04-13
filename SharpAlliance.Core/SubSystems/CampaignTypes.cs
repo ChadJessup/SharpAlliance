@@ -34,7 +34,7 @@ public class SECTORINFO
                             // while this is being maintained (partially, surely buggy), nothing uses it anymore. ARM
 
     public uint ubDayOfLastCreatureAttack;
-    public uint uiFacilitiesFlags;   // the flags for various facilities
+    public SFCF uiFacilitiesFlags;   // the flags for various facilities
 
     public Dictionary<StrategicMove, Traversability> ubTraversability = new();//determines the traversability ratings to adjacent sectors.
                                             //The last index represents the traversability if travelling
@@ -196,11 +196,11 @@ public class UNDERGROUND_SECTORINFO
 
 
 // coordinates of shooting range sector
-public enum GUN_RANGE
+public class GUN_RANGE
 {
-    RANGE_X = 13,
-    RANGE_Y = MAP_ROW.H,
-    RANGE_Z = 0,
+    public const int X = 13;
+    public const MAP_ROW Y = MAP_ROW.H;
+    public const int Z = 0;
 }
 
 //Vehicle types

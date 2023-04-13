@@ -1,6 +1,4 @@
-﻿using TIMECOUNTER = System.UInt32;
-
-using static SharpAlliance.Core.Globals;
+﻿using static SharpAlliance.Core.Globals;
 using System.Collections.Generic;
 
 namespace SharpAlliance.Core;

@@ -57,7 +57,7 @@ public struct PaletteSubRangeType
     public int ubEnd;
 }
 
-public record PaletteRepID();
+public record PaletteRepID2();
 
 public enum WorldDirections : int
 {

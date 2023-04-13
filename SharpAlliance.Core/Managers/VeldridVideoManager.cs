@@ -21,7 +21,6 @@ using Veldrid.ImageSharp;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
@@ -43,9 +42,9 @@ public class VeldridVideoManager : IVideoManager
 
     private readonly ILogger<VeldridVideoManager> logger;
 
-    private static bool clearScreen;
+    private  bool clearScreen;
 
-    private static Dictionary<string, HVOBJECT> loadedTextures = new();
+    private  Dictionary<string, HVOBJECT> loadedTextures = new();
 
     // private readonly WindowsSubSystem windows;
     private readonly RenderWorld renderWorld;
@@ -57,12 +56,12 @@ public class VeldridVideoManager : IVideoManager
 
     private static Sdl2Window window;
     public static Sdl2Window Window { get => window; }
-    public static GraphicsDevice GraphicDevice { get; private set; }
-    public static ResourceFactory Factory { get; private set; }
-    protected static SpriteRenderer SpriteRenderer { get; private set; }
+    public GraphicsDevice GraphicDevice { get; private set; }
+    public ResourceFactory Factory { get; private set; }
+    protected SpriteRenderer SpriteRenderer { get; private set; }
 
-    private static Swapchain mainSwapchain;
-    private static CommandList commandList;
+    private Swapchain mainSwapchain;
+    private CommandList commandList;
     private DeviceBuffer _screenSizeBuffer;
     private DeviceBuffer _shiftBuffer;
     private DeviceBuffer _vertexBuffer;
@@ -79,11 +78,11 @@ public class VeldridVideoManager : IVideoManager
     private ResourceLayout _graphicsLayout;
     private float _ticks;
 
-    private static bool _colorSrgb = true;
+    private bool _colorSrgb = true;
 
-    private static FadeScreen? fadeScreen;
+    private FadeScreen? fadeScreen;
 
-    private static RgbaFloat clearColor = new(1.0f, 0, 0.2f, 1f);
+    private RgbaFloat clearColor = new(1.0f, 0, 0.2f, 1f);
 
     private Rectangle rcWindow;
 
@@ -112,7 +111,7 @@ public class VeldridVideoManager : IVideoManager
     //private Surface2? gpPrimarySurface = null;
     //private Surface2? gpBackBuffer = null
 
-    public static bool IsInitialized { get; private set; }
+    public bool IsInitialized { get; private set; }
     public uint guiBOTTOMPANEL { get; set; }
     public uint guiRIGHTPANEL { get; set; }
     public uint guiRENDERBUFFER { get; set; }
@@ -125,16 +124,16 @@ public class VeldridVideoManager : IVideoManager
     private const int SCREEN_HEIGHT = 480;
     private const int PIXEL_DEPTH = 16;
 
-    static ThreadState uiRefreshThreadState;
-    static int uiIndex;
+    ThreadState uiRefreshThreadState;
+    int uiIndex;
 
-    static bool fShowMouse;
-    static Rectangle Region;
-    static Point MousePos;
-    static bool fFirstTime = true;
-    private static bool windowResized;
+    bool fShowMouse;
+    Rectangle Region;
+    Point MousePos;
+    bool fFirstTime = true;
+    private bool windowResized;
 
-    private static Texture backBuffer;
+    private Texture backBuffer;
     public VeldridVideoManager(
         ILogger<VeldridVideoManager> logger,
         GameContext context,
@@ -251,7 +250,7 @@ public class VeldridVideoManager : IVideoManager
 	etc. to their unblit buffer, for later reblitting. Does NOT clip.
 
 **********************************************************************************************/
-    public static bool Blt16BPPTo16BPP(int pDest, int uiDestPitch, int pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight)
+    public bool Blt16BPPTo16BPP(int pDest, int uiDestPitch, int pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight)
     {
         int pSrcPtr, pDestPtr;
         int uiLineSkipDest, uiLineSkipSrc;
@@ -348,7 +347,7 @@ public class VeldridVideoManager : IVideoManager
         GraphicDevice.SwapBuffers(mainSwapchain);
     }
 
-    public static byte[] ReadEmbeddedAssetBytes(string name)
+    public byte[] ReadEmbeddedAssetBytes(string name)
     {
         using Stream stream = OpenEmbeddedAssetStream(name);
         byte[] bytes = new byte[stream.Length];
@@ -358,7 +357,7 @@ public class VeldridVideoManager : IVideoManager
         return bytes;
     }
 
-    public static Stream OpenEmbeddedAssetStream(string name)
+    public Stream OpenEmbeddedAssetStream(string name)
         => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
     public HVOBJECT AddVideoObject(string assetPath, out string key)
@@ -427,7 +426,7 @@ public class VeldridVideoManager : IVideoManager
         return hVObject;
     }
 
-    public static bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
+    public bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
     {
         // Create palette object if not already done so
         hVObject.pPaletteEntry = pSrcPalette;
@@ -454,7 +453,7 @@ public class VeldridVideoManager : IVideoManager
         return true;
     }
 
-    public static bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
+    public bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
     {
         if (hImage is null)
         {
@@ -1053,7 +1052,7 @@ public class VeldridVideoManager : IVideoManager
         fFirstTime = false;
     }
 
-    private static void DrawRegion(
+    private void DrawRegion(
         Texture destinationTexture,
         int destinationPointX,
         int destinationPointY,
@@ -1065,7 +1064,7 @@ public class VeldridVideoManager : IVideoManager
             sourceRegion,
             sourceTexture);
 
-    private static void BlitRegion(
+    private void BlitRegion(
         Texture texture,
         Point destinationPoint,
         Rectangle sourceRegion,
@@ -1499,11 +1498,11 @@ public class VeldridVideoManager : IVideoManager
         //SaveBackgroundRects();
     }
 
-    private static void RestoreShiftedVideoOverlays(int sShiftX, int sShiftY)
+    private void RestoreShiftedVideoOverlays(int sShiftX, int sShiftY)
     {
     }
 
-    public static void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
+    public void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth)
     {
         usWidth = 0;
         usHeight = 0;
@@ -1529,15 +1528,15 @@ public class VeldridVideoManager : IVideoManager
         GC.SuppressFinalize(this);
     }
 
-    public static void InvalidateRegion(Rectangle bounds)
+    public void InvalidateRegion(Rectangle bounds)
     {
     }
 
-    public static void EndFrameBufferRender()
+    public void EndFrameBufferRender()
     {
     }
 
-    public static bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex)
+    public bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex)
     {
         hVObject = null;
         VOBJECT_NODE? curr;
@@ -1557,7 +1556,7 @@ public class VeldridVideoManager : IVideoManager
         return false;
     }
 
-    public static HVOBJECT GetVideoObject(string key)
+    public HVOBJECT GetVideoObject(string key)
     {
         if (!loadedTextures.TryGetValue(key, out var hPixHandle))
         {
@@ -1567,7 +1566,7 @@ public class VeldridVideoManager : IVideoManager
         return hPixHandle;
     }
 
-    public static void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
+    public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
     {
         if (hVObject.Textures is null)
         {
@@ -1580,7 +1579,7 @@ public class VeldridVideoManager : IVideoManager
             $"{hVObject.Name}_{textureIndex}");
     }
 
-    public static bool DrawTextToScreen(
+    public bool DrawTextToScreen(
         string text,
         int usLocX,
         int usLocY,
@@ -1654,27 +1653,27 @@ public class VeldridVideoManager : IVideoManager
         return true;
     }
 
-    public static bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
+    public bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
     {
         throw new NotImplementedException();
     }
 
-    public static void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap)
+    public void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap)
     {
         vs_desc = new();
         uiTempMap = 0;
     }
 
-    public static void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette)
+    public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette)
     {
     }
 
-    public static ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
+    public ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
     {
         return 0;
     }
 
-    public static void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap)
+    public void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap)
     {
     }
 
@@ -1683,76 +1682,76 @@ public class VeldridVideoManager : IVideoManager
         //loadedTextures.Remove(logoKey);
     }
 
-    public static void LineDraw(int v2, int v3, int v4, int v5, Color color, Image<Rgba32> image)
+    public void LineDraw(int v2, int v3, int v4, int v5, Color color, Image<Rgba32> image)
     {
     }
 
-    public static void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4)
+    public void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4)
     {
     }
 
-    public static void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
+    public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
     {
     }
 
-    public static void ColorFillVideoSurfaceArea(Surfaces buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32)
+    public void ColorFillVideoSurfaceArea(Surfaces buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32)
     {
     }
 
-    public static void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
+    public void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
     {
     }
 
-    public static void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
+    public void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
     {
     }
 
-    public static void GetClippingRect(out Rectangle clipRect)
+    public void GetClippingRect(out Rectangle clipRect)
     {
         clipRect = new();
     }
 
-    public static void SetClippingRect(ref Rectangle newClip)
+    public void SetClippingRect(ref Rectangle newClip)
     {
     }
 
-    public static void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color)
+    public void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color)
         => ColorFillVideoSurfaceArea(rectangle, color.ToPixel<Rgba32>());
 
-    public static void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32)
+    public void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32)
     {
 
     }
 
-    public static void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
+    public void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
     {
     }
 
-    public static void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle)
+    public void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle)
     {
     }
 
-    public static void RestoreBackgroundRects()
+    public void RestoreBackgroundRects()
     {
     }
 
-    public static void SaveBackgroundRects()
+    public void SaveBackgroundRects()
     {
     }
 
-    public static void ExecuteBaseDirtyRectQueue()
+    public void ExecuteBaseDirtyRectQueue()
     {
     }
 
-    public static void DeleteVideoObject(HVOBJECT? vobj)
+    public void DeleteVideoObject(HVOBJECT? vobj)
     {
     }
 
-    public static void BlitBufferToBuffer(int left, int top, int width, int height)
+    public void BlitBufferToBuffer(int left, int top, int width, int height)
     {
     }
 
-    public static int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
+    public int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
     {
         vs_desc = new();
         uiTempMap = Surfaces.FRAME_BUFFER;
@@ -1760,58 +1759,58 @@ public class VeldridVideoManager : IVideoManager
         return 0;
     }
 
-    public static void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32)
+    public void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32)
     {
     }
 
-    public static void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color)
+    public void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color)
     {
     }
 
-    public static void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v)
+    public void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v)
     {
     }
 
-    public static bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
+    public bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
     {
         hSrcVSurface = new();
 
         return true;
     }
 
-    public static void ClearElements()
+    public void ClearElements()
     {
         FontSubSystem.TextRenderer.ClearText();
     }
 
-    internal static int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
+    public int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
     {
         throw new NotImplementedException();
     }
 
-    internal static void UnLockVideoSurface(Surfaces buffer)
+    public void UnLockVideoSurface(Surfaces buffer)
     {
         throw new NotImplementedException();
     }
 
-    internal static void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
+    public void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
     {
         throw new NotImplementedException();
     }
 
-    internal static void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
+    public void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
     {
         throw new NotImplementedException();
     }
 
-    internal void DeleteVideoObjectFromIndex(int guiWoodBackground)
+    public void DeleteVideoObjectFromIndex(int guiWoodBackground)
     {
         throw new NotImplementedException();
     }
 
-    internal static void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
+    public void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
 
-    public static void Blt8BPPDataSubTo16BPPBuffer(int pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, int pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
+    public void Blt8BPPDataSubTo16BPPBuffer(int pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, int pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {
         throw new NotImplementedException();
     }

@@ -4,11 +4,18 @@ using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.EnglishText;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicMap
 {
+    private static IFileManager files;
+    public StrategicMap(IFileManager fileManager)
+    {
+        files = fileManager;
+    }
+
     public ValueTask<bool> InitStrategicMovementCosts()
     {
         return ValueTask.FromResult(true);
@@ -61,7 +68,7 @@ public class StrategicMap
         // We will test against this string
         bTestString = sprintf("MAPS\\%s", bString);
 
-        if (fUsePlaceholder && !FileManager.FileExists(bTestString))
+        if (fUsePlaceholder && !files.FileExists(bTestString))
         {
             // Debug str
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string.Format("Map does not exist for %s, using default.", bTestString));

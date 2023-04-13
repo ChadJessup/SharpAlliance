@@ -38,7 +38,7 @@ public class FileManager : IFileManager
         return ValueTask.FromResult(true);
     }
 
-    public static Stream FileOpen(string strFilename, FileAccess uiOptions, bool fDeleteOnClose = false)
+    public Stream FileOpen(string strFilename, FileAccess uiOptions, bool fDeleteOnClose = false)
     {
         Stream hFile = Stream.Null;
         FileStream? realFileStream = null;
@@ -169,7 +169,7 @@ public class FileManager : IFileManager
         return realFileStream;
     }
 
-    private static Stream AddToOpenFile(Stream hLibFile)
+    private Stream AddToOpenFile(Stream hLibFile)
     {
         gFileDataBase.RealFiles.pRealFilesOpen.Add(new Library.RealFileOpen
         {
@@ -183,13 +183,13 @@ public class FileManager : IFileManager
     {
     }
 
-    public static void FileClose(Stream fptr)
+    public void FileClose(Stream fptr)
     {
     }
 
     private const int ROTATION_ARRAY_SIZE = 46;
 
-    public static bool FileExists(string pFilename)
+    public bool FileExists(string pFilename)
     {
         var exists = false;
 
@@ -207,7 +207,7 @@ public class FileManager : IFileManager
 
     static byte[] ubRotationArray = new byte[] { 132, 235, 125, 99, 15, 220, 140, 89, 205, 132, 254, 144, 217, 78, 156, 58, 215, 76, 163, 187, 55, 49, 65, 48, 156, 140, 201, 68, 184, 13, 45, 69, 102, 185, 122, 225, 23, 250, 160, 220, 114, 240, 64, 175, 057, 233 };
 
-    public static unsafe bool JA2EncryptedFileRead(Stream hFile, byte[] pDest, int uiBytesToRead, out int puiBytesRead)
+    public unsafe bool JA2EncryptedFileRead(Stream hFile, byte[] pDest, int uiBytesToRead, out int puiBytesRead)
     {
         uint uiLoop;
         byte ubArrayIndex = 0;
@@ -244,31 +244,31 @@ public class FileManager : IFileManager
         return fRet;
     }
 
-    public static long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
+    public long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
         => hLibraryHandle.Seek(offset, origin);
 
-    public static bool FileRead(Stream stream, ref byte[] buffer, int uiBytesToRead, out int uiBytesRead)
+    public bool FileRead(Stream stream, ref byte[] buffer, int uiBytesToRead, out int uiBytesRead)
     {
         uiBytesRead = stream.Read(buffer, 0, uiBytesToRead);
 
         return true;
     }
 
-    public static bool FileRead(Stream stream, Span<byte> buffer, out uint bytesRead)
+    public bool FileRead(Stream stream, Span<byte> buffer, out uint bytesRead)
     {
         bytesRead = (uint)stream.Read(buffer);
 
         return true;
     }
 
-    public static bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current)
+    public bool FileSeek(Stream stream, ref uint uiStoredSize, SeekOrigin current)
     {
         stream.Seek(uiStoredSize, current);
 
         return true;
     }
 
-    public static bool FileRead<T>(Stream stream, ref T obj, int uiFileSectionSize, out int uiBytesRead)
+    public bool FileRead<T>(Stream stream, ref T obj, int uiFileSectionSize, out int uiBytesRead)
         where T : unmanaged
     {
         T[] buff = new T[1];
@@ -282,7 +282,7 @@ public class FileManager : IFileManager
         return result;
     }
 
-    public static bool FileRead<T>(Stream stream, ref T[] obj, int uiFileSectionSize, out int uiBytesRead)
+    public bool FileRead<T>(Stream stream, ref T[] obj, int uiFileSectionSize, out int uiBytesRead)
         where T : unmanaged
     {
         var buffer = new byte[uiFileSectionSize];
@@ -297,14 +297,14 @@ public class FileManager : IFileManager
         return true;
     }
 
-    public static bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, int seekFrom, int uiSeekAmount)
+    public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, int seekFrom, int uiSeekAmount)
         => LoadEncryptedDataFromFile(pFileName, out pDestString, (uint)seekFrom, (uint)uiSeekAmount);
 
-    public static bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, uint seekFrom, uint uiSeekAmount)
+    public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, uint seekFrom, uint uiSeekAmount)
     {
         pDestString = string.Empty;
 
-        using var stream = FileOpen(pFileName, FileAccess.Read, false);
+        using var stream = this.FileOpen(pFileName, FileAccess.Read, false);
         if (stream is null)
         {
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed to FileOpen");
@@ -353,8 +353,23 @@ public class FileManager : IFileManager
         return true;
     }
 
-    internal static void FileWrite<T>(Stream stream, T value, int size, out int bytesWritten)
+    public void FileWrite<T>(Stream stream, T value, int size, out int bytesWritten)
     {
         bytesWritten = size;
+    }
+
+    public FileAttributes FileGetAttributes(string filePath) => File.GetAttributes(filePath);
+
+    public bool MakeFileManDirectory(string saveDir)
+    {
+        var result = Directory.CreateDirectory(saveDir);
+        return result.Exists;
+    }
+
+    public bool FileDelete(string filePath)
+    {
+        File.Delete(filePath);
+
+        return File.Exists(filePath);
     }
 }

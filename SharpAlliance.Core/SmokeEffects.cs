@@ -8,7 +8,10 @@ namespace SharpAlliance.Core;
 
 public class SmokeEffects
 {
-
+    public static bool SaveSmokeEffectsToMapTempFile(int sMapX, MAP_ROW sMapY, int bMapZ)
+    {
+        return false;
+    }
 }
 
 // Smoke effect types

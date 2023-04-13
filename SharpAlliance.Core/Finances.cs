@@ -8,6 +8,10 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public static bool gfWasInMeanwhile = false;
-    public const string MAPS_DIR = "Temp\\";
+    public const string FINANCES_DATA_FILE = "TEMP\\finances.dat";
+}
+
+public class Finances
+{
+
 }

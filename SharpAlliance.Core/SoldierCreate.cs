@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
+
 namespace SharpAlliance.Core;
 
 public class SoldierCreate
@@ -47,7 +48,7 @@ public class BASIC_SOLDIERCREATE_STRUCT
     public int bBodyType;                                 //up to 128 body types, -1 means random
     public int[] sPatrolGrid = new int[MAXPATROLGRIDS]; //possible locations to visit, patrol, etc.
     public int bPatrolCnt;
-    public bool fOnRoof;
+    public int fOnRoof;
     public int ubSoldierClass;                           //army, administrator, elite
     public int ubCivilianGroup;
     public bool fPriorityExistance;         //These slots are used first
@@ -62,7 +63,7 @@ public class SOLDIERCREATE_STRUCT
     public bool fStatic;
 
     //Profile information used for special NPCs and player mercs.
-    public int ubProfile;
+    public NPCID ubProfile;
     public bool fPlayerMerc;
     public bool fPlayerPlan;
     public bool fCopyProfileItemsOver;
@@ -70,16 +71,16 @@ public class SOLDIERCREATE_STRUCT
     //Location information
     public int sSectorX;
     public MAP_ROW sSectorY;
-    public int bDirection;
+    public WorldDirections bDirection;
     public int sInsertionGridNo;
 
     // Can force a team, but needs flag set
-    public int bTeam;
-    public int bBodyType;
+    public TEAM bTeam;
+    public SoldierBodyTypes bBodyType;
 
     //Orders and attitude settings
-    public int bAttitude;
-    public int bOrders;
+    public Attitudes bAttitude;
+    public Orders bOrders;
 
     //Attributes
     public int bLifeMax;
@@ -95,7 +96,7 @@ public class SOLDIERCREATE_STRUCT
     public int bStrength;
     public int bWisdom;
     public int bMorale;
-    public int bAIMorale;
+    public MORALE bAIMorale;
 
     //Inventory
     public OBJECTTYPE[] Inv = new OBJECTTYPE[(int)InventorySlot.NUM_INV_SLOTS];
@@ -113,16 +114,16 @@ public class SOLDIERCREATE_STRUCT
     //Kris:  Additions November 16, 1997 (padding down to 129 from 150)
     public bool fVisible;
     public string name;
-    public int ubSoldierClass;   //army, administrator, elite
-    public bool fOnRoof;
+    public SOLDIER_CLASS ubSoldierClass;   //army, administrator, elite
+    public int fOnRoof;
     public int bSectorZ;
     public SOLDIERTYPE? pExistingSoldier;
     public bool fUseExistingSoldier;
-    public int ubCivilianGroup;
+    public CIV_GROUP ubCivilianGroup;
     public bool fKillSlotIfOwnerDies;
     public int ubScheduleID;
     public bool fUseGivenVehicle;
     public int bUseGivenVehicleID;
-    public bool fHasKeys;
+    public int fHasKeys;
     public int[] bPadding = new int[115];
 }

@@ -26,8 +26,8 @@ public partial class Globals
 {
     public const int SOLDIER_CREATE_AUTO_TEAM = -1;
     public const int MAX_INDIVIDUALS = 148;
-    public SOLDIERINITNODE? gSoldierInitHead;
-    public SOLDIERINITNODE? gSoldierInitTail;
+    public static SOLDIERINITNODE? gSoldierInitHead;
+    public static SOLDIERINITNODE? gSoldierInitTail;
 
     public static bool gfEstimatePath { get; internal set; }
 

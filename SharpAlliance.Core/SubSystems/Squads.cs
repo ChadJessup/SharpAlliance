@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -14,6 +15,9 @@ namespace SharpAlliance.Core.SubSystems;
 public class Squads
 {
     public static bool fExitingVehicleToSquad = false;
+
+    private static IFileManager files;
+    public Squads(IFileManager fileManager) => files = fileManager;
 
 
     public static SquadEnum CurrentSquad()
@@ -1064,7 +1068,7 @@ public class Squads
         //Save the squad info to the Saved Game File
         uiSaveSize = sizeof(SAVE_SQUAD_INFO_STRUCT) * (int)NUMBER_OF_SQUADS * NUMBER_OF_SOLDIERS_PER_SQUAD;
 
-        FileManager.FileWrite(hFile, sSquadSaveStruct, uiSaveSize, out uiNumBytesWritten);
+        files.FileWrite(hFile, sSquadSaveStruct, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -1072,7 +1076,7 @@ public class Squads
 
 
         //Save all the squad movement id's
-        FileManager.FileWrite(hFile, SquadMovementGroups, sizeof(int) * (int)NUMBER_OF_SQUADS, out uiNumBytesWritten);
+        files.FileWrite(hFile, SquadMovementGroups, sizeof(int) * (int)NUMBER_OF_SQUADS, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * (int)NUMBER_OF_SQUADS)
         {
             return (false);
@@ -1105,7 +1109,7 @@ public class Squads
         // Load in the squad info
         uiSaveSize = sizeof(SAVE_SQUAD_INFO_STRUCT) * (int)NUMBER_OF_SQUADS * NUMBER_OF_SOLDIERS_PER_SQUAD;
 
-        //FileManager.FileRead<SAVE_SQUAD_INFO_STRUCT[]>(hFile, ref sSquadSaveStruct, uiSaveSize, out uiNumBytesRead);
+        //files.FileRead<SAVE_SQUAD_INFO_STRUCT[]>(hFile, ref sSquadSaveStruct, uiSaveSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiSaveSize)
         {
             return (false);
@@ -1131,7 +1135,7 @@ public class Squads
 
 
         //Load in the Squad movement id's
-        //FileManager.FileRead(hFile, ref SquadMovementGroups, sizeof(int) * (int)NUMBER_OF_SQUADS, out uiNumBytesRead);
+        //files.FileRead(hFile, ref SquadMovementGroups, sizeof(int) * (int)NUMBER_OF_SQUADS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int) * (int)NUMBER_OF_SQUADS)
         {
             return (false);

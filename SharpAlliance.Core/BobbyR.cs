@@ -142,33 +142,33 @@ public class BobbyR
 
     void RenderBobbyR()
     {
-        HVOBJECT hPixHandle;
-        HVOBJECT hStorePlaqueHandle;
+        HVOBJECT? hPixHandle;
+        HVOBJECT? hStorePlaqueHandle;
 
         DrawBobbyRWoodBackground();
 
         // Bobby's Name
-        hPixHandle = VeldridVideoManager.GetVideoObject(guiBobbyName);
+        hPixHandle = this.video.GetVideoObject(guiBobbyName);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBY_RAYS_NAME_X, BOBBY_RAYS_NAME_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Plaque
-        hPixHandle = VeldridVideoManager.GetVideoObject(guiPlaque);
+        hPixHandle = this.video.GetVideoObject(guiPlaque);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBYS_PLAQUES_X, BOBBYS_PLAQUES_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Top Hinge
-        hPixHandle = VeldridVideoManager.GetVideoObject(guiTopHinge);
+        hPixHandle = this.video.GetVideoObject(guiTopHinge);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_TOPHINGE_X, BOBBIES_TOPHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Bottom Hinge
-        hPixHandle = VeldridVideoManager.GetVideoObject(guiBottomHinge);
+        hPixHandle = this.video.GetVideoObject(guiBottomHinge);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_BOTTOMHINGE_X, BOBBIES_BOTTOMHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // StorePlaque
-        hStorePlaqueHandle = VeldridVideoManager.GetVideoObject(guiStorePlaque);
+        hStorePlaqueHandle = this.video.GetVideoObject(guiStorePlaque);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hStorePlaqueHandle, 0, BOBBIES_STORE_PLAQUE_X, BOBBIES_STORE_PLAQUE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Handle
-        hPixHandle = VeldridVideoManager.GetVideoObject(guiHandle);
+        hPixHandle = this.video.GetVideoObject(guiHandle);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_HANDLE_X, BOBBIES_HANDLE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         /*
@@ -242,7 +242,7 @@ public class BobbyR
         }
 
         Laptop.RenderWWWProgramTitleBar();
-        VeldridVideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+        this.video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
     }
 
     bool InitBobbyRWoodBackground()
@@ -268,7 +268,7 @@ public class BobbyR
         int x, y, uiPosX, uiPosY;
 
         // Blt the Wood background
-        HVOBJECT hWoodBackGroundHandle = VeldridVideoManager.GetVideoObject(guiWoodBackground);
+        HVOBJECT hWoodBackGroundHandle = this.video.GetVideoObject(guiWoodBackground);
 
         uiPosY = BOBBY_WOOD_BACKGROUND_Y;
         for (y = 0; y < 4; y++)
@@ -405,14 +405,14 @@ public class BobbyR
         if (((uiCurTime - uiLastTime) > BOBBYR_UNDERCONSTRUCTION_ANI_DELAY) || (fReDrawScreenFlag))
         {
             // The undercontsruction graphic 
-            hPixHandle = VeldridVideoManager.GetVideoObject(guiUnderConstructionImage);
+            hPixHandle = this.video.GetVideoObject(guiUnderConstructionImage);
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT.SRCTRANSPARENCY, null);
             VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT.SRCTRANSPARENCY, null);
 
             FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.UNDER_CONSTRUCTION], BOBBYR_UNDER_CONSTRUCTION_TEXT_X, BOBBYR_UNDER_CONSTRUCTION_TEXT_Y, BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH, FontStyle.FONT16ARIAL, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.INVALIDATE_TEXT);
 
-            VeldridVideoManager.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
-            VeldridVideoManager.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION1_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
+            this.video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
+            this.video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION1_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
 
             uiLastTime = ClockManager.GetJA2Clock();
 

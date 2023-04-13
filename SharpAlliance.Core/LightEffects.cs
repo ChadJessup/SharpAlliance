@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SharpAlliance.Core;
 
-public partial class Globals
+public class LightEffects
 {
-    public static bool gfWasInMeanwhile = false;
-    public const string MAPS_DIR = "Temp\\";
+    public static bool SaveLightEffectsToMapTempFile(int sMapX, MAP_ROW sMapY, int bMapZ)
+    {
+        return true;
+    }
 }

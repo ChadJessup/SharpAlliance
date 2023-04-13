@@ -20,10 +20,11 @@ namespace SharpAlliance.Core;
 public class InputManager : IInputManager
 {
     private readonly ILogger<InputManager> logger;
+    private static IVideoManager video;
     public MouseSubSystem Mouse { get; init; }
     public ButtonSubSystem buttonSystem { get; init; }
     private readonly GameContext context2;
-    //private VeldridVideoManager video;
+    //private video video;
     private int[] gsKeyTranslationTable = new int[1024];
     private bool gfApplicationActive;
     private bool[] gfKeyState = new bool[256];            // true = Pressed, false = Not Pressed
@@ -87,10 +88,12 @@ public class InputManager : IInputManager
 
     public InputManager(
         ILogger<InputManager> logger,
+        IVideoManager videoManager,
         MouseSubSystem mouseSubSystem,
         ButtonSubSystem buttonSubsystem)
     {
         this.logger = logger;
+        video = videoManager;
         this.Mouse = mouseSubSystem;
         this.buttonSystem = buttonSubsystem;
     }
@@ -121,7 +124,7 @@ public class InputManager : IInputManager
             return true;
         }
 
-        //VeldridVideoManager = (this.context.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
+        //video = (this.context.Services.GetRequiredService<IVideoManager>() as video)!;
 
         // By default, we will not queue mousemove events
         this.gfTrackMousePos = false;

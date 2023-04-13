@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
@@ -15,6 +16,9 @@ namespace SharpAlliance.Core;
 
 public class Faces
 {
+    private static IVideoManager video;
+    public Faces(IVideoManager videoManager) => video = videoManager;
+
     private static int GetFreeFace()
     {
         int uiCount;
@@ -219,7 +223,7 @@ public class Faces
 
 
         // Set palette
-        if (VeldridVideoManager.GetVideoObject(out hVObject, uiVideoObject))
+        if (video.GetVideoObject(out hVObject, uiVideoObject))
         {
             // Build a grayscale palette! ( for testing different looks )
             for (uiCount = 0; uiCount < 256; uiCount++)
@@ -229,11 +233,11 @@ public class Faces
                 Pal[uiCount].peBlue = 255;
             }
 
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 250, 25, 25, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = video.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 250, 25, 25, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, false);
 
             for (uiCount = 0; uiCount < 256; uiCount++)
             {
@@ -241,7 +245,7 @@ public class Faces
                 Pal[uiCount].peGreen = (byte)((byte)(uiCount % 128) + 128);
                 Pal[uiCount].peBlue = (byte)((byte)(uiCount % 128) + 128);
             }
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = VeldridVideoManager.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = video.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
 
         }
 
@@ -453,7 +457,7 @@ public class Faces
 
             pFace.fAutoRestoreBuffer = true;
 
-            //            CHECKV(VeldridVideoManager.AddVideoSurface(out vs_desc, out pFace.uiAutoRestoreBuffer) > 0);
+            //            CHECKV(video.AddVideoSurface(out vs_desc, out pFace.uiAutoRestoreBuffer) > 0);
         }
         else
         {
@@ -1952,22 +1956,22 @@ public class Faces
             return (false);
         }
 
-        pDestBuf = VeldridVideoManager.LockVideoSurface(pFace.uiAutoDisplayBuffer, out uiDestPitchBYTES);
-        pSrcBuf = VeldridVideoManager.LockVideoSurface(pFace.uiAutoRestoreBuffer, out uiSrcPitchBYTES);
+        pDestBuf = video.LockVideoSurface(pFace.uiAutoDisplayBuffer, out uiDestPitchBYTES);
+        pSrcBuf = video.LockVideoSurface(pFace.uiAutoRestoreBuffer, out uiSrcPitchBYTES);
 
-        VeldridVideoManager.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+        video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
                     pSrcBuf, uiSrcPitchBYTES,
                     sDestLeft, sDestTop,
                     sSrcLeft, sSrcTop,
                     sWidth, sHeight);
 
-        VeldridVideoManager.UnLockVideoSurface(pFace.uiAutoDisplayBuffer);
-        VeldridVideoManager.UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
+        video.UnLockVideoSurface(pFace.uiAutoDisplayBuffer);
+        video.UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
 
         // Add rect to frame buffer queue
         if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
         {
-            VeldridVideoManager.InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, (sDestLeft + sWidth + 3), (sDestTop + sHeight + 2), 0);
+            video.InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, (sDestLeft + sWidth + 3), (sDestTop + sHeight + 2), 0);
         }
 
         return (true);

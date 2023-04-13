@@ -6,12 +6,20 @@ using System.Linq;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicMovement
 {
+    private static IFileManager files;
+
+    public StrategicMovement(IFileManager fileManager)
+    {
+        files = fileManager;
+    }
+
     //Player grouping functions
     //.........................
     //Creates a new player group, returning the unique ID of that group.  This is the first
@@ -1182,7 +1190,7 @@ public class StrategicMovement
                     // award exp...
                     // amount was originally based on getting 100-bLifeMax points for 12 hours of travel (720)
                     // but changed to flat rate since StatChange makes roll vs 100-lifemax as well!
-                    uiPoints = pGroup.uiTraverseTime / (450 / 100 - pSoldier.bLifeMax);
+                    uiPoints = pGroup.uiTraverseTime / (450 / 100 - (uint)pSoldier.bLifeMax);
                     if (uiPoints > 0)
                     {
                         Campaign.StatChange(pSoldier, Stat.HEALTHAMT, (int)uiPoints, 0);
@@ -1194,7 +1202,7 @@ public class StrategicMovement
                     uiCarriedPercent = ItemSubSystem.CalculateCarriedWeight(pSoldier);
                     if (uiCarriedPercent > 50)
                     {
-                        uiPoints = pGroup.uiTraverseTime / (450 / (100 - pSoldier.bStrength));
+                        uiPoints = pGroup.uiTraverseTime / (450 / (100 - (uint)pSoldier.bStrength));
                         Campaign.StatChange(pSoldier, Stat.STRAMT, (int)(uiPoints * (uiCarriedPercent - 50) / 100), 0);
                     }
                 }
@@ -3235,7 +3243,7 @@ public class StrategicMovement
 
 
         // Save the number of movement groups to the saved game file
-        FileManager.FileWrite(hFile, uiNumberOfGroups, sizeof(int), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiNumberOfGroups, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3249,7 +3257,7 @@ public class StrategicMovement
         while (pGroup is not null)
         {
             // Save each node in the LL
-//            FileManager.FileWrite(hFile, pGroup, sizeof(GROUP), &uiNumBytesWritten);
+//            files.FileWrite(hFile, pGroup, sizeof(GROUP), &uiNumBytesWritten);
 //            if (uiNumBytesWritten != sizeof(GROUP))
 //            {
 //                //Error Writing group node to disk
@@ -3288,7 +3296,7 @@ public class StrategicMovement
         }
 
         // Save the unique id mask
-        FileManager.FileWrite(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesWritten);
+        files.FileWrite(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * 8)
         {
             //Error Writing size of L.L. to disk
@@ -3325,7 +3333,7 @@ public class StrategicMovement
 
 
         //load the number of nodes in the list
-        //        FileManager.FileRead(hFile, uiNumberOfGroups, sizeof(int), out uiNumBytesRead);
+        //        files.FileRead(hFile, uiNumberOfGroups, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3347,7 +3355,7 @@ public class StrategicMovement
             //memset(pTemp, 0, sizeof(GROUP));
 
             //Read in the node
-            //            FileManager.FileRead(hFile, pTemp, sizeof(GROUP), &uiNumBytesRead);
+            //            files.FileRead(hFile, pTemp, sizeof(GROUP), &uiNumBytesRead);
             //            if (uiNumBytesRead != sizeof(GROUP))
             {
                 //Error Writing size of L.L. to disk
@@ -3396,7 +3404,7 @@ public class StrategicMovement
         }
 
         // Load the unique id mask
-        //        FileManager.FileRead(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesRead);
+        //        files.FileRead(hFile, uniqueIDMask, sizeof(int) * 8, out uiNumBytesRead);
 
         //@@@ TEMP!
         //Rebuild the uniqueIDMask as a very old bug broke the uniqueID assignments in extremely rare cases.
@@ -3463,7 +3471,7 @@ public class StrategicMovement
 //        }
 
         //Save the number of nodes in the list
-//        FileManager.FileWrite(hFile, ref uiNumberOfNodesInList, sizeof(int), out uiNumBytesWritten);
+//        files.FileWrite(hFile, ref uiNumberOfNodesInList, sizeof(int), out uiNumBytesWritten);
 //        if (uiNumBytesWritten != sizeof(int))
 //        {
 //            //Error Writing size of L.L. to disk
@@ -3477,7 +3485,7 @@ public class StrategicMovement
 //        {
 //            // Save the ubProfile ID for this node
 //            uiProfileID = pTemp.ubProfileID;
-//            FileManager.FileWrite(hFile, uiProfileID, sizeof(int), out uiNumBytesWritten);
+//            files.FileWrite(hFile, uiProfileID, sizeof(int), out uiNumBytesWritten);
 //            if (uiNumBytesWritten != sizeof(int))
 //            {
 //                //Error Writing size of L.L. to disk
@@ -3509,7 +3517,7 @@ public class StrategicMovement
         //	pHead = *pGroup.pPlayerList;
 
         // Load the number of nodes in the player list
-        FileManager.FileRead(hFile, ref uiNumberOfNodes, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref uiNumberOfNodes, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3529,7 +3537,7 @@ public class StrategicMovement
 
 
             // Load the ubProfile ID for this node
-            FileManager.FileRead(hFile, ref uiProfileID, sizeof(int), out uiNumBytesRead);
+            files.FileRead(hFile, ref uiProfileID, sizeof(int), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(int))
             {
                 //Error Writing size of L.L. to disk
@@ -3573,7 +3581,7 @@ public class StrategicMovement
         int uiNumBytesWritten = 0;
 
         //Save the enemy struct info to the saved game file
-//        FileManager.FileWrite(hFile, pGroup.pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesWritten);
+//        files.FileWrite(hFile, pGroup.pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesWritten);
 //        if (uiNumBytesWritten != sizeof(ENEMYGROUP))
 //        {
 //            //Error Writing size of L.L. to disk
@@ -3592,7 +3600,7 @@ public class StrategicMovement
         ENEMYGROUP pEnemyGroup;
 
         //Load the enemy struct
-//        FileManager.FileRead(hFile, ref pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesRead);
+//        files.FileRead(hFile, ref pEnemyGroup, sizeof(ENEMYGROUP), &uiNumBytesRead);
 //        if (uiNumBytesRead != sizeof(ENEMYGROUP))
 //        {
 //            //Error Writing size of L.L. to disk
@@ -3668,7 +3676,7 @@ public class StrategicMovement
         uiNumberOfWayPoints = pWayPoints.Count;
 
         //Save the number of waypoints
-        FileManager.FileWrite(hFile, uiNumberOfWayPoints, sizeof(int), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiNumberOfWayPoints, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3682,7 +3690,7 @@ public class StrategicMovement
             for (cnt = 0; cnt < uiNumberOfWayPoints; cnt++)
             {
                 //Save the waypoint node
-//                FileManager.FileWrite(hFile, pWayPoints, sizeof(WAYPOINT), &uiNumBytesWritten);
+//                files.FileWrite(hFile, pWayPoints, sizeof(WAYPOINT), &uiNumBytesWritten);
 //                if (uiNumBytesWritten != sizeof(WAYPOINT))
 //                {
 //                    //Error Writing size of L.L. to disk
@@ -3709,7 +3717,7 @@ public class StrategicMovement
 
 
         //Load the number of waypoints
-        FileManager.FileRead(hFile, ref uiNumberOfWayPoints, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref uiNumberOfWayPoints, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3732,7 +3740,7 @@ public class StrategicMovement
 //                memset(pTemp, 0, sizeof(WAYPOINT));
 //
 //                //Load the waypoint node
-//                FileManager.FileRead(hFile, pTemp, sizeof(WAYPOINT), &uiNumBytesRead);
+//                files.FileRead(hFile, pTemp, sizeof(WAYPOINT), &uiNumBytesRead);
 //                if (uiNumBytesRead != sizeof(WAYPOINT))
 //                {
 //                    //Error Writing size of L.L. to disk

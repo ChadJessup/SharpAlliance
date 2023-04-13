@@ -13,7 +13,7 @@ namespace SharpAlliance.Core.SubSystems;
 public class SoldierProfileSubSystem
 {
     private readonly ILogger<SoldierProfileSubSystem> logger;
-    private readonly IFileManager fileManager;
+    private static IFileManager files;
     private readonly DialogControl dialogs;
 
     private readonly TownReputations townReputations;
@@ -28,7 +28,7 @@ public class SoldierProfileSubSystem
         Cars carPortraits)
     {
         this.logger = logger;
-        this.fileManager = fileManager;
+        files = fileManager;
         this.rnd = Globals.Random;
         this.townReputations = townRep;
         this.cars = carPortraits;
@@ -86,7 +86,7 @@ public class SoldierProfileSubSystem
         int uiNumBytesRead;
 
 
-        fptr = FileManager.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
+        fptr = files.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
         //if (!fptr)
         //{
         //    this.logger.LogDebug(LoggingEventId.JA2, $"FAILED to LoadMercProfiles from file {pFileName}");
@@ -220,7 +220,7 @@ public class SoldierProfileSubSystem
 
         // SET SOME DEFAULT LOCATIONS FOR STARTING NPCS
 
-        FileManager.FileClose(fptr);
+        files.FileClose(fptr);
 
         // decide which terrorists are active
         this.DecideActiveTerrorists();
@@ -406,7 +406,7 @@ public class SoldierProfileSubSystem
         // replace profile in group
 //        ReplaceSoldierProfileInPlayerGroup(pSoldier.ubGroupID, ubSrcProfile, ubDestProfile);
 
-        pSoldier.bStrength = pNewProfile.bStrength + (uint)pNewProfile.bStrengthDelta;
+        pSoldier.bStrength = pNewProfile.bStrength + pNewProfile.bStrengthDelta;
         pSoldier.bDexterity = pNewProfile.bDexterity + pNewProfile.bDexterityDelta;
         pSoldier.bAgility = pNewProfile.bAgility + pNewProfile.bAgilityDelta;
         pSoldier.bWisdom = pNewProfile.bWisdom + pNewProfile.bWisdomDelta;

@@ -1,4 +1,9 @@
-﻿using System;
+﻿global using TIMECOUNTER = System.UInt32;
+global using PaletteRepID = System.String;
+global using static SharpAlliance.Core.Globals;
+global using SharpAlliance.Core.SubSystems;
+
+using System;
 using System.Collections.Generic;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
@@ -18,6 +23,8 @@ public partial class Globals
 {
     public const int MAX_AP_CARRIED = 5;      // APs carried from turn-to-turn
                                               // monster AP bonuses; expressed in 10ths (12 = 120% normal) 
+
+    public const string FILES_DAT_FILE = "TEMP\\files.dat";
 
     public const TileIndexes NUMBEROFTILES = TileIndexes.NUMBEROFTILES;
     public static bool gfTacticalTraversal = false;

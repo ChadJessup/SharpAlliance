@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
@@ -104,6 +105,11 @@ public struct QUOTE_SYSTEM_STRUCT
 
 public class CivQuotes
 {
+    private static IVideoManager video;
+    public CivQuotes(IVideoManager videoManager)
+    {
+        video = videoManager;
+    }
 
     void CopyNumEntriesIntoQuoteStruct()
     {
@@ -312,7 +318,7 @@ public class CivQuotes
         {
             MercTextBox.RenderMercPopUpBoxFromIndex(gCivQuoteData.iDialogueBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
 
-            VeldridVideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusCivQuoteBoxWidth, pBlitter.sY + gusCivQuoteBoxHeight);
+            video.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusCivQuoteBoxWidth, pBlitter.sY + gusCivQuoteBoxHeight);
         }
     }
 

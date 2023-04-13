@@ -47,15 +47,15 @@ public class TextUtils
 
     private string LoadShortNameItemInfo(ushort ubIndex)
     {
-        using var stream = FileManager.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
+        using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
 
         // Get current mercs bio info
         uint uiStartSeekAmount = (uint)((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
 
-        FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+        this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
 
         Span<byte> itemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
-        FileManager.FileRead(stream, itemNameBuffer, out _);
+        this.files.FileRead(stream, itemNameBuffer, out _);
 
         var shortItemName = TextUtils.ExtractString(itemNameBuffer);
 
@@ -64,20 +64,20 @@ public class TextUtils
 
     private (string itemName, string shortItemName, string itemDescription) LoadItemInfo(ushort ubIndex)
     {
-        using var stream = FileManager.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
+        using var stream = this.files.FileOpen(ITEMSTRINGFILENAME, FileAccess.Read, false);
 
         // Get current mercs bio info
         uint uiStartSeekAmount = (uint)((SIZE_SHORT_ITEM_NAME + SIZE_ITEM_NAME + SIZE_ITEM_INFO) * ubIndex);
 
-        FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+        this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
 
         Span<byte> shortItemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
-        FileManager.FileRead(stream, shortItemNameBuffer, out _);
+        this.files.FileRead(stream, shortItemNameBuffer, out _);
 
         var shortItemName = TextUtils.ExtractString(shortItemNameBuffer);
 
         Span<byte> itemNameBuffer = stackalloc byte[SIZE_ITEM_NAME];
-        FileManager.FileRead(stream, itemNameBuffer, out _);
+        this.files.FileRead(stream, itemNameBuffer, out _);
 
         var itemName = TextUtils.ExtractString(itemNameBuffer);
 
@@ -86,10 +86,10 @@ public class TextUtils
 
         // Get the additional info
 //            uiStartSeekAmount = (uint)((Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME + Text.SIZE_ITEM_INFO) * ubIndex) + Text.SIZE_ITEM_NAME + Text.SIZE_SHORT_ITEM_NAME;
-        FileManager.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
+        this.files.FileSeek(stream, ref uiStartSeekAmount, SeekOrigin.Begin);
 
         Span<byte> itemInfoBuffer = stackalloc byte[SIZE_ITEM_INFO];
-        FileManager.FileRead(stream, itemInfoBuffer, out _);
+        this.files.FileRead(stream, itemInfoBuffer, out _);
 
         var itemDescription = TextUtils.ExtractString(itemInfoBuffer);
 

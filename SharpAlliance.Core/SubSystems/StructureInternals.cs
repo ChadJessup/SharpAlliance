@@ -6,12 +6,19 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class StructureInternals
 {
+    private static IFileManager files;
+
+    public StructureInternals(IFileManager fileManager)
+    {
+        files = fileManager;
+    }
 
     // Function operating on a structure tile
     private static int FilledTilePositions(DB_STRUCTURE_TILE? pTile)
@@ -127,20 +134,20 @@ public class StructureInternals
 
         CHECKF(szFileName);
         CHECKF(pFileRef);
-        hInput = FileManager.FileOpen(szFileName, FileAccess.Read /*FILE_OPEN_EXISTING*/, false);
+        hInput = files.FileOpen(szFileName, FileAccess.Read /*FILE_OPEN_EXISTING*/, false);
         if (hInput.Length == -1)
         {
             return (false);
         }
 
         uint STRUCTURE_FILE_HEADER_SIZE = 16;
-        fOk = FileManager.FileRead<STRUCTURE_FILE_HEADER>(hInput, ref Header, sizeof(STRUCTURE_FILE_HEADER), out uiBytesRead);
+        fOk = files.FileRead<STRUCTURE_FILE_HEADER>(hInput, ref Header, sizeof(STRUCTURE_FILE_HEADER), out uiBytesRead);
         var szId = new string(Header.szId);
         if (!fOk || uiBytesRead != STRUCTURE_FILE_HEADER_SIZE
             || !szId.Equals(STRUCTURE_FILE_ID)
             || Header.usNumberOfStructures == 0)
         {
-            FileManager.FileClose(hInput);
+            files.FileClose(hInput);
             return (false);
         }
         pFileRef.usNumberOfStructures = Header.usNumberOfStructures;
@@ -148,22 +155,22 @@ public class StructureInternals
         {
             uiDataSize = sizeof(AuxObjectData) * Header.usNumberOfImages;
 
-            fOk = FileManager.FileRead<AuxObjectData>(hInput, ref pFileRef.pAuxData, uiDataSize, out uiBytesRead);
+            fOk = files.FileRead<AuxObjectData>(hInput, ref pFileRef.pAuxData, uiDataSize, out uiBytesRead);
             if (!fOk || uiBytesRead != uiDataSize)
             {
                 MemFree(pFileRef.pAuxData);
-                FileManager.FileClose(hInput);
+                files.FileClose(hInput);
                 return (false);
             }
             if (Header.usNumberOfImageTileLocsStored > 0)
             {
                 uiDataSize = sizeof(RelTileLoc) * Header.usNumberOfImageTileLocsStored;
 
-                fOk = FileManager.FileRead(hInput, ref pFileRef.pTileLocData, uiDataSize, out uiBytesRead);
+                fOk = files.FileRead(hInput, ref pFileRef.pTileLocData, uiDataSize, out uiBytesRead);
                 if (!fOk || uiBytesRead != uiDataSize)
                 {
                     MemFree(pFileRef.pAuxData);
-                    FileManager.FileClose(hInput);
+                    files.FileClose(hInput);
                     return (false);
                 }
             }
@@ -177,12 +184,12 @@ public class StructureInternals
             //pFileRef.pubStructureData = MemAlloc(uiDataSize);
             if (pFileRef.pubStructureData == null)
             {
-                FileManager.FileClose(hInput);
+                files.FileClose(hInput);
 
                 return (false);
             }
 
-            fOk = FileManager.FileRead(hInput, ref pFileRef.pubStructureData, uiDataSize, out uiBytesRead);
+            fOk = files.FileRead(hInput, ref pFileRef.pubStructureData, uiDataSize, out uiBytesRead);
             if (!fOk || uiBytesRead != uiDataSize)
             {
                 MemFree(pFileRef.pubStructureData);
@@ -194,14 +201,14 @@ public class StructureInternals
                 //         MemFree(pFileRef.pTileLocData);
                 //     }
                 // }
-                FileManager.FileClose(hInput);
+                files.FileClose(hInput);
                 return (false);
             }
 
             puiStructureDataSize = uiDataSize;
         }
 
-        FileManager.FileClose(hInput);
+        files.FileClose(hInput);
         return (true);
     }
 

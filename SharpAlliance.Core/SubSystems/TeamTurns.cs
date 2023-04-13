@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using SharpAlliance.Core.Managers;
-
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.IsometricUtils;
 
@@ -8,8 +8,15 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class TeamTurns
 {
-    int InterruptOnlyGuynum = Globals.NOBODY;
-    bool InterruptsAllowed = true;
+    private readonly IFileManager files;
+
+    private int InterruptOnlyGuynum = Globals.NOBODY;
+    private bool InterruptsAllowed = true;
+
+    public TeamTurns(IFileManager fileManager)
+    {
+        this.files = fileManager;
+    }
 
     public static void ClearIntList()
     {
@@ -1853,7 +1860,7 @@ public class TeamTurns
         int uiNumBytesWritten;
 
         //Save the gubTurn Order Array
-        FileManager.FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesWritten);
+        this.files.FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * MAXMERCS)
         {
             return (false);
@@ -1887,7 +1894,7 @@ public class TeamTurns
         TEAM_TURN_SAVE_STRUCT TeamTurnStruct = new();
 
         //Load the gubTurn Order Array
-        FileManager.FileRead(hFile, ref gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
+        this.files.FileRead(hFile, ref gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int) * MAXMERCS)
         {
             return (false);

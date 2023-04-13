@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using SharpAlliance.Core.Managers.Image;
 
-using TIMECOUNTER = System.UInt32;
-
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -26,14 +24,14 @@ public class SOLDIERTYPE
     public OBJECTTYPE? pTempObject;
     // KEY_ON_RING pKeyRing;
 
-    public uint bOldLife;          // life at end of last turn, recorded for monster AI
+    public int bOldLife;          // life at end of last turn, recorded for monster AI
                                    // attributes
     public bool bInSector { get; set; }
     public FLASH_PORTRAIT bFlashPortraitFrame;
     public int sFractLife;       // fraction of life pts (in hundreths)	
-    public uint bBleeding;     // blood loss control variable
-    public uint bBreath;           // current breath value
-    public uint bBreathMax;   // max breath, affected by fatigue/sleep
+    public int bBleeding;     // blood loss control variable
+    public int bBreath;           // current breath value
+    public int bBreathMax;   // max breath, affected by fatigue/sleep
     public bool bStealthMode { get; set; }
 
     public int sBreathRed;           // current breath value
@@ -132,7 +130,7 @@ public class SOLDIERTYPE
     public AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
 
     public bool IsAlive => bLife > 0;
-    public uint bLife;             // current life (hit points or health)
+    public int bLife;             // current life (hit points or health)
     public TEAM bSide;
     public int bViewRange;
     public int bNewOppCnt;
@@ -148,7 +146,7 @@ public class SOLDIERTYPE
     public int sDelayedMovementCauseGridNo;
     public int sReservedMovementGridNo;
 
-    public uint bStrength;
+    public int bStrength;
 
     // Weapon Stuff
     public bool fHoldAttackerUntilDone;
@@ -175,7 +173,7 @@ public class SOLDIERTYPE
     public bool fShowLocator;
     public FLASH_PORTRAIT fFlashPortrait;
     public int bMechanical;
-    public uint bLifeMax;          // maximum life for this merc
+    public int bLifeMax;          // maximum life for this merc
 
     public int iFaceIndex;
 

@@ -6,12 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicAI
 {
+    private static IFileManager files;
+    public StrategicAI(IFileManager fileManager) => files = fileManager;
     /*
     STRATEGIC AI -- UNDERLYING PHILOSOPHY
     The most fundamental part of the strategic AI which takes from reality and gives to gameplay is the manner
@@ -2160,133 +2163,133 @@ public class StrategicAI
         //memset(&gTempPatrolGroup, 0, sizeof(PATROL_GROUP));
         //memset(&gTempArmyComp, 0, sizeof(ARMY_COMPOSITION));
 
-        FileManager.FileWrite(hFile, gbPadding2, 3, out uiNumBytesWritten);
+        files.FileWrite(hFile, gbPadding2, 3, out uiNumBytesWritten);
         if (uiNumBytesWritten != 3)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gfExtraElites, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gfExtraElites, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giGarrisonArraySize, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giGarrisonArraySize, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giPatrolArraySize, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giPatrolArraySize, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giReinforcementPool, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giReinforcementPool, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giForcePercentage, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giForcePercentage, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giArmyAlertness, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giArmyAlertness, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giArmyAlertnessDecay, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giArmyAlertnessDecay, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gfQueenAIAwake, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gfQueenAIAwake, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giReinforcementPoints, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giReinforcementPoints, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, giRequestPoints, 4, out uiNumBytesWritten);
+        files.FileWrite(hFile, giRequestPoints, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gubNumAwareBattles, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gubNumAwareBattles, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gubSAIVersion, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gubSAIVersion, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gubQueenPriorityPhase, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gubQueenPriorityPhase, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gfFirstBattleMeanwhileScenePending, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gfFirstBattleMeanwhileScenePending, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gfMassFortificationOrdered, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gfMassFortificationOrdered, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gubMinEnemyGroupSize, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gubMinEnemyGroupSize, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gubHoursGracePeriod, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gubHoursGracePeriod, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gusPlayerBattleVictories, 2, out uiNumBytesWritten);
+        files.FileWrite(hFile, gusPlayerBattleVictories, 2, out uiNumBytesWritten);
         if (uiNumBytesWritten != 2)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gfUseAlternateQueenPosition, 1, out uiNumBytesWritten);
+        files.FileWrite(hFile, gfUseAlternateQueenPosition, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             return false;
         }
 
-        FileManager.FileWrite(hFile, gbPadding, SAI_PADDING_BYTES, out uiNumBytesWritten);
+        files.FileWrite(hFile, gbPadding, SAI_PADDING_BYTES, out uiNumBytesWritten);
         if (uiNumBytesWritten != SAI_PADDING_BYTES)
         {
             return false;
         }
         //Save the army composition (which does get modified)
-        //        FileManager.FileWrite(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), out uiNumBytesWritten);
+        //        files.FileWrite(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), out uiNumBytesWritten);
         //        if (uiNumBytesWritten != NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION))
         //        {
         //            return false;
@@ -2295,7 +2298,7 @@ public class StrategicAI
         i = SAVED_ARMY_COMPOSITIONS - NUM_ARMY_COMPOSITIONS;
         while (i-- > 0)
         {
-            //            FileManager.FileManager.FileWrite(hFile, gTempArmyComp, sizeof(ARMY_COMPOSITION), out uiNumBytesWritten);
+            //            files.files.FileWrite(hFile, gTempArmyComp, sizeof(ARMY_COMPOSITION), out uiNumBytesWritten);
             //            if (uiNumBytesWritten != sizeof(ARMY_COMPOSITION))
             //            {
             //                return false;
@@ -2303,7 +2306,7 @@ public class StrategicAI
         }
 
         //Save the patrol group definitions
-        //        FileManager.FileWrite(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), out uiNumBytesWritten);
+        //        files.FileWrite(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), out uiNumBytesWritten);
         //        if (uiNumBytesWritten != giPatrolArraySize * sizeof(PATROL_GROUP))
         //        {
         //            return false;
@@ -2312,7 +2315,7 @@ public class StrategicAI
         i = SAVED_PATROL_GROUPS - giPatrolArraySize;
         while (i-- > 0)
         {
-            //            FileManager.FileWrite(hFile, gTempPatrolGroup, sizeof(PATROL_GROUP), out uiNumBytesWritten);
+            //            files.FileWrite(hFile, gTempPatrolGroup, sizeof(PATROL_GROUP), out uiNumBytesWritten);
             //            if (uiNumBytesWritten != sizeof(PATROL_GROUP))
             //            {
             //                return false;
@@ -2320,7 +2323,7 @@ public class StrategicAI
         }
         //Save the garrison information!
         //memset(&gTempGarrisonGroup, 0, sizeof(GARRISON_GROUP));
-        //        FileManager.FileWrite(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), out uiNumBytesWritten);
+        //        files.FileWrite(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), out uiNumBytesWritten);
         //        if (uiNumBytesWritten != giGarrisonArraySize * sizeof(GARRISON_GROUP))
         //        {
         //            return false;
@@ -2329,20 +2332,20 @@ public class StrategicAI
         //        i = SAVED_GARRISON_GROUPS - giGarrisonArraySize;
         while (i-- > 0)
         {
-            //            FileManager.FileWrite(hFile, gTempGarrisonGroup, sizeof(GARRISON_GROUP), out uiNumBytesWritten);
+            //            files.FileWrite(hFile, gTempGarrisonGroup, sizeof(GARRISON_GROUP), out uiNumBytesWritten);
             //            if (uiNumBytesWritten != sizeof(GARRISON_GROUP))
             //            {
             //                return false;
             //            }
         }
 
-        FileManager.FileWrite(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, out uiNumBytesWritten);
+        files.FileWrite(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, out uiNumBytesWritten);
         if (uiNumBytesWritten != (int)giPatrolArraySize)
         {
             return false;
         }
 
-        //        FileManager.FileWrite(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, out uiNumBytesWritten);
+        //        files.FileWrite(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, out uiNumBytesWritten);
         //        if (uiNumBytesWritten != (int)giGarrisonArraySize)
         //        {
         //            return false;
@@ -2361,134 +2364,134 @@ public class StrategicAI
         int i;
         int ubSAIVersion = 0;
 
-        FileManager.FileRead(hFile, ref gbPadding2, 3, out uiNumBytesRead);
+        files.FileRead(hFile, ref gbPadding2, 3, out uiNumBytesRead);
         if (uiNumBytesRead != 3)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gfExtraElites, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gfExtraElites, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giGarrisonArraySize, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giGarrisonArraySize, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giPatrolArraySize, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giPatrolArraySize, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giReinforcementPool, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giReinforcementPool, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giForcePercentage, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giForcePercentage, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giArmyAlertness, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giArmyAlertness, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giArmyAlertnessDecay, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giArmyAlertnessDecay, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gfQueenAIAwake, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gfQueenAIAwake, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giReinforcementPoints, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giReinforcementPoints, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref giRequestPoints, 4, out uiNumBytesRead);
+        files.FileRead(hFile, ref giRequestPoints, 4, out uiNumBytesRead);
         if (uiNumBytesRead != 4)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gubNumAwareBattles, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gubNumAwareBattles, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref ubSAIVersion, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref ubSAIVersion, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gubQueenPriorityPhase, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gubQueenPriorityPhase, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        //        FileManager.FileRead(hFile, ref gfFirstBattleMeanwhileScenePending, 1, out uiNumBytesRead);
+        //        files.FileRead(hFile, ref gfFirstBattleMeanwhileScenePending, 1, out uiNumBytesRead);
         //        if (uiNumBytesRead != 1)
         //        {
         //            return false;
         //        }
 
-        FileManager.FileRead(hFile, ref gfMassFortificationOrdered, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gfMassFortificationOrdered, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gubMinEnemyGroupSize, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gubMinEnemyGroupSize, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gubHoursGracePeriod, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gubHoursGracePeriod, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gusPlayerBattleVictories, 2, out uiNumBytesRead);
+        files.FileRead(hFile, ref gusPlayerBattleVictories, 2, out uiNumBytesRead);
         if (uiNumBytesRead != 2)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gfUseAlternateQueenPosition, 1, out uiNumBytesRead);
+        files.FileRead(hFile, ref gfUseAlternateQueenPosition, 1, out uiNumBytesRead);
         if (uiNumBytesRead != 1)
         {
             return false;
         }
 
-        FileManager.FileRead(hFile, ref gbPadding, SAI_PADDING_BYTES, out uiNumBytesRead);
+        files.FileRead(hFile, ref gbPadding, SAI_PADDING_BYTES, out uiNumBytesRead);
         if (uiNumBytesRead != SAI_PADDING_BYTES)
         {
             return false;
         }
 
         //Restore the army composition 
-        //        FileManager.FileRead(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), out uiNumBytesRead);
+        //        files.FileRead(hFile, gArmyComp, NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION), out uiNumBytesRead);
         //        if (uiNumBytesRead != NUM_ARMY_COMPOSITIONS * sizeof(ARMY_COMPOSITION))
         //        {
         //            return false;
@@ -2497,7 +2500,7 @@ public class StrategicAI
         i = SAVED_ARMY_COMPOSITIONS - NUM_ARMY_COMPOSITIONS;
         //        while (i-- > 0)
         {
-            //            FileManager.FileRead(hFile, gTempArmyComp, sizeof(ARMY_COMPOSITION), out uiNumBytesRead);
+            //            files.FileRead(hFile, gTempArmyComp, sizeof(ARMY_COMPOSITION), out uiNumBytesRead);
             //            if (uiNumBytesRead != sizeof(ARMY_COMPOSITION))
             //            {
             //                return false;
@@ -2511,7 +2514,7 @@ public class StrategicAI
         //        }
 
         //        gPatrolGroup = (PATROL_GROUP?)MemAlloc(giPatrolArraySize * sizeof(PATROL_GROUP));
-        //        FileManager.FileRead(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), out uiNumBytesRead);
+        //        files.FileRead(hFile, gPatrolGroup, giPatrolArraySize * sizeof(PATROL_GROUP), out uiNumBytesRead);
         //
         //        if (uiNumBytesRead != giPatrolArraySize * sizeof(PATROL_GROUP))
         {
@@ -2521,7 +2524,7 @@ public class StrategicAI
         i = SAVED_PATROL_GROUPS - giPatrolArraySize;
         //        while (i-- > 0)
         //        {
-        //            //            FileManager.FileRead(hFile, gTempPatrolGroup, sizeof(PATROL_GROUP), out uiNumBytesRead);
+        //            //            files.FileRead(hFile, gTempPatrolGroup, sizeof(PATROL_GROUP), out uiNumBytesRead);
         //            //            if (uiNumBytesRead != sizeof(PATROL_GROUP))
         //            {
         //                return false;
@@ -2536,7 +2539,7 @@ public class StrategicAI
         }
 
         //        gGarrisonGroup = (GARRISON_GROUP?)MemAlloc(giGarrisonArraySize * sizeof(GARRISON_GROUP));
-        //        FileManager.FileRead(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesRead);
+        //        files.FileRead(hFile, gGarrisonGroup, giGarrisonArraySize * sizeof(GARRISON_GROUP), &uiNumBytesRead);
         //        if (uiNumBytesRead != giGarrisonArraySize * sizeof(GARRISON_GROUP))
         {
             //            return false;
@@ -2544,7 +2547,7 @@ public class StrategicAI
         //        i = SAVED_GARRISON_GROUPS - giGarrisonArraySize;
         //        while (i-- > 0)
         //        {
-        //            //            FileManager.FileRead(hFile, gTempGarrisonGroup, sizeof(GARRISON_GROUP), out uiNumBytesRead);
+        //            //            files.FileRead(hFile, gTempGarrisonGroup, sizeof(GARRISON_GROUP), out uiNumBytesRead);
         //            //            if (uiNumBytesRead != sizeof(GARRISON_GROUP))
         //            {
         //                return false;
@@ -2558,7 +2561,7 @@ public class StrategicAI
             gubPatrolReinforcementsDenied = null;
         }
         //        gubPatrolReinforcementsDenied = (int?)MemAlloc(giPatrolArraySize);
-        //        FileManager.FileRead(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, out uiNumBytesRead);
+        //        files.FileRead(hFile, gubPatrolReinforcementsDenied, giPatrolArraySize, out uiNumBytesRead);
         if (uiNumBytesRead != (int)giPatrolArraySize)
         {
             //            return false;
@@ -2571,7 +2574,7 @@ public class StrategicAI
             gubGarrisonReinforcementsDenied = null;
         }
         //        gubGarrisonReinforcementsDenied = (int?)MemAlloc(giGarrisonArraySize);
-        //        FileManager.FileRead(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, out uiNumBytesRead);
+        //        files.FileRead(hFile, gubGarrisonReinforcementsDenied, giGarrisonArraySize, out uiNumBytesRead);
         if (uiNumBytesRead != (int)giGarrisonArraySize)
         {
             return false;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
@@ -10,9 +11,9 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class RenderDirty
 {
-    public RenderDirty(GameContext context)
-    {
-    }
+    private static IVideoManager video;
+    public RenderDirty(IVideoManager videoManager) => video = videoManager;
+
     public void RestoreBackgroundRects()
     {
     }
@@ -119,12 +120,12 @@ public class RenderDirty
 
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
 
-        pDestBuf = VeldridVideoManager.LockVideoSurface(guiRENDERBUFFER, out uiDestPitchBYTES);
-        pSrcBuf = VeldridVideoManager.LockVideoSurface(guiSAVEBUFFER, out uiSrcPitchBYTES);
+        pDestBuf = video.LockVideoSurface(guiRENDERBUFFER, out uiDestPitchBYTES);
+        pSrcBuf = video.LockVideoSurface(guiSAVEBUFFER, out uiSrcPitchBYTES);
 
         if (gbPixelDepth == 16)
         {
-            VeldridVideoManager.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
                         pSrcBuf, uiSrcPitchBYTES,
                         sLeft, sTop,
                         sLeft, sTop,
@@ -132,18 +133,18 @@ public class RenderDirty
         }
         else if (gbPixelDepth == 8)
         {
-            VeldridVideoManager.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
+            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
                         pSrcBuf, uiSrcPitchBYTES,
                         sLeft, sTop,
                         sLeft, sTop,
                         sWidth, sHeight);
         }
 
-        VeldridVideoManager.UnLockVideoSurface(guiRENDERBUFFER);
-        VeldridVideoManager.UnLockVideoSurface(guiSAVEBUFFER);
+        video.UnLockVideoSurface(guiRENDERBUFFER);
+        video.UnLockVideoSurface(guiSAVEBUFFER);
 
         // Add rect to frame buffer queue
-        VeldridVideoManager.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
+        video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
 
         return (true);
     }
@@ -411,12 +412,12 @@ public class RenderDirty
 
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
 
-        pDestBuf = VeldridVideoManager.LockVideoSurface(Globals.guiRENDERBUFFER, out uiDestPitchBYTES);
-        pSrcBuf = VeldridVideoManager.LockVideoSurface(Globals.guiSAVEBUFFER, out uiSrcPitchBYTES);
+        pDestBuf = video.LockVideoSurface(Globals.guiRENDERBUFFER, out uiDestPitchBYTES);
+        pSrcBuf = video.LockVideoSurface(Globals.guiSAVEBUFFER, out uiSrcPitchBYTES);
 
         if (Globals.gbPixelDepth == 16)
         {
-            VeldridVideoManager.Blt16BPPTo16BPP(
+            video.Blt16BPPTo16BPP(
                 pDestBuf,
                 uiDestPitchBYTES,
                 pSrcBuf, uiSrcPitchBYTES,
@@ -426,18 +427,18 @@ public class RenderDirty
         }
         else if (Globals.gbPixelDepth == 8)
         {
-            VeldridVideoManager.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
+            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
                         pSrcBuf, uiSrcPitchBYTES,
                         sLeft, sTop,
                         sLeft, sTop,
                         sWidth, sHeight);
         }
 
-        VeldridVideoManager.UnLockVideoSurface(Globals.guiRENDERBUFFER);
-        VeldridVideoManager.UnLockVideoSurface(Globals.guiSAVEBUFFER);
+        video.UnLockVideoSurface(Globals.guiRENDERBUFFER);
+        video.UnLockVideoSurface(Globals.guiSAVEBUFFER);
 
         // Add rect to frame buffer queue
-        VeldridVideoManager.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
+        video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
 
         return (true);
     }

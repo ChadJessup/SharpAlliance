@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
-
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.IsometricUtils;
 
@@ -18,6 +18,9 @@ public partial class Globals
 
 public class ExplosionControl
 {
+    private static IFileManager files;
+    public ExplosionControl(IFileManager fileManager) => files = fileManager;
+
     public static int GetFreeExplosion()
     {
         int uiCount;
@@ -2979,20 +2982,20 @@ public class ExplosionControl
         //
 
         //Write the number of explosion queues
-        FileManager.FileWrite(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
+        files.FileWrite(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            FileManager.FileClose(hFile);
+            files.FileClose(hFile);
             return (false);
         }
 
         //loop through and add all the explosions
         for (uiCnt = 0; uiCnt < MAX_BOMB_QUEUE; uiCnt++)
         {
-            FileManager.FileWrite(hFile, gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesWritten);
+            files.FileWrite(hFile, gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(ExplosionQueueElement))
             {
-                FileManager.FileClose(hFile);
+                files.FileClose(hFile);
                 return (false);
             }
         }
@@ -3013,10 +3016,10 @@ public class ExplosionControl
         }
 
         //Save the number of explosions
-        FileManager.FileWrite(hFile, uiExplosionCount, sizeof(int), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiExplosionCount, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            FileManager.FileClose(hFile);
+            files.FileClose(hFile);
             return (false);
         }
 
@@ -3027,10 +3030,10 @@ public class ExplosionControl
         {
             if (gExplosionData[uiCnt].fAllocated)
             {
-                FileManager.FileWrite(hFile, gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesWritten);
+                files.FileWrite(hFile, gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesWritten);
                 if (uiNumBytesWritten != sizeof(EXPLOSIONTYPE))
                 {
-                    FileManager.FileClose(hFile);
+                    files.FileClose(hFile);
                     return (false);
                 }
             }
@@ -3052,7 +3055,7 @@ public class ExplosionControl
         //memset(gExplosionQueue, 0, sizeof(ExplosionQueueElement) * MAX_BOMB_QUEUE);
 
         //Read the number of explosions queue's
-        FileManager.FileRead(hFile, ref gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3061,7 +3064,7 @@ public class ExplosionControl
         //loop through read all the active explosions fro the file
         for (uiCnt = 0; uiCnt < MAX_BOMB_QUEUE; uiCnt++)
         {
-            FileManager.FileRead(hFile, ref gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesRead);
+            files.FileRead(hFile, ref gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(ExplosionQueueElement))
             {
                 return (false);
@@ -3073,7 +3076,7 @@ public class ExplosionControl
         //
 
         //Load the number of explosions
-        FileManager.FileRead(hFile, ref guiNumExplosions, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref guiNumExplosions, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3083,7 +3086,7 @@ public class ExplosionControl
         //loop through and load all the active explosions
         for (uiCnt = 0; uiCnt < guiNumExplosions; uiCnt++)
         {
-            FileManager.FileRead(hFile, ref gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesRead);
+            files.FileRead(hFile, ref gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(EXPLOSIONTYPE))
             {
                 return (false);

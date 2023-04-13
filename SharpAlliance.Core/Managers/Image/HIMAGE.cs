@@ -58,7 +58,7 @@ public class HIMAGE : IImageFormat
             _ => new PCXImageFileLoader(),
         };
 
-        if (!FileManager.FileExists(imageFilePath))
+        if (!fileManager.FileExists(imageFilePath))
         {
             throw new FileNotFoundException($"Unable to find asset, on disk or in library: {imageFilePath}");
         }
