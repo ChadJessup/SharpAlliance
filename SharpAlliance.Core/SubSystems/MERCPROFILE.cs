@@ -126,7 +126,7 @@ public class MERCPROFILESTRUCT
 
     public int ubInvUndroppable;
     public int[] ubRoomRangeStart = new int[2];
-    public Items[] inv = new Items[19];
+    public Dictionary<InventorySlot, Items> inv = new();// Items[19];
     public int[] bMercTownReputation = new int[20];
 
     public Dictionary<Stat, int> usStatChangeChances = new();     // used strictly for balancing, never shown!

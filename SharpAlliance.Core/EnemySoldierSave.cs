@@ -20,19 +20,19 @@ public partial class Globals
 public class EnemySoldierSave
 {
     private readonly ILogger<EnemySoldierSave> logger;
-    private readonly IFileManager files;
+    private static IFileManager files;
 
     public EnemySoldierSave(
         ILogger<EnemySoldierSave> logger,
         IFileManager fileManager)
     {
         this.logger = logger;
-        this.files = fileManager;
+        files = fileManager;
     }
 
     //If we are saving a game and we are in the sector, we will need to preserve the links between the 
     //soldiers and the soldier init list.  Otherwise, the temp file will be deleted.
-    public bool NewWayOfSavingEnemyAndCivliansToTempFile(
+    public static bool NewWayOfSavingEnemyAndCivliansToTempFile(
         int sSectorX,
         MAP_ROW sSectorY,
         int bSectorZ,
@@ -207,13 +207,13 @@ public class EnemySoldierSave
         }
 
         //Open the file for writing, Create it if it doesnt exist
-        hfile = this.files.FileOpen(zMapName, FileAccess.Write, false);
+        hfile = files.FileOpen(zMapName, FileAccess.Write, false);
         if (!hfile.CanWrite)
         {   //Error opening map modification file
             return false;
         }
 
-        this.files.FileWrite(hfile, sSectorY, 2, out uiNumBytesWritten);
+        files.FileWrite(hfile, sSectorY, 2, out uiNumBytesWritten);
         if (uiNumBytesWritten != 2)
         {
             goto FAIL_SAVE;
@@ -224,7 +224,7 @@ public class EnemySoldierSave
         //this works for both civs and enemies
 //        SaveSoldierInitListLinks(hfile);
 
-        this.files.FileWrite(hfile, sSectorX, 2, out uiNumBytesWritten);
+        files.FileWrite(hfile, sSectorX, 2, out uiNumBytesWritten);
         if (uiNumBytesWritten != 2)
         {
             goto FAIL_SAVE;
@@ -238,20 +238,20 @@ public class EnemySoldierSave
             slots = 0;
         }
 
-        this.files.FileWrite(hfile, slots, 4, out uiNumBytesWritten);
+        files.FileWrite(hfile, slots, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             goto FAIL_SAVE;
         }
 
         uiTimeStamp = GameClock.GetWorldTotalMin();
-        this.files.FileWrite(hfile, uiTimeStamp, 4, out uiNumBytesWritten);
+        files.FileWrite(hfile, uiTimeStamp, 4, out uiNumBytesWritten);
         if (uiNumBytesWritten != 4)
         {
             goto FAIL_SAVE;
         }
 
-        this.files.FileWrite(hfile, bSectorZ, 1, out uiNumBytesWritten);
+        files.FileWrite(hfile, bSectorZ, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             goto FAIL_SAVE;
@@ -262,7 +262,7 @@ public class EnemySoldierSave
             //if we are saving the game, we don't need to preserve the soldier information, just 
             //preserve the links to the placement list.
             slots = 0;
-            this.files.FileClose(hfile);
+            files.FileClose(hfile);
 
             if (fEnemy)
             {
@@ -290,7 +290,7 @@ public class EnemySoldierSave
                 if (curr is not null && curr.pSoldier == pSoldier && pSoldier.ubProfile == NO_PROFILE)
                 {
                     //found a match.  
-                    this.files.FileWrite(hfile, curr.pDetailedPlacement, Marshal.SizeOf<SOLDIERCREATE_STRUCT>(), out uiNumBytesWritten);
+                    files.FileWrite(hfile, curr.pDetailedPlacement, Marshal.SizeOf<SOLDIERCREATE_STRUCT>(), out uiNumBytesWritten);
                     if (uiNumBytesWritten != Marshal.SizeOf<SOLDIERCREATE_STRUCT>())
                     {
                         goto FAIL_SAVE;
@@ -321,7 +321,7 @@ public class EnemySoldierSave
                         curr.pDetailedPlacement.sInsertionGridNo * 1 +
                         3;
 
-                    this.files.FileWrite(hfile, usCheckSum, 2, out uiNumBytesWritten);
+                    files.FileWrite(hfile, usCheckSum, 2, out uiNumBytesWritten);
                     if (uiNumBytesWritten != 2)
                     {
                         goto FAIL_SAVE;
@@ -331,13 +331,13 @@ public class EnemySoldierSave
         }
 
         ubSectorID = SECTORINFO.SECTOR(sSectorX, sSectorY);
-        this.files.FileWrite(hfile, ubSectorID, 1, out uiNumBytesWritten);
+        files.FileWrite(hfile, ubSectorID, 1, out uiNumBytesWritten);
         if (uiNumBytesWritten != 1)
         {
             goto FAIL_SAVE;
         }
 
-        this.files.FileClose(hfile);
+        files.FileClose(hfile);
 
         if (fEnemy)
         {
@@ -351,11 +351,11 @@ public class EnemySoldierSave
         return true;
 
     FAIL_SAVE:
-        this.files.FileClose(hfile);
+        files.FileClose(hfile);
         return false;
     }
 
-    public void RemoveEnemySoldierTempFile(int sSectorX, MAP_ROW sSectorY, int bSectorZ)
+    public static void RemoveEnemySoldierTempFile(int sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
         string zMapName = string.Empty;// [128];
         if (TacticalSaveSubSystem.GetSectorFlagStatus(sSectorX, sSectorY, bSectorZ, SF.ENEMY_PRESERVED_TEMP_FILE_EXISTS))
@@ -370,11 +370,11 @@ public class EnemySoldierSave
             TacticalSaveSubSystem.GetMapTempFileName(SF.ENEMY_PRESERVED_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
 
             //Delete the temp file.
-            this.files.FileDelete(zMapName);
+            files.FileDelete(zMapName);
         }
     }
 
-    public void RemoveCivilianTempFile(int sSectorX, MAP_ROW sSectorY, int bSectorZ)
+    public static void RemoveCivilianTempFile(int sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
         //CHAR8		zTempName[ 128 ];
         string zMapName = string.Empty;// [128];
@@ -387,7 +387,7 @@ public class EnemySoldierSave
             TacticalSaveSubSystem.GetMapTempFileName(SF.CIV_PRESERVED_TEMP_FILE_EXISTS, zMapName, sSectorX, sSectorY, bSectorZ);
 
             //Delete the temp file.
-            this.files.FileDelete(zMapName);
+            files.FileDelete(zMapName);
         }
     }
 }

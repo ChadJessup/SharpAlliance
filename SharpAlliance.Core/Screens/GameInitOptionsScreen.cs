@@ -266,9 +266,9 @@ public class GameInitOptionsScreen : IScreen
         //REnder the screen once so we can blt ot to ths save buffer
         this.RenderGIOScreen();
 
-        VeldridVideoManager.BlitBufferToBuffer(0, 0, 639, 439);
+        video.BlitBufferToBuffer(0, 0, 639, 439);
 
-        //VeldridVideoManager.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 639, 439);
+        //video.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 639, 439);
 
         this.gfGIOButtonsAllocated = true;
 
@@ -346,11 +346,11 @@ public class GameInitOptionsScreen : IScreen
         int usPosY;
 
         //Get the main background screen graphic and blt it
-        HVOBJECT background = VeldridVideoManager.GetVideoObject(this.guiGIOMainBackGroundImageKey);
+        HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
         //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY, null);
-        VeldridVideoManager.BltVideoObject(background, 0, 0, 0, 0);
+        video.BltVideoObject(background, 0, 0, 0, 0);
         //Shade the background
-        // VeldridVideoManager.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358
+        // video.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358
 
 
         //Display the title

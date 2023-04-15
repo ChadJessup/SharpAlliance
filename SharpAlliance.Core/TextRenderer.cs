@@ -7,6 +7,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp.Drawing.Processing;
+using FontStyle = SixLabors.Fonts.FontStyle;
 
 namespace SharpAlliance.Core;
 

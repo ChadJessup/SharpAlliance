@@ -10,6 +10,11 @@ namespace SharpAlliance.Core;
 
 public class SoldierCreate
 {
+    internal static bool TacticalCreateSoldier(SOLDIERCREATE_STRUCT createStruct, out int ubId)
+    {
+        throw new NotImplementedException();
+    }
+
     internal void TacticalRemoveSoldier(int usSoldierIndex)
     {
         throw new NotImplementedException();

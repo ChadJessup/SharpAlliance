@@ -96,7 +96,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
     public async ValueTask<bool> Initialize(MouseSubSystem mouseSubSystem, IInputManager input)
     {
-        //video = (gameContext.Services.GetRequiredService<IVideoManager>() as VeldridVideoManager)!;
+        //video = (gameContext.Services.GetRequiredService<IVideoManager>() as video)!;
         mouse = mouseSubSystem;
         inputs = input;
 
@@ -534,15 +534,15 @@ public class ButtonSubSystem : ISharpAllianceManager
         {
             var color = Color.Black;
             //left (one thick)
-            VeldridVideoManager.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, color, image);
+            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, color, image);
             //top (one thick)
-            VeldridVideoManager.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1, color, image);
+            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1, color, image);
             //right (two thick)
-            VeldridVideoManager.LineDraw(b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Height + 1, color, image);
-            VeldridVideoManager.LineDraw(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
+            video.LineDraw(b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Height + 1, color, image);
+            video.LineDraw(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
             //bottom (two thick)
-            VeldridVideoManager.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height, color, image);
-            VeldridVideoManager.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
+            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height, color, image);
+            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
 
             VeldridVideoManager.InvalidateRegion(new Rectangle(
                 b.MouseRegion.Bounds.X - 1,
@@ -739,7 +739,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             IconY = NewClip.Y;
 
             // Get current clip area
-            VeldridVideoManager.GetClippingRect(out OldClip);
+            video.GetClippingRect(out OldClip);
 
             // Clip button's viewable area coords to screen
             if (NewClip.Y < OldClip.Y)
@@ -799,7 +799,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             }
             else
             {
-                hvObject = VeldridVideoManager.GetVideoObject(b.iIconID.ToString());
+                hvObject = video.GetVideoObject(b.iIconID.ToString());
                 pTrav = hvObject.pETRLEObject[b.usIconindex];
             }
 
@@ -835,19 +835,19 @@ public class ButtonSubSystem : ISharpAllianceManager
             }
 
             // Set the clipping rectangle to the viewable area of the button
-            VeldridVideoManager.SetClippingRect(ref NewClip);
+            video.SetClippingRect(ref NewClip);
             // Blit the icon
             if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_GENERIC))
             {
-                VeldridVideoManager.BltVideoObject(GenericButtonIcons[b.iIconID], b.usIconindex, (short)xp, (short)yp, b.iIconID);
+                video.BltVideoObject(GenericButtonIcons[b.iIconID], b.usIconindex, (short)xp, (short)yp, b.iIconID);
             }
             else
             {
-                VeldridVideoManager.BltVideoObject(hvObject, b.usIconindex, (short)xp, (short)yp, b.usIconindex);
+                video.BltVideoObject(hvObject, b.usIconindex, (short)xp, (short)yp, b.usIconindex);
             }
 
             // Restore previous clip region
-            VeldridVideoManager.SetClippingRect(ref OldClip);
+            video.SetClippingRect(ref OldClip);
         }
     }
 
@@ -922,7 +922,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
 
         // Display the button image
-        VeldridVideoManager.BltVideoObject(
+        video.BltVideoObject(
             b.ButtonPicture.vobj,
             (ushort)UseImage,
             b.Loc.X, b.Loc.Y,
@@ -1023,7 +1023,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         cy = b.Loc.Y + ((NumChunksHigh - 1) * iBorderHeight) + hremain;
 
         // Fill the button's area with the button's background color
-        VeldridVideoManager.ColorFillVideoSurfaceArea(
+        video.ColorFillVideoSurfaceArea(
             ButtonDestBuffer,
             b.MouseRegion.Bounds,
             GenericButtonFillColors[b.ButtonPicture]);
@@ -1040,7 +1040,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             }
 
             // Fill the area with the image, tilling it if need be.
-            VeldridVideoManager.ImageFillVideoSurfaceArea(
+            video.ImageFillVideoSurfaceArea(
                 // ButtonDestBuffer,
                 new Rectangle(
                     b.MouseRegion.Bounds.X + ox,
@@ -1053,7 +1053,7 @@ public class ButtonSubSystem : ISharpAllianceManager
                 GenericButtonOffsetY[b.ButtonPicture]);
         }
 
-        VeldridVideoManager.GetClippingRect(out ClipRect);
+        video.GetClippingRect(out ClipRect);
 
         // Draw the button's borders and corners (horizontally)
         for (q = 0; q < NumChunksWide; q++)
@@ -1279,7 +1279,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Display the button image
         if (b.ButtonPicture.vobj is not null)
         {
-            VeldridVideoManager.BltVideoObject(
+            video.BltVideoObject(
                 b.ButtonPicture.vobj,
                 (ushort)UseImage,
                 b.Loc.X,
@@ -2239,7 +2239,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         // If image slot isn't empty, delete the image
         if (buttonPic.vobj is not null)
         {
-            VeldridVideoManager.DeleteVideoObject(buttonPic.vobj);
+            video.DeleteVideoObject(buttonPic.vobj);
             buttonPic.vobj = null;
             ButtonPicsLoaded--;
         }

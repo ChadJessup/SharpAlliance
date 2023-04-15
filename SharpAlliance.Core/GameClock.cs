@@ -8,15 +8,23 @@ using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.EnglishText;
 using SharpAlliance.Core.Managers.VideoSurfaces;
+using SharpAlliance.Core.Interfaces;
 
 namespace SharpAlliance.Core;
 
 public class GameClock
 {
+    private static IVideoManager video;
+
     // is the clock pause region created currently?
     public static bool fClockMouseRegionCreated = false;
 
     bool fTimeCompressHasOccured = false;
+
+    public GameClock(IVideoManager videoManager)
+    {
+        video = videoManager;
+    }
 
     void InitNewGameClock()
     {

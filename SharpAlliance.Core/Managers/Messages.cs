@@ -6,6 +6,7 @@ using SharpAlliance.Core.SubSystems;
 
 using static SharpAlliance.Core.SubSystems.MessageSubSystem;
 using static SharpAlliance.Core.Globals;
+using SharpAlliance.Core.Interfaces;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -15,6 +16,10 @@ public class Messages
     private static bool fScrollMessagesHidden;
     private static bool fOkToBeepNewMessage;
     private static int usLineWidthIfWordIsWiderThenWidth = 0;
+
+    private static IVideoManager video;
+
+    public Messages(IVideoManager videoManager) => video = videoManager;
 
     public static void DisableScrollMessages()
     {
@@ -195,14 +200,14 @@ public class Messages
         }
 
 
-        pDestBuf = VeldridVideoManager.LockVideoSurface(pBlitter.uiDestBuff, out uiDestPitchBYTES);
+        pDestBuf = video.LockVideoSurface(pBlitter.uiDestBuff, out uiDestPitchBYTES);
         FontSubSystem.SetFont(pBlitter.uiFontID);
 
         FontSubSystem.SetFontBackground(pBlitter.ubFontBack);
         FontSubSystem.SetFontForeground(pBlitter.ubFontFore);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         //mprintf_buffer_coded(pDestBuf, uiDestPitchBYTES, pBlitter.uiFontID, pBlitter.sX, pBlitter.sY, pBlitter.zText);
-        VeldridVideoManager.UnLockVideoSurface(pBlitter.uiDestBuff);
+        video.UnLockVideoSurface(pBlitter.uiDestBuff);
 
     }
 

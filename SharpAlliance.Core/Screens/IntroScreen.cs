@@ -73,6 +73,7 @@ public class IntroScreen : IScreen
         this.library = libraryManager;
         this.cinematics = cinematics;
         this.soldiers = soldierSubSystem;
+        this.video = videoManager;
     }
 
     public bool IsInitialized { get; set; }
@@ -102,7 +103,7 @@ public class IntroScreen : IScreen
         this.HandleIntroScreen();
 
         this.renderDirty.ExecuteBaseDirtyRectQueue();
-        VeldridVideoManager.EndFrameBufferRender();
+        video.EndFrameBufferRender();
 
         if (Globals.gfIntroScreenExit)
         {
@@ -354,7 +355,7 @@ public class IntroScreen : IScreen
         //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
         var videoObject = this.video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
 
-        //VeldridVideoManager.BltVideoObject(
+        //video.BltVideoObject(
         //    0,
         //    videoObject,
         //    0,

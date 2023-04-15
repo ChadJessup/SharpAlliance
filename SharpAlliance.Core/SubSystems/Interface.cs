@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.Globals;
@@ -11,6 +12,10 @@ public class Interface
 {
     private static int iOverlayMessageBox = -1;
     private static int iUIMessageBox = -1;
+
+    private static IVideoManager video;
+
+    public Interface(IVideoManager videoManager) => video = videoManager;
 
     public static void BeginUIMessage(params string[] pFontString)
     {

@@ -8,6 +8,7 @@ using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Veldrid.Sdl2;
 
 namespace SharpAlliance.Core.Interfaces;
 
@@ -26,8 +27,8 @@ public interface IVideoManager : ISharpAllianceManager
     void DrawFrame();
     void RefreshScreen();
     void InvalidateScreen();
-    void InvalidateRegion(Rectangle bounds);
-    void InvalidateRegion(int v1, int v2, int v3, int v4);
+    static void InvalidateRegion(Rectangle bounds) => throw new NotImplementedException();
+    static void InvalidateRegion(int v1, int v2, int v3, int v4) => throw new NotImplementedException();
     void EndFrameBufferRender();
     HVOBJECT? AddVideoObject(string assetPath, out string key);
     HVOBJECT? GetVideoObject(string key);
@@ -76,7 +77,7 @@ public interface IVideoManager : ISharpAllianceManager
     void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
     ValueTask<bool> Initialize();
     Stream OpenEmbeddedAssetStream(string name);
-    byte[] ReadEmbeddedAssetBytes(string name);
+    static byte[] ReadEmbeddedAssetBytes(string name) => throw new NotImplementedException();
     bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette);
     void UnLockVideoSurface(Surfaces buffer);
     void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3);

@@ -22,10 +22,10 @@ public class SOLDIERTYPE
     public Dictionary<InventorySlot, OBJECTTYPE> inv = new();
 
     public OBJECTTYPE? pTempObject;
-    // KEY_ON_RING pKeyRing;
+    public KEY_ON_RING pKeyRing;
 
     public int bOldLife;          // life at end of last turn, recorded for monster AI
-                                   // attributes
+                                  // attributes
     public bool bInSector { get; set; }
     public FLASH_PORTRAIT bFlashPortraitFrame;
     public int sFractLife;       // fraction of life pts (in hundreths)	
@@ -191,10 +191,10 @@ public class SOLDIERTYPE
 
 
     public List<SGPPaletteEntry> p8BPPPalette = new(); // 4
-    public int p16BPPPalette;
+    public int? p16BPPPalette;
     public int[] pShades = new int[Globals.NUM_SOLDIER_SHADES]; // Shading tables
     public int[] pGlowShades = new int[20]; // 
-    public int pCurrentShade;
+    public int? pCurrentShade;
     public int bMedical;
     public int fBeginFade;
     public int ubFadeLevel;
@@ -233,10 +233,10 @@ public class SOLDIERTYPE
 
 
     // UNBLIT BACKGROUND
-    public int pBackGround;
-    public int pZBackground;
-    public int usUnblitX, usUnblitY;
-    public int usUnblitWidth, usUnblitHeight;
+    public int? pBackGround;
+    public int? pZBackground;
+    public int? usUnblitX, usUnblitY;
+    public int? usUnblitWidth, usUnblitHeight;
 
     public INSERTION_CODE ubStrategicInsertionCode;
     public int usStrategicInsertionData;
@@ -334,7 +334,7 @@ public class SOLDIERTYPE
     public int sLocatorOffY;
     public bool fStopPendingNextTile;
     public bool fForceShade;
-    public int pForcedShade;
+    public int? pForcedShade;
     public int bDisplayDamageCount;
     public int fDisplayDamage;
     public int sDamage;
@@ -399,7 +399,7 @@ public class SOLDIERTYPE
     public MAP_ROW sSectorY;                                 // Y position on the Stategic Map
     public int bSectorZ;                                  // Z sector location
     public int iVehicleId;                               // the id of the vehicle the char is in
-    public Path pMercPath;                                //Path Structure
+    public Path? pMercPath;                                //Path Structure
     public HIT_BY fHitByGasFlags;                       // flags 
     public int usMedicalDeposit;         // is there a medical deposit on merc 
     public CIV_GROUP usLifeInsurance;          // is there life insurance taken out on merc  
@@ -638,4 +638,10 @@ public enum GROUPFLAG
     JUST_RETREATED_FROM_BATTLE = 0x00000008,
     HIGH_POTENTIAL_FOR_AMBUSH = 0x00000010,
     GROUP_ARRIVED_SIMULTANEOUSLY = 0x00000020,
+}
+
+public struct KEY_ON_RING
+{
+    public int ubKeyID;
+    public int ubNumber;
 }

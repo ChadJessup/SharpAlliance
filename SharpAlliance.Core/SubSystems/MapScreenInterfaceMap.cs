@@ -29,7 +29,7 @@ public class MapScreenInterfaceMap
 
     public MapScreenInterfaceMap(IVideoManager videoManager)
     {
-        //VeldridVideoManager = videoManager;
+        video = videoManager;
     }
 
     public object guiUpdatePanelTactical { get; internal set; }
@@ -66,7 +66,7 @@ public class MapScreenInterfaceMap
 
     // list of map sectors that player isn't allowed to even highlight
     private bool[,] sBadSectorsList = new bool[Globals.WORLD_MAP_X, Globals.WORLD_MAP_X];
-    private readonly IVideoManager video;
+    private static IVideoManager video;
 
     public void SetUpBadSectorsList()
     {
@@ -122,20 +122,20 @@ public class MapScreenInterfaceMap
         // load image
         vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
         vs_desc.ImageFile = "INTERFACE\\b_map.pcx";
-        VeldridVideoManager.AddVideoSurface(out vs_desc, out uiTempMap);
+        video.AddVideoSurface(out vs_desc, out uiTempMap);
 
         // get video surface
-        VeldridVideoManager.GetVideoSurface(out hSrcVSurface, uiTempMap);
-        VeldridVideoManager.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
+        video.GetVideoSurface(out hSrcVSurface, uiTempMap);
+        video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
 
         // set up various palettes
-        this.pMapLTRedPalette = VeldridVideoManager.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapDKRedPalette = VeldridVideoManager.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapLTGreenPalette = VeldridVideoManager.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
-        this.pMapDKGreenPalette = VeldridVideoManager.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
+        this.pMapLTRedPalette = video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapDKRedPalette = video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapLTGreenPalette = video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
+        this.pMapDKGreenPalette = video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
 
         // delete image
-        VeldridVideoManager.DeleteVideoSurfaceFromIndex(uiTempMap);
+        video.DeleteVideoSurfaceFromIndex(uiTempMap);
     }
 
     public static bool DrawMap()
@@ -152,7 +152,7 @@ public class MapScreenInterfaceMap
         //{
         //    // pDestBuf = LockVideoSurface(Globals.guiSAVEBUFFER, out uiDestPitchBYTES);
 
-        //    if (!VeldridVideoManager.GetVideoSurface(out hSrcVSurface, Globals.guiBIGMAP))
+        //    if (!video.GetVideoSurface(out hSrcVSurface, Globals.guiBIGMAP))
         //    {
         //        return false;
         //    }
@@ -210,11 +210,11 @@ public class MapScreenInterfaceMap
         //            clip.Width = hSrcVSurface.usWidth;
         //        }
 
-        //        VeldridVideoManager.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + Globals.MAP_GRID_X, Globals.MAP_VIEW_START_Y + Globals.MAP_GRID_Y - 2, out clip);
+        //        video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + Globals.MAP_GRID_X, Globals.MAP_VIEW_START_Y + Globals.MAP_GRID_Y - 2, out clip);
         //    }
         //    else
         //    {
-        //        VeldridVideoManager.Blt8BPPDataTo16BPPBufferHalf(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + 1, Globals.MAP_VIEW_START_Y);
+        //        video.Blt8BPPDataTo16BPPBufferHalf(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, Globals.MAP_VIEW_START_X + 1, Globals.MAP_VIEW_START_Y);
         //    }
 
         //    //UnLockVideoSurface(Globals.guiBIGMAP);
@@ -431,7 +431,7 @@ public class MapScreenInterfaceMap
         }
 
         // get and blt border
-        VeldridVideoManager.GetVideoObject(out hHandle, Globals.guiMapBorder);
+        video.GetVideoObject(out hHandle, Globals.guiMapBorder);
         VideoObjectManager.BltVideoObject(
             Globals.guiSAVEBUFFER, 
             hHandle, 

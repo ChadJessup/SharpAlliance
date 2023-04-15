@@ -318,7 +318,7 @@ public class CivQuotes
         {
             MercTextBox.RenderMercPopUpBoxFromIndex(gCivQuoteData.iDialogueBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
 
-            video.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusCivQuoteBoxWidth, pBlitter.sY + gusCivQuoteBoxHeight);
+            VeldridVideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusCivQuoteBoxWidth, pBlitter.sY + gusCivQuoteBoxHeight);
         }
     }
 

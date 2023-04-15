@@ -229,11 +229,11 @@ public class PreferenceScreen : IScreen
             this.RenderOptionsScreen();
 
             //Blit the background to the save buffer
-            //VeldridVideoManager.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 640, 480);
+            //video.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 640, 480);
             VeldridVideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
-        VeldridVideoManager.RestoreBackgroundRects();
+        video.RestoreBackgroundRects();
 
         this.GetOptionsScreenUserInput();
 
@@ -255,10 +255,10 @@ public class PreferenceScreen : IScreen
         GuiManager.RenderButtons(this.buttonList);
 
         // ATE: Put here to save RECTS before any fast help being drawn...
-        VeldridVideoManager.SaveBackgroundRects();
+        video.SaveBackgroundRects();
         GuiManager.RenderButtonsFastHelp();
 
-        VeldridVideoManager.ExecuteBaseDirtyRectQueue();
+        video.ExecuteBaseDirtyRectQueue();
         // EndFrameBufferRender();
 
         if (this.gfOptionsScreenExit)
@@ -338,13 +338,13 @@ public class PreferenceScreen : IScreen
         int usWidth = 0;
 
         //Get and display the background image
-        hPixHandle = VeldridVideoManager.GetVideoObject(this.guiOptionBackGroundImageKey);
-        VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        hPixHandle = video.GetVideoObject(this.guiOptionBackGroundImageKey);
+        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
         //Get and display the titla image
-        hPixHandle = VeldridVideoManager.GetVideoObject(this.guiOptionsAddOnImagesKey);
-        VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
-        VeldridVideoManager.BltVideoObject(hPixHandle, 1, 0, 434, 0);
+        hPixHandle = video.GetVideoObject(this.guiOptionsAddOnImagesKey);
+        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        video.BltVideoObject(hPixHandle, 1, 0, 434, 0);
 
         //
         // Text for the toggle boxes

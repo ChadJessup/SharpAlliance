@@ -148,7 +148,7 @@ public class MessageBoxScreen : IScreen
         // Render buttons
         ButtonSubSystem.RenderButtons();
 
-        VeldridVideoManager.EndFrameBufferRender();
+        video.EndFrameBufferRender();
 
         // carter, need key shortcuts for clearing up message boxes
         // Check for esc 
@@ -361,17 +361,17 @@ public class MessageBoxScreen : IScreen
         if (((gMsgBox.uiExitScreen != ScreenName.GAME_SCREEN) || (fRestoreBackgroundForMessageBox == true)) && gfDontOverRideSaveBuffer)
         {
             // restore what we have under here...
-            pSrcBuf =  VeldridVideoManager.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
-            pDestBuf = VeldridVideoManager.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+            pSrcBuf =  video.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
+            pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
 
-            VeldridVideoManager.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
                         pSrcBuf, uiSrcPitchBYTES,
                         gMsgBox.sX, gMsgBox.sY,
                         0, 0,
                         gMsgBox.usWidth, gMsgBox.usHeight);
 
-            VeldridVideoManager.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
-            VeldridVideoManager.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
+            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
             VeldridVideoManager.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
         }
@@ -399,7 +399,7 @@ public class MessageBoxScreen : IScreen
         MouseSubSystem.MSYS_RemoveRegion((gMsgBox.BackRegion));
 
         // Remove save buffer!
-        VeldridVideoManager.DeleteVideoSurfaceFromIndex(gMsgBox.uiSaveBuffer);
+        video.DeleteVideoSurfaceFromIndex(gMsgBox.uiSaveBuffer);
 
         switch (gMsgBox.uiExitScreen)
         {

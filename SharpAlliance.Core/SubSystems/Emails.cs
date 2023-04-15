@@ -6,6 +6,7 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using System.Diagnostics;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -41,8 +42,9 @@ public class Emails
 
     int iTotalHeight = 0;
 
-    public Emails(IVideoManager videoManager)
+    public Emails(IVideoManager videoManager, IFileManager fileManager)
     {
+        this.files = fileManager;
         this.video = videoManager;
     }
 
@@ -326,13 +328,13 @@ public class Emails
         int iCounter = 0;
 
         // get and blt the email list background
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailBackground);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiEmailBackground);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, EMAIL_LIST_WINDOW_Y + LAPTOP_SCREEN_UL_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // get and blt the email title bar
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailTitle);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiEmailTitle);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // show text on titlebar
         DisplayTextOnTitleBar();
@@ -354,8 +356,8 @@ public class Emails
         DisplayEmailHeaders();
 
         // display border
-        hHandle = VeldridVideoManager.GetVideoObject(guiLaptopBACKGROUND);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiLaptopBACKGROUND);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, 108, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
         ReDisplayBoxes();
@@ -385,7 +387,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-        FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
         //Make a fake email that will contain the codes ( ie the merc ID )
         FakeEmail.iFirstData = iFirstData;
@@ -419,7 +421,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-        FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
         // add message to list
         AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, false, 0, 0);
@@ -446,7 +448,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-        FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, 640 * (iMessageOffset), 640);
 
         // add message to list
         AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, true, 0, 0);
@@ -1113,16 +1115,16 @@ public class Emails
         // will draw the icon for letter in mail list depending if the mail has been read or not
 
         // grab video object
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailIndicator);
+        hHandle = video.GetVideoObject(guiEmailIndicator);
 
         // is it read or not?
         if (fRead)
         {
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
         }
         else
         {
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, INDIC_X, (MIDDLE_Y + iCounter * MIDDLE_WIDTH + 2), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         return;
@@ -1572,25 +1574,25 @@ public class Emails
 
         // blt in top line of message as a blank graphic
         // get a handle to the bitmap of EMAIL VIEWER Background
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailMessage);
+        hHandle = video.GetVideoObject(guiEmailMessage);
 
         // place the graphic on the frame buffer
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, VIEWER_MESSAGE_BODY_START_Y + FontSubSystem.GetFontHeight(MESSAGE_FONT) + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
         // set shadow
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // get a handle to the bitmap of EMAIL VIEWER
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailMessage);
+        hHandle = video.GetVideoObject(guiEmailMessage);
 
         // place the graphic on the frame buffer
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X, VIEWER_Y + iViewerPositionY, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the icon for the title of this box
-        hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X + 5, VIEWER_Y + iViewerPositionY + 2, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiTITLEBARICONS);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, VIEWER_X + 5, VIEWER_Y + iViewerPositionY + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // display header text
         DisplayEmailMessageSubjectDateFromLines(pMail, iViewerPositionY);
@@ -1605,26 +1607,26 @@ public class Emails
         for (iCounter = 2; iCounter < ((iTotalHeight) / (FontSubSystem.GetFontHeight(MESSAGE_FONT))); iCounter++)
         {
             // get a handle to the bitmap of EMAIL VIEWER Background
-            hHandle = VeldridVideoManager.GetVideoObject(guiEmailMessage);
+            hHandle = video.GetVideoObject(guiEmailMessage);
 
             // place the graphic on the frame buffer
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
 
         }
 
 
         // now the bottom piece to the message viewer
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailMessage);
+        hHandle = video.GetVideoObject(guiEmailMessage);
 
         if (giNumberOfPagesToCurrentEmail <= 2)
         {
             // place the graphic on the frame buffer
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
         }
         else
         {
             // place the graphic on the frame buffer
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
+            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, VIEWER_X, iViewerPositionY + VIEWER_MESSAGE_BODY_START_Y + ((FontSubSystem.GetFontHeight(MESSAGE_FONT)) * (iCounter)), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         // reset iCounter and iHeight
@@ -1957,13 +1959,13 @@ public class Emails
         //if( ( fNewMailFlag ) && ( fOldNewMailFlag ) )
         //	return ( false );
 
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailWarning);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiEmailWarning);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // the icon for the title of this box
-        hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiTITLEBARICONS);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // font stuff 
         FontSubSystem.SetFont(EMAIL_HEADER_FONT);
@@ -2353,6 +2355,7 @@ public class Emails
     private bool fReDrawNewMailFlag;
     private bool fFirstTime;
     private readonly IVideoManager video;
+    private readonly IFileManager files;
 
     void CreateDestroyDeleteNoticeMailButton()
     {
@@ -2431,8 +2434,8 @@ public class Emails
 
         // load graphics
 
-        hHandle = VeldridVideoManager.GetVideoObject(guiEmailWarning);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiEmailWarning);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X, EMAIL_WARNING_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // font stuff 
@@ -2442,8 +2445,8 @@ public class Emails
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         // the icon for the title of this box
-        hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
+        hHandle = video.GetVideoObject(guiTITLEBARICONS);
+        video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, EMAIL_WARNING_X + 5, EMAIL_WARNING_Y + 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // title 
         //        mprintf(EMAIL_WARNING_X + 30, EMAIL_WARNING_Y + 8, pEmailTitleText[0]);
@@ -2844,8 +2847,8 @@ public class Emails
 
         for (iCounter = 1; iCounter < 19; iCounter++)
         {
-            hHandle = VeldridVideoManager.GetVideoObject(guiMAILDIVIDER);
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT.SRCTRANSPARENCY, null);
+            hHandle = video.GetVideoObject(guiMAILDIVIDER);
+            video.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, INDIC_X - 10, (MIDDLE_Y + iCounter * MIDDLE_WIDTH - 1), VO_BLT.SRCTRANSPARENCY, null);
         }
 
 
@@ -3076,7 +3079,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // have to place players name into string for first record
                 if (iCounter == 0)
@@ -3102,7 +3105,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3144,12 +3147,12 @@ public class Emails
             // personality tick
             //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
             //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_PERSONALITY_LENGTH - 1 ) + 1 ), MAIL_STRING_SIZE );
-            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + 1)), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + 1)), MAIL_STRING_SIZE);
             // add to list
             AddEmailRecordToList(pString);
 
             // persoanlity paragraph
-            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH)), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH)), MAIL_STRING_SIZE);
             // add to list
             AddEmailRecordToList(pString);
 
@@ -3157,7 +3160,7 @@ public class Emails
             if (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bPersonalityTrait == PersonalityTrait.FEAR_OF_INSECTS)
             {
                 // persoanlity paragraph
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH + 1)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + IMP_PERSONALITY_LENGTH + 1)), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
             }
@@ -3171,7 +3174,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet + iCounter)), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3215,7 +3218,7 @@ public class Emails
             }
 
             // attitude title
-            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet), MAIL_STRING_SIZE);
             // add to list
             AddEmailRecordToList(pString);
 
@@ -3223,12 +3226,12 @@ public class Emails
             // attitude tick
             //  DEF: removed 1/12/99, cause it was changing the length of email that were already calculated
             //		LoadEncryptedDataFromFile( "BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * ( iOffSet + Globals.Random.Next( IMP_ATTITUDE_LENGTH - 2 ) + 1 ), MAIL_STRING_SIZE );
-            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + 1), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + 1), MAIL_STRING_SIZE);
             // add to list
             AddEmailRecordToList(pString);
 
             // attitude paragraph
-            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH - 1), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH - 1), MAIL_STRING_SIZE);
             // add to list
             AddEmailRecordToList(pString);
 
@@ -3236,7 +3239,7 @@ public class Emails
             if (iOffSet != IMP_ATTITUDE_NORMAL)
             {
                 // attitude paragraph
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + IMP_ATTITUDE_LENGTH), MAIL_STRING_SIZE);
                 // add to list
                 AddEmailRecordToList(pString);
             }
@@ -3251,7 +3254,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3295,7 +3298,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3308,7 +3311,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MARK), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MARK), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3318,7 +3321,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MED), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MED), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3327,7 +3330,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MECH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MECH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3337,7 +3340,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_EXPL), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_EXPL), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3383,7 +3386,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3395,7 +3398,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MARK), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MARK), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3404,7 +3407,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MED), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MED), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3413,7 +3416,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MECH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MECH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3422,7 +3425,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_EXPL), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_EXPL), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3467,7 +3470,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3479,7 +3482,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MECH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MECH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3488,7 +3491,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MARK), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MARK), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3497,7 +3500,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MED), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MED), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3505,7 +3508,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_EXPL), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_EXPL), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3520,7 +3523,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3532,7 +3535,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.KNIFING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.KNIFING))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_KNIFE), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_KNIFE), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3542,7 +3545,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.LOCKPICKING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.LOCKPICKING))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_LOCK), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_LOCK), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3552,7 +3555,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HANDTOHAND) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HANDTOHAND))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HAND), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HAND), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3562,7 +3565,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.ELECTRONICS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.ELECTRONICS))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_ELEC), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_ELEC), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3571,7 +3574,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.NIGHTOPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.NIGHTOPS))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_NIGHT), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_NIGHT), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3580,7 +3583,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THROWING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THROWING))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THROW), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THROW), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3589,7 +3592,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.TEACHING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.TEACHING))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_TEACH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_TEACH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3598,7 +3601,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HEAVY_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HEAVY_WEAPS))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HEAVY), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HEAVY), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3607,7 +3610,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AUTO_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AUTO_WEAPS))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AUTO), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AUTO), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3616,7 +3619,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.STEALTHY) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.STEALTHY))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_STEALTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_STEALTH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3625,7 +3628,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AMBIDEXT) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AMBIDEXT))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AMBI), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AMBI), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3634,7 +3637,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THIEF) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THIEF))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THIEF), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THIEF), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3643,7 +3646,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.MARTIALARTS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.MARTIALARTS))
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_MARTIAL), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_MARTIAL), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3659,7 +3662,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3719,7 +3722,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3731,7 +3734,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_HEALTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_HEALTH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3741,7 +3744,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_DEXTERITY), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_DEXTERITY), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3750,7 +3753,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_STRENGTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_STRENGTH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3759,7 +3762,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_AGILITY), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_AGILITY), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3768,7 +3771,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_WISDOM), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_WISDOM), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3777,7 +3780,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_LEADERSHIP), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_LEADERSHIP), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3841,7 +3844,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3853,7 +3856,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_HEALTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_HEALTH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3863,7 +3866,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_DEXTERITY), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_DEXTERITY), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3872,7 +3875,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_STRENGTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_STRENGTH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3883,7 +3886,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_AGILITY), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_AGILITY), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3892,7 +3895,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_WISDOM), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_WISDOM), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3901,7 +3904,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_LEADERSHIP), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_LEADERSHIP), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3965,7 +3968,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3977,7 +3980,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_HEALTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_HEALTH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3988,7 +3991,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_DEXTERITY), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_DEXTERITY), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -3997,7 +4000,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_STRENGTH), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_STRENGTH), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4008,7 +4011,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_AGILITY), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_AGILITY), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4019,7 +4022,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_WISDOM), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_WISDOM), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4035,7 +4038,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_LEADERSHIP), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_LEADERSHIP), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4049,7 +4052,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4113,7 +4116,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4129,7 +4132,7 @@ public class Emails
             while (iEndOfSection > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4464,7 +4467,7 @@ public class Emails
             while (pMail.usLength > iCounter)
             {
                 // read one record from email file
-                FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
+                files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * (iOffSet + iCounter), MAIL_STRING_SIZE);
 
                 // add to list
                 AddEmailRecordToList(pString);
@@ -4689,7 +4692,7 @@ public class Emails
         for (ubCnt = 0; ubCnt < ubNumberOfRecords; ubCnt++)
         {
             // read one record from email file
-            FileManager.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * usMessageId, MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, MAIL_STRING_SIZE * usMessageId, MAIL_STRING_SIZE);
 
             //Replace the $MERCNAME$ and $AMOUNT$ with the mercs name and the amountm if the string contains the keywords.
             ReplaceMercNameAndAmountWithProperData(pString, pMail);
@@ -4869,7 +4872,7 @@ public class RecordPtr
 
 public class email
 {
-    public string? pSubject;
+    public string pSubject;
     public int usOffset;
     public int usLength;
     public EmailAddresses ubSender;

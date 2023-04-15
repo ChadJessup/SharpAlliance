@@ -26,7 +26,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //        public const int DEFAULT_NUM_REGIONS = 5;
 
     //        private readonly ILogger<VideoSurfaceManager> logger;
-    //        private readonly VeldridVideoManager video;
+            private readonly IVideoManager video;
 
     //        private VSURFACE_NODE? gpVSurfaceHead = null;
     //        private VSURFACE_NODE? gpVSurfaceTail = null;
@@ -46,7 +46,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //        {
     //            this.logger = logger;
 
-    //            VeldridVideoManager = (videoManager as VeldridVideoManager)!;
+    //            video = (videoManager as video)!;
 
     //            this.IsInitialized = this.Initialize().AsTask().Result;
     //        }
@@ -80,7 +80,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //            //
     //            // Get Primary surface
     //            //
-    //            //pSurface = VeldridVideoManager.GetPrimarySurfaceObject();
+    //            //pSurface = video.GetPrimarySurfaceObject();
     //            // CHECKF(pSurface != null);
 
     //            //ghPrimary = CreateVideoSurfaceFromDDSurface(pSurface);
@@ -208,7 +208,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
 
     ////                ETRLEData TempETRLEData = new();
     ////                // Get TRLE data
-    ////                VeldridVideoManager.GetETRLEImageData(hImage, ref TempETRLEData);
+    ////                video.GetETRLEImageData(hImage, ref TempETRLEData);
     ////
     ////                // Set values
     ////                //hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
@@ -222,7 +222,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     ////                    hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
     ////                    hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
     ////
-    ////                    VeldridVideoManager.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+    ////                    video.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
     ////                }
 
     //                hImage = tmpHIMAGE;
@@ -243,7 +243,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
 
     //            hVSurface.usHeight = usHeight;
     //            hVSurface.usWidth = usWidth;
-    //            hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false).CreateDeviceTexture(VeldridVideoManager.GraphicDevice, VeldridVideoManager.GraphicDevice.ResourceFactory);
+    //            hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false).CreateDeviceTexture(video.GraphicDevice, video.GraphicDevice.ResourceFactory);
     //            hVSurface.TransparentColor = 0;// FROMRGB(0, 0, 0);
     //            hVSurface.RegionList = new List<VSurfaceRegion>(DEFAULT_NUM_REGIONS);
 
@@ -311,12 +311,12 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //            {
     //                hVSurface.Texture = new ImageSharpTexture(hImage.ParsedImages[0], mipmap: false)
     //                    .CreateDeviceTexture(
-    //                        VeldridVideoManager.GraphicDevice,
-    //                        VeldridVideoManager.GraphicDevice.ResourceFactory);
+    //                        video.GraphicDevice,
+    //                        video.GraphicDevice.ResourceFactory);
     //            }
     //            else
     //            {
-    //                VeldridVideoManager.GraphicDevice.UpdateTexture<Rgba32>(
+    //                video.GraphicDevice.UpdateTexture<Rgba32>(
     //                    hVSurface.Texture,
     //                    pixelSpan.ToArray(),
     //                    (uint)usX,
@@ -360,12 +360,12 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         HVSURFACE hDestVSurface;
         HVSURFACE hSrcVSurface;
 
-        if (!VeldridVideoManager.GetVideoSurface(out hDestVSurface, uiDestVSurface))
+        if (!video.GetVideoSurface(out hDestVSurface, uiDestVSurface))
         {
             return false;
         }
 
-        if (!VeldridVideoManager.GetVideoSurface(out hSrcVSurface, uiSrcVSurface))
+        if (!video.GetVideoSurface(out hSrcVSurface, uiSrcVSurface))
         {
             return false;
         }

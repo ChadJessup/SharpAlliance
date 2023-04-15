@@ -23,7 +23,7 @@ public partial class Globals
 public class DialogControl
 {
     private readonly SoldierProfileSubSystem soldiers;
-    private readonly IFileManager fileManager;
+    private readonly IFileManager files;
     private readonly QuestEngine quests;
     private readonly InterfaceDialogSubSystem interfaceDialog;
     private readonly Faces faces;
@@ -36,7 +36,7 @@ public class DialogControl
         Faces faces)
     {
         this.soldiers = soldiers;
-        this.fileManager = fileManager;
+        this.files = fileManager;
         this.quests = questEngine;
         this.interfaceDialog = interfaceDialogSubSystem;
         this.faces = faces;
@@ -267,7 +267,7 @@ public class DialogControl
 
         ppStr = pFilename;
 
-        return FileManager.FileExists(pFilename);
+        return files.FileExists(pFilename);
     }
 
     private string GetDialogueDataFilename(NPCID ubCharacterNum, int usQuoteNum, bool fWavFile)

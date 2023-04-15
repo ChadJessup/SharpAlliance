@@ -10,7 +10,7 @@ public class Points
     public static void DeductPoints(SOLDIERTYPE? pSoldier, int sAPCost, int sBPCost)
     {
         int  sNewAP = 0, sNewBP = 0;
-        uint bNewBreath;
+        int bNewBreath;
 
         // in real time, there IS no AP cost, (only breath cost)
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
@@ -49,7 +49,7 @@ public class Points
         if (sBPCost > 0)
         {
             // Adjust breath changes due to spending or regaining of energy
-            sBPCost = (int)AdjustBreathPts(pSoldier, (uint)sBPCost);
+            sBPCost = (int)AdjustBreathPts(pSoldier, sBPCost);
             sBPCost *= -1;
 
             pSoldier.sBreathRed -= sBPCost;
@@ -67,7 +67,7 @@ public class Points
             }
 
             // Get new breath
-            bNewBreath = (pSoldier.bBreathMax - (uint)(pSoldier.sBreathRed / 100));
+            bNewBreath = (pSoldier.bBreathMax - (pSoldier.sBreathRed / 100));
 
             if (bNewBreath > 100)
             {
@@ -97,10 +97,10 @@ public class Points
 
     }
 
-    public static uint AdjustBreathPts(SOLDIERTYPE? pSold, uint sBPCost)
+    public static int AdjustBreathPts(SOLDIERTYPE? pSold, int sBPCost)
     {
-        uint sBreathFactor = 100;
-        uint ubBandaged;
+        int sBreathFactor = 100;
+        int ubBandaged;
 
         //NumMessage("BEFORE adjustments, BREATH PTS = ",breathPts);
 

@@ -182,7 +182,7 @@ public class CreditsScreen : IScreen
 
         //Get the current Credit record
         uiStartLoc = CREDITS_LINESIZE * (uint)Globals.guiCurrentCreditRecord;
-        if (!FileManager.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out zOriginalString, uiStartLoc, CREDITS_LINESIZE))
+        if (!files.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out zOriginalString, uiStartLoc, CREDITS_LINESIZE))
         {
             //there are no more credits
             return false;
@@ -529,13 +529,13 @@ public class CreditsScreen : IScreen
                 ubBitDepth = 16
             };
 
-            if (VeldridVideoManager.AddVideoSurface(out vs_desc, out pNodeToAdd.uiVideoSurfaceImage) == 0)
+            if (video.AddVideoSurface(out vs_desc, out pNodeToAdd.uiVideoSurfaceImage) == 0)
             {
                 return false;
             }
 
             //Set transparency
-            VeldridVideoManager.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, 0);
+            video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, 0);
 
             //fill the surface with a transparent color
 
@@ -637,8 +637,8 @@ public class CreditsScreen : IScreen
 
     private void RenderCreditScreen()
     {
-        HVOBJECT hPixHandle = VeldridVideoManager.GetVideoObject(Globals.guiCreditBackGroundImageKey);
-        VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        HVOBJECT hPixHandle = video.GetVideoObject(Globals.guiCreditBackGroundImageKey);
+        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
         /*
             HVSURFACE hVSurface;
 
@@ -650,7 +650,7 @@ public class CreditsScreen : IScreen
             Globals.gfCrdtHaveRenderedFirstFrameToSaveBuffer = true;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-            VeldridVideoManager.BlitBufferToBuffer(0, 0, 640, 480);
+            video.BlitBufferToBuffer(0, 0, 640, 480);
 
             ButtonSubSystem.UnmarkButtonsDirty();
         }

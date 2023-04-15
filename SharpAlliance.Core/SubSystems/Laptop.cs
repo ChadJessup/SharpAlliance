@@ -108,11 +108,11 @@ public class Laptop
             return;
         }
 
-        VeldridVideoManager.GetVideoObject(out hLapTopHandle, guiLAPTOP);
+        video.GetVideoObject(out hLapTopHandle, guiLAPTOP);
         VideoObjectManager. BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
-        hLapTopHandle = VeldridVideoManager.GetVideoObject(guiLaptopBACKGROUND);
+        hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -303,18 +303,18 @@ public class Laptop
         };
 
         // get surfaces
-        pDestBuf = VeldridVideoManager.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
-        CHECKF(VeldridVideoManager.GetVideoSurface(out hSrcVSurface, guiDESKTOP));
-        pSrcBuf = VeldridVideoManager.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
+        pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+        CHECKF(video.GetVideoSurface(out hSrcVSurface, guiDESKTOP));
+        pSrcBuf = video.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
 
 
         // blit .pcx for the background onto desktop
-        VeldridVideoManager.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, LAPTOP_SCREEN_UL_X - 2, LAPTOP_SCREEN_UL_Y - 3, out clip);
+        video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, LAPTOP_SCREEN_UL_X - 2, LAPTOP_SCREEN_UL_Y - 3, out clip);
 
 
         // release surfaces
-        VeldridVideoManager.UnLockVideoSurface(guiDESKTOP);
-        VeldridVideoManager.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+        video.UnLockVideoSurface(guiDESKTOP);
+        video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
         return (true);
     }
@@ -331,7 +331,7 @@ public class Laptop
         CHECKF(video.AddVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));
 
         // blit title
-        hHandle = VeldridVideoManager.GetVideoObject(uiTITLEFORWWW);
+        hHandle = video.GetVideoObject(uiTITLEFORWWW);
         VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -376,23 +376,23 @@ public class Laptop
         switch (guiCurrentLaptopMode)
         {
             case (LAPTOP_MODE.HISTORY):
-                hHandle = hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
+                hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.EMAIL):
-                hHandle = hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
+                hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.PERSONNEL):
-                hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
+                hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.FINANCES):
-                hHandle = hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
+                hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.FILES):
-                hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
+                hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.NONE):
@@ -400,7 +400,7 @@ public class Laptop
                 break;
             default:
                 // www pages
-                hHandle = VeldridVideoManager.GetVideoObject(guiTITLEBARICONS);
+                hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
         }

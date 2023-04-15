@@ -5,7 +5,9 @@ using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Platform.Interfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
@@ -13,6 +15,14 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class NPC
 {
+    private static IVideoManager video;
+    private static IFileManager files;
+
+    public NPC(IVideoManager videoManager, IFileManager fileManager)
+    {
+        video = videoManager;
+        files = fileManager;
+    }
     public static bool TriggerNPCWithIHateYouQuote(NPCID ubTriggerNPC)
     {
         // Check if we have a quote to trigger...
@@ -251,16 +261,16 @@ public class NPC
 
         }
 
-        CHECKN(FileManager.FileExists(zFileName));
+        CHECKN(files.FileExists(zFileName));
 
-//        hFile = FileManager.FileOpen(zFileName, FILE_ACCESS_READ, false);
+//        hFile = files.FileOpen(zFileName, FILE_ACCESS_READ, false);
 //        CHECKN(hFile);
 
 //        uiFileSize = sizeof(NPCQuoteInfo) * NUM_NPC_QUOTE_RECORDS;
 //        pFileData = MemAlloc(uiFileSize);
 //        if (pFileData)
 //        {
-//            if (!FileManager.FileRead(hFile, ref pFileData, uiFileSize, out uiBytesRead) || uiBytesRead != uiFileSize)
+//            if (!files.FileRead(hFile, ref pFileData, uiFileSize, out uiBytesRead) || uiBytesRead != uiFileSize)
 //            {
 //                MemFree(pFileData);
 //                pFileData = null;

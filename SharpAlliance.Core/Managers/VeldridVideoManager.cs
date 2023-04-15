@@ -347,7 +347,7 @@ public class VeldridVideoManager : IVideoManager
         GraphicDevice.SwapBuffers(mainSwapchain);
     }
 
-    public byte[] ReadEmbeddedAssetBytes(string name)
+    public static byte[] ReadEmbeddedAssetBytes(string name)
     {
         using Stream stream = OpenEmbeddedAssetStream(name);
         byte[] bytes = new byte[stream.Length];
@@ -357,7 +357,7 @@ public class VeldridVideoManager : IVideoManager
         return bytes;
     }
 
-    public Stream OpenEmbeddedAssetStream(string name)
+    public static Stream OpenEmbeddedAssetStream(string name)
         => typeof(VeldridVideoManager).Assembly.GetManifestResourceStream(name)!;
 
     public HVOBJECT AddVideoObject(string assetPath, out string key)
@@ -1528,8 +1528,9 @@ public class VeldridVideoManager : IVideoManager
         GC.SuppressFinalize(this);
     }
 
-    public void InvalidateRegion(Rectangle bounds)
+    public static void InvalidateRegion(Rectangle bounds)
     {
+
     }
 
     public void EndFrameBufferRender()
@@ -1808,7 +1809,7 @@ public class VeldridVideoManager : IVideoManager
         throw new NotImplementedException();
     }
 
-    public void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
+    public static void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
 
     public void Blt8BPPDataSubTo16BPPBuffer(int pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, int pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {

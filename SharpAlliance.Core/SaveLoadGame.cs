@@ -25,7 +25,7 @@ public partial class Globals
     public const string zTrackingNumber = "Z";
 
     public static int guiSaveGameVersion = 0;
-    public static bool gMusicModeToPlay = false;
+    public static int gMusicModeToPlay = 0;
     public static bool gfUseConsecutiveQuickSaveSlots = false;
     public static int guiCurrentQuickSaveNumber = 0;
     public static int guiLastSaveGameNum;
@@ -55,12 +55,15 @@ public class SaveLoadGame
     private readonly ILogger<SaveLoadGame> logger;
     private readonly IFileManager files;
     private readonly IVideoManager video;
+    private readonly SoldierCreate soldierCreate;
 
     public SaveLoadGame(
         ILogger<SaveLoadGame> logger,
         IFileManager fileManager,
-        IVideoManager videoManager)
+        IVideoManager videoManager,
+        SoldierCreate soldierCreate)
     {
+        this.soldierCreate = soldierCreate;
         this.logger = logger;
         this.files = fileManager;
         this.video = videoManager;
@@ -106,7 +109,7 @@ public class SaveLoadGame
 
         MercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, Surfaces.FRAME_BUFFER);
 
-        this.video.InvalidateRegion(new(0, 0, 640, 480));
+        VeldridVideoManager.InvalidateRegion(new(0, 0, 640, 480));
 
         this.video.ExecuteBaseDirtyRectQueue();
         this.video.EndFrameBufferRender();
@@ -317,7 +320,7 @@ public class SaveLoadGame
         }
 
         // save the game clock info
-        if (!SaveGameClock(hFile, fPausedStateBeforeSaving, fLockPauseStateBeforeSaving))
+        if (!GameClock.SaveGameClock(hFile, fPausedStateBeforeSaving, fLockPauseStateBeforeSaving))
         {
             goto FAILED_TO_SAVE;
         }
@@ -861,8 +864,8 @@ public class SaveLoadGame
         uiRelStartPerc = 0;
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Events...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Events...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
         //load the game events
@@ -874,8 +877,8 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 0;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Laptop Info");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Laptop Info");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -888,8 +891,8 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 0;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Merc Profiles...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Merc Profiles...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
         //
@@ -903,7 +906,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 30;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Soldier Structure...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Soldier Structure...");
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -918,8 +921,8 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Finances Data File...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Finances Data File...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -940,8 +943,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "History File...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "History File...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -962,8 +965,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "The Laptop FILES file...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "The Laptop FILES file...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -983,8 +986,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Email...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Email...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1002,8 +1005,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Information...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Information...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1022,8 +1025,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "UnderGround Information...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "UnderGround Information...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1040,8 +1043,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Squad Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Squad Info...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1058,8 +1061,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Movement Groups...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Movement Groups...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1076,7 +1079,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 30;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "All the Map Temp files...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "All the Map Temp files...");
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1094,8 +1097,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Quest Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Quest Info...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1112,8 +1115,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "OppList Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "OppList Info...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1131,8 +1134,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "MapScreen Messages...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "MapScreen Messages...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1150,8 +1153,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "NPC Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "NPC Info...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1169,8 +1172,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "KeyTable...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "KeyTable...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1188,8 +1191,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Npc Temp Quote File...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Npc Temp Quote File...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1207,8 +1210,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "PreGenerated Random Files...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "PreGenerated Random Files...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1226,8 +1229,8 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Smoke Effect Structures...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Smoke Effect Structures...");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1245,7 +1248,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Arms Dealers Inventory...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Arms Dealers Inventory...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1265,7 +1268,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Misc info...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Misc info...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1286,7 +1289,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Mine Status...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Mine Status...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1298,20 +1301,11 @@ public class SaveLoadGame
             guiSaveGameVersion = 0;
             return (false);
         }
-#if JA2BETAVERSION
-    LoadGameFilePosition(FileGetPos(hFile), "Mine Status");
-#endif
-
-
-
 
         uiRelEndPerc += 0;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Town Loyalty...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Town Loyalty...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
-
-
-
 
         if (SaveGameHeader.uiSavedGameVersion >= 21)
         {
@@ -1321,17 +1315,10 @@ public class SaveLoadGame
                 guiSaveGameVersion = 0;
                 return (false);
             }
-#if JA2BETAVERSION
-        LoadGameFilePosition(FileGetPos(hFile), "Town Loyalty");
-#endif
         }
 
-
-
-
-
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Vehicle Information...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Vehicle Information...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1353,7 +1340,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Bullet Information...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Bullet Information...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1376,7 +1363,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Physics table...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Physics table...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1400,7 +1387,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Air Raid Info...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Air Raid Info...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1422,7 +1409,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Team Turn Info...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Team Turn Info...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1445,7 +1432,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Explosion Table...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Explosion Table...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1468,7 +1455,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Creature Spreading...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Creature Spreading...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1492,7 +1479,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Status...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Status...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1515,7 +1502,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic AI...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic AI...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1537,7 +1524,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Lighting Effects...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Lighting Effects...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1554,7 +1541,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Watched Locs Info...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Watched Locs Info...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1577,7 +1564,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Item cursor Info...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Item cursor Info...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1599,7 +1586,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Civ Quote System...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Civ Quote System...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1622,7 +1609,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Backed up NPC Info...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Backed up NPC Info...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1639,7 +1626,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Meanwhile definitions...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Meanwhile definitions...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1663,7 +1650,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Schedules...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Schedules...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1682,7 +1669,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Extra Vehicle Info...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Extra Vehicle Info...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1711,7 +1698,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Contract renweal sequence stuff...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Contract renweal sequence stuff...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1780,7 +1767,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1815,7 +1802,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1829,7 +1816,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1852,7 +1839,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1878,7 +1865,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1896,7 +1883,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1908,10 +1895,10 @@ public class SaveLoadGame
         LoadCarPortraitValues();
 
         // OK, turn OFF show all enemies....
-        gTacticalStatus.uiFlags &= (~SHOW_ALL_MERCS);
-        gTacticalStatus.uiFlags &= ~SHOW_ALL_ITEMS;
+        gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_MERCS);
+        gTacticalStatus.uiFlags &= ~TacticalEngineStatus.SHOW_ALL_ITEMS;
 
-        if ((gTacticalStatus.uiFlags & INCOMBAT))
+        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
 //            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Setting attack busy count to 0 from load");
             gTacticalStatus.ubAttackBusyCount = 0;
@@ -1933,11 +1920,11 @@ public class SaveLoadGame
             if (!fSkyRiderSetUp)
             {
                 // see if we can find him and remove him if so....
-                pSoldier = FindSoldierByProfileID(NPCID.SKYRIDER, false);
+                pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SKYRIDER, false);
 
                 if (pSoldier != null)
                 {
-                    TacticalRemoveSoldier(pSoldier.ubID);
+                    soldierCreate.TacticalRemoveSoldier(pSoldier.ubID);
                 }
 
                 // add the pilot at a random location!
@@ -1981,7 +1968,9 @@ public class SaveLoadGame
         if (SaveGameHeader.uiSavedGameVersion < 73)
         {
             if (LaptopSaveInfo.fMercSiteHasGoneDownYet)
+            {
                 LaptopSaveInfo.fFirstVisitSinceServerWentDown = 2;
+            }
         }
 
 
@@ -2009,8 +1998,8 @@ public class SaveLoadGame
         gfLoadedGame = true;
 
         uiRelEndPerc = 100;
-        SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Done!");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Done!");
+        AnimatedProgressBar.RenderProgressBar(0, 100);
 
         RemoveLoadingScreenProgressBar();
 
@@ -2234,7 +2223,7 @@ public class SaveLoadGame
         //Loop through all the soldier and delete them all
         for (cnt = 0; cnt < TOTAL_SOLDIERS; cnt++)
         {
-            TacticalRemoveSoldier(cnt);
+            soldierCreate.TacticalRemoveSoldier(cnt);
         }
 
 
@@ -2289,8 +2278,8 @@ public class SaveLoadGame
                 SavedSoldierInfo.pKeyRing = null;
                 SavedSoldierInfo.p8BPPPalette = null;
                 SavedSoldierInfo.p16BPPPalette = null;
-                memset(SavedSoldierInfo.pShades, 0, Marshal.SizeOf<int*>() * NUM_SOLDIER_SHADES);
-                memset(SavedSoldierInfo.pGlowShades, 0, Marshal.SizeOf<int*>() * 20);
+                SavedSoldierInfo.pShades = new int[NUM_SOLDIER_SHADES];
+                SavedSoldierInfo.pGlowShades = new int[20];
                 SavedSoldierInfo.pCurrentShade = null;
                 SavedSoldierInfo.pThrowParams = null;
                 SavedSoldierInfo.pLevelNode = null;
@@ -2300,7 +2289,7 @@ public class SaveLoadGame
                 SavedSoldierInfo.pZBackground = null;
                 SavedSoldierInfo.pForcedShade = null;
                 SavedSoldierInfo.pMercPath = null;
-                memset(SavedSoldierInfo.pEffectShades, 0, Marshal.SizeOf<int*>() * NUM_SOLDIER_EFFECTSHADES);
+                SavedSoldierInfo.pEffectShades = new int[NUM_SOLDIER_EFFECTSHADES];
 
 
                 //if the soldier wasnt active, dont add them now.  Advance to the next merc
@@ -2309,15 +2298,16 @@ public class SaveLoadGame
 
 
                 //Create the new merc
-                memset(&CreateStruct, 0, Marshal.SizeOf<SOLDIERCREATE_STRUCT>());
+                CreateStruct = new();
                 CreateStruct.bTeam = SavedSoldierInfo.bTeam;
                 CreateStruct.ubProfile = SavedSoldierInfo.ubProfile;
                 CreateStruct.fUseExistingSoldier = true;
-                CreateStruct.pExistingSoldier = &SavedSoldierInfo;
+                CreateStruct.pExistingSoldier = SavedSoldierInfo;
 
-                if (!TacticalCreateSoldier(&CreateStruct, &ubId))
+                if (!SoldierCreate.TacticalCreateSoldier(CreateStruct, out ubId))
+                {
                     return (false);
-
+                }
 
                 // Load the pMercPath
                 if (!LoadMercPathToSoldierStruct(hFile, ubId))
@@ -2396,21 +2386,21 @@ public class SaveLoadGame
         // Fix robot
         if (guiSaveGameVersion <= 87)
         {
-            SOLDIERTYPE* pSoldier;
+            SOLDIERTYPE? pSoldier;
 
-            if (gMercProfiles[ROBOT].inv[VESTPOS] == SPECTRA_VEST)
+            if (gMercProfiles[NPCID.ROBOT].inv[InventorySlot.VESTPOS] == Items.SPECTRA_VEST)
             {
                 // update this
-                gMercProfiles[ROBOT].inv[VESTPOS] = SPECTRA_VEST_18;
-                gMercProfiles[ROBOT].inv[HELMETPOS] = SPECTRA_HELMET_18;
-                gMercProfiles[ROBOT].inv[LEGPOS] = SPECTRA_LEGGINGS_18;
-                gMercProfiles[ROBOT].bAgility = 50;
-                pSoldier = FindSoldierByProfileID(ROBOT, false);
-                if (pSoldier)
+                gMercProfiles[NPCID.ROBOT].inv[InventorySlot.VESTPOS] = Items.SPECTRA_VEST_18;
+                gMercProfiles[NPCID.ROBOT].inv[InventorySlot.HELMETPOS] = Items.SPECTRA_HELMET_18;
+                gMercProfiles[NPCID.ROBOT].inv[InventorySlot.LEGPOS] = Items.SPECTRA_LEGGINGS_18;
+                gMercProfiles[NPCID.ROBOT].bAgility = 50;
+                pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.ROBOT, false);
+                if (pSoldier is not null)
                 {
-                    pSoldier.inv[VESTPOS].usItem = SPECTRA_VEST_18;
-                    pSoldier.inv[HELMETPOS].usItem = SPECTRA_HELMET_18;
-                    pSoldier.inv[LEGPOS].usItem = SPECTRA_LEGGINGS_18;
+                    pSoldier.inv[InventorySlot.VESTPOS].usItem = Items.SPECTRA_VEST_18;
+                    pSoldier.inv[InventorySlot.HELMETPOS].usItem = Items.SPECTRA_HELMET_18;
+                    pSoldier.inv[InventorySlot.LEGPOS].usItem = Items.SPECTRA_LEGGINGS_18;
                     pSoldier.bAgility = 50;
                 }
             }
@@ -2758,8 +2748,8 @@ public class SaveLoadGame
         int uiNumOfEmails = 0;
         int uiSizeOfSubject = 0;
         email pEmail = pEmailList;
-        email pTempEmail = null;
-        int? pData = null;
+        email? pTempEmail = null;
+        string pData = null;
         int cnt;
         SavedEmailStruct SavedEmail;
         int uiNumBytesRead = 0;
@@ -2769,7 +2759,7 @@ public class SaveLoadGame
 
         pEmailList = null;
         //Allocate memory for the header node
-        pEmailList = MemAlloc(Marshal.SizeOf<email>());
+        pEmailList = new(); //MemAlloc(Marshal.SizeOf<email>());
         if (pEmailList == null)
         {
             return (false);
@@ -2789,14 +2779,14 @@ public class SaveLoadGame
         for (cnt = 0; cnt < uiNumOfEmails; cnt++)
         {
             //get the length of the email subject
-            FileRead(hFile, uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
+            files.FileRead(hFile, uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<int>())
             {
                 return (false);
             }
 
             //allocate space for the subject
-            pData = MemAlloc(EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
+            pData = string.Empty; //MemAlloc(EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
             if (pData == null)
             {
                 return (false);
@@ -2805,14 +2795,14 @@ public class SaveLoadGame
 //            memset(pData, 0, EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
 
             //Get the subject
-            FileRead(hFile, pData, uiSizeOfSubject, out uiNumBytesRead);
+            files.FileRead(hFile, pData, uiSizeOfSubject, out uiNumBytesRead);
             if (uiNumBytesRead != uiSizeOfSubject)
             {
                 return (false);
             }
 
             //get the rest of the data from the email
-            FileRead(hFile, &SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesRead);
+            files.FileRead(hFile, &SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<SavedEmailStruct>())
             {
                 return (false);
@@ -2823,7 +2813,7 @@ public class SaveLoadGame
             //
 
             //if we havent allocated space yet
-            pTempEmail = MemAlloc(Marshal.SizeOf<Email>());
+            pTempEmail = new(); //MemAlloc(Marshal.SizeOf<Email>());
             if (pTempEmail == null)
             {
                 return (false);
@@ -2859,7 +2849,7 @@ public class SaveLoadGame
         }
 
         //if there are emails
-        if (cnt)
+        if (cnt > 0)
         {
             //the first node of the LL was a dummy, node,get rid  of it
             pTempEmail = pEmailList;
@@ -2882,7 +2872,7 @@ public class SaveLoadGame
         int uiNumBytesWritten;
 
         //write the gTacticalStatus to the saved game file
-        FileWrite(hFile, gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesWritten);
+        this.files.FileWrite(hFile, gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<TacticalStatusType>())
         {
             return (false);
@@ -2893,24 +2883,24 @@ public class SaveLoadGame
         //
 
         // save gWorldSectorX
-        FileWrite(hFile, gWorldSectorX, Marshal.SizeOf<gWorldSectorX>(), out uiNumBytesWritten);
-        if (uiNumBytesWritten != Marshal.SizeOf<gWorldSectorX>())
+        this.files.FileWrite(hFile, gWorldSectorX, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
         }
 
 
         // save gWorldSectorY
-        FileWrite(hFile, gWorldSectorY, Marshal.SizeOf<gWorldSectorY>(), out uiNumBytesWritten);
-        if (uiNumBytesWritten != Marshal.SizeOf<gWorldSectorY>())
+        this.files.FileWrite(hFile, gWorldSectorY, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
         }
 
 
         // save gbWorldSectorZ
-        FileWrite(hFile, gbWorldSectorZ, Marshal.SizeOf<gbWorldSectorZ>(), out uiNumBytesWritten);
-        if (uiNumBytesWritten != Marshal.SizeOf<gbWorldSectorZ>())
+        this.files.FileWrite(hFile, gbWorldSectorZ, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
         }
@@ -2925,7 +2915,7 @@ public class SaveLoadGame
         int uiNumBytesRead;
 
         //Read the gTacticalStatus to the saved game file
-        FileRead(hFile, gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesRead);
+        this.files.FileRead(hFile, ref gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<TacticalStatusType>())
         {
             return (false);
@@ -2936,32 +2926,30 @@ public class SaveLoadGame
         //
 
         // Load gWorldSectorX
-        FileRead(hFile, gWorldSectorX, Marshal.SizeOf<gWorldSectorX>(), out uiNumBytesRead);
-        if (uiNumBytesRead != Marshal.SizeOf<gWorldSectorX>())
+        this.files.FileRead(hFile, ref gWorldSectorX, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
         }
 
 
         // Load gWorldSectorY
-        FileRead(hFile, gWorldSectorY, Marshal.SizeOf<gWorldSectorY>(), out uiNumBytesRead);
-        if (uiNumBytesRead != Marshal.SizeOf<gWorldSectorY>())
+        this.files.FileRead(hFile, ref gWorldSectorY, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
         }
 
 
         // Load gbWorldSectorZ
-        FileRead(hFile, gbWorldSectorZ, Marshal.SizeOf<gbWorldSectorZ>(), out uiNumBytesRead);
-        if (uiNumBytesRead != Marshal.SizeOf<gbWorldSectorZ>())
+        this.files.FileRead(hFile, ref gbWorldSectorZ, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
         }
 
         return (true);
     }
-
-
 
     bool CopySavedSoldierInfoToNewSoldier(SOLDIERTYPE pDestSourceInfo, SOLDIERTYPE pSourceInfo)
     {
@@ -3695,12 +3683,11 @@ void LoadGameFilePosition(int iPos, STR pMsg)
     {
         int uiNumBytesRead;
 
-        GENERAL_SAVE_INFO sGeneralInfo;
-        memset(sGeneralInfo, 0, Marshal.SizeOf<GENERAL_SAVE_INFO>());
+        GENERAL_SAVE_INFO sGeneralInfo = new();//, 0, Marshal.SizeOf<GENERAL_SAVE_INFO>());
 
 
         //Load the current music mode
-        this.files.FileRead(hFile, sGeneralInfo, Marshal.SizeOf<GENERAL_SAVE_INFO>(), out uiNumBytesRead);
+        this.files.FileRead(hFile, ref sGeneralInfo, Marshal.SizeOf<GENERAL_SAVE_INFO>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<GENERAL_SAVE_INFO>())
         {
             this.files.FileClose(hFile);
@@ -3720,8 +3707,6 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         gsRenderCenterY = sGeneralInfo.sRenderCenterY;
 
         gfAtLeastOneMercWasHired = sGeneralInfo.fAtLeastOneMercWasHired;
-
-
 
         gfHavePurchasedItemsFromTony = sGeneralInfo.fHavePurchasedItemsFromTony;
 
@@ -3781,11 +3766,15 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         //if the soldier id is valid
         if (sGeneralInfo.sContractRehireSoldierID == -1)
+        {
             pContractReHireSoldier = null;
+        }
         else
+        {
             pContractReHireSoldier = Menptr[sGeneralInfo.sContractRehireSoldierID];
+        }
 
-        memcpy(gGameOptions, sGeneralInfo.GameOptions, Marshal.SizeOf<GAME_OPTIONS>());
+        gGameOptions =  sGeneralInfo.gameop;
 
         //Restore the JA2 Clock
         guiBaseJA2Clock = sGeneralInfo.uiBaseJA2Clock;
@@ -3825,9 +3814,9 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         fDisableDueToBattleRoster = sGeneralInfo.fDisableDueToBattleRoster;
         fDisableMapInterfaceDueToBattle = sGeneralInfo.fDisableMapInterfaceDueToBattle;
 
-        memcpy(gsBoxerGridNo, sGeneralInfo.sBoxerGridNo, NUM_BOXERS * Marshal.SizeOf<int>());
-        memcpy(gubBoxerID, sGeneralInfo.ubBoxerID, NUM_BOXERS * Marshal.SizeOf<int>());
-        memcpy(gfBoxerFought, sGeneralInfo.fBoxerFought, NUM_BOXERS * Marshal.SizeOf<bool>());
+        gsBoxerGridNo = sGeneralInfo.sBoxerGridNo;
+        gubBoxerID = sGeneralInfo.ubBoxerID;
+        gfBoxerFought = sGeneralInfo.fBoxerFought;
 
         //Load the helicopter status
         fHelicopterDestroyed = sGeneralInfo.fHelicopterDestroyed;
@@ -3840,17 +3829,17 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         guiTimeOfLastSkyriderMonologue = sGeneralInfo.uiTimeOfLastSkyriderMonologue;
         fSkyRiderSetUp = sGeneralInfo.fSkyRiderSetUp;
 
-        memcpy(&fRefuelingSiteAvailable, &sGeneralInfo.fRefuelingSiteAvailable, NUMBER_OF_REFUEL_SITES * Marshal.SizeOf<bool>());
+        fRefuelingSiteAvailable = sGeneralInfo.fRefuelingSiteAvailable;
 
 
         //Meanwhile stuff
-        memcpy(gCurrentMeanwhileDef, &sGeneralInfo.gCurrentMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>());
+        gCurrentMeanwhileDef = sGeneralInfo.gCurrentMeanwhileDef;
         //	gfMeanwhileScheduled = sGeneralInfo.gfMeanwhileScheduled;
         gfMeanwhileTryingToStart = sGeneralInfo.gfMeanwhileTryingToStart;
         gfInMeanwhile = sGeneralInfo.gfInMeanwhile;
 
         // list of dead guys for squads...in id values . -1 means no one home 
-        memcpy(sDeadMercs, sGeneralInfo.sDeadMercs, Marshal.SizeOf<int>() * NUMBER_OF_SQUADS * NUMBER_OF_SOLDIERS_PER_SQUAD);
+        sDeadMercs = sGeneralInfo.sDeadMercs;
 
         // level of public noises
         for (int i = 0; i < sGeneralInfo.gbPublicNoiseLevel.Length; i++)
@@ -3883,7 +3872,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         gfLastBoxingMatchWonByPlayer = sGeneralInfo.fLastBoxingMatchWonByPlayer;
 
-        memcpy(fSamSiteFound, &sGeneralInfo.fSamSiteFound, NUMBER_OF_SAMS * Marshal.SizeOf<bool>());
+        for (SAM_SITE i = 0; i < sGeneralInfo.fSamSiteFound.Length; i++)
+        {
+            fSamSiteFound[i] = sGeneralInfo.fSamSiteFound[(int)i];
+        }
 
         gubNumTerrorists = sGeneralInfo.ubNumTerrorists;
         gubCambriaMedicalObjects = sGeneralInfo.ubCambriaMedicalObjects;
@@ -3945,14 +3937,14 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         int uiNumBytesWritten;
 
         //Save the Prerandom number index
-        FileWrite(hFile, guiPreRandomIndex, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        this.files.FileWrite(hFile, guiPreRandomIndex, Marshal.SizeOf<int>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
         }
 
         //Save the Prerandom number index
-        FileWrite(hFile, guiPreRandomNums, Marshal.SizeOf<int>() * MAX_PREGENERATED_NUMS, out uiNumBytesWritten);
+        this.files.FileWrite(hFile, guiPreRandomNums, Marshal.SizeOf<int>() * MAX_PREGENERATED_NUMS, out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>() * MAX_PREGENERATED_NUMS)
         {
             return (false);
@@ -3989,20 +3981,20 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         if (guiSaveGameVersion < 72)
         {
             //Load the array of meanwhile defs
-            FileRead(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * (NUM_MEANWHILES - 1), out uiNumBytesRead);
-            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * (NUM_MEANWHILES - 1))
+            this.files.FileRead(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * (Meanwhiles.NUM_MEANWHILES - 1), out uiNumBytesRead);
+            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * (Meanwhiles.NUM_MEANWHILES - 1))
             {
                 return (false);
             }
             // and set the last one
-            memset(&(gMeanwhileDef[NUM_MEANWHILES - 1]), 0, Marshal.SizeOf<MEANWHILE_DEFINITION>());
+            gMeanwhileDef[Meanwhiles.NUM_MEANWHILES - 1] = new();
 
         }
         else
         {
             //Load the array of meanwhile defs
-            FileRead(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * NUM_MEANWHILES, out uiNumBytesRead);
-            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * NUM_MEANWHILES)
+            this.files.FileRead(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES, out uiNumBytesRead);
+            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES)
             {
                 return (false);
             }
@@ -4016,8 +4008,8 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         int uiNumBytesWritten;
 
         //Save the array of meanwhile defs
-        FileWrite(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * NUM_MEANWHILES, out uiNumBytesWritten);
-        if (uiNumBytesWritten != Marshal.SizeOf<MEANWHILE_DEFINITION>() * NUM_MEANWHILES)
+        this.files.FileWrite(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES, out uiNumBytesWritten);
+        if (uiNumBytesWritten != Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES)
         {
             return (false);
         }
@@ -4040,96 +4032,6 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         return (true);
     }
 
-#if JA2BETAVERSION
-
-void InitShutDownMapTempFileTest(bool fInit, STR pNameOfFile, int ubSaveGameID)
-{
-    CHAR8 zFileName[128];
-    Stream hFile;
-    CHAR8 zTempString[512];
-    int uiStrLen;
-    int uiNumBytesWritten;
-
-    //strcpy( gzNameOfMapTempFile, pNameOfFile);
-    sprintf(gzNameOfMapTempFile, "%s%d", pNameOfFile, ubSaveGameID);
-
-    sprintf(zFileName, "%S\\%s.txt", pMessageStrings[MGS.SAVEDIRECTORY], gzNameOfMapTempFile);
-
-    if (fInit)
-    {
-        guiNumberOfMapTempFiles = 0;        //Test:  To determine where the temp files are crashing
-        guiSizeOfTempFiles = 0;
-
-        if (FileExists(zFileName))
-        {
-            FileDelete(zFileName);
-        }
-    }
-    else
-    {
-        // create the save game file
-        hFile = FileOpen(zFileName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
-        if (!hFile)
-        {
-            FileClose(hFile);
-            return;
-        }
-
-        FileSeek(hFile, 0, FILE_SEEK_FROM_END);
-
-        sprintf(zTempString, "Number Of Files: %6d.  Size of all files: %6d.\n", guiNumberOfMapTempFiles, guiSizeOfTempFiles);
-        uiStrLen = strlen(zTempString);
-
-        FileWrite(hFile, zTempString, uiStrLen, out uiNumBytesWritten);
-        if (uiNumBytesWritten != uiStrLen)
-        {
-            FileClose(hFile);
-            return;
-        }
-
-        FileClose(hFile);
-
-    }
-}
-
-void WriteTempFileNameToFile(STR pFileName, int uiSizeOfFile, HFILE hSaveFile)
-{
-    Stream hFile;
-    CHAR8 zTempString[512];
-    int uiNumBytesWritten;
-    int uiStrLen = 0;
-
-    CHAR8 zFileName[128];
-
-    guiSizeOfTempFiles += uiSizeOfFile;
-
-    sprintf(zFileName, "%S\\%s.txt", pMessageStrings[MGS.SAVEDIRECTORY], gzNameOfMapTempFile);
-
-    // create the save game file
-    hFile = FileOpen(zFileName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
-    if (!hFile)
-    {
-        FileClose(hFile);
-        return;
-    }
-
-    FileSeek(hFile, 0, FILE_SEEK_FROM_END);
-
-    sprintf(zTempString, "%8d   %6d   %s\n", FileGetPos(hSaveFile), uiSizeOfFile, pFileName);
-    uiStrLen = strlen(zTempString);
-
-    FileWrite(hFile, zTempString, uiStrLen, out uiNumBytesWritten);
-    if (uiNumBytesWritten != uiStrLen)
-    {
-        FileClose(hFile);
-        return;
-    }
-
-    FileClose(hFile);
-}
-
-#endif
-
     void GetBestPossibleSectorXYZValues(out int psSectorX, out MAP_ROW psSectorY, out int pbSectorZ)
     {
         //if the current sector is valid
@@ -4139,7 +4041,8 @@ void WriteTempFileNameToFile(STR pFileName, int uiSizeOfFile, HFILE hSaveFile)
             psSectorY = gWorldSectorY;
             pbSectorZ = gbWorldSectorZ;
         }
-        else if (iCurrentTacticalSquad != NO_CURRENT_SQUAD && Squad[iCurrentTacticalSquad][0])
+        else if (iCurrentTacticalSquad != NO_CURRENT_SQUAD
+            && Squad[iCurrentTacticalSquad][0])
         {
             if (Squad[iCurrentTacticalSquad][0].bAssignment != Assignments.IN_TRANSIT)
             {
@@ -4233,12 +4136,12 @@ void WriteTempFileNameToFile(STR pFileName, int uiSizeOfFile, HFILE hSaveFile)
 
     void TruncateStrategicGroupSizes()
     {
-        GROUP* pGroup;
-        SECTORINFO* pSector;
-        int i;
-        for (i = SEC_A1; i < SEC_P16; i++)
+        List<GROUP> pGroup;
+        SECTORINFO? pSector;
+
+        for (SEC i = SEC.A1; i < SEC.P16; i++)
         {
-            pSector = &SectorInfo[i];
+            pSector = SectorInfo[i];
             if (pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites > MAX_STRATEGIC_TEAM_SIZE)
             {
                 if (pSector.ubNumAdmins > pSector.ubNumTroops)
@@ -4339,9 +4242,9 @@ void WriteTempFileNameToFile(STR pFileName, int uiSizeOfFile, HFILE hSaveFile)
         }
         //Enemy groups
         pGroup = gpGroupList;
-        while (pGroup)
+        while (pGroup is not null)
         {
-            if (!pGroup.fPlayer)
+            if (!pGroup.fPlayer.Any())
             {
                 if (pGroup.pEnemyGroup.ubNumAdmins + pGroup.pEnemyGroup.ubNumTroops + pGroup.pEnemyGroup.ubNumElites > MAX_STRATEGIC_TEAM_SIZE)
                 {
@@ -4400,16 +4303,18 @@ void WriteTempFileNameToFile(STR pFileName, int uiSizeOfFile, HFILE hSaveFile)
 
     void UpdateMercMercContractInfo()
     {
-        int ubCnt;
-        SOLDIERTYPE* pSoldier;
+        NPCID ubCnt;
+        SOLDIERTYPE? pSoldier;
 
-        for (ubCnt = BIFF; ubCnt <= BUBBA; ubCnt++)
+        for (ubCnt = NPCID.BIFF; ubCnt <= NPCID.BUBBA; ubCnt++)
         {
-            pSoldier = FindSoldierByProfileID(ubCnt, true);
+            pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(ubCnt, true);
 
             //if the merc is on the team
             if (pSoldier == null)
+            {
                 continue;
+            }
 
             gMercProfiles[ubCnt].iMercMercContractLength = pSoldier.iTotalContractLength;
 
@@ -4492,7 +4397,7 @@ void WriteTempFileNameToFile(STR pFileName, int uiSizeOfFile, HFILE hSaveFile)
             //            gpNewBobbyrShipments = MemAlloc(Marshal.SizeOf<NewBobbyRayOrderStruct>() * LaptopSaveInfo.usNumberOfBobbyRayOrderUsed);
             if (gpNewBobbyrShipments == null)
             {
-                Debug.Assert(0);
+                Debug.Assert(false);
                 return;
             }
 
@@ -4650,7 +4555,7 @@ public struct GENERAL_SAVE_INFO
     public bool fShowEstoniRefuelHighLight;
     public bool fShowOtherSAMHighLight;
     public bool fShowDrassenSAMHighLight;
-    public int uiEnvWeather;
+    public WEATHER_FORECAST uiEnvWeather;
     public int ubDefaultButton;
     public bool fSkyriderEmptyHelpGiven;
     public bool fEnterMapDueToContract;
@@ -4661,7 +4566,7 @@ public struct GENERAL_SAVE_INFO
     //  public   GAME_OPTIONS GameOptions;
     public int uiSeedNumber;
     public int uiBaseJA2Clock;
-    public int sCurInterfacePanel;
+    public InterfacePanelDefines sCurInterfacePanel;
     public int ubSMCurrentMercID;
     public bool fFirstTimeInMapScreen;
     public bool fDisableDueToBattleRoster;
@@ -4715,11 +4620,11 @@ public struct GENERAL_SAVE_INFO
     public int sMercArriveSectorX;
     public int sMercArriveSectorY;
     public bool fCreatureMeanwhileScenePlayed;
-    public int ubPlayerNum;
+    public TEAM ubPlayerNum;
     //New stuff for the Prebattle interface / autoresolve
     public bool fPersistantPBI;
-    public int ubEnemyEncounterCode;
-    public bool ubExplicitEnemyEncounterCode;
+    public ENCOUNTER_CODE ubEnemyEncounterCode;
+    public ENCOUNTER_CODE ubExplicitEnemyEncounterCode;
     public bool fBlitBattleSectorLocator;
     public int ubPBSectorX;
     public MAP_ROW ubPBSectorY;
@@ -4741,7 +4646,7 @@ public struct GENERAL_SAVE_INFO
 public class SAVED_GAME_HEADER
 {
     public int uiSavedGameVersion;
-    public int[] zGameVersionNumber;// [GAME_VERSION_LENGTH];
+    public string zGameVersionNumber;// [GAME_VERSION_LENGTH];
     public string sSavedGameDesc;
     public int uiFlags;
     //The following will be used to quickly access info to display in the save/load screen

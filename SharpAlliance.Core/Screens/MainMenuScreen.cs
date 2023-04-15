@@ -94,11 +94,11 @@ public class MainMenuScreen : IScreen
             uiTime = Globals.GetJA2Clock();
             if (Globals.guiSplashFrameFade > 2)
             {
-                VeldridVideoManager.ShadowVideoSurfaceRectUsingLowPercentTable(new Rectangle(0, 0, 640, 480));
+                video.ShadowVideoSurfaceRectUsingLowPercentTable(new Rectangle(0, 0, 640, 480));
             }
             else if (Globals.guiSplashFrameFade > 1)
             {
-                VeldridVideoManager.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
+                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
             }
             else
             {
@@ -111,8 +111,8 @@ public class MainMenuScreen : IScreen
 
             Globals.guiSplashFrameFade--;
 
-            // VeldridVideoManager.InvalidateScreen();
-            // VeldridVideoManager.EndFrameBufferRender();
+            // video.InvalidateScreen();
+            // video.EndFrameBufferRender();
 
             CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
@@ -146,7 +146,7 @@ public class MainMenuScreen : IScreen
             ButtonSubSystem.MarkAButtonDirty(this.iMenuButtons[(MainMenuItems)cnt]);
         }
 
-//            VeldridVideoManager.EndFrameBufferRender();
+//            video.EndFrameBufferRender();
 
         this.HandleMainMenuInput();
 
@@ -272,11 +272,11 @@ public class MainMenuScreen : IScreen
         HVOBJECT hPixHandle;
 
         //Get and display the background image
-        //hPixHandle = VeldridVideoManager.GetVideoObject(this.mainMenuBackGroundImageKey);
-        //VeldridVideoManager.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        //hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
+        //video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
-        //hPixHandle = VeldridVideoManager.GetVideoObject(this.ja2LogoImageKey);
-        //VeldridVideoManager.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
+        //hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
+        //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
 
         FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 

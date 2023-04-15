@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Platform.Interfaces;
@@ -15,11 +16,14 @@ public class AnimationData
 {
     private readonly IFileManager files;
     private readonly StructureFile structure;
+    private readonly IVideoManager video;
 
     public AnimationData(
         IFileManager fileManager,
+        IVideoManager videoManager,
         StructureFile structureFile)
     {
+        this.video = videoManager;
         this.files = fileManager;
         this.structure = structureFile;
     }
@@ -48,7 +52,7 @@ public class AnimationData
             {
                 sFilename = gAnimStructureDatabase[cnt1][cnt2].Filename;
 
-                if (FileManager.FileExists(sFilename))
+                if (files.FileExists(sFilename))
                 {
                     pStructureFileRef = StructureInternals.LoadStructureFile(sFilename);
                     if (pStructureFileRef == null)
@@ -98,8 +102,7 @@ public class AnimationData
 
             CHECKF(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject != null);
     
-
-            VeldridVideoManager.DeleteVideoObject(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject);
+            this.video.DeleteVideoObject(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject);
             gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject = null;
         }
 

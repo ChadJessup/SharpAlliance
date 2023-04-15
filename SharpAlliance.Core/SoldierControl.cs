@@ -4763,10 +4763,10 @@ int	gOrangeGlowG[]=
         //Stream hFile;
         //int cnt, cnt2;
 
-        //hFile = FileManager.FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, false);
+        //hFile = this.files.FileOpen(PALETTEFILENAME, FILE_ACCESS_READ, false);
 
         //// Read # of types
-        //if (!FileManager.FileRead(hFile, ref guiNumPaletteSubRanges, sizeof(guiNumPaletteSubRanges), null))
+        //if (!this.files.FileRead(hFile, ref guiNumPaletteSubRanges, sizeof(guiNumPaletteSubRanges), null))
         //{
         //    return (false);
         //}
@@ -4778,7 +4778,7 @@ int	gOrangeGlowG[]=
         //// Read # of types for each!
         //for (cnt = 0; cnt < guiNumPaletteSubRanges; cnt++)
         //{
-        //    if (!FileManager.FileRead(hFile, ref gubpNumReplacementsPerRange[cnt], sizeof(int), null))
+        //    if (!this.files.FileRead(hFile, ref gubpNumReplacementsPerRange[cnt], sizeof(int), null))
         //    {
         //        return (false);
         //    }
@@ -4787,11 +4787,11 @@ int	gOrangeGlowG[]=
         //// Loop for each one, read in data
         //for (cnt = 0; cnt < guiNumPaletteSubRanges; cnt++)
         //{
-        //    if (!FileManager.FileRead(hFile, out gpPaletteSubRanges[cnt].ubStart, sizeof(int), null))
+        //    if (!this.files.FileRead(hFile, out gpPaletteSubRanges[cnt].ubStart, sizeof(int), null))
         //    {
         //        return (false);
         //    }
-        //    if (!FileManager.FileRead(hFile, out gpPaletteSubRanges[cnt].ubEnd, sizeof(int), null))
+        //    if (!this.files.FileRead(hFile, out gpPaletteSubRanges[cnt].ubEnd, sizeof(int), null))
         //    {
         //        return (false);
         //    }
@@ -4799,7 +4799,7 @@ int	gOrangeGlowG[]=
 
 
         //// Read # of palettes
-        //if (!FileManager.FileRead(hFile, ref guiNumReplacements, sizeof(guiNumReplacements), null))
+        //if (!this.files.FileRead(hFile, ref guiNumReplacements, sizeof(guiNumReplacements), null))
         //{
         //    return (false);
         //}
@@ -4811,19 +4811,19 @@ int	gOrangeGlowG[]=
         //for (cnt = 0; cnt < guiNumReplacements; cnt++)
         //{
         //    // sizeof(gpPalRep[cnt].ubType)
-        //    if (!FileManager.FileRead(hFile, gpPalRep[cnt].ubType, 100, null))
+        //    if (!this.files.FileRead(hFile, gpPalRep[cnt].ubType, 100, null))
         //    {
         //        return (false);
         //    }
 
         //    // sizeof(gpPalRep[cnt].ID)
-        //    if (!FileManager.FileRead(hFile, &gpPalRep[cnt].ID, 100, null))
+        //    if (!this.files.FileRead(hFile, &gpPalRep[cnt].ID, 100, null))
         //    {
         //        return (false);
         //    }
 
         //    // # entries // sizeof(gpPalRep[cnt].ubPaletteSize)
-        //    if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].ubPaletteSize, 100, null))
+        //    if (!this.files.FileRead(hFile, ref gpPalRep[cnt].ubPaletteSize, 100, null))
         //    {
         //        return (false);
         //    }
@@ -4838,21 +4838,21 @@ int	gOrangeGlowG[]=
 
         //    for (cnt2 = 0; cnt2 < gpPalRep[cnt].ubPaletteSize; cnt2++)
         //    {
-        //        if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].r[cnt2], sizeof(int), null))
+        //        if (!this.files.FileRead(hFile, ref gpPalRep[cnt].r[cnt2], sizeof(int), null))
         //        {
         //            return (false);
         //        }
-        //        if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].g[cnt2], sizeof(int), null))
+        //        if (!this.files.FileRead(hFile, ref gpPalRep[cnt].g[cnt2], sizeof(int), null))
         //        {
         //            return (false);
         //        }
-        //        if (!FileManager.FileRead(hFile, ref gpPalRep[cnt].b[cnt2], sizeof(int), null))
+        //        if (!this.files.FileRead(hFile, ref gpPalRep[cnt].b[cnt2], sizeof(int), null))
         //        {
         //            return (false);
         //        }
         //    }
 
-        //    FileManager.FileClose(hFile);
+        //    this.files.FileClose(hFile);
 
         //    return (true);
         //}
@@ -6001,7 +6001,7 @@ int	gOrangeGlowG[]=
         {
             zFilename = sprintf("BATTLESNDS\\%03d_%s.wav", pSoldier.ubProfile, gBattleSndsData[ubSoundID].zName);
 
-            if (!FileManager.FileExists(zFilename))
+            if (!files.FileExists(zFilename))
             {
                 // OK, temp build file...
                 if (pSoldier.ubBodyType == SoldierBodyTypes.REGFEMALE)

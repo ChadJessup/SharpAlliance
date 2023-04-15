@@ -30,12 +30,12 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
 
     public bool LoadImage(ref HIMAGE hImage, HIMAGECreateFlags flags, IFileManager fileManager)
     {
-        if (!FileManager.FileExists(hImage.ImageFile))
+        if (!fileManager.FileExists(hImage.ImageFile))
         {
             return false;
         }
 
-        using var stream = FileManager.FileOpen(hImage.ImageFile, FileAccess.Read, fDeleteOnClose: false);
+        using var stream = fileManager.FileOpen(hImage.ImageFile, FileAccess.Read, fDeleteOnClose: false);
         var config = SixLabors.ImageSharp.Configuration.Default;
         config.Properties.Clear();
 
@@ -94,7 +94,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         return image;
     }
 
-    private Image<TPixel> DecodeIndexed<TPixel>(STCIHeader pHeader, DecoderOptions options, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
+    private Image<TPixel>? DecodeIndexed<TPixel>(STCIHeader pHeader, DecoderOptions options, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
     {
         IFileManager files = (IFileManager)options.Configuration.Properties[typeof(IFileManager)];
         HIMAGE hImage = (HIMAGE)options.Configuration.Properties[stream];
@@ -122,7 +122,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
             //memset(pSTCIPalette, 0, uiFileSectionSize);
 
             // Read in the palette
-            if (!FileManager.FileRead(stream, ref pSTCIPalette, (int)uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
+            if (!fileManager.FileRead(stream, ref pSTCIPalette, (int)uiFileSectionSize, out uiBytesRead) || uiBytesRead != uiFileSectionSize)
             {
                 //DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem loading palette!");
                 //FileClose(hFile);
@@ -143,7 +143,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         {
             // seek past the palette
             uiFileSectionSize = pHeader.Indexed.uiNumberOfColours * STCI_PALETTE_ELEMENT_SIZE;
-            if (FileManager.FileSeek(stream, ref uiFileSectionSize, SeekOrigin.Current) == false)
+            if (fileManager.FileSeek(stream, ref uiFileSectionSize, SeekOrigin.Current) == false)
             {
                 // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past palette!");
                 // FileClose(hFile);
@@ -159,7 +159,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
                 hImage.usNumberOfObjects = pHeader.Indexed.usNumberOfSubImages;
                 uiFileSectionSize = (uint)hImage.usNumberOfObjects * STCI_SUBIMAGE_SIZE;
 
-                if (!FileManager.FileRead(stream, ref hImage.pETRLEObject, (int)uiFileSectionSize, out uiBytesRead)
+                if (!fileManager.FileRead(stream, ref hImage.pETRLEObject, (int)uiFileSectionSize, out uiBytesRead)
                     || uiBytesRead != uiFileSectionSize)
                 {
                     return null;
@@ -170,7 +170,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
             }
 
             hImage.pImageData = new byte[pHeader.uiStoredSize];
-            if (!FileManager.FileRead(stream, ref hImage.pImageData, (int)pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
+            if (!fileManager.FileRead(stream, ref hImage.pImageData, (int)pHeader.uiStoredSize, out uiBytesRead) || uiBytesRead != pHeader.uiStoredSize)
             {
                 return null;
             }
@@ -179,7 +179,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         }
         else if (fContents.HasFlag(HIMAGECreateFlags.IMAGE_APPDATA)) // then there's a point in seeking ahead
         {
-            if (FileManager.FileSeek(stream, ref pHeader.uiStoredSize, SeekOrigin.Current) == false)
+            if (fileManager.FileSeek(stream, ref pHeader.uiStoredSize, SeekOrigin.Current) == false)
             {
                 // DbgMessage(TOPIC_HIMAGE, DBG_LEVEL_3, "Problem seeking past image data!");
                 // FileClose(hFile);
@@ -191,7 +191,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         {
             // load application-specific data
             hImage.pAppData = new byte[pHeader.uiAppDataSize];
-            if (!FileManager.FileRead(stream, ref hImage.pAppData, (int)pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
+            if (!fileManager.FileRead(stream, ref hImage.pAppData, (int)pHeader.uiAppDataSize, out uiBytesRead) || uiBytesRead != pHeader.uiAppDataSize)
             {
             
             }

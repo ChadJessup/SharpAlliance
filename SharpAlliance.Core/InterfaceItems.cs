@@ -1414,7 +1414,7 @@ public class InterfaceItems
         if (fDirtyLevel == DIRTYLEVEL2)
         {
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-            VeldridVideoManager.GetVideoObject(out hVObject, GetInterfaceGraphicForItem(pItem));
+            video.GetVideoObject(out hVObject, GetInterfaceGraphicForItem(pItem));
             pTrav = (hVObject.pETRLEObject[pItem.ubGraphicNum]);
             usHeight = (int)pTrav.usHeight;
             usWidth = (int)pTrav.usWidth;

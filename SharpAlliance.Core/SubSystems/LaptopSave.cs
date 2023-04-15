@@ -194,7 +194,7 @@ public class LaptopSaveInfoStruct
     // BobbyRay Site
     public List<STORE_INVENTORY> BobbyRayInventory = new();
     public List<STORE_INVENTORY> BobbyRayUsedInventory = new();
-    public BobbyRayOrderStruct? BobbyRayOrdersOnDeliveryArray;
+    public List<BobbyRayOrderStruct> BobbyRayOrdersOnDeliveryArray;
     public int usNumberOfBobbyRayOrderItems;             // The number of elements in the array
     public int usNumberOfBobbyRayOrderUsed;              // The number of items in the array that are used
 
@@ -207,7 +207,7 @@ public class LaptopSaveInfoStruct
     public int ubNumberLifeInsurancePayoutUsed;      // The number of items in the array that are used
     public bool fBobbyRSiteCanBeAccessed;
     public int ubPlayerBeenToMercSiteStatus;
-    public bool fFirstVisitSinceServerWentDown;
+    public int fFirstVisitSinceServerWentDown;
     public bool fNewMercsAvailableAtMercSite;
     public bool fSaidGenericOpeningInMercSite;
     public bool fSpeckSaidFloMarriedCousinQuote;

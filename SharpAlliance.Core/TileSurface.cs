@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.SubSystems;
@@ -15,6 +16,8 @@ namespace SharpAlliance.Core;
 
 public class TileSurface
 {
+    private static IVideoManager video;
+    public TileSurface(IVideoManager videoManager) => video = videoManager;
     public static TILE_IMAGERY? LoadTileSurface(string cFilename)
     {
         // Add tile surface
@@ -142,7 +145,7 @@ public class TileSurface
             }
         }
 
-        VeldridVideoManager.DeleteVideoObject(pTileSurf.vo);
+        video.DeleteVideoObject(pTileSurf.vo);
     }
 
 

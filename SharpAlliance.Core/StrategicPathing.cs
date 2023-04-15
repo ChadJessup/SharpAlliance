@@ -482,18 +482,18 @@ public class StrategicPathing
     }
 
 
-    Path BuildAStrategicPath(Path pPath, int iStartSectorNum, int iEndSectorNum, int sMvtGroupNumber, bool fTacticalTraversal /*, bool fTempPath */ )
+    Path? BuildAStrategicPath(Path? pPath, int iStartSectorNum, int iEndSectorNum, int sMvtGroupNumber, bool fTacticalTraversal /*, bool fTempPath */ )
     {
 
         int iCurrentSectorNum;
         int iDelta = 0;
         int iPathLength;
         int iCount = 0;
-        Path pNode = null;
-        Path pNewNode = null;
-        Path pDeleteNode = null;
+        Path? pNode = null;
+        Path? pNewNode = null;
+        Path? pDeleteNode = null;
         bool fFlag = false;
-        Path pHeadOfPathList = pPath;
+        Path? pHeadOfPathList = pPath;
         int iOldDelta = 0;
         iCurrentSectorNum = iStartSectorNum;
 
@@ -634,8 +634,8 @@ public class StrategicPathing
 
     bool AddSectorToPathList(Path pPath, int uiSectorNum)
     {
-        Path pNode = null;
-        Path pTempNode = null;
+        Path? pNode = null;
+        Path? pTempNode = null;
         Path pHeadOfList = pPath;
         pNode = pPath;
 
@@ -646,7 +646,7 @@ public class StrategicPathing
 
         if (pNode == null)
         {
-//            pNode = MemAlloc(sizeof(PathSt));
+            pNode = new();
 
             // Implement EtaCost Array as base EtaCosts of sectors
             // pNode.uiEtaCost=EtaCost[uiSectorNum];
@@ -832,12 +832,12 @@ public class StrategicPathing
 
 
 
-    Path AppendStrategicPath(Path pNewSection, Path pHeadOfPathList)
+    Path AppendStrategicPath(Path? pNewSection, Path? pHeadOfPathList)
     {
         // will append a new section onto the end of the head of list, then return the head of the new list
 
-        Path pNode = pHeadOfPathList;
-        Path pPastNode = null;
+        Path? pNode = pHeadOfPathList;
+        Path? pPastNode = null;
         // move to end of original section
 
         if (pNewSection == null)
@@ -879,11 +879,11 @@ public class StrategicPathing
         return (pHeadOfPathList);
     }
 
-    Path ClearStrategicPathList(Path pHeadOfPath, int sMvtGroup)
+    Path? ClearStrategicPathList(Path? pHeadOfPath, int sMvtGroup)
     {
         // will clear out a strategic path and return head of list as null
-        Path pNode = pHeadOfPath;
-        Path pDeleteNode = pHeadOfPath;
+        Path? pNode = pHeadOfPath;
+        Path? pDeleteNode = pHeadOfPath;
 
         // is there in fact a path?
         if (pNode == null)
@@ -921,11 +921,11 @@ public class StrategicPathing
     }
 
 
-    Path ClearStrategicPathListAfterThisSector(Path pHeadOfPath, int sX, int sY, int sMvtGroup)
+    Path? ClearStrategicPathListAfterThisSector(Path? pHeadOfPath, int sX, int sY, int sMvtGroup)
     {
         // will clear out a strategic path and return head of list as null
-        Path pNode = pHeadOfPath;
-        Path pDeleteNode = pHeadOfPath;
+        Path? pNode = pHeadOfPath;
+        Path? pDeleteNode = pHeadOfPath;
         int sSector = 0;
         int sCurrentSector = -1;
 
@@ -1024,7 +1024,7 @@ public class StrategicPathing
         return (pHeadOfPath);
     }
 
-    Path MoveToBeginningOfPathList(Path pList)
+    Path? MoveToBeginningOfPathList(Path? pList)
     {
 
         // move to beginning of this list
@@ -1045,7 +1045,7 @@ public class StrategicPathing
 
     }
 
-    Path MoveToEndOfPathList(Path pList)
+    Path? MoveToEndOfPathList(Path? pList)
     {
         // move to end of list
 
@@ -1098,10 +1098,10 @@ public class StrategicPathing
     }
 
 
-    Path RemoveHeadFromStrategicPath(Path pList)
+    Path? RemoveHeadFromStrategicPath(Path? pList)
     {
         // move to head of list
-        Path pNode = pList;
+        Path? pNode = pList;
         Path pNewHead = pList;
 
         // check if there is a list
@@ -1141,7 +1141,7 @@ public class StrategicPathing
         // find sector sX, sY ...then remove it
         int sSector = 0;
         int sCurrentSector = -1;
-        Path pNode = pList;
+        Path? pNode = pList;
         Path pPastNode = pList;
 
         // get sector value
@@ -1197,7 +1197,7 @@ public class StrategicPathing
     {
         // will return the last sector of the current path, or the current sector if there's no path
         int sLastSector = (pCharacter.sSectorX) + ((int)pCharacter.sSectorY) * (MAP_WORLD_X);
-        Path pNode = null;
+        Path? pNode = null;
 
         pNode = GetSoldierMercPathPtr(pCharacter);
 
@@ -1214,7 +1214,7 @@ public class StrategicPathing
     int GetLastSectorIdInVehiclePath(int iId)
     {
         int sLastSector = -1;
-        Path pNode = null;
+        Path? pNode = null;
 
         if ((iId >= ubNumberOfVehicles) || (iId < 0))
         {
@@ -1242,12 +1242,10 @@ public class StrategicPathing
 
     }
 
-
-
-    Path CopyPaths(Path pSourcePath, Path pDestPath)
+    Path CopyPaths(Path pSourcePath, Path? pDestPath)
     {
-        Path pDestNode = pDestPath;
-        Path pCurNode = pSourcePath;
+        Path? pDestNode = pDestPath;
+        Path? pCurNode = pSourcePath;
         // copies path from source to dest
 
 
@@ -1800,7 +1798,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         gfPlotToAvoidPlayerInfuencedSectors = true;
 
         // build the path
-        pNode = BuildAStrategicPath(pNode, (int)CALCULATE_STRATEGIC_INDEX(sStartX, sStartY), (int)CALCULATE_STRATEGIC_INDEX(sDestX, sDestY), ubGroupID, false /*, false */ );
+        pNode = BuildAStrategicPath(pNode, (int)CALCULATE_STRATEGIC_INDEX(sStartX, sStartY), CALCULATE_STRATEGIC_INDEX(sDestX, sDestY), ubGroupID, false /*, false */ );
 
         // turn off the avoid flag
         gfPlotToAvoidPlayerInfuencedSectors = false;

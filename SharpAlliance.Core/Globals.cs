@@ -2060,8 +2060,8 @@ public partial class Globals
     public static Dictionary<TEAM, int> gbPublicNoiseLevel = new();
     public static int gfKnowAboutOpponents;
 
-    public static bool gfPlayerTeamSawJoey;
-    public static bool gfMikeShouldSayHi;
+    public static int gfPlayerTeamSawJoey;
+    public static int gfMikeShouldSayHi;
 
     public static int[,] gsWatchedLoc = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];
     public static int[,] gbWatchedLocLevel = new int[TOTAL_SOLDIERS, NUM_WATCHED_LOCS];

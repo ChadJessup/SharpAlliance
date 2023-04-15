@@ -3,13 +3,17 @@ using System.IO;
 using System.Linq;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
-
+using SharpAlliance.Platform.Interfaces;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Keys
 {
+    private static IFileManager files;
+
+    public Keys(IFileManager fileManager) => files = fileManager;
+
     //This is the link to see if a door exists at a gridno.  
     public static DOOR? FindDoorInfoAtGridNo(int iMapIndex)
     {
@@ -620,7 +624,7 @@ public class Keys
 
 
         //Open the file for writing, Create it if it doesnt exist
-//        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+//        hFile = files.FileOpen(zMapName, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
 //        if (hFile == 0)
 //        {
 //            //Error opening map modification file
@@ -629,11 +633,11 @@ public class Keys
 
 
         //Save the number of elements in the door array
-//        FileManager.FileWrite(hFile, gubNumDoorStatus, sizeof(int), out uiNumBytesWritten);
+//        files.FileWrite(hFile, gubNumDoorStatus, sizeof(int), out uiNumBytesWritten);
 //        if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of array to disk
-//            FileManager.FileClose(hFile);
+//            files.FileClose(hFile);
             return (false);
         }
 
@@ -641,16 +645,16 @@ public class Keys
         if (gubNumDoorStatus != 0)
         {
             //Save the door array
-//            FileManager.FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesWritten);
+//            files.FileWrite(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesWritten);
 //            if (uiNumBytesWritten != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
             {
                 //Error Writing size of array to disk
-                FileManager.FileClose(hFile);
+                files.FileClose(hFile);
                 return (false);
             }
         }
 
-        FileManager.FileClose(hFile);
+        files.FileClose(hFile);
 
         //Set the flag indicating that there is a door status array
 //        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.DOOR_STATUS_TEMP_FILE_EXISTS);
@@ -678,7 +682,7 @@ public class Keys
 //        TrashDoorStatusArray();
 
         //Open the file for reading
-//        hFile = FileManager.FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
+//        hFile = files.FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
 //        if (hFile == 0)
         {
             //Error opening map modification file,
@@ -687,16 +691,16 @@ public class Keys
 
 
         // Load the number of elements in the door status array
-        FileManager.FileRead(hFile, ref gubNumDoorStatus, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref gubNumDoorStatus, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            FileManager.FileClose(hFile);
+            files.FileClose(hFile);
             return (false);
         }
 
         if (gubNumDoorStatus == 0)
         {
-            FileManager.FileClose(hFile);
+            files.FileClose(hFile);
             return (true);
         }
 
@@ -712,14 +716,14 @@ public class Keys
 
 
         // Load the number of elements in the door status array
-//        FileManager.FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesRead);
+//        files.FileRead(hFile, gpDoorStatus, (sizeof(DOOR_STATUS) * gubNumDoorStatus), out uiNumBytesRead);
 //        if (uiNumBytesRead != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
         {
-            FileManager.FileClose(hFile);
+            files.FileClose(hFile);
             return (false);
         }
 
-        FileManager.FileClose(hFile);
+        files.FileClose(hFile);
 
         // the graphics will be updated later in the loading process.
 
@@ -741,7 +745,7 @@ public class Keys
 
 
         // Save the KeyTable
-//        FileManager.FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
+//        files.FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
 //        if (uiNumBytesWritten != sizeof(KEY) * NUM_KEYS)
         {
             return (false);
@@ -756,7 +760,7 @@ public class Keys
 
 
         // Load the KeyTable
-//        FileManager.FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
+//        files.FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
 //        if (uiNumBytesRead != sizeof(KEY) * NUM_KEYS)
         {
             return (false);
