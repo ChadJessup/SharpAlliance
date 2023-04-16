@@ -16,15 +16,18 @@ public class MessageBoxScreen : IScreen
 {
     private readonly ILogger<MessageBoxScreen> logger;
     private readonly MessageBoxSubSystem messageBoxSubSystem;
+    private static IVideoManager video;
 
     public MessageBoxScreen(
         ILogger<MessageBoxScreen> logger,
         IClockManager clockManager,
         IInputManager inputs,
+        IVideoManager videoManager,
         MessageBoxSubSystem messageBoxSubSystem)
     {
         this.logger = logger;
         this.messageBoxSubSystem = messageBoxSubSystem;
+        video = videoManager;
     }
 
     public bool IsInitialized { get; set; }

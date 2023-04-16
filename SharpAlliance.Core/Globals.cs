@@ -1,7 +1,15 @@
 ﻿global using TIMECOUNTER = System.UInt32;
 global using PaletteRepID = System.String;
-global using static SharpAlliance.Core.Globals;
+
 global using SharpAlliance.Core.SubSystems;
+global using SharpAlliance.Platform.Interfaces;
+
+global using static SharpAlliance.Core.Globals;
+global using static SharpAlliance.Core.EnglishText;
+
+using static SharpAlliance.Core.InteractiveTiles;
+using static SharpAlliance.Core.Screens.CreditsScreen;
+using static SharpAlliance.Core.SubSystems.StrategicAI;
 
 using System;
 using System.Collections.Generic;
@@ -9,13 +17,10 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Core.SubSystems;
+
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
-using static SharpAlliance.Core.InteractiveTiles;
-using static SharpAlliance.Core.Screens.CreditsScreen;
-using static SharpAlliance.Core.SubSystems.StrategicAI;
 
 namespace SharpAlliance.Core;
 
@@ -102,7 +107,7 @@ public partial class Globals
     public static int gubAdultMalesAttackingTown = 0;
     public static int gubAdultFemalesAttackingTown = 0;
     public static CREATURE_BATTLE gubCreatureBattleCode = CREATURE_BATTLE.CODE_NONE;
-    public static int gubSectorIDOfCreatureAttack = 0;
+    public static SEC gubSectorIDOfCreatureAttack = 0;
 
     public static ROTTING_CORPSE[] gRottingCorpse = new ROTTING_CORPSE[MAX_ROTTING_CORPSES];
     public static int giNumRottingCorpse = 0;

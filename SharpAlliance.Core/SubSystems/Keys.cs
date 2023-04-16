@@ -279,7 +279,7 @@ public class Keys
         }
     }
 
-    void UpdateDoorGraphicsFromStatus(bool fUsePerceivedStatus, bool fDirty)
+    public void UpdateDoorGraphicsFromStatus(bool fUsePerceivedStatus, bool fDirty)
     {
         int cnt;
         DOOR_STATUS? pDoorStatus;
@@ -771,7 +771,7 @@ public class Keys
 
 
 
-    void ExamineDoorsOnEnteringSector()
+    public void ExamineDoorsOnEnteringSector()
     {
         int cnt;
         DOOR_STATUS? pDoorStatus;

@@ -1,19 +1,32 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Screens;
-using static SharpAlliance.Core.Globals;
-using static SharpAlliance.Core.EnglishText;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Platform.Interfaces;
+using SharpAlliance.Core.Interfaces;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class StrategicMap
 {
     private static IFileManager files;
-    public StrategicMap(IFileManager fileManager)
+    private IScreenManager screens;
+    private Keys keys;
+    private IMusicManager music;
+    private AIMain aiMain;
+
+    public StrategicMap(
+        IFileManager fileManager,
+        IScreenManager screenManager,
+        IMusicManager musicManager,
+        Keys keys,
+        AIMain aiMain)
     {
+        this.music = music;
+        this.keys = keys;
         files = fileManager;
+        screens = screenManager;
+        this.aiMain = aiMain;
     }
 
     public ValueTask<bool> InitStrategicMovementCosts()
@@ -24,6 +37,231 @@ public class StrategicMap
     public ValueTask<bool> InitStrategicEngine()
     {
         return ValueTask.FromResult(true);
+    }
+
+    public bool SetCurrentWorldSector(int sMapX, MAP_ROW sMapY, int bMapZ)
+    {
+        UNDERGROUND_SECTORINFO? pUnderWorld = null;
+        bool fChangeMusic = true;
+
+        // ATE: Zero out accounting functions
+        gbMercIsNewInThisSector = new int[MAX_NUM_SOLDIERS];
+
+        SyncStrategicTurnTimes();
+
+        // is the sector already loaded?
+        if ((gWorldSectorX == sMapX) && (sMapY == gWorldSectorY) && (bMapZ == gbWorldSectorZ))
+        {
+            //Inserts the enemies into the newly loaded map based on the strategic information.
+            //Note, the flag will return true only if enemies were added.  The game may wish to
+            //do something else in a case where no enemies are present.
+
+            screens.SetPendingNewScreen(ScreenName.GAME_SCREEN);
+            if (!NumEnemyInSector())
+            {
+                PrepareEnemyForSectorBattle();
+            }
+            if (gubNumCreaturesAttackingTown > 0
+                && gbWorldSectorZ == 0
+                && gubSectorIDOfCreatureAttack == SECTORINFO.SECTOR(gWorldSectorX, gWorldSectorY))
+            {
+                PrepareCreaturesForBattle();
+            }
+
+            if (gfGotoSectorTransition)
+            {
+                BeginLoadScreen();
+                gfGotoSectorTransition = false;
+            }
+
+            // Check for helicopter being on the ground in this sector...
+            HandleHelicopterOnGroundGraphic();
+
+            ResetMilitia();
+            AllTeamsLookForAll(true);
+            return (true);
+        }
+
+        if (gWorldSectorX > 0 && gWorldSectorY > 0 && gbWorldSectorZ != -1)
+        {
+            HandleDefiniteUnloadingOfWorld(ABOUT_TO_LOAD_NEW_MAP);
+        }
+
+        // make this the currently loaded sector
+        gWorldSectorX = sMapX;
+        gWorldSectorY = sMapY;
+        gbWorldSectorZ = bMapZ;
+
+        // update currently selected map sector to match
+        ChangeSelectedMapSector(sMapX, sMapY, bMapZ);
+
+
+        //Check to see if the sector we are loading is the cave sector under Tixa.  If so
+        //then we will set up the meanwhile scene to start the creature quest.
+        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        {
+            StopAnyCurrentlyTalkingSpeech();
+
+            if (gWorldSectorX == 9 && gWorldSectorY == MAP_ROW.J /*10*/ && gbWorldSectorZ == 2)
+            {
+                InitCreatureQuest(); //Ignored if already active.
+            }
+        }
+
+        //Stop playing any music -- will fade out.
+        // SetMusicMode( MUSIC_NONE );
+
+        // ATE: Determine if we should set the default music...
+
+        // Are we already in 'tense' music...
+
+        // ATE: Change music only if not loading....
+        /*-
+        if ( gubMusicMode == MUSIC_TACTICAL_ENEMYPRESENT  )
+        {
+            fChangeMusic = false;
+        }
+
+        // Did we 'tactically traverse' over....
+        if ( gfTacticalTraversal )
+        {
+            fChangeMusic = false;
+        }
+
+        // If we have no music playing at all....
+        if ( gubMusicMode == MUSIC_NONE  )
+        {
+            fChangeMusic = true;
+        }
+        -*/
+
+        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        {
+            fChangeMusic = true;
+        }
+        else
+        {
+            fChangeMusic = false;
+        }
+
+
+        if (fChangeMusic)
+        {
+            music.SetMusicMode(MusicMode.MAIN_MENU);
+        }
+
+        // ATE: Do this stuff earlier!
+        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        {
+            // Update the last time we were in tactical...
+            gTacticalStatus.uiTimeSinceLastInTactical = GameClock.GetWorldTotalMin();
+
+            // init some AI stuff
+            InitializeTacticalStatusAtBattleStart();
+
+            // CJC: delay this until after entering the sector!
+            //InitAI();
+
+            // Check for helicopter being on the ground in this sector...
+            HandleHelicopterOnGroundSkyriderProfile();
+        }
+
+        //Load and enter the new sector
+        if (EnterSector(gWorldSectorX, gWorldSectorY, bMapZ))
+        {
+            // CJC: moved this here Feb 17
+            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+            {
+                aiMain.InitAI();
+            }
+
+            //If there are any people with schedules, now is the time to process them.
+            //CJC: doesn't work here if we're going through the tactical placement GUI; moving
+            // this call to PrepareLoadedSector()
+            //PostSchedules();
+
+            // ATE: OK, add code here to update the states of doors if they should 
+            // be closed......
+            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+            {
+                keys.ExamineDoorsOnEnteringSector();
+            }
+
+            // Update all the doors in the sector according to the temp file previously
+            // loaded, and any changes made by the schedules
+            keys.UpdateDoorGraphicsFromStatus(true, false);
+
+            //Set the fact we have visited the  sector
+            TacticalSaveSubSystem.SetSectorFlag(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, SF.ALREADY_LOADED);
+
+            // Check for helicopter being on the ground in this sector...
+            HandleHelicopterOnGroundGraphic();
+        }
+        else
+            return (false);
+
+        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        {
+            if ((gubMusicMode != MusicMode.TACTICAL_ENEMYPRESENT
+                && gubMusicMode != MusicMode.TACTICAL_BATTLE)
+                || (!NumHostilesInSector(sMapX, sMapY, bMapZ)
+                && gubMusicMode == MusicMode.TACTICAL_ENEMYPRESENT))
+            {
+                // ATE; Fade FA.T....
+                //music.SetMusicFadeSpeed(5);
+
+                music.SetMusicMode(MusicMode.TACTICAL_NOTHING);
+            }
+
+            // ATE: Check what sector we are in, to show description if we have an RPC.....
+            HandleRPCDescriptionOfSector(sMapX, sMapY, bMapZ);
+
+
+
+            // ATE: Set Flag for being visited...
+            TacticalSaveSubSystem.SetSectorFlag(sMapX, sMapY, bMapZ, SF.HAS_ENTERED_TACTICAL);
+
+            // ATE; Reset some flags for creature sayings....
+            gTacticalStatus.fSaidCreatureFlavourQuote = false;
+            gTacticalStatus.fHaveSeenCreature = false;
+            gTacticalStatus.fBeenInCombatOnce = false;
+            gTacticalStatus.fSaidCreatureSmellQuote = false;
+            ResetMultiSelection();
+
+            // ATE: Decide if we can have crows here....
+            gTacticalStatus.fGoodToAllowCrows = false;
+            gTacticalStatus.fHasEnteredCombatModeSinceEntering = false;
+            gTacticalStatus.fDontAddNewCrows = false;
+
+            // Adjust delay for tense quote
+            gTacticalStatus.sCreatureTenseQuoteDelay = (int)(10 + Globals.Random.Next(20));
+
+            {
+                int sWarpWorldX;
+                int sWarpWorldY;
+                int bWarpWorldZ;
+                int sWarpGridNo;
+
+                if (GetWarpOutOfMineCodes(out sWarpWorldX, out sWarpWorldY, out bWarpWorldZ, out sWarpGridNo) && gbWorldSectorZ >= 2)
+                {
+                    gTacticalStatus.uiFlags |= TacticalEngineStatus.IN_CREATURE_LAIR;
+                }
+                else
+                {
+                    gTacticalStatus.uiFlags &= (~TacticalEngineStatus.IN_CREATURE_LAIR);
+                }
+            }
+
+            // Every third turn
+            //if ( Random( 3 ) == 0  )
+            {
+                gTacticalStatus.fGoodToAllowCrows = true;
+                gTacticalStatus.ubNumCrowsPossible = (int)(5 + Globals.Random.Next(5));
+            }
+
+        }
+
+        return (true);
     }
 
     public static void GetMapFileName(int sMapX, MAP_ROW sMapY, int bSectorZ, out string bString, bool fUsePlaceholder, bool fAddAlternateMapLetter)

@@ -4899,3 +4899,21 @@ public record PagePtr
     public PagePtr? Next;
     public PagePtr? Prev;
 };
+
+// This used when saving the emails to disk.
+public record SavedEmailStruct
+{
+    public int usOffset;
+    public int usLength;
+    public EmailAddresses ubSender;
+    public uint iDate;
+    public int iId;
+    public int iFirstData;
+    public object uiSecondData;
+    public int iThirdData;
+    public int iFourthData;
+    public int uiFifthData;
+    public int uiSixData;
+    public bool fRead;
+    public bool fNew;
+}

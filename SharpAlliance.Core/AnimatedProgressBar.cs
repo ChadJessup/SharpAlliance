@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 
@@ -12,6 +13,12 @@ public partial class Globals
 public class AnimatedProgressBar
 {
     private static PROGRESSBAR[] pBar = new PROGRESSBAR[MAX_PROGRESSBARS];
+    private static IVideoManager video;
+
+    public AnimatedProgressBar(IVideoManager videoManager)
+    {
+        video = videoManager;
+    }
 
     //An important setup function.  The best explanation is through example.  The example being the loading
     //of a file -- there are many stages of the map loading.  In JA2, the first step is to load the tileset.
@@ -20,37 +27,39 @@ public class AnimatedProgressBar
     //As the process animates using UpdateProgressBar( 0 to 100 ), the total progress bar will only reach 30%
     //at the 100% mark within UpdateProgressBar.  At that time, you would go onto the next step, resetting the
     //relative start and end percentage from 30 to whatever, until your done.
-    public static void SetRelativeStartAndEndPercentage(int ubID, int uiRelStartPerc, int uiRelEndPerc, string str)
+    public static void SetRelativeStartAndEndPercentage(int ubID, float uiRelStartPerc, float uiRelEndPerc, string str)
     {
         PROGRESSBAR? pCurr;
         int usStartX, usStartY;
 
         Debug.Assert(ubID < MAX_PROGRESSBARS);
         pCurr = pBar[ubID];
-        if (!pCurr)
+        if (pCurr is null)
+        {
             return;
+        }
 
-        pCurr.rStart = uiRelStartPerc * 0.01;
-        pCurr.rEnd = uiRelEndPerc * 0.01;
+        pCurr.rStart = uiRelStartPerc * 0.01f;
+        pCurr.rEnd = uiRelEndPerc * 0.01f;
 
         //Render the entire panel now, as it doesn't need update during the normal rendering
         if (pCurr.fPanel)
         {
             //Draw panel
-            ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
                 pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom, pCurr.usLtColor);
-            ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
                 pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight, pCurr.usPanelBottom, pCurr.usDkColor);
-            ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
                 pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight - 1, pCurr.usPanelBottom - 1, pCurr.usColor);
-            InvalidateRegion(pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom);
+            VeldridVideoManager.InvalidateRegion(pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom);
             //Draw title
 
-            if (pCurr.swzTitle)
+            if (pCurr.swzTitle != string.Empty)
             {
                 usStartX = pCurr.usPanelLeft +                                                                                 // left position
                                      (pCurr.usPanelRight - pCurr.usPanelLeft) / 2 -                               // + half width
-                                     StringPixLength(pCurr.swzTitle, pCurr.usTitleFont) / 2;  // - half string width
+                                     FontSubSystem.StringPixLength(pCurr.swzTitle, pCurr.usTitleFont) / 2;  // - half string width
                 usStartY = pCurr.usPanelTop + 3;
                 FontSubSystem.SetFont(pCurr.usTitleFont);
                 FontSubSystem.SetFontForeground(pCurr.ubTitleFontForeColor);
@@ -63,13 +72,13 @@ public class AnimatedProgressBar
         if (pCurr.fDisplayText)
         {
             //Draw message
-            if (str)
+            if (str == string.Empty)
             {
                 if (pCurr.fUseSaveBuffer)
                 {
                     int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont);
 
-                    RestoreExternBackgroundRect(pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), (int)(usFontHeight + 3));
+                    RenderDirty.RestoreExternBackgroundRect(pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), (int)(usFontHeight + 3));
                 }
 
                 FontSubSystem.SetFont(pCurr.usMsgFont);
@@ -98,11 +107,13 @@ public class AnimatedProgressBar
         pCurr = pBar[ubID];
 
         if (pCurr == null)
-            return;
-
-        if (pCurr)
         {
-            rActual = pCurr.rStart + (pCurr.rEnd - pCurr.rStart) * uiPercentage * 0.01;
+            return;
+        }
+
+        if (pCurr is not null)
+        {
+            rActual = pCurr.rStart + (float)(pCurr.rEnd - pCurr.rStart) * (float)uiPercentage * 0.01f;
 
             if (rActual - pCurr.rLastActual < 0.01)
             {
@@ -116,11 +127,20 @@ public class AnimatedProgressBar
             {
                 return;
             }
+
             if (gfUseLoadScreenProgressBar)
             {
-                ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
-                    pCurr.usBarLeft, pCurr.usBarTop, end, pCurr.usBarBottom,
-                    Get16BPPColor(FROMRGB(pCurr.ubColorFillRed, pCurr.ubColorFillGreen, pCurr.ubColorFillBlue)));
+                ColorFillVideoSurfaceArea(
+                    Surfaces.FRAME_BUFFER,
+                    pCurr.usBarLeft,
+                    pCurr.usBarTop,
+                    end,
+                    pCurr.usBarBottom,
+                    Get16BPPColor(
+                        FROMRGB(
+                            pCurr.ubColorFillRed,
+                            pCurr.ubColorFillGreen,
+                            pCurr.ubColorFillBlue)));
                 //if( pCurr.usBarRight > gusLeftmostShaded )
                 //{
                 //	ShadowVideoSurfaceRect( Surfaces.FRAME_BUFFER, gusLeftmostShaded+1, pCurr.usBarTop, end, pCurr.usBarBottom );	
@@ -130,31 +150,31 @@ public class AnimatedProgressBar
             else
             {
                 //Border edge of the progress bar itself in gray
-                ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
                     pCurr.usBarLeft, pCurr.usBarTop, pCurr.usBarRight, pCurr.usBarBottom,
                     Get16BPPColor(FROMRGB(160, 160, 160)));
                 //Interior of progress bar in black
-                ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
                     pCurr.usBarLeft + 2, pCurr.usBarTop + 2, pCurr.usBarRight - 2, pCurr.usBarBottom - 2,
                     Get16BPPColor(FROMRGB(0, 0, 0)));
-                ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, pCurr.usBarLeft + 2, pCurr.usBarTop + 2, end, pCurr.usBarBottom - 2, Get16BPPColor(FROMRGB(72, 155, 24)));
+                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, pCurr.usBarLeft + 2, pCurr.usBarTop + 2, end, pCurr.usBarBottom - 2, Get16BPPColor(FROMRGB(72, 155, 24)));
             }
-            
+
             VeldridVideoManager.InvalidateRegion(pCurr.usBarLeft, pCurr.usBarTop, pCurr.usBarRight, pCurr.usBarBottom);
-            ExecuteBaseDirtyRectQueue();
-            EndFrameBufferRender();
-            RefreshScreen(null);
+            video.ExecuteBaseDirtyRectQueue();
+            video.EndFrameBufferRender();
+            video.RefreshScreen();
         }
 
         // update music here
         if (uiCurTime > (uiLastTime + 200))
         {
-            MusicPoll(true);
+//            MusicPoll(true);
             uiLastTime = GetJA2Clock();
         }
     }
 
-    void SetProgressBarColor(int ubID, int ubColorFillRed, int ubColorFillGreen, int ubColorFillBlue)
+    void SetProgressBarColor(int ubID, byte ubColorFillRed, byte ubColorFillGreen, byte ubColorFillBlue)
     {
         PROGRESSBAR? pCurr = null;
 
@@ -185,10 +205,10 @@ public class AnimatedProgressBar
         //if we are to use the save buffer, blit the portion of the screen to the save buffer
         if (fSaveScreenToFrameBuffer)
         {
-            int usFontHeight = GetFontHeight(pCurr.usMsgFont) + 3;
+            int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont) + 3;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-            BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);
+            RenderDirty.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);
         }
     }
 }
@@ -208,9 +228,9 @@ public class PROGRESSBAR
     public FontColor ubMsgFontForeColor;
     public FontShadow ubMsgFontShadowColor;
     public int ubRelativeStartPercentage, ubRelativeEndPercentage;
-    public int ubColorFillRed;
-    public int ubColorFillGreen;
-    public int ubColorFillBlue;
+    public byte ubColorFillRed;
+    public byte ubColorFillGreen;
+    public byte ubColorFillBlue;
     public float rStart, rEnd;
     public bool fDisplayText;
     public bool fUseSaveBuffer; //use the save buffer when display the text

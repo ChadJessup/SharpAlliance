@@ -30,7 +30,7 @@ public class AIMain
     }
 
 
-    bool InitAI()
+    public bool InitAI()
     {
         Stream DebugFile;
 

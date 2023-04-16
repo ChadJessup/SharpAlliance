@@ -1245,7 +1245,7 @@ public enum Meanwhiles
 };
 
 
-public class MEANWHILE_DEFINITION
+public struct MEANWHILE_DEFINITION
 {
     public int sSectorX;
     public MAP_ROW sSectorY;

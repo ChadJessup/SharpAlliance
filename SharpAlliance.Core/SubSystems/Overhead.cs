@@ -1645,7 +1645,7 @@ public class TacticalStatusType
     public int uiTimeCounterForGiveItemSrc;
     public int[] bNumFoughtInBattle = new int[(int)Globals.MAXTEAMS];
     public int uiDecayBloodLastUpdate;
-    public int uiTimeSinceLastInTactical;
+    public uint uiTimeSinceLastInTactical;
     public int bConsNumTurnsWeHaventSeenButEnemyDoes;
     public bool fSomeoneHit;
     public int ubPaddingSmall;

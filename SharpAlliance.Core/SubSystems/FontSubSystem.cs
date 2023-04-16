@@ -348,7 +348,7 @@ public class FontSubSystem : ISharpAllianceManager
     public ValueTask<bool> Initialize()
     {
         //video = this.context.Services.GetRequiredService<IVideoManager>();
-        FontSubSystem.TextRenderer = new TextRenderer(video.GraphicDevice);
+        FontSubSystem.TextRenderer = new TextRenderer(IVideoManager.GraphicDevice);
 
         var translationTable = this.CreateEnglishTransTable();
         this.InitializeFontManager(translationTable);

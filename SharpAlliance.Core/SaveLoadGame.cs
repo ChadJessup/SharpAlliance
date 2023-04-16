@@ -859,7 +859,7 @@ public class SaveLoadGame
         }
 
         CreateLoadingScreenProgressBar();
-        SetProgressBarColor(0, 0, 0, 150);
+        AnimatedProgressBar.SetProgressBarColor(0, 0, 0, 150);
 
         uiRelStartPerc = 0;
 
@@ -1851,7 +1851,7 @@ public class SaveLoadGame
         }
 
         //Reset the shadow 
-        SetFontShadow(DEFAULT_SHADOW);
+        FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
 #if JA2BETAVERSION
     AssertMsg(uiSizeOfGeneralInfo == 1024, String("Saved General info is NOT 1024, it is %d.  DF 1.", uiSizeOfGeneralInfo));
@@ -2665,16 +2665,14 @@ public class SaveLoadGame
     {
         int uiNumOfEmails = 0;
         int uiSizeOfEmails = 0;
-        email pEmail = pEmailList;
-        email pTempEmail = null;
+        email? pEmail = pEmailList;
+        email? pTempEmail = null;
         int cnt;
         int uiStringLength = 0;
         int uiNumBytesWritten = 0;
 
-        SavedEmailStruct SavedEmail;
-
         //loop through all the email to find out the total number
-        while (pEmail)
+        while (pEmail is not null)
         {
             pEmail = pEmail.Next;
             uiNumOfEmails++;
@@ -2683,7 +2681,7 @@ public class SaveLoadGame
         uiSizeOfEmails = Marshal.SizeOf<email>() * uiNumOfEmails;
 
         //write the number of email messages
-        FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2698,14 +2696,14 @@ public class SaveLoadGame
             uiStringLength = (wcslen(pEmail.pSubject) + 1) * 2;
 
             //write the length of the current emails subject to the saved game file
-            FileWrite(hFile, uiStringLength, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+            files.FileWrite(hFile, uiStringLength, Marshal.SizeOf<int>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<int>())
             {
                 return (false);
             }
 
             //write the subject of the current email to the saved game file
-            FileWrite(hFile, pEmail.pSubject, uiStringLength, out uiNumBytesWritten);
+            files.FileWrite(hFile, pEmail.pSubject, uiStringLength, out uiNumBytesWritten);
             if (uiNumBytesWritten != uiStringLength)
             {
                 return (false);
@@ -2713,6 +2711,7 @@ public class SaveLoadGame
 
 
             //Get the current emails data and asign it to the 'Saved email' struct
+            SavedEmailStruct SavedEmail = new();
             SavedEmail.usOffset = pEmail.usOffset;
             SavedEmail.usLength = pEmail.usLength;
             SavedEmail.ubSender = pEmail.ubSender;
@@ -2729,7 +2728,7 @@ public class SaveLoadGame
 
 
             // write the email header to the saved game file
-            FileWrite(hFile, &SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesWritten);
+            files.FileWrite(hFile, SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<SavedEmailStruct>())
             {
                 return (false);
@@ -2768,7 +2767,7 @@ public class SaveLoadGame
 //        memset(pEmailList, 0, Marshal.SizeOf<email>());
 
         //read in the number of email messages
-        FileRead(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        files.FileRead(hFile, ref uiNumOfEmails, Marshal.SizeOf<int>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2779,7 +2778,7 @@ public class SaveLoadGame
         for (cnt = 0; cnt < uiNumOfEmails; cnt++)
         {
             //get the length of the email subject
-            files.FileRead(hFile, uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
+            files.FileRead(hFile, ref uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<int>())
             {
                 return (false);
@@ -2795,14 +2794,14 @@ public class SaveLoadGame
 //            memset(pData, 0, EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
 
             //Get the subject
-            files.FileRead(hFile, pData, uiSizeOfSubject, out uiNumBytesRead);
+            files.FileRead(hFile, ref pData, uiSizeOfSubject, out uiNumBytesRead);
             if (uiNumBytesRead != uiSizeOfSubject)
             {
                 return (false);
             }
 
             //get the rest of the data from the email
-            files.FileRead(hFile, &SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesRead);
+            files.FileRead(hFile, ref SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<SavedEmailStruct>())
             {
                 return (false);
@@ -3330,13 +3329,6 @@ public class SaveLoadGame
         //load all the nodes
         for (cnt = 0; cnt < uiNumOfNodes; cnt++)
         {
-            //Allocate memory for the new node
-            pTemp = new(); // MemAlloc(Marshal.SizeOf<PathSt>());
-            if (pTemp == null)
-            {
-                return (false);
-            }
-
             //Load the node
             files.FileRead(hFile, ref pTemp, 17/*Marshal.SizeOf<Path>()*/, out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<Path>())
@@ -3468,8 +3460,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
     {
         int uiNumBytesWritten;
 
-        GENERAL_SAVE_INFO sGeneralInfo;
-        memset(&sGeneralInfo, 0, Marshal.SizeOf<GENERAL_SAVE_INFO>());
+        GENERAL_SAVE_INFO sGeneralInfo = new();
 
         sGeneralInfo.ubMusicMode = gubMusicMode;
         sGeneralInfo.uiCurrentUniqueSoldierId = guiCurrentUniqueSoldierId;
@@ -3540,7 +3531,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         else
             sGeneralInfo.sContractRehireSoldierID = -1;
 
-        memcpy(sGeneralInfo.GameOptions, gGameOptions, Marshal.SizeOf<GAME_OPTIONS>());
+        sGeneralInfo.GameOptions = gGameOptions;
 
         //Save the Ja2Clock()
         sGeneralInfo.uiBaseJA2Clock = guiBaseJA2Clock;
@@ -3587,10 +3578,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
 
         // list of dead guys for squads...in id values . -1 means no one home 
-        memcpy(sGeneralInfo.sDeadMercs, sDeadMercs, Marshal.SizeOf<int>() * (int)NUMBER_OF_SQUADS * NUMBER_OF_SOLDIERS_PER_SQUAD);
+        sGeneralInfo.sDeadMercs = sDeadMercs;
 
         // level of public noises
-        memcpy(sGeneralInfo.gbPublicNoiseLevel, gbPublicNoiseLevel, Marshal.SizeOf<int>() * (int)MAXTEAMS);
+        sGeneralInfo.gbPublicNoiseLevel = gbPublicNoiseLevel;
 
         //The screen count for the initscreen
         sGeneralInfo.gubScreenCount = gubScreenCount;
@@ -3618,7 +3609,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         sGeneralInfo.fLastBoxingMatchWonByPlayer = gfLastBoxingMatchWonByPlayer;
 
-        memcpy(sGeneralInfo.fSamSiteFound, fSamSiteFound, NUMBER_OF_SAMS * Marshal.SizeOf<bool>());
+        sGeneralInfo.fSamSiteFound = fSamSiteFound.Values.ToArray();//, NUMBER_OF_SAMS * Marshal.SizeOf<bool>());
 
         sGeneralInfo.ubNumTerrorists = gubNumTerrorists;
         sGeneralInfo.ubCambriaMedicalObjects = gubCambriaMedicalObjects;
@@ -3872,7 +3863,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         gfLastBoxingMatchWonByPlayer = sGeneralInfo.fLastBoxingMatchWonByPlayer;
 
-        for (SAM_SITE i = 0; i < sGeneralInfo.fSamSiteFound.Length; i++)
+        for (SAM_SITE i = 0; i < (SAM_SITE)sGeneralInfo.fSamSiteFound.Length; i++)
         {
             fSamSiteFound[i] = sGeneralInfo.fSamSiteFound[(int)i];
         }
@@ -4034,6 +4025,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
     void GetBestPossibleSectorXYZValues(out int psSectorX, out MAP_ROW psSectorY, out int pbSectorZ)
     {
+        psSectorX = 0;
+        psSectorY = 0;
+        pbSectorZ = 0;
+
         //if the current sector is valid
         if (gfWorldLoaded)
         {
@@ -4041,8 +4036,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
             psSectorY = gWorldSectorY;
             pbSectorZ = gbWorldSectorZ;
         }
-        else if (iCurrentTacticalSquad != NO_CURRENT_SQUAD
-            && Squad[iCurrentTacticalSquad][0])
+        else if (iCurrentTacticalSquad != NO_CURRENT_SQUAD && Squad[iCurrentTacticalSquad][0] is not null)
         {
             if (Squad[iCurrentTacticalSquad][0].bAssignment != Assignments.IN_TRANSIT)
             {
@@ -4120,7 +4114,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         if (guiCurrentScreen != ScreenName.SAVE_LOAD_SCREEN)
         {
             //Pause the game
-            PauseGame();
+            GameClock.PauseGame();
         }
     }
 
@@ -4130,7 +4124,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         if (guiCurrentScreen != ScreenName.SAVE_LOAD_SCREEN)
         {
             //UnPause time compression
-            UnPauseGame();
+            GameClock.UnPauseGame();
         }
     }
 
@@ -4491,13 +4485,13 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         switch (pSaveGameHeader.sInitialGameOptions.ubDifficultyLevel)
         {
-            case DIF_LEVEL_EASY:
+            case DifficultyLevel.Easy:
                 uiEncryptionSet += 0;
                 break;
-            case DIF_LEVEL_MEDIUM:
+            case DifficultyLevel.Medium:
                 uiEncryptionSet += BASE_NUMBER_OF_ROTATION_ARRAYS;
                 break;
-            case DIF_LEVEL_HARD:
+            case DifficultyLevel.Hard:
                 uiEncryptionSet += BASE_NUMBER_OF_ROTATION_ARRAYS * 2;
                 break;
         }
@@ -4509,10 +4503,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 public struct GENERAL_SAVE_INFO
 {
     //The screen that the gaem was saved from
-    public int uiCurrentScreen;
+    public ScreenName uiCurrentScreen;
     public int uiCurrentUniqueSoldierId;
     //The music that was playing when the game was saved
-    public int ubMusicMode;
+    public MusicMode ubMusicMode;
     //Flag indicating that we have purchased something from Tony
     public bool fHavePurchasedItemsFromTony;
     //The selected soldier in tactical
@@ -4563,7 +4557,7 @@ public struct GENERAL_SAVE_INFO
     public int ubQuitType;
     public bool fSkyriderSaidCongratsOnTakingSAM;
     public int sContractRehireSoldierID;
-    //  public   GAME_OPTIONS GameOptions;
+    public   GameOptions GameOptions;
     public int uiSeedNumber;
     public int uiBaseJA2Clock;
     public InterfacePanelDefines sCurInterfacePanel;
@@ -4588,7 +4582,7 @@ public struct GENERAL_SAVE_INFO
     public bool gfMeanwhileTryingToStart;
     public bool gfInMeanwhile;
     // list of dead guys for squads...in id values . -1 means no one home 
-    public int[][] sDeadMercs;// [NUMBER_OF_SQUADS][NUMBER_OF_SOLDIERS_PER_SQUAD];
+    public Dictionary<SquadEnum, Dictionary<int, NPCID>> sDeadMercs;// [NUMBER_OF_SQUADS][NUMBER_OF_SOLDIERS_PER_SQUAD];
                               // levels of publicly known noises
     public int[] gbPublicNoiseLevel;// [MAXTEAMS];
     public int gubScreenCount;
@@ -4662,8 +4656,7 @@ public class SAVED_GAME_HEADER
     public bool fAlternateSector;
     public bool fWorldLoaded;
     public int ubLoadScreenID;       //The load screen that should be used when loading the saved game
-                                     //    public GAME_OPTIONS sInitialGameOptions;   //need these in the header so we can get the info from it on the save load screen.
+    public GameOptions sInitialGameOptions;   //need these in the header so we can get the info from it on the save load screen.
     public int uiRandom;
     public int[] ubFiller;// [110];
-
 }
