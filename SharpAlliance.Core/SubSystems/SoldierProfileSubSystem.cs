@@ -81,9 +81,10 @@ public class SoldierProfileSubSystem
         //	FILE *fptr;
         Stream fptr;
         string pFileName = "BINARYDATA\\Prof.dat";
-        int uiLoop, uiLoop2, uiLoop3;
+        InventorySlot uiLoop, uiLoop2;
+        InventorySlot uiLoop3;
         Items usItem, usNewGun, usAmmo, usNewAmmo;
-        int uiNumBytesRead;
+        int uiNumBytesRead = 0;
 
 
         fptr = files.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
@@ -93,7 +94,7 @@ public class SoldierProfileSubSystem
         //    return false;
         //}
 
-        for (uiLoop = 0; uiLoop < NUM_PROFILES; uiLoop++)
+        for (uiLoop = 0; uiLoop < (InventorySlot)NUM_PROFILES; uiLoop++)
         {
             var npcId = (NPCID)uiLoop;
 
@@ -129,12 +130,12 @@ public class SoldierProfileSubSystem
             // ATE: New, face display indipendent of ID num now
             // Setup face index value
             // Default is the ubCharNum
-            Globals.gMercProfiles[npcId].ubFaceIndex = uiLoop;
+            Globals.gMercProfiles[npcId].ubFaceIndex = (int)uiLoop;
 
             if (!Globals.gGameOptions.GunNut)
             {
                 // CJC: replace guns in profile if they aren't available
-                for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
+                for (uiLoop2 = 0; uiLoop2 < InventorySlot.NUM_INV_SLOTS; uiLoop2++)
                 {
                     usItem = Globals.gMercProfiles[npcId].inv[uiLoop2];
 
@@ -146,7 +147,7 @@ public class SoldierProfileSubSystem
                             Globals.gMercProfiles[npcId].inv[uiLoop2] = usNewGun;
 
                             // must search through inventory and replace ammo accordingly
-                            for (uiLoop3 = 0; uiLoop3 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop3++)
+                            for (uiLoop3 = 0; uiLoop3 < InventorySlot.NUM_INV_SLOTS; uiLoop3++)
                             {
                                 usAmmo = Globals.gMercProfiles[npcId].inv[uiLoop3];
                                 if (Globals.Item[usAmmo].usItemClass.HasFlag(IC.AMMO))
@@ -169,7 +170,7 @@ public class SoldierProfileSubSystem
             Globals.gMercProfiles[npcId].bMainGunAttractiveness = -1;
             Globals.gMercProfiles[npcId].bArmourAttractiveness = -1;
 
-            for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
+            for (uiLoop2 = 0; uiLoop2 < InventorySlot.NUM_INV_SLOTS; uiLoop2++)
             {
                 var npcId2 = (NPCID)uiLoop2;
                 usItem = Globals.gMercProfiles[npcId2].inv[uiLoop2];
@@ -195,7 +196,7 @@ public class SoldierProfileSubSystem
 
             //add up the items the merc has for the usOptionalGearCost 
             Globals.gMercProfiles[npcId].usOptionalGearCost = 0;
-            for (uiLoop2 = 0; uiLoop2 < (int)InventorySlot.NUM_INV_SLOTS; uiLoop2++)
+            for (uiLoop2 = 0; uiLoop2 < InventorySlot.NUM_INV_SLOTS; uiLoop2++)
             {
                 if (Globals.gMercProfiles[npcId].inv[uiLoop2] != Items.NONE)
                 {

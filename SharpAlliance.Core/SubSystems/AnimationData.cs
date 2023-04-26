@@ -16,14 +16,14 @@ public class AnimationData
 {
     private readonly IFileManager files;
     private readonly StructureFile structure;
-    private readonly IVideoManager video;
+    private static IVideoManager video;
 
     public AnimationData(
         IFileManager fileManager,
         IVideoManager videoManager,
         StructureFile structureFile)
     {
-        this.video = videoManager;
+        video = videoManager;
         this.files = fileManager;
         this.structure = structureFile;
     }
@@ -102,7 +102,7 @@ public class AnimationData
 
             CHECKF(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject != null);
     
-            this.video.DeleteVideoObject(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject);
+            video.DeleteVideoObject(gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject);
             gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject = null;
         }
 

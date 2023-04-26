@@ -27,8 +27,8 @@ public interface IVideoManager : ISharpAllianceManager
     void DrawFrame();
     void RefreshScreen();
     void InvalidateScreen();
-    static void InvalidateRegion(Rectangle bounds) => throw new NotImplementedException();
-    static void InvalidateRegion(int v1, int v2, int v3, int v4) => throw new NotImplementedException();
+    void InvalidateRegion(Rectangle bounds) => throw new NotImplementedException();
+    void InvalidateRegion(int v1, int v2, int v3, int v4) => throw new NotImplementedException();
     void EndFrameBufferRender();
     HVOBJECT? AddVideoObject(string assetPath, out string key);
     HVOBJECT? GetVideoObject(string key);
@@ -76,7 +76,7 @@ public interface IVideoManager : ISharpAllianceManager
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap);
     void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
     ValueTask<bool> Initialize();
-    Stream OpenEmbeddedAssetStream(string name);
+    static Stream OpenEmbeddedAssetStream(string name) => throw new NotImplementedException();
     static byte[] ReadEmbeddedAssetBytes(string name) => throw new NotImplementedException();
     bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette);
     void UnLockVideoSurface(Surfaces buffer);

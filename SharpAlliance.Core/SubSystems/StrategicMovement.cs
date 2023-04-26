@@ -4267,7 +4267,7 @@ public class StrategicMovement
         Debug.Assert(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
         pSoldier.sBreathRed -= sFuelSpent;
         pSoldier.sBreathRed = (int)Math.Max(0, pSoldier.sBreathRed);
-        pSoldier.bBreath = (uint)((pSoldier.sBreathRed + 99) / 100);
+        pSoldier.bBreath = ((pSoldier.sBreathRed + 99) / 100);
         return (false);
     }
 
@@ -4294,7 +4294,7 @@ public class StrategicMovement
             sFuelAdded = Math.Min(sFuelNeeded, sFuelAvailable);
             //Add to vehicle
             pVehicle.sBreathRed += sFuelAdded;
-            pVehicle.bBreath = (uint)(pVehicle.sBreathRed / 100);
+            pVehicle.bBreath = (pVehicle.sBreathRed / 100);
             //Subtract from item
             pItem.bStatus[0] = (int)(pItem.bStatus[0] - sFuelAdded / 50);
             if (pItem.bStatus[0] == 0)

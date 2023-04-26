@@ -26,7 +26,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //        public const int DEFAULT_NUM_REGIONS = 5;
 
     //        private readonly ILogger<VideoSurfaceManager> logger;
-            private readonly IVideoManager video;
+            private static IVideoManager video;
 
     //        private VSURFACE_NODE? gpVSurfaceHead = null;
     //        private VSURFACE_NODE? gpVSurfaceTail = null;

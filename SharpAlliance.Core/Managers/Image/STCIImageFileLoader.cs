@@ -96,7 +96,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
 
     private Image<TPixel>? DecodeIndexed<TPixel>(STCIHeader pHeader, DecoderOptions options, Stream stream) where TPixel : unmanaged, IPixel<TPixel>
     {
-        IFileManager files = (IFileManager)options.Configuration.Properties[typeof(IFileManager)];
+        IFileManager fileManager = (IFileManager)options.Configuration.Properties[typeof(IFileManager)];
         HIMAGE hImage = (HIMAGE)options.Configuration.Properties[stream];
         HIMAGECreateFlags fContents = (HIMAGECreateFlags)options.Configuration.Properties[typeof(HIMAGECreateFlags)];
 

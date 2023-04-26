@@ -4568,7 +4568,7 @@ int	gOrangeGlowG[]=
             case AnimationStates.PRONE:
             case AnimationStates.STANDING:
 
-                pSoldier.sAniDelay = (pStatsSoldier.bBreath * 2) + (100 - pStatsSoldier.bLife);
+                pSoldier.sAniDelay = (uint)((pStatsSoldier.bBreath * 2) + (100 - pStatsSoldier.bLife));
 
                 // Limit it!
                 if (pSoldier.sAniDelay < 40)
@@ -4580,7 +4580,7 @@ int	gOrangeGlowG[]=
 
             case AnimationStates.CROUCHING:
 
-                pSoldier.sAniDelay = (pStatsSoldier.bBreath * 2) + ((100 - pStatsSoldier.bLife));
+                pSoldier.sAniDelay = (uint)((pStatsSoldier.bBreath * 2) + ((100 - pStatsSoldier.bLife)));
 
                 // Limit it!
                 if (pSoldier.sAniDelay < 40)
@@ -5454,7 +5454,7 @@ int	gOrangeGlowG[]=
         else
         {
             // Decrease Health
-            pSoldier.bLife -= (uint)sLifeDeduct;
+            pSoldier.bLife -= sLifeDeduct;
         }
 
         // ATE: Put some logic in here to allow enemies to die quicker.....
@@ -6001,7 +6001,7 @@ int	gOrangeGlowG[]=
         {
             zFilename = sprintf("BATTLESNDS\\%03d_%s.wav", pSoldier.ubProfile, gBattleSndsData[ubSoundID].zName);
 
-            if (!files.FileExists(zFilename))
+//            if (!files.FileExists(zFilename))
             {
                 // OK, temp build file...
                 if (pSoldier.ubBodyType == SoldierBodyTypes.REGFEMALE)
@@ -7826,15 +7826,15 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 pVictim.bLife = OKLIFE;
 
                 // reduce bleeding by the same number of life points healed up
-                pVictim.bBleeding -= (uint)ubBelowOKlife;
+                pVictim.bBleeding -= ubBelowOKlife;
 
                 // use up appropriate # of actual healing points
                 ubPtsLeft -= (2 * ubBelowOKlife);
             }
             else
             {
-                pVictim.bLife += (uint)(ubPtsLeft / 2);
-                pVictim.bBleeding -= (uint)(ubPtsLeft / 2);
+                pVictim.bLife += (ubPtsLeft / 2);
+                pVictim.bBleeding -= (ubPtsLeft / 2);
 
                 ubPtsLeft = ubPtsLeft % 2;  // if ptsLeft was odd, ptsLeft = 1
             }
@@ -7868,12 +7868,12 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             // if we have enough points to bandage all remaining bleeding this turn
             if (ubPtsLeft >= pVictim.bBleeding)
             {
-                ubPtsLeft -= (int)pVictim.bBleeding;
+                ubPtsLeft -= pVictim.bBleeding;
                 pVictim.bBleeding = 0;
             }
             else        // bandage what we can
             {
-                pVictim.bBleeding -= (uint)ubPtsLeft;
+                pVictim.bBleeding -= ubPtsLeft;
                 ubPtsLeft = 0;
             }
 
@@ -10457,4 +10457,17 @@ public enum TURNING_FROM_PRONE
     ON = 1,
     START_UP_FROM_MOVE = 2,
     ENDING_UP_FROM_MOVE = 3,
+}
+
+public struct THROW_PARAMS
+{
+    public float dX;
+    public float dY;
+    public float dZ;
+    public float dForceX;
+    public float dForceY;
+    public float dForceZ;
+    public float dLifeSpan;
+    public byte ubActionCode;
+    public uint uiActionData;
 }

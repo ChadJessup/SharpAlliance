@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -103,6 +104,106 @@ public class CreatureSpreading
         }
 
         return true;
+    }
+
+    //Returns true if valid and creature quest over, false if creature quest active or not yet started
+    public static bool GetWarpOutOfMineCodes(out int psSectorX, out MAP_ROW psSectorY, out int pbSectorZ, out int psInsertionGridNo)
+    {
+        int iSwitchValue;
+        psSectorX = 0;
+        psSectorY = 0;
+        pbSectorZ = 0;
+        psInsertionGridNo = 0;
+
+        if (!gfWorldLoaded)
+        {
+            return false;
+        }
+
+        if (gbWorldSectorZ == 0)
+        {
+            return (false);
+        }
+
+        iSwitchValue = giLairID;
+
+        if (iSwitchValue == -1)
+        {
+            iSwitchValue = giDestroyedLairID;
+        }
+
+        if (iSwitchValue == 0)
+        {
+            return false;
+        }
+
+        //Now make sure the mercs are in the previously infested mine
+        switch (iSwitchValue)
+        {
+            case 1: //Drassen
+                if (gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)6 && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)7 && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)7 && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)6 && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)5 && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)5 && gbWorldSectorZ == 1 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)4 && gbWorldSectorZ == 1)
+                {
+                    psSectorX = 13;
+                    psSectorY = (MAP_ROW)4;
+                    pbSectorZ = 0;
+                    psInsertionGridNo = 20700;
+                    return true;
+                }
+                break;
+            case 3: //Cambria
+                if (gWorldSectorX == 8     && gWorldSectorY == (MAP_ROW)9 && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 8 && gWorldSectorY == (MAP_ROW)8 && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 8 && gWorldSectorY == (MAP_ROW)8 && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 9 && gWorldSectorY == (MAP_ROW)8 && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 9 && gWorldSectorY == (MAP_ROW)8 && gbWorldSectorZ == 1 ||
+                        gWorldSectorX == 8 && gWorldSectorY == (MAP_ROW)8 && gbWorldSectorZ == 1)
+                {
+                    psSectorX = 8;
+                    psSectorY = (MAP_ROW)8;
+                    pbSectorZ = 0;
+                    psInsertionGridNo = 13002;
+                    return true;
+                }
+                break;
+            case 2: //Alma
+                if (gWorldSectorX == 13     && gWorldSectorY == (MAP_ROW)11 && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)10 && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 13 && gWorldSectorY == (MAP_ROW)10 && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 14 && gWorldSectorY == (MAP_ROW)10 && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 14 && gWorldSectorY == (MAP_ROW)10 && gbWorldSectorZ == 1 ||
+                        gWorldSectorX == 14 && gWorldSectorY == (MAP_ROW)9 && gbWorldSectorZ == 1)
+                {
+                    psSectorX = 14;
+                    psSectorY = (MAP_ROW)9;
+                    pbSectorZ = 0;
+                    psInsertionGridNo = 9085;
+                    return true;
+                }
+                break;
+            case 4: //Grumm
+                if (gWorldSectorX == 4 && gWorldSectorY == MAP_ROW.G && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 4 && gWorldSectorY == MAP_ROW.H && gbWorldSectorZ == 3 ||
+                        gWorldSectorX == 3 && gWorldSectorY == MAP_ROW.H && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 3 && gWorldSectorY == MAP_ROW.H && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 3 && gWorldSectorY == MAP_ROW.I && gbWorldSectorZ == 2 ||
+                        gWorldSectorX == 3 && gWorldSectorY == MAP_ROW.I && gbWorldSectorZ == 1 ||
+                        gWorldSectorX == 3 && gWorldSectorY == MAP_ROW.H && gbWorldSectorZ == 1)
+                {
+                    psSectorX = 3;
+                    psSectorY = MAP_ROW.H;
+                    pbSectorZ = 0;
+                    psInsertionGridNo = 9822;
+                    return true;
+                }
+                break;
+        }
+        return (false);
     }
 
     public static int CreaturesInUndergroundSector(SEC ubSectorID, int ubSectorZ)

@@ -75,7 +75,7 @@ public class GameSettings
         }
     }
 
-    public int LastSavedGameSlot { get; set; }
+    public int bLastSavedGameSlot { get; set; }
     public int MusicVolume { get; set; }
     public int SoundEffectVolume { get; set; }
     public int SpeechVolume { get; set; }

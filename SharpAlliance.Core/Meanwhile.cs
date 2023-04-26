@@ -176,7 +176,7 @@ public class Meanwhile
 
 
 
-    void ScheduleMeanwhileEvent(MEANWHILE_DEFINITION? pMeanwhileDef, uint uiTime)
+    void ScheduleMeanwhileEvent(MEANWHILE_DEFINITION pMeanwhileDef, uint uiTime)
     {
         // event scheduled to happen before, ignore
         if (GetMeanWhileFlag(pMeanwhileDef.ubMeanwhileID) == true)

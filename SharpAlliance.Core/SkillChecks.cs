@@ -19,9 +19,9 @@ public class SkillChecks
         // Effective strength is:
         // 1/2 full strength
         // plus 1/2 strength scaled according to how hurt we are
-        bBandaged = (uint)pSoldier.bLifeMax - pSoldier.bLife - pSoldier.bBleeding;
+        bBandaged = (uint)(pSoldier.bLifeMax - pSoldier.bLife - pSoldier.bBleeding);
         iEffStrength = (uint)pSoldier.bStrength / 2;
-        iEffStrength += (pSoldier.bStrength / 2) * (pSoldier.bLife + bBandaged / 2) / (pSoldier.bLifeMax);
+        iEffStrength += (uint)((pSoldier.bStrength / 2) * (pSoldier.bLife + bBandaged / 2) / (pSoldier.bLifeMax));
 
         // ATE: Make sure at least 2...
         iEffStrength = Math.Max(iEffStrength, 2);

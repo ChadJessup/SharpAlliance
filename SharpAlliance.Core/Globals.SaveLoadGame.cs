@@ -9,6 +9,8 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public static int guiBrokenSaveGameVersion = 0;
+
     public static bool gfSaveLoadScreenEntry = true;
     public static bool gfSaveLoadScreenExit = false;
     public static bool gfExitAfterMessageBox = false;

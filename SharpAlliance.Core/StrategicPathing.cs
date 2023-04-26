@@ -542,7 +542,7 @@ public class StrategicPathing
             // create new node
             iCurrentSectorNum += iDelta;
 
-            if (!AddSectorToPathList(pHeadOfPathList, (int)iCurrentSectorNum))
+            if (!AddSectorToPathList(pHeadOfPathList, (TRAILCELLTYPE)iCurrentSectorNum))
             {
                 pNode = pHeadOfPathList;
                 // intersected previous node, delete path to date
@@ -632,7 +632,7 @@ public class StrategicPathing
         return pPath;
     }
 
-    bool AddSectorToPathList(Path pPath, int uiSectorNum)
+    bool AddSectorToPathList(Path pPath, TRAILCELLTYPE uiSectorNum)
     {
         Path? pNode = null;
         Path? pTempNode = null;
@@ -1632,7 +1632,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // build a brand new list of waypoints, one for initial direction, and another for every "direction change" thereafter
         while (pNode.pNext is not null)
         {
-            iDelta = pNode.pNext.uiSectorId - pNode.uiSectorId;
+            iDelta = (int)(pNode.pNext.uiSectorId - pNode.uiSectorId);
             Debug.Assert(iDelta != 0);        // same sector should never repeat in the path list
 
             // Waypoints are only added at "pivot points" - whenever there is a change in orthogonal direction.
@@ -2081,7 +2081,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
     {
         Path pNode = new()
         {
-            uiSectorId = CALCULATE_STRATEGIC_INDEX(ubSectorX, ubSectorY),
+            uiSectorId = (TRAILCELLTYPE)CALCULATE_STRATEGIC_INDEX(ubSectorX, ubSectorY),
             pNext = ppMercPath,
             pPrev = null,
             uiEta = GameClock.GetWorldTotalMin(),

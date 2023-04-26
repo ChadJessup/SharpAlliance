@@ -25,13 +25,13 @@ public partial class Globals
     public const string zTrackingNumber = "Z";
 
     public static int guiSaveGameVersion = 0;
-    public static int gMusicModeToPlay = 0;
+    public static MusicMode gMusicModeToPlay = 0;
     public static bool gfUseConsecutiveQuickSaveSlots = false;
     public static int guiCurrentQuickSaveNumber = 0;
     public static int guiLastSaveGameNum;
-    public static int guiJA2EncryptionSet = 0;
+    public static uint guiJA2EncryptionSet = 0;
     public static int gubSaveGameLoc = 0;
-    public static int guiScreenToGotoAfterLoadingSavedGame = 0;
+    public static ScreenName guiScreenToGotoAfterLoadingSavedGame = 0;
 
     public const int NUM_SAVE_GAMES = 11;
     public const int BYTESINMEGABYTE = 1048576; //1024*1024;
@@ -56,13 +56,16 @@ public class SaveLoadGame
     private readonly IFileManager files;
     private readonly IVideoManager video;
     private readonly SoldierCreate soldierCreate;
+    private readonly StrategicMap strategicMap;
 
     public SaveLoadGame(
         ILogger<SaveLoadGame> logger,
         IFileManager fileManager,
         IVideoManager videoManager,
+        StrategicMap strategicMap,
         SoldierCreate soldierCreate)
     {
+        this.strategicMap = strategicMap;
         this.soldierCreate = soldierCreate;
         this.logger = logger;
         this.files = fileManager;
@@ -177,7 +180,7 @@ public class SaveLoadGame
         }
 
         //Create the name of the file
-        CreateSavedGameFileNameFromNumber(ubSaveGameID, zSaveGameName);
+        CreateSavedGameFileNameFromNumber(ubSaveGameID, out zSaveGameName);
 
         //if the file already exists, delete it
         if (this.files.FileExists(zSaveGameName))
@@ -277,7 +280,7 @@ public class SaveLoadGame
             }
         */
 
-        SaveGameHeader.ubNumOfMercsOnPlayersTeam = NumberOfMercsOnPlayerTeam();
+//        SaveGameHeader.ubNumOfMercsOnPlayersTeam = NumberOfMercsOnPlayerTeam();
         SaveGameHeader.iCurrentBalance = LaptopSaveInfo.iCurrentBalance;
 
 
@@ -288,7 +291,7 @@ public class SaveLoadGame
         if (gfWorldLoaded)
         {
             SaveGameHeader.fWorldLoaded = true;
-            SaveGameHeader.ubLoadScreenID = GetLoadScreenID(gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+//            SaveGameHeader.ubLoadScreenID = GetLoadScreenID(gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
         }
         else
         {
@@ -326,15 +329,15 @@ public class SaveLoadGame
         }
 
         // save the strategic events
-        if (!SaveStrategicEventsToSavedGame(hFile))
+        if (!GameEvents.SaveStrategicEventsToSavedGame(hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
-        if (!SaveLaptopInfoToSavedGame(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveLaptopInfoToSavedGame(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         //
         // Save the merc profiles
@@ -377,163 +380,163 @@ public class SaveLoadGame
         }
 
         //Save the strategic information
-        if (!SaveStrategicInfoToSavedFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveStrategicInfoToSavedFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         //save the underground information
-        if (!SaveUnderGroundSectorInfoToSaveGame(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveUnderGroundSectorInfoToSaveGame(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         //save the squad info
-        if (!SaveSquadInfoToSavedGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveSquadInfoToSavedGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveStrategicMovementGroupsToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveStrategicMovementGroupsToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         //Save all the map temp files from the maps\temp directory into the saved game file
-        if (!SaveMapTempFilesToSavedGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveMapTempFilesToSavedGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveQuestInfoToSavedGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveQuestInfoToSavedGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         if (!SaveOppListInfoToSavedGame(hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
-        if (!SaveMapScreenMessagesToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveMapScreenMessagesToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveNPCInfoToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveNPCInfoToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveKeyTableToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveKeyTableToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveTempNpcQuoteArrayToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveTempNpcQuoteArrayToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         if (!SavePreRandomNumbersToSaveGameFile(hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
-        if (!SaveSmokeEffectsToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveSmokeEffectsToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveArmsDealerInventoryToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveArmsDealerInventoryToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         if (!SaveGeneralInfo(hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
-        if (!SaveMineStatusToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveMineStatusToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveStrategicTownLoyaltyToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveStrategicTownLoyaltyToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveVehicleInformationToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveVehicleInformationToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveBulletStructureToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveBulletStructureToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SavePhysicsTableToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SavePhysicsTableToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveAirRaidInfoToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveAirRaidInfoToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveTeamTurnsToTheSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveTeamTurnsToTheSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveExplosionTableToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveExplosionTableToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveCreatureDirectives(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveCreatureDirectives(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveStrategicStatusToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveStrategicStatusToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveStrategicAI(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveStrategicAI(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveLightEffectsToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveLightEffectsToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         if (!SaveWatchedLocsToSavedGame(hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
-        if (!SaveItemCursorToSavedGame(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveItemCursorToSavedGame(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveCivQuotesToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveCivQuotesToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
-        if (!SaveBackupNPCInfoToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveBackupNPCInfoToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         if (!SaveMeanwhileDefsFromSaveGameFile(hFile))
         {
@@ -542,34 +545,34 @@ public class SaveLoadGame
 
         // save meanwhiledefs
 
-        if (!SaveSchedules(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveSchedules(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         // Save extra vehicle info
-        if (!NewSaveVehicleMovementInfoToSavedGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!NewSaveVehicleMovementInfoToSavedGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         // Save contract renewal sequence stuff
-        if (!MercContract.SaveContractRenewalDataToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!MercContract.SaveContractRenewalDataToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         // Save leave list stuff
-        if (!SaveLeaveItemList(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!SaveLeaveItemList(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         //do the new way of saving bobbyr mail order items
-        if (!NewWayOfSavingBobbyRMailOrdersToSaveGameFile(hFile))
-        {
-            goto FAILED_TO_SAVE;
-        }
+//        if (!NewWayOfSavingBobbyRMailOrdersToSaveGameFile(hFile))
+//        {
+//            goto FAILED_TO_SAVE;
+//        }
 
         //sss
 
@@ -584,7 +587,7 @@ public class SaveLoadGame
         }
 
         //Save the save game settings
-        SaveGameSettings();
+//        SaveGameSettings();
 
         //
         // Display a screen message that the save was succesful
@@ -607,7 +610,7 @@ public class SaveLoadGame
         }
 
         //restore the music mode
-        SetMusicMode(gubMusicMode);
+//        SetMusicMode(gubMusicMode);
 
         //Unset the fact that we are saving a game
         gTacticalStatus.uiFlags &= ~TacticalEngineStatus.LOADING_SAVED_GAME;
@@ -623,7 +626,7 @@ public class SaveLoadGame
 #endif
 
         //Check for enough free hard drive space
-        NextLoopCheckForEnoughFreeHardDriveSpace();
+//        NextLoopCheckForEnoughFreeHardDriveSpace();
 
         return (true);
 
@@ -642,17 +645,17 @@ public class SaveLoadGame
         }
 
         //Delete the failed attempt at saving
-        DeleteSaveGameNumber(ubSaveGameID);
+//        DeleteSaveGameNumber(ubSaveGameID);
 
         //Put out an error message
-        Messages.ScreenMsg(FontColor.FONT_MCOLOR_WHITE, MSG.INTERFACE, zSaveLoadText[SLG.SAVE_GAME_ERROR]);
+        Messages.ScreenMsg(FontColor.FONT_MCOLOR_WHITE, MSG.INTERFACE, zSaveLoadText[(int)SLG.SAVE_GAME_ERROR]);
 
 #if JA2BETAVERSION
     InitShutDownMapTempFileTest(false, "SaveMapTempFile", ubSaveGameID);
 #endif
 
         //Check for enough free hard drive space
-        NextLoopCheckForEnoughFreeHardDriveSpace();
+//        NextLoopCheckForEnoughFreeHardDriveSpace();
 
 #if JA2BETAVERSION
     if (fDisableDueToBattleRoster || fDisableMapInterfaceDueToBattle)
@@ -664,14 +667,10 @@ public class SaveLoadGame
         return (false);
     }
 
-
-
-    int guiBrokenSaveGameVersion = 0;
-
     bool LoadSavedGame(int ubSavedGameID)
     {
         Stream hFile;
-        SAVED_GAME_HEADER SaveGameHeader;
+        SAVED_GAME_HEADER SaveGameHeader = new();
         int uiNumBytesRead = 0;
 
         int sLoadSectorX;
@@ -689,17 +688,17 @@ public class SaveLoadGame
 
         uiRelStartPerc = uiRelEndPerc = 0;
 
-        TrashAllSoldiers();
+//        TrashAllSoldiers();
 
         //Empty the dialogue Queue cause someone could still have a quote in waiting
-        EmptyDialogueQueue();
+//        EmptyDialogueQueue();
 
         //If there is someone talking, stop them
-        StopAnyCurrentlyTalkingSpeech();
+//        StopAnyCurrentlyTalkingSpeech();
 
-        ZeroAnimSurfaceCounts();
+//        ZeroAnimSurfaceCounts();
 
-        ShutdownNPCQuotes();
+//        ShutdownNPCQuotes();
 
         //is it a valid save number
         if (ubSavedGameID >= NUM_SAVE_GAMES)
@@ -723,22 +722,22 @@ public class SaveLoadGame
         gubSaveGameLoc = ubSavedGameID;
 
         //Set the fact that we are loading a saved game
-        gTacticalStatus.uiFlags |= LOADING_SAVED_GAME;
+        gTacticalStatus.uiFlags |= TacticalEngineStatus.LOADING_SAVED_GAME;
 
         //Trash the existing world.  This is done to ensure that if we are loading a game that doesn't have 
         //a world loaded, that we trash it beforehand -- else the player could theoretically enter that sector
         //where it would be in a pre-load state.  
-        TrashWorld();
+//        TrashWorld();
 
 
         //Deletes all the Temp files in the Maps\Temp directory
-        InitTacticalSave(true);
+//        InitTacticalSave(true);
 
         // ATE; Added to empry dialogue q
-        EmptyDialogueQueue();
+//        EmptyDialogueQueue();
 
         //Create the name of the file
-        CreateSavedGameFileNameFromNumber(ubSavedGameID, zSaveGameName);
+        CreateSavedGameFileNameFromNumber(ubSavedGameID, out zSaveGameName);
 
         // open the save game file
         hFile = this.files.FileOpen(zSaveGameName, FileAccess.Read, false);
@@ -750,7 +749,7 @@ public class SaveLoadGame
         }
 
         //Load the Save Game header file
-        this.files.FileRead(hFile, ref SaveGameHeader, Marshal.SizeOf<SAVED_GAME_HEADER>(), out uiNumBytesRead);
+//        this.files.FileRead(hFile, ref SaveGameHeader, Marshal.SizeOf<SAVED_GAME_HEADER>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<SAVED_GAME_HEADER>())
         {
             this.files.FileClose(hFile);
@@ -762,16 +761,16 @@ public class SaveLoadGame
         guiBrokenSaveGameVersion = SaveGameHeader.uiSavedGameVersion;
 
         //if the player is loading up an older version of the game, and the person DOESNT have the cheats on, 
-        if (SaveGameHeader.uiSavedGameVersion < 65 && !CHEATER_CHEAT_LEVEL())
-        {
-            //Fail loading the save
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (SaveGameHeader.uiSavedGameVersion < 65 && !CHEATER_CHEAT_LEVEL())
+//        {
+//            //Fail loading the save
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 
         //Store the loading screenID that was saved
-        gubLastLoadingScreenID = SaveGameHeader.ubLoadScreenID;
+//        gubLastLoadingScreenID = SaveGameHeader.ubLoadScreenID;
 
         //HACK
         guiSaveGameVersion = SaveGameHeader.uiSavedGameVersion;
@@ -806,7 +805,7 @@ public class SaveLoadGame
 
 
         //Load the game clock ingo
-        if (!LoadGameClock(hFile))
+        if (!GameClock.LoadGameClock(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -841,7 +840,7 @@ public class SaveLoadGame
             if ((gWorldSectorX != 0) && (gWorldSectorY != 0))
             {
                 //Load the sector
-                StrategicMap.SetCurrentWorldSector(sLoadSectorX, sLoadSectorY, bLoadSectorZ);
+                this.strategicMap.SetCurrentWorldSector(sLoadSectorX, sLoadSectorY, bLoadSectorZ);
             }
         }
         else
@@ -851,15 +850,19 @@ public class SaveLoadGame
 
             //Since there is no 
             if (SaveGameHeader.sSectorX == -1 || SaveGameHeader.sSectorY == MAP_ROW.UNSET || SaveGameHeader.bSectorZ == -1)
-                gubLastLoadingScreenID = LOADINGSCREEN_HELI;
+            {
+//                gubLastLoadingScreenID = LOADINGSCREEN_HELI;
+            }
             else
-                gubLastLoadingScreenID = GetLoadScreenID(SaveGameHeader.sSectorX, SaveGameHeader.sSectorY, SaveGameHeader.bSectorZ);
+            {
+//                gubLastLoadingScreenID = GetLoadScreenID(SaveGameHeader.sSectorX, SaveGameHeader.sSectorY, SaveGameHeader.bSectorZ);
+            }
 
-            BeginLoadScreen();
+//            BeginLoadScreen();
         }
 
-        CreateLoadingScreenProgressBar();
-        AnimatedProgressBar.SetProgressBarColor(0, 0, 0, 150);
+//        CreateLoadingScreenProgressBar();
+//        AnimatedProgressBar.SetProgressBarColor(0, 0, 0, 150);
 
         uiRelStartPerc = 0;
 
@@ -869,7 +872,7 @@ public class SaveLoadGame
         uiRelStartPerc = uiRelEndPerc;
 
         //load the game events
-        if (!LoadStrategicEventsFromSavedGame(hFile))
+        if (!GameEvents.LoadStrategicEventsFromSavedGame(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -883,12 +886,12 @@ public class SaveLoadGame
 
 
 
-        if (!LoadLaptopInfoFromSavedGame(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadLaptopInfoFromSavedGame(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 
         uiRelEndPerc += 0;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Merc Profiles...");
@@ -1012,12 +1015,12 @@ public class SaveLoadGame
 
 
         //Load the strategic Information
-        if (!LoadStrategicInfoFromSavedFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadStrategicInfoFromSavedFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Strategic Information");
 #endif
@@ -1031,12 +1034,12 @@ public class SaveLoadGame
 
 
         //Load the underground information
-        if (!LoadUnderGroundSectorInfoFromSavedGame(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadUnderGroundSectorInfoFromSavedGame(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "UnderGround Information");
 #endif
@@ -1049,12 +1052,12 @@ public class SaveLoadGame
 
 
         // Load all the squad info from the saved game file 
-        if (!LoadSquadInfoFromSavedGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadSquadInfoFromSavedGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Squad Info");
 #endif
@@ -1067,12 +1070,12 @@ public class SaveLoadGame
 
 
         //Load the group linked list
-        if (!LoadStrategicMovementGroupsFromSavedGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadStrategicMovementGroupsFromSavedGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Strategic Movement Groups");
 #endif
@@ -1084,12 +1087,12 @@ public class SaveLoadGame
 
 
         // Load all the map temp files from the saved game file into the maps\temp directory
-        if (!LoadMapTempFilesFromSavedGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadMapTempFilesFromSavedGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "All the Map Temp files");
 #endif
@@ -1103,12 +1106,12 @@ public class SaveLoadGame
 
 
 
-        if (!LoadQuestInfoFromSavedGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadQuestInfoFromSavedGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Quest Info");
 #endif
@@ -1140,12 +1143,12 @@ public class SaveLoadGame
 
 
 
-        if (!LoadMapScreenMessagesFromSaveGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadMapScreenMessagesFromSaveGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "MapScreen Messages");
 #endif
@@ -1159,12 +1162,12 @@ public class SaveLoadGame
 
 
 
-        if (!LoadNPCInfoFromSavedGameFile(hFile, SaveGameHeader.uiSavedGameVersion))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadNPCInfoFromSavedGameFile(hFile, SaveGameHeader.uiSavedGameVersion))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "NPC Info");
 #endif
@@ -1178,12 +1181,12 @@ public class SaveLoadGame
 
 
 
-        if (!LoadKeyTableFromSaveedGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadKeyTableFromSaveedGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "KeyTable");
 #endif
@@ -1196,12 +1199,12 @@ public class SaveLoadGame
         uiRelStartPerc = uiRelEndPerc;
 
 
-        if (!LoadTempNpcQuoteArrayToSaveGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadTempNpcQuoteArrayToSaveGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Npc Temp Quote File");
 #endif
@@ -1235,12 +1238,12 @@ public class SaveLoadGame
 
 
 
-        if (!LoadSmokeEffectsFromLoadGameFile(hFile))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadSmokeEffectsFromLoadGameFile(hFile))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Smoke Effect Structures");
 #endif
@@ -1249,17 +1252,17 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Arms Dealers Inventory...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
-        if (!LoadArmsDealerInventoryFromSavedGameFile(hFile, (bool)(SaveGameHeader.uiSavedGameVersion >= 54), (bool)(SaveGameHeader.uiSavedGameVersion >= 55)))
-        {
-            this.files.FileClose(hFile);
-            guiSaveGameVersion = 0;
-            return (false);
-        }
+//        if (!LoadArmsDealerInventoryFromSavedGameFile(hFile, (bool)(SaveGameHeader.uiSavedGameVersion >= 54), (bool)(SaveGameHeader.uiSavedGameVersion >= 55)))
+//        {
+//            this.files.FileClose(hFile);
+//            guiSaveGameVersion = 0;
+//            return (false);
+//        }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Arms Dealers Inventory");
 #endif
@@ -1269,7 +1272,7 @@ public class SaveLoadGame
 
         uiRelEndPerc += 0;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Misc info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1290,12 +1293,12 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Mine Status...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
-        if (!LoadMineStatusFromSavedGameFile(hFile))
+//        if (!LoadMineStatusFromSavedGameFile(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -1304,12 +1307,12 @@ public class SaveLoadGame
 
         uiRelEndPerc += 0;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Town Loyalty...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
         if (SaveGameHeader.uiSavedGameVersion >= 21)
         {
-            if (!LoadStrategicTownLoyaltyFromSavedGameFile(hFile))
+//            if (!LoadStrategicTownLoyaltyFromSavedGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1319,14 +1322,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Vehicle Information...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 22)
         {
-            if (!LoadVehicleInformationFromSavedGameFile(hFile, SaveGameHeader.uiSavedGameVersion))
+//            if (!LoadVehicleInformationFromSavedGameFile(hFile, SaveGameHeader.uiSavedGameVersion))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1341,19 +1344,19 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Bullet Information...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 24)
         {
-            if (!LoadBulletStructureFromSavedGameFile(hFile))
-            {
-                this.files.FileClose(hFile);
-                guiSaveGameVersion = 0;
-                return (false);
-            }
+//            if (!LoadBulletStructureFromSavedGameFile(hFile))
+//            {
+//                this.files.FileClose(hFile);
+//                guiSaveGameVersion = 0;
+//                return (false);
+//            }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Bullet Information");
 #endif
@@ -1364,7 +1367,7 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Physics table...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1372,12 +1375,12 @@ public class SaveLoadGame
 
         if (SaveGameHeader.uiSavedGameVersion >= 24)
         {
-            if (!LoadPhysicsTableFromSavedGameFile(hFile))
-            {
-                this.files.FileClose(hFile);
-                guiSaveGameVersion = 0;
-                return (false);
-            }
+//            if (!LoadPhysicsTableFromSavedGameFile(hFile))
+//            {
+//                this.files.FileClose(hFile);
+//                guiSaveGameVersion = 0;
+//                return (false);
+//            }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Physics table");
 #endif
@@ -1388,14 +1391,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Air Raid Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 24)
         {
-            if (!LoadAirRaidInfoFromSaveGameFile(hFile))
+//            if (!LoadAirRaidInfoFromSaveGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1410,14 +1413,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 0;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Team Turn Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 24)
         {
-            if (!LoadTeamTurnsFromTheSavedGameFile(hFile))
+//            if (!LoadTeamTurnsFromTheSavedGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1433,19 +1436,19 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Explosion Table...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 25)
         {
-            if (!LoadExplosionTableFromSavedGameFile(hFile))
-            {
-                this.files.FileClose(hFile);
-                guiSaveGameVersion = 0;
-                return (false);
-            }
+//            if (!LoadExplosionTableFromSavedGameFile(hFile))
+//            {
+//                this.files.FileClose(hFile);
+//                guiSaveGameVersion = 0;
+//                return (false);
+//            }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Explosion Table");
 #endif
@@ -1456,7 +1459,7 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Creature Spreading...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1464,7 +1467,7 @@ public class SaveLoadGame
 
         if (SaveGameHeader.uiSavedGameVersion >= 27)
         {
-            if (!LoadCreatureDirectives(hFile, SaveGameHeader.uiSavedGameVersion))
+//            if (!LoadCreatureDirectives(hFile, SaveGameHeader.uiSavedGameVersion))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1480,7 +1483,7 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Status...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1488,7 +1491,7 @@ public class SaveLoadGame
 
         if (SaveGameHeader.uiSavedGameVersion >= 28)
         {
-            if (!LoadStrategicStatusFromSaveGameFile(hFile))
+//            if (!LoadStrategicStatusFromSaveGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1503,14 +1506,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic AI...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 31)
         {
-            if (!LoadStrategicAI(hFile))
+//            if (!LoadStrategicAI(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1525,14 +1528,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Lighting Effects...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 37)
         {
-            if (!LoadLightEffectsFromLoadGameFile(hFile))
+//            if (!LoadLightEffectsFromLoadGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1542,7 +1545,7 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Watched Locs Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1565,14 +1568,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Item cursor Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 39)
         {
-            if (!LoadItemCursorFromSavedGame(hFile))
+//            if (!LoadItemCursorFromSavedGame(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1587,14 +1590,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Civ Quote System...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 51)
         {
-            if (!LoadCivQuotesFromLoadGameFile(hFile))
+//            if (!LoadCivQuotesFromLoadGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1610,24 +1613,24 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Backed up NPC Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 53)
         {
-            if (!LoadBackupNPCInfoFromSavedGameFile(hFile, SaveGameHeader.uiSavedGameVersion))
-            {
-                this.files.FileClose(hFile);
-                guiSaveGameVersion = 0;
-                return (false);
-            }
+//            if (!LoadBackupNPCInfoFromSavedGameFile(hFile, SaveGameHeader.uiSavedGameVersion))
+//            {
+//                this.files.FileClose(hFile);
+//                guiSaveGameVersion = 0;
+//                return (false);
+//            }
         }
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Meanwhile definitions...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1651,7 +1654,7 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Schedules...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1659,18 +1662,18 @@ public class SaveLoadGame
         if (SaveGameHeader.uiSavedGameVersion >= 59)
         {
             // trash schedules loaded from map
-            DestroyAllSchedulesWithoutDestroyingEvents();
-            if (!LoadSchedulesFromSave(hFile))
-            {
-                this.files.FileClose(hFile);
-                guiSaveGameVersion = 0;
-                return (false);
-            }
+//            DestroyAllSchedulesWithoutDestroyingEvents();
+//            if (!LoadSchedulesFromSave(hFile))
+//            {
+//                this.files.FileClose(hFile);
+//                guiSaveGameVersion = 0;
+//                return (false);
+//            }
         }
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Extra Vehicle Info...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1679,27 +1682,27 @@ public class SaveLoadGame
         {
             if (SaveGameHeader.uiSavedGameVersion < 84)
             {
-                if (!LoadVehicleMovementInfoFromSavedGameFile(hFile))
-                {
-                    this.files.FileClose(hFile);
-                    guiSaveGameVersion = 0;
-                    return (false);
-                }
+//                if (!LoadVehicleMovementInfoFromSavedGameFile(hFile))
+//                {
+//                    this.files.FileClose(hFile);
+//                    guiSaveGameVersion = 0;
+//                    return (false);
+//                }
             }
             else
             {
-                if (!NewLoadVehicleMovementInfoFromSavedGameFile(hFile))
-                {
-                    this.files.FileClose(hFile);
-                    guiSaveGameVersion = 0;
-                    return (false);
-                }
+//                if (!NewLoadVehicleMovementInfoFromSavedGameFile(hFile))
+//                {
+//                    this.files.FileClose(hFile);
+//                    guiSaveGameVersion = 0;
+//                    return (false);
+//                }
             }
         }
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Contract renweal sequence stuff...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1712,23 +1715,23 @@ public class SaveLoadGame
 
         if (SaveGameHeader.uiSavedGameVersion >= 67)
         {
-            if (!LoadContractRenewalDataFromSaveGameFile(hFile))
-            {
-                this.files.FileClose(hFile);
-                guiSaveGameVersion = 0;
-                return (false);
-            }
+//            if (!LoadContractRenewalDataFromSaveGameFile(hFile))
+//            {
+//                this.files.FileClose(hFile);
+//                guiSaveGameVersion = 0;
+//                return (false);
+//            }
         }
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 70)
         {
-            if (!LoadLeaveItemList(hFile))
-            {
-                this.files.FileClose(hFile);
-                guiSaveGameVersion = 0;
-                return (false);
-            }
+//            if (!LoadLeaveItemList(hFile))
+//            {
+//                this.files.FileClose(hFile);
+//                guiSaveGameVersion = 0;
+//                return (false);
+//            }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Leave List");
 #endif
@@ -1737,13 +1740,13 @@ public class SaveLoadGame
         if (SaveGameHeader.uiSavedGameVersion <= 73)
         {
             // Patch vehicle fuel
-            AddVehicleFuelToSave();
+//            AddVehicleFuelToSave();
         }
 
 
         if (SaveGameHeader.uiSavedGameVersion >= 85)
         {
-            if (!NewWayOfLoadingBobbyRMailOrdersToSaveGameFile(hFile))
+//            if (!NewWayOfLoadingBobbyRMailOrdersToSaveGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1768,7 +1771,7 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
         //
@@ -1777,7 +1780,7 @@ public class SaveLoadGame
         this.files.FileClose(hFile);
 
         // ATE: Patch? Patch up groups.....( will only do for old saves.. )
-        UpdatePersistantGroupsFromOldSave(SaveGameHeader.uiSavedGameVersion);
+//        UpdatePersistantGroupsFromOldSave(SaveGameHeader.uiSavedGameVersion);
 
 
         if (SaveGameHeader.uiSavedGameVersion <= 40)
@@ -1785,7 +1788,7 @@ public class SaveLoadGame
             // Cancel all pending purchase orders for BobbyRay's.  Starting with version 41, the BR orders events are 
             // posted with the usItemIndex itself as the parameter, rather than the inventory slot index.  This was
             // done to make it easier to modify BR's traded inventory lists later on without breaking saves.
-            CancelAllPendingBRPurchaseOrders();
+//            CancelAllPendingBRPurchaseOrders();
         }
 
 
@@ -1793,43 +1796,45 @@ public class SaveLoadGame
         if (SaveGameHeader.fWorldLoaded || SaveGameHeader.uiSavedGameVersion < 50)
         {
             // Load the current sectors Information From the temporary files
-            if (!LoadCurrentSectorsInformationFromTempItemsFile())
-            {
-                InitExitGameDialogBecauseFileHackDetected();
-                guiSaveGameVersion = 0;
-                return (true);
-            }
+//            if (!LoadCurrentSectorsInformationFromTempItemsFile())
+//            {
+//                InitExitGameDialogBecauseFileHackDetected();
+//                guiSaveGameVersion = 0;
+//                return (true);
+//            }
         }
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
-        InitAI();
+//        InitAI();
 
         //Update the mercs in the sector with the new soldier info
-        UpdateMercsInSector(gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+//        UpdateMercsInSector(gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
 
         //ReconnectSchedules();
-        PostSchedules();
+//        PostSchedules();
 
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
         //Reset the lighting level if we are outside
         if (gbWorldSectorZ == 0)
-            LightSetBaseLevel(GetTimeOfDayAmbientLightLevel());
+        {
+//            LightSetBaseLevel(GetTimeOfDayAmbientLightLevel());
+        }
 
         //if we have been to this sector before
         //	if( SectorInfo[ SECTOR( gWorldSectorX,gWorldSectorY) ].uiFlags & SF_ALREADY_VISITED )
         {
             //Reset the fact that we are loading a saved game
-            gTacticalStatus.uiFlags &= ~LOADING_SAVED_GAME;
+            gTacticalStatus.uiFlags &= ~TacticalEngineStatus.LOADING_SAVED_GAME;
         }
 
         // CJC January 13: we can't do this because (a) it resets militia IN THE MIDDLE OF 
@@ -1840,14 +1845,14 @@ public class SaveLoadGame
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
         //if the UI was locked in the saved game file
         if (gTacticalStatus.ubAttackBusyCount > 1)
         {
             //Lock the ui
-            SetUIBusy((int)gusSelectedSoldier);
+//            SetUIBusy((int)gusSelectedSoldier);
         }
 
         //Reset the shadow 
@@ -1861,38 +1866,38 @@ public class SaveLoadGame
         gGameSettings.bLastSavedGameSlot = ubSavedGameID;
 
         //Save the save game settings
-        SaveGameSettings();
+//        SaveGameSettings();
 
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
         //Reset the Ai Timer clock
-        giRTAILastUpdateTime = 0;
+//        giRTAILastUpdateTime = 0;
 
         //if we are in tactical
         if (guiScreenToGotoAfterLoadingSavedGame == ScreenName.GAME_SCREEN)
         {
             //Initialize the current panel
-            InitializeCurrentPanel();
+//            InitializeCurrentPanel();
 
-            SelectSoldier(gusSelectedSoldier, false, true);
+//            SelectSoldier(gusSelectedSoldier, false, true);
         }
 
         uiRelEndPerc += 1;
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
-        RenderProgressBar(0, 100);
+        AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
 
         // init extern faces
-        InitalizeStaticExternalNPCFaces();
+//        InitalizeStaticExternalNPCFaces();
 
         // load portraits
-        LoadCarPortraitValues();
+//        LoadCarPortraitValues();
 
         // OK, turn OFF show all enemies....
         gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_MERCS);
@@ -1917,42 +1922,42 @@ public class SaveLoadGame
             SOLDIERTYPE? pSoldier;
             MERCPROFILESTRUCT? pProfile;
 
-            if (!fSkyRiderSetUp)
-            {
-                // see if we can find him and remove him if so....
-                pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SKYRIDER, false);
-
-                if (pSoldier != null)
-                {
-                    soldierCreate.TacticalRemoveSoldier(pSoldier.ubID);
-                }
-
-                // add the pilot at a random location!
-                pProfile = (gMercProfiles[NPCID.SKYRIDER]);
-                switch (Globals.Random.Next(4))
-                {
-                    case 0:
-                        pProfile.sSectorX = 15;
-                        pProfile.sSectorY = MAP_ROW.B;
-                        pProfile.bSectorZ = 0;
-                        break;
-                    case 1:
-                        pProfile.sSectorX = 14;
-                        pProfile.sSectorY = MAP_ROW.E;
-                        pProfile.bSectorZ = 0;
-                        break;
-                    case 2:
-                        pProfile.sSectorX = 12;
-                        pProfile.sSectorY = MAP_ROW.D;
-                        pProfile.bSectorZ = 0;
-                        break;
-                    case 3:
-                        pProfile.sSectorX = 16;
-                        pProfile.sSectorY = MAP_ROW.C;
-                        pProfile.bSectorZ = 0;
-                        break;
-                }
-            }
+//            if (!fSkyRiderSetUp)
+//            {
+//                // see if we can find him and remove him if so....
+//                pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SKYRIDER, false);
+//
+//                if (pSoldier != null)
+//                {
+//                    soldierCreate.TacticalRemoveSoldier(pSoldier.ubID);
+//                }
+//
+//                // add the pilot at a random location!
+//                pProfile = (gMercProfiles[NPCID.SKYRIDER]);
+//                switch (Globals.Random.Next(4))
+//                {
+//                    case 0:
+//                        pProfile.sSectorX = 15;
+//                        pProfile.sSectorY = MAP_ROW.B;
+//                        pProfile.bSectorZ = 0;
+//                        break;
+//                    case 1:
+//                        pProfile.sSectorX = 14;
+//                        pProfile.sSectorY = MAP_ROW.E;
+//                        pProfile.bSectorZ = 0;
+//                        break;
+//                    case 2:
+//                        pProfile.sSectorX = 12;
+//                        pProfile.sSectorY = MAP_ROW.D;
+//                        pProfile.bSectorZ = 0;
+//                        break;
+//                    case 3:
+//                        pProfile.sSectorX = 16;
+//                        pProfile.sSectorY = MAP_ROW.C;
+//                        pProfile.bSectorZ = 0;
+//                        break;
+//                }
+//            }
         }
 
         if (SaveGameHeader.uiSavedGameVersion < 68)
@@ -1986,13 +1991,13 @@ public class SaveLoadGame
         {
             // ARM: A change was made in version 89 where refuel site availability now also depends on whether the player has
             // airspace control over that sector.  To update the settings immediately, must call it here.
-            UpdateRefuelSiteAvailability();
+//            UpdateRefuelSiteAvailability();
         }
 
         if (SaveGameHeader.uiSavedGameVersion < 91)
         {
             //update the amount of money that has been paid to speck
-            CalcAproximateAmountPaidToSpeck();
+//            CalcAproximateAmountPaidToSpeck();
         }
 
         gfLoadedGame = true;
@@ -2001,15 +2006,15 @@ public class SaveLoadGame
         AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Done!");
         AnimatedProgressBar.RenderProgressBar(0, 100);
 
-        RemoveLoadingScreenProgressBar();
+//        RemoveLoadingScreenProgressBar();
 
-        SetMusicMode(gMusicModeToPlay);
+//        SetMusicMode(gMusicModeToPlay);
 
         // reset to 0
         guiSaveGameVersion = 0;
 
         // reset once-per-convo records for everyone in the loaded sector
-        ResetOncePerConvoRecordsForAllNPCsInLoadedSector();
+//        ResetOncePerConvoRecordsForAllNPCsInLoadedSector();
 
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
         {
@@ -2019,11 +2024,11 @@ public class SaveLoadGame
         }
 
         // fix squads
-        CheckSquadMovementGroups();
+//        CheckSquadMovementGroups();
 
         //The above function LightSetBaseLevel adjusts ALL the level node light values including the merc node,
         //we must reset the values
-        HandlePlayerTogglingLightEffects(false);
+//        HandlePlayerTogglingLightEffects(false);
 
 
         return (true);
@@ -2036,16 +2041,16 @@ public class SaveLoadGame
         int uiSaveSize = Marshal.SizeOf<MERCPROFILESTRUCT>();
 
         //Lopp through all the profiles to save
-        for (cnt = 0; cnt < NUM_PROFILES; cnt++)
+        for (cnt = 0; cnt < (NPCID)NUM_PROFILES; cnt++)
         {
-            gMercProfiles[cnt].uiProfileChecksum = ProfileChecksum((gMercProfiles[cnt]));
+//            gMercProfiles[cnt].uiProfileChecksum = ProfileChecksum((gMercProfiles[cnt]));
             if (guiSavedGameVersion < 87)
             {
-                JA2EncryptedFileWrite(hFile, gMercProfiles[cnt], uiSaveSize, out uiNumBytesWritten);
+//                JA2EncryptedFileWrite(hFile, gMercProfiles[cnt], uiSaveSize, out uiNumBytesWritten);
             }
             else
             {
-                NewJA2EncryptedFileWrite(hFile, gMercProfiles[cnt], uiSaveSize, out uiNumBytesWritten);
+//                NewJA2EncryptedFileWrite(hFile, gMercProfiles[cnt], uiSaveSize, out uiNumBytesWritten);
             }
             if (uiNumBytesWritten != uiSaveSize)
             {
@@ -2064,24 +2069,25 @@ public class SaveLoadGame
         int uiNumBytesRead = 0;
 
         //Lopp through all the profiles to Load
-        for (cnt = 0; cnt < NUM_PROFILES; cnt++)
+        for (cnt = 0; cnt < (NPCID)NUM_PROFILES; cnt++)
         {
             if (guiSaveGameVersion < 87)
             {
-                JA2EncryptedFileRead(hFile, gMercProfiles[cnt], Marshal.SizeOf<MERCPROFILESTRUCT>(), out uiNumBytesRead);
+//                JA2EncryptedFileRead(hFile, gMercProfiles[cnt], Marshal.SizeOf<MERCPROFILESTRUCT>(), out uiNumBytesRead);
             }
             else
             {
-                NewJA2EncryptedFileRead(hFile, gMercProfiles[cnt], Marshal.SizeOf<MERCPROFILESTRUCT>(), out uiNumBytesRead);
+//                NewJA2EncryptedFileRead(hFile, gMercProfiles[cnt], Marshal.SizeOf<MERCPROFILESTRUCT>(), out uiNumBytesRead);
             }
             if (uiNumBytesRead != Marshal.SizeOf<MERCPROFILESTRUCT>())
             {
                 return (false);
             }
-            if (gMercProfiles[cnt].uiProfileChecksum != ProfileChecksum((gMercProfiles[cnt])))
-            {
-                return (false);
-            }
+
+//            if (gMercProfiles[cnt].uiProfileChecksum != ProfileChecksum((gMercProfiles[cnt])))
+//            {
+//                return (false);
+//            }
         }
 
         return (true);
@@ -2125,7 +2131,7 @@ public class SaveLoadGame
             if (!Menptr[cnt].bActive)
             {
                 // Save the byte specifing to NOT load the soldiers 
-                FileWrite(hFile, ubZero, 1, out uiNumBytesWritten);
+//                FileWrite(hFile, ubZero, 1, out uiNumBytesWritten);
                 if (uiNumBytesWritten != 1)
                 {
                     return (false);
@@ -2135,22 +2141,22 @@ public class SaveLoadGame
             else
             {
                 // Save the byte specifing to load the soldiers 
-                FileWrite(hFile, ubOne, 1, out uiNumBytesWritten);
+//                FileWrite(hFile, ubOne, 1, out uiNumBytesWritten);
                 if (uiNumBytesWritten != 1)
                 {
                     return (false);
                 }
 
                 // calculate checksum for soldier
-                Menptr[cnt].uiMercChecksum = MercChecksum((Menptr[cnt]));
+//                Menptr[cnt].uiMercChecksum = MercChecksum((Menptr[cnt]));
                 // Save the soldier structure
                 if (guiSavedGameVersion < 87)
                 {
-                    JA2EncryptedFileWrite(hFile, Menptr[cnt], uiSaveSize, out uiNumBytesWritten);
+//                    JA2EncryptedFileWrite(hFile, Menptr[cnt], uiSaveSize, out uiNumBytesWritten);
                 }
                 else
                 {
-                    NewJA2EncryptedFileWrite(hFile, Menptr[cnt], uiSaveSize, out uiNumBytesWritten);
+//                    NewJA2EncryptedFileWrite(hFile, Menptr[cnt], uiSaveSize, out uiNumBytesWritten);
                 }
                 if (uiNumBytesWritten != uiSaveSize)
                 {
@@ -2174,31 +2180,31 @@ public class SaveLoadGame
                 //do we have a 	KEY_ON_RING									*pKeyRing;
                 //
 
-                if (Menptr[cnt].pKeyRing != null)
-                {
-                    // write to the file saying we have the ....
-                    FileWrite(hFile, &ubOne, 1, out uiNumBytesWritten);
-                    if (uiNumBytesWritten != 1)
-                    {
-                        return (false);
-                    }
-
-                    // Now save the ....
-                    FileWrite(hFile, Menptr[cnt].pKeyRing, NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>(), out uiNumBytesWritten);
-                    if (uiNumBytesWritten != NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>())
-                    {
-                        return (false);
-                    }
-                }
-                else
-                {
-                    // write to the file saying we DO NOT have the Key ring
-                    FileWrite(hFile, &ubZero, 1, out uiNumBytesWritten);
-                    if (uiNumBytesWritten != 1)
-                    {
-                        return (false);
-                    }
-                }
+//                if (Menptr[cnt].pKeyRing != null)
+//                {
+//                    // write to the file saying we have the ....
+//                    FileWrite(hFile, &ubOne, 1, out uiNumBytesWritten);
+//                    if (uiNumBytesWritten != 1)
+//                    {
+//                        return (false);
+//                    }
+//
+//                    // Now save the ....
+//                    FileWrite(hFile, Menptr[cnt].pKeyRing, NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>(), out uiNumBytesWritten);
+//                    if (uiNumBytesWritten != NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>())
+//                    {
+//                        return (false);
+//                    }
+//                }
+//                else
+//                {
+//                    // write to the file saying we DO NOT have the Key ring
+//                    FileWrite(hFile, &ubZero, 1, out uiNumBytesWritten);
+//                    if (uiNumBytesWritten != 1)
+//                    {
+//                        return (false);
+//                    }
+//                }
             }
         }
 
@@ -2211,7 +2217,7 @@ public class SaveLoadGame
     {
         int cnt;
         int uiNumBytesRead = 0;
-        SOLDIERTYPE SavedSoldierInfo;
+        SOLDIERTYPE SavedSoldierInfo = new();
         int uiSaveSize = Marshal.SizeOf<SOLDIERTYPE>();
         int ubId;
         int ubOne = 1;
@@ -2235,21 +2241,21 @@ public class SaveLoadGame
             //update the progress bar
             uiPercentage = (cnt * 100) / (TOTAL_SOLDIERS - 1);
 
-            RenderProgressBar(0, uiPercentage);
+            AnimatedProgressBar.RenderProgressBar(0, uiPercentage);
 
 
             //Read in a byte to tell us whether or not there is a soldier loaded here.
-            FileRead(hFile, &ubActive, 1, out uiNumBytesRead);
+//            file.FileRead(hFile, ref ubActive, 1, out uiNumBytesRead);
             if (uiNumBytesRead != 1)
             {
                 return (false);
             }
 
             // if the soldier is not active, continue 
-            if (!ubActive)
-            {
-                continue;
-            }
+//            if (!ubActive)
+//            {
+//                continue;
+//            }
 
             // else if there is a soldier 
             else
@@ -2257,21 +2263,21 @@ public class SaveLoadGame
                 //Read in the saved soldier info into a Temp structure
                 if (guiSaveGameVersion < 87)
                 {
-                    JA2EncryptedFileRead(hFile, &SavedSoldierInfo, uiSaveSize, out uiNumBytesRead);
+//                    JA2EncryptedFileRead(hFile, &SavedSoldierInfo, uiSaveSize, out uiNumBytesRead);
                 }
                 else
                 {
-                    NewJA2EncryptedFileRead(hFile, &SavedSoldierInfo, uiSaveSize, out uiNumBytesRead);
+//                    NewJA2EncryptedFileRead(hFile, &SavedSoldierInfo, uiSaveSize, out uiNumBytesRead);
                 }
                 if (uiNumBytesRead != uiSaveSize)
                 {
                     return (false);
                 }
                 // check checksum
-                if (MercChecksum(&SavedSoldierInfo) != SavedSoldierInfo.uiMercChecksum)
-                {
-                    return (false);
-                }
+//                if (MercChecksum(&SavedSoldierInfo) != SavedSoldierInfo.uiMercChecksum)
+//                {
+//                    return (false);
+//                }
 
                 //Make sure all the pointer references are null'ed out.  
                 SavedSoldierInfo.pTempObject = null;
@@ -2319,31 +2325,31 @@ public class SaveLoadGame
                 //
 
                 // Read the file to see if we have to load the keys
-                FileRead(hFile, &ubOne, 1, out uiNumBytesRead);
-                if (uiNumBytesRead != 1)
-                {
-                    return (false);
-                }
+//                FileRead(hFile, &ubOne, 1, out uiNumBytesRead);
+//                if (uiNumBytesRead != 1)
+//                {
+//                    return (false);
+//                }
 
-                if (ubOne)
-                {
-                    // Now Load the ....
-                    FileRead(hFile, Menptr[cnt].pKeyRing, NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>(), out uiNumBytesRead);
-                    if (uiNumBytesRead != NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>())
-                    {
-                        return (false);
-                    }
-
-                }
-                else
-                {
-                    Assert(Menptr[cnt].pKeyRing == null);
-                }
+//                if (ubOne)
+//                {
+//                    // Now Load the ....
+//                    FileRead(hFile, Menptr[cnt].pKeyRing, NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>(), out uiNumBytesRead);
+//                    if (uiNumBytesRead != NUM_KEYS * Marshal.SizeOf<KEY_ON_RING>())
+//                    {
+//                        return (false);
+//                    }
+//
+//                }
+//                else
+//                {
+//                    Assert(Menptr[cnt].pKeyRing == null);
+//                }
 
                 //if the soldier is an IMP character
-                if (Menptr[cnt].ubWhatKindOfMercAmI == MERC_TYPE__PLAYER_CHARACTER && Menptr[cnt].bTeam == gbPlayerNum)
+                if (Menptr[cnt].ubWhatKindOfMercAmI == MERC_TYPE.PLAYER_CHARACTER && Menptr[cnt].bTeam == gbPlayerNum)
                 {
-                    ResetIMPCharactersEyesAndMouthOffsets(Menptr[cnt].ubProfile);
+//                    ResetIMPCharactersEyesAndMouthOffsets(Menptr[cnt].ubProfile);
                 }
 
                 //if the saved game version is before x, calculate the amount of money paid to mercs
@@ -2352,7 +2358,7 @@ public class SaveLoadGame
                     //if the soldier is someone
                     if (Menptr[cnt].ubProfile != NO_PROFILE)
                     {
-                        if (Menptr[cnt].ubWhatKindOfMercAmI == MERC_TYPE__MERC)
+                        if (Menptr[cnt].ubWhatKindOfMercAmI == MERC_TYPE.MERC)
                         {
                             gMercProfiles[Menptr[cnt].ubProfile].uiTotalCostToDate = gMercProfiles[Menptr[cnt].ubProfile].sSalary * gMercProfiles[Menptr[cnt].ubProfile].iMercMercContractLength;
                         }
@@ -2500,29 +2506,29 @@ public class SaveLoadGame
 
     bool SaveFilesToSavedGame(string pSrcFileName, Stream hFile)
     {
-        int uiFileSize;
+        int uiFileSize = 0;
         int uiNumBytesWritten = 0;
-        Stream hSrcFile;
+        Stream hSrcFile = Stream.Null;
         int? pData;
-        int uiNumBytesRead;
+        int uiNumBytesRead = 0;
 
 
         //open the file
-        hSrcFile = this.files.FileOpen(pSrcFileName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
-        if (!hSrcFile)
-        {
-            return (false);
-        }
+//        hSrcFile = this.files.FileOpen(pSrcFileName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
+//        if (!hSrcFile)
+//        {
+//            return (false);
+//        }
 
         //Get the file size of the source data file
-        uiFileSize = this.files.FileGetSize(hSrcFile);
+//        uiFileSize = this.files.FileGetSize(hSrcFile);
         if (uiFileSize == 0)
         {
             return (false);
         }
 
         // Write the the size of the file to the saved game file
-        FileWrite(hFile, uiFileSize, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+//        FileWrite(hFile, uiFileSize, Marshal.SizeOf<int>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2531,7 +2537,7 @@ public class SaveLoadGame
 
 
         //Allocate a buffer to read the data into
-        pData = MemAlloc(uiFileSize);
+        pData = new();
         if (pData == null)
         {
             return (false);
@@ -2540,7 +2546,7 @@ public class SaveLoadGame
 //        memset(pData, 0, uiFileSize);
 
         // Read the saource file into the buffer
-        FileRead(hSrcFile, pData, uiFileSize, out uiNumBytesRead);
+//        FileRead(hSrcFile, pData, uiFileSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiFileSize)
         {
             //Free the buffer
@@ -2552,7 +2558,7 @@ public class SaveLoadGame
 
 
         // Write the buffer to the saved game file
-        FileWrite(hFile, pData, uiFileSize, out uiNumBytesWritten);
+//        FileWrite(hFile, pData, uiFileSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiFileSize)
         {
             //Free the buffer
@@ -2574,7 +2580,7 @@ public class SaveLoadGame
     {
         int uiFileSize = 0;
         int uiNumBytesWritten = 0;
-        Stream hSrcFile;
+        Stream hSrcFile = Stream.Null;
         int? pData;
         int uiNumBytesRead;
 
@@ -2591,12 +2597,12 @@ public class SaveLoadGame
         }
 
         //open the destination file to write to
-        hSrcFile = this.files.FileOpen(pSrcFileName, FILE_ACCESS_WRITE | FILE_CREATE_ALWAYS, false);
-        if (!hSrcFile)
-        {
-            //error, we cant open the saved game file
-            return (false);
-        }
+//        hSrcFile = this.files.FileOpen(pSrcFileName, FILE_ACCESS_WRITE | FILE_CREATE_ALWAYS, false);
+//        if (!hSrcFile)
+//        {
+//            //error, we cant open the saved game file
+//            return (false);
+//        }
 
 
         // Read the size of the data 
@@ -2617,7 +2623,7 @@ public class SaveLoadGame
         }
 
         //Allocate a buffer to read the data into
-        pData = MemAlloc(uiFileSize);
+        pData = new();
         if (pData == null)
         {
             this.files.FileClose(hSrcFile);
@@ -2626,7 +2632,7 @@ public class SaveLoadGame
 
 
         // Read into the buffer
-        this.files.FileRead(hFile, ref pData, uiFileSize, out uiNumBytesRead);
+//        this.files.FileRead(hFile, ref pData, uiFileSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiFileSize)
         {
             this.files.FileClose(hSrcFile);
@@ -2750,11 +2756,11 @@ public class SaveLoadGame
         email? pTempEmail = null;
         string pData = null;
         int cnt;
-        SavedEmailStruct SavedEmail;
+        SavedEmailStruct SavedEmail = new();
         int uiNumBytesRead = 0;
 
         //Delete the existing list of emails
-        ShutDownEmailList();
+        Emails.ShutDownEmailList();
 
         pEmailList = null;
         //Allocate memory for the header node
@@ -2794,14 +2800,14 @@ public class SaveLoadGame
 //            memset(pData, 0, EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
 
             //Get the subject
-            files.FileRead(hFile, ref pData, uiSizeOfSubject, out uiNumBytesRead);
+//            files.FileRead(hFile, ref pData, uiSizeOfSubject, out uiNumBytesRead);
             if (uiNumBytesRead != uiSizeOfSubject)
             {
                 return (false);
             }
 
             //get the rest of the data from the email
-            files.FileRead(hFile, ref SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesRead);
+//            files.FileRead(hFile, ref SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<SavedEmailStruct>())
             {
                 return (false);
@@ -2843,7 +2849,7 @@ public class SaveLoadGame
             //moved to the next email
             pEmail = pEmail.Next;
 
-            AddMessageToPages(pTempEmail.iId);
+//            AddMessageToPages(pTempEmail.iId);
 
         }
 
@@ -2911,10 +2917,10 @@ public class SaveLoadGame
 
     bool LoadTacticalStatusFromSavedGame(Stream hFile)
     {
-        int uiNumBytesRead;
+        int uiNumBytesRead = 0;
 
         //Read the gTacticalStatus to the saved game file
-        this.files.FileRead(hFile, ref gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesRead);
+//        this.files.FileRead(hFile, ref gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<TacticalStatusType>())
         {
             return (false);
@@ -2925,7 +2931,7 @@ public class SaveLoadGame
         //
 
         // Load gWorldSectorX
-        this.files.FileRead(hFile, ref gWorldSectorX, Marshal.SizeOf<int>(), out uiNumBytesRead);
+//        this.files.FileRead(hFile, ref gWorldSectorX, Marshal.SizeOf<int>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2933,7 +2939,7 @@ public class SaveLoadGame
 
 
         // Load gWorldSectorY
-        this.files.FileRead(hFile, ref gWorldSectorY, Marshal.SizeOf<int>(), out uiNumBytesRead);
+//        this.files.FileRead(hFile, ref gWorldSectorY, Marshal.SizeOf<int>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2941,7 +2947,7 @@ public class SaveLoadGame
 
 
         // Load gbWorldSectorZ
-        this.files.FileRead(hFile, ref gbWorldSectorZ, Marshal.SizeOf<int>(), out uiNumBytesRead);
+//        this.files.FileRead(hFile, ref gbWorldSectorZ, Marshal.SizeOf<int>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2994,8 +3000,8 @@ public class SaveLoadGame
 
 
         // Save the Public Opplist
-        uiSaveSize = MAXTEAMS * TOTAL_SOLDIERS;
-        FileWrite(hFile, gbPublicOpplist, uiSaveSize, out uiNumBytesWritten);
+//        uiSaveSize = MAXTEAMS * TOTAL_SOLDIERS;
+//        FileWrite(hFile, gbPublicOpplist, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3003,7 +3009,7 @@ public class SaveLoadGame
 
         // Save the Seen Oppenents
         uiSaveSize = TOTAL_SOLDIERS * TOTAL_SOLDIERS;
-        FileWrite(hFile, gbSeenOpponents, uiSaveSize, out uiNumBytesWritten);
+//        FileWrite(hFile, gbSeenOpponents, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3013,7 +3019,7 @@ public class SaveLoadGame
 
         // Save the Last Known Opp Locations
         uiSaveSize = TOTAL_SOLDIERS * TOTAL_SOLDIERS;
-        FileWrite(hFile, gsLastKnownOppLoc, uiSaveSize, out uiNumBytesWritten);
+//        FileWrite(hFile, gsLastKnownOppLoc, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3021,7 +3027,7 @@ public class SaveLoadGame
 
         // Save the Last Known Opp Level
         uiSaveSize = TOTAL_SOLDIERS * TOTAL_SOLDIERS;
-        FileWrite(hFile, gbLastKnownOppLevel, uiSaveSize, out uiNumBytesWritten);
+//        FileWrite(hFile, gbLastKnownOppLevel, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3029,16 +3035,16 @@ public class SaveLoadGame
 
 
         // Save the Public Last Known Opp Locations
-        uiSaveSize = MAXTEAMS * TOTAL_SOLDIERS;
-        FileWrite(hFile, gsPublicLastKnownOppLoc, uiSaveSize, out uiNumBytesWritten);
+//        uiSaveSize = MAXTEAMS * TOTAL_SOLDIERS;
+//        FileWrite(hFile, gsPublicLastKnownOppLoc, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
         }
 
         // Save the Public Last Known Opp Level
-        uiSaveSize = MAXTEAMS * TOTAL_SOLDIERS;
-        FileWrite(hFile, gbPublicLastKnownOppLevel, uiSaveSize, out uiNumBytesWritten);
+//        uiSaveSize = MAXTEAMS * TOTAL_SOLDIERS;
+//        FileWrite(hFile, gbPublicLastKnownOppLevel, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3046,16 +3052,16 @@ public class SaveLoadGame
 
 
         // Save the Public Noise Volume
-        uiSaveSize = MAXTEAMS;
-        FileWrite(hFile, gubPublicNoiseVolume, uiSaveSize, out uiNumBytesWritten);
+//        uiSaveSize = MAXTEAMS;
+//        FileWrite(hFile, gubPublicNoiseVolume, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
         }
 
         // Save the Public Last Noise Gridno
-        uiSaveSize = MAXTEAMS;
-        FileWrite(hFile, gsPublicNoiseGridno, uiSaveSize, out uiNumBytesWritten);
+//        uiSaveSize = MAXTEAMS;
+//        FileWrite(hFile, gsPublicNoiseGridno, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3073,8 +3079,8 @@ public class SaveLoadGame
         int uiNumBytesRead = 0;
 
         // Load the Public Opplist
-        uiLoadSize = MAXTEAMS * TOTAL_SOLDIERS;
-        FileRead(hFile, gbPublicOpplist, uiLoadSize, out uiNumBytesRead);
+//        uiLoadSize = MAXTEAMS * TOTAL_SOLDIERS;
+//        FileRead(hFile, gbPublicOpplist, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
@@ -3082,7 +3088,7 @@ public class SaveLoadGame
 
         // Load the Seen Oppenents
         uiLoadSize = TOTAL_SOLDIERS * TOTAL_SOLDIERS;
-        FileRead(hFile, gbSeenOpponents, uiLoadSize, out uiNumBytesRead);
+//        FileRead(hFile, gbSeenOpponents, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
@@ -3092,7 +3098,7 @@ public class SaveLoadGame
 
         // Load the Last Known Opp Locations
         uiLoadSize = TOTAL_SOLDIERS * TOTAL_SOLDIERS;
-        FileRead(hFile, gsLastKnownOppLoc, uiLoadSize, out uiNumBytesRead);
+//        FileRead(hFile, gsLastKnownOppLoc, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
@@ -3100,7 +3106,7 @@ public class SaveLoadGame
 
         // Load the Last Known Opp Level
         uiLoadSize = TOTAL_SOLDIERS * TOTAL_SOLDIERS;
-        FileRead(hFile, gbLastKnownOppLevel, uiLoadSize, out uiNumBytesRead);
+//        FileRead(hFile, gbLastKnownOppLevel, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
@@ -3108,16 +3114,16 @@ public class SaveLoadGame
 
 
         // Load the Public Last Known Opp Locations
-        uiLoadSize = MAXTEAMS * TOTAL_SOLDIERS;
-        FileRead(hFile, gsPublicLastKnownOppLoc, uiLoadSize, out uiNumBytesRead);
+//        uiLoadSize = MAXTEAMS * TOTAL_SOLDIERS;
+//        FileRead(hFile, gsPublicLastKnownOppLoc, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
         }
 
         // Load the Public Last Known Opp Level
-        uiLoadSize = MAXTEAMS * TOTAL_SOLDIERS;
-        FileRead(hFile, gbPublicLastKnownOppLevel, uiLoadSize, out uiNumBytesRead);
+//        uiLoadSize = MAXTEAMS * TOTAL_SOLDIERS;
+//        FileRead(hFile, gbPublicLastKnownOppLevel, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
@@ -3125,16 +3131,16 @@ public class SaveLoadGame
 
 
         // Load the Public Noise Volume
-        uiLoadSize = MAXTEAMS;
-        FileRead(hFile, gubPublicNoiseVolume, uiLoadSize, out uiNumBytesRead);
+//        uiLoadSize = MAXTEAMS;
+//        FileRead(hFile, gubPublicNoiseVolume, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
         }
 
         // Load the Public Last Noise Gridno
-        uiLoadSize = MAXTEAMS;
-        FileRead(hFile, gsPublicNoiseGridno, uiLoadSize, out uiNumBytesRead);
+//        uiLoadSize = MAXTEAMS;
+//        FileRead(hFile, gsPublicNoiseGridno, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
@@ -3145,7 +3151,7 @@ public class SaveLoadGame
 
     bool SaveWatchedLocsToSavedGame(Stream hFile)
     {
-        int uiArraySize;
+        int uiArraySize = 0;
         int uiSaveSize = 0;
         int uiNumBytesWritten = 0;
 
@@ -3153,7 +3159,7 @@ public class SaveLoadGame
 
         // save locations of watched points
         uiSaveSize = uiArraySize * Marshal.SizeOf<int>();
-        FileWrite(hFile, gsWatchedLoc, uiSaveSize, out uiNumBytesWritten);
+//        FileWrite(hFile, gsWatchedLoc, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3161,19 +3167,19 @@ public class SaveLoadGame
 
         uiSaveSize = uiArraySize * Marshal.SizeOf<int>();
 
-        FileWrite(hFile, gbWatchedLocLevel, uiSaveSize, out uiNumBytesWritten);
+//        FileWrite(hFile, gbWatchedLocLevel, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
         }
 
-        FileWrite(hFile, gubWatchedLocPoints, uiSaveSize, out uiNumBytesWritten);
+//        FileWrite(hFile, gubWatchedLocPoints, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
         }
 
-        FileWrite(hFile, gfWatchedLocReset, uiSaveSize, out uiNumBytesWritten);
+//        FileWrite(hFile, gfWatchedLocReset, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);
@@ -3192,26 +3198,26 @@ public class SaveLoadGame
         uiArraySize = TOTAL_SOLDIERS * NUM_WATCHED_LOCS;
 
         uiLoadSize = uiArraySize * Marshal.SizeOf<int>();
-        FileRead(hFile, gsWatchedLoc, uiLoadSize, out uiNumBytesRead);
+//        FileRead(hFile, gsWatchedLoc, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
         }
 
         uiLoadSize = uiArraySize * Marshal.SizeOf<int>();
-        FileRead(hFile, gbWatchedLocLevel, uiLoadSize, out uiNumBytesRead);
+//        FileRead(hFile, gbWatchedLocLevel, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
         }
 
-        FileRead(hFile, gubWatchedLocPoints, uiLoadSize, out uiNumBytesRead);
+//        FileRead(hFile, gubWatchedLocPoints, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
         }
 
-        FileRead(hFile, gfWatchedLocReset, uiLoadSize, out uiNumBytesRead);
+//        FileRead(hFile, gfWatchedLocReset, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
             return (false);
@@ -3221,17 +3227,17 @@ public class SaveLoadGame
         return (true);
     }
 
-    void CreateSavedGameFileNameFromNumber(int ubSaveGameID, string pzNewFileName)
+    void CreateSavedGameFileNameFromNumber(int ubSaveGameID, out string pzNewFileName)
     {
         //if we are creating the QuickSave file
         if (ubSaveGameID == 0)
         {
-            sprintf(pzNewFileName, "%S\\%S.%S", EnglishText.pMessageStrings[MSG.SAVEDIRECTORY], EnglishText.pMessageStrings[MSG.QUICKSAVE_NAME], EnglishText.pMessageStrings[MSG.SAVEEXTENSION]);
+            pzNewFileName = sprintf("%S\\%S.%S", EnglishText.pMessageStrings[MSG.SAVEDIRECTORY], EnglishText.pMessageStrings[MSG.QUICKSAVE_NAME], EnglishText.pMessageStrings[MSG.SAVEEXTENSION]);
         }
         else if (ubSaveGameID == SAVE__END_TURN_NUM)
         {
             //The name of the file
-            sprintf(pzNewFileName, "%S\\Auto%02d.%S", EnglishText.pMessageStrings[MSG.SAVEDIRECTORY], guiLastSaveGameNum, EnglishText.pMessageStrings[MSG.SAVEEXTENSION]);
+            pzNewFileName = sprintf("%S\\Auto%02d.%S", EnglishText.pMessageStrings[MSG.SAVEDIRECTORY], guiLastSaveGameNum, EnglishText.pMessageStrings[MSG.SAVEEXTENSION]);
 
             //increment end turn number
             guiLastSaveGameNum++;
@@ -3244,19 +3250,19 @@ public class SaveLoadGame
         }
         else
         {
-            sprintf(pzNewFileName, "%S\\%S%02d.%S", EnglishText.pMessageStrings[MSG.SAVEDIRECTORY], EnglishText.pMessageStrings[MSG.SAVE_NAME], ubSaveGameID, EnglishText.pMessageStrings[MSG.SAVEEXTENSION]);
+            pzNewFileName = sprintf("%S\\%S%02d.%S", EnglishText.pMessageStrings[MSG.SAVEDIRECTORY], EnglishText.pMessageStrings[MSG.SAVE_NAME], ubSaveGameID, EnglishText.pMessageStrings[MSG.SAVEEXTENSION]);
         }
     }
 
     bool SaveMercPathFromSoldierStruct(Stream hFile, int ubID)
     {
         int uiNumOfNodes = 0;
-        Path pTempPath = Menptr[ubID].pMercPath;
+        Path? pTempPath = Menptr[ubID].pMercPath;
         int uiNumBytesWritten = 0;
 
 
         //loop through to get all the nodes
-        while (pTempPath)
+        while (pTempPath is not null)
         {
             uiNumOfNodes++;
             pTempPath = pTempPath.pNext;
@@ -3275,7 +3281,7 @@ public class SaveLoadGame
 
 
         //loop through nodes and save all the nodes
-        while (pTempPath)
+        while (pTempPath is not null)
         {
             //Save the number of the nodes
             files.FileWrite(hFile, pTempPath, Marshal.SizeOf<Path>(), out uiNumBytesWritten);
@@ -3330,7 +3336,7 @@ public class SaveLoadGame
         for (cnt = 0; cnt < uiNumOfNodes; cnt++)
         {
             //Load the node
-            files.FileRead(hFile, ref pTemp, 17/*Marshal.SizeOf<Path>()*/, out uiNumBytesRead);
+//            files.FileRead(hFile, ref pTemp, 17/*Marshal.SizeOf<Path>()*/, out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<Path>())
             {
                 return (false);
@@ -3354,11 +3360,13 @@ public class SaveLoadGame
         }
 
         //move to beginning of list
-        pTempPath = MoveToBeginningOfPathList(pTempPath);
+//        pTempPath = MoveToBeginningOfPathList(pTempPath);
 
         Menptr[ubID].pMercPath = pTempPath;
-        if (Menptr[ubID].pMercPath)
+        if (Menptr[ubID].pMercPath is not null)
+        {
             Menptr[ubID].pMercPath.pPrev = null;
+        }
 
         return (true);
     }
@@ -3463,22 +3471,22 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         GENERAL_SAVE_INFO sGeneralInfo = new();
 
         sGeneralInfo.ubMusicMode = gubMusicMode;
-        sGeneralInfo.uiCurrentUniqueSoldierId = guiCurrentUniqueSoldierId;
+//        sGeneralInfo.uiCurrentUniqueSoldierId = guiCurrentUniqueSoldierId;
         sGeneralInfo.uiCurrentScreen = guiPreviousOptionScreen;
 
         sGeneralInfo.usSelectedSoldier = gusSelectedSoldier;
         sGeneralInfo.sRenderCenterX = gsRenderCenterX;
         sGeneralInfo.sRenderCenterY = gsRenderCenterY;
         sGeneralInfo.fAtLeastOneMercWasHired = gfAtLeastOneMercWasHired;
-        sGeneralInfo.fHavePurchasedItemsFromTony = gfHavePurchasedItemsFromTony;
+//        sGeneralInfo.fHavePurchasedItemsFromTony = gfHavePurchasedItemsFromTony;
 
-        sGeneralInfo.fShowItemsFlag = fShowItemsFlag;
-        sGeneralInfo.fShowTownFlag = fShowTownFlag;
-        sGeneralInfo.fShowMineFlag = fShowMineFlag;
-        sGeneralInfo.fShowAircraftFlag = fShowAircraftFlag;
-        sGeneralInfo.fShowTeamFlag = fShowTeamFlag;
+//        sGeneralInfo.fShowItemsFlag = fShowItemsFlag;
+//        sGeneralInfo.fShowTownFlag = fShowTownFlag;
+//        sGeneralInfo.fShowMineFlag = fShowMineFlag;
+//        sGeneralInfo.fShowAircraftFlag = fShowAircraftFlag;
+//        sGeneralInfo.fShowTeamFlag = fShowTeamFlag;
 
-        sGeneralInfo.fHelicopterAvailable = fHelicopterAvailable;
+//        sGeneralInfo.fHelicopterAvailable = fHelicopterAvailable;
 
         // helicopter vehicle id
         sGeneralInfo.iHelicopterVehicleId = iHelicopterVehicleId;
@@ -3487,49 +3495,49 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         //	sGeneralInfo.iTotalHeliDistanceSinceRefuel = iTotalHeliDistanceSinceRefuel;
 
         // total owed by player
-        sGeneralInfo.iTotalAccumulatedCostByPlayer = iTotalAccumulatedCostByPlayer;
+//        sGeneralInfo.iTotalAccumulatedCostByPlayer = iTotalAccumulatedCostByPlayer;
 
         // whether or not skyrider is alive and well? and on our side yet?
         sGeneralInfo.fSkyRiderAvailable = fSkyRiderAvailable;
 
         // is the heli in the air?
-        sGeneralInfo.fHelicopterIsAirBorne = fHelicopterIsAirBorne;
+//        sGeneralInfo.fHelicopterIsAirBorne = fHelicopterIsAirBorne;
 
         // is the pilot returning straight to base?
-        sGeneralInfo.fHeliReturnStraightToBase = fHeliReturnStraightToBase;
+//        sGeneralInfo.fHeliReturnStraightToBase = fHeliReturnStraightToBase;
 
         // heli hovering
-        sGeneralInfo.fHoveringHelicopter = fHoveringHelicopter;
+//        sGeneralInfo.fHoveringHelicopter = fHoveringHelicopter;
 
         // time started hovering
-        sGeneralInfo.uiStartHoverTime = uiStartHoverTime;
+//        sGeneralInfo.uiStartHoverTime = uiStartHoverTime;
 
         // what state is skyrider's dialogue in in?
         sGeneralInfo.uiHelicopterSkyriderTalkState = guiHelicopterSkyriderTalkState;
 
         // the flags for skyrider events
-        sGeneralInfo.fShowEstoniRefuelHighLight = fShowEstoniRefuelHighLight;
-        sGeneralInfo.fShowOtherSAMHighLight = fShowOtherSAMHighLight;
-        sGeneralInfo.fShowDrassenSAMHighLight = fShowDrassenSAMHighLight;
-        sGeneralInfo.fShowCambriaHospitalHighLight = fShowCambriaHospitalHighLight;
+//        sGeneralInfo.fShowEstoniRefuelHighLight = fShowEstoniRefuelHighLight;
+//        sGeneralInfo.fShowOtherSAMHighLight = fShowOtherSAMHighLight;
+//        sGeneralInfo.fShowDrassenSAMHighLight = fShowDrassenSAMHighLight;
+//        sGeneralInfo.fShowCambriaHospitalHighLight = fShowCambriaHospitalHighLight;
 
         //The current state of the weather
         sGeneralInfo.uiEnvWeather = guiEnvWeather;
 
-        sGeneralInfo.ubDefaultButton = gubDefaultButton;
+//        sGeneralInfo.ubDefaultButton = gubDefaultButton;
 
-        sGeneralInfo.fSkyriderEmptyHelpGiven = gfSkyriderEmptyHelpGiven;
-        sGeneralInfo.ubHelicopterHitsTaken = gubHelicopterHitsTaken;
-        sGeneralInfo.fSkyriderSaidCongratsOnTakingSAM = gfSkyriderSaidCongratsOnTakingSAM;
-        sGeneralInfo.ubPlayerProgressSkyriderLastCommentedOn = gubPlayerProgressSkyriderLastCommentedOn;
+//        sGeneralInfo.fSkyriderEmptyHelpGiven = gfSkyriderEmptyHelpGiven;
+//        sGeneralInfo.ubHelicopterHitsTaken = gubHelicopterHitsTaken;
+//        sGeneralInfo.fSkyriderSaidCongratsOnTakingSAM = gfSkyriderSaidCongratsOnTakingSAM;
+//        sGeneralInfo.ubPlayerProgressSkyriderLastCommentedOn = gubPlayerProgressSkyriderLastCommentedOn;
 
-        sGeneralInfo.fEnterMapDueToContract = fEnterMapDueToContract;
-        sGeneralInfo.ubQuitType = ubQuitType;
+//        sGeneralInfo.fEnterMapDueToContract = fEnterMapDueToContract;
+//        sGeneralInfo.ubQuitType = ubQuitType;
 
-        if (pContractReHireSoldier != null)
-            sGeneralInfo.sContractRehireSoldierID = pContractReHireSoldier.ubID;
-        else
-            sGeneralInfo.sContractRehireSoldierID = -1;
+//        if (pContractReHireSoldier != null)
+//            sGeneralInfo.sContractRehireSoldierID = pContractReHireSoldier.ubID;
+//        else
+//            sGeneralInfo.sContractRehireSoldierID = -1;
 
         sGeneralInfo.GameOptions = gGameOptions;
 
@@ -3540,10 +3548,14 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         sGeneralInfo.sCurInterfacePanel = gsCurInterfacePanel;
 
         // Save the selected merc
-        if (gpSMCurrentMerc)
+        if (gpSMCurrentMerc is not null)
+        {
             sGeneralInfo.ubSMCurrentMercID = gpSMCurrentMerc.ubID;
+        }
         else
+        {
             sGeneralInfo.ubSMCurrentMercID = 255;
+        }
 
         //Save the fact that it is the first time in mapscreen
         sGeneralInfo.fFirstTimeInMapScreen = fFirstTimeInMapScreen;
@@ -3553,25 +3565,25 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         sGeneralInfo.fDisableMapInterfaceDueToBattle = fDisableMapInterfaceDueToBattle;
 
         // Save boxing info
-        memcpy(sGeneralInfo.sBoxerGridNo, gsBoxerGridNo, NUM_BOXERS * Marshal.SizeOf<int>());
-        memcpy(sGeneralInfo.ubBoxerID, gubBoxerID, NUM_BOXERS * Marshal.SizeOf<int>());
-        memcpy(sGeneralInfo.fBoxerFought, gfBoxerFought, NUM_BOXERS * Marshal.SizeOf<bool>());
+//        memcpy(sGeneralInfo.sBoxerGridNo, gsBoxerGridNo, NUM_BOXERS * Marshal.SizeOf<int>());
+//        memcpy(sGeneralInfo.ubBoxerID, gubBoxerID, NUM_BOXERS * Marshal.SizeOf<int>());
+//        memcpy(sGeneralInfo.fBoxerFought, gfBoxerFought, NUM_BOXERS * Marshal.SizeOf<bool>());
 
         //Save the helicopter status
-        sGeneralInfo.fHelicopterDestroyed = fHelicopterDestroyed;
-        sGeneralInfo.fShowMapScreenHelpText = fShowMapScreenHelpText;
-
-        sGeneralInfo.iSortStateForMapScreenList = giSortStateForMapScreenList;
-        sGeneralInfo.fFoundTixa = fFoundTixa;
-
-        sGeneralInfo.uiTimeOfLastSkyriderMonologue = guiTimeOfLastSkyriderMonologue;
-        sGeneralInfo.fSkyRiderSetUp = fSkyRiderSetUp;
-
-        memcpy(sGeneralInfo.fRefuelingSiteAvailable, fRefuelingSiteAvailable, NUMBER_OF_REFUEL_SITES * Marshal.SizeOf<bool>());
+//        sGeneralInfo.fHelicopterDestroyed = fHelicopterDestroyed;
+//        sGeneralInfo.fShowMapScreenHelpText = fShowMapScreenHelpText;
+//
+//        sGeneralInfo.iSortStateForMapScreenList = giSortStateForMapScreenList;
+//        sGeneralInfo.fFoundTixa = fFoundTixa;
+//
+//        sGeneralInfo.uiTimeOfLastSkyriderMonologue = guiTimeOfLastSkyriderMonologue;
+//        sGeneralInfo.fSkyRiderSetUp = fSkyRiderSetUp;
+//
+//        memcpy(sGeneralInfo.fRefuelingSiteAvailable, fRefuelingSiteAvailable, NUMBER_OF_REFUEL_SITES * Marshal.SizeOf<bool>());
 
 
         //Meanwhile stuff
-        memcpy(sGeneralInfo.gCurrentMeanwhileDef, gCurrentMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>());
+//        memcpy(sGeneralInfo.gCurrentMeanwhileDef, gCurrentMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>());
         //sGeneralInfo.gfMeanwhileScheduled = gfMeanwhileScheduled;
         sGeneralInfo.gfMeanwhileTryingToStart = gfMeanwhileTryingToStart;
         sGeneralInfo.gfInMeanwhile = gfInMeanwhile;
@@ -3581,59 +3593,59 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         sGeneralInfo.sDeadMercs = sDeadMercs;
 
         // level of public noises
-        sGeneralInfo.gbPublicNoiseLevel = gbPublicNoiseLevel;
+//        sGeneralInfo.gbPublicNoiseLevel = gbPublicNoiseLevel;
 
         //The screen count for the initscreen
-        sGeneralInfo.gubScreenCount = gubScreenCount;
+//        sGeneralInfo.gubScreenCount = gubScreenCount;
 
 
         //used for the mean while screen
         sGeneralInfo.uiMeanWhileFlags = uiMeanWhileFlags;
 
         //Imp portrait number
-        sGeneralInfo.iPortraitNumber = iPortraitNumber;
+//        sGeneralInfo.iPortraitNumber = iPortraitNumber;
 
         // location of first enocunter with enemy
-        sGeneralInfo.sWorldSectorLocationOfFirstBattle = sWorldSectorLocationOfFirstBattle;
+//        sGeneralInfo.sWorldSectorLocationOfFirstBattle = sWorldSectorLocationOfFirstBattle;
 
 
         //State of email flags
-        sGeneralInfo.fUnReadMailFlag = fUnReadMailFlag;
-        sGeneralInfo.fNewMailFlag = fNewMailFlag;
-        sGeneralInfo.fOldUnReadFlag = fOldUnreadFlag;
-        sGeneralInfo.fOldNewMailFlag = fOldNewMailFlag;
+//        sGeneralInfo.fUnReadMailFlag = fUnReadMailFlag;
+//        sGeneralInfo.fNewMailFlag = fNewMailFlag;
+//        sGeneralInfo.fOldUnReadFlag = fOldUnreadFlag;
+//        sGeneralInfo.fOldNewMailFlag = fOldNewMailFlag;
 
-        sGeneralInfo.fShowMilitia = fShowMilitia;
+//        sGeneralInfo.fShowMilitia = fShowMilitia;
 
-        sGeneralInfo.fNewFilesInFileViewer = fNewFilesInFileViewer;
+//        sGeneralInfo.fNewFilesInFileViewer = fNewFilesInFileViewer;
 
-        sGeneralInfo.fLastBoxingMatchWonByPlayer = gfLastBoxingMatchWonByPlayer;
+//        sGeneralInfo.fLastBoxingMatchWonByPlayer = gfLastBoxingMatchWonByPlayer;
 
         sGeneralInfo.fSamSiteFound = fSamSiteFound.Values.ToArray();//, NUMBER_OF_SAMS * Marshal.SizeOf<bool>());
 
         sGeneralInfo.ubNumTerrorists = gubNumTerrorists;
-        sGeneralInfo.ubCambriaMedicalObjects = gubCambriaMedicalObjects;
+//        sGeneralInfo.ubCambriaMedicalObjects = gubCambriaMedicalObjects;
 
-        sGeneralInfo.fDisableTacticalPanelButtons = gfDisableTacticalPanelButtons;
+//        sGeneralInfo.fDisableTacticalPanelButtons = gfDisableTacticalPanelButtons;
 
-        sGeneralInfo.sSelMapX = sSelMapX;
-        sGeneralInfo.sSelMapY = sSelMapY;
-        sGeneralInfo.iCurrentMapSectorZ = iCurrentMapSectorZ;
+//        sGeneralInfo.sSelMapX = sSelMapX;
+//        sGeneralInfo.sSelMapY = sSelMapY;
+//        sGeneralInfo.iCurrentMapSectorZ = iCurrentMapSectorZ;
 
         //Save the current status of the help screens flag that say wether or not the user has been there before
-        sGeneralInfo.usHasPlayerSeenHelpScreenInCurrentScreen = gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen;
+//        sGeneralInfo.usHasPlayerSeenHelpScreenInCurrentScreen = gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen;
 
-        sGeneralInfo.ubBoxingMatchesWon = gubBoxingMatchesWon;
-        sGeneralInfo.ubBoxersRests = gubBoxersRests;
+//        sGeneralInfo.ubBoxingMatchesWon = gubBoxingMatchesWon;
+//        sGeneralInfo.ubBoxersRests = gubBoxersRests;
         sGeneralInfo.fBoxersResting = gfBoxersResting;
 
         sGeneralInfo.ubDesertTemperature = gubDesertTemperature;
         sGeneralInfo.ubGlobalTemperature = gubGlobalTemperature;
 
-        sGeneralInfo.sMercArriveSectorX = gsMercArriveSectorX;
-        sGeneralInfo.sMercArriveSectorY = gsMercArriveSectorY;
+//        sGeneralInfo.sMercArriveSectorX = gsMercArriveSectorX;
+//        sGeneralInfo.sMercArriveSectorY = gsMercArriveSectorY;
 
-        sGeneralInfo.fCreatureMeanwhileScenePlayed = gfCreatureMeanwhileScenePlayed;
+//        sGeneralInfo.fCreatureMeanwhileScenePlayed = gfCreatureMeanwhileScenePlayed;
 
         //save the global player num
         sGeneralInfo.ubPlayerNum = gbPlayerNum;
@@ -3649,7 +3661,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         sGeneralInfo.fCantRetreatInPBI = gfCantRetreatInPBI;
         sGeneralInfo.fExplosionQueueActive = gfExplosionQueueActive;
 
-        sGeneralInfo.bSelectedInfoChar = bSelectedInfoChar;
+//        sGeneralInfo.bSelectedInfoChar = bSelectedInfoChar;
 
         sGeneralInfo.iHospitalTempBalance = giHospitalTempBalance;
         sGeneralInfo.iHospitalRefund = giHospitalRefund;
@@ -3672,13 +3684,13 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
     bool LoadGeneralInfo(Stream hFile)
     {
-        int uiNumBytesRead;
+        int uiNumBytesRead = 0;
 
         GENERAL_SAVE_INFO sGeneralInfo = new();//, 0, Marshal.SizeOf<GENERAL_SAVE_INFO>());
 
 
         //Load the current music mode
-        this.files.FileRead(hFile, ref sGeneralInfo, Marshal.SizeOf<GENERAL_SAVE_INFO>(), out uiNumBytesRead);
+//        this.files.FileRead(hFile, ref sGeneralInfo, Marshal.SizeOf<GENERAL_SAVE_INFO>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<GENERAL_SAVE_INFO>())
         {
             this.files.FileClose(hFile);
@@ -3687,9 +3699,9 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         gMusicModeToPlay = sGeneralInfo.ubMusicMode;
 
-        guiCurrentUniqueSoldierId = sGeneralInfo.uiCurrentUniqueSoldierId;
+//        guiCurrentUniqueSoldierId = sGeneralInfo.uiCurrentUniqueSoldierId;
 
-        guiScreenToGotoAfterLoadingSavedGame = sGeneralInfo.uiCurrentScreen;
+//        guiScreenToGotoAfterLoadingSavedGame = sGeneralInfo.uiCurrentScreen;
 
         //	gusSelectedSoldier = NOBODY;
         gusSelectedSoldier = sGeneralInfo.usSelectedSoldier;
@@ -3699,15 +3711,15 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         gfAtLeastOneMercWasHired = sGeneralInfo.fAtLeastOneMercWasHired;
 
-        gfHavePurchasedItemsFromTony = sGeneralInfo.fHavePurchasedItemsFromTony;
+//        gfHavePurchasedItemsFromTony = sGeneralInfo.fHavePurchasedItemsFromTony;
 
-        fShowItemsFlag = sGeneralInfo.fShowItemsFlag;
-        fShowTownFlag = sGeneralInfo.fShowTownFlag;
-        fShowMineFlag = sGeneralInfo.fShowMineFlag;
-        fShowAircraftFlag = sGeneralInfo.fShowAircraftFlag;
-        fShowTeamFlag = sGeneralInfo.fShowTeamFlag;
-
-        fHelicopterAvailable = sGeneralInfo.fHelicopterAvailable;
+//        fShowItemsFlag = sGeneralInfo.fShowItemsFlag;
+//        fShowTownFlag = sGeneralInfo.fShowTownFlag;
+//        fShowMineFlag = sGeneralInfo.fShowMineFlag;
+//        fShowAircraftFlag = sGeneralInfo.fShowAircraftFlag;
+//        fShowTeamFlag = sGeneralInfo.fShowTeamFlag;
+//
+//        fHelicopterAvailable = sGeneralInfo.fHelicopterAvailable;
 
         // helicopter vehicle id
         iHelicopterVehicleId = sGeneralInfo.iHelicopterVehicleId;
@@ -3716,62 +3728,62 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         //	iTotalHeliDistanceSinceRefuel = sGeneralInfo.iTotalHeliDistanceSinceRefuel;
 
         // total owed to player
-        iTotalAccumulatedCostByPlayer = sGeneralInfo.iTotalAccumulatedCostByPlayer;
+//        iTotalAccumulatedCostByPlayer = sGeneralInfo.iTotalAccumulatedCostByPlayer;
 
         // whether or not skyrider is alive and well? and on our side yet?
         fSkyRiderAvailable = sGeneralInfo.fSkyRiderAvailable;
 
         // is the heli in the air?
-        fHelicopterIsAirBorne = sGeneralInfo.fHelicopterIsAirBorne;
+//        fHelicopterIsAirBorne = sGeneralInfo.fHelicopterIsAirBorne;
 
         // is the pilot returning straight to base?
-        fHeliReturnStraightToBase = sGeneralInfo.fHeliReturnStraightToBase;
+//        fHeliReturnStraightToBase = sGeneralInfo.fHeliReturnStraightToBase;
 
         // heli hovering
-        fHoveringHelicopter = sGeneralInfo.fHoveringHelicopter;
+//        fHoveringHelicopter = sGeneralInfo.fHoveringHelicopter;
 
         // time started hovering
-        uiStartHoverTime = sGeneralInfo.uiStartHoverTime;
+//        uiStartHoverTime = sGeneralInfo.uiStartHoverTime;
 
         // what state is skyrider's dialogue in in?
         guiHelicopterSkyriderTalkState = sGeneralInfo.uiHelicopterSkyriderTalkState;
 
         // the flags for skyrider events
-        fShowEstoniRefuelHighLight = sGeneralInfo.fShowEstoniRefuelHighLight;
-        fShowOtherSAMHighLight = sGeneralInfo.fShowOtherSAMHighLight;
-        fShowDrassenSAMHighLight = sGeneralInfo.fShowDrassenSAMHighLight;
-        fShowCambriaHospitalHighLight = sGeneralInfo.fShowCambriaHospitalHighLight;
+//        fShowEstoniRefuelHighLight = sGeneralInfo.fShowEstoniRefuelHighLight;
+//        fShowOtherSAMHighLight = sGeneralInfo.fShowOtherSAMHighLight;
+//        fShowDrassenSAMHighLight = sGeneralInfo.fShowDrassenSAMHighLight;
+//        fShowCambriaHospitalHighLight = sGeneralInfo.fShowCambriaHospitalHighLight;
 
         //The current state of the weather
         guiEnvWeather = sGeneralInfo.uiEnvWeather;
 
-        gubDefaultButton = sGeneralInfo.ubDefaultButton;
-
-        gfSkyriderEmptyHelpGiven = sGeneralInfo.fSkyriderEmptyHelpGiven;
-        gubHelicopterHitsTaken = sGeneralInfo.ubHelicopterHitsTaken;
-        gfSkyriderSaidCongratsOnTakingSAM = sGeneralInfo.fSkyriderSaidCongratsOnTakingSAM;
-        gubPlayerProgressSkyriderLastCommentedOn = sGeneralInfo.ubPlayerProgressSkyriderLastCommentedOn;
-
-        fEnterMapDueToContract = sGeneralInfo.fEnterMapDueToContract;
-        ubQuitType = sGeneralInfo.ubQuitType;
-
-        //if the soldier id is valid
-        if (sGeneralInfo.sContractRehireSoldierID == -1)
-        {
-            pContractReHireSoldier = null;
-        }
-        else
-        {
-            pContractReHireSoldier = Menptr[sGeneralInfo.sContractRehireSoldierID];
-        }
-
-        gGameOptions =  sGeneralInfo.gameop;
+//        gubDefaultButton = sGeneralInfo.ubDefaultButton;
+//
+//        gfSkyriderEmptyHelpGiven = sGeneralInfo.fSkyriderEmptyHelpGiven;
+//        gubHelicopterHitsTaken = sGeneralInfo.ubHelicopterHitsTaken;
+//        gfSkyriderSaidCongratsOnTakingSAM = sGeneralInfo.fSkyriderSaidCongratsOnTakingSAM;
+//        gubPlayerProgressSkyriderLastCommentedOn = sGeneralInfo.ubPlayerProgressSkyriderLastCommentedOn;
+//
+//        fEnterMapDueToContract = sGeneralInfo.fEnterMapDueToContract;
+//        ubQuitType = sGeneralInfo.ubQuitType;
+//
+//        //if the soldier id is valid
+//        if (sGeneralInfo.sContractRehireSoldierID == -1)
+//        {
+//            pContractReHireSoldier = null;
+//        }
+//        else
+//        {
+//            pContractReHireSoldier = Menptr[sGeneralInfo.sContractRehireSoldierID];
+//        }
+//
+//        gGameOptions =  sGeneralInfo.gameop;
 
         //Restore the JA2 Clock
         guiBaseJA2Clock = sGeneralInfo.uiBaseJA2Clock;
 
         // whenever guiBaseJA2Clock changes, we must reset all the timer variables that use it as a reference
-        ResetJA2ClockGlobalTimers();
+//        ResetJA2ClockGlobalTimers();
 
 
         // Restore the selected merc
@@ -3781,7 +3793,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
             gpSMCurrentMerc = Menptr[sGeneralInfo.ubSMCurrentMercID];
 
         //Set the interface panel to the team panel
-        ShutdownCurrentPanel();
+//        ShutdownCurrentPanel();
 
         //Restore the current tactical panel mode
         gsCurInterfacePanel = sGeneralInfo.sCurInterfacePanel;
@@ -3806,21 +3818,21 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         fDisableMapInterfaceDueToBattle = sGeneralInfo.fDisableMapInterfaceDueToBattle;
 
         gsBoxerGridNo = sGeneralInfo.sBoxerGridNo;
-        gubBoxerID = sGeneralInfo.ubBoxerID;
-        gfBoxerFought = sGeneralInfo.fBoxerFought;
+//        gubBoxerID = sGeneralInfo.ubBoxerID;
+//        gfBoxerFought = sGeneralInfo.fBoxerFought;
 
         //Load the helicopter status
-        fHelicopterDestroyed = sGeneralInfo.fHelicopterDestroyed;
-        fShowMapScreenHelpText = sGeneralInfo.fShowMapScreenHelpText;
-
-
-        giSortStateForMapScreenList = sGeneralInfo.iSortStateForMapScreenList;
-        fFoundTixa = sGeneralInfo.fFoundTixa;
-
-        guiTimeOfLastSkyriderMonologue = sGeneralInfo.uiTimeOfLastSkyriderMonologue;
-        fSkyRiderSetUp = sGeneralInfo.fSkyRiderSetUp;
-
-        fRefuelingSiteAvailable = sGeneralInfo.fRefuelingSiteAvailable;
+//        fHelicopterDestroyed = sGeneralInfo.fHelicopterDestroyed;
+//        fShowMapScreenHelpText = sGeneralInfo.fShowMapScreenHelpText;
+//
+//
+//        giSortStateForMapScreenList = sGeneralInfo.iSortStateForMapScreenList;
+//        fFoundTixa = sGeneralInfo.fFoundTixa;
+//
+//        guiTimeOfLastSkyriderMonologue = sGeneralInfo.uiTimeOfLastSkyriderMonologue;
+//        fSkyRiderSetUp = sGeneralInfo.fSkyRiderSetUp;
+//
+//        fRefuelingSiteAvailable = sGeneralInfo.fRefuelingSiteAvailable;
 
 
         //Meanwhile stuff
@@ -3835,11 +3847,11 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         // level of public noises
         for (int i = 0; i < sGeneralInfo.gbPublicNoiseLevel.Length; i++)
         {
-            gbPublicNoiseLevel.Values[i] = sGeneralInfo.gbPublicNoiseLevel[i];
+//            gbPublicNoiseLevel.Values[i] = sGeneralInfo.gbPublicNoiseLevel[i];
         }
 
         //the screen count for the init screen
-        gubScreenCount = sGeneralInfo.gubScreenCount;
+//        gubScreenCount = sGeneralInfo.gubScreenCount;
 
         //used for the mean while screen
         if (guiSaveGameVersion < 71)
@@ -3852,51 +3864,51 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         }
 
         //Imp portrait number
-        iPortraitNumber = sGeneralInfo.iPortraitNumber;
-
-        // location of first enocunter with enemy
-        sWorldSectorLocationOfFirstBattle = sGeneralInfo.sWorldSectorLocationOfFirstBattle;
-
-        fShowMilitia = sGeneralInfo.fShowMilitia;
-
-        fNewFilesInFileViewer = sGeneralInfo.fNewFilesInFileViewer;
-
-        gfLastBoxingMatchWonByPlayer = sGeneralInfo.fLastBoxingMatchWonByPlayer;
-
-        for (SAM_SITE i = 0; i < (SAM_SITE)sGeneralInfo.fSamSiteFound.Length; i++)
-        {
-            fSamSiteFound[i] = sGeneralInfo.fSamSiteFound[(int)i];
-        }
-
-        gubNumTerrorists = sGeneralInfo.ubNumTerrorists;
-        gubCambriaMedicalObjects = sGeneralInfo.ubCambriaMedicalObjects;
-
-        gfDisableTacticalPanelButtons = sGeneralInfo.fDisableTacticalPanelButtons;
-
-        sSelMapX = sGeneralInfo.sSelMapX;
-        sSelMapY = sGeneralInfo.sSelMapY;
-        iCurrentMapSectorZ = sGeneralInfo.iCurrentMapSectorZ;
-
-        //State of email flags
-        fUnReadMailFlag = sGeneralInfo.fUnReadMailFlag;
-        fNewMailFlag = sGeneralInfo.fNewMailFlag;
-        fOldUnreadFlag = sGeneralInfo.fOldUnReadFlag;
-        fOldNewMailFlag = sGeneralInfo.fOldNewMailFlag;
-
-        //Save the current status of the help screens flag that say wether or not the user has been there before
-        gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = sGeneralInfo.usHasPlayerSeenHelpScreenInCurrentScreen;
-
-        gubBoxingMatchesWon = sGeneralInfo.ubBoxingMatchesWon;
-        gubBoxersRests = sGeneralInfo.ubBoxersRests;
-        gfBoxersResting = sGeneralInfo.fBoxersResting;
-
-        gubDesertTemperature = sGeneralInfo.ubDesertTemperature;
-        gubGlobalTemperature = sGeneralInfo.ubGlobalTemperature;
-
-        gsMercArriveSectorX = sGeneralInfo.sMercArriveSectorX;
-        gsMercArriveSectorY = sGeneralInfo.sMercArriveSectorY;
-
-        gfCreatureMeanwhileScenePlayed = sGeneralInfo.fCreatureMeanwhileScenePlayed;
+//        iPortraitNumber = sGeneralInfo.iPortraitNumber;
+//
+//        // location of first enocunter with enemy
+//        sWorldSectorLocationOfFirstBattle = sGeneralInfo.sWorldSectorLocationOfFirstBattle;
+//
+//        fShowMilitia = sGeneralInfo.fShowMilitia;
+//
+//        fNewFilesInFileViewer = sGeneralInfo.fNewFilesInFileViewer;
+//
+//        gfLastBoxingMatchWonByPlayer = sGeneralInfo.fLastBoxingMatchWonByPlayer;
+//
+//        for (SAM_SITE i = 0; i < (SAM_SITE)sGeneralInfo.fSamSiteFound.Length; i++)
+//        {
+//            fSamSiteFound[i] = sGeneralInfo.fSamSiteFound[(int)i];
+//        }
+//
+//        gubNumTerrorists = sGeneralInfo.ubNumTerrorists;
+//        gubCambriaMedicalObjects = sGeneralInfo.ubCambriaMedicalObjects;
+//
+//        gfDisableTacticalPanelButtons = sGeneralInfo.fDisableTacticalPanelButtons;
+//
+//        sSelMapX = sGeneralInfo.sSelMapX;
+//        sSelMapY = sGeneralInfo.sSelMapY;
+//        iCurrentMapSectorZ = sGeneralInfo.iCurrentMapSectorZ;
+//
+//        //State of email flags
+//        fUnReadMailFlag = sGeneralInfo.fUnReadMailFlag;
+//        fNewMailFlag = sGeneralInfo.fNewMailFlag;
+//        fOldUnreadFlag = sGeneralInfo.fOldUnReadFlag;
+//        fOldNewMailFlag = sGeneralInfo.fOldNewMailFlag;
+//
+//        //Save the current status of the help screens flag that say wether or not the user has been there before
+//        gHelpScreen.usHasPlayerSeenHelpScreenInCurrentScreen = sGeneralInfo.usHasPlayerSeenHelpScreenInCurrentScreen;
+//
+//        gubBoxingMatchesWon = sGeneralInfo.ubBoxingMatchesWon;
+//        gubBoxersRests = sGeneralInfo.ubBoxersRests;
+//        gfBoxersResting = sGeneralInfo.fBoxersResting;
+//
+//        gubDesertTemperature = sGeneralInfo.ubDesertTemperature;
+//        gubGlobalTemperature = sGeneralInfo.ubGlobalTemperature;
+//
+//        gsMercArriveSectorX = sGeneralInfo.sMercArriveSectorX;
+//        gsMercArriveSectorY = sGeneralInfo.sMercArriveSectorY;
+//
+//        gfCreatureMeanwhileScenePlayed = sGeneralInfo.fCreatureMeanwhileScenePlayed;
 
         //load the global player num
         gbPlayerNum = sGeneralInfo.ubPlayerNum;
@@ -3912,7 +3924,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         gfCantRetreatInPBI = sGeneralInfo.fCantRetreatInPBI;
         gfExplosionQueueActive = sGeneralInfo.fExplosionQueueActive;
 
-        bSelectedInfoChar = sGeneralInfo.bSelectedInfoChar;
+//        bSelectedInfoChar = sGeneralInfo.bSelectedInfoChar;
 
         giHospitalTempBalance = sGeneralInfo.iHospitalTempBalance;
         giHospitalRefund = sGeneralInfo.iHospitalRefund;
@@ -3972,20 +3984,20 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         if (guiSaveGameVersion < 72)
         {
             //Load the array of meanwhile defs
-            this.files.FileRead(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * (Meanwhiles.NUM_MEANWHILES - 1), out uiNumBytesRead);
-            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * (Meanwhiles.NUM_MEANWHILES - 1))
+            this.files.FileRead(hFile, ref gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * ((int)Meanwhiles.NUM_MEANWHILES - 1), out uiNumBytesRead);
+            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * ((int)Meanwhiles.NUM_MEANWHILES - 1))
             {
                 return (false);
             }
             // and set the last one
-            gMeanwhileDef[Meanwhiles.NUM_MEANWHILES - 1] = new();
+            gMeanwhileDef[(int)Meanwhiles.NUM_MEANWHILES - 1] = new();
 
         }
         else
         {
             //Load the array of meanwhile defs
-            this.files.FileRead(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES, out uiNumBytesRead);
-            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES)
+            this.files.FileRead(hFile, ref gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES, out uiNumBytesRead);
+            if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES)
             {
                 return (false);
             }
@@ -3996,11 +4008,11 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
     bool SaveMeanwhileDefsFromSaveGameFile(Stream hFile)
     {
-        int uiNumBytesWritten;
+        int uiNumBytesWritten = 0;
 
         //Save the array of meanwhile defs
-        this.files.FileWrite(hFile, gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES, out uiNumBytesWritten);
-        if (uiNumBytesWritten != Marshal.SizeOf<MEANWHILE_DEFINITION>() * Meanwhiles.NUM_MEANWHILES)
+//        this.files.FileWrite(hFile, ref gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES, out uiNumBytesWritten);
+        if (uiNumBytesWritten != Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES)
         {
             return (false);
         }
@@ -4012,7 +4024,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
     {
         int uiBytesFree = 0;
 
-        uiBytesFree = GetFreeSpaceOnHardDriveWhereGameIsRunningFrom();
+//        uiBytesFree = GetFreeSpaceOnHardDriveWhereGameIsRunningFrom();
 
         //check to see if there is enough hard drive space
         if (uiBytesFree < REQUIRED_FREE_SPACE)
@@ -4238,59 +4250,60 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         pGroup = gpGroupList;
         while (pGroup is not null)
         {
-            if (!pGroup.fPlayer.Any())
-            {
-                if (pGroup.pEnemyGroup.ubNumAdmins + pGroup.pEnemyGroup.ubNumTroops + pGroup.pEnemyGroup.ubNumElites > MAX_STRATEGIC_TEAM_SIZE)
-                {
-                    pGroup.ubGroupSize = 20;
-                    if (pGroup.pEnemyGroup.ubNumAdmins > pGroup.pEnemyGroup.ubNumTroops)
-                    {
-                        if (pGroup.pEnemyGroup.ubNumAdmins > pGroup.pEnemyGroup.ubNumElites)
-                        {
-                            pGroup.pEnemyGroup.ubNumAdmins = 20;
-                            pGroup.pEnemyGroup.ubNumTroops = 0;
-                            pGroup.pEnemyGroup.ubNumElites = 0;
-                        }
-                        else
-                        {
-                            pGroup.pEnemyGroup.ubNumAdmins = 0;
-                            pGroup.pEnemyGroup.ubNumTroops = 0;
-                            pGroup.pEnemyGroup.ubNumElites = 20;
-                        }
-                    }
-                    else if (pGroup.pEnemyGroup.ubNumTroops > pGroup.pEnemyGroup.ubNumElites)
-                    {
-                        if (pGroup.pEnemyGroup.ubNumTroops > pGroup.pEnemyGroup.ubNumAdmins)
-                        {
-                            pGroup.pEnemyGroup.ubNumAdmins = 0;
-                            pGroup.pEnemyGroup.ubNumTroops = 20;
-                            pGroup.pEnemyGroup.ubNumElites = 0;
-                        }
-                        else
-                        {
-                            pGroup.pEnemyGroup.ubNumAdmins = 20;
-                            pGroup.pEnemyGroup.ubNumTroops = 0;
-                            pGroup.pEnemyGroup.ubNumElites = 0;
-                        }
-                    }
-                    else
-                    {
-                        if (pGroup.pEnemyGroup.ubNumElites > pGroup.pEnemyGroup.ubNumTroops)
-                        {
-                            pGroup.pEnemyGroup.ubNumAdmins = 0;
-                            pGroup.pEnemyGroup.ubNumTroops = 0;
-                            pGroup.pEnemyGroup.ubNumElites = 20;
-                        }
-                        else
-                        {
-                            pGroup.pEnemyGroup.ubNumAdmins = 0;
-                            pGroup.pEnemyGroup.ubNumTroops = 20;
-                            pGroup.pEnemyGroup.ubNumElites = 0;
-                        }
-                    }
-                }
-            }
-            pGroup = pGroup.next;
+//            if (!pGroup.fPlayer.Any())
+//            {
+//                if (pGroup.pEnemyGroup.ubNumAdmins + pGroup.pEnemyGroup.ubNumTroops + pGroup.pEnemyGroup.ubNumElites > MAX_STRATEGIC_TEAM_SIZE)
+//                {
+//                    pGroup.ubGroupSize = 20;
+//                    if (pGroup.pEnemyGroup.ubNumAdmins > pGroup.pEnemyGroup.ubNumTroops)
+//                    {
+//                        if (pGroup.pEnemyGroup.ubNumAdmins > pGroup.pEnemyGroup.ubNumElites)
+//                        {
+//                            pGroup.pEnemyGroup.ubNumAdmins = 20;
+//                            pGroup.pEnemyGroup.ubNumTroops = 0;
+//                            pGroup.pEnemyGroup.ubNumElites = 0;
+//                        }
+//                        else
+//                        {
+//                            pGroup.pEnemyGroup.ubNumAdmins = 0;
+//                            pGroup.pEnemyGroup.ubNumTroops = 0;
+//                            pGroup.pEnemyGroup.ubNumElites = 20;
+//                        }
+//                    }
+//                    else if (pGroup.pEnemyGroup.ubNumTroops > pGroup.pEnemyGroup.ubNumElites)
+//                    {
+//                        if (pGroup.pEnemyGroup.ubNumTroops > pGroup.pEnemyGroup.ubNumAdmins)
+//                        {
+//                            pGroup.pEnemyGroup.ubNumAdmins = 0;
+//                            pGroup.pEnemyGroup.ubNumTroops = 20;
+//                            pGroup.pEnemyGroup.ubNumElites = 0;
+//                        }
+//                        else
+//                        {
+//                            pGroup.pEnemyGroup.ubNumAdmins = 20;
+//                            pGroup.pEnemyGroup.ubNumTroops = 0;
+//                            pGroup.pEnemyGroup.ubNumElites = 0;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (pGroup.pEnemyGroup.ubNumElites > pGroup.pEnemyGroup.ubNumTroops)
+//                        {
+//                            pGroup.pEnemyGroup.ubNumAdmins = 0;
+//                            pGroup.pEnemyGroup.ubNumTroops = 0;
+//                            pGroup.pEnemyGroup.ubNumElites = 20;
+//                        }
+//                        else
+//                        {
+//                            pGroup.pEnemyGroup.ubNumAdmins = 0;
+//                            pGroup.pEnemyGroup.ubNumTroops = 20;
+//                            pGroup.pEnemyGroup.ubNumElites = 0;
+//                        }
+//                    }
+//                }
+//            }
+
+//            pGroup = pGroup.next;
         }
     }
 
@@ -4320,10 +4333,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
     {
         string zFileName1 = string.Empty;//[256];
         string zFileName2 = string.Empty;// [256];
-        Stream hFile;
+        Stream hFile = Stream.Null;
         bool fFile1Exist, fFile2Exist;
-        SGP_FILETIME CreationTime1, LastAccessedTime1, LastWriteTime1;
-        SGP_FILETIME CreationTime2, LastAccessedTime2, LastWriteTime2;
+//        SGP_FILETIME CreationTime1, LastAccessedTime1, LastWriteTime1;
+//        SGP_FILETIME CreationTime2, LastAccessedTime2, LastWriteTime2;
 
         fFile1Exist = false;
         fFile2Exist = false;
@@ -4335,9 +4348,9 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         if (this.files.FileExists(zFileName1))
         {
-            hFile = this.files.FileOpen(zFileName1, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
-
-            GetFileManFileTime(hFile, &CreationTime1, &LastAccessedTime1, &LastWriteTime1);
+//            hFile = this.files.FileOpen(zFileName1, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
+//
+//            GetFileManFileTime(hFile, &CreationTime1, &LastAccessedTime1, &LastWriteTime1);
 
             this.files.FileClose(hFile);
 
@@ -4346,9 +4359,9 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         if (this.files.FileExists(zFileName2))
         {
-            hFile = this.files.FileOpen(zFileName2, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
-
-            GetFileManFileTime(hFile, &CreationTime2, &LastAccessedTime2, &LastWriteTime2);
+//            hFile = this.files.FileOpen(zFileName2, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
+//
+//            GetFileManFileTime(hFile, &CreationTime2, &LastAccessedTime2, &LastWriteTime2);
 
             this.files.FileClose(hFile);
 
@@ -4373,9 +4386,9 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         }
         else
         {
-            if (CompareSGPFileTimes(&LastWriteTime1, &LastWriteTime2) > 0)
-                return (0);
-            else
+//            if (CompareSGPFileTimes(&LastWriteTime1, &LastWriteTime2) > 0)
+//                return (0);
+//            else
                 return (1);
         }
     }
@@ -4404,16 +4417,16 @@ void LoadGameFilePosition(int iPos, STR pMsg)
                 if (LaptopSaveInfo.BobbyRayOrdersOnDeliveryArray[iCnt].fActive)
                 {
                     //copy over the purchase info
-                    memcpy(gpNewBobbyrShipments[iNewListCnt].BobbyRayPurchase,
-                                    LaptopSaveInfo.BobbyRayOrdersOnDeliveryArray[iCnt].BobbyRayPurchase,
-                                    Marshal.SizeOf<BobbyRayPurchaseStruct>() * MAX_PURCHASE_AMOUNT);
+//                    memcpy(gpNewBobbyrShipments[iNewListCnt].BobbyRayPurchase,
+//                                    LaptopSaveInfo.BobbyRayOrdersOnDeliveryArray[iCnt].BobbyRayPurchase,
+//                                    Marshal.SizeOf<BobbyRayPurchaseStruct>() * MAX_PURCHASE_AMOUNT);
 
                     gpNewBobbyrShipments[iNewListCnt].fActive = true;
-                    gpNewBobbyrShipments[iNewListCnt].ubDeliveryLoc = BR_DRASSEN;
+                    gpNewBobbyrShipments[iNewListCnt].ubDeliveryLoc = BR.DRASSEN;
                     gpNewBobbyrShipments[iNewListCnt].ubDeliveryMethod = 0;
                     gpNewBobbyrShipments[iNewListCnt].ubNumberPurchases = LaptopSaveInfo.BobbyRayOrdersOnDeliveryArray[iCnt].ubNumberPurchases;
                     gpNewBobbyrShipments[iNewListCnt].uiPackageWeight = 1;
-                    gpNewBobbyrShipments[iNewListCnt].uiOrderedOnDayNum = GetWorldDay();
+                    gpNewBobbyrShipments[iNewListCnt].uiOrderedOnDayNum = GameClock.GetWorldDay();
                     gpNewBobbyrShipments[iNewListCnt].fDisplayedInShipmentPage = true;
 
                     iNewListCnt++;
@@ -4428,16 +4441,16 @@ void LoadGameFilePosition(int iPos, STR pMsg)
     }
 
 
-    int CalcJA2EncryptionSet(SAVED_GAME_HEADER pSaveGameHeader)
+    uint CalcJA2EncryptionSet(SAVED_GAME_HEADER pSaveGameHeader)
     {
-        int uiEncryptionSet = 0;
+        uint uiEncryptionSet = 0;
 
-        uiEncryptionSet = pSaveGameHeader.uiSavedGameVersion;
-        uiEncryptionSet *= pSaveGameHeader.uiFlags;
-        uiEncryptionSet += pSaveGameHeader.iCurrentBalance;
-        uiEncryptionSet *= (pSaveGameHeader.ubNumOfMercsOnPlayersTeam + 1);
-        uiEncryptionSet += pSaveGameHeader.bSectorZ * 3;
-        uiEncryptionSet += pSaveGameHeader.ubLoadScreenID;
+        uiEncryptionSet = (uint)pSaveGameHeader.uiSavedGameVersion;
+        uiEncryptionSet *= (uint)pSaveGameHeader.uiFlags;
+        uiEncryptionSet += (uint)pSaveGameHeader.iCurrentBalance;
+        uiEncryptionSet *= (uint)(pSaveGameHeader.ubNumOfMercsOnPlayersTeam + 1);
+        uiEncryptionSet += (uint)pSaveGameHeader.bSectorZ * 3;
+        uiEncryptionSet += (uint)pSaveGameHeader.ubLoadScreenID;
 
         if (pSaveGameHeader.fAlternateSector)
         {
@@ -4473,12 +4486,12 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         uiEncryptionSet = uiEncryptionSet % 19;
 
         // now pick a different set of #s depending on what game options we've chosen
-        if (pSaveGameHeader.sInitialGameOptions.fGunNut)
+        if (pSaveGameHeader.sInitialGameOptions.GunNut)
         {
             uiEncryptionSet += BASE_NUMBER_OF_ROTATION_ARRAYS * 6;
         }
 
-        if (pSaveGameHeader.sInitialGameOptions.fSciFi)
+        if (pSaveGameHeader.sInitialGameOptions.SciFi)
         {
             uiEncryptionSet += BASE_NUMBER_OF_ROTATION_ARRAYS * 3;
         }

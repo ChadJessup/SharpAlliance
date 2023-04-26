@@ -625,7 +625,7 @@ public class Campaign
                 if (pSoldier != null)
                 {
                     // adjust current health by the same amount as max health
-                    pSoldier.bLife += (uint)sPtsChanged;
+                    pSoldier.bLife += sPtsChanged;
 
                     // don't let this kill a guy or knock him out!!!
                     if (pSoldier.bLife < Globals.OKLIFE)

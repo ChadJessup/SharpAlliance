@@ -46,13 +46,13 @@ public class AnimatedProgressBar
         if (pCurr.fPanel)
         {
             //Draw panel
-            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
-                pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom, pCurr.usLtColor);
-            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
-                pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight, pCurr.usPanelBottom, pCurr.usDkColor);
-            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
-                pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight - 1, pCurr.usPanelBottom - 1, pCurr.usColor);
-            VeldridVideoManager.InvalidateRegion(pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom);
+//            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+//                pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom, pCurr.usLtColor);
+//            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+//                pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight, pCurr.usPanelBottom, pCurr.usDkColor);
+//            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+//                pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight - 1, pCurr.usPanelBottom - 1, pCurr.usColor);
+//            VeldridVideoManager.InvalidateRegion(pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom);
             //Draw title
 
             if (pCurr.swzTitle != string.Empty)
@@ -128,36 +128,36 @@ public class AnimatedProgressBar
                 return;
             }
 
-            if (gfUseLoadScreenProgressBar)
-            {
-                ColorFillVideoSurfaceArea(
-                    Surfaces.FRAME_BUFFER,
-                    pCurr.usBarLeft,
-                    pCurr.usBarTop,
-                    end,
-                    pCurr.usBarBottom,
-                    Get16BPPColor(
-                        FROMRGB(
-                            pCurr.ubColorFillRed,
-                            pCurr.ubColorFillGreen,
-                            pCurr.ubColorFillBlue)));
+//            if (gfUseLoadScreenProgressBar)
+//            {
+//                ColorFillVideoSurfaceArea(
+//                    Surfaces.FRAME_BUFFER,
+//                    pCurr.usBarLeft,
+//                    pCurr.usBarTop,
+//                    end,
+//                    pCurr.usBarBottom,
+//                    Get16BPPColor(
+//                        FROMRGB(
+//                            pCurr.ubColorFillRed,
+//                            pCurr.ubColorFillGreen,
+//                            pCurr.ubColorFillBlue)));
                 //if( pCurr.usBarRight > gusLeftmostShaded )
                 //{
                 //	ShadowVideoSurfaceRect( Surfaces.FRAME_BUFFER, gusLeftmostShaded+1, pCurr.usBarTop, end, pCurr.usBarBottom );	
                 //	gusLeftmostShaded = (int)end;
                 //}
-            }
-            else
+//            }
+//            else
             {
                 //Border edge of the progress bar itself in gray
-                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
-                    pCurr.usBarLeft, pCurr.usBarTop, pCurr.usBarRight, pCurr.usBarBottom,
-                    Get16BPPColor(FROMRGB(160, 160, 160)));
-                //Interior of progress bar in black
-                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
-                    pCurr.usBarLeft + 2, pCurr.usBarTop + 2, pCurr.usBarRight - 2, pCurr.usBarBottom - 2,
-                    Get16BPPColor(FROMRGB(0, 0, 0)));
-                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, pCurr.usBarLeft + 2, pCurr.usBarTop + 2, end, pCurr.usBarBottom - 2, Get16BPPColor(FROMRGB(72, 155, 24)));
+//                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+//                    pCurr.usBarLeft, pCurr.usBarTop, pCurr.usBarRight, pCurr.usBarBottom,
+//                    Get16BPPColor(FROMRGB(160, 160, 160)));
+//                //Interior of progress bar in black
+//                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
+//                    pCurr.usBarLeft + 2, pCurr.usBarTop + 2, pCurr.usBarRight - 2, pCurr.usBarBottom - 2,
+//                    Get16BPPColor(FROMRGB(0, 0, 0)));
+//                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, pCurr.usBarLeft + 2, pCurr.usBarTop + 2, end, pCurr.usBarBottom - 2, Get16BPPColor(FROMRGB(72, 155, 24)));
             }
 
             VeldridVideoManager.InvalidateRegion(pCurr.usBarLeft, pCurr.usBarTop, pCurr.usBarRight, pCurr.usBarBottom);
@@ -174,7 +174,7 @@ public class AnimatedProgressBar
         }
     }
 
-    void SetProgressBarColor(int ubID, byte ubColorFillRed, byte ubColorFillGreen, byte ubColorFillBlue)
+    public static void SetProgressBarColor(int ubID, byte ubColorFillRed, byte ubColorFillGreen, byte ubColorFillBlue)
     {
         PROGRESSBAR? pCurr = null;
 
@@ -208,7 +208,7 @@ public class AnimatedProgressBar
             int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont) + 3;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-            RenderDirty.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);
+//            RenderDirty.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);
         }
     }
 }

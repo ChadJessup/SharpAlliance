@@ -752,8 +752,7 @@ public class GameClock
     }
 
 
-
-    bool SaveGameClock(Stream hFile, bool fGamePaused, bool fLockPauseState)
+    public static bool SaveGameClock(Stream hFile, bool fGamePaused, bool fLockPauseState)
     {
         int uiNumBytesWritten = 0;
 
@@ -875,7 +874,7 @@ public class GameClock
     }
 
 
-    bool LoadGameClock(Stream hFile)
+    public static bool LoadGameClock(Stream hFile)
     {
         int uiNumBytesRead = sizeof(int);
 

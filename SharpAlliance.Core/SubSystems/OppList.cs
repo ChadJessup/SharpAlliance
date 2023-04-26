@@ -1848,18 +1848,18 @@ public class OppList
             {
                 if ((pOpponent.ubProfile == NPCID.MIKE) && (pSoldier.ubWhatKindOfMercAmI == MERC_TYPE.AIM_MERC) && !(pSoldier.usQuoteSaidExtFlags.HasFlag(SOLDIER_QUOTE.SAID_EXT_MIKE)))
                 {
-                    if (gfMikeShouldSayHi == false)
+                    if (gfMikeShouldSayHi == 0)
                     {
-                        gfMikeShouldSayHi = true;
+                        gfMikeShouldSayHi = 1;
                     }
 
                     DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.AIM_SEEN_MIKE);
                     pSoldier.usQuoteSaidExtFlags |= SOLDIER_QUOTE.SAID_EXT_MIKE;
                 }
-                else if (pOpponent.ubProfile == NPCID.JOEY && gfPlayerTeamSawJoey == false)
+                else if (pOpponent.ubProfile == NPCID.JOEY && gfPlayerTeamSawJoey == 0)
                 {
                     DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.SPOTTED_JOEY);
-                    gfPlayerTeamSawJoey = true;
+                    gfPlayerTeamSawJoey = 1;
                 }
             }
 

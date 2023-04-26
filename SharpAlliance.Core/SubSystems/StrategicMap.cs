@@ -47,7 +47,7 @@ public class StrategicMap
         // ATE: Zero out accounting functions
         gbMercIsNewInThisSector = new int[MAX_NUM_SOLDIERS];
 
-        SyncStrategicTurnTimes();
+//        SyncStrategicTurnTimes();
 
         // is the sector already loaded?
         if ((gWorldSectorX == sMapX) && (sMapY == gWorldSectorY) && (bMapZ == gbWorldSectorZ))
@@ -57,34 +57,35 @@ public class StrategicMap
             //do something else in a case where no enemies are present.
 
             screens.SetPendingNewScreen(ScreenName.GAME_SCREEN);
-            if (!NumEnemyInSector())
-            {
-                PrepareEnemyForSectorBattle();
-            }
+//            if (!NumEnemyInSector())
+//            {
+//                PrepareEnemyForSectorBattle();
+//            }
+
             if (gubNumCreaturesAttackingTown > 0
                 && gbWorldSectorZ == 0
                 && gubSectorIDOfCreatureAttack == SECTORINFO.SECTOR(gWorldSectorX, gWorldSectorY))
             {
-                PrepareCreaturesForBattle();
+//                PrepareCreaturesForBattle();
             }
 
             if (gfGotoSectorTransition)
             {
-                BeginLoadScreen();
+//                BeginLoadScreen();
                 gfGotoSectorTransition = false;
             }
 
             // Check for helicopter being on the ground in this sector...
-            HandleHelicopterOnGroundGraphic();
+//            HandleHelicopterOnGroundGraphic();
 
-            ResetMilitia();
-            AllTeamsLookForAll(true);
+//            ResetMilitia();
+            OppList.AllTeamsLookForAll(1);
             return (true);
         }
 
         if (gWorldSectorX > 0 && gWorldSectorY > 0 && gbWorldSectorZ != -1)
         {
-            HandleDefiniteUnloadingOfWorld(ABOUT_TO_LOAD_NEW_MAP);
+//            HandleDefiniteUnloadingOfWorld(ABOUT_TO_LOAD_NEW_MAP);
         }
 
         // make this the currently loaded sector
@@ -93,18 +94,18 @@ public class StrategicMap
         gbWorldSectorZ = bMapZ;
 
         // update currently selected map sector to match
-        ChangeSelectedMapSector(sMapX, sMapY, bMapZ);
+//        ChangeSelectedMapSector(sMapX, sMapY, bMapZ);
 
 
         //Check to see if the sector we are loading is the cave sector under Tixa.  If so
         //then we will set up the meanwhile scene to start the creature quest.
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
         {
-            StopAnyCurrentlyTalkingSpeech();
+//            StopAnyCurrentlyTalkingSpeech();
 
             if (gWorldSectorX == 9 && gWorldSectorY == MAP_ROW.J /*10*/ && gbWorldSectorZ == 2)
             {
-                InitCreatureQuest(); //Ignored if already active.
+//                InitCreatureQuest(); //Ignored if already active.
             }
         }
 
@@ -157,55 +158,55 @@ public class StrategicMap
             gTacticalStatus.uiTimeSinceLastInTactical = GameClock.GetWorldTotalMin();
 
             // init some AI stuff
-            InitializeTacticalStatusAtBattleStart();
+//            InitializeTacticalStatusAtBattleStart();
 
             // CJC: delay this until after entering the sector!
             //InitAI();
 
             // Check for helicopter being on the ground in this sector...
-            HandleHelicopterOnGroundSkyriderProfile();
+//            HandleHelicopterOnGroundSkyriderProfile();
         }
 
         //Load and enter the new sector
-        if (EnterSector(gWorldSectorX, gWorldSectorY, bMapZ))
-        {
-            // CJC: moved this here Feb 17
-            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
-            {
-                aiMain.InitAI();
-            }
-
-            //If there are any people with schedules, now is the time to process them.
-            //CJC: doesn't work here if we're going through the tactical placement GUI; moving
-            // this call to PrepareLoadedSector()
-            //PostSchedules();
-
-            // ATE: OK, add code here to update the states of doors if they should 
-            // be closed......
-            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
-            {
-                keys.ExamineDoorsOnEnteringSector();
-            }
-
-            // Update all the doors in the sector according to the temp file previously
-            // loaded, and any changes made by the schedules
-            keys.UpdateDoorGraphicsFromStatus(true, false);
-
-            //Set the fact we have visited the  sector
-            TacticalSaveSubSystem.SetSectorFlag(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, SF.ALREADY_LOADED);
-
-            // Check for helicopter being on the ground in this sector...
-            HandleHelicopterOnGroundGraphic();
-        }
-        else
-            return (false);
+//        if (EnterSector(gWorldSectorX, gWorldSectorY, bMapZ))
+//        {
+//            // CJC: moved this here Feb 17
+//            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+//            {
+//                aiMain.InitAI();
+//            }
+//
+//            //If there are any people with schedules, now is the time to process them.
+//            //CJC: doesn't work here if we're going through the tactical placement GUI; moving
+//            // this call to PrepareLoadedSector()
+//            //PostSchedules();
+//
+//            // ATE: OK, add code here to update the states of doors if they should 
+//            // be closed......
+//            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+//            {
+//                keys.ExamineDoorsOnEnteringSector();
+//            }
+//
+//            // Update all the doors in the sector according to the temp file previously
+//            // loaded, and any changes made by the schedules
+//            keys.UpdateDoorGraphicsFromStatus(true, false);
+//
+//            //Set the fact we have visited the  sector
+//            TacticalSaveSubSystem.SetSectorFlag(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, SF.ALREADY_LOADED);
+//
+//            // Check for helicopter being on the ground in this sector...
+//            HandleHelicopterOnGroundGraphic();
+//        }
+//        else
+//            return (false);
 
         if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
         {
             if ((gubMusicMode != MusicMode.TACTICAL_ENEMYPRESENT
                 && gubMusicMode != MusicMode.TACTICAL_BATTLE)
-                || (!NumHostilesInSector(sMapX, sMapY, bMapZ)
-                && gubMusicMode == MusicMode.TACTICAL_ENEMYPRESENT))
+//                || (!NumHostilesInSector(sMapX, sMapY, bMapZ) && gubMusicMode == MusicMode.TACTICAL_ENEMYPRESENT)
+                )
             {
                 // ATE; Fade FA.T....
                 //music.SetMusicFadeSpeed(5);
@@ -214,7 +215,7 @@ public class StrategicMap
             }
 
             // ATE: Check what sector we are in, to show description if we have an RPC.....
-            HandleRPCDescriptionOfSector(sMapX, sMapY, bMapZ);
+//            HandleRPCDescriptionOfSector(sMapX, sMapY, bMapZ);
 
 
 
@@ -226,7 +227,7 @@ public class StrategicMap
             gTacticalStatus.fHaveSeenCreature = false;
             gTacticalStatus.fBeenInCombatOnce = false;
             gTacticalStatus.fSaidCreatureSmellQuote = false;
-            ResetMultiSelection();
+            HandleUI.ResetMultiSelection();
 
             // ATE: Decide if we can have crows here....
             gTacticalStatus.fGoodToAllowCrows = false;
@@ -238,11 +239,11 @@ public class StrategicMap
 
             {
                 int sWarpWorldX;
-                int sWarpWorldY;
+                MAP_ROW sWarpWorldY;
                 int bWarpWorldZ;
                 int sWarpGridNo;
 
-                if (GetWarpOutOfMineCodes(out sWarpWorldX, out sWarpWorldY, out bWarpWorldZ, out sWarpGridNo) && gbWorldSectorZ >= 2)
+                if (CreatureSpreading.GetWarpOutOfMineCodes(out sWarpWorldX, out sWarpWorldY, out bWarpWorldZ, out sWarpGridNo) && gbWorldSectorZ >= 2)
                 {
                     gTacticalStatus.uiFlags |= TacticalEngineStatus.IN_CREATURE_LAIR;
                 }

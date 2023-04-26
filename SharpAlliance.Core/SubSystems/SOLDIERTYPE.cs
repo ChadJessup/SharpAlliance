@@ -22,7 +22,7 @@ public class SOLDIERTYPE
     public Dictionary<InventorySlot, OBJECTTYPE> inv = new();
 
     public OBJECTTYPE? pTempObject;
-    public KEY_ON_RING pKeyRing;
+    public KEY_ON_RING? pKeyRing;
 
     public int bOldLife;          // life at end of last turn, recorded for monster AI
                                   // attributes
@@ -202,7 +202,7 @@ public class SOLDIERTYPE
     public int ubServicePartner;
     public int bMarksmanship;
     public int bExplosive;
-    // THROW_PARAMS pThrowParams;
+    public THROW_PARAMS? pThrowParams;
     public TURNING_FROM_PRONE fTurningFromPronePosition;
     public bool bReverse;
     public LEVELNODE? pLevelNode;

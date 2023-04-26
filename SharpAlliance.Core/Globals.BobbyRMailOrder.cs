@@ -289,12 +289,12 @@ public partial class Globals
 public class NewBobbyRayOrderStruct
 {
     public bool fActive;
-    public int ubDeliveryLoc;                // the city the shipment is going to
+    public BR ubDeliveryLoc;                // the city the shipment is going to
     public int ubDeliveryMethod;         // type of delivery: next day, 2 days ...
     public BobbyRayPurchaseStruct[] BobbyRayPurchase = new BobbyRayPurchaseStruct[Globals.MAX_PURCHASE_AMOUNT];
     public int ubNumberPurchases;
     public int uiPackageWeight;
-    public int uiOrderedOnDayNum;
+    public uint uiOrderedOnDayNum;
     public bool fDisplayedInShipmentPage;
     public int[] ubFiller = new int[7];
 }
