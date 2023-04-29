@@ -22,7 +22,6 @@ public partial class Globals
 
 public class DialogControl
 {
-    private readonly SoldierProfileSubSystem soldiers;
     private readonly IFileManager files;
     private readonly QuestEngine quests;
     private readonly InterfaceDialogSubSystem interfaceDialog;
@@ -30,12 +29,10 @@ public class DialogControl
 
     public DialogControl(
         IFileManager fileManager,
-        SoldierProfileSubSystem soldiers,
         QuestEngine questEngine,
         InterfaceDialogSubSystem interfaceDialogSubSystem,
         Faces faces)
     {
-        this.soldiers = soldiers;
         this.files = fileManager;
         this.quests = questEngine;
         this.interfaceDialog = interfaceDialogSubSystem;
@@ -115,7 +112,7 @@ public class DialogControl
             }
         }
 
-        if (AM_AN_EPC(pSoldier) && !(gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_FORCENPCQUOTE)))
+        if (AM_AN_EPC(pSoldier) && !(gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.FORCENPCQUOTE)))
         {
             return (false);
         }
@@ -291,9 +288,9 @@ public class DialogControl
             }
         }
         else if (ubCharacterNum >= Globals.FIRST_RPC &&
-                (!Globals.gMercProfiles[ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)
+                (!Globals.gMercProfiles[ubCharacterNum].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)
                 || this.interfaceDialog.ProfileCurrentlyTalkingInDialoguePanel(ubCharacterNum)
-                || Globals.gMercProfiles[ubCharacterNum].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_FORCENPCQUOTE))
+                || Globals.gMercProfiles[ubCharacterNum].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.FORCENPCQUOTE))
                 )
         {
             ubFileNumID = (int)ubCharacterNum;
@@ -331,7 +328,7 @@ public class DialogControl
             else
             {
                 // assume EDT files are in EDT directory on HARD DRIVE
-                // sprintf(zFileName, "MERCEDT\\%03d.EDT", ubCharacterNum);
+                zFileName = $"MERCEDT\\{(int)ubCharacterNum:D3}.EDT";
             }
         }
 

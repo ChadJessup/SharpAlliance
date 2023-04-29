@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
@@ -25,8 +27,10 @@ public class SoldierProfileSubSystem
         ILogger<SoldierProfileSubSystem> logger,
         IFileManager fileManager,
         TownReputations townRep,
+        DialogControl dialogControl,
         Cars carPortraits)
     {
+        this.dialogs = dialogControl;
         this.logger = logger;
         files = fileManager;
         this.rnd = Globals.Random;
@@ -81,10 +85,10 @@ public class SoldierProfileSubSystem
         //	FILE *fptr;
         Stream fptr;
         string pFileName = "BINARYDATA\\Prof.dat";
-        InventorySlot uiLoop, uiLoop2;
+        InventorySlot uiLoop2;
         InventorySlot uiLoop3;
         Items usItem, usNewGun, usAmmo, usNewAmmo;
-        int uiNumBytesRead = 0;
+        int uiNumBytesRead;
 
 
         fptr = files.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
@@ -94,27 +98,32 @@ public class SoldierProfileSubSystem
         //    return false;
         //}
 
-        for (uiLoop = 0; uiLoop < (InventorySlot)NUM_PROFILES; uiLoop++)
+        for (NPCID uiLoop = 0; uiLoop < (NPCID)NUM_PROFILES; uiLoop++)
         {
-            var npcId = (NPCID)uiLoop;
+            var npcId = uiLoop;
+            var fm = (FileManager)files;
+            
+            var mercProfileBytes = fm.JA2EncryptedFileRead(fptr, MERCPROFILESTRUCT.Size, out uiNumBytesRead);
 
-            //if (this.fileManager.JA2EncryptedFileRead(fptr, gMercProfiles[npcId]))
-            //{
-            //    this.logger.LogDebug(LoggingEventId.JA2, $"FAILED to Read Merc Profiles from File {uiLoop} {pFileName}");
-            //    this.fileManager.FileClose(fptr);
-            //    return false;
-            //}
+            if (mercProfileBytes.IsEmpty)
+            {
+                this.logger.LogDebug(LoggingEventId.JA2, $"FAILED to Read Merc Profiles from File {uiLoop} {pFileName}");
+                files.FileClose(fptr);
+                return false;
+            }
+
+            MERCPROFILESTRUCT mercProfile = MERCPROFILESTRUCT.LoadFromBytes(mercProfileBytes);
+            gMercProfiles[npcId] = mercProfile;
 
             //if the Dialogue exists for the merc, allow the merc to be hired
-            // TODO: figure out circular dependency
-            //if (this.DialogueDataFileExistsForProfile(uiLoop, 0, false, out var _))
-            //{
-            //    gMercProfiles[npcId].bMercStatus = 0;
-            //}
-            //else
-            //{
-            //    gMercProfiles[npcId].bMercStatus = MercStatus.MERC_HAS_NO_TEXT_FILE;
-            //}
+            if (this.dialogs.DialogueDataFileExistsForProfile(uiLoop, 0, false, out var _))
+            {
+                gMercProfiles[npcId].bMercStatus = 0;
+            }
+            else
+            {
+                gMercProfiles[npcId].bMercStatus = MercStatus.MERC_HAS_NO_TEXT_FILE;
+            }
 
             // if the merc has a medical deposit
             if (Globals.gMercProfiles[npcId].bMedicalDeposit > 0)
@@ -209,7 +218,7 @@ public class SoldierProfileSubSystem
             }
 
             //These variables to get loaded in
-            Globals.gMercProfiles[npcId].fUseProfileInsertionInfo = false;
+            Globals.gMercProfiles[npcId].fUseProfileInsertionInfo = 0;
             Globals.gMercProfiles[npcId].sGridNo = 0;
 
             // ARM: this is also being done inside the profile editor, but put it here too, so this project's code makes sense

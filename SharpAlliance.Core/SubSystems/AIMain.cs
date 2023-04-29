@@ -2342,7 +2342,7 @@ public class AIMain
                 if (pSoldier.ubProfile != NO_PROFILE)
                 {
                     gMercProfiles[pSoldier.ubProfile].bSectorZ++;
-                    gMercProfiles[pSoldier.ubProfile].fUseProfileInsertionInfo = false;
+                    gMercProfiles[pSoldier.ubProfile].fUseProfileInsertionInfo = 0;
                 }
                 
 //                TacticalRemoveSoldier(pSoldier.ubID);
@@ -2590,7 +2590,7 @@ public class AIMain
 
 //        if (pSoldier.ubProfile != NO_PROFILE && NPCHasUnusedRecordWithGivenApproach(pSoldier.ubProfile, APPROACH_DONE_TRAVERSAL))
         {
-            gMercProfiles[pSoldier.ubProfile].ubMiscFlags3 |= ProfileMiscFlags3.PROFILE_MISC_FLAG3_HANDLE_DONE_TRAVERSAL;
+            gMercProfiles[pSoldier.ubProfile].ubMiscFlags3 |= PROFILE_MISC_FLAG3.HANDLE_DONE_TRAVERSAL;
         }
 //        else
         {

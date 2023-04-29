@@ -2771,7 +2771,7 @@ public class StrategicAI
             {
                 if (gbWorldSectorZ != 1 || gWorldSectorX != 16 || gWorldSectorY != (MAP_ROW)3)
                 { //We aren't in the basement sector
-                    gMercProfiles[NPCID.QUEEN].fUseProfileInsertionInfo = false;
+                    gMercProfiles[NPCID.QUEEN].fUseProfileInsertionInfo = 0;
                 }
                 else
                 {
@@ -2793,7 +2793,7 @@ public class StrategicAI
         {
             if (gubFact[FACT.SKYRIDER_CLOSE_TO_CHOPPER] > 0)
             {
-                gMercProfiles[NPCID.SKYRIDER].fUseProfileInsertionInfo = false;
+                gMercProfiles[NPCID.SKYRIDER].fUseProfileInsertionInfo = 0;
             }
         }
 

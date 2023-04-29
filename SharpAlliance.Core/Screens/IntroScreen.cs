@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Library;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using Veldrid;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -28,7 +20,6 @@ public class IntroScreen : IScreen
     private readonly IVideoManager video;
     private readonly ILibraryManager library;
     private readonly CinematicsSubSystem cinematics;
-    private readonly SoldierProfileSubSystem soldiers;
     private readonly IVideoObjectManager videoObject;
 
     private string[] gpzSmackerFileNames = new string[]
@@ -57,7 +48,6 @@ public class IntroScreen : IScreen
         IMusicManager musicManager,
         ILibraryManager libraryManager,
         CinematicsSubSystem cinematics,
-        SoldierProfileSubSystem soldierSubSystem,
         IVideoManager videoManager,
         IScreenManager screenManager,
         GameInit gameInit)
@@ -72,7 +62,6 @@ public class IntroScreen : IScreen
         this.video = videoManager;
         this.library = libraryManager;
         this.cinematics = cinematics;
-        this.soldiers = soldierSubSystem;
         this.video = videoManager;
     }
 

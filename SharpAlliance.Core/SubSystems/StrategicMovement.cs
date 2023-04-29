@@ -4799,7 +4799,7 @@ public class StrategicMovement
             {
                 // if we haven't talked to him yet, and he's not currently recruired/escorted by player (!)
                 if ((pProfile.ubLastDateSpokenTo == 0)
-                    && !(pProfile.ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED | ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE)))
+                    && !(pProfile.ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED | PROFILE_MISC_FLAG.EPCACTIVE)))
                 {
                     // then this is a guy we need to stop for...
                     fFoundSomebody = true;

@@ -74,7 +74,7 @@ public class Quests
         {
             if (fByPlayerOnly)
             {
-                if (Globals.gMercProfiles[ubProfileID].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_WOUNDEDBYPLAYER))
+                if (Globals.gMercProfiles[ubProfileID].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.WOUNDEDBYPLAYER))
                 {
                     return (true);
                 }
@@ -390,14 +390,14 @@ public class Quests
     {
         if (Globals.gpSrcSoldier is not null && Globals.gpSrcSoldier.bTeam == Globals.gbPlayerNum && Globals.gpSrcSoldier.ubProfile != NPCID.NO_PROFILE)
         {
-            if (!(Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_ASKED_BY_HICKS)))
+            if (!(Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.ASKED_BY_HICKS)))
             {
                 return (Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].bSex == Sexes.FEMALE);
             }
         }
         else if (Globals.gpDestSoldier is not null && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum && Globals.gpDestSoldier.ubProfile != NPCID.NO_PROFILE)
         {
-            if (!(Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_ASKED_BY_HICKS)))
+            if (!(Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.ASKED_BY_HICKS)))
             {
                 return (Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].bSex == Sexes.FEMALE);
             }

@@ -124,6 +124,8 @@ namespace SharpAlliance
             builder.Services.AddSingleton<QuestEngine>();
             builder.Services.AddSingleton<InterfaceDialogSubSystem>();
             builder.Services.AddSingleton<Faces>();
+            builder.Services.AddSingleton<Keys>();
+            builder.Services.AddSingleton<AIMain>();
             builder.Services.AddSingleton<Shading>();
             builder.Services.AddSingleton<TextUtils>();
             builder.Services.AddSingleton<AnimationData>();

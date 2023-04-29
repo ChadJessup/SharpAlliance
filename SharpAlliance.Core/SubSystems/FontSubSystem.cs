@@ -48,6 +48,7 @@ public class FontSubSystem : ISharpAllianceManager
     private static int FontDestPitch = 640 * 2;
     private static int FontDestBPP = 16;
     private static IVideoManager video;
+    private readonly IServiceProvider services;
     private static FontColor FontForeground16 = 0;
     private static FontColor FontBackground16 = 0;
     private static FontShadow FontShadow16 = FontShadow.DEFAULT_SHADOW;
@@ -106,7 +107,13 @@ public class FontSubSystem : ISharpAllianceManager
 
     public static TextRenderer TextRenderer { get; private set; }
 
-    public FontSubSystem(IVideoManager videoManager) => video = videoManager;
+    public FontSubSystem(
+        IVideoManager videoManager,
+        IServiceProvider serviceProvider)
+    {
+        video = videoManager;
+        services = serviceProvider;
+    }
 
     public static void SetFont(FontStyle fontStyle)
     {
@@ -347,8 +354,8 @@ public class FontSubSystem : ISharpAllianceManager
 
     public ValueTask<bool> Initialize()
     {
-        //video = this.context.Services.GetRequiredService<IVideoManager>();
-        FontSubSystem.TextRenderer = new TextRenderer(IVideoManager.GraphicDevice);
+        video = this.services.GetRequiredService<IVideoManager>();
+        FontSubSystem.TextRenderer = new TextRenderer(video.GraphicDevice);
 
         var translationTable = this.CreateEnglishTransTable();
         this.InitializeFontManager(translationTable);

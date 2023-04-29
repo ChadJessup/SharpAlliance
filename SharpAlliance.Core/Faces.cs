@@ -371,7 +371,7 @@ public class Faces
         if (!(pFace.uiFlags.HasFlag(FACE.BIGFACE)) || ((pFace.uiFlags.HasFlag(FACE.FORCE_SMALL))))
         {
             // Are we a recruited merc? .. or small?
-            if ((gMercProfiles[usMercProfileID].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED | ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE))
+            if ((gMercProfiles[usMercProfileID].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED | PROFILE_MISC_FLAG.EPCACTIVE))
                 || (pFace.uiFlags.HasFlag(FACE.FORCE_SMALL)))
             {
                 // Loop through all values of availible merc IDs to find ours!

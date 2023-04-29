@@ -126,7 +126,7 @@ public class Facts
                 gubFact[FACT.IRA_TALKING] = (Globals.gubSrcSoldierProfile == (NPCID)59);
                 break;
             case FACT.IRA_UNHIRED_AND_ALIVE:
-                if (Globals.gMercProfiles[NPCID.IRA].bMercStatus != MercStatus.MERC_IS_DEAD && Quests.CheckNPCSector(NPCID.IRA, 10, (MAP_ROW)1, 1) && !(Globals.gMercProfiles[NPCID.IRA].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)))
+                if (Globals.gMercProfiles[NPCID.IRA].bMercStatus != MercStatus.MERC_IS_DEAD && Quests.CheckNPCSector(NPCID.IRA, 10, (MAP_ROW)1, 1) && !(Globals.gMercProfiles[NPCID.IRA].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)))
                 {
                     gubFact[FACT.IRA_UNHIRED_AND_ALIVE] = true;
                 }
@@ -193,7 +193,7 @@ public class Facts
                 gubFact[FACT.BRENDA_DEAD] = (Globals.gMercProfiles[(NPCID)85].bMercStatus == MercStatus.MERC_IS_DEAD);
                 break;
             case FACT.NPC_IS_ENEMY:
-                gubFact[FACT.NPC_IS_ENEMY] = Quests.CheckNPCIsEnemy(ubProfileID) || Globals.gMercProfiles[ubProfileID].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_NEEDS_TO_SAY_HOSTILE_QUOTE);
+                gubFact[FACT.NPC_IS_ENEMY] = Quests.CheckNPCIsEnemy(ubProfileID) || Globals.gMercProfiles[ubProfileID].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.NEEDS_TO_SAY_HOSTILE_QUOTE);
                 break;
             /*
 		case FACT.SKYRIDER_CLOSE_TO_CHOPPER:
@@ -276,10 +276,10 @@ public class Facts
                 gubFact[usFact] = (Globals.gMercProfiles[NPCID.SLAY].sSectorX == Globals.gWorldSectorX && Globals.gMercProfiles[NPCID.SLAY].sSectorY == Globals.gWorldSectorY && Globals.gMercProfiles[NPCID.SLAY].bSectorZ == Globals.gbWorldSectorZ);
                 break;
             case FACT.SLAY_HIRED_AND_WORKED_FOR_48_HOURS:
-                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.SLAY].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)) && (Globals.gMercProfiles[NPCID.SLAY].usTotalDaysServed > 1));
+                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.SLAY].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)) && (Globals.gMercProfiles[NPCID.SLAY].usTotalDaysServed > 1));
                 break;
             case FACT.SHANK_IN_SQUAD_BUT_NOT_SPEAKING:
-                gubFact[usFact] = ((SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SHANK, true) != null) && (Globals.gMercProfiles[NPCID.SHANK].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)) && (Globals.gpSrcSoldier == null || Globals.gpSrcSoldier.ubProfile != NPCID.SHANK));
+                gubFact[usFact] = ((SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SHANK, true) != null) && (Globals.gMercProfiles[NPCID.SHANK].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)) && (Globals.gpSrcSoldier == null || Globals.gpSrcSoldier.ubProfile != NPCID.SHANK));
                 break;
             case FACT.SHANK_NOT_IN_SECTOR:
                 gubFact[usFact] = (SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SHANK, false) == null);
@@ -533,7 +533,7 @@ public class Facts
                 break;
 
             case FACT.NPC_HOSTILE_OR_PISSED_OFF:
-                gubFact[usFact] = Quests.CheckNPCIsEnemy(ubProfileID) || (Globals.gMercProfiles[ubProfileID].ubMiscFlags3.HasFlag(ProfileMiscFlags3.PROFILE_MISC_FLAG3_NPC_PISSED_OFF));
+                gubFact[usFact] = Quests.CheckNPCIsEnemy(ubProfileID) || (Globals.gMercProfiles[ubProfileID].ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.NPC_PISSED_OFF));
                 break;
 
             case FACT.TONY_IN_BUILDING:
@@ -581,7 +581,7 @@ public class Facts
                 break;
 
             case FACT.NPC_BANDAGED_TODAY:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_BANDAGED_TODAY));
+                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.BANDAGED_TODAY));
                 break;
 
             case FACT.PLAYER_IN_SAME_ROOM:

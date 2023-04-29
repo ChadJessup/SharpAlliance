@@ -22,7 +22,7 @@ public interface IVideoManager : ISharpAllianceManager
     public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
     // TODO move to better area
-    public static Veldrid.GraphicsDevice GraphicDevice { get; }
+    Veldrid.GraphicsDevice GraphicDevice { get; }
 
     void DrawFrame();
     void RefreshScreen();

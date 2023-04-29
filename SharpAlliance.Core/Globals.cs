@@ -26,6 +26,9 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+    public const int NAME_LENGTH = 30;
+    public const int NICKNAME_LENGTH = 10;
+
     public const int MAX_AP_CARRIED = 5;      // APs carried from turn-to-turn
                                               // monster AP bonuses; expressed in 10ths (12 = 120% normal) 
 
@@ -205,8 +208,8 @@ public partial class Globals
     public static bool INTERRUPT_QUEUED => (gubOutOfTurnPersons > 0);
 
 
-    public static bool RPC_RECRUITED(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)));
-    public static bool AM_AN_EPC(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_EPCACTIVE)));
+    public static bool RPC_RECRUITED(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)));
+    public static bool AM_AN_EPC(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.EPCACTIVE)));
     public static bool AM_A_ROBOT(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON));
 
     public static email? pEmailList;

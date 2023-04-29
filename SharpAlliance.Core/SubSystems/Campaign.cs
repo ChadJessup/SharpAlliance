@@ -1159,7 +1159,7 @@ public class Campaign
 
 
         // if the player has never yet had the chance to hire this merc
-        if (!(pProfile.ubMiscFlags3.HasFlag(ProfileMiscFlags3.PROFILE_MISC_FLAG3_PLAYER_HAD_CHANCE_TO_HIRE)))
+        if (!(pProfile.ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.PLAYER_HAD_CHANCE_TO_HIRE)))
         {
             // then we're not allowed to kill him (to avoid really pissing off player by killing his very favorite merc)
             return;

@@ -5703,7 +5703,7 @@ int	gOrangeGlowG[]=
 
         if ((ubAttacker != NOBODY) && (Menptr[ubAttacker].bTeam == OUR_TEAM) && (pSoldier.ubProfile != NO_PROFILE) && (pSoldier.ubProfile >= FIRST_RPC))
         {
-            gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= ProfileMiscFlags1.PROFILE_MISC_FLAG_WOUNDEDBYPLAYER;
+            gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= PROFILE_MISC_FLAG.WOUNDEDBYPLAYER;
             if (pSoldier.ubProfile == (NPCID)114)
             {
                 Facts.SetFactTrue(FACT.PACOS_KILLED);

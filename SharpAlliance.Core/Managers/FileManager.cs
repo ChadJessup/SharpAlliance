@@ -205,24 +205,29 @@ public class FileManager : IFileManager
         return exists;
     }
 
-    static byte[] ubRotationArray = new byte[] { 132, 235, 125, 99, 15, 220, 140, 89, 205, 132, 254, 144, 217, 78, 156, 58, 215, 76, 163, 187, 55, 49, 65, 48, 156, 140, 201, 68, 184, 13, 45, 69, 102, 185, 122, 225, 23, 250, 160, 220, 114, 240, 64, 175, 057, 233 };
+    static byte[] ubRotationArray = new byte[]
+    {
+        132, 235, 125, 99, 15, 220, 140, 89, 205,
+        132, 254, 144, 217, 78, 156, 58, 215, 76,
+        163, 187, 55, 49, 65, 48, 156, 140, 201,
+        68, 184, 13, 45, 69, 102, 185, 122, 225,
+        23, 250, 160, 220, 114, 240, 64, 175, /*057 - C handles leading zeroes stupidly */ 47, 233
+    };
 
-    public unsafe bool JA2EncryptedFileRead(Stream hFile, byte[] pDest, int uiBytesToRead, out int puiBytesRead)
+    public unsafe ReadOnlySpan<byte> JA2EncryptedFileRead(Stream hFile, int uiBytesToRead, out int puiBytesRead)
     {
         uint uiLoop;
         byte ubArrayIndex = 0;
-        //byte		ubLastNonBlank = 0;
         byte ubLastByte = 0;
         byte ubLastByteForNextLoop;
         bool fRet;
         byte[] pMemBlock = new byte[uiBytesToRead];
 
-        fRet = FileRead(hFile, ref pDest, uiBytesToRead, out puiBytesRead);
+        fRet = FileRead(hFile, ref pMemBlock, uiBytesToRead, out puiBytesRead);
         try
         {
             if (fRet)
             {
-                // pMemBlock = pDest;
                 for (uiLoop = 0; uiLoop < puiBytesRead; uiLoop++)
                 {
                     ubLastByteForNextLoop = pMemBlock[uiLoop];
@@ -239,9 +244,12 @@ public class FileManager : IFileManager
         }
         catch (Exception e)
         {
-
+            fRet = false;
         }
-        return fRet;
+
+        return fRet
+            ? pMemBlock
+            : null;
     }
 
     public long SetFilePointer(Stream hLibraryHandle, int offset, SeekOrigin origin)
@@ -269,7 +277,7 @@ public class FileManager : IFileManager
     }
 
     public bool FileRead<T>(Stream stream, ref T obj, int uiFileSectionSize, out int uiBytesRead)
-        where T : unmanaged
+        where T : struct
     {
         T[] buff = new T[1];
         var result = FileRead(stream, ref buff, uiFileSectionSize, out uiBytesRead);
@@ -283,13 +291,11 @@ public class FileManager : IFileManager
     }
 
     public bool FileRead<T>(Stream stream, ref T[] obj, int uiFileSectionSize, out int uiBytesRead)
-        where T : unmanaged
+        where T : struct
     {
         var buffer = new byte[uiFileSectionSize];
         uiBytesRead = stream.Read(buffer, 0, uiFileSectionSize);
         var bufferSpan = new ReadOnlySpan<byte>(buffer);
-
-        //Unsafe.As().CopyBlock()
 
         var tSpan = MemoryMarshal.Cast<byte, T>(bufferSpan);
 

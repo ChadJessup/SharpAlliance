@@ -8,12 +8,14 @@ using Veldrid;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 using static SharpAlliance.Core.Globals;
+using System;
 
 namespace SharpAlliance.Core.Screens;
 
 // jascreens.c = InitScreen = splashscreen
 public class InitScreen : IScreen
 {
+    private readonly SoldierProfileSubSystem soldierProfiles;
     private readonly Overhead overhead;
     private readonly GameContext context;
     private readonly CursorSubSystem cursor;
@@ -55,12 +57,14 @@ public class InitScreen : IScreen
         AnimationData animationData,
         TileCache tileCache,
         MercTextBox mercTextBox,
+        SoldierProfileSubSystem soldierProfileSubSystem,
         LightingSystem lightingSystem,
         IVideoManager videoManager,
         DialogControl dialogControl,
         SaveLoadGame saveLoadGame,
         IMusicManager musicManager)
     {
+        this.soldierProfiles = soldierProfileSubSystem;
         this.overhead = overhead;
         this.eventManager = eventManager;
         this.shading = shading;
@@ -205,6 +209,9 @@ public class InitScreen : IScreen
     {
         await this.textUtils.LoadAllExternalText();
         await this.sounds.InitSound();
+
+        await this.LoadFiles();
+
         this.dialogs.InitalizeStaticExternalNPCFaces();
 
         gsRenderCenterX = 805;
@@ -267,6 +274,14 @@ public class InitScreen : IScreen
 
 
         return ScreenName.InitScreen;
+    }
+
+    private Task LoadFiles()
+    {
+        this.soldierProfiles.LoadMercProfiles();
+
+
+        return Task.CompletedTask;
     }
 
     public void Dispose()

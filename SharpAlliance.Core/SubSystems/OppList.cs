@@ -358,7 +358,7 @@ public class OppList
             {
 
                 // make sure person can say quote!!!!
-                gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= ProfileMiscFlags2.PROFILE_MISC_FLAG2_NEEDS_TO_SAY_HOSTILE_QUOTE;
+                gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= PROFILE_MISC_FLAG2.NEEDS_TO_SAY_HOSTILE_QUOTE;
 
                 //                if (NPCHasUnusedHostileRecord(pSoldier.ubProfile, APPROACH_DECLARATION_OF_HOSTILITY))
                 //                {
@@ -1738,12 +1738,12 @@ public class OppList
                                 //case QUEEN:
                                 case NPCID.JOE:
                                 case NPCID.ELLIOT:
-                                    if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE)))
+                                    if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.SAID_FIRSTSEEN_QUOTE)))
                                     {
                                         if (!Meanwhile.AreInMeanwhile())
                                         {
                                             NPC.TriggerNPCRecord(pSoldier.ubProfile, 4);
-                                            gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE;
+                                            gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= PROFILE_MISC_FLAG2.SAID_FIRSTSEEN_QUOTE;
                                         }
                                     }
                                     break;
@@ -1766,10 +1766,10 @@ public class OppList
                                 break;
                                 */
                             case NPCID.IGGY:
-                                if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE)))
+                                if (!(gMercProfiles[pSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.SAID_FIRSTSEEN_QUOTE)))
                                 {
                                     NPC.TriggerNPCRecord(pSoldier.ubProfile, 9);
-                                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= ProfileMiscFlags2.PROFILE_MISC_FLAG2_SAID_FIRSTSEEN_QUOTE;
+                                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags2 |= PROFILE_MISC_FLAG2.SAID_FIRSTSEEN_QUOTE;
                                     gbPublicOpplist[gbPlayerNum][pSoldier.ubID] = HEARD_THIS_TURN;
                                 }
                                 break;
@@ -2755,7 +2755,7 @@ public class OppList
         if (fSeenCreature > 0)
         {
             // Is this our first time seeing them?
-            if (gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE))
+            if (gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.HAVESEENCREATURE))
             {
                 // Are there multiplaes and we have not said this quote during this battle?
                 if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_MULTIPLE_CREATURES)))
@@ -2803,7 +2803,7 @@ public class OppList
             else
             {
                 // Yes, set flag
-                gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE;
+                gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= PROFILE_MISC_FLAG.HAVESEENCREATURE;
 
                 DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.FIRSTTIME_GAME_SEE_CREATURE);
             }
@@ -3194,7 +3194,7 @@ public class OppList
                 }
                 else if (fSawCreatureForFirstTime)
                 {
-                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= ProfileMiscFlags1.PROFILE_MISC_FLAG_HAVESEENCREATURE;
+                    gMercProfiles[pSoldier.ubProfile].ubMiscFlags |= PROFILE_MISC_FLAG.HAVESEENCREATURE;
                     DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.FIRSTTIME_GAME_SEE_CREATURE);
                 }
 

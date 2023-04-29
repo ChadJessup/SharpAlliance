@@ -185,7 +185,7 @@ public class NPC
 
         if (ubNPC >= FIRST_RPC && ubNPC < FIRST_NPC)
         {
-            if (gMercProfiles[ubNPC].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED))
+            if (gMercProfiles[ubNPC].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED))
             {
                 // recruited
                 if (gpBackupNPCQuoteInfoArray[ubNPC] == null)
@@ -235,7 +235,7 @@ public class NPC
             // use a copy of Herve's data file instead!
             zFileName = sprintf("NPCData\\%03d.npc", NPCID.HERVE);
         }
-        else if (ubNPC < FIRST_RPC || (ubNPC < FIRST_NPC && gMercProfiles[ubNPC].ubMiscFlags.HasFlag(ProfileMiscFlags1.PROFILE_MISC_FLAG_RECRUITED)))
+        else if (ubNPC < FIRST_RPC || (ubNPC < FIRST_NPC && gMercProfiles[ubNPC].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)))
         {
             zFileName = sprintf("NPCData\\000.npc", ubNPC);
         }

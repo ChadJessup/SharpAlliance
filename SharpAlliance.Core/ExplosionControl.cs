@@ -3246,7 +3246,7 @@ public class ExplosionControl
                 {
                     // ignore if the player is fighting the enemy here and this is a good guy
                     if (gTacticalStatus.Team[ENEMY_TEAM].bMenInSector > 0
-                        && (gMercProfiles[pSoldier.ubProfile].ubMiscFlags3.HasFlag(ProfileMiscFlags3.PROFILE_MISC_FLAG3_GOODGUY)))
+                        && (gMercProfiles[pSoldier.ubProfile].ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.GOODGUY)))
                     {
                         continue;
                     }
