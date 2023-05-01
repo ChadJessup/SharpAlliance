@@ -569,33 +569,36 @@ public class FontSubSystem : ISharpAllianceManager
         // Build white palette
         for (int count = 0; count < 256; count++)
         {
-            Pal[count].peRed = (byte)255;
-            Pal[count].peGreen = (byte)255;
-            Pal[count].peBlue = (byte)255;
+            Pal[count] = new()
+            {
+                peRed = 255,
+                peGreen = 255,
+                peBlue = 255
+            };
         }
 
-        pObj.pShades[(int)FONT_SHADE.RED] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 0, 0, true);
-        pObj.pShades[(int)FONT_SHADE.BLUE] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 0, 0, 255, true);
-        pObj.pShades[(int)FONT_SHADE.GREEN] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 0, 255, 0, true);
-        pObj.pShades[(int)FONT_SHADE.YELLOW] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 255, 0, true);
-        pObj.pShades[(int)FONT_SHADE.NEUTRAL] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 255, 255, false);
+        pObj.pShades[(int)FONT_SHADE.RED] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 255, 0, 0, true);
+        pObj.pShades[(int)FONT_SHADE.BLUE] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 0, 0, 255, true);
+        pObj.pShades[(int)FONT_SHADE.GREEN] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 0, 255, 0, true);
+        pObj.pShades[(int)FONT_SHADE.YELLOW] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 255, 255, 0, true);
+        pObj.pShades[(int)FONT_SHADE.NEUTRAL] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 255, 255, 255, false);
 
-        pObj.pShades[(int)FONT_SHADE.WHITE] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 255, 255, 255, true);
+        pObj.pShades[(int)FONT_SHADE.WHITE] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 255, 255, 255, true);
 
         // the rest are darkening tables, right down to all-black.
-        pObj.pShades[0] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 165, 165, 165, false);
-        pObj.pShades[7] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 135, 135, 135, false);
-        pObj.pShades[8] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 105, 105, 105, false);
-        pObj.pShades[9] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 75, 75, 75, false);
-        pObj.pShades[10] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 45, 45, 45, false);
-        pObj.pShades[11] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 36, 36, 36, false);
-        pObj.pShades[12] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 27, 27, 27, false);
-        pObj.pShades[13] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 18, 18, 18, false);
-        pObj.pShades[14] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 9, 9, 9, false);
-        pObj.pShades[15] = video.Create16BPPPaletteShaded(ref pObj.pPaletteEntry, 0, 0, 0, false);
+        pObj.pShades[0] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 165, 165, 165, false);
+        pObj.pShades[7] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 135, 135, 135, false);
+        pObj.pShades[8] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 105, 105, 105, false);
+        pObj.pShades[9] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 75, 75, 75, false);
+        pObj.pShades[10] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 45, 45, 45, false);
+        pObj.pShades[11] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 36, 36, 36, false);
+        pObj.pShades[12] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 27, 27, 27, false);
+        pObj.pShades[13] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 18, 18, 18, false);
+        pObj.pShades[14] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 9, 9, 9, false);
+        pObj.pShades[15] = video.Create16BPPPaletteShaded(pObj.pPaletteEntry, 0, 0, 0, false);
 
         // Set current shade table to neutral color
-        pObj.pShadeCurrent = pObj.pShades[(int)FONT_SHADE.NEUTRAL]!.Value;
+        pObj.pShadeCurrent = pObj.pShades[(int)FONT_SHADE.NEUTRAL][0];
 
         // check to make sure every table got a palette
         //for(count=0; (count < HVOBJECT_SHADE_TABLES) && (pObj.pShades[count]!=null); count++);

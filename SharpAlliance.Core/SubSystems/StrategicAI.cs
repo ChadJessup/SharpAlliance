@@ -2767,7 +2767,7 @@ public class StrategicAI
             //If the queen has escaped to the basement, do not use the profile insertion info
             //when we finally go down there, otherwise she will end up in the wrong spot, possibly inside
             //the walls.
-            if (gubFact[FACT.QUEEN_DEAD] == 0 && gMercProfiles[NPCID.QUEEN].bSectorZ == 1)
+            if (gubFact[FACT.QUEEN_DEAD] == false && gMercProfiles[NPCID.QUEEN].bSectorZ == 1)
             {
                 if (gbWorldSectorZ != 1 || gWorldSectorX != 16 || gWorldSectorY != (MAP_ROW)3)
                 { //We aren't in the basement sector
@@ -2791,7 +2791,7 @@ public class StrategicAI
 
         if (ubSAIVersion < 25)
         {
-            if (gubFact[FACT.SKYRIDER_CLOSE_TO_CHOPPER] > 0)
+            if (gubFact[FACT.SKYRIDER_CLOSE_TO_CHOPPER])
             {
                 gMercProfiles[NPCID.SKYRIDER].fUseProfileInsertionInfo = 0;
             }

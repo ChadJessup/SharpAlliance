@@ -10,7 +10,45 @@ public class WeaponTypes
 {
     public static List<ARMOURTYPE> Armour = new()
     {
-
+	//	Class					      Protection	Degradation%			Description
+	//  -------------       ----------  ------------      ----------------
+	    new(ARMOURCLASS.VEST,               10,                 25          ), /* Flak jacket     */ 
+	    new(ARMOURCLASS.VEST,               13,                 20          ), /* Flak jacket w X */ 
+	    new(ARMOURCLASS.VEST,               16,                 15          ), /* Flak jacket w Y */ 
+	    new(ARMOURCLASS.VEST,               15,                 20          ), /* Kevlar jacket   */ 
+	    new(ARMOURCLASS.VEST,               19,                 15          ), /* Kevlar jack w X */ 
+	    new(ARMOURCLASS.VEST,               24,                 10          ), /* Kevlar jack w Y */ 
+	    new(ARMOURCLASS.VEST,               30,                 15          ), /* Spectra jacket  */ 
+	    new(ARMOURCLASS.VEST,               36,                 10          ), /* Spectra jack w X*/
+	    new(ARMOURCLASS.VEST,               42,                  5          ), /* Spectra jack w Y*/
+	    new(ARMOURCLASS.LEGGINGS,           15,                 20          ), /* Kevlar leggings */	
+	    new(ARMOURCLASS.LEGGINGS,           19,                 15          ), /* Kevlar legs w X */	
+	    new(ARMOURCLASS.LEGGINGS,           24,                 10          ), /* Kevlar legs w Y */	
+	    new(ARMOURCLASS.LEGGINGS,           30,                 15          ), /* Spectra leggings*/	
+	    new(ARMOURCLASS.LEGGINGS,           36,                 10          ), /* Spectra legs w X*/	
+	    new(ARMOURCLASS.LEGGINGS,           42,                  5          ), /* Spectra legs w Y*/	
+	    new(ARMOURCLASS.HELMET,             10,                  5          ), /* Steel helmet    */	
+	    new(ARMOURCLASS.HELMET,             15,                 20          ), /* Kevlar helmet   */	
+	    new(ARMOURCLASS.HELMET,             19,                 15          ), /* Kevlar helm w X */	
+	    new(ARMOURCLASS.HELMET,             24,                 10          ), /* Kevlar helm w Y */	
+	    new(ARMOURCLASS.HELMET,             30,                 15          ), /* Spectra helmet  */	
+	    new(ARMOURCLASS.HELMET,             36,                 10          ), /* Spectra helm w X*/	
+	    new(ARMOURCLASS.HELMET,             42,                  5          ), /* Spectra helm w Y*/	
+	    new(ARMOURCLASS.PLATE,              15,                 200         ), /* Ceramic plates  */ 
+	    new(ARMOURCLASS.MONST,               3,                  0          ), /* Infant creature hide */
+	    new(ARMOURCLASS.MONST,               5,                  0          ), /* Young male creature hide  */
+	    new(ARMOURCLASS.MONST,               6,                  0          ), /* Male creature hide  */
+	    new(ARMOURCLASS.MONST,              20,                  0          ), /* Queen creature hide  */
+	    new(ARMOURCLASS.VEST,                2,                 25          ), /* Leather jacket    */ 
+	    new(ARMOURCLASS.VEST,               12,                 30          ), /* Leather jacket w kevlar */ 
+	    new(ARMOURCLASS.VEST,               16,                 25          ), /* Leather jacket w kevlar & compound 18 */ 
+	    new(ARMOURCLASS.VEST,               19,                 20          ), /* Leather jacket w kevlar & queen blood */ 
+	    new(ARMOURCLASS.MONST,               7,                  0          ), /* Young female creature hide */
+	    new(ARMOURCLASS.MONST,               8,                  0          ), /* Old female creature hide  */
+	    new(ARMOURCLASS.VEST,                1,                 25          ), /* T-shirt */ 
+	    new(ARMOURCLASS.VEST,               22,                 20          ), /* Kevlar 2 jacket   */ 
+	    new(ARMOURCLASS.VEST,               27,                 15          ), /* Kevlar 2 jack w X */ 
+	    new(ARMOURCLASS.VEST,               32,                 10          ), /* Kevlar 2 jack w Y */ 
     };
 
     public static Dictionary<Items, WEAPONTYPE> Weapon = new()

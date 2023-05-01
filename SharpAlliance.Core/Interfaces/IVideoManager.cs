@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
@@ -36,8 +37,8 @@ public interface IVideoManager : ISharpAllianceManager
     bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);
     int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap);
-    void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette);
-    ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono);
+    void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette);
+    ushort[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono);
     void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap);
     void DeleteVideoObjectFromIndex(string logoKey);
     void RestoreBackgroundRects();
@@ -78,7 +79,8 @@ public interface IVideoManager : ISharpAllianceManager
     ValueTask<bool> Initialize();
     static Stream OpenEmbeddedAssetStream(string name) => throw new NotImplementedException();
     static byte[] ReadEmbeddedAssetBytes(string name) => throw new NotImplementedException();
-    bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette);
+    bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, List<SGPPaletteEntry> pSrcPalette);
     void UnLockVideoSurface(Surfaces buffer);
     void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3);
+    bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject eTRLEObject, int index);
 }

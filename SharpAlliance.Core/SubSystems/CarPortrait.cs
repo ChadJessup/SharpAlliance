@@ -1,12 +1,47 @@
-﻿using static SharpAlliance.Core.Globals;
+﻿using System;
+using SharpAlliance.Core.Interfaces;
+using static SharpAlliance.Core.Globals;
 
-namespace SharpAlliance.Core.SubSystems;
+namespace SharpAlliance.Core;
+
+public partial class Globals
+{
+    // the ids for the car portraits
+    public static string[] giCarPortraits = { string.Empty, string.Empty, string.Empty, string.Empty };
+
+    // the car portrait file names
+    public static string[] pbCarPortraitFileNames =
+    {
+        "INTERFACE\\eldorado.sti",
+        "INTERFACE\\Hummer.sti",
+        "INTERFACE\\ice Cream Truck.sti",
+        "INTERFACE\\Jeep.sti",
+    };
+}
 
 public class Cars
 {
-    public void LoadCarPortraitValues()
-    {
+    private readonly IVideoManager video;
 
+    public Cars(IVideoManager videoManager)
+    {
+        this.video = videoManager;
+    }
+
+    public bool LoadCarPortraitValues()
+    {
+        if (giCarPortraits[0] != string.Empty)
+        {
+            return false;
+        }
+
+        for (CarPortrait iCounter = 0; iCounter < CarPortrait.NUMBER_CAR_PORTRAITS; iCounter++)
+        {
+            this.video.AddVideoObject(pbCarPortraitFileNames[(int)iCounter], out var key);
+            giCarPortraits[(int)iCounter] = key;
+        }
+
+        return true;
     }
 }
 

@@ -469,7 +469,7 @@ public class LibraryFileManager : ILibraryManager
         var seekedAmount = libraryHeader.hLibraryHandle.Seek(pFileHeader.Value.uiFileOffset, SeekOrigin.Begin);
         libraryHeader.hLibraryHandle.CopyTo(ms, pFileHeader.Value.uiFileLength);
 
-        System.IO.Directory.CreateDirectory("c:\\assets");
+        System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(System.IO.Path.Combine("c:\\assets", pFileHeader.Value.pFileName)));
 
         using FileStream fs = new(System.IO.Path.Combine("C:\\assets", pFileHeader.Value.pFileName), FileMode.OpenOrCreate);
         ms.Seek(0, SeekOrigin.Begin);

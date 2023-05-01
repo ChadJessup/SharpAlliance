@@ -102,7 +102,7 @@ public class SoldierProfileSubSystem
         {
             var npcId = uiLoop;
             var fm = (FileManager)files;
-            
+
             var mercProfileBytes = fm.JA2EncryptedFileRead(fptr, MERCPROFILESTRUCT.Size, out uiNumBytesRead);
 
             if (mercProfileBytes.IsEmpty)
@@ -112,7 +112,7 @@ public class SoldierProfileSubSystem
                 return false;
             }
 
-            MERCPROFILESTRUCT mercProfile = MERCPROFILESTRUCT.LoadFromBytes(mercProfileBytes);
+            MERCPROFILESTRUCT mercProfile = MERCPROFILESTRUCT.LoadFromBytes(mercProfileBytes, uiLoop);
             gMercProfiles[npcId] = mercProfile;
 
             //if the Dialogue exists for the merc, allow the merc to be hired
@@ -139,7 +139,7 @@ public class SoldierProfileSubSystem
             // ATE: New, face display indipendent of ID num now
             // Setup face index value
             // Default is the ubCharNum
-            Globals.gMercProfiles[npcId].ubFaceIndex = (int)uiLoop;
+            gMercProfiles[npcId].ubFaceIndex = (int)uiLoop;
 
             if (!Globals.gGameOptions.GunNut)
             {
@@ -181,8 +181,7 @@ public class SoldierProfileSubSystem
 
             for (uiLoop2 = 0; uiLoop2 < InventorySlot.NUM_INV_SLOTS; uiLoop2++)
             {
-                var npcId2 = (NPCID)uiLoop2;
-                usItem = Globals.gMercProfiles[npcId2].inv[uiLoop2];
+                usItem = Globals.gMercProfiles[npcId].inv[uiLoop2];
 
                 if (usItem != Items.NONE)
                 {
@@ -229,6 +228,18 @@ public class SoldierProfileSubSystem
         }
 
         // SET SOME DEFAULT LOCATIONS FOR STARTING NPCS
+        foreach (var merc in gMercProfiles)
+        {
+            for (int i = 0; i < merc.Value.bBuddyIndexes.Length; i++)
+            {
+                if (merc.Value.bBuddyIndexes[i] == -1)
+                {
+                    continue;
+                }
+
+                merc.Value.bBuddy[i] = gMercProfiles[(NPCID)merc.Value.bBuddyIndexes[i]];
+            }
+        }
 
         files.FileClose(fptr);
 
@@ -242,6 +253,10 @@ public class SoldierProfileSubSystem
         this.townReputations.InitializeProfilesForTownReputation();
 
         EditScreen.gfProfileDataLoaded = true;
+
+        // no better place..heh?.. will load faces for profiles that are 'extern'.....won't have soldiertype instances
+        this.dialogs.InitalizeStaticExternalNPCFaces();
+
 
         // car portrait values
         this.cars.LoadCarPortraitValues();
@@ -298,7 +313,7 @@ public class SoldierProfileSubSystem
 
         // count life twice 'cause it's also hit points
         // mental skills are halved 'cause they're actually not that important within the game
-//        uiStats = ((2 * profile.bLifeMax) + profile.bStrength + profile.bAgility + profile.bDexterity + ((profile.bLeadership + profile.bWisdom) / 2)) / 3;
+        //        uiStats = ((2 * profile.bLifeMax) + profile.bStrength + profile.bAgility + profile.bDexterity + ((profile.bLeadership + profile.bWisdom) / 2)) / 3;
 
         // marksmanship is very important, count it double
         uiSkills = (int)((2 * (Math.Pow(profile.bMarksmanship, 3) / 10000)) +
@@ -321,7 +336,7 @@ public class SoldierProfileSubSystem
         // this currently varies from about 10 (Flo) to 1200 (Gus)
         return usCompetence;
     }
-    
+
     public static SOLDIERTYPE? SwapLarrysProfiles(SOLDIERTYPE? pSoldier)
     {
         NPCID ubSrcProfile;
@@ -411,10 +426,10 @@ public class SoldierProfileSubSystem
         pSoldier.ubProfile = ubDestProfile;
 
         // create new face
-//        pSoldier.iFaceIndex = InitSoldierFace(pSoldier);
+        //        pSoldier.iFaceIndex = InitSoldierFace(pSoldier);
 
         // replace profile in group
-//        ReplaceSoldierProfileInPlayerGroup(pSoldier.ubGroupID, ubSrcProfile, ubDestProfile);
+        //        ReplaceSoldierProfileInPlayerGroup(pSoldier.ubGroupID, ubSrcProfile, ubDestProfile);
 
         pSoldier.bStrength = pNewProfile.bStrength + pNewProfile.bStrengthDelta;
         pSoldier.bDexterity = pNewProfile.bDexterity + pNewProfile.bDexterityDelta;

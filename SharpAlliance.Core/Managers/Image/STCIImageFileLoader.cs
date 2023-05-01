@@ -321,12 +321,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
         //pubPalette = MemoryMarshal.Read<STCIPaletteElement>(paletteSpan);
 
         // Allocate memory for palette
-        hImage.pPalette = new SGPPaletteEntry[256];
-
-        if (hImage.pPalette == null)
-        {
-            return false;
-        }
+        hImage.pPalette = new();
 
         // Initialize the proper palette entries
         for (usIndex = 0; usIndex < 256; usIndex++)
@@ -339,7 +334,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
                 peFlags = 0,
             };
 
-            hImage.pPalette[usIndex] = paletteEntry;
+            hImage.pPalette.Add(paletteEntry);
             pubPaletteIdx++;
         }
 

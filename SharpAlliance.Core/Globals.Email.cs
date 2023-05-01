@@ -12,11 +12,6 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    static Globals()
-    {
-
-    }
-
     public static int giMessageId = -1;
     public static int giPrevMessageId = -1;
     public static int giMessagePage = -1;

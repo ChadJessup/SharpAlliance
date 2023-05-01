@@ -91,22 +91,20 @@ public enum ParentType
 
 }
 
-public class INVTYPE
-{
-    public IC usItemClass;
-    public int ubClassIndex;
-    public int ubCursor;
-    public int bSoundType;
-    public int ubGraphicType;
-    public int ubGraphicNum;
-    public int ubWeight; //2 units per kilogram; roughly 1 unit per pound
-    public int ubPerPocket;
-    public int usPrice;
-    public int ubCoolness;
-    public int bReliability;
-    public int bRepairEase;
-    public ItemAttributes fFlags;
-}
+public record INVTYPE(
+    IC usItemClass,
+    int ubClassIndex,
+    CURS ubCursor,
+    int bSoundType,
+    int ubGraphicType,
+    int ubGraphicNum,
+    int ubWeight, //2 units per kilogram; roughly 1 unit per pound
+    int ubPerPocket,
+    int usPrice,
+    int ubCoolness,
+    int bReliability,
+    int bRepairEase,
+    ItemAttributes fFlags);
 
 public enum DetonatorType
 {

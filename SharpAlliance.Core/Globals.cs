@@ -26,6 +26,15 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
+
+    static Globals()
+    {
+        foreach (var fact in Enum.GetValues<FACT>())
+        {
+            gubFact[fact] = false;
+        }
+    }
+
     public const int NAME_LENGTH = 30;
     public const int NICKNAME_LENGTH = 10;
 
@@ -199,8 +208,6 @@ public partial class Globals
     public const int MAX_OBJECTS_PER_SLOT = 8;
     public const int MAX_ATTACHMENTS = 4;
     public const int MAX_MONEY_PER_SLOT = 20000;
-
-    public static Dictionary<Items, INVTYPE> Item = new();
 
     public static bool gfHiddenInterrupt;
     public static bool gfHiddenTurnbased;
@@ -629,7 +636,9 @@ public partial class Globals
     public const int NUM_FACTS = 500;			//If you increase this number, add entries to the fact text list in QuestText.c
 
     public static Dictionary<QUEST, int> gubQuest { get; } = new();
-    public static Dictionary<FACT, int> gubFact { get; } = new(); // this has to be updated when we figure out how many facts we have
+
+    // this has to be updated when we figure out how many facts we have
+    public static Dictionary<FACT, bool> gubFact { get; } = new();
     public static bool gfBoxersResting { get; internal set; }
     public static int guiHelicopterSkyriderTalkState { get; internal set; }
     public static int guiTimeOfLastSkyriderMonologue { get; internal set; }
@@ -819,9 +828,9 @@ public partial class Globals
     public static Dictionary<MINE, MINE_LOCATION_TYPE> gMineLocation = new()
     {
         { MINE.SAN_MONA, new(4, (MAP_ROW)4, TOWNS.SAN_MONA) },
-        { MINE.DRASSEN, new(13, (MAP_ROW)4, TOWNS.DRASSEN ) },
+        { MINE.DRASSEN, new(13, (MAP_ROW)4, TOWNS.DRASSEN) },
         { MINE.ALMA, new(14, (MAP_ROW)9, TOWNS.ALMA) },
-        { MINE.CAMBRIA, new(8,  (MAP_ROW)8, TOWNS.CAMBRIA ) },
+        { MINE.CAMBRIA, new(8,  (MAP_ROW)8, TOWNS.CAMBRIA) },
         { MINE.CHITZENA, new(2,  (MAP_ROW)2, TOWNS.CHITZENA) },
         { MINE.GRUMM, new(3, (MAP_ROW)8, TOWNS.GRUMM) },
     };
@@ -2148,13 +2157,13 @@ public partial class Globals
     /*
        //   P E R S O N A L   O P P L I S T  //
        // -3   -2   -1   0   1   2   3   4   //
-       {   0,   1,   2,  0,  4,  3,  2,  1   }, // -3    O
-       {   0,   0,   1,  0,  3,  2,  1,  0   }, // -2  P P
-       {   0,   0,   0,  0,  2,  1,  0,  0   }, // -1  U P
-       {   1,   2,   3,  0,  5,  4,  3,  2   }, //  0  B L
-       {   0,   0,   0,  0,  0,  0,  0,  0   }, //  1  L I
-       {   0,   0,   0,  0,  1,  0,  0,  0   }, //  2  I S
-       {   0,   0,   1,  0,  2,  1,  0,  0   }, //  3  C T
+       {   0,   1,   2,  0,  4,  3,  2,  1  ) }, // -3    O
+       {   0,   0,   1,  0,  3,  2,  1,  0  ) }, // -2  P P
+       {   0,   0,   0,  0,  2,  1,  0,  0  ) }, // -1  U P
+       {   1,   2,   3,  0,  5,  4,  3,  2  ) }, //  0  B L
+       {   0,   0,   0,  0,  0,  0,  0,  0  ) }, //  1  L I
+       {   0,   0,   0,  0,  1,  0,  0,  0  ) }, //  2  I S
+       {   0,   0,   1,  0,  2,  1,  0,  0  ) }, //  3  C T
        {   0,   1,   2,  0,  3,  2,  1,  0   }  //  4
     	 */
      };
@@ -2186,11 +2195,11 @@ public partial class Globals
     {
      //       AI DIFFICULTY SETTING
      // WIMPY  EASY  NORMAL  TOUGH  ELITE
-      {  -20,  -10,     0,    10,     20  },     // DIFF_ENEMY_EQUIP_MOD
-      {  -10,   -5,     0,     5,     10  },     // DIFF_ENEMY_TO_HIT_MOD
-      {   -2,   -1,     0,     1,      2  },     // DIFF_ENEMY_INTERRUPT_MOD
-      {   50,   65,    80,    90,     95  },     // DIFF_RADIO_RED_ALERT
-      {    4,    6,     8,    10,     13  }      // DIFF_MAX_COVER_RANGE
+      {  -20,  -10,     0,    10,     20 },     // DIFF_ENEMY_EQUIP_MOD
+      {  -10,   -5,     0,     5,     10 },     // DIFF_ENEMY_TO_HIT_MOD
+      {   -2,   -1,     0,     1,      2 },     // DIFF_ENEMY_INTERRUPT_MOD
+      {   50,   65,    80,    90,     95 },     // DIFF_RADIO_RED_ALERT
+      {    4,    6,     8,    10,     13 }      // DIFF_MAX_COVER_RANGE
     };
 
     public static uint BOMB_QUEUE_DELAY { get; } = (uint)(1000 + Random.Next(500));
@@ -2295,6 +2304,408 @@ public partial class Globals
 
     public static SIGHT gubSightFlags = 0;
 
+    public const int CONDBUL = 0;
+    public const int COND = 0;
+    public const int SINGLE = 0;
+    public const int LIQ = 0;
+    public const int USAGE = 0;
+    public const int BUCKS = 0;
+
+
+    public static Dictionary<Items, INVTYPE> Item = new()
+    {
+        //  							CLASS								SOUND			GRPH	GRA-			PER			         
+        //CLASS						INDEX		CURSOR			TYPE			TYPE	PHIC	WT	PCKT	PRICE COOL	DESCRIPTION							REL		REPAIR	FLAGS
+        //---------				-----		-------     -------		----	--	  --  ----  -----	----	-----------							---		------		-----
+        { 0, new(IC.PUNCH, 0, CURS.PUNCHCURS, 0, 0, 0, 0, 0, 0, 0,      /* nothing! */            0, 0, ItemAttributes.ITEM_NOT_BUYABLE) },
+        //---WEAPONS---
+        // NB For convenience, in accessing the Weapons table, the class index
+        // of a weapon must be equal to its position in the Item table
+        { (Items)01, new(IC.GUN,                1,          CURS.TARGETCURS,    CONDBUL,    0,      1,      6,  1,       350,   2,		/* Glock 17        */	+2,     +2,         ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)02, new(IC.GUN,                    2,          CURS.TARGETCURS,    CONDBUL,    0,      2,      6,  1,       480,   2,		/* Glock 18        */	+1,     +1,         ItemAttributes.IF_STANDARD_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)03, new(IC.GUN,                    3,          CURS.TARGETCURS,    CONDBUL,    0,      3,      11, 1,       450,   2,		/* Beretta 92F     */	-1,     -1,         ItemAttributes.IF_STANDARD_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)04, new(IC.GUN,                    4,          CURS.TARGETCURS,    CONDBUL,    0,      4,      11, 1,       470,   2,		/* Beretta 93R     */	-2,     -2,         ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)05, new(IC.GUN,                    5,          CURS.TARGETCURS,    CONDBUL,    0,      5,      11, 1,       250,   1,		/* .38 S&W Special */	+4,     +4,         ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)06, new(IC.GUN,                    6,          CURS.TARGETCURS,    CONDBUL,    0,      6,      10, 1,       300,   1,		/* .357 Barracuda  */	+3,     +3,         ItemAttributes.IF_STANDARD_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)07, new(IC.GUN,                    7,          CURS.TARGETCURS,    CONDBUL,    0,      7,      17, 1,       300,   1,		/* .357 DesertEagle*/ -1,       -1,         ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)08, new(IC.GUN,                    8,          CURS.TARGETCURS,    CONDBUL,    0,      8,      11, 1,       400,   2,		/* .45 M1911			 */  0,     0,          ItemAttributes.IF_STANDARD_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)09, new(IC.GUN,                    9,          CURS.TARGETCURS,    CONDBUL,    0,      9,      21, 0,       980,   3,		/* H&K MP5K      	 */	-1,     0,          ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)10, new(IC.GUN,                    10,         CURS.TARGETCURS,    CONDBUL,    0,      10,     28, 0,      1170,   4,		/* .45 MAC-10	     */	-2,     -1,         ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)11, new(IC.GUN,                    11,         CURS.TARGETCURS,    CONDBUL,    0,      11,     48, 0,       700,   3,		/* Thompson M1A1   */	+3,     -3,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)12, new(IC.GUN,                    12,         CURS.TARGETCURS,    CONDBUL,    0,      12,     26, 0,      1330,   5,		/* Colt Commando   */	 0,     -1,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)13, new(IC.GUN,                    13,         CURS.TARGETCURS,    CONDBUL,    0,      13,     31, 0,       770,   3,		/* H&K MP53		 		 */	-1,     -1,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)14, new(IC.GUN,                    14,         CURS.TARGETCURS,    CONDBUL,    0,      14,     39, 0,      1180,   4,		/* AKSU-74         */ -2,       -1,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)15, new(IC.GUN,                    15,         CURS.TARGETCURS,    CONDBUL,    0,      15,     28, 0,      2750,   9,		/* 5.7mm FN P90    */ -2,       -4,         ItemAttributes.IF_STANDARD_GUN | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)16, new(IC.GUN,                    16,         CURS.TARGETCURS,    CONDBUL,    0,      16,     19, 0,       620,   3,		/* Type-85         */ -4,       +2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)17, new(IC.GUN,                    17,         CURS.TARGETCURS,    CONDBUL,    0,      17,     39, 0,      1350,   5,		/* SKS             */ -4,       -2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)18, new(IC.GUN,                    18,         CURS.TARGETCURS,    CONDBUL,    0,      18,     43, 0,      1930,   6,		/* Dragunov        */ +2,       +2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)19, new(IC.GUN,                    19,         CURS.TARGETCURS,    CONDBUL,    0,      19,     66, 0,      1950,   6,		/* M24             */ +4,       +4,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)20, new(IC.GUN,                    20,         CURS.TARGETCURS,    CONDBUL,    0,      20,     36, 0,      2380,   8,		/* Steyr AUG       */ +1,       -2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)21, new(IC.GUN,                    21,         CURS.TARGETCURS,    CONDBUL,    0,      21,     41, 0,      1620,   6,		/* H&K G41         */ +1,       -1,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)22, new(IC.GUN,                    22,         CURS.TARGETCURS,    CONDBUL,    0,      22,     29, 0,      1100,   4,		/* Ruger Mini-14   */  0,       -1,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)23, new(IC.GUN,                    23,         CURS.TARGETCURS,    CONDBUL,    0,      23,     36, 0,      2680,   8,		/* C-7             */ -1,       -1,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)24, new(IC.GUN,                    24,         CURS.TARGETCURS,    CONDBUL,    0,      24,     36, 0,      1970,   7,		/* FA-MAS          */ -2,       -2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)25, new(IC.GUN,                    25,         CURS.TARGETCURS,    CONDBUL,    0,      25,     36, 0,      1830,   6,		/* AK-74           */ -1,       -2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)26, new(IC.GUN,                    26,         CURS.TARGETCURS,    CONDBUL,    0,      26,     43, 0,      1450,   5,		/* AKM             */ +2,       +2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)27, new(IC.GUN,                    27,         CURS.TARGETCURS,    CONDBUL,    0,      27,     29, 0,      2120,   7,		/* M-14            */ +1,       -1,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)28, new(IC.GUN,                    28,         CURS.TARGETCURS,    CONDBUL,    0,      28,     43, 0,      2680,   8,		/* FN-FAL          */	 0,     -1,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)29, new(IC.GUN,                    29,         CURS.TARGETCURS,    CONDBUL,    0,      29,     44, 0,      1570,   5,		/* H&K G3A3        */ +1,       -1,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)30, new(IC.GUN,                    30,         CURS.TARGETCURS,    CONDBUL,    0,      30,     38, 0,      2530,   8,		/* H&K G11         */	+3,     -4,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)31, new(IC.GUN,                    31,         CURS.TARGETCURS,    CONDBUL,    0,      31,     36, 0,       670,   3,		/* Remington M870  */	+3,     +3,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)32, new(IC.GUN,                    32,         CURS.TARGETCURS,    CONDBUL,    0,      32,     38, 0,       980,   4,		/* SPAS-15         */ -2,       -2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)33, new(IC.GUN,                    33,         CURS.TARGETCURS,    CONDBUL,    0,      33,     41, 0,      2900,   9,		/* CAWS            */	-3,     -3,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)34, new(IC.GUN,                    34,         CURS.TARGETCURS,    CONDBUL,    0,      34,     68, 0,      3100,   10,		/* FN Minimi       */	-1,     -2,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)35, new(IC.GUN,                    35,         CURS.TARGETCURS,    CONDBUL,    0,      35,     48, 0,      3180,   10,		/* RPK-74          */ -1,       -2,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)36, new(IC.GUN,                    36,         CURS.TARGETCURS,    CONDBUL,    0,      36,     93, 0,      3420,   10,		/* H&K 21E         */	+2,     +1,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)37, new(IC.BLADE,                  37,         CURS.KNIFECURS,  0,             1,      79,     9,  2,       100,   2,		/* combat knife    */	+2,     +2,         ItemAttributes.IF_STANDARD_BLADE) },
+        { (Items)38, new(IC.THROWING_KNIFE,        38,          CURS.TARGETCURS, 0,             1,      53,     1,  4,        50,   3,		/* throwing knife  */	-1,     -1,         ItemAttributes.IF_STANDARD_BLADE) },
+        { (Items)39, new(IC.THROWN,                 39,         CURS.TOSSCURS,      0,              1,      57,     5,  2,         0,   0,		/* rock            */ 0,        0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)40, new(IC.LAUNCHER,               40,         CURS.TRAJECTORYCURS,    0,      0,      37,     26, 0,       900,   7,		/* grenade launcher*/	0,      -1,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)41, new(IC.LAUNCHER,               41,         CURS.TRAJECTORYCURS,    0,      0,      0,      77, 0,      1800,   10,		/* mortar */					0,      -2,         ItemAttributes.IF_TWOHANDED_GUN) },
+        { (Items)42, new(IC.THROWN,                 42,         CURS.TOSSCURS,      0,              1,      60,     4,  3,           0, 0,		/* another rock    */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)43, new(IC.BLADE,                  43,         CURS.KNIFECURS, 0,              0,      0,      0,  1,         0,   0,		/* yng male claws */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)44, new(IC.BLADE,                  44,         CURS.KNIFECURS, 0,              0,      0,      0,  1,         0,   0,		/* yng fem claws  */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)45, new(IC.BLADE,                  45,         CURS.KNIFECURS, 0,              0,      0,      0,  1,         0,   0,		/* old male claws */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)46, new(IC.BLADE,                  46,         CURS.KNIFECURS, 0,              0,      0,      0,  1,         0,   0,		/* old fem claws  */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)47, new(IC.TENTACLES,              47,         CURS.KNIFECURS, 0,              0,      0,      0,  1,         0,   0,		/* queen tentacles*/	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)48, new(IC.GUN,                    48,         CURS.TARGETCURS,    0,              0,      0,      0,  1,         0,   0,		/* queen spit */			0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)49, new(IC.PUNCH,                  49,         CURS.PUNCHCURS, 0,              1,      102,    1,  4,        20,   2,		/* brass knuckles */	0,      0,          ItemAttributes.IF_STANDARD_BLADE) },
+        { (Items)50, new(IC.LAUNCHER,               50,         CURS.INVALIDCURS,0,             0,      39,     13, 0,       500,   8,		/* underslung g.l.*/	0,      0,          ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)51, new(IC.GUN,                    51,         CURS.TARGETCURS,    0,              0,      38,     21, 0,       500,   9,		/* rocket Launcher*/	0,      -3,         ItemAttributes.IF_TWOHANDED_GUN) },	// now repairable
+        { (Items)52, new(IC.BLADE,                  52,         CURS.KNIFECURS, 0,              0,      41,     13, 0,       200,   3,		/* machete */					0,      +3,         ItemAttributes.IF_STANDARD_BLADE) },
+        { (Items)53, new(IC.BLADE,                  53,         CURS.KNIFECURS, 0,              0,      0,      0,  1,         0,   0,		/* bloodcat claws*/		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)54, new(IC.BLADE,                  54,         CURS.KNIFECURS, 0,              0,      0,      0,  1,         0,   0,		/* bloodcat bite */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)55, new(IC.GUN,                    55,         CURS.TARGETCURS,    0,              0,      45,     40, 0,      5000,   0,		/* rocket rifle */		0,      -5,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)56, new(IC.GUN,                    56,         CURS.TARGETCURS,    0,              0,      40,     12, 0,      1000,   0,		/* Automag III */			0,      -2,         ItemAttributes.IF_STANDARD_GUN | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)57, new(IC.GUN,                    57,         CURS.TARGETCURS,    0,              0,      0,      0,  0,         0,   0,		/* infant spit */			0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)58, new(IC.GUN,                    58,         CURS.TARGETCURS,    0,              0,      0,      0,  0,         0,   0,		/* yng male spit */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)59, new(IC.GUN,                    59,         CURS.TARGETCURS,    0,              0,      0,      0,  0,         0,   0,		/* old male spit */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)60, new(IC.GUN,                    60,         CURS.TARGETCURS,    0,              0,      37,     26, 0,         0,   0,		/* tank cannon  */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)61, new(IC.GUN,                    61,         CURS.TARGETCURS,        0,              0,      46,  12,    1,       500,   5,		/* dart gun */				0,      +3,         ItemAttributes.IF_STANDARD_GUN) },
+        { (Items)62, new(IC.THROWING_KNIFE,        62,          CURS.TARGETCURS,        0,              1,      95,     1,  4,        50,   0,		/*bloody throw.knife*/0,        +4,         ItemAttributes.IF_STANDARD_BLADE | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)63, new(IC.GUN,                    63,         CURS.TARGETCURS,        0,              0,      48,  18,    0,         0,   0,		/* flamethrower */		0,      0,          ItemAttributes.IF_STANDARD_GUN | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)64, new(IC.PUNCH,                  64,         CURS.PUNCHCURS,     0,              1,      85,  30,    0,        40,   1,		/* Crowbar       */		0,      -4,         ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)65, new(IC.GUN,                    65,         CURS.TARGETCURS,        0,              0,      45,     40, 0,   10000, 0,		/* rocket rifle */		0,      -5,         ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)66, new(IC.NONE,                   0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)67, new(IC.NONE,                   0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)68, new(IC.NONE,                   0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)69, new(IC.NONE,                   0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)70, new(IC.NONE,                   0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        //---AMMO---
+        { (Items)71, new(IC.AMMO,                   0,          CURS.INVALIDCURS,   0,              1,      32,     2,  8,        15,   2,		/* CLIP9_15 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)72, new(IC.AMMO,                   1,          CURS.INVALIDCURS,   0,              1,      35,     3,  4,        30,   4,		/* CLIP9_30 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)73, new(IC.AMMO,                   2,          CURS.INVALIDCURS,   0,              1,      33,     2,  8,        45,   4,		/* CLIP9_15_AP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)74, new(IC.AMMO,                   3,          CURS.INVALIDCURS,   0,              1,      36,     3,  4,        90,   6,		/* CLIP9_30_AP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)75, new(IC.AMMO,                   4,          CURS.INVALIDCURS,   0,              1,      34,     2,  8,        30,   3,		/* CLIP9_15_HP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)76, new(IC.AMMO,                   5,          CURS.INVALIDCURS,   0,              1,      37,     3,  4,        60,   5,		/* CLIP9_30_HP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)77, new(IC.AMMO,                   6,          CURS.INVALIDCURS,   0,              1,      24,     1,  8,         5,   1,		/* CLIP38_6 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)78, new(IC.AMMO,                   7,          CURS.INVALIDCURS,   0,              1,      25,     1,  8,        15,   3,		/* CLIP38_6_AP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)79, new(IC.AMMO,                   8,          CURS.INVALIDCURS,   0,              1,      26,     1,  8,        10,   2,		/* CLIP38_6_HP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)80, new(IC.AMMO,                   9,          CURS.INVALIDCURS,   0,              1,      14,     2,  8,        10,   2,		/* CLIP45_7 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+
+        { (Items)81, new(IC.AMMO,                   10,         CURS.INVALIDCURS,   0,              1,       4,  10,    4,        45,   3,		/* CLIP45_30 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)82, new(IC.AMMO,                   11,         CURS.INVALIDCURS,   0,              1,      15,     2,  8,        45,   4,		/* CLIP45_7_AP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)83, new(IC.AMMO,                   12,         CURS.INVALIDCURS,   0,              1,       5,  10,    4,       135,   5,		/* CLIP45_30_AP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)84, new(IC.AMMO,                   13,         CURS.INVALIDCURS,   0,              1,      16,     2,  8,        30,   3,		/* CLIP45_7_HP */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)85, new(IC.AMMO,                   14,         CURS.INVALIDCURS,   0,              1,       6,  10,    4,        90,   4,		/* CLIP45_30_HP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)86, new(IC.AMMO,                   15,         CURS.INVALIDCURS,   0,              1,      11,     1,  8,        10,   1,		/* CLIP357_6 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)87, new(IC.AMMO,                   16,         CURS.INVALIDCURS,   0,              1,      17,     3,  8,          15, 1,		/* CLIP357_9 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)88, new(IC.AMMO,                   17,         CURS.INVALIDCURS,   0,              1,      12,     1,  8,        30,   3,		/* CLIP357_6_AP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)89, new(IC.AMMO,                   18,         CURS.INVALIDCURS,   0,              1,      18,     3,  8,        45,   3,		/* CLIP357_9_AP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)90, new(IC.AMMO,                   19,         CURS.INVALIDCURS,   0,              1,      13,     1,  8,        20,   2,		/* CLIP357_6_HP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+
+        { (Items)91, new(IC.AMMO,                   20,         CURS.INVALIDCURS,   0,              1,      19,     3,  8,        30,   2,		/* CLIP357_9_HP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)92, new(IC.AMMO,                   21,         CURS.INVALIDCURS,   0,              1,       9,     6,  4,       150,   5,		/* CLIP545_30_AP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)93, new(IC.AMMO,                   22,         CURS.INVALIDCURS,   0,              1,      10,     6,  4,       100,   4,		/* CLIP545_30_HP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)94, new(IC.AMMO,                   23,         CURS.INVALIDCURS,   0,              1,       7,     5,  4,       150,   4,		/* CLIP556_30_AP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)95, new(IC.AMMO,                   24,         CURS.INVALIDCURS,   0,              1,       8,     5,  4,       100,   3,		/* CLIP556_30_HP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)96, new(IC.AMMO,                   25,         CURS.INVALIDCURS,   0,              1,      22,     3,  6,        60,   6,		/* CLIP762W_10_AP */	0,      0,          ItemAttributes.IF_STANDARD_CLIP | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)97, new(IC.AMMO,                   26,         CURS.INVALIDCURS,   0,              1,      29,     8,  4,       180,   4,		/* CLIP762W_30_AP */	0,      0,          ItemAttributes.IF_STANDARD_CLIP | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)98, new(IC.AMMO,                   27,         CURS.INVALIDCURS,   0,              1,      23,     3,  6,        40,   5,		/* CLIP762W_10_HP */	0,      0,          ItemAttributes.IF_STANDARD_CLIP | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)99, new(IC.AMMO,                   28,         CURS.INVALIDCURS,   0,              1,      30,     8,  4,       120,   3,		/* CLIP762W_30_HP */	0,      0,          ItemAttributes.IF_STANDARD_CLIP | ItemAttributes.ITEM_BIGGUNLIST) },
+        { (Items)100, new(IC.AMMO,                  29,         CURS.INVALIDCURS,   0,              1,       3,     1,  6,        30,   7,		/* CLIP762N_5_AP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+
+        { (Items)101, new(IC.AMMO,                  30,         CURS.INVALIDCURS,   0,              1,      27,     8,  4,       120,   6,		/* CLIP762N_20_AP */	0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)102, new(IC.AMMO,                  31,         CURS.INVALIDCURS,   0,              1,       2,     1,  6,        20,   6,		/* CLIP762N_5_HP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)103, new(IC.AMMO,                  32,         CURS.INVALIDCURS,   0,              1,      28,     8,  4,        80,   5,		/* CLIP762N_20_HP */	0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)104, new(IC.AMMO,                  33,         CURS.INVALIDCURS,   0,              1,      31,     5,  4,       700,   8,		/* CLIP47_50_SAP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)105, new(IC.AMMO,                  34,         CURS.INVALIDCURS,   0,              1,      20,     9 , 4,       750,   9,		/* CLIP57_50_SAP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)106, new(IC.AMMO,                  35,         CURS.INVALIDCURS,   0,              1,      21,     9,  4,       500,   9,		/* CLIP57_50_HP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)107, new(IC.AMMO,                  37,         CURS.INVALIDCURS,   0,              2,      22,     5,  6,        20,   3,		/* CLIP12G_7 */				0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)108, new(IC.AMMO,                  36,         CURS.INVALIDCURS,   0,              2,       4,     5,  6,        20,   3,		/* CLIP12G_7_BUCKSHOT */	0,      0,  ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)109, new(IC.AMMO,                  39,         CURS.INVALIDCURS,   0,              1,       0,  10,    6,       300,   9,		/* CLIPCAWS_10_SAP */	0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)110, new(IC.AMMO,                  38,         CURS.INVALIDCURS,   0,              1,       1,  10,    6,       300,   9,		/* CLIPCAWS_10_FLECH */		0,      0,  ItemAttributes.IF_STANDARD_CLIP) },
+
+        { (Items)111, new(IC.AMMO,                  40,         CURS.INVALIDCURS,   0,              1,      110, 10,    4,       500,   9,		/* CLIPROCKET_AP */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)112, new(IC.AMMO,                  41,         CURS.INVALIDCURS,   0,              1,      115, 10,    4,       500,   9,		/* CLIPROCKET_HE */		0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)113, new(IC.AMMO,                  42,         CURS.INVALIDCURS,   0,              1,      114, 10,    4,       500,   9,		/* CLIPROCKET_HEAT */	0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)114, new(IC.AMMO,                  43,         CURS.INVALIDCURS,   0,              1,      119,    1,  8,        10,   4,		/* sleep dart */			0,      0,          ItemAttributes.IF_STANDARD_CLIP) },
+        { (Items)115, new(IC.AMMO,                  44,         CURS.INVALIDCURS,   0,              0,      49,     8,  4,         0,   0,		/* flameThrwr clip */	0,      0,          ItemAttributes.IF_STANDARD_CLIP | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)116, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)117, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)118, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)119, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)120, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+
+        { (Items)121, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)122, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)123, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)124, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)125, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)126, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)127, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)128, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)129, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)130, new(IC.NONE,                  0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+
+        //---EXPLOSIVES---
+
+        { (Items)131, new(IC.GRENADE,               0,          CURS.TOSSCURS,          0,              1,      38,     6,  4,       100,   6,		/* stun grenade				*/	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)132, new(IC.GRENADE,               1,          CURS.TOSSCURS,          0,              1,      48,     6,  4,       120,   5,		/* tear gas grenade   */	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)133, new(IC.GRENADE,               2,          CURS.TOSSCURS,          0,              1,      41,     6,  4,       500,   8, 		/* mustard gas grenade*/	0,      -3,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)134, new(IC.GRENADE,               3,          CURS.TOSSCURS,          0,              1,      50,     3,  6,       150,   6,		/* mini hand grenade  */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)135, new(IC.GRENADE,               4,          CURS.TOSSCURS,          0,              1,      49,     6,  4,       200,   7,		/* reg hand grenade   */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)136, new(IC.BOMB,                  5,          CURS.INVALIDCURS,   0,              2,       3,  11,    2,       400,   7,		/* RDX                */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)137, new(IC.BOMB,                  6,          CURS.INVALIDCURS,   0,              2,       0,  11,    1,       500,   6,		/* TNT (="explosives")*/	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)138, new(IC.BOMB,                  7,          CURS.INVALIDCURS,   0,              2,      23,  11,    1,      1000,   8,		/* HMX (=RDX+TNT)     */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)139, new(IC.BOMB,                  8,          CURS.INVALIDCURS,   0,              1,      45,  11,    1,       750,   7,		/* C1  (=RDX+min oil) */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)140, new(IC.BOMB,                  9,          CURS.INVALIDCURS,   0,              1,      40,  41,    2,       400,   9,		/* mortar shell       */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+
+        { (Items)141, new(IC.BOMB,                  10,         CURS.BOMBCURS        ,  0,              1,      46,     8,  1,       300,   5,		/* mine               */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)142, new(IC.BOMB,                  11,         CURS.INVALIDCURS,   0,              1,      44,  11,    1,      1500,   9,		/* C4  ("plastique")  */	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)143, new(IC.BOMB,                  12,         CURS.BOMBCURS,          0,              1,      42,     4,  2,         0,   0,		/* trip flare				  */	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)144, new(IC.BOMB,                  13,         CURS.BOMBCURS,          0,              1,      43,     4,  2,         0,   0,		/* trip klaxon        */	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)145, new(IC.BOMB,                  14,         CURS.INVALIDCURS,   0,              1,      107,    2,  4,       250,   6,		/* shaped charge			*/	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)146, new(IC.GRENADE,               15,         CURS.TOSSCURS,          0,              2,      24,     1,  6,        50,   3,		/* break light (flare)*/	0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)147, new(IC.GRENADE,               16,         CURS.INVALIDCURS,   0,              1,      97,  10,    4,       400,   8,		/* 40mm HE grenade		*/	0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)148, new(IC.GRENADE,               17,         CURS.INVALIDCURS,   0,              1,      111, 10,    4,       250,   6,		/* 40mm tear gas grnd */	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)149, new(IC.GRENADE,               18,         CURS.INVALIDCURS,   0,              1,      113, 10,    4,       200,   5,		/* 40mm stun grenade  */	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)150, new(IC.GRENADE,               19,         CURS.INVALIDCURS,   0,              1,      112, 10,    4,       100,   7,		/* 40mm smoke grenade */	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+
+        { (Items)151, new(IC.GRENADE,               20,         CURS.TOSSCURS,          0,              1,      98,     6,  4,        50,   4,		/* smoke hand grenade */	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)152, new(IC.BOMB,                  21,         CURS.INVALIDCURS,   0,              1,      40,  41,    8,       450,   0,		/* tank shell       */		0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR) },
+        { (Items)153, new(IC.BOMB,                  22,         CURS.INVALIDCURS,   0,              1,      40,  41,    2,       450,   0,		/* fake struct ignite*/		0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)154, new(IC.GRENADE,               23,         CURS.TOSSCURS,          0,              2,      37,     6,  4,        50,   0,		/* creature cocktail*/		0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)155, new(IC.BOMB,                  24,         CURS.INVALIDCURS,   0,              1,      40,  41,    2,       450,   0,		/* fake struct xplod*/		0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)156, new(IC.BOMB,                  25,         CURS.INVALIDCURS,   0,              1,      40,  41,    2,       450,   0,		/* fake vehicle xplod*/		0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)157, new(IC.GRENADE,               26,         CURS.TOSSCURS,          0,              1,      48,     6,  4,         0,   0,		/* BIG tear gas grenade*/	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)158, new(IC.GRENADE,               27,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* small creature gas */	0,      0,          0) },
+        { (Items)159, new(IC.GRENADE,               28,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* big creature gas */		0,      0,          0) },
+        { (Items)160, new(IC.GRENADE,               29,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* very sm creat gas */	  0,        0,          0) },
+
+        //---ARMOUR---
+
+        { (Items)161, new(IC.ARMOUR,             0,         CURS.INVALIDCURS,   COND,           1,      66,     20, 0,       300, 2,		/* Flak jacket     */ 0,        +2,         ItemAttributes.IF_STANDARD_ARMOUR) },
+        { (Items)162, new(IC.ARMOUR,             1,         CURS.INVALIDCURS,   COND,           2,      18,     22, 0,       350, 0,		/* Flak jacket w X */ 0,        +1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)163, new(IC.ARMOUR,             2,         CURS.INVALIDCURS,   COND,           2,      11,     18, 0,       400, 0,		/* Flak jacket w Y */ 0,        +3,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)164, new(IC.ARMOUR,             3,         CURS.INVALIDCURS,   COND,           1,      64,     32, 0,       500, 4,		/* Kevlar jacket   */ 0,        0,          ItemAttributes.IF_STANDARD_ARMOUR) },
+        { (Items)165, new(IC.ARMOUR,             4,         CURS.INVALIDCURS,   COND,           2,      16,     35, 0,       600, 0,		/* Kevlar jack w X */ 0,        -1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)166, new(IC.ARMOUR,             5,         CURS.INVALIDCURS,   COND,           2,       9,     29, 0,       700, 0,		/* Kevlar jack w Y */ 0,        +1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)167, new(IC.ARMOUR,             6,         CURS.INVALIDCURS,   COND,           1,      65,     32, 0,      1000, 8,		/* Spectra jacket  */ 0,        -2,         ItemAttributes.IF_STANDARD_ARMOUR) },
+        { (Items)168, new(IC.ARMOUR,             7,         CURS.INVALIDCURS,   COND,           2,      17,     35, 0,      1100, 0,		/* Spectra jack w X*/ 0,        -3,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)169, new(IC.ARMOUR,             8,         CURS.INVALIDCURS,   COND,           2,      10,     29, 0,      1200, 0,		/* Spectra jack w Y*/ 0,        -1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)170, new(IC.ARMOUR,             9,         CURS.INVALIDCURS,   COND,           1,      67,     39, 0,       650,   5,		/* Kevlar leggings */	0,      0,          ItemAttributes.IF_STANDARD_ARMOUR) },
+
+        { (Items)171, new(IC.ARMOUR,            10,         CURS.INVALIDCURS,   COND,           2,      19,     43, 0,       800,   0,		/* Kevlar legs w X */	0,      -1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)172, new(IC.ARMOUR,            11,         CURS.INVALIDCURS,   COND,           2,      12,     35, 0,       950,   0,		/* Kevlar legs w Y */	0,      +1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)173, new(IC.ARMOUR,            12,         CURS.INVALIDCURS,   COND,           1,      68,     39, 0,       900,   8,		/* Spectra leggings*/	0,      -2,         ItemAttributes.IF_STANDARD_ARMOUR) },
+        { (Items)174, new(IC.ARMOUR,            13,         CURS.INVALIDCURS,   COND,           2,      20,     43, 0,      1100,   0,		/* Spectra legs w X*/	0,      -3,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)175, new(IC.ARMOUR,            14,         CURS.INVALIDCURS,   COND,           2,      13,     35, 0,      1300,   0,		/* Spectra legs w Y*/	0,      -1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)176, new(IC.ARMOUR,            15,         CURS.INVALIDCURS,   COND,           1,      61,     14, 0,        50,   2,		/* Steel helmet    */	0,      +2,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_METAL) },
+        { (Items)177, new(IC.ARMOUR,            16,         CURS.INVALIDCURS,   COND,           1,      63,     14, 0,       200,   4,		/* Kevlar helmet   */	0,      0,          ItemAttributes.IF_STANDARD_ARMOUR) },
+        { (Items)178, new(IC.ARMOUR,            17,         CURS.INVALIDCURS,   COND,           2,      15,     15, 0,       250,   0,		/* Kevlar helm w X */	0,      -1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)179, new(IC.ARMOUR,            18,         CURS.INVALIDCURS,   COND,           2,       8,     13, 0,       300,   0,		/* Kevlar helm w Y */	0,      +1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)180, new(IC.ARMOUR,            19,         CURS.INVALIDCURS,   COND,           1,      62,     14, 0,       450,   7,		/* Spectra helmet  */	0,      -2,         ItemAttributes.IF_STANDARD_ARMOUR) },
+
+        { (Items)181, new(IC.ARMOUR,            20,         CURS.INVALIDCURS,   COND,           2,      14,     15, 0,       550,   0,		/* Spectra helm w X*/	0,      -3,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)182, new(IC.ARMOUR,            21,         CURS.INVALIDCURS,   COND,           2,       7,     13, 0,       650,   0,		/* Spectra helm w Y*/	0,      -1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)183, new(IC.ARMOUR,            22,         CURS.INVALIDCURS,   COND,           1,      81,     12, 2,       250,   5,		/* Ceramic plates  */ 0,        -4,         (ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_ATTACHMENT) & (~ItemAttributes.ITEM_REPAIRABLE)) },
+        { (Items)184, new(IC.ARMOUR,            23,         CURS.INVALIDCURS,   COND,           1,      0,      0,  0,           0, 0,		/* Infant crt hide */ 0,        0,          ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)185, new(IC.ARMOUR,            24,         CURS.INVALIDCURS,   COND,           1,      0,      0,  0,           0, 0,		/* Yng male hide */		0,      0,          ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)186, new(IC.ARMOUR,            25,         CURS.INVALIDCURS,   COND,           1,      0,      0,  0,           0, 0,		/* Old male hide */		0,      0,          ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)187, new(IC.ARMOUR,            26,         CURS.INVALIDCURS,   COND,           1,      0,      0,  0,           0, 0,		/* Queen cret hide */ 0,        0,          ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)188, new(IC.ARMOUR,            27,         CURS.INVALIDCURS,   COND,           1,      96,     20, 0,       200,   2,		/* Leather jacket  */ 0,        +4,         ItemAttributes.IF_STANDARD_ARMOUR) },
+        //NOTE: THE FOLLOWING ITEM'S PRICE VALUE IS IN DIALOGUE AND SHOULD NOT BE CHANG) ED
+        { (Items)189, new(IC.ARMOUR,            28,         CURS.INVALIDCURS,   COND,           1,      116,    20, 0,       950,   0,		/* L jacket w kev  */ 0,        +2,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)190, new(IC.ARMOUR,            29,         CURS.INVALIDCURS,   COND,           1,      117,    20, 0,      1200,   0,		/* L jacket w kev 18*/0,        +1,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+
+        { (Items)191, new(IC.ARMOUR,            30,         CURS.INVALIDCURS,   COND,           1,      118,    20, 0,      1500,   0,		/* L jacket w kev c*/ 0,        +3,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)192, new(IC.ARMOUR,            31,         CURS.INVALIDCURS,   COND,           1,      0,      0,  0,         0,   0,		/* yng fem hide */		0,      0,          ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)193, new(IC.ARMOUR,            32,         CURS.INVALIDCURS,   COND,           1,      0,      0,  0,         0,   0,		/* old fem hide */		0,      0,          ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_DEFAULT_UNDROPPABLE) },
+        { (Items)194, new(IC.ARMOUR,            33,         CURS.INVALIDCURS,   COND,           2,      25,     3,  1,        10,   1,		/* t-shirt */					0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_SHOW_STATUS | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)195, new(IC.ARMOUR,            33,         CURS.INVALIDCURS,   COND,           2,      34,     3,  1,        10,   1,		/* t-shirt D. rules*/	0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_SHOW_STATUS | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)196, new(IC.ARMOUR,            34,         CURS.INVALIDCURS,   COND,           1,      137,        32, 0,       700, 6,		/* Kevlar2 jacket  */ 0,        -1,         ItemAttributes.IF_STANDARD_ARMOUR) },
+        { (Items)197, new(IC.ARMOUR,            35,         CURS.INVALIDCURS,   COND,           2,      40,     35, 0,       800, 0,		/* Kevlar2 jack w X*/ 0,        -2,         ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)198, new(IC.ARMOUR,            36,         CURS.INVALIDCURS,   COND,           2,      41,     29, 0,       900, 0,		/* Kevlar2 jack w Y*/ 0,        0,          ItemAttributes.IF_STANDARD_ARMOUR | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)199, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)200, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+
+        //---MISC---
+        { (Items)201, new(IC.MEDKIT,                0,          CURS.AIDCURS,           USAGE,    1,        73,     5,  4,       100,   1,		/* First aid kit */		0,      0,          ItemAttributes.IF_STANDARD_KIT) },
+        { (Items)202, new(IC.MEDKIT,                0,          CURS.AIDCURS,           USAGE,    1,        86,     18, 0,       300,   1,		/* Medical Kit   */		0,      0,          ItemAttributes.IF_STANDARD_KIT | ItemAttributes.ITEM_METAL) },
+        { (Items)203, new(IC.KIT,                   0,          CURS.REPAIRCURS,        COND,           2,      21,     50, 0,       250,   1,		/* Tool Kit	     */		0,      0,          ItemAttributes.IF_STANDARD_KIT | ItemAttributes.ITEM_METAL) },
+        { (Items)204, new(IC.KIT,                   0,          CURS.INVALIDCURS,   COND,           1,      78,     3,  1,       250,   3,	  /* Locksmith kit */		0,      -2,         ItemAttributes.IF_STANDARD_KIT | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)205, new(IC.KIT,                   0,          CURS.INVALIDCURS,   COND,           1,      58,     1,  4,       250,   5,	  /* Camouflage kit*/		0,      0,          ItemAttributes.IF_STANDARD_KIT) },
+        { (Items)206, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)207, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      52,     5,  4,       300,   5,		/* Silencer      */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ATTACHMENT) },
+        { (Items)208, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      76,     9,  4,       500,   6,		/* Sniper scope  */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ATTACHMENT) },
+        { (Items)209, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      69,     5,  2,        50,   4,		/* Bipod         */		0,      +5,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ATTACHMENT) },
+        { (Items)210, new(IC.FACE,              0,          CURS.INVALIDCURS,   0,              1,      77,     9,  1,       400,   7,		/* Extended ear	 */		0,      -3,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+
+        { (Items)211, new(IC.FACE,              0,          CURS.INVALIDCURS,   0,              1,      74,     9,  1,       800,   7,		/* Night goggles */		0,      -1,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)212, new(IC.FACE,              0,          CURS.INVALIDCURS,   0,              1,      55,     2,  4,       150,   3,		/* Sun goggles	 */		0,      +3,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)213, new(IC.FACE,              0,          CURS.INVALIDCURS,   0,              1,    75,       9,  1,       100,   4,		/* Gas mask   	 */		0,      +1,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE) },
+        { (Items)214, new(IC.KIT,                   0,          CURS.INVALIDCURS,   0,              2,       5,  10,    4,        10,   1,		/* Canteen       */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)215, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      80,  10,    1,       200,   4,		/* Metal detector*/		0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)216, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,       6,     1,  4,       900,   7,		/* Compound 18	 */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)217, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      42,     1,  4,      2500,   0,		/* Jar/QueenBlood*/		0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)218, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,       2,     1,  4,       500,   1,		/* Jar/Elixir    */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)219, new(IC.MONEY,             0,          CURS.INVALIDCURS,   0,              2,       1,     1,  1,         0,   0,		/* Money         */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)220, new(IC.MISC,              0,          CURS.JARCURS,           COND,           1,      71,     1,  2,          10, 1,		/* Glass jar		 */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+
+        { (Items)221, new(IC.MISC,              0,          CURS.INVALIDCURS,   COND,           1,      72,     5,  2,          50, 1,		/* Jar/CreatureBlood*/0,        0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)222, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      70,     1,  8,       150,   4,		/* Adren Booster */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)223, new(IC.MISC,              0,          CURS.INVALIDCURS,   COND,           1,      47,     1,  4,       100, 3,		/* Detonator     */		0,      +1,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_ATTACHMENT | ItemAttributes.ITEM_METAL) },
+        { (Items)224, new(IC.MISC,              0,          CURS.INVALIDCURS,   COND,           1,      47,     1,  4,       200, 6,		/* Rem Detonator */		0,      -1,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_ATTACHMENT | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)225, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      93,     1,  8,         0,   0,		/* Videotape     */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)226, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      94,     1,  8,         0,   0,		/* Deed          */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)227, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      56,     1,  1,         0,   0,		/* Letter				 */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)228, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      59,     1,  1,         0,   0,		/* Diskette	  	 */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)229, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  124,        0,  1,      3000,   0,		/* Chalice	     */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)230, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  120,        1,  4,        50,   0,		/* Bloodcat claws*/		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+
+        { (Items)231, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  121,        1,  4,       100,   0,		/* Bloodcat teeth*/		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)232, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      9,   60,    0,       400, 0,		/* Bloodcat pelt */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)233, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      54,     0,  99,        0,   0,		/* Switch        */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)234, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      47,     0,  99,        0,   0,		/* Action item   */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)235, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      70,     1,  6,       300,   6,		/* Regen Booster */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)236, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      70,     0,  99,        0,   0,		/* syringe 3     */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)237, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      70,     0,  99,        0,   0,		/* syringe 4     */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)238, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      70,     0,  99,        0,   0,		/* syringe 5     */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)239, new(IC.MISC,              0,          CURS.INVALIDCURS,   COND,           1,      72,     5,  2,          10, 1,		/* Jar/Human Blood*/	0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)240, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      0,      0,  0,         0,   0,		/* ownership     */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE) },
+
+        { (Items)241, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      51,     4,  4,       750,   8,		/* Laser scope   */		0,      -1,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ATTACHMENT | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)242, new(IC.MISC,              0,          CURS.REMOTECURS,        0,              1,      54,     9,  4,       400,   6,		/* Remote bomb trig*/	0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)243, new(IC.MISC,              0,          CURS.WIRECUTCURS,   0,              1,      88,     4,  2,        20,   2,		/* Wirecutters   */		0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)244, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      90,     9,  4,        30,   2,		/* Duckbill      */		0,      +5,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ATTACHMENT) },
+        { (Items)245, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      106,    20, 1,        30,   1,		/* Alcohol  */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)246, new(IC.FACE,              0,          CURS.INVALIDCURS,   0,              1,      74,     11, 1,      1500,   10,		/* UV goggles */			0,      -1,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)247, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              0,      44,     21, 0,        30,   0,		/* discarded LAW*/		0,      0,          ItemAttributes.IF_TWOHANDED_GUN | ItemAttributes.ITEM_NOT_BUYABLE) },
+        { (Items)248, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      0,      40, 0,         0,   0,		/* head - generic */	0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)249, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      1,      40, 0,         0,   0,		/* head - Imposter*/	0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)250, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      2,      40, 0,         0,   0,		/* head - T-Rex */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+
+        { (Items)251, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      3,      40, 0,         0,   0,		/* head - Slay */			0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)252, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      4,      40, 0,         0,   0,		/* head - Druggist */	0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)253, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      5,      40, 0,         0,   0,		/* head - Matron */		0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)254, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      6,      40, 0,         0,   0,		/* head - Tiffany */	0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)255, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      100,    12, 1,        20,   1,		/* wine     */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)256, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      101,    4,  4,        10,   1,		/* beer		  */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)257, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      99,     0,  2,        20,   3,		/* pornos   */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)258, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              0,      43,     20, 0,       900,   6,		/* video camera */		0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC ) },
+        { (Items)259, new(IC.FACE,              0,          CURS.INVALIDCURS,   0,              0,      42,     5,  1,      2500,   0,		/* robot remote */		0,      -5,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC ) },
+        { (Items)260, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      103, 20,    0,       500,   0,		/* creature claws */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+
+        { (Items)261, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      7,   40,    0,       250,   0,		/* creature flesh */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)262, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      104, 10,    0,      1000,   0,		/* creature organ */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)263, new(IC.MISC,              0,          CURS.REMOTECURS,        0,              1,      54,     9,  4,       400,   6,		/* Remote trigger*/		0,      -2,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)264, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              0,      47,     2,  8,       500,   2,		/* gold watch */			0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)265, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,      136, 100,   0,       200,   2,		/* golf clubs */			0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)266, new(IC.FACE,              0,          CURS.INVALIDCURS,   0,              3,      11,     5,  1,       100,   1,		/* walkman */					0,      -4,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)267, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      8,   50,    0,       300,   2,		/* portable tv */			0,      -3,         ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)268, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)269, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              3,      10,  10,    1,        30,   1,		/* cigars */					0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)270, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+
+        { (Items)271, new(IC.KEY,                   0,          CURS.INVALIDCURS,   0,              1,      82,     1,  8,         0,   0,		/* dull gold key */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)272, new(IC.KEY,                   1,          CURS.INVALIDCURS,   0,              1,      83,     1,  8,         0,   0,		/* silver key */			0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)273, new(IC.KEY,                   2,          CURS.INVALIDCURS,   0,              1,      84,     1,  8,         0,   0,		/* diamond-shpd key */0,        0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)274, new(IC.KEY,                   3,          CURS.INVALIDCURS,   0,              1,      87,     1,  8,         0,   0,		/* bright gold key */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)275, new(IC.KEY,                   4,          CURS.INVALIDCURS,   0,              1,      91,     1,  8,         0,   0,		/* gold key */				0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)276, new(IC.KEY,                   5,          CURS.INVALIDCURS,   0,              1,      92,     1,  8,         0,   0,		/* small gold key */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)277, new(IC.KEY,                   6,          CURS.INVALIDCURS,   0,              1,      108,    1,  8,         0,   0,		/* electronic */			0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)278, new(IC.KEY,                   7,          CURS.INVALIDCURS,   0,              1,      109,    1,  8,         0,   0,		/* passcard       */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)279, new(IC.KEY,                   8,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)280, new(IC.KEY,                   9,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+
+        { (Items)281, new(IC.KEY,                   10,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)282, new(IC.KEY,                   11,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)283, new(IC.KEY,                   12,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)284, new(IC.KEY,                   13,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)285, new(IC.KEY,                   14,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)286, new(IC.KEY,                   15,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)287, new(IC.KEY,                   16,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)288, new(IC.KEY,                   17,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)289, new(IC.KEY,                   18,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)290, new(IC.KEY,                   19,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+
+        { (Items)291, new(IC.KEY,                   20,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)292, new(IC.KEY,                   21,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)293, new(IC.KEY,                   22,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)294, new(IC.KEY,                   23,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)295, new(IC.KEY,                   24,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)296, new(IC.KEY,                   25,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)297, new(IC.KEY,                   26,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)298, new(IC.KEY,                   27,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)299, new(IC.KEY,                   28,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)300, new(IC.KEY,                   29,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+
+        { (Items)301, new(IC.KEY,                   30,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)302, new(IC.KEY,                   31,         CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* key      */				0,      0,          ItemAttributes.ITEM_NOT_EDITOR | ItemAttributes.ITEM_METAL) },
+        { (Items)303, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      31,     4,  0,       150,   2,		/* silver platter */	0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL) },
+        { (Items)304, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      30,     1,  6,         5,   1,		/* duct tape */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)305, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      28,     3,  1,        20,   0,		/* aluminum rod */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)306, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      32,     1,  8,         0,   0,		/* spring */					0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_UNAERODYNAMIC | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)307, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      33,     4,  1,        25,   0,		/* a. rod & spring */	0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_INSEPARABLE) },
+        { (Items)308, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,   133,       4,  1,        20,   0,		/* steel rod */				0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)309, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,   132,       2,  6,         5,   3,		/* quick glue */			0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)310, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,   134,       6,  1,       150,   0,		/* gun barrel xtndr */0,        0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_INSEPARABLE) },
+
+        { (Items)311, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      35,     1,  8,         0,   0,		/* string */					0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)312, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,      27,     1,  1,         0,   0,		/* tin can */					0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)313, new(IC.MISC,              0,          CURS.TINCANCURS,        0,              2,      36,     2,  4,         0,   0,		/* string & tin can */0,        0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)314, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  122,        3,  6,         5,   0,		/* marbles */					0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)315, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  127,        6,  1,       200,   6,		/* lame boy */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_ELECTRONIC | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)316, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  128,        1,  8,         5,   1,		/* copper wire */			0,      0,          ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)317, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  126,        7,  1,        50,   0,		/* display unit */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_ELECTRONIC | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)318, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  130,        1,  1,       100,   5,		/* fumble pak */			0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)319, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  131,        1,  2,        10,   5,		/* xray bulb */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)320, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,   29,        1,  8,         1,   1,		/* chewing gum */			0,      0,          ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_HIDDEN_ADDON) },
+
+        { (Items)321, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  129,        3,  1,       100,   0,		/* flash device */		0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC | ItemAttributes.ITEM_HIDDEN_ADDON) },
+        { (Items)322, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              2,   26,        1,  6,         5,   1,		/* batteries */				0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)323, new(IC.MISC,              0,          CURS.INVALIDCURS,   0,              1,  123,        1,  8,         0,   0,		/* elastic */					0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_UNAERODYNAMIC) },
+        { (Items)324, new(IC.MISC,              0,          CURS.REMOTECURS,        0,              1,  125,     10,    1,      2500,   0,		/* xray device */			0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE | ItemAttributes.ITEM_REPAIRABLE | ItemAttributes.ITEM_METAL | ItemAttributes.ITEM_ELECTRONIC) },
+        { (Items)325, new(IC.MONEY,             0,          CURS.INVALIDCURS,   0,              2,   38,        2,  1,       100,   0,		/* silver   */				0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)326, new(IC.MONEY,             0,          CURS.INVALIDCURS,   0,              1,  135,        2,  1,       300,   0,		/* gold			*/				0,      0,          ItemAttributes.ITEM_NOT_BUYABLE | ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)327, new(IC.KIT,                   0,          CURS.REFUELCURS,      0,                2,   39,     20,    0,       250,   0,		/* gas can */					0,      0,          ItemAttributes.ITEM_DAMAGEABLE) },
+        { (Items)328, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)329, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)330, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+
+        { (Items)331, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)332, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)333, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)334, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)335, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)336, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)337, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)338, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)339, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)340, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+
+        { (Items)341, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)342, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)343, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)344, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)345, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)346, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)347, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)348, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)349, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+        { (Items)350, new(IC.NONE,              0,          CURS.INVALIDCURS,   0,              0,      0,      0,  0,         0,   0,		/* nothing! */				0,      0,          0) },
+    };
 }
 
 public enum Stat

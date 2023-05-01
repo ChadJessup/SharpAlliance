@@ -1,5 +1,5 @@
 ﻿using System;
-
+using SharpAlliance.Core.Screens;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -33,9 +33,8 @@ public class TownReputations
         // initialize the town opinion values in each recruitable merc's profile structure
         for (NPCID uiProfileId = 0; uiProfileId < FIRST_NPC; uiProfileId++)
         {
-            var npcId = (NPCID)uiProfileId;
             // set to 0 by default
-            // this.soldiers.gMercProfiles[npcId].bMercTownReputation; INITIAL_TOWN_REPUTATION;
+            gMercProfiles[uiProfileId].bMercTownReputation = new sbyte[20];
         }
     }
 }

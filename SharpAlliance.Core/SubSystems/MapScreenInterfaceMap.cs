@@ -21,10 +21,10 @@ public class MapScreenInterfaceMap
     private int[] guiLeaveListOwnerProfileId = new int[Globals.NUM_LEAVE_LIST_SLOTS];
 
     // the palettes
-    private ushort pMapLTRedPalette;
-    private ushort pMapDKRedPalette;
-    private ushort pMapLTGreenPalette;
-    private ushort pMapDKGreenPalette;
+    private ushort[] pMapLTRedPalette;
+    private ushort[] pMapDKRedPalette;
+    private ushort[] pMapLTGreenPalette;
+    private ushort[] pMapDKGreenPalette;
 
 
     public MapScreenInterfaceMap(IVideoManager videoManager)
@@ -115,7 +115,7 @@ public class MapScreenInterfaceMap
     {
         // init palettes
         HVSURFACE hSrcVSurface;
-        SGPPaletteEntry[] pPalette = new SGPPaletteEntry[256];
+        List<SGPPaletteEntry> pPalette = new();
         VSURFACE_DESC vs_desc;
         Surfaces uiTempMap;
 
@@ -129,10 +129,10 @@ public class MapScreenInterfaceMap
         video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
 
         // set up various palettes
-        this.pMapLTRedPalette = video.Create16BPPPaletteShaded(pPalette: ref pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapDKRedPalette = video.Create16BPPPaletteShaded(ref pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
-        this.pMapLTGreenPalette = video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
-        this.pMapDKGreenPalette = video.Create16BPPPaletteShaded(ref pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
+        this.pMapLTRedPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapDKRedPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 200, greenScale: 0, blueScale: 0, mono: true);
+        this.pMapLTGreenPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 0, greenScale: 400, blueScale: 0, mono: true);
+        this.pMapDKGreenPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
 
         // delete image
         video.DeleteVideoSurfaceFromIndex(uiTempMap);

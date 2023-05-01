@@ -202,7 +202,7 @@ public class FACETYPE
     public int uiMouthDelay;
     public uint uiLastBlink;
     public uint uiLastExpression;
-    public int uiVideoObject;
+    public string uiVideoObject;
     public int uiUserData1;
     public int uiUserData2;
     public bool fCompatibleItems;

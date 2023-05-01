@@ -17,12 +17,15 @@ public class AnimationData
     private readonly IFileManager files;
     private readonly StructureFile structure;
     private static IVideoManager video;
+    private StructureInternals structureInternals;
 
     public AnimationData(
         IFileManager fileManager,
+        StructureInternals structureInternals,
         IVideoManager videoManager,
         StructureFile structureFile)
     {
+        this.structureInternals = structureInternals;
         video = videoManager;
         this.files = fileManager;
         this.structure = structureFile;
@@ -54,7 +57,7 @@ public class AnimationData
 
                 if (files.FileExists(sFilename))
                 {
-                    pStructureFileRef = StructureInternals.LoadStructureFile(sFilename);
+                    pStructureFileRef = structureInternals.LoadStructureFile(sFilename);
                     if (pStructureFileRef == null)
                     {
                         // SET_ERROR("Animation structure file load failed - %s", sFilename);

@@ -642,7 +642,7 @@ public class HVOBJECT
 
     public int fFlags;                              // Special flags
     public uint uiSizePixData;           // ETRLE data size
-    public SGPPaletteEntry[] pPaletteEntry;             // 8BPP Palette						  
+    public List<SGPPaletteEntry> pPaletteEntry = new();             // 8BPP Palette						  
     public int TransparentColor;          // Defaults to 0,0,0
     //public ushort[] p16BPPPalette;              // A 16BPP palette used for 8.16 blits
     public Rgba32[] Palette;
@@ -650,7 +650,7 @@ public class HVOBJECT
     public byte[] pPixData;                       // ETRLE pixel data
     public ETRLEObject[] pETRLEObject;              // Object offset data etc
     public SixteenBPPObjectInfo? p16BPPObject;
-    public ushort?[] pShades = new ushort?[HVOBJECT_SHADE_TABLES]; // Shading tables
+    public ushort[][] pShades = new ushort[HVOBJECT_SHADE_TABLES][]; // Shading tables
     // public ushort[] pShadeCurrent;
     public Rgba32[] ShadeCurrentPixels;
     public int? pGlow;                              // glow highlight table
@@ -661,7 +661,7 @@ public class HVOBJECT
     public int usNumberOf16BPPObjects;
     public int usNumberOfObjects;   // Total number of objects
     public int ubBitDepth;                       // BPP 
-    internal ushort? p16BPPPalette;
+    internal ushort[] p16BPPPalette;
     internal ushort pShadeCurrent;
 
     public string Name { get; set; } = string.Empty;

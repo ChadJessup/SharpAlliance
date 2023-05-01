@@ -83,10 +83,10 @@ public enum HIMAGECreateFlags
     IMAGE_ALLDATA = 0x001C,
 }
 
-public struct SGPPaletteEntry
+public class SGPPaletteEntry
 {
-    public byte peRed { get; set; }
-    public byte peGreen { get; set; }
-    public byte peBlue { get; set; }
-    public readonly int peFlags { get; init; }
+    public byte peRed;
+    public byte peGreen;
+    public byte peBlue;
+    public int peFlags;
 }

@@ -42,9 +42,9 @@ public class VeldridVideoManager : IVideoManager
 
     private readonly ILogger<VeldridVideoManager> logger;
 
-    private  bool clearScreen;
+    private bool clearScreen;
 
-    private  Dictionary<string, HVOBJECT> loadedTextures = new();
+    private Dictionary<string, HVOBJECT> loadedTextures = new();
 
     // private readonly WindowsSubSystem windows;
     private readonly RenderWorld renderWorld;
@@ -94,12 +94,12 @@ public class VeldridVideoManager : IVideoManager
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int gusRedMask;
-    int gusGreenMask;
-    int gusBlueMask;
-    int gusRedShift;
-    int gusBlueShift;
-    int gusGreenShift;
+    ushort gusRedMask = 63488;
+    ushort gusGreenMask = 2016;
+    ushort gusBlueMask = 31;
+    short gusRedShift = 8;
+    short gusBlueShift = -3;
+    short gusGreenShift = 3;
     //
     // Direct Draw objects for both the Primary and Backbuffer surfaces
     //
@@ -426,13 +426,13 @@ public class VeldridVideoManager : IVideoManager
         return hVObject;
     }
 
-    public bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, SGPPaletteEntry[] pSrcPalette)
+    public bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, List<SGPPaletteEntry> pSrcPalette)
     {
         // Create palette object if not already done so
         hVObject.pPaletteEntry = pSrcPalette;
 
         // Create 16BPP Palette
-        hVObject.Palette = hImage.Create16BPPPalette(ref pSrcPalette);
+        hVObject.Palette = hImage.Create16BPPPalette(pSrcPalette);
         hVObject.ShadeCurrentPixels = hVObject.Palette;
 
         if (hImage.fFlags.HasFlag(HIMAGECreateFlags.IMAGE_PALETTE))
@@ -1665,13 +1665,88 @@ public class VeldridVideoManager : IVideoManager
         uiTempMap = 0;
     }
 
-    public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, SGPPaletteEntry[] pPalette)
+    public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette)
     {
     }
 
-    public ushort Create16BPPPaletteShaded(ref SGPPaletteEntry[] pPalette, int redScale, int greenScale, int blueScale, bool mono)
+    public ushort[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono)
     {
-        return 0;
+        ushort[] p16BPPPalette = new ushort[256];
+        ushort r16, g16, b16, usColor;
+        int cnt;
+        uint lumin;
+        uint rmod, gmod, bmod;
+        byte r, g, b;
+
+        Debug.Assert(pPalette != null);
+
+        for (cnt = 0; cnt < 256; cnt++)
+        {
+            if (mono)
+            {
+                lumin = (uint)(pPalette[cnt].peRed * 299 / 1000) + (uint)(pPalette[cnt].peGreen * 587 / 1000) + (uint)(pPalette[cnt].peBlue * 114 / 1000);
+                rmod = (uint)(redScale * lumin) / 256;
+                gmod = (uint)(greenScale * lumin) / 256;
+                bmod = (uint)(blueScale * lumin) / 256;
+            }
+            else
+            {
+                rmod = (uint)(redScale * pPalette[cnt].peRed / 256);
+                gmod = (uint)(greenScale * pPalette[cnt].peGreen / 256);
+                bmod = (uint)(blueScale * pPalette[cnt].peBlue / 256);
+            }
+
+            r = (byte)Math.Min(rmod, 255);
+            g = (byte)Math.Min(gmod, 255);
+            b = (byte)Math.Min(bmod, 255);
+
+            if (gusRedShift < 0)
+            {
+                r16 = (ushort)(r >> (-gusRedShift));
+            }
+            else
+            {
+                r16 = (ushort)(r << gusRedShift);
+            }
+
+            if (gusGreenShift < 0)
+            {
+                g16 = (ushort)(g >> (-gusGreenShift));
+            }
+            else
+            {
+                g16 = (ushort)(g << gusGreenShift);
+            }
+
+
+            if (gusBlueShift < 0)
+            {
+                b16 = (ushort)(b >> (-gusBlueShift));
+            }
+            else
+            {
+                b16 = (ushort)(b << gusBlueShift);
+            }
+
+            // Prevent creation of pure black color
+            usColor = (ushort)((r16 & gusRedMask) | (g16 & gusGreenMask) | (b16 & gusBlueMask));
+
+            if (usColor == 0)
+            {
+                if ((r + g + b) != 0)
+                {
+                    usColor = (ushort)(HIMAGE.BLACK_SUBSTITUTE | gusAlphaMask);
+                }
+            }
+            else
+            {
+                usColor |= gusAlphaMask;
+            }
+
+            p16BPPPalette[cnt] = usColor;
+        }
+
+        return (p16BPPPalette);
     }
 
     public void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap)
@@ -1814,6 +1889,26 @@ public class VeldridVideoManager : IVideoManager
     public void Blt8BPPDataSubTo16BPPBuffer(int pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, int pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {
         throw new NotImplementedException();
+    }
+
+    public bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject pETRLEObject, int usIndex)
+    {
+
+        var hVObject = GetVideoObject(uiVideoObject);
+
+        GetVideoObjectETRLEProperties(hVObject, out pETRLEObject, usIndex);
+
+        return true;
+    }
+
+    public bool GetVideoObjectETRLEProperties(HVOBJECT hVObject, out ETRLEObject pETRLEObject, int usIndex)
+    {
+        CHECKF(usIndex >= 0);
+        CHECKF(usIndex < hVObject.usNumberOfObjects);
+
+        pETRLEObject = (hVObject.pETRLEObject[usIndex]);
+
+        return true;
     }
 }
 

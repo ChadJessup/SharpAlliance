@@ -302,7 +302,7 @@ public class DialogControl
             }
 
             // If we are character #155, check fact!
-            if ((int)ubCharacterNum == 155 && Globals.gubFact[(FACT)220] == 0)
+            if ((int)ubCharacterNum == 155 && Globals.gubFact[(FACT)220] == false)
             {
                 ubFileNumID = 155;
             }
@@ -315,7 +315,7 @@ public class DialogControl
             else
             {
                 // assume EDT files are in EDT directory on HARD DRIVE
-                // sprintf(zFileName, "NPCDATA\\%03d.EDT", ubFileNumID);
+                zFileName = $"NPCDATA\\{(int)ubFileNumID:D3}.EDT";
             }
         }
         else

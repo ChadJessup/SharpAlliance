@@ -101,12 +101,11 @@ public class Faces
     {
         FACETYPE? pFace = null;
         VOBJECT_DESC VObjectDesc = new();
-        int uiVideoObject = 0;
+        string uiVideoObject = string.Empty;
         int iFaceIndex = 0;
         ETRLEObject ETRLEObject = new();
-        HVOBJECT hVObject;
-        byte uiCount = 0;
-        SGPPaletteEntry[] Pal = new SGPPaletteEntry[256];
+        HVOBJECT? hVObject = null;
+        List<SGPPaletteEntry> Pal = new(256);
 
         if ((iFaceIndex = GetFreeFace()) == (-1))
         {
@@ -129,11 +128,11 @@ public class Faces
             // The filename is the profile ID!
             if (iFaceFileID < 100)
             {
-                sprintf(VObjectDesc.ImageFile, "FACES\\b%02d.sti", iFaceFileID);
+                VObjectDesc.ImageFile = $"FACES\\b{iFaceFileID:D2}.sti";
             }
             else
             {
-                sprintf(VObjectDesc.ImageFile, "FACES\\b%03d.sti", iFaceFileID);
+                VObjectDesc.ImageFile = $"FACES\\b{iFaceFileID:D3}.sti";
             }
 
             // ATE: Check for profile - if elliot , use special face :)
@@ -141,23 +140,23 @@ public class Faces
             {
                 if (gMercProfiles[NPCID.ELLIOT].bNPCData > 3 && gMercProfiles[NPCID.ELLIOT].bNPCData < 7)
                 {
-                    sprintf(VObjectDesc.ImageFile, "FACES\\b%02da.sti", iFaceFileID);
+                    VObjectDesc.ImageFile = $"FACES\\b{iFaceFileID:D2}a.sti";
                 }
                 else if (gMercProfiles[NPCID.ELLIOT].bNPCData > 6 && gMercProfiles[NPCID.ELLIOT].bNPCData < 10)
                 {
-                    sprintf(VObjectDesc.ImageFile, "FACES\\b%02db.sti", iFaceFileID);
+                    VObjectDesc.ImageFile = $"FACES\\b{iFaceFileID:D2}b.sti";
                 }
                 else if (gMercProfiles[NPCID.ELLIOT].bNPCData > 9 && gMercProfiles[NPCID.ELLIOT].bNPCData < 13)
                 {
-                    sprintf(VObjectDesc.ImageFile, "FACES\\b%02dc.sti", iFaceFileID);
+                    VObjectDesc.ImageFile = $"FACES\\b{iFaceFileID:D2}c.sti";
                 }
                 else if (gMercProfiles[NPCID.ELLIOT].bNPCData > 12 && gMercProfiles[NPCID.ELLIOT].bNPCData < 16)
                 {
-                    sprintf(VObjectDesc.ImageFile, "FACES\\b%02dd.sti", iFaceFileID);
+                    VObjectDesc.ImageFile = $"FACES\\b{iFaceFileID:D2}d.sti";
                 }
                 else if (gMercProfiles[NPCID.ELLIOT].bNPCData == 17)
                 {
-                    sprintf(VObjectDesc.ImageFile, "FACES\\b%02de.sti", iFaceFileID);
+                    VObjectDesc.ImageFile = $"FACES\\b{iFaceFileID:D2}e.sti";
                 }
             }
         }
@@ -167,34 +166,34 @@ public class Faces
             if (iFaceFileID < 100)
             {
                 // The filename is the profile ID!
-                sprintf(VObjectDesc.ImageFile, "FACES\\%02d.sti", iFaceFileID);
+                VObjectDesc.ImageFile = $"FACES\\{iFaceFileID:D2}.sti";
             }
             else
             {
-                sprintf(VObjectDesc.ImageFile, "FACES\\%03d.sti", iFaceFileID);
+                VObjectDesc.ImageFile = $"FACES\\{iFaceFileID:D3}.sti";
             }
         }
 
         // Load
-        //        if (this.video.AddVideoObject(VObjectDesc, out uiVideoObject) == false)
-        //        {
-        //            // If we are a big face, use placeholder...
-        //            if (uiInitFlags.HasFlag(FACE.BIGFACE))
-        //            {
-        //                sprintf(VObjectDesc.ImageFile, "FACES\\placeholder.sti");
-        //
-        //                if (this.video.AddVideoObject(VObjectDesc, uiVideoObject) == false)
-        //                {
-        //                    return (-1);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                return (-1);
-        //            }
-        //        }
+        if (video.AddVideoObject(VObjectDesc.ImageFile, out uiVideoObject) is null)
+        {
+            // If we are a big face, use placeholder...
+            if (uiInitFlags.HasFlag(FACE.BIGFACE))
+            {
+                sprintf(VObjectDesc.ImageFile, "FACES\\placeholder.sti");
+        
+                if (video.AddVideoObject(VObjectDesc.ImageFile, out uiVideoObject) is null)
+                {
+                    return (-1);
+                }
+            }
+            else
+            {
+                return (-1);
+            }
+        }
 
-        // memset(gFacesData[iFaceIndex], 0, sizeof(FACETYPE));
+        gFacesData[iFaceIndex] = new();
 
         pFace = gFacesData[iFaceIndex];
 
@@ -223,38 +222,44 @@ public class Faces
 
 
         // Set palette
-        if (video.GetVideoObject(out hVObject, uiVideoObject))
+        hVObject = video.GetVideoObject(uiVideoObject);
+        if (hVObject is not null)
         {
             // Build a grayscale palette! ( for testing different looks )
-            for (uiCount = 0; uiCount < 256; uiCount++)
+            for (int uiCount = 0; uiCount < 256; uiCount++)
             {
-                Pal[uiCount].peRed = 255;
-                Pal[uiCount].peGreen = 255;
-                Pal[uiCount].peBlue = 255;
+                Pal.Add(new()
+                {
+                    peRed = 255,
+                    peGreen = 255,
+                    peBlue = 255,
+                });
             }
 
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = video.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 250, 25, 25, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, true);
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = video.Create16BPPPaletteShaded(ref hVObject.pPaletteEntry, 100, 100, 100, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.NOSHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.STARTSHADE] = video.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.ENDSHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 250, 25, 25, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.DARKSHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, true);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.LITESHADE] = video.Create16BPPPaletteShaded(hVObject.pPaletteEntry, 100, 100, 100, false);
 
-            for (uiCount = 0; uiCount < 256; uiCount++)
+            for (int uiCount = 0; uiCount < 256; uiCount++)
             {
+
                 Pal[uiCount].peRed = (byte)((byte)(uiCount % 128) + 128);
                 Pal[uiCount].peGreen = (byte)((byte)(uiCount % 128) + 128);
                 Pal[uiCount].peBlue = (byte)((byte)(uiCount % 128) + 128);
             }
-            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = video.Create16BPPPaletteShaded(ref Pal, 255, 255, 255, false);
+            hVObject.pShades[(ushort)FLASH_PORTRAIT.GRAYSHADE] = video.Create16BPPPaletteShaded(Pal, 255, 255, 255, false);
 
         }
 
 
         // Get FACE height, width
-        //        if (GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, ETRLEObject, 0) == false)
-        //        {
-        //            return (-1);
-        //        }
+        if (video.GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, out ETRLEObject, 0) == false)
+        {
+            return (-1);
+        }
+
         pFace.usFaceWidth = ETRLEObject.usWidth;
         pFace.usFaceHeight = ETRLEObject.usHeight;
 
@@ -265,19 +270,21 @@ public class Faces
             pFace.fInvalidAnim = false;
 
             // Get EYE height, width
-//            if (GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, ETRLEObject, 1) == false)
-//            {
-//                return (-1);
-//            }
+            if (video.GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, out ETRLEObject, 1) == false)
+            {
+                return (-1);
+            }
+
             pFace.usEyesWidth = ETRLEObject.usWidth;
             pFace.usEyesHeight = ETRLEObject.usHeight;
 
 
             // Get Mouth height, width
-//            if (GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, ETRLEObject, 5) == false)
-//            {
-//                return (-1);
-//            }
+            if (video.GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, out ETRLEObject, 5) == false)
+            {
+                return (-1);
+            }
+
             pFace.usMouthWidth = ETRLEObject.usWidth;
             pFace.usMouthHeight = ETRLEObject.usHeight;
         }
@@ -290,7 +297,6 @@ public class Faces
         pFace.uiVideoObject = uiVideoObject;
 
         return (iFaceIndex);
-
     }
 
 
@@ -306,12 +312,12 @@ public class Faces
         FACETYPE? pFace;
 
         // Check face index
-//        CHECKV(iFaceIndex != -1);
+        //        CHECKV(iFaceIndex != -1);
 
         pFace = gFacesData[iFaceIndex];
 
         // Check for a valid slot!
-//        CHECKV(pFace.fAllocated != false);
+        //        CHECKV(pFace.fAllocated != false);
 
         pFace.fCanHandleInactiveNow = true;
 
@@ -326,11 +332,11 @@ public class Faces
             // Call dialogue handler function
             pFace.fTalking = false;
 
-//            HandleDialogueEnd(pFace);
+            //            HandleDialogueEnd(pFace);
         }
 
         // Delete vo	
-//        DeleteVideoObjectFromIndex(pFace.uiVideoObject);
+        //        DeleteVideoObjectFromIndex(pFace.uiVideoObject);
 
         // Set uncallocated
         pFace.fAllocated = false;
@@ -406,7 +412,7 @@ public class Faces
         FACETYPE? pFace;
 
         // Check face index
-//        CHECKV(iFaceIndex != -1);
+        //        CHECKV(iFaceIndex != -1);
 
         pFace = gFacesData[iFaceIndex];
 
@@ -528,7 +534,7 @@ public class Faces
     public static void SetAutoFaceInActiveFromSoldier(int ubSoldierID)
     {
         // Check for valid soldier
-//        CHECKV(ubSoldierID != NOBODY);
+        //        CHECKV(ubSoldierID != NOBODY);
 
         SetAutoFaceInActive(MercPtrs[ubSoldierID].iFaceIndex);
     }
@@ -540,12 +546,12 @@ public class Faces
         SOLDIERTYPE? pSoldier;
 
         // Check face index
-//        CHECKV(iFaceIndex != -1);
+        //        CHECKV(iFaceIndex != -1);
 
         pFace = gFacesData[iFaceIndex];
 
         // Check for a valid slot!
-//        CHECKV(pFace.fAllocated != false);
+        //        CHECKV(pFace.fAllocated != false);
 
 
         // Turn off some flags
@@ -565,7 +571,7 @@ public class Faces
                 pSoldier = MercPtrs[pFace.ubSoldierID];
 
                 // IF we are in tactical
-//                if (pSoldier.bAssignment == iCurrentTacticalSquad && guiCurrentScreen == ScreenName.GAME_SCREEN)
+                //                if (pSoldier.bAssignment == iCurrentTacticalSquad && guiCurrentScreen == ScreenName.GAME_SCREEN)
                 {
                     // Make the interfac panel dirty..
                     // This will dirty the panel next frame...
@@ -578,17 +584,17 @@ public class Faces
 
         if (pFace.fAutoRestoreBuffer)
         {
-//            DeleteVideoSurfaceFromIndex(pFace.uiAutoRestoreBuffer);
+            //            DeleteVideoSurfaceFromIndex(pFace.uiAutoRestoreBuffer);
         }
 
         if (pFace.fAutoDisplayBuffer)
         {
-//            DeleteVideoSurfaceFromIndex(pFace.uiAutoDisplayBuffer);
+            //            DeleteVideoSurfaceFromIndex(pFace.uiAutoDisplayBuffer);
         }
 
         if (pFace.iVideoOverlay != -1)
         {
-//            RemoveVideoOverlay(pFace.iVideoOverlay);
+            //            RemoveVideoOverlay(pFace.iVideoOverlay);
             pFace.iVideoOverlay = -1;
         }
 
@@ -706,11 +712,11 @@ public class Faces
                     if (sFrame > 0)
                     {
                         // Blit Accordingly!
-//                        BltVideoObjectFromIndex(pFace.uiAutoDisplayBuffer, pFace.uiVideoObject, (int)(sFrame), pFace.usEyesX, pFace.usEyesY, VO_BLT.SRCTRANSPARENCY, null);
+                        //                        BltVideoObjectFromIndex(pFace.uiAutoDisplayBuffer, pFace.uiVideoObject, (int)(sFrame), pFace.usEyesX, pFace.usEyesY, VO_BLT.SRCTRANSPARENCY, null);
 
                         if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
                         {
-//                            InvalidateRegion(pFace.usEyesX, pFace.usEyesY, pFace.usEyesX + pFace.usEyesWidth, pFace.usEyesY + pFace.usEyesHeight);
+                            //                            InvalidateRegion(pFace.usEyesX, pFace.usEyesY, pFace.usEyesX + pFace.usEyesWidth, pFace.usEyesY + pFace.usEyesHeight);
                         }
                     }
                     else
@@ -1134,16 +1140,16 @@ public class Faces
             if ((MercPtrs[pFace.ubSoldierID].bLife < CONSCIOUSNESS || MercPtrs[pFace.ubSoldierID].fDeadPanel))
             {
                 // Blit Closed eyes here!
-//                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
+                //                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
 
                 // Blit hatch!
-//                BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
+                //                BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
             }
 
             if (MercPtrs[pFace.ubSoldierID].fMercAsleep == true)
             {
                 // blit eyes closed
-//                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
+                //                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
             }
 
             if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD)))
@@ -1152,10 +1158,10 @@ public class Faces
                 if (!pSoldier.fClosePanel && !pSoldier.fDeadPanel && !pSoldier.fUIdeadMerc && !pSoldier.fUICloseMerc)
                 {
                     // Put close panel there
-//                    BltVideoObjectFromIndex(uiRenderBuffer, guiDEAD, 5, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
+                    //                    BltVideoObjectFromIndex(uiRenderBuffer, guiDEAD, 5, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
 
                     // Blit hatch!
-//                    BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
+                    //                    BltVideoObjectFromIndex(uiRenderBuffer, guiHATCH, 0, sFaceX, sFaceY, VO_BLT.SRCTRANSPARENCY, null);
                 }
             }
 
@@ -1214,30 +1220,30 @@ public class Faces
                 if (!pFace.fDisabled && !pFace.fInvalidAnim)
                 {
                     // Render text above here if that's what was asked for
-//                    if (pFace.fDisplayTextOver != FACE_NO_TEXT_OVER)
-//                    {
-//                        FontSubSystem.SetFont(FontStyle.TINYFONT1);
-//                        FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
-//                        FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_WHITE);
-//
-//                        FontSubSystem.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
-//
-////                        VarFindFontCenterCoordinates(sFaceX, sFaceY, pFace.usFaceWidth, pFace.usFaceHeight, FontStyle.TINYFONT1, &sFontX, &sFontY, pFace.zDisplayText);
-//
-//                        if (pFace.fDisplayTextOver == FACE_DRAW_TEXT_OVER)
-//                        {
-//                            gprintfinvalidate(sFontX, sFontY, pFace.zDisplayText);
-//                            mprintf(sFontX, sFontY, pFace.zDisplayText);
-//                        }
-//                        else if (pFace.fDisplayTextOver == FACE_ERASE_TEXT_OVER)
-//                        {
-//                            gprintfRestore(sFontX, sFontY, pFace.zDisplayText);
-//                            pFace.fDisplayTextOver = FACE_NO_TEXT_OVER;
-//                        }
-//
-//                        FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
-//
-//                    }
+                    //                    if (pFace.fDisplayTextOver != FACE_NO_TEXT_OVER)
+                    //                    {
+                    //                        FontSubSystem.SetFont(FontStyle.TINYFONT1);
+                    //                        FontSubSystem.SetFontBackground(FontColor.FONT_MCOLOR_BLACK);
+                    //                        FontSubSystem.SetFontForeground(FontColor.FONT_MCOLOR_WHITE);
+                    //
+                    //                        FontSubSystem.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
+                    //
+                    ////                        VarFindFontCenterCoordinates(sFaceX, sFaceY, pFace.usFaceWidth, pFace.usFaceHeight, FontStyle.TINYFONT1, &sFontX, &sFontY, pFace.zDisplayText);
+                    //
+                    //                        if (pFace.fDisplayTextOver == FACE_DRAW_TEXT_OVER)
+                    //                        {
+                    //                            gprintfinvalidate(sFontX, sFontY, pFace.zDisplayText);
+                    //                            mprintf(sFontX, sFontY, pFace.zDisplayText);
+                    //                        }
+                    //                        else if (pFace.fDisplayTextOver == FACE_ERASE_TEXT_OVER)
+                    //                        {
+                    //                            gprintfRestore(sFontX, sFontY, pFace.zDisplayText);
+                    //                            pFace.fDisplayTextOver = FACE_NO_TEXT_OVER;
+                    //                        }
+                    //
+                    //                        FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
+                    //
+                    //                    }
                 }
             }
 
@@ -1285,7 +1291,7 @@ public class Faces
 
                     sIconIndex = 1;
                     fDoIcon = true;
-//                    sPtsAvailable = CalculateHealingPointsForDoctor(MercPtrs[pFace.ubSoldierID], usMaximumPts, false);
+                    //                    sPtsAvailable = CalculateHealingPointsForDoctor(MercPtrs[pFace.ubSoldierID], usMaximumPts, false);
                     fShowNumber = true;
                     fShowMaximum = true;
 
@@ -1322,19 +1328,19 @@ public class Faces
                     switch (MercPtrs[pFace.ubSoldierID].bAssignment)
                     {
                         case (Assignments.TRAIN_SELF):
-//                            sPtsAvailable = GetSoldierTrainingPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
+                            //                            sPtsAvailable = GetSoldierTrainingPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
                             break;
                         case (Assignments.TRAIN_BY_OTHER):
-//                            sPtsAvailable = GetSoldierStudentPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
+                            //                            sPtsAvailable = GetSoldierStudentPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
                             break;
                         case (Assignments.TRAIN_TOWN):
-//                            sPtsAvailable = GetTownTrainPtsForCharacter(MercPtrs[pFace.ubSoldierID], &usMaximumPts);
+                            //                            sPtsAvailable = GetTownTrainPtsForCharacter(MercPtrs[pFace.ubSoldierID], &usMaximumPts);
                             // divide both amounts by 10 to make the displayed numbers a little more user-palatable (smaller)
                             sPtsAvailable = (sPtsAvailable + 5) / 10;
                             usMaximumPts = (usMaximumPts + 5) / 10;
                             break;
                         case (Assignments.TRAIN_TEAMMATE):
-//                            sPtsAvailable = GetBonusTrainingPtsDueToInstructor(MercPtrs[pFace.ubSoldierID], null, MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, &usMaximumPts);
+                            //                            sPtsAvailable = GetBonusTrainingPtsDueToInstructor(MercPtrs[pFace.ubSoldierID], null, MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, &usMaximumPts);
                             break;
                     }
                     break;
@@ -1991,7 +1997,7 @@ public class Faces
 
         if (!Meanwhile.AreInMeanwhile())
         {
-//            TurnOnSectorLocator(pFace.ubCharacterNum);
+            //            TurnOnSectorLocator(pFace.ubCharacterNum);
         }
 
         // Play sample
@@ -2017,7 +2023,7 @@ public class Faces
             // Set delay based on sound...
             pFace.uiTalkingTimer = pFace.uiTalkingFromVeryBeginningTimer = GetJA2Clock();
 
-//            pFace.uiTalkingDuration = FindDelayForString(zTextString);
+            //            pFace.uiTalkingDuration = FindDelayForString(zTextString);
         }
 
         return (true);
@@ -2046,7 +2052,7 @@ public class Faces
         FACETYPE? pFace;
 
         // Check face index
-//        CHECKV(iFaceIndex != -1);
+        //        CHECKV(iFaceIndex != -1);
 
         pFace = gFacesData[iFaceIndex];
 
@@ -2060,11 +2066,11 @@ public class Faces
 
             if (pFace.uiSoundID != SOUND_ERROR)
             {
-//                SoundStop(pFace.uiSoundID);
+                //                SoundStop(pFace.uiSoundID);
             }
 
             // Remove gap info
-//            AudioGapListDone((pFace.GapList));
+            //            AudioGapListDone((pFace.GapList));
 
             // Shutup mouth!
             pFace.sMouthFrame = 0;
@@ -2086,7 +2092,7 @@ public class Faces
             pFace.fTalking = false;
 
             // Call dialogue handler function
-//            HandleDialogueEnd(pFace);
+            //            HandleDialogueEnd(pFace);
 
             pFace.fTalking = false;
             pFace.fAnimatingTalking = false;

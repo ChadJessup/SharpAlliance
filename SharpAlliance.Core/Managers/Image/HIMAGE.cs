@@ -20,7 +20,7 @@ public class HIMAGE : IImageFormat
     public HIMAGECreateFlags fFlags;
     public string ImageFile;
     public IImageFileLoader iFileLoader;
-    public SGPPaletteEntry[] pPalette;
+    public List<SGPPaletteEntry> pPalette = new();
     public uint pui16BPPPalette;
     public byte[]? pAppData;
     public uint uiAppDataSize;
@@ -79,19 +79,19 @@ public class HIMAGE : IImageFormat
         return hImage;
     }
 
-    public Rgba32[] Create16BPPPalette(ref SGPPaletteEntry[] pPalette)
+    public Rgba32[] Create16BPPPalette(List<SGPPaletteEntry> pPalette)
     {
         Rgba32[] palette;
-        uint cnt;
+        int cnt;
         ushort r16, g16, b16, usColor;
         byte r, g, b; // byte
 
-        gusRedShift = -8;
-        gusGreenShift = 8;
-        gusBlueShift = 0;
-        gusRedMask = 0;
-        gusGreenMask = 65280;
-        gusBlueMask = 255;
+        gusRedShift = 8;//-8;
+        gusGreenShift = 3;//8;
+        gusBlueShift = -3;//0;
+        gusRedMask = 63488;//0;
+        gusGreenMask = 2016;//65280;
+        gusBlueMask = 31;//255;
 
         palette = new Rgba32[256];
 
@@ -104,7 +104,6 @@ public class HIMAGE : IImageFormat
             var p = new Bgr24(r, g, b);
             p.ToRgba32(ref palette[cnt]);
 
-            continue;
             if (gusRedShift < 0)
             {
                 r16 = (ushort)(r >> Math.Abs(gusRedShift));

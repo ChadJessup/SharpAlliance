@@ -121,7 +121,7 @@ public class StructureInternals
         return (true);
     }
 
-    private unsafe static bool LoadStructureData(string szFileName, STRUCTURE_FILE_REF pFileRef, out int puiStructureDataSize)
+    private unsafe bool LoadStructureData(string szFileName, STRUCTURE_FILE_REF pFileRef, out int puiStructureDataSize)
     {
         // Loads a structure file's data as a honking chunk o' memory 
         //int **ppubStructureData, int * puiDataSize, STRUCTURE_FILE_HEADER * pHeader )
@@ -140,7 +140,7 @@ public class StructureInternals
             return (false);
         }
 
-        uint STRUCTURE_FILE_HEADER_SIZE = 16;
+        uint STRUCTURE_FILE_HEADER_SIZE = 17;//16;
         fOk = files.FileRead<STRUCTURE_FILE_HEADER>(hInput, ref Header, sizeof(STRUCTURE_FILE_HEADER), out uiBytesRead);
         var szId = new string(Header.szId);
         if (!fOk || uiBytesRead != STRUCTURE_FILE_HEADER_SIZE
@@ -271,7 +271,7 @@ public class StructureInternals
         return (true);
     }
 
-    public static STRUCTURE_FILE_REF? LoadStructureFile(string szFileName)
+    public STRUCTURE_FILE_REF? LoadStructureFile(string szFileName)
     { // NB should be passed in expected number of structures so we can check equality
         int uiDataSize = 0;
         bool fOk;

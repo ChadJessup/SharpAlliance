@@ -11,6 +11,7 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class MERCPROFILESTRUCT
 {
+    public int Index { get; set; }
     public const int Size = 716;
     public string zName;
     public string zNickname;
@@ -218,222 +219,238 @@ public class MERCPROFILESTRUCT
     public int uiTotalCostToDate;           // The total amount of money that has been paid to the merc for their salary
     public byte[] ubBuffer = new byte[4];
 
-    public static MERCPROFILESTRUCT LoadFromBytes(ReadOnlySpan<byte> mercProfileBytes)
+    public static MERCPROFILESTRUCT LoadFromBytes(ReadOnlySpan<byte> mercProfileBytes, NPCID index)
     {
-        var profile = new MERCPROFILESTRUCT();
-        int index = 0;
+        var profile = new MERCPROFILESTRUCT
+        {
+            Index = (int)index,
+            zName = MemoryMarshal.Cast<byte, char>(mercProfileBytes[..60]).ToString().TrimEnd('\0'),
+            zNickname = MemoryMarshal.Cast<byte, char>(mercProfileBytes[60..80]).ToString().TrimEnd('\0'),
 
-        var bytes = mercProfileBytes.ToArray();
+            uiAttnSound = MemoryMarshal.Read<int>(mercProfileBytes[80..]),
+            uiCurseSound = MemoryMarshal.Read<int>(mercProfileBytes[84..]),
+            uiDieSound = MemoryMarshal.Read<int>(mercProfileBytes[88..]),
+            uiGoodSound = MemoryMarshal.Read<int>(mercProfileBytes[92..]),
+            uiGruntSound = MemoryMarshal.Read<int>(mercProfileBytes[96..]),
+            uiGrunt2Sound = MemoryMarshal.Read<int>(mercProfileBytes[100..]),
+            uiOkSound = MemoryMarshal.Read<int>(mercProfileBytes[104..]),
+            ubFaceIndex = MemoryMarshal.Read<byte>(mercProfileBytes[108..]),
 
-        profile.zName = MemoryMarshal.Cast<byte, char>(mercProfileBytes[..60]).ToString().TrimEnd('\0');
-        profile.zNickname = MemoryMarshal.Cast<byte, char>(mercProfileBytes[60..80]).ToString().TrimEnd('\0');
+            PANTS = Encoding.ASCII.GetString(mercProfileBytes[109..139]).TrimEnd('\0'),
+            VEST = Encoding.ASCII.GetString(mercProfileBytes[139..169]).TrimEnd('\0'),
+            SKIN = Encoding.ASCII.GetString(mercProfileBytes[169..199]).TrimEnd('\0'),
+            HAIR = Encoding.ASCII.GetString(mercProfileBytes[199..229]).TrimEnd('\0'),
 
-        profile.uiAttnSound = MemoryMarshal.Read<int>(mercProfileBytes[80..]);
-        profile.uiCurseSound = MemoryMarshal.Read<int>(mercProfileBytes[84..]);
-        profile.uiDieSound = MemoryMarshal.Read<int>(mercProfileBytes[88..]);
-        profile.uiGoodSound = MemoryMarshal.Read<int>(mercProfileBytes[92..]);
-        profile.uiGruntSound = MemoryMarshal.Read<int>(mercProfileBytes[96..]);
-        profile.uiGrunt2Sound = MemoryMarshal.Read<int>(mercProfileBytes[100..]);
-        profile.uiOkSound = MemoryMarshal.Read<int>(mercProfileBytes[104..]);
-        profile.ubFaceIndex = MemoryMarshal.Read<byte>(mercProfileBytes[108..]);
+            bSex = (Sexes)MemoryMarshal.Read<sbyte>(mercProfileBytes[229..]),
+            bArmourAttractiveness = MemoryMarshal.Read<sbyte>(mercProfileBytes[230..]),
+            ubMiscFlags2 = (PROFILE_MISC_FLAG2)MemoryMarshal.Read<byte>(mercProfileBytes[231..]),
+            bEvolution = (CharacterEvolution)MemoryMarshal.Read<sbyte>(mercProfileBytes[232..]),
+            ubMiscFlags = (PROFILE_MISC_FLAG)MemoryMarshal.Read<sbyte>(mercProfileBytes[233..]),
+            bSexist = (SexistLevels)MemoryMarshal.Read<byte>(mercProfileBytes[234..]),
+            bLearnToHate = MemoryMarshal.Read<sbyte>(mercProfileBytes[235..]),
 
-        profile.PANTS = Encoding.ASCII.GetString(mercProfileBytes[109..139]).TrimEnd('\0');
-        profile.VEST = Encoding.ASCII.GetString(mercProfileBytes[139..169]).TrimEnd('\0');
-        profile.SKIN = Encoding.ASCII.GetString(mercProfileBytes[169..199]).TrimEnd('\0');
-        profile.HAIR = Encoding.ASCII.GetString(mercProfileBytes[199..229]).TrimEnd('\0');
+            bStealRate = MemoryMarshal.Read<sbyte>(mercProfileBytes[236..]),
+            bVocalVolume = MemoryMarshal.Read<sbyte>(mercProfileBytes[237..]),
+            ubQuoteRecord = MemoryMarshal.Read<byte>(mercProfileBytes[238..]),
+            bDeathRate = MemoryMarshal.Read<sbyte>(mercProfileBytes[239..]),
+            bScientific = MemoryMarshal.Read<sbyte>(mercProfileBytes[240..]),
 
-        profile.bSex = (Sexes)MemoryMarshal.Read<sbyte>(mercProfileBytes[229..]);
-        profile.bArmourAttractiveness = MemoryMarshal.Read<sbyte>(mercProfileBytes[230..]);
-        profile.ubMiscFlags2 = (PROFILE_MISC_FLAG2)MemoryMarshal.Read<byte>(mercProfileBytes[231..]);
-        profile.bEvolution = (CharacterEvolution)MemoryMarshal.Read<sbyte>(mercProfileBytes[232..]);
-        profile.ubMiscFlags = (PROFILE_MISC_FLAG)MemoryMarshal.Read<sbyte>(mercProfileBytes[233..]);
-        profile.bSexist = (SexistLevels)MemoryMarshal.Read<byte>(mercProfileBytes[234..]);
-        profile.bLearnToHate = MemoryMarshal.Read<sbyte>(mercProfileBytes[235..]);
+            sExpLevelGain = MemoryMarshal.Read<short>(mercProfileBytes[241..]),
+            sLifeGain = MemoryMarshal.Read<short>(mercProfileBytes[243..]),
+            sAgilityGain = MemoryMarshal.Read<short>(mercProfileBytes[245..]),
+            sDexterityGain = MemoryMarshal.Read<short>(mercProfileBytes[247..]),
+            sWisdomGain = MemoryMarshal.Read<short>(mercProfileBytes[249..]),
+            sMarksmanshipGain = MemoryMarshal.Read<short>(mercProfileBytes[251..]),
+            sMedicalGain = MemoryMarshal.Read<short>(mercProfileBytes[253..]),
+            sMechanicGain = MemoryMarshal.Read<short>(mercProfileBytes[255..]),
+            sExplosivesGain = MemoryMarshal.Read<short>(mercProfileBytes[257..]),
 
-        profile.bStealRate = MemoryMarshal.Read<sbyte>(mercProfileBytes[236..]);
-        profile.bVocalVolume = MemoryMarshal.Read<sbyte>(mercProfileBytes[237..]);
-        profile.ubQuoteRecord = MemoryMarshal.Read<byte>(mercProfileBytes[238..]);
-        profile.bDeathRate = MemoryMarshal.Read<sbyte>(mercProfileBytes[239..]);
-        profile.bScientific = MemoryMarshal.Read<sbyte>(mercProfileBytes[240..]);
+            ubBodyType = (SoldierBodyTypes)MemoryMarshal.Read<byte>(mercProfileBytes[259..]),
+            bMedical = MemoryMarshal.Read<sbyte>(mercProfileBytes[261..]),
 
-        profile.sExpLevelGain = MemoryMarshal.Read<short>(mercProfileBytes[241..]);
-        profile.sLifeGain = MemoryMarshal.Read<short>(mercProfileBytes[243..]);
-        profile.sAgilityGain = MemoryMarshal.Read<short>(mercProfileBytes[245..]);
-        profile.sDexterityGain = MemoryMarshal.Read<short>(mercProfileBytes[247..]);
-        profile.sWisdomGain = MemoryMarshal.Read<short>(mercProfileBytes[249..]);
-        profile.sMarksmanshipGain = MemoryMarshal.Read<short>(mercProfileBytes[251..]);
-        profile.sMedicalGain = MemoryMarshal.Read<short>(mercProfileBytes[253..]);
-        profile.sMechanicGain = MemoryMarshal.Read<short>(mercProfileBytes[255..]);
-        profile.sExplosivesGain = MemoryMarshal.Read<short>(mercProfileBytes[257..]);
+            usEyesX = MemoryMarshal.Read<ushort>(mercProfileBytes[262..]),
+            usEyesY = MemoryMarshal.Read<ushort>(mercProfileBytes[264..]),
+            usMouthX = MemoryMarshal.Read<ushort>(mercProfileBytes[266..]),
+            usMouthY = MemoryMarshal.Read<ushort>(mercProfileBytes[268..]),
+            uiEyeDelay = MemoryMarshal.Read<int>(mercProfileBytes[272..]),
+            uiMouthDelay = MemoryMarshal.Read<int>(mercProfileBytes[276..]),
+            uiBlinkFrequency = MemoryMarshal.Read<int>(mercProfileBytes[280..]),
+            uiExpressionFrequency = MemoryMarshal.Read<int>(mercProfileBytes[284..]),
+            sSectorX = MemoryMarshal.Read<ushort>(mercProfileBytes[287..]),
+            sSectorY = (MAP_ROW)MemoryMarshal.Read<ushort>(mercProfileBytes[289..]),
 
-        profile.ubBodyType = (SoldierBodyTypes)MemoryMarshal.Read<byte>(mercProfileBytes[259..]);
-        profile.bMedical = MemoryMarshal.Read<sbyte>(mercProfileBytes[261..]);
+            uiDayBecomesAvailable = MemoryMarshal.Read<int>(mercProfileBytes[291..]),           //day the merc will be available.  used with the bMercStatus
 
-        profile.usEyesX = MemoryMarshal.Read<ushort>(mercProfileBytes[262..]);
-        profile.usEyesY = MemoryMarshal.Read<ushort>(mercProfileBytes[264..]);
-        profile.usMouthX = MemoryMarshal.Read<ushort>(mercProfileBytes[266..]);
-        profile.usMouthY = MemoryMarshal.Read<ushort>(mercProfileBytes[268..]);
-        profile.uiEyeDelay = MemoryMarshal.Read<int>(mercProfileBytes[272..]);
-        profile.uiMouthDelay = MemoryMarshal.Read<int>(mercProfileBytes[276..]);
-        profile.uiBlinkFrequency = MemoryMarshal.Read<int>(mercProfileBytes[280..]);
-        profile.uiExpressionFrequency = MemoryMarshal.Read<int>(mercProfileBytes[284..]);
-        profile.sSectorX = MemoryMarshal.Read<ushort>(mercProfileBytes[287..]);
-        profile.sSectorY = (MAP_ROW)MemoryMarshal.Read<ushort>(mercProfileBytes[289..]);
+            bStrength = MemoryMarshal.Read<sbyte>(mercProfileBytes[296..]),
 
-        profile.uiDayBecomesAvailable = MemoryMarshal.Read<int>(mercProfileBytes[291..]);           //day the merc will be available.  used with the bMercStatus
+            bLifeMax = MemoryMarshal.Read<sbyte>(mercProfileBytes[297..]),
+            bExpLevelDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[298..]),
+            bLifeDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[299..]),
+            bAgilityDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[300..]),
+            bDexterityDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[301..]),
+            bWisdomDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[302..]),
+            bMarksmanshipDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[303..]),
+            bMedicalDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[304..]),
+            bMechanicDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[305..]),
+            bExplosivesDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[306..]),
+            bStrengthDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[307..]),
+            bLeadershipDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[308..]),
+            usKills = MemoryMarshal.Read<ushort>(mercProfileBytes[309..]),
+            usAssists = MemoryMarshal.Read<ushort>(mercProfileBytes[311..]),
+            usShotsFired = MemoryMarshal.Read<ushort>(mercProfileBytes[313..]),
+            usShotsHit = MemoryMarshal.Read<ushort>(mercProfileBytes[315..]),
+            usBattlesFought = MemoryMarshal.Read<ushort>(mercProfileBytes[317..]),
+            usTimesWounded = MemoryMarshal.Read<ushort>(mercProfileBytes[319..]),
+            usTotalDaysServed = MemoryMarshal.Read<ushort>(mercProfileBytes[321..]),
 
-        profile.bStrength = MemoryMarshal.Read<sbyte>(mercProfileBytes[296..]);
-
-        profile.bLifeMax = MemoryMarshal.Read<sbyte>(mercProfileBytes[297..]);
-        profile.bExpLevelDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[298..]);
-        profile.bLifeDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[299..]);
-        profile.bAgilityDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[300..]);
-        profile.bDexterityDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[301..]);
-        profile.bWisdomDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[302..]);
-        profile.bMarksmanshipDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[303..]);
-        profile.bMedicalDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[304..]);
-        profile.bMechanicDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[305..]);
-        profile.bExplosivesDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[306..]);
-        profile.bStrengthDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[307..]);
-        profile.bLeadershipDelta = MemoryMarshal.Read<sbyte>(mercProfileBytes[308..]);
-        profile.usKills = MemoryMarshal.Read<ushort>(mercProfileBytes[309..]);
-        profile.usAssists = MemoryMarshal.Read<ushort>(mercProfileBytes[311..]);
-        profile.usShotsFired = MemoryMarshal.Read<ushort>(mercProfileBytes[313..]);
-        profile.usShotsHit = MemoryMarshal.Read<ushort>(mercProfileBytes[315..]);
-        profile.usBattlesFought = MemoryMarshal.Read<ushort>(mercProfileBytes[317..]);
-        profile.usTimesWounded = MemoryMarshal.Read<ushort>(mercProfileBytes[319..]);
-        profile.usTotalDaysServed = MemoryMarshal.Read<ushort>(mercProfileBytes[321..]);
-
-        profile.sLeadershipGain = MemoryMarshal.Read<short>(mercProfileBytes[323..]);
-        profile.sStrengthGain = MemoryMarshal.Read<short>(mercProfileBytes[325..]);
+            sLeadershipGain = MemoryMarshal.Read<short>(mercProfileBytes[323..]),
+            sStrengthGain = MemoryMarshal.Read<short>(mercProfileBytes[325..]),
 
 
 
-        // BODY TYPE SUBSITUTIONS
-        profile.uiBodyTypeSubFlags = MemoryMarshal.Read<int>(mercProfileBytes[327..]);
+            // BODY TYPE SUBSITUTIONS
+            uiBodyTypeSubFlags = MemoryMarshal.Read<int>(mercProfileBytes[327..]),
 
-        profile.sSalary = MemoryMarshal.Read<short>(mercProfileBytes[332..]);
+            sSalary = MemoryMarshal.Read<short>(mercProfileBytes[332..]),
 
-        profile.bLife = MemoryMarshal.Read<sbyte>(mercProfileBytes[334..]);
-        profile.bDexterity = MemoryMarshal.Read<sbyte>(mercProfileBytes[335..]);        // dexterity (hand coord) value
-        profile.bPersonalityTrait = (PersonalityTrait)MemoryMarshal.Read<sbyte>(mercProfileBytes[336..]);
-        profile.bSkillTrait = (SkillTrait)MemoryMarshal.Read<sbyte>(mercProfileBytes[337..]);
-        profile.bReputationTolerance = MemoryMarshal.Read<sbyte>(mercProfileBytes[338..]);
-        profile.bExplosive = MemoryMarshal.Read<sbyte>(mercProfileBytes[339..]);
-        profile.bSkillTrait2 = (SkillTrait)MemoryMarshal.Read<sbyte>(mercProfileBytes[340..]);
-        profile.bLeadership = MemoryMarshal.Read<sbyte>(mercProfileBytes[341..]);
-        profile.bBuddyIndexes = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[342..347]).ToArray();
-        profile.bHatedIndexes = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[347..352]).ToArray();
-        profile.bExpLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[352..]);     // general experience level
-        profile.bMarksmanship = MemoryMarshal.Read<sbyte>(mercProfileBytes[353..]);
+            bLife = MemoryMarshal.Read<sbyte>(mercProfileBytes[334..]),
+            bDexterity = MemoryMarshal.Read<sbyte>(mercProfileBytes[335..]),        // dexterity (hand coord) value
+            bPersonalityTrait = (PersonalityTrait)MemoryMarshal.Read<sbyte>(mercProfileBytes[336..]),
+            bSkillTrait = (SkillTrait)MemoryMarshal.Read<sbyte>(mercProfileBytes[337..]),
+            bReputationTolerance = MemoryMarshal.Read<sbyte>(mercProfileBytes[338..]),
+            bExplosive = MemoryMarshal.Read<sbyte>(mercProfileBytes[339..]),
+            bSkillTrait2 = (SkillTrait)MemoryMarshal.Read<sbyte>(mercProfileBytes[340..]),
+            bLeadership = MemoryMarshal.Read<sbyte>(mercProfileBytes[341..]),
+            bBuddyIndexes = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[342..347]).ToArray(),
+            bHatedIndexes = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[347..352]).ToArray(),
+            bExpLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[352..]),     // general experience level
+            bMarksmanship = MemoryMarshal.Read<sbyte>(mercProfileBytes[353..]),
 
-        profile.bMinService = MemoryMarshal.Read<byte>(mercProfileBytes[354..]);
-        profile.bWisdom = MemoryMarshal.Read<sbyte>(mercProfileBytes[355..]);
-        profile.bResigned = MemoryMarshal.Read<byte>(mercProfileBytes[356..]);
-        profile.bActive = MemoryMarshal.Read<byte>(mercProfileBytes[357..]);
+            bMinService = MemoryMarshal.Read<byte>(mercProfileBytes[354..]),
+            bWisdom = MemoryMarshal.Read<sbyte>(mercProfileBytes[355..]),
+            bResigned = MemoryMarshal.Read<byte>(mercProfileBytes[356..]),
+            bActive = MemoryMarshal.Read<byte>(mercProfileBytes[357..]),
 
-        profile.bInvStatus = mercProfileBytes[358..377].ToArray();
-        profile.bInvNumber = mercProfileBytes[377..396].ToArray();
-        profile.usApproachFactor = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[396..404]).ToArray();
+            bInvStatus = mercProfileBytes[358..377].ToArray(),
+            bInvNumber = mercProfileBytes[377..396].ToArray(),
+            usApproachFactor = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[396..404]).ToArray(),
 
-        profile.bMainGunAttractiveness = MemoryMarshal.Read<sbyte>(mercProfileBytes[404..]);
-        profile.bAgility = MemoryMarshal.Read<sbyte>(mercProfileBytes[405..]);          // agility (speed) value
+            bMainGunAttractiveness = MemoryMarshal.Read<sbyte>(mercProfileBytes[404..]),
+            bAgility = MemoryMarshal.Read<sbyte>(mercProfileBytes[405..]),          // agility (speed) value
 
-        profile.fUseProfileInsertionInfo = MemoryMarshal.Read<byte>(mercProfileBytes[406..]); // Set to various flags, ( contained in TacticalSave.h )
-        profile.sGridNo = MemoryMarshal.Read<short>(mercProfileBytes[407..]);                                              // The Gridno the NPC was in before leaving the sector
-        profile.ubQuoteActionID = MemoryMarshal.Read<byte>(mercProfileBytes[410..]);
-        profile.bMechanical = MemoryMarshal.Read<sbyte>(mercProfileBytes[411..]);
+            fUseProfileInsertionInfo = MemoryMarshal.Read<byte>(mercProfileBytes[406..]), // Set to various flags, ( contained in TacticalSave.h )
+            sGridNo = MemoryMarshal.Read<short>(mercProfileBytes[407..]),                                              // The Gridno the NPC was in before leaving the sector
+            ubQuoteActionID = MemoryMarshal.Read<byte>(mercProfileBytes[410..]),
+            bMechanical = MemoryMarshal.Read<sbyte>(mercProfileBytes[411..]),
 
-        profile.ubInvUndroppable = MemoryMarshal.Read<byte>(mercProfileBytes[412..]);
-        profile.ubRoomRangeStart = mercProfileBytes[413..415].ToArray();
-        profile.invIndexes = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[416..454]).ToArray();//[19]
-        profile.bMercTownReputation = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[454..474]).ToArray();
+            ubInvUndroppable = MemoryMarshal.Read<byte>(mercProfileBytes[412..]),
+            ubRoomRangeStart = mercProfileBytes[413..415].ToArray(),
+            invIndexes = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[416..454]).ToArray(),//[19]
+            bMercTownReputation = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[454..474]).ToArray(),
 
-        profile.usStatChangeChancesIndexes = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[475..499]).ToArray();     // used strictly for balancing, never shown!
-        profile.usStatChangeSuccessesIndexes = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[500..524]).ToArray();   // used strictly for balancing, never shown!
+            usStatChangeChancesIndexes = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[475..499]).ToArray(),     // used strictly for balancing, never shown!
+            usStatChangeSuccessesIndexes = MemoryMarshal.Cast<byte, ushort>(mercProfileBytes[500..524]).ToArray(),   // used strictly for balancing, never shown!
 
-        profile.ubStrategicInsertionCode = MemoryMarshal.Read<byte>(mercProfileBytes[525..]);
+            ubStrategicInsertionCode = MemoryMarshal.Read<byte>(mercProfileBytes[525..]),
 
-        profile.ubRoomRangeEnd = mercProfileBytes[526..527].ToArray();
+            ubRoomRangeEnd = mercProfileBytes[526..527].ToArray(),
 
-        profile.bPadding = mercProfileBytes[527..529].ToArray();
+            bPadding = mercProfileBytes[527..529].ToArray(),
 
-        profile.ubLastQuoteSaid = MemoryMarshal.Read<byte>(mercProfileBytes[529..]);
+            ubLastQuoteSaid = MemoryMarshal.Read<byte>(mercProfileBytes[529..]),
 
-        profile.bRace = MemoryMarshal.Read<sbyte>(mercProfileBytes[530..]);
-        profile.bNationality = MemoryMarshal.Read<sbyte>(mercProfileBytes[531..]);
-        profile.bAppearance = MemoryMarshal.Read<sbyte>(mercProfileBytes[532..]);
-        profile.bAppearanceCareLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[533..]);
-        profile.bRefinement = MemoryMarshal.Read<sbyte>(mercProfileBytes[534..]);
-        profile.bRefinementCareLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[535..]);
-        profile.bHatedNationality = MemoryMarshal.Read<sbyte>(mercProfileBytes[536..]);
-        profile.bHatedNationalityCareLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[537..]);
-        profile.bRacist = MemoryMarshal.Read<sbyte>(mercProfileBytes[538..]);
-        profile.uiWeeklySalary = MemoryMarshal.Read<int>(mercProfileBytes[540..]);
-        profile.uiBiWeeklySalary = MemoryMarshal.Read<int>(mercProfileBytes[544..]);
-        profile.bMedicalDeposit = MemoryMarshal.Read<sbyte>(mercProfileBytes[548..]);
-        profile.bAttitude = (ATT)MemoryMarshal.Read<sbyte>(mercProfileBytes[549..]);
-        profile.bBaseMorale = MemoryMarshal.Read<sbyte>(mercProfileBytes[550..]);
-        profile.sMedicalDepositAmount = MemoryMarshal.Read<ushort>(mercProfileBytes[551..]);
+            bRace = MemoryMarshal.Read<sbyte>(mercProfileBytes[530..]),
+            bNationality = MemoryMarshal.Read<sbyte>(mercProfileBytes[531..]),
+            bAppearance = MemoryMarshal.Read<sbyte>(mercProfileBytes[532..]),
+            bAppearanceCareLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[533..]),
+            bRefinement = MemoryMarshal.Read<sbyte>(mercProfileBytes[534..]),
+            bRefinementCareLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[535..]),
+            bHatedNationality = MemoryMarshal.Read<sbyte>(mercProfileBytes[536..]),
+            bHatedNationalityCareLevel = MemoryMarshal.Read<sbyte>(mercProfileBytes[537..]),
+            bRacist = MemoryMarshal.Read<sbyte>(mercProfileBytes[538..]),
+            uiWeeklySalary = MemoryMarshal.Read<int>(mercProfileBytes[540..]),
+            uiBiWeeklySalary = MemoryMarshal.Read<int>(mercProfileBytes[544..]),
+            bMedicalDeposit = MemoryMarshal.Read<sbyte>(mercProfileBytes[548..]),
+            bAttitude = (ATT)MemoryMarshal.Read<sbyte>(mercProfileBytes[549..]),
+            bBaseMorale = MemoryMarshal.Read<sbyte>(mercProfileBytes[550..]),
+            sMedicalDepositAmount = MemoryMarshal.Read<ushort>(mercProfileBytes[551..]),
 
-        profile.bLearnToLike = MemoryMarshal.Read<sbyte>(mercProfileBytes[554..]);
-        profile.ubApproachVal = mercProfileBytes[555..559].ToArray();
+            bLearnToLike = MemoryMarshal.Read<sbyte>(mercProfileBytes[554..]),
+            ubApproachVal = mercProfileBytes[555..559].ToArray(),
 
-        //profile.ubApproachMod[3][4] = MemoryMarshal.Read<byte>(mercProfileBytes[556..]);
+            // We do some further parsing for the jagged arrays here outside of this initializer.
 
-
-
-
-        profile.bTown = (TOWNS)MemoryMarshal.Read<sbyte>(mercProfileBytes[568..]);
-        profile.bTownAttachment = MemoryMarshal.Read<sbyte>(mercProfileBytes[569..]);
-        profile.usOptionalGearCost = MemoryMarshal.Read<ushort>(mercProfileBytes[570..]);
-        profile.bMercOpinionIndexes = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[576..651]).ToArray();
-        profile.bApproached = MemoryMarshal.Read<sbyte>(mercProfileBytes[651..]);
-        profile.bMercStatus = (MercStatus)MemoryMarshal.Read<sbyte>(mercProfileBytes[652..]);                               //The status of the merc.  If negative, see flags at the top of this file.  Positive:  The number of days the merc is away for.  0:  Not hired but ready to be.
-        profile.bHatedTime = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[653..658]).ToArray();
-        profile.bLearnToLikeTime = MemoryMarshal.Read<sbyte>(mercProfileBytes[658..]);
-        profile.bLearnToHateTime = MemoryMarshal.Read<sbyte>(mercProfileBytes[659..]);
-        profile.bHatedCount = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[660..665]).ToArray();
-        profile.bLearnToLikeCount = MemoryMarshal.Read<sbyte>(mercProfileBytes[665..]);
-        profile.bLearnToHateCount = MemoryMarshal.Read<sbyte>(mercProfileBytes[666..]);
-        profile.ubLastDateSpokenTo = MemoryMarshal.Read<byte>(mercProfileBytes[667..]);
-        profile.bLastQuoteSaidWasSpecial = MemoryMarshal.Read<byte>(mercProfileBytes[668..]);
-        profile.bSectorZ = MemoryMarshal.Read<sbyte>(mercProfileBytes[669..]);
-        profile.usStrategicInsertionData = MemoryMarshal.Read<ushort>(mercProfileBytes[670..]);
+            bTown = (TOWNS)MemoryMarshal.Read<sbyte>(mercProfileBytes[568..]),
+            bTownAttachment = MemoryMarshal.Read<sbyte>(mercProfileBytes[569..]),
+            usOptionalGearCost = MemoryMarshal.Read<ushort>(mercProfileBytes[570..]),
+            bMercOpinionIndexes = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[576..651]).ToArray(),
+            bApproached = MemoryMarshal.Read<sbyte>(mercProfileBytes[651..]),
+            bMercStatus = (MercStatus)MemoryMarshal.Read<sbyte>(mercProfileBytes[652..]),                               //The status of the merc.  If negative, see flags at the top of this file.  Positive:  The number of days the merc is away for.  0:  Not hired but ready to be.
+            bHatedTime = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[653..658]).ToArray(),
+            bLearnToLikeTime = MemoryMarshal.Read<sbyte>(mercProfileBytes[658..]),
+            bLearnToHateTime = MemoryMarshal.Read<sbyte>(mercProfileBytes[659..]),
+            bHatedCount = MemoryMarshal.Cast<byte, sbyte>(mercProfileBytes[660..665]).ToArray(),
+            bLearnToLikeCount = MemoryMarshal.Read<sbyte>(mercProfileBytes[665..]),
+            bLearnToHateCount = MemoryMarshal.Read<sbyte>(mercProfileBytes[666..]),
+            ubLastDateSpokenTo = MemoryMarshal.Read<byte>(mercProfileBytes[667..]),
+            bLastQuoteSaidWasSpecial = MemoryMarshal.Read<byte>(mercProfileBytes[668..]),
+            bSectorZ = MemoryMarshal.Read<sbyte>(mercProfileBytes[669..]),
+            usStrategicInsertionData = MemoryMarshal.Read<ushort>(mercProfileBytes[670..]),
 
 
-        profile.bFriendlyOrDirectDefaultResponseUsedRecently = MemoryMarshal.Read<sbyte>(mercProfileBytes[679..]);
-        profile.bRecruitDefaultResponseUsedRecently = MemoryMarshal.Read<sbyte>(mercProfileBytes[680..]);
-        profile.bThreatenDefaultResponseUsedRecently = MemoryMarshal.Read<sbyte>(mercProfileBytes[681..]);
-        profile.bNPCData = MemoryMarshal.Read<sbyte>(mercProfileBytes[682..]);          // NPC specifi
-        profile.iBalance = MemoryMarshal.Read<int>(mercProfileBytes[679..]);
-        profile.sTrueSalary = MemoryMarshal.Read<short>(mercProfileBytes[680..]); // for use when the person is working for us for free but has a positive salary value
-        profile.ubCivilianGroup = MemoryMarshal.Read<byte>(mercProfileBytes[682..]);
-        profile.ubNeedForSleep = MemoryMarshal.Read<byte>(mercProfileBytes[683..]);
-        profile.uiMoney = MemoryMarshal.Read<int>(mercProfileBytes[684..]);
-        profile.bNPCData2 = MemoryMarshal.Read<sbyte>(mercProfileBytes[688..]);     // NPC specific
+            bFriendlyOrDirectDefaultResponseUsedRecently = MemoryMarshal.Read<sbyte>(mercProfileBytes[679..]),
+            bRecruitDefaultResponseUsedRecently = MemoryMarshal.Read<sbyte>(mercProfileBytes[680..]),
+            bThreatenDefaultResponseUsedRecently = MemoryMarshal.Read<sbyte>(mercProfileBytes[681..]),
+            bNPCData = MemoryMarshal.Read<sbyte>(mercProfileBytes[682..]),          // NPC specifi
+            iBalance = MemoryMarshal.Read<int>(mercProfileBytes[679..]),
+            sTrueSalary = MemoryMarshal.Read<short>(mercProfileBytes[680..]), // for use when the person is working for us for free but has a positive salary value
+            ubCivilianGroup = MemoryMarshal.Read<byte>(mercProfileBytes[682..]),
+            ubNeedForSleep = MemoryMarshal.Read<byte>(mercProfileBytes[683..]),
+            uiMoney = MemoryMarshal.Read<int>(mercProfileBytes[684..]),
+            bNPCData2 = MemoryMarshal.Read<sbyte>(mercProfileBytes[688..]),     // NPC specific
 
-        profile.ubMiscFlags3 = (PROFILE_MISC_FLAG3)MemoryMarshal.Read<byte>(mercProfileBytes[689..]);
+            ubMiscFlags3 = (PROFILE_MISC_FLAG3)MemoryMarshal.Read<byte>(mercProfileBytes[689..]),
 
-        profile.ubDaysOfMoraleHangover = MemoryMarshal.Read<byte>(mercProfileBytes[690..]);       // used only when merc leaves team while having poor morale
-        profile.ubNumTimesDrugUseInLifetime = MemoryMarshal.Read<byte>(mercProfileBytes[691..]);      // The # times a drug has been used in the player's lifetime...
+            ubDaysOfMoraleHangover = MemoryMarshal.Read<byte>(mercProfileBytes[690..]),       // used only when merc leaves team while having poor morale
+            ubNumTimesDrugUseInLifetime = MemoryMarshal.Read<byte>(mercProfileBytes[691..]),      // The # times a drug has been used in the player's lifetime...
 
-        // Flags used for the precedent to repeating oneself in Contract negotiations.  Used for quote 80 -  ~107.  Gets reset every day
-        profile.uiPrecedentQuoteSaid = MemoryMarshal.Read<int>(mercProfileBytes[692..]);
-        profile.uiProfileChecksum = MemoryMarshal.Read<int>(mercProfileBytes[696..]);
-        profile.sPreCombatGridNo = MemoryMarshal.Read<short>(mercProfileBytes[700..]);
-        profile.ubTimeTillNextHatedComplaint = MemoryMarshal.Read<byte>(mercProfileBytes[702..]);
-        profile.ubSuspiciousDeath = MemoryMarshal.Read<byte>(mercProfileBytes[703..]);
+            // Flags used for the precedent to repeating oneself in Contract negotiations.  Used for quote 80 -  ~107.  Gets reset every day
+            uiPrecedentQuoteSaid = MemoryMarshal.Read<int>(mercProfileBytes[692..]),
+            uiProfileChecksum = MemoryMarshal.Read<int>(mercProfileBytes[696..]),
+            sPreCombatGridNo = MemoryMarshal.Read<short>(mercProfileBytes[700..]),
+            ubTimeTillNextHatedComplaint = MemoryMarshal.Read<byte>(mercProfileBytes[702..]),
+            ubSuspiciousDeath = MemoryMarshal.Read<byte>(mercProfileBytes[703..]),
 
-        profile.iMercMercContractLength = MemoryMarshal.Read<int>(mercProfileBytes[704..]);      //Used for MERC mercs, specifies how many days the merc has gone since last page
+            iMercMercContractLength = MemoryMarshal.Read<int>(mercProfileBytes[704..]),      //Used for MERC mercs, specifies how many days the merc has gone since last page
 
-        profile.uiTotalCostToDate = MemoryMarshal.Read<int>(mercProfileBytes[708..]);           // The total amount of money that has been paid to the merc for their salary
-        profile.ubBuffer = mercProfileBytes[708..712].ToArray();
+            uiTotalCostToDate = MemoryMarshal.Read<int>(mercProfileBytes[708..]),           // The total amount of money that has been paid to the merc for their salary
+            ubBuffer = mercProfileBytes[708..712].ToArray()
+        };
+
+        // Jagged array on disk here, have to parse a little differently.
+        profile.ubApproachMod[0] = mercProfileBytes[559..563].ToArray();
+        profile.ubApproachMod[1] = mercProfileBytes[563..567].ToArray();
+        profile.ubApproachMod[2] = mercProfileBytes[567..571].ToArray();
 
         // Whew! We loaded some indexes above, so let's fill in the dictionaries and tie up some loose ends.
         for (int i = 0; i < profile.invIndexes.Length; i++)
         {
             profile.inv.Add((InventorySlot)i, (Items)profile.invIndexes[i]);
+        }
+
+        for (int i = 0; i < profile.usStatChangeChancesIndexes.Length; i++)
+        {
+            profile.usStatChangeChances.Add((Stat)i, profile.usStatChangeChancesIndexes[i]);
+        }
+
+        for (int i = 0; i < profile.usStatChangeSuccessesIndexes.Length; i++)
+        {
+            profile.usStatChangeSuccesses.Add((Stat)i, profile.usStatChangeSuccessesIndexes[i]);
+        }
+
+        for (int i = 0; i < profile.bMercOpinionIndexes.Length; i++)
+        {
+            profile.bMercOpinion.Add((NPCID)i, profile.bMercOpinionIndexes[i]);
         }
 
         return profile;

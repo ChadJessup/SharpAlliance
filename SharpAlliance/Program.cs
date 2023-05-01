@@ -75,6 +75,7 @@ namespace SharpAlliance
             builder.AddDependency<IInputManager, InputManager>();
             builder.AddDependency<IClockManager, ClockManager>();
 
+            builder.Services.AddSingleton<Cars>();
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<Messages>();
             builder.Services.AddSingleton<TileCache>();
@@ -82,6 +83,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<FadeScreen>();
             builder.Services.AddSingleton<RenderWorld>();
             builder.Services.AddSingleton<MercTextBox>();
+            builder.Services.AddSingleton<RenderDirty>();
             builder.Services.AddSingleton<EventManager>();
             builder.Services.AddSingleton<SaveLoadGame>();
             builder.Services.AddSingleton<FontSubSystem>();
@@ -91,11 +93,11 @@ namespace SharpAlliance
             builder.Services.AddSingleton<CursorSubSystem>();
             builder.Services.AddSingleton<MessageSubSystem>();
             builder.Services.AddSingleton<SaveGameSubSystem>();
+            builder.Services.AddSingleton<StructureInternals>();
             builder.Services.AddSingleton<MessageBoxSubSystem>();
             builder.Services.AddSingleton<MessageBoxSubSystem>();
             builder.Services.AddSingleton<CinematicsSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
-            builder.Services.AddSingleton<RenderDirty>();
             builder.Services.AddSingleton<MapScreenInterfaceMap>();
             builder.Services.AddSingleton<SoldierProfileSubSystem>();
             builder.Services.AddSingleton<DialogControl>();
