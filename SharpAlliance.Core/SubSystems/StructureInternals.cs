@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Platform.Interfaces;
@@ -87,11 +88,11 @@ public class StructureInternals
         STRUCTURE_FILE_REF pNextRef;
 
         pFileRef = gpStructureFileRefs;
-//        while (IntPtr.Zero != pFileRef.pNext)
+        //        while (IntPtr.Zero != pFileRef.pNext)
         {
-//            pNextRef = Marshal.PtrToStructure<STRUCTURE_FILE_REF>(pFileRef.pNext);
+            //            pNextRef = Marshal.PtrToStructure<STRUCTURE_FILE_REF>(pFileRef.pNext);
             FreeStructureFileRef(pFileRef);
-//            pFileRef = pNextRef;
+            //            pFileRef = pNextRef;
         }
     }
 
@@ -135,14 +136,20 @@ public class StructureInternals
         CHECKF(szFileName);
         CHECKF(pFileRef);
         hInput = files.FileOpen(szFileName, FileAccess.Read /*FILE_OPEN_EXISTING*/, false);
+
+        // chad: uncomment the following 3 lines to write the temporary file to disk.
+        //using var f = new FileStream(@"c:\assets\test.bin", FileMode.OpenOrCreate);
+        //hInput.CopyTo(f);
+        //f.Close();
+
         if (hInput.Length == -1)
         {
             return (false);
         }
 
-        uint STRUCTURE_FILE_HEADER_SIZE = 17;//16;
+        uint STRUCTURE_FILE_HEADER_SIZE = 16;
         fOk = files.FileRead<STRUCTURE_FILE_HEADER>(hInput, ref Header, sizeof(STRUCTURE_FILE_HEADER), out uiBytesRead);
-        var szId = new string(Header.szId);
+        var szId = new string(new[] { (char)Header.szId1, (char)Header.szId2, (char)Header.szId3, (char)Header.szId4 });
         if (!fOk || uiBytesRead != STRUCTURE_FILE_HEADER_SIZE
             || !szId.Equals(STRUCTURE_FILE_ID)
             || Header.usNumberOfStructures == 0)
@@ -158,7 +165,6 @@ public class StructureInternals
             fOk = files.FileRead<AuxObjectData>(hInput, ref pFileRef.pAuxData, uiDataSize, out uiBytesRead);
             if (!fOk || uiBytesRead != uiDataSize)
             {
-                MemFree(pFileRef.pAuxData);
                 files.FileClose(hInput);
                 return (false);
             }
@@ -169,38 +175,23 @@ public class StructureInternals
                 fOk = files.FileRead(hInput, ref pFileRef.pTileLocData, uiDataSize, out uiBytesRead);
                 if (!fOk || uiBytesRead != uiDataSize)
                 {
-                    MemFree(pFileRef.pAuxData);
                     files.FileClose(hInput);
                     return (false);
                 }
             }
         }
+
         if (Header.fFlags.HasFlag(STRUCTURE_FILE_CONTAINS.STRUCTUREDATA))
         {
             pFileRef.usNumberOfStructuresStored = Header.usNumberOfStructuresStored;
             uiDataSize = Header.usStructureDataSize;
             // Determine the size of the data, from the header just read,
             // allocate enough memory and read it in
-            //pFileRef.pubStructureData = MemAlloc(uiDataSize);
-            if (pFileRef.pubStructureData == null)
-            {
-                files.FileClose(hInput);
-
-                return (false);
-            }
+            pFileRef.pubStructureData = new byte[uiDataSize];
 
             fOk = files.FileRead(hInput, ref pFileRef.pubStructureData, uiDataSize, out uiBytesRead);
             if (!fOk || uiBytesRead != uiDataSize)
             {
-                MemFree(pFileRef.pubStructureData);
-                // if (pFileRef.pAuxData != null)
-                // {
-                //     MemFree(pFileRef.pAuxData);
-                //     if (pFileRef.pTileLocData != null)
-                //     {
-                //         MemFree(pFileRef.pTileLocData);
-                //     }
-                // }
                 files.FileClose(hInput);
                 return (false);
             }
@@ -212,11 +203,10 @@ public class StructureInternals
         return (true);
     }
 
-    private static bool CreateFileStructureArrays(STRUCTURE_FILE_REF? pFileRef, int uiDataSize)
+    private static bool CreateFileStructureArrays(STRUCTURE_FILE_REF pFileRef, int uiDataSize)
     { // Based on a file chunk, creates all the dynamic arrays for the 
       // structure definitions contained within
 
-        int? pCurrent;
         List<DB_STRUCTURE_REF> pDBStructureRef = new();
         List<DB_STRUCTURE_TILE> ppTileArray = new();
         int usLoop;
@@ -224,50 +214,84 @@ public class StructureInternals
         int usTileLoop;
         int uiHitPoints;
 
-//        pCurrent = pFileRef.pubStructureData;
-//        pFileRef.pDBStructureRef.Add(pDBStructureRef);
-//        for (usLoop = 0; usLoop < pFileRef.usNumberOfStructuresStored; usLoop++)
-//        {
-//            if (pCurrent + sizeof(DB_STRUCTURE) > pFileRef.pubStructureData + uiDataSize)
-//            {   // gone past end of file block?!
-//                // freeing of memory will occur outside of the function
-//                return (false);
-//            }
-//            usIndex = ((DB_STRUCTURE?)pCurrent).usStructureNumber;
-//            pDBStructureRef[usIndex].pDBStructure = (DB_STRUCTURE?)pCurrent;
-//            pDBStructureRef[usIndex].ppTile = ppTileArray;
-//            pCurrent += sizeof(DB_STRUCTURE);
-//            // Set things up to calculate hit points
-//            uiHitPoints = 0;
-//            for (usTileLoop = 0; usTileLoop < pDBStructureRef[usIndex].pDBStructure.ubNumberOfTiles; usTileLoop++)
-//            {
-//                if (pCurrent + sizeof(DB_STRUCTURE) > pFileRef.pubStructureData + uiDataSize)
-//                {   // gone past end of file block?!
-//                    // freeing of memory will occur outside of the function
-//                    return (false);
-//                }
-//                ppTileArray[usTileLoop] = (DB_STRUCTURE_TILE)pCurrent;
+        pFileRef.pDBStructureRef = pDBStructureRef;
+
+        var totalSpan = pFileRef.pubStructureData.AsSpan();
+
+        var index = 16;
+        for (usLoop = 0; usLoop < pFileRef.usNumberOfStructuresStored; usLoop++)
+        {
+            // sizeof(DB_STRUCTURE) == 16
+            var dbStructureStart = usLoop * 16;
+            var dbStructureEnd = dbStructureStart + 16;
+
+            var dbStructureSpan = totalSpan.Slice(dbStructureStart, 16);
+
+            DB_STRUCTURE dbStructure = new()
+            {
+                ubArmour = MemoryMarshal.Read<MATERIAL>(dbStructureSpan[0..]),
+                ubHitPoints = MemoryMarshal.Read<byte>(dbStructureSpan[1..]),
+                ubDensity = MemoryMarshal.Read<byte>(dbStructureSpan[2..]),
+                ubNumberOfTiles = MemoryMarshal.Read<byte>(dbStructureSpan[3..]),
+                fFlags = MemoryMarshal.Read<STRUCTUREFLAGS>(dbStructureSpan[4..]),
+                usStructureNumber = MemoryMarshal.Read<ushort>(dbStructureSpan[8..]),
+                ubWallOrientation = MemoryMarshal.Read<WallOrientation>(dbStructureSpan[10..]),
+                bDestructionPartner = MemoryMarshal.Read<sbyte>(dbStructureSpan[11..]), // >0 = debris number (bDP - 1), <0 = partner graphic 
+                bPartnerDelta = MemoryMarshal.Read<byte>(dbStructureSpan[12..]), // opened/closed version, etc... 0 for unused
+                bZTileOffsetX = MemoryMarshal.Read<sbyte>(dbStructureSpan[13..]),
+                bZTileOffsetY = MemoryMarshal.Read<sbyte>(dbStructureSpan[14..]),
+                bUnused = dbStructureSpan[15..16].ToArray(),
+            };
+
+            pDBStructureRef.Add(new()
+            {
+                pDBStructure = dbStructure,
+            });
+
+            usIndex = dbStructure.usStructureNumber;
+            pDBStructureRef[usIndex].pDBStructure = dbStructure;
+            pDBStructureRef[usIndex].ppTile = ppTileArray;
+            index += 16;
+
+            // Set things up to calculate hit points
+            uiHitPoints = 0;
+            for (usTileLoop = 0; usTileLoop < pDBStructureRef[usIndex].pDBStructure.ubNumberOfTiles; usTileLoop++)
+            {
+                // sizeof(DB_STRUCTURE_TILE) == 32
+                var tileSpan = totalSpan.Slice(dbStructureEnd + (usTileLoop * 32), 32);
+                ppTileArray.Add(new()
+                {
+                    sPosRelToBase = 0,
+                    bXPosRelToBase = 0,
+                    bYPosRelToBase = 0,
+                    Shape = new byte[5, 5],
+                    fFlags = 0,
+                    ubVehicleHitLocation = 0,
+                });
+
 //                // set the single-value relative position between this tile and the base tile
-//                ppTileArray[usTileLoop].sPosRelToBase = ppTileArray[usTileLoop].bXPosRelToBase + ppTileArray[usTileLoop].bYPosRelToBase * WORLD_COLS;
-//                uiHitPoints += FilledTilePositions(ppTileArray[usTileLoop]);
+                ppTileArray[usTileLoop].sPosRelToBase = ppTileArray[usTileLoop].bXPosRelToBase + ppTileArray[usTileLoop].bYPosRelToBase * WORLD_COLS;
+                uiHitPoints += FilledTilePositions(ppTileArray[usTileLoop]);
 //                pCurrent += sizeof(DB_STRUCTURE_TILE);
-//            }
-//            // scale hit points down to something reasonable...
-//            uiHitPoints = uiHitPoints * 100 / 255;
-//            /*
-//            if (uiHitPoints > 255)
-//            {
-//                uiHitPoints = 255;
-//            }
-//            */
-//            pDBStructureRef[usIndex].pDBStructure.ubHitPoints = uiHitPoints;
-//            /*
-//            if (pDBStructureRef[usIndex].pDBStructure.usStructureNumber + 1 == pFileRef.usNumberOfStructures)
-//            {
-//                break;
-//            }
-//            */
-//        }
+            }
+
+            // scale hit points down to something reasonable...
+            uiHitPoints = uiHitPoints * 100 / 255;
+            /*
+            if (uiHitPoints > 255)
+            {
+                uiHitPoints = 255;
+            }
+            */
+            pDBStructureRef[usIndex].pDBStructure.ubHitPoints = (byte)uiHitPoints;
+            /*
+            if (pDBStructureRef[usIndex].pDBStructure.usStructureNumber + 1 == pFileRef.usNumberOfStructures)
+            {
+                break;
+            }
+            */
+        }
+
         return (true);
     }
 
@@ -293,11 +317,11 @@ public class StructureInternals
             }
         }
         // Add the file reference to the master list, at the head for convenience	
-//        if (gpStructureFileRefs != null)
-//        {
-//            gpStructureFileRefs.pPrev = pFileRef;
-//        }
-//        pFileRef.pNext = gpStructureFileRefs;
+        //        if (gpStructureFileRefs != null)
+        //        {
+        //            gpStructureFileRefs.pPrev = pFileRef;
+        //        }
+        //        pFileRef.pNext = gpStructureFileRefs;
         gpStructureFileRefs = pFileRef;
         return (pFileRef);
     }
@@ -311,7 +335,7 @@ public class StructureInternals
     private static STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF pDBStructureRef, int ubTileNum)
     { // Creates a STRUCTURE struct for one tile of a structure
         STRUCTURE? pStructure;
-        DB_STRUCTURE? pDBStructure;
+        DB_STRUCTURE pDBStructure;
         DB_STRUCTURE_TILE? pTile;
 
         // set pointers to the DBStructure and Tile
@@ -325,7 +349,7 @@ public class StructureInternals
         // setup
         pStructure = new()
         {
-            fFlags = pDBStructure.fFlags,
+            fFlags = (STRUCTUREFLAGS)pDBStructure.fFlags,
             pShape = (pTile.Shape),
             pDBStructureRef = pDBStructureRef
         };
@@ -360,7 +384,7 @@ public class StructureInternals
     private static bool OkayToAddStructureToTile(int sBaseGridNo, STRUCTURE_ON sCubeOffset, DB_STRUCTURE_REF pDBStructureRef, int ubTileIndex, int sExclusionID, bool fIgnorePeople)
     {
         // Verifies whether a structure is blocked from being added to the map at a particular point
-        DB_STRUCTURE? pDBStructure = null;
+        DB_STRUCTURE pDBStructure;
         List<DB_STRUCTURE_TILE> ppTile = new();
         STRUCTURE? pExistingStructure = null;
         STRUCTURE? pOtherExistingStructure = null;
@@ -399,7 +423,7 @@ public class StructureInternals
 
                 // CJC:
                 // If adding a mobile structure, allow addition if existing structure is passable
-                if ((pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
                 {
                     // Skip!
                     pExistingStructure = pExistingStructure.pNext;
@@ -407,7 +431,7 @@ public class StructureInternals
                 }
 
 
-                if (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OBSTACLE))
                 {
 
                     // CJC: NB these next two if states are probably COMPLETELY OBSOLETE but I'm leaving
@@ -438,7 +462,7 @@ public class StructureInternals
 
                     // two obstacle structures aren't allowed in the same tile at the same height
                     // ATE: There is more sophisticated logic for mobiles, so postpone this check if mobile....
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)))
+                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE)))
                     {
                         if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE) && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)))
                         {
@@ -493,7 +517,7 @@ public class StructureInternals
 
                     }
                 }
-                else if (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF))
+                else if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                 {
                     // two walls with the same alignment aren't allowed in the same tile
                     if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)) && (pDBStructure.ubWallOrientation == pExistingStructure.ubWallOrientation))
@@ -532,7 +556,7 @@ public class StructureInternals
                     }
                 }
 
-                if (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE))
                 {
                     // ATE:
                     // ignore this one if it has the same ID num as exclusion
@@ -582,7 +606,7 @@ public class StructureInternals
                     }
                 }
 
-                if ((pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE)))
+                if ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OPENABLE)))
                 {
                     if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE))
                     {
@@ -679,7 +703,7 @@ public class StructureInternals
         int sGridNo;
         List<STRUCTURE?> ppStructure = new();
         STRUCTURE? pBaseStructure;
-        DB_STRUCTURE? pDBStructure;
+        DB_STRUCTURE pDBStructure;
         List<DB_STRUCTURE_TILE> ppTile;
         int ubLoop;
         int ubLoop2;
@@ -746,7 +770,7 @@ public class StructureInternals
                 ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.PERSON;
                 ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.BLOCKSMOVES);
             }
-            else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE) || pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE))
+            else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE) || ((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE))
             {
                 ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.CORPSE;
                 // attempted check to screen this out for queen creature or vehicle
@@ -914,16 +938,16 @@ public class StructureInternals
 
         // record values
         bDelta = pBaseStructure.pDBStructureRef.pDBStructure.bPartnerDelta;
-//        pPartnerDBStructure = pBaseStructure.pDBStructureRef + bDelta;
+        //        pPartnerDBStructure = pBaseStructure.pDBStructureRef + bDelta;
         sGridNo = pBaseStructure.sGridNo;
         ubHitPoints = pBaseStructure.ubHitPoints;
         sCubeOffset = pBaseStructure.sCubeOffset;
         // delete the old structure and add the new one
-//        if (DeleteStructureFromWorld(pBaseStructure) == false)
-//        {
-//            return (null);
-//        }
-//        pNewBaseStructure = InternalAddStructureToWorld(sGridNo, ((int)sCubeOffset / PROFILE_Z_SIZE), pPartnerDBStructure, pLevelNode);
+        //        if (DeleteStructureFromWorld(pBaseStructure) == false)
+        //        {
+        //            return (null);
+        //        }
+        //        pNewBaseStructure = InternalAddStructureToWorld(sGridNo, ((int)sCubeOffset / PROFILE_Z_SIZE), pPartnerDBStructure, pLevelNode);
         if (pNewBaseStructure == null)
         {
             return (null);
@@ -937,7 +961,7 @@ public class StructureInternals
             if (fStoreInMap)
             {
                 SaveLoadMap.ApplyMapChangesToMapTempFile(true);
-//                RemoveStructFromMapTempFile(sGridNo, pLevelNode.usIndex);
+                //                RemoveStructFromMapTempFile(sGridNo, pLevelNode.usIndex);
             }
 
             pLevelNode.usIndex += bDelta;
@@ -945,7 +969,7 @@ public class StructureInternals
             // store removal of new one if necessary
             if (fStoreInMap)
             {
-//                AddStructToMapTempFile(sGridNo, pLevelNode.usIndex);
+                //                AddStructToMapTempFile(sGridNo, pLevelNode.usIndex);
                 SaveLoadMap.ApplyMapChangesToMapTempFile(false);
             }
 
@@ -961,7 +985,7 @@ public class StructureInternals
             if (pNewBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
             {
                 // just turned a switch on!
-//                ActivateSwitchInGridNo(NOBODY, sGridNo);
+                //                ActivateSwitchInGridNo(NOBODY, sGridNo);
             }
         }
         return (pNewBaseStructure);
@@ -1071,7 +1095,7 @@ public class StructureInternals
     public static int StructureHeight(STRUCTURE? pStructure)
     { // return the height of an object from 1-4
         int ubLoopX, ubLoopY;
-        PROFILE? pShape;
+        byte[,]? pShape;
         int ubShapeValue;
         int bLoopZ;
         int bGreatestHeight = -1;
@@ -1203,7 +1227,7 @@ public class StructureInternals
     public static int StructureBottomLevel(STRUCTURE? pStructure)
     { // return the bottom level of an object, from 1-4
         int ubLoopX, ubLoopY;
-        PROFILE? pShape;
+        byte[,]? pShape;
         int ubShapeValue;
         int bLoopZ;
         int bLowestHeight = PROFILE_Z_SIZE;
@@ -1244,7 +1268,7 @@ public class StructureInternals
     {
         int ubLoopX, ubLoopY;
         int ubShapeValue;
-        PROFILE? pShape;
+        byte[,]? pShape;
 
         CHECKF(pStructure);
         pubLevel0 = 0;
@@ -1259,22 +1283,22 @@ public class StructureInternals
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
                 ubShapeValue = (pShape)[ubLoopX, ubLoopY];
-//                if (ubShapeValue & AtHeight[0])
-//                {
-//                    (pubLevel0)++;
-//                }
-//                if (ubShapeValue & AtHeight[1])
-//                {
-//                    (pubLevel1)++;
-//                }
-//                if (ubShapeValue & AtHeight[2])
-//                {
-//                    (pubLevel2)++;
-//                }
-//                if (ubShapeValue & AtHeight[3])
-//                {
-//                    (pubLevel3)++;
-//                }
+                //                if (ubShapeValue & AtHeight[0])
+                //                {
+                //                    (pubLevel0)++;
+                //                }
+                //                if (ubShapeValue & AtHeight[1])
+                //                {
+                //                    (pubLevel1)++;
+                //                }
+                //                if (ubShapeValue & AtHeight[2])
+                //                {
+                //                    (pubLevel2)++;
+                //                }
+                //                if (ubShapeValue & AtHeight[3])
+                //                {
+                //                    (pubLevel3)++;
+                //                }
 
             }
         }
@@ -1371,7 +1395,7 @@ public class StructureInternals
             }
             else
             {
-//                if (guiMaterialHitSound[pStructure.pDBStructureRef.pDBStructure.ubArmour] != SoundDefine.UNSET)
+                //                if (guiMaterialHitSound[pStructure.pDBStructureRef.pDBStructure.ubArmour] != SoundDefine.UNSET)
                 {
                     //PlayJA2Sample(guiMaterialHitSound[pStructure.pDBStructureRef.pDBStructure.ubArmour], RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
                 }
@@ -1381,7 +1405,7 @@ public class StructureInternals
         }
 
         // OK, LOOK FOR A SAM SITE, UPDATE....
-//        UpdateAndDamageSAMIfFound(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, sGridNo, ubDamage);
+        //        UpdateAndDamageSAMIfFound(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, sGridNo, ubDamage);
 
         // find the base so we can reduce the hit points!
         pBase = FindBaseStructure(pStructure);
@@ -1469,7 +1493,7 @@ public class StructureInternals
             }
             else if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALL))
             {
-//                gprintf(0, LINE_HEIGHT * 1, "Wall with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
+                //                gprintf(0, LINE_HEIGHT * 1, "Wall with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
             }
             else if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLNWINDOW))
             {
@@ -1489,21 +1513,21 @@ public class StructureInternals
             }
             else if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DOOR))
             {
-//                gprintf(0, LINE_HEIGHT * 1, "Door with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
+                //                gprintf(0, LINE_HEIGHT * 1, "Door with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
             }
             else if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SLIDINGDOOR))
             {
-//                gprintf(0, LINE_HEIGHT * 1, "%s sliding door with orientation %s",
-//                    (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN) ? "Open" : "Closed"),
-//                    WallOrientationString[pStructure.ubWallOrientation]);
+                //                gprintf(0, LINE_HEIGHT * 1, "%s sliding door with orientation %s",
+                //                    (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN) ? "Open" : "Closed"),
+                //                    WallOrientationString[pStructure.ubWallOrientation]);
             }
             else if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_LEFT))
             {
-//                gprintf(0, LINE_HEIGHT * 1, "DDoorLft with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
+                //                gprintf(0, LINE_HEIGHT * 1, "DDoorLft with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
             }
             else if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_RIGHT))
             {
-//                gprintf(0, LINE_HEIGHT * 1, "DDoorRt with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
+                //                gprintf(0, LINE_HEIGHT * 1, "DDoorRt with orientation %s", WallOrientationString[pStructure.ubWallOrientation]);
             }
             else
             {
@@ -1511,14 +1535,14 @@ public class StructureInternals
             }
             bHeight = StructureHeight(pStructure);
             pBase = FindBaseStructure(pStructure);
-            gprintf(0, LINE_HEIGHT * 2, "Structure height %d, cube offset %d, armour %d, HP %d", bHeight, pStructure.sCubeOffset, gubMaterialArmour[pStructure.pDBStructureRef.pDBStructure.ubArmour], pBase.ubHitPoints);
+            gprintf(0, LINE_HEIGHT * 2, "Structure height %d, cube offset %d, armour %d, HP %d", bHeight, pStructure.sCubeOffset, gubMaterialArmour[(MATERIAL)pStructure.pDBStructureRef.pDBStructure.ubArmour], pBase.ubHitPoints);
             if (StructureDensity(pStructure, out bDens0, out bDens1, out bDens2, out bDens3) == true)
             {
                 gprintf(0, LINE_HEIGHT * 3, "Structure fill %d%%/%d%%/%d%%/%d%% density %d", bDens0, bDens1, bDens2, bDens3,
                     pStructure.pDBStructureRef.pDBStructure.ubDensity);
             }
 
-# if !LOS_DEBUG
+#if !LOS_DEBUG
             gprintf(0, LINE_HEIGHT * 4, "Structure ID %d", pStructure.usStructureID);
 #endif
 
@@ -1529,7 +1553,7 @@ public class StructureInternals
             }
             gprintf(0, LINE_HEIGHT * 12, "Number of structures = %d", bStructures);
         }
-# if LOS_DEBUG
+#if LOS_DEBUG
         if (gLOSTestResults.fLOSTestPerformed)
         {
             gprintf(0, LINE_HEIGHT * 4, "LOS from (%7d,%7d,%7d)", gLOSTestResults.iStartX, gLOSTestResults.iStartY, gLOSTestResults.iStartZ);
@@ -1556,21 +1580,21 @@ public class StructureInternals
             }
         }
 #endif
-//        gprintf(0, LINE_HEIGHT * 13, "N %d NE %d E %d SE %d",
-//            gubWorldMovementCosts[sGridNo, WorldDirections.NORTH, gsInterfaceLevel],
-//            gubWorldMovementCosts[sGridNo, WorldDirections.NORTHEAST, gsInterfaceLevel],
-//            gubWorldMovementCosts[sGridNo, WorldDirections.EAST, gsInterfaceLevel],
-//            gubWorldMovementCosts[sGridNo, WorldDirections.SOUTHEAST, gsInterfaceLevel]);
-//        gprintf(0, LINE_HEIGHT * 14, "S %d SW %d W %d NW %d",
-//            gubWorldMovementCosts[sGridNo, WorldDirections.SOUTH, gsInterfaceLevel],
-//            gubWorldMovementCosts[sGridNo, WorldDirections.SOUTHWEST, gsInterfaceLevel],
-//            gubWorldMovementCosts[sGridNo, WorldDirections.WEST, gsInterfaceLevel],
-//            gubWorldMovementCosts[sGridNo, WorldDirections.NORTHWEST, gsInterfaceLevel]);
+        //        gprintf(0, LINE_HEIGHT * 13, "N %d NE %d E %d SE %d",
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.NORTH, gsInterfaceLevel],
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.NORTHEAST, gsInterfaceLevel],
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.EAST, gsInterfaceLevel],
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.SOUTHEAST, gsInterfaceLevel]);
+        //        gprintf(0, LINE_HEIGHT * 14, "S %d SW %d W %d NW %d",
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.SOUTH, gsInterfaceLevel],
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.SOUTHWEST, gsInterfaceLevel],
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.WEST, gsInterfaceLevel],
+        //            gubWorldMovementCosts[sGridNo, WorldDirections.NORTHWEST, gsInterfaceLevel]);
         gprintf(0, LINE_HEIGHT * 15, "Ground smell %d strength %d",
             Smell.SMELL_TYPE(gpWorldLevelData[sGridNo].ubSmellInfo),
             Smell.SMELL_STRENGTH(gpWorldLevelData[sGridNo].ubSmellInfo));
 
-# if COUNT_PATHS
+#if COUNT_PATHS
         if (guiTotalPathChecks > 0)
         {
             gprintf(0, LINE_HEIGHT * 16,
@@ -1603,7 +1627,7 @@ public class StructureInternals
         int usWidth;
         int usHeight;
         DB_STRUCTURE_REF pDBStructureRef = new();
-        DB_STRUCTURE? pDBStructure = null;
+        DB_STRUCTURE pDBStructure = new();
         int sSTIStep = 0;
         int sStructIndex = 0;
         int sNext;
@@ -1621,7 +1645,7 @@ public class StructureInternals
             pDBStructureRef = (pStructureFileRef.pDBStructureRef[uiLoop]);
             pDBStructure = pDBStructureRef.pDBStructure;
             //if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1 && !(pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)) )
-            if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1)
+            if (pDBStructure.ubNumberOfTiles > 1)
             {
                 for (ubLoop2 = 1; ubLoop2 < pDBStructure.ubNumberOfTiles; ubLoop2++)
                 {
@@ -1636,7 +1660,7 @@ public class StructureInternals
         }
 
         // ATE: Make all corpses use z-strip info..
-        if (pDBStructure != null && pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE))
+        if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE))
         {
             fFound = true;
         }
@@ -1647,7 +1671,7 @@ public class StructureInternals
             return (true);
         }
 
-//        hVObject.ppZStripInfo = MemAlloc(sizeof(ZStripInfo?) * hVObject.usNumberOfObjects);
+        //        hVObject.ppZStripInfo = MemAlloc(sizeof(ZStripInfo?) * hVObject.usNumberOfObjects);
         if (hVObject.ppZStripInfo == null)
         {
             return (false);
@@ -1714,30 +1738,30 @@ public class StructureInternals
             if (fCopyIntoVo && sStructIndex < pStructureFileRef.usNumberOfStructures)
             {
                 pDBStructure = pStructureFileRef.pDBStructureRef[sStructIndex].pDBStructure;
-                if (pDBStructure != null && (pDBStructure.ubNumberOfTiles > 1 || (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE))))
+                if (pDBStructure.ubNumberOfTiles > 1 || (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE)))
                 //if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1 )
                 {
                     // ATE: We allow SLIDING DOORS of 2 tile sizes...
-                    if (!(pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)
-                        || ((pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)))
-                        && (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.SLIDINGDOOR))))
+                    if (!(((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.ANYDOOR)
+                        || ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.ANYDOOR)))
+                        && (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.SLIDINGDOOR))))
                     {
-//                        hVObject.ppZStripInfo[uiDestVoIndex] = MemAlloc(sizeof(ZStripInfo));
-//                        if (hVObject.ppZStripInfo[uiDestVoIndex] == null)
+                        //                        hVObject.ppZStripInfo[uiDestVoIndex] = MemAlloc(sizeof(ZStripInfo));
+                        //                        if (hVObject.ppZStripInfo[uiDestVoIndex] == null)
                         {
                             // augh!! out of memory!  free everything allocated and abort
                             for (ubLoop2 = 0; ubLoop2 < uiLoop; ubLoop2++)
                             {
-//                                if (hVObject.ppZStripInfo[ubLoop2] != null)
-//                                {
-//                                    MemFree(hVObject.ppZStripInfo[uiLoop]);
-//                                }
+                                //                                if (hVObject.ppZStripInfo[ubLoop2] != null)
+                                //                                {
+                                //                                    MemFree(hVObject.ppZStripInfo[uiLoop]);
+                                //                                }
                             }
                             MemFree(hVObject.ppZStripInfo);
                             hVObject.ppZStripInfo = null;
-//                            return (false);
+                            //                            return (false);
                         }
-//                        else
+                        //                        else
                         {
                             pCurr = hVObject.ppZStripInfo[uiDestVoIndex];
 
@@ -1750,7 +1774,7 @@ public class StructureInternals
                             sOffsetY = hVObject.pETRLEObject[uiLoop].sOffsetY;
                             usWidth = hVObject.pETRLEObject[uiLoop].usWidth;
                             usHeight = hVObject.pETRLEObject[uiLoop].usHeight;
-                            if (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE | STRUCTUREFLAGS.CORPSE))
+                            if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE | STRUCTUREFLAGS.CORPSE))
                             {
                                 int i = 0;
                                 // adjust for the difference between the animation and structure base tile				
@@ -1859,16 +1883,16 @@ public class StructureInternals
 
                             // now create the array!
                             pCurr.ubNumberOfZChanges = ubNumIncreasing + ubNumStable + ubNumDecreasing;
-//                            pCurr.pbZChange = MemAlloc(pCurr.ubNumberOfZChanges);
+                            //                            pCurr.pbZChange = MemAlloc(pCurr.ubNumberOfZChanges);
                             if (pCurr.pbZChange == null)
                             {
                                 // augh!
                                 for (ubLoop2 = 0; ubLoop2 < uiLoop; ubLoop2++)
                                 {
-//                                    if (hVObject.ppZStripInfo[ubLoop2] != null)
-//                                    {
-//                                        MemFree(hVObject.ppZStripInfo[uiLoop]);
-//                                    }
+                                    //                                    if (hVObject.ppZStripInfo[ubLoop2] != null)
+                                    //                                    {
+                                    //                                        MemFree(hVObject.ppZStripInfo[uiLoop]);
+                                    //                                    }
                                 }
                                 MemFree(hVObject.ppZStripInfo);
                                 hVObject.ppZStripInfo = null;
@@ -2090,7 +2114,7 @@ public class StructureInternals
                 return (ubLoop);
             }
 
-//            uiBit <<= (STRUCTUREFLAGS)1;
+            //            uiBit <<= (STRUCTUREFLAGS)1;
         }
         return (0);
     }
@@ -2099,7 +2123,7 @@ public class StructureInternals
     {
         STRUCTUREFLAGS uiFlag = (STRUCTUREFLAGS)0x1;
 
-//        uiFlag <<= ubType;
+        //        uiFlag <<= ubType;
         return (uiFlag);
     }
 
@@ -2204,7 +2228,7 @@ public class STRUCTURE_FILE_REF
     public STRUCTURE_FILE_REF? pNext;
     public AuxObjectData pAuxData;
     public RelTileLoc pTileLocData;
-    public IntPtr pubStructureData;
+    public byte[] pubStructureData;
     public List<DB_STRUCTURE_REF> pDBStructureRef = new(); // dynamic array
     public ushort usNumberOfStructures;
     public ushort usNumberOfStructuresStored;
@@ -2226,14 +2250,19 @@ public class STRUCTURE_FILE_REF
 // below. Trying to avoid unsafe here.
 
 [StructLayout(LayoutKind.Explicit, Size = 16)]
-public unsafe struct STRUCTURE_FILE_HEADER
+public struct STRUCTURE_FILE_HEADER
 {
-    [FieldOffset(00)] public fixed char szId[4];
+    [FieldOffset(00)] public byte szId1;
+    [FieldOffset(01)] public byte szId2;
+    [FieldOffset(02)] public byte szId3;
+    [FieldOffset(03)] public byte szId4;
     [FieldOffset(04)] public ushort usNumberOfStructures;
     [FieldOffset(04)] public ushort usNumberOfImages;
     [FieldOffset(06)] public ushort usNumberOfStructuresStored;
     [FieldOffset(08)] public ushort usStructureDataSize;
-    [FieldOffset(09)] public STRUCTURE_FILE_CONTAINS fFlags;
-    [FieldOffset(12)] private fixed byte bUnused[3];
-    [FieldOffset(15)] public ushort usNumberOfImageTileLocsStored;
+    [FieldOffset(10)] public STRUCTURE_FILE_CONTAINS fFlags;
+    [FieldOffset(11)] private byte bUnused1;
+    [FieldOffset(12)] private byte bUnused2;
+    [FieldOffset(13)] private byte bUnused3;
+    [FieldOffset(14)] public ushort usNumberOfImageTileLocsStored;
 } // 16 bytes

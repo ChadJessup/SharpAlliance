@@ -39,7 +39,7 @@ public class WorldStructures
 
             pCurrent = pCurrent.pNext;
         }
-     
+
         return (null);
     }
 
@@ -118,7 +118,7 @@ public class WorldStructures
         int sGridNo;
         List<STRUCTURE> ppStructure = new();
         STRUCTURE? pBaseStructure;
-        DB_STRUCTURE? pDBStructure;
+        DB_STRUCTURE pDBStructure;
         List<DB_STRUCTURE_TILE> ppTile;
         int ubLoop;
         int ubLoop2;
@@ -130,11 +130,12 @@ public class WorldStructures
             return null;
         }
 
-        pDBStructure = pDBStructureRef.pDBStructure;
-        if (pDBStructure is null)
+        if (pDBStructureRef is null)
         {
             return null;
         }
+
+        pDBStructure = pDBStructureRef.pDBStructure;
 
         ppTile = pDBStructureRef.ppTile;
         if (ppTile is null)
@@ -183,11 +184,11 @@ public class WorldStructures
 
             if (ppTile[ubLoop].fFlags.HasFlag(TILE.ON_ROOF))
             {
-//                ppStructure[ubLoop].sCubeOffset = (bLevel + 1) * PROFILE.Z_SIZE;
+                //                ppStructure[ubLoop].sCubeOffset = (bLevel + 1) * PROFILE.Z_SIZE;
             }
             else
             {
-//                ppStructure[ubLoop].sCubeOffset = bLevel * PROFILE.Z_SIZE;
+                //                ppStructure[ubLoop].sCubeOffset = bLevel * PROFILE.Z_SIZE;
             }
             if (ppTile[ubLoop].fFlags.HasFlag(TILE.PASSABLE))
             {
@@ -199,7 +200,7 @@ public class WorldStructures
                 ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.PERSON;
                 ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.BLOCKSMOVES);
             }
-            else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE) || pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE))
+            else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE) || ((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE))
             {
                 ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.CORPSE;
                 // attempted check to screen this out for queen creature or vehicle
@@ -224,7 +225,7 @@ public class WorldStructures
         else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE))
         {
             // ATE: Offset IDs so they don't collide with soldiers
-//            usStructureID = (Globals.TOTAL_SOLDIERS + pLevelNode.pAniTile.uiUserData);
+            //            usStructureID = (Globals.TOTAL_SOLDIERS + pLevelNode.pAniTile.uiUserData);
         }
         else
         {
@@ -316,11 +317,11 @@ public class WorldStructures
     {
         // Creates a STRUCTURE struct for one tile of a structure
         STRUCTURE? pStructure;
-        DB_STRUCTURE? pDBStructure;
+        DB_STRUCTURE pDBStructure;
         DB_STRUCTURE_TILE? pTile;
 
         // set pointers to the DBStructure and Tile
-        if (pDBStructureRef.pDBStructure is null)
+        if (pDBStructureRef is null)
         {
             return null;
         }
@@ -398,7 +399,7 @@ public class WorldStructures
         ArgumentNullException.ThrowIfNull(pDBStructureRef.ppTile);
 
         // Verifies whether a structure is blocked from being added to the map at a particular point
-        DB_STRUCTURE? pDBStructure;
+        DB_STRUCTURE pDBStructure;
         List<DB_STRUCTURE_TILE> ppTile = new();
         STRUCTURE? pExistingStructure;
         STRUCTURE? pOtherExistingStructure;
@@ -436,14 +437,14 @@ public class WorldStructures
             {
                 // CJC:
                 // If adding a mobile structure, allow addition if existing structure is passable
-                if ((pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
+                if ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE)) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
                 {
                     // Skip!
                     pExistingStructure = pExistingStructure.pNext;
                     continue;
                 }
 
-                if (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OBSTACLE))
                 {
 
                     // CJC: NB these next two if states are probably COMPLETELY OBSOLETE but I'm leaving
@@ -474,7 +475,7 @@ public class WorldStructures
 
                     // two obstacle structures aren't allowed in the same tile at the same height
                     // ATE: There is more sophisticated logic for mobiles, so postpone this check if mobile....
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)))
+                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE)))
                     {
                         if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE) && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)))
                         {
@@ -523,7 +524,7 @@ public class WorldStructures
 
                     }
                 }
-                else if (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF))
+                else if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                 {
                     // two walls with the same alignment aren't allowed in the same tile
                     if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)) && (pDBStructure.ubWallOrientation == pExistingStructure.ubWallOrientation))
@@ -562,7 +563,7 @@ public class WorldStructures
                     }
                 }
 
-                if (pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE))
                 {
                     // ATE:
                     // ignore this one if it has the same ID num as exclusion
@@ -610,7 +611,7 @@ public class WorldStructures
                     }
                 }
 
-                if ((pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE)))
+                if ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OPENABLE)))
                 {
                     if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE))
                     {
@@ -633,7 +634,7 @@ public class WorldStructures
         int ubLoop;
         STRUCTURE_ON sCubeOffset;
 
-        if (pDBStructureRef.pDBStructure is null
+        if (pDBStructureRef is null
             || pDBStructureRef.pDBStructure.ubNumberOfTiles > 0
             || pDBStructureRef.ppTile is null)
         {

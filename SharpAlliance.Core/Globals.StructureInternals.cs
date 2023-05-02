@@ -154,7 +154,7 @@ public enum STRUCTURE_ON
 }
 
 // Material armour type enumeration
-public enum MATERIAL
+public enum MATERIAL : byte
 {
     NOTHING,
     WOOD_WALL,

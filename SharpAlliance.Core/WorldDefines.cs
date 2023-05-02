@@ -134,33 +134,33 @@ public class STRUCTURE
 
     public STRUCTURE_ON sCubeOffset;// height of bottom of object in profile "cubes"
     public STRUCTUREFLAGS fFlags; // need to have something to indicate base tile/not
-    public PROFILE? pShape;
+    public byte[,]? pShape;
     public WallOrientation ubWallOrientation;
     public int ubVehicleHitLocation;
     public int ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
     public int ubUnused;
 }
 
-public class DB_STRUCTURE
+public struct DB_STRUCTURE
 {
     public MATERIAL ubArmour;
-    public int ubDensity;
-    public int ubHitPoints;
-    public int ubNumberOfTiles;
-    public STRUCTUREFLAGS fFlags;
+    public byte ubHitPoints;
+    public byte ubDensity;
+    public byte ubNumberOfTiles;
+    public STRUCTUREFLAGS fFlags; //  STRUCTUREFLAGS
     public ushort usStructureNumber;
     public WallOrientation ubWallOrientation;
     public sbyte bDestructionPartner; // >0 = debris number (bDP - 1), <0 = partner graphic 
-    public int bPartnerDelta; // opened/closed version, etc... 0 for unused
+    public byte bPartnerDelta; // opened/closed version, etc... 0 for unused
     public sbyte bZTileOffsetX;
     public sbyte bZTileOffsetY;
-    public byte bUnused;
+    public byte[] bUnused;
 } // 16 bytes
 
-public struct DB_STRUCTURE_REF
+public class DB_STRUCTURE_REF
 {
-    public DB_STRUCTURE pDBStructure;
-    public List<DB_STRUCTURE_TILE> ppTile; // dynamic array
+    public DB_STRUCTURE pDBStructure = new();
+    public List<DB_STRUCTURE_TILE> ppTile = new(); // dynamic array
 } // 8 bytes
 
 public class DB_STRUCTURE_TILE
@@ -168,10 +168,10 @@ public class DB_STRUCTURE_TILE
     public int sPosRelToBase;  // "single-axis"
     public int bXPosRelToBase;
     public int bYPosRelToBase;
-    public PROFILE Shape;                  // 25 bytes
+    public byte [,] Shape = new byte[PROFILE_X_SIZE, PROFILE_Y_SIZE];                  // 25 bytes
     public TILE fFlags { get; set; }
     public byte ubVehicleHitLocation;
-    byte bUnused;
+    public byte[] bUnused = new byte[1];
 } // 32 bytes
 
 public class MAP_ELEMENT

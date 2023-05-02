@@ -3263,7 +3263,7 @@ public enum TileTypeDefines
     UNSET = -1,
 }
 
-public enum WallOrientation
+public enum WallOrientation : byte
 {
     NO_ORIENTATION,
     INSIDE_TOP_LEFT,

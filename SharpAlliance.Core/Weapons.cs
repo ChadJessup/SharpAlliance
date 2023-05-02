@@ -48,7 +48,7 @@ public class Weapons
     public static void WindowHit(int sGridNo, int usStructureID, bool fBlowWindowSouth, bool fLargeForce)
     {
         STRUCTURE? pWallAndWindow;
-        DB_STRUCTURE? pWallAndWindowInDB;
+        DB_STRUCTURE pWallAndWindowInDB;
         int sShatterGridNo;
         TileIndexes usTileIndex;
         ANITILE? pNode;
