@@ -134,7 +134,7 @@ public class STRUCTURE
 
     public STRUCTURE_ON sCubeOffset;// height of bottom of object in profile "cubes"
     public STRUCTUREFLAGS fFlags; // need to have something to indicate base tile/not
-    public byte[,]? pShape;
+    public byte[][]? pShape;
     public WallOrientation ubWallOrientation;
     public int ubVehicleHitLocation;
     public int ubStructureHeight; // if 0, then unset; otherwise stores height of structure when last calculated
@@ -168,7 +168,7 @@ public class DB_STRUCTURE_TILE
     public int sPosRelToBase;  // "single-axis"
     public int bXPosRelToBase;
     public int bYPosRelToBase;
-    public byte [,] Shape = new byte[PROFILE_X_SIZE, PROFILE_Y_SIZE];                  // 25 bytes
+    public byte[][] Shape = new byte[PROFILE_X_SIZE][];// PROFILE_Y_SIZE];                  // 25 bytes
     public TILE fFlags { get; set; }
     public byte ubVehicleHitLocation;
     public byte[] bUnused = new byte[1];

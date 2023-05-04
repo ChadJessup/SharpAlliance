@@ -833,7 +833,7 @@ public class WorldStructures
     }
 }
 
-public enum TILE
+public enum TILE : byte
 {
     ON_ROOF = 0x01,
     PASSABLE = 0x02,

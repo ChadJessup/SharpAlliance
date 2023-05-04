@@ -22,7 +22,7 @@ public class StructureInternals
     }
 
     // Function operating on a structure tile
-    private static int FilledTilePositions(DB_STRUCTURE_TILE? pTile)
+    private static int FilledTilePositions(DB_STRUCTURE_TILE pTile)
     {
         int ubFilled = 0, ubShapeValue;
         int bLoopX, bLoopY, bLoopZ;
@@ -33,10 +33,10 @@ public class StructureInternals
         {
             for (bLoopY = 0; bLoopY < PROFILE_Y_SIZE; bLoopY++)
             {
-                ubShapeValue = pTile.Shape[bLoopX, bLoopY];
+                ubShapeValue = pTile.Shape[bLoopX][bLoopY];
                 for (bLoopZ = 0; bLoopZ < PROFILE_Z_SIZE; bLoopZ++)
                 {
-                    if ((ubShapeValue & AtHeight[bLoopZ]) == 0)
+                    if ((ubShapeValue & AtHeight[bLoopZ]) > 0)
                     {
                         ubFilled++;
                     }
@@ -203,6 +203,8 @@ public class StructureInternals
         return (true);
     }
 
+    static int idxCount = 0;
+
     private static bool CreateFileStructureArrays(STRUCTURE_FILE_REF pFileRef, int uiDataSize)
     { // Based on a file chunk, creates all the dynamic arrays for the 
       // structure definitions contained within
@@ -248,6 +250,7 @@ public class StructureInternals
                 pDBStructure = dbStructure,
             });
 
+            idxCount++;
             usIndex = dbStructure.usStructureNumber;
             pDBStructureRef[usIndex].pDBStructure = dbStructure;
             pDBStructureRef[usIndex].ppTile = ppTileArray;
@@ -259,15 +262,22 @@ public class StructureInternals
             {
                 // sizeof(DB_STRUCTURE_TILE) == 32
                 var tileSpan = totalSpan.Slice(dbStructureEnd + (usTileLoop * 32), 32);
-                ppTileArray.Add(new()
+                DB_STRUCTURE_TILE tempTile = new()
                 {
-                    sPosRelToBase = 0,
-                    bXPosRelToBase = 0,
-                    bYPosRelToBase = 0,
-                    Shape = new byte[5, 5],
-                    fFlags = 0,
-                    ubVehicleHitLocation = 0,
-                });
+                    sPosRelToBase = MemoryMarshal.Read<short>(tileSpan[0..]),
+                    bXPosRelToBase = tileSpan[2],
+                    bYPosRelToBase = tileSpan[3],
+                    fFlags = (TILE)tileSpan[28],
+                    ubVehicleHitLocation = tileSpan[29],
+                };
+
+                tempTile.Shape[0] = MemoryMarshal.Cast<byte, byte>(tileSpan[4..9]).ToArray();
+                tempTile.Shape[1] = MemoryMarshal.Cast<byte, byte>(tileSpan[9..14]).ToArray();
+                tempTile.Shape[2] = MemoryMarshal.Cast<byte, byte>(tileSpan[14..19]).ToArray();
+                tempTile.Shape[3] = MemoryMarshal.Cast<byte, byte>(tileSpan[19..24]).ToArray();
+                tempTile.Shape[4] = MemoryMarshal.Cast<byte, byte>(tileSpan[24..29]).ToArray();
+
+                ppTileArray.Add(tempTile);
 
 //                // set the single-value relative position between this tile and the base tile
                 ppTileArray[usTileLoop].sPosRelToBase = ppTileArray[usTileLoop].bXPosRelToBase + ppTileArray[usTileLoop].bYPosRelToBase * WORLD_COLS;
@@ -316,12 +326,13 @@ public class StructureInternals
                 return (null);
             }
         }
+        
         // Add the file reference to the master list, at the head for convenience	
-        //        if (gpStructureFileRefs != null)
-        //        {
-        //            gpStructureFileRefs.pPrev = pFileRef;
-        //        }
-        //        pFileRef.pNext = gpStructureFileRefs;
+        if (gpStructureFileRefs != null)
+        {
+            gpStructureFileRefs.pPrev = pFileRef;
+        }
+        pFileRef.pNext = gpStructureFileRefs;
         gpStructureFileRefs = pFileRef;
         return (pFileRef);
     }
@@ -1095,7 +1106,7 @@ public class StructureInternals
     public static int StructureHeight(STRUCTURE? pStructure)
     { // return the height of an object from 1-4
         int ubLoopX, ubLoopY;
-        byte[,]? pShape;
+        byte[][]? pShape;
         int ubShapeValue;
         int bLoopZ;
         int bGreatestHeight = -1;
@@ -1117,7 +1128,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX, ubLoopY];
+                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
                 // loop DOWN vertically so that we find the tallest point first
                 // and don't need to check any below it
                 for (bLoopZ = PROFILE_Z_SIZE - 1; bLoopZ > bGreatestHeight; bLoopZ--)
@@ -1227,7 +1238,7 @@ public class StructureInternals
     public static int StructureBottomLevel(STRUCTURE? pStructure)
     { // return the bottom level of an object, from 1-4
         int ubLoopX, ubLoopY;
-        byte[,]? pShape;
+        byte[][]? pShape;
         int ubShapeValue;
         int bLoopZ;
         int bLowestHeight = PROFILE_Z_SIZE;
@@ -1243,7 +1254,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX, ubLoopY];
+                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
                 // loop DOWN vertically so that we find the tallest point first
                 // and don't need to check any below it
                 for (bLoopZ = 0; bLoopZ < bLowestHeight; bLoopZ++)
@@ -1268,7 +1279,7 @@ public class StructureInternals
     {
         int ubLoopX, ubLoopY;
         int ubShapeValue;
-        byte[,]? pShape;
+        byte[][]? pShape;
 
         CHECKF(pStructure);
         pubLevel0 = 0;
@@ -1282,7 +1293,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX, ubLoopY];
+                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
                 //                if (ubShapeValue & AtHeight[0])
                 //                {
                 //                    (pubLevel0)++;
