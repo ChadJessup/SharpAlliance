@@ -8,6 +8,7 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 
 using static SharpAlliance.Core.Globals;
@@ -529,13 +530,13 @@ public class CreditsScreen : IScreen
                 ubBitDepth = 16
             };
 
-            if (video.AddVideoSurface(out vs_desc, out pNodeToAdd.uiVideoSurfaceImage) == 0)
+            if (video.TryCreateVideoSurface(vs_desc, out pNodeToAdd.uiVideoSurfaceImage))
             {
                 return false;
             }
 
             //Set transparency
-            video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, 0);
+            video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
 
             //fill the surface with a transparent color
 
@@ -650,7 +651,7 @@ public class CreditsScreen : IScreen
             Globals.gfCrdtHaveRenderedFirstFrameToSaveBuffer = true;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-            video.BlitBufferToBuffer(0, 0, 640, 480);
+            video.BlitBufferToBuffer(Surfaces.RENDER_BUFFER, Surfaces.SAVE_BUFFER, 0, 0, 640, 480);
 
             ButtonSubSystem.UnmarkButtonsDirty();
         }

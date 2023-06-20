@@ -30,19 +30,6 @@ public class TGAImageFileLoader : IImageFileLoader
     }
 }
 
-public class PCXImageFileLoader : IImageFileLoader
-{
-    public List<Image<Rgba32>> ApplyPalette(ref HVOBJECT hVObject, ref HIMAGE hImage)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool LoadImage(ref HIMAGE hIMAGE, HIMAGECreateFlags flags, IFileManager fileManager)
-    {
-        return false;
-    }
-}
-
 // NB if you're going to change the header definition:
 // - make sure that everything in this header is nicely aligned
 // - don't exceed the 64-byte maximum
@@ -121,3 +108,4 @@ public struct RGB
     [FieldOffset(18)] public byte ubBlueDepth;
     [FieldOffset(19)] public byte ubAlphaDepth;
 }
+

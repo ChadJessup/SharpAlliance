@@ -7,6 +7,8 @@ using SharpAlliance.Core.SubSystems;
 using static SharpAlliance.Core.SubSystems.MessageSubSystem;
 using static SharpAlliance.Core.Globals;
 using SharpAlliance.Core.Interfaces;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -188,7 +190,7 @@ public class Messages
 
     void BlitString(VIDEO_OVERLAY pBlitter)
     {
-        int? pDestBuf;
+        Image<Rgba32> pDestBuf;
         int uiDestPitchBYTES;
 
         //gprintfdirty(pBlitter.sX,pBlitter.sY, pBlitter.zText);

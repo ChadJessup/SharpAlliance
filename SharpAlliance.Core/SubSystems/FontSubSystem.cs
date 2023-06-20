@@ -1069,6 +1069,12 @@ public class FontSubSystem : ISharpAllianceManager
     {
         throw new NotImplementedException();
     }
+
+    public int WFStringPixLength(string pString, FontStyle UseFont)
+    {
+        // return how many Y pixels we used
+        return StringPixLength(pString, UseFont);
+    }
 }
 
 public enum FONT_SHADE

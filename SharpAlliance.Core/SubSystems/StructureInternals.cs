@@ -220,11 +220,11 @@ public class StructureInternals
 
         var totalSpan = pFileRef.pubStructureData.AsSpan();
 
-        var index = 16;
+        var index = 0;
         for (usLoop = 0; usLoop < pFileRef.usNumberOfStructuresStored; usLoop++)
         {
             // sizeof(DB_STRUCTURE) == 16
-            var dbStructureStart = usLoop * 16;
+            var dbStructureStart = index;
             var dbStructureEnd = dbStructureStart + 16;
 
             var dbStructureSpan = totalSpan.Slice(dbStructureStart, 16);
@@ -282,7 +282,7 @@ public class StructureInternals
 //                // set the single-value relative position between this tile and the base tile
                 ppTileArray[usTileLoop].sPosRelToBase = ppTileArray[usTileLoop].bXPosRelToBase + ppTileArray[usTileLoop].bYPosRelToBase * WORLD_COLS;
                 uiHitPoints += FilledTilePositions(ppTileArray[usTileLoop]);
-//                pCurrent += sizeof(DB_STRUCTURE_TILE);
+                index += 32;//sizeof(DB_STRUCTURE_TILE);
             }
 
             // scale hit points down to something reasonable...

@@ -21,14 +21,14 @@ public class HIMAGE : IImageFormat
     public string ImageFile;
     public IImageFileLoader iFileLoader;
     public List<SGPPaletteEntry> pPalette = new();
-    public uint pui16BPPPalette;
+    public Rgba32[] pui16BPPPalette;
     public byte[]? pAppData;
     public uint uiAppDataSize;
     // This union is used to describe each data type and is flexible to include the
     // data strucutre of the compresssed format, once developed.
     public byte[] pImageData;
     public byte[] pCompressedImageData;
-    public int p8BPPData;
+    public byte[] p8BPPData;
     public byte[] p16BPPData;
     public byte[] pPixData8;
     public uint uiSizePixData;
@@ -40,7 +40,7 @@ public class HIMAGE : IImageFormat
     public List<Image<Rgba32>> ParsedImages { get; set; }
     public string Name { get; } = "STI";
     public string DefaultMimeType { get; }
-    public IEnumerable<string> MimeTypes { get; } = new List<string>() { "BLAH" };
+    public IEnumerable<string> MimeTypes { get; } = new List<string>() { "pcx" };
     public IEnumerable<string> FileExtensions { get; } = new List<string> { "sti" };
 
     public const ushort BLACK_SUBSTITUTE = 0x0001;

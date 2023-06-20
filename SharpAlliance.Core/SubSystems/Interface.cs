@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
@@ -14,10 +15,18 @@ public class Interface
     private static int iUIMessageBox = -1;
 
     private static IVideoManager video;
+    private readonly MercTextBox mercTextBox;
 
-    public Interface(IVideoManager videoManager) => video = videoManager;
+    public Interface(
+        ILogger<Interface> logger,
+        IVideoManager videoManager,
+        MercTextBox mercTextBox)
+    {
+        video = videoManager;
+        this.mercTextBox = mercTextBox;
+    }
 
-    public static void BeginUIMessage(params string[] pFontString)
+    public void BeginUIMessage(params string[] pFontString)
     {
         InternalBeginUIMessage(false, pFontString);
     }
@@ -28,7 +37,7 @@ public class Interface
         return (1000 + 50 * wString.Length);
     }
 
-    private static void InternalBeginUIMessage(bool fUseSkullIcon, params string[] MsgString)
+    private void InternalBeginUIMessage(bool fUseSkullIcon, params string[] MsgString)
     {
         VIDEO_OVERLAY_DESC VideoOverlayDesc;
         guiUIMessageTime = ClockManager.GetJA2Clock();
@@ -49,7 +58,7 @@ public class Interface
         }
 
         // Prepare text box
-        iUIMessageBox = MercTextBox.PrepareMercPopupBox(iUIMessageBox, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER, string.Format(MsgString.First(), MsgString[1..]), 200, 10, 0, 0, out gusUIMessageWidth, out gusUIMessageHeight);
+        iUIMessageBox = mercTextBox.PrepareMercPopupBox(iUIMessageBox, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER, string.Format(MsgString.First(), MsgString[1..]), 200, 10, 0, 0, out gusUIMessageWidth, out gusUIMessageHeight);
 
         // Set it back!
         MercTextBox.ResetOverrideMercPopupBox();

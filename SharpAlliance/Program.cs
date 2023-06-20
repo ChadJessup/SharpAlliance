@@ -75,6 +75,7 @@ namespace SharpAlliance
             builder.AddDependency<IInputManager, InputManager>();
             builder.AddDependency<IClockManager, ClockManager>();
 
+
             builder.Services.AddSingleton<Cars>();
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<Messages>();
@@ -88,6 +89,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<SaveLoadGame>();
             builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<MouseSubSystem>();
+            builder.Services.AddSingleton<SurfaceManager>();
             builder.Services.AddSingleton<SliderSubSystem>();
             builder.Services.AddSingleton<ButtonSubSystem>();
             builder.Services.AddSingleton<CursorSubSystem>();

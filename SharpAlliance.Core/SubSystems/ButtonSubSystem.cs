@@ -63,7 +63,7 @@ public class ButtonSubSystem : ISharpAllianceManager
     private uint ButtonDestBPP = 16;
 
     public static GUI_BUTTON[] ButtonList = new GUI_BUTTON[Globals.MAX_BUTTONS];
-    private static Dictionary<ButtonPic, HVOBJECT> GenericButtonGrayed = new ();
+    private static Dictionary<ButtonPic, HVOBJECT> GenericButtonGrayed = new();
     private static Dictionary<ButtonPic, HVOBJECT> GenericButtonOffNormal = new();
     private static Dictionary<ButtonPic, HVOBJECT> GenericButtonOffHilite = new();
     private static Dictionary<ButtonPic, HVOBJECT> GenericButtonOnNormal = new();
@@ -171,7 +171,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Blank out all QuickButton images
         //for (x = 0; x < MAX_BUTTON_PICS; x++)
         //{
-        
+
         var bp = new ButtonPic
         {
             vobj = null,
@@ -269,7 +269,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         bool fOldButtonDown, fOldEnabled;
 
         fonts.SaveFontSettings();
-        foreach(var b in buttons)
+        foreach (var b in buttons)
         {
             // If the button exists, and it's not owned by another object, draw it
             //Kris:  and make sure that the button isn't hidden.
@@ -1333,9 +1333,25 @@ public class ButtonSubSystem : ISharpAllianceManager
         button.IsDirty = true;
     }
 
+    //=============================================================================
+    //	DisableButton
+    //
+    //	Disables a button. The button remains in the system list, and can be
+    //	reactivated by calling EnableButton.
+    //
+    //	Diabled buttons will appear "grayed out" on the screen (unless the
+    //	graphics for such are not available).
+    //
     public static bool DisableButton(GUI_BUTTON button)
     {
-        return false;
+        ButtonFlags OldState;
+
+        OldState = button.uiFlags & ButtonFlags.BUTTON_ENABLED;
+        button.uiFlags &= (~ButtonFlags.BUTTON_ENABLED);
+        button.uiFlags |= ButtonFlags.BUTTON_DIRTY;
+
+        // Return previous ENABLED state of button
+        return OldState == ButtonFlags.BUTTON_ENABLED;
     }
 
     private bool GetETRLEPixelValue(

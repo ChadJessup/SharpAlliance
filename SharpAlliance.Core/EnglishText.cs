@@ -337,7 +337,7 @@ public static class EnglishText
     //option Text
     public static string[] zOptionsToggleText = new string[]
     {
-        "Hi Twitter!",
+        "Speech",
         "Mute Confirmations",
         "SubTitles",
         "Pause Text Dialogue",

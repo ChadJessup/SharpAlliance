@@ -997,8 +997,8 @@ public partial class Globals
 
     public static uint guiBOTTOMPANEL { get; set; }
     public static uint guiRIGHTPANEL { get; set; }
-    public static Surfaces guiRENDERBUFFER { get; set; }
-    public static Surfaces guiSAVEBUFFER { get; set; }
+//    public static Surfaces guiRENDERBUFFER { get; set; }
+    //public static Surfaces Surfaces.SAVE_BUFFER { get; set; }
     public static Surfaces guiEXTRABUFFER { get; set; }
     public static bool gfExtraBuffer { get; set; }
 
@@ -1395,8 +1395,8 @@ public partial class Globals
     public static bool gfPrintFrameBuffer;
     public static int guiPrintFrameBufferIndex;
 
-    public static Image<Rgba32> gpFrameBuffer;
-    public static Image<Rgba32> gpPrimarySurface;
+//    public static Image<Rgba32> gpFrameBuffer;
+//    public static Image<Rgba32> gpPrimarySurface;
 
     public static int gusScreenWidth = 640;
     public static int gusScreenHeight = 480;
@@ -1660,8 +1660,6 @@ public partial class Globals
     public static bool gfMainMenuScreenEntry = false;
     public static bool gfMainMenuScreenExit = false;
 
-    public static ScreenName guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
-
     public static string guiCreditFacesKey;
     public static string guiCreditBackGroundImageKey;
     public static bool gfCreditsScreenEntry;
@@ -1712,7 +1710,7 @@ public partial class Globals
     public static MercPopUpBox gBasicPopUpTextBox;
 
     // the current pop up box
-    public static MercPopUpBox? gPopUpTextBox;
+    public static MercPopUpBox gPopUpTextBox;
 
     public static STRATEGICEVENT? gpEventList = null;
     public static bool gfPreventDeletionOfAnyEvent = false;
@@ -1759,11 +1757,11 @@ public partial class Globals
 
 
     // the old one
-    public static MercPopUpBox? gOldPopUpTextBox;
+    public static MercPopUpBox gOldPopUpTextBox;
 
 
     // the list of boxes
-    public static MercPopUpBox?[] gpPopUpBoxList = new MercPopUpBox?[MAX_NUMBER_OF_POPUP_BOXES];
+    public static MercPopUpBox[] gpPopUpBoxList = new MercPopUpBox[MAX_NUMBER_OF_POPUP_BOXES];
 
     // the flags
     public static MERC_POPUP_PREPARE_FLAGS guiFlags = 0;

@@ -11,7 +11,7 @@ namespace SharpAlliance.Core.Managers;
 
 public class GuiManager : ISharpAllianceManager
 {
-    public static SliderSubSystem Sliders { get; private set; }
+    public SliderSubSystem Sliders { get; private set; }
 
     public bool IsInitialized { get; }
 
@@ -25,14 +25,14 @@ public class GuiManager : ISharpAllianceManager
         return ValueTask.FromResult(true);
     }
 
-    public static void RenderButtonsFastHelp()
+    public void RenderButtonsFastHelp()
     {
     }
 
-    public static void RenderSliderBars()
+    public void RenderSliderBars()
         => Sliders.RenderSliderBars();
 
-    public static void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
+    public void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
         => ButtonSubSystem.RenderButtons(buttons);
 
     public void Dispose()

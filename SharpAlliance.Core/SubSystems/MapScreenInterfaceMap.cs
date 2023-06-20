@@ -117,16 +117,14 @@ public class MapScreenInterfaceMap
         HVSURFACE hSrcVSurface;
         List<SGPPaletteEntry> pPalette = new();
         VSURFACE_DESC vs_desc;
-        Surfaces uiTempMap;
+        string uiTempMap;
 
         // load image
-        vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
-        vs_desc.ImageFile = "INTERFACE\\b_map.pcx";
-        video.AddVideoSurface(out vs_desc, out uiTempMap);
-
+        video.AddVideoObject("INTERFACE\\b_map.pcx", out uiTempMap);
+        
         // get video surface
-        video.GetVideoSurface(out hSrcVSurface, uiTempMap);
-        video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
+        //video.GetVideoSurface(out hSrcVSurface, uiTempMap);
+        //video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
 
         // set up various palettes
         this.pMapLTRedPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 400, greenScale: 0, blueScale: 0, mono: true);
@@ -135,7 +133,7 @@ public class MapScreenInterfaceMap
         this.pMapDKGreenPalette = video.Create16BPPPaletteShaded(pPalette, redScale: 0, greenScale: 200, blueScale: 0, mono: true);
 
         // delete image
-        video.DeleteVideoSurfaceFromIndex(uiTempMap);
+        // video.DeleteVideoSurfaceFromIndex(uiTempMap);
     }
 
     public static bool DrawMap()
@@ -150,7 +148,7 @@ public class MapScreenInterfaceMap
 
         //if (!iCurrentMapSectorZ)
         //{
-        //    // pDestBuf = LockVideoSurface(Globals.guiSAVEBUFFER, out uiDestPitchBYTES);
+        //    // pDestBuf = LockVideoSurface(Globals.Surfaces.SAVE_BUFFER, out uiDestPitchBYTES);
 
         //    if (!video.GetVideoSurface(out hSrcVSurface, Globals.guiBIGMAP))
         //    {
@@ -218,7 +216,7 @@ public class MapScreenInterfaceMap
         //    }
 
         //    //UnLockVideoSurface(Globals.guiBIGMAP);
-        //    //UnLockVideoSurface(Globals.guiSAVEBUFFER);
+        //    //UnLockVideoSurface(Globals.Surfaces.SAVE_BUFFER);
 
 
         //    // shade map sectors (must be done after Tixa/Orta/Mine icons have been blitted, but before icons!)		
@@ -413,7 +411,7 @@ public class MapScreenInterfaceMap
 
     public static void RenderMapBorder()
     {
-        // renders the actual border to the guiSAVEBUFFER
+        // renders the actual border to the Surfaces.SAVE_BUFFER
         HVOBJECT hHandle;
 
         /*	
@@ -426,23 +424,23 @@ public class MapScreenInterfaceMap
         if (fShowMapInventoryPool)
         {
             // render background, then leave
-//            BlitInventoryPoolGraphic();
+            //            BlitInventoryPoolGraphic();
             return;
         }
 
         // get and blt border
         video.GetVideoObject(out hHandle, Globals.guiMapBorder);
         VideoObjectManager.BltVideoObject(
-            Globals.guiSAVEBUFFER, 
-            hHandle, 
-            0, 
-            Globals.MAP_BORDER_X, 
-            Globals.MAP_BORDER_Y, 
-            VO_BLT.SRCTRANSPARENCY, 
+            Surfaces.SAVE_BUFFER,
+            hHandle,
+            0,
+            Globals.MAP_BORDER_X,
+            Globals.MAP_BORDER_Y,
+            VO_BLT.SRCTRANSPARENCY,
             null);
 
         // show the level marker
-//        DisplayCurrentLevelMarker();
+        //        DisplayCurrentLevelMarker();
 
 
         return;

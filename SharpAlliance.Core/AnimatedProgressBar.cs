@@ -208,7 +208,7 @@ public class AnimatedProgressBar
             int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont) + 3;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-//            RenderDirty.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);
+//            RenderDirty.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);
         }
     }
 }

@@ -36,7 +36,6 @@ public interface IVideoManager : ISharpAllianceManager
     void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
     bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap);
-    int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap);
     void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette);
     ushort[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono);
     void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap);
@@ -48,7 +47,7 @@ public interface IVideoManager : ISharpAllianceManager
     void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4);
     void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
     void GetClippingRect(out Rectangle clipRect);
-    void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32);
+    void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Rgba32 rgba32);
     void SaveBackgroundRects();
     void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
     void ExecuteBaseDirtyRectQueue();
@@ -58,20 +57,21 @@ public interface IVideoManager : ISharpAllianceManager
     // SpriteRenderer SpriteRenderer { get; }
     static DebugRenderer DebugRenderer { get; protected set; }
 
-    void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color);
-    void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle);
+    void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle rectangle, Color color);
+    bool ShadowVideoSurfaceRectUsingLowPercentTable(Surfaces surface, Rectangle rectangle);
     void DeleteVideoObject(HVOBJECT vobj);
-    void BlitBufferToBuffer(int left, int top, int v1, int v2);
-    void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v);
+    bool BlitBufferToBuffer(Surfaces srcBuffer, Surfaces dstBuffer, int srcX, int srcY, int width, int height);
+    void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();
-    int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES);
-    bool Blt16BPPTo16BPP(int pDest, int uiDestPitch, int pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight);
-    void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap);
-    void Blt8BPPDataSubTo16BPPBuffer(int pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, int pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip);
-    void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
+    Image<Rgba32> LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES);
+    bool Blt16BPPTo16BPP(Image<Rgba32> pDest, int uiDestPitch, Image<Rgba32> pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight);
+    void AddVideoObject(out VSURFACE_DESC vs_desc, out uint uiTempMap);
+    void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip);
+    void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
     void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
     void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
     void ColorFillVideoSurfaceArea(Surfaces buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32);
+    void ColorFillVideoSurfaceArea(Surfaces buffer, Rectangle rectangle, Color black);
     bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer);
     bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex);
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap);
@@ -83,4 +83,8 @@ public interface IVideoManager : ISharpAllianceManager
     void UnLockVideoSurface(Surfaces buffer);
     void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3);
     bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject eTRLEObject, int index);
+    bool TryCreateVideoSurface(VSURFACE_DESC vs_desc, out Surfaces uiVideoSurfaceImage);
+    bool BltVideoObjectFromIndex(Surfaces uiSourceBufferIndex, int guiSkullIcons, int v1, int v2, int v3, VO_BLT sRCTRANSPARENCY, blt_fx? value);
+    void DeleteVideoObjectFromIndex(Surfaces uiMercTextPopUpBackground);
+    Image<Rgba32> AddVideoSurface(string v, out Surfaces uiMercTextPopUpBackground);
 }

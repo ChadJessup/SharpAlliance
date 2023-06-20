@@ -466,6 +466,11 @@ public class LibraryFileManager : ILibraryManager
         var buffer = new byte[pFileHeader.Value.uiFileLength];
         var ms = new MemoryStream();
 
+        if (pFileHeader.Value.uiFileLength == 0)
+        {
+
+        }
+
         var seekedAmount = libraryHeader.hLibraryHandle.Seek(pFileHeader.Value.uiFileOffset, SeekOrigin.Begin);
         libraryHeader.hLibraryHandle.CopyTo(ms, pFileHeader.Value.uiFileLength);
 

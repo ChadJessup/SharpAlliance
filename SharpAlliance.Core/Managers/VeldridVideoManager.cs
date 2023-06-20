@@ -21,11 +21,12 @@ using Veldrid.ImageSharp;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 using Veldrid.Utilities;
-using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 using static SharpAlliance.Core.Globals;
+using static SharpAlliance.Core.SubSystems.FontSubSystem;
+using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -39,7 +40,7 @@ public class VeldridVideoManager : IVideoManager
     const int DDBLTFAST_WAIT = 0x00000010;
     const int DDERR_WASSTILLDRAWING = 0x8700000; // not real value
     const int DDERR_SURFACELOST = 0x9700000;
-
+    private readonly SurfaceManager surfaces;
     private readonly ILogger<VeldridVideoManager> logger;
 
     private bool clearScreen;
@@ -114,16 +115,16 @@ public class VeldridVideoManager : IVideoManager
     public bool IsInitialized { get; private set; }
     public uint guiBOTTOMPANEL { get; set; }
     public uint guiRIGHTPANEL { get; set; }
-    public uint guiRENDERBUFFER { get; set; }
-    public uint guiSAVEBUFFER { get; set; }
-    public uint guiEXTRABUFFER { get; set; }
+//    public uint guiRENDERBUFFER { get; set; }
+//    public uint guiSAVEBUFFER { get; set; }
+//    public uint guiEXTRABUFFER { get; set; }
     public bool gfExtraBuffer { get; set; }
     public int gbPixelDepth { get; }
 
     private const int SCREEN_WIDTH = 640;
     private const int SCREEN_HEIGHT = 480;
     private const int PIXEL_DEPTH = 16;
-
+    
     ThreadState uiRefreshThreadState;
     int uiIndex;
 
@@ -140,8 +141,10 @@ public class VeldridVideoManager : IVideoManager
         IFileManager fileManager,
         RenderWorld renderWorld,
         IScreenManager screenManager,
+        SurfaceManager surfaceManager,
         Shading shading)
     {
+        this.surfaces = surfaceManager;
         this.logger = logger;
         this.context = context;
         this.files = fileManager;
@@ -149,8 +152,7 @@ public class VeldridVideoManager : IVideoManager
         this.screenManager = (screenManager as ScreenManager)!;
         this.shading = shading;
 
-        Globals.gpPrimarySurface = new(SCREEN_WIDTH, SCREEN_HEIGHT);
-        Globals.gpFrameBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+        this.surfaces.InitializeSurfaces(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
@@ -250,13 +252,13 @@ public class VeldridVideoManager : IVideoManager
 	etc. to their unblit buffer, for later reblitting. Does NOT clip.
 
 **********************************************************************************************/
-    public bool Blt16BPPTo16BPP(int pDest, int uiDestPitch, int pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight)
+    public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, int uiDestPitch, Image<Rgba32> pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight)
     {
         int pSrcPtr, pDestPtr;
         int uiLineSkipDest, uiLineSkipSrc;
 
-        pSrcPtr = pSrc + (iSrcYPos * uiSrcPitch) + (iSrcXPos * 2);
-        pDestPtr = pDest + (iDestYPos * uiDestPitch) + (iDestXPos * 2);
+        //pSrcPtr = pSrc + (iSrcYPos * uiSrcPitch) + (iSrcXPos * 2);
+        //pDestPtr = pDest + (iDestYPos * uiDestPitch) + (iDestXPos * 2);
         uiLineSkipDest = uiDestPitch - (uiWidth * 2);
         uiLineSkipSrc = uiSrcPitch - (uiWidth * 2);
 
@@ -608,7 +610,7 @@ public class VeldridVideoManager : IVideoManager
                             backBuffer,
                             new Point(Region.X, Region.Y),
                             Region,
-                            Globals.gpPrimarySurface);
+                            this.surfaces[Surfaces.PRIMARY_SURFACE]);
                     }
 
                     // Now do new, extended dirty regions
@@ -631,7 +633,7 @@ public class VeldridVideoManager : IVideoManager
                             backBuffer,
                             Region.ToPoint(),
                             Region,
-                            Globals.gpFrameBuffer);
+                            this.surfaces[Surfaces.FRAME_BUFFER]);
                     }
                 }
             }
@@ -642,7 +644,7 @@ public class VeldridVideoManager : IVideoManager
                     Globals.guiScrollDirection,
                     Globals.gsScrollXIncrement,
                     Globals.gsScrollYIncrement,
-                    Globals.gpPrimarySurface,
+                    this.surfaces[Surfaces.PRIMARY_SURFACE],
                     backBuffer,
                     fRenderStrip: true,
                     Globals.PREVIOUS_MOUSE_DATA);
@@ -950,7 +952,7 @@ public class VeldridVideoManager : IVideoManager
                 backBuffer,
                 new Point(0, 0),
                 Region,
-                Globals.gpPrimarySurface);
+                this.surfaces[Surfaces.PRIMARY_SURFACE]);
 
             // Get new background for mouse
             // Ok, do the actual data save to the mouse background
@@ -971,7 +973,7 @@ public class VeldridVideoManager : IVideoManager
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseYPos),
                 Region,
-                Globals.gpPrimarySurface);
+                this.surfaces[Surfaces.PRIMARY_SURFACE]);
         }
 
         // NOW NEW MOUSE AREA
@@ -985,7 +987,7 @@ public class VeldridVideoManager : IVideoManager
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
                 Region,
-                Globals.gpPrimarySurface);
+                this.surfaces[Surfaces.PRIMARY_SURFACE]);
         }
 
         if (Globals.gfForceFullScreenRefresh == true)
@@ -1000,7 +1002,7 @@ public class VeldridVideoManager : IVideoManager
                 backBuffer,
                 new Point(0, 0),
                 Region,
-                Globals.gpPrimarySurface);
+                this.surfaces[Surfaces.PRIMARY_SURFACE]);
 
             Globals.guiDirtyRegionCount = 0;
             Globals.guiDirtyRegionExCount = 0;
@@ -1019,7 +1021,7 @@ public class VeldridVideoManager : IVideoManager
                     backBuffer,
                     new Point(Region.X, Region.Y),
                     Region,
-                    Globals.gpPrimarySurface);
+                    this.surfaces[Surfaces.PRIMARY_SURFACE]);
             }
 
             Globals.guiDirtyRegionCount = 0;
@@ -1044,7 +1046,7 @@ public class VeldridVideoManager : IVideoManager
                 backBuffer,
                 new Point(Region.X, Region.Y),
                 Region,
-                Globals.gpPrimarySurface);
+                this.surfaces[Surfaces.PRIMARY_SURFACE]);
         }
 
         Globals.guiDirtyRegionExCount = 0;
@@ -1400,7 +1402,7 @@ public class VeldridVideoManager : IVideoManager
                     pDest,
                     new Point(StripRegions[cnt].X, StripRegions[cnt].Y),
                     StripRegions[cnt],
-                    Globals.gpFrameBuffer);
+                    this.surfaces[Surfaces.FRAME_BUFFER]);
             }
 
             sShiftX = 0;
@@ -1659,7 +1661,7 @@ public class VeldridVideoManager : IVideoManager
         throw new NotImplementedException();
     }
 
-    public void AddVideoSurface(out VSURFACE_DESC vs_desc, out uint uiTempMap)
+    public void AddVideoObject(out VSURFACE_DESC vs_desc, out uint uiTempMap)
     {
         vs_desc = new();
         uiTempMap = 0;
@@ -1803,8 +1805,119 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public void ShadowVideoSurfaceRectUsingLowPercentTable(Rectangle rectangle)
+    public bool ShadowVideoSurfaceRectUsingLowPercentTable(Surfaces destSurface, Rectangle rectangle)
     {
+        return InternalShadowVideoSurfaceRect(destSurface, rectangle, true);
+
+    }
+
+    private bool InternalShadowVideoSurfaceRect(Surfaces destSurface, Rectangle rectangle, bool fLowPercentShadeTable)
+    {
+        Image<Rgba32> pBuffer;
+        int uiPitch;
+        Rectangle area;
+        HVSURFACE hVSurface;
+
+        int X1 = rectangle.X;
+        int X2 = rectangle.X + rectangle.Width;
+        int Y1 = rectangle.Y;
+        int Y2 = rectangle.Height - rectangle.Y;
+
+        // CLIP IT!
+        // FIRST GET SURFACE
+
+        //
+        // Get Video Surface
+        //
+# if _DEBUG
+        gubVSDebugCode = DEBUGSTR_SHADOWVIDEOSURFACERECT;
+#endif
+        CHECKF(GetVideoSurface(out hVSurface, destSurface));
+
+        if (X1 < 0)
+        {
+            X1 = 0;
+        }
+
+        if (X2 < 0)
+        {
+            return (false);
+        }
+
+        if (Y2 < 0)
+        {
+            return (false);
+        }
+
+        if (Y1 < 0)
+        {
+            Y1 = 0;
+        }
+
+        if (X2 >= hVSurface.usWidth)
+        {
+            X2 = hVSurface.usWidth - 1;
+        }
+
+        if (Y2 >= hVSurface.usHeight)
+        {
+            Y2 = hVSurface.usHeight - 1;
+        }
+
+        if (X1 >= hVSurface.usWidth)
+        {
+            return (false);
+        }
+
+        if (Y1 >= hVSurface.usHeight)
+        {
+            return (false);
+        }
+
+        if ((X2 - X1) <= 0)
+        {
+            return (false);
+        }
+
+        if ((Y2 - Y1) <= 0)
+        {
+            return (false);
+        }
+
+        area = new(X1, Y1, X2, Y2);
+
+        // Lock video surface
+        pBuffer = LockVideoSurface(destSurface, out uiPitch);
+        //UnLockVideoSurface( uiDestVSurface );
+
+
+        if (!fLowPercentShadeTable)
+        {
+            // Now we have the video object and surface, call the shadow function
+            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, uiPitch, area))
+            {
+                // Blit has failed if false returned
+                return (false);
+            }
+        }
+        else
+        {
+            // Now we have the video object and surface, call the shadow function
+            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, uiPitch, area))
+            {
+                // Blit has failed if false returned
+                return (false);
+            }
+        }
+
+        // Mark as dirty if it's the backbuffer
+        //if ( uiDestVSurface == BACKBUFFER )
+        //{
+        //	InvalidateBackbuffer( );
+        //}
+
+        UnLockVideoSurface(destSurface);
+        return (true);
     }
 
     public void RestoreBackgroundRects()
@@ -1823,11 +1936,27 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public void BlitBufferToBuffer(int left, int top, int width, int height)
+    public bool BlitBufferToBuffer(Surfaces srcBuffer, Surfaces dstBuffer, int srcX, int srcY, int width, int height)
     {
+        int uiDestPitchBYTES, uiSrcPitchBYTES;
+        Image<Rgba32> pDestBuf, pSrcBuf;
+        bool fRetVal;
+
+        pDestBuf = LockVideoSurface(dstBuffer, out uiDestPitchBYTES);
+        pSrcBuf = LockVideoSurface(srcBuffer, out uiSrcPitchBYTES);
+
+        fRetVal = Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES, pSrcBuf, uiSrcPitchBYTES,
+                srcX, srcY,
+                srcX, srcY,
+                width, height);
+
+        UnLockVideoSurface(dstBuffer);
+        UnLockVideoSurface(srcBuffer);
+
+        return (fRetVal);
     }
 
-    public int AddVideoSurface(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
+    public int AddVideoObject(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
     {
         vs_desc = new();
         uiTempMap = Surfaces.FRAME_BUFFER;
@@ -1835,7 +1964,11 @@ public class VeldridVideoManager : IVideoManager
         return 0;
     }
 
-    public void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle region, Rgba32 rgba32)
+    public void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Color rgba32)
+    {
+    }
+
+    public void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Rgba32 rgba32)
     {
     }
 
@@ -1843,7 +1976,7 @@ public class VeldridVideoManager : IVideoManager
     {
     }
 
-    public void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, int v)
+    public void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, Rgba32 pixel)
     {
     }
 
@@ -1859,36 +1992,58 @@ public class VeldridVideoManager : IVideoManager
         FontSubSystem.TextRenderer.ClearText();
     }
 
-    public int LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
+    public Image<Rgba32> LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
     {
-        throw new NotImplementedException();
+        uiSrcPitchBYTES = buffer switch
+        {
+            Surfaces.PRIMARY_SURFACE => 128,
+            Surfaces.BACKBUFFER => 128,
+            Surfaces.FRAME_BUFFER => 1280,
+            Surfaces.MOUSE_BUFFER => 128,
+            Surfaces.Unknown => 0,
+            _ => 0,
+        };
+
+        return this.surfaces.LockSurface(buffer);
     }
 
-    public void UnLockVideoSurface(Surfaces buffer)
+    public void UnLockVideoSurface(Surfaces surface)
     {
-        throw new NotImplementedException();
+        this.surfaces.UnlockSurface(surface);
+    }
+
+    public void UnLockVideoSurface(Image<Rgba32> buffer)
+    {
+        this.surfaces.UnlockSurface(buffer);
     }
 
     public void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3)
     {
-        throw new NotImplementedException();
     }
 
-    public void Blt8BPPTo8BPP(int pDestBuf, int uiDestPitchBYTES, int pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
+    public void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight)
     {
         throw new NotImplementedException();
     }
 
-    public void DeleteVideoObjectFromIndex(int guiWoodBackground)
+    public void DeleteVideoObjectFromIndex(Surfaces guiWoodBackground)
     {
         throw new NotImplementedException();
     }
 
     public static void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
 
-    public void Blt8BPPDataSubTo16BPPBuffer(int pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, int pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
+    public void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {
         throw new NotImplementedException();
+    }
+
+    public bool TryCreateVideoSurface(VSURFACE_DESC vs_desc, out Surfaces uiVideoSurfaceImage)
+    {
+        uiVideoSurfaceImage = this.surfaces.CreateSurface(width: vs_desc.usWidth, height: vs_desc.usHeight);
+
+        return uiVideoSurfaceImage > 0;
+
     }
 
     public bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject pETRLEObject, int usIndex)
@@ -1907,8 +2062,53 @@ public class VeldridVideoManager : IVideoManager
         CHECKF(usIndex < hVObject.usNumberOfObjects);
 
         pETRLEObject = (hVObject.pETRLEObject[usIndex]);
-
         return true;
+    }
+
+    public bool BltVideoObjectFromIndex(Surfaces uiDestVSurface, int uiSrcVObject, int usRegionIndex, int iDestX, int iDestY, VO_BLT fBltFlags, blt_fx? pBltFx)
+    {
+        Image<Rgba32> pBuffer;
+        int uiPitch;
+        HVOBJECT hSrcVObject;
+
+        // Lock video surface
+        pBuffer = LockVideoSurface(uiDestVSurface, out uiPitch);
+
+        // Get video object
+        if (!GetVideoObject(out hSrcVObject, uiSrcVObject))
+        {
+            UnLockVideoSurface(uiDestVSurface);
+            return false;
+        }
+
+        // Now we have the video object and surface, call the VO blitter function
+        if (!VideoObjectManager.BltVideoObjectToBuffer(
+            out pBuffer, 
+            (uint)uiPitch, 
+            hSrcVObject, 
+            (ushort)usRegionIndex, 
+            iDestX, 
+            iDestY, 
+            fBltFlags, 
+            pBltFx))
+        {
+            UnLockVideoSurface(uiDestVSurface);
+            // VO Blitter will set debug messages for error conditions
+            return false;
+        }
+
+        UnLockVideoSurface(uiDestVSurface);
+        return true;
+    }
+
+    public Image<Rgba32> AddVideoSurface(string assetPath, out Surfaces surface)
+    {
+        var hobj = this.CreateVideoObject(assetPath);
+        surface = this.surfaces.CreateSurface((int)hobj.hImage.ParsedImages[0].Width, (int)hobj.hImage.ParsedImages[0].Height);
+
+        this.surfaces[surface] = hobj.hImage.ParsedImages[0];
+
+        return this.surfaces[surface];
     }
 }
 

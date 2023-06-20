@@ -88,7 +88,7 @@ public class VideoObjectManager
 
     private static Rectangle? ClippingRect = new(0, 0, 640, 480);
 
-    private static bool BltVideoObjectToBuffer(
+    public static bool BltVideoObjectToBuffer(
         out Image<Rgba32> pBuffer,
         uint uiDestPitchBYTES,
         HVOBJECT hSrcVObject,

@@ -9,7 +9,8 @@ using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
-
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
@@ -463,7 +464,7 @@ public class Faces
 
             pFace.fAutoRestoreBuffer = true;
 
-            //            CHECKV(video.AddVideoSurface(out vs_desc, out pFace.uiAutoRestoreBuffer) > 0);
+            //            CHECKV(video.AddVideoObject(out vs_desc, out pFace.uiAutoRestoreBuffer) > 0);
         }
         else
         {
@@ -483,7 +484,7 @@ public class Faces
 
             pFace.fAutoDisplayBuffer = true;
 
-            //            CHECKV(AddVideoSurface(vs_desc, (pFace.uiAutoDisplayBuffer)));
+            //            CHECKV(AddVideoObject(vs_desc, (pFace.uiAutoDisplayBuffer)));
         }
         else
         {
@@ -725,7 +726,7 @@ public class Faces
                         pFace.ubExpression = Expression.NO_EXPRESSION;
                         // Update rects just for eyes
 
-                        if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
+                        if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
                         {
                             FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usEyesX, pFace.usEyesY, pFace.usEyesX, pFace.usEyesY, pFace.usEyesWidth, pFace.usEyesHeight);
                         }
@@ -871,7 +872,7 @@ public class Faces
                         //                        {
                         //                            pFace.sMouthFrame = 0;
                         //
-                        //                            if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
+                        //                            if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
                         //                            {
                         //                                FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usMouthX, pFace.usMouthY, pFace.usMouthX, pFace.usMouthY, pFace.usMouthWidth, pFace.usMouthHeight);
                         //                            }
@@ -909,7 +910,7 @@ public class Faces
                         //                                    //RenderFace( uiDestBuffer , uiCount );
                         //                                    //pFace.fTaking = false;
                         //                                    // Update rects just for Mouth
-                        //                                    if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
+                        //                                    if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
                         //                                    {
                         //                                        FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usMouthX, pFace.usMouthY, pFace.usMouthX, pFace.usMouthY, pFace.usMouthWidth, pFace.usMouthHeight);
                         //                                    }
@@ -1449,7 +1450,7 @@ public class Faces
         // Blit face to save buffer!
         if (pFace.uiAutoRestoreBuffer != FACE_NO_RESTORE_BUFFER)
         {
-            if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
+            if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
             {
                 //                BltVideoObjectFromIndex(pFace.uiAutoRestoreBuffer, pFace.uiVideoObject, 0, pFace.usFaceX, pFace.usFaceY, VO_BLT.SRCTRANSPARENCY, null);
             }
@@ -1462,7 +1463,7 @@ public class Faces
         HandleRenderFaceAdjustments(pFace, false, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
 
         // Restore extern rect
-        if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
+        if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
         {
             FaceRestoreSavedBackgroundRect(iFaceIndex, (int)(pFace.usFaceX), (int)(pFace.usFaceY), (int)(pFace.usFaceX), (int)(pFace.usFaceY), (int)(pFace.usFaceWidth), (int)(pFace.usFaceHeight));
         }
@@ -1516,7 +1517,7 @@ public class Faces
         HandleRenderFaceAdjustments(pFace, false, true, uiBuffer, sX, sY, (int)(sX + usEyesX), (int)(sY + usEyesY));
 
         // Restore extern rect
-        if (uiBuffer == guiSAVEBUFFER)
+        if (uiBuffer == Surfaces.SAVE_BUFFER)
         {
             //            RestoreExternBackgroundRect(sX, sY, pFace.usFaceWidth, pFace.usFaceWidth);
         }
@@ -1949,7 +1950,7 @@ public class Faces
     {
         FACETYPE? pFace;
         int uiDestPitchBYTES, uiSrcPitchBYTES;
-        int pDestBuf, pSrcBuf;
+        Image<Rgba32> pDestBuf, pSrcBuf;
 
         // Check face index
         CHECKF(iFaceIndex != -1);
@@ -2078,7 +2079,7 @@ public class Faces
             // ATE: Only change if active!
             if (!pFace.fDisabled)
             {
-                if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
+                if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
                 {
                     FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usMouthX, pFace.usMouthY, pFace.usMouthX, pFace.usMouthY, pFace.usMouthWidth, pFace.usMouthHeight);
                 }
@@ -2131,7 +2132,7 @@ public class Faces
         // Close mouth!
         if (!pFace.fDisabled)
         {
-            if (pFace.uiAutoRestoreBuffer == guiSAVEBUFFER)
+            if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
             {
                 FaceRestoreSavedBackgroundRect(pFace.iID, pFace.usMouthX, pFace.usMouthY, pFace.usMouthX, pFace.usMouthY, pFace.usMouthWidth, pFace.usMouthHeight);
             }

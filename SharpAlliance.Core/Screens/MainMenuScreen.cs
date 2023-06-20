@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.SubSystems;
-using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using Veldrid;
 using SixLabors.ImageSharp;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
@@ -35,8 +30,10 @@ public class MainMenuScreen : IScreen
     private Dictionary<MainMenuItems, ButtonPic> iMenuImages = new();
     private Dictionary<MainMenuItems, GUI_BUTTON> iMenuButtons = new();
 
-    string mainMenuBackGroundImageKey;
-    string ja2LogoImageKey;
+    private ScreenName guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+
+    private string mainMenuBackGroundImageKey;
+    private string ja2LogoImageKey;
 
     private bool fInitialRender = false;
     //bool gfDoHelpScreen = 0;
@@ -50,6 +47,7 @@ public class MainMenuScreen : IScreen
         IClockManager clockManager,
         IMusicManager musicManager,
         GameOptions gameOptions,
+        IVideoManager videoManager,
         CursorSubSystem cursorSubSystem,
         FontSubSystem fontSubSystem,
         IInputManager inputManager,
@@ -63,6 +61,7 @@ public class MainMenuScreen : IScreen
         this.options = gameOptions;
         this.fonts = fontSubSystem;
         this.screens = screenManager;
+        this.video = videoManager;
         this.gameInit = gameInit;
         this.renderDirty = renderDirtySubSystem;
     }
@@ -94,7 +93,7 @@ public class MainMenuScreen : IScreen
             uiTime = Globals.GetJA2Clock();
             if (Globals.guiSplashFrameFade > 2)
             {
-                video.ShadowVideoSurfaceRectUsingLowPercentTable(new Rectangle(0, 0, 640, 480));
+                video.ShadowVideoSurfaceRectUsingLowPercentTable(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
             }
             else if (Globals.guiSplashFrameFade > 1)
             {
@@ -126,7 +125,7 @@ public class MainMenuScreen : IScreen
             await this.InitMainMenu();
             Globals.gfMainMenuScreenEntry = false;
             Globals.gfMainMenuScreenExit = false;
-            Globals.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+            guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
             this.music.SetMusicMode(MusicMode.MAIN_MENU);
         }
 
@@ -159,12 +158,12 @@ public class MainMenuScreen : IScreen
             Globals.gfMainMenuScreenEntry = true;
         }
 
-        if (Globals.guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
+        if (guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
         {
             Globals.gfMainMenuScreenEntry = true;
         }
 
-        return Globals.guiMainMenuExitScreen;
+        return guiMainMenuExitScreen;
     }
 
     private void ExitMainMenu()
@@ -203,7 +202,7 @@ public class MainMenuScreen : IScreen
                 case MainMenuItems.LOAD_GAME:
                     // Select the game which is to be restored
                     // guiPreviousOptionScreen = guiCurrentScreen;
-                    Globals.guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
+                    guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
                     Globals.gbHandledMainMenu = 0;
                     // gfSaveGame = false;
                     Globals.gfMainMenuScreenExit = true;
@@ -212,13 +211,13 @@ public class MainMenuScreen : IScreen
 
                 case MainMenuItems.PREFERENCES:
                     //this.optionsScreen.guiPreviousOptionScreen = guiCurrentScreen;
-                    Globals.guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
+                    guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
                     Globals.gbHandledMainMenu = 0;
                     Globals.gfMainMenuScreenExit = true;
                     break;
 
                 case MainMenuItems.CREDITS:
-                    Globals.guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
+                    guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
                     Globals.gbHandledMainMenu = 0;
                     Globals.gfMainMenuScreenExit = true;
                     break;
@@ -242,7 +241,7 @@ public class MainMenuScreen : IScreen
 
     private void SetMainMenuExitScreen(ScreenName screen)
     {
-        Globals.guiMainMenuExitScreen = screen;
+        guiMainMenuExitScreen = screen;
 
         //Remove the background region
         this.CreateDestroyBackGroundMouseMask(false);
@@ -333,7 +332,7 @@ public class MainMenuScreen : IScreen
         this.fInitialRender = true;
 
         await this.screens.SetPendingNewScreen(ScreenName.MAINMENU_SCREEN);
-        Globals.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+        guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
 
         this.options.InitGameOptions();
 

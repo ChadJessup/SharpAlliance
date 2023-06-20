@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SharpAlliance.Core.Interfaces;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -136,11 +137,11 @@ public class SliderSubSystem
             if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
             {
                 //Restore the old rect
-                video.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15);
+                video.BlitBufferToBuffer(Surfaces.SAVE_BUFFER, Surfaces.RENDER_BUFFER, pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15);
             }
 
             //save the new rect
-            video.BlitBufferToBuffer(DestRect.Left, DestRect.Top, 8, 15);
+            video.BlitBufferToBuffer(Surfaces.RENDER_BUFFER, Surfaces.SAVE_BUFFER, DestRect.Left, DestRect.Top, 8, 15);
         }
 
         //Save the new rect location

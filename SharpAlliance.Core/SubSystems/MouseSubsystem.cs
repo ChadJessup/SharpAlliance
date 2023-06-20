@@ -23,6 +23,7 @@ public class MouseSubSystem : ISharpAllianceManager
 {
     public static GUI_CALLBACK DefaultMoveCallback { get; private set; }
     private readonly ILogger<MouseSubSystem> logger;
+    private static IServiceProvider services;
     private readonly IClockManager clock;
     private static CursorSubSystem cursors;
     private static GameContext gameContext;
@@ -75,12 +76,14 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public MouseSubSystem(
         ILogger<MouseSubSystem> logger,
+        IServiceProvider serviceProvider,
 //        GameContext gameContext,
 //        IClockManager clockManager,
         CursorSubSystem cursorSubSystem)
     {
         this.logger = logger;
 
+        services = serviceProvider;
         DefaultMoveCallback = BtnGenericMouseMoveButtonCallback;
         logger.LogDebug(LoggingEventId.MouseSystem, "Mouse Region System");
      //   this.clock = clockManager;
@@ -591,7 +594,7 @@ public class MouseSubSystem : ISharpAllianceManager
         // ATE: We could be replacing already existing, active text
         // so let's remove the region so it be rebuilt...
 
-        if (gameContext.Services.GetRequiredService<ScreenManager>().CurrentScreenName != ScreenName.MAP_SCREEN)
+        if (services.GetRequiredService<IScreenManager>().CurrentScreenName != ScreenName.MAP_SCREEN)
         {
             region.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
             region.uiFlags &= (~MouseRegionFlags.FASTHELP_RESET);

@@ -4,7 +4,8 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
-
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -12,7 +13,13 @@ namespace SharpAlliance.Core.SubSystems;
 public class RenderDirty
 {
     private static IVideoManager video;
-    public RenderDirty(IVideoManager videoManager) => video = videoManager;
+    private readonly SurfaceManager surfaces;
+
+    public RenderDirty(IVideoManager videoManager, SurfaceManager surfaceManager)
+    {
+        video = videoManager;
+        surfaces = surfaceManager;
+    }
 
     public void RestoreBackgroundRects()
     {
@@ -105,7 +112,7 @@ public class RenderDirty
     {
         int uiDestPitchBYTES, uiSrcPitchBYTES;
         int sLeft, sTop, sWidth, sHeight;
-        int pDestBuf, pSrcBuf;
+        Image<Rgba32> pDestBuf, pSrcBuf;
 
 
         if (!gBackSaves[iBack].fAllocated)
@@ -120,8 +127,8 @@ public class RenderDirty
 
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
 
-        pDestBuf = video.LockVideoSurface(guiRENDERBUFFER, out uiDestPitchBYTES);
-        pSrcBuf = video.LockVideoSurface(guiSAVEBUFFER, out uiSrcPitchBYTES);
+        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
+        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
 
         if (gbPixelDepth == 16)
         {
@@ -140,8 +147,8 @@ public class RenderDirty
                         sWidth, sHeight);
         }
 
-        video.UnLockVideoSurface(guiRENDERBUFFER);
-        video.UnLockVideoSurface(guiSAVEBUFFER);
+        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
+        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
@@ -408,12 +415,12 @@ public class RenderDirty
     public static bool RestoreExternBackgroundRect(int sLeft, int sTop, int sWidth, int sHeight)
     {
         int uiDestPitchBYTES, uiSrcPitchBYTES;
-        int pDestBuf, pSrcBuf;
+        Image<Rgba32> pDestBuf, pSrcBuf;
 
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
-
-        pDestBuf = video.LockVideoSurface(Globals.guiRENDERBUFFER, out uiDestPitchBYTES);
-        pSrcBuf = video.LockVideoSurface(Globals.guiSAVEBUFFER, out uiSrcPitchBYTES);
+        
+        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
+        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
 
         if (Globals.gbPixelDepth == 16)
         {
@@ -434,8 +441,8 @@ public class RenderDirty
                         sWidth, sHeight);
         }
 
-        video.UnLockVideoSurface(Globals.guiRENDERBUFFER);
-        video.UnLockVideoSurface(Globals.guiSAVEBUFFER);
+        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
+        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);

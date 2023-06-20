@@ -114,6 +114,7 @@ public class PreferenceScreen : IScreen
     private readonly IInputManager inputs;
     private readonly IMusicManager music;
     private readonly GameInit gameInit;
+    private readonly GuiManager guiManager;
     private readonly Messages messages;
 
     private readonly List<GUI_BUTTON> buttonList = new();
@@ -163,8 +164,10 @@ public class PreferenceScreen : IScreen
         GameOptions gameOptions,
         FontSubSystem fontSubSystem,
         Messages messages,
+        GuiManager guiManager,
         MessageBoxSubSystem messageBoxSubSystem)
     {
+        this.guiManager = guiManager;
         this.messages = messages;
         this.gameInit = gameInit;
         this.music = musicManager;
@@ -214,7 +217,7 @@ public class PreferenceScreen : IScreen
         ButtonSubSystem.MarkButtonsDirty(this.buttonList);
         ButtonSubSystem.RenderButtons(this.buttonList);
 
-        GuiManager.RenderSliderBars();
+        this.guiManager.RenderSliderBars();
     }
 
     public ValueTask<ScreenName> Handle()
@@ -229,7 +232,7 @@ public class PreferenceScreen : IScreen
             this.RenderOptionsScreen();
 
             //Blit the background to the save buffer
-            //video.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 640, 480);
+            //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 640, 480);
             VeldridVideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
@@ -241,22 +244,22 @@ public class PreferenceScreen : IScreen
 
         if (this.gfRedrawOptionsScreen)
         {
-            GuiManager.RenderButtons(this.buttonList);
+            this.guiManager.RenderButtons(this.buttonList);
             this.RenderOptionsScreen();
 
             this.gfRedrawOptionsScreen = false;
         }
 
         //Render the active slider bars
-        GuiManager.RenderSliderBars();
+        this.guiManager.RenderSliderBars();
 
         // render buttons marked dirty	
         ButtonSubSystem.MarkButtonsDirty(this.buttonList);
-        GuiManager.RenderButtons(this.buttonList);
+        this.guiManager.RenderButtons(this.buttonList);
 
         // ATE: Put here to save RECTS before any fast help being drawn...
         video.SaveBackgroundRects();
-        GuiManager.RenderButtonsFastHelp();
+        this.guiManager.RenderButtonsFastHelp();
 
         video.ExecuteBaseDirtyRectQueue();
         // EndFrameBufferRender();
@@ -436,7 +439,7 @@ public class PreferenceScreen : IScreen
         this.guiOptionsScreen = ScreenName.OPTIONS_SCREEN;
 
         //Init the slider bar;
-        GuiManager.Sliders.InitSliderSystem();
+        this.guiManager.Sliders.InitSliderSystem();
 
         if (this.gfExitOptionsDueToMessageBox)
         {
@@ -726,7 +729,7 @@ public class PreferenceScreen : IScreen
         this.RenderOptionsScreen();
 
         //Add a slider bar for the Sound Effects 
-        this.guiSoundEffectsSlider = GuiManager.Sliders.AddSlider(
+        this.guiSoundEffectsSlider = this.guiManager.Sliders.AddSlider(
             SliderStyle.SLIDER_VERTICAL_STEEL,
             CURSOR.NORMAL,
             new(OPT_SOUND_EFFECTS_SLIDER_X, OPT_SOUND_EFFECTS_SLIDER_Y),
@@ -737,10 +740,10 @@ public class PreferenceScreen : IScreen
             0);
 
         // AssertMsg(guiSoundEffectsSliderID, "Failed to AddSlider");
-        GuiManager.Sliders.SetSliderValue(ref this.guiSoundEffectsSlider, this.sound.GetSoundEffectsVolume());
+        this.guiManager.Sliders.SetSliderValue(ref this.guiSoundEffectsSlider, this.sound.GetSoundEffectsVolume());
 
         //Add a slider bar for the Speech
-        this.guiSpeechSlider = GuiManager.Sliders.AddSlider(
+        this.guiSpeechSlider = this.guiManager.Sliders.AddSlider(
             SliderStyle.SLIDER_VERTICAL_STEEL,
             CURSOR.NORMAL,
             new(OPT_SPEECH_SLIDER_X, OPT_SPEECH_SLIDER_Y),
@@ -751,10 +754,10 @@ public class PreferenceScreen : IScreen
             0);
 
         // AssertMsg(guiSpeechSliderID, "Failed to AddSlider");
-        GuiManager.Sliders.SetSliderValue(ref this.guiSpeechSlider, this.sound.GetSpeechVolume());
+        this.guiManager.Sliders.SetSliderValue(ref this.guiSpeechSlider, this.sound.GetSpeechVolume());
 
         //Add a slider bar for the Music
-        this.guiMusicSlider = GuiManager.Sliders.AddSlider(
+        this.guiMusicSlider = this.guiManager.Sliders.AddSlider(
             SliderStyle.SLIDER_VERTICAL_STEEL,
             CURSOR.NORMAL,
             new(OPT_MUSIC_SLIDER_X, OPT_MUSIC_SLIDER_Y),
@@ -765,7 +768,7 @@ public class PreferenceScreen : IScreen
             0);
 
         // AssertMsg(guiMusicSliderID, "Failed to AddSlider");
-        GuiManager.Sliders.SetSliderValue(ref this.guiMusicSlider, this.music.MusicGetVolume());
+        this.guiManager.Sliders.SetSliderValue(ref this.guiMusicSlider, this.music.MusicGetVolume());
 
         //Remove the mouse region over the clock
         ClockManager.RemoveMouseRegionForPauseOfClock();

@@ -27,7 +27,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     private readonly IClockManager clock;
     private readonly MouseSubSystem mouse;
     private static GameSettings gGameSettings;
-    private readonly MercTextBox mercTextBox;
+    private static MercTextBox mercTextBox;
     private static IScreenManager screens;
     private readonly Overhead overhead;
     private readonly RenderWorld renderWorld;
@@ -49,22 +49,22 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         CursorSubSystem cursorSubSystem,
         MercTextBox mercTextBox,
         RenderWorld renderWorld,
-//        IInputManager inputManager,
-//        IScreenManager screenManager,
+        IInputManager inputManager,
+        IScreenManager screenManager,
 //        IClockManager clockManager,
         Overhead overhead,
         GameSettings gameSettings)
     {
         gGameSettings = gameSettings;
-        mercTextBox = mercTextBox;
-        renderWorld = renderWorld;
+        MessageBoxSubSystem.mercTextBox = mercTextBox;
+        this.renderWorld = renderWorld;
         cursor = cursorSubSystem;
         mouse = mouseSubSystem;
-//        screens = screenManager;
-//        inputs = inputManager;
+        screens = screenManager;
+        inputs = inputManager;
 //        clock = clockManager;
-        overhead = overhead;
-        context = context;
+        this.overhead = overhead;
+        this.context = context;
     }
 
     public bool IsInitialized { get; }
@@ -220,7 +220,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         gMsgBox.bHandled = 0;
 
         // Init message box
-        gMsgBox.iBoxId = MercTextBox.PrepareMercPopupBox(iId, ubMercBoxBackground, ubMercBoxBorder, zString, MSGBOX_DEFAULT_WIDTH, 40, 10, 30, out usTextBoxWidth, out usTextBoxHeight);
+        gMsgBox.iBoxId = mercTextBox.PrepareMercPopupBox(iId, ubMercBoxBackground, ubMercBoxBorder, zString, MSGBOX_DEFAULT_WIDTH, 40, 10, 30, out usTextBoxWidth, out usTextBoxHeight);
 
         if (gMsgBox.iBoxId == -1)
         {
@@ -257,7 +257,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         vs_desc.usHeight = usTextBoxHeight;
         vs_desc.ubBitDepth = 16;
 
-        //if (AddVideoSurface(vs_desc, gMsgBox.uiSaveBuffer) == false)
+        //if (AddVideoObject(vs_desc, gMsgBox.uiSaveBuffer) == false)
         //{
         //    return (-1);
         //}

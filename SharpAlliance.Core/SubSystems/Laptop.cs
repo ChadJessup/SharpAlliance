@@ -7,6 +7,8 @@ using Veldrid;
 
 using static SharpAlliance.Core.Globals;
 using SharpAlliance.Core.Interfaces;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -50,7 +52,7 @@ public class Laptop
 
             LaptopSaveInfo.iBookMarkList[iCounter] = iBookId;
         }
-     
+
         return;
     }
 
@@ -70,7 +72,7 @@ public class Laptop
         }
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
-//            HandleRightButtonUpEvent();
+            //            HandleRightButtonUpEvent();
             return;
         }
 
@@ -109,7 +111,7 @@ public class Laptop
         }
 
         video.GetVideoObject(out hLapTopHandle, guiLAPTOP);
-        VideoObjectManager. BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
@@ -141,127 +143,127 @@ public class Laptop
                 DrawDeskTopBackground();
                 break;
             case LAPTOP_MODE.AIM:
-//                RenderAIM();
+                //                RenderAIM();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS:
-//                RenderAIMMembers();
+                //                RenderAIMMembers();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_FACIAL_INDEX:
-//                RenderAimFacialIndex();
+                //                RenderAimFacialIndex();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_SORTED_FILES:
-//                RenderAimSort();
+                //                RenderAimSort();
                 break;
             case LAPTOP_MODE.AIM_MEMBERS_ARCHIVES:
-//                RenderAimArchives();
+                //                RenderAimArchives();
                 break;
             case LAPTOP_MODE.AIM_POLICIES:
-//                RenderAimPolicies();
+                //                RenderAimPolicies();
                 break;
             case LAPTOP_MODE.AIM_LINKS:
-//                RenderAimLinks();
+                //                RenderAimLinks();
                 break;
             case LAPTOP_MODE.AIM_HISTORY:
-//                RenderAimHistory();
+                //                RenderAimHistory();
                 break;
             case LAPTOP_MODE.MERC:
-//                RenderMercs();
+                //                RenderMercs();
                 break;
             case LAPTOP_MODE.MERC_FILES:
-//                RenderMercsFiles();
+                //                RenderMercsFiles();
                 break;
             case LAPTOP_MODE.MERC_ACCOUNT:
-//                RenderMercsAccount();
+                //                RenderMercsAccount();
                 break;
             case LAPTOP_MODE.MERC_NO_ACCOUNT:
-//                RenderMercsNoAccount();
+                //                RenderMercsNoAccount();
                 break;
 
             case LAPTOP_MODE.BOBBY_R:
-//                RenderBobbyR();
+                //                RenderBobbyR();
                 break;
 
             case LAPTOP_MODE.BOBBY_R_GUNS:
-//                RenderBobbyRGuns();
+                //                RenderBobbyRGuns();
                 break;
             case LAPTOP_MODE.BOBBY_R_AMMO:
-//                RenderBobbyRAmmo();
+                //                RenderBobbyRAmmo();
                 break;
             case LAPTOP_MODE.BOBBY_R_ARMOR:
-//                RenderBobbyRArmour();
+                //                RenderBobbyRArmour();
                 break;
             case LAPTOP_MODE.BOBBY_R_MISC:
-//                RenderBobbyRMisc();
+                //                RenderBobbyRMisc();
                 break;
             case LAPTOP_MODE.BOBBY_R_USED:
-//                RenderBobbyRUsed();
+                //                RenderBobbyRUsed();
                 break;
             case LAPTOP_MODE.BOBBY_R_MAILORDER:
-//                RenderBobbyRMailOrder();
+                //                RenderBobbyRMailOrder();
                 break;
             case LAPTOP_MODE.CHAR_PROFILE:
-//                RenderCharProfile();
+                //                RenderCharProfile();
                 break;
             case LAPTOP_MODE.FLORIST:
-//                RenderFlorist();
+                //                RenderFlorist();
                 break;
             case LAPTOP_MODE.FLORIST_FLOWER_GALLERY:
-//                RenderFloristGallery();
+                //                RenderFloristGallery();
                 break;
             case LAPTOP_MODE.FLORIST_ORDERFORM:
-//                RenderFloristOrderForm();
+                //                RenderFloristOrderForm();
                 break;
             case LAPTOP_MODE.FLORIST_CARD_GALLERY:
-//                RenderFloristCards();
+                //                RenderFloristCards();
                 break;
 
             case LAPTOP_MODE.INSURANCE:
-//                RenderInsurance();
+                //                RenderInsurance();
                 break;
 
             case LAPTOP_MODE.INSURANCE_INFO:
-//                RenderInsuranceInfo();
+                //                RenderInsuranceInfo();
                 break;
 
             case LAPTOP_MODE.INSURANCE_CONTRACT:
-//                RenderInsuranceContract();
+                //                RenderInsuranceContract();
                 break;
 
             case LAPTOP_MODE.INSURANCE_COMMENTS:
-//                RenderInsuranceComments();
+                //                RenderInsuranceComments();
                 break;
 
             case LAPTOP_MODE.FUNERAL:
-//                RenderFuneral();
+                //                RenderFuneral();
                 break;
             case LAPTOP_MODE.SIRTECH:
-//                RenderSirTech();
+                //                RenderSirTech();
                 break;
             case LAPTOP_MODE.FINANCES:
-//                RenderFinances();
+                //                RenderFinances();
                 break;
             case LAPTOP_MODE.PERSONNEL:
-//                RenderPersonnel();
+                //                RenderPersonnel();
                 break;
             case LAPTOP_MODE.HISTORY:
-//                RenderHistory();
+                //                RenderHistory();
                 break;
             case LAPTOP_MODE.FILES:
-//                RenderFiles();
+                //                RenderFiles();
                 break;
             case LAPTOP_MODE.EMAIL:
-//                RenderEmail();
+                //                RenderEmail();
                 break;
             case (LAPTOP_MODE.WWW):
                 DrawDeskTopBackground();
                 RenderWWWProgramTitleBar();
                 break;
             case (LAPTOP_MODE.BROKEN_LINK):
-//                RenderBrokenLink();
+                //                RenderBrokenLink();
                 break;
 
             case LAPTOP_MODE.BOBBYR_SHIPMENTS:
-//                RenderBobbyRShipments();
+                //                RenderBobbyRShipments();
                 break;
         }
 
@@ -279,7 +281,7 @@ public class Laptop
             return;
         }
 
-//        DisplayProgramBoundingBox(false);
+        //        DisplayProgramBoundingBox(false);
 
         // mark the buttons dirty at this point
         ButtonSubSystem.MarkButtonsDirty();
@@ -290,9 +292,9 @@ public class Laptop
         HVSURFACE hSrcVSurface;
         int uiDestPitchBYTES;
         int uiSrcPitchBYTES;
-        int pDestBuf;
-        int pSrcBuf;
-        
+        Image<Rgba32> pDestBuf;
+        Image<Rgba32> pSrcBuf;
+
         SixLabors.ImageSharp.Rectangle clip = new()
         {
             // set clipping region
@@ -309,7 +311,15 @@ public class Laptop
 
 
         // blit .pcx for the background onto desktop
-        video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, LAPTOP_SCREEN_UL_X - 2, LAPTOP_SCREEN_UL_Y - 3, out clip);
+        video.Blt8BPPDataSubTo16BPPBuffer(
+            pDestBuf,
+            uiDestPitchBYTES,
+            hSrcVSurface,
+            pSrcBuf,
+            uiSrcPitchBYTES,
+            LAPTOP_SCREEN_UL_X - 2,
+            LAPTOP_SCREEN_UL_Y - 3,
+            out clip);
 
 
         // release surfaces
@@ -350,20 +360,20 @@ public class Laptop
 
         if (guiCurrentLaptopMode == LAPTOP_MODE.WWW)
         {
-//            mprintf(140, 33, pWebTitle[0]);
+            //            mprintf(140, 33, pWebTitle[0]);
         }
 
         else
         {
             iIndex = guiCurrentLaptopMode - LAPTOP_MODE.WWW - 1;
 
-//            wprintf(sString, "%s  -  %s", pWebTitle[0], pWebPagesTitles[iIndex]);
+            //            wprintf(sString, "%s  -  %s", pWebTitle[0], pWebPagesTitles[iIndex]);
             mprintf(140, 33, sString);
         }
 
         BlitTitleBarIcons();
 
-//        DisplayProgramBoundingBox(false);
+        //        DisplayProgramBoundingBox(false);
 
         //InvalidateRegion( 0, 0, 640, 480 );
         return (true);

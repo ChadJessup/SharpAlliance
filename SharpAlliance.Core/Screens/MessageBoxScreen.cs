@@ -7,6 +7,7 @@ using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
 using static SharpAlliance.Core.Globals;
 
@@ -264,7 +265,7 @@ public class MessageBoxScreen : IScreen
     public static ScreenName ExitMsgBox(MessageBoxReturnCode ubExitCode)
     {
         int uiDestPitchBYTES, uiSrcPitchBYTES;
-        int pDestBuf, pSrcBuf;
+        Image<Rgba32> pDestBuf, pSrcBuf;
         SixLabors.ImageSharp.Point pPosition;
 
         // Delete popup!

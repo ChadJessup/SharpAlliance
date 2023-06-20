@@ -21,6 +21,7 @@ public class SharpAllianceGameLogic : IGameLogic
 {
     private readonly GameContext context;
     private readonly IStringLocalizer<string> strings;
+    private readonly SurfaceManager surfaces;
     private readonly HelpScreenSubSystem helpScreen;
     private readonly CursorSubSystem cursors;
     private readonly SaveGameSubSystem saves;
@@ -46,12 +47,15 @@ public class SharpAllianceGameLogic : IGameLogic
         SaveGameSubSystem saveGameSubSystem,
         MessageBoxSubSystem messageBoxSubSystem,
         IOSManager OSManager,
+        SurfaceManager surfaceManager,
         IScreenManager screenManager,
         IVideoManager videoManager,
         IMusicManager musicManager)
     {
         this.context = context;
         this.strings = strings;
+
+        this.surfaces = surfaceManager;
 
         // These should be initialized already
         this.mouse = mouseSubSystem;

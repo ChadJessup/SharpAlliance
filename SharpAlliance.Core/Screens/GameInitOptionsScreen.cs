@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using Veldrid;
@@ -54,7 +56,7 @@ public class GameInitOptionsScreen : IScreen
     private readonly GameContext context;
     private readonly FontSubSystem fonts;
     private readonly IScreenManager screens;
-    private readonly IInputManager inputs;
+    private readonly IInputManager input;
     private readonly GuiManager gui;
     private bool gfGIOScreenEntry = true;
     private bool gfGIOScreenExit = false;
@@ -62,6 +64,7 @@ public class GameInitOptionsScreen : IScreen
     private bool gfGIOButtonsAllocated = false;
     private GameMode gubGameOptionScreenHandler = GameMode.GIO_NOTHING;
     private ScreenName gubGIOExitScreen = ScreenName.GAME_INIT_OPTIONS_SCREEN;
+    private IntroScreen introScreen;
     private string guiGIOMainBackGroundImageKey;
     private int giGioMessageBox = -1;
     private ButtonPic giGIODoneBtnImage;
@@ -91,7 +94,7 @@ public class GameInitOptionsScreen : IScreen
         this.gGameOptions = gameOptions;
         this.cursor = cursorSubSystem;
         this.context = gameContext;
-        this.inputs = inputManager;
+        this.input = inputManager;
         this.gui = guiManager;
         this.screens = screenManager;
     }
@@ -99,7 +102,7 @@ public class GameInitOptionsScreen : IScreen
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
 
-    public ValueTask Activate()
+    public async ValueTask Activate()
     {
         int usPosY;
 
@@ -263,16 +266,16 @@ public class GameInitOptionsScreen : IScreen
         //Reset the exit screen
         this.gubGIOExitScreen = ScreenName.GAME_INIT_OPTIONS_SCREEN;
 
+        this.introScreen = (await this.screens.GetScreen(ScreenName.INTRO_SCREEN, activate: false) as IntroScreen)!;
+
         //REnder the screen once so we can blt ot to ths save buffer
         this.RenderGIOScreen();
 
-        video.BlitBufferToBuffer(0, 0, 639, 439);
+        video.BlitBufferToBuffer(Surfaces.RENDER_BUFFER, Surfaces.SAVE_BUFFER, 0, 0, 639, 439);
 
-        //video.BlitBufferToBuffer(guiRENDERBUFFER, guiSAVEBUFFER, 0, 0, 639, 439);
+        //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 639, 439);
 
         this.gfGIOButtonsAllocated = true;
-
-        return ValueTask.CompletedTask;
     }
 
     public async ValueTask<ScreenName> Handle()
@@ -335,10 +338,193 @@ public class GameInitOptionsScreen : IScreen
 
     private void GetGIOScreenUserInput()
     {
+        // Check for key
+        while (this.input.DequeueEvent(out var Event) == true)
+        {
+            foreach (var ke in Event.KeyEvents.Where(ke => ke.Down))
+            {
+                switch (ke.Key)
+                {
+                    case Key.Escape:
+                        //Exit out of the screen
+                        gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
+                        break;
+
+                    case Key.Enter:
+                        gubGameOptionScreenHandler = GameMode.GIO_EXIT;
+                        break;
+                }
+            }
+        }
     }
 
     private void HandleGIOScreen()
     {
+        if (gubGameOptionScreenHandler != GameMode.GIO_NOTHING)
+        {
+            switch (gubGameOptionScreenHandler)
+            {
+                case GameMode.GIO_CANCEL:
+                    gubGIOExitScreen = ScreenName.MAINMENU_SCREEN;
+                    gfGIOScreenExit = true;
+                    break;
+
+                case GameMode.GIO_EXIT:
+                    //if we are already fading out, get out of here
+                    if (fade.gFadeOutDoneCallback != DoneFadeOutForExitGameInitOptionScreen)
+                    {
+                        //Disable the ok button
+                        ButtonSubSystem.DisableButton(guiGIODoneButton);
+
+                        fade.gFadeOutDoneCallback = DoneFadeOutForExitGameInitOptionScreen;
+
+                        fade.FadeOutNextFrame();
+                    }
+                
+                    break;
+                case GameMode.GIO_IRON_MAN_MODE:
+                    DisplayMessageToUserAboutGameDifficulty();
+                    break;
+            }
+
+            gubGameOptionScreenHandler = GameMode.GIO_NOTHING;
+        }
+
+
+        if (gfReRenderGIOScreen)
+        {
+            RenderGIOScreen();
+            gfReRenderGIOScreen = false;
+        }
+
+        RestoreGIOButtonBackGrounds();
+    }
+
+    private void RestoreGIOButtonBackGrounds()
+    {
+        ushort usPosY;
+
+        usPosY = GIO_DIF_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
+        //Check box to toggle Difficulty settings
+        for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
+        {
+            RenderDirty.RestoreExternBackgroundRect(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY, 34, 29);
+            usPosY += GIO_GAP_BN_SETTINGS;
+        }
+
+        usPosY = GIO_GAME_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
+        //Check box to toggle Game settings ( realistic, sci fi )
+        for (GameStyle cnt = 0; cnt < GameStyle.NUM_GAME_STYLES; cnt++)
+        {
+            RenderDirty.RestoreExternBackgroundRect(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY, 34, 29);
+
+            usPosY += GIO_GAP_BN_SETTINGS;
+        }
+
+        usPosY = GIO_GUN_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
+
+        //Check box to toggle Gun options
+        for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
+        {
+            RenderDirty.RestoreExternBackgroundRect(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY, 34, 29);
+            usPosY += GIO_GAP_BN_SETTINGS;
+        }
+
+        // JA2Gold: no more timed turns setting
+        /*
+        //Check box to toggle timed turns options
+        usPosY = GIO_TIMED_TURN_SETTING_Y-GIO_OFFSET_TO_TOGGLE_BOX_Y;
+        for( cnt=0; cnt<GIO_NUM_TIMED_TURN_OPTIONS; cnt++)
+        {
+            RestoreExternBackgroundRect( GIO_TIMED_TURN_SETTING_X+GIO_OFFSET_TO_TOGGLE_BOX, usPosY, 34, 29 ); 
+            usPosY += GIO_GAP_BN_SETTINGS;
+        }
+        */
+        //Check box to toggle iron man options
+        usPosY = GIO_IRON_MAN_SETTING_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
+        for (IronManMode cnt = 0; cnt < IronManMode.NUM_SAVE_OPTIONS; cnt++)
+        {
+            RenderDirty.RestoreExternBackgroundRect(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY, 34, 29);
+            usPosY += GIO_GAP_BN_SETTINGS;
+        }
+    }
+
+    private void DoneFadeOutForExitGameInitOptionScreen()
+    {
+        // loop through and get the status of all the buttons
+        gGameOptions.GunNut = GetCurrentGunButtonSetting();
+        gGameOptions.SciFi = GetCurrentGameStyleButtonSetting();
+        gGameOptions.ubDifficultyLevel = GetCurrentDifficultyButtonSetting() + 1;
+        // JA2Gold: no more timed turns setting
+        //gGameOptions.fTurnTimeLimit = GetCurrentTimedTurnsButtonSetting();
+        // JA2Gold: iron man
+        gGameOptions.IronManMode = GetCurrentGameSaveButtonSetting();
+
+
+        //	gubGIOExitScreen = INIT_SCREEN;
+        gubGIOExitScreen = ScreenName.INTRO_SCREEN;
+
+        //set the fact that we should do the intro videos
+        //	gbIntroScreenMode = INTRO_BEGINING;
+        this.introScreen.SetIntroType(IntroScreenType.INTRO_BEGINING);
+
+        ExitGIOScreen();
+
+        //	gFadeInDoneCallback = DoneFadeInForExitGameInitOptionScreen;
+        //	FadeInNextFrame( );
+        CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+    }
+
+    private bool GetCurrentGameSaveButtonSetting()
+    {
+        for (IronManMode cnt = 0; cnt < IronManMode.NUM_SAVE_OPTIONS; cnt++)
+        {
+            if (guiGameSaveToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                return true;
+            }
+        }
+    
+        return false;
+    }
+
+    private DifficultyLevel GetCurrentDifficultyButtonSetting()
+    {
+        for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
+        {
+            if (guiDifficultySettingsToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                return (DifficultyLevel)cnt;
+            }
+        }
+
+        return (0);
+    }
+
+    public bool GetCurrentGameStyleButtonSetting()
+    {
+        for (GameStyle cnt = 0; cnt < GameStyle.NUM_GAME_STYLES; cnt++)
+        {
+            if (guiGameStyleToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    private bool GetCurrentGunButtonSetting()
+    {
+        for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
+        {
+            if (guiGunOptionToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private bool RenderGIOScreen()
@@ -350,7 +536,7 @@ public class GameInitOptionsScreen : IScreen
         //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY, null);
         video.BltVideoObject(background, 0, 0, 0, 0);
         //Shade the background
-        // video.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358
+        //video.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358
 
 
         //Display the title
@@ -651,7 +837,7 @@ public class GameInitOptionsScreen : IScreen
 
     public ValueTask Deactivate()
     {
-        throw new NotImplementedException();
+        return ValueTask.CompletedTask;
     }
 }
 

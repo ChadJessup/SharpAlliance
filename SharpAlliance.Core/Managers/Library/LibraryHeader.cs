@@ -43,6 +43,6 @@ public record LibraryHeader
 
         fileHeader = this.pFileHeader.FirstOrDefault(fh => fh.pFileName.Equals(fileNameNoLibrary, StringComparison.OrdinalIgnoreCase));
 
-        return fileHeader.HasValue;
+        return !string.IsNullOrWhiteSpace(fileHeader.Value.pFileName);
     }
 }

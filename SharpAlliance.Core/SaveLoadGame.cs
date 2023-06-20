@@ -56,6 +56,7 @@ public class SaveLoadGame
     private readonly IFileManager files;
     private readonly IVideoManager video;
     private readonly SoldierCreate soldierCreate;
+    private readonly MercTextBox mercTextBox;
     private readonly StrategicMap strategicMap;
 
     public SaveLoadGame(
@@ -63,8 +64,10 @@ public class SaveLoadGame
         IFileManager fileManager,
         IVideoManager videoManager,
         StrategicMap strategicMap,
+        MercTextBox mercTextBox,
         SoldierCreate soldierCreate)
     {
+        this.mercTextBox = mercTextBox;
         this.strategicMap = strategicMap;
         this.soldierCreate = soldierCreate;
         this.logger = logger;
@@ -106,7 +109,7 @@ public class SaveLoadGame
         }
 
         //Place a message on the screen telling the user that we are saving the game
-        iSaveLoadGameMessageBoxID = MercTextBox.PrepareMercPopupBox(iSaveLoadGameMessageBoxID, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER,
+        iSaveLoadGameMessageBoxID = mercTextBox.PrepareMercPopupBox(iSaveLoadGameMessageBoxID, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER,
             EnglishText.zSaveLoadText[(int)SLG.SAVING_GAME_MESSAGE], 300, 0, 0, 0, out usActualWidth, out usActualHeight);
         usPosX = (640 - usActualWidth) / 2;
 

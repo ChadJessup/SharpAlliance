@@ -9,6 +9,7 @@ using SixLabors.ImageSharp;
 using SharpAlliance.Core.Screens;
 
 using static SharpAlliance.Core.Globals;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core;
 
@@ -54,7 +55,7 @@ public partial class Globals
 
     // This definition mimics what is found in WINDOWS.H ( for Direct Draw compatiblity )
     // From RGB to COLORVAL
-    public static int FROMRGB(byte r, byte g, byte b) => ((int)(((r) | ((g) << 8)) | ((b)) << 16));
+    public static Rgba32 FROMRGB(byte r, byte g, byte b) => new Rgba32(r, g, b);// ((int)(((r) | ((g) << 8)) | ((b)) << 16));
 
     public const FontStyle ITEMDESC_FONT = FontStyle.BLOCKFONT2;
     public const FontShadow ITEMDESC_FONTSHADOW1 = FontShadow.MILITARY_SHADOW;
@@ -69,10 +70,10 @@ public partial class Globals
     public const FontColor ITEMDESC_FONTHEAPFORE = (FontColor)76;
     public const FontColor ITEMDESC_AMMO_FORE = (FontColor)209;
     public const FontColor ITEMDESC_FONTHIGHLIGHT = FontColor.FONT_MCOLOR_WHITE;
-    public static readonly int STATUS_BAR_SHADOW = FROMRGB(140, 136, 119);
-    public static readonly int STATUS_BAR = FROMRGB(201, 172, 133);
-    public static readonly int DESC_STATUS_BAR_SHADOW = STATUS_BAR_SHADOW;
-    public static readonly int DESC_STATUS_BAR = STATUS_BAR;
+    public static readonly Rgba32 STATUS_BAR_SHADOW = FROMRGB(140, 136, 119);
+    public static readonly Rgba32 STATUS_BAR = FROMRGB(201, 172, 133);
+    public static readonly Rgba32 DESC_STATUS_BAR_SHADOW = STATUS_BAR_SHADOW;
+    public static readonly Rgba32 DESC_STATUS_BAR = STATUS_BAR;
     public const int MIN_LOB_RANGE = 4;
     public const int INV_BAR_DX = 5;
     public const int INV_BAR_DY = 21;
