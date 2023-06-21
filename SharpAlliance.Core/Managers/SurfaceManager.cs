@@ -54,7 +54,7 @@ public class SurfaceManager
         }
         else
         {
-            throw new KeyNotFoundException();
+            return new Image<Rgba32>(100, 100);
         }
     }
 
@@ -69,6 +69,29 @@ public class SurfaceManager
         {
             this.UnlockSurface(image);
         }
+    }
+
+    public Surfaces CreateSurface(Image<Rgba32> image)
+    {
+        if (this.surfaces.ContainsValue(image))
+        {
+            foreach (var surf in this.surfaces)
+            {
+                if (surf.Value == image)
+                {
+                    return surf.Key;
+                }
+            }
+        }
+
+        Surfaces idx = (Surfaces)this.surfaces.Count;
+        if (this.surfaces.TryAdd(idx, image))
+        {
+            this.surfaces[idx] = image;
+            return idx;
+        }
+
+        return Surfaces.Unknown;
     }
 
     public Surfaces CreateSurface(int width, int height)

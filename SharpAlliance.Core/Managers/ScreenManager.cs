@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
@@ -21,11 +22,13 @@ public class ScreenManager : IScreenManager
 
     private Dictionary<ScreenName, Type> ScreenTypes { get; set; } = new();
     private readonly GameContext context;
+    private readonly ILogger<ScreenManager> logger;
     private Task currentScreenTask;
 
-    public ScreenManager(GameContext context)
+    public ScreenManager(ILogger<ScreenManager> logger, GameContext context)
     {
         this.context = context;
+        this.logger = logger;
     }
 
     public Dictionary<ScreenName, IScreen> Screens { get; set; } = new();
@@ -158,6 +161,7 @@ public class ScreenManager : IScreenManager
 
     public async ValueTask SetPendingNewScreen(ScreenName pendingScreen)
     {
+        Console.WriteLine($"Setting next pending screen: {pendingScreen}");
         this.guiPendingScreen = await this.GetScreen(pendingScreen, activate: false);
     }
 }

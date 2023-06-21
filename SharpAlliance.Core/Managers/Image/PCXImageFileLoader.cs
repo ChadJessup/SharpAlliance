@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using SharpAlliance.Core.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -32,13 +33,13 @@ public class PCXImageFileLoader : IImageFileLoader
         {
             SGPPaletteEntry entry = new()
             {
-               // peRed = (pubPalette[(Index * 3)]),
-               // peGreen = (pubPalette[(Index * 3) + 1]),
-               // peBlue = (pubPalette[(Index * 3) + 2]),
+                // peRed = (pubPalette[(Index * 3)]),
+                // peGreen = (pubPalette[(Index * 3) + 1]),
+                // peBlue = (pubPalette[(Index * 3) + 2]),
                 peFlags = 0,
             };
 
-        hImage.pPalette[Index] = entry;
+            hImage.pPalette[Index] = entry;
         }
 
         return true;
@@ -87,7 +88,6 @@ public class PCXImageFileLoader : IImageFileLoader
 
     PcxObject? LoadPcx(string pFilename, IFileManager fileManager)
     {
-        PcxObject pCurrentPcxObject = new();
         Stream hFileHandle;
         uint uiFileSize;
         byte[] pPcxBuffer;
@@ -105,6 +105,7 @@ public class PCXImageFileLoader : IImageFileLoader
         }
 
         // Create enw pCX object
+        PcxObject pCurrentPcxObject = new();
         pCurrentPcxObject.pPcxBuffer = new byte[(uiFileSize - (PCXImageFileLoader.PcxHeaderSize + 768))];
 
         if (pCurrentPcxObject.pPcxBuffer == null)
@@ -128,12 +129,12 @@ public class PCXImageFileLoader : IImageFileLoader
             usBottom = MemoryMarshal.Read<ushort>(headerBuffer[10..]),
             usHorRez = MemoryMarshal.Read<ushort>(headerBuffer[12..]),
             usVerRez = MemoryMarshal.Read<ushort>(headerBuffer[14..]),
-            ubEgaPalette = headerBuffer[16..64].ToArray(),
-            ubReserved = headerBuffer[65],
-            ubColorPlanes = headerBuffer[66],
-            usBytesPerLine = MemoryMarshal.Read<ushort>(headerBuffer[67..]),
-            usPaletteType = MemoryMarshal.Read<ushort>(headerBuffer[69..]),
-            ubFiller = headerBuffer[71..128].ToArray(),
+            ubEgaPalette = headerBuffer[16..65].ToArray(),
+            ubReserved = headerBuffer[64],
+            ubColorPlanes = headerBuffer[65],
+            usBytesPerLine = MemoryMarshal.Read<ushort>(headerBuffer[66..]),
+            usPaletteType = MemoryMarshal.Read<ushort>(headerBuffer[68..]),
+            ubFiller = headerBuffer[72..128].ToArray(),
         };
 
         if ((Header.ubManufacturer != 10) || (Header.ubEncoding != 1))
@@ -159,11 +160,11 @@ public class PCXImageFileLoader : IImageFileLoader
         pCurrentPcxObject.uiBufferSize = (uiFileSize - 768 - PcxHeaderSize);
 
         // We are ready to read in the pcx buffer data. Therefore we must lock the buffer
-        pPcxBuffer = pCurrentPcxObject.pPcxBuffer;
+        //pPcxBuffer = pCurrentPcxObject.pPcxBuffer;
 
         Span<byte> buffer = new byte[pCurrentPcxObject.uiBufferSize];
         fileManager.FileRead(hFileHandle, buffer, out var _);
-        pPcxBuffer = buffer.ToArray();
+        pCurrentPcxObject.pPcxBuffer = buffer.ToArray();
 
         // Read in the palette
         Span<byte> paletteBuffer = new byte[768];
@@ -421,7 +422,56 @@ public class PCXImageFileLoader : IImageFileLoader
 
     public List<Image<Rgba32>> ApplyPalette(ref HVOBJECT hVObject, ref HIMAGE hImage)
     {
-        return new();
+        var img = this.CreateIndexedImages(ref hImage, hVObject);
+
+        return hImage.ParsedImages;
+    }
+
+    public List<Image<Rgba32>> CreateIndexedImages(
+        ref HIMAGE hImage,
+        HVOBJECT hVObject)
+    {
+        var rgba32 = new Rgba32();
+        Rgba32 color = default;
+
+        //using var byteBuffer = configuration.MemoryAllocator.AllocateManagedByteBuffer(numOfPixels * image.PixelType.BitsPerPixel);
+        ReadOnlySpan<byte> indexSpan = new(hVObject.pPixData);
+        hImage.ParsedImages = new();
+
+        var numOfPixels = hImage.usHeight * hImage.usWidth;
+        var image = new Image<Rgba32>(hImage.usWidth, hImage.usHeight);
+       // var imageSpan = indexSpan.Slice((int)hImage.uiDataOffset, (int)hImage.uiDataLength);
+
+      //  var uncompressedData = imageSpan.ToArray();
+
+        image.ProcessPixelRows(p =>
+        {
+            ReadOnlySpan<Rgba32> paletteSpan = new(hVObject.Palette);
+
+            for (int y = 0; y < image.Height; y++)
+            {
+                Span<Rgba32> pixelRow = p.GetRowSpan(y);
+                for (int x = 0; x < image.Width; x++)
+                {
+                    var pixel = IVideoManager.AlphaPixel;//paletteSpan[x];
+
+                    // This is the alpha pixel after all the conversions...so replace with
+                    // RGBA32 alpha pixel.
+              //      if (uncompressedData[idx] == 0)
+              //      {
+              //          pixel = IVideoManager.AlphaPixel;
+              //      }
+
+                    color.FromRgba32(pixel);
+
+                    pixelRow[x] = color;
+                }
+            }
+        });
+
+        hImage.ParsedImages.Add(image);
+
+        return hImage.ParsedImages;
     }
 }
 

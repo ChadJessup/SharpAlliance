@@ -12,6 +12,7 @@ public class IntroScreen : IScreen
 {
     private readonly GameInit gameInit;
     private readonly GameContext context;
+    private readonly TextureManager textures;
     private readonly IScreenManager screens;
     private readonly MouseSubSystem mouse;
     private readonly CursorSubSystem cursor;
@@ -50,19 +51,21 @@ public class IntroScreen : IScreen
         CinematicsSubSystem cinematics,
         IVideoManager videoManager,
         IScreenManager screenManager,
+        TextureManager textureManager,
         GameInit gameInit)
     {
-        this.gameInit = gameInit;
-        this.context = context;
-        this.screens = screenManager;
-        this.mouse = mouseSubSystem;
-        this.cursor = cursorSubSystem;
         this.renderDirty = renderDirtySubSystem;
+        this.textures = textureManager;
+        this.cursor = cursorSubSystem;
+        this.library = libraryManager;
+        this.screens = screenManager;
+        this.cinematics = cinematics;
+        this.mouse = mouseSubSystem;
         this.music = musicManager;
         this.video = videoManager;
-        this.library = libraryManager;
-        this.cinematics = cinematics;
         this.video = videoManager;
+        this.gameInit = gameInit;
+        this.context = context;
     }
 
     public bool IsInitialized { get; set; }

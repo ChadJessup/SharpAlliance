@@ -640,11 +640,11 @@ public class HVOBJECT
 {
     public const int HVOBJECT_SHADE_TABLES = 48;
 
-    public int fFlags;                              // Special flags
-    public uint uiSizePixData;           // ETRLE data size
-    public List<SGPPaletteEntry> pPaletteEntry = new();             // 8BPP Palette						  
-    public int TransparentColor;          // Defaults to 0,0,0
-    //public ushort[] p16BPPPalette;              // A 16BPP palette used for 8.16 blits
+    public int fFlags;                                                 // Special flags
+    public uint uiSizePixData;                                         // ETRLE data size
+    public List<SGPPaletteEntry> pPaletteEntry = new();                // 8BPP Palette
+    public int TransparentColor;                                       // Defaults to 0,0,0
+    //public ushort[] p16BPPPalette;                                   // A 16BPP palette used for 8.16 blits
     public Rgba32[] Palette;
 
     public byte[] pPixData;                       // ETRLE pixel data

@@ -18,17 +18,20 @@ public class MessageBoxScreen : IScreen
     private readonly ILogger<MessageBoxScreen> logger;
     private readonly MessageBoxSubSystem messageBoxSubSystem;
     private static IVideoManager video;
+    private readonly MercTextBox mercTextBox;
 
     public MessageBoxScreen(
         ILogger<MessageBoxScreen> logger,
         IClockManager clockManager,
         IInputManager inputs,
         IVideoManager videoManager,
-        MessageBoxSubSystem messageBoxSubSystem)
+        MessageBoxSubSystem messageBoxSubSystem,
+        MercTextBox mercTextBox)
     {
         this.logger = logger;
         this.messageBoxSubSystem = messageBoxSubSystem;
         video = videoManager;
+        this.mercTextBox = mercTextBox;
     }
 
     public bool IsInitialized { get; set; }
@@ -144,7 +147,7 @@ public class MessageBoxScreen : IScreen
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            MercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, Surfaces.FRAME_BUFFER);
+            mercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, Surfaces.FRAME_BUFFER);
             //gMsgBox.fRenderBox = false;
             // ATE: Render each frame...
         }

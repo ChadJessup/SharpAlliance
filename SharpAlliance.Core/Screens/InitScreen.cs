@@ -9,6 +9,8 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 using static SharpAlliance.Core.Globals;
 using System;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -35,6 +37,7 @@ public class InitScreen : IScreen
     private readonly IVideoManager video;
     private readonly Shading shading;
     private readonly SaveLoadGame saveLoadGame;
+    private readonly TextureManager textures;
     private readonly StrategicMap strategicMap;
     private readonly EventManager eventManager;
     private readonly GameInit gameInit;
@@ -46,6 +49,7 @@ public class InitScreen : IScreen
         World world,
         GameContext context,
         CursorSubSystem cursorSubSystem,
+        TextureManager textureManager,
         FontSubSystem fontSubSystem,
         EventManager eventManager,
         IScreenManager sm,
@@ -69,6 +73,7 @@ public class InitScreen : IScreen
         this.eventManager = eventManager;
         this.shading = shading;
         this.saveLoadGame = saveLoadGame;
+        this.textures = textureManager;
         this.strategicMap = strategicMap;
         this.world = world;
         this.video = videoManager;
@@ -101,6 +106,7 @@ public class InitScreen : IScreen
     public ValueTask<bool> Initialize()
     {
         hVObject = this.video.AddVideoObject("ja2_logo.STI", out var key);
+        HVOBJECT logo = this.textures.LoadTexture("ja2_logo.STI", out var textureKey);
 
         return ValueTask.FromResult(true);
     }

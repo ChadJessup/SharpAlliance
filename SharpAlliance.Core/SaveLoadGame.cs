@@ -113,7 +113,7 @@ public class SaveLoadGame
             EnglishText.zSaveLoadText[(int)SLG.SAVING_GAME_MESSAGE], 300, 0, 0, 0, out usActualWidth, out usActualHeight);
         usPosX = (640 - usActualWidth) / 2;
 
-        MercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, Surfaces.FRAME_BUFFER);
+        mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, Surfaces.FRAME_BUFFER);
 
         VeldridVideoManager.InvalidateRegion(new(0, 0, 640, 480));
 

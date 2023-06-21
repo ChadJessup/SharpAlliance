@@ -106,9 +106,12 @@ public struct QUOTE_SYSTEM_STRUCT
 public class CivQuotes
 {
     private static IVideoManager video;
-    public CivQuotes(IVideoManager videoManager)
+    private static MercTextBox mercTextBox;
+
+    public CivQuotes(IVideoManager videoManager, MercTextBox mercTextBox)
     {
         video = videoManager;
+        CivQuotes.mercTextBox = mercTextBox;
     }
 
     void CopyNumEntriesIntoQuoteStruct()
@@ -316,7 +319,7 @@ public class CivQuotes
     {
         if (gCivQuoteData.iVideoOverlay != -1)
         {
-            MercTextBox.RenderMercPopUpBoxFromIndex(gCivQuoteData.iDialogueBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
+            mercTextBox.RenderMercPopUpBoxFromIndex(gCivQuoteData.iDialogueBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
 
             VeldridVideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusCivQuoteBoxWidth, pBlitter.sY + gusCivQuoteBoxHeight);
         }

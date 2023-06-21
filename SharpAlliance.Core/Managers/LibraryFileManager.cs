@@ -9,7 +9,7 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Library;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-
+using SixLabors.ImageSharp.Memory;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
@@ -355,7 +355,7 @@ public class LibraryFileManager : ILibraryManager
         return true;
     }
 
-    private long SetFilePointer(Stream hLibraryFile, int offset, SeekOrigin origin)
+    private long SetFilePointer(Stream hLibraryFile, long offset, SeekOrigin origin)
         => hLibraryFile.Seek(offset, origin);
 
     private LibHeader ParseLibHeader(BinaryReader br)
@@ -383,7 +383,6 @@ public class LibraryFileManager : ILibraryManager
         Stream hLibFile;
         LibraryNames sLibraryID;
         uint uiLoop1;
-        uint uiFileNum = 0;
 
         long uiNewFilePosition = 0;
 
@@ -427,9 +426,12 @@ public class LibraryFileManager : ILibraryManager
                 this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles.Add(fos);
 
                 //Set the file position in the library to the begining of the 'file' in the library
-                uiNewFilePosition = this.SetFilePointer(this.gFileDataBase.pLibraries[sLibraryID].hLibraryHandle, this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles[(int)uiFileNum].pFileHeader.uiFileOffset, SeekOrigin.Begin);
+                uiNewFilePosition = this.SetFilePointer(
+                    this.gFileDataBase.pLibraries[sLibraryID].hLibraryHandle,
+                    fos.uiActualPositionInLibrary,
+                    SeekOrigin.Begin);
 
-                uiNewFilePosition = this.gFileDataBase.pLibraries[sLibraryID].hLibraryHandle.Length;
+                // uiNewFilePosition = this.gFileDataBase.pLibraries[sLibraryID].hLibraryHandle.Length;
             }
             else
             {
@@ -443,9 +445,9 @@ public class LibraryFileManager : ILibraryManager
             return Stream.Null;
         }
 
-        //Set the fact the a file is currently open in the library
-        //	gFileDataBase.pLibraries[ sLibraryID ].fAnotherFileAlreadyOpenedLibrary = true;
-        this.gFileDataBase.pLibraries[sLibraryID].uiIdOfOtherFileAlreadyOpenedLibrary = uiFileNum;
+        // Set the fact the a file is currently open in the library
+        // gFileDataBase.pLibraries[ sLibraryID ].fAnotherFileAlreadyOpenedLibrary = true;
+        // this.gFileDataBase.pLibraries[sLibraryID].uiIdOfOtherFileAlreadyOpenedLibrary = uiFileNum;
 
         return hLibFile;
     }
@@ -463,7 +465,7 @@ public class LibraryFileManager : ILibraryManager
         }
 
         // make a buffer for the file...
-        var buffer = new byte[pFileHeader.Value.uiFileLength];
+        //var buffer = new byte[pFileHeader.Value.uiFileLength];
         var ms = new MemoryStream();
 
         if (pFileHeader.Value.uiFileLength == 0)
@@ -473,12 +475,12 @@ public class LibraryFileManager : ILibraryManager
 
         var seekedAmount = libraryHeader.hLibraryHandle.Seek(pFileHeader.Value.uiFileOffset, SeekOrigin.Begin);
         libraryHeader.hLibraryHandle.CopyTo(ms, pFileHeader.Value.uiFileLength);
-
+        ms.SetLength(pFileHeader.Value.uiFileLength);
         System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(System.IO.Path.Combine("c:\\assets", pFileHeader.Value.pFileName)));
 
-        using FileStream fs = new(System.IO.Path.Combine("C:\\assets", pFileHeader.Value.pFileName), FileMode.OpenOrCreate);
+        using FileStream fs = new(System.IO.Path.Combine("C:\\assets", pFileHeader.Value.pFileName), FileMode.Create);
         ms.Seek(0, SeekOrigin.Begin);
-        ms.CopyTo(fs);
+        ms.CopyTo(fs, pFileHeader.Value.uiFileLength);
         ms.Seek(0, SeekOrigin.Begin);
 
         return ms;

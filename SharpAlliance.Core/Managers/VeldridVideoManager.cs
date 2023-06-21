@@ -2035,7 +2035,7 @@ public class VeldridVideoManager : IVideoManager
 
     public void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {
-        throw new NotImplementedException();
+        clip = new Rectangle(0, 0, 100, 100);
     }
 
     public bool TryCreateVideoSurface(VSURFACE_DESC vs_desc, out Surfaces uiVideoSurfaceImage)
@@ -2104,9 +2104,7 @@ public class VeldridVideoManager : IVideoManager
     public Image<Rgba32> AddVideoSurface(string assetPath, out Surfaces surface)
     {
         var hobj = this.CreateVideoObject(assetPath);
-        surface = this.surfaces.CreateSurface((int)hobj.hImage.ParsedImages[0].Width, (int)hobj.hImage.ParsedImages[0].Height);
-
-        this.surfaces[surface] = hobj.hImage.ParsedImages[0];
+        surface = this.surfaces.CreateSurface(hobj.hImage.ParsedImages[0]);
 
         return this.surfaces[surface];
     }

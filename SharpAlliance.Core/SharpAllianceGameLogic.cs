@@ -204,6 +204,8 @@ public class SharpAllianceGameLogic : IGameLogic
 
     public void HandleNewScreenChange(IScreen newScreen, IScreen oldScreen)
     {
+        Console.WriteLine($"Changing screen from {oldScreen} to {newScreen}");
+
         //if we are not going into the message box screen, and we didnt just come from it
         if (newScreen is not MessageBoxScreen && oldScreen is not MessageBoxScreen)
         {

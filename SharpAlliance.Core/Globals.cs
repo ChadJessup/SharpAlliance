@@ -1706,12 +1706,6 @@ public partial class Globals
 
     public static CRDT_NODE? gCrdtLastAddedNode;
 
-    // the pop up box structure
-    public static MercPopUpBox gBasicPopUpTextBox;
-
-    // the current pop up box
-    public static MercPopUpBox gPopUpTextBox;
-
     public static STRATEGICEVENT? gpEventList = null;
     public static bool gfPreventDeletionOfAnyEvent = false;
     public static bool gfEventDeletionPending = false;
@@ -1754,14 +1748,6 @@ public partial class Globals
     public static int giHospitalTempBalance;
     public static int giHospitalRefund;
     public static int gbHospitalPriceModifier;
-
-
-    // the old one
-    public static MercPopUpBox gOldPopUpTextBox;
-
-
-    // the list of boxes
-    public static MercPopUpBox[] gpPopUpBoxList = new MercPopUpBox[MAX_NUMBER_OF_POPUP_BOXES];
 
     // the flags
     public static MERC_POPUP_PREPARE_FLAGS guiFlags = 0;

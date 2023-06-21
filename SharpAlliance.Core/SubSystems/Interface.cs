@@ -44,7 +44,7 @@ public class Interface
         guiUIMessageTimeDelay = CalcUIMessageDuration(string.Format(MsgString.First(), MsgString[1..]));
 
         // Override it!
-        MercTextBox.OverrideMercPopupBox(gpUIMessageOverrideMercBox);
+        mercTextBox.OverrideMercPopupBox(gpUIMessageOverrideMercBox);
 
         //SetPrepareMercPopupFlags( MERC_POPUP_PREPARE_FLAGS_TRANS_BACK | MERC_POPUP_PREPARE_FLAGS_MARGINS );
 
@@ -61,7 +61,7 @@ public class Interface
         iUIMessageBox = mercTextBox.PrepareMercPopupBox(iUIMessageBox, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER, string.Format(MsgString.First(), MsgString[1..]), 200, 10, 0, 0, out gusUIMessageWidth, out gusUIMessageHeight);
 
         // Set it back!
-        MercTextBox.ResetOverrideMercPopupBox();
+        mercTextBox.ResetOverrideMercPopupBox();
 
         if (giUIMessageOverlay != -1)
         {
@@ -92,12 +92,12 @@ public class Interface
         gfUseSkullIconMessage = fUseSkullIcon;
     }
 
-    private static void RenderUIMessage(VIDEO_OVERLAY pBlitter)
+    private void RenderUIMessage(VIDEO_OVERLAY pBlitter)
     {
         // Shade area first...
         VideoSurfaceManager.ShadowVideoSurfaceRect(pBlitter.uiDestBuff, pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth - 2, pBlitter.sY + gusUIMessageHeight - 2);
 
-        MercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
+        mercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
 
         VeldridVideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth, pBlitter.sY + gusUIMessageHeight);
     }

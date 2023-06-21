@@ -15,15 +15,17 @@ namespace SharpAlliance.Core;
 public class GameClock
 {
     private static IVideoManager video;
+    private static MercTextBox mercTextBox;
 
     // is the clock pause region created currently?
     public static bool fClockMouseRegionCreated = false;
 
     bool fTimeCompressHasOccured = false;
 
-    public GameClock(IVideoManager videoManager)
+    public GameClock(IVideoManager videoManager, MercTextBox mercTextBox)
     {
         video = videoManager;
+        GameClock.mercTextBox = mercTextBox;
     }
 
     void InitNewGameClock()
@@ -1151,7 +1153,7 @@ public class GameClock
     {
         if ((gfPauseDueToPlayerGamePause == true) && (gfGamePaused == true) && (iPausedPopUpBox != -1))
         {
-            MercTextBox.RenderMercPopUpBoxFromIndex(iPausedPopUpBox, (int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), Surfaces.FRAME_BUFFER);
+            mercTextBox.RenderMercPopUpBoxFromIndex(iPausedPopUpBox, (int)(320 - usPausedActualWidth / 2), (int)(200 - usPausedActualHeight / 2), Surfaces.FRAME_BUFFER);
             VeldridVideoManager.InvalidateRegion(new(
                 (320 - usPausedActualWidth / 2),
                 (200 - usPausedActualHeight / 2),
