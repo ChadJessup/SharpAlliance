@@ -20,6 +20,6 @@ public interface IScreen : IDisposable
     ValueTask Deactivate();
 
     ValueTask<ScreenName> Handle();
-    void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl);
+    void Draw(ITextureManager textureManager);
     ScreenState State { get; set; }
 }

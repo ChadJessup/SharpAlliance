@@ -7,6 +7,7 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 using Point = SixLabors.ImageSharp.Point;
 
 using static SharpAlliance.Core.Globals;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.Managers.VideoSurfaces;
 
@@ -14,7 +15,7 @@ public struct HVSURFACE
 {
     public int usHeight;                            // Height of Video Surface
     public int usWidth;                         // Width of Video Surface
-    public Texture Texture;
+    public Image<Rgba32> Texture;
     public int TransparentColor;          // Defaults to 0,0,0
     public List<VSurfaceRegion> RegionList;                       // A List of regions within the video Surface
 }

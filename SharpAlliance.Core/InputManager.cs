@@ -162,8 +162,8 @@ public class InputManager : IInputManager
         {
             var enqueue = false;
             InputSnapshot? snapshot = null;
-            snapshot = VeldridVideoManager.Window.PumpEvents();
-            InputTracker.UpdateFrameInput(snapshot, VeldridVideoManager.Window);
+            snapshot = SDL2VideoManager.Window.PumpEvents();
+            InputTracker.UpdateFrameInput(snapshot, SDL2VideoManager.Window);
 
             var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
             var tmpRight = snapshot.IsMouseDown(MouseButton.Right);

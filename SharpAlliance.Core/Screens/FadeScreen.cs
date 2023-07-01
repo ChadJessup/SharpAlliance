@@ -28,7 +28,7 @@ public class FadeScreen : IScreen
     public bool gfFadeInVideo;
     public int gbFadeType;
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
     }
 

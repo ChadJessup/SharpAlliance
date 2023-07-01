@@ -138,6 +138,7 @@ public class FontSubSystem : ISharpAllianceManager
 
     public static void SetFontForeground(FontColor ubForeground)
     {
+        return;
         int uiRed, uiGreen, uiBlue;
 
         if ((FontDefault < 0) || (((int)FontDefault) > MAX_FONTS))
@@ -355,7 +356,7 @@ public class FontSubSystem : ISharpAllianceManager
     public ValueTask<bool> Initialize()
     {
         video = this.services.GetRequiredService<IVideoManager>();
-        FontSubSystem.TextRenderer = new TextRenderer(video.GraphicDevice);
+//        FontSubSystem.TextRenderer = new TextRenderer(video.GraphicDevice);
 
         var translationTable = this.CreateEnglishTransTable();
         this.InitializeFontManager(translationTable);
@@ -378,6 +379,8 @@ public class FontSubSystem : ISharpAllianceManager
 
     public static void InitializeFonts()
     {
+        return;
+
         // Initialize fonts
         gpLargeFontType1 = LoadFontFile(FontStyle.LARGEFONT1, "FONTS\\LARGEFONT1.sti");
         gvoLargeFontType1 = GetFontObject(gpLargeFontType1);

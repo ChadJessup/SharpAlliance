@@ -70,7 +70,8 @@ namespace SharpAlliance
             builder.AddDependency<IScreenManager, ScreenManager>();
             builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
-            builder.AddDependency<IVideoManager, VeldridVideoManager>();
+            builder.AddDependency<IVideoManager, SDL2VideoManager>();
+            builder.AddDependency<ITextureManager, TextureManager>();
             builder.AddDependency<ISoundManager, SoundManager>();
             builder.AddDependency<IInputManager, InputManager>();
             builder.AddDependency<IClockManager, ClockManager>();

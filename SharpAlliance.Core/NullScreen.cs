@@ -26,7 +26,7 @@ internal class NullScreen : IScreen
     {
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
         throw new System.NotImplementedException();
     }

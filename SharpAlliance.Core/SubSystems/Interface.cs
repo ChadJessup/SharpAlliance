@@ -99,7 +99,7 @@ public class Interface
 
         mercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
 
-        VeldridVideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth, pBlitter.sY + gusUIMessageHeight);
+        SDL2VideoManager.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth, pBlitter.sY + gusUIMessageHeight);
     }
 
     public static void DirtyMercPanelInterface(SOLDIERTYPE pSoldier, int ubDirtyLevel)

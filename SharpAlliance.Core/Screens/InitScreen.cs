@@ -294,9 +294,9 @@ public class InitScreen : IScreen
     {
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
-        sr.AddSprite(new Rectangle(0, 0, 640, 480), hVObject.Textures[0], "SplashScreen");
+//        sr.AddSprite(new Rectangle(0, 0, 640, 480), hVObject.Textures[0], "SplashScreen");
     }
 
     public ValueTask Deactivate()

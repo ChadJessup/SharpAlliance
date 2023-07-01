@@ -320,7 +320,7 @@ public class ButtonSubSystem : ISharpAllianceManager
                     b.IsDirty = false;
                     DrawButtonFromPtr(b);
 
-                    VeldridVideoManager.InvalidateRegion(b.MouseRegion.Bounds);
+                    SDL2VideoManager.InvalidateRegion(b.MouseRegion.Bounds);
                 }
             }
         }
@@ -544,7 +544,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height, color, image);
             video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
 
-            VeldridVideoManager.InvalidateRegion(new Rectangle(
+            SDL2VideoManager.InvalidateRegion(new Rectangle(
                 b.MouseRegion.Bounds.X - 1,
                 b.MouseRegion.Bounds.Y - 1,
                 b.MouseRegion.Bounds.Width + 1,
@@ -1746,7 +1746,7 @@ public class ButtonSubSystem : ISharpAllianceManager
                 Globals.gpAnchoredButton.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             }
 
-            VeldridVideoManager.InvalidateRegion(Globals.gpAnchoredButton.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(Globals.gpAnchoredButton.MouseRegion.Bounds);
         }
 
         Globals.gpPrevAnchoredButton = Globals.gpAnchoredButton;
@@ -1853,8 +1853,8 @@ public class ButtonSubSystem : ISharpAllianceManager
             QuickButtonCallbackMouseMove,
             QuickButtonCallbackMButn);
 
-        IVideoManager.DebugRenderer.DrawRectangle(regionRect, Color.Green);
-        IVideoManager.DebugRenderer.DrawRectangle(b.MouseRegion.Bounds, Color.Red);
+//        IVideoManager.DebugRenderer.DrawRectangle(regionRect, Color.Green);
+//        IVideoManager.DebugRenderer.DrawRectangle(b.MouseRegion.Bounds, Color.Red);
 
         // Link the MOUSE_REGION with this QuickButton
         MouseSubSystem.SetRegionUserData(ref b.MouseRegion, 0, b);
@@ -2135,7 +2135,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         if (StateBefore != StateAfter)
         {
-            VeldridVideoManager.InvalidateRegion(b.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(b.MouseRegion.Bounds);
         }
 
         if (Globals.gfPendingButtonDeletion)
@@ -2331,7 +2331,7 @@ public class GUI_BUTTON
 public class ButtonPic
 {
     public HVOBJECT? vobj = new();                      // The Image itself
-    public Texture? Texture { get; set; }
+    public Image<Rgba32>? Texture { get; set; }
     public int Grayed;                   // index to use for a "Grayed-out" button
     public int OffNormal;            // index to use when button is OFF
     public int OffHilite;            // index to use when button is OFF w/ hilite on it

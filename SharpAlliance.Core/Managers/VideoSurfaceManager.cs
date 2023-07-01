@@ -1,19 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using Veldrid.ImageSharp;
-using Veldrid.MetalBindings;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
 

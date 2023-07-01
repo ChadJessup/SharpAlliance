@@ -202,14 +202,14 @@ public class Messages
         }
 
 
-        pDestBuf = video.LockVideoSurface(pBlitter.uiDestBuff, out uiDestPitchBYTES);
+        //pDestBuf = video.LockVideoSurface(pBlitter.uiDestBuff, out uiDestPitchBYTES);
         FontSubSystem.SetFont(pBlitter.uiFontID);
 
         FontSubSystem.SetFontBackground(pBlitter.ubFontBack);
         FontSubSystem.SetFontForeground(pBlitter.ubFontFore);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         //mprintf_buffer_coded(pDestBuf, uiDestPitchBYTES, pBlitter.uiFontID, pBlitter.sX, pBlitter.sY, pBlitter.zText);
-        video.UnLockVideoSurface(pBlitter.uiDestBuff);
+        //video.UnLockVideoSurface(pBlitter.uiDestBuff);
 
     }
 

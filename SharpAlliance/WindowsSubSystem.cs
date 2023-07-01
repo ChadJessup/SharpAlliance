@@ -63,8 +63,8 @@ namespace SharpAlliance
 
             if (this.MainWindow is not null)
             {
-                VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<VeldridVideoManager>();
-                this.MainWindow = VeldridVideoManager.Window;
+                SDL2VideoManager vorticeVideoManager = (SDL2VideoManager)this.context.Services.GetRequiredService<SDL2VideoManager>();
+                this.MainWindow = SDL2VideoManager.Window;
 
 //                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
             }
@@ -77,8 +77,8 @@ namespace SharpAlliance
 
         public Sdl2Window CreateWindow(string name = "Vortice")
         {
-            VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<VeldridVideoManager>();
-            return VeldridVideoManager.Window;
+            SDL2VideoManager vorticeVideoManager = (SDL2VideoManager)this.context.Services.GetRequiredService<SDL2VideoManager>();
+            return SDL2VideoManager.Window;
         }
 
         private void PlatformConstruct()

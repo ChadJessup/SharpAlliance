@@ -1963,17 +1963,17 @@ public class Faces
             return (false);
         }
 
-        pDestBuf = video.LockVideoSurface(pFace.uiAutoDisplayBuffer, out uiDestPitchBYTES);
-        pSrcBuf = video.LockVideoSurface(pFace.uiAutoRestoreBuffer, out uiSrcPitchBYTES);
+//        pDestBuf = video.LockVideoSurface(pFace.uiAutoDisplayBuffer, out uiDestPitchBYTES);
+//        pSrcBuf = video.LockVideoSurface(pFace.uiAutoRestoreBuffer, out uiSrcPitchBYTES);
 
-        video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
-                    pSrcBuf, uiSrcPitchBYTES,
-                    sDestLeft, sDestTop,
-                    sSrcLeft, sSrcTop,
-                    sWidth, sHeight);
-
-        video.UnLockVideoSurface(pFace.uiAutoDisplayBuffer);
-        video.UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
+//        video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+//                    pSrcBuf, uiSrcPitchBYTES,
+//                    sDestLeft, sDestTop,
+//                    sSrcLeft, sSrcTop,
+//                    sWidth, sHeight);
+//
+//        video.UnLockVideoSurface(pFace.uiAutoDisplayBuffer);
+//        video.UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
 
         // Add rect to frame buffer queue
         if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)

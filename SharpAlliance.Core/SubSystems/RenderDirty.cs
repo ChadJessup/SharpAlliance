@@ -6,6 +6,7 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -15,14 +16,214 @@ public class RenderDirty
     private static IVideoManager video;
     private readonly SurfaceManager surfaces;
 
+    private bool gfViewportDirty = false;
+
     public RenderDirty(IVideoManager videoManager, SurfaceManager surfaceManager)
     {
         video = videoManager;
         surfaces = surfaceManager;
     }
 
-    public void RestoreBackgroundRects()
+    public bool RestoreBackgroundRects()
     {
+        int uiCount;
+        Image<Rgba32> pDestBuf, pSrcBuf;
+
+        pDestBuf = this.surfaces.LockSurface(Surfaces.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
+        pSrcBuf = this.surfaces.LockSurface(Surfaces.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
+
+        for (uiCount = 0; uiCount < guiNumBackSaves; uiCount++)
+        {
+            if (gBackSaves[uiCount].fFilled && (!gBackSaves[uiCount].fDisabled))
+            {
+                if (gBackSaves[uiCount].uiFlags.HasFlag(BGND_FLAG.SAVERECT))
+                {
+                    if (gBackSaves[uiCount].pSaveArea != null)
+                    {
+                        video.Blt16BPPTo16BPP(
+                            pDestBuf,
+                            gBackSaves[uiCount].pSaveArea,
+                            gBackSaves[uiCount].sWidth * 2,
+                            gBackSaves[uiCount].sLeft,
+                            gBackSaves[uiCount].sTop,
+                            0,
+                            gBackSaves[uiCount].sWidth,
+                            gBackSaves[uiCount].sHeight);
+
+                        AddBaseDirtyRect(
+                            new(gBackSaves[uiCount].sLeft,
+                            gBackSaves[uiCount].sTop,
+                            gBackSaves[uiCount].sRight,
+                            gBackSaves[uiCount].sBottom));
+
+                    }
+                }
+                else if (gBackSaves[uiCount].uiFlags.HasFlag(BGND_FLAG.SAVE_Z))
+                {
+                    if (gBackSaves[uiCount].fZBuffer)
+                    {
+                        //video.Blt16BPPTo16BPP(
+                        //    gpZBuffer,
+                        //    gBackSaves[uiCount].pZSaveArea,
+                        //    gBackSaves[uiCount].sWidth * 2,
+                        //    gBackSaves[uiCount].sLeft,
+                        //    gBackSaves[uiCount].sTop,
+                        //    0, 0,
+                        //    gBackSaves[uiCount].sWidth,
+                        //    gBackSaves[uiCount].sHeight);
+                    }
+                }
+                else
+                {
+                    video.Blt16BPPTo16BPP(
+                        pDestBuf,
+                        pSrcBuf,
+                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
+                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
+                        gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight);
+
+                    AddBaseDirtyRect(
+                        new(gBackSaves[uiCount].sLeft,
+                        gBackSaves[uiCount].sTop,
+                        gBackSaves[uiCount].sRight,
+                        gBackSaves[uiCount].sBottom));
+                }
+            }
+        }
+
+        this.surfaces.UnlockSurface(Surfaces.RENDER_BUFFER);
+        this.surfaces.UnlockSurface(Surfaces.SAVE_BUFFER);
+        EmptyBackgroundRects();
+
+        return (true);
+    }
+
+    private bool EmptyBackgroundRects()
+    {
+        int uiCount;
+
+        for (uiCount = 0; uiCount < guiNumBackSaves; uiCount++)
+        {
+            if (gBackSaves[uiCount].fFilled)
+            {
+                gBackSaves[uiCount].fFilled = false;
+
+                if (!(gBackSaves[uiCount].fAllocated) && (gBackSaves[uiCount].fFreeMemory == true))
+                {
+                    if (gBackSaves[uiCount].uiFlags.HasFlag(BGND_FLAG.SAVERECT))
+                    {
+                        if (gBackSaves[uiCount].pSaveArea != null)
+                        {
+                            MemFree(gBackSaves[uiCount].pSaveArea);
+                        }
+                    }
+                    if (gBackSaves[uiCount].fZBuffer)
+                        MemFree(gBackSaves[uiCount].pZSaveArea);
+
+                    gBackSaves[uiCount].fZBuffer = false;
+                    gBackSaves[uiCount].fAllocated = false;
+                    gBackSaves[uiCount].fFreeMemory = false;
+                    gBackSaves[uiCount].fFilled = false;
+                    gBackSaves[uiCount].pSaveArea = null;
+
+                    RecountBackgrounds();
+                }
+            }
+
+            if (gBackSaves[uiCount].uiFlags.HasFlag(BGND_FLAG.SINGLE) || gBackSaves[uiCount].fPendingDelete)
+            {
+                if (gBackSaves[uiCount].fFreeMemory == true)
+                {
+                    if (gBackSaves[uiCount].uiFlags.HasFlag(BGND_FLAG.SAVERECT))
+                    {
+                        if (gBackSaves[uiCount].pSaveArea != null)
+                        {
+                            MemFree(gBackSaves[uiCount].pSaveArea);
+                        }
+                    }
+
+                    if (gBackSaves[uiCount].fZBuffer)
+                    {
+                        MemFree(gBackSaves[uiCount].pZSaveArea);
+                    }
+                }
+
+                gBackSaves[uiCount].fZBuffer = false;
+                gBackSaves[uiCount].fAllocated = false;
+                gBackSaves[uiCount].fFreeMemory = false;
+                gBackSaves[uiCount].fFilled = false;
+                gBackSaves[uiCount].pSaveArea = null;
+                gBackSaves[uiCount].fPendingDelete = false;
+
+                RecountBackgrounds();
+            }
+        }
+
+        return (true);
+    }
+
+    private void AddBaseDirtyRect(Rectangle bounds)
+    {
+        (var iLeft, var iTop, var iRight, var iBottom) = bounds;
+
+        if (iLeft < 0)
+        {
+            iLeft = 0;
+        }
+        if (iLeft > 640)
+        {
+            iLeft = 640;
+        }
+
+
+        if (iTop < 0)
+        {
+            iTop = 0;
+        }
+        if (iTop > 480)
+        {
+            iTop = 480;
+        }
+
+
+        if (iRight < 0)
+        {
+            iRight = 0;
+        }
+        if (iRight > 640)
+        {
+            iRight = 640;
+        }
+
+
+        if (iBottom < 0)
+        {
+            iBottom = 0;
+        }
+        if (iBottom > 480)
+        {
+            iBottom = 480;
+        }
+
+        if ((iRight - iLeft) == 0 || (iBottom - iTop) == 0)
+        {
+            return;
+        }
+
+
+        if ((iLeft == gsVIEWPORT_START_X)
+            && (iRight == gsVIEWPORT_END_X)
+            && (iTop == gsVIEWPORT_WINDOW_START_Y)
+            && (iBottom == gsVIEWPORT_WINDOW_END_Y))
+        {
+            gfViewportDirty = true;
+            return;
+        }
+
+        // Add to list
+        Rectangle aRect = new(iLeft, iTop, iRight, iBottom);
+
+        video.InvalidateRegionEx(aRect, 0);
     }
 
     public static bool UpdateVideoOverlay(VIDEO_OVERLAY_DESC? pTopmostDesc, int iBlitterIndex, bool fForceAll)
@@ -127,28 +328,28 @@ public class RenderDirty
 
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
 
-        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
-        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
+//        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
+//        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
 
         if (gbPixelDepth == 16)
         {
-            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
-                        pSrcBuf, uiSrcPitchBYTES,
-                        sLeft, sTop,
-                        sLeft, sTop,
-                        sWidth, sHeight);
+//            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+//                        pSrcBuf, uiSrcPitchBYTES,
+//                        sLeft, sTop,
+//                        sLeft, sTop,
+//                        sWidth, sHeight);
         }
         else if (gbPixelDepth == 8)
         {
-            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
-                        pSrcBuf, uiSrcPitchBYTES,
-                        sLeft, sTop,
-                        sLeft, sTop,
-                        sWidth, sHeight);
+//            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
+//                        pSrcBuf, uiSrcPitchBYTES,
+//                        sLeft, sTop,
+//                        sLeft, sTop,
+//                        sWidth, sHeight);
         }
 
-        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
-        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
+//        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
+//        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
@@ -235,13 +436,13 @@ public class RenderDirty
 
             if (uiFlags.HasFlag(BGND_FLAG.SAVERECT))
             {
-                Globals.gBackSaves[iBackIndex].pSaveArea = new int[uiBufSize];
+                Globals.gBackSaves[iBackIndex].pSaveArea = new Image<Rgba32>((sRight - sLeft), (sBottom - sTop));
             }
 
 
             if (uiFlags.HasFlag(BGND_FLAG.SAVE_Z))
             {
-                Globals.gBackSaves[iBackIndex].pZSaveArea = new int[uiBufSize];
+                Globals.gBackSaves[iBackIndex].pZSaveArea = new Image<Rgba32>((sRight - sLeft), (sBottom - sTop));
                 Globals.gBackSaves[iBackIndex].fZBuffer = true;
             }
 
@@ -419,30 +620,30 @@ public class RenderDirty
 
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
         
-        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
-        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
+//        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
+//        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
 
         if (Globals.gbPixelDepth == 16)
         {
-            video.Blt16BPPTo16BPP(
-                pDestBuf,
-                uiDestPitchBYTES,
-                pSrcBuf, uiSrcPitchBYTES,
-                sLeft, sTop,
-                sLeft, sTop,
-                sWidth, sHeight);
+//            video.Blt16BPPTo16BPP(
+//                pDestBuf,
+//                uiDestPitchBYTES,
+//                pSrcBuf, uiSrcPitchBYTES,
+//                sLeft, sTop,
+//                sLeft, sTop,
+//                sWidth, sHeight);
         }
         else if (Globals.gbPixelDepth == 8)
         {
-            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
-                        pSrcBuf, uiSrcPitchBYTES,
-                        sLeft, sTop,
-                        sLeft, sTop,
-                        sWidth, sHeight);
+//            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
+//                        pSrcBuf, uiSrcPitchBYTES,
+//                        sLeft, sTop,
+//                        sLeft, sTop,
+//                        sWidth, sHeight);
         }
 
-        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
-        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
+//        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
+//        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
@@ -590,8 +791,8 @@ public struct BACKGROUND_SAVE
     public bool fZBuffer;
     public bool fPendingDelete;
     public bool fDisabled;
-    public int[]? pSaveArea;
-    public int[]? pZSaveArea;
+    public Image<Rgba32>? pSaveArea;
+    public Image<Rgba32>? pZSaveArea;
     public BGND_FLAG uiFlags;
     public int sLeft;
     public int sTop;

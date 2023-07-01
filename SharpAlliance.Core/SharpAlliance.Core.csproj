@@ -22,6 +22,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Managers\VeldridVideoManager.cs" />
+    <Compile Remove="SpriteRenderer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\Shaders\Compute.glsl" />
     <None Remove="Assets\Shaders\Fragment.glsl" />
     <None Remove="Assets\Shaders\sprite.frag" />
@@ -69,11 +74,11 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
-    <PackageReference Include="Veldrid" Version="4.9.0" />
     <PackageReference Include="Veldrid.SDL2" Version="4.9.0" />
+    <!--<PackageReference Include="Veldrid" Version="4.9.0" />
     <PackageReference Include="Veldrid.ImageSharp" Version="4.9.0" />
     <PackageReference Include="Veldrid.OpenGLBindings" Version="4.9.0" />
-    <PackageReference Include="Veldrid.SPIRV" Version="1.0.15" />
+    <PackageReference Include="Veldrid.SPIRV" Version="1.0.15" />-->
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.9.0" />
     <PackageReference Include="Veldrid.Utilities" Version="4.9.0" />
 

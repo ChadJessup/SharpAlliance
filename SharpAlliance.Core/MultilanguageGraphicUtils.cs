@@ -1,5 +1,4 @@
 ﻿using System;
-using Vortice.Win32;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;

@@ -258,7 +258,7 @@ public class MercTextBox
             // Set source transparcenty
             video.SetVideoSurfaceTransparency(pPopUpTextBox.uiSourceBufferIndex, FROMRGB(255, 255, 0));
 
-            pDestBuf = video.LockVideoSurface(pPopUpTextBox.uiSourceBufferIndex, out uiDestPitchBYTES);
+//            pDestBuf = video.LockVideoSurface(pPopUpTextBox.uiSourceBufferIndex, out uiDestPitchBYTES);
 
             usColorVal = new Rgba32(255, 255, 0);
 
@@ -266,11 +266,11 @@ public class MercTextBox
             {
                 for (int y = 0; y < usHeight; y++)
                 {
-                    pDestBuf[x, y] = usColorVal;
+//                    pDestBuf[x, y] = usColorVal;
                 }
             }
 
-            video.UnLockVideoSurface(pPopUpTextBox.uiSourceBufferIndex);
+//            video.UnLockVideoSurface(pPopUpTextBox.uiSourceBufferIndex);
         }
         else
         {
@@ -280,13 +280,13 @@ public class MercTextBox
                 //    pPopUpTextBox.uiMercTextPopUpBackground);
             }
 
-            pDestBuf = video.LockVideoSurface(pPopUpTextBox.uiSourceBufferIndex, out uiDestPitchBYTES);
-            pSrcBuf =  video.LockVideoSurface(pPopUpTextBox.uiMercTextPopUpBackground, out uiSrcPitchBYTES);
+//            pDestBuf = video.LockVideoSurface(pPopUpTextBox.uiSourceBufferIndex, out uiDestPitchBYTES);
+//            pSrcBuf =  video.LockVideoSurface(pPopUpTextBox.uiMercTextPopUpBackground, out uiSrcPitchBYTES);
 
-            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, 0, 0, out DestRect);
+//            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, 0, 0, out DestRect);
 
-            video.UnLockVideoSurface(pPopUpTextBox.uiMercTextPopUpBackground);
-            video.UnLockVideoSurface(pPopUpTextBox.uiSourceBufferIndex);
+//            video.UnLockVideoSurface(pPopUpTextBox.uiMercTextPopUpBackground);
+//            video.UnLockVideoSurface(pPopUpTextBox.uiSourceBufferIndex);
         }
 
         hImageHandle = video.GetVideoObject(pPopUpTextBox.uiMercTextPopUpBorder);
@@ -571,7 +571,7 @@ public class MercTextBox
         //Invalidate!
         if (uiBuffer == Surfaces.FRAME_BUFFER)
         {
-            VeldridVideoManager.InvalidateRegion(sDestX, sDestY, (int)(sDestX + gPopUpTextBox.sWidth), (int)(sDestY + gPopUpTextBox.sHeight));
+            SDL2VideoManager.InvalidateRegion(sDestX, sDestY, (int)(sDestX + gPopUpTextBox.sWidth), (int)(sDestY + gPopUpTextBox.sHeight));
         }
 
         // unlock the video surfaces

@@ -22,9 +22,6 @@ public interface IVideoManager : ISharpAllianceManager
     public const int MAX_CURSOR_HEIGHT = 64;
     public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
-    // TODO move to better area
-    Veldrid.GraphicsDevice GraphicDevice { get; }
-
     void DrawFrame();
     void RefreshScreen();
     void InvalidateScreen();
@@ -53,18 +50,13 @@ public interface IVideoManager : ISharpAllianceManager
     void ExecuteBaseDirtyRectQueue();
     void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
     void SetClippingRect(ref Rectangle newClip);
-
-    // SpriteRenderer SpriteRenderer { get; }
-    static DebugRenderer DebugRenderer { get; protected set; }
-
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle rectangle, Color color);
     bool ShadowVideoSurfaceRectUsingLowPercentTable(Surfaces surface, Rectangle rectangle);
     void DeleteVideoObject(HVOBJECT vobj);
     bool BlitBufferToBuffer(Surfaces srcBuffer, Surfaces dstBuffer, int srcX, int srcY, int width, int height);
     void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();
-    Image<Rgba32> LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES);
-    bool Blt16BPPTo16BPP(Image<Rgba32> pDest, int uiDestPitch, Image<Rgba32> pSrc, int uiSrcPitch, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight);
+    bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight);
     void AddVideoObject(out VSURFACE_DESC vs_desc, out uint uiTempMap);
     void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip);
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
@@ -80,8 +72,8 @@ public interface IVideoManager : ISharpAllianceManager
     static Stream OpenEmbeddedAssetStream(string name) => throw new NotImplementedException();
     static byte[] ReadEmbeddedAssetBytes(string name) => throw new NotImplementedException();
     bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, List<SGPPaletteEntry> pSrcPalette);
-    void UnLockVideoSurface(Surfaces buffer);
-    void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int v3);
+    void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int flags);
+    void InvalidateRegionEx(Rectangle bounds, int flags);
     bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject eTRLEObject, int index);
     bool TryCreateVideoSurface(VSURFACE_DESC vs_desc, out Surfaces uiVideoSurfaceImage);
     bool BltVideoObjectFromIndex(Surfaces uiSourceBufferIndex, int guiSkullIcons, int v1, int v2, int v3, VO_BLT sRCTRANSPARENCY, blt_fx? value);

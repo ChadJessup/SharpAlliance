@@ -370,7 +370,7 @@ public class Emails
         DisplayWhichPageOfEmailProgramIsDisplayed();
 
 
-        VeldridVideoManager.InvalidateRegion(0, 0, 640, 480);
+        SDL2VideoManager.InvalidateRegion(0, 0, 640, 480);
         // invalidate region to force update
         return;
     }
@@ -1303,7 +1303,7 @@ public class Emails
             }
         }
 
-        VeldridVideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+        SDL2VideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
 
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         return;
@@ -1752,7 +1752,7 @@ public class Emails
         DisplayNumberOfPagesToThisEmail(iViewerPositionY);
 
         // mark this area dirty
-        VeldridVideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+        SDL2VideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
 
 
         // reset shadow
@@ -1986,7 +1986,7 @@ public class Emails
         Laptop.DrawLapTopIcons();
 
         // invalidate region
-        VeldridVideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + 270, EMAIL_WARNING_Y + 200);
+        SDL2VideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + 270, EMAIL_WARNING_Y + 200);
 
         // mark button
         ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
@@ -2473,7 +2473,7 @@ public class Emails
         {
             // draw buttons
             ButtonSubSystem.MarkButtonsDirty();
-            VeldridVideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + EMAIL_WARNING_WIDTH, EMAIL_WARNING_Y + EMAIL_WARNING_HEIGHT);
+            SDL2VideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + EMAIL_WARNING_WIDTH, EMAIL_WARNING_Y + EMAIL_WARNING_HEIGHT);
         }
 
         // reset font shadow
@@ -2521,7 +2521,7 @@ public class Emails
         //ReDraw();
 
         // invalidate
-        VeldridVideoManager.InvalidateRegion(0, 0, 640, 480);
+        SDL2VideoManager.InvalidateRegion(0, 0, 640, 480);
     }
 
     void FromCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON iReason)

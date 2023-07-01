@@ -127,7 +127,7 @@ public class MapScreen : IScreen
         return;
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
         throw new System.NotImplementedException();
     }

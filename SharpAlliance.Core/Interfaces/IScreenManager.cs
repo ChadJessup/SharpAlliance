@@ -23,7 +23,7 @@ public interface IScreenManager : ISharpAllianceManager
     IScreen guiPendingScreen { get; set; }
     ScreenName CurrentScreenName { get; }
 
-    static void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl) => throw new NotImplementedException();
+    static void Draw(ITextureManager textureManager) => throw new NotImplementedException();
     void EndMapScreen(bool v);
     void ExitLaptop();
     ValueTask SetPendingNewScreen(ScreenName pendingScreen);

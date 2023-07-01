@@ -30,7 +30,7 @@ public class HelpScreen : IScreen
     {
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
         throw new NotImplementedException();
     }

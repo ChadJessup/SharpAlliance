@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SixLabors.ImageSharp;
@@ -7,7 +8,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.Managers;
 
-public class TextureManager
+public class TextureManager : ITextureManager
 {
     private readonly Dictionary<string, HVOBJECT> loadedTextures = new();
     private readonly ILogger<TextureManager> logger;
@@ -19,10 +20,20 @@ public class TextureManager
         this.libraries = libraryManager;
     }
 
+    public ValueTask<bool> Initialize()
+    {
+        throw new NotImplementedException();
+    }
+
     public HVOBJECT LoadTexture(string assetPath, out string assetKey)
     {
         assetKey = assetPath;
 
         return new HVOBJECT();
+    }
+
+    public void Dispose()
+    {
+        throw new NotImplementedException();
     }
 }

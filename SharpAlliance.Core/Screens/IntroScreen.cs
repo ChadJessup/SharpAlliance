@@ -12,7 +12,7 @@ public class IntroScreen : IScreen
 {
     private readonly GameInit gameInit;
     private readonly GameContext context;
-    private readonly TextureManager textures;
+    private readonly ITextureManager textures;
     private readonly IScreenManager screens;
     private readonly MouseSubSystem mouse;
     private readonly CursorSubSystem cursor;
@@ -51,7 +51,7 @@ public class IntroScreen : IScreen
         CinematicsSubSystem cinematics,
         IVideoManager videoManager,
         IScreenManager screenManager,
-        TextureManager textureManager,
+        ITextureManager textureManager,
         GameInit gameInit)
     {
         this.renderDirty = renderDirtySubSystem;
@@ -84,7 +84,7 @@ public class IntroScreen : IScreen
             Globals.gfIntroScreenEntry = false;
             Globals.gfIntroScreenExit = false;
 
-            VeldridVideoManager.InvalidateRegion(new(0, 0, 640, 480));
+            SDL2VideoManager.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         this.renderDirty.RestoreBackgroundRects();
@@ -389,7 +389,7 @@ public class IntroScreen : IScreen
     {
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
     }
 

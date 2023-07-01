@@ -8,29 +8,27 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp.Drawing.Processing;
 using FontStyle = SixLabors.Fonts.FontStyle;
+using SharpAlliance.Core.Managers;
 
 namespace SharpAlliance.Core;
 
 public class TextRenderer
 {
     private Rgba32 White = Rgba32.ParseHex("FFFFFF");
-    private readonly GraphicsDevice _gd;
-    private readonly Texture _texture;
-
-    public TextureView TextureView { get; }
+    private readonly Image<Rgba32> _texture;
 
     private readonly Font _font;
     private readonly Image<Rgba32> _image;
 
-    public TextRenderer(GraphicsDevice gd)
+    public TextRenderer(ITextureManager textureManager)
     {
-        this._gd = gd;
         int width = 640;
         int height = 480;
-        this._texture = gd.ResourceFactory.CreateTexture(
-            TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
+        this._texture = new(width, height);
+//        gd.ResourceFactory.CreateTexture(
+//            TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
 
-        this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
+//        this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
 
         this._font = this.LoadFont("Arial", 10, FontStyle.Bold);
 
@@ -79,20 +77,20 @@ public class TextRenderer
 
             try
             {
-                this._gd.UpdateTexture(
-                    this._texture,
-                    (IntPtr)data,
-                    size,
-                    x: 0,
-                    y: 0,
-                    z: 0,
-                    this._texture.Width,
-                    this._texture.Height,
-                    depth: 1,
-                    mipLevel: 0,
-                    arrayLayer: 0);
+//                this._gd.UpdateTexture(
+//                    this._texture,
+//                    (IntPtr)data,
+//                    size,
+//                    x: 0,
+//                    y: 0,
+//                    z: 0,
+//                    this._texture.Width,
+//                    this._texture.Height,
+//                    depth: 1,
+//                    mipLevel: 0,
+//                    arrayLayer: 0);
             }
-            catch (VeldridException e)
+            catch (Exception e)
             {
 
             }

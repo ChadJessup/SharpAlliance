@@ -368,19 +368,19 @@ public class MessageBoxScreen : IScreen
         if (((gMsgBox.uiExitScreen != ScreenName.GAME_SCREEN) || (fRestoreBackgroundForMessageBox == true)) && gfDontOverRideSaveBuffer)
         {
             // restore what we have under here...
-            pSrcBuf =  video.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
-            pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+//            pSrcBuf =  video.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
+//            pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+//
+//            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+//                        pSrcBuf, uiSrcPitchBYTES,
+//                        gMsgBox.sX, gMsgBox.sY,
+//                        0, 0,
+//                        gMsgBox.usWidth, gMsgBox.usHeight);
 
-            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
-                        pSrcBuf, uiSrcPitchBYTES,
-                        gMsgBox.sX, gMsgBox.sY,
-                        0, 0,
-                        gMsgBox.usWidth, gMsgBox.usHeight);
+//            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
+//            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
-            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
-            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
-
-            VeldridVideoManager.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
+            SDL2VideoManager.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
         }
 
         fRestoreBackgroundForMessageBox = false;
@@ -435,7 +435,7 @@ public class MessageBoxScreen : IScreen
         return (gMsgBox.uiExitScreen);
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
     }
 }

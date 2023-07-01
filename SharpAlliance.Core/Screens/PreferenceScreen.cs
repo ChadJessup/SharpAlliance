@@ -201,7 +201,7 @@ public class PreferenceScreen : IScreen
         return ValueTask.CompletedTask;
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
         var background = this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
@@ -210,8 +210,8 @@ public class PreferenceScreen : IScreen
 
         this.RenderOptionsScreen();
 
-        sr.AddSprite(new Point(0, 0), background.Textures[0], this.guiOptionBackGroundImageKey);
-        sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
+        // sr.AddSprite(new Point(0, 0), background.Textures[0], this.guiOptionBackGroundImageKey);
+        // sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
 
         // render buttons marked dirty	
         ButtonSubSystem.MarkButtonsDirty(this.buttonList);
@@ -233,7 +233,7 @@ public class PreferenceScreen : IScreen
 
             //Blit the background to the save buffer
             //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 640, 480);
-            VeldridVideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+            SDL2VideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
         video.RestoreBackgroundRects();
@@ -428,7 +428,7 @@ public class PreferenceScreen : IScreen
         //Display the Music text
         FontSubSystem.DisplayWrappedString(new(OPT_MUSIC_TEXT_X, OPT_MUSIC_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_MUSIC], FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
-        VeldridVideoManager.InvalidateRegion(new(OPTIONS__TOP_LEFT_X, OPTIONS__TOP_LEFT_Y, OPTIONS__BOTTOM_RIGHT_X, OPTIONS__BOTTOM_RIGHT_Y));
+        SDL2VideoManager.InvalidateRegion(new(OPTIONS__TOP_LEFT_X, OPTIONS__TOP_LEFT_Y, OPTIONS__BOTTOM_RIGHT_X, OPTIONS__BOTTOM_RIGHT_Y));
     }
 
     private void EnterOptionsScreen()
@@ -828,7 +828,7 @@ public class PreferenceScreen : IScreen
 
             this.gbHighLightedOptionText = -1;
 
-            VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(pRegion.Bounds);
         }
     }
 
@@ -852,7 +852,7 @@ public class PreferenceScreen : IScreen
         {
             this.HandleOptionToggle(ubButton, !this.settings[ubButton], false, true);
 
-            VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(pRegion.Bounds);
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON.LBUTTON_REPEAT || 
         {
@@ -877,13 +877,13 @@ public class PreferenceScreen : IScreen
 
             this.gbHighLightedOptionText = -1;
 
-            VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(pRegion.Bounds);
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
             //                this.gbHighLightedOptionText = bButton;
 
-            VeldridVideoManager.InvalidateRegion(pRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(pRegion.Bounds);
         }
     }
 
@@ -975,7 +975,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -985,13 +985,13 @@ public class PreferenceScreen : IScreen
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
             // gfSaveGame = false;
 
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -1000,7 +1000,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -1012,13 +1012,13 @@ public class PreferenceScreen : IScreen
 
             ///		SetOptionsExitScreen( MAINMENU_SCREEN );
 
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -1046,7 +1046,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -1055,13 +1055,13 @@ public class PreferenceScreen : IScreen
 
             this.SetOptionsExitScreen(this.guiPreviousOptionScreen);
 
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -1076,7 +1076,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -1086,13 +1086,13 @@ public class PreferenceScreen : IScreen
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
             //gfSaveGame = true;
 
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 

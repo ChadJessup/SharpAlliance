@@ -417,7 +417,7 @@ public class MouseSubSystem : ISharpAllianceManager
                 && CurrentRegion.HasMoveCallback
                 && MouseAction.HasFlag(MouseDos.MOVE))
             {
-                IVideoManager.DebugRenderer.DrawRectangle(CurrentRegion.Bounds, Color.Yellow);
+//                IVideoManager.DebugRenderer.DrawRectangle(CurrentRegion.Bounds, Color.Yellow);
                 CurrentRegion.MovementCallback?.Invoke(ref CurrentRegion, MSYS_CALLBACK_REASON.MOVE);
             }
 
@@ -601,16 +601,15 @@ public class MouseSubSystem : ISharpAllianceManager
         }
     }
 
-    public static void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public static void Draw(ITextureManager textureManager)
     {
-        cursors.Draw(sr, gd, cl);
+//        cursors.Draw(sr, gd, cl);
     }
 
     public static void Draw(
         MouseCursorBackground mouseCursorBackground,
         Rectangle region,
-        GraphicsDevice graphicDevice,
-        CommandList commandList)
+        ITextureManager textureManager)
     {
 
     }
@@ -815,7 +814,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public ValueTask<bool> Initialize()
     {
-        // VeldridVideoManager = gameContext.Services.GetRequiredService<IVideoManager>();
+        // SDL2VideoManager = gameContext.Services.GetRequiredService<IVideoManager>();
 
         return ValueTask.FromResult(true);
     }
@@ -1002,8 +1001,8 @@ public struct MouseCursorBackground
     public int usMouseXPos, usMouseYPos;
     public int usLeft, usTop, usRight, usBottom;
     public Rectangle Region;
-    public Texture _pSurface;
-    public Texture pSurface;
+    public Image<Rgba32> _pSurface;
+    public Image<Rgba32> pSurface;
 }
 
 public delegate void MouseCallback(ref MOUSE_REGION region, MSYS_CALLBACK_REASON callbackReason);

@@ -52,7 +52,7 @@ public class AnimatedProgressBar
 //                pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight, pCurr.usPanelBottom, pCurr.usDkColor);
 //            video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER,
 //                pCurr.usPanelLeft + 1, pCurr.usPanelTop + 1, pCurr.usPanelRight - 1, pCurr.usPanelBottom - 1, pCurr.usColor);
-//            VeldridVideoManager.InvalidateRegion(pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom);
+//            SDL2VideoManager.InvalidateRegion(pCurr.usPanelLeft, pCurr.usPanelTop, pCurr.usPanelRight, pCurr.usPanelBottom);
             //Draw title
 
             if (pCurr.swzTitle != string.Empty)
@@ -160,7 +160,7 @@ public class AnimatedProgressBar
 //                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, pCurr.usBarLeft + 2, pCurr.usBarTop + 2, end, pCurr.usBarBottom - 2, Get16BPPColor(FROMRGB(72, 155, 24)));
             }
 
-            VeldridVideoManager.InvalidateRegion(pCurr.usBarLeft, pCurr.usBarTop, pCurr.usBarRight, pCurr.usBarBottom);
+            SDL2VideoManager.InvalidateRegion(pCurr.usBarLeft, pCurr.usBarTop, pCurr.usBarRight, pCurr.usBarBottom);
             video.ExecuteBaseDirtyRectQueue();
             video.EndFrameBufferRender();
             video.RefreshScreen();

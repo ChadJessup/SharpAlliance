@@ -1,4 +1,5 @@
 ﻿using System;
+using SharpAlliance.Core.Managers;
 using Veldrid;
 
 using static SharpAlliance.Core.Globals;
@@ -15,7 +16,7 @@ public class CursorSubSystem : IDisposable
     {
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
 
     }

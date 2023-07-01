@@ -1416,7 +1416,7 @@ public partial class Globals
     public static SixLabors.ImageSharp.Rectangle gScrollRegion;
     public static Action? gpFrameBufferRefreshOverride;
 
-    public static Texture gpMouseCursor { get; set; }
+    public static Image<Rgba32> gpMouseCursor { get; set; }
     public static Image<Rgba32> gpMouseCursorOriginal { get; set; }
 
     public static ScreenName guiIntroExitScreen { get; set; } = ScreenName.INTRO_SCREEN;

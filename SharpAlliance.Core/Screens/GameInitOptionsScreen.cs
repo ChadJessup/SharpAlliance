@@ -284,7 +284,7 @@ public class GameInitOptionsScreen : IScreen
         {
             this.gfGIOScreenEntry = false;
             this.gfGIOScreenExit = false;
-            VeldridVideoManager.InvalidateRegion(new(0, 0, 640, 480));
+            SDL2VideoManager.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         this.GetGIOScreenUserInput();
@@ -618,7 +618,7 @@ public class GameInitOptionsScreen : IScreen
         return true;
     }
 
-    public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
+    public void Draw(ITextureManager textureManager)
     {
         this.RenderGIOScreen();
         //ButtonSubSystem.MarkButtonsDirty();
@@ -791,7 +791,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -804,7 +804,7 @@ public class GameInitOptionsScreen : IScreen
                 this.DisplayMessageToUserAboutGameDifficulty();
             }
 
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -822,7 +822,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -831,7 +831,7 @@ public class GameInitOptionsScreen : IScreen
 
             this.gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
 
-            VeldridVideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 

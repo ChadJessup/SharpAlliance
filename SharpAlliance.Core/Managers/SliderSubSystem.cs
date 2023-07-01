@@ -76,7 +76,7 @@ public class SliderSubSystem
             this.OptDisplayLine((pSlider.usPos.X + 1), (pSlider.usPos.Y + 1), (pSlider.usPos.X + pSlider.ubSliderWidth - 1), (pSlider.usPos.Y + 1), pSlider.usBackGroundColor, img);
 
             //invalidate the area
-            VeldridVideoManager.InvalidateRegion(new(
+            SDL2VideoManager.InvalidateRegion(new(
                 pSlider.usPos.X,
                 pSlider.usPos.Y - 2,
                 pSlider.usPos.X + pSlider.ubSliderWidth + 1,
@@ -114,7 +114,7 @@ public class SliderSubSystem
                 //video.BlitBufferToBuffer(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.ubSliderWidth, pSlider.ubSliderHeight);
 
                 //invalidate the old area
-                VeldridVideoManager.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+                SDL2VideoManager.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
             }
 
             //Blit the new rect
@@ -154,7 +154,7 @@ public class SliderSubSystem
             video.BltVideoObject(hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top, 0);
 
             //invalidate the area
-            VeldridVideoManager.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
+            SDL2VideoManager.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
         }
         else
         {
@@ -163,7 +163,7 @@ public class SliderSubSystem
             video.BltVideoObject(hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, 0);
 
             //invalidate the area
-            VeldridVideoManager.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
+            SDL2VideoManager.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));
         }
     }
 

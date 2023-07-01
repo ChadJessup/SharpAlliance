@@ -1,9 +1,6 @@
 ﻿using System;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Veldrid.MetalBindings;
-using Veldrid;
 
 using static SharpAlliance.Core.Globals;
 using SharpAlliance.Core.Interfaces;
@@ -305,26 +302,26 @@ public class Laptop
         };
 
         // get surfaces
-        pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+//        pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
         CHECKF(video.GetVideoSurface(out hSrcVSurface, guiDESKTOP));
-        pSrcBuf = video.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
+//        pSrcBuf = video.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
 
 
         // blit .pcx for the background onto desktop
-        video.Blt8BPPDataSubTo16BPPBuffer(
-            pDestBuf,
-            uiDestPitchBYTES,
-            hSrcVSurface,
-            pSrcBuf,
-            uiSrcPitchBYTES,
-            LAPTOP_SCREEN_UL_X - 2,
-            LAPTOP_SCREEN_UL_Y - 3,
-            out clip);
+//        video.Blt8BPPDataSubTo16BPPBuffer(
+//            pDestBuf,
+//            uiDestPitchBYTES,
+//            hSrcVSurface,
+//            pSrcBuf,
+//            uiSrcPitchBYTES,
+//            LAPTOP_SCREEN_UL_X - 2,
+//            LAPTOP_SCREEN_UL_Y - 3,
+//            out clip);
 
 
         // release surfaces
-        video.UnLockVideoSurface(guiDESKTOP);
-        video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+//        video.UnLockVideoSurface(guiDESKTOP);
+//        video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
         return (true);
     }
