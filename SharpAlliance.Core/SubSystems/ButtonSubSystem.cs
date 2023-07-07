@@ -45,7 +45,7 @@ public class ButtonSubSystem : ISharpAllianceManager
     private readonly ILogger<ButtonSubSystem> logger;
     private readonly GameContext gameContext;
     private static FontSubSystem fonts;
-
+    private readonly ITextureManager textures;
     private static IInputManager inputs;
     private static MouseSubSystem mouse;
     private static IVideoManager video;
@@ -58,7 +58,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
     private static int ButtonPicsLoaded;
 
-    private static Surfaces ButtonDestBuffer = Surfaces.BACKBUFFER;
+    private static SurfaceType ButtonDestBuffer = SurfaceType.BACKBUFFER;
     private uint ButtonDestPitch = 640 * 2;
     private uint ButtonDestBPP = 16;
 
@@ -86,8 +86,10 @@ public class ButtonSubSystem : ISharpAllianceManager
         ILogger<ButtonSubSystem> logger,
         IVideoManager videoManager,
         GameContext gameContext,
+        ITextureManager textureManager,
         FontSubSystem fontSubSystem)
     {
+        this.textures = textureManager;
         this.logger = logger;
         video = videoManager;
         this.gameContext = gameContext;
@@ -101,7 +103,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         inputs = input;
 
         IsInitialized = await InitializeButtonImageManager(
-            Surfaces.Unknown,
+            SurfaceType.Unknown,
         -1,
             -1);
 
@@ -135,7 +137,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
     // public List<ButtonPic> ButtonPictures { get; } = new(MAX_BUTTON_PICS);
 
-    private async ValueTask<bool> InitializeButtonImageManager(Surfaces DefaultBuffer, int DefaultPitch, int DefaultBPP)
+    private async ValueTask<bool> InitializeButtonImageManager(SurfaceType DefaultBuffer, int DefaultPitch, int DefaultBPP)
     {
         byte Pix;
         int x;
@@ -147,7 +149,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
         else
         {
-            ButtonDestBuffer = Surfaces.FRAME_BUFFER;
+            ButtonDestBuffer = SurfaceType.FRAME_BUFFER;
         }
 
         if (DefaultPitch != (int)Globals.BUTTON_USE_DEFAULT)
@@ -210,14 +212,14 @@ public class ButtonSubSystem : ISharpAllianceManager
         // }
 
         // Load the default generic button images
-        GenericButtonOffNormal.Add(bp, video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF));
+//        GenericButtonOffNormal.Add(bp, textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_OFF));
         if (GenericButtonOffNormal[bp] == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_OFF);
             return false;
         }
 
-        if ((GenericButtonOnNormal[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON)) == null)
+//        if ((GenericButtonOnNormal[bp] = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_ON)) == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_ON);
             return false;
@@ -226,9 +228,9 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Load up the off hilite and on hilite images. We won't check for errors because if the file
         // doesn't exists, the system simply ignores that file. These are only here as extra images, they
         // aren't required for operation (only OFF Normal and ON Normal are required).
-        GenericButtonOffHilite[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
+//        GenericButtonOffHilite[bp] = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
 
-        GenericButtonOnHilite[bp] = video.CreateVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
+//        GenericButtonOnHilite[bp] = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
 
         Pix = 0;
         if (!GetETRLEPixelValue(ref Pix, GenericButtonOffNormal[bp], 8, 0, 0))
@@ -578,7 +580,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         btn.UserData[index] = userData;
     }
 
-    public static GUI_BUTTON CreateCheckBoxButton(
+    public GUI_BUTTON CreateCheckBoxButton(
         Point loc,
         string filename,
         MSYS_PRIORITY Priority,
@@ -1590,7 +1592,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         return buttonPic;
     }
 
-    public static ButtonPic LoadButtonImage(string filename, int Grayed, int OffNormal, int OffHilite, int OnNormal, int OnHilite)
+    public ButtonPic LoadButtonImage(string filename, int Grayed, int OffNormal, int OffHilite, int OnNormal, int OnHilite)
     {
         int UseSlot;
         ETRLEObject pTrav;
@@ -1616,11 +1618,11 @@ public class ButtonSubSystem : ISharpAllianceManager
         // }
 
         // Load the image
-        if ((buttonPic.vobj = video.CreateVideoObject(filename)) == null)
-        {
-            //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, String("Couldn't create VOBJECT for %s", filename));
-            return null;
-        }
+//        if ((buttonPic.vobj = textures.LoadTexture(filename)) == null)
+//        {
+//            //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, String("Couldn't create VOBJECT for %s", filename));
+//            return null;
+//        }
 
         // Init the QuickButton image structure with indexes to use
         buttonPic.Grayed = Grayed;

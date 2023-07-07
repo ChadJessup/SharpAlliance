@@ -13,13 +13,15 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class RenderDirty
 {
+    private readonly FontSubSystem fonts;
     private static IVideoManager video;
     private readonly SurfaceManager surfaces;
 
     private bool gfViewportDirty = false;
 
-    public RenderDirty(IVideoManager videoManager, SurfaceManager surfaceManager)
+    public RenderDirty(IVideoManager videoManager, SurfaceManager surfaceManager, FontSubSystem fontSubSystem)
     {
+        this.fonts = fontSubSystem;
         video = videoManager;
         surfaces = surfaceManager;
     }
@@ -29,8 +31,8 @@ public class RenderDirty
         int uiCount;
         Image<Rgba32> pDestBuf, pSrcBuf;
 
-        pDestBuf = this.surfaces.LockSurface(Surfaces.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
-        pSrcBuf = this.surfaces.LockSurface(Surfaces.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
+        pDestBuf = this.surfaces.LockSurface(SurfaceType.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
+        pSrcBuf = this.surfaces.LockSurface(SurfaceType.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
 
         for (uiCount = 0; uiCount < guiNumBackSaves; uiCount++)
         {
@@ -91,8 +93,8 @@ public class RenderDirty
             }
         }
 
-        this.surfaces.UnlockSurface(Surfaces.RENDER_BUFFER);
-        this.surfaces.UnlockSurface(Surfaces.SAVE_BUFFER);
+        this.surfaces.UnlockSurface(SurfaceType.RENDER_BUFFER);
+        this.surfaces.UnlockSurface(SurfaceType.SAVE_BUFFER);
         EmptyBackgroundRects();
 
         return (true);
@@ -226,7 +228,7 @@ public class RenderDirty
         video.InvalidateRegionEx(aRect, 0);
     }
 
-    public static bool UpdateVideoOverlay(VIDEO_OVERLAY_DESC? pTopmostDesc, int iBlitterIndex, bool fForceAll)
+    public bool UpdateVideoOverlay(VIDEO_OVERLAY_DESC? pTopmostDesc, int iBlitterIndex, bool fForceAll)
     {
         if (pTopmostDesc is null)
         {
@@ -288,7 +290,7 @@ public class RenderDirty
                         }
 
                         uiStringLength = FontSubSystem.StringPixLength(Globals.gVideoOverlays[iBlitterIndex].zText, Globals.gVideoOverlays[iBlitterIndex].uiFontID);
-                        uiStringHeight = FontSubSystem.GetFontHeight(Globals.gVideoOverlays[iBlitterIndex].uiFontID);
+                        uiStringHeight = this.fonts.GetFontHeight(Globals.gVideoOverlays[iBlitterIndex].uiFontID);
 
                         // Delete old rect
                         // Remove background
@@ -651,7 +653,7 @@ public class RenderDirty
         return (true);
     }
 
-    public static int RegisterVideoOverlay(VOVERLAY uiFlags, VIDEO_OVERLAY_DESC? pTopmostDesc)
+    public int RegisterVideoOverlay(VOVERLAY uiFlags, VIDEO_OVERLAY_DESC? pTopmostDesc)
     {
         int iBlitterIndex;
         int iBackIndex;
@@ -666,7 +668,7 @@ public class RenderDirty
             }
 
             uiStringLength = FontSubSystem.StringPixLength(pTopmostDesc.pzText, pTopmostDesc.uiFontID);
-            uiStringHeight = FontSubSystem.GetFontHeight(pTopmostDesc.uiFontID);
+            uiStringHeight = this.fonts.GetFontHeight(pTopmostDesc.uiFontID);
 
             iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, (pTopmostDesc.sLeft + uiStringLength), (pTopmostDesc.sTop + uiStringHeight));
 
@@ -712,7 +714,7 @@ public class RenderDirty
             DisableBackgroundRect(Globals.gVideoOverlays[iBlitterIndex].uiBackground, true);
         }
 
-        Globals.gVideoOverlays[iBlitterIndex].uiDestBuff = Surfaces.FRAME_BUFFER;
+        Globals.gVideoOverlays[iBlitterIndex].uiDestBuff = SurfaceType.FRAME_BUFFER;
 
         //DebugMsg( TOPIC_JA2, DBG_LEVEL_0, String( "Register Overlay %d %S", iBlitterIndex, gVideoOverlays[ iBlitterIndex ].zText ) );
 
@@ -776,7 +778,7 @@ public class VIDEO_OVERLAY
     public FontColor ubFontBack;
     public FontColor ubFontFore;
     public string zText;// [200];
-    public Surfaces uiDestBuff;
+    public SurfaceType uiDestBuff;
     public OVERLAY_CALLBACK? BltCallback;
 }
 

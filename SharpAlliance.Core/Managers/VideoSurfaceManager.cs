@@ -343,7 +343,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //        }
     //    }
 
-    public static bool BltVideoSurface(Surfaces uiDestVSurface, Surfaces uiSrcVSurface, int usRegionIndex, int iDestX, int iDestY, BlitTypes fBltFlags, blt_vs_fx? pBltFx)
+    public static bool BltVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, int usRegionIndex, int iDestX, int iDestY, BlitTypes fBltFlags, blt_vs_fx? pBltFx)
     {
         HVSURFACE hDestVSurface;
         HVSURFACE hSrcVSurface;
@@ -366,7 +366,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         return true;
     }
 
-    internal static void ShadowVideoSurfaceRect(Surfaces uiDestBuff, int sX, int sY, int v1, int v2)
+    internal static void ShadowVideoSurfaceRect(SurfaceType uiDestBuff, int sX, int sY, int v1, int v2)
     {
         throw new NotImplementedException();
     }

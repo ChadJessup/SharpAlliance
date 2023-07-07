@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using Veldrid;
@@ -26,7 +27,7 @@ internal class NullScreen : IScreen
     {
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
         throw new System.NotImplementedException();
     }

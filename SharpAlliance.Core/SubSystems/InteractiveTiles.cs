@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;

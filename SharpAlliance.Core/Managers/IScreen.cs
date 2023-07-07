@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Screens;
 using Veldrid;
 
@@ -20,6 +21,6 @@ public interface IScreen : IDisposable
     ValueTask Deactivate();
 
     ValueTask<ScreenName> Handle();
-    void Draw(ITextureManager textureManager);
+    void Draw(IVideoManager videoManager);
     ScreenState State { get; set; }
 }

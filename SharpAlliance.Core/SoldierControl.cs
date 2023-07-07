@@ -9,11 +9,21 @@ using static SharpAlliance.Core.Globals;
 using static System.Math;
 using SharpAlliance.Core.Screens;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace SharpAlliance.Core;
 
 public class SoldierControl
 {
+    private readonly ILogger<SoldierControl> logger;
+    private readonly CivQuotes civQuotes;
+
+    public SoldierControl(ILogger<SoldierControl> logger, CivQuotes civQuotes)
+    {
+        this.logger = logger;
+        this.civQuotes = civQuotes;
+    }
+
     // HUALT EVENT IS USED TO STOP A MERC - NETWORKING SHOULD CHECK / ADJUST TO GRIDNO?
     public static void EVENT_StopMerc(SOLDIERTYPE? pSoldier, int sGridNo, WorldDirections bDirection)
     {
@@ -9595,7 +9605,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // ATE; Check for normal civs...
         if (CivQuotes.GetCivType(pTSoldier) != CIV_TYPE.NA)
         {
-            CivQuotes.StartCivQuote(pTSoldier);
+            civQuotes.StartCivQuote(pTSoldier);
             return (false);
         }
 

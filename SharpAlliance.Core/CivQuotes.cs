@@ -105,11 +105,13 @@ public struct QUOTE_SYSTEM_STRUCT
 
 public class CivQuotes
 {
+    private readonly MessageBoxSubSystem messageBoxes;
     private static IVideoManager video;
     private static MercTextBox mercTextBox;
 
-    public CivQuotes(IVideoManager videoManager, MercTextBox mercTextBox)
+    public CivQuotes(IVideoManager videoManager, MessageBoxSubSystem messageBoxSubSystem, MercTextBox mercTextBox)
     {
+        this.messageBoxes = messageBoxSubSystem;
         video = videoManager;
         CivQuotes.mercTextBox = mercTextBox;
     }
@@ -202,7 +204,7 @@ public class CivQuotes
         }
     }
 
-    public static void ShutDownQuoteBox(bool fForce)
+    public void ShutDownQuoteBox(bool fForce)
     {
         if (!gCivQuoteData.bActive)
         {
@@ -226,7 +228,7 @@ public class CivQuotes
             if (gCivQuoteData.pCiv is not null && gCivQuoteData.pCiv.bAction == AI_ACTION.OFFER_SURRENDER)
             {
                 Rectangle? _ = null;
-                MessageBoxSubSystem.DoMessageBox(
+                this.messageBoxes.DoMessageBox(
                     MessageBoxStyle.MSG_BOX_BASIC_STYLE,
                     "",//Message[STR_SURRENDER],
                     ScreenName.GAME_SCREEN,
@@ -347,7 +349,7 @@ public class CivQuotes
     }
 
 
-    public static void BeginCivQuote(SOLDIERTYPE pCiv, CIV_QUOTE ubCivQuoteID, int ubEntryID, int sX, int sY)
+    public void BeginCivQuote(SOLDIERTYPE pCiv, CIV_QUOTE ubCivQuoteID, int ubEntryID, int sX, int sY)
     {
         VIDEO_OVERLAY_DESC VideoOverlayDesc = new();
         string zQuote;// [320];
@@ -752,7 +754,7 @@ public class CivQuotes
         }
     }
 
-    public static void StartCivQuote(SOLDIERTYPE pCiv)
+    public void StartCivQuote(SOLDIERTYPE pCiv)
     {
         CIV_QUOTE ubCivQuoteID;
         int sX = 0, sY = 0;

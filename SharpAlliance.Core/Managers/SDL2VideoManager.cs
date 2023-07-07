@@ -28,6 +28,7 @@ using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.SubSystems.FontSubSystem;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using System.Collections;
+using SDL2;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -44,16 +45,16 @@ public class SDL2VideoManager : IVideoManager
     private readonly SurfaceManager surfaces;
     private readonly ILogger<SDL2VideoManager> logger;
 
-    private bool clearScreen;
+    private nint renderer;
 
-    private Dictionary<string, HVOBJECT> loadedTextures = new();
+    private bool clearScreen;
 
     // private readonly WindowsSubSystem windows;
     private readonly RenderWorld renderWorld;
     private readonly ScreenManager screenManager;
     private readonly GameContext context;
     private readonly IFileManager files;
-    private readonly Shading shading = new();
+    private readonly ITextureManager textures;
     private readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
 
     private static Sdl2Window window;
@@ -121,19 +122,20 @@ public class SDL2VideoManager : IVideoManager
     public SDL2VideoManager(
         ILogger<SDL2VideoManager> logger,
         GameContext context,
+        ITextureManager textureManager,
         IFileManager fileManager,
         RenderWorld renderWorld,
         IScreenManager screenManager,
         SurfaceManager surfaceManager,
         Shading shading)
     {
+        this.textures = textureManager;
         this.surfaces = surfaceManager;
         this.logger = logger;
         this.context = context;
         this.files = fileManager;
         this.renderWorld = renderWorld;
         this.screenManager = (screenManager as ScreenManager)!;
-        this.shading = shading;
 
         this.surfaces.InitializeSurfaces(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -182,20 +184,19 @@ public class SDL2VideoManager : IVideoManager
             flags,
             threadedProcessing: true);
 
+        renderer = SDL.SDL_CreateRenderer(
+            window.SdlWindowHandle,
+            -1,
+            SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
+            SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
 
-
-        //        GraphicDevice = VeldridStartup.CreateGraphicsDevice(
-        //            Window,
-        //            gdOptions);
+        if (renderer == IntPtr.Zero)
+        {
+            Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
+        }
 
         Window.Resized += () => windowResized = true;
         //Window.PollIntervalInMs = 1000 / 30;
-        //        Factory = new DisposeCollectorResourceFactory(GraphicDevice.ResourceFactory);
-        //        mainSwapchain = GraphicDevice.MainSwapchain;
-        //        commandList = GraphicDevice.ResourceFactory.CreateCommandList();
-
-        //        SpriteRenderer = new SpriteRenderer(GraphicDevice);
-        //        IVideoManager.DebugRenderer = new DebugRenderer(GraphicDevice);
 
         Globals.guiFrameBufferState = BufferState.DIRTY;
         Globals.guiMouseBufferState = BufferState.DISABLED;
@@ -295,14 +296,22 @@ public class SDL2VideoManager : IVideoManager
     {
         if (Globals.gfForceFullScreenRefresh || clearScreen)
         {
-            //            commandList.ClearColorTarget(0, clearColor);
             clearScreen = false;
         }
 
-        //      commandList.ClearColorTarget(0, clearColor);
+        if (SDL.SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255) < 0)
+        {
+            var error = SDL.SDL_GetError();
+        }
 
-        //        ScreenManager.Draw(SpriteRenderer, GraphicDevice, commandList);
-        //        MouseSubSystem.Draw(SpriteRenderer, GraphicDevice, commandList);
+        // Clears the current render surface.
+        if (SDL.SDL_RenderClear(renderer) < 0)
+        {
+            Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
+        }
+
+        ScreenManager.Draw(this);
+        MouseSubSystem.Draw(this);
 
         // Everything above writes to this SpriteRenderer, so draw it now.
         //        SpriteRenderer.Draw(GraphicDevice, commandList);
@@ -311,9 +320,9 @@ public class SDL2VideoManager : IVideoManager
         //        SpriteRenderer.RenderText(GraphicDevice, commandList, FontSubSystem.TextRenderer.TextureView, new Vector2(0, 0));
         //        commandList.End();
 
-        //        FontSubSystem.TextRenderer.RenderAllText();
-        //        GraphicDevice.SubmitCommands(commandList);
-        //        GraphicDevice.SwapBuffers(mainSwapchain);
+//        FontSubSystem.TextRenderer.RenderAllText(this);
+
+        SDL.SDL_RenderPresent(renderer);
     }
 
     public static byte[] ReadEmbeddedAssetBytes(string name)
@@ -331,126 +340,14 @@ public class SDL2VideoManager : IVideoManager
 
     public HVOBJECT AddVideoObject(string assetPath, out string key)
     {
+
         key = assetPath;
 
-        if (loadedTextures.TryGetValue(key, out var vObject))
-        {
-            return vObject;
-        }
-
         // Create video object
-        HVOBJECT hVObject = CreateVideoObject(assetPath);
-
-        loadedTextures.Add(assetPath, hVObject);
-
-        return hVObject;
+        return new();
     }
 
-    public HVOBJECT CreateVideoObject(string assetPath)
-    {
-        HVOBJECT hVObject = new();
-        hVObject.Name = assetPath;
 
-        HIMAGE hImage;
-        ETRLEData TempETRLEData = new();
-
-        // Create himage object from file
-        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, files);
-
-        // Get TRLE data
-        GetETRLEImageData(hImage, ref TempETRLEData);
-
-        // Set values
-        hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
-        hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
-        hVObject.pPixData = TempETRLEData.pPixData;
-        hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
-
-        // Set palette from himage
-        if (hImage.ubBitDepth == 8)
-        {
-            hVObject.pShade8 = shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
-            hVObject.pGlow8 = shading.ubColorTables[0, 0];
-
-            SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
-        }
-
-        // Set values from himage
-        hVObject.ubBitDepth = hImage.ubBitDepth;
-
-        // All is well
-        //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
-
-        hVObject.hImage = hImage;
-        hVObject.Textures = new Image<Rgba32>[hImage.ParsedImages.Count];
-
-        for (int i = 0; i < hImage.ParsedImages.Count; i++)
-        {
-            hVObject.Textures[i] = hImage.ParsedImages[i];
-            //new ImageSharpTexture(hImage.ParsedImages[i], mipmap: false)
-            //.CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
-
-            //            hVObject.Textures[i].Name = $"{hImage.ImageFile}_{i}";
-        }
-
-        return hVObject;
-    }
-
-    public bool SetVideoObjectPalette(HVOBJECT hVObject, HIMAGE hImage, List<SGPPaletteEntry> pSrcPalette)
-    {
-        // Create palette object if not already done so
-        hVObject.pPaletteEntry = pSrcPalette;
-
-        // Create 16BPP Palette
-        hVObject.Palette = hImage.Create16BPPPalette(pSrcPalette);
-        hVObject.ShadeCurrentPixels = hVObject.Palette;
-
-        if (hImage.fFlags.HasFlag(HIMAGECreateFlags.IMAGE_PALETTE))
-        {
-            hImage.ParsedImages = hImage.iFileLoader.ApplyPalette(ref hVObject, ref hImage);
-        }
-
-        // If you want to output all the images to disk, uncomment ..makes startup take a lot longer.
-        // for (int i = 0; i < (hImage.ParsedImages?.Count ?? 0); i++)
-        // {
-        //     var fileName = Path.GetFileNameWithoutExtension(hImage.ImageFile) + $"_{i}.png";
-        //     var directory = Path.Combine("C:\\", "assets", Path.GetDirectoryName(hImage.ImageFile)!);
-        //     Directory.CreateDirectory(directory);
-        //     hImage.ParsedImages![i].SaveAsPng(Path.Combine(directory, fileName));
-        // }
-
-        //  DbgMessage(TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Video Object Palette change successfull" ));
-        return true;
-    }
-
-    public bool GetETRLEImageData(HIMAGE? hImage, ref ETRLEData pBuffer)
-    {
-        if (hImage is null)
-        {
-            return false;
-        }
-
-        // Create memory for data
-        pBuffer.usNumberOfObjects = hImage.usNumberOfObjects;
-
-        // Create buffer for objects
-        pBuffer.pETRLEObject = new ETRLEObject[pBuffer.usNumberOfObjects];
-        //CHECKF(pBuffer.pETRLEObject != null);
-
-        // Copy into buffer
-        pBuffer.pETRLEObject = hImage.pETRLEObject;
-
-        // Allocate memory for pixel data
-        pBuffer.pPixData = new byte[hImage.uiSizePixData];
-        //CHECKF(pBuffer.pPixData != null);
-
-        pBuffer.uiSizePixData = hImage.uiSizePixData;
-
-        // Copy into buffer
-        pBuffer.pPixData = hImage.pImageData;
-
-        return true;
-    }
 
     public void RefreshScreen()
     {
@@ -578,7 +475,7 @@ public class SDL2VideoManager : IVideoManager
                             backBuffer,
                             new Point(Region.X, Region.Y),
                             Region,
-                            this.surfaces[Surfaces.PRIMARY_SURFACE]);
+                            this.surfaces[SurfaceType.PRIMARY_SURFACE]);
                     }
 
                     // Now do new, extended dirty regions
@@ -601,7 +498,7 @@ public class SDL2VideoManager : IVideoManager
                             backBuffer,
                             Region.ToPoint(),
                             Region,
-                            this.surfaces[Surfaces.FRAME_BUFFER]);
+                            this.surfaces[SurfaceType.FRAME_BUFFER]);
                     }
                 }
             }
@@ -612,7 +509,7 @@ public class SDL2VideoManager : IVideoManager
                     Globals.guiScrollDirection,
                     Globals.gsScrollXIncrement,
                     Globals.gsScrollYIncrement,
-                    this.surfaces[Surfaces.PRIMARY_SURFACE],
+                    this.surfaces[SurfaceType.PRIMARY_SURFACE],
                     backBuffer,
                     fRenderStrip: true,
                     Globals.PREVIOUS_MOUSE_DATA);
@@ -920,7 +817,7 @@ public class SDL2VideoManager : IVideoManager
                 backBuffer,
                 new Point(0, 0),
                 Region,
-                this.surfaces[Surfaces.PRIMARY_SURFACE]);
+                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
 
             // Get new background for mouse
             // Ok, do the actual data save to the mouse background
@@ -941,7 +838,7 @@ public class SDL2VideoManager : IVideoManager
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseYPos),
                 Region,
-                this.surfaces[Surfaces.PRIMARY_SURFACE]);
+                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         // NOW NEW MOUSE AREA
@@ -955,7 +852,7 @@ public class SDL2VideoManager : IVideoManager
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
                 Region,
-                this.surfaces[Surfaces.PRIMARY_SURFACE]);
+                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         if (Globals.gfForceFullScreenRefresh == true)
@@ -970,7 +867,7 @@ public class SDL2VideoManager : IVideoManager
                 backBuffer,
                 new Point(0, 0),
                 Region,
-                this.surfaces[Surfaces.PRIMARY_SURFACE]);
+                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
 
             Globals.guiDirtyRegionCount = 0;
             Globals.guiDirtyRegionExCount = 0;
@@ -989,7 +886,7 @@ public class SDL2VideoManager : IVideoManager
                     backBuffer,
                     new Point(Region.X, Region.Y),
                     Region,
-                    this.surfaces[Surfaces.PRIMARY_SURFACE]);
+                    this.surfaces[SurfaceType.PRIMARY_SURFACE]);
             }
 
             Globals.guiDirtyRegionCount = 0;
@@ -1014,7 +911,7 @@ public class SDL2VideoManager : IVideoManager
                 backBuffer,
                 new Point(Region.X, Region.Y),
                 Region,
-                this.surfaces[Surfaces.PRIMARY_SURFACE]);
+                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         Globals.guiDirtyRegionExCount = 0;
@@ -1054,6 +951,11 @@ public class SDL2VideoManager : IVideoManager
         var finalRect = new Rectangle(
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
+
+        this.backBuffer.Mutate(ctx =>
+        {
+            ctx.DrawImage(srcImage, finalRect, 0.5f);
+        });
 
         //SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
     }
@@ -1376,7 +1278,7 @@ public class SDL2VideoManager : IVideoManager
                     pDest,
                     new Point(StripRegions[cnt].X, StripRegions[cnt].Y),
                     StripRegions[cnt],
-                    this.surfaces[Surfaces.FRAME_BUFFER]);
+                    this.surfaces[SurfaceType.FRAME_BUFFER]);
             }
 
             sShiftX = 0;
@@ -1592,15 +1494,15 @@ public class SDL2VideoManager : IVideoManager
         return false;
     }
 
-    public HVOBJECT GetVideoObject(string key)
-    {
-        if (!loadedTextures.TryGetValue(key, out var hPixHandle))
-        {
-            //logger.LogError("Unable to retrive VideoObject with key: " + key);
-        }
-
-        return hPixHandle;
-    }
+//    public HVOBJECT GetVideoObject(string key)
+//    {
+//        if (!this.textures.TryGetTexture(key, out var hPixHandle))
+//        {
+//            //logger.LogError("Unable to retrive VideoObject with key: " + key);
+//        }
+//
+//        return hPixHandle;
+//    }
 
     public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
     {
@@ -1784,7 +1686,7 @@ public class SDL2VideoManager : IVideoManager
         return (p16BPPPalette);
     }
 
-    public void DeleteVideoSurfaceFromIndex(Surfaces uiTempMap)
+    public void DeleteVideoSurfaceFromIndex(SurfaceType uiTempMap)
     {
     }
 
@@ -1805,11 +1707,11 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public void ColorFillVideoSurfaceArea(Surfaces buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32)
+    public void ColorFillVideoSurfaceArea(SurfaceType buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32)
     {
     }
 
-    public void ImageFillVideoSurfaceArea(Surfaces buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
+    public void ImageFillVideoSurfaceArea(SurfaceType buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
     {
     }
 
@@ -1838,13 +1740,13 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public bool ShadowVideoSurfaceRectUsingLowPercentTable(Surfaces destSurface, Rectangle rectangle)
+    public bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType destSurface, Rectangle rectangle)
     {
         return InternalShadowVideoSurfaceRect(destSurface, rectangle, true);
 
     }
 
-    private bool InternalShadowVideoSurfaceRect(Surfaces destSurface, Rectangle rectangle, bool fLowPercentShadeTable)
+    private bool InternalShadowVideoSurfaceRect(SurfaceType destSurface, Rectangle rectangle, bool fLowPercentShadeTable)
     {
         Image<Rgba32> pBuffer;
         int uiPitch;
@@ -1949,7 +1851,7 @@ public class SDL2VideoManager : IVideoManager
         //	InvalidateBackbuffer( );
         //}
 
-        UnLockVideoSurface(destSurface);
+        // UnLockVideoSurface(destSurface);
         return (true);
     }
 
@@ -1969,7 +1871,7 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public bool BlitBufferToBuffer(Surfaces srcBuffer, Surfaces dstBuffer, int srcX, int srcY, int width, int height)
+    public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, int srcX, int srcY, int width, int height)
     {
         int uiDestPitchBYTES, uiSrcPitchBYTES;
         Image<Rgba32> pDestBuf, pSrcBuf;
@@ -1988,16 +1890,16 @@ public class SDL2VideoManager : IVideoManager
             width,
             height);
 
-        UnLockVideoSurface(dstBuffer);
-        UnLockVideoSurface(srcBuffer);
+        // UnLockVideoSurface(dstBuffer);
+        // UnLockVideoSurface(srcBuffer);
 
         return (fRetVal);
     }
 
-    public int AddVideoObject(out VSURFACE_DESC vs_desc, out Surfaces uiTempMap)
+    public int AddVideoObject(out VSURFACE_DESC vs_desc, out SurfaceType uiTempMap)
     {
         vs_desc = new();
-        uiTempMap = Surfaces.FRAME_BUFFER;
+        uiTempMap = SurfaceType.FRAME_BUFFER;
 
         return 0;
     }
@@ -2010,15 +1912,15 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public void ColorFillVideoSurfaceArea(Surfaces surface, Rectangle rectangle, Color color)
+    public void ColorFillVideoSurfaceArea(SurfaceType surface, Rectangle rectangle, Color color)
     {
     }
 
-    public void SetVideoSurfaceTransparency(Surfaces uiVideoSurfaceImage, Rgba32 pixel)
+    public void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel)
     {
     }
 
-    public bool GetVideoSurface(out HVSURFACE hSrcVSurface, Surfaces uiTempMap)
+    public bool GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap)
     {
         hSrcVSurface = new();
 
@@ -2030,29 +1932,19 @@ public class SDL2VideoManager : IVideoManager
         //        FontSubSystem.TextRenderer.ClearText();
     }
 
-    public Image<Rgba32> LockVideoSurface(Surfaces buffer, out int uiSrcPitchBYTES)
+    public Image<Rgba32> LockVideoSurface(SurfaceType buffer, out int uiSrcPitchBYTES)
     {
         uiSrcPitchBYTES = buffer switch
         {
-            Surfaces.PRIMARY_SURFACE => 128,
-            Surfaces.BACKBUFFER => 128,
-            Surfaces.FRAME_BUFFER => 1280,
-            Surfaces.MOUSE_BUFFER => 128,
-            Surfaces.Unknown => 0,
+            SurfaceType.PRIMARY_SURFACE => 128,
+            SurfaceType.BACKBUFFER => 128,
+            SurfaceType.FRAME_BUFFER => 1280,
+            SurfaceType.MOUSE_BUFFER => 128,
+            SurfaceType.Unknown => 0,
             _ => 0,
         };
 
         return this.surfaces.LockSurface(buffer);
-    }
-
-    public void UnLockVideoSurface(Surfaces surface)
-    {
-        this.surfaces.UnlockSurface(surface);
-    }
-
-    public void UnLockVideoSurface(Image<Rgba32> buffer)
-    {
-        this.surfaces.UnlockSurface(buffer);
     }
 
     public void InvalidateRegionEx(Rectangle bounds, int uiFlags)
@@ -2133,7 +2025,7 @@ public class SDL2VideoManager : IVideoManager
         throw new NotImplementedException();
     }
 
-    public void DeleteVideoObjectFromIndex(Surfaces guiWoodBackground)
+    public void DeleteVideoObjectFromIndex(SurfaceType guiWoodBackground)
     {
         throw new NotImplementedException();
     }
@@ -2143,14 +2035,6 @@ public class SDL2VideoManager : IVideoManager
     public void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {
         clip = new Rectangle(0, 0, 100, 100);
-    }
-
-    public bool TryCreateVideoSurface(VSURFACE_DESC vs_desc, out Surfaces uiVideoSurfaceImage)
-    {
-        uiVideoSurfaceImage = this.surfaces.CreateSurface(width: vs_desc.usWidth, height: vs_desc.usHeight);
-
-        return uiVideoSurfaceImage > 0;
-
     }
 
     public bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject pETRLEObject, int usIndex)
@@ -2172,7 +2056,7 @@ public class SDL2VideoManager : IVideoManager
         return true;
     }
 
-    public bool BltVideoObjectFromIndex(Surfaces uiDestVSurface, int uiSrcVObject, int usRegionIndex, int iDestX, int iDestY, VO_BLT fBltFlags, blt_fx? pBltFx)
+    public bool BltVideoObjectFromIndex(SurfaceType uiDestVSurface, int uiSrcVObject, int usRegionIndex, int iDestX, int iDestY, VO_BLT fBltFlags, blt_fx? pBltFx)
     {
         Image<Rgba32> pBuffer;
         int uiPitch;
@@ -2184,7 +2068,7 @@ public class SDL2VideoManager : IVideoManager
         // Get video object
         if (!GetVideoObject(out hSrcVObject, uiSrcVObject))
         {
-            UnLockVideoSurface(uiDestVSurface);
+            // UnLockVideoSurface(uiDestVSurface);
             return false;
         }
 
@@ -2199,25 +2083,43 @@ public class SDL2VideoManager : IVideoManager
             fBltFlags,
             pBltFx))
         {
-            UnLockVideoSurface(uiDestVSurface);
+            // UnLockVideoSurface(uiDestVSurface);
             // VO Blitter will set debug messages for error conditions
             return false;
         }
 
-        UnLockVideoSurface(uiDestVSurface);
+        // UnLockVideoSurface(uiDestVSurface);
         return true;
     }
 
-    public Image<Rgba32> AddVideoSurface(string assetPath, out Surfaces surface)
+    public Image<Rgba32> AddVideoSurface(string assetPath, out SurfaceType surface)
     {
-        var hobj = this.CreateVideoObject(assetPath);
-        surface = this.surfaces.CreateSurface(hobj.hImage.ParsedImages[0]);
+        //        var hobj = this.CreateVideoObject(assetPath);
+        //        surface = this.surfaces.CreateSurface(hobj.hImage.ParsedImages[0]);
 
+        surface = SurfaceType.Unknown;
         return this.surfaces[surface];
     }
 
     public void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int flags)
         => InvalidateRegionEx(new(sLeft, sTop, v1, v2), flags);
+
+    public Image<Rgba32> LoadImage(string assetPath)
+    {
+        return this.textures.LoadTexture(assetPath);
+    }
+
+    public Surface CreateSurface(Image<Rgba32> image)
+    {
+        Surface surface = this.surfaces.CreateSurface(image);
+
+        return surface;
+    }
+
+    public void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public enum BufferState

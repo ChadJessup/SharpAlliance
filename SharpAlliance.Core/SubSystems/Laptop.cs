@@ -108,11 +108,11 @@ public class Laptop
         }
 
         video.GetVideoObject(out hLapTopHandle, guiLAPTOP);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
         hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
         ButtonSubSystem.MarkButtonsDirty();
@@ -339,7 +339,7 @@ public class Laptop
 
         // blit title
         hHandle = video.GetVideoObject(uiTITLEFORWWW);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
 
         // now delete
@@ -384,23 +384,23 @@ public class Laptop
         {
             case (LAPTOP_MODE.HISTORY):
                 hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.EMAIL):
                 hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.PERSONNEL):
                 hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.FINANCES):
                 hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.FILES):
                 hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
             case (LAPTOP_MODE.NONE):
                 // do nothing
@@ -408,7 +408,7 @@ public class Laptop
             default:
                 // www pages
                 hHandle = video.GetVideoObject(guiTITLEBARICONS);
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 1, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
         }
     }

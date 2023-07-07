@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using SixLabors.ImageSharp.Drawing.Processing;
 using FontStyle = SixLabors.Fonts.FontStyle;
 using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Interfaces;
 
 namespace SharpAlliance.Core;
 
@@ -68,7 +69,7 @@ public class TextRenderer
         });
     }
 
-    public unsafe void RenderAllText()
+    public unsafe void RenderAllText(IVideoManager videoManager)
     {
         this._image.DangerousTryGetSinglePixelMemory(out var span2);
         fixed (void* data = &MemoryMarshal.GetReference(span2.Span))

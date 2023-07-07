@@ -431,7 +431,7 @@ public class MapScreenInterfaceMap
         // get and blt border
         video.GetVideoObject(out hHandle, Globals.guiMapBorder);
         VideoObjectManager.BltVideoObject(
-            Surfaces.SAVE_BUFFER,
+            SurfaceType.SAVE_BUFFER,
             hHandle,
             0,
             Globals.MAP_BORDER_X,

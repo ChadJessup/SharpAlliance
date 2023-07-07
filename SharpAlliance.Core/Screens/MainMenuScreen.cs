@@ -22,6 +22,7 @@ public class MainMenuScreen : IScreen
     private readonly FontSubSystem fonts;
     private readonly IInputManager input;
     private readonly IMusicManager music;
+    private readonly ButtonSubSystem buttons;
     private readonly MouseSubSystem mouse;
     private readonly IVideoManager video;
     private readonly CursorSubSystem cursor;
@@ -45,6 +46,7 @@ public class MainMenuScreen : IScreen
         IScreenManager screenManager,
         GameInit gameInit,
         IClockManager clockManager,
+        ButtonSubSystem buttonSubSystem,
         IMusicManager musicManager,
         GameOptions gameOptions,
         IVideoManager videoManager,
@@ -59,6 +61,7 @@ public class MainMenuScreen : IScreen
         this.music = musicManager;
         this.mouse = mouseSubSystem;
         this.options = gameOptions;
+        this.buttons = buttonSubSystem;
         this.fonts = fontSubSystem;
         this.screens = screenManager;
         this.video = videoManager;
@@ -93,11 +96,11 @@ public class MainMenuScreen : IScreen
             uiTime = Globals.GetJA2Clock();
             if (Globals.guiSplashFrameFade > 2)
             {
-                video.ShadowVideoSurfaceRectUsingLowPercentTable(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
+                video.ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
             }
             else if (Globals.guiSplashFrameFade > 1)
             {
-                video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
+                video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
             }
             else
             {
@@ -364,7 +367,7 @@ public class MainMenuScreen : IScreen
             // Load button images
             filename = "LOADSCREENS\\titletext.sti";// MLG_TITLETEXT);
 
-            this.iMenuImages[MainMenuItems.NEW_GAME] = ButtonSubSystem.LoadButtonImage(filename, 0, 0, 1, 2, -1);
+            this.iMenuImages[MainMenuItems.NEW_GAME] = this.buttons.LoadButtonImage(filename, 0, 0, 1, 2, -1);
             sSlot = 0;
 
             this.iMenuImages[MainMenuItems.LOAD_GAME] = ButtonSubSystem.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 6, 3, 4, 5, -1);
@@ -538,7 +541,7 @@ public class MainMenuScreen : IScreen
         this.video.InvalidateScreen();
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
         //var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 

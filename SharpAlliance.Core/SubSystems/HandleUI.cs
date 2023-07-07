@@ -53,6 +53,7 @@ public class HandleUI
     private const int GO_MOVE_ONE = 40;
     private const int GO_MOVE_TWO = 80;
     private const int GO_MOVE_THREE = 100;
+    private readonly MessageBoxSubSystem messageBoxSubSystem;
 
     //extern bool gfExitDebugScreen;
     //extern byte gCurDebugPage;
@@ -82,10 +83,12 @@ public class HandleUI
         GameSettings gameSettings,
         Points points,
         PathAI pathAI,
+        MessageBoxSubSystem messageBoxSubSystem,
         RenderWorld renderWorld,
         SoldierFind soldierFind,
         IScreenManager screenManager)
     {
+        this.messageBoxSubSystem = messageBoxSubSystem;
         this.logger = logger;
         this.clock = clock;
         this.overhead = overhead;
@@ -2276,7 +2279,7 @@ public class HandleUI
 
                         Rectangle? _ = null;
 
-                        MessageBoxSubSystem.DoMessageBox(
+                        this.messageBoxSubSystem.DoMessageBox(
                             MessageBoxStyle.MSG_BOX_BASIC_STYLE,
                             zStr,
                             ScreenName.GAME_SCREEN,

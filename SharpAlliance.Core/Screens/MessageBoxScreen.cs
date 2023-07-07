@@ -147,7 +147,7 @@ public class MessageBoxScreen : IScreen
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            mercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, Surfaces.FRAME_BUFFER);
+            mercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, SurfaceType.FRAME_BUFFER);
             //gMsgBox.fRenderBox = false;
             // ATE: Render each frame...
         }
@@ -435,7 +435,7 @@ public class MessageBoxScreen : IScreen
         return (gMsgBox.uiExitScreen);
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
     }
 }

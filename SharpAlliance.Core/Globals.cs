@@ -717,7 +717,7 @@ public partial class Globals
     public const int MAX_BUTTON_PICS = 256;
     public const int MAX_BUTTONS = 400;
 
-    public const Surfaces BUTTON_USE_DEFAULT = Surfaces.Unknown;
+    public const SurfaceType BUTTON_USE_DEFAULT = SurfaceType.Unknown;
     public static readonly int? BUTTON_NO_FILENAME = null;
     public static readonly GUI_CALLBACK BUTTON_NO_CALLBACK = (ref GUI_BUTTON o, MSYS_CALLBACK_REASON r) => { };
     //public const int MAX_NUMBER_OF_MINES = (int)MINE.MAX_NUMBER_OF_MINES;
@@ -999,7 +999,7 @@ public partial class Globals
     public static uint guiRIGHTPANEL { get; set; }
 //    public static Surfaces guiRENDERBUFFER { get; set; }
     //public static Surfaces Surfaces.SAVE_BUFFER { get; set; }
-    public static Surfaces guiEXTRABUFFER { get; set; }
+    public static SurfaceType guiEXTRABUFFER { get; set; }
     public static bool gfExtraBuffer { get; set; }
 
     public static OBJECTTYPE? gpItemPointer { get; set; } = null;

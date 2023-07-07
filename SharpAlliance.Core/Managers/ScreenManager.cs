@@ -90,9 +90,9 @@ public class ScreenManager : IScreenManager
         return screen;
     }
 
-    public static void Draw(ITextureManager textureManager)
+    public static void Draw(IVideoManager videoManager)
     {
-        CurrentScreen.Draw(textureManager);
+        CurrentScreen.Draw(videoManager);
     }
 
     public ValueTask<IScreen> ActivateScreen(ScreenName screenName)

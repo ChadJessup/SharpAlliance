@@ -62,7 +62,7 @@ public struct VSurfaceRegion
     public int ubHitMask;                   // Byte flags for hit detection
 }
 
-public enum Surfaces : uint
+public enum SurfaceType : uint
 {
     Unknown         = 0x00000000,
     PRIMARY_SURFACE = 0xFFFFFFF0,

@@ -47,6 +47,7 @@ public class FontSubSystem : ISharpAllianceManager
     //private int FontDestBuffer = BACKBUFFER;
     private static int FontDestPitch = 640 * 2;
     private static int FontDestBPP = 16;
+    private readonly ITextureManager textures;
     private static IVideoManager video;
     private readonly IServiceProvider services;
     private static FontColor FontForeground16 = 0;
@@ -109,8 +110,10 @@ public class FontSubSystem : ISharpAllianceManager
 
     public FontSubSystem(
         IVideoManager videoManager,
+        ITextureManager textureManager,
         IServiceProvider serviceProvider)
     {
+        textures = textureManager;
         video = videoManager;
         services = serviceProvider;
     }
@@ -120,7 +123,7 @@ public class FontSubSystem : ISharpAllianceManager
         FontDefault = fontStyle;
     }
 
-    public static void FindFontRightCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
+    public void FindFontRightCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
     {
         int xp, yp;
 
@@ -163,11 +166,11 @@ public class FontSubSystem : ISharpAllianceManager
     {
     }
 
-    public static int GetFontHeight(FontStyle usFont)
+    public int GetFontHeight(FontStyle usFont)
     {
         if (!FontObjs.TryGetValue(usFont, out var hVobject))
         {
-            FontSubSystem.InitializeFonts();
+            InitializeFonts();
         }
 
         return GetHeight(FontObjs[usFont], 0);
@@ -182,7 +185,7 @@ public class FontSubSystem : ISharpAllianceManager
         return pTrav.usHeight + pTrav.sOffsetY;
     }
 
-    public static void SetFontDestBuffer(Surfaces buttonDestBuffer, int y1, int y2, int width, int height, bool v)
+    public static void SetFontDestBuffer(SurfaceType buttonDestBuffer, int y1, int y2, int width, int height, bool v)
     {
     }
 
@@ -377,7 +380,7 @@ public class FontSubSystem : ISharpAllianceManager
         return ValueTask.FromResult(true);
     }
 
-    public static void InitializeFonts()
+    public void InitializeFonts()
     {
         return;
 
@@ -988,7 +991,7 @@ public class FontSubSystem : ISharpAllianceManager
     //  This function returns (-1) if it fails, and debug msgs for a reason.
     //  Otherwise the font number is returned.
     //*****************************************************************************
-    private static FontStyle LoadFontFile(FontStyle LoadIndex, string filename)
+    private FontStyle LoadFontFile(FontStyle LoadIndex, string filename)
     {
         if (FontObjs.ContainsKey(LoadIndex))
         {
@@ -996,12 +999,12 @@ public class FontSubSystem : ISharpAllianceManager
             return LoadIndex;
         }
 
-        if ((FontObjs[LoadIndex] = video.CreateVideoObject(filename)) == null)
-        {
-            //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);
-
-            return FontStyle.None;
-        }
+//        if ((FontObjs[LoadIndex] = textures.LoadTexture(filename)) == null)
+//        {
+//            //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);
+//
+//            return FontStyle.None;
+//        }
 
         if (FontDefault == FontStyle.None)
         {
@@ -1051,7 +1054,7 @@ public class FontSubSystem : ISharpAllianceManager
         FindFontCenterCoordinates(sLeft, sTop, sWidth, sHeight, pFontString, iFontIndex, out psNewX, out psNewY);
     }
 
-    public static void FindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
+    public void FindFontCenterCoordinates(int sLeft, int sTop, int sWidth, int sHeight, string pStr, FontStyle iFontIndex, out int psNewX, out int psNewY)
     {
         int xp, yp;
 

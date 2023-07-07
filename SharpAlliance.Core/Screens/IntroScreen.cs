@@ -1,9 +1,14 @@
 ﻿using System.Threading.Tasks;
+using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Library;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using Point = SixLabors.ImageSharp.Point;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -16,6 +21,7 @@ public class IntroScreen : IScreen
     private readonly IScreenManager screens;
     private readonly MouseSubSystem mouse;
     private readonly CursorSubSystem cursor;
+    private readonly SurfaceManager surfaces;
     private readonly RenderDirty renderDirty;
     private readonly IMusicManager music;
     private readonly IVideoManager video;
@@ -52,8 +58,10 @@ public class IntroScreen : IScreen
         IVideoManager videoManager,
         IScreenManager screenManager,
         ITextureManager textureManager,
+        SurfaceManager surfaceManager,
         GameInit gameInit)
     {
+        this.surfaces = surfaceManager;
         this.renderDirty = renderDirtySubSystem;
         this.textures = textureManager;
         this.cursor = cursorSubSystem;
@@ -342,21 +350,30 @@ public class IntroScreen : IScreen
         // JA3Gold: do nothing until we have a graphic to replace Talonsoft's
         //return;
 
-        //memset(&VObjectDesc, 0, sizeof(VOBJECT_DESC));
+        Image<Rgba32> image = this.video.LoadImage("INTERFACE\\SirtechSplash.sti");
+        Surface surface = this.video.CreateSurface(image);
+
+        this.video.BlitSurfaceToSurface(
+            src: surface,
+            dst: SurfaceType.FRAME_BUFFER,
+            dstPoint: new Point(0, 0),
+            bltFlags: VO_BLT.SRCTRANSPARENCY);
+
+//        var videoObject = this.video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
+//        videoObject = this.textures.LoadTexture("INTERFACE\\SirtechSplash.sti");
+  
         
-        //	FilenameForBPP("INTERFACE\\TShold.sti", VObjectDesc.ImageFile);
-        var videoObject = this.video.AddVideoObject("INTERFACE\\SirtechSplash.sti", out logoKey);
+        
+//        VideoObjectManager.BltVideoObject(
+//            SurfaceType.FRAME_BUFFER,
+//            videoObject,
+//            0,
+//            0,
+//            0,
+//            VO_BLT.SRCTRANSPARENCY,
+//            null);
 
-        //video.BltVideoObject(
-        //    0,
-        //    videoObject,
-        //    0,
-        //    0,
-        //    0,
-        //    VideoObjectManager.VO_BLT.SRCTRANSPARENCY,
-        //    null);
-
-        this.video.DeleteVideoObjectFromIndex(logoKey);
+//        this.video.DeleteVideoObjectFromIndex(logoKey);
         this.video.InvalidateScreen();
         this.video.RefreshScreen();
     }
@@ -389,7 +406,7 @@ public class IntroScreen : IScreen
     {
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
     }
 

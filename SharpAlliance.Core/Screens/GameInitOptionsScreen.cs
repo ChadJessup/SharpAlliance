@@ -52,6 +52,7 @@ public class GameInitOptionsScreen : IScreen
     private readonly IVideoManager video;
     private readonly FadeScreen fade;
     private readonly GameOptions gGameOptions;
+    private readonly ButtonSubSystem buttons;
     private readonly CursorSubSystem cursor;
     private readonly GameContext context;
     private readonly FontSubSystem fonts;
@@ -83,6 +84,7 @@ public class GameInitOptionsScreen : IScreen
         IInputManager inputManager,
         GuiManager guiManager,
         IVideoManager videoManager,
+        ButtonSubSystem buttonSubSystem,
         FontSubSystem fontSubSystem,
         CursorSubSystem cursorSubSystem,
         GameOptions gameOptions,
@@ -92,6 +94,7 @@ public class GameInitOptionsScreen : IScreen
         this.fade = fadeScreen;
         this.fonts = fontSubSystem;
         this.gGameOptions = gameOptions;
+        this.buttons = buttonSubSystem;
         this.cursor = cursorSubSystem;
         this.context = gameContext;
         this.input = inputManager;
@@ -112,7 +115,7 @@ public class GameInitOptionsScreen : IScreen
         this.video.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
 
         //Ok button
-        this.giGIODoneBtnImage = ButtonSubSystem.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
+        this.giGIODoneBtnImage = this.buttons.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);
         this.guiGIODoneButton = ButtonSubSystem.CreateIconAndTextButton(
             this.giGIODoneBtnImage,
             EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_OK_TEXT],
@@ -161,7 +164,7 @@ public class GameInitOptionsScreen : IScreen
 
         for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
         {
-            this.guiDifficultySettingsToggles[cnt] = ButtonSubSystem.CreateCheckBoxButton(
+            this.guiDifficultySettingsToggles[cnt] = this.buttons.CreateCheckBoxButton(
                 new(GIO_DIF_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti",
                 MSYS_PRIORITY.HIGH + 10,
@@ -196,7 +199,7 @@ public class GameInitOptionsScreen : IScreen
         usPosY = GIO_GAME_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
         for (GameStyle gameStyle = 0; gameStyle < GameStyle.NUM_GAME_STYLES; gameStyle++)
         {
-            this.guiGameStyleToggles[gameStyle] = ButtonSubSystem.CreateCheckBoxButton(
+            this.guiGameStyleToggles[gameStyle] = this.buttons.CreateCheckBoxButton(
                 new(GIO_GAME_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
                 this.BtnGameStyleTogglesCallback);
@@ -218,7 +221,7 @@ public class GameInitOptionsScreen : IScreen
         usPosY = GIO_IRON_MAN_SETTING_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
         for (IronManMode opt = 0; opt < IronManMode.NUM_SAVE_OPTIONS; opt++)
         {
-            this.guiGameSaveToggles[opt] = ButtonSubSystem.CreateCheckBoxButton(
+            this.guiGameSaveToggles[opt] = this.buttons.CreateCheckBoxButton(
                 new(GIO_IRON_MAN_SETTING_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
                 this.BtnGameSaveTogglesCallback);
@@ -244,7 +247,7 @@ public class GameInitOptionsScreen : IScreen
         usPosY = GIO_GUN_SETTINGS_Y - GIO_OFFSET_TO_TOGGLE_BOX_Y;
         for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
         {
-            this.guiGunOptionToggles[cnt] = ButtonSubSystem.CreateCheckBoxButton(
+            this.guiGunOptionToggles[cnt] = this.buttons.CreateCheckBoxButton(
                 new(GIO_GUN_SETTINGS_X + GIO_OFFSET_TO_TOGGLE_BOX, usPosY),
                 "INTERFACE\\OptionsCheck.sti", MSYS_PRIORITY.HIGH + 10,
                 this.BtnGunOptionsTogglesCallback);
@@ -271,7 +274,7 @@ public class GameInitOptionsScreen : IScreen
         //REnder the screen once so we can blt ot to ths save buffer
         this.RenderGIOScreen();
 
-        video.BlitBufferToBuffer(Surfaces.RENDER_BUFFER, Surfaces.SAVE_BUFFER, 0, 0, 639, 439);
+        video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 639, 439);
 
         //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 639, 439);
 
@@ -532,9 +535,9 @@ public class GameInitOptionsScreen : IScreen
         int usPosY;
 
         //Get the main background screen graphic and blt it
-        HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
+       // HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
         //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY, null);
-        video.BltVideoObject(background, 0, 0, 0, 0);
+        //video.BltVideoObject(background, 0, 0, 0, 0);
         //Shade the background
         //video.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358
 
@@ -618,7 +621,7 @@ public class GameInitOptionsScreen : IScreen
         return true;
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
         this.RenderGIOScreen();
         //ButtonSubSystem.MarkButtonsDirty();

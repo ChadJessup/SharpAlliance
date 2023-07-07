@@ -56,6 +56,7 @@ public class SaveLoadGame
     private readonly IFileManager files;
     private readonly IVideoManager video;
     private readonly SoldierCreate soldierCreate;
+    private readonly AnimatedProgressBar animatedProgressBar;
     private readonly MercTextBox mercTextBox;
     private readonly StrategicMap strategicMap;
 
@@ -65,8 +66,10 @@ public class SaveLoadGame
         IVideoManager videoManager,
         StrategicMap strategicMap,
         MercTextBox mercTextBox,
+        AnimatedProgressBar animatedProgressBar,
         SoldierCreate soldierCreate)
     {
+        this.animatedProgressBar = animatedProgressBar;
         this.mercTextBox = mercTextBox;
         this.strategicMap = strategicMap;
         this.soldierCreate = soldierCreate;
@@ -113,7 +116,7 @@ public class SaveLoadGame
             EnglishText.zSaveLoadText[(int)SLG.SAVING_GAME_MESSAGE], 300, 0, 0, 0, out usActualWidth, out usActualHeight);
         usPosX = (640 - usActualWidth) / 2;
 
-        mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, Surfaces.FRAME_BUFFER);
+        mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, SurfaceType.FRAME_BUFFER);
 
         SDL2VideoManager.InvalidateRegion(new(0, 0, 640, 480));
 
@@ -870,7 +873,7 @@ public class SaveLoadGame
         uiRelStartPerc = 0;
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Events...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Events...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -883,7 +886,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 0;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Laptop Info");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Laptop Info");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -897,7 +900,7 @@ public class SaveLoadGame
 //        }
 
         uiRelEndPerc += 0;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Merc Profiles...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Merc Profiles...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -912,7 +915,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 30;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Soldier Structure...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Soldier Structure...");
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -927,7 +930,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Finances Data File...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Finances Data File...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -949,7 +952,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "History File...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "History File...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -971,7 +974,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "The Laptop FILES file...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "The Laptop FILES file...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -992,7 +995,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Email...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Email...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1011,7 +1014,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Information...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Information...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1031,7 +1034,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "UnderGround Information...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "UnderGround Information...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1049,7 +1052,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Squad Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Squad Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1067,7 +1070,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Movement Groups...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Movement Groups...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1085,7 +1088,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 30;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "All the Map Temp files...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "All the Map Temp files...");
         uiRelStartPerc = uiRelEndPerc;
 
 
@@ -1103,7 +1106,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Quest Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Quest Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1121,7 +1124,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "OppList Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "OppList Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1140,7 +1143,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "MapScreen Messages...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "MapScreen Messages...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1159,7 +1162,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "NPC Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "NPC Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1178,7 +1181,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "KeyTable...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "KeyTable...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1197,7 +1200,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Npc Temp Quote File...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Npc Temp Quote File...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1216,7 +1219,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "PreGenerated Random Files...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "PreGenerated Random Files...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1235,7 +1238,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Smoke Effect Structures...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Smoke Effect Structures...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1254,7 +1257,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Arms Dealers Inventory...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Arms Dealers Inventory...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1274,7 +1277,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Misc info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Misc info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1295,7 +1298,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Mine Status...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Mine Status...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1309,7 +1312,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 0;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Town Loyalty...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Town Loyalty...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1324,7 +1327,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Vehicle Information...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Vehicle Information...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1346,7 +1349,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Bullet Information...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Bullet Information...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1369,7 +1372,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Physics table...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Physics table...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1393,7 +1396,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Air Raid Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Air Raid Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1415,7 +1418,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 0;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Team Turn Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Team Turn Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1438,7 +1441,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Explosion Table...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Explosion Table...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1461,7 +1464,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Creature Spreading...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Creature Spreading...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1485,7 +1488,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Status...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic Status...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1508,7 +1511,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic AI...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Strategic AI...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1530,7 +1533,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Lighting Effects...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Lighting Effects...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1547,7 +1550,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Watched Locs Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Watched Locs Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1570,7 +1573,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Item cursor Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Item cursor Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1592,7 +1595,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Civ Quote System...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Civ Quote System...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1615,7 +1618,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Backed up NPC Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Backed up NPC Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1632,7 +1635,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Meanwhile definitions...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Meanwhile definitions...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1656,7 +1659,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Schedules...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Schedules...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1675,7 +1678,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Extra Vehicle Info...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Extra Vehicle Info...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1704,7 +1707,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Contract renweal sequence stuff...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Contract renweal sequence stuff...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1773,7 +1776,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1808,7 +1811,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1822,7 +1825,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1847,7 +1850,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1873,7 +1876,7 @@ public class SaveLoadGame
 
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -1891,7 +1894,7 @@ public class SaveLoadGame
         }
 
         uiRelEndPerc += 1;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Final Checks...");
         AnimatedProgressBar.RenderProgressBar(0, 100);
         uiRelStartPerc = uiRelEndPerc;
 
@@ -2006,7 +2009,7 @@ public class SaveLoadGame
         gfLoadedGame = true;
 
         uiRelEndPerc = 100;
-        AnimatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Done!");
+        this.animatedProgressBar.SetRelativeStartAndEndPercentage(0, uiRelStartPerc, uiRelEndPerc, "Done!");
         AnimatedProgressBar.RenderProgressBar(0, 100);
 
 //        RemoveLoadingScreenProgressBar();

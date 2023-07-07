@@ -353,7 +353,7 @@ public class DialogControl
 
         for (iCounter = 0; iCounter < (int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES; iCounter++)
         {
-            this.uiExternalStaticNPCFaces[iCounter] = (int)Faces.InitFace(this.uiExternalFaceProfileIds[iCounter], Globals.NOBODY, FACE.FORCE_SMALL);
+   //         this.uiExternalStaticNPCFaces[iCounter] = (int)Faces.InitFace(this.uiExternalFaceProfileIds[iCounter], Globals.NOBODY, FACE.FORCE_SMALL);
         }
 
         return;

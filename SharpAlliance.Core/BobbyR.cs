@@ -149,27 +149,27 @@ public class BobbyR
 
         // Bobby's Name
         hPixHandle = this.video.GetVideoObject(guiBobbyName);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBY_RAYS_NAME_X, BOBBY_RAYS_NAME_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBY_RAYS_NAME_X, BOBBY_RAYS_NAME_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Plaque
         hPixHandle = this.video.GetVideoObject(guiPlaque);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBYS_PLAQUES_X, BOBBYS_PLAQUES_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBYS_PLAQUES_X, BOBBYS_PLAQUES_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Top Hinge
         hPixHandle = this.video.GetVideoObject(guiTopHinge);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_TOPHINGE_X, BOBBIES_TOPHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBIES_TOPHINGE_X, BOBBIES_TOPHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Bottom Hinge
         hPixHandle = this.video.GetVideoObject(guiBottomHinge);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_BOTTOMHINGE_X, BOBBIES_BOTTOMHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBIES_BOTTOMHINGE_X, BOBBIES_BOTTOMHINGE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // StorePlaque
         hStorePlaqueHandle = this.video.GetVideoObject(guiStorePlaque);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hStorePlaqueHandle, 0, BOBBIES_STORE_PLAQUE_X, BOBBIES_STORE_PLAQUE_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hStorePlaqueHandle, 0, BOBBIES_STORE_PLAQUE_X, BOBBIES_STORE_PLAQUE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         // Handle
         hPixHandle = this.video.GetVideoObject(guiHandle);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, 0, BOBBIES_HANDLE_X, BOBBIES_HANDLE_Y, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, BOBBIES_HANDLE_X, BOBBIES_HANDLE_Y, VO_BLT.SRCTRANSPARENCY, null);
 
         /*
             if( !LaptopSaveInfo.fBobbyRSiteCanBeAccessed )
@@ -238,7 +238,7 @@ public class BobbyR
         //if we cant go to any sub pages, darken the page out
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
         {
-            VideoSurfaceManager.ShadowVideoSurfaceRect(Surfaces.FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+            VideoSurfaceManager.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
         }
 
         Laptop.RenderWWWProgramTitleBar();
@@ -276,7 +276,7 @@ public class BobbyR
             uiPosX = BOBBY_WOOD_BACKGROUND_X;
             for (x = 0; x < 4; x++)
             {
-                VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hWoodBackGroundHandle, 0, uiPosX, uiPosY, VO_BLT.SRCTRANSPARENCY, null);
+                VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hWoodBackGroundHandle, 0, uiPosX, uiPosY, VO_BLT.SRCTRANSPARENCY, null);
                 uiPosX += BOBBY_WOOD_BACKGROUND_WIDTH;
             }
             uiPosY += BOBBY_WOOD_BACKGROUND_HEIGHT;
@@ -406,8 +406,8 @@ public class BobbyR
         {
             // The undercontsruction graphic 
             hPixHandle = this.video.GetVideoObject(guiUnderConstructionImage);
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT.SRCTRANSPARENCY, null);
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT.SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT.SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT.SRCTRANSPARENCY, null);
 
             FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.UNDER_CONSTRUCTION], BOBBYR_UNDER_CONSTRUCTION_TEXT_X, BOBBYR_UNDER_CONSTRUCTION_TEXT_Y, BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH, FontStyle.FONT16ARIAL, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.INVALIDATE_TEXT);
 

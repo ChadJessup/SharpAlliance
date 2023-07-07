@@ -18,11 +18,16 @@ public class Messages
     private static bool fScrollMessagesHidden;
     private static bool fOkToBeepNewMessage;
     private static int usLineWidthIfWordIsWiderThenWidth = 0;
-
+    private readonly FontSubSystem fonts;
     private static IVideoManager video;
+    private readonly RenderDirty renderDirty;
 
-    public Messages(IVideoManager videoManager) => video = videoManager;
-
+    public Messages(IVideoManager videoManager, FontSubSystem fontSubSystem, RenderDirty renderDirty)
+    {
+        this.fonts = fontSubSystem;
+        video = videoManager;
+        this.renderDirty = renderDirty;
+    }
     public static void DisableScrollMessages()
     {
         // will stop the scroll of messages in tactical and hide them during an NPC's dialogue
@@ -142,7 +147,7 @@ public class Messages
         VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
         VideoOverlayDesc.pzText = pStringSt.pString16!;
         VideoOverlayDesc.BltCallback = BlitString;
-        pStringSt.iVideoOverlay = RenderDirty.RegisterVideoOverlay((VOVERLAY.DIRTYBYTEXT), VideoOverlayDesc);
+        pStringSt.iVideoOverlay = this.renderDirty.RegisterVideoOverlay((VOVERLAY.DIRTYBYTEXT), VideoOverlayDesc);
 
         if (pStringSt.iVideoOverlay == -1)
         {
@@ -183,7 +188,7 @@ public class Messages
             VideoOverlayDesc.sX = VideoOverlayDesc.sLeft;
             VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
 
-            RenderDirty.UpdateVideoOverlay(VideoOverlayDesc, pStringSt.iVideoOverlay, false);
+            this.renderDirty.UpdateVideoOverlay(VideoOverlayDesc, pStringSt.iVideoOverlay, false);
         }
     }
 
@@ -222,7 +227,7 @@ public class Messages
         {
             VideoOverlayDesc.fDisabled = !fEnable;
             VideoOverlayDesc.uiFlags = VOVERLAY_DESC.DISABLED;
-            RenderDirty.UpdateVideoOverlay(VideoOverlayDesc, pStringSt.iVideoOverlay, false);
+            this.renderDirty.UpdateVideoOverlay(VideoOverlayDesc, pStringSt.iVideoOverlay, false);
         }
     }
 
@@ -364,7 +369,7 @@ public class Messages
                     if (Globals.gpDisplayList[cnt] != null)
                     {
 
-                        SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], Globals.X_START, ((Globals.Y_START - ((cnt) * FontSubSystem.GetFontHeight(FontStyle.SMALLFONT1))) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * (iNumberOfNewStrings))));
+                        SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], Globals.X_START, ((Globals.Y_START - ((cnt) * this.fonts.GetFontHeight(FontStyle.SMALLFONT1))) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * (iNumberOfNewStrings))));
 
                         // start of new string, increment count of new strings, for spacing purposes
                         if (Globals.gpDisplayList[cnt].fBeginningOfNewString == true)
@@ -425,7 +430,7 @@ public class Messages
             if (Globals.gpDisplayList[cnt] != null)
             {
                 RenderDirty.RestoreExternBackgroundRectGivenID(Globals.gVideoOverlays[Globals.gpDisplayList[cnt].iVideoOverlay].uiBackground);
-                RenderDirty.UpdateVideoOverlay(VideoOverlayDesc, Globals.gpDisplayList[cnt].iVideoOverlay, false);
+                this.renderDirty.UpdateVideoOverlay(VideoOverlayDesc, Globals.gpDisplayList[cnt].iVideoOverlay, false);
             }
         }
 
@@ -447,7 +452,7 @@ public class Messages
             if (Globals.gpDisplayList[cnt] != null)
             {
                 Globals.gpDisplayList[cnt].uiTimeOfLastUpdate += Globals.GetJA2Clock() - uiStartOfPauseTime;
-                RenderDirty.UpdateVideoOverlay(VideoOverlayDesc, Globals.gpDisplayList[cnt].iVideoOverlay, false);
+                this.renderDirty.UpdateVideoOverlay(VideoOverlayDesc, Globals.gpDisplayList[cnt].iVideoOverlay, false);
             }
         }
 
@@ -914,7 +919,7 @@ public class Messages
         int usSpacing;
 
 
-        FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 17, 360 + 6, 407, 360 + 101, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 17, 360 + 6, 407, 360 + 101, false);
 
         FontSubSystem.SetFont(MAP_SCREEN_MESSAGE_FONT);       // no longer supports variable fonts
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -923,7 +928,7 @@ public class Messages
         ubCurrentStringIndex = Globals.gubCurrentMapMessageString;
 
         sY = 377;
-        usSpacing = FontSubSystem.GetFontHeight(Globals.MAP_SCREEN_MESSAGE_FONT);
+        usSpacing = this.fonts.GetFontHeight(Globals.MAP_SCREEN_MESSAGE_FONT);
 
         for (ubLinesPrinted = 0; ubLinesPrinted < Globals.MAX_MESSAGES_ON_MAP_BOTTOM; ubLinesPrinted++)
         {
@@ -951,7 +956,7 @@ public class Messages
             ubCurrentStringIndex = (ubCurrentStringIndex + 1) % 256;
         }
 
-        FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
+        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
     }
 
 

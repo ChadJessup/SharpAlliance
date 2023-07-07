@@ -137,11 +137,11 @@ public class SliderSubSystem
             if (!(pSlider.LastRect.Left == 0 && pSlider.LastRect.Right == 0))
             {
                 //Restore the old rect
-                video.BlitBufferToBuffer(Surfaces.SAVE_BUFFER, Surfaces.RENDER_BUFFER, pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15);
+                video.BlitBufferToBuffer(SurfaceType.SAVE_BUFFER, SurfaceType.RENDER_BUFFER, pSlider.LastRect.Left, pSlider.LastRect.Top, 8, 15);
             }
 
             //save the new rect
-            video.BlitBufferToBuffer(Surfaces.RENDER_BUFFER, Surfaces.SAVE_BUFFER, DestRect.Left, DestRect.Top, 8, 15);
+            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, DestRect.Left, DestRect.Top, 8, 15);
         }
 
         //Save the new rect location

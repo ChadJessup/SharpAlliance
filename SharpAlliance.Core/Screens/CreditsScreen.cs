@@ -530,10 +530,10 @@ public class CreditsScreen : IScreen
                 ubBitDepth = 16
             };
 
-            if (video.TryCreateVideoSurface(vs_desc, out pNodeToAdd.uiVideoSurfaceImage))
-            {
-                return false;
-            }
+//            if (video.TryCreateVideoSurface(vs_desc, out pNodeToAdd.uiVideoSurfaceImage))
+//            {
+//                return false;
+//            }
 
             //Set transparency
             video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
@@ -547,7 +547,7 @@ public class CreditsScreen : IScreen
             FontSubSystem.DisplayWrappedString(new SixLabors.ImageSharp.Point(0, 1), CRDT_WIDTH_OF_TEXT_AREA, 2, uiFontToUse, uiColorToUse, pNodeToAdd.pString, 0, Globals.gubCrdtJustification);
 
             //reset the font dest buffer
-            FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
+            FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
         }
 
         //
@@ -651,7 +651,7 @@ public class CreditsScreen : IScreen
             Globals.gfCrdtHaveRenderedFirstFrameToSaveBuffer = true;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-            video.BlitBufferToBuffer(Surfaces.RENDER_BUFFER, Surfaces.SAVE_BUFFER, 0, 0, 640, 480);
+            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 640, 480);
 
             ButtonSubSystem.UnmarkButtonsDirty();
         }
@@ -783,7 +783,7 @@ public class CreditsScreen : IScreen
 
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
 
     }
@@ -962,5 +962,5 @@ public class CRDT_NODE
     public int sHeightOfString;      //The height of the displayed string
     public bool fDelete;        //Delete this loop
     public long uiLastTime;  // The last time the node was udated
-    public Surfaces uiVideoSurfaceImage;
+    public SurfaceType uiVideoSurfaceImage;
 }

@@ -26,6 +26,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     private readonly GameContext context;
     private readonly IClockManager clock;
     private readonly MouseSubSystem mouse;
+    private readonly ButtonSubSystem buttons;
     private static GameSettings gGameSettings;
     private static MercTextBox mercTextBox;
     private static IScreenManager screens;
@@ -48,6 +49,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         MouseSubSystem mouseSubSystem,
         CursorSubSystem cursorSubSystem,
         MercTextBox mercTextBox,
+        ButtonSubSystem buttonSubSystem,
         RenderWorld renderWorld,
         IInputManager inputManager,
         IScreenManager screenManager,
@@ -55,6 +57,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         Overhead overhead,
         GameSettings gameSettings)
     {
+        this.buttons = buttonSubSystem;
         gGameSettings = gameSettings;
         MessageBoxSubSystem.mercTextBox = mercTextBox;
         this.renderWorld = renderWorld;
@@ -81,7 +84,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         return true;
     }
 
-    public static int DoMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK ReturnCallback, ref Rectangle? pCenteringRect)
+    public int DoMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK ReturnCallback, ref Rectangle? pCenteringRect)
     {
         VSURFACE_DESC vs_desc;
         int usTextBoxWidth;
@@ -119,7 +122,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.NORMAL;
@@ -131,7 +134,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.RED_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxRedButtons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxRedButtons.sti", -1, 0, -1, 1, -1);
 
                 ubFontColor = (FontColor)2;
                 ubFontShadowColor = FontShadow.NO_SHADOW;
@@ -143,7 +146,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.BLUE_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
 
                 ubFontColor = (FontColor)2;
                 ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
@@ -154,7 +157,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxGreyButtons.sti", -1, 0, -1, 1, -1);
 
                 ubFontColor = (FontColor)2;
                 ubFontShadowColor = (FontShadow)FontColor.FONT_MCOLOR_WHITE;
@@ -166,7 +169,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.DIALOG_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 2, -1, 3, -1);
+                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 2, -1, 3, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.NORMAL;
@@ -178,7 +181,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.LAPTOP_POP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\popupbuttons.sti", -1, 0, -1, 1, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.LAPTOP_SCREEN;
@@ -189,7 +192,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 ubMercBoxBorder = MercTextBoxBorder.BASIC_MERC_POPUP_BORDER;
 
                 // Add button images
-                gMsgBox.iButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\msgboxbuttons.sti", -1, 0, -1, 1, -1);
+                gMsgBox.iButtonImages = this.buttons.LoadButtonImage("INTERFACE\\msgboxbuttons.sti", -1, 0, -1, 1, -1);
                 ubFontColor = FontColor.FONT_MCOLOR_WHITE;
                 ubFontShadowColor = FontShadow.DEFAULT_SHADOW;
                 usCursor = CURSOR.NORMAL;
@@ -986,7 +989,7 @@ public class MessageBox
     public MSGBOX_CALLBACK? ExitCallback;
     public int sX;
     public int sY;
-    public Surfaces uiSaveBuffer;
+    public SurfaceType uiSaveBuffer;
     public MOUSE_REGION BackRegion { get; } = new(nameof(MessageBox));
     public int usWidth;
     public int usHeight;

@@ -113,6 +113,7 @@ public class PreferenceScreen : IScreen
     private readonly ISoundManager sound;
     private readonly IInputManager inputs;
     private readonly IMusicManager music;
+    private readonly ButtonSubSystem buttons;
     private readonly GameInit gameInit;
     private readonly GuiManager guiManager;
     private readonly Messages messages;
@@ -160,6 +161,7 @@ public class PreferenceScreen : IScreen
         IInputManager inputManager,
         IMusicManager musicManager,
         GameInit gameInit,
+        ButtonSubSystem buttonSubSystem,
         GameSettings gameSettings,
         GameOptions gameOptions,
         FontSubSystem fontSubSystem,
@@ -167,6 +169,7 @@ public class PreferenceScreen : IScreen
         GuiManager guiManager,
         MessageBoxSubSystem messageBoxSubSystem)
     {
+        this.buttons = buttonSubSystem;
         this.guiManager = guiManager;
         this.messages = messages;
         this.gameInit = gameInit;
@@ -201,7 +204,7 @@ public class PreferenceScreen : IScreen
         return ValueTask.CompletedTask;
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
         var background = this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
@@ -457,7 +460,7 @@ public class PreferenceScreen : IScreen
         this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
         //Save game button
-        this.giOptionsButtonImages = ButtonSubSystem.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);
+        this.giOptionsButtonImages = this.buttons.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);
 
         this.guiOptGotoSaveGameBtn = ButtonSubSystem.CreateIconAndTextButton(
             this.giOptionsButtonImages,
@@ -550,7 +553,7 @@ public class PreferenceScreen : IScreen
         //
         // Toggle Boxes
         //
-        TextSize.Height = FontSubSystem.GetFontHeight(OPT_MAIN_FONT);
+        TextSize.Height = this.fonts.GetFontHeight(OPT_MAIN_FONT);
 
         //Create the first column of check boxes
         usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
@@ -560,7 +563,7 @@ public class PreferenceScreen : IScreen
             var option = cnt;
 
             //Check box to toggle tracking mode
-            this.guiOptionsToggles[option] = ButtonSubSystem.CreateCheckBoxButton(
+            this.guiOptionsToggles[option] = this.buttons.CreateCheckBoxButton(
                 new(OPT_TOGGLE_BOX_FIRST_COLUMN_X, usPosY),
                 "INTERFACE\\OptionsCheckBoxes.sti",
                 MSYS_PRIORITY.HIGH + 10,
@@ -583,7 +586,7 @@ public class PreferenceScreen : IScreen
                     OPT_HIGHLIGHT_COLOR,
                     EnglishText.zOptionsToggleText[(int)cnt],
                     FontColor.FONT_MCOLOR_BLACK,
-                    (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / FontSubSystem.GetFontHeight(OPT_MAIN_FONT)));
+                    (TextJustifies)((int)((int)ButtonTextJustifies.BUTTON_TEXT_LEFT | FontSubSystem.DONT_DISPLAY_TEXT) / this.fonts.GetFontHeight(OPT_MAIN_FONT)));
 
                 TextSize.Width = OPT_TOGGLE_BOX_TEXT_WIDTH;
 
@@ -637,7 +640,7 @@ public class PreferenceScreen : IScreen
             var option = (TOPTION)cnt;
 
             //Check box to toggle tracking mode
-            this.guiOptionsToggles[option] = ButtonSubSystem.CreateCheckBoxButton(
+            this.guiOptionsToggles[option] = this.buttons.CreateCheckBoxButton(
                 new(OPT_TOGGLE_BOX_SECOND_COLUMN_X, usPosY),
                 "INTERFACE\\OptionsCheckBoxes.sti",
                 MSYS_PRIORITY.HIGH + 10,
@@ -1181,7 +1184,7 @@ public class PreferenceScreen : IScreen
         gfExitOptionsDueToMessageBox = true;
 
         // do message box and return
-        this.giOptionsMessageBox = MessageBoxSubSystem.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
+        this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
 
         // send back return state
         return ((giOptionsMessageBox != -1));

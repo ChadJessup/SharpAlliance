@@ -12,13 +12,16 @@ namespace SharpAlliance.Core.SubSystems;
 
 public class History
 {
+    private readonly FontSubSystem fonts;
     private static IFileManager files;
     private readonly IVideoManager video;
 
     public History(
         IFileManager fileManager,
+        FontSubSystem fontSubSystem,
         IVideoManager videoManager)
     {
+        this.fonts = fontSubSystem;
         files = fileManager;
         video = videoManager;
     }
@@ -286,11 +289,11 @@ public class History
         video.GetVideoObject(out hHandle, Globals.guiTITLE);
 
         // blt title bar to screen
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
         video.GetVideoObject(out hHandle, Globals.guiTOP);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
 
         // display background for history list
         DisplayHistoryListBackground();
@@ -677,15 +680,15 @@ public class History
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // the date header
-        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[0]);
 
         // the date header
-        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[3]);
 
         // event header
-        FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH + RECORD_LOCATION_WIDTH + 5, 0, RECORD_LOCATION_WIDTH, 0, pHistoryHeaders[3], Globals.HISTORY_TEXT_FONT, out usX, out usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[4]);
         // reset shadow
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -704,13 +707,13 @@ public class History
         for (iCounter = 0; iCounter < 11; iCounter++)
         {
             // blt title bar to screen
-            VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT.SRCTRANSPARENCY, null);
+            VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         // the long hortizontal line int he records list display region
         video.GetVideoObject(out hHandle, Globals.guiLONGLINE);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT.SRCTRANSPARENCY, null);
-        VideoObjectManager.BltVideoObject(Surfaces.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT.SRCTRANSPARENCY, null);
+        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT.SRCTRANSPARENCY, null);
 
         return;
     }
@@ -752,7 +755,7 @@ public class History
             }
             // get and write the date
             sString = wprintf("%d", (pCurHistory.uiDate / (24 * 60)));
-            FontSubSystem.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, HISTORY_TEXT_FONT, out usX, out usY);
+            this.fonts.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, HISTORY_TEXT_FONT, out usX, out usY);
             mprintf(usX, Globals.RECORD_Y + (iCounter * (Globals.BOX_HEIGHT)) + 3, sString);
 
             // now the actual history text
@@ -771,7 +774,7 @@ public class History
             else
             {
                 StrategicMap.GetSectorIDString(pCurHistory.sSectorX, pCurHistory.sSectorY, pCurHistory.bSectorZ, out sString, true);
-                FontSubSystem.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, out sX, out sY);
+                this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH, 0, RECORD_LOCATION_WIDTH + 10, 0, sString, Globals.HISTORY_TEXT_FONT, out sX, out sY);
 
                 WordWrap.ReduceStringLength(sString, RECORD_LOCATION_WIDTH + 10, Globals.HISTORY_TEXT_FONT);
 

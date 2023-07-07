@@ -11,12 +11,15 @@ using static SharpAlliance.Core.Globals;
 using System;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
+using SDL2;
 
 namespace SharpAlliance.Core.Screens;
 
 // jascreens.c = InitScreen = splashscreen
 public class InitScreen : IScreen
 {
+    private const string LogoAsset = "ja2_logo.STI";
+
     private readonly SoldierProfileSubSystem soldierProfiles;
     private readonly Overhead overhead;
     private readonly GameContext context;
@@ -105,8 +108,8 @@ public class InitScreen : IScreen
 
     public ValueTask<bool> Initialize()
     {
-        hVObject = this.video.AddVideoObject("ja2_logo.STI", out var key);
-        HVOBJECT logo = this.textures.LoadTexture("ja2_logo.STI", out var textureKey);
+        hVObject = this.video.AddVideoObject(LogoAsset, out var key);
+        HVOBJECT logo = this.textures.LoadTexture(LogoAsset);
 
         return ValueTask.FromResult(true);
     }
@@ -294,7 +297,7 @@ public class InitScreen : IScreen
     {
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
 //        sr.AddSprite(new Rectangle(0, 0, 640, 480), hVObject.Textures[0], "SplashScreen");
     }

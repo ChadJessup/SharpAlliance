@@ -601,7 +601,7 @@ public class MouseSubSystem : ISharpAllianceManager
         }
     }
 
-    public static void Draw(ITextureManager textureManager)
+    public static void Draw(IVideoManager videoManager)
     {
 //        cursors.Draw(sr, gd, cl);
     }

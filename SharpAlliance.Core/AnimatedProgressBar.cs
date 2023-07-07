@@ -13,10 +13,12 @@ public partial class Globals
 public class AnimatedProgressBar
 {
     private static PROGRESSBAR[] pBar = new PROGRESSBAR[MAX_PROGRESSBARS];
+    private readonly FontSubSystem fonts;
     private static IVideoManager video;
 
-    public AnimatedProgressBar(IVideoManager videoManager)
+    public AnimatedProgressBar(IVideoManager videoManager, FontSubSystem fontSubSystem)
     {
+        this.fonts = fontSubSystem;
         video = videoManager;
     }
 
@@ -27,7 +29,7 @@ public class AnimatedProgressBar
     //As the process animates using UpdateProgressBar( 0 to 100 ), the total progress bar will only reach 30%
     //at the 100% mark within UpdateProgressBar.  At that time, you would go onto the next step, resetting the
     //relative start and end percentage from 30 to whatever, until your done.
-    public static void SetRelativeStartAndEndPercentage(int ubID, float uiRelStartPerc, float uiRelEndPerc, string str)
+    public void SetRelativeStartAndEndPercentage(int ubID, float uiRelStartPerc, float uiRelEndPerc, string str)
     {
         PROGRESSBAR? pCurr;
         int usStartX, usStartY;
@@ -76,7 +78,7 @@ public class AnimatedProgressBar
             {
                 if (pCurr.fUseSaveBuffer)
                 {
-                    int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont);
+                    int usFontHeight = this.fonts.GetFontHeight(pCurr.usMsgFont);
 
                     RenderDirty.RestoreExternBackgroundRect(pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), (int)(usFontHeight + 3));
                 }
@@ -205,7 +207,7 @@ public class AnimatedProgressBar
         //if we are to use the save buffer, blit the portion of the screen to the save buffer
         if (fSaveScreenToFrameBuffer)
         {
-            int usFontHeight = FontSubSystem.GetFontHeight(pCurr.usMsgFont) + 3;
+            int usFontHeight = this.fonts.GetFontHeight(pCurr.usMsgFont) + 3;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
 //            RenderDirty.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, pCurr.usBarLeft, pCurr.usBarBottom, (int)(pCurr.usBarRight - pCurr.usBarLeft), usFontHeight);

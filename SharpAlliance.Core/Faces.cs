@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
@@ -17,8 +16,13 @@ namespace SharpAlliance.Core;
 
 public class Faces
 {
+    private readonly FontSubSystem fonts;
     private static IVideoManager video;
-    public Faces(IVideoManager videoManager) => video = videoManager;
+    public Faces(IVideoManager videoManager, FontSubSystem fontSubSystem)
+    {
+        video = videoManager;
+        this.fonts = fontSubSystem;
+    }
 
     private static int GetFreeFace()
     {
@@ -346,7 +350,7 @@ public class Faces
 
     }
 
-    void SetAutoFaceActiveFromSoldier(Surfaces uiDisplayBuffer, Surfaces uiRestoreBuffer, int ubSoldierID, int usFaceX, int usFaceY)
+    void SetAutoFaceActiveFromSoldier(SurfaceType uiDisplayBuffer, SurfaceType uiRestoreBuffer, int ubSoldierID, int usFaceX, int usFaceY)
     {
         if (ubSoldierID == NOBODY)
         {
@@ -404,7 +408,7 @@ public class Faces
     }
 
 
-    void SetAutoFaceActive(Surfaces uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY)
+    void SetAutoFaceActive(SurfaceType uiDisplayBuffer, SurfaceType uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY)
     {
         int usEyesX;
         int usEyesY;
@@ -424,7 +428,7 @@ public class Faces
     }
 
 
-    void InternalSetAutoFaceActive(Surfaces uiDisplayBuffer, Surfaces uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY, int usEyesX, int usEyesY, int usMouthX, int usMouthY)
+    void InternalSetAutoFaceActive(SurfaceType uiDisplayBuffer, SurfaceType uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY, int usEyesX, int usEyesY, int usMouthX, int usMouthY)
     {
         NPCID usMercProfileID = 0;
         FACETYPE? pFace = null;
@@ -626,7 +630,7 @@ public class Faces
 
 
 
-    public static void BlinkAutoFace(int iFaceIndex)
+    public void BlinkAutoFace(int iFaceIndex)
     {
         FACETYPE? pFace;
         int sFrame;
@@ -715,7 +719,7 @@ public class Faces
                         // Blit Accordingly!
                         //                        BltVideoObjectFromIndex(pFace.uiAutoDisplayBuffer, pFace.uiVideoObject, (int)(sFrame), pFace.usEyesX, pFace.usEyesY, VO_BLT.SRCTRANSPARENCY, null);
 
-                        if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
+                        if (pFace.uiAutoDisplayBuffer == SurfaceType.FRAME_BUFFER)
                         {
                             //                            InvalidateRegion(pFace.usEyesX, pFace.usEyesY, pFace.usEyesX + pFace.usEyesWidth, pFace.usEyesY + pFace.usEyesHeight);
                         }
@@ -726,7 +730,7 @@ public class Faces
                         pFace.ubExpression = Expression.NO_EXPRESSION;
                         // Update rects just for eyes
 
-                        if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
+                        if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
                         {
                             FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usEyesX, pFace.usEyesY, pFace.usEyesX, pFace.usEyesY, pFace.usEyesWidth, pFace.usEyesHeight);
                         }
@@ -746,7 +750,7 @@ public class Faces
 
     }
 
-    private static void HandleFaceHilights(FACETYPE? pFace, Surfaces uiBuffer, int sFaceX, int sFaceY)
+    private static void HandleFaceHilights(FACETYPE? pFace, SurfaceType uiBuffer, int sFaceX, int sFaceY)
     {
         int uiDestPitchBYTES;
         int pDestBuf;
@@ -757,7 +761,7 @@ public class Faces
 
         if (!gFacesData[iFaceIndex].fDisabled)
         {
-            if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER && guiCurrentScreen == ScreenName.GAME_SCREEN)
+            if (pFace.uiAutoDisplayBuffer == SurfaceType.FRAME_BUFFER && guiCurrentScreen == ScreenName.GAME_SCREEN)
             {
                 // If we are highlighted, do this now!
                 if ((pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT)))
@@ -1080,7 +1084,7 @@ public class Faces
 
 
 
-    private static void DoRightIcon(Surfaces uiRenderBuffer, FACETYPE? pFace, int sFaceX, int sFaceY, int bNumIcons, int sIconIndex)
+    private static void DoRightIcon(SurfaceType uiRenderBuffer, FACETYPE? pFace, int sFaceX, int sFaceY, int bNumIcons, int sIconIndex)
     {
         int sIconX, sIconY;
 
@@ -1090,12 +1094,12 @@ public class Faces
     }
 
 
-    public static void HandleRenderFaceAdjustments(FACETYPE? pFace, bool fDisplayBuffer, bool fUseExternBuffer, Surfaces uiBuffer, int sFaceX, int sFaceY, int usEyesX, int usEyesY)
+    public void HandleRenderFaceAdjustments(FACETYPE? pFace, bool fDisplayBuffer, bool fUseExternBuffer, SurfaceType uiBuffer, int sFaceX, int sFaceY, int usEyesX, int usEyesY)
     {
         int sIconX, sIconY;
         int sIconIndex = -1;
         bool fDoIcon = false;
-        Surfaces uiRenderBuffer;
+        SurfaceType uiRenderBuffer;
         int sPtsAvailable = 0;
         int usMaximumPts = 0;
         string sString = string.Empty;
@@ -1195,10 +1199,10 @@ public class Faces
                     sY1 = (int)(sFaceY);
 
                     sX2 = sX1 + FontSubSystem.StringPixLength(sString, FontStyle.TINYFONT1) + 1;
-                    sY2 = sY1 + FontSubSystem.GetFontHeight(FontStyle.TINYFONT1) - 1;
+                    sY2 = sY1 + this.fonts.GetFontHeight(FontStyle.TINYFONT1) - 1;
 
                     mprintf((int)(sX1 + 1), (int)(sY1 - 1), sString);
-                    FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
+                    FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
                     // Draw box
                     //                    pDestBuf = LockVideoSurface(uiRenderBuffer, out uiDestPitchBYTES);
@@ -1409,7 +1413,7 @@ public class Faces
                     FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
                     mprintf(sFaceX + pFace.usFaceWidth - usTextWidth, (int)(sFaceY + 3), sString);
-                    FontSubSystem.SetFontDestBuffer(Surfaces.FRAME_BUFFER, 0, 0, 640, 480, false);
+                    FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
                 }
             }
         }
@@ -1450,7 +1454,7 @@ public class Faces
         // Blit face to save buffer!
         if (pFace.uiAutoRestoreBuffer != FACE_NO_RESTORE_BUFFER)
         {
-            if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
+            if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
             {
                 //                BltVideoObjectFromIndex(pFace.uiAutoRestoreBuffer, pFace.uiVideoObject, 0, pFace.usFaceX, pFace.usFaceY, VO_BLT.SRCTRANSPARENCY, null);
             }
@@ -1463,7 +1467,7 @@ public class Faces
         HandleRenderFaceAdjustments(pFace, false, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
 
         // Restore extern rect
-        if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
+        if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
         {
             FaceRestoreSavedBackgroundRect(iFaceIndex, (int)(pFace.usFaceX), (int)(pFace.usFaceY), (int)(pFace.usFaceX), (int)(pFace.usFaceY), (int)(pFace.usFaceWidth), (int)(pFace.usFaceHeight));
         }
@@ -1476,7 +1480,7 @@ public class Faces
     }
 
 
-    public static bool ExternRenderFaceFromSoldier(Surfaces uiBuffer, int ubSoldierID, int sX, int sY)
+    public bool ExternRenderFaceFromSoldier(SurfaceType uiBuffer, int ubSoldierID, int sX, int sY)
     {
         // Check for valid soldier
         CHECKF(ubSoldierID != NOBODY);
@@ -1485,7 +1489,7 @@ public class Faces
     }
 
 
-    public static bool ExternRenderFace(Surfaces uiBuffer, int iFaceIndex, int sX, int sY)
+    public bool ExternRenderFace(SurfaceType uiBuffer, int iFaceIndex, int sX, int sY)
     {
         int usEyesX;
         int usEyesY;
@@ -1517,7 +1521,7 @@ public class Faces
         HandleRenderFaceAdjustments(pFace, false, true, uiBuffer, sX, sY, (int)(sX + usEyesX), (int)(sY + usEyesY));
 
         // Restore extern rect
-        if (uiBuffer == Surfaces.SAVE_BUFFER)
+        if (uiBuffer == SurfaceType.SAVE_BUFFER)
         {
             //            RestoreExternBackgroundRect(sX, sY, pFace.usFaceWidth, pFace.usFaceWidth);
         }
@@ -1976,7 +1980,7 @@ public class Faces
 //        video.UnLockVideoSurface(pFace.uiAutoRestoreBuffer);
 
         // Add rect to frame buffer queue
-        if (pFace.uiAutoDisplayBuffer == Surfaces.FRAME_BUFFER)
+        if (pFace.uiAutoDisplayBuffer == SurfaceType.FRAME_BUFFER)
         {
             video.InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, (sDestLeft + sWidth + 3), (sDestTop + sHeight + 2), 0);
         }
@@ -2079,7 +2083,7 @@ public class Faces
             // ATE: Only change if active!
             if (!pFace.fDisabled)
             {
-                if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
+                if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
                 {
                     FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usMouthX, pFace.usMouthY, pFace.usMouthX, pFace.usMouthY, pFace.usMouthWidth, pFace.usMouthHeight);
                 }
@@ -2132,7 +2136,7 @@ public class Faces
         // Close mouth!
         if (!pFace.fDisabled)
         {
-            if (pFace.uiAutoRestoreBuffer == Surfaces.SAVE_BUFFER)
+            if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
             {
                 FaceRestoreSavedBackgroundRect(pFace.iID, pFace.usMouthX, pFace.usMouthY, pFace.usMouthX, pFace.usMouthY, pFace.usMouthWidth, pFace.usMouthHeight);
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using Veldrid;
 
@@ -36,7 +37,7 @@ public class EditScreen : IScreen
         return ValueTask.FromResult(true);
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
         throw new NotImplementedException();
     }

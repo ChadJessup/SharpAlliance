@@ -127,7 +127,7 @@ public class MapScreen : IScreen
         return;
     }
 
-    public void Draw(ITextureManager textureManager)
+    public void Draw(IVideoManager videoManager)
     {
         throw new System.NotImplementedException();
     }

@@ -123,6 +123,7 @@ namespace SharpAlliance
             builder.Services.AddSingleton<ShopKeeper>();
             builder.Services.AddSingleton<World>();
             builder.Services.AddSingleton<WorldStructures>();
+            builder.Services.AddSingleton<AnimatedProgressBar>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
             builder.Services.AddSingleton<DialogControl>();
             builder.Services.AddSingleton<AirRaid>();

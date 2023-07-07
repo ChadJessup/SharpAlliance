@@ -16,14 +16,17 @@ public class Interface
 
     private static IVideoManager video;
     private readonly MercTextBox mercTextBox;
+    private readonly RenderDirty renderDirty;
 
     public Interface(
         ILogger<Interface> logger,
+        RenderDirty renderDirty,
         IVideoManager videoManager,
         MercTextBox mercTextBox)
     {
         video = videoManager;
         this.mercTextBox = mercTextBox;
+        this.renderDirty = renderDirty;
     }
 
     public void BeginUIMessage(params string[] pFontString)
@@ -86,7 +89,7 @@ public class Interface
                 BltCallback = RenderUIMessage,
             };
 
-            giUIMessageOverlay = RenderDirty.RegisterVideoOverlay(0, VideoOverlayDesc);
+            giUIMessageOverlay = this.renderDirty.RegisterVideoOverlay(0, VideoOverlayDesc);
         }
 
         gfUseSkullIconMessage = fUseSkullIcon;
