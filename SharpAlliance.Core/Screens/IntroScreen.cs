@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Library;
@@ -21,7 +20,6 @@ public class IntroScreen : IScreen
     private readonly IScreenManager screens;
     private readonly MouseSubSystem mouse;
     private readonly CursorSubSystem cursor;
-    private readonly SurfaceManager surfaces;
     private readonly RenderDirty renderDirty;
     private readonly IMusicManager music;
     private readonly IVideoManager video;
@@ -58,10 +56,8 @@ public class IntroScreen : IScreen
         IVideoManager videoManager,
         IScreenManager screenManager,
         ITextureManager textureManager,
-        SurfaceManager surfaceManager,
         GameInit gameInit)
     {
-        this.surfaces = surfaceManager;
         this.renderDirty = renderDirtySubSystem;
         this.textures = textureManager;
         this.cursor = cursorSubSystem;
@@ -92,7 +88,7 @@ public class IntroScreen : IScreen
             Globals.gfIntroScreenEntry = false;
             Globals.gfIntroScreenExit = false;
 
-            SDL2VideoManager.InvalidateRegion(new(0, 0, 640, 480));
+            video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         this.renderDirty.RestoreBackgroundRects();
@@ -350,8 +346,8 @@ public class IntroScreen : IScreen
         // JA3Gold: do nothing until we have a graphic to replace Talonsoft's
         //return;
 
-        Image<Rgba32> image = this.video.LoadImage("INTERFACE\\SirtechSplash.sti");
-        Surface surface = this.video.CreateSurface(image);
+        var image = this.video.LoadImage("INTERFACE\\SirtechSplash.sti");
+        Surface surface = this.video.CreateSurface(image.Images[0]);
 
         this.video.BlitSurfaceToSurface(
             src: surface,

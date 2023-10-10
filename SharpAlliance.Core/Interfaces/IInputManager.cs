@@ -23,4 +23,5 @@ public interface IInputManager : ISharpAllianceManager
     MouseEvents ConvertToMouseEvents(ref InputSnapshot inputSnapshot);
     void ProcessEvents();
     void DequeueAllKeyBoardEvents();
+    void GetMousePos(out Point pPosition);
 }

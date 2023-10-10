@@ -85,11 +85,11 @@ public class TextureManager : ITextureManager
         //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
 
         hVObject.hImage = hImage;
-        hVObject.Textures = new Image<Rgba32>[hImage.ParsedImages.Count];
+        hVObject.Images = new Image<Rgba32>[hImage.ParsedImages.Count];
 
         for (int i = 0; i < hImage.ParsedImages.Count; i++)
         {
-            hVObject.Textures[i] = hImage.ParsedImages[i];
+            hVObject.Images[i] = hImage.ParsedImages[i];
             //new ImageSharpTexture(hImage.ParsedImages[i], mipmap: false)
             //.CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
 
@@ -162,4 +162,72 @@ public class TextureManager : ITextureManager
 
     public bool TryGetTexture(string key, out HVOBJECT hPixHandle)
         => this.loadedTextures.TryGetValue(key, out hPixHandle);
+
+    HVOBJECT ITextureManager.LoadImage(string assetPath)
+    {
+        if (this.loadedTextures.TryGetValue(assetPath, out var existingObj))
+        {
+            return existingObj;
+        }
+
+        HVOBJECT hVObject = new();
+        hVObject.Name = assetPath;
+
+        HIMAGE hImage;
+        ETRLEData TempETRLEData = new();
+
+        // Create himage object from file
+        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, files);
+
+        // Get TRLE data
+        GetETRLEImageData(hImage, ref TempETRLEData);
+
+        // Set values
+        hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
+        hVObject.pETRLEObject = TempETRLEData.pETRLEObject;
+        hVObject.pPixData = TempETRLEData.pPixData;
+        hVObject.uiSizePixData = TempETRLEData.uiSizePixData;
+
+        // Set palette from himage
+        if (hImage.ubBitDepth == 8)
+        {
+            hVObject.pShade8 = shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+            hVObject.pGlow8 = shading.ubColorTables[0, 0];
+
+            SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+        }
+
+        // Set values from himage
+        hVObject.ubBitDepth = hImage.ubBitDepth;
+
+        // All is well
+        //  DbgMessage( TOPIC_VIDEOOBJECT, DBG_LEVEL_3, String("Success in Creating Video Object" ) );
+
+        hVObject.hImage = hImage;
+        hVObject.Images = new Image<Rgba32>[hImage.ParsedImages.Count];
+
+        for (int i = 0; i < hImage.ParsedImages.Count; i++)
+        {
+            hVObject.Images[i] = hImage.ParsedImages[i];
+            //new ImageSharpTexture(hImage.ParsedImages[i], mipmap: false)
+            //.CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
+
+            //            hVObject.Textures[i].Name = $"{hImage.ImageFile}_{i}";
+            hVObject.Images[i].SaveAsPng($"c:\\assets\\{hImage.ImageFile}_{i}.png");
+        }
+
+        this.loadedTextures.Add(assetPath, hVObject);
+
+        return hVObject;
+    }
+
+    public bool TryGetImage(string key, out Image<Rgba32> hPixHandle)
+    {
+        throw new NotImplementedException();
+    }
+
+    public nint CreateTexture(Surface surface)
+    {
+        throw new NotImplementedException();
+    }
 }

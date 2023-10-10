@@ -16,11 +16,6 @@ using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Veldrid;
-using Veldrid.ImageSharp;
-using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
-using Veldrid.Utilities;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
@@ -29,6 +24,9 @@ using static SharpAlliance.Core.SubSystems.FontSubSystem;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using System.Collections;
 using SDL2;
+using Veldrid.Sdl2;
+using Veldrid.StartupUtilities;
+using Veldrid;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -118,6 +116,8 @@ public class SDL2VideoManager : IVideoManager
 
     //    private Texture backBuffer;
     private Image<Rgba32> backBuffer;
+
+    private Dictionary<string, HVOBJECT> loadedObjects = new();
 
     public SDL2VideoManager(
         ILogger<SDL2VideoManager> logger,
@@ -320,7 +320,7 @@ public class SDL2VideoManager : IVideoManager
         //        SpriteRenderer.RenderText(GraphicDevice, commandList, FontSubSystem.TextRenderer.TextureView, new Vector2(0, 0));
         //        commandList.End();
 
-//        FontSubSystem.TextRenderer.RenderAllText(this);
+        //        FontSubSystem.TextRenderer.RenderAllText(this);
 
         SDL.SDL_RenderPresent(renderer);
     }
@@ -340,14 +340,19 @@ public class SDL2VideoManager : IVideoManager
 
     public HVOBJECT AddVideoObject(string assetPath, out string key)
     {
-
         key = assetPath;
 
+        if (!this.loadedObjects.TryGetValue(key, out var hvObj))
+        {
+            hvObj = textures.LoadImage(assetPath);
+            this.loadedObjects.Add(assetPath, hvObj);
+        }
+        //  var surface = surfaces.CreateSurface(hvObj.Images.First());
+        //  var texture = surfaces.CreateTextureFromSurface(renderer, surface);
+
         // Create video object
-        return new();
+        return hvObj;
     }
-
-
 
     public void RefreshScreen()
     {
@@ -941,7 +946,7 @@ public class SDL2VideoManager : IVideoManager
         {
             srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
         }
-        catch(ArgumentException ex)
+        catch (ArgumentException ex)
         {
 
         }
@@ -1406,7 +1411,7 @@ public class SDL2VideoManager : IVideoManager
         GC.SuppressFinalize(this);
     }
 
-    public static void InvalidateRegion(Rectangle bounds)
+    public void InvalidateRegion(Rectangle bounds)
     {
         if (gfForceFullScreenRefresh)
         {
@@ -1494,19 +1499,19 @@ public class SDL2VideoManager : IVideoManager
         return false;
     }
 
-//    public HVOBJECT GetVideoObject(string key)
-//    {
-//        if (!this.textures.TryGetTexture(key, out var hPixHandle))
-//        {
-//            //logger.LogError("Unable to retrive VideoObject with key: " + key);
-//        }
-//
-//        return hPixHandle;
-//    }
+    //    public HVOBJECT GetVideoObject(string key)
+    //    {
+    //        if (!this.textures.TryGetTexture(key, out var hPixHandle))
+    //        {
+    //            //logger.LogError("Unable to retrive VideoObject with key: " + key);
+    //        }
+    //
+    //        return hPixHandle;
+    //    }
 
     public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
     {
-        if (hVObject.Textures is null)
+        if (hVObject.Images is null)
         {
             throw new NullReferenceException("Texture is null for: " + hVObject.Name);
         }
@@ -2030,7 +2035,7 @@ public class SDL2VideoManager : IVideoManager
         throw new NotImplementedException();
     }
 
-    public static void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
+    public void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
 
     public void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {
@@ -2040,7 +2045,7 @@ public class SDL2VideoManager : IVideoManager
     public bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject pETRLEObject, int usIndex)
     {
 
-        var hVObject = GetVideoObject(uiVideoObject);
+        HVOBJECT hVObject = null;// GetVideoObject(uiVideoObject);
 
         GetVideoObjectETRLEProperties(hVObject, out pETRLEObject, usIndex);
 
@@ -2104,9 +2109,9 @@ public class SDL2VideoManager : IVideoManager
     public void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int flags)
         => InvalidateRegionEx(new(sLeft, sTop, v1, v2), flags);
 
-    public Image<Rgba32> LoadImage(string assetPath)
+    public HVOBJECT LoadImage(string assetPath)
     {
-        return this.textures.LoadTexture(assetPath);
+        return this.textures.LoadImage(assetPath);
     }
 
     public Surface CreateSurface(Image<Rgba32> image)
@@ -2118,32 +2123,39 @@ public class SDL2VideoManager : IVideoManager
 
     public void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
     {
-        throw new NotImplementedException();
+        var dstSurface = surfaces.SurfaceByTypes[dst];
+        SDL.SDL_Rect srcRect = new()
+        {
+            h = src.Image.Height,
+            w = src.Image.Width,
+            x = 0,
+            y = 0,
+        };
+
+        SDL.SDL_Rect dstRect = new()
+        {
+             h = srcRect.h,
+             w = srcRect.w,
+             x = dstPoint.X,
+             y = dstPoint.Y,
+        };
+
+        var result = SDL.SDL_BlitSurface(
+            src.Pointer,
+            ref srcRect,
+            dstSurface.Pointer,
+            ref dstRect);
+
+        if(result != 0)
+        {
+            var e = SDL.SDL_GetError();
+        }
     }
-}
 
-public enum BufferState
-{
-    READY = 0x00,
-    BUSY = 0x01,
-    DIRTY = 0x02,
-    DISABLED = 0x03,
-}
-
-public enum VideoManagerState
-{
-    Off = 0x00,
-    On = 0x01,
-    ShuttingDown = 0x02,
-    Suspended = 0x04,
-}
-
-public enum ThreadState
-{
-    Unknown = 0,
-    Off,
-    On,
-    Suspended,
+    public HVOBJECT GetVideoObject(string image)
+    {
+        return textures.LoadImage(image);
+    }
 }
 
 public static class RectangleHelpers

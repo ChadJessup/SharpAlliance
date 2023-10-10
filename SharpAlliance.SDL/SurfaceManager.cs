@@ -28,6 +28,8 @@ public class SurfaceManager
     private int width;
     private int height;
 
+    public Dictionary<SurfaceType, Surface> SurfaceByTypes { get; } = new();
+
     public Image<Rgba32> this[SurfaceType surface]
     {
         get => this.surfaces.FirstOrDefault(s => s.Key.SurfaceType == surface).Value;
@@ -38,17 +40,17 @@ public class SurfaceManager
         this.width = width;
         this.height = height;
 
-        var primarySurface = CreateSurface(new(this.width, this.height), SurfaceType.PRIMARY_SURFACE);
-        var frameSurface = CreateSurface(new(this.width, this.height), SurfaceType.FRAME_BUFFER);
-        var renderSurface = CreateSurface(new(this.width, this.height), SurfaceType.RENDER_BUFFER);
-        var saveSurface = CreateSurface(new(this.width, this.height), SurfaceType.SAVE_BUFFER);
-        var extraSurface = CreateSurface(new(this.width, this.height), SurfaceType.EXTRA_BUFFER);
+        var primarySurface = this.CreateSurface(new(this.width, this.height), SurfaceType.PRIMARY_SURFACE);
+        var frameSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.FRAME_BUFFER);
+        var renderSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.RENDER_BUFFER);
+        var saveSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.SAVE_BUFFER);
+        var extraSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.EXTRA_BUFFER);
 
-        this.surfaces.Add(primarySurface, primarySurface.Image);
-        this.surfaces.Add(frameSurface, frameSurface.Image);
-        this.surfaces.Add(renderSurface, renderSurface.Image);
-        this.surfaces.Add(saveSurface, saveSurface.Image);
-        this.surfaces.Add(extraSurface, extraSurface.Image);
+//        this.surfaces.Add(primarySurface, primarySurface.Image);
+//        this.surfaces.Add(frameSurface, frameSurface.Image);
+//        this.surfaces.Add(renderSurface, renderSurface.Image);
+//        this.surfaces.Add(saveSurface, saveSurface.Image);
+//        this.surfaces.Add(extraSurface, extraSurface.Image);
     }
 
     public Image<Rgba32> LockSurface(SurfaceType buffer)
@@ -130,8 +132,30 @@ public class SurfaceManager
             Pointer = surfacePtr,
         };
 
+        this.SurfaceByTypes[idx] = surf;
         this.surfaces[surf] = image;
 
         return surf;
+    }
+
+    public Texture CreateTextureFromSurface(nint renderer, Surface surface)
+    {
+        var texturePtr = SDL.SDL_CreateTextureFromSurface(renderer, surface.Pointer);
+
+        if (texturePtr == IntPtr.Zero)
+        {
+            string error = SDL.SDL_GetError();
+            Console.WriteLine(error);
+        }
+
+        return new()
+        {
+            Pointer = texturePtr,
+        };
+    }
+
+    internal void UnlockSurface(SurfaceType sAVE_BUFFER)
+    {
+        throw new NotImplementedException();
     }
 }

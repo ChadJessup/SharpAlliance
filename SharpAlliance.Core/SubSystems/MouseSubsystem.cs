@@ -814,7 +814,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
     public ValueTask<bool> Initialize()
     {
-        // SDL2VideoManager = gameContext.Services.GetRequiredService<IVideoManager>();
+        // video = gameContext.Services.GetRequiredService<IVideoManager>();
 
         return ValueTask.FromResult(true);
     }

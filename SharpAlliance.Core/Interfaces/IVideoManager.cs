@@ -26,8 +26,8 @@ public interface IVideoManager : ISharpAllianceManager
     void DrawFrame();
     void RefreshScreen();
     void InvalidateScreen();
-    void InvalidateRegion(Rectangle bounds) => throw new NotImplementedException();
-    void InvalidateRegion(int v1, int v2, int v3, int v4) => throw new NotImplementedException();
+    void InvalidateRegion(Rectangle bounds);
+    void InvalidateRegion(int v1, int v2, int v3, int v4);
     void EndFrameBufferRender();
     HVOBJECT? AddVideoObject(string assetPath, out string key);
 //    HVOBJECT? GetVideoObject(string key);
@@ -76,7 +76,8 @@ public interface IVideoManager : ISharpAllianceManager
     bool BltVideoObjectFromIndex(SurfaceType uiSourceBufferIndex, int guiSkullIcons, int v1, int v2, int v3, VO_BLT sRCTRANSPARENCY, blt_fx? value);
     void DeleteVideoObjectFromIndex(SurfaceType uiMercTextPopUpBackground);
     Image<Rgba32> AddVideoSurface(string v, out SurfaceType uiMercTextPopUpBackground);
-    Image<Rgba32> LoadImage(string v);
+    HVOBJECT LoadImage(string assetPath);
     Surface CreateSurface(Image<Rgba32> image);
     void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
+    HVOBJECT GetVideoObject(string image);
 }

@@ -15,6 +15,7 @@ namespace SharpAlliance.Core.Screens;
 
 public class MessageBoxScreen : IScreen
 {
+    private readonly IInputManager inputs;
     private readonly ILogger<MessageBoxScreen> logger;
     private readonly MessageBoxSubSystem messageBoxSubSystem;
     private static IVideoManager video;
@@ -24,10 +25,12 @@ public class MessageBoxScreen : IScreen
         ILogger<MessageBoxScreen> logger,
         IClockManager clockManager,
         IInputManager inputs,
+        IInputManager inputManager,
         IVideoManager videoManager,
         MessageBoxSubSystem messageBoxSubSystem,
         MercTextBox mercTextBox)
     {
+        this.inputs = inputManager;
         this.logger = logger;
         this.messageBoxSubSystem = messageBoxSubSystem;
         video = videoManager;
@@ -265,7 +268,7 @@ public class MessageBoxScreen : IScreen
         return ValueTask.CompletedTask;
     }
 
-    public static ScreenName ExitMsgBox(MessageBoxReturnCode ubExitCode)
+    public ScreenName ExitMsgBox(MessageBoxReturnCode ubExitCode)
     {
         int uiDestPitchBYTES, uiSrcPitchBYTES;
         Image<Rgba32> pDestBuf, pSrcBuf;
@@ -380,7 +383,7 @@ public class MessageBoxScreen : IScreen
 //            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
 //            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
-            SDL2VideoManager.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
+            video.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
         }
 
         fRestoreBackgroundForMessageBox = false;
@@ -388,7 +391,7 @@ public class MessageBoxScreen : IScreen
 
         if (MessageBoxSubSystem.fCursorLockedToArea == true)
         {
-            InputManager.GetMousePos(out pPosition);
+            inputs.GetMousePos(out pPosition);
 
             if ((pPosition.X > MessageBoxRestrictedCursorRegion.Right)
                 || (pPosition.X > MessageBoxRestrictedCursorRegion.Left)

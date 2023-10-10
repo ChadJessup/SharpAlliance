@@ -372,7 +372,7 @@ public class Emails
         DisplayWhichPageOfEmailProgramIsDisplayed();
 
 
-        SDL2VideoManager.InvalidateRegion(0, 0, 640, 480);
+        video.InvalidateRegion(0, 0, 640, 480);
         // invalidate region to force update
         return;
     }
@@ -1305,7 +1305,7 @@ public class Emails
             }
         }
 
-        SDL2VideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+        video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
 
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         return;
@@ -1754,7 +1754,7 @@ public class Emails
         DisplayNumberOfPagesToThisEmail(iViewerPositionY);
 
         // mark this area dirty
-        SDL2VideoManager.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
+        video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_LR_Y);
 
 
         // reset shadow
@@ -1988,7 +1988,7 @@ public class Emails
         Laptop.DrawLapTopIcons();
 
         // invalidate region
-        SDL2VideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + 270, EMAIL_WARNING_Y + 200);
+        video.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + 270, EMAIL_WARNING_Y + 200);
 
         // mark button
         ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
@@ -2477,7 +2477,7 @@ public class Emails
         {
             // draw buttons
             ButtonSubSystem.MarkButtonsDirty();
-            SDL2VideoManager.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + EMAIL_WARNING_WIDTH, EMAIL_WARNING_Y + EMAIL_WARNING_HEIGHT);
+            video.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + EMAIL_WARNING_WIDTH, EMAIL_WARNING_Y + EMAIL_WARNING_HEIGHT);
         }
 
         // reset font shadow
@@ -2525,7 +2525,7 @@ public class Emails
         //ReDraw();
 
         // invalidate
-        SDL2VideoManager.InvalidateRegion(0, 0, 640, 480);
+        video.InvalidateRegion(0, 0, 640, 480);
     }
 
     void FromCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON iReason)

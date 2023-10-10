@@ -22,14 +22,15 @@ public record LibraryHeader
     //	bool	fAnotherFileAlreadyOpenedLibrary;				//this variable is set when a file is opened from the library and reset when the file is close.  No 2 files can have access to the library at 1 time.
     public uint uiIdOfOtherFileAlreadyOpenedLibrary;             //this variable is set when a file is opened from the library and reset when the file is close.  No 2 files can have access to the library at 1 time.
     public int iNumFilesOpen => this.pOpenFiles.Count;
-    public List<FileHeader> pFileHeader { get; } = new();
-    public List<FileOpenStruct> pOpenFiles { get; } = new();
+    public Dictionary<string, FileHeader> pFileHeader { get; } = new();
+    public Dictionary<string, FileOpenStruct> pOpenFiles { get; } = new();
+
     public uint uiTotalMemoryAllocatedForLibrary;
 
     public bool FileExists(string fileName)
     {
-        return this.pFileHeader
-            .Any(fh => fh.pFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase));
+        return this.pFileHeader.ContainsKey(fileName);
+//            .Any(fh => fh.pFileName.Equals(fileName, StringComparison.OrdinalIgnoreCase));
     }
 
     public bool TryGetValue(string fileName, out FileHeader? fileHeader)
@@ -41,7 +42,8 @@ public record LibraryHeader
             fileNameNoLibrary = fileName.ToUpper().Replace(this.sLibraryPath.ToUpper(), "");
         }
 
-        fileHeader = this.pFileHeader.FirstOrDefault(fh => fh.pFileName.Equals(fileNameNoLibrary, StringComparison.OrdinalIgnoreCase));
+        //this.pFileHeader.TryGetValue(fileName, out var fileHeader);
+        fileHeader = this.pFileHeader.FirstOrDefault(fh => fh.Value.pFileName.Equals(fileNameNoLibrary, StringComparison.OrdinalIgnoreCase)).Value;
 
         return !string.IsNullOrWhiteSpace(fileHeader.Value.pFileName);
     }

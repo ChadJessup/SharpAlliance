@@ -227,7 +227,7 @@ public class Faces
 
 
         // Set palette
-        hVObject = video.GetVideoObject(uiVideoObject);
+        hVObject = null; //video.GetVideoObject(uiVideoObject);
         if (hVObject is not null)
         {
             // Build a grayscale palette! ( for testing different looks )

@@ -29,6 +29,7 @@ namespace SharpAlliance
             // but let's add per-machine configuration as well (and commandline args),
             // since I dev this on multiple machines...and need examples.
             var configurationBuilder = new ConfigurationBuilder()
+                .AddJsonFile("SharpAlliance.json")
                 .AddJsonFile($"SharpAlliance.{System.Environment.MachineName}.json", optional: true)
                 .AddCommandLine(args);
 

@@ -212,7 +212,12 @@ public class ButtonSubSystem : ISharpAllianceManager
         // }
 
         // Load the default generic button images
-//        GenericButtonOffNormal.Add(bp, textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_OFF));
+
+        //var texture = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_OFF);
+        //var surface = video.CreateSurface(texture);
+
+        var hobject = video.AddVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF, out var key);
+        GenericButtonOffNormal.Add(bp, hobject);
         if (GenericButtonOffNormal[bp] == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_OFF);
@@ -322,7 +327,7 @@ public class ButtonSubSystem : ISharpAllianceManager
                     b.IsDirty = false;
                     DrawButtonFromPtr(b);
 
-                    SDL2VideoManager.InvalidateRegion(b.MouseRegion.Bounds);
+                    video.InvalidateRegion(b.MouseRegion.Bounds);
                 }
             }
         }
@@ -546,7 +551,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height, color, image);
             video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
 
-            SDL2VideoManager.InvalidateRegion(new Rectangle(
+            video.InvalidateRegion(new Rectangle(
                 b.MouseRegion.Bounds.X - 1,
                 b.MouseRegion.Bounds.Y - 1,
                 b.MouseRegion.Bounds.Width + 1,
@@ -1598,6 +1603,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         ETRLEObject pTrav;
         int MaxHeight, MaxWidth, ThisHeight, ThisWidth;
         ButtonPic buttonPic = new();
+        buttonPic.vobj = textures.LoadImage(filename);
 
         //// is there ANY file to open?
         //if ((Grayed == BUTTON_NO_IMAGE)
@@ -1618,11 +1624,11 @@ public class ButtonSubSystem : ISharpAllianceManager
         // }
 
         // Load the image
-//        if ((buttonPic.vobj = textures.LoadTexture(filename)) == null)
-//        {
-//            //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, String("Couldn't create VOBJECT for %s", filename));
-//            return null;
-//        }
+        //        if ((buttonPic.vobj = textures.LoadTexture(filename)) == null)
+        //        {
+        //            //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, String("Couldn't create VOBJECT for %s", filename));
+        //            return null;
+        //        }
 
         // Init the QuickButton image structure with indexes to use
         buttonPic.Grayed = Grayed;
@@ -1748,7 +1754,7 @@ public class ButtonSubSystem : ISharpAllianceManager
                 Globals.gpAnchoredButton.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             }
 
-            SDL2VideoManager.InvalidateRegion(Globals.gpAnchoredButton.MouseRegion.Bounds);
+            video.InvalidateRegion(Globals.gpAnchoredButton.MouseRegion.Bounds);
         }
 
         Globals.gpPrevAnchoredButton = Globals.gpAnchoredButton;
@@ -2137,7 +2143,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         if (StateBefore != StateAfter)
         {
-            SDL2VideoManager.InvalidateRegion(b.MouseRegion.Bounds);
+            video.InvalidateRegion(b.MouseRegion.Bounds);
         }
 
         if (Globals.gfPendingButtonDeletion)

@@ -5,6 +5,9 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 
 // Initilizes SDL.
+
+var cur = Environment.CurrentDirectory;
+
 if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
 {
     Console.WriteLine($"There was an issue initilizing SDL. {SDL.SDL_GetError()}");
@@ -107,7 +110,7 @@ class ImageLoader
             Configuration = customConfig,
         };
 
-        image = (Image<Rgba32>)Image.Load(doptions, @"C:\Users\chadj\Dropbox\chadscode-lost.png");
+        image = (Image<Rgba32>)Image.Load(doptions, @"C:\Users\chadj\OneDrive\Pictures\100votes-comeon!.PNG");
 
         if (!image.DangerousTryGetSinglePixelMemory(out Memory<Rgba32> memory))
         {

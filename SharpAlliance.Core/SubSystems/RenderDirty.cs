@@ -15,15 +15,13 @@ public class RenderDirty
 {
     private readonly FontSubSystem fonts;
     private static IVideoManager video;
-    private readonly SurfaceManager surfaces;
 
     private bool gfViewportDirty = false;
 
-    public RenderDirty(IVideoManager videoManager, SurfaceManager surfaceManager, FontSubSystem fontSubSystem)
+    public RenderDirty(IVideoManager videoManager, FontSubSystem fontSubSystem)
     {
         this.fonts = fontSubSystem;
         video = videoManager;
-        surfaces = surfaceManager;
     }
 
     public bool RestoreBackgroundRects()
@@ -31,8 +29,8 @@ public class RenderDirty
         int uiCount;
         Image<Rgba32> pDestBuf, pSrcBuf;
 
-        pDestBuf = this.surfaces.LockSurface(SurfaceType.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
-        pSrcBuf = this.surfaces.LockSurface(SurfaceType.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
+//        pDestBuf = this.surfaces.LockSurface(SurfaceType.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
+//        pSrcBuf = this.surfaces.LockSurface(SurfaceType.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
 
         for (uiCount = 0; uiCount < guiNumBackSaves; uiCount++)
         {
@@ -42,15 +40,15 @@ public class RenderDirty
                 {
                     if (gBackSaves[uiCount].pSaveArea != null)
                     {
-                        video.Blt16BPPTo16BPP(
-                            pDestBuf,
-                            gBackSaves[uiCount].pSaveArea,
-                            gBackSaves[uiCount].sWidth * 2,
-                            gBackSaves[uiCount].sLeft,
-                            gBackSaves[uiCount].sTop,
-                            0,
-                            gBackSaves[uiCount].sWidth,
-                            gBackSaves[uiCount].sHeight);
+//                        video.Blt16BPPTo16BPP(
+//                            pDestBuf,
+//                            gBackSaves[uiCount].pSaveArea,
+//                            gBackSaves[uiCount].sWidth * 2,
+//                            gBackSaves[uiCount].sLeft,
+//                            gBackSaves[uiCount].sTop,
+//                            0,
+//                            gBackSaves[uiCount].sWidth,
+//                            gBackSaves[uiCount].sHeight);
 
                         AddBaseDirtyRect(
                             new(gBackSaves[uiCount].sLeft,
@@ -77,12 +75,12 @@ public class RenderDirty
                 }
                 else
                 {
-                    video.Blt16BPPTo16BPP(
-                        pDestBuf,
-                        pSrcBuf,
-                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
-                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
-                        gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight);
+//                    video.Blt16BPPTo16BPP(
+//                        pDestBuf,
+//                        pSrcBuf,
+//                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
+//                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
+//                        gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight);
 
                     AddBaseDirtyRect(
                         new(gBackSaves[uiCount].sLeft,
@@ -93,8 +91,8 @@ public class RenderDirty
             }
         }
 
-        this.surfaces.UnlockSurface(SurfaceType.RENDER_BUFFER);
-        this.surfaces.UnlockSurface(SurfaceType.SAVE_BUFFER);
+//        this.surfaces.UnlockSurface(SurfaceType.RENDER_BUFFER);
+//        this.surfaces.UnlockSurface(SurfaceType.SAVE_BUFFER);
         EmptyBackgroundRects();
 
         return (true);

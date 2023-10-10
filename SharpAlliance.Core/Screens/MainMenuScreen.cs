@@ -274,15 +274,15 @@ public class MainMenuScreen : IScreen
         HVOBJECT hPixHandle;
 
         //Get and display the background image
-        //hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
-        //video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
+        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
         //hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
         //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
 
         FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
-//            SDL2VideoManager.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+//            video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
 
     public ValueTask<bool> Initialize()
@@ -543,10 +543,10 @@ public class MainMenuScreen : IScreen
 
     public void Draw(IVideoManager videoManager)
     {
-        //var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+        var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
         // load ja2 logo graphic and add it
-        //var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+        var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
         //sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
         //sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);

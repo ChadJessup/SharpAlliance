@@ -135,12 +135,14 @@ public class LibraryFileManager : ILibraryManager
 
             if (dirEntry.ubState == 0) // FILE_OK
             {
-                pLibHeader.pFileHeader.Add(new()
-                {
-                    pFileName = dirEntry.sFileName,
-                    uiFileOffset = dirEntry.uiOffset,
-                    uiFileLength = dirEntry.uiLength,
-                });
+                pLibHeader.pFileHeader.Add(
+                    dirEntry.sFileName,
+                    new()
+                    {
+                        pFileName = dirEntry.sFileName,
+                        uiFileOffset = dirEntry.uiOffset,
+                        uiFileLength = dirEntry.uiLength,
+                    });
 
                 numEntries++;
             }
@@ -301,51 +303,51 @@ public class LibraryFileManager : ILibraryManager
 
     private bool LoadDataFromLibrary(LibraryNames sLibraryID, int uiFileNum, byte[] pData, int uiBytesToRead, out int pBytesRead)
     {
-        int uiOffsetInLibrary, uiLength;
-        Stream hLibraryFile;
-        int uiNumBytesRead;
-        int uiCurPos;
-
-        //get the offset into the library, the length and current position of the file pointer.
-        uiOffsetInLibrary = this.Libraries[sLibraryID].pOpenFiles[uiFileNum].pFileHeader.uiFileOffset;
-        uiLength = this.Libraries[sLibraryID].pOpenFiles[uiFileNum].pFileHeader.uiFileLength;
-        hLibraryFile = this.Libraries[sLibraryID].hLibraryHandle;
-        uiCurPos = this.Libraries[sLibraryID].pOpenFiles[uiFileNum].uiFilePosInFile;
-
-        //set the file pointer to the right location
-        this.SetFilePointer(hLibraryFile, uiOffsetInLibrary + uiCurPos, SeekOrigin.Begin);
-
-        //if we are trying to read more data then the size of the file, return an error
-        if (uiBytesToRead + uiCurPos > uiLength)
-        {
-            pBytesRead = 0;
-            return false;
-        }
-
-        //get the data
-        if (!this.ReadFile(hLibraryFile, pData, uiBytesToRead, out uiNumBytesRead))
-        {
-            pBytesRead = 0;
-            return false;
-        }
-
-        if (uiBytesToRead != uiNumBytesRead)
-        {
-            //		Gets the reason why the function failed
-            //		int uiLastError = GetLastError();
-            //		char zString[1024];
-            //		FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, null);
-            pBytesRead = 0;
-            return false;
-        }
-
-        this.Libraries[sLibraryID].pOpenFiles[uiFileNum].uiFilePosInFile += uiNumBytesRead;
-
-        //	CloseHandle( hLibraryFile );
-
-        pBytesRead = uiNumBytesRead;
-
-        return true;
+        //        int uiOffsetInLibrary, uiLength;
+        //        Stream hLibraryFile;
+        //        int uiNumBytesRead;
+        //        int uiCurPos;
+        //
+        //        //get the offset into the library, the length and current position of the file pointer.
+        //        uiOffsetInLibrary = this.Libraries[sLibraryID]..pOpenFileByIndex[uiFileNum].pFileHeader.uiFileOffset;
+        //        uiLength = this.Libraries[sLibraryID].pOpenFileByIndex[uiFileNum].pFileHeader.uiFileLength;
+        //        hLibraryFile = this.Libraries[sLibraryID].hLibraryHandle;
+        //        uiCurPos = this.Libraries[sLibraryID].pOpenFileByIndex[uiFileNum].uiFilePosInFile;
+        //
+        //        //set the file pointer to the right location
+        //        this.SetFilePointer(hLibraryFile, uiOffsetInLibrary + uiCurPos, SeekOrigin.Begin);
+        //
+        //        //if we are trying to read more data then the size of the file, return an error
+        //        if (uiBytesToRead + uiCurPos > uiLength)
+        //        {
+        //            pBytesRead = 0;
+        //            return false;
+        //        }
+        //
+        //        //get the data
+        //        if (!this.ReadFile(hLibraryFile, pData, uiBytesToRead, out uiNumBytesRead))
+        //        {
+        //            pBytesRead = 0;
+        //            return false;
+        //        }
+        //
+        //        if (uiBytesToRead != uiNumBytesRead)
+        //        {
+        //            //		Gets the reason why the function failed
+        //            //		int uiLastError = GetLastError();
+        //            //		char zString[1024];
+        //            //		FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, 0, uiLastError, 0, zString, 1024, null);
+        //            pBytesRead = 0;
+        //            return false;
+        //        }
+        //
+        //        this.Libraries[sLibraryID].pOpenFileByIndex[uiFileNum].uiFilePosInFile += uiNumBytesRead;
+        //
+        //        //	CloseHandle( hLibraryFile );
+        //
+        //        pBytesRead = uiNumBytesRead;
+        pBytesRead = 0;
+        return false;
     }
 
     private bool ReadFile(Stream hLibraryFile, byte[] pData, int count, out int uiNumBytesRead)
@@ -405,7 +407,8 @@ public class LibraryFileManager : ILibraryManager
             //check if the file is already open
             if (this.CheckIfFileIsAlreadyOpen(pName, sLibraryID))
             {
-                return Stream.Null;
+                //this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles[pName];
+                return this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles[pName].FileStream;
             }
 
             //if the file is in a library, get the file
@@ -421,9 +424,10 @@ public class LibraryFileManager : ILibraryManager
                     uiFilePosInFile = 0,
                     pFileHeader = pFileHeader!.Value,
                     uiActualPositionInLibrary = pFileHeader.Value.uiFileOffset,
+                    FileStream = hLibFile,
                 };
 
-                this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles.Add(fos);
+                this.gFileDataBase.pLibraries[sLibraryID].pOpenFiles.Add(pName, fos);
 
                 //Set the file position in the library to the begining of the 'file' in the library
                 uiNewFilePosition = this.SetFilePointer(
@@ -502,8 +506,7 @@ public class LibraryFileManager : ILibraryManager
             return false;
         }
 
-        return lib.fLibraryOpen
-            && lib.pOpenFiles.Any(of => of.pFileHeader.pFileName.Equals(pFileName, StringComparison.OrdinalIgnoreCase));
+        return lib.pOpenFiles.ContainsKey(pFileName);
     }
 
     // TODO: Make data driven

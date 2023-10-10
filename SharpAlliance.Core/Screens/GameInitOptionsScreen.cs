@@ -287,7 +287,7 @@ public class GameInitOptionsScreen : IScreen
         {
             this.gfGIOScreenEntry = false;
             this.gfGIOScreenExit = false;
-            SDL2VideoManager.InvalidateRegion(new(0, 0, 640, 480));
+            video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         this.GetGIOScreenUserInput();
@@ -794,7 +794,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -807,7 +807,7 @@ public class GameInitOptionsScreen : IScreen
                 this.DisplayMessageToUserAboutGameDifficulty();
             }
 
-            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -825,7 +825,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -834,7 +834,7 @@ public class GameInitOptionsScreen : IScreen
 
             this.gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
 
-            SDL2VideoManager.InvalidateRegion(btn.MouseRegion.Bounds);
+            video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 

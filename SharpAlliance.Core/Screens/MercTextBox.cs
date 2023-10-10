@@ -576,7 +576,7 @@ public class MercTextBox
         //Invalidate!
         if (uiBuffer == SurfaceType.FRAME_BUFFER)
         {
-            SDL2VideoManager.InvalidateRegion(sDestX, sDestY, (int)(sDestX + gPopUpTextBox.sWidth), (int)(sDestY + gPopUpTextBox.sHeight));
+            video.InvalidateRegion(sDestX, sDestY, (int)(sDestX + gPopUpTextBox.sWidth), (int)(sDestY + gPopUpTextBox.sHeight));
         }
 
         // unlock the video surfaces

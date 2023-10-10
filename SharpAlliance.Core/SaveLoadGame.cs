@@ -118,7 +118,7 @@ public class SaveLoadGame
 
         mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, SurfaceType.FRAME_BUFFER);
 
-        SDL2VideoManager.InvalidateRegion(new(0, 0, 640, 480));
+        video.InvalidateRegion(new(0, 0, 640, 480));
 
         this.video.ExecuteBaseDirtyRectQueue();
         this.video.EndFrameBufferRender();

@@ -62,7 +62,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SharpAlliance.Platform\SharpAlliance.Platform.csproj" />
-    <ProjectReference Include="..\SharpAlliance.SDL\SharpAlliance.SDL.csproj" />
     <ProjectReference Include="..\SharpAlliance.Strategic\SharpAlliance.Strategic.csproj" />
   </ItemGroup>
 

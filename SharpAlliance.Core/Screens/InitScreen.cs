@@ -11,7 +11,6 @@ using static SharpAlliance.Core.Globals;
 using System;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
-using SDL2;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -109,7 +108,7 @@ public class InitScreen : IScreen
     public ValueTask<bool> Initialize()
     {
         hVObject = this.video.AddVideoObject(LogoAsset, out var key);
-        HVOBJECT logo = this.textures.LoadTexture(LogoAsset);
+       // HVOBJECT logo = this.textures.LoadTexture(LogoAsset);
 
         return ValueTask.FromResult(true);
     }
