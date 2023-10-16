@@ -56,29 +56,7 @@ public class SurfaceManager
     public Image<Rgba32> LockSurface(SurfaceType buffer)
     {
         return new Image<Rgba32>(100, 100);
-        //        if (this.surfaces.TryGetValue(buffer, out var image))
-        //        {
-        //            this.surfaceLocks[image] = true;
-        //            return this.surfaces[buffer];
-        //        }
-        //        else
-        //        {
-        //            return null;//new Image<Rgba32>(100, 100);
-        //        }
     }
-
-    //    public void UnlockSurface(Image<Rgba32> buffer)
-    //    {
-    //        this.surfaceLocks[buffer] = false;
-    //    }
-
-    //    public void UnlockSurface(SurfaceType surface)
-    //    {
-    //        if (this.surfaces.TryGetValue(surface, out var image))
-    //        {
-    //            this.UnlockSurface(image);
-    //        }
-    //    }
 
     public unsafe Surface CreateSurface(Image<Rgba32> image, SurfaceType? surfaceType = null)
     {
@@ -152,10 +130,5 @@ public class SurfaceManager
         {
             Pointer = texturePtr,
         };
-    }
-
-    internal void UnlockSurface(SurfaceType sAVE_BUFFER)
-    {
-        throw new NotImplementedException();
     }
 }

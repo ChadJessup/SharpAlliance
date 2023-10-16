@@ -41,14 +41,11 @@ public interface IVideoManager : ISharpAllianceManager
     void RestoreBackgroundRects();
     void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
     void LineDraw(int v2, int v3, int v4, int v5, Color v6, Image<Rgba32> image);
-    void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4);
-    void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect);
     void GetClippingRect(out Rectangle clipRect);
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Rgba32 rgba32);
     void SaveBackgroundRects();
     void ImageFillVideoSurfaceArea(Rectangle region, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
     void ExecuteBaseDirtyRectQueue();
-    void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect);
     void SetClippingRect(ref Rectangle newClip);
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle rectangle, Color color);
     bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType surface, Rectangle rectangle);
@@ -62,11 +59,9 @@ public interface IVideoManager : ISharpAllianceManager
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
     void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
     void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
-    void ColorFillVideoSurfaceArea(SurfaceType buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32);
     void ColorFillVideoSurfaceArea(SurfaceType buffer, Rectangle rectangle, Color black);
     bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex);
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap);
-    void ImageFillVideoSurfaceArea(SurfaceType buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5);
     ValueTask<bool> Initialize();
     static Stream OpenEmbeddedAssetStream(string name) => throw new NotImplementedException();
     static byte[] ReadEmbeddedAssetBytes(string name) => throw new NotImplementedException();
@@ -75,7 +70,6 @@ public interface IVideoManager : ISharpAllianceManager
     bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject eTRLEObject, int index);
     bool BltVideoObjectFromIndex(SurfaceType uiSourceBufferIndex, int guiSkullIcons, int v1, int v2, int v3, VO_BLT sRCTRANSPARENCY, blt_fx? value);
     void DeleteVideoObjectFromIndex(SurfaceType uiMercTextPopUpBackground);
-    Image<Rgba32> AddVideoSurface(string v, out SurfaceType uiMercTextPopUpBackground);
     HVOBJECT LoadImage(string assetPath);
     Surface CreateSurface(Image<Rgba32> image);
     void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);

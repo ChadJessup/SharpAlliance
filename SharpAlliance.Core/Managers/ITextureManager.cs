@@ -6,7 +6,5 @@ namespace SharpAlliance.Core.Managers;
 
 public interface ITextureManager : ISharpAllianceManager
 {
-    nint CreateTexture(Surface surface);
     HVOBJECT LoadImage(string assetPath);
-    bool TryGetImage(string key, out Image<Rgba32> hPixHandle);
 }

@@ -209,25 +209,10 @@ public class TextureManager : ITextureManager
         for (int i = 0; i < hImage.ParsedImages.Count; i++)
         {
             hVObject.Images[i] = hImage.ParsedImages[i];
-            //new ImageSharpTexture(hImage.ParsedImages[i], mipmap: false)
-            //.CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
-
-            //            hVObject.Textures[i].Name = $"{hImage.ImageFile}_{i}";
-            hVObject.Images[i].SaveAsPng($"c:\\assets\\{hImage.ImageFile}_{i}.png");
         }
 
         this.loadedTextures.Add(assetPath, hVObject);
 
         return hVObject;
-    }
-
-    public bool TryGetImage(string key, out Image<Rgba32> hPixHandle)
-    {
-        throw new NotImplementedException();
-    }
-
-    public nint CreateTexture(Surface surface)
-    {
-        throw new NotImplementedException();
     }
 }

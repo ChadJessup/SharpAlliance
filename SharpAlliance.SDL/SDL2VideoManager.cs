@@ -27,6 +27,7 @@ using SDL2;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 using Veldrid;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -305,10 +306,10 @@ public class SDL2VideoManager : IVideoManager
         }
 
         // Clears the current render surface.
-        if (SDL.SDL_RenderClear(renderer) < 0)
-        {
-            Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
-        }
+        // if (SDL.SDL_RenderClear(renderer) < 0)
+        // {
+        //     Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
+        // }
 
         ScreenManager.Draw(this);
         MouseSubSystem.Draw(this);
@@ -344,13 +345,11 @@ public class SDL2VideoManager : IVideoManager
 
         if (!this.loadedObjects.TryGetValue(key, out var hvObj))
         {
-            hvObj = textures.LoadImage(assetPath);
+            hvObj = this.GetVideoObject(assetPath);
             this.loadedObjects.Add(assetPath, hvObj);
+            Console.WriteLine($"{nameof(AddVideoObject)}: {assetPath}");
         }
-        //  var surface = surfaces.CreateSurface(hvObj.Images.First());
-        //  var texture = surfaces.CreateTextureFromSurface(renderer, surface);
 
-        // Create video object
         return hvObj;
     }
 
@@ -1516,6 +1515,17 @@ public class SDL2VideoManager : IVideoManager
             throw new NullReferenceException("Texture is null for: " + hVObject.Name);
         }
 
+        if (hVObject.Surface is null)
+        {
+            return;
+        }
+
+        SDL.SDL_RenderCopy(
+            renderer,
+            hVObject.Texture.Pointer,
+            X,
+            Y);
+
         //SpriteRenderer.AddSprite(
         //    new Rectangle(X, Y, (int)hVObject.Textures[textureIndex].Width, (int)hVObject.Textures[textureIndex].Height),
         //    hVObject.Textures[textureIndex],
@@ -1704,26 +1714,6 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public void SetClippingRegionAndImageWidth(uint uiDestPitchBYTES, int v1, int v2, int v3, int v4)
-    {
-    }
-
-    public void Blt16BPPBufferHatchRect(ref byte[] pDestBuf, uint uiDestPitchBYTES, ref Rectangle clipRect)
-    {
-    }
-
-    public void ColorFillVideoSurfaceArea(SurfaceType buttonDestBuffer, int regionTopLeftX, int regionTopLeftY, int regionBottomRightX, int regionBottomRightY, Rgba32 rgba32)
-    {
-    }
-
-    public void ImageFillVideoSurfaceArea(SurfaceType buttonDestBuffer, int v1, int v2, int regionBottomRightX, int regionBottomRightY, HVOBJECT hVOBJECT, ushort v3, short v4, short v5)
-    {
-    }
-
-    public void Blt8BPPDataTo8BPPBufferTransparentClip(ref byte[] pDestBuf, uint uiDestPitchBYTES, HVOBJECT bPic, int v, int yLoc, ushort imgNum, ref Rectangle clipRect)
-    {
-    }
-
     public void GetClippingRect(out Rectangle clipRect)
     {
         clipRect = new();
@@ -1748,7 +1738,6 @@ public class SDL2VideoManager : IVideoManager
     public bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType destSurface, Rectangle rectangle)
     {
         return InternalShadowVideoSurfaceRect(destSurface, rectangle, true);
-
     }
 
     private bool InternalShadowVideoSurfaceRect(SurfaceType destSurface, Rectangle rectangle, bool fLowPercentShadeTable)
@@ -1899,14 +1888,6 @@ public class SDL2VideoManager : IVideoManager
         // UnLockVideoSurface(srcBuffer);
 
         return (fRetVal);
-    }
-
-    public int AddVideoObject(out VSURFACE_DESC vs_desc, out SurfaceType uiTempMap)
-    {
-        vs_desc = new();
-        uiTempMap = SurfaceType.FRAME_BUFFER;
-
-        return 0;
     }
 
     public void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Color rgba32)
@@ -2097,29 +2078,12 @@ public class SDL2VideoManager : IVideoManager
         return true;
     }
 
-    public Image<Rgba32> AddVideoSurface(string assetPath, out SurfaceType surface)
-    {
-        //        var hobj = this.CreateVideoObject(assetPath);
-        //        surface = this.surfaces.CreateSurface(hobj.hImage.ParsedImages[0]);
-
-        surface = SurfaceType.Unknown;
-        return this.surfaces[surface];
-    }
-
     public void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int flags)
         => InvalidateRegionEx(new(sLeft, sTop, v1, v2), flags);
 
-    public HVOBJECT LoadImage(string assetPath)
-    {
-        return this.textures.LoadImage(assetPath);
-    }
+    public HVOBJECT LoadImage(string assetPath) => this.textures.LoadImage(assetPath);
 
-    public Surface CreateSurface(Image<Rgba32> image)
-    {
-        Surface surface = this.surfaces.CreateSurface(image);
-
-        return surface;
-    }
+    public Surface CreateSurface(Image<Rgba32> image) => this.surfaces.CreateSurface(image);
 
     public void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
     {
@@ -2134,10 +2098,10 @@ public class SDL2VideoManager : IVideoManager
 
         SDL.SDL_Rect dstRect = new()
         {
-             h = srcRect.h,
-             w = srcRect.w,
-             x = dstPoint.X,
-             y = dstPoint.Y,
+            h = srcRect.h,
+            w = srcRect.w,
+            x = dstPoint.X,
+            y = dstPoint.Y,
         };
 
         var result = SDL.SDL_BlitSurface(
@@ -2146,7 +2110,7 @@ public class SDL2VideoManager : IVideoManager
             dstSurface.Pointer,
             ref dstRect);
 
-        if(result != 0)
+        if (result != 0)
         {
             var e = SDL.SDL_GetError();
         }
@@ -2154,7 +2118,16 @@ public class SDL2VideoManager : IVideoManager
 
     public HVOBJECT GetVideoObject(string image)
     {
-        return textures.LoadImage(image);
+        Console.WriteLine($"{nameof(GetVideoObject)}: {image}");
+        var videoObject = this.textures.LoadImage(image);
+
+        if (videoObject.Surface is null)
+        {
+            videoObject.Surface = this.CreateSurface(videoObject.Images[0]);
+            videoObject.Texture = this.surfaces.CreateTextureFromSurface(renderer, videoObject.Surface);
+        }
+
+        return videoObject;
     }
 }
 
