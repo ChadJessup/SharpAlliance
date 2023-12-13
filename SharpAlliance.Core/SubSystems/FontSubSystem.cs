@@ -99,8 +99,8 @@ public class FontSubSystem : ISharpAllianceManager
     private static FontStyle gpHugeFont;
     private static HVOBJECT gvoHugeFont;
 
-    private static Dictionary<FontStyle, Font> fontLookup = new();
-    private static Dictionary<FontColor, Rgba32> fontColorLookup = new();
+    private static Dictionary<FontStyle, Font> fontLookup = [];
+    private static Dictionary<FontColor, Rgba32> fontColorLookup = [];
 
     public bool IsInitialized { get; }
     public bool FontDestWrap { get; private set; }
@@ -113,6 +113,8 @@ public class FontSubSystem : ISharpAllianceManager
         ITextureManager textureManager,
         IServiceProvider serviceProvider)
     {
+        TextRenderer = new(textureManager);
+
         textures = textureManager;
         video = videoManager;
         services = serviceProvider;
@@ -382,8 +384,6 @@ public class FontSubSystem : ISharpAllianceManager
 
     public void InitializeFonts()
     {
-        return;
-
         // Initialize fonts
         gpLargeFontType1 = LoadFontFile(FontStyle.LARGEFONT1, "FONTS\\LARGEFONT1.sti");
         gvoLargeFontType1 = GetFontObject(gpLargeFontType1);
@@ -999,6 +999,7 @@ public class FontSubSystem : ISharpAllianceManager
             return LoadIndex;
         }
 
+        FontObjs[LoadIndex] = video.AddVideoObject(filename, out var key)!;
 //        if ((FontObjs[LoadIndex] = textures.LoadTexture(filename)) == null)
 //        {
 //            //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);

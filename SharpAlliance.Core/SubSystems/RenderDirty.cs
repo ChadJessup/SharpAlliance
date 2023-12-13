@@ -18,7 +18,9 @@ public class RenderDirty
 
     private bool gfViewportDirty = false;
 
-    public RenderDirty(IVideoManager videoManager, FontSubSystem fontSubSystem)
+    public RenderDirty(
+        IVideoManager videoManager,
+        FontSubSystem fontSubSystem)
     {
         this.fonts = fontSubSystem;
         video = videoManager;
@@ -29,8 +31,8 @@ public class RenderDirty
         int uiCount;
         Image<Rgba32> pDestBuf, pSrcBuf;
 
-//        pDestBuf = this.surfaces.LockSurface(SurfaceType.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
-//        pSrcBuf = this.surfaces.LockSurface(SurfaceType.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
+        //        pDestBuf = this.surfaces.LockSurface(SurfaceType.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
+        //        pSrcBuf = this.surfaces.LockSurface(SurfaceType.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
 
         for (uiCount = 0; uiCount < guiNumBackSaves; uiCount++)
         {
@@ -40,15 +42,15 @@ public class RenderDirty
                 {
                     if (gBackSaves[uiCount].pSaveArea != null)
                     {
-//                        video.Blt16BPPTo16BPP(
-//                            pDestBuf,
-//                            gBackSaves[uiCount].pSaveArea,
-//                            gBackSaves[uiCount].sWidth * 2,
-//                            gBackSaves[uiCount].sLeft,
-//                            gBackSaves[uiCount].sTop,
-//                            0,
-//                            gBackSaves[uiCount].sWidth,
-//                            gBackSaves[uiCount].sHeight);
+                        //                        video.Blt16BPPTo16BPP(
+                        //                            pDestBuf,
+                        //                            gBackSaves[uiCount].pSaveArea,
+                        //                            gBackSaves[uiCount].sWidth * 2,
+                        //                            gBackSaves[uiCount].sLeft,
+                        //                            gBackSaves[uiCount].sTop,
+                        //                            0,
+                        //                            gBackSaves[uiCount].sWidth,
+                        //                            gBackSaves[uiCount].sHeight);
 
                         AddBaseDirtyRect(
                             new(gBackSaves[uiCount].sLeft,
@@ -75,12 +77,12 @@ public class RenderDirty
                 }
                 else
                 {
-//                    video.Blt16BPPTo16BPP(
-//                        pDestBuf,
-//                        pSrcBuf,
-//                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
-//                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
-//                        gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight);
+                    //                    video.Blt16BPPTo16BPP(
+                    //                        pDestBuf,
+                    //                        pSrcBuf,
+                    //                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
+                    //                        gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop,
+                    //                        gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight);
 
                     AddBaseDirtyRect(
                         new(gBackSaves[uiCount].sLeft,
@@ -91,8 +93,8 @@ public class RenderDirty
             }
         }
 
-//        this.surfaces.UnlockSurface(SurfaceType.RENDER_BUFFER);
-//        this.surfaces.UnlockSurface(SurfaceType.SAVE_BUFFER);
+        //        this.surfaces.UnlockSurface(SurfaceType.RENDER_BUFFER);
+        //        this.surfaces.UnlockSurface(SurfaceType.SAVE_BUFFER);
         EmptyBackgroundRects();
 
         return (true);
@@ -328,28 +330,28 @@ public class RenderDirty
 
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
 
-//        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
-//        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
+        //        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
+        //        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
 
         if (gbPixelDepth == 16)
         {
-//            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
-//                        pSrcBuf, uiSrcPitchBYTES,
-//                        sLeft, sTop,
-//                        sLeft, sTop,
-//                        sWidth, sHeight);
+            //            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+            //                        pSrcBuf, uiSrcPitchBYTES,
+            //                        sLeft, sTop,
+            //                        sLeft, sTop,
+            //                        sWidth, sHeight);
         }
         else if (gbPixelDepth == 8)
         {
-//            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
-//                        pSrcBuf, uiSrcPitchBYTES,
-//                        sLeft, sTop,
-//                        sLeft, sTop,
-//                        sWidth, sHeight);
+            //            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
+            //                        pSrcBuf, uiSrcPitchBYTES,
+            //                        sLeft, sTop,
+            //                        sLeft, sTop,
+            //                        sWidth, sHeight);
         }
 
-//        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
-//        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
+        //        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
+        //        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
@@ -615,35 +617,17 @@ public class RenderDirty
 
     public static bool RestoreExternBackgroundRect(int sLeft, int sTop, int sWidth, int sHeight)
     {
-        int uiDestPitchBYTES, uiSrcPitchBYTES;
-        Image<Rgba32> pDestBuf, pSrcBuf;
-
         Debug.Assert((sLeft >= 0) && (sTop >= 0) && (sLeft + sWidth <= 640) && (sTop + sHeight <= 480));
-        
-//        pDestBuf = video.LockVideoSurface(Surfaces.RENDER_BUFFER, out uiDestPitchBYTES);
-//        pSrcBuf = video.LockVideoSurface(Surfaces.SAVE_BUFFER, out uiSrcPitchBYTES);
 
-        if (Globals.gbPixelDepth == 16)
-        {
-//            video.Blt16BPPTo16BPP(
-//                pDestBuf,
-//                uiDestPitchBYTES,
-//                pSrcBuf, uiSrcPitchBYTES,
-//                sLeft, sTop,
-//                sLeft, sTop,
-//                sWidth, sHeight);
-        }
-        else if (Globals.gbPixelDepth == 8)
-        {
-//            video.Blt8BPPTo8BPP(pDestBuf, uiDestPitchBYTES,
-//                        pSrcBuf, uiSrcPitchBYTES,
-//                        sLeft, sTop,
-//                        sLeft, sTop,
-//                        sWidth, sHeight);
-        }
+        Image<Rgba32> pDestBuf = video.Surfaces[SurfaceType.RENDER_BUFFER];
+        Image<Rgba32> pSrcBuf = video.Surfaces[SurfaceType.SAVE_BUFFER];
 
-//        video.UnLockVideoSurface(Surfaces.RENDER_BUFFER);
-//        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
+        video.Blt16BPPTo16BPP(
+            pDestBuf,
+            pSrcBuf,
+            new(sLeft, sTop),
+            new(sLeft, sTop),
+            sWidth, sHeight);
 
         // Add rect to frame buffer queue
         video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);

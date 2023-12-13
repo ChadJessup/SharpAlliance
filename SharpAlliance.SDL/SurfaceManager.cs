@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SDL2;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -13,7 +14,7 @@ using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
 
-public class SurfaceManager
+public class SurfaceManager : ISurfaceManager
 {
     private readonly ILogger<SurfaceManager> logger;
     private readonly Dictionary<Surface, Image<Rgba32>> surfaces = new();
@@ -46,11 +47,11 @@ public class SurfaceManager
         var saveSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.SAVE_BUFFER);
         var extraSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.EXTRA_BUFFER);
 
-//        this.surfaces.Add(primarySurface, primarySurface.Image);
-//        this.surfaces.Add(frameSurface, frameSurface.Image);
-//        this.surfaces.Add(renderSurface, renderSurface.Image);
-//        this.surfaces.Add(saveSurface, saveSurface.Image);
-//        this.surfaces.Add(extraSurface, extraSurface.Image);
+        //        this.surfaces.Add(primarySurface, primarySurface.Image);
+        //        this.surfaces.Add(frameSurface, frameSurface.Image);
+        //        this.surfaces.Add(renderSurface, renderSurface.Image);
+        //        this.surfaces.Add(saveSurface, saveSurface.Image);
+        //        this.surfaces.Add(extraSurface, extraSurface.Image);
     }
 
     public Image<Rgba32> LockSurface(SurfaceType buffer)

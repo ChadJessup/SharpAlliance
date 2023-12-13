@@ -278,7 +278,7 @@ public class MainMenuScreen : IScreen
         video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
         //hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
-        //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
+        //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Images[0].Height), 0);
 
         FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
@@ -551,7 +551,7 @@ public class MainMenuScreen : IScreen
         //sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
         //sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);
 
-        ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
+        //ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
 
         FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
     }

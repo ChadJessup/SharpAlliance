@@ -1603,8 +1603,9 @@ public class ButtonSubSystem : ISharpAllianceManager
         ETRLEObject pTrav;
         int MaxHeight, MaxWidth, ThisHeight, ThisWidth;
         ButtonPic buttonPic = new();
-        buttonPic.vobj = textures.LoadImage(filename);
 
+        // textures.LoadImage(filename);
+        buttonPic.vobj = video.AddVideoObject(filename, out var _);
         //// is there ANY file to open?
         //if ((Grayed == BUTTON_NO_IMAGE)
         //    && (OffNormal == BUTTON_NO_IMAGE)
@@ -2339,7 +2340,6 @@ public class GUI_BUTTON
 public class ButtonPic
 {
     public HVOBJECT? vobj = new();                      // The Image itself
-    public Image<Rgba32>? Texture { get; set; }
     public int Grayed;                   // index to use for a "Grayed-out" button
     public int OffNormal;            // index to use when button is OFF
     public int OffHilite;            // index to use when button is OFF w/ hilite on it

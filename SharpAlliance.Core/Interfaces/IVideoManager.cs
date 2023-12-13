@@ -23,6 +23,8 @@ public interface IVideoManager : ISharpAllianceManager
     public const int MAX_CURSOR_HEIGHT = 64;
     public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
+    public ISurfaceManager Surfaces { get; }
+
     void DrawFrame();
     void RefreshScreen();
     void InvalidateScreen();
@@ -53,7 +55,7 @@ public interface IVideoManager : ISharpAllianceManager
     bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, int srcX, int srcY, int width, int height);
     void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();
-    bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight);
+    bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight);
     void AddVideoObject(out VSURFACE_DESC vs_desc, out uint uiTempMap);
     void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip);
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);

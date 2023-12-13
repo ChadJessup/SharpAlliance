@@ -41,7 +41,6 @@ public class SDL2VideoManager : IVideoManager
     const int DDBLTFAST_WAIT = 0x00000010;
     const int DDERR_WASSTILLDRAWING = 0x8700000; // not real value
     const int DDERR_SURFACELOST = 0x9700000;
-    private readonly SurfaceManager surfaces;
     private readonly ILogger<SDL2VideoManager> logger;
 
     private nint renderer;
@@ -93,6 +92,8 @@ public class SDL2VideoManager : IVideoManager
     //private Surface2? gpPrimarySurface = null;
     //private Surface2? gpBackBuffer = null
 
+    public ISurfaceManager Surfaces { get; }
+
     public bool IsInitialized { get; private set; }
     public uint guiBOTTOMPANEL { get; set; }
     public uint guiRIGHTPANEL { get; set; }
@@ -131,14 +132,14 @@ public class SDL2VideoManager : IVideoManager
         Shading shading)
     {
         this.textures = textureManager;
-        this.surfaces = surfaceManager;
+        this.Surfaces = surfaceManager;
         this.logger = logger;
         this.context = context;
         this.files = fileManager;
         this.renderWorld = renderWorld;
         this.screenManager = (screenManager as ScreenManager)!;
 
-        this.surfaces.InitializeSurfaces(SCREEN_WIDTH, SCREEN_HEIGHT);
+        this.Surfaces.InitializeSurfaces(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
@@ -228,8 +229,13 @@ public class SDL2VideoManager : IVideoManager
 	etc. to their unblit buffer, for later reblitting. Does NOT clip.
 
 **********************************************************************************************/
-    public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, int iDestXPos, int iDestYPos, int iSrcXPos, int iSrcYPos, int uiWidth, int uiHeight)
+    public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight)
     {
+        Rectangle destRect = new(iSrcPos.X, iSrcPos.Y, uiWidth, uiHeight);
+        pDest.Mutate(ctx =>
+        {
+            ctx.DrawImage(pSrc, iDestPos, destRect, 1.0f);
+        });
         //pSrcPtr = pSrc + (iSrcYPos * uiSrcPitch) + (iSrcXPos * 2);
         //pDestPtr = pDest + (iDestYPos * uiDestPitch) + (iDestXPos * 2);
         // uiLineSkipDest = uiDestPitch - (uiWidth * 2);
@@ -460,11 +466,11 @@ public class SDL2VideoManager : IVideoManager
                     Region.Width = usScreenWidth;
                     Region.Height = usScreenHeight;
 
-                    // BlitRegion(
-                    //     backBuffer,
-                    //     new Point(0, 0),
-                    //     Region,
-                    //     gpFrameBuffer);
+                    BlitRegion(
+                        backBuffer,
+                        new Point(0, 0),
+                        Region,
+                        this.Surfaces[SurfaceType.FRAME_BUFFER]);
                 }
                 else
                 {
@@ -479,7 +485,7 @@ public class SDL2VideoManager : IVideoManager
                             backBuffer,
                             new Point(Region.X, Region.Y),
                             Region,
-                            this.surfaces[SurfaceType.PRIMARY_SURFACE]);
+                            this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
                     }
 
                     // Now do new, extended dirty regions
@@ -502,7 +508,7 @@ public class SDL2VideoManager : IVideoManager
                             backBuffer,
                             Region.ToPoint(),
                             Region,
-                            this.surfaces[SurfaceType.FRAME_BUFFER]);
+                            this.Surfaces[SurfaceType.FRAME_BUFFER]);
                     }
                 }
             }
@@ -513,7 +519,7 @@ public class SDL2VideoManager : IVideoManager
                     Globals.guiScrollDirection,
                     Globals.gsScrollXIncrement,
                     Globals.gsScrollYIncrement,
-                    this.surfaces[SurfaceType.PRIMARY_SURFACE],
+                    this.Surfaces[SurfaceType.PRIMARY_SURFACE],
                     backBuffer,
                     fRenderStrip: true,
                     Globals.PREVIOUS_MOUSE_DATA);
@@ -821,7 +827,7 @@ public class SDL2VideoManager : IVideoManager
                 backBuffer,
                 new Point(0, 0),
                 Region,
-                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
+                this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
 
             // Get new background for mouse
             // Ok, do the actual data save to the mouse background
@@ -842,7 +848,7 @@ public class SDL2VideoManager : IVideoManager
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseYPos),
                 Region,
-                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
+                this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         // NOW NEW MOUSE AREA
@@ -856,7 +862,7 @@ public class SDL2VideoManager : IVideoManager
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
                 Region,
-                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
+                this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         if (Globals.gfForceFullScreenRefresh == true)
@@ -871,7 +877,7 @@ public class SDL2VideoManager : IVideoManager
                 backBuffer,
                 new Point(0, 0),
                 Region,
-                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
+                this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
 
             Globals.guiDirtyRegionCount = 0;
             Globals.guiDirtyRegionExCount = 0;
@@ -890,7 +896,7 @@ public class SDL2VideoManager : IVideoManager
                     backBuffer,
                     new Point(Region.X, Region.Y),
                     Region,
-                    this.surfaces[SurfaceType.PRIMARY_SURFACE]);
+                    this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
             }
 
             Globals.guiDirtyRegionCount = 0;
@@ -915,7 +921,7 @@ public class SDL2VideoManager : IVideoManager
                 backBuffer,
                 new Point(Region.X, Region.Y),
                 Region,
-                this.surfaces[SurfaceType.PRIMARY_SURFACE]);
+                this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         Globals.guiDirtyRegionExCount = 0;
@@ -941,27 +947,11 @@ public class SDL2VideoManager : IVideoManager
         Rectangle sourceRegion,
         Image<Rgba32> srcImage)
     {
-        try
-        {
-            srcImage.Mutate(ctx => ctx.Crop(sourceRegion));
-        }
-        catch (ArgumentException ex)
-        {
-
-        }
-        //var newTexture = new ImageSharpTexture(srcImage)
-        //    .CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
-
         var finalRect = new Rectangle(
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
-        this.backBuffer.Mutate(ctx =>
-        {
-            ctx.DrawImage(srcImage, finalRect, 0.5f);
-        });
-
-        //SpriteRenderer.AddSprite(finalRect, newTexture, srcImage.GetHashCode().ToString());
+        this.backBuffer.Mutate(ctx => ctx.DrawImage(srcImage, finalRect, 0.5f));
     }
 
     private void ScrollJA2Background(
@@ -1282,7 +1272,7 @@ public class SDL2VideoManager : IVideoManager
                     pDest,
                     new Point(StripRegions[cnt].X, StripRegions[cnt].Y),
                     StripRegions[cnt],
-                    this.surfaces[SurfaceType.FRAME_BUFFER]);
+                    this.Surfaces[SurfaceType.FRAME_BUFFER]);
             }
 
             sShiftX = 0;
@@ -1877,10 +1867,8 @@ public class SDL2VideoManager : IVideoManager
         fRetVal = Blt16BPPTo16BPP(
             pDestBuf,
             pSrcBuf,
-            srcX,
-            srcY,
-            srcX,
-            srcY,
+            new(srcX, srcY),
+            new(srcX, srcY),
             width,
             height);
 
@@ -1930,7 +1918,7 @@ public class SDL2VideoManager : IVideoManager
             _ => 0,
         };
 
-        return this.surfaces.LockSurface(buffer);
+        return this.Surfaces.LockSurface(buffer);
     }
 
     public void InvalidateRegionEx(Rectangle bounds, int uiFlags)
@@ -1993,7 +1981,7 @@ public class SDL2VideoManager : IVideoManager
                 return;
             }
 
-            gDirtyRegionsEx[guiDirtyRegionExCount] = new(iLeft, iTop, iRight, iBottom);
+            gDirtyRegionsEx[guiDirtyRegionExCount] = new(iLeft, iTop, iRight - iLeft, iBottom - iTop);
             gDirtyRegionsFlagsEx[guiDirtyRegionExCount] = uiFlags;
 
             guiDirtyRegionExCount++;
@@ -2083,11 +2071,11 @@ public class SDL2VideoManager : IVideoManager
 
     public HVOBJECT LoadImage(string assetPath) => this.textures.LoadImage(assetPath);
 
-    public Surface CreateSurface(Image<Rgba32> image) => this.surfaces.CreateSurface(image);
+    public Surface CreateSurface(Image<Rgba32> image) => this.Surfaces.CreateSurface(image);
 
     public void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
     {
-        var dstSurface = surfaces.SurfaceByTypes[dst];
+        var dstSurface = Surfaces.SurfaceByTypes[dst];
         SDL.SDL_Rect srcRect = new()
         {
             h = src.Image.Height,
@@ -2124,7 +2112,7 @@ public class SDL2VideoManager : IVideoManager
         if (videoObject.Surface is null)
         {
             videoObject.Surface = this.CreateSurface(videoObject.Images[0]);
-            videoObject.Texture = this.surfaces.CreateTextureFromSurface(renderer, videoObject.Surface);
+            videoObject.Texture = this.Surfaces.CreateTextureFromSurface(renderer, videoObject.Surface);
         }
 
         return videoObject;

@@ -76,6 +76,7 @@ namespace SharpAlliance
             builder.AddDependency<ISoundManager, SoundManager>();
             builder.AddDependency<IInputManager, InputManager>();
             builder.AddDependency<IClockManager, ClockManager>();
+            builder.AddDependency<ISurfaceManager, SurfaceManager>();
 
             builder.Services.AddSingleton<Cars>();
             builder.Services.AddSingleton<Globals>();
