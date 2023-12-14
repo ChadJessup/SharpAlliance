@@ -116,19 +116,19 @@ public class Emails
         iCurrentPage = LaptopSaveInfo.iCurrentEmailPage;
 
         // title bar
-        this.video.AddVideoObject("LAPTOP\\programtitlebar.sti", out guiEmailTitle);
+        this.video.GetVideoObject("LAPTOP\\programtitlebar.sti", out guiEmailTitle);
 
         // the list background
-        this.video.AddVideoObject("LAPTOP\\Mailwindow.sti", out guiEmailBackground);
+        this.video.GetVideoObject("LAPTOP\\Mailwindow.sti", out guiEmailBackground);
 
         // the indication/notification box
-        this.video.AddVideoObject("LAPTOP\\MailIndicator.sti", out guiEmailIndicator);
+        this.video.GetVideoObject("LAPTOP\\MailIndicator.sti", out guiEmailIndicator);
 
         // the message background
-        this.video.AddVideoObject("LAPTOP\\emailviewer.sti", out guiEmailMessage);
+        this.video.GetVideoObject("LAPTOP\\emailviewer.sti", out guiEmailMessage);
 
         // the message background
-        this.video.AddVideoObject("LAPTOP\\maillistdivider.sti", out guiMAILDIVIDER);
+        this.video.GetVideoObject("LAPTOP\\maillistdivider.sti", out guiMAILDIVIDER);
 
         //AddEmail(IMP_EMAIL_PROFILE_RESULTS, IMP_EMAIL_PROFILE_RESULTS_LENGTH, IMP_PROFILE_RESULTS, GetWorldTotalMin( ) );
         // initialize mouse regions

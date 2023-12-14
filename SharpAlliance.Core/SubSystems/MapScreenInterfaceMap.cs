@@ -120,7 +120,7 @@ public class MapScreenInterfaceMap
         string uiTempMap;
 
         // load image
-        video.AddVideoObject("INTERFACE\\b_map.pcx", out uiTempMap);
+        video.GetVideoObject("INTERFACE\\b_map.pcx", out uiTempMap);
         
         // get video surface
         //video.GetVideoSurface(out hSrcVSurface, uiTempMap);
@@ -429,15 +429,15 @@ public class MapScreenInterfaceMap
         }
 
         // get and blt border
-        video.GetVideoObject(out hHandle, Globals.guiMapBorder);
-        VideoObjectManager.BltVideoObject(
-            SurfaceType.SAVE_BUFFER,
-            hHandle,
-            0,
-            Globals.MAP_BORDER_X,
-            Globals.MAP_BORDER_Y,
-            VO_BLT.SRCTRANSPARENCY,
-            null);
+//        video.GetVideoObject(out hHandle, Globals.guiMapBorder);
+//        VideoObjectManager.BltVideoObject(
+//            SurfaceType.SAVE_BUFFER,
+//            hHandle,
+//            0,
+//            Globals.MAP_BORDER_X,
+//            Globals.MAP_BORDER_Y,
+//            VO_BLT.SRCTRANSPARENCY,
+//            null);
 
         // show the level marker
         //        DisplayCurrentLevelMarker();

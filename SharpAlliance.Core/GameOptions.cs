@@ -13,6 +13,10 @@ public class GameOptions
 
     public void InitGameOptions()
     {
+        Globals.gGameOptions.GunNut = false;
+        Globals.gGameOptions.SciFi = true;
+        Globals.gGameOptions.ubDifficultyLevel = DifficultyLevel.Easy;
+        Globals.gGameOptions.IronManMode = false;
     }
 }
 

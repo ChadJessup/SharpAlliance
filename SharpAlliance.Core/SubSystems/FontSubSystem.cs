@@ -113,7 +113,7 @@ public class FontSubSystem : ISharpAllianceManager
         ITextureManager textureManager,
         IServiceProvider serviceProvider)
     {
-        TextRenderer = new(textureManager);
+        TextRenderer = new(videoManager);
 
         textures = textureManager;
         video = videoManager;
@@ -999,7 +999,7 @@ public class FontSubSystem : ISharpAllianceManager
             return LoadIndex;
         }
 
-        FontObjs[LoadIndex] = video.AddVideoObject(filename, out var key)!;
+        FontObjs[LoadIndex] = video.GetVideoObject(filename, out var key)!;
 //        if ((FontObjs[LoadIndex] = textures.LoadTexture(filename)) == null)
 //        {
 //            //DbgMessage(TOPIC_FONT_HANDLER, DBG_LEVEL_0, String("Error creating VOBJECT (%s)", filename);

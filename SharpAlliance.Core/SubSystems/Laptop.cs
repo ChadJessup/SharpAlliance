@@ -107,12 +107,12 @@ public class Laptop
             return;
         }
 
-        video.GetVideoObject(out hLapTopHandle, guiLAPTOP);
-        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
+//        video.GetVideoObject(out hLapTopHandle, guiLAPTOP);
+//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
-        hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
-        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
+//        hLapTopHandle = video.GetVideoObject(guiLaptopBACKGROUND);
+//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
         ButtonSubSystem.MarkButtonsDirty();
@@ -335,7 +335,7 @@ public class Laptop
         string sString = string.Empty;
 
         // title bar - load
-        CHECKF(video.AddVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));
+        CHECKF(video.GetVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));
 
         // blit title
         hHandle = video.GetVideoObject(uiTITLEFORWWW);

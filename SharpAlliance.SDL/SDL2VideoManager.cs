@@ -327,7 +327,7 @@ public class SDL2VideoManager : IVideoManager
         //        SpriteRenderer.RenderText(GraphicDevice, commandList, FontSubSystem.TextRenderer.TextureView, new Vector2(0, 0));
         //        commandList.End();
 
-        //        FontSubSystem.TextRenderer.RenderAllText(this);
+        FontSubSystem.TextRenderer.RenderAllText(this);
 
         SDL.SDL_RenderPresent(renderer);
     }
@@ -345,15 +345,26 @@ public class SDL2VideoManager : IVideoManager
     public static Stream OpenEmbeddedAssetStream(string name)
         => typeof(SDL2VideoManager).Assembly.GetManifestResourceStream(name)!;
 
-    public HVOBJECT AddVideoObject(string assetPath, out string key)
+    public HVOBJECT GetVideoObject(string assetPath) => GetVideoObject(assetPath, out var _);
+
+    public HVOBJECT GetVideoObject(string assetPath, out string key) => AddVideoObject(assetPath, out key);
+
+    private HVOBJECT AddVideoObject(string assetPath, out string key)
     {
         key = assetPath;
 
         if (!this.loadedObjects.TryGetValue(key, out var hvObj))
         {
-            hvObj = this.GetVideoObject(assetPath);
+            hvObj = this.textures.LoadImage(assetPath);
+
+            if (hvObj.Surface is null)
+            {
+                hvObj.Surface = this.CreateSurface(hvObj.Images[0]);
+                hvObj.Texture = this.Surfaces.CreateTextureFromSurface(renderer, hvObj.Surface);
+            }
+
             this.loadedObjects.Add(assetPath, hvObj);
-            Console.WriteLine($"{nameof(AddVideoObject)}: {assetPath}");
+            Console.WriteLine($"{nameof(GetVideoObject)}: {assetPath}");
         }
 
         return hvObj;
@@ -1383,6 +1394,13 @@ public class SDL2VideoManager : IVideoManager
 
     public void InvalidateScreen()
     {
+        //
+        // W A R N I N G ---- W A R N I N G ---- W A R N I N G ---- W A R N I N G ---- W A R N I N G ----
+        //
+        // This function is intended to be called by a thread which has already locked the
+        // FRAME_BUFFER_MUTEX mutual exclusion section. Anything else will cause the application to
+        // yack
+        //
         clearScreen = true;
 
         Globals.guiDirtyRegionCount = 0;
@@ -1466,6 +1484,7 @@ public class SDL2VideoManager : IVideoManager
 
     public void EndFrameBufferRender()
     {
+        guiFrameBufferState = BufferState.DIRTY;
     }
 
     public bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex)
@@ -1488,16 +1507,6 @@ public class SDL2VideoManager : IVideoManager
         return false;
     }
 
-    //    public HVOBJECT GetVideoObject(string key)
-    //    {
-    //        if (!this.textures.TryGetTexture(key, out var hPixHandle))
-    //        {
-    //            //logger.LogError("Unable to retrive VideoObject with key: " + key);
-    //        }
-    //
-    //        return hPixHandle;
-    //    }
-
     public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
     {
         if (hVObject.Images is null)
@@ -1510,16 +1519,20 @@ public class SDL2VideoManager : IVideoManager
             return;
         }
 
+        // Might need to revisit this, offsets don't feel right at the mo.
+        SDL.SDL_Rect dstRect = new()
+        {
+            x = X,
+            y = 480 - (Y + hVObject.Images[textureIndex].Height),//Math.Max(0, Y - hVObject.Images[textureIndex].Height),
+            h = hVObject.Images[textureIndex].Height,
+            w = hVObject.Images[textureIndex].Width
+        };
+
         SDL.SDL_RenderCopy(
             renderer,
             hVObject.Texture.Pointer,
-            X,
-            Y);
-
-        //SpriteRenderer.AddSprite(
-        //    new Rectangle(X, Y, (int)hVObject.Textures[textureIndex].Width, (int)hVObject.Textures[textureIndex].Height),
-        //    hVObject.Textures[textureIndex],
-        //    $"{hVObject.Name}_{textureIndex}");
+            IntPtr.Zero,
+            ref dstRect);
     }
 
     public bool DrawTextToScreen(
@@ -1594,17 +1607,6 @@ public class SDL2VideoManager : IVideoManager
         //}
 
         return true;
-    }
-
-    public bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void AddVideoObject(out VSURFACE_DESC vs_desc, out uint uiTempMap)
-    {
-        vs_desc = new();
-        uiTempMap = 0;
     }
 
     public void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette)
@@ -2102,20 +2104,6 @@ public class SDL2VideoManager : IVideoManager
         {
             var e = SDL.SDL_GetError();
         }
-    }
-
-    public HVOBJECT GetVideoObject(string image)
-    {
-        Console.WriteLine($"{nameof(GetVideoObject)}: {image}");
-        var videoObject = this.textures.LoadImage(image);
-
-        if (videoObject.Surface is null)
-        {
-            videoObject.Surface = this.CreateSurface(videoObject.Images[0]);
-            videoObject.Texture = this.Surfaces.CreateTextureFromSurface(renderer, videoObject.Surface);
-        }
-
-        return videoObject;
     }
 }
 

@@ -112,7 +112,7 @@ public class GameInitOptionsScreen : IScreen
         CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
 
         // load the Main trade screen backgroiund image
-        this.video.AddVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
+        this.video.GetVideoObject("InterFace\\OptionsScreenBackGround.sti", out this.guiGIOMainBackGroundImageKey);
 
         //Ok button
         this.giGIODoneBtnImage = this.buttons.LoadButtonImage("INTERFACE\\PreferencesButtons.sti", -1, 0, -1, 2, -1);

@@ -288,7 +288,7 @@ public class SliderSubSystem
     public void InitSliderSystem()
     {
         // load Slider Box Graphic graphic and add it
-        this.video.AddVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
+        this.video.GetVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
 
         this.gfSliderInited = true;
     }

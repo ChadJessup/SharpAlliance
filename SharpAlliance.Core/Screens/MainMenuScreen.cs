@@ -10,6 +10,8 @@ using Point = SixLabors.ImageSharp.Point;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 
 using static SharpAlliance.Core.Globals;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -92,7 +94,8 @@ public class MainMenuScreen : IScreen
         }
 
         if (Globals.guiSplashFrameFade != 0)
-        { //Fade the splash screen.
+        {
+            //Fade the splash screen.
             uiTime = Globals.GetJA2Clock();
             if (Globals.guiSplashFrameFade > 2)
             {
@@ -113,8 +116,8 @@ public class MainMenuScreen : IScreen
 
             Globals.guiSplashFrameFade--;
 
-            // video.InvalidateScreen();
-            // video.EndFrameBufferRender();
+            video.InvalidateScreen();
+            video.EndFrameBufferRender();
 
             CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
@@ -148,7 +151,7 @@ public class MainMenuScreen : IScreen
             ButtonSubSystem.MarkAButtonDirty(this.iMenuButtons[(MainMenuItems)cnt]);
         }
 
-//            video.EndFrameBufferRender();
+        video.EndFrameBufferRender();
 
         this.HandleMainMenuInput();
 
@@ -277,12 +280,13 @@ public class MainMenuScreen : IScreen
         hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
         video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
-        //hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
+        hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
         //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Images[0].Height), 0);
+        video.BltVideoObject(hPixHandle, 0, 188, (25 + (int)hPixHandle.Images[0].Height), 0);
 
         FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
-//            video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+        video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
 
     public ValueTask<bool> Initialize()
@@ -305,10 +309,10 @@ public class MainMenuScreen : IScreen
         this.CreateDestroyMainMenuButtons(fCreate: true);
 
         // load background graphic and add it
-        this.background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+        this.background = this.video.GetVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
         // load ja2 logo graphic and add it
-        this.logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+        this.logo = this.video.GetVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
         /*
             // Gray out some buttons based on status of game!
@@ -538,22 +542,24 @@ public class MainMenuScreen : IScreen
 
     public void ClearMainMenu()
     {
+        this.video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Clear(Color.AliceBlue));
         this.video.InvalidateScreen();
     }
 
     public void Draw(IVideoManager videoManager)
     {
-        var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+        //this.RenderMainMenu();
+       // var background = this.video.GetVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
         // load ja2 logo graphic and add it
-        var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+        //var logo = this.video.GetVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
 
         //sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
         //sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);
 
         //ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
 
-        FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+        //FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
     }
 
     public ValueTask Deactivate()

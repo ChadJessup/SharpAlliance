@@ -56,32 +56,32 @@ public class BobbyR
         // load the Bobbyname graphic and add it
         //
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.BOBBYNAME);
-        this.video.AddVideoObject(imageFile, out guiBobbyName);
+        this.video.GetVideoObject(imageFile, out guiBobbyName);
 
         // load the plaque graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyPlaques.sti", VObjectDesc.ImageFile);
-        this.video.AddVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
+        this.video.GetVideoObject("LAPTOP\\BobbyPlaques.sti", out guiPlaque);
 
         // load the TopHinge graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyTopHinge.sti", VObjectDesc.ImageFile);
-        this.video.AddVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
+        this.video.GetVideoObject("LAPTOP\\BobbyTopHinge.sti", out guiTopHinge);
 
         // load the BottomHinge graphic and add it
         //
         //Utils.FilenameForBPP("LAPTOP\\BobbyBottomHinge.sti", VObjectDesc.ImageFile);
-        this.video.AddVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
+        this.video.GetVideoObject("LAPTOP\\BobbyBottomHinge.sti", out guiBottomHinge);
 
         // load the Store Plaque graphic and add it
         //
         MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.STOREPLAQUE);
-        this.video.AddVideoObject(imageFile, out guiStorePlaque);
+        this.video.GetVideoObject(imageFile, out guiStorePlaque);
 
         // load the Handle graphic and add it
         //
         //FilenameForBPP("LAPTOP\\BobbyHandle.sti", VObjectDesc.ImageFile);
-        this.video.AddVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
+        this.video.GetVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
 
 
         InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, usMouseRegionPosArray, gSelectedBobbiesSignMenuRegion);
@@ -93,7 +93,7 @@ public class BobbyR
             //
             //Utils.FilenameForBPP("LAPTOP\\UnderConstruction.sti", VObjectDesc.ImageFile);
 
-            var hvobject = this.video.AddVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
+            var hvobject = this.video.GetVideoObject("LAPTOP\\UnderConstruction.sti", out guiUnderConstructionImage);
 
             for (i = 0; i < BOBBIES_NUMBER_SIGNS; i++)
             {
@@ -251,7 +251,7 @@ public class BobbyR
         // load the Wood bacground graphic and add it
         //
         string filename = Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti");
-        this.video.AddVideoObject(filename, out guiWoodBackground);
+        this.video.GetVideoObject(filename, out guiWoodBackground);
 
         return (true);
     }

@@ -37,7 +37,7 @@ public class Cars
 
         for (CarPortrait iCounter = 0; iCounter < CarPortrait.NUMBER_CAR_PORTRAITS; iCounter++)
         {
-            this.video.AddVideoObject(pbCarPortraitFileNames[(int)iCounter], out var key);
+            this.video.GetVideoObject(pbCarPortraitFileNames[(int)iCounter], out var key);
             giCarPortraits[(int)iCounter] = key;
         }
 

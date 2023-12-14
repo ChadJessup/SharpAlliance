@@ -282,17 +282,17 @@ public class History
     void RenderHistoryBackGround()
     {
         // render generic background for history system
-        HVOBJECT? hHandle;
+        HVOBJECT? hHandle = null;
         int iCounter = 0;
 
         // get title bar object
-        video.GetVideoObject(out hHandle, Globals.guiTITLE);
+//        video.GetVideoObject(out hHandle, Globals.guiTITLE);
 
         // blt title bar to screen
         VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
-        video.GetVideoObject(out hHandle, Globals.guiTOP);
+//        video.GetVideoObject(out hHandle, Globals.guiTOP);
         VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
 
         // display background for history list
@@ -703,17 +703,17 @@ public class History
         int iCounter = 0;
 
         // get shaded line object
-        video.GetVideoObject(out hHandle, Globals.guiSHADELINE);
+//        video.GetVideoObject(out hHandle, Globals.guiSHADELINE);
         for (iCounter = 0; iCounter < 11; iCounter++)
         {
             // blt title bar to screen
-            VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT.SRCTRANSPARENCY, null);
+//            VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 15, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * iCounter), VO_BLT.SRCTRANSPARENCY, null);
         }
 
         // the long hortizontal line int he records list display region
-        video.GetVideoObject(out hHandle, Globals.guiLONGLINE);
-        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT.SRCTRANSPARENCY, null);
-        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT.SRCTRANSPARENCY, null);
+//      video.GetVideoObject(out hHandle, Globals.guiLONGLINE);
+//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT.SRCTRANSPARENCY, null);
+//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT.SRCTRANSPARENCY, null);
 
         return;
     }

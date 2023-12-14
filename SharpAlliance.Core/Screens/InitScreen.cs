@@ -107,7 +107,7 @@ public class InitScreen : IScreen
 
     public ValueTask<bool> Initialize()
     {
-        hVObject = this.video.AddVideoObject(LogoAsset, out var key);
+        hVObject = this.video.GetVideoObject(LogoAsset, out var key);
        // HVOBJECT logo = this.textures.LoadTexture(LogoAsset);
 
         return ValueTask.FromResult(true);

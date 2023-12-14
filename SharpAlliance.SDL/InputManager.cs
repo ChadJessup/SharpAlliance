@@ -364,5 +364,6 @@ public class InputManager : IInputManager
 
     public void DequeueAllKeyBoardEvents()
     {
+        this.gEventQueue.Clear();
     }
 }

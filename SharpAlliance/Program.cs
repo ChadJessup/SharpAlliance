@@ -13,6 +13,12 @@ using SharpAlliance.Platform.Interfaces;
 
 namespace SharpAlliance
 {
+    enum test
+    {
+        test1,
+        test2,
+    }
+
     /// <summary>
     /// This executable is the one that most closely matches the original Jagged Alliance 2
     /// game. It uses Direct2d, raw inputs, etc.

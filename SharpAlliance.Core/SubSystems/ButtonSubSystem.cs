@@ -216,7 +216,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         //var texture = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_OFF);
         //var surface = video.CreateSurface(texture);
 
-        var hobject = video.AddVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF, out var key);
+        var hobject = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF, out var key);
         GenericButtonOffNormal.Add(bp, hobject);
         if (GenericButtonOffNormal[bp] == null)
         {
@@ -1605,7 +1605,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         ButtonPic buttonPic = new();
 
         // textures.LoadImage(filename);
-        buttonPic.vobj = video.AddVideoObject(filename, out var _);
+        buttonPic.vobj = video.GetVideoObject(filename, out var _);
         //// is there ANY file to open?
         //if ((Grayed == BUTTON_NO_IMAGE)
         //    && (OffNormal == BUTTON_NO_IMAGE)

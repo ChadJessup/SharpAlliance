@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using FontStyle = SixLabors.Fonts.FontStyle;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Interfaces;
+using Veldrid.Sdl2;
 
 namespace SharpAlliance.Core;
 
@@ -17,15 +18,17 @@ public class TextRenderer
 {
     private Rgba32 White = Rgba32.ParseHex("FFFFFF");
     private readonly Image<Rgba32> _texture;
-
+    private readonly IVideoManager _video;
     private readonly Font _font;
     private readonly Image<Rgba32> _image;
 
-    public TextRenderer(ITextureManager textureManager)
+    public TextRenderer(IVideoManager videoManager)
     {
         int width = 640;
         int height = 480;
         this._texture = new(width, height);
+
+        this._video = videoManager;
 //        gd.ResourceFactory.CreateTexture(
 //            TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
 
@@ -78,6 +81,7 @@ public class TextRenderer
 
             try
             {
+//                videoManager.
 //                this._gd.UpdateTexture(
 //                    this._texture,
 //                    (IntPtr)data,

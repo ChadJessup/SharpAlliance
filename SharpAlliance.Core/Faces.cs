@@ -180,14 +180,14 @@ public class Faces
         }
 
         // Load
-        if (video.AddVideoObject(VObjectDesc.ImageFile, out uiVideoObject) is null)
+        if (video.GetVideoObject(VObjectDesc.ImageFile, out uiVideoObject) is null)
         {
             // If we are a big face, use placeholder...
             if (uiInitFlags.HasFlag(FACE.BIGFACE))
             {
                 sprintf(VObjectDesc.ImageFile, "FACES\\placeholder.sti");
         
-                if (video.AddVideoObject(VObjectDesc.ImageFile, out uiVideoObject) is null)
+                if (video.GetVideoObject(VObjectDesc.ImageFile, out uiVideoObject) is null)
                 {
                     return (-1);
                 }

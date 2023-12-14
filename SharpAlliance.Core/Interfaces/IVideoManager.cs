@@ -31,8 +31,8 @@ public interface IVideoManager : ISharpAllianceManager
     void InvalidateRegion(Rectangle bounds);
     void InvalidateRegion(int v1, int v2, int v3, int v4);
     void EndFrameBufferRender();
-    HVOBJECT? AddVideoObject(string assetPath, out string key);
-//    HVOBJECT? GetVideoObject(string key);
+    HVOBJECT GetVideoObject(string assetPath);
+    HVOBJECT GetVideoObject(string image, out string key);
     void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
     bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap);
@@ -56,15 +56,12 @@ public interface IVideoManager : ISharpAllianceManager
     void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();
     bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight);
-    void AddVideoObject(out VSURFACE_DESC vs_desc, out uint uiTempMap);
     void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip);
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
     void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
     void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
     void ColorFillVideoSurfaceArea(SurfaceType buffer, Rectangle rectangle, Color black);
-    bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex);
-    bool GetVideoSurface(out HVSURFACE hSrcVSurface, uint uiTempMap);
-    ValueTask<bool> Initialize();
+   // bool GetVideoObject(out HVOBJECT? hVObject, int uiIndex);
     static Stream OpenEmbeddedAssetStream(string name) => throw new NotImplementedException();
     static byte[] ReadEmbeddedAssetBytes(string name) => throw new NotImplementedException();
     void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int flags);
@@ -75,5 +72,4 @@ public interface IVideoManager : ISharpAllianceManager
     HVOBJECT LoadImage(string assetPath);
     Surface CreateSurface(Image<Rgba32> image);
     void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
-    HVOBJECT GetVideoObject(string image);
 }

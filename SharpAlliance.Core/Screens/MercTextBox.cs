@@ -472,7 +472,7 @@ public class MercTextBox
 
         // border
         VObjectDesc.ImageFile = Utils.FilenameForBPP(zMercBorderPopupFilenames[(int)ubBorderIndex]);
-        var borderImage = video.AddVideoObject(VObjectDesc.ImageFile, out var key);
+        var borderImage = video.GetVideoObject(VObjectDesc.ImageFile, out var key);
 
         gPopUpTextBox.uiMercTextPopUpBorder = key;
         gPopUpTextBox.fMercTextPopupInitialized = true;

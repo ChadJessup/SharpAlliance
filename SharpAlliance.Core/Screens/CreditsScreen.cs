@@ -687,8 +687,8 @@ public class CreditsScreen : IScreen
 
     private bool EnterCreditsScreen()
     {
-        this.video.AddVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
-        this.video.AddVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
+        this.video.GetVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
+        this.video.GetVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
 
         //Initialize the root credit node
 
@@ -807,8 +807,8 @@ public class CreditsScreen : IScreen
     {
         Globals.gfCreditsScreenEntry = true;
 
-        this.video.AddVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
-        this.video.AddVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
+        this.video.GetVideoObject("INTERFACE\\Credits.sti", out Globals.guiCreditBackGroundImageKey);
+        this.video.GetVideoObject("INTERFACE\\Credit Faces.sti", out Globals.guiCreditFacesKey);
 
         return ValueTask.FromResult(true);
     }

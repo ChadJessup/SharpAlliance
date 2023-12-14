@@ -206,10 +206,10 @@ public class PreferenceScreen : IScreen
 
     public void Draw(IVideoManager videoManager)
     {
-        var background = this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
+        var background = this.video.GetVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
         // load button, title graphic and add it
-        var options = this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
+        var options = this.video.GetVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
         this.RenderOptionsScreen();
 
@@ -454,10 +454,10 @@ public class PreferenceScreen : IScreen
         this.gfExitOptionsDueToMessageBox = false;
 
         // load the options screen background graphic and add it
-        this.video.AddVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
+        this.video.GetVideoObject("INTERFACE\\OptionScreenBase.sti", out this.guiOptionBackGroundImageKey);
 
         // load button, title graphic and add it
-        this.video.AddVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
+        this.video.GetVideoObject("INTERFACE\\optionscreenaddons.sti", out this.guiOptionsAddOnImagesKey);
 
         //Save game button
         this.giOptionsButtonImages = this.buttons.LoadButtonImage("INTERFACE\\OptionScreenAddons.sti", -1, 2, -1, 3, -1);

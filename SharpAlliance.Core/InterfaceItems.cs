@@ -267,23 +267,23 @@ public class InterfaceItems
         string key;
 
         // Load all four body type images
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_large_male.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_large_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][0] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][1] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGMALE][0] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male_H.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGMALE][1] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][0] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_normal_male.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.STOCKYMALE][1] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_female.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_female.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGFEMALE][0] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\inventory_figure_female_H.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_female_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.REGFEMALE][1] = key;
-        CHECKF(this.video.AddVideoObject("INTERFACE\\gold_key_button.sti", out guiGoldKeyVO));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\gold_key_button.sti", out guiGoldKeyVO));
 
         // Add cammo region 
         MouseSubSystem.MSYS_DefineRegion(
@@ -1399,7 +1399,7 @@ public class InterfaceItems
         ETRLEObject pTrav;
         int usHeight, usWidth;
         int sCenX, sCenY, sNewY, sNewX;
-        HVOBJECT? hVObject;
+        HVOBJECT? hVObject = null;
         bool fLineSplit = false;
         int sFontX2, sFontY2;
         int sFontX, sFontY;
@@ -1421,7 +1421,7 @@ public class InterfaceItems
         if (fDirtyLevel == DIRTYLEVEL2)
         {
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-            video.GetVideoObject(out hVObject, GetInterfaceGraphicForItem(pItem));
+//            video.GetVideoObject(out hVObject, GetInterfaceGraphicForItem(pItem));
             pTrav = (hVObject.pETRLEObject[pItem.ubGraphicNum]);
             usHeight = (int)pTrav.usHeight;
             usWidth = (int)pTrav.usWidth;
