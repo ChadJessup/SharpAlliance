@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Numerics;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
@@ -12,22 +9,13 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using Point = SixLabors.ImageSharp.Point;
-using Rectangle = SixLabors.ImageSharp.Rectangle;
-
-using static SharpAlliance.Core.Globals;
-using static SharpAlliance.Core.SubSystems.FontSubSystem;
-using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
-using System.Collections;
-using SDL2;
+using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
-using Veldrid;
-using static System.Net.Mime.MediaTypeNames;
+using static SharpAlliance.Core.Globals;
+using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
+using Point = SixLabors.ImageSharp.Point;
+using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -116,10 +104,7 @@ public class SDL2VideoManager : IVideoManager
     bool fFirstTime = true;
     private bool windowResized;
 
-    //    private Texture backBuffer;
-    private Image<Rgba32> backBuffer;
-
-    private Dictionary<string, HVOBJECT> loadedObjects = new();
+    private Dictionary<string, HVOBJECT> loadedObjects = [];
 
     public SDL2VideoManager(
         ILogger<SDL2VideoManager> logger,
@@ -211,7 +196,7 @@ public class SDL2VideoManager : IVideoManager
         Globals.gfPrintFrameBuffer = false;
         Globals.guiPrintFrameBufferIndex = 0;
 
-        backBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
+        //backBuffer = new(SCREEN_WIDTH, SCREEN_HEIGHT);
         //        backBuffer = new ImageSharpTexture(new Image<Rgba32>(SCREEN_WIDTH, SCREEN_HEIGHT), mipmap: false)
         //            .CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
         //
@@ -478,7 +463,7 @@ public class SDL2VideoManager : IVideoManager
                     Region.Height = usScreenHeight;
 
                     BlitRegion(
-                        backBuffer,
+                        this.Surfaces[SurfaceType.BACKBUFFER],
                         new Point(0, 0),
                         Region,
                         this.Surfaces[SurfaceType.FRAME_BUFFER]);
@@ -493,7 +478,7 @@ public class SDL2VideoManager : IVideoManager
                         Region.Height = Globals.gListOfDirtyRegions[uiIndex].Height;
 
                         BlitRegion(
-                            backBuffer,
+                            this.Surfaces[SurfaceType.BACKBUFFER],
                             new Point(Region.X, Region.Y),
                             Region,
                             this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
@@ -516,7 +501,7 @@ public class SDL2VideoManager : IVideoManager
                         }
 
                         BlitRegion(
-                            backBuffer,
+                            this.Surfaces[SurfaceType.BACKBUFFER],
                             Region.ToPoint(),
                             Region,
                             this.Surfaces[SurfaceType.FRAME_BUFFER]);
@@ -531,7 +516,7 @@ public class SDL2VideoManager : IVideoManager
                     Globals.gsScrollXIncrement,
                     Globals.gsScrollYIncrement,
                     this.Surfaces[SurfaceType.PRIMARY_SURFACE],
-                    backBuffer,
+                    this.Surfaces[SurfaceType.BACKBUFFER],
                     fRenderStrip: true,
                     Globals.PREVIOUS_MOUSE_DATA);
             }
@@ -835,7 +820,7 @@ public class SDL2VideoManager : IVideoManager
             Region.Height = 360;
 
             BlitRegion(
-                backBuffer,
+                this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(0, 0),
                 Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
@@ -854,7 +839,7 @@ public class SDL2VideoManager : IVideoManager
             Region = mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].Region;
 
             BlitRegion(
-                backBuffer,
+                this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseYPos),
@@ -868,7 +853,7 @@ public class SDL2VideoManager : IVideoManager
             Region = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].Region;
 
             BlitRegion(
-                backBuffer,
+                this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
                     mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
@@ -885,7 +870,7 @@ public class SDL2VideoManager : IVideoManager
             Region.Height = SCREEN_HEIGHT;
 
             BlitRegion(
-                backBuffer,
+                this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(0, 0),
                 Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
@@ -904,7 +889,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Height = Globals.gListOfDirtyRegions[uiIndex].Height;
 
                 BlitRegion(
-                    backBuffer,
+                    this.Surfaces[SurfaceType.BACKBUFFER],
                     new Point(Region.X, Region.Y),
                     Region,
                     this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
@@ -929,7 +914,7 @@ public class SDL2VideoManager : IVideoManager
             }
 
             BlitRegion(
-                backBuffer,
+                this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(Region.X, Region.Y),
                 Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
@@ -962,7 +947,7 @@ public class SDL2VideoManager : IVideoManager
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
-        this.backBuffer.Mutate(ctx => ctx.DrawImage(srcImage, finalRect, 0.5f));
+        this.Surfaces[SurfaceType.BACKBUFFER].Mutate(ctx => ctx.DrawImage(srcImage, finalRect, 0.5f));
     }
 
     private void ScrollJA2Background(

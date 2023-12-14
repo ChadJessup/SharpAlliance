@@ -46,7 +46,7 @@ public class SurfaceManager : ISurfaceManager
         var renderSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.RENDER_BUFFER);
         var saveSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.SAVE_BUFFER);
         var extraSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.EXTRA_BUFFER);
-
+        var backBuffer = this.CreateSurface(new(this.width, this.height), SurfaceType.BACKBUFFER);
         //        this.surfaces.Add(primarySurface, primarySurface.Image);
         //        this.surfaces.Add(frameSurface, frameSurface.Image);
         //        this.surfaces.Add(renderSurface, renderSurface.Image);
