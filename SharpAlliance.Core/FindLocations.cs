@@ -519,7 +519,7 @@ public class FindLocations
         int uiThreatCnt = 0;
         int iMaxMoveTilesLeft = 0, iSearchRange = 0, iRoamRange;
         int sMaxLeft, sMaxRight, sMaxUp, sMaxDown, sXOffset, sYOffset;
-        int sOrigin;  // has to be a short, need a pointer
+        // has to be a short, need a pointer
         int? pusLastLoc;
         int? pbPersOL;
         int? pbPublOL;
@@ -782,7 +782,7 @@ public class FindLocations
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
         //NumMessage("sMaxDown = ",sMaxDown);
 
-        iRoamRange = AIUtils.RoamingRange(pSoldier, out sOrigin);
+        iRoamRange = AIUtils.RoamingRange(pSoldier, out int sOrigin);
 
         // if status isn't black (life & death combat), and roaming range is limited
         if ((pSoldier.bAlertStatus != STATUS.BLACK) && (iRoamRange < MAX_ROAMING_RANGE) &&
@@ -1490,11 +1490,10 @@ public class FindLocations
         int iSearchRange;
         int bLightLevel, bCurrLightLevel, bLightDiff = 0;
         int iRoamRange;
-        int sOrigin;
 
         //        bCurrLightLevel = LightTrueLevel(pSoldier.sGridNo, pSoldier.bLevel);
 
-        iRoamRange = AIUtils.RoamingRange(pSoldier, out sOrigin);
+        iRoamRange = AIUtils.RoamingRange(pSoldier, out int sOrigin);
 
         // start with a small search area, and expand it if we're unsuccessful
         // this should almost never need to search farther than 5 or 10 squares...
@@ -2059,8 +2058,7 @@ public class FindLocations
 
     int FindNearestEdgePoint(int sGridNo)
     {
-        int sGridX, sGridY;
-        int sScreenX, sScreenY, sMaxScreenX, sMaxScreenY;
+        int sMaxScreenX, sMaxScreenY;
         int[] sDist = new int[5], sMinDist;
         int iLoop;
         int bMinIndex;
@@ -2068,8 +2066,8 @@ public class FindLocations
         int iEdgepointArraySize;
         int sClosestSpot = NOWHERE, sClosestDist = 0x7FFF, sTempDist;
 
-        IsometricUtils.ConvertGridNoToXY(sGridNo, out sGridX, out sGridY);
-        IsometricUtils.GetWorldXYAbsoluteScreenXY(sGridX, sGridY, out sScreenX, out sScreenY);
+        IsometricUtils.ConvertGridNoToXY(sGridNo, out int sGridX, out int sGridY);
+        IsometricUtils.GetWorldXYAbsoluteScreenXY(sGridX, sGridY, out int sScreenX, out int sScreenY);
 
         sMaxScreenX = gsBRX - gsTLX;
         sMaxScreenY = gsBRY - gsTLY;
@@ -2243,7 +2241,6 @@ public class FindLocations
 
         int sGridNo, sClosestSpot = NOWHERE;
         int iDistance, iClosestDistance = 9999;
-        int ubRoom;
 
         // set the distance limit of the square region
         iSearchRange = 7;
@@ -2271,7 +2268,7 @@ public class FindLocations
             {
                 // calculate the next potential gridno
                 sGridNo = pSoldier.sGridNo + sXOffset + (MAXCOL * sYOffset);
-                if (RenderFun.InARoom(sGridNo, out ubRoom))
+                if (RenderFun.InARoom(sGridNo, out int ubRoom))
                 {
                     if ((fInRing && ubRoom == BOXING_RING) || (!fInRing && ubRoom != BOXING_RING) && Movement.LegalNPCDestination(pSoldier, sGridNo, IGNORE_PATH, NOWATER, 0) > 0)
                     {

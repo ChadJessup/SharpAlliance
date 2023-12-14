@@ -485,7 +485,7 @@ public class Smell
     {
         MAP_ELEMENT? pMapElement;
         int bValue;
-        TileIndexes usIndex, usNewIndex;
+        TileIndexes usNewIndex;
 
         // OK, based on level, type, display graphics for blood
         pMapElement = (Globals.gpWorldLevelData[sGridNo]);
@@ -508,7 +508,7 @@ public class Smell
                 bValue = BLOOD_FLOOR_STRENGTH(pMapElement.ubBloodInfo);
 
                 // OK, remove tile graphic if one exists....
-                if (WorldManager.TypeRangeExistsInObjectLayer(sGridNo, TileTypeDefines.HUMANBLOOD, TileTypeDefines.CREATUREBLOOD, out usIndex))
+                if (WorldManager.TypeRangeExistsInObjectLayer(sGridNo, TileTypeDefines.HUMANBLOOD, TileTypeDefines.CREATUREBLOOD, out TileIndexes usIndex))
                 {
                     //This has been removed and it is handled by the ubBloodInfo level when restoring a saved game.
                     //Set a flag indicating that the following changes are to go the the maps temp file

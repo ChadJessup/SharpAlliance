@@ -667,7 +667,6 @@ public class Keys
     {
         string zMapName;
         Stream hFile;
-        int uiNumBytesRead;
         int ubLoop;
 
         //Convert the current sector location into a file name
@@ -676,14 +675,14 @@ public class Keys
         //add the 'm' for 'Modifed Map' to the front of the map name
         //	sprintf( zMapName, "%s\\ds_%s", MAPS_DIR, zTempName);
 
-//        GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+        //        GetMapTempFileName(SF.DOOR_STATUS_TEMP_FILE_EXISTS, zMapName, gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
 
         //Get rid of the existing door array
-//        TrashDoorStatusArray();
+        //        TrashDoorStatusArray();
 
         //Open the file for reading
-//        hFile = files.FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
-//        if (hFile == 0)
+        //        hFile = files.FileOpen(zMapName, FILE_ACCESS_READ | FILE_OPEN_EXISTING, false);
+        //        if (hFile == 0)
         {
             //Error opening map modification file,
             return (false);
@@ -691,7 +690,7 @@ public class Keys
 
 
         // Load the number of elements in the door status array
-        files.FileRead(hFile, ref gubNumDoorStatus, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref gubNumDoorStatus, sizeof(int), out int uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             files.FileClose(hFile);

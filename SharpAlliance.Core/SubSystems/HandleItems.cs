@@ -17,7 +17,6 @@ public class HandleItems
 
     private static OBJECTTYPE? InternalAddItemToPool(ref int psGridNo, OBJECTTYPE? pObject, ItemVisibility bVisible, int ubLevel, WORLD_ITEM usFlags, int bRenderZHeightAboveLevel, int? piItemIndex)
     {
-        ITEM_POOL? pItemPool;
         ITEM_POOL? pItemPoolTemp;
         int iWorldItem = 0;
         STRUCTURE? pStructure, pBase;
@@ -122,7 +121,6 @@ public class HandleItems
                     // Else can we place an item on top?
                     else if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.GENERIC))
                     {
-                        int ubLevel0, ubLevel1, ubLevel2, ubLevel3;
 
                         // If we are going into a raised struct AND we have above level set to -1
                         if (StructureInternals.StructureBottomLevel(pStructure) != 1 && fForceOnGround)
@@ -131,7 +129,7 @@ public class HandleItems
                         }
 
                         // Find most dence area...
-                        if (StructureInternals.StructureDensity(pStructure, out ubLevel0, out ubLevel1, out ubLevel2, out ubLevel3))
+                        if (StructureInternals.StructureDensity(pStructure, out int ubLevel0, out int ubLevel1, out int ubLevel2, out int ubLevel3))
                         {
                             if (ubLevel3 == 0 && ubLevel2 == 0 && ubLevel1 == 0 && ubLevel0 == 0)
                             {
@@ -213,7 +211,7 @@ public class HandleItems
 //        iWorldItem = AddItemToWorld(psGridNo, pObject, ubLevel, usFlags, bRenderZHeightAboveLevel, bVisible);
 
         // Check for and existing pool on the object layer
-        if (GetItemPool(psGridNo, out pItemPool, ubLevel))
+        if (GetItemPool(psGridNo, out ITEM_POOL? pItemPool, ubLevel))
         {
 
             // Add to exitsing pool
@@ -307,12 +305,11 @@ public class HandleItems
 
     public static bool ItemTypeExistsAtLocation(int sGridNo, Items usItem, int ubLevel, out int piItemIndex)
     {
-        ITEM_POOL? pItemPool;
         ITEM_POOL? pItemPoolTemp;
         bool fItemFound = false;
 
         // Check for an existing pool on the object layer
-        if (GetItemPool(sGridNo, out pItemPool, ubLevel))
+        if (GetItemPool(sGridNo, out ITEM_POOL? pItemPool, ubLevel))
         {
             // LOOP THROUGH LIST TO FIND ITEM WE WANT
             pItemPoolTemp = pItemPool;

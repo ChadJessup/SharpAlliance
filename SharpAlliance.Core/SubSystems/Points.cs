@@ -219,7 +219,7 @@ public class Points
     {
         int sAPCost = 0;
         int sSwitchValue;
-        bool fHiddenStructVisible;               // Used for hidden struct visiblity
+        // Used for hidden struct visiblity
 
         if (pSoldier.bStealthMode)
         {
@@ -241,7 +241,7 @@ public class Points
         if (pSoldier.bTeam == gbPlayerNum)
         {
             // Is this obstcale a hidden tile that has not been revealed yet?
-            if (StructureWrap.DoesGridnoContainHiddenStruct(sGridno, out fHiddenStructVisible))
+            if (StructureWrap.DoesGridnoContainHiddenStruct(sGridno, out bool fHiddenStructVisible))
             {
                 // Are we not visible, if so use terrain costs!
                 if (!fHiddenStructVisible)

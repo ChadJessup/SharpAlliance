@@ -87,8 +87,6 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     public int DoMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK ReturnCallback, ref Rectangle? pCenteringRect)
     {
         VSURFACE_DESC vs_desc;
-        int usTextBoxWidth;
-        int usTextBoxHeight;
         Rectangle aRect = new();
         int uiDestPitchBYTES, uiSrcPitchBYTES;
         int pDestBuf, pSrcBuf;
@@ -223,7 +221,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         gMsgBox.bHandled = 0;
 
         // Init message box
-        gMsgBox.iBoxId = mercTextBox.PrepareMercPopupBox(iId, ubMercBoxBackground, ubMercBoxBorder, zString, MSGBOX_DEFAULT_WIDTH, 40, 10, 30, out usTextBoxWidth, out usTextBoxHeight);
+        gMsgBox.iBoxId = mercTextBox.PrepareMercPopupBox(iId, ubMercBoxBackground, ubMercBoxBorder, zString, MSGBOX_DEFAULT_WIDTH, 40, 10, 30, out int usTextBoxWidth, out int usTextBoxHeight);
 
         if (gMsgBox.iBoxId == -1)
         {
@@ -820,7 +818,6 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     {
         int uiDestPitchBYTES, uiSrcPitchBYTES;
         int pDestBuf, pSrcBuf;
-        Point pPosition;
 
         // Delete popup!
         MercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
@@ -936,7 +933,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
 
         if (fCursorLockedToArea == true)
         {
-            inputs.GetCursorPosition(out pPosition);
+            inputs.GetCursorPosition(out Point pPosition);
 
             if ((pPosition.X > MessageBoxRestrictedCursorRegion.Width) || (pPosition.X > MessageBoxRestrictedCursorRegion.X) && (pPosition.Y < MessageBoxRestrictedCursorRegion.Y) && (pPosition.Y > MessageBoxRestrictedCursorRegion.Height))
             {

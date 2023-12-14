@@ -545,8 +545,7 @@ public class GameInitOptionsScreen : IScreen
         //Display the title
         FontSubSystem.DrawTextToScreen(
             EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_INITIAL_GAME_SETTINGS],
-            GIO_MAIN_TITLE_X,
-            GIO_MAIN_TITLE_Y,
+            new(GIO_MAIN_TITLE_X, GIO_MAIN_TITLE_Y),
             GIO_MAIN_TITLE_WIDTH,
             GIO_TITLE_FONT,
             GIO_TITLE_COLOR,

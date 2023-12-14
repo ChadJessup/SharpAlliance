@@ -177,7 +177,6 @@ public class InteractiveTiles
     {
         STRUCTURE? pStructure, pNewStructure = null;
         int sAPCost = 0, sBPCost = 0;
-        ITEM_POOL? pItemPool;
         bool fDidMissingQuote = false;
 
         pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.OPENABLE);
@@ -228,7 +227,7 @@ public class InteractiveTiles
 
 
             // LOOK for item pool here...
-            if (HandleItems.GetItemPool(sGridNo, out pItemPool, pSoldier.bLevel))
+            if (HandleItems.GetItemPool(sGridNo, out ITEM_POOL? pItemPool, pSoldier.bLevel))
             {
                 // Update visiblity....
                 if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
@@ -314,8 +313,6 @@ public class InteractiveTiles
     void SetActionModeDoorCursorText()
     {
         LEVELNODE? pIntNode;
-        STRUCTURE? pStructure;
-        int sGridNo;
 
         // If we are over a merc, don't
         if (Globals.gfUIFullTargetFound)
@@ -324,7 +321,7 @@ public class InteractiveTiles
         }
 
         // OK, first see if we have an in tile...
-        pIntNode = GetCurInteractiveTileGridNoAndStructure(out sGridNo, out pStructure);
+        pIntNode = GetCurInteractiveTileGridNoAndStructure(out int sGridNo, out STRUCTURE? pStructure);
 
         if (pIntNode != null && pStructure != null)
         {
@@ -338,11 +335,9 @@ public class InteractiveTiles
     public static UICursorDefines GetInteractiveTileCursor(UICursorDefines uiOldCursor, bool fConfirm)
     {
         LEVELNODE? pIntNode;
-        STRUCTURE? pStructure;
-        int sGridNo;
 
         // OK, first see if we have an in tile...
-        pIntNode = GetCurInteractiveTileGridNoAndStructure(out sGridNo, out pStructure);
+        pIntNode = GetCurInteractiveTileGridNoAndStructure(out int sGridNo, out STRUCTURE? pStructure);
 
         if (pIntNode != null && pStructure != null)
         {
@@ -466,8 +461,7 @@ public class InteractiveTiles
 
     void LogMouseOverInteractiveTile(int sGridNo)
     {
-        Rectangle aRect;
-        int sXMapPos, sYMapPos, sScreenX, sScreenY;
+        int sScreenX, sScreenY;
         LEVELNODE? pNode;
 
         // OK, for now, don't allow any interactive tiles on higher interface level!
@@ -483,7 +477,7 @@ public class InteractiveTiles
         }
 
         // Get World XY From gridno
-        IsometricUtils.ConvertGridNoToCellXY(sGridNo, out sXMapPos, out sYMapPos);
+        IsometricUtils.ConvertGridNoToCellXY(sGridNo, out int sXMapPos, out int sYMapPos);
 
         // Set mouse stuff
         sScreenX = Globals.gusMouseXPos;
@@ -494,7 +488,7 @@ public class InteractiveTiles
         while (pNode != null)
         {
             {
-                GetLevelNodeScreenRect(pNode, out aRect, sXMapPos, sYMapPos, sGridNo);
+                GetLevelNodeScreenRect(pNode, out Rectangle aRect, sXMapPos, sYMapPos, sGridNo);
 
                 // Make sure we are always on guy if we are on same gridno
 //                if (IsPointInScreenRect(sScreenX, sScreenY, aRect))

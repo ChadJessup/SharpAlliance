@@ -381,7 +381,6 @@ public class LibraryFileManager : ILibraryManager
     {
         this.gFileDataBase = FileManager.gFileDataBase;
 
-        FileHeader? pFileHeader;
         Stream hLibFile;
         LibraryNames sLibraryID;
         uint uiLoop1;
@@ -412,7 +411,7 @@ public class LibraryFileManager : ILibraryManager
             }
 
             //if the file is in a library, get the file
-            if (this.GetFileHeaderFromLibrary(sLibraryID, pName, out pFileHeader))
+            if (this.GetFileHeaderFromLibrary(sLibraryID, pName, out FileHeader? pFileHeader))
             {
                 //Create a library handle for the new file
                 hLibFile = this.CreateLibraryFileStream(sLibraryID, pFileHeader);

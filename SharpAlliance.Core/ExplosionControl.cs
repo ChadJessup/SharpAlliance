@@ -294,8 +294,6 @@ public class ExplosionControl
         STRUCTURE? pFenceStructure, pFenceBaseStructure;
         LEVELNODE? pFenceNode;
         int bFenceDestructionPartner = -1;
-        TileTypeDefines uiFenceType;
-        TileIndexes usTileIndex;
 
         pFenceStructure = WorldStructures.FindStructure(sStructGridNo, STRUCTUREFLAGS.FENCE);
 
@@ -311,12 +309,12 @@ public class ExplosionControl
                 pFenceNode = WorldStructures.FindLevelNodeBasedOnStructure(pFenceBaseStructure.sGridNo, pFenceBaseStructure);
 
                 // Get type from index...
-                TileDefine.GetTileType(pFenceNode.usIndex, out uiFenceType);
+                TileDefine.GetTileType(pFenceNode.usIndex, out TileTypeDefines uiFenceType);
 
                 bFenceDestructionPartner = -1 * (pFenceBaseStructure.pDBStructureRef.pDBStructure.bDestructionPartner);
 
                 // Get new index
-                TileDefine.GetTileIndexFromTypeSubIndex(uiFenceType, (int)(bFenceDestructionPartner), out usTileIndex);
+                TileDefine.GetTileIndexFromTypeSubIndex(uiFenceType, (int)(bFenceDestructionPartner), out TileIndexes usTileIndex);
 
                 //Set a flag indicating that the following changes are to go the the maps, temp file
                 SaveLoadMap.ApplyMapChangesToMapTempFile(true);
@@ -837,10 +835,9 @@ public class ExplosionControl
                         // CJC, Sept 16: if we destroy any wall of the brothel, make Kingpin's men hostile!
                         if (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.C && gbWorldSectorZ == 0)
                         {
-                            int ubRoom;
                             bool fInRoom;
 
-                            fInRoom = RenderFun.InARoom(sGridNo, out ubRoom);
+                            fInRoom = RenderFun.InARoom(sGridNo, out int ubRoom);
                             if (!fInRoom)
                             {
                                 // try to south
@@ -1298,7 +1295,7 @@ public class ExplosionControl
         bool fBlastEffect = true;
         int sNewGridNo;
         bool fBloodEffect = false;
-        ITEM_POOL? pItemPool, pItemPoolNext;
+        ITEM_POOL? pItemPoolNext;
         int uiRoll;
 
         //Init the variables
@@ -1454,7 +1451,7 @@ public class ExplosionControl
             // NB radius can be 0 so cannot divide it by 2 here
             if (!fStunEffect && (uiDist * 2 <= pExplosive.ubRadius))
             {
-                HandleItems.GetItemPool(sGridNo, out pItemPool, bLevel);
+                HandleItems.GetItemPool(sGridNo, out ITEM_POOL? pItemPool, bLevel);
 
                 while (pItemPool is not null)
                 {
@@ -1699,13 +1696,11 @@ public class ExplosionControl
     void GetRayStopInfo(int uiNewSpot, WorldDirections ubDir, int bLevel, bool fSmokeEffect, int uiCurRange, out int? piMaxRange, out int pubKeepGoing)
     {
         piMaxRange = -1;
-        int bStructHeight;
         int ubMovementCost;
         BLOCKING Blocking, BlockingTemp;
         bool fTravelCostObs = false;
         int uiRangeReduce;
         int sNewGridNo;
-        STRUCTURE? pBlockingStructure;
         bool fBlowWindowSouth = false;
         bool fReduceRay = true;
 
@@ -1731,7 +1726,7 @@ public class ExplosionControl
         }
 
 
-        Blocking = StructureInternals.GetBlockingStructureInfo((int)uiNewSpot, ubDir, 0, bLevel, out bStructHeight, out pBlockingStructure, true);
+        Blocking = StructureInternals.GetBlockingStructureInfo((int)uiNewSpot, ubDir, 0, bLevel, out int bStructHeight, out STRUCTURE? pBlockingStructure, true);
 
         if (pBlockingStructure is not null)
         {
@@ -1917,7 +1912,6 @@ public class ExplosionControl
         int ubKeepGoing;
         int sRange;
         bool fRecompileMovement = false;
-        bool fAnyMercHit = false;
         bool fSmokeEffect = false;
 
         switch (usItem)
@@ -1946,7 +1940,7 @@ public class ExplosionControl
         sRange = ubRadius * 2;
 
         // first, affect main spot
-        if (ExpAffect(sGridNo, sGridNo, 0, usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
+        if (ExpAffect(sGridNo, sGridNo, 0, usItem, ubOwner, fSubsequent, out bool fAnyMercHit, bLevel, iSmokeEffectID))
         {
             fRecompileMovement = true;
         }
@@ -2079,10 +2073,9 @@ public class ExplosionControl
         // Recompile movement costs...
         if (fRecompileMovement)
         {
-            int sX, sY;
 
             // DO wireframes as well
-            ConvertGridNoToXY((int)sGridNo, out sX, out sY);
+            ConvertGridNoToXY((int)sGridNo, out int sX, out int sY);
             // SetRecalculateWireFrameFlagRadius(sX, sY, ubRadius);
             // CalculateWorldWireFrameTiles(false);
 
@@ -2210,7 +2203,6 @@ public class ExplosionControl
     bool HookerInRoom(int ubRoom)
     {
         int ubLoop;
-        int ubTempRoom;
         SOLDIERTYPE? pSoldier;
 
         for (ubLoop = gTacticalStatus.Team[TEAM.CIV_TEAM].bFirstID; ubLoop <= gTacticalStatus.Team[TEAM.CIV_TEAM].bLastID; ubLoop++)
@@ -2219,7 +2211,7 @@ public class ExplosionControl
 
             if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && pSoldier.bNeutral > 0 && pSoldier.ubBodyType == SoldierBodyTypes.MINICIV)
             {
-                if (RenderFun.InARoom(pSoldier.sGridNo, out ubTempRoom) && ubTempRoom == ubRoom)
+                if (RenderFun.InARoom(pSoldier.sGridNo, out int ubTempRoom) && ubTempRoom == ubRoom)
                 {
                     return (true);
                 }
@@ -2973,7 +2965,6 @@ public class ExplosionControl
 
     unsafe bool SaveExplosionTableToSaveGameFile(Stream hFile)
     {
-        int uiNumBytesWritten;
         int uiExplosionCount = 0;
         int uiCnt;
 
@@ -2982,7 +2973,7 @@ public class ExplosionControl
         //
 
         //Write the number of explosion queues
-        files.FileWrite(hFile, gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesWritten);
+        files.FileWrite(hFile, gubElementsOnExplosionQueue, sizeof(int), out int uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             files.FileClose(hFile);
@@ -3043,7 +3034,6 @@ public class ExplosionControl
 
     unsafe bool LoadExplosionTableFromSavedGameFile(Stream hFile)
     {
-        int uiNumBytesRead;
         int uiExplosionCount = 0;
         int uiCnt;
 
@@ -3055,7 +3045,7 @@ public class ExplosionControl
         //memset(gExplosionQueue, 0, sizeof(ExplosionQueueElement) * MAX_BOMB_QUEUE);
 
         //Read the number of explosions queue's
-        files.FileRead(hFile, ref gubElementsOnExplosionQueue, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref gubElementsOnExplosionQueue, sizeof(int), out int uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             return (false);
@@ -3164,7 +3154,6 @@ public class ExplosionControl
         int cnt;
         SEC sSectorNo;
         bool fInSector = false;
-        TileIndexes usGoodGraphic;
         TileIndexes usDamagedGraphic;
 
         // ATE: If we are below, return right away...
@@ -3187,7 +3176,7 @@ public class ExplosionControl
             if (pSamList[cnt] == sSectorNo)
             {
                 // get graphic.......
-                TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.EIGHTISTRUCT, (gbSAMGraphicList[cnt]), out usGoodGraphic);
+                TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.EIGHTISTRUCT, (gbSAMGraphicList[cnt]), out TileIndexes usGoodGraphic);
 
                 // Damaged one ( current ) is 2 less...
                 usDamagedGraphic = usGoodGraphic - 2;

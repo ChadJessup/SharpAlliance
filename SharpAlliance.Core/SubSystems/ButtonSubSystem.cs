@@ -704,8 +704,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
             FontSubSystem.DrawTextToScreen(
                 b.stringText,
-                x,
-                y,
+                new(x, y),
                 b.MouseRegion.Bounds.Width + 8,
                 b.usFont,
                 sForeColor,

@@ -43,7 +43,6 @@ public class EnemySoldierSave
         SOLDIERTYPE? pSoldier;
         int i;
         int slots = 0;
-        int uiNumBytesWritten;
         uint uiTimeStamp;
         Stream hfile;
         //	CHAR8		zTempName[ 128 ];
@@ -213,7 +212,7 @@ public class EnemySoldierSave
             return false;
         }
 
-        files.FileWrite(hfile, sSectorY, 2, out uiNumBytesWritten);
+        files.FileWrite(hfile, sSectorY, 2, out int uiNumBytesWritten);
         if (uiNumBytesWritten != 2)
         {
             goto FAIL_SAVE;

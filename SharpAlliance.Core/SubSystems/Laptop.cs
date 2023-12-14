@@ -99,7 +99,6 @@ public class Laptop
 
     public static void RenderLapTopImage()
     {
-        HVOBJECT? hLapTopHandle;
 
 
         if ((fMaximizingProgram == true) || (fMinizingProgram == true))
@@ -107,7 +106,7 @@ public class Laptop
             return;
         }
 
-//        video.GetVideoObject(out hLapTopHandle, guiLAPTOP);
+//        video.GetVideoObject(out HVOBJECT? hLapTopHandle, guiLAPTOP);
 //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 0, LAPTOP_X, LAPTOP_Y, VO_BLT.SRCTRANSPARENCY, null);
 
 
@@ -286,7 +285,6 @@ public class Laptop
 
     private static bool DrawDeskTopBackground()
     {
-        HVSURFACE hSrcVSurface;
         int uiDestPitchBYTES;
         int uiSrcPitchBYTES;
         Image<Rgba32> pDestBuf;
@@ -303,7 +301,7 @@ public class Laptop
 
         // get surfaces
 //        pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
-        CHECKF(video.GetVideoSurface(out hSrcVSurface, guiDESKTOP));
+        CHECKF(video.GetVideoSurface(out HVSURFACE hSrcVSurface, guiDESKTOP));
 //        pSrcBuf = video.LockVideoSurface(guiDESKTOP, out uiSrcPitchBYTES);
 
 
@@ -329,13 +327,12 @@ public class Laptop
     public static bool RenderWWWProgramTitleBar()
     {
         // will render the title bar for the www program
-        string uiTITLEFORWWW;
         HVOBJECT hHandle;
         int iIndex = 0;
         string sString = string.Empty;
 
         // title bar - load
-        CHECKF(video.GetVideoObject("LAPTOP\\programtitlebar.sti", out uiTITLEFORWWW));
+        CHECKF(video.GetVideoObject("LAPTOP\\programtitlebar.sti", out string uiTITLEFORWWW));
 
         // blit title
         hHandle = video.GetVideoObject(uiTITLEFORWWW);

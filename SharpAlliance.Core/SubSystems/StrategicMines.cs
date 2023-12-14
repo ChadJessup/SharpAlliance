@@ -295,8 +295,6 @@ public class StrategicMines
         // will remove the ore from the mine and return the amount that was removed
         int uiAmountExtracted = 0;
         int uiOreRunningOutPoint = 0;
-        int sSectorX;
-        MAP_ROW sSectorY;
 
         Debug.Assert((bMineIndex >= 0) && (bMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
@@ -324,7 +322,7 @@ public class StrategicMines
             mineStatus.fRunningOut = false;
 
             // tell the strategic AI about this, that mine's and town's value is greatly reduced
-            GetMineSector(bMineIndex, out sSectorX, out sSectorY);
+            GetMineSector(bMineIndex, out int sSectorX, out MAP_ROW sSectorY);
 //            StrategicHandleMineThatRanOut(SECTORINFO.SECTOR(sSectorX, sSectorY));
 
             History.AddHistoryToPlayersLog(

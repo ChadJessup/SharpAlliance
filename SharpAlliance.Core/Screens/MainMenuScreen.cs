@@ -284,7 +284,14 @@ public class MainMenuScreen : IScreen
         //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Images[0].Height), 0);
         video.BltVideoObject(hPixHandle, 0, 188, (25 + (int)hPixHandle.Images[0].Height), 0);
 
-        FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DrawTextToScreen(
+            EnglishText.gzCopyrightText[0],
+            new(0, 465),
+            640,
+            FontStyle.FONT10ARIAL,
+            FontColor.FONT_MCOLOR_WHITE,
+            FontColor.FONT_MCOLOR_BLACK,
+            TextJustifies.CENTER_JUSTIFIED);
 
         video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
@@ -369,9 +376,7 @@ public class MainMenuScreen : IScreen
             //gfLoadGameUponEntry = false;
 
             // Load button images
-            filename = "LOADSCREENS\\titletext.sti";// MLG_TITLETEXT);
-
-            this.iMenuImages[MainMenuItems.NEW_GAME] = this.buttons.LoadButtonImage(filename, 0, 0, 1, 2, -1);
+            this.iMenuImages[MainMenuItems.NEW_GAME] = this.buttons.LoadButtonImage("LOADSCREENS\\titletext.sti", 0, 0, 1, 2, -1);
             sSlot = 0;
 
             this.iMenuImages[MainMenuItems.LOAD_GAME] = ButtonSubSystem.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 6, 3, 4, 5, -1);

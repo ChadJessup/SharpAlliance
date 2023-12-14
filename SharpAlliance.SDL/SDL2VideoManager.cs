@@ -974,8 +974,6 @@ public class SDL2VideoManager : IVideoManager
         bool fRenderStrip,
         int uiCurrentMouseBackbuffer)
     {
-        int usWidth, usHeight;
-        int ubBitDepth;
         Rectangle Region = new();
         int usMouseXPos, usMouseYPos;
         Rectangle[] StripRegions = new Rectangle[2];
@@ -985,7 +983,7 @@ public class SDL2VideoManager : IVideoManager
         int sShiftX, sShiftY;
         int uiCountY;
 
-        GetCurrentVideoSettings(out usWidth, out usHeight, out ubBitDepth);
+        GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
         usHeight = Globals.gsVIEWPORT_WINDOW_END_Y - Globals.gsVIEWPORT_WINDOW_START_Y;
 
         StripRegions[0].X = Globals.gsVIEWPORT_START_X;
@@ -1735,9 +1733,7 @@ public class SDL2VideoManager : IVideoManager
     private bool InternalShadowVideoSurfaceRect(SurfaceType destSurface, Rectangle rectangle, bool fLowPercentShadeTable)
     {
         Image<Rgba32> pBuffer;
-        int uiPitch;
         Rectangle area;
-        HVSURFACE hVSurface;
 
         int X1 = rectangle.X;
         int X2 = rectangle.X + rectangle.Width;
@@ -1753,7 +1749,7 @@ public class SDL2VideoManager : IVideoManager
 # if _DEBUG
         gubVSDebugCode = DEBUGSTR_SHADOWVIDEOSURFACERECT;
 #endif
-        CHECKF(GetVideoSurface(out hVSurface, destSurface));
+        CHECKF(GetVideoSurface(out HVSURFACE hVSurface, destSurface));
 
         if (X1 < 0)
         {
@@ -1808,7 +1804,7 @@ public class SDL2VideoManager : IVideoManager
         area = new(X1, Y1, X2, Y2);
 
         // Lock video surface
-        pBuffer = LockVideoSurface(destSurface, out uiPitch);
+        pBuffer = LockVideoSurface(destSurface, out int uiPitch);
         //UnLockVideoSurface( uiDestVSurface );
 
 
@@ -1859,12 +1855,11 @@ public class SDL2VideoManager : IVideoManager
 
     public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, int srcX, int srcY, int width, int height)
     {
-        int uiDestPitchBYTES, uiSrcPitchBYTES;
         Image<Rgba32> pDestBuf, pSrcBuf;
         bool fRetVal;
 
-        pDestBuf = LockVideoSurface(dstBuffer, out uiDestPitchBYTES);
-        pSrcBuf = LockVideoSurface(srcBuffer, out uiSrcPitchBYTES);
+        pDestBuf = LockVideoSurface(dstBuffer, out int uiDestPitchBYTES);
+        pSrcBuf = LockVideoSurface(srcBuffer, out int uiSrcPitchBYTES);
 
         fRetVal = Blt16BPPTo16BPP(
             pDestBuf,
@@ -2035,14 +2030,12 @@ public class SDL2VideoManager : IVideoManager
     public bool BltVideoObjectFromIndex(SurfaceType uiDestVSurface, int uiSrcVObject, int usRegionIndex, int iDestX, int iDestY, VO_BLT fBltFlags, blt_fx? pBltFx)
     {
         Image<Rgba32> pBuffer;
-        int uiPitch;
-        HVOBJECT hSrcVObject;
 
         // Lock video surface
-        pBuffer = LockVideoSurface(uiDestVSurface, out uiPitch);
+        pBuffer = LockVideoSurface(uiDestVSurface, out int uiPitch);
 
         // Get video object
-        if (!GetVideoObject(out hSrcVObject, uiSrcVObject))
+        if (!GetVideoObject(out HVOBJECT hSrcVObject, uiSrcVObject))
         {
             // UnLockVideoSurface(uiDestVSurface);
             return false;

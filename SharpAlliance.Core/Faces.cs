@@ -410,10 +410,6 @@ public class Faces
 
     void SetAutoFaceActive(SurfaceType uiDisplayBuffer, SurfaceType uiRestoreBuffer, int iFaceIndex, int usFaceX, int usFaceY)
     {
-        int usEyesX;
-        int usEyesY;
-        int usMouthX;
-        int usMouthY;
         FACETYPE? pFace;
 
         // Check face index
@@ -421,7 +417,7 @@ public class Faces
 
         pFace = gFacesData[iFaceIndex];
 
-        GetFaceRelativeCoordinates(pFace, out usEyesX, out usEyesY, out usMouthX, out usMouthY);
+        GetFaceRelativeCoordinates(pFace, out int usEyesX, out int usEyesY, out int usMouthX, out int usMouthY);
 
         InternalSetAutoFaceActive(uiDisplayBuffer, uiRestoreBuffer, iFaceIndex, usFaceX, usFaceY, usEyesX, usEyesY, usMouthX, usMouthY);
 
@@ -1086,17 +1082,15 @@ public class Faces
 
     private static void DoRightIcon(SurfaceType uiRenderBuffer, FACETYPE? pFace, int sFaceX, int sFaceY, int bNumIcons, int sIconIndex)
     {
-        int sIconX, sIconY;
 
         // Find X, y for placement
-        GetXYForRightIconPlacement(pFace, sIconIndex, sFaceX, sFaceY, out sIconX, out sIconY, bNumIcons);
+        GetXYForRightIconPlacement(pFace, sIconIndex, sFaceX, sFaceY, out int sIconX, out int sIconY, bNumIcons);
         //        BltVideoObjectFromIndex(uiRenderBuffer, guiPORTRAITICONS, sIconIndex, sIconX, sIconY, VO_BLT.SRCTRANSPARENCY, null);
     }
 
 
     public void HandleRenderFaceAdjustments(FACETYPE? pFace, bool fDisplayBuffer, bool fUseExternBuffer, SurfaceType uiBuffer, int sFaceX, int sFaceY, int usEyesX, int usEyesY)
     {
-        int sIconX, sIconY;
         int sIconIndex = -1;
         bool fDoIcon = false;
         SurfaceType uiRenderBuffer;
@@ -1388,7 +1382,7 @@ public class Faces
             if (fDoIcon)
             {
                 // Find X, y for placement
-                GetXYForIconPlacement(pFace, sIconIndex, sFaceX, sFaceY, out sIconX, out sIconY);
+                GetXYForIconPlacement(pFace, sIconIndex, sFaceX, sFaceY, out int sIconX, out int sIconY);
                 //                BltVideoObjectFromIndex(uiRenderBuffer, guiPORTRAITICONS, sIconIndex, sIconX, sIconY, VO_BLT.SRCTRANSPARENCY, null);
 
                 // ATE: Show numbers only in mapscreen
@@ -1491,10 +1485,6 @@ public class Faces
 
     public bool ExternRenderFace(SurfaceType uiBuffer, int iFaceIndex, int sX, int sY)
     {
-        int usEyesX;
-        int usEyesY;
-        int usMouthX;
-        int usMouthY;
         FACETYPE? pFace;
 
         // Check face index
@@ -1516,7 +1506,7 @@ public class Faces
         // Blit face to save buffer!
         //        BltVideoObjectFromIndex(uiBuffer, pFace.uiVideoObject, 0, sX, sY, VO_BLT.SRCTRANSPARENCY, null);
 
-        GetFaceRelativeCoordinates(pFace, out usEyesX, out usEyesY, out usMouthX, out usMouthY);
+        GetFaceRelativeCoordinates(pFace, out int usEyesX, out int usEyesY, out int usMouthX, out int usMouthY);
 
         HandleRenderFaceAdjustments(pFace, false, true, uiBuffer, sX, sY, (int)(sX + usEyesX), (int)(sY + usEyesY));
 
@@ -1550,7 +1540,7 @@ public class Faces
                 else
                 {
                     //if (pFace.sEyeFrame && Talk.talking && Talk.expression != DYING)
-                    ///    pFace.sEyeFrame = 3;
+                    //    pFace.sEyeFrame = 3;
                     //else
                     pFace.sEyeFrame = 1;
                 }

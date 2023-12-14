@@ -104,13 +104,10 @@ public class MercTextBox
         VSURFACE_DESC vs_desc;
         int usStringPixLength;
         Rectangle DestRect;
-        HVSURFACE hSrcVSurface;
         int uiDestPitchBYTES;
         int uiSrcPitchBYTES;
         Image<Rgba32> pDestBuf;
         Image<Rgba32> pSrcBuf;
-        FontColor ubFontColor;
-        FontShadow ubFontShadowColor;
         Rgba32 usColorVal;
         int usLoopEnd;
         int sDispTextXPos;
@@ -277,7 +274,7 @@ public class MercTextBox
         }
         else
         {
-            if (!video.GetVideoSurface(out hSrcVSurface, pPopUpTextBox.uiMercTextPopUpBackground))
+            if (!video.GetVideoSurface(out HVSURFACE hSrcVSurface, pPopUpTextBox.uiMercTextPopUpBackground))
             {
                 //AssertMsg(0, "Failed to GetVideoSurface for PrepareMercPopupBox.  VSurfaceID:  %d",
                 //    pPopUpTextBox.uiMercTextPopUpBackground);
@@ -333,7 +330,7 @@ public class MercTextBox
         }
 
         //Get the font and shadow colors
-        GetMercPopupBoxFontColor(ubBackgroundIndex, out ubFontColor, out ubFontShadowColor);
+        GetMercPopupBoxFontColor(ubBackgroundIndex, out FontColor ubFontColor, out FontShadow ubFontShadowColor);
 
         FontSubSystem.SetFontShadow(ubFontShadowColor);
         FontSubSystem.SetFontDestBuffer(pPopUpTextBox.uiSourceBufferIndex, 0, 0, usWidth, usHeight, false);

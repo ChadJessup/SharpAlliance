@@ -23,7 +23,6 @@ public class BobbyR
     bool EnterBobbyR()
     {
         //VOBJECT_DESC VObjectDesc;
-        string imageFile;
         int i;
 
         // an array of mouse regions for the bobbies signs.  Top Left corner, bottom right corner
@@ -55,7 +54,7 @@ public class BobbyR
 
         // load the Bobbyname graphic and add it
         //
-        MultilanguageGraphicUtils.GetMLGFilename(out imageFile, MLG.BOBBYNAME);
+        MultilanguageGraphicUtils.GetMLGFilename(out string imageFile, MLG.BOBBYNAME);
         this.video.GetVideoObject(imageFile, out guiBobbyName);
 
         // load the plaque graphic and add it
@@ -190,8 +189,7 @@ public class BobbyR
             //	ShadowText( FRAME_BUFFER, BobbyRaysFrontText[BOBBYR_ADVERTISMENT_1], BOBBIES_SENTENCE_FONT, BOBBIES_FIRST_SENTENCE_X, BOBBIES_FIRST_SENTENCE_Y );
             FontSubSystem.DrawTextToScreen(
                 BobbyRaysFrontText[(int)BOBBYR.ADVERTISMENT_1],
-                BOBBIES_FIRST_SENTENCE_X,
-                BOBBIES_FIRST_SENTENCE_Y,
+                new(BOBBIES_FIRST_SENTENCE_X, BOBBIES_FIRST_SENTENCE_Y),
                 BOBBIES_FIRST_SENTENCE_WIDTH,
                 BOBBIES_SENTENCE_FONT,
                 BOBBIES_SENTENCE_COLOR,
@@ -199,7 +197,14 @@ public class BobbyR
                 TextJustifies.CENTER_JUSTIFIED | TextJustifies.TEXT_SHADOWED);
 
             //Bobbys second sentence
-            FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.ADVERTISMENT_2], BOBBIES_2ND_SENTENCE_X, BOBBIES_2ND_SENTENCE_Y, BOBBIES_2ND_SENTENCE_WIDTH, BOBBIES_SENTENCE_FONT, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.TEXT_SHADOWED);
+            FontSubSystem.DrawTextToScreen(
+                BobbyRaysFrontText[(int)BOBBYR.ADVERTISMENT_2],
+                new(BOBBIES_2ND_SENTENCE_X, BOBBIES_2ND_SENTENCE_Y),
+                BOBBIES_2ND_SENTENCE_WIDTH,
+                BOBBIES_SENTENCE_FONT, BOBBIES_SENTENCE_COLOR,
+                BOBBIES_SIGN_BACKCOLOR,
+                TextJustifies.CENTER_JUSTIFIED | TextJustifies.TEXT_SHADOWED);
+
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         }
 
@@ -231,7 +236,7 @@ public class BobbyR
         {
             //Bobbys Third sentence
             FontSubSystem.SetFontShadow(BOBBIES_SENTENCE_BACKGROUNDCOLOR);
-            FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.ADVERTISMENT_3], BOBBIES_3RD_SENTENCE_X, BOBBIES_3RD_SENTENCE_Y, BOBBIES_3RD_SENTENCE_WIDTH, BOBBIES_SENTENCE_FONT, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.TEXT_SHADOWED);
+            FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.ADVERTISMENT_3], new(BOBBIES_3RD_SENTENCE_X, BOBBIES_3RD_SENTENCE_Y), BOBBIES_3RD_SENTENCE_WIDTH, BOBBIES_SENTENCE_FONT, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.TEXT_SHADOWED);
             FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         }
 
@@ -409,7 +414,7 @@ public class BobbyR
             VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, VO_BLT.SRCTRANSPARENCY, null);
             VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, usCount, BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, VO_BLT.SRCTRANSPARENCY, null);
 
-            FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.UNDER_CONSTRUCTION], BOBBYR_UNDER_CONSTRUCTION_TEXT_X, BOBBYR_UNDER_CONSTRUCTION_TEXT_Y, BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH, FontStyle.FONT16ARIAL, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.INVALIDATE_TEXT);
+            FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.UNDER_CONSTRUCTION], new(BOBBYR_UNDER_CONSTRUCTION_TEXT_X, BOBBYR_UNDER_CONSTRUCTION_TEXT_Y), BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH, FontStyle.FONT16ARIAL, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.INVALIDATE_TEXT);
 
             video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
             video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION1_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));

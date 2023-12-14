@@ -1686,10 +1686,9 @@ public class OppList
                                 case NPCID.ELDIN:
                                     if (pSoldier.IsNeutral)
                                     {
-                                        int ubRoom = 0;
                                         // if player is in behind the ropes of the museum display
                                         // or if alarm has gone off (status red)
-                                        RenderFun.InARoom(pOpponent.sGridNo, out ubRoom);
+                                        RenderFun.InARoom(pOpponent.sGridNo, out int ubRoom);
 
                                         if ((Facts.CheckFact(FACT.MUSEUM_OPEN, 0) == false && ubRoom >= 22 && ubRoom <= 41) || Facts.CheckFact(FACT.MUSEUM_ALARM_WENT_OFF, 0) || (ubRoom == 39 || ubRoom == 40) || (ItemSubSystem.FindObj(pOpponent, Items.CHALICE) != NO_SLOT))
                                         {
@@ -1803,11 +1802,10 @@ public class OppList
                             }
                             else
                             {
-                                int ubRoom;
 
                                 // JA2 Gold: only go hostile if see player IN guard room
                                 //if ( InARoom( pOpponent.sGridNo, &ubRoom ) && IN_BROTHEL( ubRoom ) && ( gMercProfiles[ MADAME ].bNPCData == 0 || IN_BROTHEL_GUARD_ROOM( ubRoom ) ) )
-                                if (RenderFun.InARoom(pOpponent.sGridNo, out ubRoom) && IN_BROTHEL_GUARD_ROOM(ubRoom))
+                                if (RenderFun.InARoom(pOpponent.sGridNo, out int ubRoom) && IN_BROTHEL_GUARD_ROOM(ubRoom))
                                 {
                                     // unauthorized!
                                     //                                    MakeCivHostile(pSoldier, 2);
@@ -2858,7 +2856,7 @@ public class OppList
             if (pSoldier.bTeam == gbPlayerNum)
             {
                 // STOP IF WE WERE MOVING....
-                /// Speek up!
+                // Speek up!
                 if (bNumReRevealed > 0 && bNumNewEnemies == 0)
                 {
                     //                    DoMercBattleSound(pSoldier, BATTLE_SOUND.CURSE1);
@@ -3204,7 +3202,6 @@ public class OppList
 
     void DebugSoldierPage1()
     {
-        SOLDIERTYPE? pSoldier;
         int usSoldierIndex = 0;
         int uiMercFlags;
         int usMapPos;
@@ -3213,7 +3210,7 @@ public class OppList
         //        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
-            Overhead.GetSoldier(out pSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out SOLDIERTYPE? pSoldier, usSoldierIndex);
 
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG SOLDIER PAGE ONE, GRIDNO %d", pSoldier.sGridNo);
@@ -3387,7 +3384,6 @@ public class OppList
 
     void DebugSoldierPage2()
     {
-        SOLDIERTYPE? pSoldier;
         int usSoldierIndex = 0;
         int uiMercFlags;
         int usMapPos;
@@ -3398,7 +3394,7 @@ public class OppList
 //        if (FindSoldierFromMouse(out usSoldierIndex, out uiMercFlags))
         {
             // Get Soldier
-            Overhead.GetSoldier(out pSoldier, usSoldierIndex);
+            Overhead.GetSoldier(out SOLDIERTYPE? pSoldier, usSoldierIndex);
 
             FontSubSystem.SetFont(FontStyle.LARGEFONT1);
             gprintf(0, 0, "DEBUG SOLDIER PAGE TWO, GRIDNO %d", pSoldier.sGridNo);

@@ -81,7 +81,6 @@ public class WorldManager
     {
         LEVELNODE? pStruct = null;
         LEVELNODE? pOldStruct = null;
-        TileTypeDefines fTileType;
         TileIndexes usIndex;
         bool fRetVal = false;
 
@@ -95,7 +94,7 @@ public class WorldManager
             if (pStruct.usIndex != TileIndexes.NO_TILE)
             {
 
-                TileDefine.GetTileType(pStruct.usIndex, out fTileType);
+                TileDefine.GetTileType(pStruct.usIndex, out TileTypeDefines fTileType);
 
                 // Advance to next
                 pOldStruct = pStruct;
@@ -125,11 +124,10 @@ public class WorldManager
     public static bool AddObjectToHead(int iMapIndex, TileIndexes usIndex)
     {
         LEVELNODE? pObject = null;
-        LEVELNODE? pNextObject = null;
 
         pObject = gpWorldLevelData[iMapIndex].pObjectHead;
 
-        CHECKF(CreateLevelNode(out pNextObject) != false);
+        CHECKF(CreateLevelNode(out LEVELNODE? pNextObject) != false);
 
         pNextObject.pNext = pObject;
         pNextObject.usIndex = usIndex;
@@ -152,7 +150,6 @@ public class WorldManager
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pOldObject = null;
-        TileTypeDefines fTileType;
 
         pObject = gpWorldLevelData[iMapIndex].pObjectHead;
 
@@ -166,7 +163,7 @@ public class WorldManager
 
             if (pOldObject.usIndex != TileIndexes.NO_TILE && pOldObject.usIndex < NUMBEROFTILES)
             {
-                TileDefine.GetTileType(pOldObject.usIndex, out fTileType);
+                TileDefine.GetTileType(pOldObject.usIndex, out TileTypeDefines fTileType);
 
                 if (fTileType >= fStartType && fTileType <= fEndType)
                 {
@@ -187,12 +184,11 @@ public class WorldManager
     public static bool AddStructToHead(int iMapIndex, TileIndexes usIndex)
     {
         LEVELNODE? pStruct = null;
-        LEVELNODE? pNextStruct = null;
         DB_STRUCTURE? pDBStructure;
 
         pStruct = gpWorldLevelData[iMapIndex].pStructHead;
 
-        CHECKF(CreateLevelNode(out pNextStruct) != false);
+        CHECKF(CreateLevelNode(out LEVELNODE? pNextStruct) != false);
 
         if (usIndex < NUMBEROFTILES)
         {
@@ -253,12 +249,11 @@ public class WorldManager
     public static bool AddShadowToHead(int iMapIndex, TileIndexes usIndex)
     {
         LEVELNODE? pShadow;
-        LEVELNODE? pNextShadow = null;
 
         pShadow = gpWorldLevelData[iMapIndex].pShadowHead;
 
         // Allocate head
-        CHECKF(CreateLevelNode(out pNextShadow) != false);
+        CHECKF(CreateLevelNode(out LEVELNODE? pNextShadow) != false);
         pNextShadow.pNext = pShadow;
         pNextShadow.usIndex = usIndex;
 
@@ -321,25 +316,22 @@ public class WorldManager
     public static bool AddWallToStructLayer(int iMapIndex, TileIndexes usIndex, bool fReplace)
     {
         LEVELNODE? pStruct = null;
-        WallOrientation usCheckWallOrient;
-        WallOrientation usWallOrientation;
         bool fInsertFound = false;
         bool fRoofFound = false;
         int ubRoofLevel = 0;
-        TileTypeDefines uiCheckType;
         int ubLevel = 0;
 
         pStruct = gpWorldLevelData[iMapIndex].pStructHead;
 
 
         // Get orientation of peice we want to add
-        TileDefine.GetWallOrientation(usIndex, out usWallOrientation);
+        TileDefine.GetWallOrientation(usIndex, out WallOrientation usWallOrientation);
 
         // Look through all objects and Search for orientation
         while (pStruct != null)
         {
 
-            TileDefine.GetWallOrientation(pStruct.usIndex, out usCheckWallOrient);
+            TileDefine.GetWallOrientation(pStruct.usIndex, out WallOrientation usCheckWallOrient);
             //OLD CASE 
             //if ( usCheckWallOrient > usWallOrientation )
             //Kris:
@@ -356,7 +348,7 @@ public class WorldManager
                 }
             }
 
-            TileDefine.GetTileType(pStruct.usIndex, out uiCheckType);
+            TileDefine.GetTileType(pStruct.usIndex, out TileTypeDefines uiCheckType);
 
             //		if ( uiCheckType >= FIRSTFLOOR && uiCheckType <= LASTFLOOR )
             if (uiCheckType >= TileTypeDefines.FIRSTROOF && uiCheckType <= LASTROOF)
@@ -422,7 +414,6 @@ public class WorldManager
     public static bool InsertStructIndex(int iMapIndex, TileIndexes usIndex, int ubLevel)
     {
         LEVELNODE? pStruct = null;
-        LEVELNODE? pNextStruct = null;
         int level = 0;
         bool CanInsert = false;
 
@@ -436,7 +427,7 @@ public class WorldManager
 
 
         // Allocate memory for new item
-        CHECKF(CreateLevelNode(out pNextStruct) != false);
+        CHECKF(CreateLevelNode(out LEVELNODE? pNextStruct) != false);
 
         pNextStruct.usIndex = usIndex;
 
@@ -548,14 +539,13 @@ public class WorldManager
     public static bool FloorAtGridNo(int iMapIndex)
     {
         LEVELNODE? pLand;
-        TileTypeDefines uiTileType;
         pLand = gpWorldLevelData[iMapIndex].pLandHead;
         // Look through all objects and Search for type
         while (pLand is not null)
         {
             if (pLand.usIndex != TileIndexes.NO_TILE)
             {
-                TileDefine.GetTileType(pLand.usIndex, out uiTileType);
+                TileDefine.GetTileType(pLand.usIndex, out TileTypeDefines uiTileType);
                 if (uiTileType >= TileTypeDefines.FIRSTFLOOR && uiTileType <= LASTFLOOR)
                 {
                     return true;
@@ -680,7 +670,6 @@ public class WorldManager
     {
         LEVELNODE? pOnRoof = null;
         LEVELNODE? pOldOnRoof = null;
-        TileTypeDefines fTileType;
         bool fRetVal = false;
 
         pOnRoof = Globals.gpWorldLevelData[iMapIndex].pOnRoofHead;
@@ -691,7 +680,7 @@ public class WorldManager
         {
             if (pOnRoof.usIndex != TileIndexes.NO_TILE)
             {
-                TileDefine.GetTileType(pOnRoof.usIndex, out fTileType);
+                TileDefine.GetTileType(pOnRoof.usIndex, out TileTypeDefines fTileType);
 
                 // Advance to next
                 pOldOnRoof = pOnRoof;
@@ -842,7 +831,6 @@ public class WorldManager
     {
         LEVELNODE? pTopmost = null;
         LEVELNODE? pOldTopmost = null;
-        TileTypeDefines fTileType;
         bool fRetVal = false;
 
         pTopmost = Globals.gpWorldLevelData[iMapIndex].pTopmostHead;
@@ -857,7 +845,7 @@ public class WorldManager
 
             if (pOldTopmost.usIndex != TileIndexes.NO_TILE && pOldTopmost.usIndex < TileIndexes.NUMBEROFTILES)
             {
-                TileDefine.GetTileType(pOldTopmost.usIndex, out fTileType);
+                TileDefine.GetTileType(pOldTopmost.usIndex, out TileTypeDefines fTileType);
 
                 if (fTileType >= fStartType && fTileType <= fEndType)
                 {
@@ -917,7 +905,6 @@ public class WorldManager
     {
         LEVELNODE? pObject = null;
         LEVELNODE? pOldObject = null;
-        TileTypeDefines fTileType;
         bool fRetVal = false;
 
         pObject = Globals.gpWorldLevelData[iMapIndex].pObjectHead;
@@ -933,7 +920,7 @@ public class WorldManager
             if (pOldObject.usIndex != TileIndexes.NO_TILE && pOldObject.usIndex < TileIndexes.NUMBEROFTILES)
             {
 
-                TileDefine.GetTileType(pOldObject.usIndex, out fTileType);
+                TileDefine.GetTileType(pOldObject.usIndex, out TileTypeDefines fTileType);
 
                 if (fTileType >= fStartType && fTileType <= fEndType)
                 {
@@ -1164,11 +1151,10 @@ public class WorldManager
     public bool AddOnRoofToHead(int iMapIndex, TileIndexes usIndex)
     {
         LEVELNODE? pOnRoof = null;
-        LEVELNODE? pNextOnRoof = null;
 
         pOnRoof = Globals.gpWorldLevelData[iMapIndex].pOnRoofHead;
 
-        if (CreateLevelNode(out pNextOnRoof) == false)
+        if (CreateLevelNode(out LEVELNODE? pNextOnRoof) == false)
         {
 
         }

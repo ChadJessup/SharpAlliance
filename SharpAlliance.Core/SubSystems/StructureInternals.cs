@@ -129,7 +129,6 @@ public class StructureInternals
         puiStructureDataSize = 0;
         Stream hInput;
         STRUCTURE_FILE_HEADER Header = new();
-        int uiBytesRead;
         int uiDataSize;
         bool fOk;
 
@@ -148,7 +147,7 @@ public class StructureInternals
         }
 
         uint STRUCTURE_FILE_HEADER_SIZE = 16;
-        fOk = files.FileRead<STRUCTURE_FILE_HEADER>(hInput, ref Header, sizeof(STRUCTURE_FILE_HEADER), out uiBytesRead);
+        fOk = files.FileRead<STRUCTURE_FILE_HEADER>(hInput, ref Header, sizeof(STRUCTURE_FILE_HEADER), out int uiBytesRead);
         var szId = new string(new[] { (char)Header.szId1, (char)Header.szId2, (char)Header.szId3, (char)Header.szId4 });
         if (!fOk || uiBytesRead != STRUCTURE_FILE_HEADER_SIZE
             || !szId.Equals(STRUCTURE_FILE_ID)
@@ -307,11 +306,10 @@ public class StructureInternals
 
     public STRUCTURE_FILE_REF? LoadStructureFile(string szFileName)
     { // NB should be passed in expected number of structures so we can check equality
-        int uiDataSize = 0;
         bool fOk;
         STRUCTURE_FILE_REF pFileRef = new();
 
-        fOk = LoadStructureData(szFileName, pFileRef, out uiDataSize);
+        fOk = LoadStructureData(szFileName, pFileRef, out int uiDataSize);
         if (!fOk)
         {
             MemFree(pFileRef);
@@ -1452,15 +1450,14 @@ public class StructureInternals
         STRUCTURE? pStructure;
         STRUCTURE? pBase;
         //LEVELNODE *		pLand;
-        int sGridNo;
         STRUCTURE_ON sDesiredLevel;
-        int bHeight, bDens0, bDens1, bDens2, bDens3;
+        int bHeight;
         int bStructures;
 
         FontSubSystem.SetFont(FontStyle.LARGEFONT1);
 
         gprintf(0, 0, "DEBUG STRUCTURES PAGE 1 OF 1");
-        if (IsometricUtils.GetMouseMapPos(out sGridNo) == false)
+        if (IsometricUtils.GetMouseMapPos(out int sGridNo) == false)
         {
             return;
             //gprintf( 0, LINE_HEIGHT * 1, "No structure selected" );
@@ -1547,7 +1544,7 @@ public class StructureInternals
             bHeight = StructureHeight(pStructure);
             pBase = FindBaseStructure(pStructure);
             gprintf(0, LINE_HEIGHT * 2, "Structure height %d, cube offset %d, armour %d, HP %d", bHeight, pStructure.sCubeOffset, gubMaterialArmour[(MATERIAL)pStructure.pDBStructureRef.pDBStructure.ubArmour], pBase.ubHitPoints);
-            if (StructureDensity(pStructure, out bDens0, out bDens1, out bDens2, out bDens3) == true)
+            if (StructureDensity(pStructure, out int bDens0, out int bDens1, out int bDens2, out int bDens3) == true)
             {
                 gprintf(0, LINE_HEIGHT * 3, "Structure fill %d%%/%d%%/%d%%/%d%% density %d", bDens0, bDens1, bDens2, bDens3,
                     pStructure.pDBStructureRef.pDBStructure.ubDensity);

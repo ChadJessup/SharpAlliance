@@ -322,10 +322,9 @@ public class TacticalSaveSubSystem : IDisposable
 
     public static void GetMapTempFileName(SF uiType, string pMapName, int sMapX, MAP_ROW sMapY, int bMapZ)
     {
-        string zTempName;
 
         //Convert the current sector location into a file name
-        StrategicMap.GetMapFileName(sMapX, sMapY, bMapZ, out zTempName, false, false);
+        StrategicMap.GetMapFileName(sMapX, sMapY, bMapZ, out string zTempName, false, false);
 
         switch (uiType)
         {

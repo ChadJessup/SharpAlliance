@@ -74,13 +74,12 @@ public class IsometricUtils
 
     public static int GetRangeInCellCoordsFromGridNoDiff(int sGridNo1, int sGridNo2)
     {
-        int sXPos, sYPos, sXPos2, sYPos2;
 
         // Convert our grid-not into an XY
-        ConvertGridNoToXY(sGridNo1, out sXPos, out sYPos);
+        ConvertGridNoToXY(sGridNo1, out int sXPos, out int sYPos);
 
         // Convert our grid-not into an XY
-        ConvertGridNoToXY(sGridNo2, out sXPos2, out sYPos2);
+        ConvertGridNoToXY(sGridNo2, out int sXPos2, out int sYPos2);
 
         return ((int)(Math.Sqrt((sXPos2 - sXPos) * (sXPos2 - sXPos) + (sYPos2 - sYPos) * (sYPos2 - sYPos))) * CELL_X_SIZE);
     }
@@ -88,13 +87,12 @@ public class IsometricUtils
     public static int GetRangeFromGridNoDiff(int sGridNo1, int sGridNo2)
     {
         int uiDist;
-        int sXPos, sYPos, sXPos2, sYPos2;
 
         // Convert our grid-not into an XY
-        ConvertGridNoToXY(sGridNo1, out sXPos, out sYPos);
+        ConvertGridNoToXY(sGridNo1, out int sXPos, out int sYPos);
 
         // Convert our grid-not into an XY
-        ConvertGridNoToXY(sGridNo2, out sXPos2, out sYPos2);
+        ConvertGridNoToXY(sGridNo2, out int sXPos2, out int sYPos2);
 
         uiDist = (int)Math.Sqrt((sXPos2 - sXPos) * (sXPos2 - sXPos) + (sYPos2 - sYPos) * (sYPos2 - sYPos));
 
@@ -184,7 +182,6 @@ public class IsometricUtils
 
     public static bool GetMouseMapPos(out int psMapPos)
     {
-        int sWorldX, sWorldY;
 
         // Check if this is the same frame as before, return already calculated value if so!
         if (uiOldFrameNumber == Globals.guiGameCycleCounter && !Globals.guiForceRefreshMousePositionCalculation)
@@ -203,7 +200,7 @@ public class IsometricUtils
         Globals.guiForceRefreshMousePositionCalculation = false;
 
 
-        if (GetMouseXY(out sWorldX, out sWorldY))
+        if (GetMouseXY(out int sWorldX, out int sWorldY))
         {
             psMapPos = MAPROWCOLTOPOS(sWorldY, sWorldX);
             sSameCursorPos = psMapPos;
@@ -350,9 +347,8 @@ public class IsometricUtils
 
     public static bool GetMouseXY(out int psMouseX, out int psMouseY)
     {
-        int sWorldX, sWorldY;
 
-        if (!GetMouseWorldCoords(out sWorldX, out sWorldY))
+        if (!GetMouseWorldCoords(out int sWorldX, out int sWorldY))
         {
             (psMouseX) = 0;
             (psMouseY) = 0;
@@ -369,9 +365,8 @@ public class IsometricUtils
 
     public static bool GetMouseXYWithRemainder(out int psMouseX, out int psMouseY, out int psCellX, out int psCellY)
     {
-        int sWorldX, sWorldY;
 
-        if (!GetMouseWorldCoords(out sWorldX, out sWorldY))
+        if (!GetMouseWorldCoords(out int sWorldX, out int sWorldY))
         {
             psMouseX = 0;
             psMouseY = 0;
@@ -394,7 +389,6 @@ public class IsometricUtils
     public static bool GetMouseWorldCoords(out int psMouseX, out int psMouseY)
     {
         int sOffsetX, sOffsetY;
-        int sTempPosX_W, sTempPosY_W;
         int sStartPointX_W, sStartPointY_W;
 
         // Convert mouse screen coords into offset from center
@@ -415,7 +409,7 @@ public class IsometricUtils
         }
 
 
-        FromScreenToCellCoordinates(sOffsetX, sOffsetY, out sTempPosX_W, out sTempPosY_W);
+        FromScreenToCellCoordinates(sOffsetX, sOffsetY, out int sTempPosX_W, out int sTempPosY_W);
 
         // World start point is Render center plus this distance
         sStartPointX_W = Globals.gsRenderCenterX + sTempPosX_W;
@@ -445,10 +439,9 @@ public class IsometricUtils
 
     public static bool GetMouseWorldCoordsInCenter(out int psMouseX, out int psMouseY)
     {
-        int sMouseX, sMouseY;
 
         // Get grid position
-        if (!GetMouseXY(out sMouseX, out sMouseY))
+        if (!GetMouseXY(out int sMouseX, out int sMouseY))
         {
             psMouseX = 0;
             psMouseY = 0;

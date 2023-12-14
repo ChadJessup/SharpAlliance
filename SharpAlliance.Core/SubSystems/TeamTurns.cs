@@ -143,7 +143,7 @@ public class TeamTurns
         guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
 
         // ATE: Reset killed on attack variable.. this is because sometimes timing is such
-        /// that a baddie can die and still maintain it's attacker ID
+        // that a baddie can die and still maintain it's attacker ID
         Globals.gTacticalStatus.fKilledEnemyOnAttack = false;
 
         HandleUI.HandleTacticalUI();
@@ -879,7 +879,7 @@ public class TeamTurns
                 else
                 {
                     // Signal UI done enemy's turn
-                    /// ATE: This used to be ablow so it would get done for
+                    // ATE: This used to be ablow so it would get done for
                     // both hidden interrupts as well - NOT good because
                     // hidden interrupts should leave it locked if it was already...
                     guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
@@ -1857,10 +1857,9 @@ public class TeamTurns
 
     bool SaveTeamTurnsToTheSaveGameFile(Stream hFile)
     {
-        int uiNumBytesWritten;
 
         //Save the gubTurn Order Array
-        this.files.FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesWritten);
+        this.files.FileWrite(hFile, gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out int uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * MAXMERCS)
         {
             return (false);
@@ -1890,11 +1889,10 @@ public class TeamTurns
 
     bool LoadTeamTurnsFromTheSavedGameFile(Stream hFile)
     {
-        int uiNumBytesRead;
         TEAM_TURN_SAVE_STRUCT TeamTurnStruct = new();
 
         //Load the gubTurn Order Array
-        this.files.FileRead(hFile, ref gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out uiNumBytesRead);
+        this.files.FileRead(hFile, ref gubOutOfTurnOrder, sizeof(int) * MAXMERCS, out int uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int) * MAXMERCS)
         {
             return (false);

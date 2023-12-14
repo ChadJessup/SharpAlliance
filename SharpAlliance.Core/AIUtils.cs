@@ -142,8 +142,6 @@ public class AIUtils
 
     public static bool ConsiderProne(SOLDIERTYPE pSoldier)
     {
-        int sOpponentGridNo;
-        int bOpponentLevel;
         int iRange;
 
         if (pSoldier.bAIMorale >= MORALE.NORMAL)
@@ -151,7 +149,7 @@ public class AIUtils
             return (false);
         }
         // We don't want to go prone if there is a nearby enemy
-        ClosestKnownOpponent(pSoldier, out sOpponentGridNo, out bOpponentLevel);
+        ClosestKnownOpponent(pSoldier, out int sOpponentGridNo, out int bOpponentLevel);
         iRange = IsometricUtils.GetRangeFromGridNoDiff(pSoldier.sGridNo, sOpponentGridNo);
         if (iRange > 10)
         {
@@ -587,12 +585,12 @@ public class AIUtils
         bool[] fDirChecked = new bool[8];
         bool fRangeRestricted = false;
         int fFound = 0;
-        int usDest, usOrigin;
+        int usDest;
         SOLDIERTYPE pFriend;
 
 
         // obtain maximum roaming distance from soldier's origin
-        usMaxDist = RoamingRange(pSoldier, out usOrigin);
+        usMaxDist = RoamingRange(pSoldier, out int usOrigin);
 
         // if our movement range is restricted
 
@@ -725,13 +723,13 @@ public class AIUtils
     int RandDestWithinRange(SOLDIERTYPE pSoldier)
     {
         int sRandDest = NOWHERE;
-        int usOrigin, usMaxDist;
+        int usMaxDist;
         int ubTriesLeft;
         bool fLimited = false, fFound = false;
         int sMaxLeft, sMaxRight, sMaxUp, sMaxDown, sXRange, sYRange, sXOffset, sYOffset;
         int sOrigX, sOrigY;
         int sX, sY;
-        int ubRoom = 0, ubTempRoom;
+        int ubRoom = 0;
 
         sOrigX = sOrigY = -1;
         sMaxLeft = sMaxRight = sMaxUp = sMaxDown = sXRange = sYRange = -1;
@@ -748,7 +746,7 @@ public class AIUtils
             ubTriesLeft = 1;
         }
 
-        usMaxDist = RoamingRange(pSoldier, out usOrigin);
+        usMaxDist = RoamingRange(pSoldier, out int usOrigin);
 
         if (pSoldier.bOrders <= Orders.CLOSEPATROL && (pSoldier.bTeam == CIV_TEAM || pSoldier.ubProfile != NO_PROFILE))
         {
@@ -842,7 +840,7 @@ public class AIUtils
                     sRandDest = (int)PreRandom(GRIDSIZE);
                 }
 
-                if (ubRoom > 0 && RenderFun.InARoom(sRandDest, out ubTempRoom) && ubTempRoom != ubRoom)
+                if (ubRoom > 0 && RenderFun.InARoom(sRandDest, out int ubTempRoom) && ubTempRoom != ubRoom)
                 {
                     // outside of room available for patrol!
                     sRandDest = NOWHERE;
@@ -1569,8 +1567,8 @@ public class AIUtils
     {
         pfClimbingNecessary = false;
         int uiLoop;
-        int sPathCost, sClosestFriend = NOWHERE, sShortestPath = 1000, sClimbGridNo;
-        bool fClimbingNecessary, fClosestClimbingNecessary = false;
+        int sPathCost, sClosestFriend = NOWHERE, sShortestPath = 1000;
+        bool fClosestClimbingNecessary = false;
         SOLDIERTYPE? pFriend;
 
         // civilians don't really have any "friends", so they don't bother with this
@@ -1617,7 +1615,7 @@ public class AIUtils
             }
 
             // get the AP cost to go to this friend's gridno
-            sPathCost = EstimatePathCostToLocation(pSoldier, pFriend.sGridNo, pFriend.bLevel, true, out fClimbingNecessary, out sClimbGridNo);
+            sPathCost = EstimatePathCostToLocation(pSoldier, pFriend.sGridNo, pFriend.bLevel, true, out bool fClimbingNecessary, out int sClimbGridNo);
 
             // if we can get there
             if (sPathCost != 0)

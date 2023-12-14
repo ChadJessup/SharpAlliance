@@ -27,8 +27,6 @@ public class SaveLoadMap
     public static void AddObjectToMapTempFile(int uiMapIndex, TileIndexes usIndex)
     {
         MODIFY_MAP Map;
-        TileTypeDefines uiType;
-        int? usSubIndex;
 
         if (!gfApplyChangesToTempFile)
         {
@@ -40,8 +38,8 @@ public class SaveLoadMap
             return;
         }
 
-        TileDefine.GetTileType(usIndex, out uiType);
-        TileDefine.GetSubIndexFromTileIndex(usIndex, out usSubIndex);
+        TileDefine.GetTileType(usIndex, out TileTypeDefines uiType);
+        TileDefine.GetSubIndexFromTileIndex(usIndex, out int? usSubIndex);
 
         Map = new()
         {
@@ -111,8 +109,6 @@ public class SaveLoadMap
     public static void AddRemoveObjectToMapTempFile(int uiMapIndex, TileIndexes usIndex)
     {
         MODIFY_MAP Map;
-        TileTypeDefines uiType;
-        int? usSubIndex;
 
         if (!Globals.gfApplyChangesToTempFile)
         {
@@ -124,8 +120,8 @@ public class SaveLoadMap
             return;
         }
 
-        TileDefine.GetTileType(usIndex, out uiType);
-        TileDefine.GetSubIndexFromTileIndex(usIndex, out usSubIndex);
+        TileDefine.GetTileType(usIndex, out TileTypeDefines uiType);
+        TileDefine.GetSubIndexFromTileIndex(usIndex, out int? usSubIndex);
 
         //memset(&Map, 0, sizeof(MODIFY_MAP));
 

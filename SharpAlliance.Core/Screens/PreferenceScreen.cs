@@ -1013,7 +1013,7 @@ public class PreferenceScreen : IScreen
             //Confirm the Exit to the main menu screen
             DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmQuitToMainMenuMessageBoxCallBack);
 
-            ///		SetOptionsExitScreen( MAINMENU_SCREEN );
+            //		SetOptionsExitScreen( MAINMENU_SCREEN );
 
             video.InvalidateRegion(btn.MouseRegion.Bounds);
         }

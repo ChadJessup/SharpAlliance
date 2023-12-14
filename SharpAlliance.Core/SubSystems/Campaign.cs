@@ -583,10 +583,9 @@ public class Campaign
                 }
                 else
                 {
-                    string wTempString;
 
                     // tell player about it
-                    BuildStatChangeString(out wTempString, pSoldier.name, fChangeTypeIncrease, sPtsChanged, ubStat);
+                    BuildStatChangeString(out string wTempString, pSoldier.name, fChangeTypeIncrease, sPtsChanged, ubStat);
                     Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, wTempString);
                 }
 

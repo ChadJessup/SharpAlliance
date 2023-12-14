@@ -441,7 +441,6 @@ public class Emails
 
     void AddPreReadEmail(int iMessageOffset, int iMessageLength, EmailAddresses ubSender, uint iDate)
     {
-        string pSubject;
         //MessagePtr pMessageList;
         //MessagePtr pMessage;
         //string pMessageString[320];
@@ -450,7 +449,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pSubject, (uint)(640 * (iMessageOffset)), 640);
+        files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pSubject, (uint)(640 * (iMessageOffset)), 640);
 
         // add message to list
         AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, true, 0, 0);
@@ -4364,7 +4363,6 @@ public class Emails
 
 
         int iCounter = 0;
-        int sX = 0, sY = 0;
         string sString = string.Empty;
 
 
@@ -4391,7 +4389,7 @@ public class Emails
 
         FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
-        this.fonts.FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out sX, out sY);
+        this.fonts.FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out int sX, out int sY);
         mprintf(sX, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 2, sString);
 
 
@@ -4680,7 +4678,6 @@ public class Emails
         int iHeight = 0;
         RecordPtr pTempRecord;
         //	string pString[MAIL_STRING_SIZE/2 + 1];
-        string pString;
         int ubCnt;
 
 
@@ -4696,7 +4693,7 @@ public class Emails
         for (ubCnt = 0; ubCnt < ubNumberOfRecords; ubCnt++)
         {
             // read one record from email file
-            files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out pString, (uint)(MAIL_STRING_SIZE * usMessageId), MAIL_STRING_SIZE);
+            files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pString, (uint)(MAIL_STRING_SIZE * usMessageId), MAIL_STRING_SIZE);
 
             //Replace the $MERCNAME$ and $AMOUNT$ with the mercs name and the amountm if the string contains the keywords.
             ReplaceMercNameAndAmountWithProperData(pString, pMail);

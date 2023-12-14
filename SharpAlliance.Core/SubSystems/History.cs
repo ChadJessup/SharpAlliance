@@ -282,18 +282,17 @@ public class History
     void RenderHistoryBackGround()
     {
         // render generic background for history system
-        HVOBJECT? hHandle = null;
         int iCounter = 0;
 
         // get title bar object
-//        video.GetVideoObject(out hHandle, Globals.guiTITLE);
+//        HVOBJECT? hHandle = video.GetVideoObject(Globals.guiTITLE);
 
         // blt title bar to screen
-        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
 //        video.GetVideoObject(out hHandle, Globals.guiTOP);
-        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
+//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
 
         // display background for history list
         DisplayHistoryListBackground();
@@ -671,7 +670,6 @@ public class History
     void DisplayHistoryListHeaders()
     {
         // this procedure will display the headers to each column in History
-        int usX, usY;
 
         // font stuff
         FontSubSystem.SetFont(HISTORY_TEXT_FONT);
@@ -680,7 +678,7 @@ public class History
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
         // the date header
-        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out usX, out usY);
+        this.fonts.FindFontCenterCoordinates(RECORD_DATE_X + 5, 0, RECORD_DATE_WIDTH, 0, pHistoryHeaders[0], Globals.HISTORY_TEXT_FONT, out int usX, out int usY);
         mprintf(usX, RECORD_HEADER_Y, pHistoryHeaders[0]);
 
         // the date header
@@ -699,11 +697,10 @@ public class History
     void DisplayHistoryListBackground()
     {
         // this function will display the History list display background
-        HVOBJECT? hHandle;
         int iCounter = 0;
 
         // get shaded line object
-//        video.GetVideoObject(out hHandle, Globals.guiSHADELINE);
+//        video.GetVideoObject(out HVOBJECT? hHandle, Globals.guiSHADELINE);
         for (iCounter = 0; iCounter < 11; iCounter++)
         {
             // blt title bar to screen
@@ -711,7 +708,7 @@ public class History
         }
 
         // the long hortizontal line int he records list display region
-//      video.GetVideoObject(out hHandle, Globals.guiLONGLINE);
+//        video.GetVideoObject(out hHandle, Globals.guiLONGLINE);
 //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y), VO_BLT.SRCTRANSPARENCY, null);
 //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X + 9, (Globals.TOP_DIVLINE_Y + Globals.BOX_HEIGHT * 2 * 11), VO_BLT.SRCTRANSPARENCY, null);
 
@@ -725,7 +722,6 @@ public class History
         history? pTempHistory = pHistoryListHead;
         string sString;
         int iCounter = 0;
-        int usX, usY;
         int iBalance = 0;
         int sX = 0, sY = 0;
 
@@ -755,7 +751,7 @@ public class History
             }
             // get and write the date
             sString = wprintf("%d", (pCurHistory.uiDate / (24 * 60)));
-            this.fonts.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, HISTORY_TEXT_FONT, out usX, out usY);
+            this.fonts.FindFontCenterCoordinates(Globals.RECORD_DATE_X + 5, 0, Globals.RECORD_DATE_WIDTH, 0, sString, HISTORY_TEXT_FONT, out int usX, out int usY);
             mprintf(usX, Globals.RECORD_Y + (iCounter * (Globals.BOX_HEIGHT)) + 3, sString);
 
             // now the actual history text
@@ -1464,25 +1460,24 @@ public class History
 
 
         // open file
-//        hFileHandle = files.FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
+        //        hFileHandle = files.FileOpen(HISTORY_DATA_FILE, FILE_ACCESS_WRITE | FILE_OPEN_ALWAYS, false);
 
         // if no file exits, do nothing
-//        if (!hFileHandle)
-//        {
-//            return (false);
-//        }
+        //        if (!hFileHandle)
+        //        {
+        //            return (false);
+        //        }
 
         // go to the end
-//        if (files.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
-//        {
-//            // error
-//            files.FileClose(hFileHandle);
-//            return (false);
-//        }
+        //        if (files.FileSeek(hFileHandle, 0, FILE_SEEK_FROM_END) == false)
+        //        {
+        //            // error
+        //            files.FileClose(hFileHandle);
+        //            return (false);
+        //        }
 
         // now write date and amount, and code
-        var doncare = 0;
-        files.FileWrite(hFileHandle, (pHistoryList.ubCode), sizeof(int), out doncare);
+        files.FileWrite(hFileHandle, (pHistoryList.ubCode), sizeof(int), out int doncare);
         files.FileWrite(hFileHandle, (pHistoryList.ubSecondCode), sizeof(int), out doncare);
         files.FileWrite(hFileHandle, (pHistoryList.uiDate), sizeof(int), out doncare);
         files.FileWrite(hFileHandle, (pHistoryList.sSectorX), sizeof(int), out doncare);

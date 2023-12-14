@@ -19,15 +19,14 @@ public class LOS
 
     public static bool SoldierTo3DLocationLineOfSightTest(SOLDIERTYPE pStartSoldier, int sGridNo, int bLevel, int bCubeLevel, int ubTileSightLimit, int bAware)
     {
-        float dStartZPos, dEndZPos;
-        int sXPos, sYPos;
+        float dEndZPos;
         int ubTargetID;
         SOLDIERTYPE? pTarget;
         bool fOk;
 
         CHECKF(pStartSoldier);
 
-        fOk = CalculateSoldierZPos(pStartSoldier, POS.LOS_POS, out dStartZPos);
+        fOk = CalculateSoldierZPos(pStartSoldier, POS.LOS_POS, out float dStartZPos);
         CHECKF(fOk);
 
         if (bCubeLevel > 0)
@@ -50,7 +49,7 @@ public class LOS
             dEndZPos += CONVERT_PIXELS_TO_HEIGHTUNITS(gpWorldLevelData[sGridNo].sHeight);
         }
 
-        IsometricUtils.ConvertGridNoToXY(sGridNo, out sXPos, out sYPos);
+        IsometricUtils.ConvertGridNoToXY(sGridNo, out int sXPos, out int sYPos);
         sXPos = sXPos * CELL_X_SIZE + (CELL_X_SIZE / 2);
         sYPos = sYPos * CELL_Y_SIZE + (CELL_Y_SIZE / 2);
 
@@ -247,7 +246,7 @@ public class LOS
 
     public static bool SoldierToSoldierLineOfSightTest(SOLDIERTYPE pStartSoldier, SOLDIERTYPE pEndSoldier, int ubTileSightLimit, int bAware)
     {
-        float dStartZPos, dEndZPos;
+        float dEndZPos;
         bool fOk;
         bool fSmell;
         int bEffectiveCamo;
@@ -257,7 +256,7 @@ public class LOS
         // TO ADD: if in tear gas, reduce sight limit to 2 tiles
         CHECKF(pStartSoldier);
         CHECKF(pEndSoldier);
-        fOk = CalculateSoldierZPos(pStartSoldier, POS.LOS_POS, out dStartZPos);
+        fOk = CalculateSoldierZPos(pStartSoldier, POS.LOS_POS, out float dStartZPos);
         CHECKF(fOk);
 
         if (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.N)

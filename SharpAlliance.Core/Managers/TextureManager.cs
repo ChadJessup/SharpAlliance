@@ -170,8 +170,10 @@ public class TextureManager : ITextureManager
             return existingObj;
         }
 
-        HVOBJECT hVObject = new();
-        hVObject.Name = assetPath;
+        HVOBJECT hVObject = new()
+        {
+            Name = assetPath
+        };
 
         HIMAGE hImage;
         ETRLEData TempETRLEData = new();

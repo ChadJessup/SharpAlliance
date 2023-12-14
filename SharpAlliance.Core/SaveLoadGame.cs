@@ -80,7 +80,6 @@ public class SaveLoadGame
 
     bool SaveGame(int ubSaveGameID, string pGameDesc)
     {
-        int uiNumBytesWritten = 0;
         Stream hFile = Stream.Null;
         SAVED_GAME_HEADER SaveGameHeader;
         string zSaveGameName = string.Empty;// [512];
@@ -89,7 +88,7 @@ public class SaveLoadGame
         bool fPausedStateBeforeSaving = gfGamePaused;
         bool fLockPauseStateBeforeSaving = gfLockPauseState;
         int iSaveLoadGameMessageBoxID = -1;
-        int usPosX, usActualWidth, usActualHeight;
+        int usPosX;
         bool fWePausedIt = false;
 
 
@@ -113,7 +112,7 @@ public class SaveLoadGame
 
         //Place a message on the screen telling the user that we are saving the game
         iSaveLoadGameMessageBoxID = mercTextBox.PrepareMercPopupBox(iSaveLoadGameMessageBoxID, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER,
-            EnglishText.zSaveLoadText[(int)SLG.SAVING_GAME_MESSAGE], 300, 0, 0, 0, out usActualWidth, out usActualHeight);
+            EnglishText.zSaveLoadText[(int)SLG.SAVING_GAME_MESSAGE], 300, 0, 0, 0, out int usActualWidth, out int usActualHeight);
         usPosX = (640 - usActualWidth) / 2;
 
         mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, SurfaceType.FRAME_BUFFER);
@@ -312,7 +311,7 @@ public class SaveLoadGame
         //
 
 
-        this.files.FileWrite(hFile, SaveGameHeader, Marshal.SizeOf<SAVED_GAME_HEADER>(), out uiNumBytesWritten);
+        this.files.FileWrite(hFile, SaveGameHeader, Marshal.SizeOf<SAVED_GAME_HEADER>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<SAVED_GAME_HEADER>())
         {
             goto FAILED_TO_SAVE;
@@ -682,7 +681,7 @@ public class SaveLoadGame
         int sLoadSectorX;
         MAP_ROW sLoadSectorY;
         int bLoadSectorZ;
-        string zSaveGameName;// [512];
+        // [512];
         int uiSizeOfGeneralInfo = Marshal.SizeOf<GENERAL_SAVE_INFO>();
 
         int uiRelStartPerc;
@@ -743,7 +742,7 @@ public class SaveLoadGame
 //        EmptyDialogueQueue();
 
         //Create the name of the file
-        CreateSavedGameFileNameFromNumber(ubSavedGameID, out zSaveGameName);
+        CreateSavedGameFileNameFromNumber(ubSavedGameID, out string zSaveGameName);
 
         // open the save game file
         hFile = this.files.FileOpen(zSaveGameName, FileAccess.Read, false);
@@ -1770,7 +1769,7 @@ public class SaveLoadGame
         }
 
 
-        ///lll
+        //lll
 
 
 
@@ -2225,7 +2224,6 @@ public class SaveLoadGame
         int uiNumBytesRead = 0;
         SOLDIERTYPE SavedSoldierInfo = new();
         int uiSaveSize = Marshal.SizeOf<SOLDIERTYPE>();
-        int ubId;
         int ubOne = 1;
         int ubActive = 1;
         int uiPercentage;
@@ -2316,7 +2314,7 @@ public class SaveLoadGame
                 CreateStruct.fUseExistingSoldier = true;
                 CreateStruct.pExistingSoldier = SavedSoldierInfo;
 
-                if (!SoldierCreate.TacticalCreateSoldier(CreateStruct, out ubId))
+                if (!SoldierCreate.TacticalCreateSoldier(CreateStruct, out int ubId))
                 {
                     return (false);
                 }
@@ -2585,10 +2583,8 @@ public class SaveLoadGame
     bool LoadFilesFromSavedGame(string pSrcFileName, Stream hFile)
     {
         int uiFileSize = 0;
-        int uiNumBytesWritten = 0;
         Stream hSrcFile = Stream.Null;
         int? pData;
-        int uiNumBytesRead;
 
 
 
@@ -2603,16 +2599,16 @@ public class SaveLoadGame
         }
 
         //open the destination file to write to
-//        hSrcFile = this.files.FileOpen(pSrcFileName, FILE_ACCESS_WRITE | FILE_CREATE_ALWAYS, false);
-//        if (!hSrcFile)
-//        {
-//            //error, we cant open the saved game file
-//            return (false);
-//        }
+        //        hSrcFile = this.files.FileOpen(pSrcFileName, FILE_ACCESS_WRITE | FILE_CREATE_ALWAYS, false);
+        //        if (!hSrcFile)
+        //        {
+        //            //error, we cant open the saved game file
+        //            return (false);
+        //        }
 
 
         // Read the size of the data 
-        this.files.FileRead(hFile, ref uiFileSize, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        this.files.FileRead(hFile, ref uiFileSize, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             this.files.FileClose(hSrcFile);
@@ -2652,7 +2648,7 @@ public class SaveLoadGame
 
 
         // Write the buffer to the new file
-        this.files.FileWrite(hSrcFile, pData, uiFileSize, out uiNumBytesWritten);
+        this.files.FileWrite(hSrcFile, pData, uiFileSize, out int uiNumBytesWritten);
         if (uiNumBytesWritten != uiFileSize)
         {
             this.files.FileClose(hSrcFile);
@@ -2681,7 +2677,6 @@ public class SaveLoadGame
         email? pTempEmail = null;
         int cnt;
         int uiStringLength = 0;
-        int uiNumBytesWritten = 0;
 
         //loop through all the email to find out the total number
         while (pEmail is not null)
@@ -2693,7 +2688,7 @@ public class SaveLoadGame
         uiSizeOfEmails = Marshal.SizeOf<email>() * uiNumOfEmails;
 
         //write the number of email messages
-        files.FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2763,7 +2758,6 @@ public class SaveLoadGame
         string pData = null;
         int cnt;
         SavedEmailStruct SavedEmail = new();
-        int uiNumBytesRead = 0;
 
         //Delete the existing list of emails
         Emails.ShutDownEmailList();
@@ -2779,7 +2773,7 @@ public class SaveLoadGame
 //        memset(pEmailList, 0, Marshal.SizeOf<email>());
 
         //read in the number of email messages
-        files.FileRead(hFile, ref uiNumOfEmails, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        files.FileRead(hFile, ref uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2880,10 +2874,9 @@ public class SaveLoadGame
 
     bool SaveTacticalStatusToSavedGame(Stream hFile)
     {
-        int uiNumBytesWritten;
 
         //write the gTacticalStatus to the saved game file
-        this.files.FileWrite(hFile, gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesWritten);
+        this.files.FileWrite(hFile, gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<TacticalStatusType>())
         {
             return (false);
@@ -3264,7 +3257,6 @@ public class SaveLoadGame
     {
         int uiNumOfNodes = 0;
         Path? pTempPath = Menptr[ubID].pMercPath;
-        int uiNumBytesWritten = 0;
 
 
         //loop through to get all the nodes
@@ -3276,7 +3268,7 @@ public class SaveLoadGame
 
 
         //Save the number of the nodes
-        files.FileWrite(hFile, uiNumOfNodes, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
@@ -3307,7 +3299,6 @@ public class SaveLoadGame
         int uiNumOfNodes = 0;
         Path? pTempPath = null;
         Path? pTemp = null;
-        int uiNumBytesRead = 0;
         int cnt;
 
 
@@ -3332,7 +3323,7 @@ public class SaveLoadGame
         */
 
         //Load the number of the nodes
-        files.FileRead(hFile, ref uiNumOfNodes, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        files.FileRead(hFile, ref uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
@@ -3472,7 +3463,6 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
     bool SaveGeneralInfo(Stream hFile)
     {
-        int uiNumBytesWritten;
 
         GENERAL_SAVE_INFO sGeneralInfo = new();
 
@@ -3677,7 +3667,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
         //Setup the 
         //Save the current music mode
-        this.files.FileWrite(hFile, sGeneralInfo, Marshal.SizeOf<GENERAL_SAVE_INFO>(), out uiNumBytesWritten);
+        this.files.FileWrite(hFile, sGeneralInfo, Marshal.SizeOf<GENERAL_SAVE_INFO>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<GENERAL_SAVE_INFO>())
         {
             this.files.FileClose(hFile);
@@ -3943,10 +3933,9 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
     bool SavePreRandomNumbersToSaveGameFile(Stream hFile)
     {
-        int uiNumBytesWritten;
 
         //Save the Prerandom number index
-        this.files.FileWrite(hFile, guiPreRandomIndex, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+        this.files.FileWrite(hFile, guiPreRandomIndex, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
@@ -3964,10 +3953,9 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 
     bool LoadPreRandomNumbersFromSaveGameFile(Stream hFile)
     {
-        int uiNumBytesRead;
 
         //Load the Prerandom number index
-        this.files.FileRead(hFile, ref guiPreRandomIndex, Marshal.SizeOf<int>(), out uiNumBytesRead);
+        this.files.FileRead(hFile, ref guiPreRandomIndex, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);

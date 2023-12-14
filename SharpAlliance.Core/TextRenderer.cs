@@ -11,6 +11,7 @@ using FontStyle = SixLabors.Fonts.FontStyle;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Interfaces;
 using Veldrid.Sdl2;
+using SixLabors.ImageSharp.Drawing;
 
 namespace SharpAlliance.Core;
 
@@ -29,10 +30,10 @@ public class TextRenderer
         this._texture = new(width, height);
 
         this._video = videoManager;
-//        gd.ResourceFactory.CreateTexture(
-//            TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
+        //        gd.ResourceFactory.CreateTexture(
+        //            TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
 
-//        this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
+        //        this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
 
         this._font = this.LoadFont("Arial", 10, FontStyle.Bold);
 
@@ -55,7 +56,14 @@ public class TextRenderer
         }
     }
 
-    public void DrawText(string text, int x, int y, int width, HorizontalAlignment alignment, Font font, Rgba32 foreground, Rgba32 background)
+    public void DrawText(
+        string text,
+        PointF location,
+        int width,
+        HorizontalAlignment alignment,
+        Font font,
+        Rgba32 foreground,
+        Rgba32 background)
     {
         if (text == "Save Game")
         {
@@ -68,7 +76,7 @@ public class TextRenderer
                 text,
                 font,
                 foreground,
-                new PointF(x, y));
+                location);
         });
     }
 
@@ -81,19 +89,19 @@ public class TextRenderer
 
             try
             {
-//                videoManager.
-//                this._gd.UpdateTexture(
-//                    this._texture,
-//                    (IntPtr)data,
-//                    size,
-//                    x: 0,
-//                    y: 0,
-//                    z: 0,
-//                    this._texture.Width,
-//                    this._texture.Height,
-//                    depth: 1,
-//                    mipLevel: 0,
-//                    arrayLayer: 0);
+                //                videoManager.
+                //                this._gd.UpdateTexture(
+                //                    this._texture,
+                //                    (IntPtr)data,
+                //                    size,
+                //                    x: 0,
+                //                    y: 0,
+                //                    z: 0,
+                //                    this._texture.Width,
+                //                    this._texture.Height,
+                //                    depth: 1,
+                //                    mipLevel: 0,
+                //                    arrayLayer: 0);
             }
             catch (Exception e)
             {

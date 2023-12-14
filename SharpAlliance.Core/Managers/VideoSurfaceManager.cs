@@ -345,15 +345,13 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
 
     public static bool BltVideoSurface(SurfaceType uiDestVSurface, SurfaceType uiSrcVSurface, int usRegionIndex, int iDestX, int iDestY, BlitTypes fBltFlags, blt_vs_fx? pBltFx)
     {
-        HVSURFACE hDestVSurface;
-        HVSURFACE hSrcVSurface;
 
-        if (!video.GetVideoSurface(out hDestVSurface, uiDestVSurface))
+        if (!video.GetVideoSurface(out HVSURFACE hDestVSurface, uiDestVSurface))
         {
             return false;
         }
 
-        if (!video.GetVideoSurface(out hSrcVSurface, uiSrcVSurface))
+        if (!video.GetVideoSurface(out HVSURFACE hSrcVSurface, uiSrcVSurface))
         {
             return false;
         }

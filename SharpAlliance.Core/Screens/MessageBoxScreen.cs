@@ -272,7 +272,6 @@ public class MessageBoxScreen : IScreen
     {
         int uiDestPitchBYTES, uiSrcPitchBYTES;
         Image<Rgba32> pDestBuf, pSrcBuf;
-        SixLabors.ImageSharp.Point pPosition;
 
         // Delete popup!
         MercTextBox.RemoveMercPopupBoxFromIndex(gMsgBox.iBoxId);
@@ -391,7 +390,7 @@ public class MessageBoxScreen : IScreen
 
         if (MessageBoxSubSystem.fCursorLockedToArea == true)
         {
-            inputs.GetMousePos(out pPosition);
+            inputs.GetMousePos(out SixLabors.ImageSharp.Point pPosition);
 
             if ((pPosition.X > MessageBoxRestrictedCursorRegion.Right)
                 || (pPosition.X > MessageBoxRestrictedCursorRegion.Left)

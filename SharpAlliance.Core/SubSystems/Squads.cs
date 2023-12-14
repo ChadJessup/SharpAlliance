@@ -125,9 +125,6 @@ public class Squads
     public static bool AddCharacterToSquad(SOLDIERTYPE? pCharacter, SquadEnum bSquadValue)
     {
         int bCounter = 0;
-        int sX;
-        MAP_ROW sY;
-        int bZ;
         //	bool fBetweenSectors = false;
         GROUP? pGroup;
         bool fNewSquad;
@@ -181,7 +178,7 @@ public class Squads
                 // check if squad empty, if not check sector x,y,z are the same as this guys
                 if (SquadIsEmpty(bSquadValue) == false)
                 {
-                    GetLocationOfSquad(out sX, out sY, out bZ, bSquadValue);
+                    GetLocationOfSquad(out int sX, out MAP_ROW sY, out int bZ, bSquadValue);
 
                     // if not same, return false
                     if ((pCharacter.sSectorX != sX) || (pCharacter.sSectorY != sY) || (pCharacter.bSectorZ != bZ))
@@ -1043,7 +1040,6 @@ public class Squads
     public static unsafe bool SaveSquadInfoToSavedGameFile(Stream hFile)
     {
         Dictionary<SquadEnum, List<SAVE_SQUAD_INFO_STRUCT>> sSquadSaveStruct = new();// SAVE_SQUAD_INFO_STRUCT[(int)NUMBER_OF_SQUADS, NUMBER_OF_SOLDIERS_PER_SQUAD];
-        int uiNumBytesWritten = 0;
         int uiSaveSize = 0;
         //Reset the current squad info
         int iCounterB = 0;
@@ -1068,7 +1064,7 @@ public class Squads
         //Save the squad info to the Saved Game File
         uiSaveSize = sizeof(SAVE_SQUAD_INFO_STRUCT) * (int)NUMBER_OF_SQUADS * NUMBER_OF_SOLDIERS_PER_SQUAD;
 
-        files.FileWrite(hFile, sSquadSaveStruct, uiSaveSize, out uiNumBytesWritten);
+        files.FileWrite(hFile, sSquadSaveStruct, uiSaveSize, out int uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
             return (false);

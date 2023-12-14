@@ -55,7 +55,6 @@ public class InterfaceCursors
     static bool fHideCursor = false;
     bool DrawUICursor()
     {
-        int usMapPos;
         LEVELNODE? pNode;
         TileIndexes usTileCursor; // might be ushort, but testing this out.
 
@@ -81,7 +80,7 @@ public class InterfaceCursors
             return true;
         }
 
-        if (IsometricUtils.GetMouseMapPos(out usMapPos))
+        if (IsometricUtils.GetMouseMapPos(out int usMapPos))
         {
             Globals.gusCurMousePos = usMapPos;
 
@@ -322,11 +321,10 @@ public class InterfaceCursors
     static bool fShowAP = true;
     void DrawSnappingCursor()
     {
-        SOLDIERTYPE? pSoldier;
 
         if (Globals.gusSelectedSoldier != Globals.NO_SOLDIER)
         {
-            Overhead.GetSoldier(out pSoldier, Globals.gusSelectedSoldier);
+            Overhead.GetSoldier(out SOLDIERTYPE? pSoldier, Globals.gusSelectedSoldier);
 
         }
 

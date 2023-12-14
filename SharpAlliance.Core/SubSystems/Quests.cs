@@ -34,11 +34,10 @@ public class Quests
 
     public static bool CheckForNewShipment()
     {
-        ITEM_POOL? pItemPool;
 
         if ((Globals.gWorldSectorX == BOBBYR_SHIPPING_DEST_SECTOR_X) && (Globals.gWorldSectorY == BOBBYR_SHIPPING_DEST_SECTOR_Y) && (Globals.gbWorldSectorZ == BOBBYR_SHIPPING_DEST_SECTOR_Z))
         {
-            if (HandleItems.GetItemPool(BOBBYR_SHIPPING_DEST_GRIDNO, out pItemPool, 0))
+            if (HandleItems.GetItemPool(BOBBYR_SHIPPING_DEST_GRIDNO, out ITEM_POOL? pItemPool, 0))
             {
                 return (!(ITEMPOOL_VISIBLE(pItemPool)));
             }

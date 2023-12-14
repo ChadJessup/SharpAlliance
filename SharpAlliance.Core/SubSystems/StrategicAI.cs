@@ -747,7 +747,6 @@ public class StrategicAI
         GROUP? pGroup;
         int iReinforcementsApproved;
         int usOffensePoints;
-        int usDefencePoints;
         int ubEnemies;
         pSector = SectorInfo[ubSectorID];
         //First check to see if the player is at his final destination.
@@ -759,7 +758,7 @@ public class StrategicAI
         usOffensePoints = pSector.ubNumAdmins * 2 +
                                             pSector.ubNumTroops * 4 +
                                             pSector.ubNumElites * 6;
-        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, out usDefencePoints))
+        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, out int usDefencePoints))
         {
             RequestAttackOnSector(ubSectorID, usDefencePoints);
             return;
@@ -790,13 +789,13 @@ public class StrategicAI
     bool HandleMilitiaNoticedByPatrolGroup(SEC ubSectorID, GROUP? pEnemyGroup)
     {
         //For now, automatically attack.
-        int usOffensePoints = 0, usDefencePoints;
+        int usOffensePoints = 0;
         int ubSectorX = ((int)ubSectorID % 16) + 1;
         MAP_ROW ubSectorY = (MAP_ROW)((int)ubSectorID / 16) + 1;
         //        usOffensePoints = pEnemyGroup.pEnemyGroup.ubNumAdmins * 2 +
         //                                            pEnemyGroup.pEnemyGroup.ubNumTroops * 4 +
         //                                            pEnemyGroup.pEnemyGroup.ubNumElites * 6;
-        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, out usDefencePoints))
+        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, out int usDefencePoints))
         {
             RequestAttackOnSector(ubSectorID, usDefencePoints);
             return false;
@@ -2157,13 +2156,12 @@ public class StrategicAI
         GARRISON_GROUP gTempGarrisonGroup;
         PATROL_GROUP gTempPatrolGroup;
         ARMY_COMPOSITION gTempArmyComp;
-        int uiNumBytesWritten;
         int i;
 
         //memset(&gTempPatrolGroup, 0, sizeof(PATROL_GROUP));
         //memset(&gTempArmyComp, 0, sizeof(ARMY_COMPOSITION));
 
-        files.FileWrite(hFile, gbPadding2, 3, out uiNumBytesWritten);
+        files.FileWrite(hFile, gbPadding2, 3, out int uiNumBytesWritten);
         if (uiNumBytesWritten != 3)
         {
             return false;
@@ -2360,11 +2358,10 @@ public class StrategicAI
         GARRISON_GROUP gTempGarrisonGroup;
         PATROL_GROUP gTempPatrolGroup;
         ARMY_COMPOSITION gTempArmyComp;
-        int uiNumBytesRead;
         int i;
         int ubSAIVersion = 0;
 
-        files.FileRead(hFile, ref gbPadding2, 3, out uiNumBytesRead);
+        files.FileRead(hFile, ref gbPadding2, 3, out int uiNumBytesRead);
         if (uiNumBytesRead != 3)
         {
             return false;

@@ -309,9 +309,8 @@ public class InputManager : IInputManager
         {
             if ((this.guiLeftButtonRepeatTimer > 0) && (this.guiLeftButtonRepeatTimer <= uiTimer))
             {
-                Point MousePos;
 
-                GetCursorPos(out MousePos);
+                GetCursorPos(out Point MousePos);
 
                 this.QueueEvent(MouseEvents.LEFT_BUTTON_REPEAT, null, MousePos);
                 this.guiLeftButtonRepeatTimer = uiTimer + BUTTON_REPEAT_TIME;
@@ -328,9 +327,8 @@ public class InputManager : IInputManager
         {
             if ((this.guiRightButtonRepeatTimer > 0) && (this.guiRightButtonRepeatTimer <= uiTimer))
             {
-                Point MousePos;
 
-                GetCursorPos(out MousePos);
+                GetCursorPos(out Point MousePos);
                 this.QueueEvent(MouseEvents.RIGHT_BUTTON_REPEAT, 0, MousePos);
                 this.guiRightButtonRepeatTimer = uiTimer + BUTTON_REPEAT_TIME;
             }
@@ -364,6 +362,5 @@ public class InputManager : IInputManager
 
     public void DequeueAllKeyBoardEvents()
     {
-        this.gEventQueue.Clear();
     }
 }

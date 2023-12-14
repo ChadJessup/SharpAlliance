@@ -162,9 +162,9 @@ public class CreditsScreen : IScreen
 
         if (Globals.giCurrentlySelectedFace != -1)
         {
-            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNames[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
-            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNameTitle[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_TITLE_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
-            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNameFunny[Globals.giCurrentlySelectedFace], CRDT_NAME_LOC_X, CRDT_NAME_FUNNY_LOC_Y, CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNames[Globals.giCurrentlySelectedFace], new(CRDT_NAME_LOC_X, CRDT_NAME_LOC_Y), CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNameTitle[Globals.giCurrentlySelectedFace], new(CRDT_NAME_LOC_X, CRDT_NAME_TITLE_LOC_Y), CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
+            FontSubSystem.DrawTextToScreen(EnglishText.gzCreditNameFunny[Globals.giCurrentlySelectedFace], new(CRDT_NAME_LOC_X, CRDT_NAME_FUNNY_LOC_Y), CRDT_NAME_LOC_WIDTH, CRDT_NAME_FONT, FontColor.FONT_MCOLOR_WHITE, 0, TextJustifies.INVALIDATE_TEXT | TextJustifies.CENTER_JUSTIFIED);
         }
     }
 
@@ -172,7 +172,6 @@ public class CreditsScreen : IScreen
     {
         bool fDone = false;
         uint uiStringWidth = 20;
-        string zOriginalString;
         string zString = string.Empty;
         string zCodes;
         string? pzNewCode = null;
@@ -183,7 +182,7 @@ public class CreditsScreen : IScreen
 
         //Get the current Credit record
         uiStartLoc = CREDITS_LINESIZE * (uint)Globals.guiCurrentCreditRecord;
-        if (!files.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out zOriginalString, uiStartLoc, CREDITS_LINESIZE))
+        if (!files.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out string zOriginalString, uiStartLoc, CREDITS_LINESIZE))
         {
             //there are no more credits
             return false;

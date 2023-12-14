@@ -705,7 +705,7 @@ public static class EnglishText
     	"Campaign: Default ( %S )",																							// @@@ new text
     	"Campaign: %S",																													// @@@ new text
     	"You have selected the campaign %S. This campaign is a player-modified version of the original Unfinished Business campaign. Are you sure you wish to play the %S campaign?",			// @@@ new text
-    	"In order to use the editor, please select a campaign other than the default.",		///@@new
+    	"In order to use the editor, please select a campaign other than the default.",		//@@new
     };
 
 

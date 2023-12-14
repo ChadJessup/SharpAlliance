@@ -788,10 +788,9 @@ public class ArmsDealerInit
         int ubCnt;
         int ubItemCondition;
         int ubPerfectOnes = 0;
-        SPECIAL_ITEM_INFO? SpclItemInfo;
 
         // create item info describing a perfect item
-        SetSpecialItemInfoToDefaults(out SpclItemInfo);
+        SetSpecialItemInfoToDefaults(out SPECIAL_ITEM_INFO? SpclItemInfo);
 
 
         // determine the condition of each one, counting up new ones, but adding damaged ones right away

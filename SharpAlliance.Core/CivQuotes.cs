@@ -352,7 +352,7 @@ public class CivQuotes
     public void BeginCivQuote(SOLDIERTYPE pCiv, CIV_QUOTE ubCivQuoteID, int ubEntryID, int sX, int sY)
     {
         VIDEO_OVERLAY_DESC VideoOverlayDesc = new();
-        string zQuote;// [320];
+        // [320];
 
         // OK, do we have another on?
         if (gCivQuoteData.bActive)
@@ -362,7 +362,7 @@ public class CivQuotes
         }
 
         // get text
-        if (!GetCivQuoteText(ubCivQuoteID, ubEntryID, out zQuote))
+        if (!GetCivQuoteText(ubCivQuoteID, ubEntryID, out string zQuote))
         {
             return;
         }

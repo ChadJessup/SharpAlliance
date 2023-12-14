@@ -149,7 +149,6 @@ public class PathAI
         int sSwitchValue;
         STEPSTART[] sFootOrder = new STEPSTART[] { STEPSTART.GREEN, STEPSTART.PURPLE, STEPSTART.BLUE,
                                                     STEPSTART.ORANGE, STEPSTART.RED };
-        TileIndexes usTileIndex;
         int usTileNum;
         LEVELNODE? pNode;
         AnimationStates usMovementModeToUseForAPs;
@@ -416,7 +415,7 @@ public class PathAI
                                 sFootOrderIndex++;
                             }
                         }
-                        TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.FOOTPRINTS, usTileNum, out usTileIndex);
+                        TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.FOOTPRINTS, usTileNum, out TileIndexes usTileIndex);
 
                         // Adjust based on what mode we are in...
                         if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))

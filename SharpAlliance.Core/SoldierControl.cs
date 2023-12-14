@@ -116,7 +116,6 @@ public class SoldierControl
     public static bool ReevaluateEnemyStance(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
     {
         int cnt, iClosestEnemy = NOBODY;
-        int sTargetXPos, sTargetYPos;
         bool fReturnVal = false;
         int sDist, sClosestDist = 10000;
 
@@ -165,7 +164,7 @@ public class SoldierControl
                         if (iClosestEnemy != NOBODY)
                         {
                             // Change to fire ready animation
-                            IsometricUtils.ConvertGridNoToXY(MercPtrs[iClosestEnemy].sGridNo, out sTargetXPos, out sTargetYPos);
+                            IsometricUtils.ConvertGridNoToXY(MercPtrs[iClosestEnemy].sGridNo, out int sTargetXPos, out int sTargetYPos);
 
                             pSoldier.fDontChargeReadyAPs = true;
 
@@ -1587,7 +1586,7 @@ public class SoldierControl
                     }
                 }
 
-                ///HandlePlacingRoofMarker( pSoldier, pSoldier.sGridNo, true, false );
+                //HandlePlacingRoofMarker( pSoldier, pSoldier.sGridNo, true, false );
 
                 HandleAnimationProfile(pSoldier, pSoldier.usAnimState, false);
 
@@ -1735,7 +1734,6 @@ public class SoldierControl
 
     public static void EVENT_FireSoldierWeapon(SOLDIERTYPE? pSoldier, int sTargetGridNo)
     {
-        int sTargetXPos, sTargetYPos;
         bool fDoFireRightAway = false;
 
         // CANNOT BE SAME GRIDNO!
@@ -1789,7 +1787,7 @@ public class SoldierControl
         //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting attack, bullets left %d", pSoldier.bBulletsLeft));
 
         // Convert our grid-not into an XY
-        IsometricUtils.ConvertGridNoToXY(sTargetGridNo, out sTargetXPos, out sTargetYPos);
+        IsometricUtils.ConvertGridNoToXY(sTargetGridNo, out int sTargetXPos, out int sTargetYPos);
 
 
         // Change to fire animation
@@ -4872,19 +4870,18 @@ int	gOrangeGlowG[]=
     {
         int cnt2;
         int ubType;
-        int ubPalIndex;
 
-        CHECKF(GetPaletteRepIndexFromID(aPalRep, out ubPalIndex));
+        CHECKF(GetPaletteRepIndexFromID(aPalRep, out int ubPalIndex));
 
         // Get range type
         //        ubType = gpPalRep[ubPalIndex].ubType;
 
-//        for (cnt2 = gpPaletteSubRanges[ubType].ubStart; cnt2 <= gpPaletteSubRanges[ubType].ubEnd; cnt2++)
-//        {
-//            p8BPPPalette[cnt2].peRed = gpPalRep[ubPalIndex].r[cnt2 - gpPaletteSubRanges[ubType].ubStart];
-//            p8BPPPalette[cnt2].peGreen = gpPalRep[ubPalIndex].g[cnt2 - gpPaletteSubRanges[ubType].ubStart];
-//            p8BPPPalette[cnt2].peBlue = gpPalRep[ubPalIndex].b[cnt2 - gpPaletteSubRanges[ubType].ubStart];
-//        }
+        //        for (cnt2 = gpPaletteSubRanges[ubType].ubStart; cnt2 <= gpPaletteSubRanges[ubType].ubEnd; cnt2++)
+        //        {
+        //            p8BPPPalette[cnt2].peRed = gpPalRep[ubPalIndex].r[cnt2 - gpPaletteSubRanges[ubType].ubStart];
+        //            p8BPPPalette[cnt2].peGreen = gpPalRep[ubPalIndex].g[cnt2 - gpPaletteSubRanges[ubType].ubStart];
+        //            p8BPPPalette[cnt2].peBlue = gpPalRep[ubPalIndex].b[cnt2 - gpPaletteSubRanges[ubType].ubStart];
+        //        }
 
         return (true);
     }
@@ -6527,20 +6524,17 @@ int	gOrangeGlowG[]=
 
     public static WorldDirections GetDirectionFromGridNo(int sGridNo, SOLDIERTYPE? pSoldier)
     {
-        int sXPos, sYPos;
 
-        IsometricUtils.ConvertGridNoToXY(sGridNo, out sXPos, out sYPos);
+        IsometricUtils.ConvertGridNoToXY(sGridNo, out int sXPos, out int sYPos);
 
         return (GetDirectionFromXY(sXPos, sYPos, pSoldier));
     }
 
     public static WorldDirections GetDirectionToGridNoFromGridNo(int sGridNoDest, int sGridNoSrc)
     {
-        int sXPos2, sYPos2;
-        int sXPos, sYPos;
 
-        IsometricUtils.ConvertGridNoToXY(sGridNoSrc, out sXPos, out sYPos);
-        IsometricUtils.ConvertGridNoToXY(sGridNoDest, out sXPos2, out sYPos2);
+        IsometricUtils.ConvertGridNoToXY(sGridNoSrc, out int sXPos, out int sYPos);
+        IsometricUtils.ConvertGridNoToXY(sGridNoDest, out int sXPos2, out int sYPos2);
 
         return (atan8(sXPos2, sYPos2, sXPos, sYPos));
 
@@ -6548,9 +6542,8 @@ int	gOrangeGlowG[]=
 
     public static WorldDirections GetDirectionFromXY(int sXPos, int sYPos, SOLDIERTYPE? pSoldier)
     {
-        int sXPos2, sYPos2;
 
-        IsometricUtils.ConvertGridNoToXY(pSoldier.sGridNo, out sXPos2, out sYPos2);
+        IsometricUtils.ConvertGridNoToXY(pSoldier.sGridNo, out int sXPos2, out int sYPos2);
 
         return (atan8(sXPos2, sYPos2, sXPos, sYPos));
     }
@@ -6748,7 +6741,6 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     {
         LEVELNODE? pStruct = null;
         LEVELNODE? pOldStruct = null;
-        TileCategory fTileFlags;
 
         pStruct = gpWorldLevelData[sGridNo].pStructHead;
 
@@ -6759,7 +6751,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             if (pStruct.usIndex != TileIndexes.NO_TILE && pStruct.usIndex < TileIndexes.NUMBEROFTILES)
             {
 
-                TileDefine.GetTileFlags(pStruct.usIndex, out fTileFlags);
+                TileDefine.GetTileFlags(pStruct.usIndex, out TileCategory fTileFlags);
 
                 // Advance to next
                 pOldStruct = pStruct;
@@ -7244,7 +7236,6 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     void EVENT_SoldierBeginBladeAttack(SOLDIERTYPE pSoldier, int sGridNo, WorldDirections ubDirection)
     {
-        SOLDIERTYPE pTSoldier;
         //int uiMercFlags;
         int usSoldierIndex;
         WorldDirections ubTDirection;
@@ -7310,7 +7301,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             usSoldierIndex = WorldManager.WhoIsThere2(sGridNo, pSoldier.bTargetLevel);
             if (usSoldierIndex != NOBODY)
             {
-                Overhead.GetSoldier(out pTSoldier, usSoldierIndex);
+                Overhead.GetSoldier(out SOLDIERTYPE pTSoldier, usSoldierIndex);
 
                 // Look at stance of target
                 switch (gAnimControl[pTSoldier.usAnimState].ubEndHeight)
@@ -8648,13 +8639,11 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     public static void SetSoldierLocatorOffsets(SOLDIERTYPE pSoldier)
     {
-        int sHeight, sWidth;
-        int sOffsetX, sOffsetY;
 
 
         // OK, from our animation, get height, width
-        GetActualSoldierAnimDims(pSoldier, out sHeight, out sWidth);
-        GetActualSoldierAnimOffsets(pSoldier, out sOffsetX, out sOffsetY);
+        GetActualSoldierAnimDims(pSoldier, out int sHeight, out int sWidth);
+        GetActualSoldierAnimOffsets(pSoldier, out int sOffsetX, out int sOffsetY);
 
         // OK, here, use the difference between center of animation ( sWidth/2 ) and our offset!
         //pSoldier.sLocatorOffX = ( abs( sOffsetX ) ) - ( sWidth / 2 );
@@ -9508,7 +9497,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
 
     void MercStealFromMerc(SOLDIERTYPE pSoldier, SOLDIERTYPE pTarget)
     {
-        int sActionGridNo, sGridNo, sAdjustedGridNo;
+        int sActionGridNo, sGridNo;
         WorldDirections ubDirection = 0;
 
 
@@ -9516,7 +9505,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         sGridNo = pTarget.sGridNo;
 
         // See if we can get there to punch	
-        sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sGridNo, ref ubDirection, out sAdjustedGridNo, true, false);
+        sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sGridNo, ref ubDirection, out int sAdjustedGridNo, true, false);
         if (sActionGridNo != -1)
         {
             // SEND PENDING ACTION
@@ -9550,7 +9539,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
     bool PlayerSoldierStartTalking(SOLDIERTYPE pSoldier, int ubTargetID, bool fValidate)
     {
         WorldDirections sFacingDir;
-        int sXPos, sYPos, sAPCost;
+        int sAPCost;
         SOLDIERTYPE? pTSoldier;
         int uiRange;
 
@@ -9588,7 +9577,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // Deduct points from our guy....
         Points.DeductPoints(pSoldier, sAPCost, 0);
 
-        IsometricUtils.ConvertGridNoToXY(pTSoldier.sGridNo, out sXPos, out sYPos);
+        IsometricUtils.ConvertGridNoToXY(pTSoldier.sGridNo, out int sXPos, out int sYPos);
 
         // Get direction from mouse pos
         sFacingDir = GetDirectionFromXY(sXPos, sYPos, pSoldier);

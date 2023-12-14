@@ -322,8 +322,6 @@ public class Overhead
         int sClosest = NOWHERE, sSpot;
         bool sOkTest;
         int sCloseGridNo = NOWHERE;
-        FIND_SOLDIER_RESPONSES uiMercFlags;
-        int usSoldierIndex;
         WorldDirections ubDir;
         STRUCTURE? pDoor;
         //STRUCTURE                            *pWall;
@@ -400,7 +398,7 @@ public class Overhead
 
         if (fForceToPerson)
         {
-            if (SoldierFind.FindSoldier(sGridNo, out usSoldierIndex, out uiMercFlags, FIND_SOLDIER.GRIDNO))
+            if (SoldierFind.FindSoldier(sGridNo, out int usSoldierIndex, out FIND_SOLDIER_RESPONSES uiMercFlags, FIND_SOLDIER.GRIDNO))
             {
                 sGridNo = MercPtrs[usSoldierIndex].sGridNo;
                 if (psAdjustedGridNo != null)
@@ -1403,13 +1401,12 @@ public class Overhead
     public static bool FlatRoofAboveGridNo(int iMapIndex)
     {
         LEVELNODE? pRoof;
-        TileTypeDefines uiTileType;
         pRoof = gpWorldLevelData[iMapIndex].pRoofHead;
         while (pRoof is not null)
         {
             if (pRoof.usIndex != TileIndexes.NO_TILE)
             {
-                TileDefine.GetTileType(pRoof.usIndex, out uiTileType);
+                TileDefine.GetTileType(pRoof.usIndex, out TileTypeDefines uiTileType);
                 if (uiTileType >= TileTypeDefines.FIRSTROOF && uiTileType <= LASTROOF)
                 {
                     return true;
@@ -1488,9 +1485,8 @@ public class Overhead
 
     private static void InternalLocateGridNo(int sGridNo, bool fForce)
     {
-        int sNewCenterWorldX, sNewCenterWorldY;
 
-        IsometricUtils.ConvertGridNoToCenterCellXY(sGridNo, out sNewCenterWorldX, out sNewCenterWorldY);
+        IsometricUtils.ConvertGridNoToCenterCellXY(sGridNo, out int sNewCenterWorldX, out int sNewCenterWorldY);
 
         // FIRST CHECK IF WE ARE ON SCREEN
         if (SoldierFind.GridNoOnScreen(sGridNo) && !fForce)

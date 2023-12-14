@@ -62,12 +62,11 @@ public class VideoObjectManager
         VO_BLT fBltFlags,
         blt_fx? pBltFx)
     {
-        Image<Rgba32> pBuffer;
         uint uiPitch;
 
         // Now we have the video object and surface, call the VO blitter function
         if (!BltVideoObjectToBuffer(
-            out pBuffer,
+            out Image<Rgba32> pBuffer,
             16,
             hSrcVObject,
             usRegionIndex,

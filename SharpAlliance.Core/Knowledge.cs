@@ -299,12 +299,11 @@ public class Knowledge
             // make civs not walk to noises outside their room if on close patrol/onguard
             if (pSoldier.bOrders <= Orders.CLOSEPATROL && (pSoldier.bTeam == CIV_TEAM || pSoldier.ubProfile != NO_PROFILE))
             {
-                int ubRoom, ubNewRoom;
 
                 // any other combo uses the default of ubRoom == 0, set above
-                if (RenderFun.InARoom(pSoldier.usPatrolGrid[0], out ubRoom))
+                if (RenderFun.InARoom(pSoldier.usPatrolGrid[0], out int ubRoom))
                 {
-                    if (!RenderFun.InARoom(pSoldier.usPatrolGrid[0], out ubNewRoom) || ubRoom != ubNewRoom)
+                    if (!RenderFun.InARoom(pSoldier.usPatrolGrid[0], out int ubNewRoom) || ubRoom != ubNewRoom)
                     {
                         pfReachable = false;
                     }

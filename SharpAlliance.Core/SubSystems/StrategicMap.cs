@@ -238,12 +238,8 @@ public class StrategicMap
             gTacticalStatus.sCreatureTenseQuoteDelay = (int)(10 + Globals.Random.Next(20));
 
             {
-                int sWarpWorldX;
-                MAP_ROW sWarpWorldY;
-                int bWarpWorldZ;
-                int sWarpGridNo;
 
-                if (CreatureSpreading.GetWarpOutOfMineCodes(out sWarpWorldX, out sWarpWorldY, out bWarpWorldZ, out sWarpGridNo) && gbWorldSectorZ >= 2)
+                if (CreatureSpreading.GetWarpOutOfMineCodes(out int sWarpWorldX, out MAP_ROW sWarpWorldY, out int bWarpWorldZ, out int sWarpGridNo) && gbWorldSectorZ >= 2)
                 {
                     gTacticalStatus.uiFlags |= TacticalEngineStatus.IN_CREATURE_LAIR;
                 }

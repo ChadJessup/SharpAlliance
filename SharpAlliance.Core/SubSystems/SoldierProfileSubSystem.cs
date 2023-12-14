@@ -88,7 +88,6 @@ public class SoldierProfileSubSystem
         InventorySlot uiLoop2;
         InventorySlot uiLoop3;
         Items usItem, usNewGun, usAmmo, usNewAmmo;
-        int uiNumBytesRead;
 
 
         fptr = files.FileOpen(pFileName, FileAccess.Read, fDeleteOnClose: false);
@@ -103,7 +102,7 @@ public class SoldierProfileSubSystem
             var npcId = uiLoop;
             var fm = (FileManager)files;
 
-            var mercProfileBytes = fm.JA2EncryptedFileRead(fptr, MERCPROFILESTRUCT.Size, out uiNumBytesRead);
+            var mercProfileBytes = fm.JA2EncryptedFileRead(fptr, MERCPROFILESTRUCT.Size, out int uiNumBytesRead);
 
             if (mercProfileBytes.IsEmpty)
             {

@@ -297,26 +297,7 @@ public class FontSubSystem : ISharpAllianceManager
 
     public static void DrawTextToScreen(
         string text,
-        Point pos,
-        int width,
-        FontStyle font,
-        FontColor foregroundColor,
-        FontColor backgroundColor,
-        TextJustifies justification)
-        => DrawTextToScreen(
-            text,
-            pos.X,
-            pos.Y,
-            width,
-            font,
-            foregroundColor,
-            backgroundColor,
-            justification);
-
-    public static void DrawTextToScreen(
-        string text,
-        int x,
-        int y,
+        PointF location,
         int width,
         FontStyle font,
         FontColor foregroundColor,
@@ -340,8 +321,7 @@ public class FontSubSystem : ISharpAllianceManager
         {
             FontSubSystem.TextRenderer.DrawText(
                 text,
-                x,
-                y,
+                location,
                 width,
                 alignment,
                 fontLookup[font],
@@ -535,8 +515,6 @@ public class FontSubSystem : ISharpAllianceManager
         // video = this.context.Services.GetRequiredService<IVideoManager>();
 
         int count;
-        int uiRight, uiBottom;
-        int uiPixelDepth = 16;
 
         FontDefault = FontStyle.None;
         //FontDestBuffer = Font.BACKBUFFER;
@@ -544,7 +522,7 @@ public class FontSubSystem : ISharpAllianceManager
 
         //	FontDestBPP=0;
 
-        video.GetCurrentVideoSettings(out uiRight, out uiBottom, out uiPixelDepth);
+        video.GetCurrentVideoSettings(out int uiRight, out int uiBottom, out int uiPixelDepth);
         this.FontDestRegion.X = 0;
         this.FontDestRegion.Y = 0;
         this.FontDestRegion.Width = uiRight;

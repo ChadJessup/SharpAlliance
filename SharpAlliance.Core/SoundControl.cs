@@ -71,8 +71,6 @@ public class SoundControl
 
     private static int PositionSoundVolume(int bInitialVolume, int sGridNo)
     {
-        int sWorldX, sWorldY;
-        int sScreenX, sScreenY;
         int sMiddleX, sMiddleY;
         int sDifX, sAbsDifX;
         int sDifY, sAbsDifY;
@@ -85,10 +83,10 @@ public class SoundControl
         }
 
         // OK, get screen position of gridno.....
-        IsometricUtils.ConvertGridNoToXY(sGridNo, out sWorldX, out sWorldY);
+        IsometricUtils.ConvertGridNoToXY(sGridNo, out int sWorldX, out int sWorldY);
 
         // Get screen coordinates for current position of soldier
-        IsometricUtils.GetWorldXYAbsoluteScreenXY((sWorldX), (sWorldY), out sScreenX, out sScreenY);
+        IsometricUtils.GetWorldXYAbsoluteScreenXY((sWorldX), (sWorldY), out int sScreenX, out int sScreenY);
 
         // Get middle of where we are now....
         sMiddleX = gsTopLeftWorldX + (gsBottomRightWorldX - gsTopLeftWorldX) / 2;

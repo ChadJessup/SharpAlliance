@@ -117,11 +117,10 @@ public class MapScreenInterfaceMap
         HVSURFACE hSrcVSurface;
         List<SGPPaletteEntry> pPalette = new();
         VSURFACE_DESC vs_desc;
-        string uiTempMap;
 
         // load image
-        video.GetVideoObject("INTERFACE\\b_map.pcx", out uiTempMap);
-        
+        video.GetVideoObject("INTERFACE\\b_map.pcx", out string uiTempMap);
+
         // get video surface
         //video.GetVideoSurface(out hSrcVSurface, uiTempMap);
         //video.GetVSurfacePaletteEntries(hSrcVSurface, pPalette);
@@ -412,7 +411,6 @@ public class MapScreenInterfaceMap
     public static void RenderMapBorder()
     {
         // renders the actual border to the Surfaces.SAVE_BUFFER
-        HVOBJECT hHandle;
 
         /*	
             if( fDisabledMapBorder )
@@ -429,7 +427,7 @@ public class MapScreenInterfaceMap
         }
 
         // get and blt border
-//        video.GetVideoObject(out hHandle, Globals.guiMapBorder);
+//        video.GetVideoObject(out HVOBJECT hHandle, Globals.guiMapBorder);
 //        VideoObjectManager.BltVideoObject(
 //            SurfaceType.SAVE_BUFFER,
 //            hHandle,

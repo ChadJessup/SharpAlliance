@@ -362,14 +362,13 @@ public class Movement
     {
         int sLoop, sAPCost;
         int sTempDest, sGoToGrid;
-        int sOrigin;
         int usMaxDist;
         int ubDirection, ubDirsLeft;
         int[] ubDirChecked = new int[8];
         int fFound = 0;
         int bAPsLeft = 0;
         PATH fPathFlags;
-        int ubRoomRequired = 0, ubTempRoom;
+        int ubRoomRequired = 0;
 
         if (bReserveAPs == -1)
         {
@@ -387,7 +386,7 @@ public class Movement
         sTempDest = -1;
 
         // obtain maximum roaming distance from soldier's sOrigin
-        usMaxDist = AIUtils.RoamingRange(pSoldier, out sOrigin);
+        usMaxDist = AIUtils.RoamingRange(pSoldier, out int sOrigin);
 
         if (pSoldier.bOrders <= Orders.CLOSEPATROL && (pSoldier.bTeam == CIV_TEAM || pSoldier.ubProfile != NO_PROFILE))
         {
@@ -539,7 +538,7 @@ public class Movement
 
             if (ubRoomRequired > 0)
             {
-                if (!(RenderFun.InARoom(sTempDest, out ubTempRoom) && ubTempRoom == ubRoomRequired))
+                if (!(RenderFun.InARoom(sTempDest, out int ubTempRoom) && ubTempRoom == ubRoomRequired))
                 {
                     // quit here, limited by room!
                     break;

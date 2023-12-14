@@ -264,10 +264,9 @@ public class InterfaceItems
     {
         InventorySlot cnt;
 
-        string key;
 
         // Load all four body type images
-        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_large_male.sti", out key));
+        CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_large_male.sti", out string key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][0] = key;
         CHECKF(this.video.GetVideoObject("INTERFACE\\inventory_figure_large_male_H.sti", out key));
         guiBodyInvVO[SoldierBodyTypes.BIGMALE][1] = key;
@@ -1396,10 +1395,9 @@ public class InterfaceItems
     {
         int uiStringLength;
         INVTYPE pItem;
-        ETRLEObject pTrav;
+        ETRLEObject pTrav = new();
         int usHeight, usWidth;
         int sCenX, sCenY, sNewY, sNewX;
-        HVOBJECT? hVObject = null;
         bool fLineSplit = false;
         int sFontX2, sFontY2;
         int sFontX, sFontY;
@@ -1421,8 +1419,8 @@ public class InterfaceItems
         if (fDirtyLevel == DIRTYLEVEL2)
         {
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
-//            video.GetVideoObject(out hVObject, GetInterfaceGraphicForItem(pItem));
-            pTrav = (hVObject.pETRLEObject[pItem.ubGraphicNum]);
+//            video.GetVideoObject(out HVOBJECT? hVObject, GetInterfaceGraphicForItem(pItem));
+//            pTrav = (hVObject.pETRLEObject[pItem.ubGraphicNum]);
             usHeight = (int)pTrav.usHeight;
             usWidth = (int)pTrav.usWidth;
 
@@ -1962,16 +1960,16 @@ public class InterfaceItems
         // Load graphic
         //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //        strcpy(VObjectDesc.ImageFile, "INTERFACE\\infobox.sti");
-        //        CHECKF(AddVideoObject(&VObjectDesc, guiItemDescBox));
+        //        CHECKF(GetVideoObject(&VObjectDesc, guiItemDescBox));
 
 
         //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //        strcpy(VObjectDesc.ImageFile, "INTERFACE\\iteminfoc.STI");
-        //        CHECKF(AddVideoObject(&VObjectDesc, guiMapItemDescBox));
+        //        CHECKF(GetVideoObject(&VObjectDesc, guiMapItemDescBox));
 
         //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //        strcpy(VObjectDesc.ImageFile, "INTERFACE\\bullet.STI");
-        //        CHECKF(AddVideoObject(&VObjectDesc, guiBullet));
+        //        CHECKF(GetVideoObject(&VObjectDesc, guiBullet));
 
         if (gpItemDescObject.usItem != Items.MONEY)
         {
@@ -2025,7 +2023,7 @@ public class InterfaceItems
             // Load graphic
             //            VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
             //            strcpy(VObjectDesc.ImageFile, "INTERFACE\\info_bil.sti");
-            //            CHECKF(AddVideoObject(&VObjectDesc, guiMoneyGraphicsForDescBox));
+            //            CHECKF(GetVideoObject(&VObjectDesc, guiMoneyGraphicsForDescBox));
 
             //Create buttons for the money
             //		if (guiCurrentScreen ==  MAP_SCREEN )
@@ -4112,7 +4110,6 @@ public class InterfaceItems
     {
         // Determine what to do
         WorldDirections ubDirection = 0;
-        int ubSoldierID;
         Items usItem;
         int sAPCost;
         SOLDIERTYPE? pSoldier = null;
@@ -4177,7 +4174,7 @@ public class InterfaceItems
         }
 
         // SEE IF WE ARE OVER A TALKABLE GUY!
-        if (HandleUI.IsValidTalkableNPCFromMouse(out ubSoldierID, true, false, true))
+        if (HandleUI.IsValidTalkableNPCFromMouse(out int ubSoldierID, true, false, true))
         {
             fGiveItem = true;
         }
@@ -4243,11 +4240,10 @@ public class InterfaceItems
                     if (IsValidAmmoToReloadRobot(MercPtrs[ubSoldierID], TempObject))
                     {
                         int sActionGridNo;
-                        int sAdjustedGridNo;
 
                         // Walk up to him and reload!
                         // See if we can get there to stab	
-                        sActionGridNo = Overhead.FindAdjacentGridEx(gpItemPointerSoldier, MercPtrs[ubSoldierID].sGridNo, ref ubDirection, out sAdjustedGridNo, true, false);
+                        sActionGridNo = Overhead.FindAdjacentGridEx(gpItemPointerSoldier, MercPtrs[ubSoldierID].sGridNo, ref ubDirection, out int sAdjustedGridNo, true, false);
 
                         if (sActionGridNo != -1 && gbItemPointerSrcSlot != NO_SLOT)
                         {
@@ -4598,14 +4594,13 @@ public class InterfaceItems
     bool InitItemStackPopup(SOLDIERTYPE pSoldier, InventorySlot ubPosition, int sInvX, int sInvY, int sInvWidth, int sInvHeight)
     {
         //        VOBJECT_DESC VObjectDesc;
-        int sX, sY, sCenX, sCenY;
+        int sCenX, sCenY;
         Rectangle aRect;
         int ubLimit = 0;
         ETRLEObject? pTrav;
         HVOBJECT hVObject;
         int cnt;
         int usPopupWidth = 1;
-        int sItemSlotWidth, sItemSlotHeight;
 
 
         // Set some globals
@@ -4639,7 +4634,7 @@ public class InterfaceItems
         // Load graphics
         //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //        strcpy(VObjectDesc.ImageFile, "INTERFACE\\extra_inventory.STI");
-        //        CHECKF(AddVideoObject(&VObjectDesc, guiItemPopupBoxes));
+        //        CHECKF(GetVideoObject(&VObjectDesc, guiItemPopupBoxes));
 
         // Get size
         //        GetVideoObject(hVObject, guiItemPopupBoxes);
@@ -4647,8 +4642,8 @@ public class InterfaceItems
         //        usPopupWidth = pTrav.usWidth;
 
         // Determine position, height and width of mouse region, area
-        GetSlotInvXY(ubPosition, out sX, out sY);
-        GetSlotInvHeightWidth(ubPosition, out sItemSlotWidth, out sItemSlotHeight);
+        GetSlotInvXY(ubPosition, out int sX, out int sY);
+        GetSlotInvHeightWidth(ubPosition, out int sItemSlotWidth, out int sItemSlotHeight);
 
         // Get Width, Height
         gsItemPopupWidth = ubLimit * usPopupWidth;
@@ -4884,7 +4879,7 @@ public class InterfaceItems
         //        // Load graphics
         //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //        strcpy(VObjectDesc.ImageFile, "INTERFACE\\extra_inventory.STI");
-        //        CHECKF(AddVideoObject(&VObjectDesc, guiItemPopupBoxes));
+        //        CHECKF(GetVideoObject(&VObjectDesc, guiItemPopupBoxes));
 
         // Get size
         //        GetVideoObject(&hVObject, guiItemPopupBoxes);
@@ -5183,7 +5178,7 @@ public class InterfaceItems
         //Load item
         //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
         //        sprintf(VObjectDesc.ImageFile, "BIGITEMS\\%s", zName);
-        //        CHECKF(AddVideoObject(VObjectDesc, uiVo));
+        //        CHECKF(GetVideoObject(VObjectDesc, uiVo));
 
         puiVo = uiVo;
 
@@ -5494,7 +5489,7 @@ public class InterfaceItems
 
 //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
 //        FilenameForBPP("INTERFACE\\itembox.sti", VObjectDesc.ImageFile);
-//        CHECKF(AddVideoObject(&VObjectDesc, (gItemPickupMenu.uiPanelVo)));
+//        CHECKF(GetVideoObject(&VObjectDesc, (gItemPickupMenu.uiPanelVo)));
 
         // Memalloc selection array...
 //        gItemPickupMenu.pfSelectedArray = MemAlloc((sizeof(int) * gItemPickupMenu.ubTotalItems));

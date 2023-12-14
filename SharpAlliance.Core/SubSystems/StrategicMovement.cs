@@ -1214,7 +1214,6 @@ public class StrategicMovement
 
     void AddCorpsesToBloodcatLair(int sSectorX, MAP_ROW sSectorY)
     {
-        int sXPos, sYPos;
 
         // Setup some values!
         ROTTING_CORPSE_DEFINITION Corpse = new()
@@ -1241,7 +1240,7 @@ public class StrategicMovement
 
         // 1st gridno
         Corpse.sGridNo = 14319;
-        IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out sXPos, out sYPos);
+        IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out int sXPos, out int sYPos);
         Corpse.dXPos = (IsometricUtils.CenterX(sXPos));
         Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
 
@@ -3230,9 +3229,8 @@ public class StrategicMovement
     {
         GROUP? pGroup = null;
         int uiNumberOfGroups = 0;
-        int uiNumBytesWritten = 0;
 
-//        pGroup = gpGroupList;
+        //        pGroup = gpGroupList;
 
         //Count the number of active groups
         while (pGroup is not null)
@@ -3243,7 +3241,7 @@ public class StrategicMovement
 
 
         // Save the number of movement groups to the saved game file
-        files.FileWrite(hFile, uiNumberOfGroups, sizeof(int), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiNumberOfGroups, sizeof(int), out int uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3507,7 +3505,6 @@ public class StrategicMovement
         PLAYERGROUP? pHead = null;
         int uiNumberOfNodes = 0;
         NPCID uiProfileID = 0;
-        int uiNumBytesRead = 0;
         int cnt = 0;
         int sTempID = 0;
         GROUP? pTempGroup = pGroup;
@@ -3517,7 +3514,7 @@ public class StrategicMovement
         //	pHead = *pGroup.pPlayerList;
 
         // Load the number of nodes in the player list
-        files.FileRead(hFile, ref uiNumberOfNodes, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref uiNumberOfNodes, sizeof(int), out int uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3669,14 +3666,13 @@ public class StrategicMovement
     {
         int cnt = 0;
         int uiNumberOfWayPoints = 0;
-        int uiNumBytesWritten = 0;
         List<WAYPOINT> pWayPoints = pGroup.pWaypoints;
 
         //loop trhough and count all the node in the waypoint list
         uiNumberOfWayPoints = pWayPoints.Count;
 
         //Save the number of waypoints
-        files.FileWrite(hFile, uiNumberOfWayPoints, sizeof(int), out uiNumBytesWritten);
+        files.FileWrite(hFile, uiNumberOfWayPoints, sizeof(int), out int uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
@@ -3711,13 +3707,12 @@ public class StrategicMovement
     {
         int cnt = 0;
         int uiNumberOfWayPoints = 0;
-        int uiNumBytesRead = 0;
         List<WAYPOINT> pWayPoints = pGroup.pWaypoints;
         List<WAYPOINT> pTemp = new();
 
 
         //Load the number of waypoints
-        files.FileRead(hFile, ref uiNumberOfWayPoints, sizeof(int), out uiNumBytesRead);
+        files.FileRead(hFile, ref uiNumberOfWayPoints, sizeof(int), out int uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
