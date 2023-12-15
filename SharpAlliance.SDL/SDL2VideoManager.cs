@@ -342,10 +342,18 @@ public class SDL2VideoManager : IVideoManager
         {
             hvObj = this.textures.LoadImage(assetPath);
 
-            if (hvObj.Surface is null)
+            if (hvObj.Surfaces is null)
             {
-                hvObj.Surface = this.CreateSurface(hvObj.Images[0]);
-                hvObj.Texture = this.Surfaces.CreateTextureFromSurface(renderer, hvObj.Surface);
+                hvObj.Surfaces = this.CreateSurfaces(hvObj.Images);
+
+                List<Texture> textures = [];
+
+                foreach (var surface in hvObj.Surfaces)
+                {
+                    textures.Add(this.Surfaces.CreateTextureFromSurface(renderer, surface));
+                }
+
+                hvObj.Textures = [.. textures];
             }
 
             this.loadedObjects.Add(assetPath, hvObj);
@@ -1497,7 +1505,7 @@ public class SDL2VideoManager : IVideoManager
             throw new NullReferenceException("Texture is null for: " + hVObject.Name);
         }
 
-        if (hVObject.Surface is null)
+        if (hVObject.Surfaces is null)
         {
             return;
         }
@@ -1513,7 +1521,7 @@ public class SDL2VideoManager : IVideoManager
 
         SDL.SDL_RenderCopy(
             renderer,
-            hVObject.Texture.Pointer,
+            hVObject.Textures[textureIndex].Pointer,
             IntPtr.Zero,
             ref dstRect);
     }
@@ -2051,7 +2059,17 @@ public class SDL2VideoManager : IVideoManager
 
     public HVOBJECT LoadImage(string assetPath) => this.textures.LoadImage(assetPath);
 
-    public Surface CreateSurface(Image<Rgba32> image) => this.Surfaces.CreateSurface(image);
+    public Surface[] CreateSurfaces(Image<Rgba32>[] images)
+    {
+        List<Surface> surfaces = [];
+
+        foreach (var image in images)
+        {
+            surfaces.Add(this.Surfaces.CreateSurface(image));
+        }
+
+        return [.. surfaces];
+    }
 
     public void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
     {

@@ -216,7 +216,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         //var texture = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_OFF);
         //var surface = video.CreateSurface(texture);
 
-        var hobject = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF, out var key);
+        var hobject = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF);
         GenericButtonOffNormal.Add(bp, hobject);
         if (GenericButtonOffNormal[bp] == null)
         {
@@ -224,7 +224,9 @@ public class ButtonSubSystem : ISharpAllianceManager
             return false;
         }
 
-//        if ((GenericButtonOnNormal[bp] = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_ON)) == null)
+        hobject = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON);
+        GenericButtonOnNormal.Add(bp, hobject);
+        if (GenericButtonOnNormal[bp] == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't create VOBJECT for "DEFAULT_GENERIC_BUTTON_ON);
             return false;
@@ -233,9 +235,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Load up the off hilite and on hilite images. We won't check for errors because if the file
         // doesn't exists, the system simply ignores that file. These are only here as extra images, they
         // aren't required for operation (only OFF Normal and ON Normal are required).
-//        GenericButtonOffHilite[bp] = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
-
-//        GenericButtonOnHilite[bp] = textures.LoadTexture(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
+        GenericButtonOffHilite[bp] = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_OFF_HI);
+        GenericButtonOnHilite[bp] = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
 
         Pix = 0;
         if (!GetETRLEPixelValue(ref Pix, GenericButtonOffNormal[bp], 8, 0, 0))

@@ -6,13 +6,9 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -56,7 +52,7 @@ public class FontSubSystem : ISharpAllianceManager
     private static FontColor FontForeground8 = 0;
     private static FontColor FontBackground8 = 0;
 
-    private static Dictionary<FontStyle, HVOBJECT> FontObjs = new();
+    private static Dictionary<FontStyle, HVOBJECT> FontObjs = [];
 
     private static FontStyle gpSmallFontType1;
     private static HVOBJECT gvoSmallFontType1;
@@ -143,7 +139,6 @@ public class FontSubSystem : ISharpAllianceManager
 
     public static void SetFontForeground(FontColor ubForeground)
     {
-        return;
         int uiRed, uiGreen, uiBlue;
 
         if ((FontDefault < 0) || (((int)FontDefault) > MAX_FONTS))
@@ -341,7 +336,6 @@ public class FontSubSystem : ISharpAllianceManager
     public ValueTask<bool> Initialize()
     {
         video = this.services.GetRequiredService<IVideoManager>();
-//        FontSubSystem.TextRenderer = new TextRenderer(video.GraphicDevice);
 
         var translationTable = this.CreateEnglishTransTable();
         this.InitializeFontManager(translationTable);
@@ -350,8 +344,6 @@ public class FontSubSystem : ISharpAllianceManager
         {
 
         }
-
-        Color color;
 
         fontColorLookup.Add(FontColor.FONT_YELLOW, Color.Yellow);
         fontColorLookup.Add(FontColor.FONT_WHITE, Color.White);

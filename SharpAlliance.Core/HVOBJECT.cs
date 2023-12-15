@@ -37,6 +37,6 @@ public class HVOBJECT
     public string Name { get; set; } = string.Empty;
     public HIMAGE? hImage { get; set; }
     public Image<Rgba32>[] Images { get; set; }
-    public Surface Surface { get; set; }
-    public Texture Texture { get; set; }
+    public Surface[] Surfaces { get; set; }
+    public Texture[] Textures { get; set; }
 }

@@ -347,10 +347,10 @@ public class IntroScreen : IScreen
         //return;
 
         var image = this.video.LoadImage("INTERFACE\\SirtechSplash.sti");
-        Surface surface = this.video.CreateSurface(image.Images[0]);
+        Surface[] surface = this.video.CreateSurfaces(image.Images);
 
         this.video.BlitSurfaceToSurface(
-            src: surface,
+            src: surface[0],
             dst: SurfaceType.FRAME_BUFFER,
             dstPoint: new Point(0, 0),
             bltFlags: VO_BLT.SRCTRANSPARENCY);

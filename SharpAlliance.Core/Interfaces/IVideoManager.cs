@@ -70,6 +70,6 @@ public interface IVideoManager : ISharpAllianceManager
     bool BltVideoObjectFromIndex(SurfaceType uiSourceBufferIndex, int guiSkullIcons, int v1, int v2, int v3, VO_BLT sRCTRANSPARENCY, blt_fx? value);
     void DeleteVideoObjectFromIndex(SurfaceType uiMercTextPopUpBackground);
     HVOBJECT LoadImage(string assetPath);
-    Surface CreateSurface(Image<Rgba32> image);
+    Surface[] CreateSurfaces(Image<Rgba32>[] image);
     void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
 }
