@@ -1,5 +1,9 @@
 ﻿using SDL2;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
@@ -40,14 +44,15 @@ if (renderer == IntPtr.Zero)
 }
 
 // Initilizes SDL_image for use with png files.
-if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) == 0)
-{
-    Console.WriteLine($"There was an issue initilizing SDL2_Image {SDL_image.IMG_GetError()}");
-}
+//if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) == 0)
+//{
+//    Console.WriteLine($"There was an issue initilizing SDL2_Image {SDL_image.IMG_GetError()}");
+//}
 
 var il = new ImageLoader();
 
 var running = true;
+nint texturePtr = il.Process(renderer);
 
 // Main loop for the program
 while (running)
@@ -75,7 +80,15 @@ while (running)
         Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
     }
 
-    nint texturePtr = il.Process(renderer);
+    var image = il.UpdateTexture();
+    //    var surf = ImageLoader.AsSdlSurface(il.surfacePtr);
+    unsafe
+    {
+            if (SDL.SDL_UpdateTexture(texturePtr, 0, (nint)il.pinHandle.Pointer, 4 * image.Width) < 0)
+            {
+                var error = SDL.SDL_GetError();
+            }
+    }
     SDL.SDL_RenderCopy(renderer, texturePtr, 0, 0);
     SDL.SDL_RenderPresent(renderer);
 }
@@ -88,8 +101,8 @@ SDL.SDL_Quit();
 
 class ImageLoader
 {
-    private MemoryHandle pinHandle;
-    private nint surfacePtr;
+    public MemoryHandle pinHandle { get; set; }
+    public nint surfacePtr { get; set; }
     private Image<Rgba32> image;
     private nint texturePtr;
 
@@ -119,24 +132,33 @@ class ImageLoader
         }
 
         pinHandle = memory.Pin();
-        surfacePtr = SDL.SDL_CreateRGBSurfaceFrom(
-            (nint)pinHandle.Pointer,
-            image.Width,
-            image.Height,
-            depth: 32,
-            pitch: 4 * image.Width, // unsure of this, I'd expect at least gibberish if wrong.
-            Rmask: 0x000000FF,
-            Gmask: 0x0000FF00,
-            Bmask: 0x00FF0000,
-            Amask: 0xFF000000);
+        texturePtr = SDL.SDL_CreateTexture(
+            renderer,
+            SDL.SDL_PIXELFORMAT_ABGR8888,
+            (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
+            640,
+            480);
 
-        if (surfacePtr == IntPtr.Zero)
-        {
-            string error = SDL.SDL_GetError();
-            Console.WriteLine(error);
-        }
 
-        texturePtr = SDL.SDL_CreateTextureFromSurface(renderer, surfacePtr);
+
+        //surfacePtr = SDL.SDL_CreateRGBSurfaceFrom(
+        //    (nint)pinHandle.Pointer,
+        //    image.Width,
+        //    image.Height,
+        //    depth: 32,
+        //    pitch: 4 * image.Width, // unsure of this, I'd expect at least gibberish if wrong.
+        //    Rmask: 0x000000FF,
+        //    Gmask: 0x0000FF00,
+        //    Bmask: 0x00FF0000,
+        //    Amask: 0xFF000000);
+        //
+        //if (surfacePtr == IntPtr.Zero)
+        //{
+        //    string error = SDL.SDL_GetError();
+        //    Console.WriteLine(error);
+        //}
+
+       // texturePtr = SDL.SDL_CreateTextureFromSurface(renderer, surfacePtr);
 
         if (texturePtr == IntPtr.Zero)
         {
@@ -145,5 +167,22 @@ class ImageLoader
         }
 
         return texturePtr;
+    }
+
+    int degrees = 0;
+    public Image<Rgba32> UpdateTexture()
+    {
+        degrees += 5;
+//        image.Mutate(ctx =>
+//        {
+//            ctx.Rotate(degrees);
+//        });
+
+  //      if(degrees % 5 == 0)
+  //      {
+  //          image.SaveAsPng(@"C:\temp\test.png");
+  //      }
+
+        return image;
     }
 }

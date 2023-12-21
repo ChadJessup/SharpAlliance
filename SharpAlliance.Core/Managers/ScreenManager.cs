@@ -92,7 +92,8 @@ public class ScreenManager : IScreenManager
 
     public static void Draw(IVideoManager videoManager)
     {
-        CurrentScreen.Draw(videoManager);
+        videoManager.Draw();
+        //CurrentScreen.Draw(videoManager);
     }
 
     public ValueTask<IScreen> ActivateScreen(ScreenName screenName)

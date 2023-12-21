@@ -24,7 +24,7 @@ public interface IVideoManager : ISharpAllianceManager
     public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
     public ISurfaceManager Surfaces { get; }
-
+    public nint Renderer { get; }
     void DrawFrame();
     void RefreshScreen();
     void InvalidateScreen();
@@ -70,6 +70,7 @@ public interface IVideoManager : ISharpAllianceManager
     bool BltVideoObjectFromIndex(SurfaceType uiSourceBufferIndex, int guiSkullIcons, int v1, int v2, int v3, VO_BLT sRCTRANSPARENCY, blt_fx? value);
     void DeleteVideoObjectFromIndex(SurfaceType uiMercTextPopUpBackground);
     HVOBJECT LoadImage(string assetPath);
-    Surface[] CreateSurfaces(Image<Rgba32>[] image);
-    void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
+    Texture[] CreateSurfaces(nint renderer, Image<Rgba32>[] image);
+    void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
+    void Draw();
 }

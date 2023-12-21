@@ -9,11 +9,11 @@ namespace SharpAlliance.Core.Interfaces
     {
         Image<Rgba32> this[SurfaceType surface] { get; }
 
-        Dictionary<SurfaceType, Surface> SurfaceByTypes { get; }
+        Dictionary<SurfaceType, Texture> SurfaceByTypes { get; }
 
-        Surface CreateSurface(Image<Rgba32> image, SurfaceType? surfaceType = null);
+        Texture CreateSurface(nint renderer, Image<Rgba32> image, SurfaceType? surfaceType = null);
         Texture CreateTextureFromSurface(nint renderer, Surface surface);
-        void InitializeSurfaces(int width, int height);
+        void InitializeSurfaces(nint renderer, int width, int height);
         Image<Rgba32> LockSurface(SurfaceType buffer);
     }
 }

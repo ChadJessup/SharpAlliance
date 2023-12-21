@@ -2,23 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.PixelFormats;
-using Veldrid;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Net.Mime.MediaTypeNames;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -1286,12 +1280,18 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Display the button image
         if (b.ButtonPicture.vobj is not null)
         {
-            video.BltVideoObject(
-                b.ButtonPicture.vobj,
-                (ushort)UseImage,
-                b.Loc.X,
-                b.Loc.Y,
-                UseImage);
+            video.BlitSurfaceToSurface(
+                b.ButtonPicture.vobj.Images[UseImage],
+                ButtonDestBuffer,
+                new(b.Loc.X, b.Loc.Y),
+                VO_BLT.SRCTRANSPARENCY);
+
+//            video.BltVideoObject(
+//                b.ButtonPicture.vobj,
+//                (ushort)UseImage,
+//                b.Loc.X,
+//                b.Loc.Y,
+//                UseImage);
         }
     }
 
@@ -1774,7 +1774,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         int ButtonNum;
         ButtonFlags BType;
 
-        loc.Y = 480 - loc.Y;
+//        loc.Y = 480 - loc.Y;
 
         // Strip off any extraneous bits from button type
         BType = Type & (ButtonFlags.BUTTON_TYPE_MASK | ButtonFlags.BUTTON_NEWTOGGLE);
@@ -1851,8 +1851,8 @@ public class ButtonSubSystem : ISharpAllianceManager
         var regionRect = new Rectangle(
             loc.X,
             loc.Y,
-            Image.MaxWidth,
-            Image.MaxHeight);
+            loc.X + Image.MaxWidth,
+            loc.Y + Image.MaxHeight);
 
         MouseSubSystem.MSYS_DefineRegion(
             ref b.MouseRegion,

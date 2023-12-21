@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers;
+using System.Diagnostics;
 using System.Numerics;
 using Microsoft.Extensions.Logging;
 using SDL2;
@@ -9,6 +10,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp.Drawing.Processing;
 using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
@@ -31,7 +33,7 @@ public class SDL2VideoManager : IVideoManager
     const int DDERR_SURFACELOST = 0x9700000;
     private readonly ILogger<SDL2VideoManager> logger;
 
-    private nint renderer;
+    public nint Renderer { get; private set; }
 
     private bool clearScreen;
 
@@ -124,8 +126,6 @@ public class SDL2VideoManager : IVideoManager
         this.renderWorld = renderWorld;
         this.screenManager = (screenManager as ScreenManager)!;
 
-        this.Surfaces.InitializeSurfaces(SCREEN_WIDTH, SCREEN_HEIGHT);
-
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
 
@@ -171,16 +171,18 @@ public class SDL2VideoManager : IVideoManager
             flags,
             threadedProcessing: true);
 
-        renderer = SDL.SDL_CreateRenderer(
+        Renderer = SDL.SDL_CreateRenderer(
             window.SdlWindowHandle,
             -1,
             SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
             SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
 
-        if (renderer == IntPtr.Zero)
+        if (Renderer == IntPtr.Zero)
         {
             Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
         }
+
+        this.Surfaces.InitializeSurfaces(Renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         Window.Resized += () => windowResized = true;
         //Window.PollIntervalInMs = 1000 / 30;
@@ -284,20 +286,20 @@ public class SDL2VideoManager : IVideoManager
         return true;
     }
 
-    public void DrawFrame()
+    public unsafe void DrawFrame()
     {
         if (Globals.gfForceFullScreenRefresh || clearScreen)
         {
             clearScreen = false;
         }
 
-        if (SDL.SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255) < 0)
+        if (SDL.SDL_SetRenderDrawColor(Renderer, 135, 206, 235, 255) < 0)
         {
             var error = SDL.SDL_GetError();
         }
 
         // Clears the current render surface.
-        // if (SDL.SDL_RenderClear(renderer) < 0)
+        // if (SDL.SDL_RenderClear(Renderer) < 0)
         // {
         //     Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
         // }
@@ -305,16 +307,26 @@ public class SDL2VideoManager : IVideoManager
         ScreenManager.Draw(this);
         MouseSubSystem.Draw(this);
 
-        // Everything above writes to this SpriteRenderer, so draw it now.
-        //        SpriteRenderer.Draw(GraphicDevice, commandList);
-        //        IVideoManager.DebugRenderer.Draw(GraphicDevice, commandList);
-
-        //        SpriteRenderer.RenderText(GraphicDevice, commandList, FontSubSystem.TextRenderer.TextureView, new Vector2(0, 0));
-        //        commandList.End();
-
         FontSubSystem.TextRenderer.RenderAllText(this);
 
-        SDL.SDL_RenderPresent(renderer);
+        var bb = this.Surfaces.SurfaceByTypes[SurfaceType.PRIMARY_SURFACE];
+        //bb.Image.SaveAsPng(@"C:\temp\test.png");
+
+        if (SDL.SDL_UpdateTexture(bb.Pointer, 0, (nint)bb.Handle.Pointer, 4 * bb.Image.Width) < 0)
+        {
+            var error = SDL.SDL_GetError();
+        }
+
+        if (SDL.SDL_RenderCopy(Renderer, bb.Pointer, 0, 0) < 0)
+        {
+            var error = SDL.SDL_GetError();
+        }
+
+        SDL.SDL_RenderPresent(Renderer);
+    }
+
+    public void Draw()
+    {
     }
 
     public static byte[] ReadEmbeddedAssetBytes(string name)
@@ -342,19 +354,20 @@ public class SDL2VideoManager : IVideoManager
         {
             hvObj = this.textures.LoadImage(assetPath);
 
-            if (hvObj.Surfaces is null)
-            {
-                hvObj.Surfaces = this.CreateSurfaces(hvObj.Images);
-
-                List<Texture> textures = [];
-
-                foreach (var surface in hvObj.Surfaces)
-                {
-                    textures.Add(this.Surfaces.CreateTextureFromSurface(renderer, surface));
-                }
-
-                hvObj.Textures = [.. textures];
-            }
+//            if (hvObj.Images is null)
+//            {
+//                hvObj.Surfaces = this.CreateSurfaces(Renderer, hvObj.Images);
+//
+//                List<Texture> textures = [];
+//
+//                foreach (var surface in hvObj.Surfaces)
+//                {
+//                    var tex = this.Surfaces.CreateTextureFromSurface(Renderer, surface);
+//                    textures.Add(tex);
+//                }
+//
+//                hvObj.Textures = [.. textures];
+//            }
 
             this.loadedObjects.Add(assetPath, hvObj);
             Console.WriteLine($"{nameof(GetVideoObject)}: {assetPath}");
@@ -362,6 +375,8 @@ public class SDL2VideoManager : IVideoManager
 
         return hvObj;
     }
+
+    private Rectangle fullScreenRect = new(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     public void RefreshScreen()
     {
@@ -811,13 +826,12 @@ public class SDL2VideoManager : IVideoManager
         //
         // Step (1) - Flip pages
         //
-        var fullRect = new Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        //BlitRegion(
-        //    gpPrimarySurface,
-        //    rcWindow.ToPoint(),
-        //    fullRect,
-        //    backBuffer);
+        BlitRegion(
+            this.Surfaces[SurfaceType.PRIMARY_SURFACE],
+            rcWindow.ToPoint(),
+            fullScreenRect,
+            this.Surfaces[SurfaceType.BACKBUFFER]);
 
         // Step (2) - Copy Primary Surface to the Back Buffer
         if (Globals.gfRenderScroll)
@@ -946,7 +960,7 @@ public class SDL2VideoManager : IVideoManager
             sourceTexture);
 
     private void BlitRegion(
-        Image<Rgba32> texture,
+        Image<Rgba32> dstImage,
         Point destinationPoint,
         Rectangle sourceRegion,
         Image<Rgba32> srcImage)
@@ -955,7 +969,26 @@ public class SDL2VideoManager : IVideoManager
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
-        this.Surfaces[SurfaceType.BACKBUFFER].Mutate(ctx => ctx.DrawImage(srcImage, finalRect, 0.5f));
+        //        srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
+        //        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-before.png");
+
+        try
+        {
+            dstImage.Mutate(ctx =>
+            {
+                ctx.DrawImage(
+                    srcImage,
+//                    destinationPoint,
+                    finalRect,
+                    PixelColorBlendingMode.Normal,
+                    1.0f);
+            });
+        }
+        catch(Exception e)
+        {
+
+        }
+//        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
     }
 
     private void ScrollJA2Background(
@@ -1505,7 +1538,7 @@ public class SDL2VideoManager : IVideoManager
             throw new NullReferenceException("Texture is null for: " + hVObject.Name);
         }
 
-        if (hVObject.Surfaces is null)
+        if (hVObject.Images is null)
         {
             return;
         }
@@ -1519,11 +1552,11 @@ public class SDL2VideoManager : IVideoManager
             w = hVObject.Images[textureIndex].Width
         };
 
-        SDL.SDL_RenderCopy(
-            renderer,
-            hVObject.Textures[textureIndex].Pointer,
-            IntPtr.Zero,
-            ref dstRect);
+//        SDL.SDL_RenderCopy(
+//            Renderer,
+//            hVObject.Textures[textureIndex].Pointer,
+//            IntPtr.Zero,
+//            ref dstRect);
     }
 
     public bool DrawTextToScreen(
@@ -2059,48 +2092,74 @@ public class SDL2VideoManager : IVideoManager
 
     public HVOBJECT LoadImage(string assetPath) => this.textures.LoadImage(assetPath);
 
-    public Surface[] CreateSurfaces(Image<Rgba32>[] images)
+    public Texture[] CreateSurfaces(nint renderer, Image<Rgba32>[] images)
     {
-        List<Surface> surfaces = [];
+        List<Texture> surfaces = [];
 
         foreach (var image in images)
         {
-            surfaces.Add(this.Surfaces.CreateSurface(image));
+            surfaces.Add(this.Surfaces.CreateSurface(renderer, image));
         }
 
         return [.. surfaces];
     }
 
-    public void BlitSurfaceToSurface(Surface src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
+    public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
     {
         var dstSurface = Surfaces.SurfaceByTypes[dst];
-        SDL.SDL_Rect srcRect = new()
+
+        //        SDL.SDL_Rect srcRect = new()
+        //        {
+        //            h = src.Image.Height,
+        //            w = src.Image.Width,
+        //            x = 0,
+        //            y = 0,
+        //        };
+        //
+        //        SDL.SDL_Rect dstRect = new()
+        //        {
+        //            h = srcRect.h,
+        //            w = srcRect.w,
+        //            x = dstPoint.X,
+        //            y = dstPoint.Y,
+        //        };
+
+        Rectangle dstRectangle = new()
         {
-            h = src.Image.Height,
-            w = src.Image.Width,
-            x = 0,
-            y = 0,
+            Height = src.Height,
+            Width = src.Width,
+            X = dstPoint.X,
+            Y = dstPoint.Y,
         };
 
-        SDL.SDL_Rect dstRect = new()
-        {
-            h = srcRect.h,
-            w = srcRect.w,
-            x = dstPoint.X,
-            y = dstPoint.Y,
-        };
+        //src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
+//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
 
-        var result = SDL.SDL_BlitSurface(
-            src.Pointer,
-            ref srcRect,
-            dstSurface.Pointer,
-            ref dstRect);
-
-        if (result != 0)
+        dstSurface.Image.Mutate(ctx =>
         {
-            var e = SDL.SDL_GetError();
+            ctx.DrawImage(
+                src, 
+                dstPoint,
+                dstRectangle,
+                colorBlending: PixelColorBlendingMode.Normal,
+//                alphaComposition: PixelAlphaCompositionMode.Dest,
+                1.0f);
+        });
+
+//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+
+
+        //        var result = SDL.SDL_BlitSurface(
+        //            src.Pointer,
+        //            ref srcRect,
+        //            dstSurface.Pointer,
+        //            ref dstRect);
+        //
+        //        if (result != 0)
+        //        {
+        //            var e = SDL.SDL_GetError();
+        //        }
         }
-    }
 }
 
 public static class RectangleHelpers

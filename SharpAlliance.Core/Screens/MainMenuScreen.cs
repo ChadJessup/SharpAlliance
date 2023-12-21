@@ -151,6 +151,8 @@ public class MainMenuScreen : IScreen
             ButtonSubSystem.MarkAButtonDirty(this.iMenuButtons[(MainMenuItems)cnt]);
         }
 
+        ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
+
         video.EndFrameBufferRender();
 
         this.HandleMainMenuInput();
@@ -272,26 +274,29 @@ public class MainMenuScreen : IScreen
         }
     }
 
+    private PointF copyrightLocaiton = new(0, 465);
     private void RenderMainMenu()
     {
-        HVOBJECT hPixHandle;
-
         //Get and display the background image
-        hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
-        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        HVOBJECT hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        //video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
         hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
         //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Images[0].Height), 0);
-        video.BltVideoObject(hPixHandle, 0, 188, (25 + (int)hPixHandle.Images[0].Height), 0);
+//        video.BltVideoObject(hPixHandle, 0, 188, (25 + (int)hPixHandle.Images[0].Height), 0);
 
-        FontSubSystem.DrawTextToScreen(
-            EnglishText.gzCopyrightText[0],
-            new(0, 465),
-            640,
-            FontStyle.FONT10ARIAL,
-            FontColor.FONT_MCOLOR_WHITE,
-            FontColor.FONT_MCOLOR_BLACK,
-            TextJustifies.CENTER_JUSTIFIED);
+//        FontSubSystem.DrawTextToScreen(
+//            EnglishText.gzCopyrightText[0],
+//            copyrightLocaiton,
+//            640,
+//            FontStyle.FONT10ARIAL,
+//            FontColor.FONT_MCOLOR_WHITE,
+//            FontColor.FONT_MCOLOR_BLACK,
+//            TextJustifies.CENTER_JUSTIFIED);
 
         video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
@@ -408,7 +413,9 @@ public class MainMenuScreen : IScreen
 
                 this.iMenuButtons[menuItem] = ButtonSubSystem.QuickCreateButton(
                     this.iMenuImages[menuItem],
-                    new Point(320 - Globals.gusMainMenuButtonWidths[cnt] / 2, Globals.MAINMENU_Y + (cnt * Globals.MAINMENU_Y_SPACE)),
+                    new Point(
+                        320 - Globals.gusMainMenuButtonWidths[cnt] / 2,
+                        Globals.MAINMENU_Y + (cnt * Globals.MAINMENU_Y_SPACE)),
                     ButtonFlags.BUTTON_TOGGLE,
                     MSYS_PRIORITY.HIGHEST,
                     MouseSubSystem.DefaultMoveCallback,
@@ -553,16 +560,7 @@ public class MainMenuScreen : IScreen
 
     public void Draw(IVideoManager videoManager)
     {
-        //this.RenderMainMenu();
-       // var background = this.video.GetVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
 
-        // load ja2 logo graphic and add it
-        //var logo = this.video.GetVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
-
-        //sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
-        //sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);
-
-        ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
 
         //FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
     }

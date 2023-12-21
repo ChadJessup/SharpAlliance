@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
 
 public class SurfaceManager : ISurfaceManager
 {
     private readonly ILogger<SurfaceManager> logger;
-    private readonly Dictionary<Surface, Image<Rgba32>> surfaces = new();
+    private readonly Dictionary<Texture, Image<Rgba32>> surfaces = new();
     private readonly Dictionary<Image<Rgba32>, bool> surfaceLocks = new();
 
     public SurfaceManager(
@@ -29,24 +20,28 @@ public class SurfaceManager : ISurfaceManager
     private int width;
     private int height;
 
-    public Dictionary<SurfaceType, Surface> SurfaceByTypes { get; } = new();
+    public Dictionary<SurfaceType, Texture> SurfaceByTypes { get; } = new();
 
     public Image<Rgba32> this[SurfaceType surface]
     {
         get => this.surfaces.FirstOrDefault(s => s.Key.SurfaceType == surface).Value;
     }
 
-    public void InitializeSurfaces(int width, int height)
+    public void InitializeSurfaces(nint renderer, int width, int height)
     {
         this.width = width;
         this.height = height;
 
-        var primarySurface = this.CreateSurface(new(this.width, this.height), SurfaceType.PRIMARY_SURFACE);
-        var frameSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.FRAME_BUFFER);
-        var renderSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.RENDER_BUFFER);
-        var saveSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.SAVE_BUFFER);
-        var extraSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.EXTRA_BUFFER);
-        var backbufferSurface = this.CreateSurface(new(this.width, this.height), SurfaceType.BACKBUFFER);
+        Image<Rgba32> blankImage = new(width, height, Rgba32.ParseHex("FF000000")); 
+
+        var primarySurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.PRIMARY_SURFACE);
+        var frameSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.FRAME_BUFFER);
+        var renderSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.RENDER_BUFFER);
+        var saveSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.SAVE_BUFFER);
+        var extraSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.EXTRA_BUFFER);
+        var backbufferSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.BACKBUFFER);
+
+//        frameSurface.Image.SaveAsPng($@"c:\temp\{nameof(InitializeSurfaces)}-frameSurface.png");
 
         //        this.surfaces.Add(primarySurface, primarySurface.Image);
         //        this.surfaces.Add(frameSurface, frameSurface.Image);
@@ -60,7 +55,7 @@ public class SurfaceManager : ISurfaceManager
         return new Image<Rgba32>(100, 100);
     }
 
-    public unsafe Surface CreateSurface(Image<Rgba32> image, SurfaceType? surfaceType = null)
+    public unsafe Texture CreateSurface(nint renderer, Image<Rgba32> image, SurfaceType? surfaceType = null)
     {
         if (this.surfaces.ContainsValue(image))
         {
@@ -87,35 +82,42 @@ public class SurfaceManager : ISurfaceManager
         }
 
         var pinHandle = memory.Pin();
-        var surfacePtr = SDL.SDL_CreateRGBSurfaceFrom(
-            (nint)pinHandle.Pointer,
-            image.Width,
-            image.Height,
-            depth: 32,
-            pitch: 4 * image.Width, // unsure of this, I'd expect at least gibberish if wrong.
-            Rmask: 0x000000FF,
-            Gmask: 0x0000FF00,
-            Bmask: 0x00FF0000,
-            Amask: 0xFF000000);
+      //  var surfacePtr = SDL.SDL_CreateRGBSurfaceFrom(
+      //      (nint)pinHandle.Pointer,
+      //      image.Width,
+      //      image.Height,
+      //      depth: 32,
+      //      pitch: 4 * image.Width, // unsure of this, I'd expect at least gibberish if wrong.
+      //      Rmask: 0x000000FF,
+      //      Gmask: 0x0000FF00,
+      //      Bmask: 0x00FF0000,
+      //      Amask: 0xFF000000);
 
-        if (surfacePtr == IntPtr.Zero)
+       var texturePtr = SDL.SDL_CreateTexture(
+            renderer,
+            SDL.SDL_PIXELFORMAT_ABGR8888,
+            (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
+            image.Width,
+            image.Height);
+
+        if (texturePtr == IntPtr.Zero)
         {
             string error = SDL.SDL_GetError();
             Console.WriteLine(error);
         }
 
-        Surface surf = new()
+        Texture texture = new()
         {
             Image = image,
             SurfaceType = idx,
             Handle = pinHandle,
-            Pointer = surfacePtr,
+            Pointer = texturePtr,
         };
 
-        this.SurfaceByTypes[idx] = surf;
-        this.surfaces[surf] = image;
-
-        return surf;
+        this.SurfaceByTypes[idx] = texture;
+        this.surfaces[texture] = image;
+        
+        return texture;
     }
 
     public Texture CreateTextureFromSurface(nint renderer, Surface surface)
@@ -128,9 +130,14 @@ public class SurfaceManager : ISurfaceManager
             Console.WriteLine(error);
         }
 
-        return new()
+        Texture tex = new()
         {
             Pointer = texturePtr,
+            Image = surface.Image,
         };
+
+        surface.Texture = tex;
+
+        return tex;
     }
 }

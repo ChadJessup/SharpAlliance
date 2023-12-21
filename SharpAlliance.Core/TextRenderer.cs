@@ -82,32 +82,32 @@ public class TextRenderer
 
     public unsafe void RenderAllText(IVideoManager videoManager)
     {
-        this._image.DangerousTryGetSinglePixelMemory(out var span2);
-        fixed (void* data = &MemoryMarshal.GetReference(span2.Span))
-        {
-            uint size = (uint)(this._image.Width * this._image.Height * 4);
-
-            try
-            {
-                //                videoManager.
-                //                this._gd.UpdateTexture(
-                //                    this._texture,
-                //                    (IntPtr)data,
-                //                    size,
-                //                    x: 0,
-                //                    y: 0,
-                //                    z: 0,
-                //                    this._texture.Width,
-                //                    this._texture.Height,
-                //                    depth: 1,
-                //                    mipLevel: 0,
-                //                    arrayLayer: 0);
-            }
-            catch (Exception e)
-            {
-
-            }
-        }
-
+    //    this._image.DangerousTryGetSinglePixelMemory(out var span2);
+    //    fixed (void* data = &MemoryMarshal.GetReference(span2.Span))
+    //    {
+    //        uint size = (uint)(this._image.Width * this._image.Height * 4);
+    //
+    //        try
+    //        {
+    //            //                videoManager.
+    //            //                this._gd.UpdateTexture(
+    //            //                    this._texture,
+    //            //                    (IntPtr)data,
+    //            //                    size,
+    //            //                    x: 0,
+    //            //                    y: 0,
+    //            //                    z: 0,
+    //            //                    this._texture.Width,
+    //            //                    this._texture.Height,
+    //            //                    depth: 1,
+    //            //                    mipLevel: 0,
+    //            //                    arrayLayer: 0);
+    //        }
+    //        catch (Exception e)
+    //        {
+    //
+    //        }
+    //    }
+    //
     }
 }

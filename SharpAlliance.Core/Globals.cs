@@ -1651,7 +1651,7 @@ public partial class Globals
     public const int MAINMENU_X = (640 - 214) / 2;
     public const int MAINMENU_TITLE_Y = 75;
     public const int MAINMENU_Y_SPACE = 37;
-    public const int MAINMENU_Y = 480 - 187;
+    public const int MAINMENU_Y = 277;//480 - 187;
 
     public static int[] gusMainMenuButtonWidths = new int[(int)MainMenuItems.NUM_MENU_ITEMS];
     public static MOUSE_REGION gBackRegion = new(nameof(gBackRegion));
