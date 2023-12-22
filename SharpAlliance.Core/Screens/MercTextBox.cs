@@ -333,7 +333,7 @@ public class MercTextBox
         GetMercPopupBoxFontColor(ubBackgroundIndex, out FontColor ubFontColor, out FontShadow ubFontShadowColor);
 
         FontSubSystem.SetFontShadow(ubFontShadowColor);
-        FontSubSystem.SetFontDestBuffer(pPopUpTextBox.uiSourceBufferIndex, 0, 0, usWidth, usHeight, false);
+        this.fonts.SetFontDestBuffer(pPopUpTextBox.uiSourceBufferIndex, 0, 0, usWidth, usHeight, false);
 
         //Display the text
         sDispTextXPos = ((MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X + usMarginX));
@@ -354,7 +354,7 @@ public class MercTextBox
             FontColor.FONT_MCOLOR_BLACK,
             TextJustifies.LEFT_JUSTIFIED);
 
-        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
         if (iBoxId == -1)

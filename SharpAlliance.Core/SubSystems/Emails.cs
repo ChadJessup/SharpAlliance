@@ -1139,7 +1139,7 @@ public class Emails
         // draw subject line of mail being viewed in viewer
 
         // lock buffer to prevent overwrite
-        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, SUBJECT_X, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)), SUBJECT_X + SUBJECT_WIDTH, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)) + MIDDLE_WIDTH, false);
+        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, SUBJECT_X, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)), SUBJECT_X + SUBJECT_WIDTH, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)) + MIDDLE_WIDTH, false);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -1174,7 +1174,7 @@ public class Emails
 
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
         // reset font dest buffer
-        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
         return;
     }
@@ -4387,7 +4387,7 @@ public class Emails
         // turn off the shadows
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
 
-        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
         this.fonts.FindFontCenterCoordinates(VIEWER_X + INDENT_X_OFFSET, 0, INDENT_X_WIDTH, 0, sString, FontStyle.FONT12ARIAL, out int sX, out int sY);
         mprintf(sX, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 2, sString);

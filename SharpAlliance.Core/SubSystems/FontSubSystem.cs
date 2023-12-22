@@ -9,6 +9,7 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Veldrid;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -33,14 +34,14 @@ public class FontSubSystem : ISharpAllianceManager
     private const int ID_BLACK = 0;
     private const int MAX_FONTS = 25;
     public const int INVALIDATE_TEXT = 0x00000010;
-    public Rectangle FontDestRegion = new(0, 0, 640, 480);
+    public SixLabors.ImageSharp.Rectangle FontDestRegion = new(0, 0, 640, 480);
 
     // Wont display the text.  Used if you just want to get how many lines will be displayed
     public const int DONT_DISPLAY_TEXT = 0x00000020;
     private static FontStyle gpLargeFontType1;
     private static HVOBJECT gvoLargeFontType1;
     private static FontStyle FontDefault;
-    //private int FontDestBuffer = BACKBUFFER;
+    public SurfaceType FontDestBuffer { get; set; } = SurfaceType.BACKBUFFER;
     private static int FontDestPitch = 640 * 2;
     private static int FontDestBPP = 16;
     private readonly ITextureManager textures;
@@ -109,7 +110,7 @@ public class FontSubSystem : ISharpAllianceManager
         ITextureManager textureManager,
         IServiceProvider serviceProvider)
     {
-        TextRenderer = new(videoManager);
+        TextRenderer = new(this, videoManager);
 
         textures = textureManager;
         video = videoManager;
@@ -182,8 +183,15 @@ public class FontSubSystem : ISharpAllianceManager
         return pTrav.usHeight + pTrav.sOffsetY;
     }
 
-    public static void SetFontDestBuffer(SurfaceType buttonDestBuffer, int y1, int y2, int width, int height, bool v)
+    public void SetFontDestBuffer(SurfaceType DestBuffer, int x1, int y1, int x2, int y2, bool wrap)
     {
+        FontDestBuffer = DestBuffer;
+
+        FontDestRegion.X = x1;
+        FontDestRegion.Y = y1;
+        FontDestRegion.Width = x2 - x1;
+        FontDestRegion.Height = y2 - y1;
+        FontDestWrap = wrap;
     }
 
     public static int StringPixLength(string stringText, FontStyle UseFont)
@@ -269,7 +277,7 @@ public class FontSubSystem : ISharpAllianceManager
     }
 
     public static int DisplayWrappedString(
-        Point pos,
+        SixLabors.ImageSharp.Point pos,
         int sWrappedWidth,
         int gap,
         FontStyle usFont,
@@ -306,10 +314,10 @@ public class FontSubSystem : ISharpAllianceManager
 
         var alignment = justification switch
         {
-            TextJustifies.CENTER_JUSTIFIED => HorizontalAlignment.Center,
-            TextJustifies.RIGHT_JUSTIFIED => HorizontalAlignment.Right,
-            TextJustifies.LEFT_JUSTIFIED => HorizontalAlignment.Left,
-            _ => HorizontalAlignment.Left,
+            TextJustifies.CENTER_JUSTIFIED => TextAlignment.Center,
+            TextJustifies.RIGHT_JUSTIFIED => TextAlignment.End,
+            TextJustifies.LEFT_JUSTIFIED => TextAlignment.Start,
+            _ => TextAlignment.Center,
         };
 
         try
@@ -480,6 +488,9 @@ public class FontSubSystem : ISharpAllianceManager
         gvoHugeFont = GetFontObject(gpHugeFont);
         CreateFontPaletteTables(gvoHugeFont);
         FontObjs[FontStyle.HUGEFONT] = gvoHugeFont;
+
+        // Set default for font system
+        SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
     }
 
     //*****************************************************************************

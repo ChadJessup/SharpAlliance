@@ -1181,7 +1181,7 @@ public class Faces
 
                 if (pSoldier.bOppCnt > 0)
                 {
-                    FontSubSystem.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
+                    this.fonts.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
 
                     sString = wprintf("%d", pSoldier.bOppCnt);
 
@@ -1196,7 +1196,7 @@ public class Faces
                     sY2 = sY1 + this.fonts.GetFontHeight(FontStyle.TINYFONT1) - 1;
 
                     mprintf((int)(sX1 + 1), (int)(sY1 - 1), sString);
-                    FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+                    this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
 
                     // Draw box
                     //                    pDestBuf = LockVideoSurface(uiRenderBuffer, out uiDestPitchBYTES);
@@ -1388,7 +1388,7 @@ public class Faces
                 // ATE: Show numbers only in mapscreen
                 if (fShowNumber)
                 {
-                    FontSubSystem.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
+                    this.fonts.SetFontDestBuffer(uiRenderBuffer, 0, 0, 640, 480, false);
 
                     if (fShowMaximum)
                     {
@@ -1407,7 +1407,7 @@ public class Faces
                     FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
 
                     mprintf(sFaceX + pFace.usFaceWidth - usTextWidth, (int)(sFaceY + 3), sString);
-                    FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+                    this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
                 }
             }
         }

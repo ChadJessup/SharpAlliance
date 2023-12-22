@@ -274,7 +274,7 @@ public class MainMenuScreen : IScreen
         }
     }
 
-    private PointF copyrightLocaiton = new(0, 465);
+    private PointF copyrightLocation = new(0, 465);
     private void RenderMainMenu()
     {
         //Get and display the background image
@@ -286,17 +286,18 @@ public class MainMenuScreen : IScreen
         hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+
         //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Images[0].Height), 0);
 //        video.BltVideoObject(hPixHandle, 0, 188, (25 + (int)hPixHandle.Images[0].Height), 0);
 
-//        FontSubSystem.DrawTextToScreen(
-//            EnglishText.gzCopyrightText[0],
-//            copyrightLocaiton,
-//            640,
-//            FontStyle.FONT10ARIAL,
-//            FontColor.FONT_MCOLOR_WHITE,
-//            FontColor.FONT_MCOLOR_BLACK,
-//            TextJustifies.CENTER_JUSTIFIED);
+        FontSubSystem.DrawTextToScreen(
+            EnglishText.gzCopyrightText[0],
+            copyrightLocation,
+            640,
+            FontStyle.FONT10ARIAL,
+            FontColor.FONT_MCOLOR_WHITE,
+            FontColor.FONT_MCOLOR_BLACK,
+            TextJustifies.CENTER_JUSTIFIED);
 
         video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
@@ -562,7 +563,6 @@ public class MainMenuScreen : IScreen
     {
 
 
-        //FontSubSystem.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
     }
 
     public ValueTask Deactivate()

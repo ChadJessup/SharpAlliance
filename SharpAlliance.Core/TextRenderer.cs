@@ -22,9 +22,11 @@ public class TextRenderer
     private readonly IVideoManager _video;
     private readonly Font _font;
     private readonly Image<Rgba32> _image;
+    private readonly FontSubSystem fonts;
 
-    public TextRenderer(IVideoManager videoManager)
+    public TextRenderer(FontSubSystem fontSubsystem, IVideoManager videoManager)
     {
+        this.fonts = fontSubsystem;
         int width = 640;
         int height = 480;
         this._texture = new(width, height);
@@ -60,54 +62,67 @@ public class TextRenderer
         string text,
         PointF location,
         int width,
-        HorizontalAlignment alignment,
+        TextAlignment alignment,
         Font font,
         Rgba32 foreground,
         Rgba32 background)
     {
-        if (text == "Save Game")
+        var buffer = this._video.Surfaces[this.fonts.FontDestBuffer];
+
+        RichTextOptions options = new(font)
         {
+            Origin = location,
+            TextAlignment = alignment,
+            LayoutMode = LayoutMode.HorizontalTopBottom,
+            TextDirection = TextDirection.LeftToRight,
+            TextJustification = TextJustification.InterWord,
+            VerticalAlignment = VerticalAlignment.Center,
+            WrappingLength = width,
+        };
 
-        }
+        var foreColor = new Color(foreground);
+        var backColor = new Color(background);
+        Brush brush = Brushes.Solid(foreColor);//, backColor);
+        Pen pen = Pens.Solid(backColor, 0.1f);
 
-        this._image.Mutate(ctx =>
+        buffer.Mutate(ctx =>
         {
             ctx.DrawText(
+                options,
                 text,
-                font,
-                foreground,
-                location);
+                brush,
+                pen);
         });
     }
 
     public unsafe void RenderAllText(IVideoManager videoManager)
     {
-    //    this._image.DangerousTryGetSinglePixelMemory(out var span2);
-    //    fixed (void* data = &MemoryMarshal.GetReference(span2.Span))
-    //    {
-    //        uint size = (uint)(this._image.Width * this._image.Height * 4);
-    //
-    //        try
-    //        {
-    //            //                videoManager.
-    //            //                this._gd.UpdateTexture(
-    //            //                    this._texture,
-    //            //                    (IntPtr)data,
-    //            //                    size,
-    //            //                    x: 0,
-    //            //                    y: 0,
-    //            //                    z: 0,
-    //            //                    this._texture.Width,
-    //            //                    this._texture.Height,
-    //            //                    depth: 1,
-    //            //                    mipLevel: 0,
-    //            //                    arrayLayer: 0);
-    //        }
-    //        catch (Exception e)
-    //        {
-    //
-    //        }
-    //    }
-    //
+        //    this._image.DangerousTryGetSinglePixelMemory(out var span2);
+        //    fixed (void* data = &MemoryMarshal.GetReference(span2.Span))
+        //    {
+        //        uint size = (uint)(this._image.Width * this._image.Height * 4);
+        //
+        //        try
+        //        {
+        //            //                videoManager.
+        //            //                this._gd.UpdateTexture(
+        //            //                    this._texture,
+        //            //                    (IntPtr)data,
+        //            //                    size,
+        //            //                    x: 0,
+        //            //                    y: 0,
+        //            //                    z: 0,
+        //            //                    this._texture.Width,
+        //            //                    this._texture.Height,
+        //            //                    depth: 1,
+        //            //                    mipLevel: 0,
+        //            //                    arrayLayer: 0);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //
+        //        }
+        //    }
+        //
     }
 }

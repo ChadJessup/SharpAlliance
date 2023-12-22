@@ -919,7 +919,7 @@ public class Messages
         int usSpacing;
 
 
-        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 17, 360 + 6, 407, 360 + 101, false);
+        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 17, 360 + 6, 407, 360 + 101, false);
 
         FontSubSystem.SetFont(MAP_SCREEN_MESSAGE_FONT);       // no longer supports variable fonts
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -956,7 +956,7 @@ public class Messages
             ubCurrentStringIndex = (ubCurrentStringIndex + 1) % 256;
         }
 
-        FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
     }
 
 

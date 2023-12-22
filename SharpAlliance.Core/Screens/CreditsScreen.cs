@@ -22,6 +22,7 @@ public class CreditsScreen : IScreen
     private readonly GameContext context;
     private readonly IInputManager inputs;
     private readonly IFileManager files;
+    private readonly FontSubSystem fonts;
     private readonly IVideoManager video;
 
     public bool IsInitialized { get; set; }
@@ -33,8 +34,10 @@ public class CreditsScreen : IScreen
         IClockManager clockManager,
         IFileManager fileManager,
         IVideoManager videoManager,
-        GuiManager guiManager)
+        GuiManager guiManager,
+        FontSubSystem fontSubSystem)
     {
+        this.fonts = fontSubSystem;
         this.video = videoManager;
         this.gui = guiManager;
         this.clock = clockManager;
@@ -540,13 +543,13 @@ public class CreditsScreen : IScreen
             //fill the surface with a transparent color
 
             //set the font dest buffer to be the surface
-            FontSubSystem.SetFontDestBuffer(pNodeToAdd.uiVideoSurfaceImage, 0, 0, CRDT_WIDTH_OF_TEXT_AREA, pNodeToAdd.sHeightOfString, false);
+            this.fonts.SetFontDestBuffer(pNodeToAdd.uiVideoSurfaceImage, 0, 0, CRDT_WIDTH_OF_TEXT_AREA, pNodeToAdd.sHeightOfString, false);
 
             //write the string onto the surface
             FontSubSystem.DisplayWrappedString(new SixLabors.ImageSharp.Point(0, 1), CRDT_WIDTH_OF_TEXT_AREA, 2, uiFontToUse, uiColorToUse, pNodeToAdd.pString, 0, Globals.gubCrdtJustification);
 
             //reset the font dest buffer
-            FontSubSystem.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+            this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
         }
 
         //

@@ -978,7 +978,6 @@ public class SDL2VideoManager : IVideoManager
             {
                 ctx.DrawImage(
                     srcImage,
-//                    destinationPoint,
                     finalRect,
                     PixelColorBlendingMode.Normal,
                     1.0f);
