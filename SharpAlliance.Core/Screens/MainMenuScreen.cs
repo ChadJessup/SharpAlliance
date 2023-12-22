@@ -554,12 +554,6 @@ public class MainMenuScreen : IScreen
         this.video.InvalidateScreen();
     }
 
-    public void Draw(IVideoManager videoManager)
-    {
-
-
-    }
-
     public ValueTask Deactivate()
     {
         return ValueTask.CompletedTask;

@@ -151,7 +151,7 @@ public class SliderSubSystem
         {
             //display the slider box
             hPixHandle = video.GetVideoObject(this.guiSliderBoxImageTag);
-            video.BltVideoObject(hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top, 0);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.LastRect.Left, pSlider.LastRect.Top);
 
             //invalidate the area
             video.InvalidateRegion(new(pSlider.LastRect.Left, pSlider.LastRect.Top, pSlider.LastRect.Right, pSlider.LastRect.Bottom));
@@ -160,7 +160,7 @@ public class SliderSubSystem
         {
             //display the slider box
             hPixHandle = video.GetVideoObject(this.guiSliderBoxImageTag);
-            video.BltVideoObject(hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, 0);
+            video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE);
 
             //invalidate the area
             video.InvalidateRegion(new(pSlider.usCurrentSliderBoxPosition, pSlider.usPos.Y - Slider.DEFAULT_SLIDER_SIZE, pSlider.usCurrentSliderBoxPosition + 9, pSlider.usPos.Y + Slider.DEFAULT_SLIDER_SIZE));

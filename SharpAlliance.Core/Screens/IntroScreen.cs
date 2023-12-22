@@ -20,7 +20,6 @@ public class IntroScreen : IScreen
     private readonly IScreenManager screens;
     private readonly MouseSubSystem mouse;
     private readonly CursorSubSystem cursor;
-    private readonly RenderDirty renderDirty;
     private readonly IMusicManager music;
     private readonly IVideoManager video;
     private readonly ILibraryManager library;
@@ -49,16 +48,15 @@ public class IntroScreen : IScreen
     public IntroScreen(GameContext context,
         MouseSubSystem mouseSubSystem,
         CursorSubSystem cursorSubSystem,
-        RenderDirty renderDirtySubSystem,
         IMusicManager musicManager,
         ILibraryManager libraryManager,
         CinematicsSubSystem cinematics,
         IVideoManager videoManager,
+        RenderDirty renderDirty,
         IScreenManager screenManager,
         ITextureManager textureManager,
         GameInit gameInit)
     {
-        this.renderDirty = renderDirtySubSystem;
         this.textures = textureManager;
         this.cursor = cursorSubSystem;
         this.library = libraryManager;
@@ -91,14 +89,14 @@ public class IntroScreen : IScreen
             video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
-        this.renderDirty.RestoreBackgroundRects();
+        RenderDirty.RestoreBackgroundRects();
 
 
         this.GetIntroScreenUserInput();
 
         this.HandleIntroScreen();
 
-        this.renderDirty.ExecuteBaseDirtyRectQueue();
+        RenderDirty.ExecuteBaseDirtyRectQueue();
         video.EndFrameBufferRender();
 
         if (Globals.gfIntroScreenExit)

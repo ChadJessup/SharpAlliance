@@ -224,69 +224,17 @@ public class SDL2VideoManager : IVideoManager
     public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight)
     {
         Rectangle destRect = new(iSrcPos.X, iSrcPos.Y, uiWidth, uiHeight);
+
+        //pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst.png");
+        //pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src.png");
+
         pDest.Mutate(ctx =>
         {
             ctx.DrawImage(pSrc, iDestPos, destRect, 1.0f);
         });
-        //pSrcPtr = pSrc + (iSrcYPos * uiSrcPitch) + (iSrcXPos * 2);
-        //pDestPtr = pDest + (iDestYPos * uiDestPitch) + (iDestXPos * 2);
-        // uiLineSkipDest = uiDestPitch - (uiWidth * 2);
-        // uiLineSkipSrc = uiSrcPitch - (uiWidth * 2);
 
-        //        __asm {
-        //            mov esi, pSrcPtr
-        //        
-        //    mov edi, pDestPtr
-        //        
-        //    mov ebx, uiHeight
-        //        
-        //    cld
-        //
-        //    mov     ecx, uiWidth
-        //    test    ecx, 1
-        //        
-        //    jz BlitDwords
-        //        
-        //BlitNewLine:
-        //
-        //            mov ecx, uiWidth
-        //        
-        //    shr ecx, 1
-        //        
-        //    movsw
-        //
-        //    //BlitNL2:
-        //
-        //    rep     movsd
-        //
-        //    add     edi, uiLineSkipDest
-        //    add     esi, uiLineSkipSrc
-        //    dec     ebx
-        //    jnz     BlitNewLine
-        //
-        //    jmp     BlitDone
-        //
-        //
-        //BlitDwords:
-        //	mov ecx, uiWidth
-        //        
-        //    shr ecx, 1
-        //        
-        //    rep movsd
-        //        
-        //
-        //    add edi, uiLineSkipDest
-        //        
-        //    add esi, uiLineSkipSrc
-        //        
-        //    dec ebx
-        //        
-        //    jnz BlitDwords
-        //        
-        //BlitDone:
-        //
-        //
-        //    }
+        //pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst-after.png");
+        //pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src-after.png");
 
         return true;
     }
@@ -509,7 +457,7 @@ public class SDL2VideoManager : IVideoManager
                             this.Surfaces[SurfaceType.BACKBUFFER],
                             new Point(Region.X, Region.Y),
                             Region,
-                            this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
+                            this.Surfaces[SurfaceType.FRAME_BUFFER]);
                     }
 
                     // Now do new, extended dirty regions
@@ -974,7 +922,7 @@ public class SDL2VideoManager : IVideoManager
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
-        //        srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
+         //       srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
         //        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-before.png");
 
         try
@@ -992,7 +940,7 @@ public class SDL2VideoManager : IVideoManager
         {
 
         }
-        //        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
+            //    dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
     }
 
     private void ScrollJA2Background(
@@ -1531,34 +1479,6 @@ public class SDL2VideoManager : IVideoManager
         return false;
     }
 
-    public void BltVideoObject(HVOBJECT hVObject, int regionIndex, int X, int Y, int textureIndex)
-    {
-        if (hVObject.Images is null)
-        {
-            throw new NullReferenceException("Texture is null for: " + hVObject.Name);
-        }
-
-        if (hVObject.Images is null)
-        {
-            return;
-        }
-
-        // Might need to revisit this, offsets don't feel right at the mo.
-        SDL.SDL_Rect dstRect = new()
-        {
-            x = X,
-            y = 480 - (Y + hVObject.Images[textureIndex].Height),//Math.Max(0, Y - hVObject.Images[textureIndex].Height),
-            h = hVObject.Images[textureIndex].Height,
-            w = hVObject.Images[textureIndex].Width
-        };
-
-        //        SDL.SDL_RenderCopy(
-        //            Renderer,
-        //            hVObject.Textures[textureIndex].Pointer,
-        //            IntPtr.Zero,
-        //            ref dstRect);
-    }
-
     public bool DrawTextToScreen(
         string text,
         int usLocX,
@@ -1865,6 +1785,7 @@ public class SDL2VideoManager : IVideoManager
 
     public void RestoreBackgroundRects()
     {
+        RenderDirty.RestoreBackgroundRects();
     }
 
     public void SaveBackgroundRects()
@@ -1881,22 +1802,18 @@ public class SDL2VideoManager : IVideoManager
 
     public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, int srcX, int srcY, int width, int height)
     {
-        Image<Rgba32> pDestBuf, pSrcBuf;
         bool fRetVal;
 
-        pDestBuf = LockVideoSurface(dstBuffer, out int uiDestPitchBYTES);
-        pSrcBuf = LockVideoSurface(srcBuffer, out int uiSrcPitchBYTES);
+        var src = this.Surfaces[srcBuffer];
+        var dst = this.Surfaces[dstBuffer];
 
         fRetVal = Blt16BPPTo16BPP(
-            pDestBuf,
-            pSrcBuf,
+            dst,
+            src,
             new(srcX, srcY),
             new(srcX, srcY),
             width,
             height);
-
-        // UnLockVideoSurface(dstBuffer);
-        // UnLockVideoSurface(srcBuffer);
 
         return (fRetVal);
     }

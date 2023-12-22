@@ -21,6 +21,8 @@ using SharpAlliance.Core.Screens;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Veldrid;
+using System.Diagnostics;
+using ThreadState = SharpAlliance.Core.Managers.ThreadState;
 
 namespace SharpAlliance.Core;
 
@@ -824,6 +826,17 @@ public partial class Globals
     public static bool gfExitPalEditScreen = false;
     public static bool gfInitRect = true;
     public static bool gfDoneWithSplashScreen = false;
+
+    private static SixLabors.ImageSharp.Rectangle ClippingRect = new(0, 0, 640, 480);
+    public static void SetClippingRect(SixLabors.ImageSharp.Rectangle clip)
+    {
+        ClippingRect = new(clip.X, clip.Y, clip.Width, clip.Height);
+    }
+
+    public static void GetClippingRect(out SixLabors.ImageSharp.Rectangle clip)
+    {
+        clip = new(ClippingRect.X, ClippingRect.Y, ClippingRect.Width, ClippingRect.Height);
+    }
 
     public static Dictionary<MINE, MINE_LOCATION_TYPE> gMineLocation = new()
     {

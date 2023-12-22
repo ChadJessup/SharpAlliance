@@ -29,7 +29,6 @@ public interface IVideoManager : ISharpAllianceManager
     void EndFrameBufferRender();
     HVOBJECT GetVideoObject(string assetPath);
     HVOBJECT GetVideoObject(string image, out string key);
-    void BltVideoObject(HVOBJECT videoObject, int regionIndex, int X, int Y, int textureIndex);
     bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap);
     void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette);
@@ -69,6 +68,6 @@ public interface IVideoManager : ISharpAllianceManager
     Texture[] CreateSurfaces(nint renderer, Image<Rgba32>[] image);
     void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
     void Draw();
-    void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags)
+    void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY)
         => BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);
 }

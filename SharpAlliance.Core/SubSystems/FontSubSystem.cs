@@ -183,14 +183,14 @@ public class FontSubSystem : ISharpAllianceManager
         return pTrav.usHeight + pTrav.sOffsetY;
     }
 
-    public void SetFontDestBuffer(SurfaceType DestBuffer, int x1, int y1, int x2, int y2, bool wrap)
+    public void SetFontDestBuffer(SurfaceType DestBuffer, SixLabors.ImageSharp.Rectangle bounds, bool wrap)
     {
         FontDestBuffer = DestBuffer;
 
-        FontDestRegion.X = x1;
-        FontDestRegion.Y = y1;
-        FontDestRegion.Width = x2 - x1;
-        FontDestRegion.Height = y2 - y1;
+        FontDestRegion.X = bounds.X;
+        FontDestRegion.Y = bounds.Y;
+        FontDestRegion.Width = bounds.Width;
+        FontDestRegion.Height = bounds.Height;
         FontDestWrap = wrap;
     }
 
@@ -490,7 +490,7 @@ public class FontSubSystem : ISharpAllianceManager
         FontObjs[FontStyle.HUGEFONT] = gvoHugeFont;
 
         // Set default for font system
-        SetFontDestBuffer(SurfaceType.FRAME_BUFFER, 0, 0, 640, 480, false);
+        SetFontDestBuffer(SurfaceType.FRAME_BUFFER, new(0, 0, 640, 480), false);
     }
 
     //*****************************************************************************
@@ -1063,6 +1063,9 @@ public class FontSubSystem : ISharpAllianceManager
         // return how many Y pixels we used
         return StringPixLength(pString, UseFont);
     }
+
+    public void SetFontDestBuffer(SurfaceType DestBuffer, int x, int y, int width, int height, bool wrap)
+        => SetFontDestBuffer(DestBuffer, new(x, y, width, height), wrap);
 }
 
 public enum FONT_SHADE

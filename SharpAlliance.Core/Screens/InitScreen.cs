@@ -296,11 +296,6 @@ public class InitScreen : IScreen
     {
     }
 
-    public void Draw(IVideoManager videoManager)
-    {
-//        sr.AddSprite(new Rectangle(0, 0, 640, 480), hVObject.Textures[0], "SplashScreen");
-    }
-
     public ValueTask Deactivate()
     {
         return ValueTask.CompletedTask;

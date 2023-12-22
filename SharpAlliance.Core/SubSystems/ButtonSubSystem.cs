@@ -11,6 +11,7 @@ using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
@@ -427,7 +428,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         ButtonFlags BType;
         int x;
 
-        loc.Y = 480 - loc.Y;
+        // loc.Y = 480 - loc.Y;
 
         if (loc.X < 0 || loc.Y < 0)
         {
@@ -437,45 +438,41 @@ public class ButtonSubSystem : ISharpAllianceManager
         // Strip off any extraneous bits from button type
         BType = Type & (ButtonFlags.BUTTON_TYPE_MASK | ButtonFlags.BUTTON_NEWTOGGLE);
 
-        b = new();
-        // Set the values for this button
-        b.IsDirty = true;
-        b.uiOldFlags = 0;
-        // b.IdNum = iButtonID;
-        b.Loc = loc;
-        b.ButtonPicture = image;
+        b = new()
+        {
+            // Set the values for this button
+            IsDirty = true,
+            uiOldFlags = 0,
+            // b.IdNum = iButtonID;
+            Loc = loc,
+            ButtonPicture = image,
+            Group = -1,
+            bDefaultStatus = DEFAULT_STATUS.NONE,
+            bDisabledStyle = DISABLED_STYLE.DEFAULT,
+            stringText = text,
+
+            bJustification = bJustification,
+            usFont = uiFont,
+            fMultiColor = false,
+            sForeColor = sForeColor,
+            sWrappedWidth = -1,
+            sShadowColor = sShadowColor,
+            sForeColorDown = sForeColorDown,
+            sShadowColorDown = sShadowColorDown,
+            sForeColorHilited = FontColor.None,
+            sShadowColorHilited = FontShadow.NO_SHADOW,
+            bTextOffset = new(-1, -1),
+            bTextSubOffSet = new(0, 0),
+            fShiftText = true,
+
+            iIconID = -1,
+            usIconindex = 0
+        };
+
         for (x = 0; x < 4; x++)
         {
             b.UserData[x] = 0;
         }
-
-        b.Group = -1;
-        b.bDefaultStatus = DEFAULT_STATUS.NONE;
-        b.bDisabledStyle = DISABLED_STYLE.DEFAULT;
-
-        // Allocate memory for the button's text string...
-        b.stringText = null;
-        if (!string.IsNullOrWhiteSpace(text))
-        {
-            b.stringText = text;
-        }
-
-        b.bJustification = bJustification;
-        b.usFont = uiFont;
-        b.fMultiColor = false;
-        b.sForeColor = sForeColor;
-        b.sWrappedWidth = -1;
-        b.sShadowColor = sShadowColor;
-        b.sForeColorDown = sForeColorDown;
-        b.sShadowColorDown = sShadowColorDown;
-        b.sForeColorHilited = FontColor.None;
-        b.sShadowColorHilited = FontShadow.NO_SHADOW;
-        b.bTextOffset = new(-1, -1);
-        b.bTextSubOffSet = new(0, 0);
-        b.fShiftText = true;
-
-        b.iIconID = -1;
-        b.usIconindex = 0;
 
         // Set the button click callback function (if any)
         if (ClickCallback != Globals.BUTTON_NO_CALLBACK)
@@ -631,7 +628,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
     private static void DrawTextOnButton(ref GUI_BUTTON b, int id = 0)
     {
-        int height, TextX, TextY;
+        int height, width, TextX, TextY, xp, yp;
         Rectangle NewClip = new();
         Rectangle OldClip = new();
         FontColor sForeColor;
@@ -640,12 +637,51 @@ public class ButtonSubSystem : ISharpAllianceManager
         if (!string.IsNullOrWhiteSpace(b.stringText))
         {
             // Get the width and height of this button
-            //width = b.MouseRegion.Bounds.Width - b.MouseRegion.Bounds.X;
-            height = b.MouseRegion.Bounds.Height - b.MouseRegion.Bounds.Y;
+            width = b.MouseRegion.Bounds.Width;
+            height = b.MouseRegion.Bounds.Height;
+
+            // Compute the viewable area on this button
+            NewClip.X = b.Loc.X + 3;
+            NewClip.Width = b.Loc.X + width - 3;
+            NewClip.Y = b.Loc.Y + 2;
+            NewClip.Height = b.Loc.Y + height - 2;
+
+            // Get the starting coordinates to print
+            TextX = NewClip.X;
+            TextY = NewClip.Y;
+
+            // Get the current clipping area
+            GetClippingRect(out OldClip);
 
             // Compute the coordinates to center the text
-            //yp = b.MouseRegion.Bounds.Y + b.bTextOffset.Y;
-            //xp = b.MouseRegion.Bounds.X + b.bTextOffset.X;
+            yp = b.MouseRegion.Bounds.Y + b.bTextOffset.Y;
+            xp = b.MouseRegion.Bounds.X + b.bTextOffset.X;
+
+            // Set the font printing settings to the buttons viewable area
+            fonts.SetFontDestBuffer(ButtonDestBuffer, NewClip, false);
+
+            // Compute the coordinates to center the text
+            if (b.bTextOffset.Y == -1)
+            {
+                yp = (((height) - fonts.GetFontHeight(b.usFont)) / 2) + TextY - 1;
+            }
+            else
+            {
+                yp = b.MouseRegion.Bounds.Top + b.bTextOffset.Y;
+            }
+
+            if (b.bTextOffset.Y == -1)
+            {
+                xp = b.bJustification switch
+                {
+                    ButtonTextJustifies.BUTTON_TEXT_LEFT => TextX + 3,
+                    ButtonTextJustifies.BUTTON_TEXT_RIGHT => NewClip.Width - FontSubSystem.StringPixLength(b.stringText, b.usFont) - 3,
+                    _ => (((width - 6) - FontSubSystem.StringPixLength(b.stringText, b.usFont)) / 2) + TextX,
+                };
+            }
+            else
+                xp = b.MouseRegion.Bounds.X + b.bTextOffset.X;
+
 
             // Set the printing font to the button text font
             FontSubSystem.SetFont(b.usFont);
@@ -684,27 +720,24 @@ public class ButtonSubSystem : ISharpAllianceManager
                 FontSubSystem.SetFontShadow(b.sShadowColorDown);
             }
 
-            int x = b.MouseRegion.Bounds.X;
-            int y = 480 - (b.MouseRegion.Bounds.Height + b.MouseRegion.Bounds.Y - (b.MouseRegion.Bounds.Height / 4));
-
             if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON) && b.fShiftText)
             {   // Was the button clicked on? if so, move the text slightly for the illusion
                 // that the text moved into the screen.
-                x++;
-                y++;
+                xp++;
+                yp++;
             }
 
-            // yp += b.bTextSubOffSet.Y;
-            // xp += b.bTextSubOffSet.X;
+            yp += b.bTextSubOffSet.Y;
+            xp += b.bTextSubOffSet.X;
 
             FontSubSystem.DrawTextToScreen(
                 b.stringText,
-                new(x, y),
+                new(xp, yp),
                 b.MouseRegion.Bounds.Width + 8,
                 b.usFont,
                 sForeColor,
                 FontColor.FONT_MCOLOR_BLACK,
-                TextJustifies.CENTER_JUSTIFIED);
+                TextJustifies.LEFT_JUSTIFIED);
         }
     }
 
@@ -840,11 +873,11 @@ public class ButtonSubSystem : ISharpAllianceManager
             // Blit the icon
             if (b.uiFlags.HasFlag(ButtonFlags.BUTTON_GENERIC))
             {
-                video.BltVideoObject(GenericButtonIcons[b.iIconID], b.usIconindex, (short)xp, (short)yp, b.iIconID);
+                video.BltVideoObject(ButtonDestBuffer, GenericButtonIcons[b.iIconID], b.usIconindex, (short)xp, (short)yp);
             }
             else
             {
-                video.BltVideoObject(hvObject, b.usIconindex, (short)xp, (short)yp, b.usIconindex);
+                video.BltVideoObject(ButtonDestBuffer, hvObject, b.usIconindex, (short)xp, (short)yp);
             }
 
             // Restore previous clip region
@@ -944,7 +977,42 @@ public class ButtonSubSystem : ISharpAllianceManager
 
     public static void DrawCheckBoxButtonOn(GUI_BUTTON btn)
     {
+        bool fLeftButtonState = inputs.gfLeftButtonState;
+
+        inputs.gfLeftButtonState = true;
+        btn.MouseRegion.uiFlags |= MouseRegionFlags.IN_AREA;
+
+        DrawButton(btn);
+
+        inputs.gfLeftButtonState = fLeftButtonState;
     }
+
+    //=============================================================================
+    //	DrawButton
+    //
+    //	Draws a single button on the screen.
+    //
+    private static bool DrawButton(GUI_BUTTON btn)
+    {
+        if (!string.IsNullOrWhiteSpace(btn.stringText))
+        {
+            fonts.SaveFontSettings();
+        }
+
+        // Draw this button
+        if (btn.MouseRegion.uiFlags.HasFlag(MouseRegionFlags.MSYS_REGION_ENABLED))
+        {
+            DrawButtonFromPtr(btn);
+        }
+
+        if (!string.IsNullOrWhiteSpace(btn.stringText))
+        {
+            fonts.RestoreFontSettings();
+        }
+
+        return true;
+    }
+
 
     private static void DrawGenericButton(ref GUI_BUTTON b, int id = 0)
     {
@@ -1286,12 +1354,12 @@ public class ButtonSubSystem : ISharpAllianceManager
                 new(b.Loc.X, b.Loc.Y),
                 VO_BLT.SRCTRANSPARENCY);
 
-//            video.BltVideoObject(
-//                b.ButtonPicture.vobj,
-//                (ushort)UseImage,
-//                b.Loc.X,
-//                b.Loc.Y,
-//                UseImage);
+            //            video.BltVideoObject(
+            //                b.ButtonPicture.vobj,
+            //                (ushort)UseImage,
+            //                b.Loc.X,
+            //                b.Loc.Y,
+            //                UseImage);
         }
     }
 
@@ -1770,57 +1838,61 @@ public class ButtonSubSystem : ISharpAllianceManager
         GUI_CALLBACK? MoveCallback,
         GUI_CALLBACK ClickCallback)
     {
-        GUI_BUTTON b = new();
         int ButtonNum;
         ButtonFlags BType;
 
-//        loc.Y = 480 - loc.Y;
+        //        loc.Y = 480 - loc.Y;
 
         // Strip off any extraneous bits from button type
         BType = Type & (ButtonFlags.BUTTON_TYPE_MASK | ButtonFlags.BUTTON_NEWTOGGLE);
 
-        // Set the values for this buttn
-        b.IsDirty = true;
-        b.uiOldFlags = 0;
+        GUI_BUTTON b = new()
+        {
+            // Set the values for this buttn
+            IsDirty = true,
+            uiOldFlags = 0,
+            // shadow style
+            bDefaultStatus = DEFAULT_STATUS.NONE,
+            bDisabledStyle = DISABLED_STYLE.DEFAULT,
+
+            Group = -1,
+            //Init string
+            stringText = null,
+            usFont = 0,
+            fMultiColor = false,
+            sForeColor = 0,
+            sWrappedWidth = -1,
+            sShadowColor = FontShadow.NO_SHADOW,
+            sForeColorDown = FontColor.None,
+            sShadowColorDown = FontShadow.NO_SHADOW,
+            sForeColorHilited = FontColor.None,
+            sShadowColorHilited = FontShadow.NO_SHADOW,
+            bJustification = ButtonTextJustifies.BUTTON_TEXT_CENTER,
+            bTextOffset = new(-1, -1),
+            bTextSubOffSet = new(0, 0),
+            fShiftText = true,
+            //Init icon
+            iIconID = -1,
+            usIconindex = -1,
+            bIconOffset = new(-1, -1),
+            fShiftImage = true,
+            //Init quickbutton
+            // b.IdNum = ButtonNum;
+            ButtonPicture = Image,
+            Loc = loc,
+
+            ubToggleButtonOldState = 0,
+            ubToggleButtonActivated = 0,
+
+            MouseRegion = new(nameof(QuickCreateButton)),
+        };
+
 
         // Set someflags if of s certain type....
         if (Type.HasFlag(ButtonFlags.BUTTON_NEWTOGGLE))
         {
             b.uiFlags |= ButtonFlags.BUTTON_NEWTOGGLE;
         }
-
-        // shadow style
-        b.bDefaultStatus = DEFAULT_STATUS.NONE;
-        b.bDisabledStyle = DISABLED_STYLE.DEFAULT;
-
-        b.Group = -1;
-        //Init string
-        b.stringText = null;
-        b.usFont = 0;
-        b.fMultiColor = false;
-        b.sForeColor = 0;
-        b.sWrappedWidth = -1;
-        b.sShadowColor = FontShadow.NO_SHADOW;
-        b.sForeColorDown = FontColor.None;
-        b.sShadowColorDown = FontShadow.NO_SHADOW;
-        b.sForeColorHilited = FontColor.None;
-        b.sShadowColorHilited = FontShadow.NO_SHADOW;
-        b.bJustification = ButtonTextJustifies.BUTTON_TEXT_CENTER;
-        b.bTextOffset = new(-1, -1);
-        b.bTextSubOffSet = new(0, 0);
-        b.fShiftText = true;
-        //Init icon
-        b.iIconID = -1;
-        b.usIconindex = -1;
-        b.bIconOffset = new(-1, -1);
-        b.fShiftImage = true;
-        //Init quickbutton
-        // b.IdNum = ButtonNum;
-        b.ButtonPicture = Image;
-        b.Loc = loc;
-
-        b.ubToggleButtonOldState = 0;
-        b.ubToggleButtonActivated = 0;
 
         // Set the button click callback function (if any)
         if (ClickCallback != Globals.BUTTON_NO_CALLBACK)
@@ -1844,15 +1916,13 @@ public class ButtonSubSystem : ISharpAllianceManager
             b.MoveCallback = Globals.BUTTON_NO_CALLBACK;
         }
 
-        b.MouseRegion = new(nameof(QuickCreateButton));
-
         // Define a MOUSE_REGION for this QuickButton
 
         var regionRect = new Rectangle(
             loc.X,
             loc.Y,
-            loc.X + Image.MaxWidth,
-            loc.Y + Image.MaxHeight);
+            Image.MaxWidth,
+            Image.MaxHeight);
 
         MouseSubSystem.MSYS_DefineRegion(
             ref b.MouseRegion,
@@ -1862,8 +1932,8 @@ public class ButtonSubSystem : ISharpAllianceManager
             QuickButtonCallbackMouseMove,
             QuickButtonCallbackMButn);
 
-//        IVideoManager.DebugRenderer.DrawRectangle(regionRect, Color.Green);
-//        IVideoManager.DebugRenderer.DrawRectangle(b.MouseRegion.Bounds, Color.Red);
+        //        IVideoManager.DebugRenderer.DrawRectangle(regionRect, Color.Green);
+        //        IVideoManager.DebugRenderer.DrawRectangle(b.MouseRegion.Bounds, Color.Red);
 
         // Link the MOUSE_REGION with this QuickButton
         MouseSubSystem.SetRegionUserData(ref b.MouseRegion, 0, b);

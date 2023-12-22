@@ -63,12 +63,13 @@ public class TextRenderer
         RichTextOptions options = new(font)
         {
             Origin = location,
+            //HorizontalAlignment = width == 0 ? HorizontalAlignment.Left : HorizontalAlignment.Right,
             TextAlignment = alignment,
-            LayoutMode = LayoutMode.HorizontalTopBottom,
             TextDirection = TextDirection.LeftToRight,
-            TextJustification = TextJustification.InterWord,
-            VerticalAlignment = VerticalAlignment.Center,
-            WrappingLength = width,
+            VerticalAlignment = VerticalAlignment.Top,
+            WrappingLength = width == 0 ? -1 : width,
+            //TextJustification = TextJustification.InterWord,
+            //LayoutMode = LayoutMode.HorizontalTopBottom,
         };
 
         var foreColor = new Color(foreground);

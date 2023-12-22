@@ -641,7 +641,7 @@ public class CreditsScreen : IScreen
     private void RenderCreditScreen()
     {
         HVOBJECT hPixHandle = video.GetVideoObject(Globals.guiCreditBackGroundImageKey);
-        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0);
         /*
             HVSURFACE hVSurface;
 

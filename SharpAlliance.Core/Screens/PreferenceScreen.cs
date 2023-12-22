@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.SubSystems;
-using SharpAlliance.Platform.Interfaces;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 using SixLabors.ImageSharp;
-using Veldrid;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
-
-using static SharpAlliance.Core.Globals;
-using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -67,7 +60,7 @@ public class PreferenceScreen : IScreen
     public const int OPT_TOGGLE_TEXT_OFFSET_Y = 2;//3
 
     public const int OPT_TOGGLE_BOX_FIRST_COLUMN_X = 265; //257 //OPT_TOGGLE_BOX_TEXT_X + OPT_SPACE_BETWEEN_TEXT_AND_TOGGLE_BOX
-    public const int OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y = 110;//OPT_TOGGLE_BOX_TEXT_Y
+    public const int OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y = 89;//OPT_TOGGLE_BOX_TEXT_Y
 
     public const int OPT_TOGGLE_BOX_SECOND_COLUMN_X = 428; //OPT_TOGGLE_BOX_TEXT_X + OPT_SPACE_BETWEEN_TEXT_AND_TOGGLE_BOX
     public const int OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y;
@@ -214,9 +207,6 @@ public class PreferenceScreen : IScreen
 
         this.RenderOptionsScreen();
 
-        // sr.AddSprite(new Point(0, 0), background.Textures[0], this.guiOptionBackGroundImageKey);
-        // sr.AddSprite(new Point(0, 434), options.Textures[0], this.guiOptionsAddOnImagesKey);
-
         // render buttons marked dirty	
         ButtonSubSystem.MarkButtonsDirty(this.buttonList);
         ButtonSubSystem.RenderButtons(this.buttonList);
@@ -236,7 +226,7 @@ public class PreferenceScreen : IScreen
             this.RenderOptionsScreen();
 
             //Blit the background to the save buffer
-            //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 640, 480);
+            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 640, 480);
             video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
@@ -266,7 +256,8 @@ public class PreferenceScreen : IScreen
         this.guiManager.RenderButtonsFastHelp();
 
         video.ExecuteBaseDirtyRectQueue();
-        // EndFrameBufferRender();
+        video.EndFrameBufferRender();
+//        video.InvalidateScreen();
 
         if (this.gfOptionsScreenExit)
         {
@@ -357,7 +348,7 @@ public class PreferenceScreen : IScreen
         // Text for the toggle boxes
         //
 
-        usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y - 15;
+        usPosY = OPT_TOGGLE_BOX_FIRST_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y;
 
         // Display the First column of toggles
         for (cnt = 0; cnt < this.gubFirstColOfOptions; cnt++)
@@ -368,7 +359,7 @@ public class PreferenceScreen : IScreen
             if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
             {
                 FontSubSystem.DisplayWrappedString(
-                    new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY - 5),
+                    new(OPT_TOGGLE_BOX_FIRST_COL_TEXT_X, usPosY),
                     OPT_TOGGLE_BOX_TEXT_WIDTH,
                     2,
                     OPT_MAIN_FONT,
@@ -392,7 +383,7 @@ public class PreferenceScreen : IScreen
             usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
         }
 
-        usPosY = OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y - 15;
+        usPosY = OPT_TOGGLE_BOX_SECOND_COLUMN_START_Y + OPT_TOGGLE_TEXT_OFFSET_Y;
         //Display the 2nd column of toggles
         for (cnt = this.gubFirstColOfOptions; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
         {
@@ -402,7 +393,7 @@ public class PreferenceScreen : IScreen
             if (usWidth > OPT_TOGGLE_BOX_TEXT_WIDTH)
             {
                 FontSubSystem.DisplayWrappedString(
-                    new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY - 5),
+                    new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY),
                     OPT_TOGGLE_BOX_TEXT_WIDTH,
                     2,
                     OPT_MAIN_FONT,
@@ -413,7 +404,14 @@ public class PreferenceScreen : IScreen
             }
             else
             {
-                FontSubSystem.DrawTextToScreen(EnglishText.zOptionsToggleText[(int)cnt], new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY), 0, OPT_MAIN_FONT, OPT_MAIN_COLOR, FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
+                FontSubSystem.DrawTextToScreen(
+                    EnglishText.zOptionsToggleText[(int)cnt],
+                    new(OPT_TOGGLE_BOX_SECOND_TEXT_X, usPosY),
+                    0,
+                    OPT_MAIN_FONT,
+                    OPT_MAIN_COLOR,
+                    FontColor.FONT_MCOLOR_BLACK,
+                    TextJustifies.LEFT_JUSTIFIED);
             }
 
             usPosY += OPT_GAP_BETWEEN_TOGGLE_BOXES;
@@ -596,7 +594,7 @@ public class PreferenceScreen : IScreen
                     this.gSelectedOptionTextRegion[cnt],
                     new Rectangle(
                         OPT_TOGGLE_BOX_FIRST_COLUMN_X,
-                        480 - usPosY,
+                        usPosY,
                         OPT_TOGGLE_BOX_FIRST_COL_TEXT_X,
                         TextSize.Height),
                     MSYS_PRIORITY.HIGH,
@@ -616,7 +614,7 @@ public class PreferenceScreen : IScreen
                     this.gSelectedOptionTextRegion[cnt],
                     new Rectangle(
                         OPT_TOGGLE_BOX_FIRST_COLUMN_X,
-                        480 - usPosY,
+                        usPosY,
                         OPT_TOGGLE_BOX_SECOND_TEXT_X,
                         TextSize.Height),
                     MSYS_PRIORITY.HIGH,
@@ -703,7 +701,7 @@ public class PreferenceScreen : IScreen
                     this.gSelectedOptionTextRegion[option],
                     new(
                         OPT_TOGGLE_BOX_SECOND_COLUMN_X + 13,
-                        480 - usPosY,
+                        usPosY,
                         OPT_TOGGLE_BOX_SECOND_TEXT_X + TextSize.Width,
                         TextSize.Height),
                     MSYS_PRIORITY.HIGH,
@@ -850,7 +848,9 @@ public class PreferenceScreen : IScreen
 
     private void SelectedOptionTextRegionCallBack(ref MOUSE_REGION pRegion, MSYS_CALLBACK_REASON iReason)
     {
-        TOPTION ubButton = (TOPTION)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
+        GUI_BUTTON button = (GUI_BUTTON)MouseSubSystem.MSYS_GetRegionUserData(ref pRegion, 0);
+
+        TOPTION ubButton = (TOPTION)button.UserData[0];
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -987,7 +987,7 @@ public class PreferenceScreen : IScreen
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
-            // gfSaveGame = false;
+            gfSaveGame = false;
 
             video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
@@ -1088,7 +1088,7 @@ public class PreferenceScreen : IScreen
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
-            //gfSaveGame = true;
+            gfSaveGame = true;
 
             video.InvalidateRegion(btn.MouseRegion.Bounds);
         }

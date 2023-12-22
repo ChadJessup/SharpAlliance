@@ -16,7 +16,7 @@ public class RenderDirty
     private readonly FontSubSystem fonts;
     private static IVideoManager video;
 
-    private bool gfViewportDirty = false;
+    private static bool gfViewportDirty = false;
 
     public RenderDirty(
         IVideoManager videoManager,
@@ -26,13 +26,11 @@ public class RenderDirty
         video = videoManager;
     }
 
-    public bool RestoreBackgroundRects()
+    public static bool RestoreBackgroundRects()
     {
         int uiCount;
-        Image<Rgba32> pDestBuf, pSrcBuf;
-
-        //        pDestBuf = this.surfaces.LockSurface(SurfaceType.RENDER_BUFFER);// guiRENDERBUFFER, &uiDestPitchBYTES);
-        //        pSrcBuf = this.surfaces.LockSurface(SurfaceType.SAVE_BUFFER);// guiSAVEBUFFER, &uiSrcPitchBYTES);
+        var pDestBuf = video.Surfaces[SurfaceType.RENDER_BUFFER];
+        var pSrcBuf = video.Surfaces[SurfaceType.SAVE_BUFFER];
 
         for (uiCount = 0; uiCount < guiNumBackSaves; uiCount++)
         {
@@ -42,15 +40,13 @@ public class RenderDirty
                 {
                     if (gBackSaves[uiCount].pSaveArea != null)
                     {
-                        //                        video.Blt16BPPTo16BPP(
-                        //                            pDestBuf,
-                        //                            gBackSaves[uiCount].pSaveArea,
-                        //                            gBackSaves[uiCount].sWidth * 2,
-                        //                            gBackSaves[uiCount].sLeft,
-                        //                            gBackSaves[uiCount].sTop,
-                        //                            0,
-                        //                            gBackSaves[uiCount].sWidth,
-                        //                            gBackSaves[uiCount].sHeight);
+                        video.Blt16BPPTo16BPP(
+                            pDestBuf,
+                            gBackSaves[uiCount].pSaveArea,
+                            new(gBackSaves[uiCount].sWidth * 2, gBackSaves[uiCount].sLeft),
+                            new(gBackSaves[uiCount].sTop, 0),
+                            gBackSaves[uiCount].sWidth,
+                            gBackSaves[uiCount].sHeight);
 
                         AddBaseDirtyRect(
                             new(gBackSaves[uiCount].sLeft,
@@ -100,7 +96,7 @@ public class RenderDirty
         return (true);
     }
 
-    private bool EmptyBackgroundRects()
+    private static bool EmptyBackgroundRects()
     {
         int uiCount;
 
@@ -164,7 +160,7 @@ public class RenderDirty
         return (true);
     }
 
-    private void AddBaseDirtyRect(Rectangle bounds)
+    private static void AddBaseDirtyRect(Rectangle bounds)
     {
         (var iLeft, var iTop, var iRight, var iBottom) = bounds;
 
@@ -611,7 +607,7 @@ public class RenderDirty
     }
 
 
-    public void ExecuteBaseDirtyRectQueue()
+    public static void ExecuteBaseDirtyRectQueue()
     {
     }
 

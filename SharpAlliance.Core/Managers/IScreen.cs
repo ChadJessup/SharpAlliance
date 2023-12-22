@@ -21,6 +21,5 @@ public interface IScreen : IDisposable
     ValueTask Deactivate();
 
     ValueTask<ScreenName> Handle();
-    void Draw(IVideoManager videoManager);
     ScreenState State { get; set; }
 }
