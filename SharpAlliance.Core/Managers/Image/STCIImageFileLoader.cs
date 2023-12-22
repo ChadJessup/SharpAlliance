@@ -8,14 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Platform.Interfaces;
-using SharpGen.Runtime;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers.Image;
 

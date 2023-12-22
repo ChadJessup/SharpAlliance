@@ -18,9 +18,8 @@ namespace SharpAlliance.Core;
 public class TextRenderer
 {
     private Rgba32 White = Rgba32.ParseHex("FFFFFF");
-    private readonly Image<Rgba32> _texture;
-    private readonly IVideoManager _video;
-    private readonly Font _font;
+    private readonly IVideoManager video;
+    private readonly Font font;
     private readonly Image<Rgba32> _image;
     private readonly FontSubSystem fonts;
 
@@ -29,17 +28,9 @@ public class TextRenderer
         this.fonts = fontSubsystem;
         int width = 640;
         int height = 480;
-        this._texture = new(width, height);
 
-        this._video = videoManager;
-        //        gd.ResourceFactory.CreateTexture(
-        //            TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
-
-        //        this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
-
-        this._font = this.LoadFont("Arial", 10, FontStyle.Bold);
-
-        this._image = new Image<Rgba32>(width, height);
+        this.video = videoManager;
+        this.font = this.LoadFont("Arial", 10, FontStyle.Bold);
     }
 
     public Font LoadFont(string fontFamily, int size, FontStyle style)
@@ -67,7 +58,7 @@ public class TextRenderer
         Rgba32 foreground,
         Rgba32 background)
     {
-        var buffer = this._video.Surfaces[this.fonts.FontDestBuffer];
+        var buffer = this.video.Surfaces[this.fonts.FontDestBuffer];
 
         RichTextOptions options = new(font)
         {
@@ -93,36 +84,5 @@ public class TextRenderer
                 brush,
                 pen);
         });
-    }
-
-    public unsafe void RenderAllText(IVideoManager videoManager)
-    {
-        //    this._image.DangerousTryGetSinglePixelMemory(out var span2);
-        //    fixed (void* data = &MemoryMarshal.GetReference(span2.Span))
-        //    {
-        //        uint size = (uint)(this._image.Width * this._image.Height * 4);
-        //
-        //        try
-        //        {
-        //            //                videoManager.
-        //            //                this._gd.UpdateTexture(
-        //            //                    this._texture,
-        //            //                    (IntPtr)data,
-        //            //                    size,
-        //            //                    x: 0,
-        //            //                    y: 0,
-        //            //                    z: 0,
-        //            //                    this._texture.Width,
-        //            //                    this._texture.Height,
-        //            //                    depth: 1,
-        //            //                    mipLevel: 0,
-        //            //                    arrayLayer: 0);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //
-        //        }
-        //    }
-        //
     }
 }

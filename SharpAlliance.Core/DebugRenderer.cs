@@ -2,8 +2,6 @@
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Veldrid;
-using Veldrid.ImageSharp;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core;

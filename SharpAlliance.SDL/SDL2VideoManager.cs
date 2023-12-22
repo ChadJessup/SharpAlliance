@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-using System.Diagnostics;
-using System.Numerics;
+﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SDL2;
 using SharpAlliance.Core.Interfaces;
@@ -10,10 +8,6 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using SixLabors.ImageSharp.Drawing.Processing;
-using Veldrid;
-using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
 using static SharpAlliance.Core.Globals;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
@@ -45,8 +39,10 @@ public class SDL2VideoManager : IVideoManager
     private readonly ITextureManager textures;
     private readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
 
-    private static Sdl2Window window;
-    public static Sdl2Window Window { get => window; }
+    private static nint window;
+    private uint WindowID;
+
+    public static nint Window { get => window; }
     private float _ticks;
 
     private bool _colorSrgb = true;
@@ -92,6 +88,8 @@ public class SDL2VideoManager : IVideoManager
     //    public uint guiEXTRABUFFER { get; set; }
     public bool gfExtraBuffer { get; set; }
     public int gbPixelDepth { get; }
+    public bool LimitPollRate { get; private set; }
+    public double PollIntervalInMs { get; private set; }
 
     private const int SCREEN_WIDTH = 640;
     private const int SCREEN_HEIGHT = 480;
@@ -129,6 +127,39 @@ public class SDL2VideoManager : IVideoManager
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
 
+    private void WindowOwnerRoutine(object state)
+    {
+        WindowParams wp = (WindowParams)state;
+        window = wp.Create();
+        WindowID = SDL.SDL_GetWindowID(window);
+//        PostWindowCreated(wp.WindowFlags);
+        wp.ResetEvent.Set();
+
+        double previousPollTimeMs = 0;
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+
+        while (_exists)
+        {
+            if (_shouldClose)// && CloseCore())
+            {
+                return;
+            }
+
+            double currentTick = sw.ElapsedTicks;
+            double currentTimeMs = sw.ElapsedTicks * (1000.0 / Stopwatch.Frequency);
+            if (LimitPollRate && currentTimeMs - previousPollTimeMs < PollIntervalInMs)
+            {
+                Thread.Sleep(0);
+            }
+            else
+            {
+                previousPollTimeMs = currentTimeMs;
+                //ProcessEvents(null);
+            }
+        }
+    }
+
     public async ValueTask<bool> Initialize()
     {
         WindowCreateInfo windowCI = new()
@@ -141,28 +172,35 @@ public class SDL2VideoManager : IVideoManager
             WindowTitle = "Sharp Alliance!!!",
         };
 
-        SDL_WindowFlags GetWindowFlags(WindowState state)
+        SDL.SDL_WindowFlags GetWindowFlags(WindowState state)
             => state switch
             {
                 WindowState.Normal => 0,
-                WindowState.FullScreen => SDL_WindowFlags.Fullscreen,
-                WindowState.Maximized => SDL_WindowFlags.Maximized,
-                WindowState.Minimized => SDL_WindowFlags.Minimized,
-                WindowState.BorderlessFullScreen => SDL_WindowFlags.FullScreenDesktop,
-                WindowState.Hidden => SDL_WindowFlags.Hidden,
+                WindowState.FullScreen => SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN,
+                WindowState.Maximized => SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED,
+                WindowState.Minimized => SDL.SDL_WindowFlags.SDL_WINDOW_MINIMIZED,
+                WindowState.BorderlessFullScreen => SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                WindowState.Hidden => SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN,
                 _ => throw new Exception("Invalid WindowState: " + state),
             };
 
-        SDL_WindowFlags flags = SDL_WindowFlags.OpenGL
-            | SDL_WindowFlags.Resizable
+        SDL.SDL_WindowFlags flags =
+            SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL
+            | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
+            | SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN
             | GetWindowFlags(windowCI.WindowInitialState);
 
         if (windowCI.WindowInitialState != WindowState.Hidden)
         {
-            flags |= SDL_WindowFlags.Shown;
+            flags |= SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN;
         }
 
-        window = new Sdl2Window(
+        if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
+        {
+            Console.WriteLine($"There was an issue initilizing SDL. {SDL.SDL_GetError()}");
+        }
+
+        var window = new Sdl2Window(
             windowCI.WindowTitle,
             windowCI.X,
             windowCI.Y,
@@ -172,7 +210,7 @@ public class SDL2VideoManager : IVideoManager
             threadedProcessing: true);
 
         Renderer = SDL.SDL_CreateRenderer(
-            window.SdlWindowHandle,
+            window.Handle,
             -1,
             SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
             SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
@@ -184,7 +222,7 @@ public class SDL2VideoManager : IVideoManager
 
         this.Surfaces.InitializeSurfaces(Renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        Window.Resized += () => windowResized = true;
+        //        Window.Resized += () => windowResized = true;
         //Window.PollIntervalInMs = 1000 / 30;
 
         Globals.guiFrameBufferState = BufferState.DIRTY;
@@ -307,8 +345,6 @@ public class SDL2VideoManager : IVideoManager
         ScreenManager.Draw(this);
         MouseSubSystem.Draw(this);
 
-        FontSubSystem.TextRenderer.RenderAllText(this);
-
         var bb = this.Surfaces.SurfaceByTypes[SurfaceType.PRIMARY_SURFACE];
         //bb.Image.SaveAsPng(@"C:\temp\test.png");
 
@@ -354,20 +390,20 @@ public class SDL2VideoManager : IVideoManager
         {
             hvObj = this.textures.LoadImage(assetPath);
 
-//            if (hvObj.Images is null)
-//            {
-//                hvObj.Surfaces = this.CreateSurfaces(Renderer, hvObj.Images);
-//
-//                List<Texture> textures = [];
-//
-//                foreach (var surface in hvObj.Surfaces)
-//                {
-//                    var tex = this.Surfaces.CreateTextureFromSurface(Renderer, surface);
-//                    textures.Add(tex);
-//                }
-//
-//                hvObj.Textures = [.. textures];
-//            }
+            //            if (hvObj.Images is null)
+            //            {
+            //                hvObj.Surfaces = this.CreateSurfaces(Renderer, hvObj.Images);
+            //
+            //                List<Texture> textures = [];
+            //
+            //                foreach (var surface in hvObj.Surfaces)
+            //                {
+            //                    var tex = this.Surfaces.CreateTextureFromSurface(Renderer, surface);
+            //                    textures.Add(tex);
+            //                }
+            //
+            //                hvObj.Textures = [.. textures];
+            //            }
 
             this.loadedObjects.Add(assetPath, hvObj);
             Console.WriteLine($"{nameof(GetVideoObject)}: {assetPath}");
@@ -377,6 +413,8 @@ public class SDL2VideoManager : IVideoManager
     }
 
     private Rectangle fullScreenRect = new(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    private bool _exists;
+    private bool _shouldClose;
 
     public void RefreshScreen()
     {
@@ -983,11 +1021,11 @@ public class SDL2VideoManager : IVideoManager
                     1.0f);
             });
         }
-        catch(Exception e)
+        catch (Exception e)
         {
 
         }
-//        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
+        //        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
     }
 
     private void ScrollJA2Background(
@@ -1434,10 +1472,6 @@ public class SDL2VideoManager : IVideoManager
 
     public void Dispose()
     {
-        //        GraphicDevice.WaitForIdle();
-        //        (Factory as DisposeCollectorResourceFactory)!.DisposeCollector.DisposeAll();
-        //        GraphicDevice.Dispose();
-
         GC.SuppressFinalize(this);
     }
 
@@ -1551,11 +1585,11 @@ public class SDL2VideoManager : IVideoManager
             w = hVObject.Images[textureIndex].Width
         };
 
-//        SDL.SDL_RenderCopy(
-//            Renderer,
-//            hVObject.Textures[textureIndex].Pointer,
-//            IntPtr.Zero,
-//            ref dstRect);
+        //        SDL.SDL_RenderCopy(
+        //            Renderer,
+        //            hVObject.Textures[textureIndex].Pointer,
+        //            IntPtr.Zero,
+        //            ref dstRect);
     }
 
     public bool DrawTextToScreen(
@@ -2107,22 +2141,6 @@ public class SDL2VideoManager : IVideoManager
     {
         var dstSurface = Surfaces.SurfaceByTypes[dst];
 
-        //        SDL.SDL_Rect srcRect = new()
-        //        {
-        //            h = src.Image.Height,
-        //            w = src.Image.Width,
-        //            x = 0,
-        //            y = 0,
-        //        };
-        //
-        //        SDL.SDL_Rect dstRect = new()
-        //        {
-        //            h = srcRect.h,
-        //            w = srcRect.w,
-        //            x = dstPoint.X,
-        //            y = dstPoint.Y,
-        //        };
-
         Rectangle dstRectangle = new()
         {
             Height = src.Height,
@@ -2131,41 +2149,20 @@ public class SDL2VideoManager : IVideoManager
             Y = dstPoint.Y,
         };
 
-        //src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+        // src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
+        // dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
 
         dstSurface.Image.Mutate(ctx =>
         {
             ctx.DrawImage(
-                src, 
+                src,
                 dstPoint,
                 dstRectangle,
                 colorBlending: PixelColorBlendingMode.Normal,
-//                alphaComposition: PixelAlphaCompositionMode.Dest,
+                //                alphaComposition: PixelAlphaCompositionMode.Dest,
                 1.0f);
         });
 
-//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
-
-
-        //        var result = SDL.SDL_BlitSurface(
-        //            src.Pointer,
-        //            ref srcRect,
-        //            dstSurface.Pointer,
-        //            ref dstRect);
-        //
-        //        if (result != 0)
-        //        {
-        //            var e = SDL.SDL_GetError();
-        //        }
-        }
-}
-
-public static class RectangleHelpers
-{
-    public static Rectangle ToVeldridRectangle(this Rectangle rectangle)
-        => new(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-
-    public static Point ToPoint(this Rectangle rect) => new(rect.X, rect.Y);
-    public static Vector2 ToVector2(this Point point) => new(point.X, point.Y);
+        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+    }
 }

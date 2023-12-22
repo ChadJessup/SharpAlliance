@@ -54,14 +54,14 @@ namespace SharpAlliance
             await this.input.Initialize();
             await this.fonts.Initialize();
 
-            this.PlatformConstruct();
+            //this.PlatformConstruct();
 
             var validation = false;
 #if DEBUG
             validation = true;
 #endif
 
-            if (this.MainWindow is not null)
+            if (this.MainWindow is not 0)
             {
                 SDL2VideoManager vorticeVideoManager = (SDL2VideoManager)this.context.Services.GetRequiredService<SDL2VideoManager>();
                 this.MainWindow = SDL2VideoManager.Window;
@@ -72,10 +72,10 @@ namespace SharpAlliance
             return true;
         }
 
-        public Sdl2Window MainWindow { get; private set; }
+        public nint MainWindow { get; private set; }
         public bool IsInitialized { get; }
 
-        public Sdl2Window CreateWindow(string name = "Vortice")
+        public nint CreateWindow(string name = "Vortice")
         {
             SDL2VideoManager vorticeVideoManager = (SDL2VideoManager)this.context.Services.GetRequiredService<SDL2VideoManager>();
             return SDL2VideoManager.Window;
@@ -135,7 +135,7 @@ namespace SharpAlliance
 
         public ValueTask<bool> Pump(Action gameLoopCallback)
         {
-            if (this.MainWindow is null)
+            if (this.MainWindow is 0)
             {
                 this.MainWindow = this.CreateWindow();
             }

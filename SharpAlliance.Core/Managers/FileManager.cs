@@ -1,14 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Platform.Interfaces;
-using Vortice.Mathematics.PackedVector;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
 

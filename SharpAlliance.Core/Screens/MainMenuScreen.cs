@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using Veldrid;
 using SixLabors.ImageSharp;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 using Point = SixLabors.ImageSharp.Point;
@@ -261,7 +260,7 @@ public class MainMenuScreen : IScreen
     {
         byte cnt;
 
-        //	RestoreExternBackgroundRect( (ushort)(320 - gusMainMenuButtonWidths[TITLE]/2), MAINMENU_TITLE_Y, gusMainMenuButtonWidths[TITLE], 23 );
+        //RestoreExternBackgroundRect( (ushort)(320 - gusMainMenuButtonWidths[TITLE]/2), MAINMENU_TITLE_Y, gusMainMenuButtonWidths[TITLE], 23 );
 
 
         for (cnt = 0; cnt < (byte)MainMenuItems.NUM_MENU_ITEMS; cnt++)
@@ -281,14 +280,10 @@ public class MainMenuScreen : IScreen
         HVOBJECT hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
-        //video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
 
         hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
         video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
-
-        //video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Images[0].Height), 0);
-//        video.BltVideoObject(hPixHandle, 0, 188, (25 + (int)hPixHandle.Images[0].Height), 0);
 
         FontSubSystem.DrawTextToScreen(
             EnglishText.gzCopyrightText[0],

@@ -6,14 +6,8 @@ using Microsoft.Extensions.Localization;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
-using SixLabors.ImageSharp;
 using Veldrid;
-using static SharpAlliance.Core.Screens.IntroScreen;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core;
 
@@ -90,10 +84,29 @@ public class SharpAllianceGameLogic : IGameLogic
         IScreen nextScreen = ScreenManager.CurrentScreen;
         var sm = this.screen;
 
+        var mre = new ManualResetEvent(false);
+
+        void ProcessEvents(object? state)
+        {
+            while (this.context.State == GameState.Running)
+            {
+                this.inputs.ProcessEvents();
+                if (!mre.WaitOne())
+                {
+
+                }
+
+                Console.WriteLine("events processed");
+            }
+        }
+
+//        Task.Factory.StartNew(ProcessEvents, token, TaskCreationOptions.LongRunning);
+
         while (this.context.State == GameState.Running && !token.IsCancellationRequested)
         {
             nextScreen = ScreenManager.CurrentScreen;
 
+            //            mre.Set();
             this.inputs.ProcessEvents();
 
             this.inputs.GetCursorPosition(out SixLabors.ImageSharp.Point MousePos);

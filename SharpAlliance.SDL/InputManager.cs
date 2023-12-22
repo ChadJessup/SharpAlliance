@@ -163,55 +163,76 @@ public class InputManager : IInputManager
         {
             var enqueue = false;
             InputSnapshot? snapshot = null;
+            
             SDL.SDL_PumpEvents();
 
-            if (SDL.SDL_PollEvent(out SDL.SDL_Event e) == 1)
+            var hasEvents = SDL.SDL_PollEvent(out var e);
+            if (hasEvents < 0)
+            {
+                var error = SDL.SDL_GetError();
+            }
+
+            while (hasEvents > 0)
             {
                 switch (e.type)
                 {
+                    case SDL.SDL_EventType.SDL_KEYDOWN:
+                        Console.WriteLine("Key pressed.");
+                        break;
                     case SDL.SDL_EventType.SDL_QUIT:
                         //                        running = false;
                         break;
                     case SDL.SDL_EventType.SDL_WINDOWEVENT:
                         break;
+                    case SDL.SDL_EventType.SDL_TEXTEDITING:
+                        break;
                     default:
                         Console.WriteLine(e.type);
                         break;
                 }
+
+                hasEvents = SDL.SDL_PollEvent(out e);
+
+                if (hasEvents < 0)
+                {
+                    var error = SDL.SDL_GetError();
+                }
             }
+
+            SDL.SDL_Delay(100);
 
             //            InputTracker.UpdateFrameInput(snapshot, video.Window);
 
-//            var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
-//            var tmpRight = snapshot.IsMouseDown(MouseButton.Right);
-//
-//            if (tmpLeft != this.gfLeftButtonState)
-//            {
-//                this.gfLeftButtonState = tmpLeft;
-//                enqueue = true;
-//            }
-//
-//            if (tmpRight != this.gfRightButtonState)
-//            {
-//                this.gfRightButtonState = tmpRight;
-//                enqueue = true;
-//            }
-//
-//            if (this.lastMousePos != snapshot.MousePosition)
-//            {
-//                this.lastMousePos = snapshot.MousePosition;
-//                enqueue = true;
-//            }
-//
-//            if (snapshot.KeyEvents.Any() || snapshot.KeyCharPresses.Any())
-//            {
-//                enqueue = true;
-//            }
-//
-//            if (enqueue)
-//            {
-//                this.gEventQueue.Enqueue(snapshot);
-//            }
+            //            var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
+            //            var tmpRight = snapshot.IsMouseDown(MouseButton.Right);
+            //
+            //            if (tmpLeft != this.gfLeftButtonState)
+            //            {
+            //                this.gfLeftButtonState = tmpLeft;
+            //                enqueue = true;
+            //            }
+            //
+            //            if (tmpRight != this.gfRightButtonState)
+            //            {
+            //                this.gfRightButtonState = tmpRight;
+            //                enqueue = true;
+            //            }
+            //
+            //            if (this.lastMousePos != snapshot.MousePosition)
+            //            {
+            //                this.lastMousePos = snapshot.MousePosition;
+            //                enqueue = true;
+            //            }
+            //
+            //            if (snapshot.KeyEvents.Any() || snapshot.KeyCharPresses.Any())
+            //            {
+            //                enqueue = true;
+            //            }
+            //
+            //            if (enqueue)
+            //            {
+            //                this.gEventQueue.Enqueue(snapshot);
+            //            }
         }
         catch
         {

@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpAlliance.Core.SubSystems;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Veldrid.MetalBindings;
-using SixLabors.ImageSharp;
-using SharpAlliance.Core.Managers.VideoSurfaces;
+﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core;
