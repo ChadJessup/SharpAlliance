@@ -217,8 +217,8 @@ public class FindLocations
 
                         // NOTE: GOTTA SET THESE 3 FIELDS *BACK* AFTER USING THIS FUNCTION!!!
                         pSoldier.sGridNo = sAdjSpot;     // pretend he's standing at 'sAdjSpot'
-                        AICenterXY(sAdjSpot, out (pSoldier.dXPos), out (pSoldier.dYPos));
-                        bThisCTGT = CalcWorstCTGTForPosition(pSoldier, ubOppID, sOppGridNo, bLevel, iMyAPsLeft);
+                        this.AICenterXY(sAdjSpot, out (pSoldier.dXPos), out (pSoldier.dYPos));
+                        bThisCTGT = this.CalcWorstCTGTForPosition(pSoldier, ubOppID, sOppGridNo, bLevel, iMyAPsLeft);
                         if (bThisCTGT > bBestCTGT)
                         {
                             bBestCTGT = bThisCTGT;
@@ -314,7 +314,7 @@ public class FindLocations
             }
 
             // calculate where my cover is worst if opponent moves just 1 tile over
-            bHisBestCTGT = CalcBestCTGT(pHim, pMe.ubID, sMyGridNo, pMe.bLevel, iMyAPsLeft);
+            bHisBestCTGT = this.CalcBestCTGT(pHim, pMe.ubID, sMyGridNo, pMe.bLevel, iMyAPsLeft);
 
             // if he can actually improve his CTGT by moving to a nearby gridno
             if (bHisBestCTGT > bHisActualCTGT)
@@ -345,7 +345,7 @@ public class FindLocations
 
             // let's not assume anything about the stance the enemy might take, so take an average
             // value... no cover give a higher value than partial cover
-            bMyCTGT = CalcAverageCTGTForPosition(pMe, pHim.ubID, sHisGridNo, pHim.bLevel, iMyAPsLeft);
+            bMyCTGT = this.CalcAverageCTGTForPosition(pMe, pHim.ubID, sHisGridNo, pHim.bLevel, iMyAPsLeft);
 
             // since NPCs are too dumb to shoot "blind", ie. at opponents that they
             // themselves can't see (mercs can, using another as a spotter!), if the
@@ -758,13 +758,13 @@ public class FindLocations
             if (Threat[uiLoop].iOrigRange <= MAX_THREAT_RANGE)
             {
                 // add this opponent's cover value to our current total cover value
-                iCurrentCoverValue += CalcCoverValue(pSoldier, pSoldier.sGridNo, iMyThreatValue, pSoldier.bActionPoints, uiLoop, Threat[uiLoop].iOrigRange, morale, iCurrentScale);
+                iCurrentCoverValue += this.CalcCoverValue(pSoldier, pSoldier.sGridNo, iMyThreatValue, pSoldier.bActionPoints, uiLoop, Threat[uiLoop].iOrigRange, morale, iCurrentScale);
             }
             //sprintf(tempstr,"iCurrentCoverValue after opponent %d is now %d",iLoop,iCurrentCoverValue);
             //PopMessage(tempstr);
         }
 
-        iCurrentCoverValue -= (iCurrentCoverValue / 10) * NumberOfTeamMatesAdjacent(pSoldier, pSoldier.sGridNo);
+        iCurrentCoverValue -= (iCurrentCoverValue / 10) * this.NumberOfTeamMatesAdjacent(pSoldier, pSoldier.sGridNo);
 
 #if DEBUGCOVER
         //	AINumMessage("Search Range = ",iSearchRange);
@@ -952,12 +952,12 @@ public class FindLocations
                 // by 10% (so locations next to several people will be very much frowned upon
                 if (iCoverValue >= 0)
                 {
-                    iCoverValue -= (iCoverValue / 10) * NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
+                    iCoverValue -= (iCoverValue / 10) * this.NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
                 }
                 else
                 {
                     // when negative, must add a negative to decrease the total
-                    iCoverValue += (iCoverValue / 10) * NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
+                    iCoverValue += (iCoverValue / 10) * this.NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
                 }
 
                 if (fNight && !(RenderFun.InARoom(sGridNo, out var _))) // ignore in buildings in case placed there
@@ -1056,7 +1056,7 @@ public class FindLocations
             // cover values already take the AP cost of getting there into account in
             // a BIG way, so no need to worry about that here, even small improvements
             // are actually very significant once we get our APs back (if we live!)
-            piPercentBetter = CalcPercentBetter(iCurrentCoverValue, iBestCoverValue, iCurrentScale, iBestCoverScale);
+            piPercentBetter = this.CalcPercentBetter(iCurrentCoverValue, iBestCoverValue, iCurrentScale, iBestCoverScale);
 
             // if best cover value found was at least 5% better than our current cover
             if (piPercentBetter >= MIN_PERCENT_BETTER)

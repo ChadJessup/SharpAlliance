@@ -345,7 +345,7 @@ public class AIMain
                 // ATE: Display message that deadlock occured...
                 // LiveMessage("Breaking Deadlock");
 
-                EndAIDeadlock();
+                this.EndAIDeadlock();
                 if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL)))
                 {
                     return;
@@ -370,7 +370,7 @@ public class AIMain
                     // well that move must have been cancelled because we're thinking now!
                     //pSoldier.fNoAPToFinishMove = false;
                 }
-                TurnBasedHandleNPCAI(pSoldier);
+                this.TurnBasedHandleNPCAI(pSoldier);
             }
             else
             {
@@ -416,7 +416,7 @@ public class AIMain
                             else if (pSoldier.ubQuoteActionID >= QUOTE_ACTION_ID.TRAVERSE_EAST
                                 && pSoldier.ubQuoteActionID <= QUOTE_ACTION_ID.TRAVERSE_NORTH)
                             {
-                                HandleAITacticalTraversal(pSoldier);
+                                this.HandleAITacticalTraversal(pSoldier);
                                 return;
                             }
                         }
@@ -430,7 +430,7 @@ public class AIMain
                     else if (pSoldier.ubQuoteActionID >= QUOTE_ACTION_ID.TRAVERSE_EAST
                         && pSoldier.ubQuoteActionID <= QUOTE_ACTION_ID.TRAVERSE_NORTH)
                     {
-                        HandleAITacticalTraversal(pSoldier);
+                        this.HandleAITacticalTraversal(pSoldier);
                         return;
                     }
 
@@ -1579,7 +1579,7 @@ public class AIMain
             */
 
             // if action should remain in progress
-            if (ActionInProgress(pSoldier) > 0)
+            if (this.ActionInProgress(pSoldier) > 0)
             {
                 // let it continue
                 return;
@@ -1696,7 +1696,7 @@ public class AIMain
             // if he chose to continue doing nothing
             if (pSoldier.bAction == AI_ACTION.NONE)
             {
-                NPCDoesNothing(pSoldier);  // sets pSoldier.moved to true
+                this.NPCDoesNothing(pSoldier);  // sets pSoldier.moved to true
                 return;
             }
 

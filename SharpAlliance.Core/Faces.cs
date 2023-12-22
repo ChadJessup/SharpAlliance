@@ -357,7 +357,7 @@ public class Faces
             return;
         }
 
-        SetAutoFaceActive(uiDisplayBuffer, uiRestoreBuffer, MercPtrs[ubSoldierID].iFaceIndex, usFaceX, usFaceY);
+        this.SetAutoFaceActive(uiDisplayBuffer, uiRestoreBuffer, MercPtrs[ubSoldierID].iFaceIndex, usFaceX, usFaceY);
 
     }
 
@@ -419,7 +419,7 @@ public class Faces
 
         GetFaceRelativeCoordinates(pFace, out int usEyesX, out int usEyesY, out int usMouthX, out int usMouthY);
 
-        InternalSetAutoFaceActive(uiDisplayBuffer, uiRestoreBuffer, iFaceIndex, usFaceX, usFaceY, usEyesX, usEyesY, usMouthX, usMouthY);
+        this.InternalSetAutoFaceActive(uiDisplayBuffer, uiRestoreBuffer, iFaceIndex, usFaceX, usFaceY, usEyesX, usEyesY, usMouthX, usMouthY);
 
     }
 
@@ -737,7 +737,7 @@ public class Faces
 
                     }
 
-                    HandleRenderFaceAdjustments(pFace, true, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
+                    this.HandleRenderFaceAdjustments(pFace, true, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
 
                 }
             }
@@ -1033,7 +1033,7 @@ public class Faces
         // Check for valid soldier
         CHECKF(ubSoldierID != NOBODY);
 
-        return (RenderAutoFace(MercPtrs[ubSoldierID].iFaceIndex));
+        return (this.RenderAutoFace(MercPtrs[ubSoldierID].iFaceIndex));
     }
 
     public static void GetXYForIconPlacement(FACETYPE? pFace, int ubIndex, int sFaceX, int sFaceY, out int psX, out int psY)
@@ -1458,7 +1458,7 @@ public class Faces
             }
         }
 
-        HandleRenderFaceAdjustments(pFace, false, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
+        this.HandleRenderFaceAdjustments(pFace, false, false, 0, pFace.usFaceX, pFace.usFaceY, pFace.usEyesX, pFace.usEyesY);
 
         // Restore extern rect
         if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
@@ -1479,7 +1479,7 @@ public class Faces
         // Check for valid soldier
         CHECKF(ubSoldierID != NOBODY);
 
-        return (ExternRenderFace(uiBuffer, MercPtrs[ubSoldierID].iFaceIndex, sX, sY));
+        return (this.ExternRenderFace(uiBuffer, MercPtrs[ubSoldierID].iFaceIndex, sX, sY));
     }
 
 
@@ -1508,7 +1508,7 @@ public class Faces
 
         GetFaceRelativeCoordinates(pFace, out int usEyesX, out int usEyesY, out int usMouthX, out int usMouthY);
 
-        HandleRenderFaceAdjustments(pFace, false, true, uiBuffer, sX, sY, (int)(sX + usEyesX), (int)(sY + usEyesY));
+        this.HandleRenderFaceAdjustments(pFace, false, true, uiBuffer, sX, sY, (int)(sX + usEyesX), (int)(sY + usEyesY));
 
         // Restore extern rect
         if (uiBuffer == SurfaceType.SAVE_BUFFER)
@@ -1900,7 +1900,7 @@ public class Faces
 
                     if (fRerender)
                     {
-                        RenderAutoFace(uiCount);
+                        this.RenderAutoFace(uiCount);
                     }
 
                     if (bLife < CONSCIOUSNESS)
@@ -1911,10 +1911,10 @@ public class Faces
 
                 if (fHandleFace)
                 {
-                    BlinkAutoFace(uiCount);
+                    this.BlinkAutoFace(uiCount);
                 }
 
-                MouthAutoFace(uiCount);
+                this.MouthAutoFace(uiCount);
 
             }
 

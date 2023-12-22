@@ -104,69 +104,69 @@ public class HandleUI
 
         Globals.gEvents = new()
         {
-            { UI_EVENT_DEFINES.I_DO_NOTHING, new(0, UI_MODE.IDLE_MODE, UIHandleIDoNothing, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_EXIT, new(0, UI_MODE.IDLE_MODE, UIHandleExit, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_NEW_MERC, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleNewMerc, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_NEW_BADMERC, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleNewBadMerc, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_SELECT_MERC, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleSelectMerc, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_ENTER_EDIT_MODE, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleEnterEditMode, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_ENTER_PALEDIT_MODE, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleEnterPalEditMode, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_ENDTURN, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleEndTurn, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_TESTHIT, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleTestHit, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_CHANGELEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, UIHandleChangeLevel, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_ON_TERRAIN, new(UIEVENT.SINGLEEVENT, UI_MODE.IDLE_MODE, UIHandleIOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_CHANGE_TO_IDLE, new(UIEVENT.SINGLEEVENT, UI_MODE.IDLE_MODE, UIHandleIChangeToIdle, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LOADLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.IDLE_MODE, UIHandleILoadLevel, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_SOLDIERDEBUG, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleISoldierDebug, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LOSDEBUG, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILOSDebug, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LEVELNODEDEBUG, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILevelNodeDebug, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_GOTODEMOMODE, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleIGotoDemoMode, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LOADFIRSTLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadFirstLevel, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LOADSECONDLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadSecondLevel, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LOADTHIRDLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadThirdLevel, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LOADFOURTHLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadFourthLevel, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.I_LOADFIFTHLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, UIHandleILoadFifthLevel, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.ET_ON_TERRAIN, new(0,UI_MODE.ENEMYS_TURN_MODE, UIHandleIETOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.ET_ENDENEMYS_TURN, new(UIEVENT.SINGLEEVENT,UI_MODE.MOVE_MODE, UIHandleIETEndTurn, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_DO_NOTHING, new(0, UI_MODE.IDLE_MODE, this.UIHandleIDoNothing, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_EXIT, new(0, UI_MODE.IDLE_MODE, this.UIHandleExit, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_NEW_MERC, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleNewMerc, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_NEW_BADMERC, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleNewBadMerc, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_SELECT_MERC, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, this.UIHandleSelectMerc, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_ENTER_EDIT_MODE, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, this.UIHandleEnterEditMode, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_ENTER_PALEDIT_MODE, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, this.UIHandleEnterPalEditMode, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_ENDTURN, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleEndTurn, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_TESTHIT, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleTestHit, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_CHANGELEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE, this.UIHandleChangeLevel, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_ON_TERRAIN, new(UIEVENT.SINGLEEVENT, UI_MODE.IDLE_MODE, this.UIHandleIOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_CHANGE_TO_IDLE, new(UIEVENT.SINGLEEVENT, UI_MODE.IDLE_MODE, this.UIHandleIChangeToIdle, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LOADLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.IDLE_MODE, this.UIHandleILoadLevel, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_SOLDIERDEBUG, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleISoldierDebug, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LOSDEBUG, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleILOSDebug, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LEVELNODEDEBUG, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleILevelNodeDebug, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_GOTODEMOMODE, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleIGotoDemoMode, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LOADFIRSTLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleILoadFirstLevel, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LOADSECONDLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleILoadSecondLevel, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LOADTHIRDLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleILoadThirdLevel, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LOADFOURTHLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleILoadFourthLevel, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.I_LOADFIFTHLEVEL, new(UIEVENT.SINGLEEVENT, UI_MODE.DONT_CHANGEMODE, this.UIHandleILoadFifthLevel, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.ET_ON_TERRAIN, new(0,UI_MODE.ENEMYS_TURN_MODE, this.UIHandleIETOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.ET_ENDENEMYS_TURN, new(UIEVENT.SINGLEEVENT,UI_MODE.MOVE_MODE, this.UIHandleIETEndTurn, false, false, 0, new int[] { 0, 0, 0 }) },
             { UI_EVENT_DEFINES.M_ON_TERRAIN, new(0,UI_MODE.MOVE_MODE, UIHandleMOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.M_CHANGE_TO_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.ACTION_MODE,                    UIHandleMChangeToAction, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.M_CHANGE_TO_HANDMODE, new(UIEVENT.SINGLEEVENT, UI_MODE.HANDCURSOR_MODE,            UIHandleMChangeToHandMode, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.M_CYCLE_MOVEMENT, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleMCycleMovement, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.M_CYCLE_MOVE_ALL, new(UIEVENT.SINGLEEVENT, UI_MODE.CONFIRM_MOVE_MODE,      UIHandleMCycleMoveAll, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.M_CHANGE_TO_ADJPOS_MODE, new(UIEVENT.SNAPMOUSE, UI_MODE.ADJUST_STANCE_MODE,     UIHandleMAdjustStanceMode, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.POPUP_DOMESSAGE, new(0, UI_MODE.POPUP_MODE, UIHandlePOPUPMSG, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.A_ON_TERRAIN, new(0, UI_MODE.ACTION_MODE, UIHandleAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.A_CHANGE_TO_MOVE, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleAChangeToMove, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.A_CHANGE_TO_CONFIM_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.CONFIRM_ACTION_MODE,    UIHandleAChangeToConfirmAction, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.A_END_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleAEndAction, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.U_MOVEMENT_MENU, new(UIEVENT.SNAPMOUSE, UI_MODE.MENU_MODE,                      UIHandleMovementMenu, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.U_POSITION_MENU, new(UIEVENT.SNAPMOUSE, UI_MODE.MENU_MODE,                      UIHandlePositionMenu, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.C_WAIT_FOR_CONFIRM, new(0, UI_MODE.CONFIRM_MOVE_MODE,    UIHandleCWait, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.C_MOVE_MERC, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleCMoveMerc, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.C_ON_TERRAIN, new(0, UI_MODE.CONFIRM_MOVE_MODE,      UIHandleCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.PADJ_ADJUST_STANCE, new(0, UI_MODE.MOVE_MODE,                      UIHandlePADJAdjustStance, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.CA_ON_TERRAIN, new(0, UI_MODE.CONFIRM_ACTION_MODE,    UIHandleCAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.CA_MERC_SHOOT, new(UIEVENT.SINGLEEVENT, UI_MODE.ACTION_MODE,                    UIHandleCAMercShoot, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.CA_END_CONFIRM_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.ACTION_MODE,                    UIHandleCAEndConfirmAction, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.HC_ON_TERRAIN, new(0, UI_MODE.HANDCURSOR_MODE,            UIHandleHCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.G_GETTINGITEM, new(0, UI_MODE.GETTINGITEM_MODE,           UIHandleHCGettingItem, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LC_ON_TERRAIN, new(0, UI_MODE.LOOKCURSOR_MODE,            UIHandleLCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LC_CHANGE_TO_LOOK, new(UIEVENT.SINGLEEVENT, UI_MODE.LOOKCURSOR_MODE,            UIHandleLCChangeToLook, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LC_LOOK, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleLCLook, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.TA_TALKINGMENU, new(0,UI_MODE.TALKINGMENU_MODE,           UIHandleTATalkingMenu, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.T_ON_TERRAIN, new(0,UI_MODE.TALKCURSOR_MODE,            UIHandleTOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.T_CHANGE_TO_TALKING, new(UIEVENT.SINGLEEVENT,UI_MODE.TALKCURSOR_MODE,            UIHandleTChangeToTalking, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LU_ON_TERRAIN, new(0,UI_MODE.LOCKUI_MODE,                    UIHandleLUIOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LU_BEGINUILOCK, new(0,UI_MODE.LOCKUI_MODE,                    UIHandleLUIBeginLock, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.M_CHANGE_TO_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.ACTION_MODE,                    this.UIHandleMChangeToAction, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.M_CHANGE_TO_HANDMODE, new(UIEVENT.SINGLEEVENT, UI_MODE.HANDCURSOR_MODE,            this.UIHandleMChangeToHandMode, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.M_CYCLE_MOVEMENT, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      this.UIHandleMCycleMovement, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.M_CYCLE_MOVE_ALL, new(UIEVENT.SINGLEEVENT, UI_MODE.CONFIRM_MOVE_MODE,      this.UIHandleMCycleMoveAll, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.M_CHANGE_TO_ADJPOS_MODE, new(UIEVENT.SNAPMOUSE, UI_MODE.ADJUST_STANCE_MODE,     this.UIHandleMAdjustStanceMode, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.POPUP_DOMESSAGE, new(0, UI_MODE.POPUP_MODE, this.UIHandlePOPUPMSG, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.A_ON_TERRAIN, new(0, UI_MODE.ACTION_MODE, this.UIHandleAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.A_CHANGE_TO_MOVE, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      this.UIHandleAChangeToMove, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.A_CHANGE_TO_CONFIM_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.CONFIRM_ACTION_MODE,    this.UIHandleAChangeToConfirmAction, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.A_END_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      this.UIHandleAEndAction, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.U_MOVEMENT_MENU, new(UIEVENT.SNAPMOUSE, UI_MODE.MENU_MODE,                      this.UIHandleMovementMenu, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.U_POSITION_MENU, new(UIEVENT.SNAPMOUSE, UI_MODE.MENU_MODE,                      this.UIHandlePositionMenu, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.C_WAIT_FOR_CONFIRM, new(0, UI_MODE.CONFIRM_MOVE_MODE,    this.UIHandleCWait, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.C_MOVE_MERC, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      this.UIHandleCMoveMerc, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.C_ON_TERRAIN, new(0, UI_MODE.CONFIRM_MOVE_MODE,      this.UIHandleCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.PADJ_ADJUST_STANCE, new(0, UI_MODE.MOVE_MODE,                      this.UIHandlePADJAdjustStance, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.CA_ON_TERRAIN, new(0, UI_MODE.CONFIRM_ACTION_MODE,    this.UIHandleCAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.CA_MERC_SHOOT, new(UIEVENT.SINGLEEVENT, UI_MODE.ACTION_MODE,                    this.UIHandleCAMercShoot, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.CA_END_CONFIRM_ACTION, new(UIEVENT.SINGLEEVENT, UI_MODE.ACTION_MODE,                    this.UIHandleCAEndConfirmAction, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.HC_ON_TERRAIN, new(0, UI_MODE.HANDCURSOR_MODE,            this.UIHandleHCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.G_GETTINGITEM, new(0, UI_MODE.GETTINGITEM_MODE,           this.UIHandleHCGettingItem, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LC_ON_TERRAIN, new(0, UI_MODE.LOOKCURSOR_MODE,            this.UIHandleLCOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LC_CHANGE_TO_LOOK, new(UIEVENT.SINGLEEVENT, UI_MODE.LOOKCURSOR_MODE,            this.UIHandleLCChangeToLook, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LC_LOOK, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      this.UIHandleLCLook, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.TA_TALKINGMENU, new(0,UI_MODE.TALKINGMENU_MODE,           this.UIHandleTATalkingMenu, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.T_ON_TERRAIN, new(0,UI_MODE.TALKCURSOR_MODE,            this.UIHandleTOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.T_CHANGE_TO_TALKING, new(UIEVENT.SINGLEEVENT,UI_MODE.TALKCURSOR_MODE,            this.UIHandleTChangeToTalking, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LU_ON_TERRAIN, new(0,UI_MODE.LOCKUI_MODE,                    this.UIHandleLUIOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LU_BEGINUILOCK, new(0,UI_MODE.LOCKUI_MODE,                    this.UIHandleLUIBeginLock, false, false, 0, new int[] { 0, 0, 0 }) },
             { UI_EVENT_DEFINES.LU_ENDUILOCK, new(UIEVENT.SINGLEEVENT,UI_MODE.MOVE_MODE,                      UIHandleLUIEndLock, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.OP_OPENDOORMENU, new(0, UI_MODE.OPENDOOR_MENU_MODE,     UIHandleOpenDoorMenu, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LA_ON_TERRAIN, new(0, UI_MODE.LOCKOURTURN_UI_MODE,    UIHandleLAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LA_BEGINUIOURTURNLOCK, new(0, UI_MODE.LOCKOURTURN_UI_MODE,    UIHandleLABeginLockOurTurn, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.LA_ENDUIOUTURNLOCK, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      UIHandleLAEndLockOurTurn, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.EX_EXITSECTORMENU, new(0, UI_MODE.EXITSECTORMENU_MODE,    UIHandleEXExitSectorMenu, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.RB_ON_TERRAIN, new(0, UI_MODE.RUBBERBAND_MODE,            UIHandleRubberBandOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.JP_ON_TERRAIN, new(0, UI_MODE.JUMPOVER_MODE,              UIHandleJumpOverOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
-            { UI_EVENT_DEFINES.JP_JUMP, new(0, UI_MODE.MOVE_MODE, UIHandleJumpOver, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.OP_OPENDOORMENU, new(0, UI_MODE.OPENDOOR_MENU_MODE,     this.UIHandleOpenDoorMenu, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LA_ON_TERRAIN, new(0, UI_MODE.LOCKOURTURN_UI_MODE,    this.UIHandleLAOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LA_BEGINUIOURTURNLOCK, new(0, UI_MODE.LOCKOURTURN_UI_MODE,    this.UIHandleLABeginLockOurTurn, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.LA_ENDUIOUTURNLOCK, new(UIEVENT.SINGLEEVENT, UI_MODE.MOVE_MODE,                      this.UIHandleLAEndLockOurTurn, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.EX_EXITSECTORMENU, new(0, UI_MODE.EXITSECTORMENU_MODE,    this.UIHandleEXExitSectorMenu, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.RB_ON_TERRAIN, new(0, UI_MODE.RUBBERBAND_MODE,            this.UIHandleRubberBandOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.JP_ON_TERRAIN, new(0, UI_MODE.JUMPOVER_MODE,              this.UIHandleJumpOverOnTerrain, false, false, 0, new int[] { 0, 0, 0 }) },
+            { UI_EVENT_DEFINES.JP_JUMP, new(0, UI_MODE.MOVE_MODE, this.UIHandleJumpOver, false, false, 0, new int[] { 0, 0, 0 }) },
         };
     }
 
@@ -1005,11 +1005,11 @@ public class HandleUI
     {
         if (Globals.gsInterfaceLevel == 0)
         {
-            ChangeInterfaceLevel(1);
+            this.ChangeInterfaceLevel(1);
         }
         else if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
         {
-            ChangeInterfaceLevel(0);
+            this.ChangeInterfaceLevel(0);
         }
 
         return ScreenName.GAME_SCREEN;
@@ -1294,7 +1294,7 @@ public class HandleUI
                             if (pSoldier.usUIMovementMode != AnimationStates.WALKING
                                 && pSoldier.usUIMovementMode != AnimationStates.RUNNING)
                             {
-                                UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_STAND);
+                                this.UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_STAND);
                                 pSoldier.fUIMovementFast = true;
                             }
                             else
@@ -1307,17 +1307,17 @@ public class HandleUI
 
                         case MOVEMENT.MENU_WALK:
 
-                            UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_STAND);
+                            this.UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_STAND);
                             break;
 
                         case MOVEMENT.MENU_SWAT:
 
-                            UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_CROUCH);
+                            this.UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_CROUCH);
                             break;
 
                         case MOVEMENT.MENU_PRONE:
 
-                            UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_PRONE);
+                            this.UIHandleSoldierStanceChange(pSoldier.ubID, AnimationHeights.ANIM_PRONE);
                             break;
 
                     }
@@ -1507,7 +1507,7 @@ public class HandleUI
                 Globals.gfUIDisplayActionPointsInvalid = true;
             }
 
-            SetConfirmMovementModeCursor(pSoldier, false);
+            this.SetConfirmMovementModeCursor(pSoldier, false);
 
             // If we are not in combat, draw path here!
             if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
@@ -1609,7 +1609,7 @@ public class HandleUI
                 Globals.gfGetNewPathThroughPeople = false;
 
                 // RESET MOVE FAST FLAG
-                SetConfirmMovementModeCursor(pSoldier, true);
+                this.SetConfirmMovementModeCursor(pSoldier, true);
 
                 Globals.gfUIAllMoveOn = 0;
 
@@ -1638,7 +1638,7 @@ public class HandleUI
                         sActionGridNo = Overhead.FindAdjacentGridEx(pSoldier, sIntTileGridNo, ref ubDirection, out var _, false, true);
                         if (sActionGridNo != -1)
                         {
-                            SetUIBusy(pSoldier.ubID);
+                            this.SetUIBusy(pSoldier.ubID);
 
                             // Set dest gridno
                             sDestGridNo = sActionGridNo;
@@ -1658,12 +1658,12 @@ public class HandleUI
                         }
                     }
 
-                    SetUIBusy(pSoldier.ubID);
+                    this.SetUIBusy(pSoldier.ubID);
 
                     if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                     {
                         // RESET MOVE FAST FLAG
-                        SetConfirmMovementModeCursor(pSoldier, true);
+                        this.SetConfirmMovementModeCursor(pSoldier, true);
 
                         if (!Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect)
                         {
@@ -1675,7 +1675,7 @@ public class HandleUI
 
                     if (Globals.gTacticalStatus.fAtLeastOneGuyOnMultiSelect && pIntTile == null)
                     {
-                        HandleMultiSelectionMove(sDestGridNo);
+                        this.HandleMultiSelectionMove(sDestGridNo);
                     }
                     else
                     {
@@ -2204,7 +2204,7 @@ public class HandleUI
         {
             Globals.gTacticalStatus.ubLastRequesterTargetID = Globals.gpRequesterTargetMerc.ubProfile;
 
-            UIHandleMercAttack(Globals.gpRequesterMerc, Globals.gpRequesterTargetMerc, Globals.gsRequesterGridNo);
+            this.UIHandleMercAttack(Globals.gpRequesterMerc, Globals.gpRequesterTargetMerc, Globals.gsRequesterGridNo);
         }
     }
 
@@ -2259,14 +2259,14 @@ public class HandleUI
                             zStr,
                             ScreenName.GAME_SCREEN,
                             MSG_BOX_FLAG.YESNO,
-                            AttackRequesterCallback,
+                            this.AttackRequesterCallback,
                             ref _);
                     }
                 }
 
                 if (!fDidRequester)
                 {
-                    UIHandleMercAttack(pSoldier, pTSoldier, usMapPos);
+                    this.UIHandleMercAttack(pSoldier, pTSoldier, usMapPos);
                 }
             }
         }
@@ -2364,7 +2364,7 @@ public class HandleUI
             // Get soldier
             if (Overhead.GetSoldier(out SOLDIERTYPE? pSoldier, Globals.gusSelectedSoldier))
             {
-                ubNewStance = GetAdjustedAnimHeight(Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight, Globals.gbAdjustStanceDiff);
+                ubNewStance = this.GetAdjustedAnimHeight(Globals.gAnimControl[pSoldier.usAnimState].ubEndHeight, Globals.gbAdjustStanceDiff);
 
                 if (Globals.gbClimbID == 1)
                 {
@@ -2377,7 +2377,7 @@ public class HandleUI
                 else
                 {
                     // Set state to result
-                    UIHandleSoldierStanceChange(pSoldier.ubID, ubNewStance);
+                    this.UIHandleSoldierStanceChange(pSoldier.ubID, ubNewStance);
                 }
 
                 // Once we have APs, we can safely reset nomove flag!
@@ -3052,7 +3052,7 @@ public class HandleUI
             pSoldier.fTurningFromPronePosition = 0;
 
             // Check if we have enough APS
-            if (SoldierCanAffordNewStance(pSoldier, bNewStance))
+            if (this.SoldierCanAffordNewStance(pSoldier, bNewStance))
             {
                 // Adjust stance
                 //ChangeSoldierStance( pSoldier, bNewStance );
@@ -3100,7 +3100,7 @@ public class HandleUI
         }
 
         // Set UI value for soldier
-        SetUIbasedOnStance(pSoldier, bNewStance);
+        this.SetUIbasedOnStance(pSoldier, bNewStance);
 
         Globals.gfUIStanceDifferent = true;
 
@@ -4161,7 +4161,7 @@ public class HandleUI
             {
                 if (Globals.gfUIAllMoveOn == 2)
                 {
-                    BeginDisplayTimedCursor(UICursorDefines.MOVE_RUN_REALTIME_UICURSOR, 300);
+                    this.BeginDisplayTimedCursor(UICursorDefines.MOVE_RUN_REALTIME_UICURSOR, 300);
                 }
                 else
                 {
@@ -4172,7 +4172,7 @@ public class HandleUI
             {
                 if (pSoldier.fUIMovementFast && pSoldier.usAnimState == AnimationStates.RUNNING && fFromMove)
                 {
-                    BeginDisplayTimedCursor(UICursorDefines.MOVE_RUN_REALTIME_UICURSOR, 300);
+                    this.BeginDisplayTimedCursor(UICursorDefines.MOVE_RUN_REALTIME_UICURSOR, 300);
                 }
 
                 Globals.guiNewUICursor = UICursorDefines.CONFIRM_MOVE_REALTIME_UICURSOR;
@@ -4300,7 +4300,7 @@ public class HandleUI
                 {
                     if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTI_SELECTED))
                     {
-                        MakeSoldierTurn(pSoldier, sXPos, sYPos);
+                        this.MakeSoldierTurn(pSoldier, sXPos, sYPos);
                     }
                 }
             }
@@ -4313,9 +4313,9 @@ public class HandleUI
                 return (ScreenName.GAME_SCREEN);
             }
 
-            if (MakeSoldierTurn(pSoldier, sXPos, sYPos))
+            if (this.MakeSoldierTurn(pSoldier, sXPos, sYPos))
             {
-                SetUIBusy(pSoldier.ubID);
+                this.SetUIBusy(pSoldier.ubID);
             }
         }
         return (ScreenName.GAME_SCREEN);
@@ -4452,13 +4452,13 @@ public class HandleUI
     {
         // Don't let both versions of the locks to happen at the same time!
         // ( They are mutually exclusive )!
-        UIHandleLAEndLockOurTurn(null);
+        this.UIHandleLAEndLockOurTurn(null);
 
         if (!Globals.gfDisableRegionActive)
         {
             Globals.gfDisableRegionActive = true;
 
-            RemoveTacticalCursor();
+            this.RemoveTacticalCursor();
             //SetCurrentCursorFromDatabase( VIDEO_NO_CURSOR );
 
             MouseSubSystem.MSYS_DefineRegion(Globals.gDisableRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
@@ -4671,7 +4671,7 @@ public class HandleUI
 //            FreeMouseCursor();
             Globals.gfIgnoreScrolling = false;
 
-            EndMultiSoldierSelection(true);
+            this.EndMultiSoldierSelection(true);
 
             Globals.gRubberBandActive = false;
         }
@@ -4830,7 +4830,7 @@ public class HandleUI
             if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
             {
                 // Get screen pos of gridno......
-                GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
+                this.GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
 
                 // ATE: If we are in a hiehger interface level, subttrasct....
                 if (Globals.gsInterfaceLevel == 1)
@@ -4857,13 +4857,13 @@ public class HandleUI
             // Check if this guy is OK to control....
             if (Soldier.OK_CONTROLLABLE_MERC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE | SOLDIER.PASSENGER | SOLDIER.DRIVER)))
             {
-//                if (!_KeyDown(ALT))
-//                {
-//                    pSoldier.uiStatusFlags &= (~SOLDIER.MULTI_SELECTED);
-//                }
+                //                if (!_KeyDown(ALT))
+                //                {
+                //                    pSoldier.uiStatusFlags &= (~SOLDIER.MULTI_SELECTED);
+                //                }
 
                 // Get screen pos of gridno......
-                GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
+                this.GetGridNoScreenXY(pSoldier.sGridNo, out sScreenX, out sScreenY);
 
                 // ATE: If we are in a hiehger interface level, subttrasct....
                 if (Globals.gsInterfaceLevel == 1)
@@ -4896,7 +4896,7 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!IsValidJumpLocation(pSoldier, usMapPos, false))
+        if (!this.IsValidJumpLocation(pSoldier, usMapPos, false))
         {
             Globals.guiPendingOverrideEvent = UI_EVENT_DEFINES.M_ON_TERRAIN;
             return (ScreenName.GAME_SCREEN);
@@ -4928,12 +4928,12 @@ public class HandleUI
             return (ScreenName.GAME_SCREEN);
         }
 
-        if (!IsValidJumpLocation(pSoldier, usMapPos, false))
+        if (!this.IsValidJumpLocation(pSoldier, usMapPos, false))
         {
             return (ScreenName.GAME_SCREEN);
         }
 
-        SetUIBusy(pSoldier.ubID);
+        this.SetUIBusy(pSoldier.ubID);
 
         // OK, Start jumping!
         // Remove any previous actions
@@ -5692,7 +5692,7 @@ public class HandleUI
 
                 // Nowhere
                 // Try to climb
-                GetMercClimbDirection(pSoldier.ubID, out bool fNearLowerLevel, out fNearHeigherLevel);
+                this.GetMercClimbDirection(pSoldier.ubID, out bool fNearLowerLevel, out fNearHeigherLevel);
 
                 if (fNearHeigherLevel)
                 {
@@ -5734,7 +5734,7 @@ public class HandleUI
 
                 // Nowhere
                 // Try to climb
-                GetMercClimbDirection(pSoldier.ubID, out fNearLowerLevel, out bool fNearHeigherLevel);
+                this.GetMercClimbDirection(pSoldier.ubID, out fNearLowerLevel, out bool fNearHeigherLevel);
 
                 if (fNearLowerLevel)
                 {

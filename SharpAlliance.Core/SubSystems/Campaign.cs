@@ -1121,7 +1121,7 @@ public class Campaign
             usNumChances = (pProfile.bWisdom / 10);
             for (ubStat = Globals.FIRST_CHANGEABLE_STAT; ubStat <= Globals.LAST_CHANGEABLE_STAT; ubStat++)
             {
-                ProfileStatChange(pProfile, ubStat, usNumChances, 0);
+                this.ProfileStatChange(pProfile, ubStat, usNumChances, 0);
             }
         }
         else
@@ -1142,7 +1142,7 @@ public class Campaign
             } while (ubStat == Stat.EXPERAMT);
 
             // try to improve that one stat
-            ProfileStatChange(pProfile, ubStat, (int)(pProfile.bWisdom / 2), Globals.FROM_TRAINING);
+            this.ProfileStatChange(pProfile, ubStat, (int)(pProfile.bWisdom / 2), Globals.FROM_TRAINING);
         }
 
         ProfileUpdateStats(pProfile);

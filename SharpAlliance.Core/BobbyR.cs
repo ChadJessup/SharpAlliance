@@ -50,7 +50,7 @@ public class BobbyR
             BOBBIES_ARMOUR_SIGN_Y+BOBBIES_ARMOUR_SIGN_HEIGHT
         };
 
-        InitBobbyRWoodBackground();
+        this.InitBobbyRWoodBackground();
 
         // load the Bobbyname graphic and add it
         //
@@ -83,7 +83,7 @@ public class BobbyR
         this.video.GetVideoObject("LAPTOP\\BobbyHandle.sti", out guiHandle);
 
 
-        InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, usMouseRegionPosArray, gSelectedBobbiesSignMenuRegion);
+        this.InitBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, usMouseRegionPosArray, gSelectedBobbiesSignMenuRegion);
 
 
         if (!LaptopSaveInfo.fBobbyRSiteCanBeAccessed)
@@ -104,9 +104,9 @@ public class BobbyR
 
 
         Laptop.SetBookMark(BOOKMARK.BOBBYR_BOOKMARK);
-        HandleBobbyRUnderConstructionAni(true);
+        this.HandleBobbyRUnderConstructionAni(true);
 
-        RenderBobbyR();
+        this.RenderBobbyR();
 
         return (true);
     }
@@ -127,16 +127,16 @@ public class BobbyR
         }
 
 
-        DeleteBobbyRWoodBackground();
+        this.DeleteBobbyRWoodBackground();
 
-        RemoveBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, gSelectedBobbiesSignMenuRegion);
+        this.RemoveBobbiesMouseRegion(BOBBIES_NUMBER_SIGNS, gSelectedBobbiesSignMenuRegion);
 
         guiLastBobbyRayPage = LAPTOP_MODE.BOBBY_R;
     }
 
     void HandleBobbyR()
     {
-        HandleBobbyRUnderConstructionAni(false);
+        this.HandleBobbyRUnderConstructionAni(false);
     }
 
     void RenderBobbyR()
@@ -144,7 +144,7 @@ public class BobbyR
         HVOBJECT? hPixHandle;
         HVOBJECT? hStorePlaqueHandle;
 
-        DrawBobbyRWoodBackground();
+        this.DrawBobbyRWoodBackground();
 
         // Bobby's Name
         // hPixHandle = this.video.GetVideoObject(guiBobbyName);
@@ -247,7 +247,7 @@ public class BobbyR
         }
 
         Laptop.RenderWWWProgramTitleBar();
-        video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
+        this.video.InvalidateRegion(LAPTOP_SCREEN_UL_X, LAPTOP_SCREEN_WEB_UL_Y, LAPTOP_SCREEN_LR_X, LAPTOP_SCREEN_WEB_LR_Y);
     }
 
     bool InitBobbyRWoodBackground()
@@ -309,7 +309,7 @@ public class BobbyR
                 MSYS_PRIORITY.HIGH,
                 CURSOR.WWW,
                 MSYS_NO_CALLBACK,
-                SelectBobbiesSignMenuRegionCallBack);
+                this.SelectBobbiesSignMenuRegionCallBack);
 
             MouseSubSystem.MSYS_AddRegion(ref region);
             MouseSubSystem.MSYS_SetRegionUserData(MouseRegion[i], 0, gubBobbyRPages[i]);
@@ -416,8 +416,8 @@ public class BobbyR
 
             FontSubSystem.DrawTextToScreen(BobbyRaysFrontText[(int)BOBBYR.UNDER_CONSTRUCTION], new(BOBBYR_UNDER_CONSTRUCTION_TEXT_X, BOBBYR_UNDER_CONSTRUCTION_TEXT_Y), BOBBYR_UNDER_CONSTRUCTION_TEXT_WIDTH, FontStyle.FONT16ARIAL, BOBBIES_SENTENCE_COLOR, BOBBIES_SIGN_BACKCOLOR, TextJustifies.CENTER_JUSTIFIED | TextJustifies.INVALIDATE_TEXT);
 
-            video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
-            video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION1_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
+            this.video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
+            this.video.InvalidateRegion(new(BOBBYR_UNDERCONSTRUCTION_X, BOBBYR_UNDERCONSTRUCTION1_Y, BOBBYR_UNDERCONSTRUCTION_X + BOBBYR_UNDERCONSTRUCTION_WIDTH, BOBBYR_UNDERCONSTRUCTION1_Y + BOBBYR_UNDERCONSTRUCTION_HEIGHT));
 
             uiLastTime = ClockManager.GetJA2Clock();
 
@@ -435,13 +435,13 @@ public class BobbyR
     void InitBobbyRayInventory()
     {
         //Initializes which NEW items can be bought at Bobby Rays
-        InitBobbyRayNewInventory();
+        this.InitBobbyRayNewInventory();
 
         //Initializes the starting values for Bobby Rays NEW Inventory
         LaptopSave.SetupStoreInventory(LaptopSaveInfo.BobbyRayInventory, BOBBY_RAY.NEW);
 
         //Initializes which USED items can be bought at Bobby Rays
-        InitBobbyRayUsedInventory();
+        this.InitBobbyRayUsedInventory();
 
         //Initializes the starting values for Bobby Rays USED Inventory
         LaptopSave.SetupStoreInventory(LaptopSaveInfo.BobbyRayUsedInventory, BOBBY_RAY.USED);
@@ -530,7 +530,7 @@ public class BobbyR
 
 
         //simulate other buyers by reducing the current quantity on hand
-        SimulateBobbyRayCustomer(LaptopSaveInfo.BobbyRayInventory, BOBBY_RAY.NEW);
+        this.SimulateBobbyRayCustomer(LaptopSaveInfo.BobbyRayInventory, BOBBY_RAY.NEW);
 
         //loop through all items BR can stock to see what needs reordering
         for (i = 0; i < LaptopSaveInfo.usInventoryListLength[BOBBY_RAY.NEW]; i++)
@@ -556,7 +556,7 @@ public class BobbyR
                     fPrevElig = LaptopSaveInfo.BobbyRayInventory[i].fPreviouslyEligible;
 
                     //determine if any can/should be ordered, and how many
-                    LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder = HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand, BOBBY_RAY.NEW);
+                    LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder = this.HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnHand, BOBBY_RAY.NEW);
 
                     //if he found some to buy
                     if (LaptopSaveInfo.BobbyRayInventory[i].ubQtyOnOrder > 0)
@@ -570,7 +570,7 @@ public class BobbyR
                         }
                         else
                         {
-                            OrderBobbyRItem(usItemIndex);
+                            this.OrderBobbyRItem(usItemIndex);
 
 # if BR_INVENTORY_TURNOVER_DEBUG
                             if (usItemIndex == ROCKET_LAUNCHER)
@@ -592,7 +592,7 @@ public class BobbyR
 
 
         //simulate other buyers by reducing the current quantity on hand
-        SimulateBobbyRayCustomer(LaptopSaveInfo.BobbyRayUsedInventory, BOBBY_RAY.USED);
+        this.SimulateBobbyRayCustomer(LaptopSaveInfo.BobbyRayUsedInventory, BOBBY_RAY.USED);
 
         for (i = 0; i < LaptopSaveInfo.usInventoryListLength[BOBBY_RAY.USED]; i++)
         {
@@ -616,7 +616,7 @@ public class BobbyR
                     fPrevElig = LaptopSaveInfo.BobbyRayUsedInventory[i].fPreviouslyEligible;
 
                     //determine if any can/should be ordered, and how many
-                    LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnOrder = HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnHand, BOBBY_RAY.USED);
+                    LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnOrder = this.HowManyBRItemsToOrder(usItemIndex, LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnHand, BOBBY_RAY.USED);
 
                     //if he found some to buy
                     if (LaptopSaveInfo.BobbyRayUsedInventory[i].ubQtyOnOrder > 0)
@@ -630,7 +630,7 @@ public class BobbyR
                         }
                         else
                         {
-                            OrderBobbyRItem((usItemIndex + BOBBY_R_USED_PURCHASE_OFFSET));
+                            this.OrderBobbyRItem((usItemIndex + BOBBY_R_USED_PURCHASE_OFFSET));
                         }
                     }
                 }
@@ -776,8 +776,8 @@ public class BobbyR
         }
 
         // do an extra daily update immediately to create new reorders ASAP
-        DailyUpdateOfBobbyRaysNewInventory();
-        DailyUpdateOfBobbyRaysUsedInventory();
+        this.DailyUpdateOfBobbyRaysNewInventory();
+        this.DailyUpdateOfBobbyRaysUsedInventory();
     }
 }
 

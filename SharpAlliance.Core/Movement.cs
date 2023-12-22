@@ -226,7 +226,7 @@ public class Movement
             // find next valid patrol point
             do
             {
-                sPatrolPoint = NextPatrolPoint(pSoldier);
+                sPatrolPoint = this.NextPatrolPoint(pSoldier);
             }
             while ((sPatrolPoint != NOWHERE) && (!Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel)));
 
@@ -307,7 +307,7 @@ public class Movement
                 pSoldier.bNextPatrolPnt = 0;
                 do
                 {
-                    sPatrolPoint = NextPatrolPoint(pSoldier);
+                    sPatrolPoint = this.NextPatrolPoint(pSoldier);
                 }
                 while ((sPatrolPoint != NOWHERE)
                 && (!Overhead.NewOKDestination(pSoldier, sPatrolPoint, IGNOREPEOPLE, pSoldier.bLevel)));

@@ -8,7 +8,7 @@ public struct MouseMoveEventArgs
     public Vector2 MousePosition { get; }
     public MouseMoveEventArgs(MouseState mouseState, Vector2 mousePosition)
     {
-        State = mouseState;
-        MousePosition = mousePosition;
+        this.State = mouseState;
+        this.MousePosition = mousePosition;
     }
 }

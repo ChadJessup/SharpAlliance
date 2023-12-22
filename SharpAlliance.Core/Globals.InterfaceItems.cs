@@ -440,13 +440,13 @@ public record INV_REGIONS
         int f,
         int g)
     {
-        fBigPocket = a;
-        sBarDx = b;
-        sBarDy = c;
-        sWidth = d;
-        sHeight = e;
-        sX = f;
-        sY = g;
+        this.fBigPocket = a;
+        this.sBarDx = b;
+        this.sBarDy = c;
+        this.sWidth = d;
+        this.sHeight = e;
+        this.sX = f;
+        this.sY = g;
     }
 
     public bool fBigPocket { get; set; }

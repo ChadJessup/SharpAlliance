@@ -176,18 +176,18 @@ public class SDL2VideoManager : IVideoManager
             flags,
             threadedProcessing: true);
 
-        Renderer = SDL.SDL_CreateRenderer(
+        this.Renderer = SDL.SDL_CreateRenderer(
             (window as Sdl2Window).Handle,
             -1,
             SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
             SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
 
-        if (Renderer == IntPtr.Zero)
+        if (this.Renderer == IntPtr.Zero)
         {
             Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
         }
 
-        this.Surfaces.InitializeSurfaces(Renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+        this.Surfaces.InitializeSurfaces(this.Renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         //        Window.Resized += () => windowResized = true;
         //Window.PollIntervalInMs = 1000 / 30;
@@ -208,9 +208,9 @@ public class SDL2VideoManager : IVideoManager
         //            .CreateDeviceTexture(GraphicDevice, GraphicDevice.ResourceFactory);
         //
         // fadeScreen = (screenManager.GetScreen(ScreenNames.FADE_SCREEN, activate: true).AsTask().Result as FadeScreen)!;
-        IsInitialized = await files.Initialize();
+        this.IsInitialized = await this.files.Initialize();
 
-        return IsInitialized;
+        return this.IsInitialized;
     }
 
     /**********************************************************************************************
@@ -241,12 +241,12 @@ public class SDL2VideoManager : IVideoManager
 
     public unsafe void DrawFrame()
     {
-        if (Globals.gfForceFullScreenRefresh || clearScreen)
+        if (Globals.gfForceFullScreenRefresh || this.clearScreen)
         {
-            clearScreen = false;
+            this.clearScreen = false;
         }
 
-        if (SDL.SDL_SetRenderDrawColor(Renderer, 135, 206, 235, 255) < 0)
+        if (SDL.SDL_SetRenderDrawColor(this.Renderer, 135, 206, 235, 255) < 0)
         {
             var error = SDL.SDL_GetError();
         }
@@ -268,12 +268,12 @@ public class SDL2VideoManager : IVideoManager
             var error = SDL.SDL_GetError();
         }
 
-        if (SDL.SDL_RenderCopy(Renderer, bb.Pointer, 0, 0) < 0)
+        if (SDL.SDL_RenderCopy(this.Renderer, bb.Pointer, 0, 0) < 0)
         {
             var error = SDL.SDL_GetError();
         }
 
-        SDL.SDL_RenderPresent(Renderer);
+        SDL.SDL_RenderPresent(this.Renderer);
     }
 
     public void Draw()
@@ -293,9 +293,9 @@ public class SDL2VideoManager : IVideoManager
     public static Stream OpenEmbeddedAssetStream(string name)
         => typeof(SDL2VideoManager).Assembly.GetManifestResourceStream(name)!;
 
-    public HVOBJECT GetVideoObject(string assetPath) => GetVideoObject(assetPath, out var _);
+    public HVOBJECT GetVideoObject(string assetPath) => this.GetVideoObject(assetPath, out var _);
 
-    public HVOBJECT GetVideoObject(string assetPath, out string key) => AddVideoObject(assetPath, out key);
+    public HVOBJECT GetVideoObject(string assetPath, out string key) => this.AddVideoObject(assetPath, out key);
 
     private HVOBJECT AddVideoObject(string assetPath, out string key)
     {
@@ -339,12 +339,12 @@ public class SDL2VideoManager : IVideoManager
 
         usScreenWidth = usScreenHeight = 0;
 
-        if (fFirstTime)
+        if (this.fFirstTime)
         {
-            fShowMouse = false;
+            this.fShowMouse = false;
         }
 
-        logger.LogDebug(LoggingEventId.VIDEO, "Looping in refresh");
+        this.logger.LogDebug(LoggingEventId.VIDEO, "Looping in refresh");
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // 
@@ -356,7 +356,7 @@ public class SDL2VideoManager : IVideoManager
         {
             case VideoManagerState.On:
                 // Excellent, everything is cosher, we continue on
-                uiRefreshThreadState = ThreadState.On;
+                this.uiRefreshThreadState = ThreadState.On;
                 Globals.guiRefreshThreadState = ThreadState.On;
                 usScreenWidth = Globals.gusScreenWidth;
                 usScreenHeight = Globals.gusScreenHeight;
@@ -369,7 +369,7 @@ public class SDL2VideoManager : IVideoManager
             case VideoManagerState.Suspended:
                 // This are suspended. Make sure the refresh function does try to access any of the direct
                 // draw surfaces
-                uiRefreshThreadState = Globals.guiRefreshThreadState = ThreadState.Suspended;
+                this.uiRefreshThreadState = Globals.guiRefreshThreadState = ThreadState.Suspended;
                 break;
             case VideoManagerState.ShuttingDown:
                 // Well things are shutting down. So we need to bugger out of there. Don't forget to leave the
@@ -392,12 +392,12 @@ public class SDL2VideoManager : IVideoManager
         /////////////////////////////////////////////////////////////////////////////////////////////
 
         // RESTORE OLD POSITION OF MOUSE
-        if (mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore == true)
+        if (this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore == true)
         {
-            Region.X = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft;
-            Region.Y = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop;
-            Region.Width = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight;
-            Region.Height = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom;
+            this.Region.X = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft;
+            this.Region.Y = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop;
+            this.Region.Width = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight;
+            this.Region.Height = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom;
 
             //            MouseSubSystem.Draw(
             //                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA],
@@ -406,7 +406,7 @@ public class SDL2VideoManager : IVideoManager
             //                commandList);
 
             // Save position into other background region
-            mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA] = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA];
+            this.mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA] = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA];
         }
 
         // Ok we were able to get a hold of the frame buffer stuff. Check to see if it needs updating
@@ -422,10 +422,10 @@ public class SDL2VideoManager : IVideoManager
                 Globals.gpFrameBufferRefreshOverride = null;
             }
 
-            if (fadeScreen?.gfFadeInitialized ?? false
-                && fadeScreen.gfFadeInVideo)
+            if (this.fadeScreen?.gfFadeInitialized ?? false
+                && this.fadeScreen.gfFadeInVideo)
             {
-                fadeScreen!.gFadeFunction();
+                this.fadeScreen!.gFadeFunction();
             }
             else
             {
@@ -433,53 +433,53 @@ public class SDL2VideoManager : IVideoManager
                 if (Globals.gfForceFullScreenRefresh == true)
                 {
                     // Method (1) - We will be refreshing the entire screen
-                    Region.X = 0;
-                    Region.Y = 0;
-                    Region.Width = usScreenWidth;
-                    Region.Height = usScreenHeight;
+                    this.Region.X = 0;
+                    this.Region.Y = 0;
+                    this.Region.Width = usScreenWidth;
+                    this.Region.Height = usScreenHeight;
 
-                    BlitRegion(
+                    this.BlitRegion(
                         this.Surfaces[SurfaceType.BACKBUFFER],
                         new Point(0, 0),
-                        Region,
+                        this.Region,
                         this.Surfaces[SurfaceType.FRAME_BUFFER]);
                 }
                 else
                 {
-                    for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionCount; uiIndex++)
+                    for (this.uiIndex = 0; this.uiIndex < Globals.guiDirtyRegionCount; this.uiIndex++)
                     {
-                        Region.X = Globals.gListOfDirtyRegions[uiIndex].Left;
-                        Region.Y = Globals.gListOfDirtyRegions[uiIndex].Top;
-                        Region.Width = Globals.gListOfDirtyRegions[uiIndex].Width;
-                        Region.Height = Globals.gListOfDirtyRegions[uiIndex].Height;
+                        this.Region.X = Globals.gListOfDirtyRegions[this.uiIndex].Left;
+                        this.Region.Y = Globals.gListOfDirtyRegions[this.uiIndex].Top;
+                        this.Region.Width = Globals.gListOfDirtyRegions[this.uiIndex].Width;
+                        this.Region.Height = Globals.gListOfDirtyRegions[this.uiIndex].Height;
 
-                        BlitRegion(
+                        this.BlitRegion(
                             this.Surfaces[SurfaceType.BACKBUFFER],
-                            new Point(Region.X, Region.Y),
-                            Region,
+                            new Point(this.Region.X, this.Region.Y),
+                            this.Region,
                             this.Surfaces[SurfaceType.FRAME_BUFFER]);
                     }
 
                     // Now do new, extended dirty regions
-                    for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionExCount; uiIndex++)
+                    for (this.uiIndex = 0; this.uiIndex < Globals.guiDirtyRegionExCount; this.uiIndex++)
                     {
-                        Region = Globals.gDirtyRegionsEx[uiIndex];
+                        this.Region = Globals.gDirtyRegionsEx[this.uiIndex];
 
                         // Do some checks if we are in the process of scrolling!	
                         if (Globals.gfRenderScroll)
                         {
                             // Check if we are completely out of bounds
-                            if (Region.Y <= Globals.gsVIEWPORT_WINDOW_END_Y
-                                && Region.Height <= Globals.gsVIEWPORT_WINDOW_END_Y)
+                            if (this.Region.Y <= Globals.gsVIEWPORT_WINDOW_END_Y
+                                && this.Region.Height <= Globals.gsVIEWPORT_WINDOW_END_Y)
                             {
                                 continue;
                             }
                         }
 
-                        BlitRegion(
+                        this.BlitRegion(
                             this.Surfaces[SurfaceType.BACKBUFFER],
-                            Region.ToPoint(),
-                            Region,
+                            this.Region.ToPoint(),
+                            this.Region,
                             this.Surfaces[SurfaceType.FRAME_BUFFER]);
                     }
                 }
@@ -487,7 +487,7 @@ public class SDL2VideoManager : IVideoManager
 
             if (Globals.gfRenderScroll)
             {
-                ScrollJA2Background(
+                this.ScrollJA2Background(
                     Globals.guiScrollDirection,
                     Globals.gsScrollXIncrement,
                     Globals.gsScrollYIncrement,
@@ -630,28 +630,28 @@ public class SDL2VideoManager : IVideoManager
         if (Globals.guiMouseBufferState == BufferState.DIRTY)
         {
             // Well the mouse buffer is dirty. Upload the whole thing
-            Region.X = 0;
-            Region.Y = 0;
-            Region.Width = Globals.gusMouseCursorWidth;
-            Region.Height = Globals.gusMouseCursorHeight;
+            this.Region.X = 0;
+            this.Region.Y = 0;
+            this.Region.Width = Globals.gusMouseCursorWidth;
+            this.Region.Height = Globals.gusMouseCursorHeight;
 
-            BlitRegion(
+            this.BlitRegion(
                 Globals.gpMouseCursor,
                 new Point(0, 0),
-                Region,
+                this.Region,
                 Globals.gpMouseCursorOriginal);
 
             Globals.guiMouseBufferState = BufferState.READY;
         }
 
         // Check current state of the mouse cursor
-        if (fShowMouse == false)
+        if (this.fShowMouse == false)
         {
-            fShowMouse = Globals.guiMouseBufferState == BufferState.READY;
+            this.fShowMouse = Globals.guiMouseBufferState == BufferState.READY;
         }
         else
         {
-            fShowMouse = Globals.guiMouseBufferState == BufferState.DISABLED;
+            this.fShowMouse = Globals.guiMouseBufferState == BufferState.DISABLED;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -670,60 +670,60 @@ public class SDL2VideoManager : IVideoManager
         //
         ///////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (fShowMouse == true)
+        if (this.fShowMouse == true)
         {
             // Step (1) - Save mouse background
-            Region.X = MousePos.X - Globals.gsMouseCursorXOffset;
-            Region.Y = MousePos.Y - Globals.gsMouseCursorYOffset;
-            Region.Width = Region.X + Globals.gusMouseCursorWidth;
-            Region.Height = Region.Y + Globals.gusMouseCursorHeight;
+            this.Region.X = this.MousePos.X - Globals.gsMouseCursorXOffset;
+            this.Region.Y = this.MousePos.Y - Globals.gsMouseCursorYOffset;
+            this.Region.Width = this.Region.X + Globals.gusMouseCursorWidth;
+            this.Region.Height = this.Region.Y + Globals.gusMouseCursorHeight;
 
-            if (Region.Width > usScreenWidth)
+            if (this.Region.Width > usScreenWidth)
             {
-                Region.Width = usScreenWidth;
+                this.Region.Width = usScreenWidth;
             }
 
-            if (Region.Height > usScreenHeight)
+            if (this.Region.Height > usScreenHeight)
             {
-                Region.Height = usScreenHeight;
+                this.Region.Height = usScreenHeight;
             }
 
-            if ((Region.Width > Region.X) && (Region.Height > Region.Y))
+            if ((this.Region.Width > this.Region.X) && (this.Region.Height > this.Region.Y))
             {
                 // Make sure the mouse background is marked for restore and coordinates are saved for the
                 // future restore
-                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = true;
-                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight = Region.Width - Region.X;
-                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom = Region.Height - Region.Y;
+                this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = true;
+                this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight = this.Region.Width - this.Region.X;
+                this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom = this.Region.Height - this.Region.Y;
 
-                if (Region.X < 0)
+                if (this.Region.X < 0)
                 {
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft = (0 - Region.X);
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos = 0;
-                    Region.X = 0;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft = (0 - this.Region.X);
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos = 0;
+                    this.Region.X = 0;
                 }
                 else
                 {
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos = MousePos.X - Globals.gsMouseCursorXOffset;
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft = 0;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos = this.MousePos.X - Globals.gsMouseCursorXOffset;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft = 0;
                 }
 
-                if (Region.Y < 0)
+                if (this.Region.Y < 0)
                 {
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos = 0;
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop = (0 - Region.Y);
-                    Region.Y = 0;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos = 0;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop = (0 - this.Region.Y);
+                    this.Region.Y = 0;
                 }
                 else
                 {
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos = MousePos.Y - Globals.gsMouseCursorYOffset;
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop = 0;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos = this.MousePos.Y - Globals.gsMouseCursorYOffset;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop = 0;
                 }
 
-                if ((Region.Width > Region.X) && (Region.Height > Region.Y))
+                if ((this.Region.Width > this.Region.X) && (this.Region.Height > this.Region.Y))
                 {
                     // Save clipped region
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].Region = Region;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].Region = this.Region;
 
                     // Ok, do the actual data save to the mouse background
                     //BlitRegion(
@@ -735,10 +735,10 @@ public class SDL2VideoManager : IVideoManager
                     //    backBuffer);
 
                     // Step (2) - Blit mouse cursor to back buffer
-                    Region.X = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft;
-                    Region.Y = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop;
-                    Region.Width = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight;
-                    Region.Height = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom;
+                    this.Region.X = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usLeft;
+                    this.Region.Y = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usTop;
+                    this.Region.Width = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usRight;
+                    this.Region.Height = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usBottom;
 
                     //BlitRegion(
                     //    backBuffer,
@@ -751,19 +751,19 @@ public class SDL2VideoManager : IVideoManager
                 else
                 {
                     // Hum, the mouse was not blitted this round. Henceforth we will flag fRestore as false
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
                 }
             }
             else
             {
                 // Hum, the mouse was not blitted this round. Henceforth we will flag fRestore as false
-                mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
+                this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
             }
         }
         else
         {
             // Well since there was no mouse handling this round, we disable the mouse restore
-            mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
+            this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore = false;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -780,24 +780,24 @@ public class SDL2VideoManager : IVideoManager
         // Step (1) - Flip pages
         //
 
-        BlitRegion(
+        this.BlitRegion(
             this.Surfaces[SurfaceType.PRIMARY_SURFACE],
-            rcWindow.ToPoint(),
-            fullScreenRect,
+            this.rcWindow.ToPoint(),
+            this.fullScreenRect,
             this.Surfaces[SurfaceType.BACKBUFFER]);
 
         // Step (2) - Copy Primary Surface to the Back Buffer
         if (Globals.gfRenderScroll)
         {
-            Region.X = 0;
-            Region.Y = 0;
-            Region.Width = 640;
-            Region.Height = 360;
+            this.Region.X = 0;
+            this.Region.Y = 0;
+            this.Region.Width = 640;
+            this.Region.Height = 360;
 
-            BlitRegion(
+            this.BlitRegion(
                 this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(0, 0),
-                Region,
+                this.Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
 
             // Get new background for mouse
@@ -809,45 +809,45 @@ public class SDL2VideoManager : IVideoManager
         // COPY MOUSE AREAS FROM PRIMARY BACK!
 
         // FIRST OLD ERASED POSITION
-        if (mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].fRestore == true)
+        if (this.mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].fRestore == true)
         {
-            Region = mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].Region;
+            this.Region = this.mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].Region;
 
-            BlitRegion(
+            this.BlitRegion(
                 this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(
-                    mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseXPos,
-                    mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseYPos),
-                Region,
+                    this.mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseXPos,
+                    this.mouseCursorBackground[Globals.PREVIOUS_MOUSE_DATA].usMouseYPos),
+                this.Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         // NOW NEW MOUSE AREA
-        if (mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore == true)
+        if (this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].fRestore == true)
         {
-            Region = mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].Region;
+            this.Region = this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].Region;
 
-            BlitRegion(
+            this.BlitRegion(
                 this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
-                    mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
-                Region,
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseXPos,
+                    this.mouseCursorBackground[Globals.CURRENT_MOUSE_DATA].usMouseYPos),
+                this.Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         if (Globals.gfForceFullScreenRefresh == true)
         {
             // Method (1) - We will be refreshing the entire screen
-            Region.X = 0;
-            Region.Y = 0;
-            Region.Width = SCREEN_WIDTH;
-            Region.Height = SCREEN_HEIGHT;
+            this.Region.X = 0;
+            this.Region.Y = 0;
+            this.Region.Width = SCREEN_WIDTH;
+            this.Region.Height = SCREEN_HEIGHT;
 
-            BlitRegion(
+            this.BlitRegion(
                 this.Surfaces[SurfaceType.BACKBUFFER],
                 new Point(0, 0),
-                Region,
+                this.Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
 
             Globals.guiDirtyRegionCount = 0;
@@ -856,17 +856,17 @@ public class SDL2VideoManager : IVideoManager
         }
         else
         {
-            for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionCount; uiIndex++)
+            for (this.uiIndex = 0; this.uiIndex < Globals.guiDirtyRegionCount; this.uiIndex++)
             {
-                Region.X = Globals.gListOfDirtyRegions[uiIndex].Left;
-                Region.Y = Globals.gListOfDirtyRegions[uiIndex].Top;
-                Region.Width = Globals.gListOfDirtyRegions[uiIndex].Width;
-                Region.Height = Globals.gListOfDirtyRegions[uiIndex].Height;
+                this.Region.X = Globals.gListOfDirtyRegions[this.uiIndex].Left;
+                this.Region.Y = Globals.gListOfDirtyRegions[this.uiIndex].Top;
+                this.Region.Width = Globals.gListOfDirtyRegions[this.uiIndex].Width;
+                this.Region.Height = Globals.gListOfDirtyRegions[this.uiIndex].Height;
 
-                BlitRegion(
+                this.BlitRegion(
                     this.Surfaces[SurfaceType.BACKBUFFER],
-                    new Point(Region.X, Region.Y),
-                    Region,
+                    new Point(this.Region.X, this.Region.Y),
+                    this.Region,
                     this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
             }
 
@@ -875,29 +875,29 @@ public class SDL2VideoManager : IVideoManager
         }
 
         // Do extended dirty regions!
-        for (uiIndex = 0; uiIndex < Globals.guiDirtyRegionExCount; uiIndex++)
+        for (this.uiIndex = 0; this.uiIndex < Globals.guiDirtyRegionExCount; this.uiIndex++)
         {
-            Region.X = Globals.gDirtyRegionsEx[uiIndex].Left;
-            Region.Y = Globals.gDirtyRegionsEx[uiIndex].Top;
-            Region.Width = Globals.gDirtyRegionsEx[uiIndex].Width;
-            Region.Height = Globals.gDirtyRegionsEx[uiIndex].Height;
+            this.Region.X = Globals.gDirtyRegionsEx[this.uiIndex].Left;
+            this.Region.Y = Globals.gDirtyRegionsEx[this.uiIndex].Top;
+            this.Region.Width = Globals.gDirtyRegionsEx[this.uiIndex].Width;
+            this.Region.Height = Globals.gDirtyRegionsEx[this.uiIndex].Height;
 
-            if ((Region.Y < Globals.gsVIEWPORT_WINDOW_END_Y)
+            if ((this.Region.Y < Globals.gsVIEWPORT_WINDOW_END_Y)
                 && Globals.gfRenderScroll)
             {
                 continue;
             }
 
-            BlitRegion(
+            this.BlitRegion(
                 this.Surfaces[SurfaceType.BACKBUFFER],
-                new Point(Region.X, Region.Y),
-                Region,
+                new Point(this.Region.X, this.Region.Y),
+                this.Region,
                 this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
         }
 
         Globals.guiDirtyRegionExCount = 0;
 
-        fFirstTime = false;
+        this.fFirstTime = false;
     }
 
     private void DrawRegion(
@@ -906,7 +906,7 @@ public class SDL2VideoManager : IVideoManager
         int destinationPointY,
         Rectangle sourceRegion,
         Image<Rgba32> sourceTexture)
-        => BlitRegion(
+        => this.BlitRegion(
             destinationTexture,
             new Point(destinationPointX, destinationPointY),
             sourceRegion,
@@ -961,7 +961,7 @@ public class SDL2VideoManager : IVideoManager
         int sShiftX, sShiftY;
         int uiCountY;
 
-        GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
+        this.GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
         usHeight = Globals.gsVIEWPORT_WINDOW_END_Y - Globals.gsVIEWPORT_WINDOW_START_Y;
 
         StripRegions[0].X = Globals.gsVIEWPORT_START_X;
@@ -974,13 +974,13 @@ public class SDL2VideoManager : IVideoManager
         StripRegions[1].Y = Globals.gsVIEWPORT_WINDOW_START_Y;
         StripRegions[1].Height = Globals.gsVIEWPORT_WINDOW_END_Y;
 
-        MouseRegion.X = mouseCursorBackground[uiCurrentMouseBackbuffer].usLeft;
-        MouseRegion.Y = mouseCursorBackground[uiCurrentMouseBackbuffer].usTop;
-        MouseRegion.Width = mouseCursorBackground[uiCurrentMouseBackbuffer].usRight;
-        MouseRegion.Height = mouseCursorBackground[uiCurrentMouseBackbuffer].usBottom;
+        MouseRegion.X = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usLeft;
+        MouseRegion.Y = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usTop;
+        MouseRegion.Width = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usRight;
+        MouseRegion.Height = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usBottom;
 
-        usMouseXPos = mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseXPos;
-        usMouseYPos = mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseYPos;
+        usMouseXPos = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseXPos;
+        usMouseYPos = this.mouseCursorBackground[uiCurrentMouseBackbuffer].usMouseYPos;
 
         switch (uiDirection)
         {
@@ -991,7 +991,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth - sScrollXIncrement;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                DrawRegion(
+                this.DrawRegion(
                     pDest,
                     sScrollXIncrement,
                     Globals.gsVIEWPORT_WINDOW_START_Y,
@@ -1017,7 +1017,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                DrawRegion(
+                this.DrawRegion(
                     pDest,
                     0,
                     Globals.gsVIEWPORT_WINDOW_START_Y,
@@ -1050,7 +1050,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
-                DrawRegion(
+                this.DrawRegion(
                     pDest,
                     0,
                     Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
@@ -1082,7 +1082,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                DrawRegion(
+                this.DrawRegion(
                     pDest,
                     0,
                     Globals.gsVIEWPORT_WINDOW_START_Y,
@@ -1116,7 +1116,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth - sScrollXIncrement;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
-                DrawRegion(
+                this.DrawRegion(
                     pDest,
                     sScrollXIncrement,
                     Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement,
@@ -1151,7 +1151,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight - sScrollYIncrement;
 
-                BlitRegion(
+                this.BlitRegion(
                     pDest,
                     new Point(0, Globals.gsVIEWPORT_WINDOW_START_Y + sScrollYIncrement),
                     Region,
@@ -1184,7 +1184,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth - sScrollXIncrement;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                BlitRegion(
+                this.BlitRegion(
                     pDest,
                     new Point(sScrollXIncrement, Globals.gsVIEWPORT_WINDOW_START_Y),
                     Region,
@@ -1219,7 +1219,7 @@ public class SDL2VideoManager : IVideoManager
                 Region.Width = usWidth;
                 Region.Height = Globals.gsVIEWPORT_WINDOW_START_Y + usHeight;
 
-                BlitRegion(
+                this.BlitRegion(
                     pDest,
                     new Point(0, Globals.gsVIEWPORT_WINDOW_START_Y),
                     Region,
@@ -1255,7 +1255,7 @@ public class SDL2VideoManager : IVideoManager
                 // Optimize Redundent tiles too!
                 //ExamineZBufferRect( (int)StripRegions[ cnt ].X, (int)StripRegions[ cnt ].Y, (int)StripRegions[ cnt ].Width, (int)StripRegions[ cnt ].Height );
 
-                BlitRegion(
+                this.BlitRegion(
                     pDest,
                     new Point(StripRegions[cnt].X, StripRegions[cnt].Y),
                     StripRegions[cnt],
@@ -1317,7 +1317,7 @@ public class SDL2VideoManager : IVideoManager
             }
 
             // RESTORE SHIFTED
-            RestoreShiftedVideoOverlays(sShiftX, sShiftY);
+            this.RestoreShiftedVideoOverlays(sShiftX, sShiftY);
 
             // SAVE NEW
             //SaveVideoOverlaysArea(VideoSurfaceManager.BACKBUFFER);
@@ -1377,7 +1377,7 @@ public class SDL2VideoManager : IVideoManager
         // FRAME_BUFFER_MUTEX mutual exclusion section. Anything else will cause the application to
         // yack
         //
-        clearScreen = true;
+        this.clearScreen = true;
 
         Globals.guiDirtyRegionCount = 0;
         Globals.guiDirtyRegionExCount = 0;
@@ -1588,36 +1588,36 @@ public class SDL2VideoManager : IVideoManager
             g = (byte)Math.Min(gmod, 255);
             b = (byte)Math.Min(bmod, 255);
 
-            if (gusRedShift < 0)
+            if (this.gusRedShift < 0)
             {
-                r16 = (ushort)(r >> (-gusRedShift));
+                r16 = (ushort)(r >> (-this.gusRedShift));
             }
             else
             {
-                r16 = (ushort)(r << gusRedShift);
+                r16 = (ushort)(r << this.gusRedShift);
             }
 
-            if (gusGreenShift < 0)
+            if (this.gusGreenShift < 0)
             {
-                g16 = (ushort)(g >> (-gusGreenShift));
+                g16 = (ushort)(g >> (-this.gusGreenShift));
             }
             else
             {
-                g16 = (ushort)(g << gusGreenShift);
+                g16 = (ushort)(g << this.gusGreenShift);
             }
 
 
-            if (gusBlueShift < 0)
+            if (this.gusBlueShift < 0)
             {
-                b16 = (ushort)(b >> (-gusBlueShift));
+                b16 = (ushort)(b >> (-this.gusBlueShift));
             }
             else
             {
-                b16 = (ushort)(b << gusBlueShift);
+                b16 = (ushort)(b << this.gusBlueShift);
             }
 
             // Prevent creation of pure black color
-            usColor = (ushort)((r16 & gusRedMask) | (g16 & gusGreenMask) | (b16 & gusBlueMask));
+            usColor = (ushort)((r16 & this.gusRedMask) | (g16 & this.gusGreenMask) | (b16 & this.gusBlueMask));
 
             if (usColor == 0)
             {
@@ -1660,7 +1660,7 @@ public class SDL2VideoManager : IVideoManager
     }
 
     public void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color)
-        => ColorFillVideoSurfaceArea(rectangle, color.ToPixel<Rgba32>());
+        => this.ColorFillVideoSurfaceArea(rectangle, color.ToPixel<Rgba32>());
 
     public void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32)
     {
@@ -1673,7 +1673,7 @@ public class SDL2VideoManager : IVideoManager
 
     public bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType destSurface, Rectangle rectangle)
     {
-        return InternalShadowVideoSurfaceRect(destSurface, rectangle, true);
+        return this.InternalShadowVideoSurfaceRect(destSurface, rectangle, true);
     }
 
     private bool InternalShadowVideoSurfaceRect(SurfaceType destSurface, Rectangle rectangle, bool fLowPercentShadeTable)
@@ -1695,7 +1695,7 @@ public class SDL2VideoManager : IVideoManager
 # if _DEBUG
         gubVSDebugCode = DEBUGSTR_SHADOWVIDEOSURFACERECT;
 #endif
-        CHECKF(GetVideoSurface(out HVSURFACE hVSurface, destSurface));
+        CHECKF(this.GetVideoSurface(out HVSURFACE hVSurface, destSurface));
 
         if (X1 < 0)
         {
@@ -1750,7 +1750,7 @@ public class SDL2VideoManager : IVideoManager
         area = new(X1, Y1, X2, Y2);
 
         // Lock video surface
-        pBuffer = LockVideoSurface(destSurface, out int uiPitch);
+        pBuffer = this.LockVideoSurface(destSurface, out int uiPitch);
         //UnLockVideoSurface( uiDestVSurface );
 
 
@@ -1807,7 +1807,7 @@ public class SDL2VideoManager : IVideoManager
         var src = this.Surfaces[srcBuffer];
         var dst = this.Surfaces[dstBuffer];
 
-        fRetVal = Blt16BPPTo16BPP(
+        fRetVal = this.Blt16BPPTo16BPP(
             dst,
             src,
             new(srcX, srcY),
@@ -1871,17 +1871,17 @@ public class SDL2VideoManager : IVideoManager
         {
             // Add new top region
             iBottom = gsVIEWPORT_WINDOW_END_Y;
-            AddRegionEx(iLeft, iTop, iRight, iBottom, uiFlags);
+            this.AddRegionEx(iLeft, iTop, iRight, iBottom, uiFlags);
 
             // Add new bottom region
             iTop = gsVIEWPORT_WINDOW_END_Y;
             iBottom = iOldBottom;
-            AddRegionEx(iLeft, iTop, iRight, iBottom, uiFlags);
+            this.AddRegionEx(iLeft, iTop, iRight, iBottom, uiFlags);
 
         }
         else
         {
-            AddRegionEx(iLeft, iTop, iRight, iBottom, uiFlags);
+            this.AddRegionEx(iLeft, iTop, iRight, iBottom, uiFlags);
         }
     }
 
@@ -1944,7 +1944,7 @@ public class SDL2VideoManager : IVideoManager
         throw new NotImplementedException();
     }
 
-    public void InvalidateRegion(int v1, int v2, int v3, int v4) => InvalidateRegion(new(v1, v2, v3, v4));
+    public void InvalidateRegion(int v1, int v2, int v3, int v4) => this.InvalidateRegion(new(v1, v2, v3, v4));
 
     public void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
     {
@@ -1956,7 +1956,7 @@ public class SDL2VideoManager : IVideoManager
 
         HVOBJECT hVObject = null;// GetVideoObject(uiVideoObject);
 
-        GetVideoObjectETRLEProperties(hVObject, out pETRLEObject, usIndex);
+        this.GetVideoObjectETRLEProperties(hVObject, out pETRLEObject, usIndex);
 
         return true;
     }
@@ -1975,10 +1975,10 @@ public class SDL2VideoManager : IVideoManager
         Image<Rgba32> pBuffer;
 
         // Lock video surface
-        pBuffer = LockVideoSurface(uiDestVSurface, out int uiPitch);
+        pBuffer = this.LockVideoSurface(uiDestVSurface, out int uiPitch);
 
         // Get video object
-        if (!GetVideoObject(out HVOBJECT hSrcVObject, uiSrcVObject))
+        if (!this.GetVideoObject(out HVOBJECT hSrcVObject, uiSrcVObject))
         {
             // UnLockVideoSurface(uiDestVSurface);
             return false;
@@ -2005,7 +2005,7 @@ public class SDL2VideoManager : IVideoManager
     }
 
     public void InvalidateRegionEx(int sLeft, int sTop, int v1, int v2, int flags)
-        => InvalidateRegionEx(new(sLeft, sTop, v1, v2), flags);
+        => this.InvalidateRegionEx(new(sLeft, sTop, v1, v2), flags);
 
     public HVOBJECT LoadImage(string assetPath) => this.textures.LoadImage(assetPath);
 
@@ -2023,7 +2023,7 @@ public class SDL2VideoManager : IVideoManager
 
     public void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags)
     {
-        var dstSurface = Surfaces.SurfaceByTypes[dst];
+        var dstSurface = this.Surfaces.SurfaceByTypes[dst];
 
         Rectangle dstRectangle = new()
         {

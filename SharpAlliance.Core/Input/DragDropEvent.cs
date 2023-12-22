@@ -6,6 +6,6 @@ public struct DragDropEvent
 
     public DragDropEvent(string file)
     {
-        File = file;
+        this.File = file;
     }
 }

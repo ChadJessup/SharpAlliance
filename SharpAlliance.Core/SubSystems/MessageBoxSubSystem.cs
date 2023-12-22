@@ -62,7 +62,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         MessageBoxSubSystem.mercTextBox = mercTextBox;
         this.renderWorld = renderWorld;
         cursor = cursorSubSystem;
-        mouse = mouseSubSystem;
+        this.mouse = mouseSubSystem;
         screens = screenManager;
         inputs = inputManager;
 //        clock = clockManager;

@@ -179,13 +179,13 @@ public class Meanwhile
     void ScheduleMeanwhileEvent(MEANWHILE_DEFINITION pMeanwhileDef, uint uiTime)
     {
         // event scheduled to happen before, ignore
-        if (GetMeanWhileFlag(pMeanwhileDef.ubMeanwhileID) == true)
+        if (this.GetMeanWhileFlag(pMeanwhileDef.ubMeanwhileID) == true)
         {
             return;
         }
 
         // set the meanwhile flag for this event
-        SetMeanWhileFlag(pMeanwhileDef.ubMeanwhileID);
+        this.SetMeanWhileFlag(pMeanwhileDef.ubMeanwhileID);
 
         // set the id value
         ubCurrentMeanWhileId = pMeanwhileDef.ubMeanwhileID;
@@ -278,9 +278,9 @@ public class Meanwhile
 
             // We need to make sure we have no item - at least in tactical
             // In mapscreen, time is paused when manipulating items...
-//            CancelItemPointer();
+            //            CancelItemPointer();
 
-            BringupMeanwhileBox();
+            this.BringupMeanwhileBox();
         }
     }
 
@@ -333,7 +333,7 @@ public class Meanwhile
             case Meanwhiles.OUTSKIRTS_MEDUNA:
 
                 // SAVE QUEEN!
-                iIndex = GetFreeNPCSave();
+                iIndex = this.GetFreeNPCSave();
                 if (iIndex != -1)
                 {
                     gNPCSaveData[iIndex].ubProfile = NPCID.QUEEN;
@@ -349,7 +349,7 @@ public class Meanwhile
                 }
 
                 // SAVE MESSANGER!
-                iIndex = GetFreeNPCSave();
+                iIndex = this.GetFreeNPCSave();
                 if (iIndex != -1)
                 {
                     gNPCSaveData[iIndex].ubProfile = NPCID.ELLIOT;
@@ -367,7 +367,7 @@ public class Meanwhile
                 if (gCurrentMeanwhileDef.ubMeanwhileID == Meanwhiles.OUTSKIRTS_MEDUNA)
                 {
                     // SAVE JOE!
-                    iIndex = GetFreeNPCSave();
+                    iIndex = this.GetFreeNPCSave();
                     if (iIndex != -1)
                     {
                         gNPCSaveData[iIndex].ubProfile = NPCID.JOE;
@@ -389,7 +389,7 @@ public class Meanwhile
             case Meanwhiles.INTERROGATION:
 
                 // SAVE QUEEN!
-                iIndex = GetFreeNPCSave();
+                iIndex = this.GetFreeNPCSave();
                 if (iIndex != -1)
                 {
                     gNPCSaveData[iIndex].ubProfile = NPCID.QUEEN;
@@ -405,7 +405,7 @@ public class Meanwhile
                 }
 
                 // SAVE MESSANGER!
-                iIndex = GetFreeNPCSave();
+                iIndex = this.GetFreeNPCSave();
                 if (iIndex != -1)
                 {
                     gNPCSaveData[iIndex].ubProfile = NPCID.ELLIOT;
@@ -421,7 +421,7 @@ public class Meanwhile
                 }
 
                 // SAVE JOE!
-                iIndex = GetFreeNPCSave();
+                iIndex = this.GetFreeNPCSave();
                 if (iIndex != -1)
                 {
                     gNPCSaveData[iIndex].ubProfile = NPCID.JOE;
@@ -455,10 +455,10 @@ public class Meanwhile
     {
         // OK, insertion data found, enter sector!
 
-//        SetCurrentWorldSector(gCurrentMeanwhileDef.sSectorX, gCurrentMeanwhileDef.sSectorY, 0);
+        //        SetCurrentWorldSector(gCurrentMeanwhileDef.sSectorX, gCurrentMeanwhileDef.sSectorY, 0);
 
         //LocateToMeanwhileCharacter( );
-        LocateMeanWhileGrid();
+        this.LocateMeanWhileGrid();
 
 //        gFadeInDoneCallback = DoneFadeInMeanwhile;
 
@@ -494,12 +494,12 @@ public class Meanwhile
             // Increment reference count...
             giNPCReferenceCount = 1;
 
-            StartMeanwhile();
+            this.StartMeanwhile();
         }
         else
         {
             // skipped scene!
-            ProcessImplicationsOfMeanwhile();
+            this.ProcessImplicationsOfMeanwhile();
             GameClock.UnLockPauseState();
             GameClock.UnPauseGame();
         }
@@ -630,8 +630,8 @@ public class Meanwhile
         int cnt;
         NPCID ubProfile;
 
-//        EmptyDialogueQueue();
-        ProcessImplicationsOfMeanwhile();
+        //        EmptyDialogueQueue();
+        this.ProcessImplicationsOfMeanwhile();
 //        SetMeanwhileSceneSeen(gCurrentMeanwhileDef.ubMeanwhileID);
 
         gfInMeanwhile = false;
@@ -808,7 +808,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = Meanwhiles.CREATURES;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
 
@@ -863,7 +863,7 @@ public class Meanwhile
             MeanwhileDef.ubMeanwhileID = ubId;
 
             // schedule the event
-            ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+            this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
         }
     }
 
@@ -872,7 +872,7 @@ public class Meanwhile
         uint uiTime = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(Meanwhiles.LOST_TOWN))
+        if (this.GetMeanWhileFlag(Meanwhiles.LOST_TOWN))
         {
             return;
         }
@@ -890,7 +890,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = Meanwhiles.LOST_TOWN;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleMeanWhileEventPostingForSAMLiberation(int bSamId)
@@ -944,7 +944,7 @@ public class Meanwhile
             MeanwhileDef.ubMeanwhileID = ubId;
 
             // schedule the event
-            ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+            this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
         }
 
 
@@ -956,7 +956,7 @@ public class Meanwhile
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(Meanwhiles.FLOWERS))
+        if (this.GetMeanWhileFlag(Meanwhiles.FLOWERS))
         {
             return;
         }
@@ -984,7 +984,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = Meanwhiles.FLOWERS;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleOutskirtsOfMedunaMeanwhileScene()
@@ -993,7 +993,7 @@ public class Meanwhile
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(Meanwhiles.OUTSKIRTS_MEDUNA))
+        if (this.GetMeanWhileFlag(Meanwhiles.OUTSKIRTS_MEDUNA))
         {
             return;
         }
@@ -1011,7 +1011,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = Meanwhiles.OUTSKIRTS_MEDUNA;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleKillChopperMeanwhileScene()
@@ -1020,7 +1020,7 @@ public class Meanwhile
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(Meanwhiles.KILL_CHOPPER))
+        if (this.GetMeanWhileFlag(Meanwhiles.KILL_CHOPPER))
         {
             return;
         }
@@ -1038,7 +1038,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = Meanwhiles.KILL_CHOPPER;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleScientistAWOLMeanwhileScene()
@@ -1047,7 +1047,7 @@ public class Meanwhile
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(Meanwhiles.AWOL_SCIENTIST))
+        if (this.GetMeanWhileFlag(Meanwhiles.AWOL_SCIENTIST))
         {
             return;
         }
@@ -1065,7 +1065,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = Meanwhiles.AWOL_SCIENTIST;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleInterrogationMeanwhileScene()
@@ -1074,7 +1074,7 @@ public class Meanwhile
         int ubId = 0;
 
         // make sure scene hasn't been used before
-        if (GetMeanWhileFlag(Meanwhiles.INTERROGATION))
+        if (this.GetMeanWhileFlag(Meanwhiles.INTERROGATION))
         {
             return;
         }
@@ -1092,7 +1092,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = Meanwhiles.INTERROGATION;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
     }
 
     void HandleFirstBattleVictory()
@@ -1100,7 +1100,7 @@ public class Meanwhile
         uint uiTime = 0;
         Meanwhiles ubId = 0;
 
-        if (GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
+        if (this.GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
         {
             return;
         }
@@ -1120,7 +1120,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = ubId;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
 
     }
 
@@ -1130,7 +1130,7 @@ public class Meanwhile
         uint uiTime = 0;
         Meanwhiles ubId = 0;
 
-        if (GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
+        if (this.GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
         {
             return;
         }
@@ -1155,7 +1155,7 @@ public class Meanwhile
         MeanwhileDef.ubMeanwhileID = ubId;
 
         // schedule the event
-        ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
+        this.ScheduleMeanwhileEvent(MeanwhileDef, uiTime);
 
     }
 
@@ -1165,7 +1165,7 @@ public class Meanwhile
         TOWNS bTownId = 0;
         int sSector = 0;
 
-        if (GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
+        if (this.GetMeanWhileFlag(Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE))
         {
             return;
         }
@@ -1183,12 +1183,12 @@ public class Meanwhile
         if (bTownId == TOWNS.BLANK_SECTOR)
         {
             // invalid town
-            HandleDelayedFirstBattleVictory();
+            this.HandleDelayedFirstBattleVictory();
             gfFirstBattleMeanwhileScenePending = false;
         }
         else if (gfFirstBattleMeanwhileScenePending || fFromAutoResolve)
         {
-            HandleFirstBattleVictory();
+            this.HandleFirstBattleVictory();
             gfFirstBattleMeanwhileScenePending = false;
         }
         else
@@ -1206,7 +1206,7 @@ public class Meanwhile
         // exiting sector after first battle fought
         if (gfFirstBattleMeanwhileScenePending)
         {
-            HandleFirstBattleVictory();
+            this.HandleFirstBattleVictory();
             gfFirstBattleMeanwhileScenePending = false;
         }
 

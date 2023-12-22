@@ -23,7 +23,7 @@ public class History
     {
         this.fonts = fontSubSystem;
         files = fileManager;
-        video = videoManager;
+        this.video = videoManager;
     }
 
     public static bool fInHistoryMode = false;
@@ -135,10 +135,10 @@ public class History
     {
 
         // load the graphics
-        LoadHistory();
+        this.LoadHistory();
 
         // create History buttons
-        CreateHistoryButtons();
+        this.CreateHistoryButtons();
 
         // reset current to first page
         if (LaptopSaveInfo.iCurrentHistoryPage > 0)
@@ -155,7 +155,7 @@ public class History
 
 
         // render hbackground
-        RenderHistory();
+        this.RenderHistory();
 
 
         // set the fact we are in the history viewer 
@@ -168,7 +168,7 @@ public class History
         //fReDrawScreenFlag=true;
 
         // set inital states
-        SetHistoryButtonStates();
+        this.SetHistoryButtonStates();
 
         return;
     }
@@ -185,10 +185,10 @@ public class History
         //OpenAndWriteHistoryFile( );
 
         // delete graphics
-        RemoveHistory();
+        this.RemoveHistory();
 
         // delete buttons
-        DestroyHistoryButtons();
+        this.DestroyHistoryButtons();
 
         ClearHistoryList();
 
@@ -206,22 +206,22 @@ public class History
     void RenderHistory()
     {
         //render the background to the display
-        RenderHistoryBackGround();
+        this.RenderHistoryBackGround();
 
         // the title bar text
-        DrawHistoryTitleText();
+        this.DrawHistoryTitleText();
 
         // the actual lists background
-        DisplayHistoryListBackground();
+        this.DisplayHistoryListBackground();
 
         // the headers to each column
-        DisplayHistoryListHeaders();
+        this.DisplayHistoryListHeaders();
 
         // render the currentpage of records
-        DrawAPageofHistoryRecords();
+        this.DrawAPageofHistoryRecords();
 
         // stuff at top of page, the date range and page numbers 
-        DisplayPageNumberAndDateRange();
+        this.DisplayPageNumberAndDateRange();
 
         // title bar icon
 //        BlitTitleBarIcons();
@@ -285,17 +285,17 @@ public class History
         int iCounter = 0;
 
         // get title bar object
-//        HVOBJECT? hHandle = video.GetVideoObject(Globals.guiTITLE);
+        //        HVOBJECT? hHandle = video.GetVideoObject(Globals.guiTITLE);
 
         // blt title bar to screen
-//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
+        //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y - 2, VO_BLT.SRCTRANSPARENCY, null);
 
         // get and blt the top part of the screen, video object and blt to screen
-//        video.GetVideoObject(out hHandle, Globals.guiTOP);
-//        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
+        //        video.GetVideoObject(out hHandle, Globals.guiTOP);
+        //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, Globals.TOP_X, Globals.TOP_Y + 22, VO_BLT.SRCTRANSPARENCY, null);
 
         // display background for history list
-        DisplayHistoryListBackground();
+        this.DisplayHistoryListBackground();
         return;
     }
 
@@ -371,13 +371,13 @@ public class History
 
             if (iCurrentHistoryPage > 0)
             {
-                LoadPreviousHistoryPage();
+                this.LoadPreviousHistoryPage();
                 //iCurrentHistoryPage--;
-                DrawAPageofHistoryRecords();
+                this.DrawAPageofHistoryRecords();
             }
 
             // set new state
-            SetHistoryButtonStates();
+            this.SetHistoryButtonStates();
         }
 
 
@@ -399,7 +399,7 @@ public class History
             btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
             LoadNextHistoryPage();
             // set new state
-            SetHistoryButtonStates();
+            this.SetHistoryButtonStates();
             fReDrawScreenFlag = true;
         }
 
@@ -756,7 +756,7 @@ public class History
 
             // now the actual history text
             //FindFontCenterCoordinates(RECORD_DATE_X + RECORD_DATE_WIDTH,0,RECORD_HISTORY.WIDTH,0,  pHistoryStrings[pCurHistory.ubCode], HISTORY.TEXT_FONT,&usX, &usY);
-            ProcessHistoryTransactionString(sString, pCurHistory);
+            this.ProcessHistoryTransactionString(sString, pCurHistory);
             //	mprintf(RECORD_DATE_X + RECORD_DATE_WIDTH + 25, RECORD_Y + ( iCounter * ( BOX_HEIGHT ) ) + 3, pHistoryStrings[pCurHistory.ubCode] );
             mprintf(Globals.RECORD_DATE_X + Globals.RECORD_LOCATION_WIDTH + Globals.RECORD_DATE_WIDTH + 15, Globals.RECORD_Y + (iCounter * (Globals.BOX_HEIGHT)) + 3, sString);
 
@@ -810,13 +810,13 @@ public class History
         // (re-)render background
 
         // the title bar text
-        DrawHistoryTitleText();
+        this.DrawHistoryTitleText();
 
         // the actual lists background
-        DisplayHistoryListBackground();
+        this.DisplayHistoryListBackground();
 
         // the headers to each column
-        DisplayHistoryListHeaders();
+        this.DisplayHistoryListHeaders();
 
 
         // error check
@@ -827,10 +827,10 @@ public class History
 
 
         // current page is found, render  from here
-        DrawHistoryRecordsText();
+        this.DrawHistoryRecordsText();
 
         // update page numbers, and date ranges
-        DisplayPageNumberAndDateRange();
+        this.DisplayPageNumberAndDateRange();
 
         return;
     }
@@ -881,7 +881,7 @@ public class History
             iLastPage=iCounter/NUM_RECORDS_PER_PAGE;
         */
 
-        iLastPage = GetNumberOfHistoryPages();
+        iLastPage = this.GetNumberOfHistoryPages();
 
         // set temp to current, to get last date
         pTempHistory = pCurrentHistory;
@@ -988,12 +988,12 @@ public class History
                 break;
 
             case (HISTORY.QUEST_STARTED):
-                GetQuestStartedString((int)pHistory.ubSecondCode, out sString);
+                this.GetQuestStartedString((int)pHistory.ubSecondCode, out sString);
                 wprintf(pString, sString);
 
                 break;
             case (HISTORY.QUEST_FINISHED):
-                GetQuestEndedString((int)pHistory.ubSecondCode, out sString);
+                this.GetQuestEndedString((int)pHistory.ubSecondCode, out sString);
                 wprintf(pString, sString);
 
                 break;
@@ -1114,11 +1114,11 @@ public class History
 
         }
 
-        if (IncrementCurrentPageHistoryDisplay())
+        if (this.IncrementCurrentPageHistoryDisplay())
         {
             // decrement page
             iCurrentHistoryPage--;
-            DrawAPageofHistoryRecords();
+            this.DrawAPageofHistoryRecords();
 
             // enable buttons
 //            EnableButton(giHistoryButton[NEXT_PAGE_BUTTON]);

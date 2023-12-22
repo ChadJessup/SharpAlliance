@@ -44,8 +44,8 @@ public struct MouseWheelEventArgs
     public float WheelDelta { get; }
     public MouseWheelEventArgs(MouseState mouseState, float wheelDelta)
     {
-        State = mouseState;
-        WheelDelta = wheelDelta;
+        this.State = mouseState;
+        this.WheelDelta = wheelDelta;
     }
 }
 

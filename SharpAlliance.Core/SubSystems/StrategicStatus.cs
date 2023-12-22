@@ -94,7 +94,7 @@ public class StrategicStatus
             return (false);
         }
 
-        if (CalcDeathRate() > bDeathRateTolerance)
+        if (this.CalcDeathRate() > bDeathRateTolerance)
         {
             // too high - sorry
             return (true);
@@ -254,7 +254,7 @@ public class StrategicStatus
             int ubTolerance;
 
             gStrategicStatus.ubNumberOfDaysOfInactivity++;
-            ubTolerance = LackOfProgressTolerance();
+            ubTolerance = this.LackOfProgressTolerance();
 
             if (gStrategicStatus.ubNumberOfDaysOfInactivity >= ubTolerance)
             {
@@ -342,7 +342,7 @@ public class StrategicStatus
     {
         int bRankIndex;
 
-        bRankIndex = SoldierClassToRankIndex(ubSoldierClass);
+        bRankIndex = this.SoldierClassToRankIndex(ubSoldierClass);
 
         // if it's not a standard enemy-class soldier
         if (bRankIndex == -1)

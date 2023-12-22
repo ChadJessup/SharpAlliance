@@ -488,7 +488,7 @@ public class InteractiveTiles
         while (pNode != null)
         {
             {
-                GetLevelNodeScreenRect(pNode, out Rectangle aRect, sXMapPos, sYMapPos, sGridNo);
+                this.GetLevelNodeScreenRect(pNode, out Rectangle aRect, sXMapPos, sYMapPos, sGridNo);
 
                 // Make sure we are always on guy if we are on same gridno
 //                if (IsPointInScreenRect(sScreenX, sScreenY, aRect))
@@ -600,7 +600,7 @@ public class InteractiveTiles
     {
         LEVELNODE? pNode;
 
-        pNode = GetCurInteractiveTile();
+        pNode = this.GetCurInteractiveTile();
 
         if (pNode != null)
         {
@@ -857,7 +857,7 @@ public class InteractiveTiles
         if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.CACHEDANITILE))
         {
             //Check it!
-            return (CheckVideoObjectScreenCoordinateInData(Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo, pNode.pAniTile.sCurrentFrame, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
+            return (this.CheckVideoObjectScreenCoordinateInData(Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo, pNode.pAniTile.sCurrentFrame, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
 
         }
         else
@@ -880,7 +880,7 @@ public class InteractiveTiles
             }
 
             //Check it!
-            return (CheckVideoObjectScreenCoordinateInData(TileElem.hTileSurface, TileElem.usRegionIndex, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
+            return (this.CheckVideoObjectScreenCoordinateInData(TileElem.hTileSurface, TileElem.usRegionIndex, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
         }
     }
 

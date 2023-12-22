@@ -210,7 +210,7 @@ public class Morale
                         break;
                 }
 
-                DecayTacticalMorale(pSoldier);
+                this.DecayTacticalMorale(pSoldier);
                 RefreshSoldierMorale(pSoldier);
             }
         }
@@ -234,7 +234,7 @@ public class Morale
                     continue;
                 }
 
-                DecayStrategicMorale(pSoldier);
+                this.DecayStrategicMorale(pSoldier);
                 RefreshSoldierMorale(pSoldier);
             }
         }
@@ -907,7 +907,7 @@ public class Morale
 
         if (bStrategicMoraleUpdateCounter == HOURS_BETWEEN_STRATEGIC_DECAY)
         {
-            DecayStrategicMoraleModifiers();
+            this.DecayStrategicMoraleModifiers();
             bStrategicMoraleUpdateCounter = 0;
         }
 

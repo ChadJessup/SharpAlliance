@@ -24,20 +24,20 @@ public partial struct MouseState
         bool mouse0, bool mouse1, bool mouse2, bool mouse3, bool mouse4, bool mouse5, bool mouse6,
         bool mouse7, bool mouse8, bool mouse9, bool mouse10, bool mouse11, bool mouse12)
     {
-        X = x;
-        Y = y;
-        _mouseDown0 = mouse0;
-        _mouseDown1 = mouse1;
-        _mouseDown2 = mouse2;
-        _mouseDown3 = mouse3;
-        _mouseDown4 = mouse4;
-        _mouseDown5 = mouse5;
-        _mouseDown6 = mouse6;
-        _mouseDown7 = mouse7;
-        _mouseDown8 = mouse8;
-        _mouseDown9 = mouse9;
-        _mouseDown10 = mouse10;
-        _mouseDown11 = mouse11;
-        _mouseDown12 = mouse12;
+        this.X = x;
+        this.Y = y;
+        this._mouseDown0 = mouse0;
+        this._mouseDown1 = mouse1;
+        this._mouseDown2 = mouse2;
+        this._mouseDown3 = mouse3;
+        this._mouseDown4 = mouse4;
+        this._mouseDown5 = mouse5;
+        this._mouseDown6 = mouse6;
+        this._mouseDown7 = mouse7;
+        this._mouseDown8 = mouse8;
+        this._mouseDown9 = mouse9;
+        this._mouseDown10 = mouse10;
+        this._mouseDown11 = mouse11;
+        this._mouseDown12 = mouse12;
     }
 }

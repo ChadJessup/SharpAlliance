@@ -37,14 +37,14 @@ public class TextureManager : ITextureManager
 
     public HVOBJECT LoadTexture(string assetPath)
     {
-        if (loadedTextures.TryGetValue(assetPath, out var vObject))
+        if (this.loadedTextures.TryGetValue(assetPath, out var vObject))
         {
             return vObject;
         }
 
-        HVOBJECT hVObject = CreateVideoObject(assetPath);
+        HVOBJECT hVObject = this.CreateVideoObject(assetPath);
 
-        loadedTextures.Add(assetPath, hVObject);
+        this.loadedTextures.Add(assetPath, hVObject);
 
         return hVObject;
     }
@@ -58,10 +58,10 @@ public class TextureManager : ITextureManager
         ETRLEData TempETRLEData = new();
 
         // Create himage object from file
-        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, files);
+        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
 
         // Get TRLE data
-        GetETRLEImageData(hImage, ref TempETRLEData);
+        this.GetETRLEImageData(hImage, ref TempETRLEData);
 
         // Set values
         hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
@@ -72,10 +72,10 @@ public class TextureManager : ITextureManager
         // Set palette from himage
         if (hImage.ubBitDepth == 8)
         {
-            hVObject.pShade8 = shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
-            hVObject.pGlow8 = shading.ubColorTables[0, 0];
+            hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+            hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
 
-            SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+            this.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
         }
 
         // Set values from himage
@@ -179,10 +179,10 @@ public class TextureManager : ITextureManager
         ETRLEData TempETRLEData = new();
 
         // Create himage object from file
-        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, files);
+        hImage = HIMAGE.CreateImage(assetPath, HIMAGECreateFlags.IMAGE_ALLIMAGEDATA, this.files);
 
         // Get TRLE data
-        GetETRLEImageData(hImage, ref TempETRLEData);
+        this.GetETRLEImageData(hImage, ref TempETRLEData);
 
         // Set values
         hVObject.usNumberOfObjects = TempETRLEData.usNumberOfObjects;
@@ -193,10 +193,10 @@ public class TextureManager : ITextureManager
         // Set palette from himage
         if (hImage.ubBitDepth == 8)
         {
-            hVObject.pShade8 = shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
-            hVObject.pGlow8 = shading.ubColorTables[0, 0];
+            hVObject.pShade8 = this.shading.ubColorTables[Shading.DEFAULT_SHADE_LEVEL, 0];
+            hVObject.pGlow8 = this.shading.ubColorTables[0, 0];
 
-            SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
+            this.SetVideoObjectPalette(hVObject, hImage, hImage.pPalette);
         }
 
         // Set values from himage

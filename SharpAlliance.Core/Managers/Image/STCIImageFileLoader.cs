@@ -59,7 +59,7 @@ public class STCIImageFileLoader : ImageDecoder, IImageFormatDetector, IImageFil
     }
 
     protected override SixLabors.ImageSharp.Image Decode(DecoderOptions options, Stream stream, CancellationToken cancellationToken)
-        => Decode<Rgba32>(options, stream, cancellationToken);
+        => this.Decode<Rgba32>(options, stream, cancellationToken);
 
     protected override Image<TPixel> Decode<TPixel>(DecoderOptions configuration, Stream stream, CancellationToken token)
     {

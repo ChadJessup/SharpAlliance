@@ -86,7 +86,7 @@ public class IntroScreen : IScreen
             Globals.gfIntroScreenEntry = false;
             Globals.gfIntroScreenExit = false;
 
-            video.InvalidateRegion(new(0, 0, 640, 480));
+            this.video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         RenderDirty.RestoreBackgroundRects();
@@ -97,11 +97,11 @@ public class IntroScreen : IScreen
         this.HandleIntroScreen();
 
         RenderDirty.ExecuteBaseDirtyRectQueue();
-        video.EndFrameBufferRender();
+        this.video.EndFrameBufferRender();
 
         if (Globals.gfIntroScreenExit)
         {
-            ExitIntroScreen();
+            this.ExitIntroScreen();
             Globals.gfIntroScreenExit = false;
             Globals.gfIntroScreenEntry = true;
         }

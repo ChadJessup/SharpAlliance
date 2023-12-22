@@ -56,7 +56,7 @@ public class SOLDIERTYPE
 
 
     public bool bActive;
-    public bool IsActive => bActive;
+    public bool IsActive => this.bActive;
 
     public TEAM bTeam;             // Team identifier
 
@@ -129,7 +129,7 @@ public class SOLDIERTYPE
     // 60
     public AnimationSurfaceCacheType AnimCache; // will be 9 bytes once changed to pointers
 
-    public bool IsAlive => bLife > 0;
+    public bool IsAlive => this.bLife > 0;
     public int bLife;             // current life (hit points or health)
     public TEAM bSide;
     public int bViewRange;
@@ -270,7 +270,7 @@ public class SOLDIERTYPE
     public STATUS bAlertStatus;
     public int bOppCnt;
 
-    public bool IsNeutral => bNeutral > 0;
+    public bool IsNeutral => this.bNeutral > 0;
     public int bNeutral;
     public int bNewSituation;
     public int bNextTargetLevel;

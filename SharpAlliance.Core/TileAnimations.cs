@@ -836,7 +836,7 @@ public class TileAnimations
 
             if (pNode.uiFlags.HasFlag(uiType))
             {
-                PauseAniTile(pNode, fPause);
+                this.PauseAniTile(pNode, fPause);
             }
 
         }

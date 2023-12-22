@@ -195,7 +195,7 @@ public class TeamTurns
 
             //		InitEnemyUIBar( );
 
-            FreezeInterfaceForEnemyTurn();
+            this.FreezeInterfaceForEnemyTurn();
 
             // Loop through all mercs and set to moved
             cnt = Globals.gTacticalStatus.Team[Globals.gTacticalStatus.ubCurrentTeam].bFirstID;
@@ -495,7 +495,7 @@ public class TeamTurns
 
 
         // freeze the user's interface
-        FreezeInterfaceForEnemyTurn();
+        this.FreezeInterfaceForEnemyTurn();
     }
 
     public static bool EveryoneInInterruptListOnSameTeam()
@@ -1036,7 +1036,7 @@ public class TeamTurns
 
             // ALEX
             // if interrupts are restricted to a particular opponent only & he's not it
-            if ((InterruptOnlyGuynum != Globals.NOBODY) && (ubOpponentID != InterruptOnlyGuynum))
+            if ((this.InterruptOnlyGuynum != Globals.NOBODY) && (ubOpponentID != this.InterruptOnlyGuynum))
             {
                 return (false);
             }
@@ -1060,7 +1060,7 @@ public class TeamTurns
         }
 
         // if interrupts have been disabled for any reason
-        if (!InterruptsAllowed)
+        if (!this.InterruptsAllowed)
         {
             return (false);
         }
@@ -1869,9 +1869,9 @@ public class TeamTurns
         {
             ubOutOfTurnPersons = gubOutOfTurnPersons,
 
-            InterruptOnlyGuynum = InterruptOnlyGuynum,
+            InterruptOnlyGuynum = this.InterruptOnlyGuynum,
             sWhoThrewRock = gsWhoThrewRock,
-            InterruptsAllowed = InterruptsAllowed,
+            InterruptsAllowed = this.InterruptsAllowed,
             fHiddenInterrupt = gfHiddenInterrupt,
             ubLastInterruptedGuy = gubLastInterruptedGuy
         };
@@ -1908,9 +1908,9 @@ public class TeamTurns
 
         gubOutOfTurnPersons = TeamTurnStruct.ubOutOfTurnPersons;
 
-        InterruptOnlyGuynum = TeamTurnStruct.InterruptOnlyGuynum;
+        this.InterruptOnlyGuynum = TeamTurnStruct.InterruptOnlyGuynum;
         gsWhoThrewRock = TeamTurnStruct.sWhoThrewRock;
-        InterruptsAllowed = TeamTurnStruct.InterruptsAllowed;
+        this.InterruptsAllowed = TeamTurnStruct.InterruptsAllowed;
         gfHiddenInterrupt = TeamTurnStruct.fHiddenInterrupt;
         gubLastInterruptedGuy = TeamTurnStruct.ubLastInterruptedGuy;
 

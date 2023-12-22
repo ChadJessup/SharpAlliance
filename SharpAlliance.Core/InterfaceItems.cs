@@ -73,7 +73,7 @@ public class InterfaceItems
         if (Item[usItem].ubWeight <= EXCEPTIONAL_WEIGHT)
         {
             zTemp = Message[(int)STRINGS.LIGHT];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -82,7 +82,7 @@ public class InterfaceItems
         if (Item[usItem].ubPerPocket >= 1) // fits in a small pocket
         {
             zTemp = Message[(int)STRINGS.SMALL];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -91,7 +91,7 @@ public class InterfaceItems
         //        if (GunRange(pObject) >= EXCEPTIONAL_RANGE)
         {
             zTemp = Message[(int)STRINGS.LONG_RANGE];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -100,7 +100,7 @@ public class InterfaceItems
         //        if (Weapon[usItem].ubImpact >= EXCEPTIONAL_DAMAGE)
         {
             zTemp = Message[(int)STRINGS.HIGH_DAMAGE];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -109,7 +109,7 @@ public class InterfaceItems
         //        if (BaseAPsToShootOrStab(DEFAULT_APS, DEFAULT_AIMSKILL, gpItemDescObject) <= EXCEPTIONAL_AP_COST)
         {
             zTemp = Message[(int)STRINGS.QUICK_FIRING];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -118,7 +118,7 @@ public class InterfaceItems
         //        if (Weapon[usItem].ubShotsPerBurst >= EXCEPTIONAL_BURST_SIZE || usItem == Items.G11)
         {
             zTemp = Message[(int)STRINGS.FAST_BURST];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -127,7 +127,7 @@ public class InterfaceItems
         //        if (Weapon[usItem].ubMagSize > EXCEPTIONAL_MAGAZINE)
         {
             zTemp = Message[(int)STRINGS.LARGE_AMMO_CAPACITY];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -136,7 +136,7 @@ public class InterfaceItems
         if (Item[usItem].bReliability >= EXCEPTIONAL_RELIABILITY)
         {
             zTemp = Message[(int)STRINGS.RELIABLE];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -145,7 +145,7 @@ public class InterfaceItems
         if (Item[usItem].bRepairEase >= EXCEPTIONAL_REPAIR_EASE)
         {
             zTemp = Message[(int)STRINGS.EASY_TO_REPAIR];
-            if (!AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -154,7 +154,7 @@ public class InterfaceItems
         if (zItemPros[0] == 0)
         {
             // empty string, so display "None"
-            if (!AttemptToAddSubstring(zItemPros, Message[(int)STRINGS.NONE], ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemPros, Message[(int)STRINGS.NONE], ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -180,7 +180,7 @@ public class InterfaceItems
         if (ubWeight >= BAD_WEIGHT)
         {
             zTemp = Message[(int)STRINGS.HEAVY];
-            if (!AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -198,7 +198,7 @@ public class InterfaceItems
         //        if (Weapon[usItem].ubImpact <= BAD_DAMAGE)
         {
             zTemp = Message[(int)STRINGS.LOW_DAMAGE];
-            if (!AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -207,7 +207,7 @@ public class InterfaceItems
         //        if (BaseAPsToShootOrStab(DEFAULT_APS, DEFAULT_AIMSKILL, gpItemDescObject) >= BAD_AP_COST)
         {
             zTemp = Message[(int)STRINGS.SLOW_FIRING];
-            if (!AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -216,7 +216,7 @@ public class InterfaceItems
         //        if (Weapon[usItem].ubShotsPerBurst == 0)
         {
             zTemp = Message[(int)STRINGS.NO_BURST];
-            if (!AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -225,7 +225,7 @@ public class InterfaceItems
         //        if (Weapon[usItem].ubMagSize < BAD_MAGAZINE)
         {
             zTemp = Message[(int)STRINGS.SMALL_AMMO_CAPACITY];
-            if (!AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -234,7 +234,7 @@ public class InterfaceItems
         if (Item[usItem].bReliability <= BAD_RELIABILITY)
         {
             zTemp = Message[(int)STRINGS.UNRELIABLE];
-            if (!AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -243,7 +243,7 @@ public class InterfaceItems
         if (Item[usItem].bRepairEase <= BAD_REPAIR_EASE)
         {
             zTemp = Message[(int)STRINGS.HARD_TO_REPAIR];
-            if (!AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, zTemp, ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -253,7 +253,7 @@ public class InterfaceItems
         if (zItemCons[0] == 0)
         {
             // empty string, so display "None"
-            if (!AttemptToAddSubstring(zItemCons, Message[(int)STRINGS.NONE], ref uiStringLength, uiPixLimit))
+            if (!this.AttemptToAddSubstring(zItemCons, Message[(int)STRINGS.NONE], ref uiStringLength, uiPixLimit))
             {
                 return;
             }
@@ -398,14 +398,14 @@ public class InterfaceItems
             MouseSubSystem.MSYS_DisableRegion(gSMInvCamoRegion);
 
             MouseSubSystem.MSYS_DisableRegion(gSM_SELMERCMoneyRegion);
-            EnableKeyRing(false);
+            this.EnableKeyRing(false);
         }
         else
         {
             MouseSubSystem.MSYS_EnableRegion(gSMInvCamoRegion);
 
             MouseSubSystem.MSYS_EnableRegion(gSM_SELMERCMoneyRegion);
-            EnableKeyRing(true);
+            this.EnableKeyRing(true);
         }
 
     }
@@ -453,7 +453,7 @@ public class InterfaceItems
     {
         InventorySlot cnt;
 
-        if (InItemDescriptionBox() || InItemStackPopup() || InKeyRingPopup())
+        if (this.InItemDescriptionBox() || this.InItemStackPopup() || this.InKeyRingPopup())
         {
 
         }
@@ -463,12 +463,12 @@ public class InterfaceItems
             {
                 if (fDirtyLevel == DIRTYLEVEL2)
                 {
-                    GetHelpTextForItem(pStr, (pSoldier.inv[cnt]), pSoldier);
+                    this.GetHelpTextForItem(pStr, (pSoldier.inv[cnt]), pSoldier);
 
                     //                    SetRegionFastHelpText((gSMInvRegion[cnt]), pStr);
                 }
 
-                INVRenderINVPanelItem(pSoldier, cnt, fDirtyLevel);
+                this.INVRenderINVPanelItem(pSoldier, cnt, fDirtyLevel);
             }
 
             //            if (KeyExistsInKeyRing(pSoldier, ANYKEY, null))
@@ -580,7 +580,7 @@ public class InterfaceItems
         //Now render as normal
         //INVRenderItem( Surfaces.SAVE_BUFFER, pObject, (int)(sX + gSMInvData[ sPocket ].sSubX), (int)(sY + gSMInvData[ sPocket ].sSubY), gSMInvData[ sPocket ].sWidth, gSMInvData[ sPocket ].sHeight, fDirtyLevel, &(gfSM_HandInvDispText[ sPocket ] ) );
         int? _ = null;
-        INVRenderItem(SurfaceType.SAVE_BUFFER, pSoldier, pObject, sX, sY, gSMInvData[sPocket].sWidth, gSMInvData[sPocket].sHeight, fRenderDirtyLevel, _, 0, fOutline, sOutlineColor);
+        this.INVRenderItem(SurfaceType.SAVE_BUFFER, pSoldier, pObject, sX, sY, gSMInvData[sPocket].sWidth, gSMInvData[sPocket].sHeight, fRenderDirtyLevel, _, 0, fOutline, sOutlineColor);
 
         if (gbInvalidPlacementSlot[sPocket] > 0)
         {
@@ -693,7 +693,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleAmmoForGun(pObject, pTestObject))
+                if (this.CompatibleAmmoForGun(pObject, pTestObject))
                 {
                     return (true);
                 }
@@ -706,7 +706,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleGunForAmmo(pObject, pTestObject))
+                if (this.CompatibleGunForAmmo(pObject, pTestObject))
                 {
                     return (true);
                 }
@@ -734,7 +734,7 @@ public class InterfaceItems
             {
                 if (!fReset)
                 {
-                    if (SoldierContainsAnyCompatibleStuff(Squad[iCurrentTacticalSquad][iCounter], pObject))
+                    if (this.SoldierContainsAnyCompatibleStuff(Squad[iCurrentTacticalSquad][iCounter], pObject))
                     {
                         // Get face and set value....
                         gFacesData[Squad[iCurrentTacticalSquad][iCounter].iFaceIndex].fCompatibleItems = true;
@@ -779,7 +779,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleItemForApplyingOnMerc(pObject))
+                if (this.CompatibleItemForApplyingOnMerc(pObject))
                 {
                     if (fOn != gbCompatibleAmmo[cnt])
                     {
@@ -796,7 +796,7 @@ public class InterfaceItems
 
             if (gpItemPointer != null)
             {
-                if (CompatibleItemForApplyingOnMerc(gpItemPointer))
+                if (this.CompatibleItemForApplyingOnMerc(gpItemPointer))
                 {
                     // OK, Light up portrait as well.....
                     if (fOn > 0)
@@ -860,7 +860,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleAmmoForGun(pObject, pTestObject))
+                if (this.CompatibleAmmoForGun(pObject, pTestObject))
                 {
                     if (fOn != gbCompatibleAmmo[cnt])
                     {
@@ -879,7 +879,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleGunForAmmo(pObject, pTestObject))
+                if (this.CompatibleGunForAmmo(pObject, pTestObject))
                 {
                     if (fOn != gbCompatibleAmmo[cnt])
                     {
@@ -1011,7 +1011,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleItemForApplyingOnMerc(pObject))
+                if (this.CompatibleItemForApplyingOnMerc(pObject))
                 {
                     if (fOn != gbCompatibleAmmo[cnt])
                     {
@@ -1028,7 +1028,7 @@ public class InterfaceItems
 
             if (gpItemPointer != null)
             {
-                if (CompatibleItemForApplyingOnMerc(gpItemPointer))
+                if (this.CompatibleItemForApplyingOnMerc(gpItemPointer))
                 {
                     // OK, Light up portrait as well.....
                     if (fOn > 0)
@@ -1090,7 +1090,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleAmmoForGun(pObject, pTestObject))
+                if (this.CompatibleAmmoForGun(pObject, pTestObject))
                 {
                     if (fOn != gbCompatibleAmmo[cnt])
                     {
@@ -1110,7 +1110,7 @@ public class InterfaceItems
             {
                 pObject = (pSoldier.inv[cnt]);
 
-                if (CompatibleGunForAmmo(pObject, pTestObject))
+                if (this.CompatibleGunForAmmo(pObject, pTestObject))
                 {
                     if (fOn != gbCompatibleAmmo[cnt])
                     {
@@ -1124,7 +1124,7 @@ public class InterfaceItems
                 }
             }
         }
-        else if (CompatibleItemForApplyingOnMerc(pTestObject))
+        else if (this.CompatibleItemForApplyingOnMerc(pTestObject))
         {
             //If we are currently NOT in the Shopkeeper interface
             if (!(guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE)))
@@ -1249,7 +1249,7 @@ public class InterfaceItems
 
         }
 
-        return (InternalHandleCompatibleAmmoUI(pSoldier, pTestObject, fOn));
+        return (this.InternalHandleCompatibleAmmoUI(pSoldier, pTestObject, fOn));
 
     }
 
@@ -1673,7 +1673,7 @@ public class InterfaceItems
         Items usOldItem;
 
         // Delete old box...
-        DeleteItemDescriptionBox();
+        this.DeleteItemDescriptionBox();
 
         // Make new item....
         usOldItem = gpItemDescSoldier.inv[InventorySlot.HANDPOS].usItem;
@@ -1699,7 +1699,7 @@ public class InterfaceItems
 
         //        CreateItem(usOldItem, 100, (gpItemDescSoldier.inv[InventorySlot.HANDPOS]));
 
-        InternalInitItemDescriptionBox((gpItemDescSoldier.inv[InventorySlot.HANDPOS]), 214, (int)(INV_INTERFACE_START_Y + 1), gubItemDescStatusIndex, gpItemDescSoldier);
+        this.InternalInitItemDescriptionBox((gpItemDescSoldier.inv[InventorySlot.HANDPOS]), 214, (int)(INV_INTERFACE_START_Y + 1), gubItemDescStatusIndex, gpItemDescSoldier);
     }
 
     bool InitItemDescriptionBox(SOLDIERTYPE pSoldier, InventorySlot ubPosition, int sX, int sY, int ubStatusIndex)
@@ -1719,7 +1719,7 @@ public class InterfaceItems
             pObject = (pSoldier.inv[ubPosition]);
         }
 
-        return (InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier));
+        return (this.InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier));
     }
 
     bool InitKeyItemDescriptionBox(SOLDIERTYPE pSoldier, int ubPosition, int sX, int sY, int ubStatusIndex)
@@ -1729,7 +1729,7 @@ public class InterfaceItems
         //        AllocateObject(pObject);
         //        CreateKeyObject(pObject, pSoldier.pKeyRing[ubPosition].ubNumber, pSoldier.pKeyRing[ubPosition].ubKeyID);
 
-        return (InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier));
+        return (this.InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier));
     }
 
     bool InternalInitItemDescriptionBox(OBJECTTYPE pObject, int sX, int sY, int ubStatusIndex, SOLDIERTYPE pSoldier)
@@ -1769,7 +1769,7 @@ public class InterfaceItems
                 MSYS_PRIORITY.HIGHEST - 2,
                 CURSOR.NORMAL,
                 MSYS_NO_CALLBACK,
-                ItemDescCallback);
+                this.ItemDescCallback);
 
             MouseSubSystem.MSYS_AddRegion(ref gInvDesc);
 
@@ -1793,7 +1793,7 @@ public class InterfaceItems
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.MSYS_NO_CURSOR,
                 MSYS_NO_CALLBACK,
-                ItemDescCallback);
+                this.ItemDescCallback);
 
             MouseSubSystem.MSYS_AddRegion(ref gInvDesc);
 
@@ -1891,7 +1891,7 @@ public class InterfaceItems
                         MSYS_PRIORITY.HIGHEST,
                         CURSOR.MSYS_NO_CURSOR,
                         MSYS_NO_CALLBACK,
-                        ItemDescCallback);
+                        this.ItemDescCallback);
 
                     MouseSubSystem.MSYS_AddRegion(ref gProsAndConsRegions[cnt]);
 
@@ -1930,7 +1930,7 @@ public class InterfaceItems
                             (gsInvDescY + gItemDescProsConsRects[cnt].Top),
                             (gsInvDescX + gItemDescProsConsRects[cnt].Right),
                             (gsInvDescY + gItemDescProsConsRects[cnt].Bottom)),
-                        MSYS_PRIORITY.HIGHEST, CURSOR.MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemDescCallback);
+                        MSYS_PRIORITY.HIGHEST, CURSOR.MSYS_NO_CURSOR, MSYS_NO_CALLBACK, this.ItemDescCallback);
 
                     MouseSubSystem.MSYS_AddRegion(ref gProsAndConsRegions[cnt]);
 
@@ -1985,7 +1985,7 @@ public class InterfaceItems
                         MSYS_PRIORITY.HIGHEST,
                         CURSOR.MSYS_NO_CURSOR,
                         MSYS_NO_CALLBACK,
-                        ItemDescAttachmentsCallback);
+                        this.ItemDescAttachmentsCallback);
                 }
                 else
                 {
@@ -1995,7 +1995,7 @@ public class InterfaceItems
                         MSYS_PRIORITY.HIGHEST,
                         CURSOR.MSYS_NO_CURSOR,
                         MSYS_NO_CALLBACK,
-                        ItemDescAttachmentsCallback);
+                        this.ItemDescAttachmentsCallback);
                 }
                 // Add region
                 MouseSubSystem.MSYS_AddRegion(ref gItemDescAttachmentRegions[cnt]);
@@ -2107,7 +2107,7 @@ public class InterfaceItems
 
         gfInItemDescBox = true;
 
-        CHECKF(ReloadItemDesc());
+        CHECKF(this.ReloadItemDesc());
 
         if (gpItemPointer is not null)
         {
@@ -2167,7 +2167,7 @@ public class InterfaceItems
 
     bool ReloadItemDesc()
     {
-        if (!LoadTileGraphicForItem((Item[gpItemDescObject.usItem]), out guiItemGraphic))
+        if (!this.LoadTileGraphicForItem((Item[gpItemDescObject.usItem]), out guiItemGraphic))
         {
             return (false);
         }
@@ -2330,12 +2330,12 @@ public class InterfaceItems
             if (gpItemDescObject.usItem == NOTHING)
             {
                 // close desc panel panel
-                DeleteItemDescriptionBox();
+                this.DeleteItemDescriptionBox();
             }
             //Dirty interface
             fInterfacePanelDirty = DIRTYLEVEL2;
 
-            ReloadItemDesc();
+            this.ReloadItemDesc();
         }
 
         // re-evaluate repairs
@@ -2346,7 +2346,7 @@ public class InterfaceItems
     {
         if (ubExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
         {
-            DoAttachment();
+            this.DoAttachment();
         }
         // else do nothing
     }
@@ -2385,7 +2385,7 @@ public class InterfaceItems
                     //                        return;
                     //                    }
 
-                    DoAttachment();
+                    this.DoAttachment();
                 }
             }
             else
@@ -2449,12 +2449,12 @@ public class InterfaceItems
                     fShopkeeperItem = true;
                 }
 
-                DeleteItemDescriptionBox();
+                this.DeleteItemDescriptionBox();
 
                 //                if (CreateItem(gpItemDescObject.usAttachItem[uiItemPos], gpItemDescObject.bAttachStatus[uiItemPos], Object2))
                 {
                     gfItemDescObjectIsAttachment = true;
-                    InternalInitItemDescriptionBox(Object2, gsInvDescX, gsInvDescY, 0, gpItemDescSoldier);
+                    this.InternalInitItemDescriptionBox(Object2, gsInvDescX, gsInvDescY, 0, gpItemDescSoldier);
 
                     if (fShopkeeperItem)
                     {
@@ -2540,7 +2540,7 @@ public class InterfaceItems
                         sCenX = (int)(gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX + 5);
                         sCenY = (int)(gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY - 1);
 
-                        INVRenderItem(SurfaceType.SAVE_BUFFER, null, gpItemDescObject, sCenX, sCenY, gMapItemDescAttachmentsXY[cnt].sWidth, gMapItemDescAttachmentsXY[cnt].sHeight, DIRTYLEVEL2, null, (int)(RENDER_ITEM_ATTACHMENT1 + cnt), false, 0);
+                        this.INVRenderItem(SurfaceType.SAVE_BUFFER, null, gpItemDescObject, sCenX, sCenY, gMapItemDescAttachmentsXY[cnt].sWidth, gMapItemDescAttachmentsXY[cnt].sHeight, DIRTYLEVEL2, null, (int)(RENDER_ITEM_ATTACHMENT1 + cnt), false, 0);
 
                         sCenX = sCenX - gMapItemDescAttachmentsXY[cnt].sBarDx;
                         sCenY = sCenY + gMapItemDescAttachmentsXY[cnt].sBarDy;
@@ -2552,7 +2552,7 @@ public class InterfaceItems
                         sCenX = (int)(gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX + 5);
                         sCenY = (int)(gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY - 1);
 
-                        INVRenderItem(SurfaceType.SAVE_BUFFER, null, gpItemDescObject, sCenX, sCenY, gMapItemDescAttachmentsXY[cnt].sWidth, gMapItemDescAttachmentsXY[cnt].sHeight, DIRTYLEVEL2, null, (int)(RENDER_ITEM_ATTACHMENT1 + cnt), false, 0);
+                        this.INVRenderItem(SurfaceType.SAVE_BUFFER, null, gpItemDescObject, sCenX, sCenY, gMapItemDescAttachmentsXY[cnt].sWidth, gMapItemDescAttachmentsXY[cnt].sHeight, DIRTYLEVEL2, null, (int)(RENDER_ITEM_ATTACHMENT1 + cnt), false, 0);
 
                         sCenX = sCenX - gItemDescAttachmentsXY[cnt].sBarDx;
                         sCenY = sCenY + gItemDescAttachmentsXY[cnt].sBarDy;
@@ -2933,7 +2933,7 @@ public class InterfaceItems
                 this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                 mprintf(sStrX, gMapWeaponStats[0].sY + gsInvDescY, pStr);
 
-                if ((InKeyRingPopup()) || (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY)))
+                if ((this.InKeyRingPopup()) || (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY)))
                 {
                     FontSubSystem.SetFontForeground((FontColor)6);
 
@@ -3008,7 +3008,7 @@ public class InterfaceItems
                     sCenX = (int)(gsInvDescX + gItemDescAttachmentsXY[cnt].sX + 5);
                     sCenY = (int)(gsInvDescY + gItemDescAttachmentsXY[cnt].sY - 1);
 
-                    INVRenderItem(SurfaceType.SAVE_BUFFER, null, gpItemDescObject, sCenX, sCenY, gItemDescAttachmentsXY[cnt].sWidth, gItemDescAttachmentsXY[cnt].sHeight, DIRTYLEVEL2, null, (int)(RENDER_ITEM_ATTACHMENT1 + cnt), false, 0);
+                    this.INVRenderItem(SurfaceType.SAVE_BUFFER, null, gpItemDescObject, sCenX, sCenY, gItemDescAttachmentsXY[cnt].sWidth, gItemDescAttachmentsXY[cnt].sHeight, DIRTYLEVEL2, null, (int)(RENDER_ITEM_ATTACHMENT1 + cnt), false, 0);
 
                     sCenX = sCenX - gItemDescAttachmentsXY[cnt].sBarDx;
                     sCenY = sCenY + gItemDescAttachmentsXY[cnt].sBarDy;
@@ -3384,7 +3384,7 @@ public class InterfaceItems
                     mprintf(usX, usY, pStr);
                 }
 
-                if ((InKeyRingPopup() == true) || (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY)))
+                if ((this.InKeyRingPopup() == true) || (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY)))
                 {
 //                    FontSubSystem.SetFontForeground(6);
 //
@@ -3427,7 +3427,7 @@ public class InterfaceItems
 
         if (fItemDescDelete)
         {
-            DeleteItemDescriptionBox();
+            this.DeleteItemDescriptionBox();
             fItemDescDelete = false;
             pfDirty = DIRTYLEVEL2;
         }
@@ -3571,7 +3571,7 @@ public class InterfaceItems
             fMapScreenBottomDirty = true;
         }
 
-        if (InKeyRingPopup() == true)
+        if (this.InKeyRingPopup() == true)
         {
             //            DeleteKeyObject(gpItemDescObject);
             gpItemDescObject = null;
@@ -3652,7 +3652,7 @@ public class InterfaceItems
         //        }
         if (fOk)
         {
-            InternalBeginItemPointer(pSoldier, pObject, ubHandPos);
+            this.InternalBeginItemPointer(pSoldier, pObject, ubHandPos);
         }
     }
 
@@ -4237,7 +4237,7 @@ public class InterfaceItems
                 if (MercPtrs[ubSoldierID].uiStatusFlags.HasFlag(SOLDIER.ROBOT))
                 {
                     // Check if we can reload robot....
-                    if (IsValidAmmoToReloadRobot(MercPtrs[ubSoldierID], TempObject))
+                    if (this.IsValidAmmoToReloadRobot(MercPtrs[ubSoldierID], TempObject))
                     {
                         int sActionGridNo;
 
@@ -4280,7 +4280,7 @@ public class InterfaceItems
                     }
 
                     gfDontChargeAPsToPickup = false;
-                    EndItemPointer();
+                    this.EndItemPointer();
                 }
                 else
                 {
@@ -4290,7 +4290,7 @@ public class InterfaceItems
                         //                        SoldierGiveItem(gpItemPointerSoldier, MercPtrs[ubSoldierID], out TempObject, gbItemPointerSrcSlot);
 
                         gfDontChargeAPsToPickup = false;
-                        EndItemPointer();
+                        this.EndItemPointer();
 
                         // If we are giving it to somebody not on our team....
                         if (MercPtrs[ubSoldierID].ubProfile < FIRST_RPC || RPC_RECRUITED(MercPtrs[ubSoldierID]))
@@ -4427,7 +4427,7 @@ public class InterfaceItems
                             // Check if it's the same now!
                             if (gpItemPointer.ubNumberOfObjects == 0)
                             {
-                                EndItemPointer();
+                                this.EndItemPointer();
                             }
 
                             // OK, make guys turn towards each other and do animation...
@@ -4494,7 +4494,7 @@ public class InterfaceItems
                         // OK, on our team, 
 
                         // How's our direction?
-                        if (SoldierCanSeeCatchComing(pSoldier, gpItemPointerSoldier.sGridNo))
+                        if (this.SoldierCanSeeCatchComing(pSoldier, gpItemPointerSoldier.sGridNo))
                         {
                             // Setup as being the catch target
                             //                            ubThrowActionCode = THROW_TARGET_MERC_CATCH;
@@ -4558,7 +4558,7 @@ public class InterfaceItems
         }
 
         gfDontChargeAPsToPickup = false;
-        EndItemPointer();
+        this.EndItemPointer();
 
 
         return (true);
@@ -4642,8 +4642,8 @@ public class InterfaceItems
         //        usPopupWidth = pTrav.usWidth;
 
         // Determine position, height and width of mouse region, area
-        GetSlotInvXY(ubPosition, out int sX, out int sY);
-        GetSlotInvHeightWidth(ubPosition, out int sItemSlotWidth, out int sItemSlotHeight);
+        this.GetSlotInvXY(ubPosition, out int sX, out int sY);
+        this.GetSlotInvHeightWidth(ubPosition, out int sItemSlotWidth, out int sItemSlotHeight);
 
         // Get Width, Height
         gsItemPopupWidth = ubLimit * usPopupWidth;
@@ -4686,7 +4686,7 @@ public class InterfaceItems
                 MSYS_PRIORITY.HIGHEST,
                 MSYS_NO_CURSOR,
                 MSYS_NO_CALLBACK,
-                ItemPopupRegionCallback);
+                this.ItemPopupRegionCallback);
 
             // Add region
             MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegions[cnt]);
@@ -4709,7 +4709,7 @@ public class InterfaceItems
             MSYS_PRIORITY.HIGH,
             MSYS_NO_CURSOR,
             MSYS_NO_CALLBACK,
-            ItemPopupFullRegionCallback);
+            this.ItemPopupFullRegionCallback);
 
         // Add region
         MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegion);
@@ -4747,7 +4747,7 @@ public class InterfaceItems
     {
         if (gpItemPointer != null)
         {
-            DeleteItemStackPopup();
+            this.DeleteItemStackPopup();
         }
     }
 
@@ -4910,7 +4910,7 @@ public class InterfaceItems
         // Build a mouse region here that is over any others.....
         MouseSubSystem.MSYS_DefineRegion(
             gItemPopupRegion, new(sInvX, sInvY, (int)(sInvX + sInvWidth), (int)(sInvY + sInvHeight)), MSYS_PRIORITY.HIGH,
-                             MSYS_NO_CURSOR, MSYS_NO_CALLBACK, ItemPopupFullRegionCallback);
+                             MSYS_NO_CURSOR, MSYS_NO_CALLBACK, this.ItemPopupFullRegionCallback);
 
         // Add region
         MouseSubSystem.MSYS_AddRegion(ref gItemPopupRegion);
@@ -5206,7 +5206,7 @@ public class InterfaceItems
                 //Only exit the screen if we are NOT in the money interface.  Only the DONE button should exit the money interface.
                 if (gpItemDescObject.usItem != Items.MONEY)
                 {
-                    DeleteItemDescriptionBox();
+                    this.DeleteItemDescriptionBox();
                 }
             }
         }
@@ -5223,7 +5223,7 @@ public class InterfaceItems
                 //Only exit the screen if we are NOT in the money interface.  Only the DONE button should exit the money interface.
                 //			if( gpItemDescObject.usItem != MONEY )
                 {
-                    DeleteItemDescriptionBox();
+                    this.DeleteItemDescriptionBox();
                 }
             }
         }
@@ -5260,7 +5260,7 @@ public class InterfaceItems
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
                 btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
-                DeleteItemDescriptionBox();
+                this.DeleteItemDescriptionBox();
             }
         }
     }
@@ -5364,9 +5364,9 @@ public class InterfaceItems
             gfItemPopupRegionCallbackEndFix = true;
 
 
-            DeleteItemStackPopup();
+            this.DeleteItemStackPopup();
 
-            if (!InItemDescriptionBox())
+            if (!this.InItemDescriptionBox())
             {
                 // RESTORE BACKGROUND
 //                RestoreExternBackgroundRect(gsItemPopupInvX, gsItemPopupInvY, gsItemPopupInvWidth, gsItemPopupInvHeight);
@@ -5376,7 +5376,7 @@ public class InterfaceItems
                 }
                 else
                 {
-                    InternalInitItemDescriptionBox(gpItemPopupObject, (int)ITEMDESC_START_X, (int)ITEMDESC_START_Y, (int)uiItemPos, gpItemPopupSoldier);
+                    this.InternalInitItemDescriptionBox(gpItemPopupObject, (int)ITEMDESC_START_X, (int)ITEMDESC_START_Y, (int)uiItemPos, gpItemPopupSoldier);
                 }
             }
 
@@ -5392,29 +5392,29 @@ public class InterfaceItems
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            if (InItemStackPopup())
+            if (this.InItemStackPopup())
             {
                 // End stack popup and retain pointer
-                EndItemStackPopupWithItemInHand();
+                this.EndItemStackPopupWithItemInHand();
             }
-            else if (InKeyRingPopup())
+            else if (this.InKeyRingPopup())
             {
                 // end pop up with key in hand
-                DeleteKeyRingPopup();
+                this.DeleteKeyRingPopup();
                 fTeamPanelDirty = true;
 
             }
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
-            if (InItemStackPopup())
+            if (this.InItemStackPopup())
             {
-                DeleteItemStackPopup();
+                this.DeleteItemStackPopup();
                 fTeamPanelDirty = true;
             }
             else
             {
-                DeleteKeyRingPopup();
+                this.DeleteKeyRingPopup();
                 fTeamPanelDirty = true;
             }
         }
@@ -5487,17 +5487,17 @@ public class InterfaceItems
             gItemPickupMenu.bNumSlotsPerPage = gItemPickupMenu.ubTotalItems;
         }
 
-//        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
-//        FilenameForBPP("INTERFACE\\itembox.sti", VObjectDesc.ImageFile);
-//        CHECKF(GetVideoObject(&VObjectDesc, (gItemPickupMenu.uiPanelVo)));
+        //        VObjectDesc.fCreateFlags = VOBJECT_CREATE_FROMFILE;
+        //        FilenameForBPP("INTERFACE\\itembox.sti", VObjectDesc.ImageFile);
+        //        CHECKF(GetVideoObject(&VObjectDesc, (gItemPickupMenu.uiPanelVo)));
 
         // Memalloc selection array...
-//        gItemPickupMenu.pfSelectedArray = MemAlloc((sizeof(int) * gItemPickupMenu.ubTotalItems));
+        //        gItemPickupMenu.pfSelectedArray = MemAlloc((sizeof(int) * gItemPickupMenu.ubTotalItems));
         // seto to 0
-//        memset(gItemPickupMenu.pfSelectedArray, 0, (sizeof(int) * gItemPickupMenu.ubTotalItems));
+        //        memset(gItemPickupMenu.pfSelectedArray, 0, (sizeof(int) * gItemPickupMenu.ubTotalItems));
 
         // Calcualate dimensions
-        CalculateItemPickupMenuDimensions();
+        this.CalculateItemPickupMenuDimensions();
 
         // Get XY
         {
@@ -5646,8 +5646,8 @@ public class InterfaceItems
                     (sCenY + ITEMPICK_GRAPHIC_YSPACE)),
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.NORMAL,
-                ItemPickMenuMouseMoveCallback,
-                ItemPickMenuMouseClickCallback);
+                this.ItemPickMenuMouseMoveCallback,
+                this.ItemPickMenuMouseClickCallback);
 
             // Add region
             MouseSubSystem.MSYS_AddRegion(ref (gItemPickupMenu.Regions[cnt]));
@@ -5660,7 +5660,7 @@ public class InterfaceItems
         //gItemPickupMenu.iDirtyRect = RegisterBackgroundRect( BGND_FLAG_PERMANENT | BGND_FLAG_SAVERECT, null, gItemPickupMenu.sX, gItemPickupMenu.sY, (int)(gItemPickupMenu.sX + gItemPickupMenu.sWidth ) , (int)(gItemPickupMenu.sY + gItemPickupMenu.sHeight ) );
 
 
-        SetupPickupPage(0);
+        this.SetupPickupPage(0);
 
         gfInItemPickupMenu = true;
 
@@ -5785,7 +5785,7 @@ public class InterfaceItems
 //                DisableButton(gItemPickupMenu.iDownButton);
             }
         }
-        SetItemPickupMenuDirty(DIRTYLEVEL2);
+        this.SetItemPickupMenuDirty(DIRTYLEVEL2);
 
     }
 
@@ -5916,7 +5916,7 @@ public class InterfaceItems
                     pObject = (gWorldItems[gItemPickupMenu.ItemPoolSlots[cnt].iItemIndex].o);
                     pItem = (Item[pObject.usItem]);
 
-                    usItemTileIndex = GetTileGraphicForItem(pItem);
+                    usItemTileIndex = this.GetTileGraphicForItem(pItem);
 
                     // Render
                     sX = ITEMPICK_GRAPHIC_X + gItemPickupMenu.sX;
@@ -6132,7 +6132,7 @@ public class InterfaceItems
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            SetupPickupPage((int)(gItemPickupMenu.bScrollPage - 1));
+            this.SetupPickupPage((int)(gItemPickupMenu.bScrollPage - 1));
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
@@ -6151,7 +6151,7 @@ public class InterfaceItems
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            SetupPickupPage((int)(gItemPickupMenu.bScrollPage + 1));
+            this.SetupPickupPage((int)(gItemPickupMenu.bScrollPage + 1));
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {

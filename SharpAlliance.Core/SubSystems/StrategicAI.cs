@@ -172,7 +172,7 @@ public class StrategicAI
             if (gGarrisonGroup[i].ubSectorID == ubSectorID && gGarrisonGroup[i].ubPendingGroupID == 0)
             {
 
-                SendReinforcementsForGarrison(i, usDefencePoints, null);
+                this.SendReinforcementsForGarrison(i, usDefencePoints, null);
                 return;
             }
         }
@@ -758,9 +758,9 @@ public class StrategicAI
         usOffensePoints = pSector.ubNumAdmins * 2 +
                                             pSector.ubNumTroops * 4 +
                                             pSector.ubNumElites * 6;
-        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, out int usDefencePoints))
+        if (this.PlayerForceTooStrong(ubSectorID, usOffensePoints, out int usDefencePoints))
         {
-            RequestAttackOnSector(ubSectorID, usDefencePoints);
+            this.RequestAttackOnSector(ubSectorID, usDefencePoints);
             return;
         }
 
@@ -795,9 +795,9 @@ public class StrategicAI
         //        usOffensePoints = pEnemyGroup.pEnemyGroup.ubNumAdmins * 2 +
         //                                            pEnemyGroup.pEnemyGroup.ubNumTroops * 4 +
         //                                            pEnemyGroup.pEnemyGroup.ubNumElites * 6;
-        if (PlayerForceTooStrong(ubSectorID, usOffensePoints, out int usDefencePoints))
+        if (this.PlayerForceTooStrong(ubSectorID, usOffensePoints, out int usDefencePoints))
         {
-            RequestAttackOnSector(ubSectorID, usDefencePoints);
+            this.RequestAttackOnSector(ubSectorID, usDefencePoints);
             return false;
         }
 
@@ -1213,52 +1213,52 @@ public class StrategicAI
             if (pEnemyGroup is not null && pEnemyGroup.ubSectorX > 1 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID - 1)))
             {
                 pPlayerGroup = StrategicMovement.FindMovementGroupInSector((int)(pEnemyGroup.ubSectorX - 1), pEnemyGroup.ubSectorY, true);
-                if (pPlayerGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
+                if (pPlayerGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    return HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
+                    return this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                 }
                 //                else if (CountAllMilitiaInSector((int)(pEnemyGroup.ubSectorX - 1), pEnemyGroup.ubSectorY) &&
                 //                                AttemptToNoticeAdjacentGroupSucceeds())
                 //                {
                 //                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX - 1, pEnemyGroup.ubSectorY), pEnemyGroup);
                 //                }
-                else if (AdjacentSectorIsImportantAndUndefended((ubSectorID - 1)) && AttemptToNoticeEmptySectorSucceeds())
+                else if (this.AdjacentSectorIsImportantAndUndefended((ubSectorID - 1)) && this.AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID - 1));
+                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID - 1));
                 }
             }
             if (pEnemyGroup is not null && pEnemyGroup.ubSectorY < (MAP_ROW)16 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID + 16)))
             {
                 pPlayerGroup = StrategicMovement.FindMovementGroupInSector(pEnemyGroup.ubSectorX, (pEnemyGroup.ubSectorY + 1), true);
-                if (pPlayerGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
+                if (pPlayerGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    return HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
+                    return this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                 }
                 //                else if (CountAllMilitiaInSector(pEnemyGroup.ubSectorX, (int)(pEnemyGroup.ubSectorY + 1)) &&
                 //                                AttemptToNoticeAdjacentGroupSucceeds())
                 //                {
                 //                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY + 1), pEnemyGroup);
                 //                }
-                else if (AdjacentSectorIsImportantAndUndefended((ubSectorID + 16)) && AttemptToNoticeEmptySectorSucceeds())
+                else if (this.AdjacentSectorIsImportantAndUndefended((ubSectorID + 16)) && this.AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 16));
+                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 16));
                 }
             }
             if (pEnemyGroup is not null && pEnemyGroup.ubSectorX < 16 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID + 1)))
             {
                 pPlayerGroup = StrategicMovement.FindMovementGroupInSector((pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY, true);
-                if (pPlayerGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
+                if (pPlayerGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    return HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
+                    return this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                 }
                 //                else if (CountAllMilitiaInSector((pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY) &&
                 //                                AttemptToNoticeAdjacentGroupSucceeds())
                 //                {
                 //                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX + 1, pEnemyGroup.ubSectorY), pEnemyGroup);
                 //                }
-                else if (AdjacentSectorIsImportantAndUndefended((ubSectorID + 1)) && AttemptToNoticeEmptySectorSucceeds())
+                else if (this.AdjacentSectorIsImportantAndUndefended((ubSectorID + 1)) && this.AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 1));
+                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 1));
                 }
             }
 
@@ -1305,48 +1305,48 @@ public class StrategicAI
             if (pPlayerGroup.ubSectorX < 16)
             {
                 pEnemyGroup = StrategicMovement.FindMovementGroupInSector((int)(pPlayerGroup.ubSectorX + 1), pPlayerGroup.ubSectorY, false);
-                if (pEnemyGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
+                if (pEnemyGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
+                    this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
                 pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
-                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
+                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY));
+                    this.HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY));
                     return false;
                 }
             }
             if (pPlayerGroup.ubSectorY < (MAP_ROW)16)
             {
                 pEnemyGroup = StrategicMovement.FindMovementGroupInSector(pPlayerGroup.ubSectorX, (pPlayerGroup.ubSectorY + 1), false);
-                if (pEnemyGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
+                if (pEnemyGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
+                    this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
                 pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
-                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
+                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1));
+                    this.HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1));
                     return false;
                 }
             }
             if (pPlayerGroup.ubSectorX > 1)
             {
                 pEnemyGroup = StrategicMovement.FindMovementGroupInSector((pPlayerGroup.ubSectorX - 1), pPlayerGroup.ubSectorY, false);
-                if (pEnemyGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
+                if (pEnemyGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
+                    this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
                     return false;
                 }
                 pSector = SectorInfo[SECTORINFO.SECTOR(pPlayerGroup.ubSectorX + 1, pPlayerGroup.ubSectorY)];
                 ubNumEnemies = pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites;
-                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && AttemptToNoticeAdjacentGroupSucceeds())
+                if (ubNumEnemies > 0 && pSector.ubGarrisonID != NO_GARRISON && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
-                    HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX + 1, pPlayerGroup.ubSectorY));
+                    this.HandlePlayerGroupNoticedByGarrison(pPlayerGroup, SECTORINFO.SECTOR(pPlayerGroup.ubSectorX + 1, pPlayerGroup.ubSectorY));
                     return false;
                 }
             }
@@ -1618,7 +1618,7 @@ public class StrategicAI
             {
                 if (pGroup.ubGroupSize == 0)
                 {
-                    TagSAIGroupWithGracePeriod(pGroup);
+                    this.TagSAIGroupWithGracePeriod(pGroup);
                     gPatrolGroup[i].ubGroupID = 0;
                 }
                 RecalculatePatrolWeight(i);
@@ -1766,7 +1766,7 @@ public class StrategicAI
         }
         pSector = SectorInfo[gGarrisonGroup[iDstGarrisonID].ubSectorID];
         //Determine how many units the garrison needs.
-        iReinforcementsRequested = GarrisonReinforcementsRequested(iDstGarrisonID, ubNumExtraReinforcements);
+        iReinforcementsRequested = this.GarrisonReinforcementsRequested(iDstGarrisonID, ubNumExtraReinforcements);
 
         //The maximum number of reinforcements can't be offsetted past a certain point based on the 
         //priority of the garrison.
@@ -1871,7 +1871,7 @@ public class StrategicAI
         }
         else
         {
-            iSrcGarrisonID = ChooseSuitableGarrisonToProvideReinforcements(iDstGarrisonID, iReinforcementsRequested);
+            iSrcGarrisonID = this.ChooseSuitableGarrisonToProvideReinforcements(iDstGarrisonID, iReinforcementsRequested);
             if (iSrcGarrisonID == Garrisons.UNSET)
             {
                 ValidateWeights(15);
@@ -3133,7 +3133,7 @@ public class StrategicAI
         switch (usActionCode)
         {
             case NPC_ACTION.STRATEGIC_AI_ACTION_WAKE_QUEEN:
-                WakeUpQueen();
+                this.WakeUpQueen();
                 break;
 
             case NPC_ACTION.STRATEGIC_AI_ACTION_QUEEN_DEAD:
@@ -3441,7 +3441,7 @@ public class StrategicAI
         gusPlayerBattleVictories++;
         //        if (gusPlayerBattleVictories == 5 - gGameOptions.ubDifficultyLevel)
         { //4 victories for easy, 3 for normal, 2 for hard
-            WakeUpQueen();
+            this.WakeUpQueen();
         }
 
         if (pSector.ubGarrisonID == NO_GARRISON)
@@ -3606,7 +3606,7 @@ public class StrategicAI
                 pGroup = StrategicMovement.GetGroup(gPatrolGroup[i].ubGroupID);
                 if (pGroup is not null && pGroup.ubGroupSize >= ubSoldiersRequested)
                 {
-                    ubDist = SectorDistance(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), gGarrisonGroup[iGarrisonID].ubSectorID);
+                    ubDist = this.SectorDistance(SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY), gGarrisonGroup[iGarrisonID].ubSectorID);
                     if (ubDist < ubBestDist)
                     {
                         ubBestDist = ubDist;
@@ -3716,7 +3716,7 @@ public class StrategicAI
         if (!gfMassFortificationOrdered)
         {
             gfMassFortificationOrdered = true;
-            MassFortifyTowns();
+            this.MassFortifyTowns();
         }
     }
 
@@ -3737,7 +3737,7 @@ public class StrategicAI
                         gGarrisonGroup[i].ubComposition != Garrisons.ROADBLOCK &&
                         EnemyPermittedToAttackSector(null, gGarrisonGroup[i].ubSectorID))
                 {
-                    RequestHighPriorityGarrisonReinforcements(i, (int)(ubDesiredTroops - ubNumTroops));
+                    this.RequestHighPriorityGarrisonReinforcements(i, (int)(ubDesiredTroops - ubNumTroops));
                 }
             }
         }

@@ -97,12 +97,12 @@ public class ButtonSubSystem : ISharpAllianceManager
         mouse = mouseSubSystem;
         inputs = input;
 
-        IsInitialized = await InitializeButtonImageManager(
+        this.IsInitialized = await this.InitializeButtonImageManager(
             SurfaceType.Unknown,
         -1,
             -1);
 
-        return IsInitialized;
+        return this.IsInitialized;
     }
 
     public static bool EnableButton(GUI_BUTTON iButtonID)
@@ -149,20 +149,20 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         if (DefaultPitch != (int)Globals.BUTTON_USE_DEFAULT)
         {
-            ButtonDestPitch = (uint)DefaultPitch;
+            this.ButtonDestPitch = (uint)DefaultPitch;
         }
         else
         {
-            ButtonDestPitch = 640 * 2;
+            this.ButtonDestPitch = 640 * 2;
         }
 
         if (DefaultBPP != (int)Globals.BUTTON_USE_DEFAULT)
         {
-            ButtonDestBPP = (uint)DefaultBPP;
+            this.ButtonDestBPP = (uint)DefaultBPP;
         }
         else
         {
-            ButtonDestBPP = 16;
+            this.ButtonDestBPP = 16;
         }
 
         // Blank out all QuickButton images
@@ -234,7 +234,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         GenericButtonOnHilite[bp] = video.GetVideoObject(Globals.DEFAULT_GENERIC_BUTTON_ON_HI);
 
         Pix = 0;
-        if (!GetETRLEPixelValue(ref Pix, GenericButtonOffNormal[bp], 8, 0, 0))
+        if (!this.GetETRLEPixelValue(ref Pix, GenericButtonOffNormal[bp], 8, 0, 0))
         {
             // DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "Couldn't get generic button's background pixel value");
             return false;
@@ -587,7 +587,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         GUI_BUTTON iButtonID;
 
-        if ((ButPic = LoadButtonImage(filename, -1, 0, 1, 2, 3)) == null)
+        if ((ButPic = this.LoadButtonImage(filename, -1, 0, 1, 2, 3)) == null)
         {
             //DbgMessage(TOPIC_BUTTON_HANDLER, DBG_LEVEL_0, "CreateCheckBoxButton: Can't load button image");
             throw new InvalidOperationException();
@@ -2340,7 +2340,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
     }
 
-    public ValueTask<bool> Initialize() => Initialize(mouse, inputs);
+    public ValueTask<bool> Initialize() => this.Initialize(mouse, inputs);
 
     internal static void MSYS_SetBtnUserData(int v1, int v2, int cnt)
     {

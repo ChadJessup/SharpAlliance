@@ -264,7 +264,7 @@ public class DialogControl
 
         ppStr = pFilename;
 
-        return files.FileExists(pFilename);
+        return this.files.FileExists(pFilename);
     }
 
     private string GetDialogueDataFilename(NPCID ubCharacterNum, int usQuoteNum, bool fWavFile)

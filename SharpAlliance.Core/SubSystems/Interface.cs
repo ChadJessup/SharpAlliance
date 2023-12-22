@@ -31,7 +31,7 @@ public class Interface
 
     public void BeginUIMessage(params string[] pFontString)
     {
-        InternalBeginUIMessage(false, pFontString);
+        this.InternalBeginUIMessage(false, pFontString);
     }
 
     private static int CalcUIMessageDuration(string wString)
@@ -47,7 +47,7 @@ public class Interface
         guiUIMessageTimeDelay = CalcUIMessageDuration(string.Format(MsgString.First(), MsgString[1..]));
 
         // Override it!
-        mercTextBox.OverrideMercPopupBox(gpUIMessageOverrideMercBox);
+        this.mercTextBox.OverrideMercPopupBox(gpUIMessageOverrideMercBox);
 
         //SetPrepareMercPopupFlags( MERC_POPUP_PREPARE_FLAGS_TRANS_BACK | MERC_POPUP_PREPARE_FLAGS_MARGINS );
 
@@ -61,10 +61,10 @@ public class Interface
         }
 
         // Prepare text box
-        iUIMessageBox = mercTextBox.PrepareMercPopupBox(iUIMessageBox, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER, string.Format(MsgString.First(), MsgString[1..]), 200, 10, 0, 0, out gusUIMessageWidth, out gusUIMessageHeight);
+        iUIMessageBox = this.mercTextBox.PrepareMercPopupBox(iUIMessageBox, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER, string.Format(MsgString.First(), MsgString[1..]), 200, 10, 0, 0, out gusUIMessageWidth, out gusUIMessageHeight);
 
         // Set it back!
-        mercTextBox.ResetOverrideMercPopupBox();
+        this.mercTextBox.ResetOverrideMercPopupBox();
 
         if (giUIMessageOverlay != -1)
         {
@@ -86,7 +86,7 @@ public class Interface
                 sBottom = 150 + gusUIMessageHeight,
                 sX = (640 - gusUIMessageWidth) / 2,
                 sY = 150,
-                BltCallback = RenderUIMessage,
+                BltCallback = this.RenderUIMessage,
             };
 
             giUIMessageOverlay = this.renderDirty.RegisterVideoOverlay(0, VideoOverlayDesc);
@@ -100,7 +100,7 @@ public class Interface
         // Shade area first...
         VideoSurfaceManager.ShadowVideoSurfaceRect(pBlitter.uiDestBuff, pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth - 2, pBlitter.sY + gusUIMessageHeight - 2);
 
-        mercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
+        this.mercTextBox.RenderMercPopUpBoxFromIndex(iUIMessageBox, pBlitter.sX, pBlitter.sY, pBlitter.uiDestBuff);
 
         video.InvalidateRegion(pBlitter.sX, pBlitter.sY, pBlitter.sX + gusUIMessageWidth, pBlitter.sY + gusUIMessageHeight);
     }

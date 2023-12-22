@@ -150,7 +150,7 @@ public class MessageBoxScreen : IScreen
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            mercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, SurfaceType.FRAME_BUFFER);
+            this.mercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, SurfaceType.FRAME_BUFFER);
             //gMsgBox.fRenderBox = false;
             // ATE: Render each frame...
         }
@@ -248,7 +248,7 @@ public class MessageBoxScreen : IScreen
         if (gMsgBox.bHandled != 0)
         {
             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-            return (ValueTask.FromResult(ExitMsgBox(gMsgBox.bHandled)));
+            return (ValueTask.FromResult(this.ExitMsgBox(gMsgBox.bHandled)));
         }
 
         return ValueTask.FromResult(ScreenName.MSG_BOX_SCREEN);
@@ -390,7 +390,7 @@ public class MessageBoxScreen : IScreen
 
         if (MessageBoxSubSystem.fCursorLockedToArea == true)
         {
-            inputs.GetMousePos(out SixLabors.ImageSharp.Point pPosition);
+            this.inputs.GetMousePos(out SixLabors.ImageSharp.Point pPosition);
 
             if ((pPosition.X > MessageBoxRestrictedCursorRegion.Right)
                 || (pPosition.X > MessageBoxRestrictedCursorRegion.Left)

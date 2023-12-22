@@ -976,7 +976,7 @@ public class AIUtils
 
         if (sClosestEnemy != NOWHERE)
         {
-            iPathCost = EstimatePathCostToLocation(pSoldier, sClosestEnemy, bClosestLevel, false, out fClimbingNecessary, out sClimbGridNo);
+            iPathCost = this.EstimatePathCostToLocation(pSoldier, sClosestEnemy, bClosestLevel, false, out fClimbingNecessary, out sClimbGridNo);
             // if we can get there
             if (iPathCost != 0)
             {
@@ -1009,7 +1009,7 @@ public class AIUtils
             else
             {
                 // get the AP cost to get to the location of the noise
-                iPathCost = EstimatePathCostToLocation(pSoldier, sGridNo, bLevel, false, out fClimbingNecessary, out sClimbGridNo);
+                iPathCost = this.EstimatePathCostToLocation(pSoldier, sGridNo, bLevel, false, out fClimbingNecessary, out sClimbGridNo);
                 // if we can get there
                 if (iPathCost != 0)
                 {
@@ -1042,7 +1042,7 @@ public class AIUtils
             //	if (sGridNo != pSoldier.sGridNo)
             {
                 // get the AP cost to get to the location of the noise
-                iPathCost = EstimatePathCostToLocation(pSoldier, sGridNo, bLevel, false, out fClimbingNecessary, out sClimbGridNo);
+                iPathCost = this.EstimatePathCostToLocation(pSoldier, sGridNo, bLevel, false, out fClimbingNecessary, out sClimbGridNo);
                 // if we can get there
                 if (iPathCost != 0)
                 {
@@ -1603,7 +1603,7 @@ public class AIUtils
             // CJC: restrict "last one to radio" to only if that guy saw us this turn or last turn
 
             // if this friend is not under fire, and isn't the last one to radio
-            if (!(pFriend.bUnderFire > 0 || (pFriend.ubID == gTacticalStatus.Team[pFriend.bTeam].ubLastMercToRadio && GuySawEnemyThisTurnOrBefore(pFriend))))
+            if (!(pFriend.bUnderFire > 0 || (pFriend.ubID == gTacticalStatus.Team[pFriend.bTeam].ubLastMercToRadio && this.GuySawEnemyThisTurnOrBefore(pFriend))))
             {
                 continue;          // next merc
             }
@@ -1615,7 +1615,7 @@ public class AIUtils
             }
 
             // get the AP cost to go to this friend's gridno
-            sPathCost = EstimatePathCostToLocation(pSoldier, pFriend.sGridNo, pFriend.bLevel, true, out bool fClimbingNecessary, out int sClimbGridNo);
+            sPathCost = this.EstimatePathCostToLocation(pSoldier, pFriend.sGridNo, pFriend.bLevel, true, out bool fClimbingNecessary, out int sClimbGridNo);
 
             // if we can get there
             if (sPathCost != 0)
@@ -1934,7 +1934,7 @@ public class AIUtils
 
             iPercent = AIMain.ThreatPercent[bMostRecentOpplistValue - OLDEST_HEARD_VALUE];
 
-            sOppThreatValue = (iPercent * CalcManThreatValue(pOpponent, pSoldier.sGridNo, false, pSoldier)) / 100;
+            sOppThreatValue = (iPercent * this.CalcManThreatValue(pOpponent, pSoldier.sGridNo, false, pSoldier)) / 100;
 
             //sprintf(tempstr,"Known opponent %s, opplist status %d, percent %d, threat = %d",
             //           ExtMen[pOpponent.ubID].name,ubMostRecentOpplistValue,ubPercent,sOppThreatValue);
@@ -1994,7 +1994,7 @@ public class AIUtils
                     }
                 }
 
-                sFrndThreatValue = (iPercent * CalcManThreatValue(pFriend, pOpponent.sGridNo, false, pSoldier)) / 100;
+                sFrndThreatValue = (iPercent * this.CalcManThreatValue(pFriend, pOpponent.sGridNo, false, pSoldier)) / 100;
 
                 //sprintf(tempstr,"Known by friend %s, opplist status %d, percent %d, threat = %d",
                 //         ExtMen[pFriend.ubID].name,pFriend.bOppList[pOpponent.ubID],ubPercent,sFrndThreatValue);

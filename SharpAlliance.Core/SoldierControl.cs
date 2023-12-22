@@ -5046,7 +5046,7 @@ int	gOrangeGlowG[]=
             dMovementDist = dMovementDist * -1;
         }
 
-        MoveMerc(pSoldier, dMovementDist, dAngle, false);
+        this.MoveMerc(pSoldier, dMovementDist, dAngle, false);
 
     }
 
@@ -6761,7 +6761,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
                 if (fTileFlags.HasFlag(TileCategory.FULL3D_TILE))
                 {
                     // CHECK IF THIS TREE IS FAIRLY ALONE!
-                    if (FullStructAlone(sGridNo, 2))
+                    if (this.FullStructAlone(sGridNo, 2))
                     {
                         // Return true and return index
                         pusIndex = pOldStruct.usIndex;
@@ -7019,7 +7019,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         //for (pSoldier = MercPtrs[cnt]; cnt <= gTacticalStatus.Team[gbPlayerNum].bLastID; cnt++, pSoldier++)
         foreach (var pSoldier in MercPtrs)
         {
-            ReviveSoldier(pSoldier);
+            this.ReviveSoldier(pSoldier);
         }
 
     }
@@ -9518,7 +9518,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
             if (pSoldier.sGridNo != sActionGridNo)
             {
                 // WALK UP TO DEST FIRST
-                SendGetNewSoldierPathEvent(pSoldier, sActionGridNo, pSoldier.usUIMovementMode);
+                this.SendGetNewSoldierPathEvent(pSoldier, sActionGridNo, pSoldier.usUIMovementMode);
             }
             else
             {
@@ -9594,7 +9594,7 @@ static int trig[8] = { 2, 3, 4, 5, 6, 7, 8, 1 };
         // ATE; Check for normal civs...
         if (CivQuotes.GetCivType(pTSoldier) != CIV_TYPE.NA)
         {
-            civQuotes.StartCivQuote(pTSoldier);
+            this.civQuotes.StartCivQuote(pTSoldier);
             return (false);
         }
 
@@ -10160,7 +10160,7 @@ void DebugValidateSoldierData()
         }
 
         //Update all the mercs in the sector
-        EnableDisableSoldierLightEffects(GameSettings.fOptions[TOPTION.MERC_CASTS_LIGHT]);
+        this.EnableDisableSoldierLightEffects(GameSettings.fOptions[TOPTION.MERC_CASTS_LIGHT]);
 
         RenderWorld.SetRenderFlags(RenderingFlags.FULL);
     }
@@ -10191,7 +10191,7 @@ void DebugValidateSoldierData()
                     //                    DeleteSoldierLight(pSoldier);
 
                     //Light up the merc though
-                    SetSoldierPersonalLightLevel(pSoldier);
+                    this.SetSoldierPersonalLightLevel(pSoldier);
                 }
             }
         }

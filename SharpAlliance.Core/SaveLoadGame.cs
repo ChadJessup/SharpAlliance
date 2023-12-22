@@ -106,18 +106,18 @@ public class SaveLoadGame
 
         if (!GameClock.GamePaused())
         {
-            PauseBeforeSaveGame();
+            this.PauseBeforeSaveGame();
             fWePausedIt = true;
         }
 
         //Place a message on the screen telling the user that we are saving the game
-        iSaveLoadGameMessageBoxID = mercTextBox.PrepareMercPopupBox(iSaveLoadGameMessageBoxID, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER,
+        iSaveLoadGameMessageBoxID = this.mercTextBox.PrepareMercPopupBox(iSaveLoadGameMessageBoxID, MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND, MercTextBoxBorder.BASIC_MERC_POPUP_BORDER,
             EnglishText.zSaveLoadText[(int)SLG.SAVING_GAME_MESSAGE], 300, 0, 0, 0, out int usActualWidth, out int usActualHeight);
         usPosX = (640 - usActualWidth) / 2;
 
-        mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, SurfaceType.FRAME_BUFFER);
+        this.mercTextBox.RenderMercPopUpBoxFromIndex(iSaveLoadGameMessageBoxID, usPosX, 160, SurfaceType.FRAME_BUFFER);
 
-        video.InvalidateRegion(new(0, 0, 640, 480));
+        this.video.InvalidateRegion(new(0, 0, 640, 480));
 
         this.video.ExecuteBaseDirtyRectQueue();
         this.video.EndFrameBufferRender();
@@ -185,7 +185,7 @@ public class SaveLoadGame
         }
 
         //Create the name of the file
-        CreateSavedGameFileNameFromNumber(ubSaveGameID, out zSaveGameName);
+        this.CreateSavedGameFileNameFromNumber(ubSaveGameID, out zSaveGameName);
 
         //if the file already exists, delete it
         if (this.files.FileExists(zSaveGameName))
@@ -229,7 +229,7 @@ public class SaveLoadGame
         // memcpy(&SaveGameHeader.sInitialGameOptions, &gGameOptions, Marshal.SizeOf<GAME_OPTIONS>());
 
         //Get the sector value to save.
-        GetBestPossibleSectorXYZValues(out SaveGameHeader.sSectorX, out SaveGameHeader.sSectorY, out SaveGameHeader.bSectorZ);
+        this.GetBestPossibleSectorXYZValues(out SaveGameHeader.sSectorX, out SaveGameHeader.sSectorY, out SaveGameHeader.bSectorZ);
 
         /*
 
@@ -317,12 +317,12 @@ public class SaveLoadGame
             goto FAILED_TO_SAVE;
         }
 
-        guiJA2EncryptionSet = CalcJA2EncryptionSet(SaveGameHeader);
+        guiJA2EncryptionSet = this.CalcJA2EncryptionSet(SaveGameHeader);
 
         //
         //Save the gTactical Status array, plus the curent secotr location
         //
-        if (!SaveTacticalStatusToSavedGame(hFile))
+        if (!this.SaveTacticalStatusToSavedGame(hFile))
         {
             goto FAILED_TO_SAVE;
         }
@@ -347,7 +347,7 @@ public class SaveLoadGame
         //
         // Save the merc profiles
         //
-        if (!SaveMercProfiles(hFile))
+        if (!this.SaveMercProfiles(hFile))
         {
             goto FAILED_TO_SAVE;
         }
@@ -355,31 +355,31 @@ public class SaveLoadGame
         //
         // Save the soldier structure
         //
-        if (!SaveSoldierStructure(hFile))
+        if (!this.SaveSoldierStructure(hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
         //Save the Finaces Data file 
-        if (!SaveFilesToSavedGame(FINANCES_DATA_FILE, hFile))
+        if (!this.SaveFilesToSavedGame(FINANCES_DATA_FILE, hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
         //Save the history file
-        if (!SaveFilesToSavedGame(HISTORY_DATA_FILE, hFile))
+        if (!this.SaveFilesToSavedGame(HISTORY_DATA_FILE, hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
         //Save the Laptop File file
-        if (!SaveFilesToSavedGame(FILES_DAT_FILE, hFile))
+        if (!this.SaveFilesToSavedGame(FILES_DAT_FILE, hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
         //Save email stuff to save file
-        if (!SaveEmailToSavedGame(hFile))
+        if (!this.SaveEmailToSavedGame(hFile))
         {
             goto FAILED_TO_SAVE;
         }
@@ -418,7 +418,7 @@ public class SaveLoadGame
 //            goto FAILED_TO_SAVE;
 //        }
 
-        if (!SaveOppListInfoToSavedGame(hFile))
+        if (!this.SaveOppListInfoToSavedGame(hFile))
         {
             goto FAILED_TO_SAVE;
         }
@@ -443,7 +443,7 @@ public class SaveLoadGame
 //            goto FAILED_TO_SAVE;
 //        }
 
-        if (!SavePreRandomNumbersToSaveGameFile(hFile))
+        if (!this.SavePreRandomNumbersToSaveGameFile(hFile))
         {
             goto FAILED_TO_SAVE;
         }
@@ -458,7 +458,7 @@ public class SaveLoadGame
 //            goto FAILED_TO_SAVE;
 //        }
 
-        if (!SaveGeneralInfo(hFile))
+        if (!this.SaveGeneralInfo(hFile))
         {
             goto FAILED_TO_SAVE;
         }
@@ -523,7 +523,7 @@ public class SaveLoadGame
 //            goto FAILED_TO_SAVE;
 //        }
 
-        if (!SaveWatchedLocsToSavedGame(hFile))
+        if (!this.SaveWatchedLocsToSavedGame(hFile))
         {
             goto FAILED_TO_SAVE;
         }
@@ -543,46 +543,46 @@ public class SaveLoadGame
 //            goto FAILED_TO_SAVE;
 //        }
 
-        if (!SaveMeanwhileDefsFromSaveGameFile(hFile))
+        if (!this.SaveMeanwhileDefsFromSaveGameFile(hFile))
         {
             goto FAILED_TO_SAVE;
         }
 
         // save meanwhiledefs
 
-//        if (!SaveSchedules(hFile))
-//        {
-//            goto FAILED_TO_SAVE;
-//        }
+        //        if (!SaveSchedules(hFile))
+        //        {
+        //            goto FAILED_TO_SAVE;
+        //        }
 
         // Save extra vehicle info
-//        if (!NewSaveVehicleMovementInfoToSavedGameFile(hFile))
-//        {
-//            goto FAILED_TO_SAVE;
-//        }
+        //        if (!NewSaveVehicleMovementInfoToSavedGameFile(hFile))
+        //        {
+        //            goto FAILED_TO_SAVE;
+        //        }
 
         // Save contract renewal sequence stuff
-//        if (!MercContract.SaveContractRenewalDataToSaveGameFile(hFile))
-//        {
-//            goto FAILED_TO_SAVE;
-//        }
+        //        if (!MercContract.SaveContractRenewalDataToSaveGameFile(hFile))
+        //        {
+        //            goto FAILED_TO_SAVE;
+        //        }
 
         // Save leave list stuff
-//        if (!SaveLeaveItemList(hFile))
-//        {
-//            goto FAILED_TO_SAVE;
-//        }
+        //        if (!SaveLeaveItemList(hFile))
+        //        {
+        //            goto FAILED_TO_SAVE;
+        //        }
 
         //do the new way of saving bobbyr mail order items
-//        if (!NewWayOfSavingBobbyRMailOrdersToSaveGameFile(hFile))
-//        {
-//            goto FAILED_TO_SAVE;
-//        }
+        //        if (!NewWayOfSavingBobbyRMailOrdersToSaveGameFile(hFile))
+        //        {
+        //            goto FAILED_TO_SAVE;
+        //        }
 
         //sss
 
         //Close the saved game file
-        files.FileClose(hFile);
+        this.files.FileClose(hFile);
 
 
         //if we succesfully saved the game, mark this entry as the last saved game file
@@ -620,7 +620,7 @@ public class SaveLoadGame
         //Unset the fact that we are saving a game
         gTacticalStatus.uiFlags &= ~TacticalEngineStatus.LOADING_SAVED_GAME;
 
-        UnPauseAfterSaveGame();
+        this.UnPauseAfterSaveGame();
 
 #if JA2BETAVERSION
     InitShutDownMapTempFileTest(false, "SaveMapTempFile", ubSaveGameID);
@@ -646,7 +646,7 @@ public class SaveLoadGame
 
         if (fWePausedIt)
         {
-            UnPauseAfterSaveGame();
+            this.UnPauseAfterSaveGame();
         }
 
         //Delete the failed attempt at saving
@@ -732,17 +732,17 @@ public class SaveLoadGame
         //Trash the existing world.  This is done to ensure that if we are loading a game that doesn't have 
         //a world loaded, that we trash it beforehand -- else the player could theoretically enter that sector
         //where it would be in a pre-load state.  
-//        TrashWorld();
+        //        TrashWorld();
 
 
         //Deletes all the Temp files in the Maps\Temp directory
-//        InitTacticalSave(true);
+        //        InitTacticalSave(true);
 
         // ATE; Added to empry dialogue q
-//        EmptyDialogueQueue();
+        //        EmptyDialogueQueue();
 
         //Create the name of the file
-        CreateSavedGameFileNameFromNumber(ubSavedGameID, out string zSaveGameName);
+        this.CreateSavedGameFileNameFromNumber(ubSavedGameID, out string zSaveGameName);
 
         // open the save game file
         hFile = this.files.FileOpen(zSaveGameName, FileAccess.Read, false);
@@ -761,7 +761,7 @@ public class SaveLoadGame
             return (false);
         }
 
-        guiJA2EncryptionSet = CalcJA2EncryptionSet(SaveGameHeader);
+        guiJA2EncryptionSet = this.CalcJA2EncryptionSet(SaveGameHeader);
 
         guiBrokenSaveGameVersion = SaveGameHeader.uiSavedGameVersion;
 
@@ -794,7 +794,7 @@ public class SaveLoadGame
 
 
         //Load the gtactical status structure plus the current sector x,y,z
-        if (!LoadTacticalStatusFromSavedGame(hFile))
+        if (!this.LoadTacticalStatusFromSavedGame(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -906,7 +906,7 @@ public class SaveLoadGame
         //
         // Load all the saved Merc profiles
         //
-        if (!LoadSavedMercProfiles(hFile))
+        if (!this.LoadSavedMercProfiles(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -921,7 +921,7 @@ public class SaveLoadGame
         //
         // Load the soldier structure info
         // 
-        if (!LoadSoldierStructure(hFile))
+        if (!this.LoadSoldierStructure(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -937,7 +937,7 @@ public class SaveLoadGame
         //
         // Load the Finances Data and write it to a new file
         //
-        if (!LoadFilesFromSavedGame(FINANCES_DATA_FILE, hFile))
+        if (!this.LoadFilesFromSavedGame(FINANCES_DATA_FILE, hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -959,7 +959,7 @@ public class SaveLoadGame
         //
         // Load the History Data and write it to a new file
         //
-        if (!LoadFilesFromSavedGame(HISTORY_DATA_FILE, hFile))
+        if (!this.LoadFilesFromSavedGame(HISTORY_DATA_FILE, hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -981,7 +981,7 @@ public class SaveLoadGame
         //
         // Load the Files Data and write it to a new file
         //
-        if (!LoadFilesFromSavedGame(FILES_DAT_FILE, hFile))
+        if (!this.LoadFilesFromSavedGame(FILES_DAT_FILE, hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -1000,7 +1000,7 @@ public class SaveLoadGame
 
 
         // Load the data for the emails
-        if (!LoadEmailFromSavedGame(hFile))
+        if (!this.LoadEmailFromSavedGame(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -1128,7 +1128,7 @@ public class SaveLoadGame
         uiRelStartPerc = uiRelEndPerc;
 
 
-        if (!LoadOppListInfoFromSavedGame(hFile))
+        if (!this.LoadOppListInfoFromSavedGame(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -1223,7 +1223,7 @@ public class SaveLoadGame
         uiRelStartPerc = uiRelEndPerc;
 
 
-        if (!LoadPreRandomNumbersFromSaveGameFile(hFile))
+        if (!this.LoadPreRandomNumbersFromSaveGameFile(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -1283,7 +1283,7 @@ public class SaveLoadGame
 
 
 
-        if (!LoadGeneralInfo(hFile))
+        if (!this.LoadGeneralInfo(hFile))
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
@@ -1557,7 +1557,7 @@ public class SaveLoadGame
 
         if (SaveGameHeader.uiSavedGameVersion >= 38)
         {
-            if (!LoadWatchedLocsFromSavedGame(hFile))
+            if (!this.LoadWatchedLocsFromSavedGame(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1642,7 +1642,7 @@ public class SaveLoadGame
 
         if (SaveGameHeader.uiSavedGameVersion >= 58)
         {
-            if (!LoadMeanwhileDefsFromSaveGameFile(hFile))
+            if (!this.LoadMeanwhileDefsFromSaveGameFile(hFile))
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
@@ -1765,7 +1765,7 @@ public class SaveLoadGame
         //If there are any old Bobby R Mail orders, tranfer them to the new system
         if (SaveGameHeader.uiSavedGameVersion < 85)
         {
-            HandleOldBobbyRMailOrders();
+            this.HandleOldBobbyRMailOrders();
         }
 
 
@@ -1918,7 +1918,7 @@ public class SaveLoadGame
         { //Militia/enemies/creature team sizes have been changed from 32 to 20.  This function
           //will simply kill off the excess.  This will allow the ability to load previous saves, though
           //there will still be problems, though a LOT less than there would be without this call.
-            TruncateStrategicGroupSizes();
+            this.TruncateStrategicGroupSizes();
         }
 
         // ATE: if we are within this window where skyridder was foobared, fix!
@@ -1988,7 +1988,7 @@ public class SaveLoadGame
         //after 77 the data is stored in the profile
         if (SaveGameHeader.uiSavedGameVersion < 77)
         {
-            UpdateMercMercContractInfo();
+            this.UpdateMercMercContractInfo();
         }
 
 
@@ -2176,7 +2176,7 @@ public class SaveLoadGame
 
 
                 //Save the pMercPath
-                if (!SaveMercPathFromSoldierStruct(hFile, (int)cnt))
+                if (!this.SaveMercPathFromSoldierStruct(hFile, (int)cnt))
                     return (false);
 
 
@@ -2233,7 +2233,7 @@ public class SaveLoadGame
         //Loop through all the soldier and delete them all
         for (cnt = 0; cnt < TOTAL_SOLDIERS; cnt++)
         {
-            soldierCreate.TacticalRemoveSoldier(cnt);
+            this.soldierCreate.TacticalRemoveSoldier(cnt);
         }
 
 
@@ -2320,7 +2320,7 @@ public class SaveLoadGame
                 }
 
                 // Load the pMercPath
-                if (!LoadMercPathToSoldierStruct(hFile, ubId))
+                if (!this.LoadMercPathToSoldierStruct(hFile, ubId))
                     return (false);
 
 
@@ -2688,7 +2688,7 @@ public class SaveLoadGame
         uiSizeOfEmails = Marshal.SizeOf<email>() * uiNumOfEmails;
 
         //write the number of email messages
-        files.FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
+        this.files.FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2703,14 +2703,14 @@ public class SaveLoadGame
             uiStringLength = (wcslen(pEmail.pSubject) + 1) * 2;
 
             //write the length of the current emails subject to the saved game file
-            files.FileWrite(hFile, uiStringLength, Marshal.SizeOf<int>(), out uiNumBytesWritten);
+            this.files.FileWrite(hFile, uiStringLength, Marshal.SizeOf<int>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<int>())
             {
                 return (false);
             }
 
             //write the subject of the current email to the saved game file
-            files.FileWrite(hFile, pEmail.pSubject, uiStringLength, out uiNumBytesWritten);
+            this.files.FileWrite(hFile, pEmail.pSubject, uiStringLength, out uiNumBytesWritten);
             if (uiNumBytesWritten != uiStringLength)
             {
                 return (false);
@@ -2735,7 +2735,7 @@ public class SaveLoadGame
 
 
             // write the email header to the saved game file
-            files.FileWrite(hFile, SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesWritten);
+            this.files.FileWrite(hFile, SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<SavedEmailStruct>())
             {
                 return (false);
@@ -2770,10 +2770,10 @@ public class SaveLoadGame
             return (false);
         }
 
-//        memset(pEmailList, 0, Marshal.SizeOf<email>());
+        //        memset(pEmailList, 0, Marshal.SizeOf<email>());
 
         //read in the number of email messages
-        files.FileRead(hFile, ref uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesRead);
+        this.files.FileRead(hFile, ref uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);
@@ -2784,7 +2784,7 @@ public class SaveLoadGame
         for (cnt = 0; cnt < uiNumOfEmails; cnt++)
         {
             //get the length of the email subject
-            files.FileRead(hFile, ref uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
+            this.files.FileRead(hFile, ref uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<int>())
             {
                 return (false);
@@ -3268,7 +3268,7 @@ public class SaveLoadGame
 
 
         //Save the number of the nodes
-        files.FileWrite(hFile, uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
+        this.files.FileWrite(hFile, uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
             return (false);
@@ -3282,7 +3282,7 @@ public class SaveLoadGame
         while (pTempPath is not null)
         {
             //Save the number of the nodes
-            files.FileWrite(hFile, pTempPath, Marshal.SizeOf<Path>(), out uiNumBytesWritten);
+            this.files.FileWrite(hFile, pTempPath, Marshal.SizeOf<Path>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<Path>())
             {
                 return (false);
@@ -3323,7 +3323,7 @@ public class SaveLoadGame
         */
 
         //Load the number of the nodes
-        files.FileRead(hFile, ref uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesRead);
+        this.files.FileRead(hFile, ref uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
             return (false);

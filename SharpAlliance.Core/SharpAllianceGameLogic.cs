@@ -164,7 +164,7 @@ public class SharpAllianceGameLogic : IGameLogic
                 sm.guiPendingScreen = NullScreen.Instance;
             }
 
-            video.ClearElements();
+            this.video.ClearElements();
             var nextScreenName = await ScreenManager.CurrentScreen.Handle();
             nextScreen = await sm.GetScreen(nextScreenName, activate: false);
 

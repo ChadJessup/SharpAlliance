@@ -130,7 +130,7 @@ public class ScreenManager : IScreenManager
             await CurrentScreen.Deactivate();
         }
 
-        currentScreenTask = screen.Activate().AsTask();
+        this.currentScreenTask = screen.Activate().AsTask();
         CurrentScreen = screen;
 
         return CurrentScreen;

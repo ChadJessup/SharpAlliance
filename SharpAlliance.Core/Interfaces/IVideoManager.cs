@@ -69,5 +69,5 @@ public interface IVideoManager : ISharpAllianceManager
     void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
     void Draw();
     void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY)
-        => BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);
+        => this.BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);
 }

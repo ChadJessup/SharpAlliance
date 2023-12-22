@@ -99,7 +99,7 @@ SDL.SDL_DestroyWindow(window);
 SDL.SDL_Quit();
 
 
-class ImageLoader
+internal class ImageLoader
 {
     public MemoryHandle pinHandle { get; set; }
     public nint surfacePtr { get; set; }
@@ -110,9 +110,9 @@ class ImageLoader
 
     public unsafe nint Process(nint renderer)
     {
-        if (texturePtr != IntPtr.Zero)
+        if (this.texturePtr != IntPtr.Zero)
         {
-            return texturePtr;
+            return this.texturePtr;
         }
 
         Configuration customConfig = Configuration.Default.Clone();
@@ -123,16 +123,16 @@ class ImageLoader
             Configuration = customConfig,
         };
 
-        image = (Image<Rgba32>)Image.Load(doptions, @"C:\Users\chadj\OneDrive\Pictures\100votes-comeon!.PNG");
+        this.image = (Image<Rgba32>)Image.Load(doptions, @"C:\Users\chadj\OneDrive\Pictures\100votes-comeon!.PNG");
 
-        if (!image.DangerousTryGetSinglePixelMemory(out Memory<Rgba32> memory))
+        if (!this.image.DangerousTryGetSinglePixelMemory(out Memory<Rgba32> memory))
         {
             throw new Exception(
                 "This can only happen with multi-GB images or when PreferContiguousImageBuffers is not set to true.");
         }
 
-        pinHandle = memory.Pin();
-        texturePtr = SDL.SDL_CreateTexture(
+        this.pinHandle = memory.Pin();
+        this.texturePtr = SDL.SDL_CreateTexture(
             renderer,
             SDL.SDL_PIXELFORMAT_ABGR8888,
             (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
@@ -160,19 +160,19 @@ class ImageLoader
 
        // texturePtr = SDL.SDL_CreateTextureFromSurface(renderer, surfacePtr);
 
-        if (texturePtr == IntPtr.Zero)
+        if (this.texturePtr == IntPtr.Zero)
         {
             string error = SDL.SDL_GetError();
             Console.WriteLine(error);
         }
 
-        return texturePtr;
+        return this.texturePtr;
     }
 
-    int degrees = 0;
+    private int degrees = 0;
     public Image<Rgba32> UpdateTexture()
     {
-        degrees += 5;
+        this.degrees += 5;
 //        image.Mutate(ctx =>
 //        {
 //            ctx.Rotate(degrees);
@@ -183,6 +183,6 @@ class ImageLoader
   //          image.SaveAsPng(@"C:\temp\test.png");
   //      }
 
-        return image;
+        return this.image;
     }
 }

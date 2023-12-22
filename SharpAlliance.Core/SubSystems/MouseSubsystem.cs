@@ -89,7 +89,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
         if (RegionList is not null)
         {
-            ClearRegionList();
+            this.ClearRegionList();
         }
 
         CurrentCoord = new(0, 0);
@@ -104,29 +104,29 @@ public class MouseSubSystem : ISharpAllianceManager
         GrabbedRegion = null;
 
         // Setup the system's background region
-        SystemBaseRegion.IdNumber = MSYS_ID.SYSTEM;
-        SystemBaseRegion.PriorityLevel = MSYS_PRIORITY.SYSTEM;
-        SystemBaseRegion.uiFlags = MouseRegionFlags.BASE_REGION_FLAGS;
-        SystemBaseRegion.Bounds = new(-32767, -32767, 32767, 32767);
+        this.SystemBaseRegion.IdNumber = MSYS_ID.SYSTEM;
+        this.SystemBaseRegion.PriorityLevel = MSYS_PRIORITY.SYSTEM;
+        this.SystemBaseRegion.uiFlags = MouseRegionFlags.BASE_REGION_FLAGS;
+        this.SystemBaseRegion.Bounds = new(-32767, -32767, 32767, 32767);
 
-        SystemBaseRegion.MousePos = new(0, 0);
-        SystemBaseRegion.RelativeMousePos = new(0, 0);
+        this.SystemBaseRegion.MousePos = new(0, 0);
+        this.SystemBaseRegion.RelativeMousePos = new(0, 0);
 
-        SystemBaseRegion.ButtonState = 0;
-        SystemBaseRegion.Cursor = 0;
-        SystemBaseRegion.UserData[0] = 0;
-        SystemBaseRegion.UserData[1] = 0;
-        SystemBaseRegion.UserData[2] = 0;
-        SystemBaseRegion.UserData[3] = 0;
-        SystemBaseRegion.MovementCallback = null;
-        SystemBaseRegion.ButtonCallback = null;
+        this.SystemBaseRegion.ButtonState = 0;
+        this.SystemBaseRegion.Cursor = 0;
+        this.SystemBaseRegion.UserData[0] = 0;
+        this.SystemBaseRegion.UserData[1] = 0;
+        this.SystemBaseRegion.UserData[2] = 0;
+        this.SystemBaseRegion.UserData[3] = 0;
+        this.SystemBaseRegion.MovementCallback = null;
+        this.SystemBaseRegion.ButtonCallback = null;
 
-        SystemBaseRegion.FastHelpTimer = 0;
-        SystemBaseRegion.FastHelpText = string.Empty;
+        this.SystemBaseRegion.FastHelpTimer = 0;
+        this.SystemBaseRegion.FastHelpText = string.Empty;
 
-        SystemBaseRegion.FastHelpRect = -1;
+        this.SystemBaseRegion.FastHelpRect = -1;
 
-        AddRegionToList(SystemBaseRegion);
+        AddRegionToList(this.SystemBaseRegion);
 
         UseMouseHandlerHook = true;
     }
@@ -869,7 +869,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
 public class MOUSE_REGION
 {
-    public MOUSE_REGION(string name) => Name = name;
+    public MOUSE_REGION(string name) => this.Name = name;
     public string Name { get; private set; }
     public int IdNumber;                        // Region's ID number, set by mouse system
     public MSYS_PRIORITY PriorityLevel;         // Region's Priority, set by system and/or caller
@@ -897,14 +897,14 @@ public class MOUSE_REGION
     public MOUSE_HELPTEXT_DONE_CALLBACK? HelpDoneCallback;
 
     public bool IsEnabled { get; set; }
-    public bool HasMoveCallback => MovementCallback is not null;
-    public bool HasButtonCallback => ButtonCallback is not null;
+    public bool HasMoveCallback => this.MovementCallback is not null;
+    public bool HasButtonCallback => this.ButtonCallback is not null;
 
     public bool HasMouse { get; internal set; }
 
     public override string ToString()
     {
-        return $"{Name}: {IdNumber}: {PriorityLevel}: {Bounds}";
+        return $"{this.Name}: {this.IdNumber}: {this.PriorityLevel}: {this.Bounds}";
     }
 }
 

@@ -132,7 +132,7 @@ public class Smell
 
         Globals.gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENTFLAGS.REEVALUATEBLOOD;
 
-        UpdateBloodGraphics(sGridNo, bLevel);
+        this.UpdateBloodGraphics(sGridNo, bLevel);
     }
 
 
@@ -246,7 +246,7 @@ public class Smell
         if ((uiTime - gTacticalStatus.uiDecayBloodLastUpdate) > uiCheckTime)
         {
             gTacticalStatus.uiDecayBloodLastUpdate = uiTime;
-            DecayBlood();
+            this.DecayBlood();
             DecaySmells();
         }
     }
@@ -441,7 +441,7 @@ public class Smell
 
         if (bVisible != -1)
         {
-            UpdateBloodGraphics(sGridNo, bLevel);
+            this.UpdateBloodGraphics(sGridNo, bLevel);
         }
 
     }
@@ -476,7 +476,7 @@ public class Smell
         }
 
 
-        InternalDropBlood(pSoldier.sGridNo, pSoldier.bLevel, ubType, ubStrength, bVisible);
+        this.InternalDropBlood(pSoldier.sGridNo, pSoldier.bLevel, ubType, ubStrength, bVisible);
     }
 
 

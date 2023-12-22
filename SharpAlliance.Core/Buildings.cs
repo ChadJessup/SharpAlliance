@@ -40,7 +40,7 @@ public class Buildings
         BUILDING? pBuilding;
         int ubBuildingID = 0;
 
-        pBuilding = CreateNewBuilding(ubBuildingID);
+        pBuilding = this.CreateNewBuilding(ubBuildingID);
         if (pBuilding is null)
         {
             return (null);
@@ -381,7 +381,7 @@ public class Buildings
             if ((gubWorldRoomInfo[uiLoop] != NO_ROOM) && (gubBuildingInfo[uiLoop] == NO_BUILDING)
                 && (WorldStructures.FindStructure(uiLoop, STRUCTUREFLAGS.NORMAL_ROOF) != null))
             {
-                GenerateBuilding((int)uiLoop);
+                this.GenerateBuilding((int)uiLoop);
             }
         }
     }

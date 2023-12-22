@@ -226,11 +226,11 @@ public class PreferenceScreen : IScreen
             this.RenderOptionsScreen();
 
             //Blit the background to the save buffer
-            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 640, 480);
-            video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+            this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 640, 480);
+            this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
-        video.RestoreBackgroundRects();
+        this.video.RestoreBackgroundRects();
 
         this.GetOptionsScreenUserInput();
 
@@ -252,11 +252,11 @@ public class PreferenceScreen : IScreen
         this.guiManager.RenderButtons(this.buttonList);
 
         // ATE: Put here to save RECTS before any fast help being drawn...
-        video.SaveBackgroundRects();
+        this.video.SaveBackgroundRects();
         this.guiManager.RenderButtonsFastHelp();
 
-        video.ExecuteBaseDirtyRectQueue();
-        video.EndFrameBufferRender();
+        this.video.ExecuteBaseDirtyRectQueue();
+        this.video.EndFrameBufferRender();
 //        video.InvalidateScreen();
 
         if (this.gfOptionsScreenExit)
@@ -336,13 +336,13 @@ public class PreferenceScreen : IScreen
         int usWidth = 0;
 
         //Get and display the background image
-        hPixHandle = video.GetVideoObject(this.guiOptionBackGroundImageKey);
-        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
+        hPixHandle = this.video.GetVideoObject(this.guiOptionBackGroundImageKey);
+        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
 
         //Get and display the title image
-        hPixHandle = video.GetVideoObject(this.guiOptionsAddOnImagesKey);
-        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
-        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 1, 0, 434, VO_BLT.SRCTRANSPARENCY);
+        hPixHandle = this.video.GetVideoObject(this.guiOptionsAddOnImagesKey);
+        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
+        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 1, 0, 434, VO_BLT.SRCTRANSPARENCY);
 
         //
         // Text for the toggle boxes
@@ -430,7 +430,7 @@ public class PreferenceScreen : IScreen
         //Display the Music text
         FontSubSystem.DisplayWrappedString(new(OPT_MUSIC_TEXT_X, OPT_MUSIC_TEXT_Y), OPT_SLIDER_TEXT_WIDTH, 2, OPT_MAIN_FONT, OPT_MAIN_COLOR, EnglishText.zOptionsText[OptionsText.OPT_MUSIC], FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
 
-        video.InvalidateRegion(new(OPTIONS__TOP_LEFT_X, OPTIONS__TOP_LEFT_Y, OPTIONS__BOTTOM_RIGHT_X, OPTIONS__BOTTOM_RIGHT_Y));
+        this.video.InvalidateRegion(new(OPTIONS__TOP_LEFT_X, OPTIONS__TOP_LEFT_Y, OPTIONS__BOTTOM_RIGHT_X, OPTIONS__BOTTOM_RIGHT_Y));
     }
 
     private void EnterOptionsScreen()
@@ -476,7 +476,7 @@ public class PreferenceScreen : IScreen
             MouseSubSystem.DefaultMoveCallback,
             this.BtnOptGotoSaveGameCallback);
 
-        this.buttonList.Add(guiOptGotoSaveGameBtn);
+        this.buttonList.Add(this.guiOptGotoSaveGameBtn);
 
         ButtonSubSystem.SpecifyDisabledButtonStyle(this.guiOptGotoSaveGameBtn, DISABLED_STYLE.HATCHED);
         if (this.guiPreviousOptionScreen == ScreenName.MAINMENU_SCREEN)// || !CanGameBeSaved())
@@ -830,7 +830,7 @@ public class PreferenceScreen : IScreen
 
             this.gbHighLightedOptionText = -1;
 
-            video.InvalidateRegion(pRegion.Bounds);
+            this.video.InvalidateRegion(pRegion.Bounds);
         }
     }
 
@@ -856,7 +856,7 @@ public class PreferenceScreen : IScreen
         {
             this.HandleOptionToggle(ubButton, !this.settings[ubButton], false, true);
 
-            video.InvalidateRegion(pRegion.Bounds);
+            this.video.InvalidateRegion(pRegion.Bounds);
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))//iReason & MSYS_CALLBACK_REASON.LBUTTON_REPEAT || 
         {
@@ -881,13 +881,13 @@ public class PreferenceScreen : IScreen
 
             this.gbHighLightedOptionText = -1;
 
-            video.InvalidateRegion(pRegion.Bounds);
+            this.video.InvalidateRegion(pRegion.Bounds);
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.GAIN_MOUSE))
         {
             //                this.gbHighLightedOptionText = bButton;
 
-            video.InvalidateRegion(pRegion.Bounds);
+            this.video.InvalidateRegion(pRegion.Bounds);
         }
     }
 
@@ -979,7 +979,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -989,13 +989,13 @@ public class PreferenceScreen : IScreen
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
             gfSaveGame = false;
 
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -1004,7 +1004,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -1012,17 +1012,17 @@ public class PreferenceScreen : IScreen
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
 
             //Confirm the Exit to the main menu screen
-            DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmQuitToMainMenuMessageBoxCallBack);
+            this.DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, this.ConfirmQuitToMainMenuMessageBoxCallBack);
 
             //		SetOptionsExitScreen( MAINMENU_SCREEN );
 
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -1050,7 +1050,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -1059,13 +1059,13 @@ public class PreferenceScreen : IScreen
 
             this.SetOptionsExitScreen(this.guiPreviousOptionScreen);
 
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -1080,7 +1080,7 @@ public class PreferenceScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -1090,13 +1090,13 @@ public class PreferenceScreen : IScreen
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
             gfSaveGame = true;
 
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -1182,13 +1182,13 @@ public class PreferenceScreen : IScreen
         Rectangle? CenteringRect = new(0, 0, 639, 479);
 
         // reset exit mode
-        gfExitOptionsDueToMessageBox = true;
+        this.gfExitOptionsDueToMessageBox = true;
 
         // do message box and return
         this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
 
         // send back return state
-        return ((giOptionsMessageBox != -1));
+        return ((this.giOptionsMessageBox != -1));
     }
 
     private void BtnOptionsTogglesCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)

@@ -22,10 +22,10 @@ public class StrategicMap
         Keys keys,
         AIMain aiMain)
     {
-        this.music = music;
+        this.music = this.music;
         this.keys = keys;
         files = fileManager;
-        screens = screenManager;
+        this.screens = screenManager;
         this.aiMain = aiMain;
     }
 
@@ -56,7 +56,7 @@ public class StrategicMap
             //Note, the flag will return true only if enemies were added.  The game may wish to
             //do something else in a case where no enemies are present.
 
-            screens.SetPendingNewScreen(ScreenName.GAME_SCREEN);
+            this.screens.SetPendingNewScreen(ScreenName.GAME_SCREEN);
 //            if (!NumEnemyInSector())
 //            {
 //                PrepareEnemyForSectorBattle();
@@ -148,7 +148,7 @@ public class StrategicMap
 
         if (fChangeMusic)
         {
-            music.SetMusicMode(MusicMode.MAIN_MENU);
+            this.music.SetMusicMode(MusicMode.MAIN_MENU);
         }
 
         // ATE: Do this stuff earlier!
@@ -211,7 +211,7 @@ public class StrategicMap
                 // ATE; Fade FA.T....
                 //music.SetMusicFadeSpeed(5);
 
-                music.SetMusicMode(MusicMode.TACTICAL_NOTHING);
+                this.music.SetMusicMode(MusicMode.TACTICAL_NOTHING);
             }
 
             // ATE: Check what sector we are in, to show description if we have an RPC.....

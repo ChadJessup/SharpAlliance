@@ -243,7 +243,7 @@ public class CivQuotes
     {
         if (gCivQuoteData.bActive)
         {
-            ShutDownQuoteBox(true);
+            this.ShutDownQuoteBox(true);
 
             return (true);
         }
@@ -340,7 +340,7 @@ public class CivQuotes
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP) && fLButtonDown)
         {
             // Shutdown quote box....
-            ShutDownQuoteBox(false);
+            this.ShutDownQuoteBox(false);
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
@@ -358,7 +358,7 @@ public class CivQuotes
         if (gCivQuoteData.bActive)
         {
             // Delete?
-            ShutDownQuoteBox(true);
+            this.ShutDownQuoteBox(true);
         }
 
         // get text
@@ -749,7 +749,7 @@ public class CivQuotes
             if ((GetJA2Clock() - gCivQuoteData.uiTimeOfCreation) > gCivQuoteData.uiDelayTime)
             {
                 // Stop!
-                ShutDownQuoteBox(true);
+                this.ShutDownQuoteBox(true);
             }
         }
     }
@@ -804,11 +804,11 @@ public class CivQuotes
         // Determine location...
         // Get location of civ on screen.....
         //        GetSoldierScreenPos(pCiv, &sScreenX, &sScreenY);
-//sX = sScreenX;
-//sY = sScreenY;
+        //sX = sScreenX;
+        //sY = sScreenY;
 
         // begin quote
-        BeginCivQuote(pCiv, ubCivQuoteID, ubEntryID, sX, sY);
+        this.BeginCivQuote(pCiv, ubCivQuoteID, ubEntryID, sX, sY);
 
         // Increment use
         if (ubCivQuoteID != CIV_QUOTE.HINT)
@@ -825,8 +825,8 @@ public class CivQuotes
 
     void InitCivQuoteSystem()
     {
-//        memset(&gCivQuotes, 0, sizeof(gCivQuotes));
-        CopyNumEntriesIntoQuoteStruct();
+        //        memset(&gCivQuotes, 0, sizeof(gCivQuotes));
+        this.CopyNumEntriesIntoQuoteStruct();
 
 //        memset(&gCivQuoteData, 0, sizeof(gCivQuoteData));
         gCivQuoteData.bActive = false;
@@ -853,13 +853,13 @@ public class CivQuotes
     {
         int uiNumBytesRead;
 
-//        FileRead(hFile, gCivQuotes, sizeof(gCivQuotes), out uiNumBytesRead);
-//        if (uiNumBytesRead != sizeof(gCivQuotes))
-//        {
-//            return (false);
-//        }
+        //        FileRead(hFile, gCivQuotes, sizeof(gCivQuotes), out uiNumBytesRead);
+        //        if (uiNumBytesRead != sizeof(gCivQuotes))
+        //        {
+        //            return (false);
+        //        }
 
-        CopyNumEntriesIntoQuoteStruct();
+        this.CopyNumEntriesIntoQuoteStruct();
 
         return (true);
     }

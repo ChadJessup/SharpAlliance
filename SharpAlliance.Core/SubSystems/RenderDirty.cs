@@ -683,7 +683,7 @@ public class RenderDirty
         // Update blitter info
         // Set update flags to zero since we are forcing all updates
         pTopmostDesc.uiFlags = 0;
-        UpdateVideoOverlay(pTopmostDesc, iBlitterIndex, true);
+        this.UpdateVideoOverlay(pTopmostDesc, iBlitterIndex, true);
 
         // Set disabled flag to true 
         if (uiFlags.HasFlag(VOVERLAY.STARTDISABLED))

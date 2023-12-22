@@ -17,7 +17,7 @@ public class GuiManager : ISharpAllianceManager
 
     public GuiManager(SliderSubSystem sliders)
     {
-        Sliders = sliders;
+        this.Sliders = sliders;
     }
 
     public ValueTask<bool> Initialize()
@@ -30,7 +30,7 @@ public class GuiManager : ISharpAllianceManager
     }
 
     public void RenderSliderBars()
-        => Sliders.RenderSliderBars();
+        => this.Sliders.RenderSliderBars();
 
     public void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
         => ButtonSubSystem.RenderButtons(buttons);

@@ -274,7 +274,7 @@ public class GameInitOptionsScreen : IScreen
         //REnder the screen once so we can blt ot to ths save buffer
         this.RenderGIOScreen();
 
-        video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 639, 439);
+        this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 639, 439);
 
         //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 639, 439);
 
@@ -287,7 +287,7 @@ public class GameInitOptionsScreen : IScreen
         {
             this.gfGIOScreenEntry = false;
             this.gfGIOScreenExit = false;
-            video.InvalidateRegion(new(0, 0, 640, 480));
+            this.video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
         this.GetGIOScreenUserInput();
@@ -350,11 +350,11 @@ public class GameInitOptionsScreen : IScreen
                 {
                     case Key.Escape:
                         //Exit out of the screen
-                        gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
+                        this.gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
                         break;
 
                     case Key.Enter:
-                        gubGameOptionScreenHandler = GameMode.GIO_EXIT;
+                        this.gubGameOptionScreenHandler = GameMode.GIO_EXIT;
                         break;
                 }
             }
@@ -363,44 +363,44 @@ public class GameInitOptionsScreen : IScreen
 
     private void HandleGIOScreen()
     {
-        if (gubGameOptionScreenHandler != GameMode.GIO_NOTHING)
+        if (this.gubGameOptionScreenHandler != GameMode.GIO_NOTHING)
         {
-            switch (gubGameOptionScreenHandler)
+            switch (this.gubGameOptionScreenHandler)
             {
                 case GameMode.GIO_CANCEL:
-                    gubGIOExitScreen = ScreenName.MAINMENU_SCREEN;
-                    gfGIOScreenExit = true;
+                    this.gubGIOExitScreen = ScreenName.MAINMENU_SCREEN;
+                    this.gfGIOScreenExit = true;
                     break;
 
                 case GameMode.GIO_EXIT:
                     //if we are already fading out, get out of here
-                    if (fade.gFadeOutDoneCallback != DoneFadeOutForExitGameInitOptionScreen)
+                    if (this.fade.gFadeOutDoneCallback != this.DoneFadeOutForExitGameInitOptionScreen)
                     {
                         //Disable the ok button
-                        ButtonSubSystem.DisableButton(guiGIODoneButton);
+                        ButtonSubSystem.DisableButton(this.guiGIODoneButton);
 
-                        fade.gFadeOutDoneCallback = DoneFadeOutForExitGameInitOptionScreen;
+                        this.fade.gFadeOutDoneCallback = this.DoneFadeOutForExitGameInitOptionScreen;
 
-                        fade.FadeOutNextFrame();
+                        this.fade.FadeOutNextFrame();
                     }
                 
                     break;
                 case GameMode.GIO_IRON_MAN_MODE:
-                    DisplayMessageToUserAboutGameDifficulty();
+                    this.DisplayMessageToUserAboutGameDifficulty();
                     break;
             }
 
-            gubGameOptionScreenHandler = GameMode.GIO_NOTHING;
+            this.gubGameOptionScreenHandler = GameMode.GIO_NOTHING;
         }
 
 
-        if (gfReRenderGIOScreen)
+        if (this.gfReRenderGIOScreen)
         {
-            RenderGIOScreen();
-            gfReRenderGIOScreen = false;
+            this.RenderGIOScreen();
+            this.gfReRenderGIOScreen = false;
         }
 
-        RestoreGIOButtonBackGrounds();
+        this.RestoreGIOButtonBackGrounds();
     }
 
     private void RestoreGIOButtonBackGrounds()
@@ -455,23 +455,23 @@ public class GameInitOptionsScreen : IScreen
     private void DoneFadeOutForExitGameInitOptionScreen()
     {
         // loop through and get the status of all the buttons
-        gGameOptions.GunNut = GetCurrentGunButtonSetting();
-        gGameOptions.SciFi = GetCurrentGameStyleButtonSetting();
-        gGameOptions.ubDifficultyLevel = GetCurrentDifficultyButtonSetting() + 1;
+        this.gGameOptions.GunNut = this.GetCurrentGunButtonSetting();
+        this.gGameOptions.SciFi = this.GetCurrentGameStyleButtonSetting();
+        this.gGameOptions.ubDifficultyLevel = this.GetCurrentDifficultyButtonSetting() + 1;
         // JA2Gold: no more timed turns setting
         //gGameOptions.fTurnTimeLimit = GetCurrentTimedTurnsButtonSetting();
         // JA2Gold: iron man
-        gGameOptions.IronManMode = GetCurrentGameSaveButtonSetting();
+        this.gGameOptions.IronManMode = this.GetCurrentGameSaveButtonSetting();
 
 
         //	gubGIOExitScreen = INIT_SCREEN;
-        gubGIOExitScreen = ScreenName.INTRO_SCREEN;
+        this.gubGIOExitScreen = ScreenName.INTRO_SCREEN;
 
         //set the fact that we should do the intro videos
         //	gbIntroScreenMode = INTRO_BEGINING;
         this.introScreen.SetIntroType(IntroScreenType.INTRO_BEGINING);
 
-        ExitGIOScreen();
+        this.ExitGIOScreen();
 
         //	gFadeInDoneCallback = DoneFadeInForExitGameInitOptionScreen;
         //	FadeInNextFrame( );
@@ -482,7 +482,7 @@ public class GameInitOptionsScreen : IScreen
     {
         for (IronManMode cnt = 0; cnt < IronManMode.NUM_SAVE_OPTIONS; cnt++)
         {
-            if (guiGameSaveToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            if (this.guiGameSaveToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
                 return true;
             }
@@ -495,7 +495,7 @@ public class GameInitOptionsScreen : IScreen
     {
         for (GameDifficulty cnt = 0; cnt < GameDifficulty.NUM_DIFF_SETTINGS; cnt++)
         {
-            if (guiDifficultySettingsToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            if (this.guiDifficultySettingsToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
                 return (DifficultyLevel)cnt;
             }
@@ -508,7 +508,7 @@ public class GameInitOptionsScreen : IScreen
     {
         for (GameStyle cnt = 0; cnt < GameStyle.NUM_GAME_STYLES; cnt++)
         {
-            if (guiGameStyleToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            if (this.guiGameStyleToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
                 return true;
             }
@@ -521,7 +521,7 @@ public class GameInitOptionsScreen : IScreen
     {
         for (GunOption cnt = 0; cnt < GunOption.NUM_GUN_OPTIONS; cnt++)
         {
-            if (guiGunOptionToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            if (this.guiGunOptionToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
                 return true;
             }
@@ -793,7 +793,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -806,7 +806,7 @@ public class GameInitOptionsScreen : IScreen
                 this.DisplayMessageToUserAboutGameDifficulty();
             }
 
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 
@@ -824,7 +824,7 @@ public class GameInitOptionsScreen : IScreen
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
@@ -833,7 +833,7 @@ public class GameInitOptionsScreen : IScreen
 
             this.gubGameOptionScreenHandler = GameMode.GIO_CANCEL;
 
-            video.InvalidateRegion(btn.MouseRegion.Bounds);
+            this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
 

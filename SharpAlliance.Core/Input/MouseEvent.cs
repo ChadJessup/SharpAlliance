@@ -7,8 +7,8 @@ public struct MouseEvent
 
     public MouseEvent(MouseButton button, bool down)
     {
-        MouseButton = button;
-        Down = down;
+        this.MouseButton = button;
+        this.Down = down;
     }
 }
 

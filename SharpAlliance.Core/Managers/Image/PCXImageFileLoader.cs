@@ -48,7 +48,7 @@ public class PCXImageFileLoader : IImageFileLoader
     public bool LoadImage(ref HIMAGE hImage, HIMAGECreateFlags fContents, IFileManager fileManager)
     {
         // First Load a PCX Image
-        PcxObject? pPcxObject = LoadPcx(hImage.ImageFile, fileManager);
+        PcxObject? pPcxObject = this.LoadPcx(hImage.ImageFile, fileManager);
 
         if (pPcxObject == null)
         {
@@ -67,7 +67,7 @@ public class PCXImageFileLoader : IImageFileLoader
             // Allocate memory for buffer
             hImage.p8BPPData = new byte[hImage.usWidth * hImage.usHeight];
 
-            if (!BlitPcxToBuffer(pPcxObject, hImage.p8BPPData, hImage.usWidth, hImage.usHeight, 0, 0, false))
+            if (!this.BlitPcxToBuffer(pPcxObject, hImage.p8BPPData, hImage.usWidth, hImage.usHeight, 0, 0, false))
             {
                 MemFree(hImage.p8BPPData);
                 return false;
@@ -76,7 +76,7 @@ public class PCXImageFileLoader : IImageFileLoader
 
         if (fContents.HasFlag(HIMAGECreateFlags.IMAGE_PALETTE))
         {
-            SetPcxPalette(pPcxObject, hImage);
+            this.SetPcxPalette(pPcxObject, hImage);
 
             // Create 16 BPP palette if flags and BPP justify 
             hImage.pui16BPPPalette = hImage.Create16BPPPalette(hImage.pPalette);

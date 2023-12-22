@@ -191,21 +191,21 @@ public class GameClock
     // set the flag that time compress has occured
     void SetFactTimeCompressHasOccured()
     {
-        fTimeCompressHasOccured = true;
+        this.fTimeCompressHasOccured = true;
         return;
     }
 
     //reset fact the time compress has occured
     void ResetTimeCompressHasOccured()
     {
-        fTimeCompressHasOccured = false;
+        this.fTimeCompressHasOccured = false;
         return;
     }
 
     // has time compress occured?
     bool HasTimeCompressOccured()
     {
-        return (fTimeCompressHasOccured);
+        return (this.fTimeCompressHasOccured);
     }
 
 
@@ -319,19 +319,19 @@ public class GameClock
             // if no compression mode is set, increase it first
             if (giTimeCompressMode <= TIME_COMPRESS.TIME_COMPRESS_X1)
             {
-                IncreaseGameTimeCompressionRate();
+                this.IncreaseGameTimeCompressionRate();
             }
 
             // change clock resolution to the current compression mode
             SetClockResolutionToCompressMode(giTimeCompressMode);
 
             // if it's the first time we're doing this since entering map screen (which reset the flag)
-            if (!HasTimeCompressOccured())
+            if (!this.HasTimeCompressOccured())
             {
                 // set fact that we have compressed time during this map screen session
-                SetFactTimeCompressHasOccured();
+                this.SetFactTimeCompressHasOccured();
 
-                ClearTacticalStuffDueToTimeCompression();
+                this.ClearTacticalStuffDueToTimeCompression();
             }
         }
     }

@@ -1670,7 +1670,7 @@ public class TacticalTeamType
     public TEAM bSide;
     public int bMenInSector;
     public int ubLastMercToRadio;
-    public bool IsTeamActive => bTeamActive > 0;
+    public bool IsTeamActive => this.bTeamActive > 0;
     public int bTeamActive;
     public int bAwareOfOpposition;
     public int bHuman;

@@ -185,7 +185,7 @@ public class CreditsScreen : IScreen
 
         //Get the current Credit record
         uiStartLoc = CREDITS_LINESIZE * (uint)Globals.guiCurrentCreditRecord;
-        if (!files.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out string zOriginalString, uiStartLoc, CREDITS_LINESIZE))
+        if (!this.files.LoadEncryptedDataFromFile(CRDT_NAME_OF_CREDIT_FILE, out string zOriginalString, uiStartLoc, CREDITS_LINESIZE))
         {
             //there are no more credits
             return false;
@@ -532,13 +532,13 @@ public class CreditsScreen : IScreen
                 ubBitDepth = 16
             };
 
-//            if (video.TryCreateVideoSurface(vs_desc, out pNodeToAdd.uiVideoSurfaceImage))
-//            {
-//                return false;
-//            }
+            //            if (video.TryCreateVideoSurface(vs_desc, out pNodeToAdd.uiVideoSurfaceImage))
+            //            {
+            //                return false;
+            //            }
 
             //Set transparency
-            video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
+            this.video.SetVideoSurfaceTransparency(pNodeToAdd.uiVideoSurfaceImage, new Rgba32(0, 0, 0));
 
             //fill the surface with a transparent color
 
@@ -640,8 +640,8 @@ public class CreditsScreen : IScreen
 
     private void RenderCreditScreen()
     {
-        HVOBJECT hPixHandle = video.GetVideoObject(Globals.guiCreditBackGroundImageKey);
-        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0);
+        HVOBJECT hPixHandle = this.video.GetVideoObject(Globals.guiCreditBackGroundImageKey);
+        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0);
         /*
             HVSURFACE hVSurface;
 
@@ -653,7 +653,7 @@ public class CreditsScreen : IScreen
             Globals.gfCrdtHaveRenderedFirstFrameToSaveBuffer = true;
 
             //blit everything to the save buffer ( cause the save buffer can bleed through )
-            video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 640, 480);
+            this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 640, 480);
 
             ButtonSubSystem.UnmarkButtonsDirty();
         }

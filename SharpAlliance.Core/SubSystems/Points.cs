@@ -449,7 +449,7 @@ public class Points
 
         if (uiItemClass == IC.GUN || uiItemClass == IC.LAUNCHER || uiItemClass == IC.TENTACLES || uiItemClass == IC.THROWING_KNIFE)
         {
-            sAPCost = MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
+            sAPCost = this.MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
 
             if (pSoldier.bDoBurst)
             {
@@ -464,7 +464,7 @@ public class Points
         //ATE: HERE, need to calculate APs!
         if (uiItemClass.HasFlag(IC.EXPLOSV))
         {
-            sAPCost = MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
+            sAPCost = this.MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
 
             sAPCost = 5;
         }
@@ -562,13 +562,13 @@ public class Points
                 pSoldier.sWalkToAttackGridNo = sGridNo;
 
                 // Add points to attack
-                sAPCost += MinAPsToAttack(pSoldier, sAdjustedGridNo, ubAddTurningCost);
+                sAPCost += this.MinAPsToAttack(pSoldier, sAdjustedGridNo, ubAddTurningCost);
             }
             else
             {
                 // Add points to attack
                 // Use our gridno
-                sAPCost += MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
+                sAPCost += this.MinAPsToAttack(pSoldier, sGridNo, ubAddTurningCost);
             }
 
             // Add aim time...

@@ -37,18 +37,18 @@ public class ClockManager : IClockManager
     {
         DateTimeOffset = new DateTimeOffset();
         Globals.guiStartupTime = Globals.guiCurrentTime = DateTimeOffset.ToUnixTimeMilliseconds();
-        globalTimer = new Timer
+        this.globalTimer = new Timer
         {
             Interval = interval.TotalMilliseconds,
             AutoReset = false,
         };
 
-        globalTimer.Elapsed += ClockCallback;
-        StartTimer();
+        this.globalTimer.Elapsed += this.ClockCallback;
+        this.StartTimer();
 
-        inputs = context.Services.GetRequiredService<IInputManager>();
+        this.inputs = this.context.Services.GetRequiredService<IInputManager>();
 
-        IsInitialized = true;
+        this.IsInitialized = true;
 
         return ValueTask.FromResult(true);
     }
@@ -62,17 +62,17 @@ public class ClockManager : IClockManager
     {
         Globals.guiCurrentTime = e.SignalTime.Ticks;
 
-        StartTimer();
+        this.StartTimer();
     }
 
-    private void StartTimer() => globalTimer?.Start();
-    private void StopTimer() => globalTimer?.Stop();
+    private void StartTimer() => this.globalTimer?.Start();
+    private void StopTimer() => this.globalTimer?.Stop();
 
     public void Dispose()
     {
-        StopTimer();
+        this.StopTimer();
 
-        globalTimer?.Dispose();
+        this.globalTimer?.Dispose();
     }
 
     public static void UpdateClock()

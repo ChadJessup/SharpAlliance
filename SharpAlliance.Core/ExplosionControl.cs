@@ -537,18 +537,18 @@ public class ExplosionControl
                             case WallOrientation.INSIDE_TOP_RIGHT:
 
                                 sStructGridNo = IsometricUtils.NewGridNo(pBase.sGridNo, IsometricUtils.DirectionInc(WorldDirections.SOUTH));
-                                HandleFencePartnerCheck(sStructGridNo);
+                                this.HandleFencePartnerCheck(sStructGridNo);
                                 sStructGridNo = IsometricUtils.NewGridNo(pBase.sGridNo, IsometricUtils.DirectionInc(WorldDirections.NORTH));
-                                HandleFencePartnerCheck(sStructGridNo);
+                                this.HandleFencePartnerCheck(sStructGridNo);
                                 break;
 
                             case WallOrientation.OUTSIDE_TOP_LEFT:
                             case WallOrientation.INSIDE_TOP_LEFT:
 
                                 sStructGridNo = IsometricUtils.NewGridNo(pBase.sGridNo, IsometricUtils.DirectionInc(WorldDirections.EAST));
-                                HandleFencePartnerCheck(sStructGridNo);
+                                this.HandleFencePartnerCheck(sStructGridNo);
                                 sStructGridNo = IsometricUtils.NewGridNo(pBase.sGridNo, IsometricUtils.DirectionInc(WorldDirections.WEST));
-                                HandleFencePartnerCheck(sStructGridNo);
+                                this.HandleFencePartnerCheck(sStructGridNo);
                                 break;
                         }
                     }
@@ -1000,7 +1000,7 @@ public class ExplosionControl
             // Check level!
             if (pCurrent.sCubeOffset == sDesiredLevel)
             {
-                fExplodeDamageReturn = ExplosiveDamageStructureAtGridNo(pCurrent, pNextCurrent, sGridNo, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, false, ubOwner, bLevel);
+                fExplodeDamageReturn = this.ExplosiveDamageStructureAtGridNo(pCurrent, pNextCurrent, sGridNo, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, false, ubOwner, bLevel);
 
                 // Are we overwritting damage due to multi-tile...?
                 if (fExplodeDamageReturn > 0)
@@ -1060,11 +1060,11 @@ public class ExplosionControl
                                         // If we just damaged it, use same damage value....
                                         if (fMultiStructSpecialFlag > 0)
                                         {
-                                            ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 1, ubOwner, bLevel);
+                                            this.ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 1, ubOwner, bLevel);
                                         }
                                         else
                                         {
-                                            ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 2, ubOwner, bLevel);
+                                            this.ExplosiveDamageGridNo(sNewGridNo2, sWoundAmt, uiDist, out pfRecompileMovementCosts, fOnlyWalls, bMultiStructSpecialFlag, 2, ubOwner, bLevel);
                                         }
 
                                         {
@@ -1366,7 +1366,7 @@ public class ExplosionControl
         sBreathAmt = (pExplosive.ubStunDamage * 100) + (int)(((pExplosive.ubStunDamage / 2) * 100 * uiRoll) / 100);
 
         // ATE: Make sure guys get pissed at us!
-        HandleBuldingDestruction(sGridNo, ubOwner);
+        this.HandleBuldingDestruction(sGridNo, ubOwner);
 
 
         if (fBlastEffect)
@@ -1415,14 +1415,14 @@ public class ExplosionControl
                     sStructDmgAmt = sWoundAmt;
                 }
 
-                ExplosiveDamageGridNo(sGridNo, sStructDmgAmt, uiDist, out fRecompileMovementCosts, false, -1, 0, ubOwner, bLevel);
+                this.ExplosiveDamageGridNo(sGridNo, sStructDmgAmt, uiDist, out fRecompileMovementCosts, false, -1, 0, ubOwner, bLevel);
 
                 // ATE: Look for damage to walls ONLY for next two gridnos
                 sNewGridNo = NewGridNo(sGridNo, DirectionInc(WorldDirections.NORTH));
 
                 if (GridNoOnVisibleWorldTile(sNewGridNo))
                 {
-                    ExplosiveDamageGridNo(sNewGridNo, sStructDmgAmt, uiDist, out fRecompileMovementCosts, true, -1, 0, ubOwner, bLevel);
+                    this.ExplosiveDamageGridNo(sNewGridNo, sStructDmgAmt, uiDist, out fRecompileMovementCosts, true, -1, 0, ubOwner, bLevel);
                 }
 
                 // ATE: Look for damage to walls ONLY for next two gridnos
@@ -1430,7 +1430,7 @@ public class ExplosionControl
 
                 if (GridNoOnVisibleWorldTile(sNewGridNo))
                 {
-                    ExplosiveDamageGridNo(sNewGridNo, sStructDmgAmt, uiDist, out fRecompileMovementCosts, true, -1, 0, ubOwner, bLevel);
+                    this.ExplosiveDamageGridNo(sNewGridNo, sStructDmgAmt, uiDist, out fRecompileMovementCosts, true, -1, 0, ubOwner, bLevel);
                 }
 
             }
@@ -1520,7 +1520,7 @@ public class ExplosionControl
                 // don't hurt anyone who is already dead & waiting to be removed
                 if ((ubPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) != NOBODY)
                 {
-                    DamageSoldierFromBlast(ubPerson, ubOwner, sBombGridNo, sWoundAmt, sBreathAmt, uiDist, usItem, sSubsequent);
+                    this.DamageSoldierFromBlast(ubPerson, ubOwner, sBombGridNo, sWoundAmt, sBreathAmt, uiDist, usItem, sSubsequent);
                 }
 
                 if (bLevel == 1)
@@ -1532,11 +1532,11 @@ public class ExplosionControl
                             // debris damage!
                             if ((sBreathAmt / 2) > 20)
                             {
-                                DamageSoldierFromBlast(ubPerson, ubOwner, sBombGridNo, (int)Globals.Random.Next((sWoundAmt / 2) - 20), (int)Globals.Random.Next((sBreathAmt / 2) - 20), uiDist, usItem, sSubsequent);
+                                this.DamageSoldierFromBlast(ubPerson, ubOwner, sBombGridNo, (int)Globals.Random.Next((sWoundAmt / 2) - 20), (int)Globals.Random.Next((sBreathAmt / 2) - 20), uiDist, usItem, sSubsequent);
                             }
                             else
                             {
-                                DamageSoldierFromBlast(ubPerson, ubOwner, sBombGridNo, (int)Globals.Random.Next((sWoundAmt / 2) - 20), 1, uiDist, usItem, sSubsequent);
+                                this.DamageSoldierFromBlast(ubPerson, ubOwner, sBombGridNo, (int)Globals.Random.Next((sWoundAmt / 2) - 20), 1, uiDist, usItem, sSubsequent);
                             }
 
                         }
@@ -1554,7 +1554,7 @@ public class ExplosionControl
 
                 pSoldier = MercPtrs[ubPerson];   // someone is here, and they're gonna get hurt
 
-                fRecompileMovementCosts = DishOutGasDamage(pSoldier, pExplosive, sSubsequent, fRecompileMovementCosts, sWoundAmt, sBreathAmt, ubOwner);
+                fRecompileMovementCosts = this.DishOutGasDamage(pSoldier, pExplosive, sSubsequent, fRecompileMovementCosts, sWoundAmt, sBreathAmt, ubOwner);
                 /*
                          if (!pSoldier.bActive || !pSoldier.bInSector || !pSoldier.bLife || AM_A_ROBOT( pSoldier ) )
                          {
@@ -1940,7 +1940,7 @@ public class ExplosionControl
         sRange = ubRadius * 2;
 
         // first, affect main spot
-        if (ExpAffect(sGridNo, sGridNo, 0, usItem, ubOwner, fSubsequent, out bool fAnyMercHit, bLevel, iSmokeEffectID))
+        if (this.ExpAffect(sGridNo, sGridNo, 0, usItem, ubOwner, fSubsequent, out bool fAnyMercHit, bLevel, iSmokeEffectID))
         {
             fRecompileMovement = true;
         }
@@ -1974,7 +1974,7 @@ public class ExplosionControl
                 else
                 {
                     // Check if struct is a tree, etc and reduce range...
-                    GetRayStopInfo(uiNewSpot, ubDir, bLevel, fSmokeEffect, cnt, out uiTempRange, out ubKeepGoing);
+                    this.GetRayStopInfo(uiNewSpot, ubDir, bLevel, fSmokeEffect, cnt, out uiTempRange, out ubKeepGoing);
                 }
 
                 if (ubKeepGoing > 0)
@@ -1983,7 +1983,7 @@ public class ExplosionControl
 
                     //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("Explosion affects %d", uiNewSpot) );
                     // ok, do what we do here...
-                    if (ExpAffect(sGridNo, (int)uiNewSpot, cnt / 2, usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
+                    if (this.ExpAffect(sGridNo, (int)uiNewSpot, cnt / 2, usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
                     {
                         fRecompileMovement = true;
                     }
@@ -2016,13 +2016,13 @@ public class ExplosionControl
                             if (uiNewSpot != uiBranchSpot)
                             {
                                 // Check if struct is a tree, etc and reduce range...
-                                GetRayStopInfo(uiNewSpot, ubBranchDir, bLevel, fSmokeEffect, branchCnt, out ubBranchRange, out ubKeepGoing);
+                                this.GetRayStopInfo(uiNewSpot, ubBranchDir, bLevel, fSmokeEffect, branchCnt, out ubBranchRange, out ubKeepGoing);
 
                                 if (ubKeepGoing > 0)
                                 {
                                     // ok, do what we do here
                                     //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("Explosion affects %d", uiNewSpot) );
-                                    if (ExpAffect(sGridNo, (int)uiNewSpot, (int)((cnt + branchCnt) / 2), usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
+                                    if (this.ExpAffect(sGridNo, (int)uiNewSpot, (int)((cnt + branchCnt) / 2), usItem, ubOwner, fSubsequent, out fAnyMercHit, bLevel, iSmokeEffectID))
                                     {
                                         fRecompileMovement = true;
                                     }
@@ -2351,19 +2351,19 @@ public class ExplosionControl
 //                SearchForOtherMembersWithinPitRadiusAndMakeThemFall(sGridNo, 2);
                 break;
             case ACTION_ITEM.TOGGLE_ACTION1:
-                ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 1);
+                this.ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 1);
                 break;
             case ACTION_ITEM.TOGGLE_ACTION2:
-                ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 2);
+                this.ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 2);
                 break;
             case ACTION_ITEM.TOGGLE_ACTION3:
-                ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 3);
+                this.ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 3);
                 break;
             case ACTION_ITEM.TOGGLE_ACTION4:
-                ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 4);
+                this.ToggleActionItemsByFrequency(FIRST_MAP_PLACED_FREQUENCY + 4);
                 break;
             case ACTION_ITEM.TOGGLE_PRESSURE_ITEMS:
-                TogglePressureActionItemsInGridNo(sGridNo);
+                this.TogglePressureActionItemsInGridNo(sGridNo);
                 break;
             case ACTION_ITEM.ENTER_BROTHEL:
                 // JA2Gold: Disable brothel tracking
@@ -2655,7 +2655,7 @@ public class ExplosionControl
 
                 if (pObj.usItem == Items.ACTION_ITEM && pObj.bActionValue != ACTION_ITEM.BLOW_UP)
                 {
-                    PerformItemAction(sGridNo, pObj);
+                    this.PerformItemAction(sGridNo, pObj);
                 }
                 else if (pObj.usBombItem == Items.TRIP_KLAXON)
                 {
@@ -2778,7 +2778,7 @@ public class ExplosionControl
                     if (pObj.bDelay == 0)
                     {
                         // put this bomb on the queue
-                        AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
+                        this.AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
                         // ATE: CC black magic....
                         if (pObj.ubBombOwner > 1)
                         {
@@ -2822,7 +2822,7 @@ public class ExplosionControl
                         gubPersonToSetOffExplosions = ubID;
 
                         // put this bomb on the queue
-                        AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
+                        this.AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
                         if (pObj.usItem != Items.ACTION_ITEM || pObj.bActionValue == ACTION_ITEM.BLOW_UP)
                         {
                             uiTimeStamp += BOMB_QUEUE_DELAY;
@@ -2847,16 +2847,16 @@ public class ExplosionControl
         switch (bPanicTrigger)
         {
             case 0:
-                SetOffBombsByFrequency(ubID, PANIC_FREQUENCY);
+                this.SetOffBombsByFrequency(ubID, PANIC_FREQUENCY);
                 gTacticalStatus.fPanicFlags &= ~(PANIC.BOMBS_HERE);
                 break;
 
             case 1:
-                SetOffBombsByFrequency(ubID, PANIC_FREQUENCY_2);
+                this.SetOffBombsByFrequency(ubID, PANIC_FREQUENCY_2);
                 break;
 
             case 2:
-                SetOffBombsByFrequency(ubID, PANIC_FREQUENCY_3);
+                this.SetOffBombsByFrequency(ubID, PANIC_FREQUENCY_3);
                 break;
 
             default:
@@ -2910,14 +2910,14 @@ public class ExplosionControl
                         {
                             // send out a signal to detonate other bombs, rather than this which
                             // isn't a bomb but a trigger
-                            SetOffBombsByFrequency(ubID, pObj.bFrequency);
+                            this.SetOffBombsByFrequency(ubID, pObj.bFrequency);
                         }
                         else
                         {
                             gubPersonToSetOffExplosions = ubID;
 
                             // put this bomb on the queue
-                            AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
+                            this.AddBombToQueue(uiWorldBombIndex, uiTimeStamp);
                             if (pObj.usItem != Items.ACTION_ITEM || pObj.bActionValue == ACTION_ITEM.BLOW_UP)
                             {
                                 uiTimeStamp += BOMB_QUEUE_DELAY;
@@ -2957,7 +2957,7 @@ public class ExplosionControl
                     // first set attack busy count to 0 in case of a lingering a.b.c. problem...
                     gTacticalStatus.ubAttackBusyCount = 0;
 
-                    SetOffBombsByFrequency(ubID, pObj.bFrequency);
+                    this.SetOffBombsByFrequency(ubID, pObj.bFrequency);
                 }
             }
         }
@@ -3125,7 +3125,7 @@ public class ExplosionControl
         int sSectorNo;
 
         // OK, First check if SAM exists, and if not, return
-        if (!DoesSAMExistHere(sSectorX, sSectorY, sSectorZ, sGridNo))
+        if (!this.DoesSAMExistHere(sSectorX, sSectorY, sSectorZ, sGridNo))
         {
             return;
         }
@@ -3276,7 +3276,7 @@ public class ExplosionControl
     {
         if (gfWorldLoaded)
         {
-            return (FindActiveTimedBomb() != -1);
+            return (this.FindActiveTimedBomb() != -1);
         }
         else
         {
@@ -3290,7 +3290,7 @@ public class ExplosionControl
 
         do
         {
-            iItemIndex = FindActiveTimedBomb();
+            iItemIndex = this.FindActiveTimedBomb();
             if (iItemIndex != -1)
             {
                 WorldItems.RemoveItemFromWorld(iItemIndex);

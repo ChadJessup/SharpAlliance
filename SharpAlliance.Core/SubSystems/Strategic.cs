@@ -111,10 +111,10 @@ public class GARRISON_GROUP
 {
     public GARRISON_GROUP(SEC a, Garrisons b, int c, int d)
     {
-        ubSectorID = a;
-        ubComposition = b;
-        bWeight = c;
-        ubPendingGroupID = d;
+        this.ubSectorID = a;
+        this.ubComposition = b;
+        this.bWeight = c;
+        this.ubPendingGroupID = d;
     }
 
     public SEC ubSectorID;

@@ -52,7 +52,7 @@ public class DrugsAndAlcohol
 
         // If not a syringe, return
 
-        ubDrugType = GetDrugType(usItem);
+        ubDrugType = this.GetDrugType(usItem);
 
         // Determine what type of drug....
         if (ubDrugType == NO_DRUG)

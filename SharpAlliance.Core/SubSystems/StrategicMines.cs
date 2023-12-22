@@ -1072,7 +1072,7 @@ public class StrategicMines
         {
             // shut off production at his mine (Permanently!)
             ShutOffMineProduction(ubMineIndex);
-            MineShutdownIsPermanent(ubMineIndex);
+            this.MineShutdownIsPermanent(ubMineIndex);
 
             // get the index of his town
             bTownId = GetTownAssociatedWithMine(ubMineIndex);
@@ -1191,7 +1191,7 @@ public class StrategicMines
              (!pMineStatus.fEmpty) &&
              (!pMineStatus.fSpokeToHeadMiner) &&
              (!pMineStatus.fAttackedHeadMiner) &&
-             (Globals.gMercProfiles[GetHeadMinerProfileIdForMine(ubMineIndex)].bLife > 0))
+             (Globals.gMercProfiles[this.GetHeadMinerProfileIdForMine(ubMineIndex)].bLife > 0))
         {
             return (true);
         }

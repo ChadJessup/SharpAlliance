@@ -309,7 +309,7 @@ public class StructureInternals
         bool fOk;
         STRUCTURE_FILE_REF pFileRef = new();
 
-        fOk = LoadStructureData(szFileName, pFileRef, out int uiDataSize);
+        fOk = this.LoadStructureData(szFileName, pFileRef, out int uiDataSize);
         if (!fOk)
         {
             MemFree(pFileRef);
@@ -2140,7 +2140,7 @@ public class StructureInternals
         STRUCTURE? pCurrent;
         STRUCTUREFLAGS uiTypeFlag;
 
-        uiTypeFlag = StructureTypeToFlag(ubType);
+        uiTypeFlag = this.StructureTypeToFlag(ubType);
 
         pCurrent = gpWorldLevelData[sGridNo].pStructureHead;
         while (pCurrent != null)

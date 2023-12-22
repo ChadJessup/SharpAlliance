@@ -81,7 +81,7 @@ public class Messages
 
     void SetStringPosition(ScrollStringStPtr pStringSt, int usX, int usY)
     {
-        SetStringVideoOverlayPosition(pStringSt, usX, usY);
+        this.SetStringVideoOverlayPosition(pStringSt, usX, usY);
     }
 
 
@@ -146,7 +146,7 @@ public class Messages
         VideoOverlayDesc.sX = VideoOverlayDesc.sLeft;
         VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
         VideoOverlayDesc.pzText = pStringSt.pString16!;
-        VideoOverlayDesc.BltCallback = BlitString;
+        VideoOverlayDesc.BltCallback = this.BlitString;
         pStringSt.iVideoOverlay = this.renderDirty.RegisterVideoOverlay((VOVERLAY.DIRTYBYTEXT), VideoOverlayDesc);
 
         if (pStringSt.iVideoOverlay == -1)
@@ -244,7 +244,7 @@ public class Messages
                 // CHECK IF WE HAVE AGED
 
                 // Remove our sorry ass
-                RemoveStringVideoOverlay(Globals.gpDisplayList[cnt]);
+                this.RemoveStringVideoOverlay(Globals.gpDisplayList[cnt]);
                 Globals.gpDisplayList[cnt] = null;
             }
         }
@@ -268,7 +268,7 @@ public class Messages
         suiTimer = Globals.GetJA2Clock();
 
         // might have pop up text timer
-        HandleLastQuotePopUpTimer();
+        this.HandleLastQuotePopUpTimer();
 
         if (Globals.guiCurrentScreen == ScreenName.MAP_SCREEN)
         {
@@ -287,7 +287,7 @@ public class Messages
             return;
         }
 
-        iNumberOfMessagesOnQueue = GetMessageQueueSize();
+        iNumberOfMessagesOnQueue = this.GetMessageQueueSize();
         iMaxAge = Globals.MAX_AGE;
 
         if ((iNumberOfMessagesOnQueue > 0) && (Globals.gpDisplayList[Globals.MAX_LINE_COUNT - 1] != null))
@@ -323,7 +323,7 @@ public class Messages
                 if ((suiTimer - Globals.gpDisplayList[cnt].uiTimeOfLastUpdate) > (int)(iMaxAge - (1000 * iNumberOfMessagesOnQueue)))
                 {
                     // Remove our sorry ass
-                    RemoveStringVideoOverlay(Globals.gpDisplayList[cnt]);
+                    this.RemoveStringVideoOverlay(Globals.gpDisplayList[cnt]);
 
                     // Free slot
                     Globals.gpDisplayList[cnt] = null;
@@ -352,7 +352,7 @@ public class Messages
                 // now add in the new string
                 cnt = 0;
                 Globals.gpDisplayList[cnt] = pStringS;
-                CreateStringVideoOverlay(pStringS, Globals.X_START, Globals.Y_START);
+                this.CreateStringVideoOverlay(pStringS, Globals.X_START, Globals.Y_START);
                 if (pStringS.fBeginningOfNewString == true)
                 {
                     iNumberOfNewStrings++;
@@ -369,7 +369,7 @@ public class Messages
                     if (Globals.gpDisplayList[cnt] != null)
                     {
 
-                        SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], Globals.X_START, ((Globals.Y_START - ((cnt) * this.fonts.GetFontHeight(FontStyle.SMALLFONT1))) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * (iNumberOfNewStrings))));
+                        this.SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], Globals.X_START, ((Globals.Y_START - ((cnt) * this.fonts.GetFontHeight(FontStyle.SMALLFONT1))) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * (iNumberOfNewStrings))));
 
                         // start of new string, increment count of new strings, for spacing purposes
                         if (Globals.gpDisplayList[cnt].fBeginningOfNewString == true)
@@ -1072,7 +1072,7 @@ public class Messages
         string SavedString = string.Empty;// [512];
 
         // clear tactical message queue
-        ClearTacticalMessageQueue();
+        this.ClearTacticalMessageQueue();
 
         Globals.gubEndOfMapScreenMessageList = 0;
         Globals.gubStartOfMapScreenMessageList = 0;
@@ -1226,7 +1226,7 @@ public class Messages
         ScrollStringStPtr pStringSt = pStringS;
         int iCounter = 0;
 
-        pStringSt = MoveToBeginningOfMessageQueue();
+        pStringSt = this.MoveToBeginningOfMessageQueue();
 
         while (pStringSt is not null)
         {
@@ -1244,7 +1244,7 @@ public class Messages
         ScrollStringStPtr? pStringSt = pStringS;
         ScrollStringStPtr? pOtherStringSt = pStringS;
 
-        ClearDisplayedListOfTacticalStrings();
+        this.ClearDisplayedListOfTacticalStrings();
 
         // now run through all the tactical messages
         while (pStringSt is not null)
@@ -1312,7 +1312,7 @@ public class Messages
             }
         }
 
-        InitGlobalMessageList();
+        this.InitGlobalMessageList();
 
         return;
     }

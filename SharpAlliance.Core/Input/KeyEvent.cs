@@ -14,11 +14,11 @@ public struct KeyEvent
 
     public KeyEvent(Key key, bool down, ModifierKeys modifiers, bool repeat)
     {
-        Key = key;
-        Down = down;
-        Modifiers = modifiers;
-        Repeat = repeat;
+        this.Key = key;
+        this.Down = down;
+        this.Modifiers = modifiers;
+        this.Repeat = repeat;
     }
 
-    public override string ToString() => $"{Key} {(Down ? "Down" : "Up")} [{Modifiers}] (repeat={Repeat})";
+    public override string ToString() => $"{this.Key} {(this.Down ? "Down" : "Up")} [{this.Modifiers}] (repeat={this.Repeat})";
 }

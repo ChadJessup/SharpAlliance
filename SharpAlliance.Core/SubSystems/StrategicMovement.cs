@@ -144,7 +144,7 @@ public class StrategicMovement
         // init errors checks
         // //AssertMsg(pGroup, String("Attempting to RemovePlayerFromGroup( %d ) from non-existant group", ubGroupId));
 
-        return RemoveAllPlayersFromPGroup(pGroup);
+        return this.RemoveAllPlayersFromPGroup(pGroup);
     }
 
     bool RemoveAllPlayersFromPGroup(GROUP? pGroup)
@@ -508,7 +508,7 @@ public class StrategicMovement
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
-        return AddWaypointIDToPGroup(pGroup, ubSectorID);
+        return this.AddWaypointIDToPGroup(pGroup, ubSectorID);
     }
 
     // NOTE: This does NOT expect a strategic sector ID
@@ -523,7 +523,7 @@ public class StrategicMovement
     {
         GROUP? pGroup;
         pGroup = GetGroup(ubGroupID);
-        return AddWaypointStrategicIDToPGroup(pGroup, uiSectorID);
+        return this.AddWaypointStrategicIDToPGroup(pGroup, uiSectorID);
     }
 
     bool AddWaypointStrategicIDToPGroup(GROUP? pGroup, int uiSectorID)
@@ -2372,13 +2372,13 @@ public class StrategicMovement
 
     void RemoveAllGroups()
     {
-        gfRemovingAllGroups = true;
+        this.gfRemovingAllGroups = true;
         while (gpGroupList is not null)
         {
             //            RemovePGroup(gpGroupList);
         }
 
-        gfRemovingAllGroups = false;
+        this.gfRemovingAllGroups = false;
     }
 
     public static void SetGroupSectorValue(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int ubGroupID)
@@ -2477,7 +2477,7 @@ public class StrategicMovement
             return (0);
         }
 
-        return (CalculateTravelTimeOfGroup(pGroup));
+        return (this.CalculateTravelTimeOfGroup(pGroup));
     }
 
     int CalculateTravelTimeOfGroup(GROUP? pGroup)
@@ -3273,20 +3273,20 @@ public class StrategicMovement
                 if (pGroup.ubGroupSize > 0)
                 {
                     //Save the player group list
-                    SavePlayerGroupList(hFile, pGroup);
+                    this.SavePlayerGroupList(hFile, pGroup);
                 }
             }
             else //else its an enemy group
             {
                 //Make sure the pointer is valid
-//                Debug.Assert(pGroup.pEnemyGroup);
+                //                Debug.Assert(pGroup.pEnemyGroup);
 
                 // 
-                SaveEnemyGroupStruct(hFile, pGroup);
+                this.SaveEnemyGroupStruct(hFile, pGroup);
             }
 
             //Save the waypoint list for the group, if they have one
-            SaveWayPointList(hFile, pGroup);
+            this.SaveWayPointList(hFile, pGroup);
 
 
 
@@ -3376,12 +3376,12 @@ public class StrategicMovement
             }
             else //else its an enemy group
             {
-                LoadEnemyGroupStructFromSavedGame(hFile, pTemp);
+                this.LoadEnemyGroupStructFromSavedGame(hFile, pTemp);
             }
 
 
             //Save the waypoint list for the group, if they have one
-            LoadWayPointList(hFile, pTemp);
+            this.LoadWayPointList(hFile, pTemp);
 
 
             pTemp.next = null;
@@ -4426,7 +4426,7 @@ public class StrategicMovement
         //1 minute to actual traverse time between the sectors.
         gfRandomizingPatrolGroup = true;
 
-        SetEnemyGroupSector(pGroup, ubSectorID);
+        this.SetEnemyGroupSector(pGroup, ubSectorID);
         InitiateGroupMovementToNextSector(pGroup);
 
         //Immediately turn off the flag once finished.
@@ -4641,7 +4641,7 @@ public class StrategicMovement
 
 
         // if we haven't already checked for NPCs, and the group isn't empty 
-        if (fCheckForNPCs && (HandlePlayerGroupEnteringSectorToCheckForNPCsOfNote(pGroup) == true))
+        if (fCheckForNPCs && (this.HandlePlayerGroupEnteringSectorToCheckForNPCsOfNote(pGroup) == true))
         {
             // wait for player to answer/confirm prompt before doing anything else
             fPlayerPrompted = true;
@@ -4737,7 +4737,7 @@ public class StrategicMovement
 
 
         // check for profiled NPCs in sector
-        if (WildernessSectorWithAllProfiledNPCsNotSpokenWith(sSectorX, sSectorY, bSectorZ) == false)
+        if (this.WildernessSectorWithAllProfiledNPCsNotSpokenWith(sSectorX, sSectorY, bSectorZ) == false)
         {
             return (false);
         }
@@ -4822,7 +4822,7 @@ public class StrategicMovement
                  (ubExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_OK))
         {
             // NPCs now checked, continue moving if appropriate
-            PlayerGroupArrivedSafelyInSector(gpGroupPrompting, false);
+            this.PlayerGroupArrivedSafelyInSector(gpGroupPrompting, false);
         }
         else if (ubExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_NO)
         {

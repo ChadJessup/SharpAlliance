@@ -132,10 +132,10 @@ public class MercTextBox
             pPopUpTextBox = new();
 
             // copy over ptr
-            gPopUpTextBox = pPopUpTextBox;
+            this.gPopUpTextBox = pPopUpTextBox;
 
             // Load appropriate images
-            if (LoadTextMercPopupImages(ubBackgroundIndex, ubBorderIndex) == false)
+            if (this.LoadTextMercPopupImages(ubBackgroundIndex, ubBorderIndex) == false)
             {
                 MemFree(pPopUpTextBox);
                 return (-1);
@@ -148,29 +148,29 @@ public class MercTextBox
             // Check if these images are different
 
             // grab box
-            pPopUpTextBox = GetPopUpBoxIndex(iBoxId);
+            pPopUpTextBox = this.GetPopUpBoxIndex(iBoxId);
 
             // copy over ptr
-            gPopUpTextBox = pPopUpTextBox;
+            this.gPopUpTextBox = pPopUpTextBox;
 
             if (ubBackgroundIndex != pPopUpTextBox.ubBackgroundIndex
                 || ubBorderIndex != pPopUpTextBox.ubBorderIndex
                 || !pPopUpTextBox.fMercTextPopupInitialized)
             {
                 //Remove old, set new
-                RemoveTextMercPopupImages();
-                if (LoadTextMercPopupImages(ubBackgroundIndex, ubBorderIndex) == false)
+                this.RemoveTextMercPopupImages();
+                if (this.LoadTextMercPopupImages(ubBackgroundIndex, ubBorderIndex) == false)
                 {
                     return (-1);
                 }
             }
         }
 
-        gPopUpTextBox.uiFlags = guiFlags;
+        this.gPopUpTextBox.uiFlags = guiFlags;
         // reset flags
         guiFlags = 0;
 
-        usStringPixLength = fonts.WFStringPixLength(pString, TEXT_POPUP_FONT);
+        usStringPixLength = this.fonts.WFStringPixLength(pString, TEXT_POPUP_FONT);
 
         if (usStringPixLength < (usWidth - (MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X) * 2))
         {
@@ -256,7 +256,7 @@ public class MercTextBox
         {
             // Zero with yellow,
             // Set source transparcenty
-            video.SetVideoSurfaceTransparency(pPopUpTextBox.uiSourceBufferIndex, FROMRGB(255, 255, 0));
+            this.video.SetVideoSurfaceTransparency(pPopUpTextBox.uiSourceBufferIndex, FROMRGB(255, 255, 0));
 
 //            pDestBuf = video.LockVideoSurface(pPopUpTextBox.uiSourceBufferIndex, out uiDestPitchBYTES);
 
@@ -274,7 +274,7 @@ public class MercTextBox
         }
         else
         {
-            if (!video.GetVideoSurface(out HVSURFACE hSrcVSurface, pPopUpTextBox.uiMercTextPopUpBackground))
+            if (!this.video.GetVideoSurface(out HVSURFACE hSrcVSurface, pPopUpTextBox.uiMercTextPopUpBackground))
             {
                 //AssertMsg(0, "Failed to GetVideoSurface for PrepareMercPopupBox.  VSurfaceID:  %d",
                 //    pPopUpTextBox.uiMercTextPopUpBackground);
@@ -289,7 +289,7 @@ public class MercTextBox
 //            video.UnLockVideoSurface(pPopUpTextBox.uiSourceBufferIndex);
         }
 
-        hImageHandle = video.GetVideoObject(pPopUpTextBox.uiMercTextPopUpBorder);
+        hImageHandle = this.video.GetVideoObject(pPopUpTextBox.uiMercTextPopUpBorder);
 
         usPosX = usPosY = 0;
         //blit top row of images
@@ -322,15 +322,15 @@ public class MercTextBox
         // Icon if ness....
         if (pPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.STOPICON))
         {
-            video.BltVideoObjectFromIndex(pPopUpTextBox.uiSourceBufferIndex, guiBoxIcons, 0, 5, 4, VO_BLT.SRCTRANSPARENCY, null);
+            this.video.BltVideoObjectFromIndex(pPopUpTextBox.uiSourceBufferIndex, guiBoxIcons, 0, 5, 4, VO_BLT.SRCTRANSPARENCY, null);
         }
         if (pPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.SKULLICON))
         {
-            video.BltVideoObjectFromIndex(pPopUpTextBox.uiSourceBufferIndex, guiSkullIcons, 0, 9, 4, VO_BLT.SRCTRANSPARENCY, null);
+            this.video.BltVideoObjectFromIndex(pPopUpTextBox.uiSourceBufferIndex, guiSkullIcons, 0, 9, 4, VO_BLT.SRCTRANSPARENCY, null);
         }
 
         //Get the font and shadow colors
-        GetMercPopupBoxFontColor(ubBackgroundIndex, out FontColor ubFontColor, out FontShadow ubFontShadowColor);
+        this.GetMercPopupBoxFontColor(ubBackgroundIndex, out FontColor ubFontColor, out FontShadow ubFontShadowColor);
 
         FontSubSystem.SetFontShadow(ubFontShadowColor);
         this.fonts.SetFontDestBuffer(pPopUpTextBox.uiSourceBufferIndex, 0, 0, usWidth, usHeight, false);
@@ -360,12 +360,12 @@ public class MercTextBox
         if (iBoxId == -1)
         {
             // now return attemp to add to pop up box list, if successful will return index
-            return (AddPopUpBoxToList(pPopUpTextBox));
+            return (this.AddPopUpBoxToList(pPopUpTextBox));
         }
         else
         {
             // set as current box
-            SetCurrentPopUpBox(iBoxId);
+            this.SetCurrentPopUpBox(iBoxId);
 
             return (iBoxId);
         }
@@ -373,7 +373,7 @@ public class MercTextBox
 
     public MercPopUpBox GetPopUpBoxIndex(int iId)
     {
-        return gpPopUpBoxList[iId];
+        return this.gpPopUpBoxList[iId];
     }
 
     //Pass in the background index, and pointers to the font and shadow color
@@ -413,15 +413,15 @@ public class MercTextBox
         //this procedure will remove the background and border video surface/object from the indecies
         if (true)//gPopUpTextBox )
         {
-            if (gPopUpTextBox.fMercTextPopupInitialized)
+            if (this.gPopUpTextBox.fMercTextPopupInitialized)
             {
                 // the background
-                video.DeleteVideoObjectFromIndex(gPopUpTextBox.uiMercTextPopUpBackground);
+                this.video.DeleteVideoObjectFromIndex(this.gPopUpTextBox.uiMercTextPopUpBackground);
 
                 // the border
-                video.DeleteVideoObjectFromIndex(gPopUpTextBox.uiMercTextPopUpBorder);
+                this.video.DeleteVideoObjectFromIndex(this.gPopUpTextBox.uiMercTextPopUpBorder);
 
-                gPopUpTextBox.fMercTextPopupInitialized = false;
+                this.gPopUpTextBox.fMercTextPopupInitialized = false;
             }
         }
 
@@ -434,13 +434,13 @@ public class MercTextBox
         // attempt to add box to list
         for (int iCounter = 0; iCounter < MAX_NUMBER_OF_POPUP_BOXES; iCounter++)
         {
-            if (gpPopUpBoxList[iCounter] == null || !gpPopUpBoxList[iCounter].IsInitialized)
+            if (this.gpPopUpBoxList[iCounter] == null || !this.gpPopUpBoxList[iCounter].IsInitialized)
             {
                 // found a spot, inset
-                gpPopUpBoxList[iCounter] = pPopUpTextBox;
+                this.gpPopUpBoxList[iCounter] = pPopUpTextBox;
 
                 // set as current
-                SetCurrentPopUpBox(iCounter);
+                this.SetCurrentPopUpBox(iCounter);
 
                 // return index value
                 return (iCounter);
@@ -468,15 +468,15 @@ public class MercTextBox
         //gPopUpTextBox.uiMercTextPopUpBackground = popupboxSurface;
 
         // border
-        VObjectDesc.ImageFile = Utils.FilenameForBPP(zMercBorderPopupFilenames[(int)ubBorderIndex]);
-        var borderImage = video.GetVideoObject(VObjectDesc.ImageFile, out var key);
+        VObjectDesc.ImageFile = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);
+        var borderImage = this.video.GetVideoObject(VObjectDesc.ImageFile, out var key);
 
-        gPopUpTextBox.uiMercTextPopUpBorder = key;
-        gPopUpTextBox.fMercTextPopupInitialized = true;
+        this.gPopUpTextBox.uiMercTextPopUpBorder = key;
+        this.gPopUpTextBox.fMercTextPopupInitialized = true;
 
         // so far so good, return successful
-        gPopUpTextBox.ubBackgroundIndex = ubBackgroundIndex;
-        gPopUpTextBox.ubBorderIndex = ubBorderIndex;
+        this.gPopUpTextBox.ubBackgroundIndex = ubBackgroundIndex;
+        this.gPopUpTextBox.ubBorderIndex = ubBorderIndex;
 
         return true;
     }
@@ -493,9 +493,9 @@ public class MercTextBox
         }
 
         // see if box inited
-        if (gpPopUpBoxList[uiId].IsInitialized)
+        if (this.gpPopUpBoxList[uiId].IsInitialized)
         {
-            gPopUpTextBox = gpPopUpBoxList[uiId];
+            this.gPopUpTextBox = this.gpPopUpBoxList[uiId];
             return (true);
         }
 
@@ -506,16 +506,16 @@ public class MercTextBox
     {
 
         // store old box and set current this passed one
-        gOldPopUpTextBox = gPopUpTextBox;
+        this.gOldPopUpTextBox = this.gPopUpTextBox;
 
-        gPopUpTextBox = pMercBox;
+        this.gPopUpTextBox = pMercBox;
 
         return (true);
     }
 
     public bool ResetOverrideMercPopupBox()
     {
-        gPopUpTextBox = gOldPopUpTextBox;
+        this.gPopUpTextBox = this.gOldPopUpTextBox;
 
         return (true);
     }
@@ -524,13 +524,13 @@ public class MercTextBox
     {
 
         // set the current box
-        if (SetCurrentPopUpBox(iBoxId) == false)
+        if (this.SetCurrentPopUpBox(iBoxId) == false)
         {
             return (false);
         }
 
         // now attempt to render the box
-        return (RenderMercPopupBox(sDestX, sDestY, uiBuffer));
+        return (this.RenderMercPopupBox(sDestX, sDestY, uiBuffer));
     }
 
     public bool RenderMercPopupBox(int sDestX, int sDestY, SurfaceType uiBuffer)
@@ -541,7 +541,7 @@ public class MercTextBox
         //	int  *pSrcBuf;
 
         // chad, is me - might mess up flow, we'll see
-        if (!gPopUpTextBox.IsInitialized)
+        if (!this.gPopUpTextBox.IsInitialized)
         {
             return false;
         }
@@ -557,13 +557,13 @@ public class MercTextBox
 
 
         //check to see if we are wanting to blit a transparent background
-        if (gPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.TRANS_BACK))
+        if (this.gPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.TRANS_BACK))
         {
-            VideoSurfaceManager.BltVideoSurface(uiBuffer, ((SurfaceType?)gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown, 0, sDestX, sDestY, BlitTypes.FAST | BlitTypes.USECOLORKEY, null);
+            VideoSurfaceManager.BltVideoSurface(uiBuffer, ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown, 0, sDestX, sDestY, BlitTypes.FAST | BlitTypes.USECOLORKEY, null);
         }
         else
         {
-            VideoSurfaceManager.BltVideoSurface(uiBuffer, ((SurfaceType?)gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown , 0, sDestX, sDestY, BlitTypes.FAST, null);
+            VideoSurfaceManager.BltVideoSurface(uiBuffer, ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown , 0, sDestX, sDestY, BlitTypes.FAST, null);
         }
 
 
@@ -573,7 +573,7 @@ public class MercTextBox
         //Invalidate!
         if (uiBuffer == SurfaceType.FRAME_BUFFER)
         {
-            video.InvalidateRegion(sDestX, sDestY, (int)(sDestX + gPopUpTextBox.sWidth), (int)(sDestY + gPopUpTextBox.sHeight));
+            this.video.InvalidateRegion(sDestX, sDestY, (int)(sDestX + this.gPopUpTextBox.sWidth), (int)(sDestY + this.gPopUpTextBox.sHeight));
         }
 
         // unlock the video surfaces

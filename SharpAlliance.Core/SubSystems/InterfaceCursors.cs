@@ -60,7 +60,7 @@ public class InterfaceCursors
 
         //RaiseMouseToLevel( (byte)gsInterfaceLevel );
 
-        HandleLooseCursorDraw();
+        this.HandleLooseCursorDraw();
 
 
         // OK, WE OVERRIDE HERE CURSOR DRAWING FOR THINGS LIKE
@@ -94,11 +94,11 @@ public class InterfaceCursors
             {
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
-                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(TileIndexes.FIRSTPOINTERS3));
+                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, this.GetSnapCursorIndex(TileIndexes.FIRSTPOINTERS3));
                 }
                 else
                 {
-                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(Globals.gUICursors[Globals.guiCurUICursor].usAdditionalData));
+                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, this.GetSnapCursorIndex(Globals.gUICursors[Globals.guiCurUICursor].usAdditionalData));
                 }
                 pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 pNode.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -106,7 +106,7 @@ public class InterfaceCursors
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
                     // Put one on the roof as well
-                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, GetSnapCursorIndex(Globals.gUICursors[Globals.guiCurUICursor].usAdditionalData));
+                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, this.GetSnapCursorIndex(Globals.gUICursors[Globals.guiCurUICursor].usAdditionalData));
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 }
@@ -165,11 +165,11 @@ public class InterfaceCursors
 
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
-                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(TileIndexes.FIRSTPOINTERS14));
+                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, this.GetSnapCursorIndex(TileIndexes.FIRSTPOINTERS14));
                 }
                 else
                 {
-                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, GetSnapCursorIndex(usTileCursor));
+                    pNode = this.world.AddTopmostToTail(Globals.gusCurMousePos, this.GetSnapCursorIndex(usTileCursor));
                 }
 
                 pNode.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
@@ -178,7 +178,7 @@ public class InterfaceCursors
                 if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
                 {
                     // Put one on the roof as well
-                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, GetSnapCursorIndex(usTileCursor));
+                    this.world.AddOnRoofToHead(Globals.gusCurMousePos, this.GetSnapCursorIndex(usTileCursor));
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                     Globals.gpWorldLevelData[Globals.gusCurMousePos].pOnRoofHead.ubNaturalShadeLevel = Shading.DEFAULT_SHADE_LEVEL;
                 }
@@ -192,7 +192,7 @@ public class InterfaceCursors
                 MouseSubSystem.MSYS_ChangeRegionCursor(Globals.gViewportRegion, CURSOR.VIDEO_NO_CURSOR);
 
                 // Set Snapping Cursor
-                DrawSnappingCursor();
+                this.DrawSnappingCursor();
             }
 
 
@@ -259,7 +259,7 @@ public class InterfaceCursors
 
     bool HideUICursor()
     {
-        HandleLooseCursorHide();
+        this.HandleLooseCursorHide();
 
         // OK, WE OVERRIDE HERE CURSOR DRAWING FOR THINGS LIKE
         if (Globals.gpItemPointer != null)
@@ -307,7 +307,7 @@ public class InterfaceCursors
         if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.SNAPPING))
         {
             // hide Snapping Cursor
-            EraseSnappingCursor();
+            this.EraseSnappingCursor();
         }
 
         if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.FREEFLOWING))

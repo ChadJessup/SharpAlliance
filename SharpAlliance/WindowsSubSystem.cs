@@ -87,8 +87,8 @@ namespace SharpAlliance
             {
                 Size = Unsafe.SizeOf<WNDCLASSEX>(),
                 Styles = WindowClassStyles.CS_HREDRAW | WindowClassStyles.CS_VREDRAW | WindowClassStyles.CS_OWNDC,
-                WindowProc = _wndProc,
-                InstanceHandle = HInstance,
+                WindowProc = this._wndProc,
+                InstanceHandle = this.HInstance,
                 CursorHandle = LoadCursor(IntPtr.Zero, SystemCursor.IDC_ARROW),
                 BackgroundBrushHandle = IntPtr.Zero,
                 IconHandle = IntPtr.Zero,

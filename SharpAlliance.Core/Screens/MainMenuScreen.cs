@@ -98,11 +98,11 @@ public class MainMenuScreen : IScreen
             uiTime = Globals.GetJA2Clock();
             if (Globals.guiSplashFrameFade > 2)
             {
-                video.ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
+                this.video.ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
             }
             else if (Globals.guiSplashFrameFade > 1)
             {
-                video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
+                this.video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
             }
             else
             {
@@ -115,8 +115,8 @@ public class MainMenuScreen : IScreen
 
             Globals.guiSplashFrameFade--;
 
-            video.InvalidateScreen();
-            video.EndFrameBufferRender();
+            this.video.InvalidateScreen();
+            this.video.EndFrameBufferRender();
 
             CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
 
@@ -130,7 +130,7 @@ public class MainMenuScreen : IScreen
             await this.InitMainMenu();
             Globals.gfMainMenuScreenEntry = false;
             Globals.gfMainMenuScreenExit = false;
-            guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+            this.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
             this.music.SetMusicMode(MusicMode.MAIN_MENU);
         }
 
@@ -152,7 +152,7 @@ public class MainMenuScreen : IScreen
 
         ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
 
-        video.EndFrameBufferRender();
+        this.video.EndFrameBufferRender();
 
         this.HandleMainMenuInput();
 
@@ -165,12 +165,12 @@ public class MainMenuScreen : IScreen
             Globals.gfMainMenuScreenEntry = true;
         }
 
-        if (guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
+        if (this.guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
         {
             Globals.gfMainMenuScreenEntry = true;
         }
 
-        return guiMainMenuExitScreen;
+        return this.guiMainMenuExitScreen;
     }
 
     private void ExitMainMenu()
@@ -209,7 +209,7 @@ public class MainMenuScreen : IScreen
                 case MainMenuItems.LOAD_GAME:
                     // Select the game which is to be restored
                     // guiPreviousOptionScreen = guiCurrentScreen;
-                    guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
+                    this.guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
                     Globals.gbHandledMainMenu = 0;
                     // gfSaveGame = false;
                     Globals.gfMainMenuScreenExit = true;
@@ -218,13 +218,13 @@ public class MainMenuScreen : IScreen
 
                 case MainMenuItems.PREFERENCES:
                     //this.optionsScreen.guiPreviousOptionScreen = guiCurrentScreen;
-                    guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
+                    this.guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
                     Globals.gbHandledMainMenu = 0;
                     Globals.gfMainMenuScreenExit = true;
                     break;
 
                 case MainMenuItems.CREDITS:
-                    guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
+                    this.guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
                     Globals.gbHandledMainMenu = 0;
                     Globals.gfMainMenuScreenExit = true;
                     break;
@@ -248,7 +248,7 @@ public class MainMenuScreen : IScreen
 
     private void SetMainMenuExitScreen(ScreenName screen)
     {
-        guiMainMenuExitScreen = screen;
+        this.guiMainMenuExitScreen = screen;
 
         //Remove the background region
         this.CreateDestroyBackGroundMouseMask(false);
@@ -277,24 +277,24 @@ public class MainMenuScreen : IScreen
     private void RenderMainMenu()
     {
         //Get and display the background image
-        HVOBJECT hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        HVOBJECT hPixHandle = this.video.GetVideoObject(this.mainMenuBackGroundImageKey);
+        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
 
-        hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
-        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        hPixHandle = this.video.GetVideoObject(this.ja2LogoImageKey);
+        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        this.video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
 
         FontSubSystem.DrawTextToScreen(
             EnglishText.gzCopyrightText[0],
-            copyrightLocation,
+            this.copyrightLocation,
             640,
             FontStyle.FONT10ARIAL,
             FontColor.FONT_MCOLOR_WHITE,
             FontColor.FONT_MCOLOR_BLACK,
             TextJustifies.CENTER_JUSTIFIED);
 
-        video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+        this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
     }
 
     public ValueTask<bool> Initialize()
@@ -347,7 +347,7 @@ public class MainMenuScreen : IScreen
         this.fInitialRender = true;
 
         await this.screens.SetPendingNewScreen(ScreenName.MAINMENU_SCREEN);
-        guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+        this.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
 
         this.options.InitGameOptions();
 

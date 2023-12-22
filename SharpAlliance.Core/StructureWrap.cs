@@ -406,7 +406,7 @@ public class StructureWrap
     {
         STRUCTURE? pStructure;
 
-        pStructure = FindCuttableWireFenceAtGridNo(sGridNo);
+        pStructure = this.FindCuttableWireFenceAtGridNo(sGridNo);
         if (pStructure is not null)
         {
 //            pStructure = SwapStructureForPartnerAndStoreChangeInMap(sGridNo, pStructure);
@@ -422,7 +422,7 @@ public class StructureWrap
 
     bool IsCuttableWireFenceAtGridNo(int sGridNo)
     {
-        return (FindCuttableWireFenceAtGridNo(sGridNo) != null);
+        return (this.FindCuttableWireFenceAtGridNo(sGridNo) != null);
     }
 
 

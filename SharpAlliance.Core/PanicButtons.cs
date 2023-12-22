@@ -24,7 +24,7 @@ public class PanicButtons
             return;
         }
 
-        if (!NeedToRadioAboutPanicTrigger())
+        if (!this.NeedToRadioAboutPanicTrigger())
         {
             // no active panic triggers
             return;
@@ -84,7 +84,7 @@ public class PanicButtons
                 continue;  // next soldier
             }
 
-            bPanicTrigger = ClosestPanicTrigger(pSoldier);
+            bPanicTrigger = this.ClosestPanicTrigger(pSoldier);
             if (bPanicTrigger == -1)
             {
                 continue; // next soldier
@@ -183,7 +183,7 @@ public class PanicButtons
         }
 
 
-        bPanicTrigger = ClosestPanicTrigger(pSoldier);
+        bPanicTrigger = this.ClosestPanicTrigger(pSoldier);
         if (bPanicTrigger == -1)
         {
             return;
@@ -269,7 +269,7 @@ public class PanicButtons
             // Have WE been chosen to go after the trigger?
             if (pSoldier.ubID == gTacticalStatus.ubTheChosenOne)
             {
-                bPanicTrigger = ClosestPanicTrigger(pSoldier);
+                bPanicTrigger = this.ClosestPanicTrigger(pSoldier);
                 if (bPanicTrigger == -1)
                 {
                     // augh!
@@ -362,7 +362,7 @@ public class PanicButtons
                 else     // Oh oh, the chosen one can't get to the trigger!
                 {
                     gTacticalStatus.ubTheChosenOne = NOBODY; // strip him of his Chosen One status
-                    MakeClosestEnemyChosenOne();   // and replace him!
+                    this.MakeClosestEnemyChosenOne();   // and replace him!
                 }
             }
         }

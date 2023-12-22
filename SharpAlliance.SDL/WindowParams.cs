@@ -17,13 +17,13 @@ public class WindowParams
 
     public nint Create()
     {
-        if (WindowHandle != IntPtr.Zero)
+        if (this.WindowHandle != IntPtr.Zero)
         {
-            return SDL.SDL_CreateWindowFrom(WindowHandle);
+            return SDL.SDL_CreateWindowFrom(this.WindowHandle);
         }
         else
         {
-            return SDL.SDL_CreateWindow(Title, X, Y, Width, Height, WindowFlags);
+            return SDL.SDL_CreateWindow(this.Title, this.X, this.Y, this.Width, this.Height, this.WindowFlags);
         }
     }
 }

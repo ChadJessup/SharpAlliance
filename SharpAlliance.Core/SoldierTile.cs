@@ -173,7 +173,7 @@ public class SoldierTile
                                 // Is the next tile blocked too?
                                 sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(guiPathingData[0]));
 
-                                return (TileIsClear(pSoldier, (WorldDirections)guiPathingData[0], sNewGridNo, pSoldier.bLevel));
+                                return (this.TileIsClear(pSoldier, (WorldDirections)guiPathingData[0], sNewGridNo, pSoldier.bLevel));
                             }
                             else
                             {
@@ -197,7 +197,7 @@ public class SoldierTile
                                     MercPtrs[ubPerson].sFinalDestination = sTempDestGridNo;
 
                                     // Swap merc positions.....
-                                    SwapMercPositions(pSoldier, MercPtrs[ubPerson]);
+                                    this.SwapMercPositions(pSoldier, MercPtrs[ubPerson]);
 
                                     // With these two guys swapped, they should try and continue on their way....
                                     // Start them both again along their way...
@@ -289,7 +289,7 @@ public class SoldierTile
         }
 
         {
-            bBlocked = TileIsClear(pSoldier, bDirection, sGridNo, pSoldier.bLevel);
+            bBlocked = this.TileIsClear(pSoldier, bDirection, sGridNo, pSoldier.bLevel);
 
             // Check if we are blocked...
             if (bBlocked != MOVE_TILE_CLEAR)
@@ -299,7 +299,7 @@ public class SoldierTile
                 if (sGridNo == sFinalDestTile && pSoldier.ubWaitActionToDo == 0 && (pSoldier.bTeam == gbPlayerNum || pSoldier.sAbsoluteFinalDestination == NOWHERE))
                 {
                     // Yah, well too bad, stop here.
-                    SetFinalTile(pSoldier, pSoldier.sGridNo, false);
+                    this.SetFinalTile(pSoldier, pSoldier.sGridNo, false);
 
                     return (false);
                 }
@@ -316,7 +316,7 @@ public class SoldierTile
                         // Restore...
                         pSoldier.sFinalDestination = sOldFinalDest;
 
-                        SetDelayedTileWaiting(pSoldier, sGridNo, 1);
+                        this.SetDelayedTileWaiting(pSoldier, sGridNo, 1);
 
                         return (false);
                     }
@@ -333,7 +333,7 @@ public class SoldierTile
                         pSoldier.sFinalDestination = sOldFinalDest;
 
                         // Setting to two means: try and wait until this tile becomes free....
-                        SetDelayedTileWaiting(pSoldier, sGridNo, 100);
+                        this.SetDelayedTileWaiting(pSoldier, sGridNo, 100);
                     }
 
                     return (false);
@@ -344,7 +344,7 @@ public class SoldierTile
                 // Mark this tile as reserverd ( until we get there! )
                 if (!((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))))
                 {
-                    MarkMovementReserved(pSoldier, sGridNo);
+                    this.MarkMovementReserved(pSoldier, sGridNo);
                 }
 
                 bOverTerrainType = WorldManager.GetTerrainType(sGridNo);
@@ -401,7 +401,7 @@ public class SoldierTile
                 // Get direction from gridno...
                 bCauseDirection = SoldierControl.GetDirectionToGridNoFromGridNo(pSoldier.sGridNo, pSoldier.sDelayedMovementCauseGridNo);
 
-                bBlocked = TileIsClear(pSoldier, bCauseDirection, pSoldier.sDelayedMovementCauseGridNo, pSoldier.bLevel);
+                bBlocked = this.TileIsClear(pSoldier, bCauseDirection, pSoldier.sDelayedMovementCauseGridNo, pSoldier.bLevel);
 
                 // If we are waiting for a temp blockage.... continue to wait
                 if (pSoldier.fDelayedMovement >= 100 && bBlocked == MOVE_TILE_TEMP_BLOCKED)
@@ -413,7 +413,7 @@ public class SoldierTile
                     if (pSoldier.fDelayedMovement > 120)
                     {
                         // Quit...
-                        SetFinalTile(pSoldier, pSoldier.sGridNo, true);
+                        this.SetFinalTile(pSoldier, pSoldier.sGridNo, true);
                         pSoldier.fDelayedMovement = 0;
                     }
                     return (true);
@@ -579,7 +579,7 @@ public class SoldierTile
                             //MercPtrs[ ubPerson ].sFinalDestination = sTempDestGridNo;
 
                             // Swap merc positions.....
-                            SwapMercPositions(pSoldier, MercPtrs[ubPerson]);
+                            this.SwapMercPositions(pSoldier, MercPtrs[ubPerson]);
 
                             // With these two guys swapped, we should try to continue on our way....				
                             pSoldier.fDelayedMovement = 0;
@@ -615,7 +615,7 @@ public class SoldierTile
                         if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pSoldier.sFinalDestination) < 5 && pSoldier.bTeam == gbPlayerNum)
                         {
                             // Quit...
-                            SetFinalTile(pSoldier, pSoldier.sGridNo, false);
+                            this.SetFinalTile(pSoldier, pSoldier.sGridNo, false);
                             pSoldier.fDelayedMovement = 0;
                         }
                     }
@@ -626,7 +626,7 @@ public class SoldierTile
                         if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, pSoldier.sFinalDestination) < 5 && pSoldier.bTeam == gbPlayerNum)
                         {
                             // Quit...
-                            SetFinalTile(pSoldier, pSoldier.sGridNo, false);
+                            this.SetFinalTile(pSoldier, pSoldier.sGridNo, false);
                             pSoldier.fDelayedMovement = 0;
                         }
                     }
@@ -699,14 +699,14 @@ public class SoldierTile
         if (Overhead.NewOKDestination(pSoldier1, sGridNo2, true, 0) && Overhead.NewOKDestination(pSoldier2, sGridNo1, true, 0))
         {
             // OK, call teleport function for each.......
-            TeleportSoldier(pSoldier1, sGridNo2, false);
-            TeleportSoldier(pSoldier2, sGridNo1, false);
+            this.TeleportSoldier(pSoldier1, sGridNo2, false);
+            this.TeleportSoldier(pSoldier2, sGridNo1, false);
         }
         else
         {
             // Place back...
-            TeleportSoldier(pSoldier1, sGridNo1, true);
-            TeleportSoldier(pSoldier2, sGridNo2, true);
+            this.TeleportSoldier(pSoldier1, sGridNo1, true);
+            this.TeleportSoldier(pSoldier2, sGridNo2, true);
         }
     }
 

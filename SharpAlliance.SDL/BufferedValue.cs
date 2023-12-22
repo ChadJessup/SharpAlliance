@@ -7,11 +7,11 @@ namespace SharpAlliance.Core
     {
         public T Value
         {
-            get => Current.Value;
+            get => this.Current.Value;
             set
             {
-                Back.Value = value;
-                Back = Interlocked.Exchange(ref Current, Back);
+                this.Back.Value = value;
+                this.Back = Interlocked.Exchange(ref this.Current, this.Back);
             }
         }
 
@@ -20,7 +20,7 @@ namespace SharpAlliance.Core
 
         public static implicit operator T(BufferedValue<T> bv) => bv.Value;
 
-        private string DebuggerDisplayString => $"{Current.Value}";
+        private string DebuggerDisplayString => $"{this.Current.Value}";
 
         private class ValueHolder
         {

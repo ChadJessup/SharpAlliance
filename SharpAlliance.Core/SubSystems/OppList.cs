@@ -2383,7 +2383,7 @@ public class OppList
           }
         */
 
-        ResetLastKnownLocs(pSoldier);
+        this.ResetLastKnownLocs(pSoldier);
 
         if (gTacticalStatus.Team[pSoldier.bTeam].ubLastMercToRadio == ubTarget)
         {
@@ -2661,7 +2661,7 @@ public class OppList
     {
         //memset(pSoldier.bOppList, NOT_HEARD_OR_SEEN, sizeof(pSoldier.bOppList));
         pSoldier.bOppCnt = 0;
-        ResetLastKnownLocs(pSoldier);
+        this.ResetLastKnownLocs(pSoldier);
         //memset(gbSeenOpponents[pSoldier.ubID], 0, MAXMERCS);
     }
 
@@ -3992,10 +3992,10 @@ public class OppList
         {
             fAttachments = true;
             szAttach = wprintf("(");
-            AppendAttachmentCode(pObject.usAttachItem[0], ref szAttach);
-            AppendAttachmentCode(pObject.usAttachItem[1], ref szAttach);
-            AppendAttachmentCode(pObject.usAttachItem[2], ref szAttach);
-            AppendAttachmentCode(pObject.usAttachItem[3], ref szAttach);
+            this.AppendAttachmentCode(pObject.usAttachItem[0], ref szAttach);
+            this.AppendAttachmentCode(pObject.usAttachItem[1], ref szAttach);
+            this.AppendAttachmentCode(pObject.usAttachItem[2], ref szAttach);
+            this.AppendAttachmentCode(pObject.usAttachItem[3], ref szAttach);
             wcscat(szAttach, " )");
         }
 
@@ -4163,7 +4163,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HELMETPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HELMETPOS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HELMETPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4174,7 +4174,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[VESTPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.VESTPOS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.VESTPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4185,7 +4185,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.LEGPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.LEGPOS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.LEGPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4196,7 +4196,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HEAD1POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HEAD1POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HEAD1POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4207,7 +4207,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HEAD2POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HEAD2POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HEAD2POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4218,7 +4218,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.HANDPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HANDPOS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.HANDPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4229,7 +4229,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SECONDHANDPOS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SECONDHANDPOS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SECONDHANDPOS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4240,7 +4240,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.BIGPOCK1POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK1POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK1POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4251,7 +4251,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.BIGPOCK2POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK2POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK2POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4262,7 +4262,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.BIGPOCK3POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK3POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK3POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4273,7 +4273,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.BIGPOCK4POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK4POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.BIGPOCK4POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4284,7 +4284,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK1POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK1POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK1POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4295,7 +4295,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK2POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK2POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK2POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4306,7 +4306,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK3POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK3POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK3POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4317,7 +4317,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK4POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK4POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK4POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4328,7 +4328,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK5POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK5POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK5POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4339,7 +4339,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK6POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK6POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK6POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4350,7 +4350,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[InventorySlot.SMALLPOCK7POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK7POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK7POS], LINE_HEIGHT * ubLine);
             ubLine++;
 
             FontSubSystem.SetFontShade(FontStyle.LARGEFONT1, FONT_SHADE.GREEN);
@@ -4361,7 +4361,7 @@ public class OppList
                 //                gprintf(150, LINE_HEIGHT * ubLine, "%s", ShortItemNames[pSoldier.inv[SMALLPOCK8POS].usItem]);
             }
 
-            WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK8POS], LINE_HEIGHT * ubLine);
+            this.WriteQuantityAndAttachments(pSoldier.inv[InventorySlot.SMALLPOCK8POS], LINE_HEIGHT * ubLine);
             ubLine++;
         }
         //        else
@@ -4541,7 +4541,7 @@ public class OppList
         {
             //            ubDoorNoise = DOOR_NOISE.VOLUME;
         }
-        if (MovementNoise(pSoldier) > 0)
+        if (this.MovementNoise(pSoldier) > 0)
         {
             // failed any stealth checks
             return (ubDoorNoise);
@@ -4672,7 +4672,7 @@ public class OppList
         // #endif
 
         // see if anyone actually hears this noise, sees ubNoiseMaker, etc.
-        ProcessNoise(ubNoiseMaker, sGridNo, bLevel, ubTerrType, ubVolume, ubNoiseType);
+        this.ProcessNoise(ubNoiseMaker, sGridNo, bLevel, ubTerrType, ubVolume, ubNoiseType);
 
         if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && (ubNoiseMaker < Globals.NOBODY) && !gfDelayResolvingBestSightingDueToDoor)
         {
@@ -4711,7 +4711,7 @@ public class OppList
         // #endif
 
         // see if anyone actually hears this noise, sees noiseMaker, etc.
-        ProcessNoise(ubNoiseMaker, sGridNo, bLevel, ubTerrType, ubVolume, ubNoiseType);
+        this.ProcessNoise(ubNoiseMaker, sGridNo, bLevel, ubTerrType, ubVolume, ubNoiseType);
 
         // if noiseMaker is SOMEBODY
         if (ubNoiseMaker < Globals.NOBODY)
@@ -5065,7 +5065,7 @@ public class OppList
                     }
 
                     // Can the listener hear noise of that volume given his circumstances?
-                    ubEffVolume = CalcEffVolume(pSoldier, sGridNo, bLevel, ubNoiseType, ubBaseVolume, bCheckTerrain, pSoldier.bOverTerrainType, ubSourceTerrType);
+                    ubEffVolume = this.CalcEffVolume(pSoldier, sGridNo, bLevel, ubNoiseType, ubBaseVolume, bCheckTerrain, pSoldier.bOverTerrainType, ubSourceTerrType);
 
                     // # if RECORDOPPLIST
                     //                     fprintf(OpplistFile, "PN: guy %d - effVol=%d,chkTer=%d,pSoldier.tType=%d,srcTType=%d\n",
@@ -5076,7 +5076,7 @@ public class OppList
                     if (ubEffVolume > 0)
                     {
                         // ALL RIGHT!  Passed all the tests, this listener hears this noise!!!
-                        HearNoise(pSoldier, ubSource, sGridNo, bLevel, ubEffVolume, ubNoiseType, out bSeen);
+                        this.HearNoise(pSoldier, ubSource, sGridNo, bLevel, ubEffVolume, ubNoiseType, out bSeen);
 
                         bHeard = true;
 
@@ -5118,7 +5118,7 @@ public class OppList
                         {
                             // the merc that heard it the LOUDEST is the one to comment
                             // should add level to this function call
-                            TellPlayerAboutNoise(Globals.MercPtrs[ubHeardLoudestBy], ubNoiseMaker, sGridNo, bLevel, ubLoudestEffVolume, ubNoiseType, ubLoudestNoiseDir);
+                            this.TellPlayerAboutNoise(Globals.MercPtrs[ubHeardLoudestBy], ubNoiseMaker, sGridNo, bLevel, ubLoudestEffVolume, ubNoiseType, ubLoudestNoiseDir);
 
                             if (ubNoiseType == NOISE.MOVEMENT)
                             {
@@ -5164,7 +5164,7 @@ public class OppList
                         if (true /* bTeam == Net.pnum */)
                         {
                             // this team is now allowed to report sightings and set Public flags
-                            OurTeamRadiosRandomlyAbout(ubSource);
+                            this.OurTeamRadiosRandomlyAbout(ubSource);
                         }
                         else    // noise was heard by another human-controlled team (not ours)
                         {
@@ -6077,15 +6077,15 @@ public class OppList
         }
 
         // if all opponents are publicly unknown (NOT_HEARD_OR_SEEN)
-//        if (bNoPubliclyKnownOpponents)
-//        {
-//            // forget about the last radio alert (ie. throw away who made the call)
-//            // this is mainly so POINT_PATROL guys don't SEEK_FRIEND forever after
-//            gTacticalStatus.Team[bTeam].ubLastMercToRadio = Globals.NOBODY;
-//        }
+        //        if (bNoPubliclyKnownOpponents)
+        //        {
+        //            // forget about the last radio alert (ie. throw away who made the call)
+        //            // this is mainly so POINT_PATROL guys don't SEEK_FRIEND forever after
+        //            gTacticalStatus.Team[bTeam].ubLastMercToRadio = Globals.NOBODY;
+        //        }
 
         // decay watched locs as well
-        DecayWatchedLocs(bTeam);
+        this.DecayWatchedLocs(bTeam);
     }
 
     // bit of a misnomer; this is now decay all opplists
@@ -6110,7 +6110,7 @@ public class OppList
                 if (gTacticalStatus.Team[t].bMenInSector > 0)
                 {
                     // decay team's public opplist
-                    DecayPublicOpplist(t);
+                    this.DecayPublicOpplist(t);
                 }
             }
             // update time
@@ -6643,7 +6643,7 @@ public class OppList
             // for each watched location
             for (cnt2 = 0; cnt2 < NUM_WATCHED_LOCS; cnt2++)
             {
-                if (gsWatchedLoc[cnt, cnt2] != NOWHERE && WatchedLocLocationIsEmpty(gsWatchedLoc[cnt, cnt2], gbWatchedLocLevel[cnt, cnt2], bTeam))
+                if (gsWatchedLoc[cnt, cnt2] != NOWHERE && this.WatchedLocLocationIsEmpty(gsWatchedLoc[cnt, cnt2], gbWatchedLocLevel[cnt, cnt2], bTeam))
                 {
                     // if the reset flag is still set, then we should decay this point
                     if (gfWatchedLocReset[cnt, cnt2])

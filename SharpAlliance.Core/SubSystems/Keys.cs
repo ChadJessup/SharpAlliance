@@ -289,7 +289,7 @@ public class Keys
             pDoorStatus = (gpDoorStatus[cnt]);
 
             // ATE: Make sure door status flag and struct info are syncronized....
-            SyncronizeDoorStatusToStructureData(pDoorStatus);
+            this.SyncronizeDoorStatusToStructureData(pDoorStatus);
 
             InternalUpdateDoorGraphicFromStatus(pDoorStatus, fUsePerceivedStatus, fDirty);
         }
@@ -732,7 +732,7 @@ public class Keys
             gpWorldLevelData[gpDoorStatus[ubLoop].sGridNo].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.DOOR_STATUS_PRESENT;
         }
 
-        UpdateDoorGraphicsFromStatus(true, false);
+        this.UpdateDoorGraphicsFromStatus(true, false);
 
         return (true);
     }

@@ -18,11 +18,11 @@ public struct WindowCreateInfo
         WindowState windowInitialState,
         string windowTitle)
     {
-        X = x;
-        Y = y;
-        WindowWidth = windowWidth;
-        WindowHeight = windowHeight;
-        WindowInitialState = windowInitialState;
-        WindowTitle = windowTitle;
+        this.X = x;
+        this.Y = y;
+        this.WindowWidth = windowWidth;
+        this.WindowHeight = windowHeight;
+        this.WindowInitialState = windowInitialState;
+        this.WindowTitle = windowTitle;
     }
 }

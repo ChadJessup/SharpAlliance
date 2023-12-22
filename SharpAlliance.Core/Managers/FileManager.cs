@@ -79,7 +79,7 @@ public class FileManager : IFileManager
 
             if (!realFileStream.SafeFileHandle.IsInvalid)
             {
-                AddToOpenFile(realFileStream);
+                this.AddToOpenFile(realFileStream);
 
                 return realFileStream;
             }
@@ -218,7 +218,7 @@ public class FileManager : IFileManager
         bool fRet;
         byte[] pMemBlock = new byte[uiBytesToRead];
 
-        fRet = FileRead(hFile, ref pMemBlock, uiBytesToRead, out puiBytesRead);
+        fRet = this.FileRead(hFile, ref pMemBlock, uiBytesToRead, out puiBytesRead);
         try
         {
             if (fRet)
@@ -275,7 +275,7 @@ public class FileManager : IFileManager
         where T : struct
     {
         T[] buff = new T[1];
-        var result = FileRead(stream, ref buff, uiFileSectionSize, out uiBytesRead);
+        var result = this.FileRead(stream, ref buff, uiFileSectionSize, out uiBytesRead);
 
         if (result)
         {
@@ -299,7 +299,7 @@ public class FileManager : IFileManager
     }
 
     public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, int seekFrom, int uiSeekAmount)
-        => LoadEncryptedDataFromFile(pFileName, out pDestString, (uint)seekFrom, (uint)uiSeekAmount);
+        => this.LoadEncryptedDataFromFile(pFileName, out pDestString, (uint)seekFrom, (uint)uiSeekAmount);
 
     public bool LoadEncryptedDataFromFile(string pFileName, out string pDestString, uint seekFrom, uint uiSeekAmount)
     {
@@ -312,17 +312,17 @@ public class FileManager : IFileManager
             return false;
         }
 
-        if (FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
+        if (this.FileSeek(stream, ref seekFrom, SeekOrigin.Begin) == false)
         {
-            FileClose(stream);
+            this.FileClose(stream);
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileSeek");
             return false;
         }
 
         byte[] buff = new byte[uiSeekAmount];
-        if (!FileRead(stream, ref buff, (int)uiSeekAmount, out var uiBytesRead))
+        if (!this.FileRead(stream, ref buff, (int)uiSeekAmount, out var uiBytesRead))
         {
-            FileClose(stream);
+            this.FileClose(stream);
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "LoadEncryptedDataFromFile: Failed FileRead");
             return false;
         }
@@ -349,7 +349,7 @@ public class FileManager : IFileManager
 
         }
         pDestString = span.Slice(0, i).ToString();
-        FileClose(stream);
+        this.FileClose(stream);
 
         return true;
     }

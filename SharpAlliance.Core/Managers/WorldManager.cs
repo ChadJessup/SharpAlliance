@@ -1079,11 +1079,11 @@ public class WorldManager
     }
 
     public void AddUIElem(int iMapIndex, TileIndexes usIndex, int sRelativeX, int sRelativeY, out LEVELNODE ppNewNode)
-        => AddUIElem(iMapIndex, usIndex, sRelativeX, sRelativeY, out ppNewNode);
+        => this.AddUIElem(iMapIndex, usIndex, sRelativeX, sRelativeY, out ppNewNode);
 
     public bool AddUIElem(int iMapIndex, TileIndexes usIndex, int sRelativeX, MAP_ROW sRelativeY, out LEVELNODE ppNewNode)
     {
-        LEVELNODE? pTopmost = AddTopmostToTail(iMapIndex, usIndex);
+        LEVELNODE? pTopmost = this.AddTopmostToTail(iMapIndex, usIndex);
 
         Debug.Assert(pTopmost != null);
 

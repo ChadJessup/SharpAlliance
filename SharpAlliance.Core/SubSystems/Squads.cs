@@ -808,7 +808,7 @@ public class Squads
         }
 
         // set default squad..just inc ase we no longer have a valid squad
-        SetDefaultSquadOnSectorEntry(true);
+        this.SetDefaultSquadOnSectorEntry(true);
 
         // cleat list
         InterfacePanel.RemoveAllPlayersFromSlot();
@@ -937,7 +937,7 @@ public class Squads
         SquadEnum iCounter = 0;
         // check if selected squad is in current sector, if so, do nothing, if not...first first case that they are
 
-        if (IsSquadOnCurrentTacticalMap(iCurrentTacticalSquad) == true)
+        if (this.IsSquadOnCurrentTacticalMap(iCurrentTacticalSquad) == true)
         {
             // is in sector, leave
             return;
@@ -948,7 +948,7 @@ public class Squads
         // find first squad availiable
         for (iCounter = 0; iCounter < NUMBER_OF_SQUADS; iCounter++)
         {
-            if (IsSquadOnCurrentTacticalMap(iCounter) == true)
+            if (this.IsSquadOnCurrentTacticalMap(iCounter) == true)
             {
                 // squad in sector...set as current
                 SetCurrentSquad(iCounter, fForce);
