@@ -223,7 +223,7 @@ public class SharpAllianceGameLogic : IGameLogic
         sm.AddScreen<CreditsScreen>(ScreenName.CREDIT_SCREEN);
         sm.AddScreen<MessageBoxScreen>(ScreenName.MSG_BOX_SCREEN);
         sm.AddScreen<MainMenuScreen>(ScreenName.MAINMENU_SCREEN);
-        sm.AddScreen<PreferenceScreen>(ScreenName.OPTIONS_SCREEN);
+        sm.AddScreen<OptionsScreen>(ScreenName.OPTIONS_SCREEN);
         sm.AddScreen<GameInitOptionsScreen>(ScreenName.GAME_INIT_OPTIONS_SCREEN);
     }
 

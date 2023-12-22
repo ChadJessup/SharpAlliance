@@ -10,7 +10,7 @@ using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 namespace SharpAlliance.Core.Screens;
 
-public class PreferenceScreen : IScreen
+public class OptionsScreen : IScreen
 {
     public const FontStyle OPT_BUTTON_FONT = FontStyle.FONT14ARIAL;
     public const FontColor OPT_BUTTON_ON_COLOR = FontColor.FONT_MCOLOR_WHITE;
@@ -148,7 +148,7 @@ public class PreferenceScreen : IScreen
     private bool gfSettingOfDontAnimateSmoke;
     private uint guiSoundFxSliderMoving;
 
-    public PreferenceScreen(
+    public OptionsScreen(
         IVideoManager videoManager,
         IClockManager clockManager,
         ISoundManager soundManager,
