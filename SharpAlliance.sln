@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30803.129
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Editor", "SharpAlliance.Editor\SharpAlliance.Editor.csproj", "{BDFFAF35-CB13-442F-A9DD-4FDB8E01886C}"
 EndProject
@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Core", "SharpAlliance.Core\SharpAlliance.Core.csproj", "{BA2FEB4F-7EED-4181-A986-5483408D6BDC}"
@@ -38,6 +39,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Utils", "SharpAlliance.Utils\SharpAlliance.Utils.csproj", "{E85C2319-2A46-4632-86E7-10C1EB4A9AB4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlliance.Core.Tests", "Tests\SharpAlliance.Core.Tests\SharpAlliance.Core.Tests.csproj", "{D52D28A0-F42F-4230-8A2C-4B4D52E1EC49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDLTestBed", "SDLTestBed\SDLTestBed.csproj", "{539EDF39-5FF4-458D-A7F1-52A55527DFD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlliance.SDL", "SharpAlliance.SDL\SharpAlliance.SDL.csproj", "{0E15ECC6-A977-481C-800C-9A70B6F3C578}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +164,22 @@ Global
 		{D52D28A0-F42F-4230-8A2C-4B4D52E1EC49}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D52D28A0-F42F-4230-8A2C-4B4D52E1EC49}.Release|x64.ActiveCfg = Release|x64
 		{D52D28A0-F42F-4230-8A2C-4B4D52E1EC49}.Release|x64.Build.0 = Release|x64
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Debug|x64.Build.0 = Debug|Any CPU
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Release|x64.ActiveCfg = Release|Any CPU
+		{539EDF39-5FF4-458D-A7F1-52A55527DFD8}.Release|x64.Build.0 = Release|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Debug|x64.Build.0 = Debug|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Release|x64.ActiveCfg = Release|Any CPU
+		{0E15ECC6-A977-481C-800C-9A70B6F3C578}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,9 +1,11 @@
-﻿namespace SharpAlliance.Core.Managers.Library
+﻿using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.Managers.Library;
+
+public enum LibraryNames
 {
-    public enum LibraryNames
-    {
-        Unknown = -1,
-        DATA = 0,
+    Unknown = -1,
+    DATA = 0,
 		AMBIENT,
 		ANIMS,
 		BATTLESNDS,
@@ -25,5 +27,4 @@
 		TILESETS,
 		LOADSCREENS,
 		INTRO,
-    }
 }

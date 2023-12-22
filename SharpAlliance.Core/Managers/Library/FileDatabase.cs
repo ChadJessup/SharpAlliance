@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpAlliance.Core.Managers.Library
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.Managers.Library;
+
+class FileDatabase
 {
-    class FileDatabase
-    {
-    }
 }

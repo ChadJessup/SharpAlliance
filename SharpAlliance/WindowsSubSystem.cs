@@ -5,14 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SharpAlliance.Core;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
-using Veldrid;
-using Veldrid.Sdl2;
-using Vortice;
+using SixLabors.ImageSharp;
 using Vortice.Win32;
 using static Vortice.Win32.Kernel32;
 using static Vortice.Win32.User32;
@@ -54,7 +53,7 @@ namespace SharpAlliance
             await this.input.Initialize();
             await this.fonts.Initialize();
 
-            this.PlatformConstruct();
+            //this.PlatformConstruct();
 
             var validation = false;
 #if DEBUG
@@ -63,8 +62,8 @@ namespace SharpAlliance
 
             if (this.MainWindow is not null)
             {
-                VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<IVideoManager>();
-                this.MainWindow = vorticeVideoManager.Window;
+                SDL2VideoManager videoManager = this.context.Services.GetRequiredService<SDL2VideoManager>();
+                this.MainWindow = videoManager.Window;
 
 //                vorticeVideoManager.SetGraphicsDevice(new D3D12GraphicsDevice(validation, this.MainWindow));
             }
@@ -72,13 +71,13 @@ namespace SharpAlliance
             return true;
         }
 
-        public Sdl2Window MainWindow { get; private set; }
+        public IWindow MainWindow { get; private set; }
         public bool IsInitialized { get; }
 
-        public Sdl2Window CreateWindow(string name = "Vortice")
+        public IWindow CreateWindow(string name = "Vortice")
         {
-            VeldridVideoManager vorticeVideoManager = (VeldridVideoManager)this.context.Services.GetRequiredService<IVideoManager>();
-            return vorticeVideoManager.Window;
+            SDL2VideoManager videoManager = this.context.Services.GetRequiredService<SDL2VideoManager>();
+            return videoManager.Window;
         }
 
         private void PlatformConstruct()

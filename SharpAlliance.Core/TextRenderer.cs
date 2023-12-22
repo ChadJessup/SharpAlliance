@@ -7,96 +7,83 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp.Drawing.Processing;
+using FontStyle = SixLabors.Fonts.FontStyle;
+using SharpAlliance.Core.Managers;
+using SharpAlliance.Core.Interfaces;
+using Veldrid.Sdl2;
+using SixLabors.ImageSharp.Drawing;
 
-namespace SharpAlliance.Core
+namespace SharpAlliance.Core;
+
+public class TextRenderer
 {
-    public class TextRenderer
+    private Rgba32 White = Rgba32.ParseHex("FFFFFF");
+    private readonly IVideoManager video;
+    private readonly Font font;
+    private readonly Image<Rgba32> _image;
+    private readonly FontSubSystem fonts;
+
+    public TextRenderer(FontSubSystem fontSubsystem, IVideoManager videoManager)
     {
-        private Rgba32 White = Rgba32.ParseHex("FFFFFF");
-        private readonly GraphicsDevice _gd;
-        private readonly Texture _texture;
+        this.fonts = fontSubsystem;
+        int width = 640;
+        int height = 480;
 
-        public TextureView TextureView { get; }
+        this.video = videoManager;
+        this.font = this.LoadFont("Arial", 10, FontStyle.Bold);
+    }
 
-        private readonly Font _font;
-        private readonly Image<Rgba32> _image;
+    public Font LoadFont(string fontFamily, int size, FontStyle style)
+    {
+        var allFonts = SystemFonts.Collection;
+        var families = SystemFonts.Get(fontFamily);
+        return families.CreateFont(size, style);
+    }
 
-        public TextRenderer(GraphicsDevice gd)
+    public unsafe void ClearText()
+    {
+        this._image.DangerousTryGetSinglePixelMemory(out var span);
+        fixed (void* data = &MemoryMarshal.GetReference<Rgba32>(span.Span))
         {
-            this._gd = gd;
-            int width = 640;
-            int height = 480;
-            this._texture = gd.ResourceFactory.CreateTexture(
-                TextureDescription.Texture2D((uint)width, (uint)height, 1, 1, PixelFormat.R8_G8_B8_A8_UNorm, TextureUsage.Sampled));
-
-            this.TextureView = gd.ResourceFactory.CreateTextureView(this._texture);
-
-            this._font = this.LoadFont("Arial", 10, FontStyle.Bold);
-
-            this._image = new Image<Rgba32>(width, height);
+            Unsafe.InitBlock(data, 0, (uint)(this._image.Width * this._image.Height * 4));
         }
+    }
 
-        public Font LoadFont(string fontFamily, int size, FontStyle style)
+    public void DrawText(
+        string text,
+        PointF location,
+        int width,
+        TextAlignment alignment,
+        Font font,
+        Rgba32 foreground,
+        Rgba32 background)
+    {
+        var buffer = this.video.Surfaces[this.fonts.FontDestBuffer];
+
+        RichTextOptions options = new(font)
         {
-            var allFonts = SystemFonts.Collection;
-            var families = SystemFonts.Get(fontFamily);
-            return families.CreateFont(size, style);
-        }
+            Origin = location,
+            //HorizontalAlignment = width == 0 ? HorizontalAlignment.Left : HorizontalAlignment.Right,
+            TextAlignment = alignment,
+            TextDirection = TextDirection.LeftToRight,
+            VerticalAlignment = VerticalAlignment.Top,
+            WrappingLength = width == 0 ? -1 : width,
+            //TextJustification = TextJustification.InterWord,
+            //LayoutMode = LayoutMode.HorizontalTopBottom,
+        };
 
-        public unsafe void ClearText()
+        var foreColor = new Color(foreground);
+        var backColor = new Color(background);
+        Brush brush = Brushes.Solid(foreColor);//, backColor);
+        Pen pen = Pens.Solid(backColor, 0.1f);
+
+        buffer.Mutate(ctx =>
         {
-            this._image.DangerousTryGetSinglePixelMemory(out var span);
-            fixed (void* data = &MemoryMarshal.GetReference<Rgba32>(span.Span))
-            {
-                Unsafe.InitBlock(data, 0, (uint)(this._image.Width * this._image.Height * 4));
-            }
-        }
-
-        public void DrawText(string text, int x, int y, int width, HorizontalAlignment alignment, Font font, Rgba32 foreground, Rgba32 background)
-        {
-            if (text == "Save Game")
-            {
-
-            }
-
-            this._image.Mutate(ctx =>
-            {
-                ctx.DrawText(
-                    text,
-                    font,
-                    foreground,
-                    new PointF(x, y));
-            });
-        }
-
-        public unsafe void RenderAllText()
-        {
-            this._image.DangerousTryGetSinglePixelMemory(out var span2);
-            fixed (void* data = &MemoryMarshal.GetReference(span2.Span))
-            {
-                uint size = (uint)(this._image.Width * this._image.Height * 4);
-
-                try
-                {
-                    this._gd.UpdateTexture(
-                        this._texture,
-                        (IntPtr)data,
-                        size,
-                        x: 0,
-                        y: 0,
-                        z: 0,
-                        this._texture.Width,
-                        this._texture.Height,
-                        depth: 1,
-                        mipLevel: 0,
-                        arrayLayer: 0);
-                }
-                catch (VeldridException e)
-                {
-
-                }
-            }
-
-        }
+            ctx.DrawText(
+                options,
+                text,
+                brush,
+                pen);
+        });
     }
 }

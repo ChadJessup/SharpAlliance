@@ -1,12 +1,109 @@
-﻿namespace SharpAlliance.Core
+﻿namespace SharpAlliance.Core;
+
+public partial class Globals
 {
-    public class Text
-    {
-        public const string ITEMSTRINGFILENAME = "BINARYDATA\\ITEMDESC.EDT";
-        public const int SIZE_ITEM_NAME = 160;
-        public const int SIZE_SHORT_ITEM_NAME = 160;
-        public const int SIZE_ITEM_INFO = 480;
-        public const int SIZE_ITEM_PROS = 160;
-        public const int SIZE_ITEM_CONS = 160;
-    }
+    public const string ITEMSTRINGFILENAME = "BINARYDATA\\ITEMDESC.EDT";
+    public const int SIZE_ITEM_NAME = 160;
+    public const int SIZE_SHORT_ITEM_NAME = 160;
+    public const int SIZE_ITEM_INFO = 480;
+    public const int SIZE_ITEM_PROS = 160;
+    public const int SIZE_ITEM_CONS = 160;
 }
+
+public class Text
+{
+}
+
+public enum STRINGS
+{
+    EMPTY,
+    LOSES_1_WISDOM,
+    LOSES_1_DEX,
+    LOSES_1_STRENGTH,
+    LOSES_1_AGIL,
+    LOSES_WISDOM,
+    LOSES_DEX,
+    LOSES_STRENGTH,
+    LOSES_AGIL,
+    INTERRUPT,
+    HEARS_NOISE_FROM,
+    PLAYER_REINFORCEMENTS,
+    PLAYER_RELOADS,
+    PLAYER_NOT_ENOUGH_APS,
+    IS_APPLYING_FIRST_AID,
+    ARE_APPLYING_FIRST_AID,
+    RELIABLE,
+    UNRELIABLE,
+    EASY_TO_REPAIR,
+    HARD_TO_REPAIR,
+    HIGH_DAMAGE,
+    LOW_DAMAGE,
+    QUICK_FIRING,
+    SLOW_FIRING,
+    LONG_RANGE,
+    SHORT_RANGE,
+    LIGHT,
+    HEAVY,
+    SMALL,
+    FAST_BURST,
+    NO_BURST,
+    LARGE_AMMO_CAPACITY,
+    SMALL_AMMO_CAPACITY,
+    CAMMO_WORN_OFF,
+    CAMMO_WASHED_OFF,
+    Second_CLIP_DEPLETED,
+    STOLE_SOMETHING,
+    NOT_BURST_CAPABLE,
+    ATTACHMENT_ALREADY,
+    MERGE_ITEMS,
+    CANT_ATTACH,
+    NONE,
+    EJECT_AMMO,
+    ATTACHMENTS,
+    CANT_USE_TWO_ITEMS,
+    ATTACHMENT_HELP,
+    ATTACHMENT_INVALID_HELP,
+    SECTOR_NOT_CLEARED,
+    NEED_TO_GIVE_MONEY,
+    HEAD_HIT,
+    ABANDON_FIGHT,
+    PERMANENT_ATTACHMENT,
+    ENERGY_BOOST,
+    SLIPPED_MARBLES,
+    FAILED_TO_STEAL_SOMETHING,
+    REPAIRED,
+    INTERRUPT_FOR,
+    SURRENDER,
+    REFUSE_FIRSTAID,
+    REFUSE_FIRSTAID_FOR_CREATURE,
+    HOW_TO_USE_SKYRIDDER,
+    RELOAD_ONLY_ONE_GUN,
+    BLOODCATS_TURN,
+};
+
+//enums for the above text
+public enum SLG
+{
+    SAVE_GAME,
+    LOAD_GAME,
+    CANCEL,
+    SAVE_SELECTED,
+    LOAD_SELECTED,
+    SAVE_GAME_OK,               //5
+    SAVE_GAME_ERROR,
+    LOAD_GAME_OK,
+    LOAD_GAME_ERROR,
+    GAME_VERSION_DIF,
+    DELETE_ALL_SAVE_GAMES,  //10
+    SAVED_GAME_VERSION_DIF,
+    BOTH_GAME_AND_SAVED_GAME_DIF,
+    CONFIRM_SAVE,
+    CONFIRM_LOAD,
+    NOT_ENOUGH_HARD_DRIVE_SPACE,        //15
+    SAVING_GAME_MESSAGE,
+    NORMAL_GUNS,
+    ADDITIONAL_GUNS,
+    REALISTIC,
+    SCIFI,      //20
+    DIFF,
+};

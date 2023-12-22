@@ -5,38 +5,37 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Core.Managers
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.Managers;
+
+public class GuiManager : ISharpAllianceManager
 {
-    public class GuiManager : ISharpAllianceManager
+    public SliderSubSystem Sliders { get; private set; }
+
+    public bool IsInitialized { get; }
+
+    public GuiManager(SliderSubSystem sliders)
     {
-        public ButtonSubSystem Buttons { get; private set; }
-        public SliderSubSystem Sliders { get; private set; }
+        Sliders = sliders;
+    }
 
-        public bool IsInitialized { get; }
+    public ValueTask<bool> Initialize()
+    {
+        return ValueTask.FromResult(true);
+    }
 
-        public GuiManager(
-            ButtonSubSystem buttons,
-            SliderSubSystem sliders)
-        {
-            this.Buttons = buttons;
-            this.Sliders = sliders;
-        }
+    public void RenderButtonsFastHelp()
+    {
+    }
 
-        public ValueTask<bool> Initialize()
-        {
-            return ValueTask.FromResult(true);
-        }
+    public void RenderSliderBars()
+        => Sliders.RenderSliderBars();
 
-        public void RenderButtonsFastHelp()
-        {
-        }
+    public void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
+        => ButtonSubSystem.RenderButtons(buttons);
 
-        public void RenderSliderBars() => this.Sliders.RenderSliderBars();
-
-        public void RenderButtons(IEnumerable<GUI_BUTTON> buttons) => this.Buttons.RenderButtons(buttons);
-
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }

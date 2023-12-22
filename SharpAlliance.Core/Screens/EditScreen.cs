@@ -3,45 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using Veldrid;
 
-namespace SharpAlliance.Core.Screens
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.Screens;
+
+public class EditScreen : IScreen
 {
-    public class EditScreen : IScreen
+    public bool IsInitialized { get; set; }
+    public ScreenState State { get; set; }
+
+    public static bool gfProfileDataLoaded = false;
+
+    public ValueTask Activate()
     {
-        public bool IsInitialized { get; set; }
-        public ScreenState State { get; set; }
+        return ValueTask.CompletedTask;
+    }
 
-        public static bool gfProfileDataLoaded = false;
+    public void Dispose()
+    {
+    }
 
-        public ValueTask Activate()
-        {
-            return ValueTask.CompletedTask;
-        }
+    public ValueTask<ScreenName> Handle()
+    {
+        return ValueTask.FromResult(ScreenName.EDIT_SCREEN);
+    }
 
-        public void Dispose()
-        {
-        }
+    public ValueTask<bool> Initialize()
+    {
+        return ValueTask.FromResult(true);
+    }
 
-        public ValueTask<ScreenName> Handle()
-        {
-            return ValueTask.FromResult(ScreenName.EDIT_SCREEN);
-        }
+    public void Draw(IVideoManager videoManager)
+    {
+        throw new NotImplementedException();
+    }
 
-        public ValueTask<bool> Initialize()
-        {
-            return ValueTask.FromResult(true);
-        }
-
-        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ValueTask Deactivate()
-        {
-            throw new NotImplementedException();
-        }
+    public ValueTask Deactivate()
+    {
+        throw new NotImplementedException();
     }
 }

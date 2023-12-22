@@ -4,47 +4,306 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpAlliance.Core.SubSystems
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.SubSystems;
+
+public class InterfaceDialogSubSystem
 {
-    public class InterfaceDialogSubSystem
+    // GLOBAL NPC STRUCT
+    //public NPC_DIALOGUE_TYPE gTalkPanel;
+
+    public int gubTargetNPC;
+    public int gubTargetRecord;
+    public int gubTargetApproach;
+    public bool gfShowDialogueMenu;
+    public bool gfWaitingForTriggerTimer;
+    public int guiWaitingForTriggerTime;
+    public int iInterfaceDialogueBox = -1;
+    public int ubRecordThatTriggeredLiePrompt;
+    public bool gfConversationPending = false;
+    public int gbPendingApproach;
+    public int guiPendingApproachData;
+
+    public bool ProfileCurrentlyTalkingInDialoguePanel(NPCID ubProfile)
     {
-        // GLOBAL NPC STRUCT
-        //public NPC_DIALOGUE_TYPE gTalkPanel;
-        public bool gfInTalkPanel = false;
-        public SOLDIERTYPE gpSrcSoldier = null;
-        public SOLDIERTYPE gpDestSoldier = null;
-        public int gubSrcSoldierProfile;
-        public int gubNiceNPCProfile = SoldierControl.NO_PROFILE;
-        public int gubNastyNPCProfile = SoldierControl.NO_PROFILE;
-
-        public int gubTargetNPC;
-        public int gubTargetRecord;
-        public int gubTargetApproach;
-        public bool gfShowDialogueMenu;
-        public bool gfWaitingForTriggerTimer;
-        public int guiWaitingForTriggerTime;
-        public int iInterfaceDialogueBox = -1;
-        public int ubRecordThatTriggeredLiePrompt;
-        public bool gfConversationPending = false;
-        public SOLDIERTYPE gpPendingDestSoldier;
-        public SOLDIERTYPE gpPendingSrcSoldier;
-        public int gbPendingApproach;
-        public int guiPendingApproachData;
-
-        public bool ProfileCurrentlyTalkingInDialoguePanel(int ubProfile)
+        if (Globals.gfInTalkPanel)
         {
-            if (this.gfInTalkPanel)
+            if (Globals.gpDestSoldier != null)
             {
-                if (this.gpDestSoldier != null)
+                if (Globals.gpDestSoldier.ubProfile == ubProfile)
                 {
-                    if (this.gpDestSoldier.ubProfile == ubProfile)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
-
-            return false;
         }
+
+        return false;
     }
+
+
 }
+
+public enum NPC_ACTION
+{
+    NONE = 0,
+    DONT_ACCEPT_ITEM,
+    FACE_CLOSEST_PLAYER,
+    OPEN_CLOSEST_DOOR,
+    RECRUIT,
+    THREATENINGLY_RAISE_GUN,
+    LOWER_GUN,
+    READY_GUN,
+    START_RUNNING,
+    STOP_RUNNING,
+    BOOST_TOWN_LOYALTY, // 10
+    PENALIZE_TOWN_LOYALTY,
+    STOP_PLAYER_GIVING_FIRST_AID,
+    FACE_NORTH,
+    FACE_NORTH_EAST,
+    FACE_EAST,
+    FACE_SOUTH_EAST,
+    FACE_SOUTH,
+    FACE_SOUTH_WEST,
+    FACE_WEST,
+    FACE_NORTH_WEST, // 20
+    TRIGGER_FRIEND_WITH_HOSTILE_QUOTE,
+    BECOME_ENEMY,
+    RECRUIT_WITH_SALARY,
+    CLOSE_DIALOGUE_PANEL,
+    ENTER_COMBAT, // 25
+    TERRORIST_REVEALS_SELF,
+    OPEN_CLOSEST_CABINET,
+    SLAP,
+    TRIGGER_QUEEN_BY_CITIES_CONTROLLED,
+    SEND_SOLDIERS_TO_DRASSEN, // 30
+    SEND_SOLDIERS_TO_BATTLE_LOCATION,
+    TRIGGER_QUEEN_BY_SAM_SITES_CONTROLLED,
+    PUNCH_PC_SLOT_0,
+    PUNCH_PC_SLOT_1,
+    PUNCH_PC_SLOT_2,             // 35
+    FRUSTRATED_SLAP,
+    PUNCH_FIRST_LIVING_PC,
+    SHOOT_ELLIOT,
+    PLAYER_SAYS_NICE_LATER,
+    GET_ITEMS_FROM_CLOSEST_CABINET, // 40
+    INITIATE_SHOPKEEPER_INTERFACE,
+    GET_OUT_OF_WHEELCHAIR,
+    GET_OUT_OF_WHEELCHAIR_AND_BECOME_HOSTILE,
+    PLAYER_SAYS_NASTY_LATER, // 44
+
+    GRANT_EXPERIENCE_1 = 50,
+    GRANT_EXPERIENCE_2,
+    GRANT_EXPERIENCE_3,
+    GRANT_EXPERIENCE_4,
+    GRANT_EXPERIENCE_5,
+
+    GOTO_HIDEOUT = 100,
+    FATIMA_GIVE_LETTER,
+    LEAVE_HIDEOUT,
+    TRAVERSE_MAP_EAST,
+    TRAVERSE_MAP_SOUTH,
+    TRAVERSE_MAP_WEST,
+    TRAVERSE_MAP_NORTH,
+    REPORT_SHIPMENT_SIZE,
+    RETURN_STOLEN_SHIPMENT_ITEMS,
+    SET_PABLO_BRIBE_DELAY,
+    ASK_ABOUT_ESCORTING_EPC, // 110
+    DRINK_DRINK_DRINK,
+    TRIGGER_END_OF_FOOD_QUEST,
+    SEND_PACOS_INTO_HIDING,
+    HAVE_PACOS_FOLLOW,
+    SET_DELAYED_PACKAGE_TIMER, // 115
+    SET_RANDOM_PACKAGE_DAMAGE_TIMER,
+    FREE_KIDS,
+    CHOOSE_DOCTOR,
+    REPORT_BALANCE,
+    ASK_ABOUT_PAYING_RPC,
+    DELAYED_MAKE_BRENDA_LEAVE,
+    SEX,
+    KYLE_GETS_MONEY,
+    LAYLA_GIVEN_WRONG_AMOUNT_OF_CASH, // 124
+    SET_GIRLS_AVAILABLE,
+    SET_DELAY_TILL_GIRLS_AVAILABLE,
+    SET_WAITED_FOR_GIRL_FALSE,
+    TRIGGER_LAYLA_13_14_OR_15,
+    OPEN_CARLAS_DOOR,
+    OPEN_CINDYS_DOOR, // 130
+    OPEN_BAMBIS_DOOR,
+    OPEN_MARIAS_DOOR,
+    POSSIBLY_ADVERTISE_CINDY,
+    POSSIBLY_ADVERTISE_BAMBI,
+    DARREN_REQUESTOR, // 135
+    ADD_JOEY_TO_WORLD,
+    MARK_KINGPIN_QUOTE_0_USED,
+    START_BOXING_MATCH,
+    ENABLE_CAMBRIA_DOCTOR_BONUS,// OBSOLETE, NO LONGER DELAYED
+    MARTHA_DIES, // 140
+    DARREN_GIVEN_CASH,
+    ANGEL_GIVEN_CASH,
+    TRIGGER_ANGEL_17_OR_18,
+    BUY_LEATHER_KEVLAR_VEST,
+    TRIGGER_MARIA, // 145
+    TRIGGER_ANGEL_16_OR_19,
+    ANGEL_LEAVES_DEED,
+    TRIGGER_ANGEL_21_OR_22,
+    UN_RECRUIT_EPC,
+    TELEPORT_NPC, // 150
+    REMOVE_DOREEN,
+    RESET_SHIPMENT_ARRIVAL_STUFF,
+    // 153 Fix helicopter by next morning?
+    DECIDE_ACTIVE_TERRORISTS = 154,
+    TRIGGER_FATHER_18_20_OR_15,
+    CHECK_LAST_TERRORIST_HEAD,
+    CARMEN_LEAVES_FOR_C13,
+    CARMEN_LEAVES_FOR_GOOD,
+    CARMEN_LEAVES_ON_NEXT_SECTOR_LOAD,
+    TRIGGER_VINCE_BY_LOYALTY, // 160
+    MEDICAL_REQUESTOR,
+    MEDICAL_REQUESTOR_2,
+    CHECK_DOCTORING_MONEY_GIVEN, // handled in NPC.c
+    START_DOCTORING,
+    VINCE_UNRECRUITABLE, // 165
+    END_COMBAT,
+    BECOME_FRIENDLY_END_COMBAT,
+    SET_EPC_TO_NPC,
+    BUY_VEHICLE_REQUESTOR,
+    END_MEANWHILE,// 170
+    START_BLOODCAT_QUEST,
+    START_MINE,
+    STOP_MINE,
+    RESET_MINE_CAPTURED,
+    SET_OSWALD_RECORD_13_USED, // 175
+    SET_CALVIN_RECORD_13_USED,
+    SET_CARL_RECORD_13_USED,
+    SET_FRED_RECORD_13_USED,
+    SET_MATT_RECORD_13_USED,
+    TRIGGER_MATT, // 180
+    REDUCE_CONRAD_SALARY_CONDITIONS,
+    REMOVE_CONRAD,
+    KROTT_REQUESTOR,
+    KROTT_ALIVE_LOYALTY_BOOST,       /* Delayed loyalty effects elimininated.  Sep.12/98.  ARM */
+    TRIGGER_YANNI, // 185
+    TRIGGER_MARY_OR_JOHN_RECORD_9,
+    TRIGGER_MARY_OR_JOHN_RECORD_10,
+    ADD_JOHNS_GUN_SHIPMENT,
+    // 189 ??
+    TRIGGER_KROTT_11_OR_12 = 190, // 190 Trigger record 11 or 12 for Krott
+    MADLAB_GIVEN_GUN = 191,
+    MADLAB_GIVEN_CAMERA,
+    MADLAB_ATTACHES_GOOD_CAMERA,
+    READY_ROBOT,
+    WALTER_GIVEN_MONEY_INITIALLY,
+    WALTER_GIVEN_MONEY,
+    MAKE_NPC_FIRST_BARTENDER = 197,
+    MAKE_NPC_SECOND_BARTENDER,
+    MAKE_NPC_THIRD_BARTENDER,
+    MAKE_NPC_FOURTH_BARTENDER,//200
+    GERARD_GIVEN_CASH,
+    FILL_UP_CAR, // obsolete?
+    JOE_GIVEN_CASH,
+    TRIGGER_ELLIOT_9_OR_10 = 204, // obsolete?
+    HANDLE_END_OF_FIGHT,// 205
+    DARREN_PAYS_PLAYER,
+    FIGHT_AGAIN_REQUESTOR,
+    TRIGGER_SPIKE_OR_DARREN,
+    // 209 is blank
+    CHANGE_MANNY_POSITION = 210,
+    TIMER_FOR_VEHICLE, // 211
+    ASK_ABOUT_PAYING_RPC_WITH_DAILY_SALARY,//212
+    TRIGGER_MICKY_BY_SCI_FI, // 213
+                             // 214 is blank
+    TRIGGER_ELLIOT_BY_BATTLE_RESULT = 215,
+    TRIGGER_ELLIOT_BY_SAM_DISABLED,
+    LAYLAS_NEXT_LINE_AFTER_CARLA,
+    LAYLAS_NEXT_LINE_AFTER_CINDY,
+    LAYLAS_NEXT_LINE_AFTER_BAMBI,
+    LAYLAS_NEXT_LINE_AFTER_MARIA,
+    PROMPT_PLAYER_TO_LIE,                        // 221
+    REMOVE_JOE_QUEEN,                            // 222
+    REMOVE_ELLIOT_END_MEANWHILE,     // 223
+    NO_SCI_FI_END_MEANWHILE,             //224
+                                         // 225 is obsolete
+    TRIGGER_MARRY_DARYL_PROMPT = 226,
+    HAVE_MARRIED_NPC_LEAVE_TEAM,
+    KINGPIN_GIVEN_MONEY, // actually handled in item-acceptance code, NPC.c
+    KINGPIN_TRIGGER_25_OR_14,
+    SEND_ENRICO_MIGUEL_EMAIL,
+    END_DEMO,// 231,
+    INVOKE_CONVERSATION_MODE, // 232
+                              // 233 is obsolete
+    START_TIMER_ON_KEITH_GOING_OUT_OF_BUSINESS = 234,
+    KEITH_GOING_BACK_IN_BUSINESS,
+    MAKE_RAT_DISAPPEAR,
+    DOCTOR_ESCORT_PATIENTS,
+    ELLIOT_DECIDE_WHICH_QUOTE_FOR_PLAYER_ATTACK,
+    QUEEN_DECIDE_WHICH_QUOTE_FOR_PLAYER_ATTACK,
+    CANCEL_WAYPOINTS, // 240
+                      // 241 currently obsolete, CJC Oct 14
+    SHOW_TIXA = 242,
+    SHOW_ORTA,
+    DRINK_WINE,
+    DRINK_BOOZE,
+    TRIGGER_ANGEL_22_OR_24,
+    SET_FACT_105_FALSE, // 247
+    MAKE_BRENDA_STATIONARY, // 248
+    TRIGGER_DARREN_OR_KINGPIN_IMPRESSED = 249,
+    TRIGGER_KINGPIN_IMPRESSED, // 250
+    ADD_RAT,
+
+    ENDGAME_STATE_1 = 253,
+    ENDGAME_STATE_2,
+    MAKE_MIGUEL_STATIONARY,
+    MAKE_ESTONI_A_FUEL_SITE, // 256
+    TwentyFour_HOURS_SINCE_JOEY_RESCUED,// 257
+    TwentyFour_HOURS_SINCE_DOCTORS_TALKED_TO,// 258
+    SEND_SOLDIERS_TO_OMERTA,// 259
+    ADD_MORE_ELITES,// 260
+    GIVE_KNOWLEDGE_OF_ALL_MERCS,// 261
+    REMOVE_MERC_FOR_MARRIAGE,
+    TRIGGER_JOE_32_OR_33,
+    REMOVE_NPC,
+    HISTORY_GOT_ROCKET_RIFLES,
+    HISTORY_DEIDRANNA_DEAD_BODIES,
+    HISTORY_BOXING_MATCHES,
+    HISTORY_SOMETHING_IN_MINES,
+    HISTORY_DEVIN,
+    HISTORY_MIKE,// 270
+    HISTORY_TONY,
+    HISTORY_KROTT,
+    HISTORY_KYLE,
+    HISTORY_MADLAB,
+    HISTORY_GABBY,
+    HISTORY_KEITH_OUT_OF_BUSINESS,
+    HISTORY_HOWARD_CYANIDE,
+    HISTORY_KEITH,
+    HISTORY_HOWARD,
+    HISTORY_PERKO,// 280
+    HISTORY_SAM,
+    HISTORY_FRANZ,
+    HISTORY_ARNOLD,
+    HISTORY_FREDO,
+    HISTORY_RICHGUY_BALIME,// 285
+    HISTORY_JAKE,
+    HISTORY_BUM_KEYCARD,
+    HISTORY_WALTER,
+    HISTORY_DAVE,
+    HISTORY_PABLO,// 290
+    HISTORY_KINGPIN_MONEY,
+    SEND_TROOPS_TO_SAM,
+    PUT_PACOS_IN_BASEMENT,
+    HISTORY_ASSASSIN,
+    TRIGGER_HANS_BY_ROOM, // 295
+    TRIGGER_MADLAB_31,
+    TRIGGER_MADLAB_32,
+    TRIGGER_BREWSTER_BY_WARDEN_PROXIMITY, // 298
+
+    TURN_TO_FACE_NEAREST_MERC = 500,
+    TURN_TO_FACE_PROFILE_ID_0,
+
+    LAST_TURN_TO_FACE_PROFILE = 650,
+
+    STRATEGIC_AI_ACTION_WAKE_QUEEN = 1,
+    STRATEGIC_AI_ACTION_KINGPIN_DEAD = 2,
+    STRATEGIC_AI_ACTION_QUEEN_DEAD = 3,
+};

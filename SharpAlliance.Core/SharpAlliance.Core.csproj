@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
@@ -22,37 +22,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Shaders\Compute.glsl" />
-    <None Remove="Assets\Shaders\Fragment.glsl" />
-    <None Remove="Assets\Shaders\sprite.frag" />
-    <None Remove="Assets\Shaders\sprite.frag.spv" />
-    <None Remove="Assets\Shaders\sprite.vert" />
-    <None Remove="Assets\Shaders\sprite.vert.spv" />
-    <None Remove="Assets\Shaders\Vertex.glsl" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Assets\Shaders\Compute.glsl">
-      <LogicalName>%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\Shaders\Fragment.glsl">
-      <LogicalName>%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\Shaders\sprite.frag">
-      <LogicalName>%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\Shaders\sprite.frag.spv">
-      <LogicalName>%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\Shaders\sprite.vert">
-      <LogicalName>%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\Shaders\sprite.vert.spv">
-      <LogicalName>%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\Shaders\Vertex.glsl">
-      <LogicalName>%(Filename)%(Extension)</LogicalName>
-    </EmbeddedResource>
+    <Compile Remove="DebugRenderer.cs" />
+    <Compile Remove="Managers\Image\ImageSharpTexture.cs" />
+    <Compile Remove="Managers\VeldridVideoManager.cs" />
+    <Compile Remove="SpriteRenderer.cs" />
+    <Compile Remove="Util.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,18 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
+    <PackageReference Include="SixLabors.Fonts" Version="2.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.0" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
-    <PackageReference Include="Veldrid" Version="4.9.0" />
-    <PackageReference Include="Veldrid.SDL2" Version="4.9.0" />
-    <PackageReference Include="Veldrid.ImageSharp" Version="4.9.0" />
-    <PackageReference Include="Veldrid.OpenGLBindings" Version="4.9.0" />
-    <PackageReference Include="Veldrid.SPIRV" Version="1.0.15" />
-    <PackageReference Include="Veldrid.StartupUtilities" Version="4.9.0" />
-    <PackageReference Include="Veldrid.Utilities" Version="4.9.0" />
-
   </ItemGroup>
 
   <ItemGroup>

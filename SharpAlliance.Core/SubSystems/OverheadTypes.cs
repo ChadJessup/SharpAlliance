@@ -4,21 +4,84 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpAlliance.Core.SubSystems
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.SubSystems;
+
+public class OverheadTypes
 {
-    public class OverheadTypes
-    {
-        // ENUMERATION OF SOLDIER POSIITONS IN GLOBAL SOLDIER LIST
-        public const int MAX_NUM_SOLDIERS = 148;
-        public const int NUM_PLANNING_MERCS = 8;
-        public const int TOTAL_SOLDIERS = NUM_PLANNING_MERCS + MAX_NUM_SOLDIERS;
+}
 
-        public const int MAX_PATH_LIST_SIZE = 30;
-        public const int NUM_SOLDIER_SHADES = 48;
-        public const int NUM_SOLDIER_EFFECTSHADES = 2;
-        //TACTICAL OVERHEAD STUFF
-        public const int NO_SOLDIER = TOTAL_SOLDIERS; // SAME AS NOBODY
-        public const int NOBODY = NO_SOLDIER;
 
-    }
+// TACTICAL ENGINE STATUS FLAGS
+[Flags]
+public enum TacticalEngineStatus : long
+{
+    REALTIME = 0x000000002,
+    TURNBASED = 0x000000004,
+    IN_ENDGAME_SEQUENCE = 0x000000008,
+    SHOW_ALL_ITEMS = 0x000000010,
+    SHOW_AP_LEFT = 0x000000020,
+    SHOW_ALL_MERCS = 0x000000040,
+    TRANSLUCENCY_TYPE = 0x000000080,
+    GODMODE = 0x000000100,
+    DEMOMODE = 0x000000200,
+    PLAYER_TEAM_DEAD = 0x000000400,
+    NPC_TEAM_DEAD = 0x000000800,
+    DISALLOW_SIGHT = 0x000001000,
+    CHECK_SIGHT_AT_END_OF_ATTACK = 0x000002000,
+    IN_CREATURE_LAIR = 0x000004000,
+    HIDE_TREES = 0x000008000,
+    NOHIDE_REDUNDENCY = 0x000010000,
+    DEBUGCLIFFS = 0x000020000,
+    INCOMBAT = 0x000040000,
+    ACTIVE = 0x000100000,
+    SHOW_Z_BUFFER = 0x000200000,
+    SLOW_ANIMATION = 0x000400000,
+    ENGAGED_IN_CONV = 0x000800000,
+    LOADING_SAVED_GAME = 0x001000000,
+    OUR_MERCS_AUTO_MOVE = 0x002000000,
+    SHOW_ALL_ROOFS = 0x004000000,
+    NEWLY_ENTERED_SECTOR = 0x008000000,
+    RED_ITEM_GLOW_ON = 0x010000000,
+    IGNORE_ENGAGED_IN_CONV_UI_UNLOCK = 0x020000000,
+    IGNORE_ALL_OBSTACLES = 0x040000000,
+    IN_DEIDRANNA_ENDGAME = 0x080000000,
+    DONE_DEIDRANNA_ENDGAME = 0x100000000,
+}
+
+// PALETTE SUBSITUTION TYPES
+public struct PaletteSubRangeType
+{
+    public int ubStart;
+    public int ubEnd;
+}
+
+public record PaletteRepID2();
+
+public enum WorldDirections : int
+{
+    NORTH = 0,
+    NORTHEAST,
+    EAST,
+    SOUTHEAST,
+    SOUTH,
+    SOUTHWEST,
+    WEST,
+    NORTHWEST,
+    NUM_WORLD_DIRECTIONS,
+    DIRECTION_IRRELEVANT,
+    DIRECTION_EXITGRID = 255,
+}
+
+public enum TEAM
+{
+    OUR_TEAM = 0,
+    ENEMY_TEAM = 1,
+    CREATURE_TEAM = 2,
+    MILITIA_TEAM = 3,
+    CIV_TEAM = 4,
+    LAST_TEAM = CIV_TEAM,
+    PLAYER_PLAN = 5,
+    MAX_TEAMS = 6,
 }

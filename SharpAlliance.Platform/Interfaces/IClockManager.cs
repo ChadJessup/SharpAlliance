@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SharpAlliance.Platform.Interfaces
+namespace SharpAlliance.Platform.Interfaces;
+
+public interface IClockManager : ISharpAllianceManager
 {
-    public interface IClockManager : ISharpAllianceManager
-    {
-        bool gfGamePaused { get; set; }
-
-        long GetClock();
-        long GetTickCount();
-        void UpdateClock();
-        uint GetJA2Clock();
-        void UnPauseGame();
-        void PauseGame();
-        void RemoveMouseRegionForPauseOfClock();
-        void InterruptTime();
-        void LockPauseState(int v);
-        void PauseTime(bool v);
-        void UnLockPauseState();
-    }
+    static long GetClock()  => throw new NotImplementedException();
+    static long GetTickCount()  => throw new NotImplementedException();
+    static void UpdateClock()  => throw new NotImplementedException();
+    static uint GetJA2Clock()  => throw new NotImplementedException();
+    static void UnPauseGame()  => throw new NotImplementedException();
+    static void PauseGame()  => throw new NotImplementedException();
+    static void RemoveMouseRegionForPauseOfClock()  => throw new NotImplementedException();
+    static void InterruptTime()  => throw new NotImplementedException();
+    static void LockPauseState(int v)  => throw new NotImplementedException();
+    static void UnLockPauseState() => throw new NotImplementedException();
 }

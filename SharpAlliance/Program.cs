@@ -29,7 +29,8 @@ namespace SharpAlliance
             // but let's add per-machine configuration as well (and commandline args),
             // since I dev this on multiple machines...and need examples.
             var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile($"SharpAlliance.{Environment.MachineName}.json", optional: true)
+                .AddJsonFile("SharpAlliance.json")
+                .AddJsonFile($"SharpAlliance.{System.Environment.MachineName}.json", optional: true)
                 .AddCommandLine(args);
 
             // pass configuration to GamePlatformBuilder...
@@ -66,15 +67,18 @@ namespace SharpAlliance
         public static IGamePlatformBuilder AddOtherComponents(this IGamePlatformBuilder builder)
         {
             builder.AddDependency<IOSManager, WindowsSubSystem>();
-            //builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
+//            builder.AddDependency<IVideoObjectManager, VideoObjectManager>();
             builder.AddDependency<IScreenManager, ScreenManager>();
             builder.AddDependency<IFileManager, FileManager>();
             builder.AddDependency<ILibraryManager, LibraryFileManager>();
-            builder.AddDependency<IVideoManager, VeldridVideoManager>();
+            builder.AddDependency<IVideoManager, SDL2VideoManager>();
+            builder.AddDependency<ITextureManager, TextureManager>();
             builder.AddDependency<ISoundManager, SoundManager>();
             builder.AddDependency<IInputManager, InputManager>();
             builder.AddDependency<IClockManager, ClockManager>();
+            builder.AddDependency<ISurfaceManager, SurfaceManager>();
 
+            builder.Services.AddSingleton<Cars>();
             builder.Services.AddSingleton<Globals>();
             builder.Services.AddSingleton<Messages>();
             builder.Services.AddSingleton<TileCache>();
@@ -82,19 +86,23 @@ namespace SharpAlliance
             builder.Services.AddSingleton<FadeScreen>();
             builder.Services.AddSingleton<RenderWorld>();
             builder.Services.AddSingleton<MercTextBox>();
+            builder.Services.AddSingleton<RenderDirty>();
             builder.Services.AddSingleton<EventManager>();
+            builder.Services.AddSingleton<SaveLoadGame>();
             builder.Services.AddSingleton<FontSubSystem>();
+            builder.Services.AddSingleton<TextureManager>();
             builder.Services.AddSingleton<MouseSubSystem>();
+            builder.Services.AddSingleton<SurfaceManager>();
             builder.Services.AddSingleton<SliderSubSystem>();
             builder.Services.AddSingleton<ButtonSubSystem>();
             builder.Services.AddSingleton<CursorSubSystem>();
             builder.Services.AddSingleton<MessageSubSystem>();
             builder.Services.AddSingleton<SaveGameSubSystem>();
+            builder.Services.AddSingleton<StructureInternals>();
             builder.Services.AddSingleton<MessageBoxSubSystem>();
             builder.Services.AddSingleton<MessageBoxSubSystem>();
             builder.Services.AddSingleton<CinematicsSubSystem>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
-            builder.Services.AddSingleton<RenderDirtySubSystem>();
             builder.Services.AddSingleton<MapScreenInterfaceMap>();
             builder.Services.AddSingleton<SoldierProfileSubSystem>();
             builder.Services.AddSingleton<DialogControl>();
@@ -109,19 +117,23 @@ namespace SharpAlliance
             builder.Services.AddSingleton<Overhead>();
             builder.Services.AddSingleton<Emails>();
             builder.Services.AddSingleton<Laptop>();
-            builder.Services.AddSingleton<Interface>();
+            //builder.Services.AddSingleton<Interface>();
             builder.Services.AddSingleton<TurnBasedInput>();
             builder.Services.AddSingleton<Cheats>();
             builder.Services.AddSingleton<GameEvents>();
             builder.Services.AddSingleton<NPC>();
             builder.Services.AddSingleton<ShopKeeper>();
             builder.Services.AddSingleton<World>();
+            builder.Services.AddSingleton<WorldStructures>();
+            builder.Services.AddSingleton<AnimatedProgressBar>();
             builder.Services.AddSingleton<HelpScreenSubSystem>();
             builder.Services.AddSingleton<DialogControl>();
             builder.Services.AddSingleton<AirRaid>();
             builder.Services.AddSingleton<QuestEngine>();
             builder.Services.AddSingleton<InterfaceDialogSubSystem>();
             builder.Services.AddSingleton<Faces>();
+            builder.Services.AddSingleton<Keys>();
+            builder.Services.AddSingleton<AIMain>();
             builder.Services.AddSingleton<Shading>();
             builder.Services.AddSingleton<TextUtils>();
             builder.Services.AddSingleton<AnimationData>();

@@ -561,7 +561,7 @@ namespace Vortice.Win32
         /// </param>
         /// <param name="hInstance">
         ///     [in] Handle to the DLL containing the hook procedure pointed to by the lpfn parameter.
-        ///     The hMod parameter must be set to NULL if the dwThreadId parameter specifies a thread created by
+        ///     The hMod parameter must be set to null if the dwThreadId parameter specifies a thread created by
         ///     the current process and if the hook procedure is within the code associated with the current process.
         /// </param>
         /// <param name="dwThreadId">
@@ -571,7 +571,7 @@ namespace Vortice.Win32
         /// </param>
         /// <returns>
         ///     If the function succeeds, the return value is the handle to the hook procedure.
-        ///     If the function fails, the return value is NULL. To get extended error information, call GetLastError.
+        ///     If the function fails, the return value is null. To get extended error information, call GetLastError.
         /// </returns>
         /// <remarks>
         ///     http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/winui/windowsuserinterface/windowing/hooks/hookreference/hookfunctions/setwindowshookex.asp

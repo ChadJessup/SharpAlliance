@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Veldrid;
-using Veldrid.Utilities;
 
 namespace SharpAlliance
 {

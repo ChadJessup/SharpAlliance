@@ -1,605 +1,578 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.SubSystems;
-using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
-using Veldrid;
 using SixLabors.ImageSharp;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 using Point = SixLabors.ImageSharp.Point;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 
-namespace SharpAlliance.Core.Screens
+using static SharpAlliance.Core.Globals;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
+
+namespace SharpAlliance.Core.Screens;
+
+public class MainMenuScreen : IScreen
 {
-    public class MainMenuScreen : IScreen
+    private readonly GameInit gameInit;
+    private readonly RenderDirty renderDirty;
+    private readonly IScreenManager screens;
+    private readonly GameOptions options;
+    private readonly FontSubSystem fonts;
+    private readonly IInputManager input;
+    private readonly IMusicManager music;
+    private readonly ButtonSubSystem buttons;
+    private readonly MouseSubSystem mouse;
+    private readonly IVideoManager video;
+    private readonly CursorSubSystem cursor;
+    private readonly IClockManager clock;
+
+    private Dictionary<MainMenuItems, ButtonPic> iMenuImages = new();
+    private Dictionary<MainMenuItems, GUI_BUTTON> iMenuButtons = new();
+
+    private ScreenName guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+
+    private string mainMenuBackGroundImageKey;
+    private string ja2LogoImageKey;
+
+    private bool fInitialRender = false;
+    //bool gfDoHelpScreen = 0;
+
+    private IntroScreen introScreen;
+
+    public MainMenuScreen(
+        MouseSubSystem mouseSubSystem,
+        IScreenManager screenManager,
+        GameInit gameInit,
+        IClockManager clockManager,
+        ButtonSubSystem buttonSubSystem,
+        IMusicManager musicManager,
+        GameOptions gameOptions,
+        IVideoManager videoManager,
+        CursorSubSystem cursorSubSystem,
+        FontSubSystem fontSubSystem,
+        IInputManager inputManager,
+        RenderDirty renderDirtySubSystem)
     {
-        private readonly ButtonSubSystem buttons;
-        private readonly GameInit gameInit;
-        private readonly RenderDirtySubSystem renderDirty;
-        private readonly IScreenManager screens;
-        private readonly GameOptions options;
-        private readonly FontSubSystem fonts;
-        private readonly IInputManager input;
-        private readonly IMusicManager music;
-        private readonly MouseSubSystem mouse;
-        private readonly IVideoManager video;
-        private readonly Globals globals;
-        private readonly CursorSubSystem cursor;
-        private readonly IClockManager clock;
+        this.cursor = cursorSubSystem;
+        this.clock = clockManager;
+        this.input = inputManager;
+        this.music = musicManager;
+        this.mouse = mouseSubSystem;
+        this.options = gameOptions;
+        this.buttons = buttonSubSystem;
+        this.fonts = fontSubSystem;
+        this.screens = screenManager;
+        this.video = videoManager;
+        this.gameInit = gameInit;
+        this.renderDirty = renderDirtySubSystem;
+    }
 
-        public const string MAINMENU_TEXT_FILE = "LoadScreens\\MainMenu.edt";
-        public const int MAINMENU_RECORD_SIZE = 80 * 2;
-        public const int MAINMENU_X = (640 - 214) / 2;
-        public const int MAINMENU_TITLE_Y = 75;
-        public const int MAINMENU_Y_SPACE = 37;
-        public const int MAINMENU_Y = 480 - 187;
+    public bool IsInitialized { get; set; }
+    public ScreenState State { get; set; }
 
-        // MENU ITEMS
-        private enum MainMenuItems
+    public async ValueTask Activate()
+    {
+        this.introScreen = await this.screens.GetScreen<IntroScreen>(ScreenName.INTRO_SCREEN, activate: false);
+    }
+
+    public async ValueTask<ScreenName> Handle()
+    {
+        uint cnt;
+        uint uiTime;
+
+        if (Globals.guiSplashStartTime + 4000 > Globals.GetJA2Clock())
         {
-            //	TITLE,
-            NEW_GAME,
-            LOAD_GAME,
-            PREFERENCES,
-            CREDITS,
-            QUIT,
-            NUM_MENU_ITEMS,
-            Unknown = 99,
-        };
+            CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+            this.music.SetMusicMode(MusicMode.NONE);
 
-        private Dictionary<MainMenuItems, ButtonPic> iMenuImages = new();
-        private Dictionary<MainMenuItems, GUI_BUTTON> iMenuButtons = new();
-
-        ushort[] gusMainMenuButtonWidths = new ushort[(int)MainMenuItems.NUM_MENU_ITEMS];
-
-        string mainMenuBackGroundImageKey;
-        string ja2LogoImageKey;
-
-        private MouseRegion gBackRegion = new(nameof(gBackRegion));
-        private MainMenuItems gbHandledMainMenu = MainMenuItems.Unknown;
-        private bool fInitialRender = false;
-        //bool gfDoHelpScreen = 0;
-
-        private bool gfMainMenuScreenEntry = false;
-        private bool gfMainMenuScreenExit = false;
-        private IntroScreen introScreen;
-
-        ScreenName guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
-
-        public MainMenuScreen(
-            MouseSubSystem mouseSubSystem,
-            IScreenManager screenManager,
-            IVideoManager videoManager,
-            GameInit gameInit,
-            IClockManager clockManager,
-            IMusicManager musicManager,
-            GameOptions gameOptions,
-            ButtonSubSystem buttonSubSystem,
-            CursorSubSystem cursorSubSystem,
-            FontSubSystem fontSubSystem,
-            IInputManager inputManager,
-            Globals globals,
-            RenderDirtySubSystem renderDirtySubSystem)
-        {
-            this.globals = globals;
-            this.cursor = cursorSubSystem;
-            this.clock = clockManager;
-            this.buttons = buttonSubSystem;
-            this.input = inputManager;
-            this.music = musicManager;
-            this.mouse = mouseSubSystem;
-            this.video = videoManager;
-            this.options = gameOptions;
-            this.fonts = fontSubSystem;
-            this.screens = screenManager;
-            this.gameInit = gameInit;
-            this.renderDirty = renderDirtySubSystem;
+            //The splash screen hasn't been up long enough yet.
+            return ScreenName.MAINMENU_SCREEN;
         }
 
-        public bool IsInitialized { get; set; }
-        public ScreenState State { get; set; }
-        public bool gfFadeInitialized;
-        public bool gfFadeIn;
-        public bool gfFadeInVideo;
-        public int gbFadeType;
-        public Action gFadeFunction;
-
-        public async ValueTask Activate()
+        if (Globals.guiSplashFrameFade != 0)
         {
-            this.introScreen = await this.screens.GetScreen<IntroScreen>(ScreenName.INTRO_SCREEN, activate: false);
-        }
-
-        public async ValueTask<ScreenName> Handle()
-        {
-            uint cnt;
-            uint uiTime;
-
-            if (this.introScreen.guiSplashStartTime + 4000 > this.clock.GetJA2Clock())
+            //Fade the splash screen.
+            uiTime = Globals.GetJA2Clock();
+            if (Globals.guiSplashFrameFade > 2)
             {
-                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
-                this.music.SetMusicMode(MusicMode.NONE);
-
-                //The splash screen hasn't been up long enough yet.
-                return ScreenName.MAINMENU_SCREEN;
+                video.ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480));
             }
-
-            if (this.introScreen.guiSplashFrameFade != 0)
-            { //Fade the splash screen.
-                uiTime = this.clock.GetJA2Clock();
-                if (this.introScreen.guiSplashFrameFade > 2)
-                {
-                    this.video.ShadowVideoSurfaceRectUsingLowPercentTable(new Rectangle(0, 0, 640, 480));
-                }
-                else if (this.introScreen.guiSplashFrameFade > 1)
-                {
-                    this.video.ColorFillVideoSurfaceArea(Surfaces.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
-                }
-                else
-                {
-                    uiTime = this.clock.GetJA2Clock();
-                    //while( GetJA2Clock() < uiTime + 375 );
-                    this.music.SetMusicMode(MusicMode.MAIN_MENU);
-                }
-
-                //while( uiTime + 100 > GetJA2Clock() );
-
-                this.introScreen.guiSplashFrameFade--;
-
-                // this.video.InvalidateScreen();
-                // this.video.EndFrameBufferRender();
-
-                this.cursor.SetCurrentCursorFromDatabase(Cursor.VIDEO_NO_CURSOR);
-
-                return ScreenName.MAINMENU_SCREEN;
-            }
-
-            this.cursor.SetCurrentCursorFromDatabase(Cursor.NORMAL);
-
-            if (this.gfMainMenuScreenEntry)
+            else if (Globals.guiSplashFrameFade > 1)
             {
-                await this.InitMainMenu();
-                this.gfMainMenuScreenEntry = false;
-                this.gfMainMenuScreenExit = false;
-                this.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
-                this.music.SetMusicMode(MusicMode.MAIN_MENU);
-            }
-
-            if (this.fInitialRender)
-            {
-                this.ClearMainMenu();
-                this.RenderMainMenu();
-
-                this.fInitialRender = false;
-            }
-
-            this.RestoreButtonBackGrounds();
-
-            // Render buttons
-            for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
-            {
-                this.buttons.MarkAButtonDirty(this.iMenuButtons[(MainMenuItems)cnt]);
-            }
-
-//            this.video.EndFrameBufferRender();
-
-            this.HandleMainMenuInput();
-
-            this.HandleMainMenuScreen();
-
-            if (this.gfMainMenuScreenExit)
-            {
-                this.ExitMainMenu();
-                this.gfMainMenuScreenExit = false;
-                this.gfMainMenuScreenEntry = true;
-            }
-
-            if (this.guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
-            {
-                this.gfMainMenuScreenEntry = true;
-            }
-
-            return this.guiMainMenuExitScreen;
-        }
-
-        private void ExitMainMenu()
-        {
-            this.CreateDestroyBackGroundMouseMask(false);
-
-            this.CreateDestroyMainMenuButtons(false);
-
-            this.video.DeleteVideoObjectFromIndex(this.mainMenuBackGroundImageKey);
-            this.video.DeleteVideoObjectFromIndex(this.ja2LogoImageKey);
-
-            //gMsgBox.uiExitScreen = ScreenName.MAINMENU_SCREEN;
-        }
-
-        private void HandleMainMenuScreen()
-        {
-            if (this.gbHandledMainMenu != MainMenuItems.Unknown)
-            {
-                // Exit according to handled value!
-                switch (this.gbHandledMainMenu)
-                {
-                    case MainMenuItems.QUIT:
-                        this.gfMainMenuScreenExit = true;
-
-                        this.globals.gfProgramIsRunning = false;
-                        break;
-
-                    case MainMenuItems.NEW_GAME:
-
-                        //					gfDoHelpScreen = 1;
-                        //				gfMainMenuScreenExit = true;
-                        //				if( !gfDoHelpScreen )
-                        //					SetMainMenuExitScreen( INIT_SCREEN );
-                        break;
-
-                    case MainMenuItems.LOAD_GAME:
-                        // Select the game which is to be restored
-                        // guiPreviousOptionScreen = guiCurrentScreen;
-                        this.guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
-                        this.gbHandledMainMenu = 0;
-                        // gfSaveGame = false;
-                        this.gfMainMenuScreenExit = true;
-
-                        break;
-
-                    case MainMenuItems.PREFERENCES:
-                        //this.optionsScreen.guiPreviousOptionScreen = guiCurrentScreen;
-                        this.guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
-                        this.gbHandledMainMenu = 0;
-                        this.gfMainMenuScreenExit = true;
-                        break;
-
-                    case MainMenuItems.CREDITS:
-                        this.guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
-                        this.gbHandledMainMenu = 0;
-                        this.gfMainMenuScreenExit = true;
-                        break;
-                }
-            }
-
-        }
-
-        private void HandleMainMenuInput()
-        {
-            // Check for key
-            while (this.input.DequeueEvent(out var InputEvent) == true)
-            {
-                if (InputEvent.KeyEvents.Any(ke => !ke.Down))
-                {
-                    this.SetMainMenuExitScreen(ScreenName.InitScreen);
-
-                }
-            }
-        }
-
-        private void SetMainMenuExitScreen(ScreenName screen)
-        {
-            this.guiMainMenuExitScreen = screen;
-
-            //Remove the background region
-            this.CreateDestroyBackGroundMouseMask(false);
-
-            this.gfMainMenuScreenExit = true;
-        }
-
-        private void RestoreButtonBackGrounds()
-        {
-            byte cnt;
-
-            //	RestoreExternBackgroundRect( (ushort)(320 - gusMainMenuButtonWidths[TITLE]/2), MAINMENU_TITLE_Y, gusMainMenuButtonWidths[TITLE], 23 );
-
-
-            for (cnt = 0; cnt < (byte)MainMenuItems.NUM_MENU_ITEMS; cnt++)
-            {
-                this.renderDirty.RestoreExternBackgroundRect(
-                    (ushort)(320 - this.gusMainMenuButtonWidths[cnt] / 2),
-                    (short)(MAINMENU_Y + (cnt * MAINMENU_Y_SPACE) - 1),
-                    (ushort)(this.gusMainMenuButtonWidths[cnt] + 1),
-                    23);
-            }
-        }
-
-        private void RenderMainMenu()
-        {
-            HVOBJECT hPixHandle;
-
-            //Get and display the background image
-            //hPixHandle = this.video.GetVideoObject(this.mainMenuBackGroundImageKey);
-            //this.video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
-
-            //hPixHandle = this.video.GetVideoObject(this.ja2LogoImageKey);
-            //this.video.BltVideoObject(hPixHandle, 0, 188, 480 - (15 + (int)hPixHandle.Textures[0].Height), 0);
-
-            this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
-
-//            this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
-        }
-
-        public ValueTask<bool> Initialize()
-        {
-            return ValueTask.FromResult(true);
-        }
-
-        public async ValueTask<bool> InitMainMenu()
-        {
-            //	gfDoHelpScreen = 0;
-
-            //Check to see whatr saved game files exist
-            // TODO: re-add when saveloadscreen is added.
-            // this.screens.GetScreen(ScreenName.SAVE_LOAD_SCREEN, activate: false)
-            // InitSaveGameArray();
-
-            //Create the background mouse mask
-            this.CreateDestroyBackGroundMouseMask(true);
-
-            this.CreateDestroyMainMenuButtons(fCreate: true);
-
-            // load background graphic and add it
-            this.background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
-
-            // load ja2 logo graphic and add it
-            this.logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
-
-            /*
-                // Gray out some buttons based on status of game!
-                if( gGameSettings.bLastSavedGameSlot < 0 || gGameSettings.bLastSavedGameSlot >= NUM_SAVE_GAMES )
-                {
-                    DisableButton( iMenuButtons[ LOAD_GAME ] );
-                }
-                //The ini file said we have a saved game, but there is no saved game
-                else if( gbSaveGameArray[ gGameSettings.bLastSavedGameSlot ] == false )
-                    DisableButton( iMenuButtons[ LOAD_GAME ] );
-            */
-
-            //if there are no saved games, disable the button
-            // TODO: re-add when saveloadscreen is added.
-            //if (!IsThereAnySavedGameFiles())
-            //{
-            this.buttons.DisableButton(this.iMenuButtons[MainMenuItems.LOAD_GAME]);
-            //}
-
-            //	DisableButton( iMenuButtons[ CREDITS ] );
-            //	DisableButton( iMenuButtons[ TITLE ] );
-
-            this.gbHandledMainMenu = 0;
-            this.fInitialRender = true;
-
-            await this.screens.SetPendingNewScreen(ScreenName.MAINMENU_SCREEN);
-            this.guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
-
-            this.options.InitGameOptions();
-
-            this.input.DequeueAllKeyBoardEvents();
-
-            return true;
-        }
-
-        private static bool fButtonsCreated = false;
-        private bool CreateDestroyMainMenuButtons(bool fCreate)
-        {
-            int cnt;
-            string filename;
-            short sSlot;
-            int iStartLoc = 0;
-            string zText;
-
-            if (fCreate)
-            {
-                if (fButtonsCreated)
-                {
-                    return true;
-                }
-
-                //reset the variable that allows the user to ALT click on the continue save btn to load the save instantly
-                // TODO: Enable when SaveLoadScreen is ported.
-                //gfLoadGameUponEntry = false;
-
-                // Load button images
-                filename = "LOADSCREENS\\titletext.sti";// MLG_TITLETEXT);
-
-                this.iMenuImages[MainMenuItems.NEW_GAME] = this.buttons.LoadButtonImage(filename, 0, 0, 1, 2, -1);
-                sSlot = 0;
-
-                this.iMenuImages[MainMenuItems.LOAD_GAME] = this.buttons.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 6, 3, 4, 5, -1);
-                this.iMenuImages[MainMenuItems.PREFERENCES] = this.buttons.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 7, 7, 8, 9, -1);
-                this.iMenuImages[MainMenuItems.CREDITS] = this.buttons.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 13, 10, 11, 12, -1);
-                this.iMenuImages[MainMenuItems.QUIT] = this.buttons.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 14, 14, 15, 16, -1);
-
-                for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
-                {
-                    var menuItem = (MainMenuItems)cnt;
-                    switch (cnt)
-                    {
-                        case (int)MainMenuItems.NEW_GAME:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], sSlot);
-                            break;
-                        case (int)MainMenuItems.LOAD_GAME:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 3);
-                            break;
-                        case (int)MainMenuItems.PREFERENCES:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 7);
-                            break;
-                        case (int)MainMenuItems.CREDITS:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 10);
-                            break;
-                        case (int)MainMenuItems.QUIT:
-                            this.gusMainMenuButtonWidths[cnt] = this.buttons.GetWidthOfButtonPic(this.iMenuImages[menuItem], 15);
-                            break;
-                    }
-
-                    this.iMenuButtons[menuItem] = this.buttons.QuickCreateButton(
-                        this.iMenuImages[menuItem],
-                        new Point(320 - this.gusMainMenuButtonWidths[cnt] / 2, MAINMENU_Y + (cnt * MAINMENU_Y_SPACE)),
-                        ButtonFlags.BUTTON_TOGGLE,
-                        MSYS_PRIORITY.HIGHEST,
-                        MouseSubSystem.DefaultMoveCallback,
-                        this.MenuButtonCallback);
-
-                    if (this.iMenuButtons[menuItem] is null)
-                    {
-                        return false;
-                    }
-
-                    this.iMenuButtons[menuItem].UserData[0] = cnt;
-                }
-
-                fButtonsCreated = true;
+                video.ColorFillVideoSurfaceArea(SurfaceType.FRAME_BUFFER, new Rectangle(0, 0, 640, 480), Color.Black);
             }
             else
             {
-                if (!fButtonsCreated)
-                {
-                    return true;
-                }
-
-                // Delete images/buttons
-                for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
-                {
-                    this.buttons.RemoveButton(this.iMenuButtons[(MainMenuItems)cnt]);
-                    this.buttons.UnloadButtonImage(this.iMenuImages[(MainMenuItems)cnt]);
-                }
-
-                fButtonsCreated = false;
+                uiTime = Globals.GetJA2Clock();
+                //while( GetJA2Clock() < uiTime + 375 );
+                this.music.SetMusicMode(MusicMode.MAIN_MENU);
             }
 
-            return true;
+            //while( uiTime + 100 > GetJA2Clock() );
+
+            Globals.guiSplashFrameFade--;
+
+            video.InvalidateScreen();
+            video.EndFrameBufferRender();
+
+            CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.VIDEO_NO_CURSOR);
+
+            return ScreenName.MAINMENU_SCREEN;
         }
 
-        private void MenuButtonCallback(ref GUI_BUTTON btn, MouseCallbackReasons reasonValue)
+        CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
+
+        if (Globals.gfMainMenuScreenEntry)
         {
-            MouseCallbackReasons reason = reasonValue;
-            MainMenuItems bID;
+            await this.InitMainMenu();
+            Globals.gfMainMenuScreenEntry = false;
+            Globals.gfMainMenuScreenExit = false;
+            guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+            this.music.SetMusicMode(MusicMode.MAIN_MENU);
+        }
 
-            bID = (MainMenuItems)btn.UserData[0];
+        if (this.fInitialRender)
+        {
+            this.ClearMainMenu();
+            this.RenderMainMenu();
 
-            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
+            this.fInitialRender = false;
+        }
+
+        this.RestoreButtonBackGrounds();
+
+        // Render buttons
+        for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
+        {
+            ButtonSubSystem.MarkAButtonDirty(this.iMenuButtons[(MainMenuItems)cnt]);
+        }
+
+        ButtonSubSystem.RenderButtons(this.iMenuButtons.Values);
+
+        video.EndFrameBufferRender();
+
+        this.HandleMainMenuInput();
+
+        this.HandleMainMenuScreen();
+
+        if (Globals.gfMainMenuScreenExit)
+        {
+            this.ExitMainMenu();
+            Globals.gfMainMenuScreenExit = false;
+            Globals.gfMainMenuScreenEntry = true;
+        }
+
+        if (guiMainMenuExitScreen != ScreenName.MAINMENU_SCREEN)
+        {
+            Globals.gfMainMenuScreenEntry = true;
+        }
+
+        return guiMainMenuExitScreen;
+    }
+
+    private void ExitMainMenu()
+    {
+        this.CreateDestroyBackGroundMouseMask(false);
+
+        this.CreateDestroyMainMenuButtons(false);
+
+        this.video.DeleteVideoObjectFromIndex(this.mainMenuBackGroundImageKey);
+        this.video.DeleteVideoObjectFromIndex(this.ja2LogoImageKey);
+
+        //gMsgBox.uiExitScreen = ScreenName.MAINMENU_SCREEN;
+    }
+
+    private void HandleMainMenuScreen()
+    {
+        if (Globals.gbHandledMainMenu != MainMenuItems.Unknown)
+        {
+            // Exit according to handled value!
+            switch (Globals.gbHandledMainMenu)
+            {
+                case MainMenuItems.QUIT:
+                    Globals.gfMainMenuScreenExit = true;
+
+                    Globals.gfProgramIsRunning = false;
+                    break;
+
+                case MainMenuItems.NEW_GAME:
+
+                    //					gfDoHelpScreen = 1;
+                    //				gfMainMenuScreenExit = true;
+                    //				if( !gfDoHelpScreen )
+                    //					SetMainMenuExitScreen( INIT_SCREEN );
+                    break;
+
+                case MainMenuItems.LOAD_GAME:
+                    // Select the game which is to be restored
+                    // guiPreviousOptionScreen = guiCurrentScreen;
+                    guiMainMenuExitScreen = ScreenName.SAVE_LOAD_SCREEN;
+                    Globals.gbHandledMainMenu = 0;
+                    // gfSaveGame = false;
+                    Globals.gfMainMenuScreenExit = true;
+
+                    break;
+
+                case MainMenuItems.PREFERENCES:
+                    //this.optionsScreen.guiPreviousOptionScreen = guiCurrentScreen;
+                    guiMainMenuExitScreen = ScreenName.OPTIONS_SCREEN;
+                    Globals.gbHandledMainMenu = 0;
+                    Globals.gfMainMenuScreenExit = true;
+                    break;
+
+                case MainMenuItems.CREDITS:
+                    guiMainMenuExitScreen = ScreenName.CREDIT_SCREEN;
+                    Globals.gbHandledMainMenu = 0;
+                    Globals.gfMainMenuScreenExit = true;
+                    break;
+            }
+        }
+
+    }
+
+    private void HandleMainMenuInput()
+    {
+        // Check for key
+        while (this.input.DequeueEvent(out var InputEvent) == true)
+        {
+            if (InputEvent.KeyEvents.Any(ke => !ke.Down))
+            {
+                this.SetMainMenuExitScreen(ScreenName.InitScreen);
+
+            }
+        }
+    }
+
+    private void SetMainMenuExitScreen(ScreenName screen)
+    {
+        guiMainMenuExitScreen = screen;
+
+        //Remove the background region
+        this.CreateDestroyBackGroundMouseMask(false);
+
+        Globals.gfMainMenuScreenExit = true;
+    }
+
+    private void RestoreButtonBackGrounds()
+    {
+        byte cnt;
+
+        //RestoreExternBackgroundRect( (ushort)(320 - gusMainMenuButtonWidths[TITLE]/2), MAINMENU_TITLE_Y, gusMainMenuButtonWidths[TITLE], 23 );
+
+
+        for (cnt = 0; cnt < (byte)MainMenuItems.NUM_MENU_ITEMS; cnt++)
+        {
+            RenderDirty.RestoreExternBackgroundRect(
+                (ushort)(320 - Globals.gusMainMenuButtonWidths[cnt] / 2),
+                (short)(Globals.MAINMENU_Y + (cnt * Globals.MAINMENU_Y_SPACE) - 1),
+                (ushort)(Globals.gusMainMenuButtonWidths[cnt] + 1),
+                23);
+        }
+    }
+
+    private PointF copyrightLocation = new(0, 465);
+    private void RenderMainMenu()
+    {
+        //Get and display the background image
+        HVOBJECT hPixHandle = video.GetVideoObject(this.mainMenuBackGroundImageKey);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(0, 0), VO_BLT.SRCTRANSPARENCY);
+
+        hPixHandle = video.GetVideoObject(this.ja2LogoImageKey);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.FRAME_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+        video.BlitSurfaceToSurface(hPixHandle.Images[0], SurfaceType.SAVE_BUFFER, new(188, 15), VO_BLT.SRCTRANSPARENCY);
+
+        FontSubSystem.DrawTextToScreen(
+            EnglishText.gzCopyrightText[0],
+            copyrightLocation,
+            640,
+            FontStyle.FONT10ARIAL,
+            FontColor.FONT_MCOLOR_WHITE,
+            FontColor.FONT_MCOLOR_BLACK,
+            TextJustifies.CENTER_JUSTIFIED);
+
+        video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
+    }
+
+    public ValueTask<bool> Initialize()
+    {
+        return ValueTask.FromResult(true);
+    }
+
+    public async ValueTask<bool> InitMainMenu()
+    {
+        //	gfDoHelpScreen = 0;
+
+        //Check to see whatr saved game files exist
+        // TODO: re-add when saveloadscreen is added.
+        // this.screens.GetScreen(ScreenName.SAVE_LOAD_SCREEN, activate: false)
+        // InitSaveGameArray();
+
+        //Create the background mouse mask
+        this.CreateDestroyBackGroundMouseMask(true);
+
+        this.CreateDestroyMainMenuButtons(fCreate: true);
+
+        // load background graphic and add it
+        this.background = this.video.GetVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
+
+        // load ja2 logo graphic and add it
+        this.logo = this.video.GetVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
+
+        /*
+            // Gray out some buttons based on status of game!
+            if( gGameSettings.bLastSavedGameSlot < 0 || gGameSettings.bLastSavedGameSlot >= NUM_SAVE_GAMES )
+            {
+                DisableButton( iMenuButtons[ LOAD_GAME ] );
+            }
+            //The ini file said we have a saved game, but there is no saved game
+            else if( gbSaveGameArray[ gGameSettings.bLastSavedGameSlot ] == false )
+                DisableButton( iMenuButtons[ LOAD_GAME ] );
+        */
+
+        //if there are no saved games, disable the button
+        // TODO: re-add when saveloadscreen is added.
+        //if (!IsThereAnySavedGameFiles())
+        //{
+        ButtonSubSystem.DisableButton(this.iMenuButtons[MainMenuItems.LOAD_GAME]);
+        //}
+
+        //	DisableButton( iMenuButtons[ CREDITS ] );
+        //	DisableButton( iMenuButtons[ TITLE ] );
+
+        Globals.gbHandledMainMenu = 0;
+        this.fInitialRender = true;
+
+        await this.screens.SetPendingNewScreen(ScreenName.MAINMENU_SCREEN);
+        guiMainMenuExitScreen = ScreenName.MAINMENU_SCREEN;
+
+        this.options.InitGameOptions();
+
+        this.input.DequeueAllKeyBoardEvents();
+
+        return true;
+    }
+
+    private static bool fButtonsCreated = false;
+    private bool CreateDestroyMainMenuButtons(bool fCreate)
+    {
+        int cnt;
+        string filename;
+        short sSlot;
+        int iStartLoc = 0;
+        string zText;
+
+        if (fCreate)
+        {
+            if (fButtonsCreated)
+            {
+                return true;
+            }
+
+            //reset the variable that allows the user to ALT click on the continue save btn to load the save instantly
+            // TODO: Enable when SaveLoadScreen is ported.
+            //gfLoadGameUponEntry = false;
+
+            // Load button images
+            this.iMenuImages[MainMenuItems.NEW_GAME] = this.buttons.LoadButtonImage("LOADSCREENS\\titletext.sti", 0, 0, 1, 2, -1);
+            sSlot = 0;
+
+            this.iMenuImages[MainMenuItems.LOAD_GAME] = ButtonSubSystem.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 6, 3, 4, 5, -1);
+            this.iMenuImages[MainMenuItems.PREFERENCES] = ButtonSubSystem.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 7, 7, 8, 9, -1);
+            this.iMenuImages[MainMenuItems.CREDITS] = ButtonSubSystem.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 13, 10, 11, 12, -1);
+            this.iMenuImages[MainMenuItems.QUIT] = ButtonSubSystem.UseLoadedButtonImage(this.iMenuImages[MainMenuItems.NEW_GAME], 14, 14, 15, 16, -1);
+
+            for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
+            {
+                var menuItem = (MainMenuItems)cnt;
+                switch (cnt)
+                {
+                    case (int)MainMenuItems.NEW_GAME:
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], sSlot);
+                        break;
+                    case (int)MainMenuItems.LOAD_GAME:
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 3);
+                        break;
+                    case (int)MainMenuItems.PREFERENCES:
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 7);
+                        break;
+                    case (int)MainMenuItems.CREDITS:
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 10);
+                        break;
+                    case (int)MainMenuItems.QUIT:
+                        Globals.gusMainMenuButtonWidths[cnt] = ButtonSubSystem.GetWidthOfButtonPic(this.iMenuImages[menuItem], 15);
+                        break;
+                }
+
+                this.iMenuButtons[menuItem] = ButtonSubSystem.QuickCreateButton(
+                    this.iMenuImages[menuItem],
+                    new Point(
+                        320 - Globals.gusMainMenuButtonWidths[cnt] / 2,
+                        Globals.MAINMENU_Y + (cnt * Globals.MAINMENU_Y_SPACE)),
+                    ButtonFlags.BUTTON_TOGGLE,
+                    MSYS_PRIORITY.HIGHEST,
+                    MouseSubSystem.DefaultMoveCallback,
+                    this.MenuButtonCallback);
+
+                if (this.iMenuButtons[menuItem] is null)
+                {
+                    return false;
+                }
+
+                this.iMenuButtons[menuItem].UserData[0] = cnt;
+            }
+
+            fButtonsCreated = true;
+        }
+        else
+        {
+            if (!fButtonsCreated)
+            {
+                return true;
+            }
+
+            // Delete images/buttons
+            for (cnt = 0; cnt < (int)MainMenuItems.NUM_MENU_ITEMS; cnt++)
+            {
+                ButtonSubSystem.RemoveButton(this.iMenuButtons[(MainMenuItems)cnt]);
+                ButtonSubSystem.UnloadButtonImage(this.iMenuImages[(MainMenuItems)cnt]);
+            }
+
+            fButtonsCreated = false;
+        }
+
+        return true;
+    }
+
+    private void MenuButtonCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reasonValue)
+    {
+        MSYS_CALLBACK_REASON reason = reasonValue;
+        MainMenuItems bID;
+
+        bID = (MainMenuItems)btn.UserData[0];
+
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
+        {
+            return;
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            // handle menu
+            Globals.gbHandledMainMenu = bID;
+            this.RenderMainMenu();
+
+            if (Globals.gbHandledMainMenu == MainMenuItems.NEW_GAME)
+            {
+                this.SetMainMenuExitScreen(ScreenName.GAME_INIT_OPTIONS_SCREEN);
+            }
+            else if (Globals.gbHandledMainMenu == MainMenuItems.LOAD_GAME)
+            {
+                // if (gfKeyState[ALT])
+                // {
+                //     gfLoadGameUponEntry = true;
+                // }
+            }
+
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+        }
+
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
+        {
+            this.RenderMainMenu();
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+        }
+    }
+
+    private static bool fRegionCreated = false;
+    private HVOBJECT background;
+    private HVOBJECT logo;
+
+    public void CreateDestroyBackGroundMouseMask(bool fCreate)
+    {
+        if (fCreate)
+        {
+            if (fRegionCreated)
             {
                 return;
             }
 
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
-            {
-                // handle menu
-                this.gbHandledMainMenu = bID;
-                this.RenderMainMenu();
+            // Make a mouse region
+            MouseSubSystem.MSYS_DefineRegion(
+                ref Globals.gBackRegion,
+                new(0, 0, 640, 480),
+                MSYS_PRIORITY.HIGHEST,
+                CURSOR.NORMAL,
+                null,
+                this.SelectMainMenuBackGroundRegionCallBack);
 
-                if (this.gbHandledMainMenu == MainMenuItems.NEW_GAME)
-                {
-                    this.SetMainMenuExitScreen(ScreenName.GAME_INIT_OPTIONS_SCREEN);
-                }
-                else if (this.gbHandledMainMenu == MainMenuItems.LOAD_GAME)
-                {
-                    // if (gfKeyState[ALT])
-                    // {
-                    //     gfLoadGameUponEntry = true;
-                    // }
-                }
-
-                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
-            }
-
-            if (reason.HasFlag(MouseCallbackReasons.LBUTTON_DWN))
-            {
-                this.RenderMainMenu();
-                btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
-            }
+            fRegionCreated = true;
         }
-
-        private static bool fRegionCreated = false;
-        private HVOBJECT background;
-        private HVOBJECT logo;
-
-        public void CreateDestroyBackGroundMouseMask(bool fCreate)
+        else
         {
-            if (fCreate)
+            if (!fRegionCreated)
             {
-                if (fRegionCreated)
-                {
-                    return;
-                }
-
-                // Make a mouse region
-                this.mouse.DefineRegion(
-                    ref this.gBackRegion,
-                    new(0, 0, 640, 480),
-                    MSYS_PRIORITY.HIGHEST,
-                    Cursor.NORMAL,
-                    null,
-                    this.SelectMainMenuBackGroundRegionCallBack);
-
-                fRegionCreated = true;
+                return;
             }
-            else
-            {
-                if (!fRegionCreated)
-                {
-                    return;
-                }
 
-                this.mouse.MSYS_RemoveRegion(this.gBackRegion);
-                fRegionCreated = false;
-            }
-        }
-
-        private void SelectMainMenuBackGroundRegionCallBack(ref MouseRegion region, MouseCallbackReasons iReason)
-        {
-            if (iReason.HasFlag(MouseCallbackReasons.INIT))
-            {
-            }
-            else if (iReason.HasFlag(MouseCallbackReasons.LBUTTON_UP))
-            {
-                //		if( gfDoHelpScreen )
-                //		{
-                //			SetMainMenuExitScreen( INIT_SCREEN );
-                //			gfDoHelpScreen = false;
-                //		}
-            }
-            else if (iReason.HasFlag(MouseCallbackReasons.RBUTTON_UP))
-            {
-                /*
-                        if( gfDoHelpScreen )
-                        {
-                            SetMainMenuExitScreen( INIT_SCREEN );
-                            gfDoHelpScreen = false;
-                        }
-                */
-            }
-        }
-
-        public void ClearMainMenu()
-        {
-            this.video.InvalidateScreen();
-        }
-
-        public void Draw(SpriteRenderer sr, GraphicsDevice gd, CommandList cl)
-        {
-            //var background = this.video.AddVideoObject("LOADSCREENS\\MainMenuBackGround.sti", out this.mainMenuBackGroundImageKey);
-
-            // load ja2 logo graphic and add it
-            //var logo = this.video.AddVideoObject("LOADSCREENS\\Ja2Logo.sti", out this.ja2LogoImageKey);
-
-            sr.AddSprite(rectangle: new (0, 0, 640, 480), background.Textures[0], this.mainMenuBackGroundImageKey);
-            sr.AddSprite(loc: new(188, 480 - (15 + (int)logo.Textures[0].Height)), logo.Textures[0], this.ja2LogoImageKey);
-
-            this.buttons.RenderButtons(this.iMenuButtons.Values);
-
-            this.fonts.DrawTextToScreen(EnglishText.gzCopyrightText[0], 0, 465, 640, FontStyle.FONT10ARIAL, FontColor.FONT_MCOLOR_WHITE, FontColor.FONT_MCOLOR_BLACK, TextJustifies.CENTER_JUSTIFIED);
-        }
-
-        public ValueTask Deactivate()
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        public void Dispose()
-        {
+            MouseSubSystem.MSYS_RemoveRegion(Globals.gBackRegion);
+            fRegionCreated = false;
         }
     }
+
+    private void SelectMainMenuBackGroundRegionCallBack(ref MOUSE_REGION region, MSYS_CALLBACK_REASON iReason)
+    {
+        if (iReason.HasFlag(MSYS_CALLBACK_REASON.INIT))
+        {
+        }
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
+        {
+            //		if( gfDoHelpScreen )
+            //		{
+            //			SetMainMenuExitScreen( INIT_SCREEN );
+            //			gfDoHelpScreen = false;
+            //		}
+        }
+        else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
+        {
+            /*
+                    if( gfDoHelpScreen )
+                    {
+                        SetMainMenuExitScreen( INIT_SCREEN );
+                        gfDoHelpScreen = false;
+                    }
+            */
+        }
+    }
+
+    public void ClearMainMenu()
+    {
+        this.video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Clear(Color.AliceBlue));
+        this.video.InvalidateScreen();
+    }
+
+    public ValueTask Deactivate()
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+    }
 }
+
+// MENU ITEMS
+public enum MainMenuItems
+{
+    //	TITLE,
+    NEW_GAME,
+    LOAD_GAME,
+    PREFERENCES,
+    CREDITS,
+    QUIT,
+    NUM_MENU_ITEMS,
+    Unknown = 99,
+};

@@ -1,10 +1,9 @@
-﻿namespace SharpAlliance.Core
+﻿namespace SharpAlliance.Core;
+
+public enum DifficultyLevel
 {
-    public enum DifficultyLevel
-    {
-        Unknown = 0,
-        Easy,
-        Medium,
-        Hard,
-    }
+    Unknown = 0,
+    Easy,
+    Medium,
+    Hard,
 }

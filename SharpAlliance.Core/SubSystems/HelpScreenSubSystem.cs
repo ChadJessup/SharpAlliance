@@ -5,18 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Platform.Interfaces;
 
-namespace SharpAlliance.Core.SubSystems
+using static SharpAlliance.Core.Globals;
+
+namespace SharpAlliance.Core.SubSystems;
+
+public class HelpScreenSubSystem : IDisposable
 {
-    public class HelpScreenSubSystem : IDisposable
+    public bool IsInitialized { get; }
+
+    public void Dispose()
     {
-        public bool IsInitialized { get; }
+    }
 
-        public void Dispose()
-        {
-        }
-
-        public void InitHelpScreenSystem()
-        {
-        }
+    public void InitHelpScreenSystem()
+    {
     }
 }
