@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using Veldrid;
-using Veldrid.Sdl2;
 
 namespace SharpAlliance.Core;
 
@@ -17,7 +13,7 @@ public static class InputTracker
 
     public static Vector2 MousePosition;
     public static Vector2 MouseDelta;
-    public static InputSnapshot FrameSnapshot { get; private set; }
+    public static IInputSnapshot? FrameSnapshot { get; private set; }
 
     public static bool GetKey(Key key)
     {
@@ -39,14 +35,14 @@ public static class InputTracker
         return _newMouseButtonsThisFrame.Contains(button);
     }
 
-    public static void UpdateFrameInput(InputSnapshot snapshot, Sdl2Window window)
+    public static void UpdateFrameInput(IInputSnapshot snapshot)
     {
         FrameSnapshot = snapshot;
         _newKeysThisFrame.Clear();
         _newMouseButtonsThisFrame.Clear();
 
         MousePosition = snapshot.MousePosition;
-        MouseDelta = window.MouseDelta;
+        //MouseDelta = window.MouseDelta;
         for (int i = 0; i < snapshot.KeyEvents.Count; i++)
         {
             KeyEvent ke = snapshot.KeyEvents[i];
@@ -59,6 +55,7 @@ public static class InputTracker
                 KeyUp(ke.Key);
             }
         }
+
         for (int i = 0; i < snapshot.MouseEvents.Count; i++)
         {
             MouseEvent me = snapshot.MouseEvents[i];

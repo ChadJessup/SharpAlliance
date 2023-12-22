@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Managers;
-using Veldrid;
 using static SharpAlliance.Core.Globals;
 
 using TRAILCELLTYPE = System.Int32;

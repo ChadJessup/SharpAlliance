@@ -924,10 +924,10 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         // Display the button image
         video.BltVideoObject(
+            ButtonDestBuffer,
             b.ButtonPicture.vobj,
             (ushort)UseImage,
-            b.Loc.X, b.Loc.Y,
-            UseImage);
+            b.Loc.X, b.Loc.Y);
     }
 
     public static void DrawCheckBoxButtonOff(GUI_BUTTON btn)

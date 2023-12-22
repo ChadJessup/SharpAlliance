@@ -544,7 +544,7 @@ public class InteractiveTiles
         // OK, Look for our tile!
 
         // Check for shift down!
-        if (_KeyDown(Veldrid.Key.LShift | Veldrid.Key.RShift))
+        if (_KeyDown(Key.LShift | Key.RShift))
         {
             return (null);
         }

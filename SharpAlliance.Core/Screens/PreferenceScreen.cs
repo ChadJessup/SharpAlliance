@@ -13,6 +13,7 @@ using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
 using static SharpAlliance.Core.Globals;
+using SharpAlliance.Core.Managers.VideoSurfaces;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -193,7 +194,7 @@ public class PreferenceScreen : IScreen
         {
             try
             {
-                this.gSelectedOptionTextRegion.Add(option, new MOUSE_REGION(option.ToString()));
+                this.gSelectedOptionTextRegion.TryAdd(option, new MOUSE_REGION(option.ToString()));
             }
             catch (Exception e)
             {
@@ -345,12 +346,12 @@ public class PreferenceScreen : IScreen
 
         //Get and display the background image
         hPixHandle = video.GetVideoObject(this.guiOptionBackGroundImageKey);
-        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
 
-        //Get and display the titla image
+        //Get and display the title image
         hPixHandle = video.GetVideoObject(this.guiOptionsAddOnImagesKey);
-        video.BltVideoObject(hPixHandle, 0, 0, 0, 0);
-        video.BltVideoObject(hPixHandle, 1, 0, 434, 0);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
+        video.BltVideoObject(SurfaceType.FRAME_BUFFER, hPixHandle, 1, 0, 434, VO_BLT.SRCTRANSPARENCY);
 
         //
         // Text for the toggle boxes

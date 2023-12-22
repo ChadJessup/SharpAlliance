@@ -8,13 +8,10 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Veldrid;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -181,11 +178,9 @@ public class MouseSubSystem : ISharpAllianceManager
             return;
         }
 
-        coord.Y = 480 - coord.Y;
-
         if (coord != CurrentCoord)
         {
-            // Console.WriteLine($"Mouse: {coord} L: {leftButtonDown} R: {rightButtonDown}");
+            Console.WriteLine($"Mouse: {coord} L: {leftButtonDown} R: {rightButtonDown}");
         }
 
 

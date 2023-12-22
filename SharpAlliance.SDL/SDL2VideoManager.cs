@@ -39,10 +39,10 @@ public class SDL2VideoManager : IVideoManager
     private readonly ITextureManager textures;
     private readonly MouseCursorBackground[] mouseCursorBackground = new MouseCursorBackground[2];
 
-    private static nint window;
+    private static IWindow window;
     private uint WindowID;
 
-    public static nint Window { get => window; }
+    public IWindow Window { get => window; }
     private float _ticks;
 
     private bool _colorSrgb = true;
@@ -127,39 +127,6 @@ public class SDL2VideoManager : IVideoManager
         Configuration.Default.MemoryAllocator = new SixLabors.ImageSharp.Memory.SimpleGcMemoryAllocator();
     }
 
-    private void WindowOwnerRoutine(object state)
-    {
-        WindowParams wp = (WindowParams)state;
-        window = wp.Create();
-        WindowID = SDL.SDL_GetWindowID(window);
-//        PostWindowCreated(wp.WindowFlags);
-        wp.ResetEvent.Set();
-
-        double previousPollTimeMs = 0;
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-
-        while (_exists)
-        {
-            if (_shouldClose)// && CloseCore())
-            {
-                return;
-            }
-
-            double currentTick = sw.ElapsedTicks;
-            double currentTimeMs = sw.ElapsedTicks * (1000.0 / Stopwatch.Frequency);
-            if (LimitPollRate && currentTimeMs - previousPollTimeMs < PollIntervalInMs)
-            {
-                Thread.Sleep(0);
-            }
-            else
-            {
-                previousPollTimeMs = currentTimeMs;
-                //ProcessEvents(null);
-            }
-        }
-    }
-
     public async ValueTask<bool> Initialize()
     {
         WindowCreateInfo windowCI = new()
@@ -200,7 +167,7 @@ public class SDL2VideoManager : IVideoManager
             Console.WriteLine($"There was an issue initilizing SDL. {SDL.SDL_GetError()}");
         }
 
-        var window = new Sdl2Window(
+        window = new Sdl2Window(
             windowCI.WindowTitle,
             windowCI.X,
             windowCI.Y,
@@ -210,7 +177,7 @@ public class SDL2VideoManager : IVideoManager
             threadedProcessing: true);
 
         Renderer = SDL.SDL_CreateRenderer(
-            window.Handle,
+            (window as Sdl2Window).Handle,
             -1,
             SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
             SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);

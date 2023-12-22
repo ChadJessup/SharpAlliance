@@ -169,7 +169,7 @@ public class SoldierFind
         pusSoldierIndex = Globals.NOBODY;
         pMercFlags = 0;
 
-        if (_KeyDown(Veldrid.Key.LShift | Veldrid.Key.RShift))
+        if (_KeyDown(Key.LShift | Key.RShift))
         {
             uiFlags = FIND_SOLDIER.GRIDNO;
         }

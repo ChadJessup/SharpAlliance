@@ -7,7 +7,6 @@ using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
-using Veldrid;
 
 namespace SharpAlliance.Core;
 
@@ -84,29 +83,10 @@ public class SharpAllianceGameLogic : IGameLogic
         IScreen nextScreen = ScreenManager.CurrentScreen;
         var sm = this.screen;
 
-        var mre = new ManualResetEvent(false);
-
-        void ProcessEvents(object? state)
-        {
-            while (this.context.State == GameState.Running)
-            {
-                this.inputs.ProcessEvents();
-                if (!mre.WaitOne())
-                {
-
-                }
-
-                Console.WriteLine("events processed");
-            }
-        }
-
-//        Task.Factory.StartNew(ProcessEvents, token, TaskCreationOptions.LongRunning);
-
         while (this.context.State == GameState.Running && !token.IsCancellationRequested)
         {
             nextScreen = ScreenManager.CurrentScreen;
 
-            //            mre.Set();
             this.inputs.ProcessEvents();
 
             this.inputs.GetCursorPosition(out SixLabors.ImageSharp.Point MousePos);
@@ -117,7 +97,7 @@ public class SharpAllianceGameLogic : IGameLogic
 
             this.music.MusicPoll(false);
 
-            while (this.inputs.DequeSpecificEvent(out InputSnapshot inputSnapshot))
+            while (this.inputs.DequeSpecificEvent(out IInputSnapshot inputSnapshot))
             {
                 MouseEvents mouseEvent = this.inputs.ConvertToMouseEvents(ref inputSnapshot);
 

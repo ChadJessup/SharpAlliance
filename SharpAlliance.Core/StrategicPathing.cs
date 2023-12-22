@@ -218,7 +218,7 @@ public class StrategicPathing
         if (pGroup.fPlayer)
         {
             // if player is holding down SHIFT key, find the shortest route instead of the quickest route!
-            if (_KeyDown(Veldrid.Key.LShift | Veldrid.Key.RShift))
+            if (_KeyDown(Key.LShift | Key.RShift))
             {
                 fPlotDirectPath = true;
             }

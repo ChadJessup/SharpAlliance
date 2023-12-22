@@ -5,21 +5,17 @@ using System.Threading.Tasks;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.Image;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Core.Screens;
-using SharpAlliance.Core.SubSystems;
-using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Veldrid.Sdl2;
 
 namespace SharpAlliance.Core.Interfaces;
 
 public interface IVideoManager : ISharpAllianceManager
 {
-    static Sdl2Window Window;
     ValueTask<bool> ISharpAllianceManager.Initialize() => ValueTask.FromResult(true);
 
     public const int MAX_CURSOR_WIDTH = 64;
+    public IWindow Window { get; }
     public const int MAX_CURSOR_HEIGHT = 64;
     public static Rgba32 AlphaPixel = new(255, 255, 255, 0);
 
@@ -73,4 +69,6 @@ public interface IVideoManager : ISharpAllianceManager
     Texture[] CreateSurfaces(nint renderer, Image<Rgba32>[] image);
     void BlitSurfaceToSurface(Image<Rgba32> src, SurfaceType dst, Point dstPoint, VO_BLT bltFlags);
     void Draw();
+    void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags)
+        => BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);
 }

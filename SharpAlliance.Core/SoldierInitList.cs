@@ -60,7 +60,7 @@ public partial class Globals
         throw new NotImplementedException();
     }
 
-    internal static bool _KeyDown(Veldrid.Key key)
+    internal static bool _KeyDown(Key key)
     {
         throw new NotImplementedException();
     }

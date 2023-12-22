@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
-using SixLabors.ImageSharp;
-using Veldrid;
 using Point = SixLabors.ImageSharp.Point;
 using Rectangle = SixLabors.ImageSharp.Rectangle;
 
@@ -63,7 +57,7 @@ public class InputManager : IInputManager
 
     // The queue structures are used to track input events using queued events
 
-    private Queue<InputSnapshot> gEventQueue = new(256);
+    private Queue<IInputSnapshot> gEventQueue = new(256);
 
     // ATE: Added to signal if we have had input this frame - cleared by the SGP main loop
     private bool gfSGPInputReceived = false;
@@ -162,77 +156,40 @@ public class InputManager : IInputManager
         try
         {
             var enqueue = false;
-            InputSnapshot? snapshot = null;
-            
-            SDL.SDL_PumpEvents();
+            IInputSnapshot snapshot = video.Window.PumpEvents();
 
-            var hasEvents = SDL.SDL_PollEvent(out var e);
-            if (hasEvents < 0)
+            InputTracker.UpdateFrameInput(snapshot);
+
+            var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
+            var tmpRight = snapshot.IsMouseDown(MouseButton.Right);
+
+            if (tmpLeft != this.gfLeftButtonState)
             {
-                var error = SDL.SDL_GetError();
+                this.gfLeftButtonState = tmpLeft;
+                enqueue = true;
             }
 
-            while (hasEvents > 0)
+            if (tmpRight != this.gfRightButtonState)
             {
-                switch (e.type)
-                {
-                    case SDL.SDL_EventType.SDL_KEYDOWN:
-                        Console.WriteLine("Key pressed.");
-                        break;
-                    case SDL.SDL_EventType.SDL_QUIT:
-                        //                        running = false;
-                        break;
-                    case SDL.SDL_EventType.SDL_WINDOWEVENT:
-                        break;
-                    case SDL.SDL_EventType.SDL_TEXTEDITING:
-                        break;
-                    default:
-                        Console.WriteLine(e.type);
-                        break;
-                }
-
-                hasEvents = SDL.SDL_PollEvent(out e);
-
-                if (hasEvents < 0)
-                {
-                    var error = SDL.SDL_GetError();
-                }
+                this.gfRightButtonState = tmpRight;
+                enqueue = true;
             }
 
-            SDL.SDL_Delay(100);
+            if (this.lastMousePos != snapshot.MousePosition)
+            {
+                this.lastMousePos = snapshot.MousePosition;
+                enqueue = true;
+            }
 
-            //            InputTracker.UpdateFrameInput(snapshot, video.Window);
+            if (snapshot.KeyEvents.Any() || snapshot.KeyCharPresses.Any())
+            {
+                enqueue = true;
+            }
 
-            //            var tmpLeft = snapshot.IsMouseDown(MouseButton.Left);
-            //            var tmpRight = snapshot.IsMouseDown(MouseButton.Right);
-            //
-            //            if (tmpLeft != this.gfLeftButtonState)
-            //            {
-            //                this.gfLeftButtonState = tmpLeft;
-            //                enqueue = true;
-            //            }
-            //
-            //            if (tmpRight != this.gfRightButtonState)
-            //            {
-            //                this.gfRightButtonState = tmpRight;
-            //                enqueue = true;
-            //            }
-            //
-            //            if (this.lastMousePos != snapshot.MousePosition)
-            //            {
-            //                this.lastMousePos = snapshot.MousePosition;
-            //                enqueue = true;
-            //            }
-            //
-            //            if (snapshot.KeyEvents.Any() || snapshot.KeyCharPresses.Any())
-            //            {
-            //                enqueue = true;
-            //            }
-            //
-            //            if (enqueue)
-            //            {
-            //                this.gEventQueue.Enqueue(snapshot);
-            //            }
+            if (enqueue)
+            {
+                this.gEventQueue.Enqueue(snapshot);
+            }
         }
         catch
         {
@@ -242,7 +199,7 @@ public class InputManager : IInputManager
         }
     }
 
-    public bool DequeSpecificEvent(out InputSnapshot inputSnapshot)
+    public bool DequeSpecificEvent(out IInputSnapshot inputSnapshot)
     {
         if (this.gEventQueue.Any())
         {
@@ -266,7 +223,7 @@ public class InputManager : IInputManager
         return false;
     }
 
-    public MouseEvents ConvertToMouseEvents(ref InputSnapshot inputSnapshot)
+    public MouseEvents ConvertToMouseEvents(ref IInputSnapshot inputSnapshot)
     {
         var input = inputSnapshot.MouseEvents.First();
 
@@ -292,7 +249,7 @@ public class InputManager : IInputManager
         return mouseEvent;
     }
 
-    public bool DequeueEvent(out InputSnapshot inputSnapshot)
+    public bool DequeueEvent(out IInputSnapshot inputSnapshot)
     {
         this.HandleSingleClicksAndButtonRepeats();
 
