@@ -366,6 +366,10 @@ public class HandleItems
         ppItemPool = null;
         return (false);
     }
+
+    internal static void ToggleItemGlow(bool fOn)
+    {
+    }
 }
 
 public enum ITEM_HANDLE

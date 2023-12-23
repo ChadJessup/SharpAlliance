@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SDL2;
 using SharpAlliance.Core.Interfaces;
@@ -8,6 +9,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp.Drawing.Processing;
 using static SharpAlliance.Core.Globals;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
@@ -238,6 +240,13 @@ public class SDL2VideoManager : IVideoManager
 
         return true;
     }
+
+    public void SetClippingRegionAndImageWidth(int iImageWidth, Rectangle iClip)
+    {
+        Globals.giImageWidth = iImageWidth;
+        Globals.giClip = new(iClip.X, iClip.Y, iClip.Width, iClip.Height);
+    }
+
 
     public unsafe void DrawFrame()
     {
@@ -1646,8 +1655,12 @@ public class SDL2VideoManager : IVideoManager
         //loadedTextures.Remove(logoKey);
     }
 
-    public void LineDraw(int v2, int v3, int v4, int v5, Color color, Image<Rgba32> image)
+    public void LineDraw(bool fClip, PointF startPoint, PointF endPoint, Color Color, Image<Rgba32> dst)
     {
+        dst.Mutate(ctx =>
+        {
+            ctx.DrawLine(Color, 1.0f, [startPoint, endPoint]);
+        });
     }
 
     public void GetClippingRect(out Rectangle clipRect)
@@ -1790,17 +1803,69 @@ public class SDL2VideoManager : IVideoManager
 
     public void SaveBackgroundRects()
     {
+        int uiCount;
+        Image<Rgba32> pDestBuf = this.Surfaces[SurfaceType.RENDER_BUFFER];
+        Image<Rgba32> pSrcBuf = this.Surfaces[SurfaceType.SAVE_BUFFER];
+
+        for (uiCount = 0; uiCount < guiNumBackSaves; uiCount++)
+        {
+            if (gBackSaves[uiCount].fAllocated && (!gBackSaves[uiCount].fDisabled))
+            {
+                if (gBackSaves[uiCount].uiFlags.HasFlag(BGND_FLAG.SAVERECT))
+                {
+                    if (gBackSaves[uiCount].pSaveArea != null)
+                    {
+                        Blt16BPPTo16BPP(
+                            gBackSaves[uiCount].pSaveArea,
+                            pSrcBuf,
+                            new(0, 0),
+                            new(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
+                            gBackSaves[uiCount].sWidth,
+                            gBackSaves[uiCount].sHeight);
+                    }
+
+                }
+                else if (gBackSaves[uiCount].fZBuffer)
+                {
+                    Blt16BPPTo16BPP(
+                        gBackSaves[uiCount].pZSaveArea,
+                        this.Surfaces[SurfaceType.Z_BUFFER],
+                        new(0, 0),
+                        new(gBackSaves[uiCount].sLeft, gBackSaves[uiCount].sTop),
+                        gBackSaves[uiCount].sWidth, gBackSaves[uiCount].sHeight);
+                }
+                else
+                {
+                    RenderDirty.AddBaseDirtyRect(new(gBackSaves[uiCount].sLeft,
+                        gBackSaves[uiCount].sTop,
+                        gBackSaves[uiCount].sRight,
+                        gBackSaves[uiCount].sBottom));
+                }
+
+                gBackSaves[uiCount].fFilled = true;
+
+
+            }
+        }
     }
 
     public void ExecuteBaseDirtyRectQueue()
     {
+        if (RenderDirty.gfViewportDirty)
+        {
+            //InvalidateRegion(gsVIEWPORT_START_X, gsVIEWPORT_START_Y, gsVIEWPORT_END_X, gsVIEWPORT_END_Y);
+            InvalidateScreen();
+            RenderDirty.EmptyDirtyRectQueue();
+            RenderDirty.gfViewportDirty = false;
+        }
+
     }
 
     public void DeleteVideoObject(HVOBJECT? vobj)
     {
     }
 
-    public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, int srcX, int srcY, int width, int height)
+    public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect)
     {
         bool fRetVal;
 
@@ -1810,10 +1875,10 @@ public class SDL2VideoManager : IVideoManager
         fRetVal = this.Blt16BPPTo16BPP(
             dst,
             src,
-            new(srcX, srcY),
-            new(srcX, srcY),
-            width,
-            height);
+            srcRect.ToPoint(),
+            srcRect.ToPoint(),
+            srcRect.Width,
+            srcRect.Height);
 
         return (fRetVal);
     }

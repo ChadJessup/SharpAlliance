@@ -12,6 +12,10 @@ public class SmokeEffects
     {
         return false;
     }
+
+    internal static void UpdateSmokeEffectGraphics()
+    {
+    }
 }
 
 // Smoke effect types

@@ -87,8 +87,10 @@ namespace SharpAlliance
             builder.Services.AddSingleton<RenderWorld>();
             builder.Services.AddSingleton<MercTextBox>();
             builder.Services.AddSingleton<RenderDirty>();
+            builder.Services.AddSingleton<SaveLoadMap>();
             builder.Services.AddSingleton<EventManager>();
             builder.Services.AddSingleton<SaveLoadGame>();
+            builder.Services.AddSingleton<WorldManager>();
             builder.Services.AddSingleton<FontSubSystem>();
             builder.Services.AddSingleton<TextureManager>();
             builder.Services.AddSingleton<MouseSubSystem>();

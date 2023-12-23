@@ -102,4 +102,8 @@ public class GameSettings
         get => options[option];
         set => options[option] = value;
     }
+
+    internal void SaveGameSettings()
+    {
+    }
 }

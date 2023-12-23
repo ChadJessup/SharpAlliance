@@ -533,15 +533,15 @@ public class ButtonSubSystem : ISharpAllianceManager
         {
             var color = Color.Black;
             //left (one thick)
-            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, color, image);
+            video.LineDraw(true, new(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1), new(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1), color, image);
             //top (one thick)
-            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1, color, image);
+            video.LineDraw(true, new(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Y - 1), new(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1), color, image);
             //right (two thick)
-            video.LineDraw(b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Height + 1, color, image);
-            video.LineDraw(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
+            video.LineDraw(true, new(b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Y - 1), new(b.MouseRegion.Bounds.Width, b.MouseRegion.Bounds.Height + 1), color, image);
+            video.LineDraw(true, new(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Y - 1), new(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1), color, image);
             //bottom (two thick)
-            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height, color, image);
-            video.LineDraw(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1, b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1, color, image);
+            video.LineDraw(true, new(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height), new(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height), color, image);
+            video.LineDraw(true, new(b.MouseRegion.Bounds.X - 1, b.MouseRegion.Bounds.Height + 1), new(b.MouseRegion.Bounds.Width + 1, b.MouseRegion.Bounds.Height + 1), color, image);
 
             video.InvalidateRegion(new Rectangle(
                 b.MouseRegion.Bounds.X - 1,

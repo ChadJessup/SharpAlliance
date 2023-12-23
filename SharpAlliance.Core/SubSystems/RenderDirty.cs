@@ -16,7 +16,7 @@ public class RenderDirty
     private readonly FontSubSystem fonts;
     private static IVideoManager video;
 
-    private static bool gfViewportDirty = false;
+    public static bool gfViewportDirty { get; set; } = false;
 
     public RenderDirty(
         IVideoManager videoManager,
@@ -160,7 +160,7 @@ public class RenderDirty
         return (true);
     }
 
-    private static void AddBaseDirtyRect(Rectangle bounds)
+    public static void AddBaseDirtyRect(Rectangle bounds)
     {
         (var iLeft, var iTop, var iRight, var iBottom) = bounds;
 
@@ -717,6 +717,11 @@ public class RenderDirty
         }
 
         return (-1);
+    }
+
+    public static void EmptyDirtyRectQueue()
+    {
+        throw new NotImplementedException();
     }
 }
 

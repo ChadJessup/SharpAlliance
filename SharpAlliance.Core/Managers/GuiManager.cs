@@ -29,8 +29,8 @@ public class GuiManager : ISharpAllianceManager
     {
     }
 
-    public void RenderSliderBars()
-        => this.Sliders.RenderSliderBars();
+    public void RenderAllSliderBars()
+        => this.Sliders.RenderAllSliderBars();
 
     public void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
         => ButtonSubSystem.RenderButtons(buttons);

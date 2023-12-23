@@ -37,7 +37,7 @@ public interface IVideoManager : ISharpAllianceManager
     void DeleteVideoObjectFromIndex(string logoKey);
     void RestoreBackgroundRects();
     void GetCurrentVideoSettings(out int usWidth, out int usHeight, out int ubBitDepth);
-    void LineDraw(int v2, int v3, int v4, int v5, Color v6, Image<Rgba32> image);
+    void LineDraw(bool fClip, PointF startPoint, PointF endPoint, Color Color, Image<Rgba32> dst);
     void GetClippingRect(out Rectangle clipRect);
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle region, Rgba32 rgba32);
     void SaveBackgroundRects();
@@ -47,7 +47,7 @@ public interface IVideoManager : ISharpAllianceManager
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle rectangle, Color color);
     bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType surface, Rectangle rectangle);
     void DeleteVideoObject(HVOBJECT vobj);
-    bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, int srcX, int srcY, int width, int height);
+    bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect);
     void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();
     bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight);
@@ -70,4 +70,5 @@ public interface IVideoManager : ISharpAllianceManager
     void Draw();
     void BltVideoObject(SurfaceType surface, HVOBJECT hPixHandle, int index, int x, int y, VO_BLT bltFlags = VO_BLT.SRCTRANSPARENCY)
         => this.BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);
+    void SetClippingRegionAndImageWidth(int width, Rectangle rectangle);
 }

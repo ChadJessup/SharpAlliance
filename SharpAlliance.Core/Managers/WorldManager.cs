@@ -1228,4 +1228,31 @@ public class WorldManager
 
         return (false);
     }
+
+    internal void SetTreeTopStateForMap()
+    {
+        if (!gGameSettings[TOPTION.TOGGLE_TREE_TOPS])
+        {
+            WorldHideTrees();
+            gTacticalStatus.uiFlags |= TacticalEngineStatus.NOHIDE_REDUNDENCY;
+        }
+        else
+        {
+            WorldShowTrees();
+            gTacticalStatus.uiFlags &= (~TacticalEngineStatus.NOHIDE_REDUNDENCY);
+        }
+
+        // FOR THE NEXT RENDER LOOP, RE-EVALUATE REDUNDENT TILES
+        RenderWorld.InvalidateWorldRedundency();
+    }
+
+    private void WorldShowTrees()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void WorldHideTrees()
+    {
+        throw new NotImplementedException();
+    }
 }

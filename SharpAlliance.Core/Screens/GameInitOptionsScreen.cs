@@ -274,7 +274,7 @@ public class GameInitOptionsScreen : IScreen
         //REnder the screen once so we can blt ot to ths save buffer
         this.RenderGIOScreen();
 
-        this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 639, 439);
+        this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
 
         //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 639, 439);
 

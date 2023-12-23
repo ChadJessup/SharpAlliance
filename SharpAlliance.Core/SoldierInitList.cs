@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.SubSystems;
+using SixLabors.ImageSharp;
 
 namespace SharpAlliance.Core;
 
@@ -28,6 +29,8 @@ public partial class Globals
     public const int MAX_INDIVIDUALS = 148;
     public static SOLDIERINITNODE? gSoldierInitHead;
     public static SOLDIERINITNODE? gSoldierInitTail;
+    public static Rectangle giClip;
+    public static int giImageWidth;
 
     public static bool gfEstimatePath { get; internal set; }
 

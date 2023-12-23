@@ -73,6 +73,7 @@ public enum SurfaceType : uint
     RENDER_BUFFER   = 0x00000001,
     SAVE_BUFFER     = 0x00000002,
     EXTRA_BUFFER    = 0x00000003,
+    Z_BUFFER        = 0x00000004,
 }
 
 [Flags]

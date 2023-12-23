@@ -107,6 +107,7 @@ public class OptionsScreen : IScreen
     private readonly ISoundManager sound;
     private readonly IInputManager inputs;
     private readonly IMusicManager music;
+    private readonly WorldManager worldMan;
     private readonly ButtonSubSystem buttons;
     private readonly GameInit gameInit;
     private readonly GuiManager guiManager;
@@ -161,8 +162,10 @@ public class OptionsScreen : IScreen
         FontSubSystem fontSubSystem,
         Messages messages,
         GuiManager guiManager,
-        MessageBoxSubSystem messageBoxSubSystem)
+        MessageBoxSubSystem messageBoxSubSystem,
+        WorldManager worldMan)
     {
+        this.worldMan = worldMan;
         this.buttons = buttonSubSystem;
         this.guiManager = guiManager;
         this.messages = messages;
@@ -207,11 +210,12 @@ public class OptionsScreen : IScreen
 
         this.RenderOptionsScreen();
 
+        this.guiManager.RenderAllSliderBars();
+
         // render buttons marked dirty	
         ButtonSubSystem.MarkButtonsDirty(this.buttonList);
         ButtonSubSystem.RenderButtons(this.buttonList);
 
-        this.guiManager.RenderSliderBars();
     }
 
     public ValueTask<ScreenName> Handle()
@@ -226,7 +230,7 @@ public class OptionsScreen : IScreen
             this.RenderOptionsScreen();
 
             //Blit the background to the save buffer
-            this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, 0, 0, 640, 480);
+            this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 640, 480));
             this.video.InvalidateRegion(new Rectangle(0, 0, 640, 480));
         }
 
@@ -245,7 +249,7 @@ public class OptionsScreen : IScreen
         }
 
         //Render the active slider bars
-        this.guiManager.RenderSliderBars();
+        this.guiManager.RenderAllSliderBars();
 
         // render buttons marked dirty	
         ButtonSubSystem.MarkButtonsDirty(this.buttonList);
@@ -257,7 +261,7 @@ public class OptionsScreen : IScreen
 
         this.video.ExecuteBaseDirtyRectQueue();
         this.video.EndFrameBufferRender();
-//        video.InvalidateScreen();
+        //        video.InvalidateScreen();
 
         if (this.gfOptionsScreenExit)
         {
@@ -273,6 +277,109 @@ public class OptionsScreen : IScreen
 
     private void ExitOptionsScreen()
     {
+        if (gfExitOptionsDueToMessageBox)
+        {
+            gfOptionsScreenExit = false;
+
+            if (!gfExitOptionsAfterMessageBox)
+            {
+                return;
+            }
+
+            gfExitOptionsAfterMessageBox = false;
+            gfExitOptionsDueToMessageBox = false;
+        }
+
+        //Get the current status of the toggle boxes
+        GetOptionsScreenToggleBoxes();
+        //The save the current settings to disk
+        gGameSettings.SaveGameSettings();
+
+        //Create the clock mouse region
+        GameClock.CreateMouseRegionForPauseOfClock(CLOCK_REGION_START_X, CLOCK_REGION_START_Y);
+
+        if (guiOptionsScreen == ScreenName.GAME_SCREEN)
+        {
+            // EnterTacticalScreen();
+        }
+
+        ButtonSubSystem.RemoveButton(guiOptGotoSaveGameBtn);
+        ButtonSubSystem.RemoveButton(guiOptGotoLoadGameBtn);
+        ButtonSubSystem.RemoveButton(guiQuitButton);
+        ButtonSubSystem.RemoveButton(guiDoneButton);
+
+        ButtonSubSystem.UnloadButtonImage(giOptionsButtonImages);
+        ButtonSubSystem.UnloadButtonImage(giGotoLoadBtnImage);
+        ButtonSubSystem.UnloadButtonImage(giQuitBtnImage);
+        ButtonSubSystem.UnloadButtonImage(giDoneBtnImage);
+
+        this.video.DeleteVideoObjectFromIndex(guiOptionBackGroundImageKey);
+        this.video.DeleteVideoObjectFromIndex(guiOptionsAddOnImagesKey);
+
+
+        //Remove the toggle buttons
+        for (TOPTION cnt = 0; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
+        {
+            //if this is the blood and gore option, and we are to hide the option
+            if (cnt == TOPTION.BLOOD_N_GORE)
+            {
+                //advance to the next
+                continue;
+            }
+
+            ButtonSubSystem.RemoveButton(guiOptionsToggles[cnt]);
+
+            MouseSubSystem.MSYS_RemoveRegion(gSelectedOptionTextRegion[cnt]);
+        }
+
+        //REmove the slider bars
+        SliderSubSystem.RemoveSliderBar(guiSoundEffectsSlider);
+        SliderSubSystem.RemoveSliderBar(guiSpeechSlider);
+        SliderSubSystem.RemoveSliderBar(guiMusicSlider);
+
+
+        MouseSubSystem.MSYS_RemoveRegion(gSelectedToggleBoxAreaRegion);
+
+        SliderSubSystem.ShutDownSlider();
+
+        //if we are coming from mapscreen
+        if (gfEnteredFromMapScreen)
+        {
+            gfEnteredFromMapScreen = false;
+            guiTacticalInterfaceFlags |= INTERFACE.MAPSCREEN;
+        }
+
+        //if the user changed the  TREE TOP option, AND a world is loaded 
+        if (gfSettingOfTreeTopStatusOnEnterOfOptionScreen != gGameSettings[TOPTION.TOGGLE_TREE_TOPS] && gfWorldLoaded)
+        {
+            this.worldMan.SetTreeTopStateForMap();
+        }
+
+        //if the user has changed the item glow option AND a world is loaded
+        if (gfSettingOfItemGlowStatusOnEnterOfOptionScreen != gGameSettings[TOPTION.GLOW_ITEMS] && gfWorldLoaded)
+        {
+            HandleItems.ToggleItemGlow(gGameSettings[TOPTION.GLOW_ITEMS]);
+        }
+
+        if (gfSettingOfDontAnimateSmoke != gGameSettings[TOPTION.ANIMATE_SMOKE] && gfWorldLoaded)
+        {
+            SmokeEffects.UpdateSmokeEffectGraphics();
+        }
+    }
+
+    private void GetOptionsScreenToggleBoxes()
+    {
+        for (TOPTION cnt = 0; cnt < TOPTION.NUM_GAME_OPTIONS; cnt++)
+        {
+            if (guiOptionsToggles[cnt].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
+            {
+                gGameSettings[cnt] = true;
+            }
+            else
+            {
+                gGameSettings[cnt] = false;
+            }
+        }
     }
 
     private void HandleOptionsScreen()
@@ -502,7 +609,7 @@ public class OptionsScreen : IScreen
             this.BtnOptGotoLoadGameCallback);
 
         this.buttonList.Add(this.guiOptGotoLoadGameBtn);
-        
+
         //	SpecifyDisabledButtonStyle( guiBobbyRAcceptOrder, DISABLED_STYLE_SHADED );
 
         //Quit to main menu button
@@ -1173,10 +1280,10 @@ public class OptionsScreen : IScreen
     }
 
     private bool DoOptionsMessageBox(
-        MessageBoxStyle ubStyle, 
-        string zString, 
-        ScreenName uiExitScreen, 
-        MSG_BOX_FLAG usFlags, 
+        MessageBoxStyle ubStyle,
+        string zString,
+        ScreenName uiExitScreen,
+        MSG_BOX_FLAG usFlags,
         MSGBOX_CALLBACK ReturnCallback)
     {
         Rectangle? CenteringRect = new(0, 0, 639, 479);
