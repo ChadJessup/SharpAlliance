@@ -30,27 +30,27 @@ public class GameEvents
         if (usDelay == DEMAND_EVENT_DELAY)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local and network #%d", uiEvent));
-            return (AddGameEventToQueue(uiEvent, 0, pEventData, EVENT_QUEUE.DEMAND_EVENT_QUEUE));
+            return AddGameEventToQueue(uiEvent, 0, pEventData, EVENT_QUEUE.DEMAND_EVENT_QUEUE);
         }
         else if (uiEvent < eJA2Events.EVENTS_LOCAL_AND_NETWORK)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local and network #%d", uiEvent));
-            return (AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE));
+            return AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE);
         }
         else if (uiEvent < eJA2Events.EVENTS_ONLY_USED_LOCALLY)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending Local #%d", uiEvent));
-            return (AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE));
+            return AddGameEventToQueue(uiEvent, usDelay, pEventData, EVENT_QUEUE.PRIMARY_EVENT_QUEUE);
         }
         else if (uiEvent < eJA2Events.EVENTS_ONLY_SENT_OVER_NETWORK)
         {
             //DebugMsg( TOPIC_JA2, DBG_LEVEL_3, String("AddGameEvent: Sending network #%d", uiEvent));
-            return (true);
+            return true;
         }
         // There is an error with the event
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -63,7 +63,7 @@ public class GameEvents
         {
             // Set debug message!
             // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Event Pump: Unknown event type");
-            return (false);
+            return false;
         }
 
         // Switch on event type and set size accordingly
@@ -164,7 +164,7 @@ public class GameEvents
 
                 // Set debug msg: unknown message!
                 //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Event Pump: Event Type mismatch");
-                return (false);
+                return false;
 
         }
 
@@ -172,7 +172,7 @@ public class GameEvents
 //        CHECKF(AddEvent(uiEvent, usDelay, pEventData, uiDataSize, ubQueueID));
 
         // successful
-        return (true);
+        return true;
     }
 
     //returns true if any events were deleted
@@ -227,7 +227,7 @@ public class GameEvents
         puiAdjustment -= uiDiff;
 
         //Calculate the day, hour, and minutes.
-        guiDay = (guiGameClock / NUM_SEC_IN_DAY);
+        guiDay = guiGameClock / NUM_SEC_IN_DAY;
         guiHour = (guiGameClock - (guiDay * NUM_SEC_IN_DAY)) / NUM_SEC_IN_HOUR;
         guiMin = (guiGameClock - ((guiDay * NUM_SEC_IN_DAY) + (guiHour * NUM_SEC_IN_HOUR))) / NUM_SEC_IN_MIN;
 
@@ -349,26 +349,26 @@ public class GameEvents
 
     public static bool AddSameDayStrategicEvent(EVENT ubCallbackID, uint uiMinStamp, int uiParam)
     {
-        return (AddStrategicEvent(ubCallbackID, uiMinStamp + GameClock.GetWorldDayInMinutes(), uiParam));
+        return AddStrategicEvent(ubCallbackID, uiMinStamp + GameClock.GetWorldDayInMinutes(), uiParam);
     }
 
     public static bool AddSameDayStrategicEventUsingSeconds(EVENT ubCallbackID, uint uiSecondStamp, int uiParam)
     {
-        return (AddStrategicEventUsingSeconds(ubCallbackID, uiSecondStamp + GameClock.GetWorldDayInSeconds(), uiParam));
+        return AddStrategicEventUsingSeconds(ubCallbackID, uiSecondStamp + GameClock.GetWorldDayInSeconds(), uiParam);
     }
 
     public static bool AddFutureDayStrategicEvent(EVENT ubCallbackID, uint uiMinStamp, int uiParam, uint uiNumDaysFromPresent)
     {
         uint uiDay;
         uiDay = GameClock.GetWorldDay();
-        return (AddStrategicEvent(ubCallbackID, uiMinStamp + GameClock.GetFutureDayInMinutes(uiDay + uiNumDaysFromPresent), uiParam));
+        return AddStrategicEvent(ubCallbackID, uiMinStamp + GameClock.GetFutureDayInMinutes(uiDay + uiNumDaysFromPresent), uiParam);
     }
 
     bool AddFutureDayStrategicEventUsingSeconds(EVENT ubCallbackID, uint uiSecondStamp, int uiParam, uint uiNumDaysFromPresent)
     {
         uint uiDay;
         uiDay = GameClock.GetWorldDay();
-        return (AddStrategicEventUsingSeconds(ubCallbackID, uiSecondStamp + GameClock.GetFutureDayInMinutes(uiDay + uiNumDaysFromPresent) * 60, uiParam));
+        return AddStrategicEventUsingSeconds(ubCallbackID, uiSecondStamp + GameClock.GetFutureDayInMinutes(uiDay + uiNumDaysFromPresent) * 60, uiParam);
     }
 
     public static STRATEGICEVENT? AddAdvancedStrategicEvent(EVENTPERIOD ubEventType, EVENT ubCallbackID, uint uiTimeStamp, object uiParam)
@@ -580,7 +580,7 @@ public class GameEvents
         curr = gpEventList;
         while (curr is not null)
         {
-            if (curr.ubCallbackID == ubCallbackID && !(curr.ubFlags.HasFlag(SEF.DELETION_PENDING)))
+            if (curr.ubCallbackID == ubCallbackID && !curr.ubFlags.HasFlag(SEF.DELETION_PENDING))
             {
                 if (gfPreventDeletionOfAnyEvent)
                 {
@@ -639,7 +639,7 @@ public class GameEvents
         { //deleting middle
             if (curr.ubCallbackID == ubCallbackID && curr.uiParam == uiParam)
             {
-                if (!(curr.ubFlags.HasFlag(SEF.DELETION_PENDING)))
+                if (!curr.ubFlags.HasFlag(SEF.DELETION_PENDING))
                 {
                     if (gfPreventDeletionOfAnyEvent)
                     {
@@ -691,7 +691,7 @@ public class GameEvents
         //FileWrite(hFile, out uiNumGameEvents, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
 
@@ -706,14 +706,14 @@ public class GameEvents
             //FileWrite(hFile, &sGameEvent, sizeof(STRATEGICEVENT), out uiNumBytesWritten);
             if (uiNumBytesWritten != 0)//sizeof(STRATEGICEVENT))
             {
-                return (false);
+                return false;
             }
 
             pTempEvent = pTempEvent.next;
         }
 
 
-        return (true);
+        return true;
     }
 
 
@@ -734,7 +734,7 @@ public class GameEvents
         //FileRead(hFile, &uiNumGameEvents, sizeof(int), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
 
@@ -752,7 +752,7 @@ public class GameEvents
             //FileRead(hFile, &sGameEvent, sizeof(STRATEGICEVENT), &uiNumBytesRead);
             if (uiNumBytesRead != 10)//sizeof(STRATEGICEVENT))
             {
-                return (false);
+                return false;
             }
 
             pTempEvent = sGameEvent;
@@ -781,7 +781,7 @@ public class GameEvents
             pTempEvent.next = null;
         }
 
-        return (true);
+        return true;
     }
 
     public static void LockStrategicEventFromDeletion(STRATEGICEVENT? pEvent)

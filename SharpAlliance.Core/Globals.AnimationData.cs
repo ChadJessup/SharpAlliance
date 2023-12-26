@@ -16,8 +16,8 @@ public partial class Globals
     // RGM = Regular Male
     // (RG) = Body desc ( Regular - RG, Short Stocky ( SS ), etc
     // (M) = Sex, Male, female
-    public static bool IS_MERC_BODY_TYPE(SOLDIERTYPE p) => ((p.ubBodyType <= SoldierBodyTypes.REGFEMALE) ? (true) : (false));
-    public static bool IS_CIV_BODY_TYPE(SOLDIERTYPE p) => ((p.ubBodyType >= SoldierBodyTypes.FATCIV) && (p.ubBodyType <= SoldierBodyTypes.CRIPPLECIV));
+    public static bool IS_MERC_BODY_TYPE(SOLDIERTYPE p) => (p.ubBodyType <= SoldierBodyTypes.REGFEMALE) ? true : false;
+    public static bool IS_CIV_BODY_TYPE(SOLDIERTYPE p) => (p.ubBodyType >= SoldierBodyTypes.FATCIV) && (p.ubBodyType <= SoldierBodyTypes.CRIPPLECIV);
 
 
     public static Dictionary<AnimationSurfaceTypes, AnimationSurfaceType> gAnimSurfaceDatabase = new();

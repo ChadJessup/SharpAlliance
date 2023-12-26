@@ -42,20 +42,20 @@ public class Overhead
             {
                 if (pCurrSoldier.bTeam == gbPlayerNum)
                 {
-                    if ((Menptr[bPerson].bVisible >= 0) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+                    if ((Menptr[bPerson].bVisible >= 0) || gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))
                     {
-                        return (false);                 // if someone there it's NOT OK
+                        return false;                 // if someone there it's NOT OK
                     }
                 }
                 else
                 {
-                    return (false);                 // if someone there it's NOT OK
+                    return false;                 // if someone there it's NOT OK
                 }
             }
         }
 
         // Check structure database
-        if ((pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)) && !(gfEstimatePath))
+        if (pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE) && !gfEstimatePath)
         {
             AnimationSurfaceTypes usAnimSurface;
             STRUCTURE_FILE_REF? pStructureFileRef;
@@ -86,12 +86,12 @@ public class Overhead
                     //                    fOk = InternalOkayToAddStructureToWorld(sGridNo, pCurrSoldier.bLevel, (pStructureFileRef.pDBStructureRef[gOneCDirection[bLoop]]), usStructureID, (bool)!fPeopleToo);
                     if (fOk)
                     {
-                        return (true);
+                        return true;
                     }
                 }
 
             }
-            return (false);
+            return false;
         }
         else
         {
@@ -120,12 +120,12 @@ public class Overhead
 
                 while (pStructure != null)
                 {
-                    if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
+                    if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
                     {
                         fOKCheckStruct = true;
 
                         // Check if this is a multi-tile
-                        if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)) && (pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)))
+                        if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE))
                         {
                             // Check IDs with soldier's ID
                             if (pCurrSoldier.pLevelNode != null && pCurrSoldier.pLevelNode.pStructureData != null && pCurrSoldier.pLevelNode.pStructureData.usStructureID == pStructure.usStructureID)
@@ -138,7 +138,7 @@ public class Overhead
                         {
                             if (pStructure.sCubeOffset == sDesiredLevel)
                             {
-                                return (false);
+                                return false;
                             }
                         }
                     }
@@ -147,7 +147,7 @@ public class Overhead
                 }
             }
         }
-        return (true);
+        return true;
     }
 
     public static void SelectSoldier(int usSoldierID, bool fAcknowledge, bool fForceReselect)
@@ -235,7 +235,7 @@ public class Overhead
             if (pOldSoldier.uiStatusFlags.HasFlag(SOLDIER.GREEN_RAY))
             {
                 //                LightHideRays((pOldSoldier.dXPos / CELL_X_SIZE), (pOldSoldier.dYPos / CELL_Y_SIZE));
-                pOldSoldier.uiStatusFlags &= (~SOLDIER.GREEN_RAY);
+                pOldSoldier.uiStatusFlags &= ~SOLDIER.GREEN_RAY;
             }
 
             //            UpdateForContOverPortrait(pOldSoldier, false);
@@ -284,7 +284,7 @@ public class Overhead
         }
 
         // possibly say personality quote
-        if ((pSoldier.bTeam == gbPlayerNum) && (pSoldier.ubProfile != NO_PROFILE && pSoldier.ubWhatKindOfMercAmI != MERC_TYPE.PLAYER_CHARACTER) && !(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY)))
+        if ((pSoldier.bTeam == gbPlayerNum) && pSoldier.ubProfile != NO_PROFILE && pSoldier.ubWhatKindOfMercAmI != MERC_TYPE.PLAYER_CHARACTER && !pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY))
         {
             switch (gMercProfiles[pSoldier.ubProfile].bPersonalityTrait)
             {
@@ -340,7 +340,7 @@ public class Overhead
         psAdjustedGridNo = sGridNo;
 
         // CHECK IF IT'S THE SAME ONE AS WE'RE ON, IF SO, RETURN THAT!
-        if (pSoldier.sGridNo == sGridNo && WorldStructures.FindStructure(sGridNo, (STRUCTUREFLAGS.SWITCH)) is null)
+        if (pSoldier.sGridNo == sGridNo && WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.SWITCH) is null)
         {
             // OK, if we are looking for a door, it may be in the same tile as us, so find the direction we
             // have to face to get to the door, not just our initial direction...
@@ -353,7 +353,7 @@ public class Overhead
                 //sSpot = NewGridNo( sGridNo, DirectionInc( SOUTH ) );
 
                 // ATE: Added: Switch behave EXACTLY like doors
-                pDoor = WorldStructures.FindStructure(sGridNo, (STRUCTUREFLAGS.ANYDOOR));
+                pDoor = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
 
                 if (pDoor != null)
                 {
@@ -366,7 +366,7 @@ public class Overhead
                         sSpot = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.SOUTH));
                         if (pubDirection > 0)
                         {
-                            (pubDirection) = SoldierControl.GetDirectionFromGridNo(sSpot, pSoldier);
+                            pubDirection = SoldierControl.GetDirectionFromGridNo(sSpot, pSoldier);
                         }
                     }
 
@@ -376,20 +376,20 @@ public class Overhead
                         sSpot = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(WorldDirections.EAST));
                         if (pubDirection > 0)
                         {
-                            (pubDirection) = SoldierControl.GetDirectionFromGridNo(sSpot, pSoldier);
+                            pubDirection = SoldierControl.GetDirectionFromGridNo(sSpot, pSoldier);
                         }
                     }
                 }
             }
 
             // Use soldier's direction
-            return (sGridNo);
+            return sGridNo;
         }
 
         // Look for a door!
         if (fDoor)
         {
-            pDoor = WorldStructures.FindStructure(sGridNo, (STRUCTUREFLAGS.ANYDOOR | STRUCTUREFLAGS.SWITCH));
+            pDoor = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR | STRUCTUREFLAGS.SWITCH);
         }
         else
         {
@@ -408,14 +408,14 @@ public class Overhead
                     // Use direction to this guy!
                     if (pubDirection > 0)
                     {
-                        (pubDirection) = SoldierControl.GetDirectionFromGridNo(sGridNo, pSoldier);
+                        pubDirection = SoldierControl.GetDirectionFromGridNo(sGridNo, pSoldier);
                     }
                 }
             }
         }
 
 
-        if ((sOkTest = NewOKDestination(pSoldier, sGridNo, true, pSoldier.bLevel)))    // no problem going there! nobody on it!
+        if (sOkTest = NewOKDestination(pSoldier, sGridNo, true, pSoldier.bLevel))    // no problem going there! nobody on it!
         {
             // OK, if we are looking to goto a switch, ignore this....
             if (pDoor is not null)
@@ -520,16 +520,16 @@ public class Overhead
                     // Use direction to the door!
                     if (pubDirection > 0)
                     {
-                        (pubDirection) = SoldierControl.GetDirectionFromGridNo(sGridNo, pSoldier);
+                        pubDirection = SoldierControl.GetDirectionFromGridNo(sGridNo, pSoldier);
                     }
                 }
-                return (sSpot);
+                return sSpot;
             }
 
             // don't store path, just measure it
             ubDir = SoldierControl.GetDirectionToGridNoFromGridNo(sSpot, sGridNo);
 
-            if ((NewOKDestinationAndDirection(pSoldier, sSpot, ubDir, true, pSoldier.bLevel))
+            if (NewOKDestinationAndDirection(pSoldier, sSpot, ubDir, true, pSoldier.bLevel)
                 && ((sDistance = PathAI.PlotPath(pSoldier, sSpot, PlotPathDefines.NO_COPYROUTE, NO_PLOT, PlotPathDefines.TEMPORARY, pSoldier.usUIMovementMode, PlotPathDefines.NOT_STEALTH, PlotPathDefines.FORWARD, pSoldier.bActionPoints)) > 0))
             {
                 if (sDistance < sClosest)
@@ -585,13 +585,13 @@ public class Overhead
             //}
             if (sCloseGridNo == NOWHERE)
             {
-                return (-1);
+                return -1;
             }
-            return (sCloseGridNo);
+            return sCloseGridNo;
         }
         else
         {
-            return (-1);
+            return -1;
         }
     }
 
@@ -629,7 +629,7 @@ public class Overhead
             {
                 if (pSoldier.bBulletsLeft > 0)
                 {
-                    return (pTarget);
+                    return pTarget;
                 }
             }
         }
@@ -641,7 +641,7 @@ public class Overhead
         {
             // ATE: We have a problem here... if testversion, report error......
             // But for all means.... DON'T wrap!
-            if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             {
                 // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! &&&&&&& Problem with attacker busy count decrementing past 0.... preventing wrap-around."));
 # if JA2BETAVERSION
@@ -659,11 +659,11 @@ public class Overhead
 
         if (gTacticalStatus.ubAttackBusyCount > 0)
         {
-            return (pTarget);
+            return pTarget;
         }
 
-        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
-            && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
+            && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
 
             // Check to see if anyone was suppressed
@@ -683,7 +683,7 @@ public class Overhead
             if (gTacticalStatus.ubAttackBusyCount > 0)
             {
                 //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting suppression, attack count now %d", gTacticalStatus.ubAttackBusyCount));
-                return (pTarget);
+                return pTarget;
             }
         }
 
@@ -693,7 +693,7 @@ public class Overhead
         // OK< let's NOT do this if it was the queen attacking....
         if (Meanwhile.AreInMeanwhile() && pSoldier != null && pSoldier.ubProfile != NPCID.QUEEN)
         {
-            return (pTarget);
+            return pTarget;
         }
 
         if (pTarget is not null)
@@ -709,7 +709,7 @@ public class Overhead
             pSoldier.ubAttackingHand = InventorySlot.HANDPOS;
 
             // if there is a valid target, and our attack was noticed
-            if (pTarget is not null && (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ATTACK_NOTICED)))
+            if (pTarget is not null && pSoldier.uiStatusFlags.HasFlag(SOLDIER.ATTACK_NOTICED))
             {
                 // stuff that only applies to when we attack
                 if (pTarget.ubBodyType != SoldierBodyTypes.CROW)
@@ -774,7 +774,7 @@ public class Overhead
 
 
                 // if soldier and target were not both players and target was not under fire before...
-                if ((pSoldier.bTeam != gbPlayerNum || pTarget.bTeam != gbPlayerNum))
+                if (pSoldier.bTeam != gbPlayerNum || pTarget.bTeam != gbPlayerNum)
                 {
                     if (pTarget.bOppList[pSoldier.ubID] != SEEN_CURRENTLY)
                     {
@@ -792,7 +792,7 @@ public class Overhead
                 {
                     //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Invalid target attacked!");
                 }
-                else if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.ATTACK_NOTICED)))
+                else if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.ATTACK_NOTICED))
                 {
                     // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, ">>Attack not noticed");
                 }
@@ -824,7 +824,7 @@ public class Overhead
             }
 
 
-            if (fEnterCombat && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            if (fEnterCombat && !gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             {
                 // Go into combat!
 
@@ -835,7 +835,7 @@ public class Overhead
                 //                }
             }
 
-            pSoldier.uiStatusFlags &= (~SOLDIER.ATTACK_NOTICED);
+            pSoldier.uiStatusFlags &= ~SOLDIER.ATTACK_NOTICED;
         }
 
         if (gTacticalStatus.fKilledEnemyOnAttack)
@@ -856,7 +856,7 @@ public class Overhead
             // Display quote!
             if (!AM_AN_EPC(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier]))
             {
-                DialogControl.TacticalCharacterDialogueWithSpecialEvent(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier], (QUOTE.SPOTTED_SOMETHING_ONE + Globals.Random.Next(2)), DIALOGUE_SPECIAL_EVENT.SIGNAL_ITEM_LOCATOR_START, gTacticalStatus.usItemsSeenOnAttackGridNo, 0);
+                DialogControl.TacticalCharacterDialogueWithSpecialEvent(MercPtrs[gTacticalStatus.ubItemsSeenOnAttackSoldier], QUOTE.SPOTTED_SOMETHING_ONE + Globals.Random.Next(2), DIALOGUE_SPECIAL_EVENT.SIGNAL_ITEM_LOCATOR_START, gTacticalStatus.usItemsSeenOnAttackGridNo, 0);
             }
             else
             {
@@ -892,7 +892,7 @@ public class Overhead
         //        CheckForEndOfBattle(false);
 
         // if we're in realtime, turn off the attacker's muzzle flash at this point
-        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) && pSoldier is not null)
+        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT) && pSoldier is not null)
         {
             OppList.EndMuzzleFlash(pSoldier);
         }
@@ -910,7 +910,7 @@ public class Overhead
             pSoldier.sLastTarget = pSoldier.sTargetGridNo;
         }
 
-        return (pTarget);
+        return pTarget;
     }
 
     // internal function for turning neutral to FALSE
@@ -1010,11 +1010,11 @@ public class Overhead
     {
         if (ubID == NOBODY)
         {
-            return (InternalReduceAttackBusyCount(ubID, fCalledByAttacker, NOBODY));
+            return InternalReduceAttackBusyCount(ubID, fCalledByAttacker, NOBODY);
         }
         else
         {
-            return (InternalReduceAttackBusyCount(ubID, fCalledByAttacker, MercPtrs[ubID].ubTargetID));
+            return InternalReduceAttackBusyCount(ubID, fCalledByAttacker, MercPtrs[ubID].ubTargetID);
         }
     }
 
@@ -1028,7 +1028,7 @@ public class Overhead
 
         if (!IsometricUtils.GridNoOnVisibleWorldTile(sGridNo))
         {
-            return (true);
+            return true;
         }
 
         if (fPeopleToo && (bPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) != NO_SOLDIER)
@@ -1039,20 +1039,20 @@ public class Overhead
             {
                 if (pCurrSoldier.bTeam == gbPlayerNum)
                 {
-                    if ((Menptr[bPerson].bVisible >= 0) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+                    if ((Menptr[bPerson].bVisible >= 0) || gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))
                     {
-                        return (false);                 // if someone there it's NOT OK
+                        return false;                 // if someone there it's NOT OK
                     }
                 }
                 else
                 {
-                    return (false);                 // if someone there it's NOT OK
+                    return false;                 // if someone there it's NOT OK
                 }
             }
         }
 
         // Check structure database
-        if ((pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)) && !(gfEstimatePath))
+        if (pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE) && !gfEstimatePath)
         {
             AnimationSurfaceTypes usAnimSurface;
             STRUCTURE_FILE_REF? pStructureFileRef;
@@ -1086,12 +1086,12 @@ public class Overhead
                     //                    fOk = StructureInternals.InternalOkayToAddStructureToWorld(sGridNo, bLevel, (pStructureFileRef.pDBStructureRef[bLoop]), usStructureID, (bool)!fPeopleToo);
                     if (fOk)
                     {
-                        return (true);
+                        return true;
                     }
                 }
             }
 
-            return (false);
+            return false;
         }
         else
         {
@@ -1120,12 +1120,12 @@ public class Overhead
 
                 while (pStructure != null)
                 {
-                    if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
+                    if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
                     {
                         fOKCheckStruct = true;
 
                         // Check if this is a multi-tile
-                        if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)) && (pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)))
+                        if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && pCurrSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE))
                         {
                             // Check IDs with soldier's ID
                             if (pCurrSoldier.pLevelNode != null && pCurrSoldier.pLevelNode.pStructureData != null && pCurrSoldier.pLevelNode.pStructureData.usStructureID == pStructure.usStructureID)
@@ -1138,7 +1138,7 @@ public class Overhead
                         {
                             if (pStructure.sCubeOffset == sDesiredLevel)
                             {
-                                return (false);
+                                return false;
                             }
                         }
                     }
@@ -1148,7 +1148,7 @@ public class Overhead
             }
         }
 
-        return (true);
+        return true;
     }
 
     public static void HandleSuppressionFire(int ubTargetedMerc, int ubCausedAttacker)
@@ -1169,7 +1169,7 @@ public class Overhead
                 bTolerance = CalcSuppressionTolerance(pSoldier);
 
                 // multiply by 2, add 1 and divide by 2 to round off to nearest whole number
-                ubPointsLost = (((pSoldier.ubSuppressionPoints * 6) / (bTolerance + 6)) * 2 + 1) / 2;
+                ubPointsLost = (pSoldier.ubSuppressionPoints * 6 / (bTolerance + 6) * 2 + 1) / 2;
 
                 // reduce loss of APs based on stance
                 // ATE: Taken out because we can possibly supress ourselves...
@@ -1230,7 +1230,7 @@ public class Overhead
                                     {
                                         // Have to give APs back so that we can change stance without
                                         // losing more APs
-                                        pSoldier.bActionPoints += (AP.PRONE - ubPointsLost);
+                                        pSoldier.bActionPoints += AP.PRONE - ubPointsLost;
                                         ubPointsLost = 0;
                                     }
                                     else
@@ -1282,9 +1282,9 @@ public class Overhead
                 pSoldier.bActionPoints -= ubPointsLost;
                 pSoldier.ubAPsLostToSuppression = ubTotalPointsLost;
 
-                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)) && (pSoldier.ubSuppressionPoints > 8) && (pSoldier.ubID == ubTargetedMerc))
+                if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC) && (pSoldier.ubSuppressionPoints > 8) && (pSoldier.ubID == ubTargetedMerc))
                 {
-                    if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_BEING_PUMMELED)))
+                    if (!pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_BEING_PUMMELED))
                     {
                         pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_BEING_PUMMELED;
                         // say we're under heavy fire!
@@ -1302,7 +1302,7 @@ public class Overhead
                     // This person is going to change stance
 
                     // This person will be busy while they crouch or go prone
-                    if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                    if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                     {
                         // DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("!!!!!!! Starting suppression, on %d", pSoldier.ubID));
 
@@ -1315,7 +1315,7 @@ public class Overhead
                     pSoldier.fDontChargeAPsForStanceChange = true;
 
                     // AI people will have to have their actions cancelled
-                    if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)))
+                    if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
                     {
                         AIMain.CancelAIAction(pSoldier, 1);
                         pSoldier.bAction = AI_ACTION.CHANGE_STANCE;
@@ -1395,7 +1395,7 @@ public class Overhead
             bTolerance = 0;
         }
 
-        return (bTolerance);
+        return bTolerance;
     }
 
     public static bool FlatRoofAboveGridNo(int iMapIndex)
@@ -1505,7 +1505,7 @@ public class Overhead
         if (usSoldierIndex < 0 || usSoldierIndex > Globals.TOTAL_SOLDIERS - 1)
         {
             // Set debug message
-            return (false);
+            return false;
         }
 
         // Check if a guy exists here
@@ -1514,11 +1514,11 @@ public class Overhead
         {
             // Set Existing guy
             ppSoldier = Globals.MercPtrs[usSoldierIndex];
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 }

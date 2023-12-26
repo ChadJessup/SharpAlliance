@@ -58,6 +58,6 @@ public class SoldierAni
 //            }
 //        }
 //
-        return (true);
+        return true;
     }
 }

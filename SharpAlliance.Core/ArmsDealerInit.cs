@@ -13,65 +13,65 @@ public class ArmsDealerInit
         switch (ubDealerID)
         {
             case ARMS_DEALER.TONY:
-                return (GetMaxItemAmount(gTonyInventory, usItemIndex));
+                return GetMaxItemAmount(gTonyInventory, usItemIndex);
 
             case ARMS_DEALER.FRANK:
-                return (GetMaxItemAmount(gFrankInventory, usItemIndex));
+                return GetMaxItemAmount(gFrankInventory, usItemIndex);
 
             case ARMS_DEALER.MICKY:
-                return (GetMaxItemAmount(gMickyInventory, usItemIndex));
+                return GetMaxItemAmount(gMickyInventory, usItemIndex);
 
             case ARMS_DEALER.ARNIE:
-                return (GetMaxItemAmount(gArnieInventory, usItemIndex));
+                return GetMaxItemAmount(gArnieInventory, usItemIndex);
 
             case ARMS_DEALER.PERKO:
-                return (GetMaxItemAmount(gPerkoInventory, usItemIndex));
+                return GetMaxItemAmount(gPerkoInventory, usItemIndex);
 
             case ARMS_DEALER.KEITH:
-                return (GetMaxItemAmount(gKeithInventory, usItemIndex));
+                return GetMaxItemAmount(gKeithInventory, usItemIndex);
 
             case ARMS_DEALER.BAR_BRO_1:
-                return (GetMaxItemAmount(gHerveInventory, usItemIndex));
+                return GetMaxItemAmount(gHerveInventory, usItemIndex);
 
             case ARMS_DEALER.BAR_BRO_2:
-                return (GetMaxItemAmount(gPeterInventory, usItemIndex));
+                return GetMaxItemAmount(gPeterInventory, usItemIndex);
 
             case ARMS_DEALER.BAR_BRO_3:
-                return (GetMaxItemAmount(gAlbertoInventory, usItemIndex));
+                return GetMaxItemAmount(gAlbertoInventory, usItemIndex);
 
             case ARMS_DEALER.BAR_BRO_4:
-                return (GetMaxItemAmount(gCarloInventory, usItemIndex));
+                return GetMaxItemAmount(gCarloInventory, usItemIndex);
 
             case ARMS_DEALER.JAKE:
-                return (GetMaxItemAmount(gJakeInventory, usItemIndex));
+                return GetMaxItemAmount(gJakeInventory, usItemIndex);
 
             case ARMS_DEALER.FRANZ:
-                return (GetMaxItemAmount(gFranzInventory, usItemIndex));
+                return GetMaxItemAmount(gFranzInventory, usItemIndex);
 
             case ARMS_DEALER.HOWARD:
-                return (GetMaxItemAmount(gHowardInventory, usItemIndex));
+                return GetMaxItemAmount(gHowardInventory, usItemIndex);
 
             case ARMS_DEALER.SAM:
-                return (GetMaxItemAmount(gSamInventory, usItemIndex));
+                return GetMaxItemAmount(gSamInventory, usItemIndex);
 
             case ARMS_DEALER.FREDO:
-                return (GetMaxItemAmount(gFredoInventory, usItemIndex));
+                return GetMaxItemAmount(gFredoInventory, usItemIndex);
 
             case ARMS_DEALER.GABBY:
-                return (GetMaxItemAmount(gGabbyInventory, usItemIndex));
+                return GetMaxItemAmount(gGabbyInventory, usItemIndex);
 
             case ARMS_DEALER.DEVIN:
-                return (GetMaxItemAmount(gDevinInventory, usItemIndex));
+                return GetMaxItemAmount(gDevinInventory, usItemIndex);
 
             case ARMS_DEALER.ELGIN:
-                return (GetMaxItemAmount(gElginInventory, usItemIndex));
+                return GetMaxItemAmount(gElginInventory, usItemIndex);
 
             case ARMS_DEALER.MANNY:
-                return (GetMaxItemAmount(gMannyInventory, usItemIndex));
+                return GetMaxItemAmount(gMannyInventory, usItemIndex);
 
             default:
                 Debug.Assert(false);
-                return (0);
+                return 0;
         }
     }
 
@@ -86,14 +86,14 @@ public class ArmsDealerInit
             //if this item is the one we want
             if (pInv[usCnt].sItemIndex == usItemIndex)
             {
-                return (pInv[usCnt].ubOptimalNumber);
+                return pInv[usCnt].ubOptimalNumber;
             }
 
             // move to the next item
             usCnt++;
         }
 
-        return (NO_DEALER_ITEM);
+        return NO_DEALER_ITEM;
     }
 
 
@@ -102,64 +102,64 @@ public class ArmsDealerInit
         switch (ubArmsDealerID)
         {
             case ARMS_DEALER.TONY:
-                return (gTonyInventory);
+                return gTonyInventory;
 
             case ARMS_DEALER.FRANK:
-                return (gFrankInventory);
+                return gFrankInventory;
 
             case ARMS_DEALER.MICKY:
-                return (gMickyInventory);
+                return gMickyInventory;
 
             case ARMS_DEALER.ARNIE:
-                return (gArnieInventory);
+                return gArnieInventory;
 
             case ARMS_DEALER.PERKO:
-                return (gPerkoInventory);
+                return gPerkoInventory;
 
             case ARMS_DEALER.KEITH:
-                return (gKeithInventory);
+                return gKeithInventory;
 
             case ARMS_DEALER.BAR_BRO_1:
-                return (gHerveInventory);
+                return gHerveInventory;
 
             case ARMS_DEALER.BAR_BRO_2:
-                return (gPeterInventory);
+                return gPeterInventory;
 
             case ARMS_DEALER.BAR_BRO_3:
-                return (gAlbertoInventory);
+                return gAlbertoInventory;
 
             case ARMS_DEALER.BAR_BRO_4:
-                return (gCarloInventory);
+                return gCarloInventory;
 
             case ARMS_DEALER.JAKE:
-                return (gJakeInventory);
+                return gJakeInventory;
 
             case ARMS_DEALER.FRANZ:
-                return (gFranzInventory);
+                return gFranzInventory;
 
             case ARMS_DEALER.HOWARD:
-                return (gHowardInventory);
+                return gHowardInventory;
 
             case ARMS_DEALER.SAM:
-                return (gSamInventory);
+                return gSamInventory;
 
             case ARMS_DEALER.FREDO:
-                return (gFredoInventory);
+                return gFredoInventory;
 
             case ARMS_DEALER.GABBY:
-                return (gGabbyInventory);
+                return gGabbyInventory;
 
             case ARMS_DEALER.DEVIN:
-                return (gDevinInventory);
+                return gDevinInventory;
 
             case ARMS_DEALER.ELGIN:
-                return (gElginInventory);
+                return gElginInventory;
 
             case ARMS_DEALER.MANNY:
-                return (gMannyInventory);
+                return gMannyInventory;
 
             default:
-                return (null);
+                return null;
         }
     }
 
@@ -175,13 +175,13 @@ public class ArmsDealerInit
         // items illegal in this game are unsuitable [this checks guns vs. current GunSet!]
         if (!ItemSubSystem.ItemIsLegal(usItemIndex))
         {
-            return (ITEM_SUITABILITY_NONE);
+            return ITEM_SUITABILITY_NONE;
         }
 
         // items normally not sold at shops are unsuitable
         if (Item[usItemIndex].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE))
         {
-            return (ITEM_SUITABILITY_NONE);
+            return ITEM_SUITABILITY_NONE;
         }
 
 
@@ -190,7 +190,7 @@ public class ArmsDealerInit
         if (ubItemCoolness == 0)
         {
             // items without a coolness rating can't be sold to the player by shopkeepers
-            return (ITEM_SUITABILITY_NONE);
+            return ITEM_SUITABILITY_NONE;
         }
 
         // the following staple items are always deemed highly suitable regardless of player's progress:
@@ -220,7 +220,7 @@ public class ArmsDealerInit
             case Items.JAR:
             case Items.JAR_ELIXIR:
             case Items.JAR_CREATURE_BLOOD:
-                return (ITEM_SUITABILITY_ALWAYS);
+                return ITEM_SUITABILITY_ALWAYS;
         }
 
 
@@ -228,7 +228,7 @@ public class ArmsDealerInit
         if ((bArmsDealer != (ARMS_DEALER)(-1)) && (bArmsDealer != ARMS_DEALER.TONY) && (bArmsDealer != ARMS_DEALER.DEVIN))
         {
             // all the other dealers have very limited inventories, so their suitability remains constant at all times in game
-            return (ITEM_SUITABILITY_HIGH);
+            return ITEM_SUITABILITY_HIGH;
         }
 
 
@@ -261,23 +261,23 @@ public class ArmsDealerInit
         // if item is too cool for current level of progress
         if (ubItemCoolness > ubMaxCoolness)
         {
-            return (ITEM_SUITABILITY_NONE);
+            return ITEM_SUITABILITY_NONE;
         }
 
         // if item is exactly within the current coolness window
         if ((ubItemCoolness >= ubMinCoolness) && (ubItemCoolness <= ubMaxCoolness))
         {
-            return (ITEM_SUITABILITY_HIGH);
+            return ITEM_SUITABILITY_HIGH;
         }
 
         // if item is still relatively close to low end of the window
         if ((ubItemCoolness + 2) >= ubMinCoolness)
         {
-            return (ITEM_SUITABILITY_MEDIUM);
+            return ITEM_SUITABILITY_MEDIUM;
         }
 
         // item is way uncool for player's current progress, but it's still possible for it to make an appearance
-        return (ITEM_SUITABILITY_LOW);
+        return ITEM_SUITABILITY_LOW;
     }
 
     public static int ChanceOfItemTransaction(ARMS_DEALER bArmsDealer, Items usItemIndex, int fDealerIsSelling, BOBBY_RAY fUsed)
@@ -290,7 +290,7 @@ public class ArmsDealerInit
         // make sure dealers don't carry used items that they shouldn't
         if (fUsed > 0 && fDealerIsSelling == 0 && !CanDealerItemBeSoldUsed(usItemIndex))
         {
-            return (0);
+            return 0;
         }
 
         if (bArmsDealer == (ARMS_DEALER)(-1))
@@ -317,15 +317,15 @@ public class ArmsDealerInit
                 break;
 
             case ITEM_SUITABILITY_LOW:
-                ubChance = (fBobbyRay) ? 25 : 15;
+                ubChance = fBobbyRay ? 25 : 15;
                 break;
 
             case ITEM_SUITABILITY_MEDIUM:
-                ubChance = (fBobbyRay) ? 50 : 30;
+                ubChance = fBobbyRay ? 50 : 30;
                 break;
 
             case ITEM_SUITABILITY_HIGH:
-                ubChance = (fBobbyRay) ? 75 : 50;
+                ubChance = fBobbyRay ? 75 : 50;
                 break;
 
             case ITEM_SUITABILITY_ALWAYS:
@@ -353,7 +353,7 @@ public class ArmsDealerInit
             // cooler items sell faster
             if (fDealerIsSelling > 0)
             {
-                ubChance += (5 * ubItemCoolness);
+                ubChance += 5 * ubItemCoolness;
 
                 // ARM: New - keep stuff on the shelves longer
                 ubChance /= 2;
@@ -367,7 +367,7 @@ public class ArmsDealerInit
         }
 
 
-        return (ubChance);
+        return ubChance;
     }
 
     public static bool ItemTransactionOccurs(ARMS_DEALER bArmsDealer, Items usItemIndex, int fDealerIsSelling, BOBBY_RAY fUsed)
@@ -404,11 +404,11 @@ public class ArmsDealerInit
         // roll to see if a transaction occurs
         if (Globals.Random.Next(100) < ubChance)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -429,7 +429,7 @@ public class ArmsDealerInit
             }
         }
 
-        return (ubNumBought);
+        return ubNumBought;
     }
 
     public static int HowManyItemsAreSold(ARMS_DEALER bArmsDealerID, Items usItemIndex, int ubNumInStock, BOBBY_RAY fUsed)
@@ -447,7 +447,7 @@ public class ArmsDealerInit
             }
         }
 
-        return (ubNumSold);
+        return ubNumSold;
     }
 
 
@@ -471,7 +471,7 @@ public class ArmsDealerInit
                 break;
         }
 
-        return (ubNumReordered);
+        return ubNumReordered;
     }
 
 
@@ -483,13 +483,13 @@ public class ArmsDealerInit
         int ubItem1Quality;
         int ubItem2Quality;
 
-        usItem1Index = (pArg1).usItemIndex;
-        usItem2Index = (pArg2).usItemIndex;
+        usItem1Index = pArg1.usItemIndex;
+        usItem2Index = pArg2.usItemIndex;
 
-        ubItem1Quality = (pArg1).ubItemQuality;
-        ubItem2Quality = (pArg2).ubItemQuality;
+        ubItem1Quality = pArg1.ubItemQuality;
+        ubItem2Quality = pArg2.ubItemQuality;
 
-        return (CompareItemsForSorting(usItem1Index, usItem2Index, ubItem1Quality, ubItem2Quality));
+        return CompareItemsForSorting(usItem1Index, usItem2Index, ubItem1Quality, ubItem2Quality);
     }
 
 
@@ -501,13 +501,13 @@ public class ArmsDealerInit
         int ubItem1Quality;
         int ubItem2Quality;
 
-        usItem1Index = (pArg1).sItemIndex;
-        usItem2Index = (pArg2).sItemIndex;
+        usItem1Index = pArg1.sItemIndex;
+        usItem2Index = pArg2.sItemIndex;
 
-        ubItem1Quality = (pArg1).ItemObject.bStatus[0];
-        ubItem2Quality = (pArg2).ItemObject.bStatus[0];
+        ubItem1Quality = pArg1.ItemObject.bStatus[0];
+        ubItem2Quality = pArg2.ItemObject.bStatus[0];
 
-        return (CompareItemsForSorting(usItem1Index, usItem2Index, ubItem1Quality, ubItem2Quality));
+        return CompareItemsForSorting(usItem1Index, usItem2Index, ubItem1Quality, ubItem2Quality);
     }
 
     int RepairmanItemQsortCompare(INVENTORY_IN_SLOT pArg1, INVENTORY_IN_SLOT pArg2)
@@ -539,7 +539,7 @@ public class ArmsDealerInit
 //        }
 //        else
         {
-            return (0);
+            return 0;
         }
     }
 
@@ -560,12 +560,12 @@ public class ArmsDealerInit
         // lower category first
         if (ubItem1Category < ubItem2Category)
         {
-            return (-1);
+            return -1;
         }
         else
         if (ubItem1Category > ubItem2Category)
         {
-            return (1);
+            return 1;
         }
         else
         {
@@ -582,24 +582,24 @@ public class ArmsDealerInit
                 ubItem2Calibre = WeaponTypes.Magazine[Item[usItem2Index].ubClassIndex].ubCalibre;
                 if (ubItem1Calibre > ubItem2Calibre)
                 {
-                    return (-1);
+                    return -1;
                 }
                 else
                 if (ubItem1Calibre < ubItem2Calibre)
                 {
-                    return (1);
+                    return 1;
                 }
                 // the same caliber - compare size of magazine, then fall out of if statement
                 ubItem1MagSize = WeaponTypes.Magazine[Item[usItem1Index].ubClassIndex].ubMagSize;
                 ubItem2MagSize = WeaponTypes.Magazine[Item[usItem2Index].ubClassIndex].ubMagSize;
                 if (ubItem1MagSize > ubItem2MagSize)
                 {
-                    return (-1);
+                    return -1;
                 }
                 else
                 if (ubItem1MagSize < ubItem2MagSize)
                 {
-                    return (1);
+                    return 1;
                 }
 
             }
@@ -612,12 +612,12 @@ public class ArmsDealerInit
                 // higher coolness first
                 if (ubItem1Coolness > ubItem2Coolness)
                 {
-                    return (-1);
+                    return -1;
                 }
                 else
                 if (ubItem1Coolness < ubItem2Coolness)
                 {
-                    return (1);
+                    return 1;
                 }
             }
 
@@ -628,12 +628,12 @@ public class ArmsDealerInit
             // higher price first
             if (usItem1Price > usItem2Price)
             {
-                return (-1);
+                return -1;
             }
             else
             if (usItem1Price < usItem2Price)
             {
-                return (1);
+                return 1;
             }
             else
             {
@@ -642,12 +642,12 @@ public class ArmsDealerInit
                 // lower index first
                 if (usItem1Index < usItem2Index)
                 {
-                    return (-1);
+                    return -1;
                 }
                 else
                 if (usItem1Index > usItem2Index)
                 {
-                    return (1);
+                    return 1;
                 }
                 else
                 {
@@ -656,17 +656,17 @@ public class ArmsDealerInit
                     // higher quality first
                     if (ubItem1Quality > ubItem2Quality)
                     {
-                        return (-1);
+                        return -1;
                     }
                     else
                     if (ubItem1Quality < ubItem2Quality)
                     {
-                        return (1);
+                        return 1;
                     }
                     else
                     {
                         // identical items!
-                        return (0);
+                        return 0;
                     }
                 }
             }
@@ -706,7 +706,7 @@ public class ArmsDealerInit
                 if (uiItemClass != IC.GUN)
                 {
                     // then we're found it
-                    return (ubCategory);
+                    return ubCategory;
                 }
                 else
                 {
@@ -714,7 +714,7 @@ public class ArmsDealerInit
                     if (DealerItemSortInfo[ubCategory].ubWeaponClass == ubWeaponClass)
                     {
                         // then we're found it
-                        return (ubCategory);
+                        return ubCategory;
                     }
                 }
             }
@@ -725,7 +725,7 @@ public class ArmsDealerInit
 
         // should never be trying to locate an item that's not covered in the table!
         Debug.Assert(false);
-        return (0);
+        return 0;
     }
 
     public static bool ItemContainsLiquid(Items usItemIndex)
@@ -740,10 +740,10 @@ public class ArmsDealerInit
             case Items.JAR_QUEEN_CREATURE_BLOOD:
             case Items.JAR_ELIXIR:
             case Items.GAS_CAN:
-                return (true);
+                return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static int DetermineDealerItemCondition(ARMS_DEALER ubArmsDealer, Items usItemIndex)
@@ -751,18 +751,18 @@ public class ArmsDealerInit
         int ubCondition = 100;
 
         // if it's a damagable item, and not a liquid (those are always sold full)
-        if ((Item[usItemIndex].fFlags.HasFlag(ItemAttributes.ITEM_DAMAGEABLE)) && !ItemContainsLiquid(usItemIndex))
+        if (Item[usItemIndex].fFlags.HasFlag(ItemAttributes.ITEM_DAMAGEABLE) && !ItemContainsLiquid(usItemIndex))
         {
             // if he ONLY has used items, or 50% of the time if he carries both used & new items
-            if ((ArmsDealerInfo[ubArmsDealer].uiFlags.HasFlag(ARMS_DEALER_ITEM.ONLY_USED_ITEMS)) ||
-                 ((ArmsDealerInfo[ubArmsDealer].uiFlags.HasFlag(ARMS_DEALER_ITEM.SOME_USED_ITEMS)) && (Globals.Random.Next(100) < 50)))
+            if (ArmsDealerInfo[ubArmsDealer].uiFlags.HasFlag(ARMS_DEALER_ITEM.ONLY_USED_ITEMS) ||
+                 (ArmsDealerInfo[ubArmsDealer].uiFlags.HasFlag(ARMS_DEALER_ITEM.SOME_USED_ITEMS) && (Globals.Random.Next(100) < 50)))
             {
                 // make the item a used one
-                ubCondition = (20 + Globals.Random.Next(60));
+                ubCondition = 20 + Globals.Random.Next(60);
             }
         }
 
-        return (ubCondition);
+        return ubCondition;
     }
 
     public static void SetSpecialItemInfoToDefaults(out SPECIAL_ITEM_INFO pSpclItemInfo)
@@ -856,7 +856,7 @@ public class ArmsDealerInit
                 fFoundOne = false;
                 for (ubElement = 0; ubElement < gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced; ubElement++)
                 {
-                    if (!(gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive))
+                    if (!gArmsDealersInventory[ubArmsDealer][usItemIndex].SpecialItem[ubElement].fActive)
                     {
                         //Great!  Store it here, then.
                         AddSpecialItemToArmsDealerInventoryAtElement(ubArmsDealer, usItemIndex, ubElement, pSpclItemInfo);
@@ -880,7 +880,7 @@ public class ArmsDealerInit
                     else
                     {
                         // we have some allocated, but they're all full and we need more.  MemRealloc existing amount + # addition elements
-                        fSuccess = ResizeSpecialItemArray(gArmsDealersInventory[ubArmsDealer][usItemIndex], (gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced + ubElementsToAdd));
+                        fSuccess = ResizeSpecialItemArray(gArmsDealersInventory[ubArmsDealer][usItemIndex], gArmsDealersInventory[ubArmsDealer][usItemIndex].ubElementsAlloced + ubElementsToAdd);
                     }
 
                     if (!fSuccess)
@@ -915,7 +915,7 @@ public class ArmsDealerInit
 
         pDealerItem.ubElementsAlloced = ubElementsNeeded;
 
-        return (true);
+        return true;
     }
 
 
@@ -958,13 +958,13 @@ public class ArmsDealerInit
         // being damaged / in repairs makes an item special
         if (pSpclItemInfo.bItemCondition != 100)
         {
-            return (true);
+            return true;
         }
 
         // being imprinted makes an item special
         if (pSpclItemInfo.ubImprintID != NO_PROFILE)
         {
-            return (true);
+            return true;
         }
 
         // having an attachment makes an item special
@@ -972,12 +972,12 @@ public class ArmsDealerInit
         {
             if (pSpclItemInfo.usAttachment[ubCnt] != (int)Items.NONE)
             {
-                return (true);
+                return true;
             }
         }
 
         // otherwise, it's just a "perfect" item, nothing special about it
-        return (false);
+        return false;
     }
 
     public static void AddSpecialItemToArmsDealerInventoryAtElement(ARMS_DEALER ubArmsDealer, Items usItemIndex, int ubElement, SPECIAL_ITEM_INFO? pSpclItemInfo)
@@ -999,24 +999,24 @@ public class ArmsDealerInit
 
     public static bool CanDealerItemBeSoldUsed(Items usItemIndex)
     {
-        if (!(Item[usItemIndex].fFlags.HasFlag(ItemAttributes.ITEM_DAMAGEABLE)))
+        if (!Item[usItemIndex].fFlags.HasFlag(ItemAttributes.ITEM_DAMAGEABLE))
         {
-            return (false);
+            return false;
         }
 
         // certain items, although they're damagable, shouldn't be sold in a used condition
-        return (DealerItemSortInfo[GetDealerItemCategoryNumber(usItemIndex)].fAllowUsed);
+        return DealerItemSortInfo[GetDealerItemCategoryNumber(usItemIndex)].fAllowUsed;
     }
 
     public static bool DoesDealerDoRepairs(ARMS_DEALER ubArmsDealer)
     {
         if (ArmsDealerInfo[ubArmsDealer].ubTypeOfArmsDealer == ARMS_DEALER_KINDS.REPAIRS)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -1042,7 +1042,7 @@ public class ArmsDealerInit
         //	if( GetDealersMaxItemAmount( ubArmsDealer][usItemIndex ) > 0)
         {
             //add the item
-            ArmsDealerGetsFreshStock(ubArmsDealer, usItemIndex, (ubHowMany - gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems));
+            ArmsDealerGetsFreshStock(ubArmsDealer, usItemIndex, ubHowMany - gArmsDealersInventory[ubArmsDealer][usItemIndex].ubTotalItems);
         }
     }
 

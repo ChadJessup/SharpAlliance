@@ -87,7 +87,7 @@ public static class Blitters
         //        jnz BlitNewLine
         //    }
 
-        return (true);
+        return true;
     }
 
     /**********************************************************************************************
@@ -170,6 +170,6 @@ public static class Blitters
         //        jnz BlitNewLine
         //}
 
-        return (true);
+        return true;
     }
 }

@@ -110,7 +110,7 @@ public class GameEventHook
             case EVENT.MERC_ABOUT_TO_LEAVE_COMMENT:
                 break;
             // show the update menu
-            case (EVENT.SHOW_UPDATE_MENU):
+            case EVENT.SHOW_UPDATE_MENU:
 //                AddDisplayBoxToWaitingQueue();
                 break;
             case EVENT.MERC_ABOUT_TO_LEAVE:

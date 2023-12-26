@@ -13,8 +13,8 @@ public class Points
         int bNewBreath;
 
         // in real time, there IS no AP cost, (only breath cost)
-        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
-            || !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
+            || !gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
             sAPCost = 0;
         }
@@ -67,7 +67,7 @@ public class Points
             }
 
             // Get new breath
-            bNewBreath = (pSoldier.bBreathMax - (pSoldier.sBreathRed / 100));
+            bNewBreath = pSoldier.bBreathMax - (pSoldier.sBreathRed / 100);
 
             if (bNewBreath > 100)
             {
@@ -115,7 +115,7 @@ public class Points
 
 
         // adjust breath factor for current breath deficiency
-        sBreathFactor += (100 - pSold.bBreath);
+        sBreathFactor += 100 - pSold.bBreath;
 
         // adjust breath factor for current life deficiency (but add 1/2 bandaging)
         ubBandaged = pSold.bLifeMax - pSold.bLife - pSold.bBleeding;
@@ -156,15 +156,15 @@ public class Points
         else if (sBPCost > 0)       // breath DECREASE
         {
             // increase breath COST by breathFactor
-            sBPCost = ((sBPCost * sBreathFactor) / 100);
+            sBPCost = sBPCost * sBreathFactor / 100;
         }
         else                // breath INCREASE
         {
             // decrease breath GAIN by breathFactor
-            sBPCost = ((sBPCost * 100) / sBreathFactor);
+            sBPCost = sBPCost * 100 / sBreathFactor;
         }
 
-        return (sBPCost);
+        return sBPCost;
     }
 
     public static int MinAPsToStartMovement(SOLDIERTYPE? pSoldier, AnimationStates usMovementMode)
@@ -212,7 +212,7 @@ public class Points
         {
             bAPs += AP.START_RUN_COST;
         }
-        return (bAPs);
+        return bAPs;
     }
 
     public static int TerrainActionPoints(SOLDIERTYPE? pSoldier, int sGridno, int bDir, int bLevel)
@@ -258,12 +258,12 @@ public class Points
         }
         else if (TRAVELCOST.IS_TRAVELCOST_DOOR(sSwitchValue))
         {
-            sSwitchValue = PathAI.DoorTravelCost(pSoldier, sGridno, sSwitchValue, (pSoldier.bTeam == gbPlayerNum), out var _);
+            sSwitchValue = PathAI.DoorTravelCost(pSoldier, sGridno, sSwitchValue, pSoldier.bTeam == gbPlayerNum, out var _);
         }
 
         if (sSwitchValue >= TRAVELCOST.BLOCKED && sSwitchValue != TRAVELCOST.DOOR)
         {
-            return (100);   // Cost too much to be considered!
+            return 100;   // Cost too much to be considered!
         }
 
         switch (sSwitchValue)
@@ -303,10 +303,10 @@ public class Points
 
             // cost for jumping a fence REPLACES all other AP costs!
             case TRAVELCOST.FENCE:
-                return (AP.JUMPFENCE);
+                return AP.JUMPFENCE;
 
             case TRAVELCOST.NONE:
-                return (0);
+                return 0;
 
             default:
                 //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("Calc AP: Unrecongnized MP type %d in %d, direction %d", sSwitchValue, sGridno, bDir));
@@ -317,11 +317,11 @@ public class Points
 
         if ((bDir & 1) > 0)
         {
-            sAPCost = (sAPCost * 14) / 10;
+            sAPCost = sAPCost * 14 / 10;
         }
 
 
-        return (sAPCost);
+        return sAPCost;
     }
 
     public static bool EnoughAmmo(SOLDIERTYPE? pSoldier, bool fDisplay, InventorySlot bInvPos)
@@ -330,27 +330,27 @@ public class Points
         {
             if (pSoldier.bWeaponMode == WM.ATTACHED)
             {
-                return (true);
+                return true;
             }
             else
             {
                 if (pSoldier.inv[bInvPos].usItem == Items.ROCKET_LAUNCHER)
                 {
                     // hack... they turn empty afterwards anyways
-                    return (true);
+                    return true;
                 }
 
                 if (Globals.Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.LAUNCHER || pSoldier.inv[bInvPos].usItem == Items.TANK_CANNON)
                 {
-                    if (ItemSubSystem.FindAttachmentByClass((pSoldier.inv[bInvPos]), IC.GRENADE) != Globals.ITEM_NOT_FOUND)
+                    if (ItemSubSystem.FindAttachmentByClass(pSoldier.inv[bInvPos], IC.GRENADE) != Globals.ITEM_NOT_FOUND)
                     {
-                        return (true);
+                        return true;
                     }
 
                     // ATE: Did an else if here...
-                    if (ItemSubSystem.FindAttachmentByClass((pSoldier.inv[bInvPos]), IC.BOMB) != Globals.ITEM_NOT_FOUND)
+                    if (ItemSubSystem.FindAttachmentByClass(pSoldier.inv[bInvPos], IC.BOMB) != Globals.ITEM_NOT_FOUND)
                     {
-                        return (true);
+                        return true;
                     }
 
                     if (fDisplay)
@@ -358,7 +358,7 @@ public class Points
                         DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.OUT_OF_AMMO);
                     }
 
-                    return (false);
+                    return false;
                 }
                 else if (Globals.Item[pSoldier.inv[bInvPos].usItem].usItemClass == IC.GUN)
                 {
@@ -368,15 +368,15 @@ public class Points
                         {
                             DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.OUT_OF_AMMO);
                         }
-                        return (false);
+                        return false;
                     }
                 }
             }
 
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
 
     }
 
@@ -392,7 +392,7 @@ public class Points
             return;
         }
 
-        pObj = (pSoldier.inv[bInvPos]);
+        pObj = pSoldier.inv[bInvPos];
         if (pObj.usItem != Globals.NOTHING)
         {
             if (pObj.usItem == Items.TANK_CANNON)
@@ -478,7 +478,7 @@ public class Points
                 if (pSoldier.sWalkToAttackGridNo == sGridNo)
                 {
                     sAdjustedGridNo = sGridNo;
-                    sAPCost += (pSoldier.sWalkToAttackWalkToCost);
+                    sAPCost += pSoldier.sWalkToAttackWalkToCost;
                 }
                 else
                 {
@@ -547,13 +547,13 @@ public class Points
 
                             if (pSoldier.sWalkToAttackWalkToCost == 0)
                             {
-                                return (99);
+                                return 99;
                             }
                         }
                     }
                     else
                     {
-                        return (0);
+                        return 0;
                     }
                     sAPCost += pSoldier.sWalkToAttackWalkToCost;
                 }
@@ -591,7 +591,7 @@ public class Points
         //}
         if (SoldierControl.IsValidSecondHandShot(pSoldier))
         {
-            return (AP.READY_DUAL);
+            return AP.READY_DUAL;
         }
 
 
@@ -600,18 +600,18 @@ public class Points
 
         if (usItem == NOTHING)
         {
-            return (0);
+            return 0;
         }
         else
         {
             // CHECK FOR RIFLE
             if (Item[usItem].usItemClass == IC.GUN)
             {
-                return (WeaponTypes.Weapon[usItem].ubReadyTime);
+                return WeaponTypes.Weapon[usItem].ubReadyTime;
             }
         }
 
-        return (0);
+        return 0;
     }
 
     public int MinAPsToAttack(SOLDIERTYPE pSoldier, int sGridno, int ubAddTurningCost)
@@ -624,7 +624,7 @@ public class Points
             InventorySlot bAttachSlot;
             // look for an attached grenade launcher
 
-            bAttachSlot = ItemSubSystem.FindAttachment((pSoldier.inv[InventorySlot.HANDPOS]), Items.UNDER_GLAUNCHER);
+            bAttachSlot = ItemSubSystem.FindAttachment(pSoldier.inv[InventorySlot.HANDPOS], Items.UNDER_GLAUNCHER);
             if (bAttachSlot == NO_SLOT)
             {
                 // default to hand
@@ -655,7 +655,7 @@ public class Points
 //            sAPCost = MinAPsToPunch(pSoldier, sGridno, ubAddTurningCost);
         }
 
-        return (sAPCost);
+        return sAPCost;
     }
 }
 

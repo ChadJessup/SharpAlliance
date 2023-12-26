@@ -47,21 +47,21 @@ public class SoldierFind
         {
             if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Globals.gsInterfaceLevel)))
             {
-                return (true);
+                return true;
             }
         }
 
         pusSoldierIndex = -1;
         pMercFlags = (FIND_SOLDIER_RESPONSES)(-1);
 
-        return (false);
+        return false;
     }
 
     public static FIND_SOLDIER FINDSOLDIERSAMELEVEL(int level)
-        => (((FIND_SOLDIER.FULL | FIND_SOLDIER.SAMELEVEL) | (FIND_SOLDIER)(level << 16)));
+        => FIND_SOLDIER.FULL | FIND_SOLDIER.SAMELEVEL | (FIND_SOLDIER)(level << 16);
 
     public static FIND_SOLDIER FINDSOLDIERSELECTIVESAMELEVEL(int level)
-        => (((FIND_SOLDIER.SELECTIVE | FIND_SOLDIER.SAMELEVEL) | (FIND_SOLDIER)(level << 16)));
+        => FIND_SOLDIER.SELECTIVE | FIND_SOLDIER.SAMELEVEL | (FIND_SOLDIER)(level << 16);
 
     bool SelectiveFindSoldierFromMouse(out int pusSoldierIndex, out FIND_SOLDIER_RESPONSES pMercFlags)
     {
@@ -72,14 +72,14 @@ public class SoldierFind
         {
             if (FindSoldier(sMapPos, out pusSoldierIndex, out pMercFlags, FINDSOLDIERSAMELEVEL(Globals.gsInterfaceLevel)))
             {
-                return (true);
+                return true;
             }
         }
 
         pusSoldierIndex = -1;
         pMercFlags = (FIND_SOLDIER_RESPONSES)(-1);
 
-        return (false);
+        return false;
     }
 
     public static FIND_SOLDIER_RESPONSES GetSoldierFindFlags(int ubID)
@@ -143,12 +143,12 @@ public class SoldierFind
             MercFlags |= FIND_SOLDIER_RESPONSES.DEAD_MERC;
         }
 
-        if (pSoldier.bVisible != -1 || (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+        if (pSoldier.bVisible != -1 || Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))
         {
             MercFlags |= FIND_SOLDIER_RESPONSES.VISIBLE_MERC;
         }
 
-        return (MercFlags);
+        return MercFlags;
     }
 
     // THIS FUNCTION IS CALLED FAIRLY REGULARLY
@@ -191,11 +191,11 @@ public class SoldierFind
 
             if (pSoldier != null)
             {
-                if (pSoldier.bActive && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD))
-                    && (pSoldier.bVisible != -1 || (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))))
+                if (pSoldier.bActive && !pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD)
+                    && (pSoldier.bVisible != -1 || Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
                 {
                     // OK, ignore if we are a passenger...
-                    if (pSoldier.uiStatusFlags.HasFlag((SOLDIER.PASSENGER | SOLDIER.DRIVER)))
+                    if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.PASSENGER | SOLDIER.DRIVER))
                     {
                         continue;
                     }
@@ -393,15 +393,15 @@ public class SoldierFind
         {
             pusSoldierIndex = (int)ubBestMerc;
 
-            (pMercFlags) = GetSoldierFindFlags(ubBestMerc);
+            pMercFlags = GetSoldierFindFlags(ubBestMerc);
 
-            return (true);
+            return true;
 
         }
         else
         {
             // If we were handling a stack, and we have not found anybody, end
-            if (gfHandleStack && !(uiFlags.HasFlag(FIND_SOLDIER.BEGINSTACK | FIND_SOLDIER.SELECTIVE)))
+            if (gfHandleStack && !uiFlags.HasFlag(FIND_SOLDIER.BEGINSTACK | FIND_SOLDIER.SELECTIVE))
             {
                 if (gSoldierStack.fUseGridNo)
                 {
@@ -416,7 +416,7 @@ public class SoldierFind
                 }
             }
         }
-        return (false);
+        return false;
     }
 
     bool CycleSoldierFindStack(int usMapPos)
@@ -472,7 +472,7 @@ public class SoldierFind
         }
 
         // Return if we are in the cycle mode now...
-        return (gfHandleStack);
+        return gfHandleStack;
     }
 
     SOLDIERTYPE? SimpleFindSoldier(int sGridNo, int bLevel)
@@ -482,11 +482,11 @@ public class SoldierFind
         ubID = WorldManager.WhoIsThere2(sGridNo, bLevel);
         if (ubID == Globals.NOBODY)
         {
-            return (null);
+            return null;
         }
         else
         {
-            return (Globals.MercPtrs[ubID]);
+            return Globals.MercPtrs[ubID];
         }
     }
 
@@ -498,7 +498,7 @@ public class SoldierFind
         // CHECK IF ACTIVE!
         if (!pSoldier.bActive)
         {
-            return (false);
+            return false;
         }
 
         // CHECK IF DEAD
@@ -510,13 +510,13 @@ public class SoldierFind
         // IF BAD GUY - CHECK VISIVILITY
         if (pSoldier.bTeam != Globals.gbPlayerNum)
         {
-            if (pSoldier.bVisible == -1 && !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+            if (pSoldier.bVisible == -1 && !Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))
             {
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -537,7 +537,7 @@ public class SoldierFind
 
                 if (sMapPos == sGridNo)
                 {
-                    return (true);
+                    return true;
                 }
 
                 iXTrav += WORLD_TILE_X;
@@ -549,7 +549,7 @@ public class SoldierFind
 
         } while (iYTrav < pRect.Bottom);
 
-        return (false);
+        return false;
     }
 
     public static void GetSoldierScreenRect(SOLDIERTYPE? pSoldier, out Rectangle pRect)
@@ -720,7 +720,7 @@ public class SoldierFind
         IsometricUtils.ConvertGridNoToXY(sGridNo, out int sNewCenterWorldX, out int sNewCenterWorldY);
 
         // Get screen coordinates for current position of soldier
-        IsometricUtils.GetWorldXYAbsoluteScreenXY((int)(sNewCenterWorldX), (int)(sNewCenterWorldY), out int sWorldX, out int sWorldY);
+        IsometricUtils.GetWorldXYAbsoluteScreenXY((int)sNewCenterWorldX, (int)sNewCenterWorldY, out int sWorldX, out int sWorldY);
 
         // ATE: OK, here, adjust the top value so that it's a tile and a bit over, because of our mercs!
         if (sWorldX >= Globals.gsTopLeftWorldX
@@ -728,10 +728,10 @@ public class SoldierFind
             && sWorldY >= (Globals.gsTopLeftWorldY + sAllowance)
             && sWorldY <= (Globals.gsBottomRightWorldY + 20))
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static bool SoldierOnScreen(int usID)
@@ -741,13 +741,13 @@ public class SoldierFind
         // Get pointer of soldier
         pSoldier = Globals.MercPtrs[usID];
 
-        return (GridNoOnScreen(pSoldier.sGridNo));
+        return GridNoOnScreen(pSoldier.sGridNo);
     }
 
 
     bool SoldierOnVisibleWorldTile(SOLDIERTYPE? pSoldier)
     {
-        return (IsometricUtils.GridNoOnVisibleWorldTile(pSoldier.sGridNo));
+        return IsometricUtils.GridNoOnVisibleWorldTile(pSoldier.sGridNo);
     }
 
     bool SoldierLocationRelativeToScreen(int sGridNo, int usReasonID, out WorldDirections pbDirection, out ScrollDirection puiScrollFlags)
@@ -780,24 +780,24 @@ public class SoldierFind
 
         // Get direction
         //*pbDirection = atan8( sScreenCenterX, sScreenCenterY, sWorldX, sWorldY );
-        pbDirection = SoldierControl.atan8(Globals.gsRenderCenterX, Globals.gsRenderCenterY, (int)(sX), (int)(sY));
+        pbDirection = SoldierControl.atan8(Globals.gsRenderCenterX, Globals.gsRenderCenterY, (int)sX, (int)sY);
 
         // Check values!
         if (sWorldX > (sScreenCenterX + 20))
         {
-            (puiScrollFlags) |= ScrollDirection.SCROLL_RIGHT;
+            puiScrollFlags |= ScrollDirection.SCROLL_RIGHT;
         }
         if (sWorldX < (sScreenCenterX - 20))
         {
-            (puiScrollFlags) |= ScrollDirection.SCROLL_LEFT;
+            puiScrollFlags |= ScrollDirection.SCROLL_LEFT;
         }
         if (sWorldY > (sScreenCenterY + 20))
         {
-            (puiScrollFlags) |= ScrollDirection.SCROLL_DOWN;
+            puiScrollFlags |= ScrollDirection.SCROLL_DOWN;
         }
         if (sWorldY < (sScreenCenterY - 20))
         {
-            (puiScrollFlags) |= ScrollDirection.SCROLL_UP;
+            puiScrollFlags |= ScrollDirection.SCROLL_UP;
         }
 
         // If we are on screen, stop
@@ -810,7 +810,7 @@ public class SoldierFind
             if (fCountdown > gScrollSlideInertiaDirection[(int)pbDirection])
             {
                 fCountdown = 0;
-                return (false);
+                return false;
             }
             else
             {
@@ -818,7 +818,7 @@ public class SoldierFind
             }
         }
 
-        return (true);
+        return true;
     }
 
     bool IsPointInSoldierBoundingBox(SOLDIERTYPE? pSoldier, int sX, int sY)
@@ -828,10 +828,10 @@ public class SoldierFind
 
         if (IsometricUtils.IsPointInScreenRect(sX, sY, aRect))
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -854,42 +854,42 @@ public class SoldierFind
 
                     if (dRelPer < .2)
                     {
-                        (usFlags) = TILE_FLAG.HEAD;
-                        return (true);
+                        usFlags = TILE_FLAG.HEAD;
+                        return true;
                     }
                     else if (dRelPer < .6)
                     {
-                        (usFlags) = TILE_FLAG.MID;
-                        return (true);
+                        usFlags = TILE_FLAG.MID;
+                        return true;
                     }
                     else
                     {
-                        (usFlags) = TILE_FLAG.FEET;
-                        return (true);
+                        usFlags = TILE_FLAG.FEET;
+                        return true;
                     }
 
                 case AnimationHeights.ANIM_CROUCH:
 
                     if (dRelPer < .2)
                     {
-                        (usFlags) = TILE_FLAG.HEAD;
-                        return (true);
+                        usFlags = TILE_FLAG.HEAD;
+                        return true;
                     }
                     else if (dRelPer < .7)
                     {
-                        (usFlags) = TILE_FLAG.MID;
-                        return (true);
+                        usFlags = TILE_FLAG.MID;
+                        return true;
                     }
                     else
                     {
-                        (usFlags) = TILE_FLAG.FEET;
-                        return (true);
+                        usFlags = TILE_FLAG.FEET;
+                        return true;
                     }
             }
         }
 
         usFlags = 0;
-        return (false);
+        return false;
     }
 
     // VERY quickly finds a soldier at gridno , ( that is visible )
@@ -907,13 +907,13 @@ public class SoldierFind
             {
                 if (pSoldier.sGridNo == sGridNo && pSoldier.bVisible != -1)
                 {
-                    return ((int)cnt);
+                    return (int)cnt;
                 }
             }
 
         }
 
-        return (Globals.NOBODY);
+        return Globals.NOBODY;
     }
 
 
@@ -923,8 +923,8 @@ public class SoldierFind
         float dOffsetX, dOffsetY;
 
         // Get 'true' merc position
-        dOffsetX = (IsometricUtils.CenterX(sGridNo) - Globals.gsRenderCenterX);
-        dOffsetY = (IsometricUtils.CenterY(sGridNo) - Globals.gsRenderCenterY);
+        dOffsetX = IsometricUtils.CenterX(sGridNo) - Globals.gsRenderCenterX;
+        dOffsetY = IsometricUtils.CenterY(sGridNo) - Globals.gsRenderCenterY;
 
         // OK, DONT'T ASK... CONVERSION TO PROPER Y NEEDS THIS...
         dOffsetX -= Globals.CELL_Y_SIZE;

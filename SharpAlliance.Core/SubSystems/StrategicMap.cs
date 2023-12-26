@@ -80,7 +80,7 @@ public class StrategicMap
 
 //            ResetMilitia();
             OppList.AllTeamsLookForAll(1);
-            return (true);
+            return true;
         }
 
         if (gWorldSectorX > 0 && gWorldSectorY > 0 && gbWorldSectorZ != -1)
@@ -99,7 +99,7 @@ public class StrategicMap
 
         //Check to see if the sector we are loading is the cave sector under Tixa.  If so
         //then we will set up the meanwhile scene to start the creature quest.
-        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
 //            StopAnyCurrentlyTalkingSpeech();
 
@@ -136,7 +136,7 @@ public class StrategicMap
         }
         -*/
 
-        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
             fChangeMusic = true;
         }
@@ -152,7 +152,7 @@ public class StrategicMap
         }
 
         // ATE: Do this stuff earlier!
-        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
             // Update the last time we were in tactical...
             gTacticalStatus.uiTimeSinceLastInTactical = GameClock.GetWorldTotalMin();
@@ -201,10 +201,10 @@ public class StrategicMap
 //        else
 //            return (false);
 
-        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
-            if ((gubMusicMode != MusicMode.TACTICAL_ENEMYPRESENT
-                && gubMusicMode != MusicMode.TACTICAL_BATTLE)
+            if (gubMusicMode != MusicMode.TACTICAL_ENEMYPRESENT
+                && gubMusicMode != MusicMode.TACTICAL_BATTLE
 //                || (!NumHostilesInSector(sMapX, sMapY, bMapZ) && gubMusicMode == MusicMode.TACTICAL_ENEMYPRESENT)
                 )
             {
@@ -245,7 +245,7 @@ public class StrategicMap
                 }
                 else
                 {
-                    gTacticalStatus.uiFlags &= (~TacticalEngineStatus.IN_CREATURE_LAIR);
+                    gTacticalStatus.uiFlags &= ~TacticalEngineStatus.IN_CREATURE_LAIR;
                 }
             }
 
@@ -258,7 +258,7 @@ public class StrategicMap
 
         }
 
-        return (true);
+        return true;
     }
 
     public static void GetMapFileName(int sMapX, MAP_ROW sMapY, int bSectorZ, out string bString, bool fUsePlaceholder, bool fAddAlternateMapLetter)
@@ -332,14 +332,14 @@ public class StrategicMap
             }
         }
 
-        return (ubSectorSize);
+        return ubSectorSize;
     }
 
     public static TOWNS GetTownIdForSector(int sMapX, MAP_ROW sMapY)
     {
         // return the name value of the town in this sector
 
-        return (Globals.strategicMap[CALCULATE_STRATEGIC_INDEX(sMapX, sMapY)].bNameId);
+        return Globals.strategicMap[CALCULATE_STRATEGIC_INDEX(sMapX, sMapY)].bNameId;
     }
 
 
@@ -545,7 +545,7 @@ public class StrategicMap
             }
         }
 
-        return (ubReturnVal);
+        return ubReturnVal;
     }
 
     // Get sector ID string makes a string like 'A9 - OMERTA', or just J11 if no town....
@@ -765,13 +765,13 @@ public class StrategicMap
     }
 
     // get index into array
-    public static int CALCULATE_STRATEGIC_INDEX(int x, MAP_ROW y) => (x + ((int)y * Globals.MAP_WORLD_X));
-    public static int GET_X_FROM_STRATEGIC_INDEX(int i) => (i % Globals.MAP_WORLD_X);
+    public static int CALCULATE_STRATEGIC_INDEX(int x, MAP_ROW y) => x + ((int)y * Globals.MAP_WORLD_X);
+    public static int GET_X_FROM_STRATEGIC_INDEX(int i) => i % Globals.MAP_WORLD_X;
     public static MAP_ROW GET_Y_FROM_STRATEGIC_INDEX(int i) => (MAP_ROW)(i / Globals.MAP_WORLD_X);
 
     // macros to convert between the 2 different sector numbering systems
-    public static int SECTOR_INFO_TO_STRATEGIC_INDEX(SEC i) => (CALCULATE_STRATEGIC_INDEX(SECTORINFO.SECTORX(i), SECTORINFO.SECTORY(i)));
-    public static SEC STRATEGIC_INDEX_TO_SECTOR_INFO(int i) => (SECTORINFO.SECTOR(GET_X_FROM_STRATEGIC_INDEX(i), GET_Y_FROM_STRATEGIC_INDEX(i)));
+    public static int SECTOR_INFO_TO_STRATEGIC_INDEX(SEC i) => CALCULATE_STRATEGIC_INDEX(SECTORINFO.SECTORX(i), SECTORINFO.SECTORY(i));
+    public static SEC STRATEGIC_INDEX_TO_SECTOR_INFO(int i) => SECTORINFO.SECTOR(GET_X_FROM_STRATEGIC_INDEX(i), GET_Y_FROM_STRATEGIC_INDEX(i));
 
     public static bool IsThisSectorASAMSector(SEC sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
@@ -779,27 +779,27 @@ public class StrategicMap
         // is the sector above ground?
         if (bSectorZ != 0)
         {
-            return (false);
+            return false;
         }
 
         if ((SAM.SAM_1_X == (SAM)sSectorX) && (SAM.SAM_1_Y == (SAM)sSectorY))
         {
-            return (true);
+            return true;
         }
         else if ((SAM.SAM_2_X == (SAM)sSectorX) && (SAM.SAM_2_Y == (SAM)sSectorY))
         {
-            return (true);
+            return true;
         }
         else if ((SAM.SAM_3_X == (SAM)sSectorX) && (SAM.SAM_3_Y == (SAM)sSectorY))
         {
-            return (true);
+            return true;
         }
         else if ((SAM.SAM_4_X == (SAM)sSectorX) && (SAM.SAM_4_Y == (SAM)sSectorY))
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 }
 

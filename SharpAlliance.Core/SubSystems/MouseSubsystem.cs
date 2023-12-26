@@ -566,14 +566,14 @@ public class MouseSubSystem : ISharpAllianceManager
     //
     public static void MSYS_DisableRegion(ref MOUSE_REGION region)
     {
-        region.uiFlags &= (~MouseRegionFlags.MSYS_REGION_ENABLED);
+        region.uiFlags &= ~MouseRegionFlags.MSYS_REGION_ENABLED;
     }
 
     public static void SetRegionFastHelpText(MOUSE_REGION region, string fastHelpText)
     {
         region.FastHelpText = null;
         //	region.FastHelpTimer = 0;
-        if (!(region.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS)))
+        if (!region.uiFlags.HasFlag(MouseRegionFlags.REGION_EXISTS))
         {
             return;
             //AssertMsg( 0, String( "Attempting to set fast help text, \"%S\" to an inactive region.", szText ) );
@@ -591,8 +591,8 @@ public class MouseSubSystem : ISharpAllianceManager
 
         if (services.GetRequiredService<IScreenManager>().CurrentScreenName != ScreenName.MAP_SCREEN)
         {
-            region.uiFlags &= (~MouseRegionFlags.GOT_BACKGROUND);
-            region.uiFlags &= (~MouseRegionFlags.FASTHELP_RESET);
+            region.uiFlags &= ~MouseRegionFlags.GOT_BACKGROUND;
+            region.uiFlags &= ~MouseRegionFlags.FASTHELP_RESET;
         }
     }
 
@@ -723,7 +723,7 @@ public class MouseSubSystem : ISharpAllianceManager
     //
 
     public static void MSYS_DefineRegion(
-        MOUSE_REGION region,
+        MOUSE_REGION? region,
         Rectangle bounds,
         MSYS_PRIORITY priority,
         CURSOR crsr,
@@ -834,14 +834,14 @@ public class MouseSubSystem : ISharpAllianceManager
             return;
         }
 
-        region.uiFlags &= (~MouseRegionFlags.SET_CURSOR);
+        region.uiFlags &= ~MouseRegionFlags.SET_CURSOR;
         region.Cursor = crsr;
         if (crsr != CURSOR.None)
         {
             region.uiFlags |= MouseRegionFlags.SET_CURSOR;
 
             // If we are not in the region, donot update!
-            if (!(region.uiFlags.HasFlag(MouseRegionFlags.IN_AREA)))
+            if (!region.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
             {
                 return;
             }
@@ -858,7 +858,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
     internal static void MSYS_DisableRegion(MOUSE_REGION region)
     {
-        region.uiFlags &= (~MouseRegionFlags.MSYS_REGION_ENABLED);
+        region.uiFlags &= ~MouseRegionFlags.MSYS_REGION_ENABLED;
     }
 
     internal static void MSYS_EnableRegion(MOUSE_REGION region)

@@ -34,14 +34,14 @@ public class NPC
         if (!EnsureQuoteFileLoaded(ubTriggerNPC))
         {
             // error!!!
-            return (false);
+            return false;
         }
 
         pNPCQuoteInfoArray = gpNPCQuoteInfoArray[ubTriggerNPC];
 
         for (ubLoop = 0; ubLoop < NUM_NPC_QUOTE_RECORDS; ubLoop++)
         {
-            pQuotePtr = (pNPCQuoteInfoArray[ubLoop]);
+            pQuotePtr = pNPCQuoteInfoArray[ubLoop];
 //            if (NPCConsiderQuote(ubTriggerNPC, 0, APPROACH_DECLARATION_OF_HOSTILITY, ubLoop, 0, pNPCQuoteInfoArray))
 //            {
 //                // trigger this quote!
@@ -52,7 +52,7 @@ public class NPC
 //                return (true);
 //            }
         }
-        return (false);
+        return false;
 
     }
 
@@ -71,7 +71,7 @@ public class NPC
         }
         else
         {
-            ubQuoteRecord = (pNPC.ubQuoteRecord - 1);
+            ubQuoteRecord = pNPC.ubQuoteRecord - 1;
         }
 
         // Clear values!
@@ -79,9 +79,9 @@ public class NPC
         if (pNPC.bTeam == gbPlayerNum)
         {
             // the "under ai control" flag was set temporarily; better turn it off now
-            pNPC.uiStatusFlags &= (~SOLDIER.PCUNDERAICONTROL);
+            pNPC.uiStatusFlags &= ~SOLDIER.PCUNDERAICONTROL;
             // make damn sure the AI_HANDLE_EVERY_FRAME flag is turned off
-            pNPC.fAIFlags &= (AIDEFINES.AI_HANDLE_EVERY_FRAME);
+            pNPC.fAIFlags &= AIDEFINES.AI_HANDLE_EVERY_FRAME;
         }
 
         ubNPC = pNPC.ubProfile;
@@ -92,7 +92,7 @@ public class NPC
         }
 
         pNPCQuoteInfoArray = gpNPCQuoteInfoArray[ubNPC];
-        pQuotePtr = (pNPCQuoteInfoArray[(int)ubQuoteRecord]);
+        pQuotePtr = pNPCQuoteInfoArray[(int)ubQuoteRecord];
         // either we are supposed to consider a new quote record
         // (indicated by a negative gridno in the has-item field)
         // or an action to perform once we reached this gridno
@@ -108,8 +108,8 @@ public class NPC
 
         for (ubLoop = 0; ubLoop < NUM_NPC_QUOTE_RECORDS; ubLoop++)
         {
-            pQuotePtr = (pNPCQuoteInfoArray[ubLoop]);
-            if (pNPC.sGridNo == -(pQuotePtr.sRequiredGridno))
+            pQuotePtr = pNPCQuoteInfoArray[ubLoop];
+            if (pNPC.sGridNo == -pQuotePtr.sRequiredGridno)
             {
 //                if (NPCConsiderQuote(ubNPC, 0, TRIGGER_NPC, ubLoop, 0, pNPCQuoteInfoArray))
 //                {
@@ -152,7 +152,7 @@ public class NPC
             // error!!!
             return;
         }
-        pQuotePtr = (gpNPCQuoteInfoArray[ubTriggerNPC][ubTriggerNPCRec]);
+        pQuotePtr = gpNPCQuoteInfoArray[ubTriggerNPC][ubTriggerNPCRec];
 //        if (pQuotePtr.ubQuoteNum == IRRELEVANT)
 //        {
 //            fDisplayDialogue = false;
@@ -175,7 +175,7 @@ public class NPC
 
         if (ubNPC == NPCID.ROBOT)
         {
-            return (false);
+            return false;
         }
 
         if (gpNPCQuoteInfoArray[ubNPC] == null)
@@ -215,11 +215,11 @@ public class NPC
             if (gpNPCQuoteInfoArray[ubNPC] == null)
             {
                 // error message at this point!
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
     public static NPCQuoteInfo LoadQuoteFile(NPCID ubNPC)
@@ -279,7 +279,7 @@ public class NPC
 //
 //        FileClose(hFile);
 
-        return (pFileData);
+        return pFileData;
     }
 
     internal static void TriggerNPCRecordImmediately(NPCID ubNPCNumber, int usTriggerEvent)

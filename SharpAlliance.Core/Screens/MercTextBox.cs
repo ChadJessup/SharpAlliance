@@ -77,7 +77,7 @@ public class MercTextBox
     public static bool SetPrepareMercPopupFlags(MERC_POPUP_PREPARE_FLAGS uiFlags)
     {
         guiFlags |= uiFlags;
-        return (true);
+        return true;
 
     }
 
@@ -115,7 +115,7 @@ public class MercTextBox
 
         if (usWidth >= 640)
         {
-            return (-1);
+            return -1;
         }
 
         if (usWidth <= MERC_TEXT_MIN_WIDTH)
@@ -138,7 +138,7 @@ public class MercTextBox
             if (this.LoadTextMercPopupImages(ubBackgroundIndex, ubBorderIndex) == false)
             {
                 MemFree(pPopUpTextBox);
-                return (-1);
+                return -1;
             }
 
         }
@@ -161,7 +161,7 @@ public class MercTextBox
                 this.RemoveTextMercPopupImages();
                 if (this.LoadTextMercPopupImages(ubBackgroundIndex, ubBorderIndex) == false)
                 {
-                    return (-1);
+                    return -1;
                 }
             }
         }
@@ -172,14 +172,14 @@ public class MercTextBox
 
         usStringPixLength = this.fonts.WFStringPixLength(pString, TEXT_POPUP_FONT);
 
-        if (usStringPixLength < (usWidth - (MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X) * 2))
+        if (usStringPixLength < (usWidth - MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X * 2))
         {
             usWidth = usStringPixLength + MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X * 2;
-            usTextWidth = usWidth - (MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X) * 2 + 1;
+            usTextWidth = usWidth - MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X * 2 + 1;
         }
         else
         {
-            usTextWidth = usWidth - (MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X) * 2 + 1 - usMarginX;
+            usTextWidth = usWidth - MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X * 2 + 1 - usMarginX;
         }
 
         usNumberVerticalPixels = WordWrap.IanWrappedStringHeight(
@@ -202,10 +202,10 @@ public class MercTextBox
         usHeight += usMarginTopY + usMarginBottomY;
 
         // Add width for margins
-        usWidth += (usMarginX * 2);
+        usWidth += usMarginX * 2;
 
         // Add width for iconic...
-        if ((pPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.STOPICON | MERC_POPUP_PREPARE_FLAGS.SKULLICON)))
+        if (pPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.STOPICON | MERC_POPUP_PREPARE_FLAGS.SKULLICON))
         {
             // Make minimun height for box...
             if (usHeight < 45)
@@ -227,7 +227,7 @@ public class MercTextBox
                 MemFree(pPopUpTextBox);
             }
 
-            return (-1);
+            return -1;
         }
         // Create a background video surface to blt the face onto
         vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_DEFAULT | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
@@ -336,7 +336,7 @@ public class MercTextBox
         this.fonts.SetFontDestBuffer(pPopUpTextBox.uiSourceBufferIndex, 0, 0, usWidth, usHeight, false);
 
         //Display the text
-        sDispTextXPos = ((MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X + usMarginX));
+        sDispTextXPos = MERC_TEXT_POPUP_WINDOW_TEXT_OFFSET_X + usMarginX;
 
         if (pPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.STOPICON | MERC_POPUP_PREPARE_FLAGS.SKULLICON))
         {
@@ -360,14 +360,14 @@ public class MercTextBox
         if (iBoxId == -1)
         {
             // now return attemp to add to pop up box list, if successful will return index
-            return (this.AddPopUpBoxToList(pPopUpTextBox));
+            return this.AddPopUpBoxToList(pPopUpTextBox);
         }
         else
         {
             // set as current box
             this.SetCurrentPopUpBox(iBoxId);
 
-            return (iBoxId);
+            return iBoxId;
         }
     }
 
@@ -443,12 +443,12 @@ public class MercTextBox
                 this.SetCurrentPopUpBox(iCounter);
 
                 // return index value
-                return (iCounter);
+                return iCounter;
             }
         }
 
         // return failure
-        return (-1);
+        return -1;
     }
 
     // Tactical Popup
@@ -489,17 +489,17 @@ public class MercTextBox
         if (uiId == (int)-1)
         {
             //Messages.ScreenMsg( FONT_MCOLOR_WHITE, MSG.BETAVERSION, "Error: Trying to set Current Popup Box using -1 as an ID" );
-            return (false);
+            return false;
         }
 
         // see if box inited
         if (this.gpPopUpBoxList[uiId].IsInitialized)
         {
             this.gPopUpTextBox = this.gpPopUpBoxList[uiId];
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public bool OverrideMercPopupBox(MercPopUpBox pMercBox)
@@ -510,14 +510,14 @@ public class MercTextBox
 
         this.gPopUpTextBox = pMercBox;
 
-        return (true);
+        return true;
     }
 
     public bool ResetOverrideMercPopupBox()
     {
         this.gPopUpTextBox = this.gOldPopUpTextBox;
 
-        return (true);
+        return true;
     }
 
     public bool RenderMercPopUpBoxFromIndex(int iBoxId, int sDestX, int sDestY, SurfaceType uiBuffer)
@@ -526,11 +526,11 @@ public class MercTextBox
         // set the current box
         if (this.SetCurrentPopUpBox(iBoxId) == false)
         {
-            return (false);
+            return false;
         }
 
         // now attempt to render the box
-        return (this.RenderMercPopupBox(sDestX, sDestY, uiBuffer));
+        return this.RenderMercPopupBox(sDestX, sDestY, uiBuffer);
     }
 
     public bool RenderMercPopupBox(int sDestX, int sDestY, SurfaceType uiBuffer)

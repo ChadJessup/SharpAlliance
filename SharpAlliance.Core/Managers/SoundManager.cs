@@ -97,11 +97,11 @@ public class SoundManager : ISoundManager
             if ((uiSound = SoundGetIndexByID(uiSoundID)) != NO_SAMPLE)
             {
                 pSoundList[uiSound].uiFadeVolume = uiVolume;
-                return (SoundSetVolumeIndex(uiSound, uiVolume));
+                return SoundSetVolumeIndex(uiSound, uiVolume);
             }
         }
 
-        return (false);
+        return false;
     }
 
     //*****************************************************************************************
@@ -133,10 +133,10 @@ public class SoundManager : ISoundManager
             //if(pSoundList[uiChannel].hM3D!=NULL)
             //	AIL_set_3D_sample_volume(pSoundList[uiChannel].hM3D, uiVolCap);
 
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -156,11 +156,11 @@ public class SoundManager : ISoundManager
         {
             if (pSoundList[uiCount].uiSoundID == uiSoundID)
             {
-                return (uiCount);
+                return uiCount;
             }
         }
 
-        return (NO_SAMPLE);
+        return NO_SAMPLE;
     }
 
 

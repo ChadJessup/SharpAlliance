@@ -5,8 +5,8 @@ namespace SharpAlliance.Core;
 
 public partial class Globals
 {
-    public static bool CAN_CALL(SOLDIERTYPE s) => (s.ubBodyType != SoldierBodyTypes.BLOODCAT && s.ubBodyType != SoldierBodyTypes.LARVAE_MONSTER && s.ubBodyType != SoldierBodyTypes.INFANT_MONSTER);
-    public static bool CAN_LISTEN_TO_CALL(SOLDIERTYPE s) => (s.ubBodyType != SoldierBodyTypes.BLOODCAT && s.ubBodyType != SoldierBodyTypes.LARVAE_MONSTER);
+    public static bool CAN_CALL(SOLDIERTYPE s) => s.ubBodyType != SoldierBodyTypes.BLOODCAT && s.ubBodyType != SoldierBodyTypes.LARVAE_MONSTER && s.ubBodyType != SoldierBodyTypes.INFANT_MONSTER;
+    public static bool CAN_LISTEN_TO_CALL(SOLDIERTYPE s) => s.ubBodyType != SoldierBodyTypes.BLOODCAT && s.ubBodyType != SoldierBodyTypes.LARVAE_MONSTER;
 
     public const int FRENZY_THRESHOLD = 8;
     public const int MAX_EAT_DIST = 5;

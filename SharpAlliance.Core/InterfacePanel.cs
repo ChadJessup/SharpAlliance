@@ -59,12 +59,12 @@ public class InterfacePanel
     {
         if (ubPanelSlot >= NUM_TEAM_SLOTS)
         {
-            return (false);
+            return false;
         }
 
         if (gTeamPanel[ubPanelSlot].fOccupied)
         {
-            if (!(MercPtrs[gTeamPanel[ubPanelSlot].ubID].uiStatusFlags.HasFlag(SOLDIER.DEAD)))
+            if (!MercPtrs[gTeamPanel[ubPanelSlot].ubID].uiStatusFlags.HasFlag(SOLDIER.DEAD))
             {
                 // Set Id to close
                 MercPtrs[gTeamPanel[ubPanelSlot].ubID].fUICloseMerc = true;
@@ -82,11 +82,11 @@ public class InterfacePanel
             // DIRTY INTERFACE
             fInterfacePanelDirty = DIRTYLEVEL2;
 
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 

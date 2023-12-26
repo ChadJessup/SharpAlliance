@@ -358,10 +358,10 @@ public class RenderWorld : IDisposable
 //                SetPositionSndsVolumeAndPanning();
             }
 
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static void SetRenderFlags(RenderingFlags full)

@@ -20,18 +20,18 @@ public partial class Globals
 
     public const int MAX_TOSS_SEARCH_DIST = 1;// must throw within this of opponent;
     public const int NPC_TOSS_SAFETY_MARGIN = 4;       // all friends must be this far away;
-    public static bool ACTING_ON_SCHEDULE(SOLDIERTYPE p) => (p.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE));
+    public static bool ACTING_ON_SCHEDULE(SOLDIERTYPE p) => p.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE);
     public const int AI_AP_CLIMBROOF = 15;    // the AI should try to have this many APs before climbing a roof, if possible;
     public const bool TEMPORARILY = false;
     public const bool FOREVER = true;
     public const int DONTADDTURNCOST = 0;
     public const int ADDTURNCOST = 1;
-    public static bool PTR_CIV_OR_MILITIA(SOLDIERTYPE pSoldier) => (PTR_CIVILIAN(pSoldier) || (pSoldier.bTeam == MILITIA_TEAM));
-    public static int REALTIME_AI_DELAY = (10000 + Globals.Random.Next(1000));
+    public static bool PTR_CIV_OR_MILITIA(SOLDIERTYPE pSoldier) => PTR_CIVILIAN(pSoldier) || (pSoldier.bTeam == MILITIA_TEAM);
+    public static int REALTIME_AI_DELAY = 10000 + Globals.Random.Next(1000);
     public static TacticalStatusType gTacticalStatus = new TacticalStatusType();
 
-    public static int REALTIME_CIV_AI_DELAY { get; } = (1000 * (gTacticalStatus.Team[MILITIA_TEAM].bMenInSector + gTacticalStatus.Team[CIV_TEAM].bMenInSector) + 5000 + 2000 * Globals.Random.Next(3));
-    public static int REALTIME_CREATURE_AI_DELAY = (10000 + 1000 * Globals.Random.Next(3));
+    public static int REALTIME_CIV_AI_DELAY { get; } = 1000 * (gTacticalStatus.Team[MILITIA_TEAM].bMenInSector + gTacticalStatus.Team[CIV_TEAM].bMenInSector) + 5000 + 2000 * Globals.Random.Next(3);
+    public static int REALTIME_CREATURE_AI_DELAY = 10000 + 1000 * Globals.Random.Next(3);
     public const int ENEMYDIFFICULTY = 8;   // this is being used in this module;
     public const int MAXGAMEOPTIONS = 14;
     public const int PERCENT_TO_IGNORE_THREAT = 50;      // any less, use threat value;

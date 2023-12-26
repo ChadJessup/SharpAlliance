@@ -370,7 +370,7 @@ public class MapScreenInterfaceMap
 
         //RestoreClipRegionToFullScreen( );
 
-        return (true);
+        return true;
     }
 
     public static void HandleMAPUILoseCursorFromOtherScreen()

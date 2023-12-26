@@ -96,18 +96,18 @@ public class AIUtils
         // can't shoot yourself
         if (target == pSoldier.sGridNo)
         {
-            return (NOSHOOT.MYSELF);
+            return NOSHOOT.MYSELF;
         }
 
         if (WorldManager.WaterTooDeepForAttacks(pSoldier.sGridNo))
         {
-            return (NOSHOOT.WATER);
+            return NOSHOOT.WATER;
         }
 
         // make sure a weapon is in hand (FEB.8 ADDITION: tossable items are also OK)
         if (!ItemSubSystem.WeaponInHand(pSoldier))
         {
-            return (NOSHOOT.NOWEAPON);
+            return NOSHOOT.NOWEAPON;
         }
 
         // JUST PUT THIS IN ON JULY 13 TO TRY AND FIX OUT-OF-AMMO SITUATIONS
@@ -120,12 +120,12 @@ public class AIUtils
                 if (ItemSubSystem.FindLaunchable(pSoldier, Items.TANK_CANNON) == NO_SLOT)
                 //if ( !ItemHasAttachments( &(pSoldier.inv[HANDPOS]) ) )
                 {
-                    return (NOSHOOT.NOLOAD);
+                    return NOSHOOT.NOLOAD;
                 }
             }
             else if (pSoldier.inv[InventorySlot.HANDPOS].ubGunShotsLeft == 0)
             {
-                return (NOSHOOT.NOAMMO);
+                return NOSHOOT.NOAMMO;
             }
         }
         else if (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.LAUNCHER)
@@ -133,11 +133,11 @@ public class AIUtils
             if (ItemSubSystem.FindLaunchable(pSoldier, pSoldier.inv[InventorySlot.HANDPOS].usItem) == NO_SLOT)
             //if ( !ItemHasAttachments( &(pSoldier.inv[HANDPOS]) ) )
             {
-                return (NOSHOOT.NOLOAD);
+                return NOSHOOT.NOLOAD;
             }
         }
 
-        return (NOSHOOT)(1);
+        return (NOSHOOT)1;
     }
 
     public static bool ConsiderProne(SOLDIERTYPE pSoldier)
@@ -146,18 +146,18 @@ public class AIUtils
 
         if (pSoldier.bAIMorale >= MORALE.NORMAL)
         {
-            return (false);
+            return false;
         }
         // We don't want to go prone if there is a nearby enemy
         ClosestKnownOpponent(pSoldier, out int sOpponentGridNo, out int bOpponentLevel);
         iRange = IsometricUtils.GetRangeFromGridNoDiff(pSoldier.sGridNo, sOpponentGridNo);
         if (iRange > 10)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -171,11 +171,11 @@ public class AIUtils
             {
                 if ((pSoldier.bActionPoints - ubAttackAPCost >= AP.CROUCH + AP.PRONE) && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_PRONE) && ConsiderProne(pSoldier))
                 {
-                    return (AnimationHeights.ANIM_PRONE);
+                    return AnimationHeights.ANIM_PRONE;
                 }
                 else if (SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_CROUCH))
                 {
-                    return (AnimationHeights.ANIM_CROUCH);
+                    return AnimationHeights.ANIM_CROUCH;
                 }
             }
         }
@@ -183,10 +183,10 @@ public class AIUtils
         {
             if ((pSoldier.bActionPoints - ubAttackAPCost >= AP.PRONE) && SoldierControl.IsValidStance(pSoldier, AnimationHeights.ANIM_PRONE) && ConsiderProne(pSoldier))
             {
-                return (AnimationHeights.ANIM_PRONE);
+                return AnimationHeights.ANIM_PRONE;
             }
         }
-        return (0);
+        return 0;
     }
 
     public static AnimationHeights ShootingStanceChange(SOLDIERTYPE pSoldier, ATTACKTYPE pAttack, WorldDirections bDesiredDirection)
@@ -211,7 +211,7 @@ public class AIUtils
         bAPsAfterAttack = pSoldier.bActionPoints - pAttack.ubAPCost - Points.GetAPsToReadyWeapon(pSoldier, pSoldier.usAnimState);
         if (bAPsAfterAttack < AP.CROUCH)
         {
-            return (0);
+            return 0;
         }
         // Unfortunately, to get this to work, we have to fake the AI guy's
         // animation state so we get the right height values
@@ -324,11 +324,11 @@ public class AIUtils
         if (bBestStanceDiff == 0 || ((uiBestChanceOfDamage - uiCurrChanceOfDamage) / bBestStanceDiff) < uiMinimumStanceBonusPerChange)
         {
             // better off not changing our stance!
-            return (0);
+            return 0;
         }
         else
         {
-            return (gAnimControl[usBestAnimState].ubEndHeight);
+            return gAnimControl[usBestAnimState].ubEndHeight;
         }
     }
 
@@ -337,40 +337,40 @@ public class AIUtils
     {
         if (pSoldier.fUIMovementFast)
         {
-            return (AnimationStates.RUNNING);
+            return AnimationStates.RUNNING;
         }
         else if (CREATURE_OR_BLOODCAT(pSoldier))
         {
             if (pSoldier.bAlertStatus == STATUS.GREEN)
             {
-                return (AnimationStates.WALKING);
+                return AnimationStates.WALKING;
             }
             else
             {
-                return (AnimationStates.RUNNING);
+                return AnimationStates.RUNNING;
             }
         }
         else if (pSoldier.ubBodyType == SoldierBodyTypes.COW || pSoldier.ubBodyType == SoldierBodyTypes.CROW)
         {
-            return (AnimationStates.WALKING);
+            return AnimationStates.WALKING;
         }
         else
         {
-            if ((pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS)) && (MovementMode[bAction][(int)Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]] == AnimationStates.RUNNING))
+            if (pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CAUTIOUS) && (MovementMode[bAction][(int)Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]] == AnimationStates.RUNNING))
             {
-                return (AnimationStates.WALKING);
+                return AnimationStates.WALKING;
             }
             else if (bAction == AI_ACTION.SEEK_NOISE && pSoldier.bTeam == CIV_TEAM && !IS_MERC_BODY_TYPE(pSoldier))
             {
-                return (AnimationStates.WALKING);
+                return AnimationStates.WALKING;
             }
             else if ((pSoldier.ubBodyType == SoldierBodyTypes.HATKIDCIV || pSoldier.ubBodyType == SoldierBodyTypes.KIDCIV) && (pSoldier.bAlertStatus == STATUS.GREEN) && Globals.Random.Next(10) == 0)
             {
-                return (AnimationStates.KID_SKIPPING);
+                return AnimationStates.KID_SKIPPING;
             }
             else
             {
-                return (MovementMode[bAction][(int)Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]]);
+                return MovementMode[bAction][(int)Urgency[pSoldier.bAlertStatus][pSoldier.bAIMorale]];
             }
         }
     }
@@ -566,11 +566,11 @@ public class AIUtils
         // check whether or not we can afford to do this action
         if (bMinPointsNeeded > pSoldier.bActionPoints)
         {
-            return (false);
+            return false;
         }
         else
         {
-            return (true);
+            return true;
         }
     }
 
@@ -609,7 +609,7 @@ public class AIUtils
 #if BETAVERSION
         NameMessage(pSoldier, "has illegal origin, but his roaming range is restricted!", 1000);
 #endif
-            return (0);
+            return 0;
         }
 
         ubFriendCount = 0;
@@ -670,7 +670,7 @@ public class AIUtils
 
                 // examine all 8 spots around 'ubFriendID'
                 // keep looking while directions remain and a satisfactory one not found
-                while ((ubDirsLeft--) > 0 && fFound == 0)
+                while (ubDirsLeft-- > 0 && fFound == 0)
                 {
                     // randomly select a direction which hasn't been 'checked' yet
                     do
@@ -682,7 +682,7 @@ public class AIUtils
                     fDirChecked[usDirection] = true;
 
                     // determine the gridno 1 tile away from current friend in this direction
-                    usDest = IsometricUtils.NewGridNo(Menptr[ubFriendID].sGridNo, IsometricUtils.DirectionInc((usDirection + 1)));
+                    usDest = IsometricUtils.NewGridNo(Menptr[ubFriendID].sGridNo, IsometricUtils.DirectionInc(usDirection + 1));
 
                     // if that's out of bounds, ignore it & check next direction
                     if (usDest == Menptr[ubFriendID].sGridNo)
@@ -716,7 +716,7 @@ public class AIUtils
             }
         }
 
-        return (fFound);
+        return fFound;
     }
 
 
@@ -780,7 +780,7 @@ public class AIUtils
         if (pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER)
         {
             // only crawl 1 tile, within our roaming range
-            while ((ubTriesLeft--) > 0 && !fFound)
+            while (ubTriesLeft-- > 0 && !fFound)
             {
                 sXOffset = (int)Globals.Random.Next(3) - 1; // generates -1 to +1
                 sYOffset = (int)Globals.Random.Next(3) - 1;
@@ -818,7 +818,7 @@ public class AIUtils
         else
         {
             // keep rolling random .sDestinations until one's satisfactory or retries used
-            while ((ubTriesLeft--) > 0 && !fFound)
+            while (ubTriesLeft-- > 0 && !fFound)
             {
                 if (fLimited)
                 {
@@ -859,7 +859,7 @@ public class AIUtils
             }
         }
 
-        return (sRandDest); // defaults to NOWHERE
+        return sRandDest; // defaults to NOWHERE
     }
 
     int ClosestReachableDisturbance(SOLDIERTYPE pSoldier, int ubUnconsciousOK, out bool pfChangeLevel)
@@ -930,7 +930,7 @@ public class AIUtils
             {
                 // don't allow this to return any valid values, this guy remains a
                 // serious threat and the last thing we want to do is approach him!
-                return (NOWHERE);
+                return NOWHERE;
             }
 
             // if personal knowledge is more up to date or at least equal
@@ -1073,7 +1073,7 @@ public class AIUtils
 #endif
 
         pfChangeLevel = fClosestClimbingNecessary;
-        return (sClosestDisturbance);
+        return sClosestDisturbance;
     }
 
 
@@ -1092,11 +1092,11 @@ public class AIUtils
 
 
         // NOTE: THIS FUNCTION ALLOWS RETURN OF UNCONSCIOUS AND UNREACHABLE OPPONENTS
-        psLastLoc = (gsLastKnownOppLoc[pSoldier.ubID][0]);
+        psLastLoc = gsLastKnownOppLoc[pSoldier.ubID][0];
 
         // hang pointers at start of this guy's personal and public opponent opplists
         pbPersOL = pSoldier.bOppList[0];
-        pbPublOL = (gbPublicOpplist[pSoldier.bTeam][0]);
+        pbPublOL = gbPublicOpplist[pSoldier.bTeam][0];
 
         // look through this man's personal & public opplists for opponents known
         for (uiLoop = 0; uiLoop < guiNumMercSlots; uiLoop++)
@@ -1116,7 +1116,7 @@ public class AIUtils
             }
 
             // Special stuff for Carmen the bounty hunter
-            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpp.ubProfile != (NPCID.SLAY))
+            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpp.ubProfile != NPCID.SLAY)
             {
                 continue;  // next opponent
             }
@@ -1188,7 +1188,7 @@ public class AIUtils
             pbLevel = bClosestLevel;
         }
 
-        return (sClosestOpponent);
+        return sClosestOpponent;
     }
 
     int ClosestSeenOpponent(SOLDIERTYPE pSoldier, out int psGridNo, out int pbLevel)
@@ -1283,7 +1283,7 @@ public class AIUtils
         }
 
 
-        return (sClosestOpponent);
+        return sClosestOpponent;
     }
 
 
@@ -1345,7 +1345,7 @@ public class AIUtils
             psDistance = sMinDist;
         }
 
-        return (sGridNo);
+        return sGridNo;
     }
 
     public static int FindClosestClimbPointAvailableToAI(SOLDIERTYPE pSoldier, int sStartGridNo, int sDesiredGridNo, bool fClimbUp)
@@ -1372,11 +1372,11 @@ public class AIUtils
 
         if (IsometricUtils.PythSpacesAway(sRoamingOrigin, sGridNo) + 1 > sRoamingRange)
         {
-            return (NOWHERE);
+            return NOWHERE;
         }
         else
         {
-            return (sGridNo);
+            return sGridNo;
         }
     }
 
@@ -1386,16 +1386,16 @@ public class AIUtils
         {
             if ((pSoldier.bLevel == 0) || (gubBuildingInfo[pSoldier.sGridNo] == gubBuildingInfo[sDestGridNo]))
             {
-                return (false);
+                return false;
             }
             else // different buildings!
             {
-                return (true);
+                return true;
             }
         }
         else
         {
-            return (true);
+            return true;
         }
     }
 
@@ -1407,14 +1407,14 @@ public class AIUtils
             {
                 // on ground or same building... normal!
                 pfClimbingNecessary = false;
-                return (NOWHERE);
+                return NOWHERE;
             }
             else
             {
                 // different buildings!
                 // yes, pass in same gridno twice... want closest climb-down spot for building we are on!
                 pfClimbingNecessary = true;
-                return (FindClosestClimbPointAvailableToAI(pSoldier, pSoldier.sGridNo, pSoldier.sGridNo, false));
+                return FindClosestClimbPointAvailableToAI(pSoldier, pSoldier.sGridNo, pSoldier.sGridNo, false);
             }
         }
         else
@@ -1424,12 +1424,12 @@ public class AIUtils
             if (pSoldier.bLevel == 0)
             {
                 // got to go UP onto building
-                return (FindClosestClimbPointAvailableToAI(pSoldier, pSoldier.sGridNo, sDestGridNo, true));
+                return FindClosestClimbPointAvailableToAI(pSoldier, pSoldier.sGridNo, sDestGridNo, true);
             }
             else
             {
                 // got to go DOWN off building
-                return (FindClosestClimbPointAvailableToAI(pSoldier, pSoldier.sGridNo, pSoldier.sGridNo, false));
+                return FindClosestClimbPointAvailableToAI(pSoldier, pSoldier.sGridNo, pSoldier.sGridNo, false);
             }
         }
     }
@@ -1536,7 +1536,7 @@ public class AIUtils
             }
         }
 
-        return (sPathCost);
+        return sPathCost;
     }
 
     bool GuySawEnemyThisTurnOrBefore(SOLDIERTYPE pSoldier)
@@ -1554,13 +1554,13 @@ public class AIUtils
                     // if this guy SAW an enemy recently...
                     if (pSoldier.bOppList[ubIDLoop] >= SEEN_CURRENTLY)
                     {
-                        return (true);
+                        return true;
                     }
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     int ClosestReachableFriendInTrouble(SOLDIERTYPE pSoldier, out bool pfClimbingNecessary)
@@ -1574,7 +1574,7 @@ public class AIUtils
         // civilians don't really have any "friends", so they don't bother with this
         if (PTR_CIVILIAN(pSoldier))
         {
-            return (sClosestFriend);
+            return sClosestFriend;
         }
 
         // consider every friend of this soldier (locations assumed to be known)
@@ -1649,7 +1649,7 @@ public class AIUtils
 #endif
 
         pfClimbingNecessary = fClosestClimbingNecessary;
-        return (sClosestFriend);
+        return sClosestFriend;
     }
 
     public static int DistanceToClosestFriend(SOLDIERTYPE pSoldier)
@@ -1701,7 +1701,7 @@ public class AIUtils
                 else
                 {
                     // well there's someone who could be near
-                    return (1);
+                    return 1;
                 }
             }
 
@@ -1713,31 +1713,31 @@ public class AIUtils
             }
         }
 
-        return (sMinDist);
+        return sMinDist;
     }
 
     public static bool InWaterGasOrSmoke(SOLDIERTYPE pSoldier, int sGridNo)
     {
         if (WorldManager.WaterTooDeepForAttacks(sGridNo))
         {
-            return (true);
+            return true;
         }
 
         // smoke
         if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.SMOKE))
         {
-            return (true);
+            return true;
         }
 
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
-            && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK
-            && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
+        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS)
+            && pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK
+            && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static bool InGasOrSmoke(SOLDIERTYPE pSoldier, int sGridNo)
@@ -1745,17 +1745,17 @@ public class AIUtils
         // smoke
         if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.SMOKE))
         {
-            return (true);
+            return true;
         }
 
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
-            && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
+        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS)
+            && pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -1763,30 +1763,30 @@ public class AIUtils
     {
         if (WorldManager.WaterTooDeepForAttacks(sGridNo))
         {
-            return (true);
+            return true;
         }
 
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
-            && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
+        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS)
+            && pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static bool InGas(SOLDIERTYPE pSoldier, int sGridNo)
     {
         // tear/mustard gas
-        if ((gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS))
-            && (pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK
-            && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK))
+        if (gpWorldLevelData[sGridNo].ubExtFlags[pSoldier.bLevel].HasFlag(MAPELEMENTFLAGS_EXT.TEARGAS | MAPELEMENTFLAGS_EXT.MUSTARDGAS)
+            && pSoldier.inv[InventorySlot.HEAD1POS].usItem != Items.GASMASK
+            && pSoldier.inv[InventorySlot.HEAD2POS].usItem != Items.GASMASK)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static bool WearGasMaskIfAvailable(SOLDIERTYPE pSoldier)
@@ -1796,11 +1796,11 @@ public class AIUtils
         bSlot = ItemSubSystem.FindObj(pSoldier, Items.GASMASK);
         if (bSlot == NO_SLOT)
         {
-            return (false);
+            return false;
         }
         if (bSlot == InventorySlot.HEAD1POS || bSlot == InventorySlot.HEAD2POS)
         {
-            return (false);
+            return false;
         }
         if (pSoldier.inv[InventorySlot.HEAD1POS].usItem == NOTHING)
         {
@@ -1817,7 +1817,7 @@ public class AIUtils
         }
 
         RearrangePocket(pSoldier, bSlot, bNewSlot, true);
-        return (true);
+        return true;
     }
 
     bool InLightAtNight(int sGridNo, int bLevel)
@@ -1827,7 +1827,7 @@ public class AIUtils
         // do not consider us to be "in light" if we're in an underground sector
         if (gbWorldSectorZ > 0)
         {
-            return (false);
+            return false;
         }
 
 //        ubBackgroundLightLevel = GetTimeOfDayAmbientLightLevel();
@@ -1841,7 +1841,7 @@ public class AIUtils
         // could've been placed here, ignore the light
         if (RenderFun.InARoom(sGridNo, out var _))
         {
-            return (false);
+            return false;
         }
 
         // NB light levels are backwards, so a lower light level means the 
@@ -1852,7 +1852,7 @@ public class AIUtils
 //            return (true);
 //        }
 
-        return (false);
+        return false;
     }
 
     MORALE CalcMorale(SOLDIERTYPE pSoldier)
@@ -1878,7 +1878,7 @@ public class AIUtils
 
         // hang pointers to my personal opplist, my team's public opplist, and my
         // list of previously seen opponents
-        pSeenOpp = (gbSeenOpponents[pSoldier.ubID][0]);
+        pSeenOpp = gbSeenOpponents[pSoldier.ubID][0];
 
         // loop through every one of my possible opponents
         for (uiLoop = 0; uiLoop < guiNumMercSlots; uiLoop++)
@@ -1911,7 +1911,7 @@ public class AIUtils
             if ((pbPersOL == NOT_HEARD_OR_SEEN) && (pbPublOL == NOT_HEARD_OR_SEEN))
             {
                 // if I have never seen him before anywhere in this sector, either
-                if ((pSeenOpp == 0))
+                if (pSeenOpp == 0)
                 {
                     continue;        // next merc
                 }
@@ -1934,7 +1934,7 @@ public class AIUtils
 
             iPercent = AIMain.ThreatPercent[bMostRecentOpplistValue - OLDEST_HEARD_VALUE];
 
-            sOppThreatValue = (iPercent * this.CalcManThreatValue(pOpponent, pSoldier.sGridNo, false, pSoldier)) / 100;
+            sOppThreatValue = iPercent * this.CalcManThreatValue(pOpponent, pSoldier.sGridNo, false, pSoldier) / 100;
 
             //sprintf(tempstr,"Known opponent %s, opplist status %d, percent %d, threat = %d",
             //           ExtMen[pOpponent.ubID].name,ubMostRecentOpplistValue,ubPercent,sOppThreatValue);
@@ -1994,7 +1994,7 @@ public class AIUtils
                     }
                 }
 
-                sFrndThreatValue = (iPercent * this.CalcManThreatValue(pFriend, pOpponent.sGridNo, false, pSoldier)) / 100;
+                sFrndThreatValue = iPercent * this.CalcManThreatValue(pFriend, pOpponent.sGridNo, false, pSoldier) / 100;
 
                 //sprintf(tempstr,"Known by friend %s, opplist status %d, percent %d, threat = %d",
                 //         ExtMen[pFriend.ubID].name,pFriend.bOppList[pOpponent.ubID],ubPercent,sFrndThreatValue);
@@ -2022,7 +2022,7 @@ public class AIUtils
             iOurTotalThreat /= iTheirTotalThreat;
 
             // calculate the morale (100 is even, < 100 is us losing, > 100 is good)
-            sMorale = (int)((100 * iOurTotalThreat) / iTheirTotalThreat);
+            sMorale = (int)(100 * iOurTotalThreat / iTheirTotalThreat);
         }
 
 
@@ -2160,7 +2160,7 @@ public class AIUtils
            morale, bMoraleCategory, sOutTotalThreat, sTheirTotalThreat));
 #endif
 
-        return (bMoraleCategory);
+        return bMoraleCategory;
     }
 
     int CalcManThreatValue(SOLDIERTYPE pEnemy, int sMyGrid, bool ubReduceForCover, SOLDIERTYPE pMe)
@@ -2173,14 +2173,14 @@ public class AIUtils
         {
             // he's no threat at all, return a negative number
             iThreatValue = -999;
-            return (iThreatValue);
+            return iThreatValue;
         }
 
         // in boxing mode, let only a boxer be considered a threat.
-        if ((gTacticalStatus.bBoxingState == BoxingStates.BOXING) && !(pEnemy.uiStatusFlags.HasFlag(SOLDIER.BOXER)))
+        if ((gTacticalStatus.bBoxingState == BoxingStates.BOXING) && !pEnemy.uiStatusFlags.HasFlag(SOLDIER.BOXER))
         {
             iThreatValue = -999;
-            return (iThreatValue);
+            return iThreatValue;
         }
 
         if (fForCreature)
@@ -2190,7 +2190,7 @@ public class AIUtils
             // bleeding (more attactive!) (1-100)
             iThreatValue += (int)pEnemy.bBleeding;
             // decrease according to distance
-            iThreatValue = (iThreatValue * 10) / (10 + IsometricUtils.PythSpacesAway(sMyGrid, pEnemy.sGridNo));
+            iThreatValue = iThreatValue * 10 / (10 + IsometricUtils.PythSpacesAway(sMyGrid, pEnemy.sGridNo));
 
         }
         else
@@ -2202,7 +2202,7 @@ public class AIUtils
 //            iThreatValue += CalcActionPoints(pEnemy);
 
             // ADD 1/2 of man's current action points (4-17)
-            iThreatValue += (pEnemy.bActionPoints / 2);
+            iThreatValue += pEnemy.bActionPoints / 2;
 
             // ADD 1/10 of man's current health (0-10)
             iThreatValue += (int)(pEnemy.bLife / 10);
@@ -2213,7 +2213,7 @@ public class AIUtils
 //                iThreatValue += ArmourPercent(pEnemy) / 4;
 
                 // ADD 1/5 of man's marksmanship skill (0-20)
-                iThreatValue += (pEnemy.bMarksmanship / 5);
+                iThreatValue += pEnemy.bMarksmanship / 5;
 
                 if (Item[pEnemy.inv[InventorySlot.HANDPOS].usItem].usItemClass.HasFlag(IC.WEAPON))
                 {
@@ -2238,14 +2238,14 @@ public class AIUtils
             // ADD 10% if man's already been shooting at me
             if (pEnemy.sLastTarget == sMyGrid)
             {
-                iThreatValue += (iThreatValue / 10);
+                iThreatValue += iThreatValue / 10;
             }
             else
             {
                 // ADD 5% if man's already facing me
                 if (pEnemy.bDirection == SoldierControl.atan8(IsometricUtils.CenterX(pEnemy.sGridNo), IsometricUtils.CenterY(pEnemy.sGridNo), IsometricUtils.CenterX(sMyGrid), IsometricUtils.CenterY(sMyGrid)))
                 {
-                    iThreatValue += (iThreatValue / 20);
+                    iThreatValue += iThreatValue / 20;
                 }
             }
         }
@@ -2298,7 +2298,7 @@ public class AIUtils
     }
 #endif
 
-        return (iThreatValue);
+        return iThreatValue;
     }
 
     public static int RoamingRange(SOLDIERTYPE pSoldier, out int pusFromGridNo)
@@ -2308,7 +2308,7 @@ public class AIUtils
             if (pSoldier.bAlertStatus == STATUS.BLACK)
             {
                 pusFromGridNo = pSoldier.sGridNo; // from current position!
-                return (MAX_ROAMING_RANGE);
+                return MAX_ROAMING_RANGE;
             }
         }
         if (pSoldier.bOrders == Orders.POINTPATROL || pSoldier.bOrders == Orders.RNDPTPATROL)
@@ -2329,42 +2329,42 @@ public class AIUtils
             case Orders.STATIONARY:
                 if (pSoldier.ubProfile != NO_PROFILE || (pSoldier.bAlertStatus < STATUS.BLACK && !(pSoldier.bUnderFire > 0)))
                 {
-                    return (0);
+                    return 0;
                 }
                 else
                 {
-                    return (5);
+                    return 5;
                 }
             case Orders.ONGUARD:
-                return (5);
+                return 5;
             case Orders.CLOSEPATROL:
-                return (15);
+                return 15;
             case Orders.RNDPTPATROL:
             case Orders.POINTPATROL:
-                return (10);     // from nextPatrolGrid, not whereIWas
+                return 10;     // from nextPatrolGrid, not whereIWas
             case Orders.FARPATROL:
                 if (pSoldier.bAlertStatus < STATUS.RED)
                 {
-                    return (25);
+                    return 25;
                 }
                 else
                 {
-                    return (50);
+                    return 50;
                 }
             case Orders.ONCALL:
                 if (pSoldier.bAlertStatus < STATUS.RED)
                 {
-                    return (10);
+                    return 10;
                 }
                 else
                 {
-                    return (30);
+                    return 30;
                 }
             case Orders.SEEKENEMY:
                 pusFromGridNo = pSoldier.sGridNo; // from current position!
-                return (MAX_ROAMING_RANGE);
+                return MAX_ROAMING_RANGE;
             default:
-                return (0);
+                return 0;
         }
     }
 
@@ -2381,12 +2381,12 @@ public class AIUtils
         // position, and moves it there.
         if (bSlot >= InventorySlot.BIGPOCK1POS)
         {
-            return (false);
+            return false;
         }
         if (pSoldier.inv[bSlot].usItem == NOTHING)
         {
             // well that's just fine then!
-            return (true);
+            return true;
         }
 
         if (Item[pSoldier.inv[bSlot].usItem].ubPerPocket == 0)
@@ -2405,11 +2405,11 @@ public class AIUtils
         }
         if (bSlot == NO_SLOT)
         {
-            return (false);
+            return false;
         }
 
         RearrangePocket(pSoldier, InventorySlot.HANDPOS, bSlot, FOREVER);
-        return (true);
+        return true;
     }
 
     QUOTE_ACTION_ID GetTraversalQuoteActionID(WorldDirections bDirection)
@@ -2417,19 +2417,19 @@ public class AIUtils
         switch (bDirection)
         {
             case WorldDirections.NORTHEAST: // east
-                return (QUOTE_ACTION_ID.TRAVERSE_EAST);
+                return QUOTE_ACTION_ID.TRAVERSE_EAST;
 
             case WorldDirections.SOUTHEAST: // south
-                return (QUOTE_ACTION_ID.TRAVERSE_SOUTH);
+                return QUOTE_ACTION_ID.TRAVERSE_SOUTH;
 
             case WorldDirections.SOUTHWEST: // west
-                return (QUOTE_ACTION_ID.TRAVERSE_WEST);
+                return QUOTE_ACTION_ID.TRAVERSE_WEST;
 
             case WorldDirections.NORTHWEST: // north
-                return (QUOTE_ACTION_ID.TRAVERSE_NORTH);
+                return QUOTE_ACTION_ID.TRAVERSE_NORTH;
 
             default:
-                return (0);
+                return 0;
         }
     }
 
@@ -2477,7 +2477,7 @@ public class AIUtils
                 }
                 else // civ...
                 {
-                    bDifficulty = (bDifficultyBase + pSoldier.bLevel / 4) - 1;
+                    bDifficulty = bDifficultyBase + pSoldier.bLevel / 4 - 1;
                 }
                 break;
 
@@ -2531,7 +2531,7 @@ public class AIUtils
             else if (bLoop > 0)
             {
                 // can't find a dir!
-                return (false);
+                return false;
             }
             else
             {
@@ -2540,7 +2540,7 @@ public class AIUtils
             }
         }
 
-        return (true);
+        return true;
     }
 
     int RangeChangeDesire(SOLDIERTYPE pSoldier)
@@ -2575,7 +2575,7 @@ public class AIUtils
             iRangeFactorMultiplier += gTacticalStatus.bConsNumTurnsWeHaventSeenButEnemyDoes;
         }
 
-        return ((int)iRangeFactorMultiplier);
+        return (int)iRangeFactorMultiplier;
     }
 
     bool ArmySeesOpponents()
@@ -2589,10 +2589,10 @@ public class AIUtils
 
             if (pSoldier.bActive && pSoldier.bInSector && pSoldier.bLife >= OKLIFE && pSoldier.bOppCnt > 0)
             {
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 }

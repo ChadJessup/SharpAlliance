@@ -79,14 +79,14 @@ public class SoundControl
 
         if (sGridNo == NOWHERE)
         {
-            return (bInitialVolume);
+            return bInitialVolume;
         }
 
         // OK, get screen position of gridno.....
         IsometricUtils.ConvertGridNoToXY(sGridNo, out int sWorldX, out int sWorldY);
 
         // Get screen coordinates for current position of soldier
-        IsometricUtils.GetWorldXYAbsoluteScreenXY((sWorldX), (sWorldY), out int sScreenX, out int sScreenY);
+        IsometricUtils.GetWorldXYAbsoluteScreenXY(sWorldX, sWorldY, out int sScreenX, out int sScreenY);
 
         // Get middle of where we are now....
         sMiddleX = gsTopLeftWorldX + (gsBottomRightWorldX - gsTopLeftWorldX) / 2;
@@ -106,7 +106,7 @@ public class SoundControl
 
         if (sSoundDist == 0)
         {
-            return (bInitialVolume);
+            return bInitialVolume;
         }
 
         if (sSoundDist > sMaxSoundDist)
@@ -115,7 +115,7 @@ public class SoundControl
         }
 
         // Scale
-        return ((int)(bInitialVolume * ((sMaxSoundDist - sSoundDist) / sMaxSoundDist)));
+        return (int)(bInitialVolume * ((sMaxSoundDist - sSoundDist) / sMaxSoundDist));
     }
 }
 

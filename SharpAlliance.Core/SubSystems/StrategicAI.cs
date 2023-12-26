@@ -89,7 +89,7 @@ public class StrategicAI
         //until it is finally excepted or an absolute max is made.
         //        pubExtraReinforcements = (int)(gubGarrisonReinforcementsDenied[iGarrisonID] / (6 - gGameOptions.ubDifficultyLevel));
         //Make sure the number of extra reinforcements don't bump the force size past the max of MAX_STRATEGIC_TEAM_SIZE.
-        pubExtraReinforcements = (int)Math.Min((int)pubExtraReinforcements, Math.Min((int)(pubExtraReinforcements), MAX_STRATEGIC_TEAM_SIZE - iReinforcementsRequested));
+        pubExtraReinforcements = (int)Math.Min((int)pubExtraReinforcements, Math.Min((int)pubExtraReinforcements, MAX_STRATEGIC_TEAM_SIZE - iReinforcementsRequested));
 
         iReinforcementsRequested = Math.Min(MAX_STRATEGIC_TEAM_SIZE, iReinforcementsRequested);
 
@@ -768,7 +768,7 @@ public class StrategicAI
         {
             //Decide whether or not they will attack them with some of the troops.
             ubEnemies = (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);
-            iReinforcementsApproved = (ubEnemies - gArmyComp[gGarrisonGroup[pSector.ubGarrisonID].ubComposition].bDesiredPopulation / 2);
+            iReinforcementsApproved = ubEnemies - gArmyComp[gGarrisonGroup[pSector.ubGarrisonID].ubComposition].bDesiredPopulation / 2;
             if (iReinforcementsApproved * 2 > pPlayerGroup.ubGroupSize * 3 && iReinforcementsApproved > gubMinEnemyGroupSize)
             { //Then enemy's available outnumber the player by at least 3:2, so attack them.
                 pGroup = StrategicMovement.CreateNewEnemyGroupDepartingFromSector(ubSectorID, 0, (int)iReinforcementsApproved, 0);
@@ -1193,9 +1193,9 @@ public class StrategicAI
             //                return EvaluateGroupSituation(pEnemyGroup);
             //            }
             ubSectorID = SECTORINFO.SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY);
-            if (pEnemyGroup is not null && pEnemyGroup.ubSectorY > (MAP_ROW)1 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID - 16)))
+            if (pEnemyGroup is not null && pEnemyGroup.ubSectorY > (MAP_ROW)1 && EnemyPermittedToAttackSector(pEnemyGroup, ubSectorID - 16))
             {
-                pPlayerGroup = StrategicMovement.FindMovementGroupInSector(pEnemyGroup.ubSectorX, (pEnemyGroup.ubSectorY - 1), true);
+                pPlayerGroup = StrategicMovement.FindMovementGroupInSector(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY - 1, true);
                 //                if (pPlayerGroup is not null && AttemptToNoticeAdjacentGroupSucceeds())
                 //                {
                 //                    return HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
@@ -1210,7 +1210,7 @@ public class StrategicAI
                 //                    return HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (SEC)(ubSectorID - 16));
                 //                }
             }
-            if (pEnemyGroup is not null && pEnemyGroup.ubSectorX > 1 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID - 1)))
+            if (pEnemyGroup is not null && pEnemyGroup.ubSectorX > 1 && EnemyPermittedToAttackSector(pEnemyGroup, ubSectorID - 1))
             {
                 pPlayerGroup = StrategicMovement.FindMovementGroupInSector((int)(pEnemyGroup.ubSectorX - 1), pEnemyGroup.ubSectorY, true);
                 if (pPlayerGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
@@ -1222,14 +1222,14 @@ public class StrategicAI
                 //                {
                 //                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX - 1, pEnemyGroup.ubSectorY), pEnemyGroup);
                 //                }
-                else if (this.AdjacentSectorIsImportantAndUndefended((ubSectorID - 1)) && this.AttemptToNoticeEmptySectorSucceeds())
+                else if (this.AdjacentSectorIsImportantAndUndefended(ubSectorID - 1) && this.AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID - 1));
+                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, ubSectorID - 1);
                 }
             }
-            if (pEnemyGroup is not null && pEnemyGroup.ubSectorY < (MAP_ROW)16 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID + 16)))
+            if (pEnemyGroup is not null && pEnemyGroup.ubSectorY < (MAP_ROW)16 && EnemyPermittedToAttackSector(pEnemyGroup, ubSectorID + 16))
             {
-                pPlayerGroup = StrategicMovement.FindMovementGroupInSector(pEnemyGroup.ubSectorX, (pEnemyGroup.ubSectorY + 1), true);
+                pPlayerGroup = StrategicMovement.FindMovementGroupInSector(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY + 1, true);
                 if (pPlayerGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     return this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
@@ -1239,14 +1239,14 @@ public class StrategicAI
                 //                {
                 //                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX, pEnemyGroup.ubSectorY + 1), pEnemyGroup);
                 //                }
-                else if (this.AdjacentSectorIsImportantAndUndefended((ubSectorID + 16)) && this.AttemptToNoticeEmptySectorSucceeds())
+                else if (this.AdjacentSectorIsImportantAndUndefended(ubSectorID + 16) && this.AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 16));
+                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, ubSectorID + 16);
                 }
             }
-            if (pEnemyGroup is not null && pEnemyGroup.ubSectorX < 16 && EnemyPermittedToAttackSector(pEnemyGroup, (ubSectorID + 1)))
+            if (pEnemyGroup is not null && pEnemyGroup.ubSectorX < 16 && EnemyPermittedToAttackSector(pEnemyGroup, ubSectorID + 1))
             {
-                pPlayerGroup = StrategicMovement.FindMovementGroupInSector((pEnemyGroup.ubSectorX + 1), pEnemyGroup.ubSectorY, true);
+                pPlayerGroup = StrategicMovement.FindMovementGroupInSector(pEnemyGroup.ubSectorX + 1, pEnemyGroup.ubSectorY, true);
                 if (pPlayerGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     return this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
@@ -1256,9 +1256,9 @@ public class StrategicAI
                 //                {
                 //                    return HandleMilitiaNoticedByPatrolGroup(SECTORINFO.SECTOR(pEnemyGroup.ubSectorX + 1, pEnemyGroup.ubSectorY), pEnemyGroup);
                 //                }
-                else if (this.AdjacentSectorIsImportantAndUndefended((ubSectorID + 1)) && this.AttemptToNoticeEmptySectorSucceeds())
+                else if (this.AdjacentSectorIsImportantAndUndefended(ubSectorID + 1) && this.AttemptToNoticeEmptySectorSucceeds())
                 {
-                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, (ubSectorID + 1));
+                    return this.HandleEmptySectorNoticedByPatrolGroup(pEnemyGroup, ubSectorID + 1);
                 }
             }
 
@@ -1320,7 +1320,7 @@ public class StrategicAI
             }
             if (pPlayerGroup.ubSectorY < (MAP_ROW)16)
             {
-                pEnemyGroup = StrategicMovement.FindMovementGroupInSector(pPlayerGroup.ubSectorX, (pPlayerGroup.ubSectorY + 1), false);
+                pEnemyGroup = StrategicMovement.FindMovementGroupInSector(pPlayerGroup.ubSectorX, pPlayerGroup.ubSectorY + 1, false);
                 if (pEnemyGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
@@ -1336,7 +1336,7 @@ public class StrategicAI
             }
             if (pPlayerGroup.ubSectorX > 1)
             {
-                pEnemyGroup = StrategicMovement.FindMovementGroupInSector((pPlayerGroup.ubSectorX - 1), pPlayerGroup.ubSectorY, false);
+                pEnemyGroup = StrategicMovement.FindMovementGroupInSector(pPlayerGroup.ubSectorX - 1, pPlayerGroup.ubSectorY, false);
                 if (pEnemyGroup is not null && this.AttemptToNoticeAdjacentGroupSucceeds())
                 {
                     this.HandlePlayerGroupNoticedByPatrolGroup(pPlayerGroup, pEnemyGroup);
@@ -4106,12 +4106,12 @@ public class StrategicAI
             if (gPatrolGroup[sPatrolIndex].ubGroupID == ubGroupID)
             {
                 // found it
-                return (sPatrolIndex);
+                return sPatrolIndex;
             }
         }
 
         // not there!
-        return (-1);
+        return -1;
     }
 
 
@@ -4124,12 +4124,12 @@ public class StrategicAI
             if (gPatrolGroup[sPatrolIndex].ubPendingGroupID == ubGroupID)
             {
                 // found it
-                return (sPatrolIndex);
+                return sPatrolIndex;
             }
         }
 
         // not there!
-        return (-1);
+        return -1;
     }
 
 
@@ -4142,7 +4142,7 @@ public class StrategicAI
             if (gGarrisonGroup[sGarrisonIndex].ubPendingGroupID == ubGroupID)
             {
                 // found it
-                return (sGarrisonIndex);
+                return sGarrisonIndex;
             }
         }
 
@@ -4152,7 +4152,7 @@ public class StrategicAI
 
     public static void TransferGroupToPool(GROUP? pGroup)
     {
-        giReinforcementPool += (pGroup).ubGroupSize;
+        giReinforcementPool += pGroup.ubGroupSize;
         //        RemovePGroup(pGroup);
         pGroup = null;
     }
@@ -4160,13 +4160,13 @@ public class StrategicAI
     //NOTE:  Make sure you call SetEnemyGroupSector() first if the group is between sectors!!  See example in ReassignAIGroup()...
     public static void SendGroupToPool(GROUP? pGroup)
     {
-        if ((pGroup).ubSectorX == 3 && (pGroup).ubSectorY == (MAP_ROW)16)
+        if (pGroup.ubSectorX == 3 && pGroup.ubSectorY == (MAP_ROW)16)
         {
             TransferGroupToPool(pGroup);
         }
         else
         {
-            (pGroup).ubSectorIDOfLastReassignment = SECTORINFO.SECTOR((pGroup).ubSectorX, (pGroup).ubSectorY);
+            pGroup.ubSectorIDOfLastReassignment = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
             //                MoveSAIGroupToSector(pGroup, SEC.P3, EVASIVE, REINFORCEMENTS);
         }
     }
@@ -4181,9 +4181,9 @@ public class StrategicAI
         int iReloopLastIndex = -1;
         SEC ubSectorID;
 
-        ubSectorID = SECTORINFO.SECTOR((pGroup).ubSectorX, (pGroup).ubSectorY);
+        ubSectorID = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY);
 
-        (pGroup).ubSectorIDOfLastReassignment = ubSectorID;
+        pGroup.ubSectorIDOfLastReassignment = ubSectorID;
 
         ClearPreviousAIGroupAssignment(pGroup);
 
@@ -4334,7 +4334,7 @@ public class StrategicAI
         int iDay = 0;
         int iDayAllowed;
         //        iDay = GetWorldDay();
-        iDayAllowed = gPatrolGroup[iPatrolID].bFillPermittedAfterDayMod100 + (iDay / 100) * 100;
+        iDayAllowed = gPatrolGroup[iPatrolID].bFillPermittedAfterDayMod100 + iDay / 100 * 100;
         return iDay >= iDayAllowed;
     }
 
@@ -4517,13 +4517,13 @@ public class StrategicAI
         ubDstSectorX = SECTORINFO.SECTORX(ubSectorID);
         ubDstSectorY = SECTORINFO.SECTORY(ubSectorID);
 
-        if ((pGroup).fBetweenSectors)
+        if (pGroup.fBetweenSectors)
         {
             //            SetEnemyGroupSector(pGroup, SECTORINFO.SECTOR((pGroup).ubSectorX, (pGroup).ubSectorY));
         }
 
         //        (pGroup).pEnemyGroup.ubIntention = ubIntention;
-        (pGroup).ubMoveType = MOVE_TYPES.ONE_WAY;
+        pGroup.ubMoveType = MOVE_TYPES.ONE_WAY;
 
         if (ubIntention == ENEMY_INTENTIONS.PURSUIT)
         {   //Make sure that the group isn't moving into a garrison sector.  These sectors should be using ASSAULT intentions!
@@ -4534,7 +4534,7 @@ public class StrategicAI
             }
         }
 
-        if ((pGroup).ubSectorX == ubDstSectorX && (pGroup).ubSectorY == ubDstSectorY)
+        if (pGroup.ubSectorX == ubDstSectorX && pGroup.ubSectorY == ubDstSectorY)
         { //The destination sector is the current location.  Instead of causing code logic problems,
           //simply process them as if they just arrived.
             if (EvaluateGroupSituation(pGroup))

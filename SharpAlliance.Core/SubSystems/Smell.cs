@@ -52,22 +52,22 @@ public class Smell
     //															 0  1,  2,  3,  4,  5,  6, 7
     public static int[] ubBloodGraphicLUT = { 3, 3, 2, 2, 1, 1, 0, 0 };
 
-    public static int SMELL_TYPE_BITS(int s) => (s & 0x03);
-    public static int BLOOD_ROOF_TYPE(int s) => (s & 0x02);
-    public static int BLOOD_FLOOR_TYPE(int s) => (s & 0x01);
-    public static int BLOOD_ROOF_STRENGTH(int b) => (b & 0xE0);
-    public static int BLOOD_FLOOR_STRENGTH(int b) => ((b & 0x1C) >> 2);
-    public static int BLOOD_DELAY_TIME(int b) => (b & 0x03);
-    public static bool NO_BLOOD_STRENGTH(int b) => ((b & 0xFC) == 0);
-    public static int SMELL_TYPE(int s) => (s & 0x01);
-    public static int SMELL_STRENGTH(int s) => ((s & 0xFC) >> SMELL_TYPE_NUM_BITS);
+    public static int SMELL_TYPE_BITS(int s) => s & 0x03;
+    public static int BLOOD_ROOF_TYPE(int s) => s & 0x02;
+    public static int BLOOD_FLOOR_TYPE(int s) => s & 0x01;
+    public static int BLOOD_ROOF_STRENGTH(int b) => b & 0xE0;
+    public static int BLOOD_FLOOR_STRENGTH(int b) => (b & 0x1C) >> 2;
+    public static int BLOOD_DELAY_TIME(int b) => b & 0x03;
+    public static bool NO_BLOOD_STRENGTH(int b) => (b & 0xFC) == 0;
+    public static int SMELL_TYPE(int s) => s & 0x01;
+    public static int SMELL_STRENGTH(int s) => (s & 0xFC) >> SMELL_TYPE_NUM_BITS;
 
     public static void DECAY_SMELL_STRENGTH(int s)
     {
-        int ubStrength = Smell.SMELL_STRENGTH((s));
+        int ubStrength = Smell.SMELL_STRENGTH(s);
         ubStrength--;
         ubStrength <<= Globals.SMELL_TYPE_NUM_BITS;
-        (s) = SMELL_TYPE_BITS((s)) | ubStrength;
+        s = SMELL_TYPE_BITS(s) | ubStrength;
     }
 
     // s = smell byte
@@ -77,28 +77,28 @@ public class Smell
     // preserve the type value for the blood on the roof
     public static void SET_SMELL(int smell, int newStrength, int newTypeFloor)
     {
-        (smell) = (BLOOD_ROOF_TYPE(smell)) | SMELL_TYPE(newTypeFloor) | (newStrength << Globals.SMELL_TYPE_NUM_BITS);
+        smell = (BLOOD_ROOF_TYPE(smell)) | SMELL_TYPE(newTypeFloor) | (newStrength << Globals.SMELL_TYPE_NUM_BITS);
     }
 
     public static void DECAY_BLOOD_DELAY_TIME(int b)
     {
-        (b)--;
+        b--;
     }
 
     public static void SET_BLOOD_FLOOR_STRENGTH(int b, int nb)
     {
-        (b) = ((nb) << 2) | ((b) & 0xE3);
+        b = ((nb) << 2) | ((b) & 0xE3);
     }
 
     public static void SET_BLOOD_ROOF_STRENGTH(int b, int nb)
     {
-        (b) = BLOOD_FLOOR_STRENGTH((nb)) << 5 | ((b) & 0x1F);
+        b = BLOOD_FLOOR_STRENGTH(nb) << 5 | ((b) & 0x1F);
     }
 
     public static void DECAY_BLOOD_FLOOR_STRENGTH(int b)
     {
         int ubFloorStrength;
-        ubFloorStrength = BLOOD_FLOOR_STRENGTH((b));
+        ubFloorStrength = BLOOD_FLOOR_STRENGTH(b);
         ubFloorStrength--;
         SET_BLOOD_FLOOR_STRENGTH(b, ubFloorStrength);
     }
@@ -106,24 +106,24 @@ public class Smell
     public static void DECAY_BLOOD_ROOF_STRENGTH(int b)
     {
         int ubRoofStrength;
-        ubRoofStrength = BLOOD_ROOF_STRENGTH((b));
+        ubRoofStrength = BLOOD_ROOF_STRENGTH(b);
         ubRoofStrength--;
         SET_BLOOD_FLOOR_STRENGTH(b, ubRoofStrength);
     }
 
     public static void SET_BLOOD_DELAY_TIME(int b)
     {
-        (b) = BLOOD_DELAY_TIME((int)Globals.Random.Next(Globals.BLOOD_DELAY_MAX) + 1) | (b & 0xFC);
+        b = BLOOD_DELAY_TIME((int)Globals.Random.Next(Globals.BLOOD_DELAY_MAX) + 1) | (b & 0xFC);
     }
 
     public static void SET_BLOOD_FLOOR_TYPE(int s, int ntg)
     {
-        (s) = BLOOD_FLOOR_TYPE(ntg) | (s & 0xFE);
+        s = BLOOD_FLOOR_TYPE(ntg) | (s & 0xFE);
     }
 
     public static void SET_BLOOD_ROOF_TYPE(int s, int ntr)
     {
-        (s) = BLOOD_ROOF_TYPE(ntr) | (s & 0xFD);
+        s = BLOOD_ROOF_TYPE(ntr) | (s & 0xFD);
     }
 
     void RemoveBlood(int sGridNo, int bLevel)
@@ -266,7 +266,7 @@ public class Smell
 
         if (pSoldier.bLevel == 0)
         {
-            pMapElement = (gpWorldLevelData[pSoldier.sGridNo]);
+            pMapElement = gpWorldLevelData[pSoldier.sGridNo];
             if (pMapElement.ubBloodInfo > 0)
             {
                 // blood here, don't drop any smell
@@ -364,7 +364,7 @@ public class Smell
         // ensure max strength is okay
         ubStrength = Math.Min(ubStrength, BLOOD_STRENGTH_MAX);
 
-        pMapElement = (Globals.gpWorldLevelData[sGridNo]);
+        pMapElement = Globals.gpWorldLevelData[sGridNo];
         if (bLevel == 0)
         {
             // dropping blood on ground
@@ -375,7 +375,7 @@ public class Smell
                 if (BLOOD_FLOOR_TYPE(pMapElement.ubBloodInfo) == ubType)
                 {
                     // combine blood strengths!
-                    ubNewStrength = Math.Min((ubOldStrength + ubStrength), BLOOD_STRENGTH_MAX);
+                    ubNewStrength = Math.Min(ubOldStrength + ubStrength, BLOOD_STRENGTH_MAX);
 
                     SET_BLOOD_FLOOR_STRENGTH(pMapElement.ubBloodInfo, ubNewStrength);
                 }
@@ -488,7 +488,7 @@ public class Smell
         TileIndexes usNewIndex;
 
         // OK, based on level, type, display graphics for blood
-        pMapElement = (Globals.gpWorldLevelData[sGridNo]);
+        pMapElement = Globals.gpWorldLevelData[sGridNo];
 
         // CHECK FOR BLOOD OPTION
         if (!GameSettings.fOptions[TOPTION.BLOOD_N_GORE])
@@ -500,7 +500,7 @@ public class Smell
         {
 
             // Turn off flag!
-            pMapElement.uiFlags &= (~MAPELEMENTFLAGS.REEVALUATEBLOOD);
+            pMapElement.uiFlags &= ~MAPELEMENTFLAGS.REEVALUATEBLOOD;
 
             // Ground
             if (bLevel == 0)

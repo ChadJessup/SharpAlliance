@@ -27,27 +27,27 @@ public class ExplosionControl
 
         for (uiCount = 0; uiCount < guiNumExplosions; uiCount++)
         {
-            if ((gExplosionData[uiCount].fAllocated == false))
+            if (gExplosionData[uiCount].fAllocated == false)
             {
-                return ((int)uiCount);
+                return (int)uiCount;
             }
         }
 
         if (guiNumExplosions < NUM_EXPLOSION_SLOTS)
         {
-            return ((int)guiNumExplosions++);
+            return (int)guiNumExplosions++;
         }
 
-        return (-1);
+        return -1;
     }
 
     void RecountExplosions()
     {
         int uiCount;
 
-        for (uiCount = guiNumExplosions - 1; (uiCount >= 0); uiCount--)
+        for (uiCount = guiNumExplosions - 1; uiCount >= 0; uiCount--)
         {
-            if ((gExplosionData[uiCount].fAllocated))
+            if (gExplosionData[uiCount].fAllocated)
             {
                 guiNumExplosions = (int)(uiCount + 1);
                 break;
@@ -62,7 +62,7 @@ public class ExplosionControl
 
 
         // Double check that we are using an explosive!
-        if (!(Item[usItem].usItemClass.HasFlag(IC.EXPLOSV)))
+        if (!Item[usItem].usItemClass.HasFlag(IC.EXPLOSV))
         {
             return;
         }
@@ -74,7 +74,7 @@ public class ExplosionControl
             // single explosion, disable sight until the end, and set flag
             // to check sight at end of attack
 
-            gTacticalStatus.uiFlags |= (TacticalEngineStatus.DISALLOW_SIGHT | TacticalEngineStatus.CHECK_SIGHT_AT_END_OF_ATTACK);
+            gTacticalStatus.uiFlags |= TacticalEngineStatus.DISALLOW_SIGHT | TacticalEngineStatus.CHECK_SIGHT_AT_END_OF_ATTACK;
         }
 
 
@@ -138,7 +138,7 @@ public class ExplosionControl
             }
 
             // OK, get pointer...
-            pExplosion = (gExplosionData[iIndex]);
+            pExplosion = gExplosionData[iIndex];
 
             //memset(pExplosion, 0, sizeof(EXPLOSIONTYPE));
 
@@ -230,7 +230,7 @@ public class ExplosionControl
         AniParams.ubKeyFrame1 = ubTransKeyFrame[ubTypeID];
         AniParams.uiKeyFrame1Code = ANI_KEYFRAME.BEGIN_TRANSLUCENCY;
 
-        if (!(uiFlags.HasFlag(EXPLOSION_FLAG.DISPLAYONLY)))
+        if (!uiFlags.HasFlag(EXPLOSION_FLAG.DISPLAYONLY))
         {
             AniParams.ubKeyFrame2 = ubDamageKeyFrame[ubTypeID];
             AniParams.uiKeyFrame2Code = ANI_KEYFRAME.BEGIN_DAMAGE;
@@ -311,10 +311,10 @@ public class ExplosionControl
                 // Get type from index...
                 TileDefine.GetTileType(pFenceNode.usIndex, out TileTypeDefines uiFenceType);
 
-                bFenceDestructionPartner = -1 * (pFenceBaseStructure.pDBStructureRef.pDBStructure.bDestructionPartner);
+                bFenceDestructionPartner = -1 * pFenceBaseStructure.pDBStructureRef.pDBStructure.bDestructionPartner;
 
                 // Get new index
-                TileDefine.GetTileIndexFromTypeSubIndex(uiFenceType, (int)(bFenceDestructionPartner), out TileIndexes usTileIndex);
+                TileDefine.GetTileIndexFromTypeSubIndex(uiFenceType, (int)bFenceDestructionPartner, out TileIndexes usTileIndex);
 
                 //Set a flag indicating that the following changes are to go the the maps, temp file
                 SaveLoadMap.ApplyMapChangesToMapTempFile(true);
@@ -363,18 +363,18 @@ public class ExplosionControl
         sY = IsometricUtils.CenterY(sGridNo);
 
         // ATE: Continue if we are only looking for walls
-        if (fOnlyWalls && !(pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)))
+        if (fOnlyWalls && !pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF))
         {
-            return (1);
+            return 1;
         }
 
         if (bLevel > 0)
         {
-            return (1);
+            return 1;
         }
 
         // Is this a corpse?
-        if ((pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE))
+        if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE)
             && GameSettings.fOptions[TOPTION.BLOOD_N_GORE]
             && sWoundAmt > 10)
         {
@@ -385,7 +385,7 @@ public class ExplosionControl
                 //                VaporizeCorpse(sGridNo, pCurrent.usStructureID);
             }
         }
-        else if (!(pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.PERSON)))
+        else if (!pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.PERSON))
         {
             // Damage structure!
             if ((bDamageReturnVal = StructureInternals.DamageStructure(pCurrent, (int)sWoundAmt, STRUCTURE_DAMAGE_EXPLOSION, sGridNo, sX, sY, NOBODY)) != 0)
@@ -398,12 +398,12 @@ public class ExplosionControl
 
                 // if the structure is openable, destroy all items there
                 if (pBase.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE)
-                    && !(pBase.fFlags.HasFlag(STRUCTUREFLAGS.DOOR)))
+                    && !pBase.fFlags.HasFlag(STRUCTUREFLAGS.DOOR))
                 {
                     //                    RemoveAllUnburiedItems(pBase.sGridNo, bLevel);
                 }
 
-                fExplosive = ((pCurrent.fFlags & STRUCTUREFLAGS.EXPLOSIVE) != 0);
+                fExplosive = (pCurrent.fFlags & STRUCTUREFLAGS.EXPLOSIVE) != 0;
 
                 // Get LEVELNODE for struct and remove!
                 pNode = WorldStructures.FindLevelNodeBasedOnStructure(pBase.sGridNo, pBase);
@@ -428,7 +428,7 @@ public class ExplosionControl
                     {
                         // We swap to another graphic!
                         // It's -ve and 1-based, change to +ve, 1 based
-                        bDestructionPartner = (-1 * pBase.pDBStructureRef.pDBStructure.bDestructionPartner);
+                        bDestructionPartner = -1 * pBase.pDBStructureRef.pDBStructure.bDestructionPartner;
 
                         TileDefine.GetTileType(pNode.usIndex, out uiTileType);
 
@@ -439,11 +439,11 @@ public class ExplosionControl
                 if (fContinue > 0)
                 {
                     // Remove the beast!
-                    while ((ppNextCurrent) != null && (ppNextCurrent).usStructureID == pCurrent.usStructureID)
+                    while (ppNextCurrent != null && ppNextCurrent.usStructureID == pCurrent.usStructureID)
                     {
                         // the next structure will also be deleted so we had better
                         // skip past it!
-                        (ppNextCurrent) = (ppNextCurrent).pNext;
+                        ppNextCurrent = ppNextCurrent.pNext;
                     }
 
                     // Replace with explosion debris if there are any....
@@ -472,7 +472,7 @@ public class ExplosionControl
                         // Free all the non-base tiles; the base tile is at pointer 0
                         for (ubLoop = BASE_TILE; ubLoop < ubNumberOfTiles; ubLoop++)
                         {
-                            if (!(ppTile[ubLoop].fFlags.HasFlag(TILE.ON_ROOF)))
+                            if (!ppTile[ubLoop].fFlags.HasFlag(TILE.ON_ROOF))
                             {
                                 sStructGridNo = pBase.sGridNo + ppTile[ubLoop].sPosRelToBase;
                                 // there might be two structures in this tile, one on each level, but we just want to
@@ -483,7 +483,7 @@ public class ExplosionControl
                                     //Set a flag indicating that the following changes are to go the the maps, temp file
                                     SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
-                                    WorldManager.AddObjectToHead(sStructGridNo, (usTileIndex + Globals.Random.Next(3)));
+                                    WorldManager.AddObjectToHead(sStructGridNo, usTileIndex + Globals.Random.Next(3));
 
                                     SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                 }
@@ -504,7 +504,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
-                                        WorldManager.AddObjectToHead(sStructGridNo, (usTileIndex + Globals.Random.Next(3)));
+                                        WorldManager.AddObjectToHead(sStructGridNo, usTileIndex + Globals.Random.Next(3));
 
                                         SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                     }
@@ -519,7 +519,7 @@ public class ExplosionControl
                                         //Set a flag indicating that the following changes are to go the the maps, temp file
                                         SaveLoadMap.ApplyMapChangesToMapTempFile(true);
 
-                                        WorldManager.AddObjectToHead(sStructGridNo, (usTileIndex + Globals.Random.Next(3)));
+                                        WorldManager.AddObjectToHead(sStructGridNo, usTileIndex + Globals.Random.Next(3));
 
                                         SaveLoadMap.ApplyMapChangesToMapTempFile(false);
                                     }
@@ -644,11 +644,11 @@ public class ExplosionControl
                                     if (pAttachedBase is not null)
                                     {
                                         // Remove the beast!
-                                        while ((ppNextCurrent) != null && (ppNextCurrent).usStructureID == pAttachedBase.usStructureID)
+                                        while (ppNextCurrent != null && ppNextCurrent.usStructureID == pAttachedBase.usStructureID)
                                         {
                                             // the next structure will also be deleted so we had better
                                             // skip past it!
-                                            (ppNextCurrent) = (ppNextCurrent).pNext;
+                                            ppNextCurrent = ppNextCurrent.pNext;
                                         }
 
                                         pAttachedNode = WorldStructures.FindLevelNodeBasedOnStructure(pAttachedBase.sGridNo, pAttachedBase);
@@ -917,7 +917,7 @@ public class ExplosionControl
                     RenderWorld.InvalidateWorldRedundency();
                     RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                     // Movement costs!
-                    (pfRecompileMovementCosts) = true;
+                    pfRecompileMovementCosts = true;
 
                     {
                         // Make secondary explosion if eplosive....
@@ -929,18 +929,18 @@ public class ExplosionControl
 
                     if (fContinue == 2)
                     {
-                        return (0);
+                        return 0;
                     }
                 }
 
                 // 2 is NO DAMAGE
                 pfRecompileMovementCosts = false;
-                return (2);
+                return 2;
             }
         }
 
         pfRecompileMovementCosts = false;
-        return (1);
+        return 1;
     }
 
     void ExplosiveDamageGridNo(int sGridNo, int sWoundAmt, int uiDist, out bool pfRecompileMovementCosts, bool fOnlyWalls, int bMultiStructSpecialFlag, int fSubSequentMultiTilesTransitionDamage, int ubOwner, int bLevel)
@@ -973,14 +973,14 @@ public class ExplosionControl
             {
                 sBaseGridNo = pBaseStructure.sGridNo;
                 ubNumberOfTiles = pBaseStructure.pDBStructureRef.pDBStructure.ubNumberOfTiles;
-                fMultiStructure = ((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MULTI)));
+                fMultiStructure = pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MULTI);
                 ppTile = new DB_STRUCTURE_TILE[ubNumberOfTiles];
                 //memcpy(ppTile, pBaseStructure.pDBStructureRef.ppTile, sizeof(DB_STRUCTURE_TILE) * ubNumberOfTiles);
 
                 if (bMultiStructSpecialFlag == -1)
                 {
                     // Set it!
-                    bMultiStructSpecialFlag = ((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.SPECIAL) ? 1 : 0));
+                    bMultiStructSpecialFlag = pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.SPECIAL) ? 1 : 0;
                 }
 
                 if (pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.EXPLOSIVE))
@@ -1053,9 +1053,9 @@ public class ExplosionControl
                                 pStructure = WorldStructures.FindStructure(sNewGridNo2, STRUCTUREFLAGS.MULTI);
                                 if (pStructure is not null)
                                 {
-                                    fMultiStructSpecialFlag = ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SPECIAL))) ? 1 : 0;
+                                    fMultiStructSpecialFlag = pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SPECIAL) ? 1 : 0;
 
-                                    if ((bMultiStructSpecialFlag == fMultiStructSpecialFlag))
+                                    if (bMultiStructSpecialFlag == fMultiStructSpecialFlag)
                                     {
                                         // If we just damaged it, use same damage value....
                                         if (fMultiStructSpecialFlag > 0)
@@ -1105,13 +1105,13 @@ public class ExplosionControl
 
         if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.bLife == 0)
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.ubMiscSoldierFlags.HasFlag(SOLDIER_MISC.HURT_BY_EXPLOSION))
         {
             // don't want to damage the guy twice
-            return (false);
+            return false;
         }
 
         // Direction to center of explosion
@@ -1135,7 +1135,7 @@ public class ExplosionControl
         {
             //            ProcessImplicationsOfPCAttack(MercPtrs[ubOwner], pSoldier, REASON_EXPLOSION);
         }
-        return (true);
+        return true;
     }
 
     bool DishOutGasDamage(SOLDIERTYPE? pSoldier, EXPLOSIVETYPE? pExplosive, int sSubsequent, bool fRecompileMovementCosts, int sWoundAmt, int sBreathAmt, int ubOwner)
@@ -1144,7 +1144,7 @@ public class ExplosionControl
 
         if (!pSoldier.bActive || !pSoldier.bInSector || pSoldier.bLife == 0 || AM_A_ROBOT(pSoldier))
         {
-            return (fRecompileMovementCosts);
+            return fRecompileMovementCosts;
         }
 
         if (pExplosive.ubType == EXPLOSV.CREATUREGAS)
@@ -1152,12 +1152,12 @@ public class ExplosionControl
             if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.MONSTER))
             {
                 // unaffected by own gas effects
-                return (fRecompileMovementCosts);
+                return fRecompileMovementCosts;
             }
             if (sSubsequent > 0 && pSoldier.fHitByGasFlags.HasFlag(HIT_BY.CREATUREGAS))
             {
                 // already affected by creature gas this turn
-                return (fRecompileMovementCosts);
+                return fRecompileMovementCosts;
             }
         }
         else // no gas mask help from creature attacks
@@ -1167,27 +1167,27 @@ public class ExplosionControl
             {
                 if (AM_A_ROBOT(pSoldier))
                 {
-                    return (fRecompileMovementCosts);
+                    return fRecompileMovementCosts;
                 }
 
                 // ignore whether subsequent or not if hit this turn 
                 if (pSoldier.fHitByGasFlags.HasFlag(HIT_BY.TEARGAS))
                 {
                     // already affected by creature gas this turn
-                    return (fRecompileMovementCosts);
+                    return fRecompileMovementCosts;
                 }
             }
             else if (pExplosive.ubType == EXPLOSV.MUSTGAS)
             {
                 if (AM_A_ROBOT(pSoldier))
                 {
-                    return (fRecompileMovementCosts);
+                    return fRecompileMovementCosts;
                 }
 
                 if (sSubsequent > 0 && pSoldier.fHitByGasFlags.HasFlag(HIT_BY.MUSTARDGAS))
                 {
                     // already affected by creature gas this turn
-                    return (fRecompileMovementCosts);
+                    return fRecompileMovementCosts;
                 }
 
             }
@@ -1206,7 +1206,7 @@ public class ExplosionControl
                 //                if (pSoldier.inv[bPosOfMask].bStatus[0] < GASMASK_MIN_STATUS)
                 {
                     // GAS MASK reduces breath loss by its work% (it leaks if not at least 70%)
-                    sBreathAmt = (sBreathAmt * (100 - pSoldier.inv[bPosOfMask].bStatus[0])) / 100;
+                    sBreathAmt = sBreathAmt * (100 - pSoldier.inv[bPosOfMask].bStatus[0]) / 100;
                     if (sBreathAmt > 500)
                     {
                         // if at least 500 of breath damage got through
@@ -1221,7 +1221,7 @@ public class ExplosionControl
                         if (sWoundAmt > 1)
                         {
                             pSoldier.inv[bPosOfMask].bStatus[0] -= (int)Globals.Random.Next(4);
-                            sWoundAmt = (sWoundAmt * (100 - pSoldier.inv[bPosOfMask].bStatus[0])) / 100;
+                            sWoundAmt = sWoundAmt * (100 - pSoldier.inv[bPosOfMask].bStatus[0]) / 100;
                         }
                         else if (sWoundAmt == 1)
                         {
@@ -1278,7 +1278,7 @@ public class ExplosionControl
                 //                ProcessImplicationsOfPCAttack(MercPtrs[ubOwner], out pSoldier, REASON_EXPLOSION);
             }
         }
-        return (fRecompileMovementCosts);
+        return fRecompileMovementCosts;
     }
 
     bool ExpAffect(int sBombGridNo, int sGridNo, int uiDist, Items usItem, int ubOwner, int sSubsequent, out bool pfMercHit, int bLevel, int iSmokeEffectID)
@@ -1355,15 +1355,15 @@ public class ExplosionControl
 
         // OK, here we:
         // Get explosive data from table
-        pExplosive = (Weapons.Explosive[Item[usItem].ubClassIndex]);
+        pExplosive = Weapons.Explosive[Item[usItem].ubClassIndex];
 
         uiRoll = PreRandom(100);
 
         // Calculate wound amount
-        sWoundAmt = pExplosive.ubDamage + (int)((pExplosive.ubDamage * uiRoll) / 100);
+        sWoundAmt = pExplosive.ubDamage + (int)(pExplosive.ubDamage * uiRoll / 100);
 
         // Calculate breath amount ( if stun damage applicable )
-        sBreathAmt = (pExplosive.ubStunDamage * 100) + (int)(((pExplosive.ubStunDamage / 2) * 100 * uiRoll) / 100);
+        sBreathAmt = (pExplosive.ubStunDamage * 100) + (int)(pExplosive.ubStunDamage / 2 * 100 * uiRoll / 100);
 
         // ATE: Make sure guys get pissed at us!
         this.HandleBuldingDestruction(sGridNo, ubOwner);
@@ -1389,8 +1389,8 @@ public class ExplosionControl
             else
             {
                 // at the edge of the explosion, do half the previous damage
-                sWoundAmt = (int)((sWoundAmt / pExplosive.ubRadius) / 2);
-                sBreathAmt = (int)((sBreathAmt / pExplosive.ubRadius) / 2);
+                sWoundAmt = (int)(sWoundAmt / pExplosive.ubRadius / 2);
+                sBreathAmt = (int)(sBreathAmt / pExplosive.ubRadius / 2);
             }
 
             if (sWoundAmt < 0)
@@ -1457,7 +1457,7 @@ public class ExplosionControl
                 {
                     pItemPoolNext = pItemPool.pNext;
 
-                    if (ItemSubSystem.DamageItemOnGround((gWorldItems[pItemPool.iItemIndex].o), sGridNo, bLevel, (int)(sWoundAmt * 2), ubOwner))
+                    if (ItemSubSystem.DamageItemOnGround(gWorldItems[pItemPool.iItemIndex].o, sGridNo, bLevel, (int)(sWoundAmt * 2), ubOwner))
                     {
                         // item was destroyed
                         //                        RemoveItemFromPool(sGridNo, pItemPool.iItemIndex, bLevel);
@@ -1549,7 +1549,7 @@ public class ExplosionControl
                 if ((ubPerson = WorldManager.WhoIsThere2(sGridNo, bLevel)) >= NOBODY)
                 {
                     pfMercHit = false;
-                    return (fRecompileMovementCosts);
+                    return fRecompileMovementCosts;
                 }
 
                 pSoldier = MercPtrs[ubPerson];   // someone is here, and they're gonna get hurt
@@ -1686,11 +1686,11 @@ public class ExplosionControl
                             */
             }
 
-            (pfMercHit) = true;
+            pfMercHit = true;
         }
 
         pfMercHit = false;
-        return (fRecompileMovementCosts);
+        return fRecompileMovementCosts;
     }
 
     void GetRayStopInfo(int uiNewSpot, WorldDirections ubDir, int bLevel, bool fSmokeEffect, int uiCurRange, out int? piMaxRange, out int pubKeepGoing)
@@ -1856,7 +1856,7 @@ public class ExplosionControl
             // ATE: Tall things should blaock all
             if (bStructHeight == 4)
             {
-                (pubKeepGoing) = 0;
+                pubKeepGoing = 0;
             }
             else
             {
@@ -1877,16 +1877,16 @@ public class ExplosionControl
                         uiRangeReduce = 2;
                     }
 
-                  (piMaxRange) -= uiRangeReduce;
+                  piMaxRange -= uiRangeReduce;
                 }
 
-                if (uiCurRange <= (piMaxRange))
+                if (uiCurRange <= piMaxRange)
                 {
-                    (pubKeepGoing) = 1;
+                    pubKeepGoing = 1;
                 }
                 else
                 {
-                    (pubKeepGoing) = 0;
+                    pubKeepGoing = 0;
                 }
             }
         }
@@ -1894,11 +1894,11 @@ public class ExplosionControl
         {
             if (fTravelCostObs)
             {
-                (pubKeepGoing) = 0;
+                pubKeepGoing = 0;
             }
             else
             {
-                (pubKeepGoing) = 1;
+                pubKeepGoing = 1;
             }
         }
     }
@@ -2132,7 +2132,7 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
                 if (pObj.bDetonatorType == DetonatorType.BOMB_REMOTE)
                 {
                     // Found a remote bomb, so check to see if it has the same frequency
@@ -2141,7 +2141,7 @@ public class ExplosionControl
                         // toggle its active flag
                         if (pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                         {
-                            pObj.fFlags &= (~OBJECT.DISABLED_BOMB);
+                            pObj.fFlags &= ~OBJECT.DISABLED_BOMB;
                         }
                         else
                         {
@@ -2163,14 +2163,14 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists && gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].sGridNo == sGridNo)
             {
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
                 if (pObj.bDetonatorType == DetonatorType.BOMB_PRESSURE)
                 {
                     // Found a pressure item
                     // toggle its active flag
                     if (pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                     {
-                        pObj.fFlags &= (~OBJECT.DISABLED_BOMB);
+                        pObj.fFlags &= ~OBJECT.DISABLED_BOMB;
                     }
                     else
                     {
@@ -2213,12 +2213,12 @@ public class ExplosionControl
             {
                 if (RenderFun.InARoom(pSoldier.sGridNo, out int ubTempRoom) && ubTempRoom == ubRoom)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     void PerformItemAction(int sGridNo, OBJECTTYPE pObj)
@@ -2488,14 +2488,14 @@ public class ExplosionControl
                         }
                     }
 
-                    if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                    if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                     {
 //                        EnterCombatMode(CIV_TEAM);
                     }
                 }
 
                 // now zap this object so it won't activate again
-                pObj.fFlags &= (~OBJECT.DISABLED_BOMB);
+                pObj.fFlags &= ~OBJECT.DISABLED_BOMB;
                 break;
             case ACTION_ITEM.SEX:
                 // JA2Gold: Disable brothel sex
@@ -2649,7 +2649,7 @@ public class ExplosionControl
 
                 // Preliminary assignments:
                 uiWorldBombIndex = gExplosionQueue[uiIndex].uiWorldBombIndex;
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
                 sGridNo = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].sGridNo;
                 ubLevel = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].ubLevel;
 
@@ -2681,14 +2681,14 @@ public class ExplosionControl
                     {
                         //                        RemoveBlueFlag(sGridNo, ubLevel);
                     }
-                    gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.ENEMY_MINE_PRESENT);
+                    gpWorldLevelData[sGridNo].uiFlags &= ~MAPELEMENTFLAGS.ENEMY_MINE_PRESENT;
 
                     // BOOM!
 
                     // bomb objects only store the SIDE who placed the bomb! :-(
                     if (pObj.ubBombOwner > 1)
                     {
-                        IgniteExplosion((pObj.ubBombOwner - 2), CenterX(sGridNo), (MAP_ROW)CenterY(sGridNo), 0, sGridNo, pObj.usBombItem, ubLevel);
+                        IgniteExplosion(pObj.ubBombOwner - 2, CenterX(sGridNo), (MAP_ROW)CenterY(sGridNo), 0, sGridNo, pObj.usBombItem, ubLevel);
                     }
                     else
                     {
@@ -2714,9 +2714,9 @@ public class ExplosionControl
             // turn off explosion queue 
 
             // re-enable sight
-            gTacticalStatus.uiFlags &= (~TacticalEngineStatus.DISALLOW_SIGHT);
+            gTacticalStatus.uiFlags &= ~TacticalEngineStatus.DISALLOW_SIGHT;
 
-            if (gubPersonToSetOffExplosions != NOBODY && !(MercPtrs[gubPersonToSetOffExplosions].uiStatusFlags.HasFlag(SOLDIER.PC)))
+            if (gubPersonToSetOffExplosions != NOBODY && !MercPtrs[gubPersonToSetOffExplosions].uiStatusFlags.HasFlag(SOLDIER.PC))
             {
                 //                FreeUpNPCFromPendingAction(MercPtrs[gubPersonToSetOffExplosions]);
             }
@@ -2747,7 +2747,7 @@ public class ExplosionControl
 
             // unlock UI
             //UnSetUIBusy( (int)gusSelectedSoldier );
-            if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) || gTacticalStatus.ubCurrentTeam == gbPlayerNum)
+            if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT) || gTacticalStatus.ubCurrentTeam == gbPlayerNum)
             {
                 // don't end UI lock when it's a computer turn
                 guiPendingOverrideEvent = UI_EVENT_DEFINES.LU_ENDUILOCK;
@@ -2770,8 +2770,8 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == DetonatorType.BOMB_TIMED && !(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)))
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
+                if (pObj.bDetonatorType == DetonatorType.BOMB_TIMED && !pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                 {
                     // Found a timed bomb, so decay its delay value and see if it goes off
                     pObj.bDelay--;
@@ -2812,8 +2812,8 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == DetonatorType.BOMB_REMOTE && !(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)))
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
+                if (pObj.bDetonatorType == DetonatorType.BOMB_REMOTE && !pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                 {
                     // Found a remote bomb, so check to see if it has the same frequency
                     if (pObj.bFrequency == bFrequency)
@@ -2841,14 +2841,14 @@ public class ExplosionControl
                     (gTacticalStatus.sPanicTriggerGridNo[1] == NOWHERE) &&
                     (gTacticalStatus.sPanicTriggerGridNo[2] == NOWHERE))
         {
-            gTacticalStatus.fPanicFlags &= ~(PANIC.TRIGGERS_HERE);
+            gTacticalStatus.fPanicFlags &= ~PANIC.TRIGGERS_HERE;
         }
 
         switch (bPanicTrigger)
         {
             case 0:
                 this.SetOffBombsByFrequency(ubID, PANIC_FREQUENCY);
-                gTacticalStatus.fPanicFlags &= ~(PANIC.BOMBS_HERE);
+                gTacticalStatus.fPanicFlags &= ~PANIC.BOMBS_HERE;
                 break;
 
             case 1:
@@ -2885,8 +2885,8 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists && gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].sGridNo == sGridNo && gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].ubLevel == bLevel)
             {
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (!(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)))
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
+                if (!pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                 {
                     if (fAllBombs || pObj.bDetonatorType == DetonatorType.BOMB_PRESSURE)
                     {
@@ -2934,7 +2934,7 @@ public class ExplosionControl
             }
         }
 
-        return (fFoundMine);
+        return fFoundMine;
     }
 
     void ActivateSwitchInGridNo(int ubID, int sGridNo)
@@ -2947,9 +2947,9 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists && gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].sGridNo == sGridNo)
             {
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
 
-                if (pObj.usItem == Items.SWITCH && (!(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))) && pObj.bDetonatorType == DetonatorType.BOMB_SWITCH)
+                if (pObj.usItem == Items.SWITCH && (!pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)) && pObj.bDetonatorType == DetonatorType.BOMB_SWITCH)
                 {
                     // send out a signal to detonate other bombs, rather than this which
                     // isn't a bomb but a trigger
@@ -2977,7 +2977,7 @@ public class ExplosionControl
         if (uiNumBytesWritten != sizeof(int))
         {
             files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
         //loop through and add all the explosions
@@ -2987,7 +2987,7 @@ public class ExplosionControl
             if (uiNumBytesWritten != sizeof(ExplosionQueueElement))
             {
                 files.FileClose(hFile);
-                return (false);
+                return false;
             }
         }
 
@@ -3011,7 +3011,7 @@ public class ExplosionControl
         if (uiNumBytesWritten != sizeof(int))
         {
             files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
 
@@ -3025,11 +3025,11 @@ public class ExplosionControl
                 if (uiNumBytesWritten != sizeof(EXPLOSIONTYPE))
                 {
                     files.FileClose(hFile);
-                    return (false);
+                    return false;
                 }
             }
         }
-        return (true);
+        return true;
     }
 
     unsafe bool LoadExplosionTableFromSavedGameFile(Stream hFile)
@@ -3048,7 +3048,7 @@ public class ExplosionControl
         files.FileRead(hFile, ref gubElementsOnExplosionQueue, sizeof(int), out int uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
         //loop through read all the active explosions fro the file
@@ -3057,7 +3057,7 @@ public class ExplosionControl
             files.FileRead(hFile, ref gExplosionQueue[uiCnt], sizeof(ExplosionQueueElement), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(ExplosionQueueElement))
             {
-                return (false);
+                return false;
             }
         }
 
@@ -3069,7 +3069,7 @@ public class ExplosionControl
         files.FileRead(hFile, ref guiNumExplosions, sizeof(int), out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
 
@@ -3079,7 +3079,7 @@ public class ExplosionControl
             files.FileRead(hFile, ref gExplosionData[uiCnt], sizeof(EXPLOSIONTYPE), out uiNumBytesRead);
             if (uiNumBytesRead != sizeof(EXPLOSIONTYPE))
             {
-                return (false);
+                return false;
             }
             gExplosionData[uiCnt].iID = (WorldDirections)uiCnt;
             gExplosionData[uiCnt].iLightID = -1;
@@ -3087,7 +3087,7 @@ public class ExplosionControl
             GenerateExplosionFromExplosionPointer(gExplosionData[uiCnt]);
         }
 
-        return (true);
+        return true;
     }
 
     bool DoesSAMExistHere(int sSectorX, MAP_ROW sSectorY, int sSectorZ, int sGridNo)
@@ -3098,7 +3098,7 @@ public class ExplosionControl
         // ATE: If we are belwo, return right away...
         if (sSectorZ != 0)
         {
-            return (false);
+            return false;
         }
 
         sSectorNo = SECTORINFO.SECTOR(sSectorX, sSectorY);
@@ -3111,12 +3111,12 @@ public class ExplosionControl
                 // Are we in the same gridno?
                 if (pSamGridNoAList[cnt] == sGridNo || pSamGridNoBList[cnt] == sGridNo)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -3176,7 +3176,7 @@ public class ExplosionControl
             if (pSamList[cnt] == sSectorNo)
             {
                 // get graphic.......
-                TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.EIGHTISTRUCT, (gbSAMGraphicList[cnt]), out TileIndexes usGoodGraphic);
+                TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.EIGHTISTRUCT, gbSAMGraphicList[cnt], out TileIndexes usGoodGraphic);
 
                 // Damaged one ( current ) is 2 less...
                 usDamagedGraphic = usGoodGraphic - 2;
@@ -3235,7 +3235,7 @@ public class ExplosionControl
                 {
                     // ignore if the player is fighting the enemy here and this is a good guy
                     if (gTacticalStatus.Team[ENEMY_TEAM].bMenInSector > 0
-                        && (gMercProfiles[pSoldier.ubProfile].ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.GOODGUY)))
+                        && gMercProfiles[pSoldier.ubProfile].ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.GOODGUY))
                     {
                         continue;
                     }
@@ -3262,25 +3262,25 @@ public class ExplosionControl
         {
             if (gWorldBombs[uiWorldBombIndex].fExists)
             {
-                pObj = (gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o);
-                if (pObj.bDetonatorType == DetonatorType.BOMB_TIMED && !(pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB)))
+                pObj = gWorldItems[gWorldBombs[uiWorldBombIndex].iItemIndex].o;
+                if (pObj.bDetonatorType == DetonatorType.BOMB_TIMED && !pObj.fFlags.HasFlag(OBJECT.DISABLED_BOMB))
                 {
-                    return (gWorldBombs[uiWorldBombIndex].iItemIndex);
+                    return gWorldBombs[uiWorldBombIndex].iItemIndex;
                 }
             }
         }
-        return (-1);
+        return -1;
     }
 
     bool ActiveTimedBombExists()
     {
         if (gfWorldLoaded)
         {
-            return (this.FindActiveTimedBomb() != -1);
+            return this.FindActiveTimedBomb() != -1;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 

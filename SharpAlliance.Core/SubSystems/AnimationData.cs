@@ -86,7 +86,7 @@ public class AnimationData
         {
             // Return warning that we have not actually loaded the surface previously
             Messages.AnimDebugMsg(string.Format("Surface Database: WARNING!!! Soldier has tried to unlock surface that he has not locked."));
-            return (false);
+            return false;
         }
 
         Messages.AnimDebugMsg(string.Format("Surface Database: MercUsage: %d, Global Uasage: %d", gbAnimUsageHistory[usSurfaceIndex][usSoldierID], gAnimSurfaceDatabase[usSurfaceIndex].bUsageCount));
@@ -109,7 +109,7 @@ public class AnimationData
             gAnimSurfaceDatabase[usSurfaceIndex].hVideoObject = null;
         }
 
-        return (true);
+        return true;
     }
 
     private bool LoadAnimationProfiles()
@@ -123,14 +123,14 @@ public class AnimationData
 
         if (usSurfaceIndex == INVALID_ANIMATION_SURFACE)
         {
-            return (null);
+            return null;
         }
 
         bStructDataType = gAnimSurfaceDatabase[usSurfaceIndex].bStructDataType;
 
         if (bStructDataType == StructData.NO_STRUCT)
         {
-            return (null);
+            return null;
         }
 
         // ATE: Alright - we all hate exception coding but ness here...
@@ -139,15 +139,15 @@ public class AnimationData
         if ((usAnimState == AnimationStates.FALLFORWARD_FROMHIT_STAND || usAnimState == AnimationStates.GENERIC_HIT_STAND ||
                  usAnimState == AnimationStates.FALLFORWARD_FROMHIT_CROUCH || usAnimState == AnimationStates.STANDING_BURST_HIT) && !fUseAbsolute)
         {
-            return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType][StructData.S_STRUCT].pStructureFileRef);
+            return gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType][StructData.S_STRUCT].pStructureFileRef;
         }
 
-        return (gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType][bStructDataType].pStructureFileRef);
+        return gAnimStructureDatabase[MercPtrs[usSoldierID].ubBodyType][bStructDataType].pStructureFileRef;
     }
 
     public static STRUCTURE_FILE_REF? GetAnimationStructureRef(int usSoldierID, AnimationSurfaceTypes usSurfaceIndex, AnimationStates usAnimState)
     {
-        return (InternalGetAnimationStructureRef(usSoldierID, usSurfaceIndex, usAnimState, false));
+        return InternalGetAnimationStructureRef(usSoldierID, usSurfaceIndex, usAnimState, false);
     }
 
     private void InitAnimationSurfacesPerBodytype()

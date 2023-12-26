@@ -18,14 +18,14 @@ public class PCXImageFileLoader : IImageFileLoader
         ushort Index;
         Rgba32[] pubPalette;
 
-        pubPalette = (pCurrentPcxObject.Palette);
+        pubPalette = pCurrentPcxObject.Palette;
 
         // Allocate memory for palette
         hImage.pPalette = new(256);//MemAlloc(sizeof(SGPPaletteEntry) * 256);
 
         if (hImage.pPalette == null)
         {
-            return (false);
+            return false;
         }
 
         // Initialize the proper palette entries
@@ -110,7 +110,7 @@ public class PCXImageFileLoader : IImageFileLoader
 
         if (pCurrentPcxObject.pPcxBuffer == null)
         {
-            return (null);
+            return null;
         }
 
         // Ok we now have a file handle, so let's read in the data
@@ -143,7 +143,7 @@ public class PCXImageFileLoader : IImageFileLoader
             // Delete the object
             //MemFree(pCurrentPcxObject.pPcxBuffer);
             //MemFree(pCurrentPcxObject);
-            return (null);
+            return null;
         }
 
         if (Header.ubBitsPerPixel == 8)
@@ -157,7 +157,7 @@ public class PCXImageFileLoader : IImageFileLoader
 
         pCurrentPcxObject.usWidth = (ushort)(1 + (Header.usRight - Header.usLeft));
         pCurrentPcxObject.usHeight = (ushort)(1 + (Header.usBottom - Header.usTop));
-        pCurrentPcxObject.uiBufferSize = (uiFileSize - 768 - PcxHeaderSize);
+        pCurrentPcxObject.uiBufferSize = uiFileSize - 768 - PcxHeaderSize;
 
         // We are ready to read in the pcx buffer data. Therefore we must lock the buffer
         //pPcxBuffer = pCurrentPcxObject.pPcxBuffer;
@@ -387,7 +387,7 @@ public class PCXImageFileLoader : IImageFileLoader
                 }
             }
         }
-        return (true);
+        return true;
     }
 
     private bool SetPcxPalette(PcxObject pCurrentPcxObject, HIMAGE hImage)
@@ -402,7 +402,7 @@ public class PCXImageFileLoader : IImageFileLoader
 
         if (hImage.pPalette == null)
         {
-            return (false);
+            return false;
         }
 
         // Initialize the proper palette entries
@@ -410,9 +410,9 @@ public class PCXImageFileLoader : IImageFileLoader
         {
             hImage.pPalette.Add(new()
             {
-                peRed = (pubPalette[(Index * 3)]),
-                peGreen = (pubPalette[(Index * 3) + 1]),
-                peBlue = (pubPalette[(Index * 3) + 2]),
+                peRed = pubPalette[Index * 3],
+                peGreen = pubPalette[(Index * 3) + 1],
+                peBlue = pubPalette[(Index * 3) + 2],
                 peFlags = 0,
             });
         }

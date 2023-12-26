@@ -14,7 +14,7 @@ public class LOS
 {
     public static bool SoldierToLocationLineOfSightTest(SOLDIERTYPE pStartSoldier, int sGridNo, int ubTileSightLimit, int bAware)
     {
-        return (SoldierTo3DLocationLineOfSightTest(pStartSoldier, sGridNo, 0, 0, ubTileSightLimit, bAware));
+        return SoldierTo3DLocationLineOfSightTest(pStartSoldier, sGridNo, 0, 0, ubTileSightLimit, bAware);
     }
 
     public static bool SoldierTo3DLocationLineOfSightTest(SOLDIERTYPE pStartSoldier, int sGridNo, int bLevel, int bCubeLevel, int ubTileSightLimit, int bAware)
@@ -31,7 +31,7 @@ public class LOS
 
         if (bCubeLevel > 0)
         {
-            dEndZPos = ((bCubeLevel + bLevel * PROFILE_Z_SIZE) - 0.5f) * HEIGHT_UNITS_PER_INDEX;
+            dEndZPos = (bCubeLevel + bLevel * PROFILE_Z_SIZE - 0.5f) * HEIGHT_UNITS_PER_INDEX;
             dEndZPos += CONVERT_PIXELS_TO_HEIGHTUNITS(gpWorldLevelData[sGridNo].sHeight);
         }
         else
@@ -41,7 +41,7 @@ public class LOS
             {
                 pTarget = MercPtrs[ubTargetID];
                 // there's a merc there; do a soldier-to-soldier test
-                return (SoldierToSoldierLineOfSightTest(pStartSoldier, pTarget, ubTileSightLimit, bAware));
+                return SoldierToSoldierLineOfSightTest(pStartSoldier, pTarget, ubTileSightLimit, bAware);
             }
             // else... assume standing height
             dEndZPos = STANDING_LOS_POS + bLevel * HEIGHT_UNITS;
@@ -113,7 +113,7 @@ public class LOS
                         pdZPos = PRONE_LOS_POS;
                         break;
                     default:
-                        return (false);
+                        return false;
                 }
                 break;
             case POS.FIRING_POS:
@@ -129,7 +129,7 @@ public class LOS
                         pdZPos = PRONE_FIRING_POS;
                         break;
                     default:
-                        return (false);
+                        return false;
                 }
                 break;
             case POS.TARGET_POS:
@@ -145,7 +145,7 @@ public class LOS
                         pdZPos = PRONE_TARGET_POS;
                         break;
                     default:
-                        return (false);
+                        return false;
                 }
                 break;
             case POS.HEAD_TARGET_POS:
@@ -161,7 +161,7 @@ public class LOS
                         pdZPos = PRONE_HEAD_TARGET_POS;
                         break;
                     default:
-                        return (false);
+                        return false;
                 }
                 break;
             case POS.TORSO_TARGET_POS:
@@ -177,7 +177,7 @@ public class LOS
                         pdZPos = PRONE_TORSO_TARGET_POS;
                         break;
                     default:
-                        return (false);
+                        return false;
                 }
                 break;
             case POS.LEGS_TARGET_POS:
@@ -193,7 +193,7 @@ public class LOS
                         pdZPos = PRONE_LEGS_TARGET_POS;
                         break;
                     default:
-                        return (false);
+                        return false;
                 }
                 break;
             case POS.HEIGHT:
@@ -209,14 +209,14 @@ public class LOS
                         pdZPos = PRONE_HEIGHT;
                         break;
                     default:
-                        return (false);
+                        return false;
                 }
                 break;
         }
         if (pSoldier.ubBodyType == SoldierBodyTypes.HATKIDCIV || pSoldier.ubBodyType == SoldierBodyTypes.KIDCIV)
         {
             // reduce value for kids who are 2/3 the height of regular people
-            pdZPos = (pdZPos * 2) / 3;
+            pdZPos = pdZPos * 2 / 3;
         }
         else if (pSoldier.ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON || pSoldier.ubBodyType == SoldierBodyTypes.LARVAE_MONSTER || pSoldier.ubBodyType == SoldierBodyTypes.INFANT_MONSTER || pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
         {
@@ -225,7 +225,7 @@ public class LOS
         }
         else if (TANK(pSoldier))
         {
-           pdZPos = (pdZPos * 4) / 3;
+           pdZPos = pdZPos * 4 / 3;
         }
 
         if (pSoldier.bLevel > 0)
@@ -241,7 +241,7 @@ public class LOS
         }
 
         pdZPos += CONVERT_PIXELS_TO_HEIGHTUNITS(gpWorldLevelData[pSoldier.sGridNo].sHeight);
-        return (true);
+        return true;
     }
 
     public static bool SoldierToSoldierLineOfSightTest(SOLDIERTYPE pStartSoldier, SOLDIERTYPE pEndSoldier, int ubTileSightLimit, int bAware)
@@ -264,11 +264,11 @@ public class LOS
             // in the bloodcat arena sector, skip sight between army & bloodcats
             if (pStartSoldier.bTeam == ENEMY_TEAM && pEndSoldier.bTeam == CREATURE_TEAM)
             {
-                return (false);
+                return false;
             }
             if (pStartSoldier.bTeam == CREATURE_TEAM && pEndSoldier.bTeam == ENEMY_TEAM)
             {
-                return (false);
+                return false;
             }
         }
 
@@ -302,11 +302,11 @@ public class LOS
                 // blind spot?
                 if (dEndZPos <= PRONE_LOS_POS)
                 {
-                    return (false);
+                    return false;
                 }
                 else if (sDistance <= 4 && dEndZPos <= CROUCHED_LOS_POS)
                 {
-                    return (false);
+                    return false;
                 }
             }
         }

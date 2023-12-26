@@ -10,17 +10,17 @@ public partial class Globals
     // This macro should be used whenever we want to see if someone is neutral
     // IF WE ARE CONSIDERING ATTACKING THEM.  Creatures & bloodcats will attack neutrals
     // but they can't attack empty vehicles!!
-    public static bool CONSIDERED_NEUTRAL(SOLDIERTYPE me, SOLDIERTYPE them) => ((them.IsNeutral) && (me.bTeam != TEAM.CREATURE_TEAM || (them.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))));
+    public static bool CONSIDERED_NEUTRAL(SOLDIERTYPE me, SOLDIERTYPE them) => them.IsNeutral && (me.bTeam != TEAM.CREATURE_TEAM || them.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
 
-    public static bool PTR_CIVILIAN(SOLDIERTYPE pSoldier) => (pSoldier.bTeam == CIV_TEAM);
-    public static bool PTR_CROUCHED(SOLDIERTYPE pSoldier) => (gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_CROUCH);
-    public static bool PTR_STANDING(SOLDIERTYPE pSoldier) => (gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_STAND);
-    public static bool PTR_PRONE(SOLDIERTYPE pSoldier) => (gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_PRONE);
+    public static bool PTR_CIVILIAN(SOLDIERTYPE pSoldier) => pSoldier.bTeam == CIV_TEAM;
+    public static bool PTR_CROUCHED(SOLDIERTYPE pSoldier) => gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_CROUCH;
+    public static bool PTR_STANDING(SOLDIERTYPE pSoldier) => gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_STAND;
+    public static bool PTR_PRONE(SOLDIERTYPE pSoldier) => gAnimControl[pSoldier.usAnimState].ubHeight == AnimationHeights.ANIM_PRONE;
 
-    public static bool HAS_SKILL_TRAIT(SOLDIERTYPE s, SkillTrait t) => (s.ubSkillTrait1 == t || s.ubSkillTrait2 == t);
-    public static int NUM_SKILL_TRAITS(SOLDIERTYPE s, SkillTrait t) => ((s.ubSkillTrait1 == t)
+    public static bool HAS_SKILL_TRAIT(SOLDIERTYPE s, SkillTrait t) => s.ubSkillTrait1 == t || s.ubSkillTrait2 == t;
+    public static int NUM_SKILL_TRAITS(SOLDIERTYPE s, SkillTrait t) => (s.ubSkillTrait1 == t)
         ? ((s.ubSkillTrait2 == t) ? 2 : 1)
-        : ((s.ubSkillTrait2 == t) ? 1 : 0));
+        : ((s.ubSkillTrait2 == t) ? 1 : 0);
 
     public static Dictionary<BATTLE_SOUND, BATTLESNDS_STRUCT> gBattleSndsData = new()
     {

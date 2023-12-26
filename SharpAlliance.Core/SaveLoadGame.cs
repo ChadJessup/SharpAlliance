@@ -35,7 +35,7 @@ public partial class Globals
 
     public const int NUM_SAVE_GAMES = 11;
     public const int BYTESINMEGABYTE = 1048576; //1024*1024;
-    public const int REQUIRED_FREE_SPACE = (20 * BYTESINMEGABYTE);
+    public const int REQUIRED_FREE_SPACE = 20 * BYTESINMEGABYTE;
     public const int SIZE_OF_SAVE_GAME_DESC = 128;
     public const int GAME_VERSION_LENGTH = 16;
     public const int SAVE__ERROR_NUM = 99;
@@ -98,7 +98,7 @@ public class SaveLoadGame
             && ubSaveGameID != SAVE__ERROR_NUM
             && ubSaveGameID != SAVE__END_TURN_NUM)
         {
-            return (false);     //ddd
+            return false;     //ddd
         }
 
         //clear out the save game header
@@ -633,7 +633,7 @@ public class SaveLoadGame
         //Check for enough free hard drive space
 //        NextLoopCheckForEnoughFreeHardDriveSpace();
 
-        return (true);
+        return true;
 
     //if there is an error saving the game
     FAILED_TO_SAVE:
@@ -669,7 +669,7 @@ public class SaveLoadGame
     }
 #endif
 
-        return (false);
+        return false;
     }
 
     bool LoadSavedGame(int ubSavedGameID)
@@ -710,12 +710,12 @@ public class SaveLoadGame
         {
             if (ubSavedGameID != SAVE__END_TURN_NUM)
             {
-                return (false);
+                return false;
             }
         }
         else if (!gbSaveGameArray[ubSavedGameID])
         {
-            return (false);
+            return false;
         }
 
         //Used in mapescreen to disable the annoying 'swoosh' transitions
@@ -750,7 +750,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 
         //Load the Save Game header file
@@ -758,7 +758,7 @@ public class SaveLoadGame
         if (uiNumBytesRead != Marshal.SizeOf<SAVED_GAME_HEADER>())
         {
             this.files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
         guiJA2EncryptionSet = this.CalcJA2EncryptionSet(SaveGameHeader);
@@ -798,7 +798,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Tactical Status");
@@ -814,7 +814,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Game Clock");
@@ -881,7 +881,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 
         uiRelEndPerc += 0;
@@ -910,7 +910,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 
         uiRelEndPerc += 30;
@@ -925,7 +925,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 
         uiRelEndPerc += 1;
@@ -941,7 +941,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Finances Data File");
@@ -963,7 +963,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "History File");
@@ -985,7 +985,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "The Laptop FILES file");
@@ -1004,7 +1004,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Email");
@@ -1132,7 +1132,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "OppList Info");
@@ -1227,7 +1227,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "PreGenerated Random Files");
@@ -1287,7 +1287,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 #if JA2BETAVERSION
     LoadGameFilePosition(FileGetPos(hFile), "Misc info");
@@ -1307,7 +1307,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hFile);
             guiSaveGameVersion = 0;
-            return (false);
+            return false;
         }
 
         uiRelEndPerc += 0;
@@ -1321,7 +1321,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
         }
 
@@ -1338,7 +1338,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Vehicle Information");
@@ -1407,7 +1407,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Air Raid Info");
@@ -1429,7 +1429,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Team Turn Info");
@@ -1476,7 +1476,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Creature Spreading");
@@ -1500,7 +1500,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Strategic Status");
@@ -1522,7 +1522,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "Strategic AI");
@@ -1544,7 +1544,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
         }
 
@@ -1561,7 +1561,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
         }
 #if JA2BETAVERSION
@@ -1584,7 +1584,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
         }
 #if JA2BETAVERSION
@@ -1646,7 +1646,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
         }
         else
@@ -1755,7 +1755,7 @@ public class SaveLoadGame
             {
                 this.files.FileClose(hFile);
                 guiSaveGameVersion = 0;
-                return (false);
+                return false;
             }
 #if JA2BETAVERSION
         LoadGameFilePosition(FileGetPos(hFile), "New way of loading Bobby R mailorders");
@@ -1905,10 +1905,10 @@ public class SaveLoadGame
 //        LoadCarPortraitValues();
 
         // OK, turn OFF show all enemies....
-        gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_MERCS);
+        gTacticalStatus.uiFlags &= ~TacticalEngineStatus.SHOW_ALL_MERCS;
         gTacticalStatus.uiFlags &= ~TacticalEngineStatus.SHOW_ALL_ITEMS;
 
-        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
 //            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, "Setting attack busy count to 0 from load");
             gTacticalStatus.ubAttackBusyCount = 0;
@@ -2021,7 +2021,7 @@ public class SaveLoadGame
         // reset once-per-convo records for everyone in the loaded sector
 //        ResetOncePerConvoRecordsForAllNPCsInLoadedSector();
 
-        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
             // fix lingering attack busy count problem on loading saved game by resetting a.b.c
             // if we're not in combat.
@@ -2036,7 +2036,7 @@ public class SaveLoadGame
 //        HandlePlayerTogglingLightEffects(false);
 
 
-        return (true);
+        return true;
     }
 
     bool SaveMercProfiles(Stream hFile)
@@ -2059,11 +2059,11 @@ public class SaveLoadGame
             }
             if (uiNumBytesWritten != uiSaveSize)
             {
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2086,7 +2086,7 @@ public class SaveLoadGame
             }
             if (uiNumBytesRead != Marshal.SizeOf<MERCPROFILESTRUCT>())
             {
-                return (false);
+                return false;
             }
 
 //            if (gMercProfiles[cnt].uiProfileChecksum != ProfileChecksum((gMercProfiles[cnt])))
@@ -2095,7 +2095,7 @@ public class SaveLoadGame
 //            }
         }
 
-        return (true);
+        return true;
     }
 
     //Not saving any of these in the soldier struct
@@ -2139,7 +2139,7 @@ public class SaveLoadGame
 //                FileWrite(hFile, ubZero, 1, out uiNumBytesWritten);
                 if (uiNumBytesWritten != 1)
                 {
-                    return (false);
+                    return false;
                 }
             }
 
@@ -2149,7 +2149,7 @@ public class SaveLoadGame
 //                FileWrite(hFile, ubOne, 1, out uiNumBytesWritten);
                 if (uiNumBytesWritten != 1)
                 {
-                    return (false);
+                    return false;
                 }
 
                 // calculate checksum for soldier
@@ -2165,7 +2165,7 @@ public class SaveLoadGame
                 }
                 if (uiNumBytesWritten != uiSaveSize)
                 {
-                    return (false);
+                    return false;
                 }
 
 
@@ -2177,7 +2177,7 @@ public class SaveLoadGame
 
                 //Save the pMercPath
                 if (!this.SaveMercPathFromSoldierStruct(hFile, (int)cnt))
-                    return (false);
+                    return false;
 
 
 
@@ -2213,7 +2213,7 @@ public class SaveLoadGame
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2243,7 +2243,7 @@ public class SaveLoadGame
         {
 
             //update the progress bar
-            uiPercentage = (cnt * 100) / (TOTAL_SOLDIERS - 1);
+            uiPercentage = cnt * 100 / (TOTAL_SOLDIERS - 1);
 
             AnimatedProgressBar.RenderProgressBar(0, uiPercentage);
 
@@ -2252,7 +2252,7 @@ public class SaveLoadGame
 //            file.FileRead(hFile, ref ubActive, 1, out uiNumBytesRead);
             if (uiNumBytesRead != 1)
             {
-                return (false);
+                return false;
             }
 
             // if the soldier is not active, continue 
@@ -2275,7 +2275,7 @@ public class SaveLoadGame
                 }
                 if (uiNumBytesRead != uiSaveSize)
                 {
-                    return (false);
+                    return false;
                 }
                 // check checksum
 //                if (MercChecksum(&SavedSoldierInfo) != SavedSoldierInfo.uiMercChecksum)
@@ -2316,12 +2316,12 @@ public class SaveLoadGame
 
                 if (!SoldierCreate.TacticalCreateSoldier(CreateStruct, out int ubId))
                 {
-                    return (false);
+                    return false;
                 }
 
                 // Load the pMercPath
                 if (!this.LoadMercPathToSoldierStruct(hFile, ubId))
-                    return (false);
+                    return false;
 
 
                 //
@@ -2416,7 +2416,7 @@ public class SaveLoadGame
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2528,14 +2528,14 @@ public class SaveLoadGame
 //        uiFileSize = this.files.FileGetSize(hSrcFile);
         if (uiFileSize == 0)
         {
-            return (false);
+            return false;
         }
 
         // Write the the size of the file to the saved game file
 //        FileWrite(hFile, uiFileSize, Marshal.SizeOf<int>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
 
@@ -2544,7 +2544,7 @@ public class SaveLoadGame
         pData = new();
         if (pData == null)
         {
-            return (false);
+            return false;
         }
 
 //        memset(pData, 0, uiFileSize);
@@ -2556,7 +2556,7 @@ public class SaveLoadGame
             //Free the buffer
 //            MemFree(pData);
 
-            return (false);
+            return false;
         }
 
 
@@ -2568,7 +2568,7 @@ public class SaveLoadGame
             //Free the buffer
 //            MemFree(pData);
 
-            return (false);
+            return false;
         }
 
         //Free the buffer
@@ -2577,7 +2577,7 @@ public class SaveLoadGame
         //Clsoe the source data file
         this.files.FileClose(hSrcFile);
 
-        return (true);
+        return true;
     }
 
     bool LoadFilesFromSavedGame(string pSrcFileName, Stream hFile)
@@ -2594,7 +2594,7 @@ public class SaveLoadGame
             if (!this.files.FileDelete(pSrcFileName))
             {
                 //unable to delete the original file
-                return (false);
+                return false;
             }
         }
 
@@ -2613,7 +2613,7 @@ public class SaveLoadGame
         {
             this.files.FileClose(hSrcFile);
 
-            return (false);
+            return false;
         }
 
 
@@ -2621,7 +2621,7 @@ public class SaveLoadGame
         if (uiFileSize == 0)
         {
             this.files.FileClose(hSrcFile);
-            return (true);
+            return true;
         }
 
         //Allocate a buffer to read the data into
@@ -2629,7 +2629,7 @@ public class SaveLoadGame
         if (pData == null)
         {
             this.files.FileClose(hSrcFile);
-            return (false);
+            return false;
         }
 
 
@@ -2642,7 +2642,7 @@ public class SaveLoadGame
             //Free the buffer
             MemFree(pData);
 
-            return (false);
+            return false;
         }
 
 
@@ -2656,7 +2656,7 @@ public class SaveLoadGame
             //Free the buffer
 //            MemFree(pData);
 
-            return (false);
+            return false;
         }
 
         //Free the buffer
@@ -2665,7 +2665,7 @@ public class SaveLoadGame
         //Close the source data file
         this.files.FileClose(hSrcFile);
 
-        return (true);
+        return true;
     }
 
 
@@ -2691,7 +2691,7 @@ public class SaveLoadGame
         this.files.FileWrite(hFile, uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
 
@@ -2706,14 +2706,14 @@ public class SaveLoadGame
             this.files.FileWrite(hFile, uiStringLength, Marshal.SizeOf<int>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<int>())
             {
-                return (false);
+                return false;
             }
 
             //write the subject of the current email to the saved game file
             this.files.FileWrite(hFile, pEmail.pSubject, uiStringLength, out uiNumBytesWritten);
             if (uiNumBytesWritten != uiStringLength)
             {
-                return (false);
+                return false;
             }
 
 
@@ -2738,14 +2738,14 @@ public class SaveLoadGame
             this.files.FileWrite(hFile, SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<SavedEmailStruct>())
             {
-                return (false);
+                return false;
             }
 
             //advance to the next email
             pEmail = pEmail.Next;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2767,7 +2767,7 @@ public class SaveLoadGame
         pEmailList = new(); //MemAlloc(Marshal.SizeOf<email>());
         if (pEmailList == null)
         {
-            return (false);
+            return false;
         }
 
         //        memset(pEmailList, 0, Marshal.SizeOf<email>());
@@ -2776,7 +2776,7 @@ public class SaveLoadGame
         this.files.FileRead(hFile, ref uiNumOfEmails, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
         //loop through all the emails, add each one individually
@@ -2787,14 +2787,14 @@ public class SaveLoadGame
             this.files.FileRead(hFile, ref uiSizeOfSubject, Marshal.SizeOf<int>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<int>())
             {
-                return (false);
+                return false;
             }
 
             //allocate space for the subject
             pData = string.Empty; //MemAlloc(EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
             if (pData == null)
             {
-                return (false);
+                return false;
             }
 
 //            memset(pData, 0, EMAIL_SUBJECT_LENGTH * Marshal.SizeOf<wchar_t>());
@@ -2803,14 +2803,14 @@ public class SaveLoadGame
 //            files.FileRead(hFile, ref pData, uiSizeOfSubject, out uiNumBytesRead);
             if (uiNumBytesRead != uiSizeOfSubject)
             {
-                return (false);
+                return false;
             }
 
             //get the rest of the data from the email
 //            files.FileRead(hFile, ref SavedEmail, Marshal.SizeOf<SavedEmailStruct>(), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<SavedEmailStruct>())
             {
-                return (false);
+                return false;
             }
 
             //
@@ -2821,7 +2821,7 @@ public class SaveLoadGame
             pTempEmail = new(); //MemAlloc(Marshal.SizeOf<Email>());
             if (pTempEmail == null)
             {
-                return (false);
+                return false;
             }
 
 //            memset(pTempEmail, 0, Marshal.SizeOf<Email>());
@@ -2868,7 +2868,7 @@ public class SaveLoadGame
             pEmailList = null;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2879,7 +2879,7 @@ public class SaveLoadGame
         this.files.FileWrite(hFile, gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<TacticalStatusType>())
         {
-            return (false);
+            return false;
         }
 
         //
@@ -2890,7 +2890,7 @@ public class SaveLoadGame
         this.files.FileWrite(hFile, gWorldSectorX, Marshal.SizeOf<int>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
 
@@ -2898,7 +2898,7 @@ public class SaveLoadGame
         this.files.FileWrite(hFile, gWorldSectorY, Marshal.SizeOf<int>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
 
@@ -2906,10 +2906,10 @@ public class SaveLoadGame
         this.files.FileWrite(hFile, gbWorldSectorZ, Marshal.SizeOf<int>(), out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2922,7 +2922,7 @@ public class SaveLoadGame
 //        this.files.FileRead(hFile, ref gTacticalStatus, Marshal.SizeOf<TacticalStatusType>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<TacticalStatusType>())
         {
-            return (false);
+            return false;
         }
 
         //
@@ -2933,7 +2933,7 @@ public class SaveLoadGame
 //        this.files.FileRead(hFile, ref gWorldSectorX, Marshal.SizeOf<int>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
 
@@ -2941,7 +2941,7 @@ public class SaveLoadGame
 //        this.files.FileRead(hFile, ref gWorldSectorY, Marshal.SizeOf<int>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
 
@@ -2949,10 +2949,10 @@ public class SaveLoadGame
 //        this.files.FileRead(hFile, ref gbWorldSectorZ, Marshal.SizeOf<int>(), out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     bool CopySavedSoldierInfoToNewSoldier(SOLDIERTYPE pDestSourceInfo, SOLDIERTYPE pSourceInfo)
@@ -2960,7 +2960,7 @@ public class SaveLoadGame
         //Copy the old soldier information over to the new structure
         //memcpy(pDestSourceInfo, pSourceInfo, Marshal.SizeOf<SOLDIERTYPE>());
 
-        return (true);
+        return true;
     }
 
     bool SetMercsInsertionGridNo()
@@ -2988,7 +2988,7 @@ public class SaveLoadGame
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -3003,7 +3003,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gbPublicOpplist, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
         // Save the Seen Oppenents
@@ -3011,7 +3011,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gbSeenOpponents, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -3021,7 +3021,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gsLastKnownOppLoc, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
         // Save the Last Known Opp Level
@@ -3029,7 +3029,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gbLastKnownOppLevel, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -3038,7 +3038,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gsPublicLastKnownOppLoc, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
         // Save the Public Last Known Opp Level
@@ -3046,7 +3046,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gbPublicLastKnownOppLevel, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -3055,7 +3055,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gubPublicNoiseVolume, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
         // Save the Public Last Noise Gridno
@@ -3063,12 +3063,12 @@ public class SaveLoadGame
 //        FileWrite(hFile, gsPublicNoiseGridno, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 
 
-        return (true);
+        return true;
     }
 
 
@@ -3082,7 +3082,7 @@ public class SaveLoadGame
 //        FileRead(hFile, gbPublicOpplist, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
         // Load the Seen Oppenents
@@ -3090,7 +3090,7 @@ public class SaveLoadGame
 //        FileRead(hFile, gbSeenOpponents, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -3100,7 +3100,7 @@ public class SaveLoadGame
 //        FileRead(hFile, gsLastKnownOppLoc, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
         // Load the Last Known Opp Level
@@ -3108,7 +3108,7 @@ public class SaveLoadGame
 //        FileRead(hFile, gbLastKnownOppLevel, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -3117,7 +3117,7 @@ public class SaveLoadGame
 //        FileRead(hFile, gsPublicLastKnownOppLoc, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
         // Load the Public Last Known Opp Level
@@ -3125,7 +3125,7 @@ public class SaveLoadGame
 //        FileRead(hFile, gbPublicLastKnownOppLevel, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -3134,7 +3134,7 @@ public class SaveLoadGame
 //        FileRead(hFile, gubPublicNoiseVolume, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
         // Load the Public Last Noise Gridno
@@ -3142,10 +3142,10 @@ public class SaveLoadGame
 //        FileRead(hFile, gsPublicNoiseGridno, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     bool SaveWatchedLocsToSavedGame(Stream hFile)
@@ -3161,7 +3161,7 @@ public class SaveLoadGame
 //        FileWrite(hFile, gsWatchedLoc, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
         uiSaveSize = uiArraySize * Marshal.SizeOf<int>();
@@ -3169,22 +3169,22 @@ public class SaveLoadGame
 //        FileWrite(hFile, gbWatchedLocLevel, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 //        FileWrite(hFile, gubWatchedLocPoints, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 //        FileWrite(hFile, gfWatchedLocReset, uiSaveSize, out uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -3200,30 +3200,30 @@ public class SaveLoadGame
 //        FileRead(hFile, gsWatchedLoc, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
         uiLoadSize = uiArraySize * Marshal.SizeOf<int>();
 //        FileRead(hFile, gbWatchedLocLevel, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
 //        FileRead(hFile, gubWatchedLocPoints, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
 //        FileRead(hFile, gfWatchedLocReset, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 
 
-        return (true);
+        return true;
     }
 
     void CreateSavedGameFileNameFromNumber(int ubSaveGameID, out string pzNewFileName)
@@ -3271,7 +3271,7 @@ public class SaveLoadGame
         this.files.FileWrite(hFile, uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
         //loop through all the nodes and add them
@@ -3285,13 +3285,13 @@ public class SaveLoadGame
             this.files.FileWrite(hFile, pTempPath, Marshal.SizeOf<Path>(), out uiNumBytesWritten);
             if (uiNumBytesWritten != Marshal.SizeOf<Path>())
             {
-                return (false);
+                return false;
             }
 
             pTempPath = pTempPath.pNext;
         }
 
-        return (true);
+        return true;
     }
 
     bool LoadMercPathToSoldierStruct(Stream hFile, int ubID)
@@ -3326,7 +3326,7 @@ public class SaveLoadGame
         this.files.FileRead(hFile, ref uiNumOfNodes, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
         //load all the nodes
@@ -3336,7 +3336,7 @@ public class SaveLoadGame
 //            files.FileRead(hFile, ref pTemp, 17/*Marshal.SizeOf<Path>()*/, out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<Path>())
             {
-                return (false);
+                return false;
             }
 
             //Put the node into the list 
@@ -3365,7 +3365,7 @@ public class SaveLoadGame
             Menptr[ubID].pMercPath.pPrev = null;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -3671,10 +3671,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         if (uiNumBytesWritten != Marshal.SizeOf<GENERAL_SAVE_INFO>())
         {
             this.files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -3690,7 +3690,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         if (uiNumBytesRead != Marshal.SizeOf<GENERAL_SAVE_INFO>())
         {
             this.files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
         gMusicModeToPlay = sGeneralInfo.ubMusicMode;
@@ -3928,7 +3928,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         gfPlayerTeamSawJoey = sGeneralInfo.fPlayerTeamSawJoey;
         gfMikeShouldSayHi = sGeneralInfo.fMikeShouldSayHi;
 
-        return (true);
+        return true;
     }
 
     bool SavePreRandomNumbersToSaveGameFile(Stream hFile)
@@ -3938,17 +3938,17 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         this.files.FileWrite(hFile, guiPreRandomIndex, Marshal.SizeOf<int>(), out int uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
         //Save the Prerandom number index
         this.files.FileWrite(hFile, guiPreRandomNums, Marshal.SizeOf<int>() * MAX_PREGENERATED_NUMS, out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<int>() * MAX_PREGENERATED_NUMS)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     bool LoadPreRandomNumbersFromSaveGameFile(Stream hFile)
@@ -3958,17 +3958,17 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         this.files.FileRead(hFile, ref guiPreRandomIndex, Marshal.SizeOf<int>(), out int uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>())
         {
-            return (false);
+            return false;
         }
 
         //Load the Prerandom number index
         this.files.FileRead(hFile, ref guiPreRandomNums, Marshal.SizeOf<int>() * MAX_PREGENERATED_NUMS, out uiNumBytesRead);
         if (uiNumBytesRead != Marshal.SizeOf<int>() * MAX_PREGENERATED_NUMS)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     bool LoadMeanwhileDefsFromSaveGameFile(Stream hFile)
@@ -3981,7 +3981,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
             this.files.FileRead(hFile, ref gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * ((int)Meanwhiles.NUM_MEANWHILES - 1), out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * ((int)Meanwhiles.NUM_MEANWHILES - 1))
             {
-                return (false);
+                return false;
             }
             // and set the last one
             gMeanwhileDef[(int)Meanwhiles.NUM_MEANWHILES - 1] = new();
@@ -3993,11 +3993,11 @@ void LoadGameFilePosition(int iPos, STR pMsg)
             this.files.FileRead(hFile, ref gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES, out uiNumBytesRead);
             if (uiNumBytesRead != Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES)
             {
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
     bool SaveMeanwhileDefsFromSaveGameFile(Stream hFile)
@@ -4008,10 +4008,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
 //        this.files.FileWrite(hFile, ref gMeanwhileDef, Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES, out uiNumBytesWritten);
         if (uiNumBytesWritten != Marshal.SizeOf<MEANWHILE_DEFINITION>() * (int)Meanwhiles.NUM_MEANWHILES)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     bool DoesUserHaveEnoughHardDriveSpace()
@@ -4023,10 +4023,10 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         //check to see if there is enough hard drive space
         if (uiBytesFree < REQUIRED_FREE_SPACE)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     void GetBestPossibleSectorXYZValues(out int psSectorX, out MAP_ROW psSectorY, out int pbSectorZ)
@@ -4363,27 +4363,27 @@ void LoadGameFilePosition(int iPos, STR pMsg)
         }
 
         if (!fFile1Exist && !fFile2Exist)
-            return (-1);
+            return -1;
         else if (fFile1Exist && !fFile2Exist)
         {
             if (fLatestAutoSave)
-                return (0);
+                return 0;
             else
-                return (-1);
+                return -1;
         }
         else if (!fFile1Exist && fFile2Exist)
         {
             if (fLatestAutoSave)
-                return (1);
+                return 1;
             else
-                return (-1);
+                return -1;
         }
         else
         {
 //            if (CompareSGPFileTimes(&LastWriteTime1, &LastWriteTime2) > 0)
 //                return (0);
 //            else
-                return (1);
+                return 1;
         }
     }
 
@@ -4503,7 +4503,7 @@ void LoadGameFilePosition(int iPos, STR pMsg)
                 break;
         }
 
-        return (uiEncryptionSet);
+        return uiEncryptionSet;
     }
 }
 

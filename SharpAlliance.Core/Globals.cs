@@ -156,7 +156,7 @@ public partial class Globals
     // ENUMERATION OF SOLDIER POSIITONS IN GLOBAL SOLDIER LIST
     public const int MAX_NUM_SOLDIERS = 148;
     public const int NUM_PLANNING_MERCS = 8;
-    public const int TOTAL_SOLDIERS = (NUM_PLANNING_MERCS + MAX_NUM_SOLDIERS);
+    public const int TOTAL_SOLDIERS = NUM_PLANNING_MERCS + MAX_NUM_SOLDIERS;
 
     public const int MAXCOL = WORLD_COLS;
     public const int MAXROW = WORLD_ROWS;
@@ -214,31 +214,31 @@ public partial class Globals
     public static bool gfHiddenInterrupt;
     public static bool gfHiddenTurnbased;
 
-    public static bool INTERRUPT_QUEUED => (gubOutOfTurnPersons > 0);
+    public static bool INTERRUPT_QUEUED => gubOutOfTurnPersons > 0;
 
 
-    public static bool RPC_RECRUITED(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)));
-    public static bool AM_AN_EPC(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.EPCACTIVE)));
-    public static bool AM_A_ROBOT(SOLDIERTYPE p) => ((p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON));
+    public static bool RPC_RECRUITED(SOLDIERTYPE p) => (p.ubProfile == NO_PROFILE) ? false : gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED);
+    public static bool AM_AN_EPC(SOLDIERTYPE p) => (p.ubProfile == NO_PROFILE) ? false : gMercProfiles[p.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.EPCACTIVE);
+    public static bool AM_A_ROBOT(SOLDIERTYPE p) => (p.ubProfile == NO_PROFILE) ? false : (gMercProfiles[p.ubProfile].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON);
 
     public static email? pEmailList;
     public static PagePtr? pPageList;
     public static int iLastPage = -1;
     public static int iCurrentPage = 0;
 
-    public static bool OK_ENEMY_MERC(SOLDIERTYPE p) => (p.bNeutral == 0 && (p.bSide != gbPlayerNum) && p.bLife >= OKLIFE);
+    public static bool OK_ENEMY_MERC(SOLDIERTYPE p) => p.bNeutral == 0 && (p.bSide != gbPlayerNum) && p.bLife >= OKLIFE;
     // Checks if our guy can be controllable .... checks bInSector, team, on duty, etc...
-    public static bool OK_CONTROLLABLE_MERC(SOLDIERTYPE p) => (p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY);
+    public static bool OK_CONTROLLABLE_MERC(SOLDIERTYPE p) => p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY;
     // Checks if our guy can be controllable .... checks bInSector, team, on duty, etc...
-    public static bool OK_INSECTOR_MERC(SOLDIERTYPE p) => (p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY);
+    public static bool OK_INSECTOR_MERC(SOLDIERTYPE p) => p.bLife >= OKLIFE && p.bActive && p.bInSector && p.bTeam == gbPlayerNum && p.bAssignment < Assignments.ON_DUTY;
     // Checkf if our guy can be selected and is not in a position where our team has an interupt and he does not have one...
-    public static bool OK_INTERRUPT_MERC(SOLDIERTYPE p) => ((INTERRUPT_QUEUED) ? ((p.bMoved > 0) ? false : true) : true);
-    public static bool CREATURE_OR_BLOODCAT(SOLDIERTYPE p) => ((p.uiStatusFlags.HasFlag(SOLDIER.MONSTER)) || p.ubBodyType == SoldierBodyTypes.BLOODCAT);
-    public static bool TANK(SOLDIERTYPE p) => (p.ubBodyType == SoldierBodyTypes.TANK_NE || p.ubBodyType == SoldierBodyTypes.TANK_NW);
-    public static bool OK_ENTERABLE_VEHICLE(SOLDIERTYPE p) => ((p.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !TANK(p) && p.bLife >= OKLIFE);
+    public static bool OK_INTERRUPT_MERC(SOLDIERTYPE p) => INTERRUPT_QUEUED ? ((p.bMoved > 0) ? false : true) : true;
+    public static bool CREATURE_OR_BLOODCAT(SOLDIERTYPE p) => p.uiStatusFlags.HasFlag(SOLDIER.MONSTER) || p.ubBodyType == SoldierBodyTypes.BLOODCAT;
+    public static bool TANK(SOLDIERTYPE p) => p.ubBodyType == SoldierBodyTypes.TANK_NE || p.ubBodyType == SoldierBodyTypes.TANK_NW;
+    public static bool OK_ENTERABLE_VEHICLE(SOLDIERTYPE p) => p.uiStatusFlags.HasFlag(SOLDIER.VEHICLE) && !TANK(p) && p.bLife >= OKLIFE;
 
 
-    public static bool EXPLOSIVE_GUN(Items x) => (x == Items.ROCKET_LAUNCHER || x == Items.TANK_CANNON);
+    public static bool EXPLOSIVE_GUN(Items x) => x == Items.ROCKET_LAUNCHER || x == Items.TANK_CANNON;
 
     public static UNDERGROUND_SECTORINFO? gpUndergroundSectorInfoHead = null;
     public static UNDERGROUND_SECTORINFO? gpUndergroundSectorInfoTail = null;
@@ -377,9 +377,9 @@ public partial class Globals
     public const int MERC_HIRE_OVER_20_MERCS_HIRED = -1;
     public const int MERC_HIRE_FAILED = 0;
     public const int MERC_HIRE_OK = 1;
-    public const int MERC_ARRIVE_TIME_SLOT_1 = (7 * 60 + 30);	// 7:30 a.m.
-    public const int MERC_ARRIVE_TIME_SLOT_2 = (13 * 60 + 30);// 1:30 pm
-    public const int MERC_ARRIVE_TIME_SLOT_3 = (19 * 60 + 30);// 7:30 pm
+    public const int MERC_ARRIVE_TIME_SLOT_1 = 7 * 60 + 30;	// 7:30 a.m.
+    public const int MERC_ARRIVE_TIME_SLOT_2 = 13 * 60 + 30;// 1:30 pm
+    public const int MERC_ARRIVE_TIME_SLOT_3 = 19 * 60 + 30;// 7:30 pm
 
 
     public const int LOYALTY_LOW_THRESHOLD = 30;
@@ -1031,8 +1031,8 @@ public partial class Globals
     public static int gubLoneMercAttemptingToAbandonEPCs { get; internal set; }
     public static int gbPotentiallyAbandonedEPCSlotID { get; internal set; }
     public static bool gfRobotWithoutControllerAttemptingTraversal { get; internal set; }
-    public const int IGNORE_PEOPLE_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 101);
-    public const int FIRST_AVAILABLE_STRUCTURE_ID = (INVALID_STRUCTURE_ID + 2);
+    public const int IGNORE_PEOPLE_STRUCTURE_ID = Globals.TOTAL_SOLDIERS + 101;
+    public const int FIRST_AVAILABLE_STRUCTURE_ID = INVALID_STRUCTURE_ID + 2;
 
     public static int gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
 
@@ -1478,8 +1478,8 @@ public partial class Globals
                                                         // Mine production is being processed 4x daily: 9am ,noon, 3pm, and 6pm.
                                                         // This is loosely based on a 6am-6pm working day of 4 "shifts".
     public const int MINE_PRODUCTION_NUMBER_OF_PERIODS = 4;                     // how many times a day mine production is processed
-    public const int MINE_PRODUCTION_START_TIME = (9 * 60);       // hour of first daily mine production event (in minutes)
-    public const int MINE_PRODUCTION_PERIOD = (3 * 60);     // time seperating daily mine production events (in minutes)
+    public const int MINE_PRODUCTION_START_TIME = 9 * 60;       // hour of first daily mine production event (in minutes)
+    public const int MINE_PRODUCTION_PERIOD = 3 * 60;     // time seperating daily mine production events (in minutes)
 
     // this table holds mine values that change during the course of the game and must be saved
     public static Dictionary<MINE, MINE_STATUS_TYPE> gMineStatus = new();
@@ -1916,8 +1916,8 @@ public partial class Globals
     public static bool gfPauseClock = false;
 
     // clock mouse region
-    public static MOUSE_REGION? gClockMouseRegion;
-    public static MOUSE_REGION? gClockScreenMaskMouseRegion;
+    public static MOUSE_REGION gClockMouseRegion = new(nameof(gClockMouseRegion));
+    public static MOUSE_REGION gClockScreenMaskMouseRegion = new(nameof(gClockScreenMaskMouseRegion));
 
     public static uint GetJA2Clock() => ClockManager.GetJA2Clock();
 
@@ -2046,13 +2046,13 @@ public partial class Globals
     public const InventorySlot NO_SLOT = (InventorySlot)(-1);
 
     // MACRO FOR DEFINING OF ITEM IS VISIBLE
-    public static bool ITEMPOOL_VISIBLE(ITEM_POOL pItemPool) => ((pItemPool.bVisible >= (ItemVisibility)1)
-        || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS)));
+    public static bool ITEMPOOL_VISIBLE(ITEM_POOL pItemPool) => (pItemPool.bVisible >= (ItemVisibility)1)
+        || gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ITEMS);
 
     // NB brothel rooms 88-90 removed because they are the antechamber
-    public static bool IN_BROTHEL(int room) => (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.C && (room) >= 91 && (room) <= 119);
-    public static bool IN_BROTHEL_GUARD_ROOM(int room) => (room == 110);
-    public static bool IN_KINGPIN_HOUSE(int room) => (gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.D && (room) >= 30 && (room) <= 39);
+    public static bool IN_BROTHEL(int room) => gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.C && room >= 91 && room <= 119;
+    public static bool IN_BROTHEL_GUARD_ROOM(int room) => room == 110;
+    public static bool IN_KINGPIN_HOUSE(int room) => gWorldSectorX == 5 && gWorldSectorY == MAP_ROW.D && room >= 30 && room <= 39;
 
     public const int MOVEINTERRUPT = 0;
     public const int SIGHTINTERRUPT = 1;
@@ -2268,7 +2268,7 @@ public partial class Globals
     public static int gsTreeRevealXPos;
     public static int gsTreeRevealYPos;
 
-    public const int MAX_HUMAN_CREATURE_SMELL = (NORMAL_HUMAN_SMELL_STRENGTH - 1);
+    public const int MAX_HUMAN_CREATURE_SMELL = NORMAL_HUMAN_SMELL_STRENGTH - 1;
 
     public static int gsWhoThrewRock = NOBODY;
 
@@ -2724,5 +2724,5 @@ public enum Stat
 
     FIRST_CHANGEABLE_STAT = HEALTHAMT,
     LAST_CHANGEABLE_STAT = LDRAMT,
-    CHANGEABLE_STAT_COUNT = (LDRAMT - HEALTHAMT + 1),
+    CHANGEABLE_STAT_COUNT = LDRAMT - HEALTHAMT + 1,
 }

@@ -102,12 +102,12 @@ public partial class Globals
     public const int BEHIND_RATIO = 0;
 
     // looking distance defines
-    public static int BEHIND => (BEHIND_RATIO * STRAIGHT_RANGE);
-    public static int SBEHIND => (SBEHIND_RATIO * STRAIGHT_RANGE);
+    public static int BEHIND => BEHIND_RATIO * STRAIGHT_RANGE;
+    public static int SBEHIND => SBEHIND_RATIO * STRAIGHT_RANGE;
     public static int SIDE => (int)(SIDE_RATIO * STRAIGHT_RANGE);
     public static int ANGLE => (int)(ANGLE_RATIO * STRAIGHT_RANGE);
-    public static int STRAIGHT = (STRAIGHT_RATIO * STRAIGHT_RANGE);
-    public static bool PTR_OURTEAM(SOLDIERTYPE pSoldier) => (pSoldier.bTeam == gbPlayerNum);
+    public static int STRAIGHT = STRAIGHT_RATIO * STRAIGHT_RANGE;
+    public static bool PTR_OURTEAM(SOLDIERTYPE pSoldier) => pSoldier.bTeam == gbPlayerNum;
 
     // opplist value constants
     public const int HEARD_3_TURNS_AGO = -4;
@@ -154,7 +154,7 @@ public partial class Globals
     }
 
     // strcmp returns 0 if true!		
-    public static bool COMPARE_PALETTEREP_ID(string a, string b) => ((a.Equals(b)) ? false : true);
+    public static bool COMPARE_PALETTEREP_ID(string a, string b) => a.Equals(b) ? false : true;
 }
 
 // ORDERS

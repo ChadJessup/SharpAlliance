@@ -27,7 +27,7 @@ public class StrategicTownLoyalty
             }
         }
 
-        return (iNumber);
+        return iNumber;
     }
 
     // is the ENTIRE town under player control?
@@ -38,7 +38,7 @@ public class StrategicTownLoyalty
 //            return (true);
 //        }
 
-        return (false);
+        return false;
     }
 
     // is the ENTIRE town under enemy control?
@@ -46,10 +46,10 @@ public class StrategicTownLoyalty
     {
         if (GetTownSectorsUnderControl(bTownId) == 0)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     // return number of sectors under player control for this town
@@ -75,6 +75,6 @@ public class StrategicTownLoyalty
             }
         }
 
-        return (ubSectorsControlled);
+        return ubSectorsControlled;
     }
 }

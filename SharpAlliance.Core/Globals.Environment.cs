@@ -44,14 +44,14 @@ public partial class Globals
     #define		DUSK_START													( 20 * 60 )
     #define   NIGHT_START													( 22 * 60 )
     */
-    public const int DAWN_START = (6 * 60 + 47);        //6:47AM
-    public const int DAY_START = (7 * 60 + 5);      //7:05AM
-    public const int DUSK_START = (20 * 60 + 57);   //8:57PM
-    public const int NIGHT_START = (21 * 60 + 15);  //9:15PM
-    public const int DAWN_TO_DAY = (DAY_START - DAWN_START);
-    public const int DAY_TO_DUSK = (DUSK_START - DAY_START);
-    public const int DUSK_TO_NIGHT = (NIGHT_START - DUSK_START);
-    public const int NIGHT_TO_DAWN = (24 * 60 - NIGHT_START + DAWN_START);
+    public const int DAWN_START = 6 * 60 + 47;        //6:47AM
+    public const int DAY_START = 7 * 60 + 5;      //7:05AM
+    public const int DUSK_START = 20 * 60 + 57;   //8:57PM
+    public const int NIGHT_START = 21 * 60 + 15;  //9:15PM
+    public const int DAWN_TO_DAY = DAY_START - DAWN_START;
+    public const int DAY_TO_DUSK = DUSK_START - DAY_START;
+    public const int DUSK_TO_NIGHT = NIGHT_START - DUSK_START;
+    public const int NIGHT_TO_DAWN = 24 * 60 - NIGHT_START + DAWN_START;
 
     public static WEATHER_FORECAST guiEnvWeather = 0;
     public static int guiRainLoop = NO_SAMPLE;
@@ -131,14 +131,14 @@ public partial class Globals
         ENV_TOD_FLAGS_NIGHT,         // 23 
     };
 
-    public const int DESERT_WARM_START = (8 * 60);
-    public const int DESERT_HOT_START = (9 * 60);
-    public const int DESERT_HOT_END = (17 * 60);
-    public const int DESERT_WARM_END = (19 * 60);
-    public const int GLOBAL_WARM_START = (9 * 60);
-    public const int GLOBAL_HOT_START = (12 * 60);
-    public const int GLOBAL_HOT_END = (14 * 60);
-    public const int GLOBAL_WARM_END = (17 * 60);
+    public const int DESERT_WARM_START = 8 * 60;
+    public const int DESERT_HOT_START = 9 * 60;
+    public const int DESERT_HOT_END = 17 * 60;
+    public const int DESERT_WARM_END = 19 * 60;
+    public const int GLOBAL_WARM_START = 9 * 60;
+    public const int GLOBAL_HOT_START = 12 * 60;
+    public const int GLOBAL_HOT_END = 14 * 60;
+    public const int GLOBAL_WARM_END = 17 * 60;
     public const int HOT_DAY_LIGHTLEVEL = 2;
 
     public static int gubEnvLightValue = 0;

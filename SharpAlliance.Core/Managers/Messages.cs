@@ -67,7 +67,7 @@ public class Messages
         // now add string to map screen strings
         //AddStringToMapScreenMessageList(pString, usColor, uiFont, fStartOfNewString, ubPriority );
 
-        return (pStringSt);
+        return pStringSt;
     }
 
     private static void SetString(ScrollStringStPtr pStringSt, string pString)
@@ -147,14 +147,14 @@ public class Messages
         VideoOverlayDesc.sY = VideoOverlayDesc.sTop;
         VideoOverlayDesc.pzText = pStringSt.pString16!;
         VideoOverlayDesc.BltCallback = this.BlitString;
-        pStringSt.iVideoOverlay = this.renderDirty.RegisterVideoOverlay((VOVERLAY.DIRTYBYTEXT), VideoOverlayDesc);
+        pStringSt.iVideoOverlay = this.renderDirty.RegisterVideoOverlay(VOVERLAY.DIRTYBYTEXT, VideoOverlayDesc);
 
         if (pStringSt.iVideoOverlay == -1)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -315,7 +315,7 @@ public class Messages
         {
             if (Globals.gpDisplayList[cnt] != null)
             {
-                if ((fDitchLastMessage) && (cnt == Globals.MAX_LINE_COUNT - 1))
+                if (fDitchLastMessage && (cnt == Globals.MAX_LINE_COUNT - 1))
                 {
                     Globals.gpDisplayList[cnt].uiTimeOfLastUpdate = iMaxAge;
                 }
@@ -369,7 +369,7 @@ public class Messages
                     if (Globals.gpDisplayList[cnt] != null)
                     {
 
-                        this.SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], Globals.X_START, ((Globals.Y_START - ((cnt) * this.fonts.GetFontHeight(FontStyle.SMALLFONT1))) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * (iNumberOfNewStrings))));
+                        this.SetStringVideoOverlayPosition(Globals.gpDisplayList[cnt], Globals.X_START, Globals.Y_START - (cnt * this.fonts.GetFontHeight(FontStyle.SMALLFONT1)) - (Globals.WIDTH_BETWEEN_NEW_STRINGS * iNumberOfNewStrings));
 
                         // start of new string, increment count of new strings, for spacing purposes
                         if (Globals.gpDisplayList[cnt].fBeginningOfNewString == true)
@@ -995,20 +995,20 @@ public class Messages
         //FileWrite(hFile, Globals.gubEndOfMapScreenMessageList, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
         //FileWrite(hFile, &gubStartOfMapScreenMessageList, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
         //	write the current message string
         //FileWrite(hFile, &gubCurrentMapMessageString, sizeof(int), out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
 
@@ -1017,7 +1017,7 @@ public class Messages
         {
             if (Globals.gMapScreenMessageList[uiCount] is not null)
             {
-                uiSizeOfString = (Globals.gMapScreenMessageList[uiCount].pString16.Length) + 1 * 2;
+                uiSizeOfString = Globals.gMapScreenMessageList[uiCount].pString16.Length + 1 * 2;
             }
             else
             {
@@ -1028,7 +1028,7 @@ public class Messages
             //FileWrite(hFile, &uiSizeOfString, sizeof(int), out uiNumBytesWritten);
             if (uiNumBytesWritten != sizeof(int))
             {
-                return (false);
+                return false;
             }
 
             //if there is a message
@@ -1038,7 +1038,7 @@ public class Messages
                 //FileWrite(hFile, gMapScreenMessageList[uiCount].pString16, uiSizeOfString, out uiNumBytesWritten);
                 if (uiNumBytesWritten != uiSizeOfString)
                 {
-                    return (false);
+                    return false;
                 }
 
                 // Create  the saved string struct
@@ -1053,13 +1053,13 @@ public class Messages
                 //FileWrite(hFile, &StringSave, sizeof(StringSaveStruct), out uiNumBytesWritten);
                 // if (uiNumBytesWritten != sizeof(StringSaveStruct))
                 {
-                    return (false);
+                    return false;
                 }
             }
 
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -1082,21 +1082,21 @@ public class Messages
         //FileRead(hFile, &gubEndOfMapScreenMessageList, sizeof(int), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
         //	Read the current message string
         //FileRead(hFile, &gubStartOfMapScreenMessageList, sizeof(int), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
         //	Read the current message string
         //FileRead(hFile, &gubCurrentMapMessageString, sizeof(int), &uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int))
         {
-            return (false);
+            return false;
         }
 
         //Loopthrough all the messages
@@ -1106,7 +1106,7 @@ public class Messages
             //FileRead(hFile, &uiSizeOfString, sizeof(int), &uiNumBytesRead);
             if (uiNumBytesRead != sizeof(int))
             {
-                return (false);
+                return false;
             }
 
             //if there is a message
@@ -1116,7 +1116,7 @@ public class Messages
                 //FileRead(hFile, SavedString, uiSizeOfString, &uiNumBytesRead);
                 if (uiNumBytesRead != uiSizeOfString)
                 {
-                    return (false);
+                    return false;
                 }
 
                 //if there is an existing string,delete it
@@ -1137,7 +1137,7 @@ public class Messages
 
                     if (sScroll == null)
                     {
-                        return (false);
+                        return false;
                     }
 
                     Globals.gMapScreenMessageList[uiCount] = sScroll;
@@ -1147,7 +1147,7 @@ public class Messages
                 Globals.gMapScreenMessageList[uiCount].pString16 = string.Empty;
                 if (Globals.gMapScreenMessageList[uiCount].pString16 == null)
                 {
-                    return (false);
+                    return false;
                 }
 
                 //copy the string over
@@ -1158,7 +1158,7 @@ public class Messages
                 //FileRead(hFile, StringSave, sizeof(StringSaveStruct), out uiNumBytesRead);
                 if (uiNumBytesRead != 0)// sizeof(StringSaveStruct))
                 {
-                    return (false);
+                    return false;
                 }
 
                 // Create  the saved string struct
@@ -1178,7 +1178,7 @@ public class Messages
         // this will set a valid value for gubFirstMapscreenMessageIndex, which isn't being saved/restored
         MapScreenInterfaceBottom.MoveToEndOfMapScreenMessageList();
 
-        return (true);
+        return true;
     }
 
 
@@ -1208,7 +1208,7 @@ public class Messages
 
         if (pStringSt == null)
         {
-            return (null);
+            return null;
         }
 
         while (pStringSt.pPrev is not null)
@@ -1216,7 +1216,7 @@ public class Messages
             pStringSt = pStringSt.pPrev;
         }
 
-        return (pStringSt);
+        return pStringSt;
     }
 
 
@@ -1234,7 +1234,7 @@ public class Messages
             pStringSt = pStringSt.pNext;
         }
 
-        return (iCounter);
+        return iCounter;
     }
 
 
@@ -1330,10 +1330,10 @@ public class Messages
         else
         {
             // this should always be 255 now, since this only happens when queue fills up, and we never remove any messages
-            ubRange = (Globals.gubEndOfMapScreenMessageList + 256) - Globals.gubStartOfMapScreenMessageList;
+            ubRange = Globals.gubEndOfMapScreenMessageList + 256 - Globals.gubStartOfMapScreenMessageList;
         }
 
-        return (ubRange);
+        return ubRange;
     }
 
     public static void AnimDebugMsg(string v)

@@ -27,9 +27,9 @@ public class Quests
         pSecondNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubSecondNPC, false);
         if (pFirstNPC is null || pSecondNPC is null)
         {
-            return (false);
+            return false;
         }
-        return (IsometricUtils.PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
+        return IsometricUtils.PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance;
     }
 
     public static bool CheckForNewShipment()
@@ -39,10 +39,10 @@ public class Quests
         {
             if (HandleItems.GetItemPool(BOBBYR_SHIPPING_DEST_GRIDNO, out ITEM_POOL? pItemPool, 0))
             {
-                return (!(ITEMPOOL_VISIBLE(pItemPool)));
+                return !ITEMPOOL_VISIBLE(pItemPool);
             }
         }
-        return (false);
+        return false;
     }
 
 
@@ -54,11 +54,11 @@ public class Quests
         pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pSoldier is not null && pSoldier.IsAlive && pSoldier.bBleeding > 0)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
 
     }
@@ -75,21 +75,21 @@ public class Quests
             {
                 if (Globals.gMercProfiles[ubProfileID].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.WOUNDEDBYPLAYER))
                 {
-                    return (true);
+                    return true;
                 }
                 else
                 {
-                    return (false);
+                    return false;
                 }
             }
             else
             {
-                return (true);
+                return true;
             }
         }
         else
         {
-            return (false);
+            return false;
 
         }
     }
@@ -109,7 +109,7 @@ public class Quests
             return false;
         }
 
-        return ((pNPC.ubWhatKindOfMercAmI == MERC_TYPE.EPC));
+        return pNPC.ubWhatKindOfMercAmI == MERC_TYPE.EPC;
     }
 
     public static bool CheckGuyVisible(NPCID ubNPC, NPCID ubGuy)
@@ -121,15 +121,15 @@ public class Quests
         pGuy = SoldierProfileSubSystem.FindSoldierByProfileID(ubGuy, false);
         if (pNPC is null || pGuy is null)
         {
-            return (false);
+            return false;
         }
         if (pNPC.bOppList[pGuy.ubID] == SEEN_CURRENTLY)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -140,9 +140,9 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubNPC, false);
         if (pNPC is null)
         {
-            return (false);
+            return false;
         }
-        return (pNPC.sGridNo == sGridNo);
+        return pNPC.sGridNo == sGridNo;
     }
 
     public static bool CheckNPCIsEnemy(NPCID ubProfileID)
@@ -152,23 +152,23 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (false);
+            return false;
         }
         if (pNPC.bSide == Globals.gbPlayerNum || pNPC.bNeutral > 0)
         {
             if (pNPC.ubCivilianGroup != CIV_GROUP.NON_CIV_GROUP)
             {
                 // although the soldier is NOW the same side, this civ group could be set to "will become hostile"
-                return (Globals.gTacticalStatus.fCivGroupHostile[pNPC.ubCivilianGroup] >= CIV_GROUP_WILL_BECOME_HOSTILE);
+                return Globals.gTacticalStatus.fCivGroupHostile[pNPC.ubCivilianGroup] >= CIV_GROUP_WILL_BECOME_HOSTILE;
             }
             else
             {
-                return (false);
+                return false;
             }
         }
         else
         {
-            return (true);
+            return true;
         }
     }
 
@@ -180,23 +180,23 @@ public class Quests
         // no merc nearby?
         if (pMerc == null)
         {
-            return (false);
+            return false;
         }
 
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileId, false);
         if (pNPC == null)
         {
-            return (false);
+            return false;
         }
         sGridNo = pNPC.sGridNo;
 
         // is the merc and NPC close enough?
         if (IsometricUtils.PythSpacesAway(sGridNo, pMerc.sGridNo) <= 9)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static void StartQuest(QUEST ubQuest, int sSectorX, MAP_ROW sSectorY)
@@ -233,7 +233,7 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (0);
+            return 0;
         }
         sGridNo = pNPC.sGridNo;
 
@@ -250,7 +250,7 @@ public class Quests
             }
         }
 
-        return (bNumber);
+        return bNumber;
     }
 
     public static void CheckForQuests(uint uiDay)
@@ -282,7 +282,7 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (0);
+            return 0;
         }
         sGridNo = pNPC.sGridNo;
 
@@ -301,7 +301,7 @@ public class Quests
             }
         }
 
-        return (bNumber);
+        return bNumber;
     }
 
     public static bool NPCInRoom(NPCID ubProfileID, int ubRoomID)
@@ -311,9 +311,9 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null || (Globals.gubWorldRoomInfo[pNPC.sGridNo] != ubRoomID))
         {
-            return (false);
+            return false;
         }
-        return (true);
+        return true;
     }
 
     public static bool NPCInRoomRange(NPCID ubProfileID, int ubRoomID1, int ubRoomID2)
@@ -324,9 +324,9 @@ public class Quests
         if (pNPC is null || (Globals.gubWorldRoomInfo[pNPC.sGridNo] < ubRoomID1)
             || (Globals.gubWorldRoomInfo[pNPC.sGridNo] > ubRoomID2))
         {
-            return (false);
+            return false;
         }
-        return (true);
+        return true;
     }
 
     public static bool PCInSameRoom(NPCID ubProfileID)
@@ -339,7 +339,7 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (false);
+            return false;
         }
         ubRoom = Globals.gubWorldRoomInfo[pNPC.sGridNo];
 
@@ -350,12 +350,12 @@ public class Quests
             {
                 if (Globals.gubWorldRoomInfo[pSoldier.sGridNo] == ubRoom)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -363,45 +363,45 @@ public class Quests
     {
         if (Globals.gpSrcSoldier is not null && Globals.gpSrcSoldier.bTeam == Globals.gbPlayerNum)
         {
-            return (Globals.gpSrcSoldier.bStrength >= 84);
+            return Globals.gpSrcSoldier.bStrength >= 84;
         }
         else if (Globals.gpDestSoldier is not null && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum)
         {
-            return (Globals.gpDestSoldier.bStrength >= 84);
+            return Globals.gpDestSoldier.bStrength >= 84;
         }
-        return (false);
+        return false;
     }
 
     public static bool CheckTalkerFemale()
     {
         if (Globals.gpSrcSoldier is not null && Globals.gpSrcSoldier.bTeam == Globals.gbPlayerNum && Globals.gpSrcSoldier.ubProfile != NPCID.NO_PROFILE)
         {
-            return (Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].bSex == Sexes.FEMALE);
+            return Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].bSex == Sexes.FEMALE;
         }
         else if (Globals.gpDestSoldier is not null && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum && Globals.gpDestSoldier.ubProfile != NPCID.NO_PROFILE)
         {
-            return (Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].bSex == Sexes.FEMALE);
+            return Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].bSex == Sexes.FEMALE;
         }
-        return (false);
+        return false;
     }
 
     public static bool CheckTalkerUnpropositionedFemale()
     {
         if (Globals.gpSrcSoldier is not null && Globals.gpSrcSoldier.bTeam == Globals.gbPlayerNum && Globals.gpSrcSoldier.ubProfile != NPCID.NO_PROFILE)
         {
-            if (!(Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.ASKED_BY_HICKS)))
+            if (!Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.ASKED_BY_HICKS))
             {
-                return (Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].bSex == Sexes.FEMALE);
+                return Globals.gMercProfiles[Globals.gpSrcSoldier.ubProfile].bSex == Sexes.FEMALE;
             }
         }
         else if (Globals.gpDestSoldier is not null && Globals.gpDestSoldier.bTeam == Globals.gbPlayerNum && Globals.gpDestSoldier.ubProfile != NPCID.NO_PROFILE)
         {
-            if (!(Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.ASKED_BY_HICKS)))
+            if (!Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.ASKED_BY_HICKS))
             {
-                return (Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].bSex == Sexes.FEMALE);
+                return Globals.gMercProfiles[Globals.gpDestSoldier.ubProfile].bSex == Sexes.FEMALE;
             }
         }
-        return (false);
+        return false;
     }
 
     public static int NumMalesPresent(NPCID ubProfileID)
@@ -415,7 +415,7 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (0);
+            return 0;
         }
         sGridNo = pNPC.sGridNo;
 
@@ -435,7 +435,7 @@ public class Quests
             }
         }
 
-        return (bNumber);
+        return bNumber;
     }
 
 
@@ -449,7 +449,7 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (false);
+            return false;
         }
         sGridNo = pNPC.sGridNo;
 
@@ -463,13 +463,13 @@ public class Quests
                 {
                     if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= 10)
                     {
-                        return (true);
+                        return true;
                     }
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -486,12 +486,12 @@ public class Quests
             {
                 if (ItemSubSystem.FindObjInObjRange(pSoldier, Items.HEAD_2, Items.HEAD_7) != (Items)NO_SLOT)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
     public static bool CheckNPCSector(NPCID ubProfileID, int sSectorX, MAP_ROW sSectorY, int bSectorZ)
     {
@@ -505,17 +505,17 @@ public class Quests
                 pSoldier.sSectorY == sSectorY &&
                 pSoldier.bSectorZ == bSectorZ)
             {
-                return (true);
+                return true;
             }
         }
         else if (Globals.gMercProfiles[ubProfileID].sSectorX == sSectorX
             && Globals.gMercProfiles[ubProfileID].sSectorY == sSectorY
             && Globals.gMercProfiles[ubProfileID].bSectorZ == bSectorZ)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static bool AIMMercWithin(int sGridNo, int sDistance)
@@ -533,12 +533,12 @@ public class Quests
             {
                 if (IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo) <= sDistance)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     public static bool CheckNPCCowering(NPCID ubProfileID)
@@ -548,9 +548,9 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (false);
+            return false;
         }
-        return (((pNPC.uiStatusFlags.HasFlag(SOLDIER.COWERING))));
+        return pNPC.uiStatusFlags.HasFlag(SOLDIER.COWERING);
     }
 
     public static int CountBartenders()
@@ -565,7 +565,7 @@ public class Quests
                 ubBartenders++;
             }
         }
-        return (ubBartenders);
+        return ubBartenders;
     }
 
     public static bool CheckNPCIsUnderFire(NPCID ubProfileID)
@@ -575,9 +575,9 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (false);
+            return false;
         }
-        return (pNPC.bUnderFire != 0);
+        return pNPC.bUnderFire != 0;
     }
 
     public static bool NPCHeardShot(NPCID ubProfileID)
@@ -587,9 +587,9 @@ public class Quests
         pNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pNPC is null)
         {
-            return (false);
+            return false;
         }
-        return (pNPC.ubMiscSoldierFlags.HasFlag(SOLDIER_MISC.HEARD_GUNSHOT));
+        return pNPC.ubMiscSoldierFlags.HasFlag(SOLDIER_MISC.HEARD_GUNSHOT);
     }
 
     public static bool InTownSectorWithTrainingLoyalty(int sSectorX, MAP_ROW sSectorY)
@@ -599,11 +599,11 @@ public class Quests
         ubTown = StrategicMap.GetTownIdForSector(sSectorX, sSectorY);
         if ((ubTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[ubTown].fStarted && Globals.gfTownUsesLoyalty[ubTown])
         {
-            return (Globals.gTownLoyalty[ubTown].ubRating >= Globals.MIN_RATING_TO_TRAIN_TOWN);
+            return Globals.gTownLoyalty[ubTown].ubRating >= Globals.MIN_RATING_TO_TRAIN_TOWN;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 

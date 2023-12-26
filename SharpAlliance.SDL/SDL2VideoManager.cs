@@ -2114,4 +2114,8 @@ public class SDL2VideoManager : IVideoManager
 
         //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
     }
+
+    public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)
+    {
+        return InternalShadowVideoSurfaceRect(buffer, rectangle, false);    }
 }

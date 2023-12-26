@@ -103,7 +103,7 @@ public class SaveLoadMap
 //
 //        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.MAP_MODIFICATIONS_TEMP_FILE_EXISTS);
 
-        return (true);
+        return true;
     }
 
     public static void AddRemoveObjectToMapTempFile(int uiMapIndex, TileIndexes usIndex)

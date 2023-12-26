@@ -48,8 +48,8 @@ public partial class Globals
     public const int NORMAL_MVT = 1;
     public const int SLOW_MVT = 0;
 
-    public const int MAXTRAILTREE = (4096);
-    public const int MAXpathQ = (512);
+    public const int MAXTRAILTREE = 4096;
+    public const int MAXpathQ = 512;
     public const int MAP_WIDTH = 18;
     public const int MAP_LENGTH = MAP_WIDTH * MAP_WIDTH;
 
@@ -64,12 +64,12 @@ public partial class Globals
     public static int[] trailCostB = new int[MAP_LENGTH];
     public static trail_t[] trailStratTreeB = new trail_t[MAXTRAILTREE];
 
-    public const int QHEADNDX = (0);
-    public const int QPOOLNDX = (MAXpathQ - 1);
+    public const int QHEADNDX = 0;
+    public const int QPOOLNDX = MAXpathQ - 1;
 
-    public static bool pathQNotEmpty() => (pathQB[QHEADNDX].nextLink != QHEADNDX);
-    public static bool pathFound(TRAILCELLTYPE sDestination) => (pathQB[pathQB[QHEADNDX].nextLink].location == sDestination);
-    public static bool pathNotYetFound(TRAILCELLTYPE sDestination) => (!pathFound(sDestination));
+    public static bool pathQNotEmpty() => pathQB[QHEADNDX].nextLink != QHEADNDX;
+    public static bool pathFound(TRAILCELLTYPE sDestination) => pathQB[pathQB[QHEADNDX].nextLink].location == sDestination;
+    public static bool pathNotYetFound(TRAILCELLTYPE sDestination) => !pathFound(sDestination);
 
     public static void REMQUENODE(int ndx)
     {
@@ -118,10 +118,10 @@ public partial class Globals
 
     // chad: this wasn't defined in original source? Was originally in a template, dunno.
     private const int FLATCOST = 0;
-    public static int ESTIMATE0(int dx, int dy) => ((dx > dy) ? (dx) : (dy));
-    public static int ESTIMATE1(int dx, int dy) => ((dx < dy) ? ((dx * 14) / 10 + dy) : ((dy * 14) / 10 + dx));
-    public static int ESTIMATE2(int dx, int dy) => FLATCOST * ((dx < dy) ? ((dx * 14) / 10 + dy) : ((dy * 14) / 10 + dx));
-    public static int ESTIMATEn(int dx, int dy) => ((int)(FLATCOST * Math.Sqrt(dx * dx + dy * dy)));
+    public static int ESTIMATE0(int dx, int dy) => (dx > dy) ? dx : dy;
+    public static int ESTIMATE1(int dx, int dy) => (dx < dy) ? (dx * 14 / 10 + dy) : (dy * 14 / 10 + dx);
+    public static int ESTIMATE2(int dx, int dy) => FLATCOST * ((dx < dy) ? (dx * 14 / 10 + dy) : (dy * 14 / 10 + dx));
+    public static int ESTIMATEn(int dx, int dy) => (int)(FLATCOST * Math.Sqrt(dx * dx + dy * dy));
     public static int ESTIMATE(int dx, int dy) => ESTIMATE1(dx, dy);
 
 
@@ -135,12 +135,12 @@ public partial class Globals
         return ESTIMATE(dx, dy);
     }
 
-    public const int MAXCOST = (99900);
+    public const int MAXCOST = 99900;
     public static int TOTALCOST(int ndx) => (int)(pathQB[ndx].costSoFar + pathQB[ndx].costToGo);
-    public static int XLOC(int a) => (a % MAP_WIDTH);
-    public static int YLOC(int a) => (a / MAP_WIDTH);
-    public static int LEGDISTANCE(int a, int b) => (Math.Abs(XLOC(b) - XLOC(a)) + Math.Abs(YLOC(b) - YLOC(a)));
-    public static bool FARTHER(int ndx, int NDX, int sDestination) => (LEGDISTANCE(pathQB[ndx].location, sDestination) > LEGDISTANCE(pathQB[NDX].location, sDestination));
+    public static int XLOC(int a) => a % MAP_WIDTH;
+    public static int YLOC(int a) => a / MAP_WIDTH;
+    public static int LEGDISTANCE(int a, int b) => Math.Abs(XLOC(b) - XLOC(a)) + Math.Abs(YLOC(b) - YLOC(a));
+    public static bool FARTHER(int ndx, int NDX, int sDestination) => LEGDISTANCE(pathQB[ndx].location, sDestination) > LEGDISTANCE(pathQB[NDX].location, sDestination);
 
     public const int FLAT_STRATEGIC_TRAVEL_TIME = 60;
 
@@ -409,13 +409,13 @@ public class StrategicPathing
 
                     if (qNewNdx == QHEADNDX)
                     {
-                        return (0);
+                        return 0;
                     }
 
 
                     if (qNewNdx == QPOOLNDX)
                     {
-                        return (0);
+                        return 0;
                     }
 
                     //make new path to current location
@@ -427,7 +427,7 @@ public class StrategicPathing
 
                     if (this.trailStratTreedxB >= MAXTRAILTREE)
                     {
-                        return (0);
+                        return 0;
                     }
 
                     pathQB[qNewNdx].location = (int)newLoc;
@@ -475,10 +475,10 @@ public class StrategicPathing
 
 
             // return path length : serves as a "successful" flag and a path length counter
-            return (iCnt);
+            return iCnt;
         }
         // failed miserably, report...
-        return (0);
+        return 0;
     }
 
 
@@ -520,7 +520,7 @@ public class StrategicPathing
             return null;
         }
 
-        iPathLength = ((int)this.FindStratPath(((int)iStartSectorNum), ((uint)iEndSectorNum), sMvtGroupNumber, fTacticalTraversal));
+        iPathLength = (int)this.FindStratPath((int)iStartSectorNum, (uint)iEndSectorNum, sMvtGroupNumber, fTacticalTraversal);
         while (iPathLength > iCount)
         {
 //            switch (gusMapPathingData[iCount])
@@ -876,7 +876,7 @@ public class StrategicPathing
         }
 
         // return head of new list
-        return (pHeadOfPathList);
+        return pHeadOfPathList;
     }
 
     Path? ClearStrategicPathList(Path? pHeadOfPath, int sMvtGroup)
@@ -889,7 +889,7 @@ public class StrategicPathing
         if (pNode == null)
         {
             // no path, leave
-            return (pNode);
+            return pNode;
         }
 
         // clear list
@@ -917,7 +917,7 @@ public class StrategicPathing
             StrategicMovement.RemoveGroupWaypoints(sMvtGroup);
         }
 
-        return (pNode);
+        return pNode;
     }
 
 
@@ -935,7 +935,7 @@ public class StrategicPathing
         if (pNode == null)
         {
             // no path, leave
-            return (pNode);
+            return pNode;
         }
 
 
@@ -966,7 +966,7 @@ public class StrategicPathing
         if (pNode == null)
         {
             // nope, leave
-            return (pHeadOfPath);
+            return pHeadOfPath;
         }
 
 
@@ -977,7 +977,7 @@ public class StrategicPathing
         if (pNode == null)
         {
             // that's it, leave
-            return (pHeadOfPath);
+            return pHeadOfPath;
         }
 
 
@@ -992,7 +992,7 @@ public class StrategicPathing
             // clear head, return null
             pHeadOfPath = this.ClearStrategicPathList(pHeadOfPath, sMvtGroup);
 
-            return (null);
+            return null;
         }
 
         // clear list
@@ -1021,7 +1021,7 @@ public class StrategicPathing
         pNode = null;
         pDeleteNode = null;
 
-        return (pHeadOfPath);
+        return pHeadOfPath;
     }
 
     Path? MoveToBeginningOfPathList(Path? pList)
@@ -1032,7 +1032,7 @@ public class StrategicPathing
         // no list, return
         if (pList == null)
         {
-            return (null);
+            return null;
         }
 
         // move to beginning of list
@@ -1041,7 +1041,7 @@ public class StrategicPathing
             pList = pList.pPrev;
         }
 
-        return (pList);
+        return pList;
 
     }
 
@@ -1052,7 +1052,7 @@ public class StrategicPathing
         // no list, return
         if (pList == null)
         {
-            return (null);
+            return null;
         }
 
         // move to beginning of list
@@ -1061,7 +1061,7 @@ public class StrategicPathing
             pList = pList.pNext;
         }
 
-        return (pList);
+        return pList;
 
     }
 
@@ -1075,7 +1075,7 @@ public class StrategicPathing
         if (pNode == null)
         {
             // no list, leave
-            return (null);
+            return null;
         }
 
         while (pNode.pNext is not null)
@@ -1093,7 +1093,7 @@ public class StrategicPathing
         MemFree(pNode);
 
         // return head of new list
-        return (pHeadOfList);
+        return pHeadOfList;
 
     }
 
@@ -1108,7 +1108,7 @@ public class StrategicPathing
         if (pNode == null)
         {
             // no list, leave
-            return (null);
+            return null;
         }
 
         // move to head of list
@@ -1131,7 +1131,7 @@ public class StrategicPathing
         pNode = null;
 
         // return new head
-        return (pNewHead);
+        return pNewHead;
 
     }
 
@@ -1150,7 +1150,7 @@ public class StrategicPathing
         // check if there is a valid list 
         if (pNode == null)
         {
-            return (pNode);
+            return pNode;
         }
 
         // get current sector value
@@ -1175,7 +1175,7 @@ public class StrategicPathing
         // no list left, sector not found
         if (pNode == null)
         {
-            return (null);
+            return null;
         }
 
         // sector found...remove it
@@ -1190,20 +1190,20 @@ public class StrategicPathing
 
         pPastNode = this.MoveToBeginningOfPathList(pPastNode);
 
-        return (pPastNode);
+        return pPastNode;
     }
 
     int GetLastSectorIdInCharactersPath(SOLDIERTYPE? pCharacter)
     {
         // will return the last sector of the current path, or the current sector if there's no path
-        int sLastSector = (pCharacter.sSectorX) + ((int)pCharacter.sSectorY) * (MAP_WORLD_X);
+        int sLastSector = pCharacter.sSectorX + ((int)pCharacter.sSectorY) * MAP_WORLD_X;
         Path? pNode = null;
 
         pNode = this.GetSoldierMercPathPtr(pCharacter);
 
         while (pNode is not null)
         {
-            sLastSector = (int)(pNode.uiSectorId);
+            sLastSector = (int)pNode.uiSectorId;
             pNode = pNode.pNext;
         }
 
@@ -1218,22 +1218,22 @@ public class StrategicPathing
 
         if ((iId >= ubNumberOfVehicles) || (iId < 0))
         {
-            return (sLastSector);
+            return sLastSector;
         }
         // now check if vehicle is valid
         if (pVehicleList[iId].fValid == false)
         {
-            return (sLastSector);
+            return sLastSector;
         }
 
         // get current last sector
-        sLastSector = (pVehicleList[iId].sSectorX) + ((int)pVehicleList[iId].sSectorY * MAP_WORLD_X);
+        sLastSector = pVehicleList[iId].sSectorX + ((int)pVehicleList[iId].sSectorY * MAP_WORLD_X);
 
         pNode = pVehicleList[iId].pMercPath;
 
         while (pNode is not null)
         {
-            sLastSector = (int)(pNode.uiSectorId);
+            sLastSector = (int)pNode.uiSectorId;
             pNode = pNode.pNext;
         }
 
@@ -1298,7 +1298,7 @@ public class StrategicPathing
         pDestNode = this.MoveToBeginningOfPathList(pDestNode);
 
         // return to head of path
-        return (pDestNode);
+        return pDestNode;
     }
 
     int GetStrategicMvtSpeed(SOLDIERTYPE? pCharacter)
@@ -1309,10 +1309,10 @@ public class StrategicPathing
         // avg of strength and agility * percentage health..very simple..replace later
 
         iSpeed = (int)((pCharacter.bAgility + pCharacter.bStrength) / 2);
-        iSpeed *= (int)((pCharacter.bLife));
+        iSpeed *= (int)pCharacter.bLife;
         iSpeed /= (int)pCharacter.bLifeMax;
 
-        return (iSpeed);
+        return iSpeed;
     }
 
     /*
@@ -1701,7 +1701,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
         if (pNode == null)
         {
-            return (false);
+            return false;
         }
 
         pNode = this.MoveToBeginningOfPathList(pNode);
@@ -1712,7 +1712,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // now clear out the mess
         pNode = this.ClearStrategicPathList(pNode, -1);
 
-        return (true);
+        return true;
     }
 
 
@@ -1725,7 +1725,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
         if (pNode == null)
         {
-            return (false);
+            return false;
         }
 
         // remove tail from path
@@ -1739,7 +1739,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // now clear out the mess
         pNode = this.ClearStrategicPathList(pNode, -1);
 
-        return (true);
+        return true;
     }
 
     bool MoveGroupFromSectorToSectorButAvoidPlayerInfluencedSectors(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
@@ -1765,11 +1765,11 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         {
             if (this.MoveGroupFromSectorToSector(ubGroupID, sStartX, sStartY, sDestX, sDestY) == false)
             {
-                return (false);
+                return false;
             }
             else
             {
-                return (true);
+                return true;
             }
         }
 
@@ -1781,7 +1781,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // now clear out the mess
         pNode = this.ClearStrategicPathList(pNode, -1);
 
-        return (true);
+        return true;
     }
 
     bool MoveGroupFromSectorToSectorButAvoidPlayerInfluencedSectorsAndStopOneSectorBeforeEnd(int ubGroupID, int sStartX, MAP_ROW sStartY, int sDestX, MAP_ROW sDestY)
@@ -1807,11 +1807,11 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         {
             if (this.MoveGroupFromSectorToSectorButAvoidLastSector(ubGroupID, sStartX, sStartY, sDestX, sDestY) == false)
             {
-                return (false);
+                return false;
             }
             else
             {
-                return (true);
+                return true;
             }
         }
 
@@ -1826,7 +1826,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // now clear out the mess
         pNode = this.ClearStrategicPathList(pNode, -1);
 
-        return (true);
+        return true;
     }
 
 
@@ -1856,7 +1856,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             iLength++;
         }
 
-        return (iLength);
+        return iLength;
     }
 
     int GetLengthOfMercPath(SOLDIERTYPE? pSoldier)
@@ -1866,7 +1866,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 
         pNode = this.GetSoldierMercPathPtr(pSoldier);
         iLength = this.GetLengthOfPath(pNode);
-        return (iLength);
+        return iLength;
     }
 
 
@@ -1875,16 +1875,16 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // no path
         if (pHeadPath == null)
         {
-            return (true);
+            return true;
         }
 
         // nothing next either
         if (pHeadPath.pNext == null)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -1908,7 +1908,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             pMercPath = pSoldier.pMercPath;
         }
 
-        return (pMercPath);
+        return pMercPath;
     }
 
 
@@ -1940,7 +1940,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 //            }
         }
 
-        return (pMercPath);
+        return pMercPath;
     }
 
 
@@ -1964,7 +1964,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
             ubGroupId = pSoldier.ubGroupID;
         }
 
-        return (ubGroupId);
+        return ubGroupId;
     }
 
 
@@ -1997,7 +1997,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 //            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicleId != -1);
 
-            pVehicle = (pVehicleList[iVehicleId]);
+            pVehicle = pVehicleList[iVehicleId];
 
             // clear the path for that vehicle
             pVehicle.pMercPath = this.ClearStrategicPathList(pVehicle.pMercPath, pVehicle.ubMovementGroup);
@@ -2023,12 +2023,12 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         // if a vehicle
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
         {
-            pVehicle = (pVehicleList[pSoldier.bVehicleID]);
+            pVehicle = pVehicleList[pSoldier.bVehicleID];
         }
         // or in a vehicle
         else if (pSoldier.bAssignment == Assignments.VEHICLE)
         {
-            pVehicle = (pVehicleList[pSoldier.iVehicleId]);
+            pVehicle = pVehicleList[pSoldier.iVehicleId];
         }
 
         // if there's an associate vehicle structure
@@ -2068,10 +2068,10 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
 //            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicleId != -1);
 
-            pVehicle = (pVehicleList[iVehicleId]);
+            pVehicle = pVehicleList[iVehicleId];
 
             // add it to that vehicle's path
-            this.AddSectorToFrontOfMercPath((pVehicle.pMercPath), ubSectorX, ubSectorY);
+            this.AddSectorToFrontOfMercPath(pVehicle.pMercPath, ubSectorX, ubSectorY);
         }
     }
 
@@ -2092,7 +2092,7 @@ void VerifyAllMercsInGroupAreOnSameSquad(GROUP* pGroup)
         if (ppMercPath != null)
         {
             // hang the previous pointer of the old head to the new head
-            (ppMercPath).pPrev = pNode;
+            ppMercPath.pPrev = pNode;
         }
 
         ppMercPath = pNode;

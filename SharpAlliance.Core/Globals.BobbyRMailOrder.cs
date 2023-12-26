@@ -71,7 +71,7 @@ public partial class Globals
     public const int BOBBYR_BACK_BUTTON_Y = 400 + LAPTOP_SCREEN_WEB_DELTA_Y + 4;
     public const int BOBBYR_HOME_BUTTON_X = 515;
     public const int BOBBYR_HOME_BUTTON_Y = BOBBYR_BACK_BUTTON_Y;
-    public const int BOBBYR_SHIPMENT_BUTTON_X = (LAPTOP_SCREEN_UL_X + (LAPTOP_SCREEN_LR_X - LAPTOP_SCREEN_UL_X - 75) / 2);
+    public const int BOBBYR_SHIPMENT_BUTTON_X = LAPTOP_SCREEN_UL_X + (LAPTOP_SCREEN_LR_X - LAPTOP_SCREEN_UL_X - 75) / 2;
     public const int BOBBYR_SHIPMENT_BUTTON_Y = BOBBYR_BACK_BUTTON_Y;
     public const int SHIPPING_SPEED_LIGHT_WIDTH = 9;
     public const int SHIPPING_SPEED_LIGHT_HEIGHT = 9;
@@ -86,7 +86,7 @@ public partial class Globals
     public const int BOBBYR_SCROLL_AREA_Y = BOBBYR_CITY_START_LOCATION_Y;
     public const int BOBBYR_SCROLL_AREA_WIDTH = 22;
     public const int BOBBYR_SCROLL_AREA_HEIGHT = 139;
-    public const int BOBBYR_SCROLL_AREA_HEIGHT_MINUS_ARROWS = (BOBBYR_SCROLL_AREA_HEIGHT - (2 * BOBBYR_SCROLL_ARROW_HEIGHT) - 8);
+    public const int BOBBYR_SCROLL_AREA_HEIGHT_MINUS_ARROWS = BOBBYR_SCROLL_AREA_HEIGHT - (2 * BOBBYR_SCROLL_ARROW_HEIGHT) - 8;
     public const int BOBBYR_SCROLL_UP_ARROW_X = BOBBYR_SCROLL_AREA_X;
     public const int BOBBYR_SCROLL_UP_ARROW_Y = BOBBYR_SCROLL_AREA_Y + 5;
     public const int BOBBYR_SCROLL_DOWN_ARROW_X = BOBBYR_SCROLL_UP_ARROW_X;
@@ -192,7 +192,7 @@ public partial class Globals
     public const int BOBBIES_NUMBER_SIGNS = 5;
     public const FontStyle BOBBIES_SENTENCE_FONT = FontStyle.FONT12ARIAL;
     public const FontColor BOBBIES_SENTENCE_COLOR = FontColor.FONT_MCOLOR_WHITE;
-    public const FontShadow BOBBIES_SENTENCE_BACKGROUNDCOLOR = (FontShadow)(2);//NO_SHADOW//226;
+    public const FontShadow BOBBIES_SENTENCE_BACKGROUNDCOLOR = (FontShadow)2;//NO_SHADOW//226;
     public const int BOBBY_WOOD_BACKGROUND_X = LAPTOP_SCREEN_UL_X;
     public const int BOBBY_WOOD_BACKGROUND_Y = LAPTOP_SCREEN_WEB_UL_Y;
     public const int BOBBY_WOOD_BACKGROUND_WIDTH = 125;
@@ -249,7 +249,7 @@ public partial class Globals
     public const int BOBBIES_3RD_SENTENCE_X = LAPTOP_SCREEN_UL_X;
     public const int BOBBIES_3RD_SENTENCE_Y = BOBBIES_BOTTOMHINGE_Y + 40;
     public const int BOBBIES_3RD_SENTENCE_WIDTH = 500;
-    public const int BOBBY_R_NEW_PURCHASE_ARRIVAL_TIME = (1 * 60 * 24); // minutes in 1 day;
+    public const int BOBBY_R_NEW_PURCHASE_ARRIVAL_TIME = 1 * 60 * 24; // minutes in 1 day;
     public const int BOBBY_R_USED_PURCHASE_OFFSET = 1000;
     public const int BOBBYR_UNDERCONSTRUCTION_ANI_DELAY = 150;
     public const int BOBBYR_UNDERCONSTRUCTION_NUM_FRAMES = 5;

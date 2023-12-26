@@ -74,7 +74,7 @@ public class StrategicMovement
         // get the type
         pNew.ubTransportationMask = VehicleTypes.CAR;
 
-        return (AddGroupToList(pNew));
+        return AddGroupToList(pNew);
     }
 
     //Allows you to add players to the group.
@@ -321,7 +321,7 @@ public class StrategicMovement
 
         if (!pGroup.fBetweenSectors)
         {
-            return (false);
+            return false;
         }
 
 
@@ -358,12 +358,12 @@ public class StrategicMovement
         // That's because the party must return to the previous sector in each of those cases, too.
         if (currDX == newDX && currDY == newDY)
         {
-            return (false);
+            return false;
         }
 
 
         // yes, we're between sectors, and we'd be changing direction to go to the given sector
-        return (true);
+        return true;
     }
 
 
@@ -762,7 +762,7 @@ public class StrategicMovement
         {
             pSoldier = pPlayer.pSoldier;
 
-            if (pSoldier.bLife >= OKLIFE && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) &&
+            if (pSoldier.bLife >= OKLIFE && !pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE) &&
                         !AM_A_ROBOT(pSoldier) && !AM_AN_EPC(pSoldier))
             {
                 ubMercsInGroup[ubNumMercs] = pSoldier.ubID;
@@ -864,7 +864,7 @@ public class StrategicMovement
                 if (gTacticalStatus.fEnemyInSector)
                 {
                     HandleArrivalOfReinforcements(pGroup);
-                    return (true);
+                    return true;
                 }
             }
         }
@@ -1183,7 +1183,7 @@ public class StrategicMovement
             if (pSoldier is not null
                 && !AM_A_ROBOT(pSoldier)
                 && !AM_AN_EPC(pSoldier)
-                && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                && !pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
             {
                 if (pSoldier.bLifeMax < 100)
                 {
@@ -1241,8 +1241,8 @@ public class StrategicMovement
         // 1st gridno
         Corpse.sGridNo = 14319;
         IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out int sXPos, out int sYPos);
-        Corpse.dXPos = (IsometricUtils.CenterX(sXPos));
-        Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
+        Corpse.dXPos = IsometricUtils.CenterX(sXPos);
+        Corpse.dYPos = IsometricUtils.CenterY(sYPos);
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
         //        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
@@ -1251,8 +1251,8 @@ public class StrategicMovement
         // 2nd gridno
         Corpse.sGridNo = 9835;
         IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out sXPos, out sYPos);
-        Corpse.dXPos = (IsometricUtils.CenterX(sXPos));
-        Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
+        Corpse.dXPos = IsometricUtils.CenterX(sXPos);
+        Corpse.dYPos = IsometricUtils.CenterY(sYPos);
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
         //        AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
@@ -1261,8 +1261,8 @@ public class StrategicMovement
         // 3rd gridno
         Corpse.sGridNo = 11262;
         IsometricUtils.ConvertGridNoToXY(Corpse.sGridNo, out sXPos, out sYPos);
-        Corpse.dXPos = (IsometricUtils.CenterX(sXPos));
-        Corpse.dYPos = (IsometricUtils.CenterY(sYPos));
+        Corpse.dXPos = IsometricUtils.CenterX(sXPos);
+        Corpse.dYPos = IsometricUtils.CenterY(sYPos);
 
         //Add the rotting corpse info to the sectors unloaded rotting corpse file
         //      AddRottingCorpseToUnloadedSectorsRottingCorpseFile(sSectorX, sSectorY, 0, Corpse);
@@ -1796,7 +1796,7 @@ public class StrategicMovement
         gubNumGroupsArrivedSimultaneously = 0;
         while (pEvent.uiTimeStamp <= uiCurrTimeStamp)
         {
-            if (pEvent.ubCallbackID == EVENT.GROUP_ARRIVAL && !(pEvent.ubFlags.HasFlag(SEF.DELETION_PENDING)))
+            if (pEvent.ubCallbackID == EVENT.GROUP_ARRIVAL && !pEvent.ubFlags.HasFlag(SEF.DELETION_PENDING))
             {
                 pGroup = GetGroup((int)pEvent.uiParam);
                 //       Debug.Assert(pGroup);
@@ -2474,10 +2474,10 @@ public class StrategicMovement
 
         if (pGroup == null)
         {
-            return (0);
+            return 0;
         }
 
-        return (this.CalculateTravelTimeOfGroup(pGroup));
+        return this.CalculateTravelTimeOfGroup(pGroup);
     }
 
     int CalculateTravelTimeOfGroup(GROUP? pGroup)
@@ -2493,19 +2493,19 @@ public class StrategicMovement
         if (pGroup == null)
         {
             // return current time
-            return (uiEtaTime);
+            return uiEtaTime;
         }
 
         // set up next node
         //        pNode = pGroup.pWaypoints;
 
         // now get the delta in current sector and next sector
-        iDelta = (SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) - SECTORINFO.SECTOR(pGroup.ubNextX, pGroup.ubNextY));
+        iDelta = SECTORINFO.SECTOR(pGroup.ubSectorX, pGroup.ubSectorY) - SECTORINFO.SECTOR(pGroup.ubNextX, pGroup.ubNextY);
 
         if (iDelta == 0)
         {
             // not going anywhere...return current time
-            return (uiEtaTime);
+            return uiEtaTime;
         }
 
 
@@ -2544,7 +2544,7 @@ public class StrategicMovement
             //pNode = pNode.next;
         }
 
-        return (uiEtaTime);
+        return uiEtaTime;
     }
 
     uint FindTravelTimeBetweenWaypoints(WAYPOINT? pSource, WAYPOINT? pDest, GROUP? pGroup)
@@ -2572,7 +2572,7 @@ public class StrategicMovement
         if (ubStart == ubEnd)
         {
             // no
-            return (iCurrentCostInTime);
+            return iCurrentCostInTime;
         }
 
         iDelta = (int)(ubEnd - ubStart);
@@ -2582,7 +2582,7 @@ public class StrategicMovement
         {
             if (iDelta % (SOUTH_MOVE - 2) == 0)
             {
-                iDelta = (SOUTH_MOVE - 2);
+                iDelta = SOUTH_MOVE - 2;
                 ubDirection = StrategicMove.SOUTH;
             }
             else
@@ -2595,7 +2595,7 @@ public class StrategicMovement
         {
             if (iDelta % (NORTH_MOVE + 2) == 0)
             {
-                iDelta = (NORTH_MOVE + 2);
+                iDelta = NORTH_MOVE + 2;
                 ubDirection = StrategicMove.NORTH;
             }
             else
@@ -2622,7 +2622,7 @@ public class StrategicMovement
             iCurrentCostInTime += iThisCostInTime;
         }
 
-        return (iCurrentCostInTime);
+        return iCurrentCostInTime;
     }
 
     //CHANGES:  ubDirection contains the strategic move value, not the delta value.  
@@ -2832,7 +2832,7 @@ public class StrategicMovement
                     foreach (var pg in pPlayer)
                     {
                         // robots count as mercs here, because they can fight, but vehicles don't
-                        if ((pg.pSoldier.IsAlive) && !(pg.pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                        if (pg.pSoldier.IsAlive && !pg.pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                         {
                             ubNumMercs++;
                         }
@@ -2883,17 +2883,17 @@ public class StrategicMovement
         // no group
         if (pGroup == null)
         {
-            return (false);
+            return false;
         }
 
 
-        return (PlayerGroupInMotion(pGroup));
+        return PlayerGroupInMotion(pGroup);
     }
 
     // is the player group in motion?
     public static bool PlayerGroupInMotion(GROUP? pGroup)
     {
-        return (pGroup.fBetweenSectors);
+        return pGroup.fBetweenSectors;
     }
 
 
@@ -2908,7 +2908,7 @@ public class StrategicMovement
         // make sure it is valid
         Debug.Assert(pGroup is not null);
 
-        return (GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup));
+        return GetSectorMvtTimeForGroup(ubSector, ubDirection, pGroup);
     }
 
     public static uint GetTravelTimeForFootTeam(SEC ubSector, StrategicMove ubDirection)
@@ -2919,7 +2919,7 @@ public class StrategicMovement
             ubTransportationMask = VehicleTypes.FOOT
         };
 
-        return (GetSectorMvtTimeForGroup(ubSector, ubDirection, Group));
+        return GetSectorMvtTimeForGroup(ubSector, ubDirection, Group);
 
     }
 
@@ -3115,7 +3115,7 @@ public class StrategicMovement
         //        }
         //        else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -3245,7 +3245,7 @@ public class StrategicMovement
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
-            return (false);
+            return false;
         }
 
 
@@ -3298,11 +3298,11 @@ public class StrategicMovement
         if (uiNumBytesWritten != sizeof(int) * 8)
         {
             //Error Writing size of L.L. to disk
-            return (false);
+            return false;
         }
 
 
-        return (true);
+        return true;
     }
 
 
@@ -3335,7 +3335,7 @@ public class StrategicMovement
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
-            return (false);
+            return false;
         }
 
         //        pGroup = gpGroupList;
@@ -3347,7 +3347,7 @@ public class StrategicMovement
             //            pTemp = MemAlloc(sizeof(GROUP));
             if (pTemp == null)
             {
-                return (false);
+                return false;
             }
 
             //memset(pTemp, 0, sizeof(GROUP));
@@ -3445,10 +3445,10 @@ public class StrategicMovement
 
         if (uiNumBytesRead != sizeof(int) * 8)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -3493,7 +3493,7 @@ public class StrategicMovement
 //            pTemp = pTemp.next;
 //        }
 
-        return (true);
+        return true;
     }
 
 
@@ -3518,7 +3518,7 @@ public class StrategicMovement
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
-            return (false);
+            return false;
         }
 
 
@@ -3529,7 +3529,7 @@ public class StrategicMovement
 //            pTemp = MemAlloc(sizeof(PLAYERGROUP));
             if (pTemp == null)
             {
-                return (false);
+                return false;
             }
 
 
@@ -3538,7 +3538,7 @@ public class StrategicMovement
             if (uiNumBytesRead != sizeof(int))
             {
                 //Error Writing size of L.L. to disk
-                return (false);
+                return false;
             }
 
             //Set up the current node
@@ -3568,7 +3568,7 @@ public class StrategicMovement
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -3585,7 +3585,7 @@ public class StrategicMovement
 //            return (false);
 //        }
 
-        return (true);
+        return true;
     }
 
 
@@ -3607,7 +3607,7 @@ public class StrategicMovement
         //Assign the struct to the group list
 //        pGroup.pEnemyGroup = pEnemyGroup;
 
-        return (true);
+        return true;
     }
 
 
@@ -3676,7 +3676,7 @@ public class StrategicMovement
         if (uiNumBytesWritten != sizeof(int))
         {
             //Error Writing size of L.L. to disk
-            return (false);
+            return false;
         }
 
 
@@ -3698,7 +3698,7 @@ public class StrategicMovement
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -3716,7 +3716,7 @@ public class StrategicMovement
         if (uiNumBytesRead != sizeof(int))
         {
             //Error Writing size of L.L. to disk
-            return (false);
+            return false;
         }
 
 
@@ -3766,7 +3766,7 @@ public class StrategicMovement
 //            pGroup.pWaypoints = null;
 //        }
 
-        return (true);
+        return true;
     }
 
     void CalculateGroupRetreatSector(GROUP? pGroup)
@@ -3996,7 +3996,7 @@ public class StrategicMovement
         //            }
         //        }
 
-        return (wp);
+        return wp;
     }
 
 
@@ -4238,7 +4238,7 @@ public class StrategicMovement
 
     int CalculateFuelCostBetweenSectors(int ubSectorID1, int ubSectorID2)
     {
-        return (0);
+        return 0;
     }
 
     bool VehicleHasFuel(SOLDIERTYPE? pSoldier)
@@ -4262,8 +4262,8 @@ public class StrategicMovement
         Debug.Assert(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE));
         pSoldier.sBreathRed -= sFuelSpent;
         pSoldier.sBreathRed = (int)Math.Max(0, pSoldier.sBreathRed);
-        pSoldier.bBreath = ((pSoldier.sBreathRed + 99) / 100);
-        return (false);
+        pSoldier.bBreath = (pSoldier.sBreathRed + 99) / 100;
+        return false;
     }
 
     void AddFuelToVehicle(SOLDIERTYPE? pSoldier, SOLDIERTYPE? pVehicle)
@@ -4289,7 +4289,7 @@ public class StrategicMovement
             sFuelAdded = Math.Min(sFuelNeeded, sFuelAvailable);
             //Add to vehicle
             pVehicle.sBreathRed += sFuelAdded;
-            pVehicle.bBreath = (pVehicle.sBreathRed / 100);
+            pVehicle.bBreath = pVehicle.sBreathRed / 100;
             //Subtract from item
             pItem.bStatus[0] = (int)(pItem.bStatus[0] - sFuelAdded / 50);
             if (pItem.bStatus[0] == 0)
@@ -4339,7 +4339,7 @@ public class StrategicMovement
             //            iVehicleId = GivenMvtGroupIdFindVehicleId(pGroup.ubGroupID);
             Debug.Assert(iVehicleId != -1);
 
-            pVehicle = (pVehicleList[iVehicleId]);
+            pVehicle = pVehicleList[iVehicleId];
 
             pVehicle.sSectorX = sSectorX;
             pVehicle.sSectorY = sSectorY;
@@ -4389,7 +4389,7 @@ public class StrategicMovement
         //        }
         //double it (they go back and forth) -- it's using zero based indices, so you have to add one to get the number of actual
         //waypoints in one direction.
-        ubTotalWaypoints = (int)((ubMaxWaypointID) * 2);
+        ubTotalWaypoints = (int)(ubMaxWaypointID * 2);
 
         //pick the waypoint they start at
         ubChosen = (int)Globals.Random.Next(ubTotalWaypoints);
@@ -4692,7 +4692,7 @@ public class StrategicMovement
         // nobody in the group (perfectly legal with the chopper)
         if (pGroup.pPlayerList == null)
         {
-            return (false);
+            return false;
         }
 
         // chopper doesn't stop for NPCs
@@ -4704,7 +4704,7 @@ public class StrategicMovement
         // if we're already in the middle of a prompt (possible with simultaneously group arrivals!), don't try to prompt again
         if (gpGroupPrompting != null)
         {
-            return (false);
+            return false;
         }
 
 
@@ -4717,7 +4717,7 @@ public class StrategicMovement
         // don't do this for underground sectors
         if (bSectorZ != 0)
         {
-            return (false);
+            return false;
         }
 
         // get the strategic sector value
@@ -4726,7 +4726,7 @@ public class StrategicMovement
         // skip towns/pseudo-towns (anything that shows up on the map as being special)
         if (strategicMap[sStrategicSector].bNameId != TOWNS.BLANK_SECTOR)
         {
-            return (false);
+            return false;
         }
 
         // skip SAM-sites
@@ -4739,7 +4739,7 @@ public class StrategicMovement
         // check for profiled NPCs in sector
         if (this.WildernessSectorWithAllProfiledNPCsNotSpokenWith(sSectorX, sSectorY, bSectorZ) == false)
         {
-            return (false);
+            return false;
         }
 
 
@@ -4762,7 +4762,7 @@ public class StrategicMovement
         }
 
         // wait, we're prompting the player
-        return (true);
+        return true;
     }
 
 
@@ -4794,7 +4794,7 @@ public class StrategicMovement
             {
                 // if we haven't talked to him yet, and he's not currently recruired/escorted by player (!)
                 if ((pProfile.ubLastDateSpokenTo == 0)
-                    && !(pProfile.ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED | PROFILE_MISC_FLAG.EPCACTIVE)))
+                    && !pProfile.ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED | PROFILE_MISC_FLAG.EPCACTIVE))
                 {
                     // then this is a guy we need to stop for...
                     fFoundSomebody = true;
@@ -4803,13 +4803,13 @@ public class StrategicMovement
                 {
                     // already spoke to this guy, don't prompt about this sector again, regardless of status of other NPCs here
                     // (although Hamous wanders around, he never shares the same wilderness sector as other important NPCs)
-                    return (false);
+                    return false;
                 }
             }
         }
 
 
-        return (fFoundSomebody);
+        return fFoundSomebody;
     }
 
 
@@ -4883,7 +4883,7 @@ public class StrategicMovement
 //        }
 
         // nope
-        return (false);
+        return false;
     }
 
     int NumberMercsInVehicleGroup(GROUP? pGroup)

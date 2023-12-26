@@ -28,8 +28,8 @@ public class Campaign
         }
 
         // ignore vehicles and robots
-        if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
-            || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT)))
+        if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)
+            || pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
         {
             return;
         }
@@ -54,7 +54,7 @@ public class Campaign
         //        }
         //#endif
 
-        Campaign.ProcessStatChange((Globals.gMercProfiles[pSoldier.ubProfile]), ubStat, usNumChances, ubReason);
+        Campaign.ProcessStatChange(Globals.gMercProfiles[pSoldier.ubProfile], ubStat, usNumChances, ubReason);
 
         // Update stats....right away... ATE
         UpdateStats(pSoldier);
@@ -119,62 +119,62 @@ public class Campaign
         {
             case Stat.HEALTHAMT:
                 bCurrentRating = pProfile.bLifeMax;
-                psStatGainPtr = (pProfile.sLifeGain);
+                psStatGainPtr = pProfile.sLifeGain;
                 // NB physical stat checks not affected by wisdom, unless training is going on
                 fAffectedByWisdom = false;
                 break;
 
             case Stat.AGILAMT:
                 bCurrentRating = pProfile.bAgility;
-                psStatGainPtr = (pProfile.sAgilityGain);
+                psStatGainPtr = pProfile.sAgilityGain;
                 fAffectedByWisdom = false;
                 break;
 
             case Stat.DEXTAMT:
                 bCurrentRating = pProfile.bDexterity;
-                psStatGainPtr = (pProfile.sDexterityGain);
+                psStatGainPtr = pProfile.sDexterityGain;
                 fAffectedByWisdom = false;
                 break;
 
             case Stat.WISDOMAMT:
                 bCurrentRating = pProfile.bWisdom;
-                psStatGainPtr = (pProfile.sWisdomGain);
+                psStatGainPtr = pProfile.sWisdomGain;
                 break;
 
             case Stat.MEDICALAMT:
                 bCurrentRating = pProfile.bMedical;
-                psStatGainPtr = (pProfile.sMedicalGain);
+                psStatGainPtr = pProfile.sMedicalGain;
                 break;
 
             case Stat.EXPLODEAMT:
                 bCurrentRating = pProfile.bExplosive;
-                psStatGainPtr = (pProfile.sExplosivesGain);
+                psStatGainPtr = pProfile.sExplosivesGain;
                 break;
 
             case Stat.MECHANAMT:
                 bCurrentRating = pProfile.bMechanical;
-                psStatGainPtr = (pProfile.sMechanicGain);
+                psStatGainPtr = pProfile.sMechanicGain;
                 break;
 
             case Stat.MARKAMT:
                 bCurrentRating = pProfile.bMarksmanship;
-                psStatGainPtr = (pProfile.sMarksmanshipGain);
+                psStatGainPtr = pProfile.sMarksmanshipGain;
                 break;
 
             case Stat.EXPERAMT:
                 bCurrentRating = pProfile.bExpLevel;
-                psStatGainPtr = (pProfile.sExpLevelGain);
+                psStatGainPtr = pProfile.sExpLevelGain;
                 break;
 
             case Stat.STRAMT:
                 bCurrentRating = (int)pProfile.bStrength;
-                psStatGainPtr = (pProfile.sStrengthGain);
+                psStatGainPtr = pProfile.sStrengthGain;
                 fAffectedByWisdom = false;
                 break;
 
             case Stat.LDRAMT:
                 bCurrentRating = pProfile.bLeadership;
-                psStatGainPtr = (pProfile.sLeadershipGain);
+                psStatGainPtr = pProfile.sLeadershipGain;
                 break;
 
             default:
@@ -232,7 +232,7 @@ public class Campaign
                 // if there IS a usChance, adjust it for high or low wisdom (50 is avg)
                 if (usChance > 0 && fAffectedByWisdom)
                 {
-                    usChance += (usChance * (pProfile.bWisdom + (pProfile.sWisdomGain / SubpointsPerPoint(Stat.WISDOMAMT, pProfile.bExpLevel)) - 50)) / 100;
+                    usChance += usChance * (pProfile.bWisdom + (pProfile.sWisdomGain / SubpointsPerPoint(Stat.WISDOMAMT, pProfile.bExpLevel)) - 50) / 100;
                 }
 
                 /*
@@ -251,7 +251,7 @@ public class Campaign
 
                 if (PreRandom(100) < usChance)
                 {
-                    (psStatGainPtr)++;
+                    psStatGainPtr++;
                     sSubPointChange++;
 
                     // as long as we're not dealing with exp_level changes (already added above!)
@@ -310,7 +310,7 @@ public class Campaign
                     // if there IS a usChance, adjust it for high or low wisdom (50 is avg)
                     if (usChance > 0 && fAffectedByWisdom)
                     {
-                        usChance -= (usChance * (pProfile.bWisdom + (pProfile.sWisdomGain / SubpointsPerPoint(Stat.WISDOMAMT, pProfile.bExpLevel)) - 50)) / 100;
+                        usChance -= usChance * (pProfile.bWisdom + (pProfile.sWisdomGain / SubpointsPerPoint(Stat.WISDOMAMT, pProfile.bExpLevel)) - 50) / 100;
                     }
 
                     // if there's ANY usChance, minimum usChance is 1% regardless of wisdom
@@ -322,7 +322,7 @@ public class Campaign
 
                 if (PreRandom(100) < usChance)
                 {
-                    (psStatGainPtr)--;
+                    psStatGainPtr--;
                     sSubPointChange--;
 
                     // as long as we're not dealing with exp_level changes (already added above!)
@@ -364,7 +364,7 @@ public class Campaign
     // convert hired mercs' stats subpoint changes into actual point changes where warranted
     private static void UpdateStats(SOLDIERTYPE? pSoldier)
     {
-        ProcessUpdateStats((Globals.gMercProfiles[pSoldier.ubProfile]), pSoldier);
+        ProcessUpdateStats(Globals.gMercProfiles[pSoldier.ubProfile], pSoldier);
     }
 
 
@@ -395,69 +395,69 @@ public class Campaign
         switch (ubStat)
         {
             case Stat.HEALTHAMT:
-                psStatGainPtr = (pProfile.sLifeGain);
-                pbStatDeltaPtr = (pProfile.bLifeDelta);
-                pbStatPtr = (pProfile.bLifeMax);
+                psStatGainPtr = pProfile.sLifeGain;
+                pbStatDeltaPtr = pProfile.bLifeDelta;
+                pbStatPtr = pProfile.bLifeMax;
                 break;
 
             case Stat.AGILAMT:
-                psStatGainPtr = (pProfile.sAgilityGain);
-                pbStatDeltaPtr = (pProfile.bAgilityDelta);
-                pbStatPtr = (pProfile.bAgility);
+                psStatGainPtr = pProfile.sAgilityGain;
+                pbStatDeltaPtr = pProfile.bAgilityDelta;
+                pbStatPtr = pProfile.bAgility;
                 break;
 
             case Stat.DEXTAMT:
-                psStatGainPtr = (pProfile.sDexterityGain);
-                pbStatDeltaPtr = (pProfile.bDexterityDelta);
-                pbStatPtr = (pProfile.bDexterity);
+                psStatGainPtr = pProfile.sDexterityGain;
+                pbStatDeltaPtr = pProfile.bDexterityDelta;
+                pbStatPtr = pProfile.bDexterity;
                 break;
 
             case Stat.WISDOMAMT:
-                psStatGainPtr = (pProfile.sWisdomGain);
-                pbStatDeltaPtr = (pProfile.bWisdomDelta);
-                pbStatPtr = (pProfile.bWisdom);
+                psStatGainPtr = pProfile.sWisdomGain;
+                pbStatDeltaPtr = pProfile.bWisdomDelta;
+                pbStatPtr = pProfile.bWisdom;
                 break;
 
             case Stat.MEDICALAMT:
-                psStatGainPtr = (pProfile.sMedicalGain);
-                pbStatDeltaPtr = (pProfile.bMedicalDelta);
-                pbStatPtr = (pProfile.bMedical);
+                psStatGainPtr = pProfile.sMedicalGain;
+                pbStatDeltaPtr = pProfile.bMedicalDelta;
+                pbStatPtr = pProfile.bMedical;
                 break;
 
             case Stat.EXPLODEAMT:
-                psStatGainPtr = (pProfile.sExplosivesGain);
-                pbStatDeltaPtr = (pProfile.bExplosivesDelta);
-                pbStatPtr = (pProfile.bExplosive);
+                psStatGainPtr = pProfile.sExplosivesGain;
+                pbStatDeltaPtr = pProfile.bExplosivesDelta;
+                pbStatPtr = pProfile.bExplosive;
                 break;
 
             case Stat.MECHANAMT:
-                psStatGainPtr = (pProfile.sMechanicGain);
-                pbStatDeltaPtr = (pProfile.bMechanicDelta);
-                pbStatPtr = (pProfile.bMechanical);
+                psStatGainPtr = pProfile.sMechanicGain;
+                pbStatDeltaPtr = pProfile.bMechanicDelta;
+                pbStatPtr = pProfile.bMechanical;
                 break;
 
             case Stat.MARKAMT:
-                psStatGainPtr = (pProfile.sMarksmanshipGain);
-                pbStatDeltaPtr = (pProfile.bMarksmanshipDelta);
-                pbStatPtr = (pProfile.bMarksmanship);
+                psStatGainPtr = pProfile.sMarksmanshipGain;
+                pbStatDeltaPtr = pProfile.bMarksmanshipDelta;
+                pbStatPtr = pProfile.bMarksmanship;
                 break;
 
             case Stat.EXPERAMT:
-                psStatGainPtr = (pProfile.sExpLevelGain);
-                pbStatDeltaPtr = (pProfile.bExpLevelDelta);
-                pbStatPtr = (pProfile.bExpLevel);
+                psStatGainPtr = pProfile.sExpLevelGain;
+                pbStatDeltaPtr = pProfile.bExpLevelDelta;
+                pbStatPtr = pProfile.bExpLevel;
                 break;
 
             case Stat.STRAMT:
-                psStatGainPtr = (pProfile.sStrengthGain);
-                pbStatDeltaPtr = (pProfile.bStrengthDelta);
-                pbStatPtr = (int?)(pProfile.bStrength);
+                psStatGainPtr = pProfile.sStrengthGain;
+                pbStatDeltaPtr = pProfile.bStrengthDelta;
+                pbStatPtr = (int?)pProfile.bStrength;
                 break;
 
             case Stat.LDRAMT:
-                psStatGainPtr = (pProfile.sLeadershipGain);
-                pbStatDeltaPtr = (pProfile.bLeadershipDelta);
-                pbStatPtr = (pProfile.bLeadership);
+                psStatGainPtr = pProfile.sLeadershipGain;
+                pbStatDeltaPtr = pProfile.bLeadershipDelta;
+                pbStatPtr = pProfile.bLeadership;
                 break;
         }
 
@@ -469,68 +469,68 @@ public class Campaign
             switch (ubStat)
             {
                 case Stat.HEALTHAMT:
-                    pbSoldierStatPtr = (int?)(pSoldier.bLifeMax);
-                    puiStatTimerPtr = (pSoldier.uiChangeHealthTime);
+                    pbSoldierStatPtr = (int?)pSoldier.bLifeMax;
+                    puiStatTimerPtr = pSoldier.uiChangeHealthTime;
                     usIncreaseValue = Globals.HEALTH_INCREASE;
                     break;
 
                 case Stat.AGILAMT:
-                    pbSoldierStatPtr = (pSoldier.bAgility);
-                    puiStatTimerPtr = (pSoldier.uiChangeAgilityTime);
+                    pbSoldierStatPtr = pSoldier.bAgility;
+                    puiStatTimerPtr = pSoldier.uiChangeAgilityTime;
                     usIncreaseValue = Globals.AGIL_INCREASE;
                     break;
 
                 case Stat.DEXTAMT:
-                    pbSoldierStatPtr = (pSoldier.bDexterity);
-                    puiStatTimerPtr = (pSoldier.uiChangeDexterityTime);
+                    pbSoldierStatPtr = pSoldier.bDexterity;
+                    puiStatTimerPtr = pSoldier.uiChangeDexterityTime;
                     usIncreaseValue = Globals.DEX_INCREASE;
                     break;
 
                 case Stat.WISDOMAMT:
-                    pbSoldierStatPtr = (pSoldier.bWisdom);
-                    puiStatTimerPtr = (pSoldier.uiChangeWisdomTime);
+                    pbSoldierStatPtr = pSoldier.bWisdom;
+                    puiStatTimerPtr = pSoldier.uiChangeWisdomTime;
                     usIncreaseValue = Globals.WIS_INCREASE;
                     break;
 
                 case Stat.MEDICALAMT:
-                    pbSoldierStatPtr = (pSoldier.bMedical);
-                    puiStatTimerPtr = (pSoldier.uiChangeMedicalTime);
+                    pbSoldierStatPtr = pSoldier.bMedical;
+                    puiStatTimerPtr = pSoldier.uiChangeMedicalTime;
                     usIncreaseValue = Globals.MED_INCREASE;
                     break;
 
                 case Stat.EXPLODEAMT:
-                    pbSoldierStatPtr = (pSoldier.bExplosive);
-                    puiStatTimerPtr = (pSoldier.uiChangeExplosivesTime);
+                    pbSoldierStatPtr = pSoldier.bExplosive;
+                    puiStatTimerPtr = pSoldier.uiChangeExplosivesTime;
                     usIncreaseValue = Globals.EXP_INCREASE;
                     break;
 
                 case Stat.MECHANAMT:
-                    pbSoldierStatPtr = (pSoldier.bMechanical);
-                    puiStatTimerPtr = (pSoldier.uiChangeMechanicalTime);
+                    pbSoldierStatPtr = pSoldier.bMechanical;
+                    puiStatTimerPtr = pSoldier.uiChangeMechanicalTime;
                     usIncreaseValue = Globals.MECH_INCREASE;
                     break;
 
                 case Stat.MARKAMT:
-                    pbSoldierStatPtr = (pSoldier.bMarksmanship);
-                    puiStatTimerPtr = (pSoldier.uiChangeMarksmanshipTime);
+                    pbSoldierStatPtr = pSoldier.bMarksmanship;
+                    puiStatTimerPtr = pSoldier.uiChangeMarksmanshipTime;
                     usIncreaseValue = Globals.MRK_INCREASE;
                     break;
 
                 case Stat.EXPERAMT:
-                    pbSoldierStatPtr = (pSoldier.bExpLevel);
-                    puiStatTimerPtr = (pSoldier.uiChangeLevelTime);
+                    pbSoldierStatPtr = pSoldier.bExpLevel;
+                    puiStatTimerPtr = pSoldier.uiChangeLevelTime;
                     usIncreaseValue = Globals.LVL_INCREASE;
                     break;
 
                 case Stat.STRAMT:
-                    pbSoldierStatPtr = ((int?)pSoldier.bStrength);
-                    puiStatTimerPtr = (pSoldier.uiChangeStrengthTime);
+                    pbSoldierStatPtr = (int?)pSoldier.bStrength;
+                    puiStatTimerPtr = pSoldier.uiChangeStrengthTime;
                     usIncreaseValue = Globals.STRENGTH_INCREASE;
                     break;
 
                 case Stat.LDRAMT:
-                    pbSoldierStatPtr = (pSoldier.bLeadership);
-                    puiStatTimerPtr = (pSoldier.uiChangeLeadershipTime);
+                    pbSoldierStatPtr = pSoldier.bLeadership;
+                    puiStatTimerPtr = pSoldier.uiChangeLeadershipTime;
                     usIncreaseValue = Globals.LDR_INCREASE;
                     break;
             }
@@ -561,7 +561,7 @@ public class Campaign
             }
 
             // reduce gain to the unused subpts only
-            psStatGainPtr = (psStatGainPtr) % usSubpointsPerPoint;
+            psStatGainPtr = psStatGainPtr % usSubpointsPerPoint;
 
 
             // if the guy is employed by player
@@ -601,7 +601,7 @@ public class Campaign
                 }
                 else
                 {
-                    pSoldier.usValueGoneUp &= ~(usIncreaseValue);
+                    pSoldier.usValueGoneUp &= ~usIncreaseValue;
                 }
 
                 fInterfacePanelDirty = DIRTYLEVEL2;
@@ -729,7 +729,7 @@ public class Campaign
         if (pSoldier != null)
         {
             // ATE: if in the midst of an attack, if in the field, delay all stat changes until the check made after the 'attack'...
-            if ((Globals.gTacticalStatus.ubAttackBusyCount > 0) && pSoldier.bInSector && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            if ((Globals.gTacticalStatus.ubAttackBusyCount > 0) && pSoldier.bInSector && Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             {
                 return;
             }
@@ -747,7 +747,7 @@ public class Campaign
             }
 
             // ignore vehicles and robots
-            if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) || (pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT)))
+            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE) || pSoldier.uiStatusFlags.HasFlag(SOLDIER.ROBOT))
             {
                 return;
             }
@@ -791,70 +791,70 @@ public class Campaign
             switch (ubStat)
             {
                 case Stat.HEALTHAMT:
-                    psStatGainPtr = (pProfile.sLifeGain);
-                    pbStatPtr = (pProfile.bLifeMax);
+                    psStatGainPtr = pProfile.sLifeGain;
+                    pbStatPtr = pProfile.bLifeMax;
 
                     bMinStatValue = Globals.OKLIFE;
                     break;
 
                 case Stat.AGILAMT:
-                    psStatGainPtr = (pProfile.sAgilityGain);
-                    pbStatPtr = (pProfile.bAgility);
+                    psStatGainPtr = pProfile.sAgilityGain;
+                    pbStatPtr = pProfile.bAgility;
                     break;
 
                 case Stat.DEXTAMT:
-                    psStatGainPtr = (pProfile.sDexterityGain);
-                    pbStatPtr = (pProfile.bDexterity);
+                    psStatGainPtr = pProfile.sDexterityGain;
+                    pbStatPtr = pProfile.bDexterity;
                     break;
 
                 case Stat.WISDOMAMT:
-                    psStatGainPtr = (pProfile.sWisdomGain);
-                    pbStatPtr = (pProfile.bWisdom);
+                    psStatGainPtr = pProfile.sWisdomGain;
+                    pbStatPtr = pProfile.bWisdom;
                     break;
 
                 case Stat.MEDICALAMT:
-                    psStatGainPtr = (pProfile.sMedicalGain);
-                    pbStatPtr = (pProfile.bMedical);
+                    psStatGainPtr = pProfile.sMedicalGain;
+                    pbStatPtr = pProfile.bMedical;
 
                     bMinStatValue = 0;
                     break;
 
                 case Stat.EXPLODEAMT:
-                    psStatGainPtr = (pProfile.sExplosivesGain);
-                    pbStatPtr = (pProfile.bExplosive);
+                    psStatGainPtr = pProfile.sExplosivesGain;
+                    pbStatPtr = pProfile.bExplosive;
 
                     bMinStatValue = 0;
                     break;
 
                 case Stat.MECHANAMT:
-                    psStatGainPtr = (pProfile.sMechanicGain);
-                    pbStatPtr = (pProfile.bMechanical);
+                    psStatGainPtr = pProfile.sMechanicGain;
+                    pbStatPtr = pProfile.bMechanical;
 
                     bMinStatValue = 0;
                     break;
 
                 case Stat.MARKAMT:
-                    psStatGainPtr = (pProfile.sMarksmanshipGain);
-                    pbStatPtr = (pProfile.bMarksmanship);
+                    psStatGainPtr = pProfile.sMarksmanshipGain;
+                    pbStatPtr = pProfile.bMarksmanship;
 
                     bMinStatValue = 0;
                     break;
 
                 case Stat.EXPERAMT:
-                    psStatGainPtr = (pProfile.sExpLevelGain);
-                    pbStatPtr = (pProfile.bExpLevel);
+                    psStatGainPtr = pProfile.sExpLevelGain;
+                    pbStatPtr = pProfile.bExpLevel;
 
                     bMaxStatValue = Globals.MAXEXPLEVEL;
                     break;
 
                 case Stat.STRAMT:
-                    psStatGainPtr = (pProfile.sStrengthGain);
-                    pbStatPtr = ((int)pProfile.bStrength);
+                    psStatGainPtr = pProfile.sStrengthGain;
+                    pbStatPtr = (int)pProfile.bStrength;
                     break;
 
                 case Stat.LDRAMT:
-                    psStatGainPtr = (pProfile.sLeadershipGain);
-                    pbStatPtr = (pProfile.bLeadership);
+                    psStatGainPtr = pProfile.sLeadershipGain;
+                    pbStatPtr = pProfile.bLeadership;
                     break;
             }
 
@@ -866,47 +866,47 @@ public class Campaign
                 switch (ubStat)
                 {
                     case Stat.HEALTHAMT:
-                        pbSoldierStatPtr = ((int)pSoldier.bLifeMax);
+                        pbSoldierStatPtr = (int)pSoldier.bLifeMax;
                         break;
 
                     case Stat.AGILAMT:
-                        pbSoldierStatPtr = (pSoldier.bAgility);
+                        pbSoldierStatPtr = pSoldier.bAgility;
                         break;
 
                     case Stat.DEXTAMT:
-                        pbSoldierStatPtr = (pSoldier.bDexterity);
+                        pbSoldierStatPtr = pSoldier.bDexterity;
                         break;
 
                     case Stat.WISDOMAMT:
-                        pbSoldierStatPtr = (pSoldier.bWisdom);
+                        pbSoldierStatPtr = pSoldier.bWisdom;
                         break;
 
                     case Stat.MEDICALAMT:
-                        pbSoldierStatPtr = (pSoldier.bMedical);
+                        pbSoldierStatPtr = pSoldier.bMedical;
                         break;
 
                     case Stat.EXPLODEAMT:
-                        pbSoldierStatPtr = (pSoldier.bExplosive);
+                        pbSoldierStatPtr = pSoldier.bExplosive;
                         break;
 
                     case Stat.MECHANAMT:
-                        pbSoldierStatPtr = (pSoldier.bMechanical);
+                        pbSoldierStatPtr = pSoldier.bMechanical;
                         break;
 
                     case Stat.MARKAMT:
-                        pbSoldierStatPtr = (pSoldier.bMarksmanship);
+                        pbSoldierStatPtr = pSoldier.bMarksmanship;
                         break;
 
                     case Stat.EXPERAMT:
-                        pbSoldierStatPtr = (pSoldier.bExpLevel);
+                        pbSoldierStatPtr = pSoldier.bExpLevel;
                         break;
 
                     case Stat.STRAMT:
-                        pbSoldierStatPtr = ((int)pSoldier.bStrength);
+                        pbSoldierStatPtr = (int)pSoldier.bStrength;
                         break;
 
                     case Stat.LDRAMT:
-                        pbSoldierStatPtr = (pSoldier.bLeadership);
+                        pbSoldierStatPtr = pSoldier.bLeadership;
                         break;
                 }
             }
@@ -916,7 +916,7 @@ public class Campaign
 
             // Calc how many full points worth of stat changes we have accumulated in this stat (positive OR negative!)
             // NOTE: for simplicity, this hopes nobody will go up more than one level at once, which would change the subpoints/pt
-            sPtsChanged = (psStatGainPtr) / usSubpointsPerPoint;
+            sPtsChanged = psStatGainPtr / usSubpointsPerPoint;
 
             // gone too high or too low?..handle the fact
             if ((pbStatPtr + sPtsChanged) > bMaxStatValue)
@@ -955,7 +955,7 @@ public class Campaign
         {
             if (pSoldier.bActive)
             {
-                ProcessUpdateStats((Globals.gMercProfiles[pSoldier.ubProfile]), pSoldier);
+                ProcessUpdateStats(Globals.gMercProfiles[pSoldier.ubProfile], pSoldier);
             }
         }
     }
@@ -968,7 +968,7 @@ public class Campaign
         // if he was working for free, it's still free!
         if (uiOldSalary == 0)
         {
-            return (0);
+            return 0;
         }
 
         if (fIncrease)
@@ -994,7 +994,7 @@ public class Campaign
             uiNewSalary = 5;
         }
 
-        return (uiNewSalary);
+        return uiNewSalary;
     }
 
 
@@ -1047,10 +1047,10 @@ public class Campaign
         {
             // then we have to make it so, as Picard would say <- We have to wonder how much Alex gets out
             // and while we're at it, we round up to next higher multiple if halfway
-            uiSalary = ((uiSalary + (uiMultiple / 2)) / uiMultiple) * uiMultiple;
+            uiSalary = (uiSalary + (uiMultiple / 2)) / uiMultiple * uiMultiple;
         }
 
-        return (uiSalary);
+        return uiSalary;
     }
 
 
@@ -1086,10 +1086,10 @@ public class Campaign
             default:
                 // BETA message
                 Messages.ScreenMsg(FontColor.FONT_ORANGE, MSG.BETAVERSION, "SubpointsPerPoint: ERROR - Unknown ubStat %d", ubStat.ToString());
-                return (100);
+                return 100;
         }
 
-        return (usSubpointsPerPoint);
+        return usSubpointsPerPoint;
     }
 
 
@@ -1118,7 +1118,7 @@ public class Campaign
             // 80 wisdom gives 8 rolls per stat per day, 10 stats, avg success rate 40% = 32pts per day,
             // so about 10 working days to hit lvl 2.  This seems high, but mercs don't actually "work" that often, and it's twice
             // as long to hit level 3.  If we go lower, attribs & skills will barely move.
-            usNumChances = (pProfile.bWisdom / 10);
+            usNumChances = pProfile.bWisdom / 10;
             for (ubStat = Globals.FIRST_CHANGEABLE_STAT; ubStat <= Globals.LAST_CHANGEABLE_STAT; ubStat++)
             {
                 this.ProfileStatChange(pProfile, ubStat, usNumChances, 0);
@@ -1137,7 +1137,7 @@ public class Campaign
             do
             {
                 // pick ONE stat at random to focus on (it may be beyond training cap, but so what, too hard to weed those out)
-                ubStat = (Stat.FIRST_CHANGEABLE_STAT + Globals.Random.Next(ubNumStats));
+                ubStat = Stat.FIRST_CHANGEABLE_STAT + Globals.Random.Next(ubNumStats);
                 // except experience - can't practise that!
             } while (ubStat == Stat.EXPERAMT);
 
@@ -1154,11 +1154,11 @@ public class Campaign
     {
         int ubMaxDeaths;
         int sChance;
-        MERCPROFILESTRUCT? pProfile = (Globals.gMercProfiles[iProfileID]);
+        MERCPROFILESTRUCT? pProfile = Globals.gMercProfiles[iProfileID];
 
 
         // if the player has never yet had the chance to hire this merc
-        if (!(pProfile.ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.PLAYER_HAD_CHANCE_TO_HIRE)))
+        if (!pProfile.ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.PLAYER_HAD_CHANCE_TO_HIRE))
         {
             // then we're not allowed to kill him (to avoid really pissing off player by killing his very favorite merc)
             return;
@@ -1262,7 +1262,7 @@ public class Campaign
         //Kris:  Make sure you don't divide by zero!!!
         if (uiPossibleIncome > 0)
         {
-            ubCurrentProgress = ((uiCurrentIncome * Globals.PROGRESS_PORTION_INCOME) / uiPossibleIncome);
+            ubCurrentProgress = uiCurrentIncome * Globals.PROGRESS_PORTION_INCOME / uiPossibleIncome;
         }
         else
         {
@@ -1307,7 +1307,7 @@ public class Campaign
         // add control progress
         ubCurrentProgress += usControlProgress;
 
-        return (ubCurrentProgress);
+        return ubCurrentProgress;
     }
 
 
@@ -1318,7 +1318,7 @@ public class Campaign
             return 0;
         }
 
-        return (Globals.gStrategicStatus.ubHighestProgress);
+        return Globals.gStrategicStatus.ubHighestProgress;
     }
 
 
@@ -1500,7 +1500,7 @@ public class Campaign
             if (pSoldier.bActive && pSoldier.bInSector
 //                && IsMercOnCurrentSquad(pSoldier)
                 && (pSoldier.bLife >= Globals.CONSCIOUSNESS) &&
-                     !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) && !AM_A_ROBOT(pSoldier))
+                     !pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE) && !AM_A_ROBOT(pSoldier))
             {
                 StatChange(pSoldier, Stat.EXPERAMT, usXPs, 0);
             }
@@ -1570,7 +1570,7 @@ public class Campaign
             }
         }
 
-        return (ubSectorControlPts);
+        return ubSectorControlPts;
     }
 
 
@@ -1578,7 +1578,7 @@ public class Campaign
     {
         int ubEmailOffset = 0;
 
-        ubEmailOffset = MERC_UP_LEVEL_BIFF + MERC_UP_LEVEL_LENGTH_BIFF * (ubMercMercIdValue);
+        ubEmailOffset = MERC_UP_LEVEL_BIFF + MERC_UP_LEVEL_LENGTH_BIFF * ubMercMercIdValue;
         Emails.AddEmail(ubEmailOffset, MERC_UP_LEVEL_LENGTH_BIFF, EmailAddresses.SPECK_FROM_MERC, GameClock.GetWorldTotalMin());
     }
 }

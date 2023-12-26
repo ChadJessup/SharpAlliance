@@ -114,7 +114,7 @@ public class InterfaceCursors
 
             Globals.gfTargetDropPos = false;
 
-            if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.FREEFLOWING) && !(Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.DONTSHOW2NDLEVEL)))
+            if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.FREEFLOWING) && !Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.DONTSHOW2NDLEVEL))
             {
                 Globals.gfTargetDropPos = true;
                 Globals.gusTargetDropPos = Globals.gusCurMousePos;
@@ -286,7 +286,7 @@ public class InterfaceCursors
 
 
         if (Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.FREEFLOWING)
-            && !(Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.DONTSHOW2NDLEVEL)))
+            && !Globals.gUICursors[Globals.guiCurUICursor].uiFlags.HasFlag(UICURSOR.DONTSHOW2NDLEVEL))
         {
             if (Globals.gsInterfaceLevel == InterfaceLevel.I_ROOF_LEVEL)
             {

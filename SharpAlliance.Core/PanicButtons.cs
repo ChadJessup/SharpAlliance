@@ -19,7 +19,7 @@ public class PanicButtons
         int bPanicTrigger;
         int sPanicTriggerGridNo;
 
-        if (!(gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE)))
+        if (!gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE))
         {
             return;
         }
@@ -130,7 +130,7 @@ public class PanicButtons
             }
 
             // set his keys value back to what it was before this hack
-            pSoldier.bHasKeys = (pSoldier.bHasKeys >> 1);
+            pSoldier.bHasKeys = pSoldier.bHasKeys >> 1;
 
             // if he can get there (or is already there!)
             if (sPathCost > 0 || (pSoldier.sGridNo == sPanicTriggerGridNo))
@@ -171,7 +171,7 @@ public class PanicButtons
         int sPanicTriggerGridNo;
         int uiPercentEnemiesKilled;
 
-        if (!(gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE)))
+        if (!gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE))
         {
             return;
         }
@@ -191,7 +191,7 @@ public class PanicButtons
 
         sPanicTriggerGridNo = gTacticalStatus.sPanicTriggerGridNo[bPanicTrigger];
 
-        uiPercentEnemiesKilled = (int)(100 * (int)(gTacticalStatus.ubArmyGuysKilled) / (int)(gTacticalStatus.Team[ENEMY_TEAM].bMenInSector + gTacticalStatus.ubArmyGuysKilled));
+        uiPercentEnemiesKilled = (int)(100 * (int)gTacticalStatus.ubArmyGuysKilled / (int)(gTacticalStatus.Team[ENEMY_TEAM].bMenInSector + gTacticalStatus.ubArmyGuysKilled));
         if (gTacticalStatus.ubPanicTolerance[bPanicTrigger] > uiPercentEnemiesKilled)
         {
             // not yet... not yet
@@ -209,7 +209,7 @@ public class PanicButtons
             if (iPathCost == 0)
             {
                 //pSoldier.bHasKeys = bOldKeys;
-                pSoldier.bHasKeys = (pSoldier.bHasKeys >> 1);
+                pSoldier.bHasKeys = pSoldier.bHasKeys >> 1;
                 return;
             }
             iAPCost += iPathCost;
@@ -224,7 +224,7 @@ public class PanicButtons
 //        }
         // else return keys to normal
         //pSoldier.bHasKeys = bOldKeys;
-        pSoldier.bHasKeys = (pSoldier.bHasKeys >> 1);
+        pSoldier.bHasKeys = pSoldier.bHasKeys >> 1;
     }
 
 
@@ -251,12 +251,12 @@ public class PanicButtons
                 if (pSoldier.bActionPoints >= AP.USE_REMOTE)
                 {
                     // blow up all the PANIC bombs!
-                    return (AI_ACTION.USE_DETONATOR);
+                    return AI_ACTION.USE_DETONATOR;
                 }
                 else     // otherwise, wait a turn
                 {
                     pSoldier.usActionData = NOWHERE;
-                    return (AI_ACTION.NONE);
+                    return AI_ACTION.NONE;
                 }
             }
         }
@@ -324,12 +324,12 @@ public class PanicButtons
                             // blow up the all the PANIC bombs (or just the journal)
                             pSoldier.usActionData = sPanicTriggerGridNo;
 
-                            return (AI_ACTION.PULL_TRIGGER);
+                            return AI_ACTION.PULL_TRIGGER;
                         }
                         else       // otherwise, wait a turn
                         {
                             pSoldier.usActionData = NOWHERE;
-                            return (AI_ACTION.NONE);
+                            return AI_ACTION.NONE;
                         }
                     }
                     else           // we are NOT at the HandGrid spot
@@ -355,7 +355,7 @@ public class PanicButtons
                         else         // can't move, wait 1 turn
                         {
                             pSoldier.usActionData = NOWHERE;
-                            return (AI_ACTION.NONE);
+                            return AI_ACTION.NONE;
                         }
                     }
                 }
@@ -386,7 +386,7 @@ public class PanicButtons
         int bClosestTrigger = -1;
         int uiPercentEnemiesKilled;
 
-        uiPercentEnemiesKilled = (int)(100 * (int)(gTacticalStatus.ubArmyGuysKilled) / (int)(gTacticalStatus.Team[ENEMY_TEAM].bMenInSector + gTacticalStatus.ubArmyGuysKilled));
+        uiPercentEnemiesKilled = (int)(100 * (int)gTacticalStatus.ubArmyGuysKilled / (int)(gTacticalStatus.Team[ENEMY_TEAM].bMenInSector + gTacticalStatus.ubArmyGuysKilled));
 
         for (bLoop = 0; bLoop < NUM_PANIC_TRIGGERS; bLoop++)
         {
@@ -424,7 +424,7 @@ public class PanicButtons
             }
         }
 
-        return (bClosestTrigger);
+        return bClosestTrigger;
     }
 
     bool NeedToRadioAboutPanicTrigger()
@@ -432,16 +432,16 @@ public class PanicButtons
         int uiPercentEnemiesKilled;
         int bLoop;
 
-        if (!(gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE))
+        if (!gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE)
             || gTacticalStatus.ubTheChosenOne != NOBODY)
         {
             // already done!
-            return (false);
+            return false;
         }
 
         if (gTacticalStatus.Team[ENEMY_TEAM].bMenInSector == 0)
         {
-            return (false);
+            return false;
         }
 
         if (gWorldSectorX == TIXA_SECTOR_X && gWorldSectorY == TIXA_SECTOR_Y)
@@ -450,23 +450,23 @@ public class PanicButtons
             pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.WARDEN, false);
             if (pSoldier is null || pSoldier.ubID == gTacticalStatus.ubTheChosenOne)
             {
-                return (false);
+                return false;
             }
         }
 
 
-        uiPercentEnemiesKilled = (int)(100 * (int)(gTacticalStatus.ubArmyGuysKilled) / (int)(gTacticalStatus.Team[ENEMY_TEAM].bMenInSector + gTacticalStatus.ubArmyGuysKilled));
+        uiPercentEnemiesKilled = (int)(100 * (int)gTacticalStatus.ubArmyGuysKilled / (int)(gTacticalStatus.Team[ENEMY_TEAM].bMenInSector + gTacticalStatus.ubArmyGuysKilled));
 
         for (bLoop = 0; bLoop < NUM_PANIC_TRIGGERS; bLoop++)
         {
             // if the bomb exists and its tolerance has been exceeded
             if ((gTacticalStatus.sPanicTriggerGridNo[bLoop] != NOWHERE) && (uiPercentEnemiesKilled >= gTacticalStatus.ubPanicTolerance[bLoop]))
             {
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 
     AI_ACTION HeadForTheStairCase(SOLDIERTYPE? pSoldier)
@@ -476,12 +476,12 @@ public class PanicButtons
         pBasementInfo = QueenCommand.FindUnderGroundSector(3, MAP_ROW.P, 1);
         if (pBasementInfo is not null && pBasementInfo.uiTimeCurrentSectorWasLastLoaded != 0 && (pBasementInfo.ubNumElites + pBasementInfo.ubNumTroops + pBasementInfo.ubNumAdmins) < 5)
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         if (IsometricUtils.PythSpacesAway(pSoldier.sGridNo, STAIRCASE_GRIDNO) < 2)
         {
-            return (AI_ACTION.TRAVERSE_DOWN);
+            return AI_ACTION.TRAVERSE_DOWN;
         }
         else
         {
@@ -491,6 +491,6 @@ public class PanicButtons
 //                return (AI_ACTION.GET_CLOSER);
 //            }
         }
-        return (AI_ACTION.NONE);
+        return AI_ACTION.NONE;
     }
 }

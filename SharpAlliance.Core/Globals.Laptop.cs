@@ -122,7 +122,7 @@ public partial class Globals
     public static bool gfTitleBarSurfaceAlreadyActive = false;
     public const int LAPTOP__NEW_FILE_ICON_X = 83;
     public const int LAPTOP__NEW_FILE_ICON_Y = 412;//(405+19)
-    public const int LAPTOP__NEW_EMAIL_ICON_X = (83 - 16);
+    public const int LAPTOP__NEW_EMAIL_ICON_X = 83 - 16;
     public const int LAPTOP__NEW_EMAIL_ICON_Y = LAPTOP__NEW_FILE_ICON_Y;
 
     // Mode values

@@ -36,7 +36,7 @@ public class TileCache
 
         if (usIndex >= (TileIndexes)TILE_CACHE_START_INDEX)
         {
-            pStructureFileRef = GetCachedTileStructureRef((usIndex - TILE_CACHE_START_INDEX));
+            pStructureFileRef = GetCachedTileStructureRef(usIndex - TILE_CACHE_START_INDEX);
 
             if (pStructureFileRef != null)
             {
@@ -57,7 +57,7 @@ public class TileCache
             return null;
         }
 
-        return (Globals.gpTileCacheStructInfo[Globals.gpTileCache[(int)iIndex].sStructRefID].pStructureFileRef);
+        return Globals.gpTileCacheStructInfo[Globals.gpTileCache[(int)iIndex].sStructRefID].pStructureFileRef;
     }
 
     private STRUCTURE_FILE_REF? GetCachedTileStructureRefFromFilename(string cFilename)
@@ -72,7 +72,7 @@ public class TileCache
             return null;
         }
 
-        return (Globals.gpTileCacheStructInfo[sStructDataIndex].pStructureFileRef);
+        return Globals.gpTileCacheStructInfo[sStructDataIndex].pStructureFileRef;
     }
 
     public static int FindCacheStructDataIndex(string cFilename)
@@ -143,7 +143,7 @@ public class TileCache
 
                 if (gpTileCache[cnt].pImagery == null)
                 {
-                    return (-1);
+                    return -1;
                 }
 
                 gpTileCache[cnt].zName = cFilename;
@@ -176,12 +176,12 @@ public class TileCache
                     ;
                 }
 
-                return (cnt);
+                return cnt;
             }
         }
 
         // Can't find one!
-        return (-1);
+        return -1;
     }
 
     public static string GetRootName(string pSrcStr)

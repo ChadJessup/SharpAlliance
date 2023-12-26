@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SharpAlliance.Core.SubSystems;
-using SharpAlliance.Platform.Interfaces;
-
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -25,7 +19,7 @@ public class GuiManager : ISharpAllianceManager
         return ValueTask.FromResult(true);
     }
 
-    public void RenderButtonsFastHelp()
+    public static void RenderButtonsFastHelp()
     {
     }
 

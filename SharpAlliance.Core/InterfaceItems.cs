@@ -46,12 +46,12 @@ public class InterfaceItems
             }
             wcscat(zDest, zTemp);
             puiStringLength = uiRequiredStringLength;
-            return (true);
+            return true;
         }
         else
         {
             wcscat(zDest, DOTDOTDOT);
-            return (false);
+            return false;
         }
     }
 
@@ -290,8 +290,8 @@ public class InterfaceItems
             new(
                 pCamoRegion.sX,
                 pCamoRegion.sY,
-                (pCamoRegion.sX + CAMO_REGION_WIDTH),
-                (pCamoRegion.sY + CAMO_REGION_HEIGHT)
+                pCamoRegion.sX + CAMO_REGION_WIDTH,
+                pCamoRegion.sY + CAMO_REGION_HEIGHT
             ),
             MSYS_PRIORITY.HIGH,
             CURSOR.MSYS_NO_CURSOR,
@@ -313,10 +313,10 @@ public class InterfaceItems
                 new(
                     gSMInvData[cnt].sX,
                     gSMInvData[cnt].sY,
-                    (gSMInvData[cnt].sX + gSMInvData[cnt].sWidth),
-                    (gSMInvData[cnt].sY + gSMInvData[cnt].sHeight)
+                    gSMInvData[cnt].sX + gSMInvData[cnt].sWidth,
+                    gSMInvData[cnt].sY + gSMInvData[cnt].sHeight
                 ),
-                (fSetHighestPrioity ? MSYS_PRIORITY.HIGHEST : MSYS_PRIORITY.HIGH),
+                fSetHighestPrioity ? MSYS_PRIORITY.HIGHEST : MSYS_PRIORITY.HIGH,
                 CURSOR.MSYS_NO_CURSOR,
                 INVMoveCallback,
                 INVClickCallback);
@@ -329,7 +329,7 @@ public class InterfaceItems
 
         gbCompatibleAmmo = new();
 
-        return (true);
+        return true;
     }
 
     void InitKeyRingInterface(MouseCallback KeyRingClickCallback)
@@ -463,7 +463,7 @@ public class InterfaceItems
             {
                 if (fDirtyLevel == DIRTYLEVEL2)
                 {
-                    this.GetHelpTextForItem(pStr, (pSoldier.inv[cnt]), pSoldier);
+                    this.GetHelpTextForItem(pStr, pSoldier.inv[cnt], pSoldier);
 
                     //                    SetRegionFastHelpText((gSMInvRegion[cnt]), pStr);
                 }
@@ -503,7 +503,7 @@ public class InterfaceItems
         //Assign the screen
         guiCurrentItemDescriptionScreen = guiCurrentScreen;
 
-        pObject = (pSoldier.inv[sPocket]);
+        pObject = pSoldier.inv[sPocket];
 
         sX = gSMInvData[sPocket].sX;
         sY = gSMInvData[sPocket].sY;
@@ -625,28 +625,28 @@ public class InterfaceItems
 
     bool CompatibleAmmoForGun(OBJECTTYPE pTryObject, OBJECTTYPE pTestObject)
     {
-        if ((Item[pTryObject.usItem].usItemClass.HasFlag(IC.AMMO)))
+        if (Item[pTryObject.usItem].usItemClass.HasFlag(IC.AMMO))
         {
             // CHECK
             //            if (Weapon[pTestObject.usItem].ubCalibre == Magazine[Item[pTryObject.usItem].ubClassIndex].ubCalibre)
             {
-                return (true);
+                return true;
             }
         }
-        return (false);
+        return false;
     }
 
     bool CompatibleGunForAmmo(OBJECTTYPE pTryObject, OBJECTTYPE pTestObject)
     {
-        if ((Item[pTryObject.usItem].usItemClass.HasFlag(IC.GUN)))
+        if (Item[pTryObject.usItem].usItemClass.HasFlag(IC.GUN))
         {
             // CHECK
             //            if (Weapon[pTryObject.usItem].ubCalibre == Magazine[Item[pTestObject.usItem].ubClassIndex].ubCalibre)
             {
-                return (true);
+                return true;
             }
         }
-        return (false);
+        return false;
     }
 
     bool CompatibleItemForApplyingOnMerc(OBJECTTYPE? pTestObject)
@@ -656,7 +656,7 @@ public class InterfaceItems
         // ATE: If in mapscreen, return false always....
         if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))
         {
-            return (false);
+            return false;
         }
 
         // ATE: Would be nice to have flag here to check for these types....
@@ -672,11 +672,11 @@ public class InterfaceItems
             || usItem == Items.CANTEEN
             || usItem == Items.JAR_ELIXIR)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -687,35 +687,35 @@ public class InterfaceItems
         InventorySlot cnt;
         OBJECTTYPE pObject;
 
-        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN)))
+        if (Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleAmmoForGun(pObject, pTestObject))
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO)))
+        if (Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleGunForAmmo(pObject, pTestObject))
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
         // ATE: Put attachment checking here.....
 
-        return (false);
+        return false;
     }
 
 
@@ -768,7 +768,7 @@ public class InterfaceItems
             }
             else
             {
-                pTestObject = (pSoldier.inv[bInvPos]);
+                pTestObject = pSoldier.inv[bInvPos];
             }
         }
 
@@ -777,7 +777,7 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleItemForApplyingOnMerc(pObject))
                 {
@@ -818,15 +818,15 @@ public class InterfaceItems
                 //HandleRenderInvSlots( pSoldier, DIRTYLEVEL2 );
             }
 
-            return (fFound);
+            return fFound;
         }
 
-        if ((!Item[pTestObject.usItem].fFlags.HasFlag(ItemAttributes.ITEM_HIDDEN_ADDON)))
+        if (!Item[pTestObject.usItem].fFlags.HasFlag(ItemAttributes.ITEM_HIDDEN_ADDON))
         {
             // First test attachments, which almost any type of item can have....
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (Item[pObject.usItem].fFlags.HasFlag(ItemAttributes.ITEM_HIDDEN_ADDON))
                 {
@@ -854,11 +854,11 @@ public class InterfaceItems
         }
 
 
-        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN)))
+        if (Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleAmmoForGun(pObject, pTestObject))
                 {
@@ -873,11 +873,11 @@ public class InterfaceItems
                 }
             }
         }
-        else if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO)))
+        else if (Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleGunForAmmo(pObject, pTestObject))
                 {
@@ -895,7 +895,7 @@ public class InterfaceItems
         }
 
 
-        return (fFound);
+        return fFound;
     }
 
     bool HandleCompatibleAmmoUIForMapInventory(SOLDIERTYPE pSoldier, InventorySlot bInvPos, int iStartSlotNumber, bool fOn, bool fFromMerc)
@@ -919,7 +919,7 @@ public class InterfaceItems
             }
             else
             {
-                pTestObject = (pSoldier.inv[bInvPos]);
+                pTestObject = pSoldier.inv[bInvPos];
             }
         }
 
@@ -993,7 +993,7 @@ public class InterfaceItems
         //            }
         //        }
 
-        return (fFound);
+        return fFound;
     }
 
 
@@ -1009,7 +1009,7 @@ public class InterfaceItems
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleItemForApplyingOnMerc(pObject))
                 {
@@ -1050,13 +1050,13 @@ public class InterfaceItems
                 //HandleRenderInvSlots( pSoldier, DIRTYLEVEL2 );
             }
 
-            return (fFound);
+            return fFound;
         }
 
         // First test attachments, which almost any type of item can have....
         for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
         {
-            pObject = (pSoldier.inv[cnt]);
+            pObject = pSoldier.inv[cnt];
 
             if (Item[pObject.usItem].fFlags.HasFlag(ItemAttributes.ITEM_HIDDEN_ADDON))
             {
@@ -1084,11 +1084,11 @@ public class InterfaceItems
 
         //if ( !fFoundAttachment )
         //{
-        if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN)))
+        if (Item[pTestObject.usItem].usItemClass.HasFlag(IC.GUN))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleAmmoForGun(pObject, pTestObject))
                 {
@@ -1104,11 +1104,11 @@ public class InterfaceItems
             }
         }
 
-        else if ((Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO)))
+        else if (Item[pTestObject.usItem].usItemClass.HasFlag(IC.AMMO))
         {
             for (cnt = 0; cnt < NUM_INV_SLOTS; cnt++)
             {
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (this.CompatibleGunForAmmo(pObject, pTestObject))
                 {
@@ -1127,7 +1127,7 @@ public class InterfaceItems
         else if (this.CompatibleItemForApplyingOnMerc(pTestObject))
         {
             //If we are currently NOT in the Shopkeeper interface
-            if (!(guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE)))
+            if (!guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE))
             {
                 fFound = true;
                 gbCompatibleApplyItem = fOn;
@@ -1160,7 +1160,7 @@ public class InterfaceItems
             //HandleRenderInvSlots( pSoldier, DIRTYLEVEL2 );
         }
 
-        return (fFound);
+        return fFound;
 
     }
 
@@ -1199,7 +1199,7 @@ public class InterfaceItems
                     }
                     else
                     {
-                        return (false);
+                        return false;
                     }
                 }
                 else
@@ -1216,19 +1216,19 @@ public class InterfaceItems
                     }
 
                     //                    gubSkiDirtyLevel = SKI_DIRTY_LEVEL1;
-                    return (true);
+                    return true;
                 }
             }
             else
             {
                 if (fOn > 0)
                 {
-                    pTestObject = (pSoldier.inv[bInvPos]);
+                    pTestObject = pSoldier.inv[bInvPos];
                     gpHighLightedItemObject = pTestObject;
                 }
                 else
                 {
-                    pTestObject = (pSoldier.inv[bInvPos]);
+                    pTestObject = pSoldier.inv[bInvPos];
                     gpHighLightedItemObject = null;
                     //                    gubSkiDirtyLevel = SKI_DIRTY_LEVEL1;
                 }
@@ -1244,12 +1244,12 @@ public class InterfaceItems
             }
             else
             {
-                pTestObject = (pSoldier.inv[bInvPos]);
+                pTestObject = pSoldier.inv[bInvPos];
             }
 
         }
 
-        return (this.InternalHandleCompatibleAmmoUI(pSoldier, pTestObject, fOn));
+        return this.InternalHandleCompatibleAmmoUI(pSoldier, pTestObject, fOn);
 
     }
 
@@ -1294,7 +1294,7 @@ public class InterfaceItems
                 sX = gSMInvData[cnt].sX;
                 sY = gSMInvData[cnt].sY;
 
-                pObject = (pSoldier.inv[cnt]);
+                pObject = pSoldier.inv[cnt];
 
                 if (pObject.usItem == NOTHING)
                 {
@@ -1576,7 +1576,7 @@ public class InterfaceItems
 
                 }
 
-                if (pObject == (pSoldier.inv[InventorySlot.HANDPOS])
+                if (pObject == pSoldier.inv[InventorySlot.HANDPOS]
                     && (Item[pSoldier.inv[InventorySlot.HANDPOS].usItem].usItemClass == IC.GUN)
                     && pSoldier.bWeaponMode != WM.NORMAL)
                 {
@@ -1665,7 +1665,7 @@ public class InterfaceItems
 
     bool InItemDescriptionBox()
     {
-        return (gfInItemDescBox);
+        return gfInItemDescBox;
     }
 
     void CycleItemDescriptionItem()
@@ -1699,7 +1699,7 @@ public class InterfaceItems
 
         //        CreateItem(usOldItem, 100, (gpItemDescSoldier.inv[InventorySlot.HANDPOS]));
 
-        this.InternalInitItemDescriptionBox((gpItemDescSoldier.inv[InventorySlot.HANDPOS]), 214, (int)(INV_INTERFACE_START_Y + 1), gubItemDescStatusIndex, gpItemDescSoldier);
+        this.InternalInitItemDescriptionBox(gpItemDescSoldier.inv[InventorySlot.HANDPOS], 214, (int)(INV_INTERFACE_START_Y + 1), gubItemDescStatusIndex, gpItemDescSoldier);
     }
 
     bool InitItemDescriptionBox(SOLDIERTYPE pSoldier, InventorySlot ubPosition, int sX, int sY, int ubStatusIndex)
@@ -1716,10 +1716,10 @@ public class InterfaceItems
         //else use item from the hand position
         else
         {
-            pObject = (pSoldier.inv[ubPosition]);
+            pObject = pSoldier.inv[ubPosition];
         }
 
-        return (this.InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier));
+        return this.InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier);
     }
 
     bool InitKeyItemDescriptionBox(SOLDIERTYPE pSoldier, int ubPosition, int sX, int sY, int ubStatusIndex)
@@ -1729,7 +1729,7 @@ public class InterfaceItems
         //        AllocateObject(pObject);
         //        CreateKeyObject(pObject, pSoldier.pKeyRing[ubPosition].ubNumber, pSoldier.pKeyRing[ubPosition].ubKeyID);
 
-        return (this.InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier));
+        return this.InternalInitItemDescriptionBox(pObject, sX, sY, ubStatusIndex, pSoldier);
     }
 
     bool InternalInitItemDescriptionBox(OBJECTTYPE pObject, int sX, int sY, int ubStatusIndex, SOLDIERTYPE pSoldier)
@@ -1764,8 +1764,8 @@ public class InterfaceItems
                 gInvDesc,
                 new(gsInvDescX,
                     gsInvDescY,
-                    (gsInvDescX + MAP_ITEMDESC_WIDTH),
-                    (gsInvDescY + MAP_ITEMDESC_HEIGHT)),
+                    gsInvDescX + MAP_ITEMDESC_WIDTH,
+                    gsInvDescY + MAP_ITEMDESC_HEIGHT),
                 MSYS_PRIORITY.HIGHEST - 2,
                 CURSOR.NORMAL,
                 MSYS_NO_CALLBACK,
@@ -1788,8 +1788,8 @@ public class InterfaceItems
                 gInvDesc,
                 new(gsInvDescX,
                 gsInvDescY,
-                (gsInvDescX + ITEMDESC_WIDTH),
-                (gsInvDescY + ITEMDESC_HEIGHT)),
+                gsInvDescX + ITEMDESC_WIDTH,
+                gsInvDescY + ITEMDESC_HEIGHT),
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.MSYS_NO_CURSOR,
                 MSYS_NO_CALLBACK,
@@ -1800,7 +1800,7 @@ public class InterfaceItems
 
         }
         // Add region
-        if ((Item[pObject.usItem].usItemClass.HasFlag(IC.GUN) && pObject.usItem != Items.ROCKET_LAUNCHER))
+        if (Item[pObject.usItem].usItemClass.HasFlag(IC.GUN) && pObject.usItem != Items.ROCKET_LAUNCHER)
         {
             // Add button
             //    if( guiCurrentScreen != MAP_SCREEN )
@@ -1884,10 +1884,10 @@ public class InterfaceItems
                     // Add region for pros/cons help text 
                     MouseSubSystem.MSYS_DefineRegion(
                         gProsAndConsRegions[cnt],
-                        new((ITEMDESC_PROS_START_X + sProsConsIndent),
-                            (gsInvDescY + gMapItemDescProsConsRects[cnt].Top),
-                            (gsInvDescX + gMapItemDescProsConsRects[cnt].Right),
-                            (gsInvDescY + gMapItemDescProsConsRects[cnt].Bottom)),
+                        new(ITEMDESC_PROS_START_X + sProsConsIndent,
+                            gsInvDescY + gMapItemDescProsConsRects[cnt].Top,
+                            gsInvDescX + gMapItemDescProsConsRects[cnt].Right,
+                            gsInvDescY + gMapItemDescProsConsRects[cnt].Bottom),
                         MSYS_PRIORITY.HIGHEST,
                         CURSOR.MSYS_NO_CURSOR,
                         MSYS_NO_CALLBACK,
@@ -1926,10 +1926,10 @@ public class InterfaceItems
                     // Add region for pros/cons help text 
                     MouseSubSystem.MSYS_DefineRegion(
                         gProsAndConsRegions[cnt],
-                        new((ITEMDESC_PROS_START_X + sProsConsIndent),
-                            (gsInvDescY + gItemDescProsConsRects[cnt].Top),
-                            (gsInvDescX + gItemDescProsConsRects[cnt].Right),
-                            (gsInvDescY + gItemDescProsConsRects[cnt].Bottom)),
+                        new(ITEMDESC_PROS_START_X + sProsConsIndent,
+                            gsInvDescY + gItemDescProsConsRects[cnt].Top,
+                            gsInvDescX + gItemDescProsConsRects[cnt].Right,
+                            gsInvDescY + gItemDescProsConsRects[cnt].Bottom),
                         MSYS_PRIORITY.HIGHEST, CURSOR.MSYS_NO_CURSOR, MSYS_NO_CALLBACK, this.ItemDescCallback);
 
                     MouseSubSystem.MSYS_AddRegion(ref gProsAndConsRegions[cnt]);
@@ -1981,7 +1981,7 @@ public class InterfaceItems
                 {
                     MouseSubSystem.MSYS_DefineRegion(
                         gItemDescAttachmentRegions[cnt],
-                        new((gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX), (gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY), (gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX + gMapItemDescAttachmentsXY[cnt].sWidth), (gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY + gMapItemDescAttachmentsXY[cnt].sHeight)),
+                        new(gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX, gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY, gsInvDescX + gMapItemDescAttachmentsXY[cnt].sX + gMapItemDescAttachmentsXY[cnt].sWidth, gsInvDescY + gMapItemDescAttachmentsXY[cnt].sY + gMapItemDescAttachmentsXY[cnt].sHeight),
                         MSYS_PRIORITY.HIGHEST,
                         CURSOR.MSYS_NO_CURSOR,
                         MSYS_NO_CALLBACK,
@@ -1991,7 +1991,7 @@ public class InterfaceItems
                 {
                     MouseSubSystem.MSYS_DefineRegion(
                         gItemDescAttachmentRegions[cnt],
-                        new((gsInvDescX + gItemDescAttachmentsXY[cnt].sX), (gsInvDescY + gItemDescAttachmentsXY[cnt].sY), (gsInvDescX + gItemDescAttachmentsXY[cnt].sX + gItemDescAttachmentsXY[cnt].sBarDx + gItemDescAttachmentsXY[cnt].sWidth), (gsInvDescY + gItemDescAttachmentsXY[cnt].sY + gItemDescAttachmentsXY[cnt].sHeight)),
+                        new(gsInvDescX + gItemDescAttachmentsXY[cnt].sX, gsInvDescY + gItemDescAttachmentsXY[cnt].sY, gsInvDescX + gItemDescAttachmentsXY[cnt].sX + gItemDescAttachmentsXY[cnt].sBarDx + gItemDescAttachmentsXY[cnt].sWidth, gsInvDescY + gItemDescAttachmentsXY[cnt].sY + gItemDescAttachmentsXY[cnt].sHeight),
                         MSYS_PRIORITY.HIGHEST,
                         CURSOR.MSYS_NO_CURSOR,
                         MSYS_NO_CALLBACK,
@@ -2161,15 +2161,15 @@ public class InterfaceItems
 
 
 
-        return (true);
+        return true;
     }
 
 
     bool ReloadItemDesc()
     {
-        if (!this.LoadTileGraphicForItem((Item[gpItemDescObject.usItem]), out guiItemGraphic))
+        if (!this.LoadTileGraphicForItem(Item[gpItemDescObject.usItem], out guiItemGraphic))
         {
-            return (false);
+            return false;
         }
 
         //
@@ -2181,14 +2181,14 @@ public class InterfaceItems
         {
             //            if (!LoadItemInfo(MONEY_FOR_PLAYERS_ACCOUNT, gzItemName, gzItemDesc))
             {
-                return (false);
+                return false;
             }
         }
         else
         {
             //            if (!LoadItemInfo(gpItemDescObject.usItem, gzItemName, gzItemDesc))
             {
-                return (false);
+                return false;
             }
         }
 
@@ -2208,7 +2208,7 @@ public class InterfaceItems
             }
             */
 
-        return (true);
+        return true;
     }
 
 
@@ -2287,7 +2287,7 @@ public class InterfaceItems
                 }
 
             }
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
         }
 
@@ -2367,7 +2367,7 @@ public class InterfaceItems
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             // if the item being described belongs to a shopkeeper, ignore attempts to pick it up / replace it
-            if ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE)) && (pShopKeeperItemDescObject != null))
+            if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.SHOPKEEP_INTERFACE) && (pShopKeeperItemDescObject != null))
             {
                 return;
             }
@@ -2482,7 +2482,7 @@ public class InterfaceItems
         bool fHatchOutAttachments = gfItemDescObjectIsAttachment; // if examining attachment, always hatch out attachment slots
         int sProsConsIndent = 0;
 
-        if ((guiCurrentItemDescriptionScreen == ScreenName.MAP_SCREEN) && (gfInItemDescBox))
+        if ((guiCurrentItemDescriptionScreen == ScreenName.MAP_SCREEN) && gfInItemDescBox)
         {
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
             //            GetVideoObject(hVObject, guiItemGraphic);
@@ -2687,11 +2687,11 @@ public class InterfaceItems
                 //                wprintf(sTempString, gWeaponStatsDesc[0], GetWeightUnitString());
                 //                mprintf(gMapWeaponStats[0].sX + gsInvDescX, gMapWeaponStats[0].sY + gsInvDescY, "%s", sTempString);
                 //mprintf( gMapWeaponStats[ 2 ].sX + gsInvDescX, gMapWeaponStats[ 2 ].sY + gsInvDescY, "%s", gMapWeaponStats[ 2 ].zDesc );
-                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag((IC.GUN | IC.LAUNCHER)))
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN | IC.LAUNCHER))
                 {
                     //                    mprintf(gMapWeaponStats[3].sX + gsInvDescX, gMapWeaponStats[3].sY + gsInvDescY, "%s", gWeaponStatsDesc[3]);
                 }
-                if (!(Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.LAUNCHER)) && gpItemDescObject.usItem != Items.ROCKET_LAUNCHER)
+                if (!Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.LAUNCHER) && gpItemDescObject.usItem != Items.ROCKET_LAUNCHER)
                 {
                     //                    mprintf(gMapWeaponStats[4].sX + gsInvDescX, gMapWeaponStats[4].sY + gsInvDescY, "%s", gWeaponStatsDesc[4]);
                 }
@@ -2731,7 +2731,7 @@ public class InterfaceItems
                 this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
-                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag((IC.GUN | IC.LAUNCHER)))
+                if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN | IC.LAUNCHER))
                 {
 
                     //                    if (GunRange(gpItemDescObject) >= EXCEPTIONAL_RANGE)
@@ -2745,7 +2745,7 @@ public class InterfaceItems
 
                     //Range
                     //                    wprintf(pStr, "%2d", (GunRange(gpItemDescObject)) / 10);
-                    this.fonts.FindFontRightCoordinates((gMapWeaponStats[3].sX + gsInvDescX + gMapWeaponStats[3].sValDx), (int)(gMapWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                    this.fonts.FindFontRightCoordinates(gMapWeaponStats[3].sX + gsInvDescX + gMapWeaponStats[3].sValDx, (int)(gMapWeaponStats[3].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                     mprintf(usX, usY, pStr);
                 }
 
@@ -2933,7 +2933,7 @@ public class InterfaceItems
                 this.fonts.FindFontRightCoordinates((int)(gMapWeaponStats[0].sX + gsInvDescX + gMapWeaponStats[0].sValDx + 6), (int)(gMapWeaponStats[0].sY + gsInvDescY), ITEM_STATS_WIDTH, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out sStrX, out usY);
                 mprintf(sStrX, gMapWeaponStats[0].sY + gsInvDescY, pStr);
 
-                if ((this.InKeyRingPopup()) || (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY)))
+                if (this.InKeyRingPopup() || Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY))
                 {
                     FontSubSystem.SetFontForeground((FontColor)6);
 
@@ -2964,7 +2964,7 @@ public class InterfaceItems
 
             // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
             //            GetVideoObject(hVObject, guiItemGraphic);
-            pTrav = (hVObject.pETRLEObject[0]);
+            pTrav = hVObject.pETRLEObject[0];
             usHeight = (int)pTrav.usHeight;
             usWidth = (int)pTrav.usWidth;
 
@@ -3290,7 +3290,7 @@ public class InterfaceItems
                 wprintf(pStr, "%d", gRemoveMoney.uiTotalAmount);
                 //                InsertCommasForDollarFigure(pStr);
                 //                InsertDollarSignInToString(pStr);
-                this.fonts.FindFontRightCoordinates((int)(ITEMDESC_NAME_X), (int)(ITEMDESC_NAME_Y), 295, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
+                this.fonts.FindFontRightCoordinates((int)ITEMDESC_NAME_X, (int)ITEMDESC_NAME_Y, 295, ITEM_STATS_HEIGHT, pStr, FontStyle.BLOCKFONT2, out usX, out usY);
                 mprintf(usX, usY, pStr);
 
                 FontSubSystem.SetFontForeground((FontColor)6);
@@ -3384,7 +3384,7 @@ public class InterfaceItems
                     mprintf(usX, usY, pStr);
                 }
 
-                if ((this.InKeyRingPopup() == true) || (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY)))
+                if ((this.InKeyRingPopup() == true) || Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.KEY))
                 {
 //                    FontSubSystem.SetFontForeground(6);
 //
@@ -3454,7 +3454,7 @@ public class InterfaceItems
         }
 
         // check for any AP costs
-        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
             if (gpAttachSoldier is not null)
             {
@@ -3556,7 +3556,7 @@ public class InterfaceItems
             MouseSubSystem.MSYS_RemoveRegion(gProsAndConsRegions[1]);
         }
 
-        if (((Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN)) && gpItemDescObject.usItem != Items.ROCKET_LAUNCHER))
+        if (Item[gpItemDescObject.usItem].usItemClass.HasFlag(IC.GUN) && gpItemDescObject.usItem != Items.ROCKET_LAUNCHER)
         {
             // Remove button
             //            UnloadButtonImage(giItemDescAmmoButtonImages);
@@ -3689,7 +3689,7 @@ public class InterfaceItems
             gpItemPointerSoldier = pSoldier;
             gbItemPointerSrcSlot = ubKeyRingPosition;
 
-            if ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN)))
+            if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))
             {
                 //                guiExternVo = GetInterfaceGraphicForItem((Item[gpItemPointer.usItem]));
                 //                gusExternVoSubIndex = Item[gpItemPointer.usItem].ubGraphicNum;
@@ -3756,7 +3756,7 @@ public class InterfaceItems
 
     bool SoldierCanSeeCatchComing(SOLDIERTYPE pSoldier, int sSrcGridNo)
     {
-        return (true);
+        return true;
         /*-
             int							cnt;
             int							bDirection, bTargetDirection;
@@ -4099,10 +4099,10 @@ public class InterfaceItems
             // Build string...
             //            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[ROBOT_NEEDS_GIVEN_CALIBER_STR], AmmoCaliber[Weapon[pSoldier.inv[HANDPOS].usItem].ubCalibre]);
 
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -4125,26 +4125,26 @@ public class InterfaceItems
 
         if (HandleUI.SelectedGuyInBusyAnimation())
         {
-            return (false);
+            return false;
         }
 
         if (giUIMessageOverlay != -1)
         {
             //            EndUIMessage();
-            return (false);
+            return false;
         }
 
         // Don't allow if our soldier is a # of things...
         if (AM_AN_EPC(gpItemPointerSoldier) || gpItemPointerSoldier.bLife < OKLIFE || gpItemPointerSoldier.bOverTerrainType == TerrainTypeDefines.DEEP_WATER)
         {
-            return (false);
+            return false;
         }
 
         // This implies we have no path....
         if (gsCurrentActionPoints == 0)
         {
             //            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[NO_PATH]);
-            return (false);
+            return false;
         }
 
 
@@ -4155,7 +4155,7 @@ public class InterfaceItems
 
             if (gAnimControl[MercPtrs[gusUIFullTargetID].usAnimState].uiFlags.HasFlag(ANIM.MOVING))
             {
-                return (false);
+                return false;
             }
 
         }
@@ -4169,7 +4169,7 @@ public class InterfaceItems
             }
             else
             {
-                return (false);
+                return false;
             }
         }
 
@@ -4305,7 +4305,7 @@ public class InterfaceItems
                 }
             }
 
-            return (true);
+            return true;
         }
 
         // CHECK IF WE ARE NOT ON THE SAME GRIDNO
@@ -4388,7 +4388,7 @@ public class InterfaceItems
             if (sDist <= PASSING_ITEM_DISTANCE_OKLIFE && gfUIFullTargetFound
                 && MercPtrs[gusUIFullTargetID].bTeam == gbPlayerNum
                 && !AM_AN_EPC(MercPtrs[gusUIFullTargetID])
-                && !(MercPtrs[gusUIFullTargetID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                && !MercPtrs[gusUIFullTargetID].uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
             {
                 // OK, do the transfer...
                 {
@@ -4410,7 +4410,7 @@ public class InterfaceItems
                         // Check LOS....
                         if (!LOS.SoldierTo3DLocationLineOfSightTest(pSoldier, gpItemPointerSoldier.sGridNo, gpItemPointerSoldier.bLevel, 3, (int)sDistVisible, 1))
                         {
-                            return (false);
+                            return false;
                         }
 
                         // Charge AP values...
@@ -4457,12 +4457,12 @@ public class InterfaceItems
                                 }
                             }
 
-                            return (true);
+                            return true;
                         }
                         // else
                         {
                             //                            Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.INTERFACE, pMessageStrings[MSG.NO_ROOM_TO_PASS_ITEM], ShortItemNames[usItem], pSoldier.name);
-                            return (false);
+                            return false;
                         }
                     }
                 }
@@ -4473,7 +4473,7 @@ public class InterfaceItems
                 if (gfBadThrowItemCTGH)
                 {
                     //                    Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.UI_FEEDBACK, TacticalStr[CANNOT_THROW_TO_DEST_STR]);
-                    return (false);
+                    return false;
                 }
 
                 // Deduct points
@@ -4489,7 +4489,7 @@ public class InterfaceItems
                 {
                     pSoldier = MercPtrs[gusUIFullTargetID];
 
-                    if (pSoldier.bTeam == gbPlayerNum && pSoldier.bLife >= OKLIFE && !AM_AN_EPC(pSoldier) && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                    if (pSoldier.bTeam == gbPlayerNum && pSoldier.bLife >= OKLIFE && !AM_AN_EPC(pSoldier) && !pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                     {
                         // OK, on our team, 
 
@@ -4561,7 +4561,7 @@ public class InterfaceItems
         this.EndItemPointer();
 
 
-        return (true);
+        return true;
     }
 
     bool ItemCursorInLobRange(int usMapPos)
@@ -4569,11 +4569,11 @@ public class InterfaceItems
         // Draw item depending on distance from buddy
         if (IsometricUtils.GetRangeFromGridNoDiff(usMapPos, gpItemPointerSoldier.sGridNo) > MIN_LOB_RANGE)
         {
-            return (false);
+            return false;
         }
         else
         {
-            return (true);
+            return true;
         }
     }
 
@@ -4582,13 +4582,13 @@ public class InterfaceItems
 
     bool InItemStackPopup()
     {
-        return (gfInItemStackPopup);
+        return gfInItemStackPopup;
     }
 
 
     bool InKeyRingPopup()
     {
-        return (gfInKeyRingPopup);
+        return gfInKeyRingPopup;
     }
 
     bool InitItemStackPopup(SOLDIERTYPE pSoldier, InventorySlot ubPosition, int sInvX, int sInvY, int sInvWidth, int sInvHeight)
@@ -4614,13 +4614,13 @@ public class InterfaceItems
 
 
         // Determine # of items
-        gpItemPopupObject = (pSoldier.inv[ubPosition]);
+        gpItemPopupObject = pSoldier.inv[ubPosition];
         //        ubLimit = ItemSlotLimit(gpItemPopupObject.usItem, ubPosition);
 
         // Return false if #objects not >1
         if (ubLimit < 1)
         {
-            return (false);
+            return false;
         }
 
         if (guiCurrentItemDescriptionScreen == ScreenName.MAP_SCREEN)
@@ -4679,10 +4679,10 @@ public class InterfaceItems
             // Build a mouse region here that is over any others.....
             MouseSubSystem.MSYS_DefineRegion(
                 gItemPopupRegions[cnt], 
-                new((sCenX + (cnt * usPopupWidth)),
+                new(sCenX + (cnt * usPopupWidth),
                     sCenY,
-                    (sCenX + ((cnt + 1) * usPopupWidth)),
-                    (sCenY + gsItemPopupHeight)),
+                    sCenX + ((cnt + 1) * usPopupWidth),
+                    sCenY + gsItemPopupHeight),
                 MSYS_PRIORITY.HIGHEST,
                 MSYS_NO_CURSOR,
                 MSYS_NO_CALLBACK,
@@ -4704,8 +4704,8 @@ public class InterfaceItems
             gItemPopupRegion, 
             new(gsItemPopupInvX, 
                 gsItemPopupInvY, 
-                (gsItemPopupInvX + gsItemPopupInvWidth), 
-                (gsItemPopupInvY + gsItemPopupInvHeight)),
+                gsItemPopupInvX + gsItemPopupInvWidth, 
+                gsItemPopupInvY + gsItemPopupInvHeight),
             MSYS_PRIORITY.HIGH,
             MSYS_NO_CURSOR,
             MSYS_NO_CALLBACK,
@@ -4740,7 +4740,7 @@ public class InterfaceItems
 
         //        RestrictMouseCursor(&aRect);
 
-        return (true);
+        return true;
     }
 
     void EndItemStackPopupWithItemInHand()
@@ -4941,7 +4941,7 @@ public class InterfaceItems
 
         //        RestrictMouseCursor(&aRect);
 
-        return (true);
+        return true;
     }
 
 
@@ -4986,7 +4986,7 @@ public class InterfaceItems
 
         // TAKE A LOOK AT THE VIDEO OBJECT SIZE ( ONE OF TWO SIZES ) AND CENTER!
         //        GetVideoObject(hVObject, guiItemPopupBoxes);
-        pTrav = (hVObject.pETRLEObject[0]);
+        pTrav = hVObject.pETRLEObject[0];
         //        usHeight = (int)pTrav.usHeight;
         //        usWidth = (int)pTrav.usWidth;
 
@@ -5113,7 +5113,7 @@ public class InterfaceItems
         {
             TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.P3ITEMS, (int)(pItem.ubGraphicNum + 1), out usIndex);
         }
-        return (usIndex);
+        return usIndex;
     }
 
 
@@ -5182,7 +5182,7 @@ public class InterfaceItems
 
         puiVo = uiVo;
 
-        return (true);
+        return true;
     }
 
     void ItemDescMoveCallback(MOUSE_REGION pRegion, int iReason)
@@ -5253,13 +5253,13 @@ public class InterfaceItems
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_DWN))
         {
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
-                btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 this.DeleteItemDescriptionBox();
             }
         }
@@ -5319,7 +5319,7 @@ public class InterfaceItems
                     //RemoveObjFrom( OBJECTTYPE * pObj, int ubRemoveIndex )
 //                    GetObjFrom(gpItemPopupObject, (int)uiItemPos, gItemPointer);
 
-                    if ((guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN)))
+                    if (guiTacticalInterfaceFlags.HasFlag(INTERFACE.MAPSCREEN))
                     {
                         // pick it up
 //                        InternalMAPBeginItemPointer(gpItemPopupSoldier);
@@ -5564,31 +5564,31 @@ public class InterfaceItems
 
         // Build a mouse region here that is over any others.....
         MouseSubSystem.MSYS_DefineRegion(
-            (gItemPickupMenu.BackRegion),
-            new((532), (367), (640), (480)),
+            gItemPickupMenu.BackRegion,
+            new(532, 367, 640, 480),
             MSYS_PRIORITY.HIGHEST,
             CURSOR.NORMAL,
             MSYS_NO_CALLBACK,
             MSYS_NO_CALLBACK);
 
         // Add region
-        MouseSubSystem.MSYS_AddRegion(ref (gItemPickupMenu.BackRegion));
+        MouseSubSystem.MSYS_AddRegion(ref gItemPickupMenu.BackRegion);
 
 
         // Build a mouse region here that is over any others.....
         MouseSubSystem.MSYS_DefineRegion(
-            (gItemPickupMenu.BackRegions),
-            new((gItemPickupMenu.sX),
-                (gItemPickupMenu.sY),
-                (gItemPickupMenu.sX + gItemPickupMenu.sWidth),
-                (gItemPickupMenu.sY + gItemPickupMenu.sHeight)),
+            gItemPickupMenu.BackRegions,
+            new(gItemPickupMenu.sX,
+                gItemPickupMenu.sY,
+                gItemPickupMenu.sX + gItemPickupMenu.sWidth,
+                gItemPickupMenu.sY + gItemPickupMenu.sHeight),
             MSYS_PRIORITY.HIGHEST,
             CURSOR.NORMAL,
             MSYS_NO_CALLBACK,
             MSYS_NO_CALLBACK);
 
         // Add region
-        MouseSubSystem.MSYS_AddRegion(ref (gItemPickupMenu.BackRegions));
+        MouseSubSystem.MSYS_AddRegion(ref gItemPickupMenu.BackRegions);
 
 
         // Create buttons
@@ -5639,19 +5639,19 @@ public class InterfaceItems
         {
             // Build a mouse region here that is over any others.....
             MouseSubSystem.MSYS_DefineRegion(
-                (gItemPickupMenu.Regions[cnt]),
-                new((sCenX),
-                    (sCenY + 1),
-                    (sCenX + gItemPickupMenu.sWidth),
-                    (sCenY + ITEMPICK_GRAPHIC_YSPACE)),
+                gItemPickupMenu.Regions[cnt],
+                new(sCenX,
+                    sCenY + 1,
+                    sCenX + gItemPickupMenu.sWidth,
+                    sCenY + ITEMPICK_GRAPHIC_YSPACE),
                 MSYS_PRIORITY.HIGHEST,
                 CURSOR.NORMAL,
                 this.ItemPickMenuMouseMoveCallback,
                 this.ItemPickMenuMouseClickCallback);
 
             // Add region
-            MouseSubSystem.MSYS_AddRegion(ref (gItemPickupMenu.Regions[cnt]));
-            MouseSubSystem.MSYS_SetRegionUserData((gItemPickupMenu.Regions[cnt]), 0, cnt);
+            MouseSubSystem.MSYS_AddRegion(ref gItemPickupMenu.Regions[cnt]);
+            MouseSubSystem.MSYS_SetRegionUserData(gItemPickupMenu.Regions[cnt], 0, cnt);
 
             sCenY += ITEMPICK_GRAPHIC_YSPACE;
         }
@@ -5673,7 +5673,7 @@ public class InterfaceItems
 //        DisableTacticalTeamPanelButtons(true);
 
         //gfSMDisableForItems = true;
-        return (true);
+        return true;
 
     }
 
@@ -5738,7 +5738,7 @@ public class InterfaceItems
             {
                 gItemPickupMenu.ItemPoolSlots[cnt - iStart] = pTempItemPool;
 
-                pObject = (gWorldItems[pTempItemPool.iItemIndex].o);
+                pObject = gWorldItems[pTempItemPool.iItemIndex].o;
 
                 sValue = pObject.bStatus[0];
 
@@ -5913,8 +5913,8 @@ public class InterfaceItems
                 if (gItemPickupMenu.ItemPoolSlots[cnt] != null)
                 {
                     // Get item to render
-                    pObject = (gWorldItems[gItemPickupMenu.ItemPoolSlots[cnt].iItemIndex].o);
-                    pItem = (Item[pObject.usItem]);
+                    pObject = gWorldItems[gItemPickupMenu.ItemPoolSlots[cnt].iItemIndex].o;
+                    pItem = Item[pObject.usItem];
 
                     usItemTileIndex = this.GetTileGraphicForItem(pItem);
 
@@ -6079,13 +6079,13 @@ public class InterfaceItems
 //            ButtonSubSystem.UnloadButtonImage(gItemPickupMenu.iCancelButtonImages);
 //            ButtonSubSystem.UnloadButtonImage(gItemPickupMenu.iOKButtonImages);
 
-            MouseSubSystem.MSYS_RemoveRegion((gItemPickupMenu.BackRegions));
-            MouseSubSystem.MSYS_RemoveRegion((gItemPickupMenu.BackRegion));
+            MouseSubSystem.MSYS_RemoveRegion(gItemPickupMenu.BackRegions);
+            MouseSubSystem.MSYS_RemoveRegion(gItemPickupMenu.BackRegion);
 
             // Remove regions
             for (cnt = 0; cnt < gItemPickupMenu.bNumSlotsPerPage; cnt++)
             {
-                MouseSubSystem.MSYS_RemoveRegion((gItemPickupMenu.Regions[cnt]));
+                MouseSubSystem.MSYS_RemoveRegion(gItemPickupMenu.Regions[cnt]);
             }
 
             // Remove register rect
@@ -6131,12 +6131,12 @@ public class InterfaceItems
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             this.SetupPickupPage((int)(gItemPickupMenu.bScrollPage - 1));
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
 
     }
@@ -6150,12 +6150,12 @@ public class InterfaceItems
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             this.SetupPickupPage((int)(gItemPickupMenu.bScrollPage + 1));
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
     }
 
@@ -6170,7 +6170,7 @@ public class InterfaceItems
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             gItemPickupMenu.fAllSelected = !gItemPickupMenu.fAllSelected;
 
@@ -6196,7 +6196,7 @@ public class InterfaceItems
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
     }
 
@@ -6211,7 +6211,7 @@ public class InterfaceItems
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             // OK, pickup item....
             gItemPickupMenu.fHandled = true;
@@ -6221,7 +6221,7 @@ public class InterfaceItems
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
     }
 
@@ -6235,14 +6235,14 @@ public class InterfaceItems
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             // OK, pickup item....
             gItemPickupMenu.fHandled = true;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
     }
 
@@ -6260,7 +6260,7 @@ public class InterfaceItems
 
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.MOVE))
         {
-            bPos = (uiItemPos + gItemPickupMenu.ubScrollAnchor);
+            bPos = uiItemPos + gItemPickupMenu.ubScrollAnchor;
 
             if (bPos < gItemPickupMenu.ubTotalItems)
             {
@@ -6368,7 +6368,7 @@ public class InterfaceItems
 
         if (!gfInItemPickupMenu)
         {
-            return (false);
+            return false;
         }
 
         if (gItemPickupMenu.fHandled)
@@ -6376,7 +6376,7 @@ public class InterfaceItems
             //            RemoveItemPickupMenu();
         }
 
-        return (gItemPickupMenu.fHandled);
+        return gItemPickupMenu.fHandled;
     }
 
 
@@ -6476,7 +6476,7 @@ public class InterfaceItems
         {
             MoneyButtons ubButton = (MoneyButtons)ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
 
             switch (ubButton)
@@ -6603,7 +6603,7 @@ public class InterfaceItems
 
     bool AttemptToApplyCamo(SOLDIERTYPE pSoldier, int usItemIndex)
     {
-        return (false);
+        return false;
     }
 
 
@@ -6702,17 +6702,17 @@ public class InterfaceItems
         if (Item[usItem].ubPerPocket >= 1)
         {
             // Small
-            return (2);
+            return 2;
         }
 
         // Now it could be large or armour, check class...
         if (Item[usItem].usItemClass == IC.ARMOUR)
         {
-            return (1);
+            return 1;
         }
 
         // OK, it's a big one...
-        return (0);
+        return 0;
     }
 
 
@@ -6760,7 +6760,7 @@ public class InterfaceItems
         //        FileRead(hFile, SaveStruct, uiLoadSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiLoadSize)
         {
-            return (false);
+            return false;
         }
 //        uiLoadSize = sizeof(ITEM_CURSOR_SAVE_INFO);
 //        FileRead(hFile, SaveStruct, uiLoadSize, out uiNumBytesRead);
@@ -6797,7 +6797,7 @@ public class InterfaceItems
             gpItemPointer = null;
         }
 
-        return (true);
+        return true;
     }
 
     bool SaveItemCursorToSavedGame(Stream hFile)
@@ -6844,7 +6844,7 @@ public class InterfaceItems
 
         // All done...
 
-        return (true);
+        return true;
     }
 
     public static void UpdateItemHatches()

@@ -26,7 +26,7 @@ public class Laptop
 
     public static bool DrawLapTopIcons()
     {
-        return (true);
+        return true;
     }
 
     public static void SetBookMark(BOOKMARK iBookId)
@@ -135,7 +135,7 @@ public class Laptop
 
         switch (guiCurrentLaptopMode)
         {
-            case (LAPTOP_MODE.NONE):
+            case LAPTOP_MODE.NONE:
                 DrawDeskTopBackground();
                 break;
             case LAPTOP_MODE.AIM:
@@ -250,11 +250,11 @@ public class Laptop
             case LAPTOP_MODE.EMAIL:
                 //                RenderEmail();
                 break;
-            case (LAPTOP_MODE.WWW):
+            case LAPTOP_MODE.WWW:
                 DrawDeskTopBackground();
                 RenderWWWProgramTitleBar();
                 break;
-            case (LAPTOP_MODE.BROKEN_LINK):
+            case LAPTOP_MODE.BROKEN_LINK:
                 //                RenderBrokenLink();
                 break;
 
@@ -321,7 +321,7 @@ public class Laptop
 //        video.UnLockVideoSurface(guiDESKTOP);
 //        video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
-        return (true);
+        return true;
     }
 
     public static bool RenderWWWProgramTitleBar()
@@ -370,7 +370,7 @@ public class Laptop
         //        DisplayProgramBoundingBox(false);
 
         //InvalidateRegion( 0, 0, 640, 480 );
-        return (true);
+        return true;
     }
 
     public static void BlitTitleBarIcons()
@@ -379,27 +379,27 @@ public class Laptop
         // will blit the icons for the title bar of the program we are in
         switch (guiCurrentLaptopMode)
         {
-            case (LAPTOP_MODE.HISTORY):
+            case LAPTOP_MODE.HISTORY:
                 hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 4, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE.EMAIL):
+            case LAPTOP_MODE.EMAIL:
                 hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 0, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE.PERSONNEL):
+            case LAPTOP_MODE.PERSONNEL:
                 hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 3, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE.FINANCES):
+            case LAPTOP_MODE.FINANCES:
                 hHandle = hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 5, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE.FILES):
+            case LAPTOP_MODE.FILES:
                 hHandle = video.GetVideoObject(guiTITLEBARICONS);
                 VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hHandle, 2, LAPTOP_TITLE_ICONS_X, LAPTOP_TITLE_ICONS_Y, VO_BLT.SRCTRANSPARENCY, null);
                 break;
-            case (LAPTOP_MODE.NONE):
+            case LAPTOP_MODE.NONE:
                 // do nothing
                 break;
             default:

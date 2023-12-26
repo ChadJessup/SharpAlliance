@@ -67,7 +67,7 @@ public class SECTORINFO
     byte[] bPadding = new byte[41];
 
     public static SEC SECTOR(int x, MAP_ROW y) => (SEC)(((int)y - 1) * 16 + x - 1);
-    public static int SECTORX(SEC SectorID) => (((int)SectorID % 16) + 1);
+    public static int SECTORX(SEC SectorID) => ((int)SectorID % 16) + 1;
     public static MAP_ROW SECTORY(SEC SectorID) => (MAP_ROW)(((int)SectorID / 16) + 1);
 }
 

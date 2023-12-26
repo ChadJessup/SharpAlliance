@@ -20,12 +20,12 @@ public class QueenCommand
                 && pUnderground.ubSectorY == sMapY
                 && pUnderground.ubSectorZ == bMapZ)
             {
-                return (pUnderground);
+                return pUnderground;
             }
             pUnderground = pUnderground.next;
         }
 
-        return (null);
+        return null;
     }
 
     public static int NumEnemiesInAnySector(int sSectorX, MAP_ROW sSectorY, int sSectorZ)
@@ -103,14 +103,14 @@ public class QueenCommand
 
         if (pSector.ubGarrisonID == NO_GARRISON)
         { //If no garrison, no stationary.
-            return (0);
+            return 0;
         }
 
         // don't count roadblocks as stationary garrison, we want to see how many enemies are in them, not question marks
         if (gGarrisonGroup[pSector.ubGarrisonID].ubComposition == Garrisons.ROADBLOCK)
         {
             // pretend they're not stationary
-            return (0);
+            return 0;
         }
 
         return (int)(pSector.ubNumAdmins + pSector.ubNumTroops + pSector.ubNumElites);

@@ -24,7 +24,7 @@ public class TileDefine
         }
 
         pusTileIndex = (TileIndexes)(usSubIndex + gTileTypeStartIndex[(int)uiCheckType] - 1);
-        return (true);
+        return true;
     }
 
     public static bool GetWallOrientation(TileIndexes usIndex, out WallOrientation pusWallOrientation)
@@ -38,7 +38,7 @@ public class TileDefine
 
         pusWallOrientation = TileElem.usWallOrientation;
 
-        return (true);
+        return true;
     }
 
     // Database access functions
@@ -78,7 +78,7 @@ public class TileDefine
 
         puiFlags = TileElem.uiFlags;
 
-        return (true);
+        return true;
     }
 
     // These values coorespond to TerrainTypeDefines order
@@ -3257,7 +3257,7 @@ public enum TileTypeDefines
 
     NUMBEROFTILETYPES,
 
-    LASTPOINTERS = (SELRING - 1),
+    LASTPOINTERS = SELRING - 1,
 
     UNSET = -1,
 }

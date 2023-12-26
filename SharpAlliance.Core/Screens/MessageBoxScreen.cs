@@ -52,7 +52,7 @@ public class MessageBoxScreen : IScreen
         if (gfNewMessageBox)
         {
             // If in game screen....
-            if ((gfStartedFromGameScreen) || (gfStartedFromMapScreen))
+            if (gfStartedFromGameScreen || gfStartedFromMapScreen)
             {
                 //int uiDestPitchBYTES, uiSrcPitchBYTES;
                 //Ubyte	 *pDestBuf, *pSrcBuf;
@@ -248,7 +248,7 @@ public class MessageBoxScreen : IScreen
         if (gMsgBox.bHandled != 0)
         {
             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-            return (ValueTask.FromResult(this.ExitMsgBox(gMsgBox.bHandled)));
+            return ValueTask.FromResult(this.ExitMsgBox(gMsgBox.bHandled));
         }
 
         return ValueTask.FromResult(ScreenName.MSG_BOX_SCREEN);
@@ -362,7 +362,7 @@ public class MessageBoxScreen : IScreen
         // Call done callback!
         if (gMsgBox.ExitCallback != null)
         {
-            ((gMsgBox.ExitCallback))(ubExitCode);
+            gMsgBox.ExitCallback(ubExitCode);
         }
 
 
@@ -382,7 +382,7 @@ public class MessageBoxScreen : IScreen
 //            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
 //            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
-            video.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, (gMsgBox.sX + gMsgBox.usWidth), (gMsgBox.sY + gMsgBox.usHeight));
+            video.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, gMsgBox.sX + gMsgBox.usWidth, gMsgBox.sY + gMsgBox.usHeight);
         }
 
         fRestoreBackgroundForMessageBox = false;
@@ -405,7 +405,7 @@ public class MessageBoxScreen : IScreen
         }
 
         // Remove region
-        MouseSubSystem.MSYS_RemoveRegion((gMsgBox.BackRegion));
+        MouseSubSystem.MSYS_RemoveRegion(gMsgBox.BackRegion);
 
         // Remove save buffer!
         video.DeleteVideoSurfaceFromIndex(gMsgBox.uiSaveBuffer);
@@ -431,10 +431,10 @@ public class MessageBoxScreen : IScreen
         if (gfFadeInitialized)
         {
             // SetPendingNewScreen(ScreenName.FADE_SCREEN);
-            return (ScreenName.FADE_SCREEN);
+            return ScreenName.FADE_SCREEN;
         }
 
-        return (gMsgBox.uiExitScreen);
+        return gMsgBox.uiExitScreen;
     }
 
     public void Draw(IVideoManager videoManager)

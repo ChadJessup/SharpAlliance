@@ -61,7 +61,7 @@ public class Emails
             MouseSubSystem.MSYS_DefineRegion(
                 region,
                 new(MIDDLE_X,
-                    ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)),
+                    (int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH),
                     MIDDLE_X + LINE_WIDTH,
                     (int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH + MIDDLE_WIDTH)),
                 MSYS_PRIORITY.NORMAL + 2,
@@ -157,7 +157,7 @@ public class Emails
         //RenderButtons( );
 
 
-        return (true);
+        return true;
     }
 
     void ExitEmail()
@@ -219,13 +219,13 @@ public class Emails
         this.UpDateMessageRecordList();
 
         // does email list need to be draw, or can be drawn 
-        if (((!this.fDisplayMessageFlag) && (!fNewMailFlag) && (!this.fDeleteMailFlag)) && (fEmailListBeenDrawAlready == false))
+        if ((!this.fDisplayMessageFlag) && (!fNewMailFlag) && (!this.fDeleteMailFlag) && (fEmailListBeenDrawAlready == false))
         {
             this.DisplayEmailList();
             fEmailListBeenDrawAlready = true;
         }
         // if the message flag, show message
-        else if ((this.fDisplayMessageFlag) && (this.fReDrawMessageFlag))
+        else if (this.fDisplayMessageFlag && this.fReDrawMessageFlag)
         {
             // redisplay list
             this.DisplayEmailList();
@@ -235,7 +235,7 @@ public class Emails
             fEmailListBeenDrawAlready = false;
 
         }
-        else if ((this.fDisplayMessageFlag) && (!this.fOldDisplayMessageFlag))
+        else if (this.fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
         {
 
             // redisplay list
@@ -249,7 +249,7 @@ public class Emails
         }
 
         // not displaying anymore?
-        if ((this.fDisplayMessageFlag == false) && (this.fOldDisplayMessageFlag))
+        if ((this.fDisplayMessageFlag == false) && this.fOldDisplayMessageFlag)
         {
             // then clear it out
             this.ClearOutEmailMessageRecordsList();
@@ -449,7 +449,7 @@ public class Emails
 
 
         // starts at iSubjectOffset amd goes iSubjectLength, reading in string
-        this.files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pSubject, (uint)(640 * (iMessageOffset)), 640);
+        this.files.LoadEncryptedDataFromFile("BINARYDATA\\Email.edt", out string pSubject, (uint)(640 * iMessageOffset), 640);
 
         // add message to list
         AddEmailMessage(iMessageOffset, iMessageLength, pSubject, iDate, ubSender, true, 0, 0);
@@ -936,14 +936,14 @@ public class Emails
                         // lesser string?...need sorting  
                         if (this.fSortSubjectUpwards)
                         {
-                            if ((wcscmp(pA.pSubject, pB.pSubject)) < 0)
+                            if (wcscmp(pA.pSubject, pB.pSubject) < 0)
                             {
                                 this.SwapMessages(pA.iId, pB.iId);
                             }
                         }
                         else
                         {
-                            if ((wcscmp(pA.pSubject, pB.pSubject)) > 0)
+                            if (wcscmp(pA.pSubject, pB.pSubject) > 0)
                             {
                                 this.SwapMessages(pA.iId, pB.iId);
                             }
@@ -964,7 +964,7 @@ public class Emails
                     while (pB is not null)
                     {
                         // one read and another not?...need sorting  
-                        if ((pA.fRead) && (!(pB.fRead)))
+                        if (pA.fRead && (!pB.fRead))
                         {
                             this.SwapMessages(pA.iId, pB.iId);
                         }
@@ -1139,7 +1139,7 @@ public class Emails
         // draw subject line of mail being viewed in viewer
 
         // lock buffer to prevent overwrite
-        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, SUBJECT_X, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)), SUBJECT_X + SUBJECT_WIDTH, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)) + MIDDLE_WIDTH, false);
+        this.fonts.SetFontDestBuffer(SurfaceType.FRAME_BUFFER, SUBJECT_X, (int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH), SUBJECT_X + SUBJECT_WIDTH, ((int)(MIDDLE_Y + iCounter * MIDDLE_WIDTH)) + MIDDLE_WIDTH, false);
         FontSubSystem.SetFontShadow(FontShadow.NO_SHADOW);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
         FontSubSystem.SetFontBackground(FontColor.FONT_BLACK);
@@ -1221,7 +1221,7 @@ public class Emails
         }
         // draw date of message being displayed in mail viewer
         //        wprintf(sString, "%s %d", pDayStrings[0], iDate / (24 * 60));
-        mprintf(DATE_X, ((int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH)), sString);
+        mprintf(DATE_X, (int)(4 + MIDDLE_Y + iCounter * MIDDLE_WIDTH), sString);
 
         FontSubSystem.SetFont(MESSAGE_FONT);
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
@@ -1326,7 +1326,7 @@ public class Emails
         while (pA is not null)
         {
             // unread mail found, set flag
-            if (!(pA.fRead))
+            if (!pA.fRead)
             {
                 this.fUnReadMailFlag = true;
             }
@@ -1466,18 +1466,18 @@ public class Emails
 
     void BtnMessageXCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
-        if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN)) || (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_DWN)))
+        if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN) || reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_DWN))
         {
 
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
 
         }
-        else if ((reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP)) || (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP)))
+        else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP) || reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
 
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
@@ -1564,7 +1564,7 @@ public class Emails
         // is there any special event meant for this mail?..if so, handle it
         this.HandleAnySpecialEmailMessageEvents(iOffSet);
 
-        this.HandleMailSpecialMessages((int)(iOffSet), this.iViewerPositionY, pMail);
+        this.HandleMailSpecialMessages((int)iOffSet, this.iViewerPositionY, pMail);
 
         this.PreProcessEmail(pMail);
 
@@ -1605,7 +1605,7 @@ public class Emails
 
         iCounter = 0;
         // now blit the text background based on height
-        for (iCounter = 2; iCounter < ((this.iTotalHeight) / (this.fonts.GetFontHeight(MESSAGE_FONT))); iCounter++)
+        for (iCounter = 2; iCounter < (this.iTotalHeight / this.fonts.GetFontHeight(MESSAGE_FONT)); iCounter++)
         {
             // get a handle to the bitmap of EMAIL VIEWER Background
             hHandle = this.video.GetVideoObject(guiEmailMessage);
@@ -1767,23 +1767,23 @@ public class Emails
 
     void BtnNewOkback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
             }
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
-                btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 fNewMailFlag = false;
 
             }
@@ -1794,7 +1794,7 @@ public class Emails
     {
         // will create/destroy mouse region for message display
 
-        if ((this.fDisplayMessageFlag) && (!this.fOldDisplayMessageFlag))
+        if (this.fDisplayMessageFlag && (!this.fOldDisplayMessageFlag))
         {
 
             // set old flag
@@ -1842,7 +1842,7 @@ public class Emails
             // force update of screen
             fReDrawScreenFlag = true;
         }
-        else if ((!this.fDisplayMessageFlag) && (this.fOldDisplayMessageFlag))
+        else if ((!this.fDisplayMessageFlag) && this.fOldDisplayMessageFlag)
         {
             // delete region
             this.fOldDisplayMessageFlag = false;
@@ -1878,7 +1878,7 @@ public class Emails
         }
 
 
-        if ((fNewMailFlag) && (!fOldNewMailFlag))
+        if (fNewMailFlag && (!fOldNewMailFlag))
         {
             // create new mail dialog box button 
 
@@ -1907,7 +1907,7 @@ public class Emails
             ButtonSubSystem.MarkAButtonDirty(giNewMailButton[0]);
             fReDrawScreenFlag = true;
         }
-        else if ((!fNewMailFlag) && (fOldNewMailFlag))
+        else if ((!fNewMailFlag) && fOldNewMailFlag)
         {
 
 
@@ -1938,20 +1938,20 @@ public class Emails
         // check if we are video conferencing, if so, do nothing
         if (gubVideoConferencingMode != 0)
         {
-            return (false);
+            return false;
         }
 
         // just stopped displaying box, reset old flag
-        if ((!fNewMailFlag) && (fOldNewMailFlag))
+        if ((!fNewMailFlag) && fOldNewMailFlag)
         {
             fOldNewMailFlag = false;
-            return (false);
+            return false;
         }
 
         // not even set, leave NOW!
         if (!fNewMailFlag)
         {
-            return (false);
+            return false;
         }
 
 
@@ -2003,7 +2003,7 @@ public class Emails
 
 
         // return
-        return (true);
+        return true;
     }
 
     void ReDrawNewMailBox()
@@ -2097,23 +2097,23 @@ public class Emails
     void NextRegionButtonCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
 
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
             }
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
-                btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
                 // not on last page, move ahead one
                 if (iCurrentPage < iLastPage)
@@ -2134,17 +2134,17 @@ public class Emails
 
     void BtnPreviousEmailPageCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
             }
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
@@ -2155,7 +2155,7 @@ public class Emails
                     giMessagePage--;
                 }
 
-                btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
                 this.fReDraw = true;
                 this.RenderEmail();
@@ -2171,29 +2171,29 @@ public class Emails
 
     void BtnNextEmailPageCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
             }
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             // not on last page, move ahead one
-            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             if ((giNumberOfPagesToCurrentEmail - 1) <= giMessagePage)
             {
                 return;
             }
 
-            if (!(this.fOnLastPageFlag))
+            if (!this.fOnLastPageFlag)
             {
                 if ((giNumberOfPagesToCurrentEmail - 1) > (giMessagePage + 1))
                 {
@@ -2213,23 +2213,23 @@ public class Emails
 
     void PreviousRegionButtonCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
             }
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
-                btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 // if we are not on forst page, more back one
                 if (iCurrentPage > 0)
                 {
@@ -2250,23 +2250,23 @@ public class Emails
 
     void BtnDeleteNoback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
             }
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
-                btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 this.fDeleteMailFlag = false;
                 fReDrawScreenFlag = true;
             }
@@ -2276,23 +2276,23 @@ public class Emails
 
     void BtnDeleteYesback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-        if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED)))
+        if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED))
         {
             return;
         }
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
-            if (!(btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+            if (!btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
             }
-            btn.uiFlags |= (ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
-                btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+                btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
                 fReDrawScreenFlag = true;
                 this.DeleteEmail();
 
@@ -2362,7 +2362,7 @@ public class Emails
 
     void CreateDestroyDeleteNoticeMailButton()
     {
-        if ((this.fDeleteMailFlag) && (!fOldDeleteMailFlag))
+        if (this.fDeleteMailFlag && (!fOldDeleteMailFlag))
         {
             // confirm delete email buttons
 
@@ -2392,7 +2392,7 @@ public class Emails
             fReDrawScreenFlag = true;
 
         }
-        else if ((!this.fDeleteMailFlag) && (fOldDeleteMailFlag))
+        else if ((!this.fDeleteMailFlag) && fOldDeleteMailFlag)
         {
 
             // clear out the buttons and screen mask
@@ -2419,19 +2419,19 @@ public class Emails
         // will display a delete mail box whenever delete mail has arrived
         if (!this.fDeleteMailFlag)
         {
-            return (false);
+            return false;
         }
 
         if (!fReDrawScreenFlag)
         {
             // no redraw flag, leave
-            return (false);
+            return false;
         }
 
         // error check.. no valid message passed
         if (pMail == null)
         {
-            return (false);
+            return false;
         }
 
 
@@ -2460,7 +2460,7 @@ public class Emails
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
 
         // draw text based on mail being read or not
-        if ((pMail.fRead))
+        if (pMail.fRead)
         {
             //            mprintf(EMAIL_WARNING_X + 95, EMAIL_WARNING_Y + 65, pDeleteMailStrings[0]);
         }
@@ -2482,7 +2482,7 @@ public class Emails
         // reset font shadow
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
-        return (true);
+        return true;
     }
 
     void DeleteEmail()
@@ -2546,7 +2546,7 @@ public class Emails
             this.fJustStartedEmail = false;
 
             this.PlaceMessagesinPages();
-            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
 
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
@@ -2573,7 +2573,7 @@ public class Emails
 
 
 
-            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
@@ -2592,7 +2592,7 @@ public class Emails
         if (iReason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
 
-            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             this.iDeleteId = giMessageId;
             this.fDeleteMailFlag = true;
 
@@ -2619,7 +2619,7 @@ public class Emails
 
             this.fJustStartedEmail = false;
 
-            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
@@ -2643,7 +2643,7 @@ public class Emails
 
             this.fJustStartedEmail = false;
 
-            btn.uiFlags &= ~(ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
         }
         else if (iReason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
         {
@@ -2807,7 +2807,7 @@ public class Emails
         //        mprintf(usX, MESSAGE_DATE_Y + (int)iViewerY, pEmailHeaders[2]);
 
         // the actual date info
-        sString = wprintf("%d", ((pMail.iDate) / (24 * 60)));
+        sString = wprintf("%d", pMail.iDate / (24 * 60));
         mprintf(MESSAGE_HEADER_X + 235, MESSAGE_DATE_Y + (int)iViewerY, sString);
 
 
@@ -2956,10 +2956,10 @@ public class Emails
         switch (iMessageId)
         {
 
-            case (IMP_EMAIL_AGAIN):
+            case IMP_EMAIL_AGAIN:
                 Laptop.SetBookMark(BOOKMARK.IMP_BOOKMARK);
                 break;
-            case (IMP_EMAIL_INTRO):
+            case IMP_EMAIL_INTRO:
                 Laptop.SetBookMark(BOOKMARK.IMP_BOOKMARK);
                 break;
         }
@@ -2999,13 +2999,13 @@ public class Emails
         // this procedure will handle special cases of email messages that are not stored in email.edt, or need special processing
         switch (usMessageId)
         {
-            case (IMP_EMAIL_PROFILE_RESULTS):
+            case IMP_EMAIL_PROFILE_RESULTS:
 
                 this.HandleIMPCharProfileResultsMessage();
                 fSpecialCase = true;
 
                 break;
-            case (MERC_INTRO):
+            case MERC_INTRO:
                 Laptop.SetBookMark(BOOKMARK.MERC_BOOKMARK);
                 fReDrawScreenFlag = true;
                 break;
@@ -3121,28 +3121,28 @@ public class Emails
             switch (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bPersonalityTrait)
             {
                 // normal as can be
-                case (PersonalityTrait.NO_PERSONALITYTRAIT):
+                case PersonalityTrait.NO_PERSONALITYTRAIT:
                     iOffSet = IMP_PERSONALITY_NORMAL;
                     break;
-                case (PersonalityTrait.HEAT_INTOLERANT):
+                case PersonalityTrait.HEAT_INTOLERANT:
                     iOffSet = IMP_PERSONALITY_HEAT;
                     break;
-                case (PersonalityTrait.NERVOUS):
+                case PersonalityTrait.NERVOUS:
                     iOffSet = IMP_PERSONALITY_NERVOUS;
                     break;
-                case (PersonalityTrait.CLAUSTROPHOBIC):
+                case PersonalityTrait.CLAUSTROPHOBIC:
                     iOffSet = IMP_PERSONALITY_CLAUSTROPHOBIC;
                     break;
-                case (PersonalityTrait.NONSWIMMER):
+                case PersonalityTrait.NONSWIMMER:
                     iOffSet = IMP_PERSONALITY_NONSWIMMER;
                     break;
-                case (PersonalityTrait.FEAR_OF_INSECTS):
+                case PersonalityTrait.FEAR_OF_INSECTS:
                     iOffSet = IMP_PERSONALITY_FEAR_OF_INSECTS;
                     break;
-                case (PersonalityTrait.FORGETFUL):
+                case PersonalityTrait.FORGETFUL:
                     iOffSet = IMP_PERSONALITY_FORGETFUL;
                     break;
-                case (PersonalityTrait.PSYCHO):
+                case PersonalityTrait.PSYCHO:
                     iOffSet = IMP_PERSONALITY_PSYCHO;
                     break;
             }
@@ -3190,38 +3190,38 @@ public class Emails
             switch (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bAttitude)
             {
                 // normal as can be
-                case (ATT.NORMAL):
+                case ATT.NORMAL:
                     iOffSet = IMP_ATTITUDE_NORMAL;
                     break;
-                case (ATT.FRIENDLY):
+                case ATT.FRIENDLY:
                     iOffSet = IMP_ATTITUDE_FRIENDLY;
                     break;
-                case (ATT.LONER):
+                case ATT.LONER:
                     iOffSet = IMP_ATTITUDE_LONER;
                     break;
-                case (ATT.OPTIMIST):
+                case ATT.OPTIMIST:
                     iOffSet = IMP_ATTITUDE_OPTIMIST;
                     break;
-                case (ATT.PESSIMIST):
+                case ATT.PESSIMIST:
                     iOffSet = IMP_ATTITUDE_PESSIMIST;
                     break;
-                case (ATT.AGGRESSIVE):
+                case ATT.AGGRESSIVE:
                     iOffSet = IMP_ATTITUDE_AGGRESSIVE;
                     break;
-                case (ATT.ARROGANT):
+                case ATT.ARROGANT:
                     iOffSet = IMP_ATTITUDE_ARROGANT;
                     break;
-                case (ATT.ASSHOLE):
+                case ATT.ASSHOLE:
                     iOffSet = IMP_ATTITUDE_ASSHOLE;
                     break;
-                case (ATT.COWARD):
+                case ATT.COWARD:
                     iOffSet = IMP_ATTITUDE_COWARD;
                     break;
 
             }
 
             // attitude title
-            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * (iOffSet)), MAIL_STRING_SIZE);
+            this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, (uint)(MAIL_STRING_SIZE * iOffSet), MAIL_STRING_SIZE);
             // add to list
             this.AddEmailRecordToList(pString);
 
@@ -3314,7 +3314,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MARK), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MARK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3324,7 +3324,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MED), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MED, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3333,7 +3333,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_MECH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_MECH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3343,7 +3343,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_IMPERIAL_EXPL), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_IMPERIAL_EXPL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3401,7 +3401,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MARK), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MARK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3410,7 +3410,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MED), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MED, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3419,7 +3419,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_MECH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_MECH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3428,7 +3428,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NEED_TRAIN_EXPL), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NEED_TRAIN_EXPL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3485,7 +3485,7 @@ public class Emails
             if (fSufficientMechSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MECH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MECH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3494,7 +3494,7 @@ public class Emails
             if (fSufficientMarkSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MARK), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MARK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3503,7 +3503,7 @@ public class Emails
             if (fSufficientMedSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_MED), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_MED, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3511,7 +3511,7 @@ public class Emails
             if (fSufficientExplSkill)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_NO_SKILL_EXPL), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_NO_SKILL_EXPL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3538,7 +3538,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.KNIFING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.KNIFING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_KNIFE), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_KNIFE, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3548,7 +3548,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.LOCKPICKING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.LOCKPICKING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_LOCK), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_LOCK, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3558,7 +3558,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HANDTOHAND) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HANDTOHAND))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HAND), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_HAND, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3568,7 +3568,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.ELECTRONICS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.ELECTRONICS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_ELEC), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_ELEC, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3577,7 +3577,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.NIGHTOPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.NIGHTOPS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_NIGHT), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_NIGHT, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3586,7 +3586,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THROWING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THROWING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THROW), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_THROW, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3595,7 +3595,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.TEACHING) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.TEACHING))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_TEACH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_TEACH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3604,7 +3604,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.HEAVY_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.HEAVY_WEAPS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_HEAVY), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_HEAVY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3613,7 +3613,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AUTO_WEAPS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AUTO_WEAPS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AUTO), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_AUTO, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3622,7 +3622,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.STEALTHY) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.STEALTHY))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_STEALTH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_STEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3631,7 +3631,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.AMBIDEXT) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.AMBIDEXT))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_AMBI), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_AMBI, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3640,7 +3640,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.THIEF) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.THIEF))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_THIEF), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_THIEF, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3649,7 +3649,7 @@ public class Emails
             if ((gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait == SkillTrait.MARTIALARTS) || (gMercProfiles[PLAYER_GENERATED_CHARACTER_ID + LaptopSaveInfo.iVoiceId].bSkillTrait2 == SkillTrait.MARTIALARTS))
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_SKILLS_SPECIAL_MARTIAL), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_SKILLS_SPECIAL_MARTIAL, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3737,7 +3737,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_HEALTH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_HEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3747,7 +3747,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_DEXTERITY), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_DEXTERITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3756,7 +3756,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_STRENGTH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_STRENGTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3765,7 +3765,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_AGILITY), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_AGILITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3774,7 +3774,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_WISDOM), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_WISDOM, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3783,7 +3783,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_SUPER_LEADERSHIP), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_SUPER_LEADERSHIP, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3859,7 +3859,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_HEALTH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_HEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3869,7 +3869,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_DEXTERITY), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_DEXTERITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3878,7 +3878,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_STRENGTH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_STRENGTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3889,7 +3889,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_AGILITY), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_AGILITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3898,7 +3898,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_WISDOM), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_WISDOM, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3907,7 +3907,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_LOW_LEADERSHIP), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_LOW_LEADERSHIP, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3983,7 +3983,7 @@ public class Emails
             if (fSufficientHlth)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_HEALTH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_HEALTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -3994,7 +3994,7 @@ public class Emails
             if (fSufficientDex)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_DEXTERITY), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_DEXTERITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4003,7 +4003,7 @@ public class Emails
             if (fSufficientStr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_STRENGTH), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_STRENGTH, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4014,7 +4014,7 @@ public class Emails
             if (fSufficientAgi)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_AGILITY), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_AGILITY, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4025,7 +4025,7 @@ public class Emails
             if (fSufficientWis)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_WISDOM), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_WISDOM, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4041,7 +4041,7 @@ public class Emails
             if (fSufficientLdr)
             {
                 // read one record from email file
-                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * (IMP_PHYSICAL_VERY_LOW_LEADERSHIP), MAIL_STRING_SIZE);
+                this.files.LoadEncryptedDataFromFile("BINARYDATA\\Impass.edt", out pString, MAIL_STRING_SIZE * IMP_PHYSICAL_VERY_LOW_LEADERSHIP, MAIL_STRING_SIZE);
 
                 // add to list
                 this.AddEmailRecordToList(pString);
@@ -4375,10 +4375,10 @@ public class Emails
         // BltVideoObject( FRAME_BUFFER, hHandle, 0,VIEWER_X + INDENT_X_OFFSET, VIEWER_Y + iViewerY + INDENT_Y_OFFSET - 10, VO_BLT.SRCTRANSPARENCY,null );
         // DeleteVideoObjectFromIndex( uiMailIndent );
 
-        giNumberOfPagesToCurrentEmail = (giNumberOfPagesToCurrentEmail);
+        giNumberOfPagesToCurrentEmail = giNumberOfPagesToCurrentEmail;
 
         // parse current page and max number of pages to email
-        wprintf(sString, "%d / %d", (giMessagePage + 1), (giNumberOfPagesToCurrentEmail - 1));
+        wprintf(sString, "%d / %d", giMessagePage + 1, giNumberOfPagesToCurrentEmail - 1);
 
         FontSubSystem.SetFont(FontStyle.FONT12ARIAL);
         FontSubSystem.SetFontForeground(FontColor.FONT_BLACK);
@@ -4396,7 +4396,7 @@ public class Emails
         // restore shadows
         FontSubSystem.SetFontShadow(FontShadow.DEFAULT_SHADOW);
 
-        return (true);
+        return true;
     }
 
 
@@ -4417,7 +4417,7 @@ public class Emails
         }
 
 
-        return (iNumberOfPagesToEmail);
+        return iNumberOfPagesToEmail;
     }
 
 
@@ -4814,7 +4814,7 @@ public class Emails
             }
         }
 
-        return (true);
+        return true;
     }
 }
 

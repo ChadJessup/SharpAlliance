@@ -43,7 +43,7 @@ public class StructureInternals
                 }
             }
         }
-        return (ubFilled);
+        return ubFilled;
     }
 
     //
@@ -119,7 +119,7 @@ public class StructureInternals
         // }
         // and free all the structures used!
         FreeStructureFileRef(pStructureFile);
-        return (true);
+        return true;
     }
 
     private unsafe bool LoadStructureData(string szFileName, STRUCTURE_FILE_REF pFileRef, out int puiStructureDataSize)
@@ -143,7 +143,7 @@ public class StructureInternals
 
         if (hInput.Length == -1)
         {
-            return (false);
+            return false;
         }
 
         uint STRUCTURE_FILE_HEADER_SIZE = 16;
@@ -154,7 +154,7 @@ public class StructureInternals
             || Header.usNumberOfStructures == 0)
         {
             files.FileClose(hInput);
-            return (false);
+            return false;
         }
         pFileRef.usNumberOfStructures = Header.usNumberOfStructures;
         if (Header.fFlags.HasFlag(STRUCTURE_FILE_CONTAINS.AUXIMAGEDATA))
@@ -165,7 +165,7 @@ public class StructureInternals
             if (!fOk || uiBytesRead != uiDataSize)
             {
                 files.FileClose(hInput);
-                return (false);
+                return false;
             }
             if (Header.usNumberOfImageTileLocsStored > 0)
             {
@@ -175,7 +175,7 @@ public class StructureInternals
                 if (!fOk || uiBytesRead != uiDataSize)
                 {
                     files.FileClose(hInput);
-                    return (false);
+                    return false;
                 }
             }
         }
@@ -192,14 +192,14 @@ public class StructureInternals
             if (!fOk || uiBytesRead != uiDataSize)
             {
                 files.FileClose(hInput);
-                return (false);
+                return false;
             }
 
             puiStructureDataSize = uiDataSize;
         }
 
         files.FileClose(hInput);
-        return (true);
+        return true;
     }
 
     static int idxCount = 0;
@@ -301,7 +301,7 @@ public class StructureInternals
             */
         }
 
-        return (true);
+        return true;
     }
 
     public STRUCTURE_FILE_REF? LoadStructureFile(string szFileName)
@@ -313,7 +313,7 @@ public class StructureInternals
         if (!fOk)
         {
             MemFree(pFileRef);
-            return (null);
+            return null;
         }
         if (pFileRef.pubStructureData != null)
         {
@@ -321,7 +321,7 @@ public class StructureInternals
             if (fOk == false)
             {
                 FreeStructureFileRef(pFileRef);
-                return (null);
+                return null;
             }
         }
         
@@ -332,7 +332,7 @@ public class StructureInternals
         }
         pFileRef.pNext = gpStructureFileRefs;
         gpStructureFileRefs = pFileRef;
-        return (pFileRef);
+        return pFileRef;
     }
 
 
@@ -359,7 +359,7 @@ public class StructureInternals
         pStructure = new()
         {
             fFlags = (STRUCTUREFLAGS)pDBStructure.fFlags,
-            pShape = (pTile.Shape),
+            pShape = pTile.Shape,
             pDBStructureRef = pDBStructureRef
         };
 
@@ -387,7 +387,7 @@ public class StructureInternals
             }
         }
         pStructure.ubVehicleHitLocation = pTile.ubVehicleHitLocation;
-        return (pStructure);
+        return pStructure;
     }
 
     private static bool OkayToAddStructureToTile(int sBaseGridNo, STRUCTURE_ON sCubeOffset, DB_STRUCTURE_REF pDBStructureRef, int ubTileIndex, int sExclusionID, bool fIgnorePeople)
@@ -405,13 +405,13 @@ public class StructureInternals
         sGridNo = sBaseGridNo + ppTile[ubTileIndex].sPosRelToBase;
         if (sGridNo < 0 || sGridNo > WORLD_MAX)
         {
-            return (false);
+            return false;
         }
 
         if (gpWorldLevelData[sBaseGridNo].sHeight != gpWorldLevelData[sGridNo].sHeight)
         {
             // uneven terrain, one portion on top of cliff and another not! can't add!
-            return (false);
+            return false;
         }
 
         pDBStructure = pDBStructureRef.pDBStructure;
@@ -432,7 +432,7 @@ public class StructureInternals
 
                 // CJC:
                 // If adding a mobile structure, allow addition if existing structure is passable
-                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
                 {
                     // Skip!
                     pExistingStructure = pExistingStructure.pNext;
@@ -471,21 +471,21 @@ public class StructureInternals
 
                     // two obstacle structures aren't allowed in the same tile at the same height
                     // ATE: There is more sophisticated logic for mobiles, so postpone this check if mobile....
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE)))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE) && !((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE))
                     {
-                        if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE) && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)))
+                        if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE) && !pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE))
                         {
                             // no mobiles, existing structure is passable						
                         }
                         else
                         {
-                            return (false);
+                            return false;
                         }
                     }
-                    else if ((pDBStructure.ubNumberOfTiles > 1) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)))
+                    else if ((pDBStructure.ubNumberOfTiles > 1) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                     {
                         // if not an open door...
-                        if (!((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))))
+                        if (!(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
                         {
 
                             // we could be trying to place a multi-tile obstacle on top of a wall; we shouldn't
@@ -496,7 +496,7 @@ public class StructureInternals
                                 {
                                     case WallOrientation.OUTSIDE_TOP_LEFT:
                                     case WallOrientation.INSIDE_TOP_LEFT:
-                                        sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((bLoop + 2)));
+                                        sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bLoop + 2));
                                         break;
                                     case WallOrientation.OUTSIDE_TOP_RIGHT:
                                     case WallOrientation.INSIDE_TOP_RIGHT:
@@ -518,7 +518,7 @@ public class StructureInternals
                                     if (sBaseGridNo + ppTile[bLoop2].sPosRelToBase == sOtherGridNo)
                                     {
                                         // obstacle will straddle wall!
-                                        return (false);
+                                        return false;
                                     }
                                 }
                             }
@@ -529,11 +529,11 @@ public class StructureInternals
                 else if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                 {
                     // two walls with the same alignment aren't allowed in the same tile
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)) && (pDBStructure.ubWallOrientation == pExistingStructure.ubWallOrientation))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF) && (pDBStructure.ubWallOrientation == pExistingStructure.ubWallOrientation))
                     {
-                        return (false);
+                        return false;
                     }
-                    else if (!(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE | STRUCTUREFLAGS.PERSON)))
+                    else if (!pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE | STRUCTUREFLAGS.PERSON))
                     {
                         // it's possible we're trying to insert this wall on top of a multitile obstacle
                         for (bLoop = 1; bLoop < 4; bLoop++)
@@ -558,7 +558,7 @@ public class StructureInternals
                                 pOtherExistingStructure = FindStructureByID(sOtherGridNo, pExistingStructure.usStructureID);
                                 if (pOtherExistingStructure is not null)
                                 {
-                                    return (false);
+                                    return false;
                                 }
                             }
                         }
@@ -592,15 +592,15 @@ public class StructureInternals
 
                     // ATE: Added check here - UNLESS the part we are trying to add is PASSABLE!
                     if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)
-                        && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
-                        && !(ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE)))
+                        && !pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)
+                        && !ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE))
                     {
                         // don't allow 2 people in the same tile
-                        return (false);
+                        return false;
                     }
 
                     // ATE: Another rule: allow PASSABLE *IF* the PASSABLE is *NOT* MOBILE!
-                    if (!(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
+                    if (!pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
                     {
                         // Skip!
                         pExistingStructure = pExistingStructure.pNext;
@@ -609,19 +609,19 @@ public class StructureInternals
 
                     // ATE: Added here - UNLESS this part is PASSABLE....
                     // two obstacle structures aren't allowed in the same tile at the same height
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE)))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE) && !ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE))
                     {
-                        return (false);
+                        return false;
                     }
                 }
 
-                if ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OPENABLE)))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OPENABLE))
                 {
                     if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE))
                     {
                         // don't allow two openable structures in the same tile or things will screw
                         // up on an interface level
-                        return (false);
+                        return false;
                     }
                 }
             }
@@ -630,7 +630,7 @@ public class StructureInternals
         }
 
 
-        return (true);
+        return true;
     }
 
     public static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, int sExclusionID, bool fIgnorePeople)
@@ -661,7 +661,7 @@ public class StructureInternals
                 }
                 else
                 {
-                    return (false);
+                    return false;
                 }
             }
             else
@@ -670,15 +670,15 @@ public class StructureInternals
             }
             if (!OkayToAddStructureToTile(sBaseGridNo, sCubeOffset, pDBStructureRef, ubLoop, sExclusionID, fIgnorePeople))
             {
-                return (false);
+                return false;
             }
         }
-        return (true);
+        return true;
     }
 
     public static bool OkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, int sExclusionID)
     {
-        return (InternalOkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, sExclusionID, (bool)(sExclusionID == IGNORE_PEOPLE_STRUCTURE_ID)));
+        return InternalOkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, sExclusionID, (bool)(sExclusionID == IGNORE_PEOPLE_STRUCTURE_ID));
     }
 
     private static bool AddStructureToTile(MAP_ELEMENT? pMapElement, STRUCTURE? pStructure, int usStructureID)
@@ -703,7 +703,7 @@ public class StructureInternals
         {
             pMapElement.uiFlags |= MAPELEMENTFLAGS.INTERACTIVETILE;
         }
-        return (true);
+        return true;
     }
 
 
@@ -733,7 +733,7 @@ public class StructureInternals
         // first check to see if the structure will be blocked
         if (!OkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, INVALID_STRUCTURE_ID))
         {
-            return (null);
+            return null;
         }
 
         // We go through a definition stage here and a later stage of
@@ -754,7 +754,7 @@ public class StructureInternals
                     MemFree(ppStructure[ubLoop2]);
                 }
                 MemFree(ppStructure);
-                return (null);
+                return null;
             }
             ppStructure[ubLoop].sGridNo = sBaseGridNo + ppTile[ubLoop].sPosRelToBase;
             if (ubLoop != BASE_TILE)
@@ -777,7 +777,7 @@ public class StructureInternals
             {
                 // should now be unncessary
                 ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.PERSON;
-                ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.BLOCKSMOVES);
+                ppStructure[ubLoop].fFlags &= ~STRUCTUREFLAGS.BLOCKSMOVES;
             }
             else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE) || ((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE))
             {
@@ -786,12 +786,12 @@ public class StructureInternals
                 if (pDBStructure.ubNumberOfTiles < 10)
                 {
                     ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.PASSABLE;
-                    ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.BLOCKSMOVES);
+                    ppStructure[ubLoop].fFlags &= ~STRUCTUREFLAGS.BLOCKSMOVES;
                 }
                 else
                 {
                     // make sure not transparent
-                    ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.TRANSPARENT);
+                    ppStructure[ubLoop].fFlags &= ~STRUCTUREFLAGS.TRANSPARENT;
                 }
             }
         }
@@ -831,21 +831,21 @@ public class StructureInternals
                     // not level ground! abort!
                     for (ubLoop2 = BASE_TILE; ubLoop2 < ubLoop; ubLoop2++)
                     {
-                        DeleteStructureFromTile((gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
+                        DeleteStructureFromTile(gpWorldLevelData[ppStructure[ubLoop2].sGridNo], ppStructure[ubLoop2]);
                     }
                     MemFree(ppStructure);
-                    return (null);
+                    return null;
                 }
             }
-            if (AddStructureToTile((gpWorldLevelData[sGridNo]), ppStructure[ubLoop], usStructureID) == false)
+            if (AddStructureToTile(gpWorldLevelData[sGridNo], ppStructure[ubLoop], usStructureID) == false)
             {
                 // error! abort!
                 for (ubLoop2 = BASE_TILE; ubLoop2 < ubLoop; ubLoop2++)
                 {
-                    DeleteStructureFromTile((gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
+                    DeleteStructureFromTile(gpWorldLevelData[ppStructure[ubLoop2].sGridNo], ppStructure[ubLoop2]);
                 }
                 MemFree(ppStructure);
-                return (null);
+                return null;
             }
         }
 
@@ -855,7 +855,7 @@ public class StructureInternals
         MemFree(ppStructure);
         // And we're done! return a pointer to the base structure!
 
-        return (pBaseStructure);
+        return pBaseStructure;
     }
 
     bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, LEVELNODE? pLevelN)
@@ -865,9 +865,9 @@ public class StructureInternals
         pStructure = InternalAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, (LEVELNODE?)pLevelN);
         if (pStructure == null)
         {
-            return (false);
+            return false;
         }
-        return (true);
+        return true;
     }
 
     //
@@ -909,7 +909,7 @@ public class StructureInternals
         }
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE))
         { // only one allowed in a tile, so we are safe to do this...
-            pMapElement.uiFlags &= (~MAPELEMENTFLAGS.INTERACTIVETILE);
+            pMapElement.uiFlags &= ~MAPELEMENTFLAGS.INTERACTIVETILE;
         }
         MemFree(pStructure);
     }
@@ -929,19 +929,19 @@ public class StructureInternals
 
         if (pStructure == null)
         {
-            return (null);
+            return null;
         }
         pBaseStructure = FindBaseStructure(pStructure);
         CHECKF(pBaseStructure);
-        if ((pBaseStructure.pDBStructureRef.pDBStructure).bPartnerDelta == NO_PARTNER_STRUCTURE)
+        if (pBaseStructure.pDBStructureRef.pDBStructure.bPartnerDelta == NO_PARTNER_STRUCTURE)
         {
-            return (null);
+            return null;
         }
-        fDoor = ((pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)));
+        fDoor = pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR);
         pLevelNode = WorldStructures.FindLevelNodeBasedOnStructure(pBaseStructure.sGridNo, pBaseStructure);
         if (pLevelNode == null)
         {
-            return (null);
+            return null;
         }
         pShadowNode = WorldManager.FindShadow(pBaseStructure.sGridNo, pLevelNode.usIndex);
 
@@ -959,7 +959,7 @@ public class StructureInternals
         //        pNewBaseStructure = InternalAddStructureToWorld(sGridNo, ((int)sCubeOffset / PROFILE_Z_SIZE), pPartnerDBStructure, pLevelNode);
         if (pNewBaseStructure == null)
         {
-            return (null);
+            return null;
         }
         // set values in the new structure
         pNewBaseStructure.ubHitPoints = ubHitPoints;
@@ -997,22 +997,22 @@ public class StructureInternals
                 //                ActivateSwitchInGridNo(NOBODY, sGridNo);
             }
         }
-        return (pNewBaseStructure);
+        return pNewBaseStructure;
     }
 
     public static STRUCTURE? SwapStructureForPartner(int sGridNo, STRUCTURE? pStructure)
     {
-        return (InternalSwapStructureForPartner(sGridNo, pStructure, true, false));
+        return InternalSwapStructureForPartner(sGridNo, pStructure, true, false);
     }
 
     public static STRUCTURE? SwapStructureForPartnerWithoutTriggeringSwitches(int sGridNo, STRUCTURE? pStructure)
     {
-        return (InternalSwapStructureForPartner(sGridNo, pStructure, false, false));
+        return InternalSwapStructureForPartner(sGridNo, pStructure, false, false);
     }
 
     public static STRUCTURE? SwapStructureForPartnerAndStoreChangeInMap(int sGridNo, STRUCTURE? pStructure)
     {
-        return (InternalSwapStructureForPartner(sGridNo, pStructure, true, true));
+        return InternalSwapStructureForPartner(sGridNo, pStructure, true, true);
     }
 
     public static STRUCTURE? FindStructure(int sGridNo, STRUCTUREFLAGS fFlags)
@@ -1024,11 +1024,11 @@ public class StructureInternals
         {
             if ((pCurrent.fFlags & fFlags) != 0)
             {
-                return (pCurrent);
+                return pCurrent;
             }
             pCurrent = pCurrent.pNext;
         }
-        return (null);
+        return null;
     }
 
     public static STRUCTURE? FindNextStructure(STRUCTURE? pStructure, STRUCTUREFLAGS fFlags)
@@ -1041,11 +1041,11 @@ public class StructureInternals
         {
             if ((pCurrent.fFlags & fFlags) != 0)
             {
-                return (pCurrent);
+                return pCurrent;
             }
             pCurrent = pCurrent.pNext;
         }
-        return (null);
+        return null;
     }
 
     public static STRUCTURE? FindStructureByID(int sGridNo, int usStructureID)
@@ -1057,11 +1057,11 @@ public class StructureInternals
         {
             if (pCurrent.usStructureID == usStructureID)
             {
-                return (pCurrent);
+                return pCurrent;
             }
             pCurrent = pCurrent.pNext;
         }
-        return (null);
+        return null;
     }
 
     public static STRUCTURE? FindBaseStructure(STRUCTURE pStructure)
@@ -1069,35 +1069,35 @@ public class StructureInternals
         CHECKF(pStructure);
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
         {
-            return (pStructure);
+            return pStructure;
         }
-        return (FindStructureByID(pStructure.sBaseGridNo, pStructure.usStructureID));
+        return FindStructureByID(pStructure.sBaseGridNo, pStructure.usStructureID);
     }
 
     STRUCTURE? FindNonBaseStructure(int sGridNo, STRUCTURE pStructure)
     { // finds a non-base structure in a location
         CHECKF(pStructure);
-        if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE)))
+        if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
         {   // error!
-            return (null);
+            return null;
         }
 
-        return (FindStructureByID(sGridNo, pStructure.usStructureID));
+        return FindStructureByID(sGridNo, pStructure.usStructureID);
     }
 
     int GetBaseTile(STRUCTURE? pStructure)
     {
         if (pStructure == null)
         {
-            return (-1);
+            return -1;
         }
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
         {
-            return (pStructure.sGridNo);
+            return pStructure.sGridNo;
         }
         else
         {
-            return (pStructure.sBaseGridNo);
+            return pStructure.sBaseGridNo;
         }
     }
 
@@ -1111,12 +1111,12 @@ public class StructureInternals
 
         if (pStructure == null || pStructure.pShape == null)
         {
-            return (0);
+            return 0;
         }
 
         if (pStructure.ubStructureHeight != 0)
         {
-            return (pStructure.ubStructureHeight);
+            return pStructure.ubStructureHeight;
         }
 
         pShape = pStructure.pShape;
@@ -1126,7 +1126,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
+                ubShapeValue = pShape[ubLoopX][ubLoopY];
                 // loop DOWN vertically so that we find the tallest point first
                 // and don't need to check any below it
                 for (bLoopZ = PROFILE_Z_SIZE - 1; bLoopZ > bGreatestHeight; bLoopZ--)
@@ -1138,7 +1138,7 @@ public class StructureInternals
                         {
                             // store height
                             pStructure.ubStructureHeight = bGreatestHeight + 1;
-                            return (bGreatestHeight + 1);
+                            return bGreatestHeight + 1;
                         }
                         break;
                     }
@@ -1147,7 +1147,7 @@ public class StructureInternals
         }
         // store height
         pStructure.ubStructureHeight = bGreatestHeight + 1;
-        return (bGreatestHeight + 1);
+        return bGreatestHeight + 1;
     }
 
     int GetTallestStructureHeight(int sGridNo, bool fOnRoof)
@@ -1178,7 +1178,7 @@ public class StructureInternals
             }
             pCurrent = pCurrent.pNext;
         }
-        return (iTallest);
+        return iTallest;
     }
 
 
@@ -1199,7 +1199,7 @@ public class StructureInternals
         }
 
         // prioritize openable structures and doors
-        pCurrent = FindStructure(sGridNo, (STRUCTUREFLAGS.DOOR | STRUCTUREFLAGS.OPENABLE));
+        pCurrent = FindStructure(sGridNo, STRUCTUREFLAGS.DOOR | STRUCTUREFLAGS.OPENABLE);
         if (pCurrent is not null)
         {
             // use this structure
@@ -1229,7 +1229,7 @@ public class StructureInternals
                 pCurrent = pCurrent.pNext;
             }
         }
-        return (iTallest);
+        return iTallest;
     }
 
 
@@ -1243,7 +1243,7 @@ public class StructureInternals
 
         if (pStructure == null || pStructure.pShape == null)
         {
-            return (0);
+            return 0;
         }
         pShape = pStructure.pShape;
 
@@ -1252,7 +1252,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
+                ubShapeValue = pShape[ubLoopX][ubLoopY];
                 // loop DOWN vertically so that we find the tallest point first
                 // and don't need to check any below it
                 for (bLoopZ = 0; bLoopZ < bLowestHeight; bLoopZ++)
@@ -1262,14 +1262,14 @@ public class StructureInternals
                         bLowestHeight = bLoopZ;
                         if (bLowestHeight == 0)
                         {
-                            return (1);
+                            return 1;
                         }
                         break;
                     }
                 }
             }
         }
-        return (bLowestHeight + 1);
+        return bLowestHeight + 1;
     }
 
 
@@ -1291,7 +1291,7 @@ public class StructureInternals
         {
             for (ubLoopY = 0; ubLoopY < PROFILE_Y_SIZE; ubLoopY++)
             {
-                ubShapeValue = (pShape)[ubLoopX][ubLoopY];
+                ubShapeValue = pShape[ubLoopX][ubLoopY];
                 //                if (ubShapeValue & AtHeight[0])
                 //                {
                 //                    (pubLevel0)++;
@@ -1316,7 +1316,7 @@ public class StructureInternals
         pubLevel1 *= 4;
         pubLevel2 *= 4;
         pubLevel3 *= 4;
-        return (true);
+        return true;
     }
 
     public static int DamageStructure(STRUCTURE? pStructure, int ubDamage, int ubReason, int sGridNo, int sX, int sY, int ubOwner)
@@ -1330,13 +1330,13 @@ public class StructureInternals
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PERSON) || pStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE))
         {
             // don't hurt this structure, it's used for hit detection only!
-            return (0);
+            return 0;
         }
 
         if ((pStructure.pDBStructureRef.pDBStructure.ubArmour == MATERIAL.INDESTRUCTABLE_METAL)
             || (pStructure.pDBStructureRef.pDBStructure.ubArmour == MATERIAL.INDESTRUCTABLE_STONE))
         {
-            return (0);
+            return 0;
         }
 
         // Account for armour!
@@ -1354,7 +1354,7 @@ public class StructureInternals
             if (ubArmour > ubDamage)
             {
                 // didn't even scratch the paint
-                return (0);
+                return 0;
             }
             else
             {
@@ -1372,7 +1372,7 @@ public class StructureInternals
         {
             // If here, we have penetrated, check flags
             // Are we an explodable structure?
-            if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.EXPLOSIVE)) && Globals.Random.Next(2) > 0)
+            if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.EXPLOSIVE) && Globals.Random.Next(2) > 0)
             {
                 // Remove struct!
                 pBase = FindBaseStructure(pStructure);
@@ -1394,7 +1394,7 @@ public class StructureInternals
                 ExplosionControl.IgniteExplosion(ubOwner, sX, sY, 0, sGridNo, Items.STRUCTURE_IGNITE, 0);
 
                 // ATE: Return false here, as we are dealing with deleting the graphic here...
-                return (0);
+                return 0;
             }
 
             // Make hit sound....
@@ -1410,7 +1410,7 @@ public class StructureInternals
                 }
             }
             // Don't update damage HPs....
-            return (1);
+            return 1;
         }
 
         // OK, LOOK FOR A SAM SITE, UPDATE....
@@ -1422,7 +1422,7 @@ public class StructureInternals
         if (pBase.ubHitPoints <= ubDamage)
         {
             // boom! structure destroyed!
-            return (1);
+            return 1;
         }
         else
         {
@@ -1432,7 +1432,7 @@ public class StructureInternals
             gpWorldLevelData[sGridNo].uiFlags |= MAPELEMENTFLAGS.STRUCTUREFLAGS_DAMAGED;
 
             // We are a little damaged....
-            return (2);
+            return 2;
         }
     }
 
@@ -1646,11 +1646,11 @@ public class StructureInternals
 
         if (pStructureFileRef.usNumberOfStructuresStored == 0)
         {
-            return (true);
+            return true;
         }
         for (uiLoop = 0; uiLoop < pStructureFileRef.usNumberOfStructures; uiLoop++)
         {
-            pDBStructureRef = (pStructureFileRef.pDBStructureRef[uiLoop]);
+            pDBStructureRef = pStructureFileRef.pDBStructureRef[uiLoop];
             pDBStructure = pDBStructureRef.pDBStructure;
             //if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1 && !(pDBStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)) )
             if (pDBStructure.ubNumberOfTiles > 1)
@@ -1676,13 +1676,13 @@ public class StructureInternals
         if (!fFound)
         {
             // no multi-tile images in this vobject; that's okay... return!
-            return (true);
+            return true;
         }
 
         //        hVObject.ppZStripInfo = MemAlloc(sizeof(ZStripInfo?) * hVObject.usNumberOfObjects);
         if (hVObject.ppZStripInfo == null)
         {
-            return (false);
+            return false;
         }
         // memset(hVObject.ppZStripInfo, 0, sizeof(ZStripInfo?) * hVObject.usNumberOfObjects);
 
@@ -1698,7 +1698,7 @@ public class StructureInternals
             }
             else
             {
-                sSTIStep = (hVObject.usNumberOfObjects / pStructureFileRef.usNumberOfStructures);
+                sSTIStep = hVObject.usNumberOfObjects / pStructureFileRef.usNumberOfStructures;
             }
         }
         else
@@ -1746,13 +1746,13 @@ public class StructureInternals
             if (fCopyIntoVo && sStructIndex < pStructureFileRef.usNumberOfStructures)
             {
                 pDBStructure = pStructureFileRef.pDBStructureRef[sStructIndex].pDBStructure;
-                if (pDBStructure.ubNumberOfTiles > 1 || (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE)))
+                if (pDBStructure.ubNumberOfTiles > 1 || ((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE))
                 //if (pDBStructure != null && pDBStructure.ubNumberOfTiles > 1 )
                 {
                     // ATE: We allow SLIDING DOORS of 2 tile sizes...
                     if (!(((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.ANYDOOR)
-                        || ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.ANYDOOR)))
-                        && (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.SLIDINGDOOR))))
+                        || ((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.ANYDOOR)
+                        && ((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.SLIDINGDOOR)))
                     {
                         //                        hVObject.ppZStripInfo[uiDestVoIndex] = MemAlloc(sizeof(ZStripInfo));
                         //                        if (hVObject.ppZStripInfo[uiDestVoIndex] == null)
@@ -1833,7 +1833,7 @@ public class StructureInternals
                                     // should never happen because these images are multi-tile!
                                     sRightHalfWidth = 0;
                                     // fake the left width to one half-tile
-                                    sLeftHalfWidth = (WORLD_TILE_X / 2);
+                                    sLeftHalfWidth = WORLD_TILE_X / 2;
                                 }
                                 else
                                 {
@@ -1868,7 +1868,7 @@ public class StructureInternals
                                 if (pCurr.ubFirstZStripWidth == 0)
                                 {
                                     ubNumIncreasing--;
-                                    pCurr.ubFirstZStripWidth = (WORLD_TILE_X / 2);
+                                    pCurr.ubFirstZStripWidth = WORLD_TILE_X / 2;
                                 }
                             }
                             else // right side only; offset is at least 20 (= WORLD_TILE_X / 2)
@@ -1884,7 +1884,7 @@ public class StructureInternals
                                 if (pCurr.ubFirstZStripWidth == 0)
                                 {
                                     ubNumDecreasing--;
-                                    pCurr.ubFirstZStripWidth = (WORLD_TILE_X / 2);
+                                    pCurr.ubFirstZStripWidth = WORLD_TILE_X / 2;
                                 }
 
                             }
@@ -1904,7 +1904,7 @@ public class StructureInternals
                                 }
                                 MemFree(hVObject.ppZStripInfo);
                                 hVObject.ppZStripInfo = null;
-                                return (false);
+                                return false;
                             }
                             for (ubLoop2 = 0; ubLoop2 < ubNumIncreasing; ubLoop2++)
                             {
@@ -1920,7 +1920,7 @@ public class StructureInternals
                             }
                             if (ubNumIncreasing > 0)
                             {
-                                pCurr.bInitialZChange = -(ubNumIncreasing);
+                                pCurr.bInitialZChange = -ubNumIncreasing;
                             }
                             else if (ubNumStable > 0)
                             {
@@ -1928,26 +1928,26 @@ public class StructureInternals
                             }
                             else
                             {
-                                pCurr.bInitialZChange = -(ubNumDecreasing);
+                                pCurr.bInitialZChange = -ubNumDecreasing;
                             }
                         }
                     }
                 }
             }
         }
-        return (true);
+        return true;
     }
 
     bool InitStructureDB()
     {
         gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
-        return (true);
+        return true;
     }
 
     bool FiniStructureDB()
     {
         gusNextAvailableStructureID = FIRST_AVAILABLE_STRUCTURE_ID;
-        return (true);
+        return true;
     }
 
 
@@ -1972,9 +1972,9 @@ public class StructureInternals
         // If no struct, return
         if (pCurrent == null)
         {
-            (pStructHeight) = StructureHeight(pCurrent);
-            (ppTallestStructure) = null;
-            return (BLOCKING.NOTHING_BLOCKING);
+            pStructHeight = StructureHeight(pCurrent);
+            ppTallestStructure = null;
+            return BLOCKING.NOTHING_BLOCKING;
         }
 
         while (pCurrent != null)
@@ -1992,7 +1992,7 @@ public class StructureInternals
                 }
 
                 // Don't stop FOV for people
-                if (pCurrent.fFlags.HasFlag((STRUCTUREFLAGS.CORPSE | STRUCTUREFLAGS.PERSON)))
+                if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE | STRUCTUREFLAGS.PERSON))
                 {
                     fOKStructOnLevel = false;
                 }
@@ -2004,7 +2004,7 @@ public class StructureInternals
                 }
 
                 // Default, if we are a wall, set full blocking
-                if ((pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.WALL)) && !fWallsBlock)
+                if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.WALL) && !fWallsBlock)
                 {
                     // Return full blocking!
                     // OK! This will be handled by movement costs......!
@@ -2019,31 +2019,31 @@ public class StructureInternals
                         case WallOrientation.OUTSIDE_TOP_LEFT:
                         case WallOrientation.INSIDE_TOP_LEFT:
 
-                            (pStructHeight) = StructureHeight(pCurrent);
-                            (ppTallestStructure) = pCurrent;
+                            pStructHeight = StructureHeight(pCurrent);
+                            ppTallestStructure = pCurrent;
 
                             if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                             {
-                                return (BLOCKING.TOPLEFT_OPEN_WINDOW);
+                                return BLOCKING.TOPLEFT_OPEN_WINDOW;
                             }
                             else
                             {
-                                return (BLOCKING.TOPLEFT_WINDOW);
+                                return BLOCKING.TOPLEFT_WINDOW;
                             }
 
                         case WallOrientation.OUTSIDE_TOP_RIGHT:
                         case WallOrientation.INSIDE_TOP_RIGHT:
 
-                            (pStructHeight) = StructureHeight(pCurrent);
-                            (ppTallestStructure) = pCurrent;
+                            pStructHeight = StructureHeight(pCurrent);
+                            ppTallestStructure = pCurrent;
 
                             if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                             {
-                                return (BLOCKING.TOPRIGHT_OPEN_WINDOW);
+                                return BLOCKING.TOPRIGHT_OPEN_WINDOW;
                             }
                             else
                             {
-                                return (BLOCKING.TOPRIGHT_WINDOW);
+                                return BLOCKING.TOPRIGHT_WINDOW;
                             }
                     }
                 }
@@ -2052,11 +2052,11 @@ public class StructureInternals
                 if (pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
                 {
                     // If we are not opem, we are full blocking!
-                    if (!(pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+                    if (!pCurrent.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                     {
-                        (pStructHeight) = StructureHeight(pCurrent);
-                        (ppTallestStructure) = pCurrent;
-                        return (BLOCKING.FULL_BLOCKING);
+                        pStructHeight = StructureHeight(pCurrent);
+                        ppTallestStructure = pCurrent;
+                        return BLOCKING.FULL_BLOCKING;
                     }
                     else
                     {
@@ -2065,16 +2065,16 @@ public class StructureInternals
                             case WallOrientation.OUTSIDE_TOP_LEFT:
                             case WallOrientation.INSIDE_TOP_LEFT:
 
-                                (pStructHeight) = StructureHeight(pCurrent);
-                                (ppTallestStructure) = pCurrent;
-                                return (BLOCKING.TOPLEFT_DOOR);
+                                pStructHeight = StructureHeight(pCurrent);
+                                ppTallestStructure = pCurrent;
+                                return BLOCKING.TOPLEFT_DOOR;
 
                             case WallOrientation.OUTSIDE_TOP_RIGHT:
                             case WallOrientation.INSIDE_TOP_RIGHT:
 
-                                (pStructHeight) = StructureHeight(pCurrent);
-                                (ppTallestStructure) = pCurrent;
-                                return (BLOCKING.TOPRIGHT_DOOR);
+                                pStructHeight = StructureHeight(pCurrent);
+                                ppTallestStructure = pCurrent;
+                                return BLOCKING.TOPRIGHT_DOOR;
                         }
                     }
                 }
@@ -2088,22 +2088,22 @@ public class StructureInternals
         {
             if (fMinimumBlockingFound)
             {
-                (pStructHeight) = StructureHeight(pStructure);
-                (ppTallestStructure) = pStructure;
-                return (BLOCKING.REDUCE_RANGE);
+                pStructHeight = StructureHeight(pStructure);
+                ppTallestStructure = pStructure;
+                return BLOCKING.REDUCE_RANGE;
             }
             else
             {
-                (pStructHeight) = StructureHeight(pStructure);
-                (ppTallestStructure) = pStructure;
-                return (BLOCKING.NEXT_TILE);
+                pStructHeight = StructureHeight(pStructure);
+                ppTallestStructure = pStructure;
+                return BLOCKING.NEXT_TILE;
             }
         }
         else
         {
-            (pStructHeight) = 0;
-            (ppTallestStructure) = null;
-            return (BLOCKING.NOTHING_BLOCKING);
+            pStructHeight = 0;
+            ppTallestStructure = null;
+            return BLOCKING.NOTHING_BLOCKING;
         }
     }
 
@@ -2119,12 +2119,12 @@ public class StructureInternals
         {
             if ((uiFlag & uiBit) != 0)
             {
-                return (ubLoop);
+                return ubLoop;
             }
 
             //            uiBit <<= (STRUCTUREFLAGS)1;
         }
-        return (0);
+        return 0;
     }
 
     STRUCTUREFLAGS StructureTypeToFlag(int ubType)
@@ -2132,7 +2132,7 @@ public class StructureInternals
         STRUCTUREFLAGS uiFlag = (STRUCTUREFLAGS)0x1;
 
         //        uiFlag <<= ubType;
-        return (uiFlag);
+        return uiFlag;
     }
 
     STRUCTURE? FindStructureBySavedInfo(int sGridNo, int ubType, WallOrientation ubWallOrientation, int bLevel)
@@ -2149,11 +2149,11 @@ public class StructureInternals
                 && pCurrent.ubWallOrientation == ubWallOrientation
                 && ((bLevel == 0 && pCurrent.sCubeOffset == 0) || (bLevel > 0 && pCurrent.sCubeOffset > 0)))
             {
-                return (pCurrent);
+                return pCurrent;
             }
             pCurrent = pCurrent.pNext;
         }
-        return (null);
+        return null;
     }
 
 
@@ -2170,7 +2170,7 @@ public class StructureInternals
             uiSoundID++;
         }
 
-        return (uiSoundID);
+        return uiSoundID;
     }
 }
 

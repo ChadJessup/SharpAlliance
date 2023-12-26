@@ -27,14 +27,14 @@ public class TacticalSaveSubSystem : IDisposable
     {
         if (bMapZ == 0)
         {
-            SectorInfo[SECTORINFO.SECTOR(sMapX, sMapY)].uiFlags &= ~(uiFlagToSet);
+            SectorInfo[SECTORINFO.SECTOR(sMapX, sMapY)].uiFlags &= ~uiFlagToSet;
         }
         else
         {
             ReSetUnderGroundSectorFlag(sMapX, sMapY, bMapZ, uiFlagToSet);
         }
 
-        return (true);
+        return true;
     }
 
     public static bool SaveCurrentSectorsInformationToTempItemFile()
@@ -54,7 +54,7 @@ public class TacticalSaveSubSystem : IDisposable
         //If we havent been to tactical yet
         if ((gWorldSectorX == 0) && (gWorldSectorY == 0))
         {
-            return (true);
+            return true;
         }
 
 
@@ -117,14 +117,14 @@ public class TacticalSaveSubSystem : IDisposable
         if (!SmokeEffects.SaveSmokeEffectsToMapTempFile(gWorldSectorX, gWorldSectorY, gbWorldSectorZ))
         {
 //            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("SaveCurrentSectorsInformationToTempItemFile:  failed in SaveSmokeEffectsToMapTempFile"));
-            return (false);
+            return false;
         }
 
         //Save the smoke effects info to the temp file
         if (!LightEffects.SaveLightEffectsToMapTempFile(gWorldSectorX, gWorldSectorY, gbWorldSectorZ))
         {
 //            DebugMsg(TOPIC_JA2, DBG_LEVEL_3, String("SaveCurrentSectorsInformationToTempItemFile:  failed in SaveLightEffectsToMapTempFile"));
-            return (false);
+            return false;
         }
 
 
@@ -145,7 +145,7 @@ public class TacticalSaveSubSystem : IDisposable
             gfInMeanwhile = true;
         }
 
-        return (true);
+        return true;
     }
 
     private static bool HandleAllReachAbleItemsInTheSector(int secX, MAP_ROW secY, int secZ)
@@ -200,14 +200,14 @@ public class TacticalSaveSubSystem : IDisposable
                 && (pTempNode.ubSectorZ == ubSectorZ))
             {
                 //set the flag indicating that ther is a temp item file exists for the sector
-                pTempNode.uiFlags &= ~(uiFlagToSet);
+                pTempNode.uiFlags &= ~uiFlagToSet;
 
-                return (true);
+                return true;
             }
             pTempNode = pTempNode.next;
         }
 
-        return (false);
+        return false;
     }
 
     public static bool SetSectorFlag(int sMapX, MAP_ROW sMapY, int bMapZ, SF uiFlagToSet)
@@ -251,7 +251,7 @@ public class TacticalSaveSubSystem : IDisposable
             TacticalSaveSubSystem.SetUnderGroundSectorFlag(sMapX, sMapY, bMapZ, uiFlagToSet);
         }
 
-        return (true);
+        return true;
     }
 
     public static bool SetUnderGroundSectorFlag(int sSectorX, MAP_ROW sSectorY, int ubSectorZ, SF uiFlagToSet)
@@ -270,23 +270,23 @@ public class TacticalSaveSubSystem : IDisposable
                 //set the flag indicating that ther is a temp item file exists for the sector
                 pTempNode.uiFlags |= uiFlagToSet;
 
-                return (true);
+                return true;
             }
             pTempNode = pTempNode.next;
         }
 
-        return (false);
+        return false;
     }
 
     public static bool GetSectorFlagStatus(int sMapX, MAP_ROW sMapY, int bMapZ, SF uiFlagToSet)
     {
         if (bMapZ == 0)
         {
-            return ((SectorInfo[SECTORINFO.SECTOR(sMapX, sMapY)].uiFlags.HasFlag(uiFlagToSet)));
+            return SectorInfo[SECTORINFO.SECTOR(sMapX, sMapY)].uiFlags.HasFlag(uiFlagToSet);
         }
         else
         {
-            return ((GetUnderGroundSectorFlagStatus(sMapX, sMapY, bMapZ, uiFlagToSet)));
+            return GetUnderGroundSectorFlagStatus(sMapX, sMapY, bMapZ, uiFlagToSet);
         }
     }
 
@@ -306,18 +306,18 @@ public class TacticalSaveSubSystem : IDisposable
                 //set the flag indicating that ther is a temp item file exists for the sector
                 if (pTempNode.uiFlags.HasFlag(uiFlagToCheck))
                 {
-                    return (true);
+                    return true;
                 }
                 else
                 {
-                    return (false);
+                    return false;
                 }
             }
 
             pTempNode = pTempNode.next;
         }
 
-        return (false);
+        return false;
     }
 
     public static void GetMapTempFileName(SF uiType, string pMapName, int sMapX, MAP_ROW sMapY, int bMapZ)
@@ -358,7 +358,7 @@ public class TacticalSaveSubSystem : IDisposable
 
             case SF.CIV_PRESERVED_TEMP_FILE_EXISTS:
                 // NB save game version 0 is "saving game"
-                if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
+                if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)
                     && guiSaveGameVersion != 0 && guiSaveGameVersion < 78)
                 {
                     pMapName = sprintf("%s\\c_%s", MAPS_DIR, zTempName);

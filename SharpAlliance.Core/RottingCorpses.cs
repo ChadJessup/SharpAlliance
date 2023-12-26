@@ -25,11 +25,11 @@ public class RottingCorpses
 
             if (pBaseStructure != null)
             {
-                return (FindCorpseBasedOnStructure(sBaseGridNo, pBaseStructure));
+                return FindCorpseBasedOnStructure(sBaseGridNo, pBaseStructure);
             }
         }
 
-        return (null);
+        return null;
     }
 
     private static ROTTING_CORPSE? FindCorpseBasedOnStructure(int sGridNo, STRUCTURE? pStructure)
@@ -50,10 +50,10 @@ public class RottingCorpses
         if (pLevelNode != null)
         {
             // Get our corpse....
-            pCorpse = (gRottingCorpse[(int)pLevelNode.pAniTile.uiUserData]);
+            pCorpse = gRottingCorpse[(int)pLevelNode.pAniTile.uiUserData];
         }
 
-        return (pCorpse);
+        return pCorpse;
     }
 
     public static void DecayRottingCorpseAIWarnings()
@@ -63,7 +63,7 @@ public class RottingCorpses
 
         for (cnt = 0; cnt < giNumRottingCorpse; cnt++)
         {
-            pCorpse = (gRottingCorpse[cnt]);
+            pCorpse = gRottingCorpse[cnt];
 
             if (pCorpse.fActivated && pCorpse.def.ubAIWarningValue > 0)
             {

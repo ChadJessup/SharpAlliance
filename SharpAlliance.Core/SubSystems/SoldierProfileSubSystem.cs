@@ -56,10 +56,10 @@ public class SoldierProfileSubSystem
         {
             if (pSoldier.bActive && pSoldier.ubProfile == ubProfileID)
             {
-                return (pSoldier);
+                return pSoldier;
             }
         }
-        return (null);
+        return null;
     }
 
     public static int WhichHated(NPCID ubCharNum, MERCPROFILESTRUCT ubHated)
@@ -67,17 +67,17 @@ public class SoldierProfileSubSystem
         MERCPROFILESTRUCT? pProfile;
         int bLoop;
 
-        pProfile = (gMercProfiles[ubCharNum]);
+        pProfile = gMercProfiles[ubCharNum];
 
         for (bLoop = 0; bLoop < 3; bLoop++)
         {
             if (pProfile.bHated[bLoop] == ubHated)
             {
-                return (bLoop);
+                return bLoop;
             }
         }
 
-        return (-1);
+        return -1;
     }
 
     public bool LoadMercProfiles()
@@ -354,7 +354,7 @@ public class SoldierProfileSubSystem
         else
         {
             // I don't think so!
-            return (pSoldier);
+            return pSoldier;
         }
 
         pNewProfile = gMercProfiles[ubDestProfile];
@@ -453,7 +453,7 @@ public class SoldierProfileSubSystem
 
         Interface.DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
 
-        return (pSoldier);
+        return pSoldier;
     }
 
     private void DecideActiveTerrorists()

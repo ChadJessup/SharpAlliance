@@ -18,8 +18,8 @@ public partial class Globals
     // the mouse region around the clock (bigger)
     public const int CLOCK_REGION_START_X = 552;
     public const int CLOCK_REGION_START_Y = 456;
-    public const int CLOCK_REGION_WIDTH = (620 - CLOCK_REGION_START_X);
-    public const int CLOCK_REGION_HEIGHT = (468 - CLOCK_REGION_START_Y);
+    public const int CLOCK_REGION_WIDTH = 620 - CLOCK_REGION_START_X;
+    public const int CLOCK_REGION_HEIGHT = 468 - CLOCK_REGION_START_Y;
     public const int NUM_SEC_IN_DAY = 86400;
     public const int NUM_SEC_IN_HOUR = 3600;
     public const int NUM_SEC_IN_MIN = 60;
@@ -27,8 +27,8 @@ public partial class Globals
     public const int NUM_MIN_IN_DAY = 1440;
     public const int NUM_MIN_IN_HOUR = 60;
 
-    public static uint STARTING_TIME => ((1 * NUM_SEC_IN_HOUR) + (0 * NUM_SEC_IN_MIN) + NUM_SEC_IN_DAY);     // 1am
-    public static int FIRST_ARRIVAL_DELAY => ((6 * NUM_SEC_IN_HOUR) + (0 * NUM_SEC_IN_MIN));        // 7am ( 6hours later)
+    public static uint STARTING_TIME => (1 * NUM_SEC_IN_HOUR) + (0 * NUM_SEC_IN_MIN) + NUM_SEC_IN_DAY;     // 1am
+    public static int FIRST_ARRIVAL_DELAY => (6 * NUM_SEC_IN_HOUR) + (0 * NUM_SEC_IN_MIN);        // 7am ( 6hours later)
 
     public const int SECONDS_PER_COMPRESSION = 1; // 1/2 minute passes every 1 second of real time 
     public const int SECONDS_PER_COMPRESSION_IN_RTCOMBAT = 10;

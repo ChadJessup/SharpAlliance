@@ -52,22 +52,22 @@ public class MapScreenHelicopter
         // what is state of skyrider?
         if (Globals.fSkyRiderAvailable == false)
         {
-            return (false);
+            return false;
         }
 
         // owe any money to skyrider?
         if (Globals.gMercProfiles[NPCID.SKYRIDER].iBalance < 0)
         {
-            return (false);
+            return false;
         }
 
         // Drassen too disloyal to wanna help player?
         if (Facts.CheckFact(FACT.LOYALTY_LOW, NPCID.SKYRIDER))
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 }
 

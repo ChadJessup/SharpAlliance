@@ -11,7 +11,7 @@ public class Morale
 {
     // macros
     public static bool SOLDIER_IN_SECTOR(SOLDIERTYPE pSoldier, int sX, MAP_ROW sY, int bZ)
-        => (!pSoldier.fBetweenSectors && (pSoldier.sSectorX == sX) && (pSoldier.sSectorY == sY) && (pSoldier.bSectorZ == bZ));
+        => !pSoldier.fBetweenSectors && (pSoldier.sSectorX == sX) && (pSoldier.sSectorY == sY) && (pSoldier.bSectorZ == bZ);
 
 
 
@@ -77,9 +77,9 @@ public class Morale
             {
                 MORALE.HOPELESS => (MORALE)(-15),
                 MORALE.WORRIED => (MORALE)(-7),
-                MORALE.CONFIDENT => (MORALE)(2),
-                MORALE.FEARLESS => (MORALE)(5),
-                _ => (0),
+                MORALE.CONFIDENT => (MORALE)2,
+                MORALE.FEARLESS => (MORALE)5,
+                _ => 0,
             };
         }
     }
@@ -96,7 +96,7 @@ public class Morale
             }
             else
             {
-                pSoldier.bTacticalMoraleMod = Math.Min(0, pSoldier.bTacticalMoraleMod + (6 + pSoldier.bTacticalMoraleMod / 10));
+                pSoldier.bTacticalMoraleMod = Math.Min(0, pSoldier.bTacticalMoraleMod + 6 + pSoldier.bTacticalMoraleMod / 10);
             }
         }
     }
@@ -110,7 +110,7 @@ public class Morale
         }
         else
         {
-            pSoldier.bStrategicMoraleMod = Math.Min(0, pSoldier.bStrategicMoraleMod + (6 + pSoldier.bStrategicMoraleMod / 10));
+            pSoldier.bStrategicMoraleMod = Math.Min(0, pSoldier.bStrategicMoraleMod + 6 + pSoldier.bStrategicMoraleMod / 10);
         }
     }
 
@@ -197,7 +197,7 @@ public class Morale
                                 }
 
                                 // alone, no recovery... in fact, if tact morale is high, decay
-                                if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY)))
+                                if (!pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_PERSONALITY))
                                 {
                                     DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.PERSONALITY_TRAIT);
                                     pSoldier.usQuoteSaidFlags |= SOLDIER_QUOTE.SAID_PERSONALITY;
@@ -256,8 +256,8 @@ public class Morale
         iActualMorale = DEFAULT_MORALE + (int)pSoldier.bTeamMoraleMod + (int)pSoldier.bTacticalMoraleMod + (int)pSoldier.bStrategicMoraleMod + (int)(Campaign.CurrentPlayerProgressPercentage() / 5);
 
         // ATE: Modify morale based on drugs....
-        iActualMorale += ((pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] * DRUG_EFFECT_MORALE_MOD) / 100);
-        iActualMorale += ((pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] * ALCOHOL_EFFECT_MORALE_MOD) / 100);
+        iActualMorale += pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] * DRUG_EFFECT_MORALE_MOD / 100;
+        iActualMorale += pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] * ALCOHOL_EFFECT_MORALE_MOD / 100;
 
         iActualMorale = Math.Min(100, iActualMorale);
         iActualMorale = Math.Max(0, iActualMorale);
@@ -274,7 +274,7 @@ public class Morale
         int iMoraleModTotal;
 
         if (!pSoldier.bActive || (pSoldier.bLife < CONSCIOUSNESS) ||
-             (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)) || AM_A_ROBOT(pSoldier) || AM_AN_EPC(pSoldier))
+             pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE) || AM_A_ROBOT(pSoldier) || AM_AN_EPC(pSoldier))
         {
             return;
         }
@@ -292,7 +292,7 @@ public class Morale
             return;
         }
 
-        pProfile = (gMercProfiles[pSoldier.ubProfile]);
+        pProfile = gMercProfiles[pSoldier.ubProfile];
 
         if (bMoraleMod > 0)
         {
@@ -377,7 +377,7 @@ public class Morale
                 if (pSoldier.bMorale < 35)
                 {
                     // Have we said this quote yet?
-                    if (!(pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_LOW_MORAL)))
+                    if (!pSoldier.usQuoteSaidFlags.HasFlag(SOLDIER_QUOTE.SAID_LOW_MORAL))
                     {
                         gfSomeoneSaidMoraleQuote = true;
 
@@ -392,7 +392,7 @@ public class Morale
         // Reset flag!
         if (pSoldier.bMorale > 65)
         {
-            pSoldier.usQuoteSaidFlags &= (~SOLDIER_QUOTE.SAID_LOW_MORAL);
+            pSoldier.usQuoteSaidFlags &= ~SOLDIER_QUOTE.SAID_LOW_MORAL;
         }
 
     }
@@ -576,7 +576,7 @@ public class Morale
                 {
                     if (pTeamSoldier.bActive && pTeamSoldier.ubProfile != NO_PROFILE)
                     {
-                        pProfile = (gMercProfiles[pTeamSoldier.ubProfile]);
+                        pProfile = gMercProfiles[pTeamSoldier.ubProfile];
 
                         if (HATED_MERC(pProfile, gMercProfiles[pSoldier.ubProfile]))
                         {
@@ -744,7 +744,7 @@ public class Morale
                    || pSoldier.bAssignment == Assignments.ASSIGNMENT_POW))
             {
                 // calculate the guy's opinion of the people he is with
-                pProfile = (gMercProfiles[pSoldier.ubProfile]);
+                pProfile = gMercProfiles[pSoldier.ubProfile];
 
                 // if we're moving
 //                if (pSoldier.ubGroupID != 0 && PlayerIDGroupInMotion(pSoldier.ubGroupID))

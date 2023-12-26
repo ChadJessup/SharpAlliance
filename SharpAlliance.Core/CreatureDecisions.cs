@@ -106,7 +106,7 @@ public class CreatureDecisions
 
         if (pSoldier.bMobility == CREATURE.CRAWLER && pSoldier.bActionPoints < pSoldier.bInitialActionPoints)
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         bInGas = AIUtils.InGas(pSoldier, pSoldier.sGridNo);
@@ -116,7 +116,7 @@ public class CreatureDecisions
 
             if (Movement.TrackScent(pSoldier) > 0)
             {
-                return (AI_ACTION.TRACK);
+                return AI_ACTION.TRACK;
             }
 
             ////////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ public class CreatureDecisions
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
-                    return (AI_ACTION.LEAVE_WATER_GAS);
+                    return AI_ACTION.LEAVE_WATER_GAS;
                 }
             }
         }
@@ -175,11 +175,11 @@ public class CreatureDecisions
         ////////////////////////////////////////////////////////////////////////
 
         // if our breath is running a bit low, and we're not in the way or in water
-        if ((pSoldier.bBreath < 75) /*&& !bInWater*/)
+        if (pSoldier.bBreath < 75 /*&& !bInWater*/)
         {
             // take a breather for gods sake!
             pSoldier.usActionData = NOWHERE;
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         ////////////////////////////////////////////////////////////////////////////
@@ -248,7 +248,7 @@ public class CreatureDecisions
 
             // if we're in water with land miles (> 25 tiles) away,
             // OR if we roll under the chance calculated
-            if ( /*bInWater ||*/ (PreRandom(100) < iChance))
+            if ( /*bInWater ||*/ PreRandom(100) < iChance)
             {
 //                pSoldier.usActionData = RandDestWithinRange(pSoldier);
 
@@ -265,7 +265,7 @@ public class CreatureDecisions
                         }
                     }
 
-                    return (AI_ACTION.RANDOM_PATROL);
+                    return AI_ACTION.RANDOM_PATROL;
                 }
             }
 
@@ -396,7 +396,7 @@ public class CreatureDecisions
         // by default, if everything else fails, just stands in place without turning
         pSoldier.usActionData = NOWHERE;
 
-        return (AI_ACTION.NONE);
+        return AI_ACTION.NONE;
     }
 
     public static AI_ACTION CreatureDecideActionYellow(SOLDIERTYPE pSoldier)
@@ -412,7 +412,7 @@ public class CreatureDecisions
 
         if (pSoldier.bMobility == CREATURE.CRAWLER && pSoldier.bActionPoints < pSoldier.bInitialActionPoints)
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         // determine the most important noise heard, and its relative value
@@ -422,7 +422,7 @@ public class CreatureDecisions
         if (sNoiseGridNo == NOWHERE)
         {
             // then we have no business being under YELLOW status any more!
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         ////////////////////////////////////////////////////////////////////////////
@@ -472,11 +472,11 @@ public class CreatureDecisions
         ////////////////////////////////////////////////////////////////////////
 
         // if our breath is running a bit low, and we're not in water
-        if ((pSoldier.bBreath < 25) /*&& !MercInWater(pSoldier) */ )
+        if (pSoldier.bBreath < 25 /*&& !MercInWater(pSoldier) */ )
         {
             // take a breather for gods sake!
             pSoldier.usActionData = NOWHERE;
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         if (pSoldier.bMobility != CREATURE.IMMOBILE && fReachable)
@@ -549,14 +549,14 @@ public class CreatureDecisions
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
-                    return (AI_ACTION.SEEK_NOISE);
+                    return AI_ACTION.SEEK_NOISE;
                 }
             }
             // Okay, we're not following up on the noise... but let's follow any
             // scent trails available
             if (Movement.TrackScent(pSoldier) > 0)
             {
-                return (AI_ACTION.TRACK);
+                return AI_ACTION.TRACK;
             }
         }
 
@@ -568,7 +568,7 @@ public class CreatureDecisions
 
         // by default, if everything else fails, just stands in place without turning
         pSoldier.usActionData = NOWHERE;
-        return (AI_ACTION.NONE);
+        return AI_ACTION.NONE;
     }
 
     public static AI_ACTION CreatureDecideActionRed(SOLDIERTYPE pSoldier, int ubUnconsciousOK)
@@ -589,12 +589,12 @@ public class CreatureDecisions
         if (pSoldier.bActionPoints == 0)
         {
             pSoldier.usActionData = NOWHERE;
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         if (pSoldier.bMobility == CREATURE.CRAWLER && pSoldier.bActionPoints < pSoldier.bInitialActionPoints)
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
 
@@ -618,7 +618,7 @@ public class CreatureDecisions
 
             if ((int)pSoldier.usActionData != NOWHERE)
             {
-                return (AI_ACTION.LEAVE_WATER_GAS);
+                return AI_ACTION.LEAVE_WATER_GAS;
             }
         }
 
@@ -637,14 +637,14 @@ public class CreatureDecisions
                         // hurt for first time!
                         pSoldier.usActionData = CALL.CRIPPLED;
                         pSoldier.bOldLife = pSoldier.bLife;  // don't want to call more than once	
-                        return (AI_ACTION.CREATURE_CALL);
+                        return AI_ACTION.CREATURE_CALL;
                     }
                     else if (pSoldier.bLifeMax / pSoldier.bLife > 2)
                     {
                         // crippled, 1/3 or less health!
                         pSoldier.usActionData = CALL.ATTACKED;
                         pSoldier.bOldLife = pSoldier.bLife;  // don't want to call more than once	
-                        return (AI_ACTION.CREATURE_CALL);
+                        return AI_ACTION.CREATURE_CALL;
                     }
                 }
             }
@@ -659,7 +659,7 @@ public class CreatureDecisions
         if ((pSoldier.bBreath < 25) /*&& !bInWater*/ && pSoldier.bUnderFire == 0)
         {
             pSoldier.usActionData = NOWHERE;
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         ////////////////////////////////////////////////////////////////////////////
@@ -682,7 +682,7 @@ public class CreatureDecisions
                     if ((int)PreRandom(100) < iChance)
                     {
                         pSoldier.usActionData = CALL.SINGLE_PREY;
-                        return (AI_ACTION.CREATURE_CALL);
+                        return AI_ACTION.CREATURE_CALL;
                     }
                 }
             }
@@ -741,7 +741,7 @@ public class CreatureDecisions
                 // if it's possible
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
-                    return (AI_ACTION.SEEK_OPPONENT);
+                    return AI_ACTION.SEEK_OPPONENT;
                 }
             }
 
@@ -761,7 +761,7 @@ public class CreatureDecisions
                     if (sGridNo != -1)
                     {
                         pSoldier.usActionData = sGridNo;
-                        return (AI_ACTION.APPROACH_MERC);
+                        return AI_ACTION.APPROACH_MERC;
                     }
                 }
             }
@@ -771,7 +771,7 @@ public class CreatureDecisions
             ////////////////////////////////////////////////////////////////////////////		
             if (Movement.TrackScent(pSoldier) > 0)
             {
-                return (AI_ACTION.TRACK);
+                return AI_ACTION.TRACK;
             }
 
 
@@ -835,7 +835,7 @@ public class CreatureDecisions
 
         pSoldier.usActionData = NOWHERE;
 
-        return (AI_ACTION.NONE);
+        return AI_ACTION.NONE;
     }
 
 
@@ -860,12 +860,12 @@ public class CreatureDecisions
         if (pSoldier.bActionPoints == 0)
         {
             pSoldier.usActionData = NOWHERE;
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         if (pSoldier.bMobility == CREATURE.CRAWLER && pSoldier.bActionPoints < pSoldier.bInitialActionPoints)
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         ////////////////////////////////////////////////////////////////////////////
@@ -895,7 +895,7 @@ public class CreatureDecisions
                         // crippled, 1/3 or less health!
                         pSoldier.usActionData = CALL.ATTACKED;
                         pSoldier.bOldLife = pSoldier.bLife;  // don't want to call more than once	
-                        return (AI_ACTION.CREATURE_CALL);
+                        return AI_ACTION.CREATURE_CALL;
                     }
                 }
                 else
@@ -921,7 +921,7 @@ public class CreatureDecisions
                             {
                                 pSoldier.usActionData = CALL.SINGLE_PREY;
                             }
-                            return (AI_ACTION.CREATURE_CALL);
+                            return AI_ACTION.CREATURE_CALL;
                         }
                     }
                 }
@@ -953,7 +953,7 @@ public class CreatureDecisions
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
-                    return (AI_ACTION.RUN_AWAY);
+                    return AI_ACTION.RUN_AWAY;
                 }
             }
 
@@ -965,13 +965,13 @@ public class CreatureDecisions
         ////////////////////////////////////////////////////////////////////////////
 
         // if soldier in water/gas has enough APs left to move at least 1 square
-        if ((/*bInWater ||*/ bInGas) && ubCanMove > 0)
+        if (/*bInWater ||*/ bInGas && ubCanMove > 0)
         {
 //            pSoldier.usActionData = FindNearestUngassedLand(pSoldier);
 
             if ((int)pSoldier.usActionData != NOWHERE)
             {
-                return (AI_ACTION.LEAVE_WATER_GAS);
+                return AI_ACTION.LEAVE_WATER_GAS;
             }
         }
 
@@ -1221,7 +1221,7 @@ public class CreatureDecisions
                 BestAttack.iAttackValue = 0;
                 ubBestAttackAction = AI_ACTION.NONE;
             }
-            if (BestStab.ubPossible > 0 && BestStab.iAttackValue > (BestAttack.iAttackValue * 12) / 10)
+            if (BestStab.ubPossible > 0 && BestStab.iAttackValue > BestAttack.iAttackValue * 12 / 10)
             {
                 BestAttack.iAttackValue = BestStab.iAttackValue;
                 ubBestAttackAction = AI_ACTION.KNIFE_MOVE;
@@ -1273,7 +1273,7 @@ public class CreatureDecisions
                     pSoldier.bAimShotLocation = AIM_SHOT_RANDOM;
                 }
 
-                return (ubBestAttackAction);
+                return ubBestAttackAction;
             }
         }
 
@@ -1343,7 +1343,7 @@ public class CreatureDecisions
 
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
-                    return (AI_ACTION.RUN_AWAY);
+                    return AI_ACTION.RUN_AWAY;
                 }
             }
 
@@ -1354,7 +1354,7 @@ public class CreatureDecisions
 
         // by default, if everything else fails, just stand in place and wait
         pSoldier.usActionData = NOWHERE;
-        return (AI_ACTION.NONE);
+        return AI_ACTION.NONE;
     }
 
     public static AI_ACTION CreatureDecideAction(SOLDIERTYPE pSoldier)
@@ -1380,7 +1380,7 @@ public class CreatureDecisions
                 break;
         }
 
-        return (bAction);
+        return bAction;
     }
 
     public static void CreatureDecideAlertStatus(SOLDIERTYPE pSoldier)
@@ -1544,11 +1544,11 @@ public class CreatureDecisions
         if (!gfTurnBasedAI)
         {
             pSoldier.usActionData = 30000;
-            return (AI_ACTION.WAIT);
+            return AI_ACTION.WAIT;
         }
         else
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
     }
 
@@ -1572,16 +1572,16 @@ public class CreatureDecisions
                 if (sFacingDir != pSoldier.bDirection)
                 {
                     pSoldier.usActionData = sFacingDir;
-                    return (AI_ACTION.CHANGE_FACING);
+                    return AI_ACTION.CHANGE_FACING;
                 }
                 else if (!gfTurnBasedAI)
                 {
                     pSoldier.usActionData = 30000;
-                    return (AI_ACTION.WAIT);
+                    return AI_ACTION.WAIT;
                 }
                 else
                 {
-                    return (AI_ACTION.NONE);
+                    return AI_ACTION.NONE;
                 }
             }
             else
@@ -1590,34 +1590,34 @@ public class CreatureDecisions
 //                pSoldier.usActionData = FindGridNoFromSweetSpot(pSoldier, sCorpseGridNo, 4, out ubDirection);
                 if ((int)pSoldier.usActionData != NOWHERE)
                 {
-                    return (AI_ACTION.GET_CLOSER);
+                    return AI_ACTION.GET_CLOSER;
                 }
             }
         }
 
-        return (AI_ACTION.NONE);
+        return AI_ACTION.NONE;
     }
 
     public static AI_ACTION CrowDecideAction(SOLDIERTYPE pSoldier)
     {
         if (pSoldier.usAnimState == AnimationStates.CROW_FLY)
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         switch (pSoldier.bAlertStatus)
         {
             case STATUS.GREEN:
             case STATUS.YELLOW:
-                return (CrowDecideActionGreen(pSoldier));
+                return CrowDecideActionGreen(pSoldier);
 
             case STATUS.RED:
             case STATUS.BLACK:
-                return (CrowDecideActionRed(pSoldier));
+                return CrowDecideActionRed(pSoldier);
 
             default:
                 Debug.Assert(false);
-                return (AI_ACTION.NONE);
+                return AI_ACTION.NONE;
         }
     }
 }

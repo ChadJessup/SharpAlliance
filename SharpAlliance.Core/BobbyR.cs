@@ -108,7 +108,7 @@ public class BobbyR
 
         this.RenderBobbyR();
 
-        return (true);
+        return true;
     }
 
     void ExitBobbyR()
@@ -258,13 +258,13 @@ public class BobbyR
         string filename = Utils.FilenameForBPP("LAPTOP\\BobbyWood.sti");
         this.video.GetVideoObject(filename, out guiWoodBackground);
 
-        return (true);
+        return true;
     }
 
     bool DeleteBobbyRWoodBackground()
     {
         this.video.DeleteVideoObjectFromIndex(guiWoodBackground);
-        return (true);
+        return true;
     }
 
 
@@ -287,7 +287,7 @@ public class BobbyR
             uiPosY += BOBBY_WOOD_BACKGROUND_HEIGHT;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -318,7 +318,7 @@ public class BobbyR
         }
 
 
-        return (true);
+        return true;
     }
 
 
@@ -331,7 +331,7 @@ public class BobbyR
             MouseSubSystem.MSYS_RemoveRegion(Mouse_Region[i]);
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -407,7 +407,7 @@ public class BobbyR
             fReDrawBookMarkInfo = true;
         }
 
-        if (((uiCurTime - uiLastTime) > BOBBYR_UNDERCONSTRUCTION_ANI_DELAY) || (fReDrawScreenFlag))
+        if (((uiCurTime - uiLastTime) > BOBBYR_UNDERCONSTRUCTION_ANI_DELAY) || fReDrawScreenFlag)
         {
             // The undercontsruction graphic 
             hPixHandle = null; // this.video.GetVideoObject(guiUnderConstructionImage);
@@ -459,7 +459,7 @@ public class BobbyR
         for (i = 0; i < Items.MAXITEMS; i++)
         {
             //if Bobby Ray sells this, it can be sold, and it's allowed into this game (some depend on e.g. gun-nut option)
-            if ((storeInventory[(int)i, (int)BOBBY_RAY.NEW] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
+            if ((storeInventory[(int)i, (int)BOBBY_RAY.NEW] != 0) && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
             {
                 LaptopSaveInfo.BobbyRayInventory[usBobbyrIndex].usItemIndex = i;
                 usBobbyrIndex++;
@@ -478,7 +478,7 @@ public class BobbyR
         // also mark the end of the list of valid item entries
         LaptopSaveInfo.BobbyRayInventory[usBobbyrIndex].usItemIndex = BOBBYR_NO_ITEMS;
 
-        return (true);
+        return true;
     }
 
 
@@ -494,9 +494,9 @@ public class BobbyR
         for (i = 0; i < Items.MAXITEMS; i++)
         {
             //if Bobby Ray sells this, it can be sold, and it's allowed into this game (some depend on e.g. gun-nut option)
-            if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
+            if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
             {
-                if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !(Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE)) && ItemSubSystem.ItemIsLegal(i))
+                if ((storeInventory[(int)i, (int)BOBBY_RAY.USED] != 0) && !Item[i].fFlags.HasFlag(ItemAttributes.ITEM_NOT_BUYABLE) && ItemSubSystem.ItemIsLegal(i))
                 {
                     // in case his store inventory list is wrong, make sure this category of item can be sold used
                     if (ArmsDealerInit.CanDealerItemBeSoldUsed(i))
@@ -519,7 +519,7 @@ public class BobbyR
         // also mark the end of the list of valid item entries
         LaptopSaveInfo.BobbyRayUsedInventory[usBobbyrIndex].usItemIndex = BOBBYR_NO_ITEMS;
 
-        return (true);
+        return true;
     }
 
     void DailyUpdateOfBobbyRaysNewInventory()
@@ -630,7 +630,7 @@ public class BobbyR
                         }
                         else
                         {
-                            this.OrderBobbyRItem((usItemIndex + BOBBY_R_USED_PURCHASE_OFFSET));
+                            this.OrderBobbyRItem(usItemIndex + BOBBY_R_USED_PURCHASE_OFFSET);
                         }
                     }
                 }
@@ -671,7 +671,7 @@ public class BobbyR
         }
 
 
-        return (ubItemsOrdered);
+        return ubItemsOrdered;
     }
 
 
@@ -734,12 +734,12 @@ public class BobbyR
             //if we have some of this item in stock
             if (pInventoryArray[i].usItemIndex == usItemIndex)
             {
-                return (i);
+                return i;
             }
         }
 
         // not found!
-        return (-1);
+        return -1;
     }
 
 

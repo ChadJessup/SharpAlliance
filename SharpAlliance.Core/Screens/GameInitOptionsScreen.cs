@@ -9,7 +9,7 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
-using Veldrid;
+using SixLabors.ImageSharp;
 using static SharpAlliance.Core.EnglishText;
 using static SharpAlliance.Core.Globals;
 namespace SharpAlliance.Core.Screens;
@@ -294,16 +294,15 @@ public class GameInitOptionsScreen : IScreen
         this.HandleGIOScreen();
 
         // render buttons marked dirty	
-        // ButtonSubSystem.MarkButtonsDirty();
-        //ButtonSubSystem.RenderButtons();
+        ButtonSubSystem.MarkButtonsDirty();
+        ButtonSubSystem.RenderButtons();
 
         // render help
-        //	RenderFastHelp( );
-        //	RenderButtonsFastHelp( );
+        //RenderFastHelp( );
+        GuiManager.RenderButtonsFastHelp( );
 
-
-        // ExecuteBaseDirtyRectQueue();
-        // EndFrameBufferRender();
+        this.video.ExecuteBaseDirtyRectQueue();
+        this.video.EndFrameBufferRender();
 
         if (this.fade.HandleFadeOutCallback())
         {
@@ -501,7 +500,7 @@ public class GameInitOptionsScreen : IScreen
             }
         }
 
-        return (0);
+        return 0;
     }
 
     public bool GetCurrentGameStyleButtonSetting()
@@ -535,12 +534,11 @@ public class GameInitOptionsScreen : IScreen
         int usPosY;
 
         //Get the main background screen graphic and blt it
-       // HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
-        //BltVideoObject(FRAME_BUFFER, hPixHandle, 0, 0, 0, VO_BLT.SRCTRANSPARENCY, null);
+       HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
+       this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, background, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
         //video.BltVideoObject(background, 0, 0, 0, 0);
         //Shade the background
-        //video.ShadowVideoSurfaceRect(FRAME_BUFFER, 48, 55, 592, 378); //358
-
+        this.video.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, new Rectangle(48, 55, 592, 378)); //358
 
         //Display the title
         FontSubSystem.DrawTextToScreen(

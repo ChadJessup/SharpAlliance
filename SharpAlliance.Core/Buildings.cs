@@ -14,7 +14,7 @@ public class Buildings
     {
         if (gubNumberOfBuildings + 1 >= MAX_BUILDINGS)
         {
-            return (null);
+            return null;
         }
         // increment # of buildings
         gubNumberOfBuildings++;
@@ -22,7 +22,7 @@ public class Buildings
         gBuildings[gubNumberOfBuildings].ubNumClimbSpots = 0;
         pubBuilding = gubNumberOfBuildings;
         // return pointer (have to subtract 1 since we just added 1
-        return ((gBuildings[gubNumberOfBuildings]));
+        return gBuildings[gubNumberOfBuildings];
     }
 
     BUILDING? GenerateBuilding(int sDesiredSpot)
@@ -43,7 +43,7 @@ public class Buildings
         pBuilding = this.CreateNewBuilding(ubBuildingID);
         if (pBuilding is null)
         {
-            return (null);
+            return null;
         }
 
         // set up fake soldier for location testing
@@ -66,13 +66,13 @@ public class Buildings
         sTempGridNo = sDesiredSpot;
         // using diagonal directions to hopefully prevent picking a 
         // spot that 
-        while ((gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+        while (gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
         {
             sNextTempGridNo = IsometricUtils.NewGridNo(sTempGridNo, IsometricUtils.DirectionInc(bDirection));
             if (sTempGridNo == sNextTempGridNo)
             {
                 // hit edge of map!??!
-                return (null);
+                return null;
             }
             else
             {
@@ -105,7 +105,7 @@ public class Buildings
             // or is starting point, turn!
             sRightGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(gTwoCDirection[bDirection]));
             sTempGridNo = sRightGridNo;
-            if (((!(gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)) && !(gpWorldLevelData[sTempGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED))) || (sTempGridNo == sStartGridNo)) && (sCurrGridNo != sStartGridNo))
+            if (((!gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE) && !gpWorldLevelData[sTempGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED)) || (sTempGridNo == sStartGridNo)) && (sCurrGridNo != sStartGridNo))
             {
                 bDirection = gTwoCDirection[bDirection];
                 // try in that direction
@@ -124,7 +124,7 @@ public class Buildings
                 for (uiLoop = 0; uiLoop < 3; uiLoop++)
                 {
                     sTempGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(bTempDirection));
-                    if (!(gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)) && !(gpWorldLevelData[sTempGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED)))
+                    if (!gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE) && !gpWorldLevelData[sTempGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED))
                     {
                         // this is the way to go!
                         fFoundDir = true;
@@ -140,7 +140,7 @@ public class Buildings
                     for (uiLoop = 0; uiLoop < 3; uiLoop++)
                     {
                         sTempGridNo = IsometricUtils.NewGridNo(sCurrGridNo, IsometricUtils.DirectionInc(bTempDirection));
-                        if (!(gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+                        if (!gpWorldLevelData[sTempGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
                         {
                             // this is the way to go!
                             fFoundDir = true;
@@ -151,7 +151,7 @@ public class Buildings
                     if (!fFoundDir)
                     {
                         // WTF is going on?
-                        return (null);
+                        return null;
                     }
                 }
                 bDirection = bTempDirection;
@@ -170,7 +170,7 @@ public class Buildings
                 break;
             }
 
-            if (!(gpWorldLevelData[sCurrGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED)))
+            if (!gpWorldLevelData[sCurrGridNo].ubExtFlags[0].HasFlag(MAPELEMENTFLAGS.EXT_ROOFCODE_VISITED))
             {
                 gpWorldLevelData[sCurrGridNo].ubExtFlags[0] |= MAPELEMENTFLAGS_EXT.ROOFCODE_VISITED;
 
@@ -193,16 +193,16 @@ public class Buildings
                         bDesiredOrientation = WallOrientation.OUTSIDE_TOP_LEFT;
                         break;
                     case WorldDirections.SOUTH:
-                        sWallGridNo = (sCurrGridNo + IsometricUtils.DirectionInc(gTwoCDirection[bDirection]));
+                        sWallGridNo = sCurrGridNo + IsometricUtils.DirectionInc(gTwoCDirection[bDirection]);
                         bDesiredOrientation = WallOrientation.OUTSIDE_TOP_RIGHT;
                         break;
                     case WorldDirections.WEST:
-                        sWallGridNo = (sCurrGridNo + IsometricUtils.DirectionInc(gTwoCDirection[bDirection]));
+                        sWallGridNo = sCurrGridNo + IsometricUtils.DirectionInc(gTwoCDirection[bDirection]);
                         bDesiredOrientation = WallOrientation.OUTSIDE_TOP_LEFT;
                         break;
                     default:
                         // what the heck?
-                        return (null);
+                        return null;
                 }
 
                 if (bDesiredOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
@@ -236,7 +236,7 @@ public class Buildings
                             if (pBuilding.ubNumClimbSpots == MAX_CLIMBSPOTS_PER_BUILDING)
                             {
                                 // gotta stop!
-                                return (pBuilding);
+                                return pBuilding;
                             }
 
                             // if location is added as a spot, reset uiChanceIn
@@ -303,7 +303,7 @@ public class Buildings
         #endif
         */
 
-        return (pBuilding);
+        return pBuilding;
     }
 
     private static BUILDING? FindBuilding(int sGridNo)
@@ -313,14 +313,14 @@ public class Buildings
 
         if (sGridNo <= 0 || sGridNo > WORLD_MAX)
         {
-            return (null);
+            return null;
         }
 
         // id 0 indicates no building
         ubBuildingID = gubBuildingInfo[sGridNo];
         if (ubBuildingID == NO_BUILDING)
         {
-            return (null);
+            return null;
             /*
             // need extra checks to see if is valid spot... 
             // must have valid room information and be a flat-roofed
@@ -337,19 +337,19 @@ public class Buildings
         }
         else if (ubBuildingID > gubNumberOfBuildings) // huh?
         {
-            return (null);
+            return null;
         }
 
-        return ((gBuildings[ubBuildingID]));
+        return gBuildings[ubBuildingID];
     }
 
     public static bool InBuilding(int sGridNo)
     {
         if (FindBuilding(sGridNo) == null)
         {
-            return (false);
+            return false;
         }
-        return (true);
+        return true;
     }
 
 
@@ -369,8 +369,8 @@ public class Buildings
         // whole map
         for (uiLoop = 0; uiLoop < WORLD_MAX; uiLoop++)
         {
-            gpWorldLevelData[uiLoop].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
-            gpWorldLevelData[uiLoop].ubExtFlags[0] &= ~(MAPELEMENTFLAGS_EXT.ROOFCODE_VISITED);
+            gpWorldLevelData[uiLoop].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
+            gpWorldLevelData[uiLoop].ubExtFlags[0] &= ~MAPELEMENTFLAGS_EXT.ROOFCODE_VISITED;
         }
 
         // search through world
@@ -397,7 +397,7 @@ public class Buildings
         pBuilding = FindBuilding(sDesiredGridNo);
         if (pBuilding is null)
         {
-            return (NOWHERE);
+            return NOWHERE;
         }
 
         ubNumClimbSpots = pBuilding.ubNumClimbSpots;
@@ -425,20 +425,20 @@ public class Buildings
             }
         }
 
-        return (sClosestSpot);
+        return sClosestSpot;
     }
 
     public static bool SameBuilding(int sGridNo1, int sGridNo2)
     {
         if (gubBuildingInfo[sGridNo1] == NO_BUILDING)
         {
-            return (false);
+            return false;
         }
         if (gubBuildingInfo[sGridNo2] == NO_BUILDING)
         {
-            return (false);
+            return false;
         }
-        return ((bool)(gubBuildingInfo[sGridNo1] == gubBuildingInfo[sGridNo2]));
+        return (bool)(gubBuildingInfo[sGridNo1] == gubBuildingInfo[sGridNo2]);
     }
 }
 

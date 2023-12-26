@@ -77,65 +77,65 @@ public class Meanwhile
         switch (ubMeanwhileID)
         {
             case Meanwhiles.END_OF_PLAYERS_FIRST_BATTLE:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.END_OF_PLAYERS_FIRST_BATTLE_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.END_OF_PLAYERS_FIRST_BATTLE_FLAG;
                 break;
             case Meanwhiles.DRASSEN_LIBERATED:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.DRASSEN_LIBERATED_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.DRASSEN_LIBERATED_FLAG;
                 break;
             case Meanwhiles.CAMBRIA_LIBERATED:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.CAMBRIA_LIBERATED_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.CAMBRIA_LIBERATED_FLAG;
                 break;
             case Meanwhiles.ALMA_LIBERATED:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.ALMA_LIBERATED_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.ALMA_LIBERATED_FLAG;
                 break;
             case Meanwhiles.GRUMM_LIBERATED:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.GRUMM_LIBERATED_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.GRUMM_LIBERATED_FLAG;
                 break;
             case Meanwhiles.CHITZENA_LIBERATED:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.CHITZENA_LIBERATED_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.CHITZENA_LIBERATED_FLAG;
                 break;
             case Meanwhiles.BALIME_LIBERATED:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.BALIME_LIBERATED_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.BALIME_LIBERATED_FLAG;
                 break;
             case Meanwhiles.NW_SAM:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.NW_SAM_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.NW_SAM_FLAG;
                 break;
             case Meanwhiles.NE_SAM:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.NE_SAM_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.NE_SAM_FLAG;
                 break;
             case Meanwhiles.CENTRAL_SAM:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.CENTRAL_SAM_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.CENTRAL_SAM_FLAG;
                 break;
             case Meanwhiles.FLOWERS:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.FLOWERS_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.FLOWERS_FLAG;
                 break;
             case Meanwhiles.LOST_TOWN:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.LOST_TOWN_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.LOST_TOWN_FLAG;
                 break;
             case Meanwhiles.CREATURES:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.CREATURES_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.CREATURES_FLAG;
                 break;
             case Meanwhiles.KILL_CHOPPER:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.KILL_CHOPPER_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.KILL_CHOPPER_FLAG;
                 break;
             case Meanwhiles.AWOL_SCIENTIST:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.AWOL_SCIENTIST_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.AWOL_SCIENTIST_FLAG;
                 break;
             case Meanwhiles.OUTSKIRTS_MEDUNA:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.OUTSKIRTS_MEDUNA_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.OUTSKIRTS_MEDUNA_FLAG;
                 break;
             case Meanwhiles.INTERROGATION:
-                uiTrue = (uiMeanWhileFlags & MEANWHILEFLAGS.INTERROGATION_FLAG);
+                uiTrue = uiMeanWhileFlags & MEANWHILEFLAGS.INTERROGATION_FLAG;
                 break;
         }
 
         if (uiTrue > 0)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -146,27 +146,27 @@ public class Meanwhile
 
         for (uiCount = 0; uiCount < guiNumNPCSaves; uiCount++)
         {
-            if ((gNPCSaveData[uiCount].ubProfile == NO_PROFILE))
+            if (gNPCSaveData[uiCount].ubProfile == NO_PROFILE)
             {
-                return ((int)uiCount);
+                return (int)uiCount;
             }
         }
 
         if (guiNumNPCSaves < MAX_MEANWHILE_PROFILES)
         {
-            return ((int)guiNumNPCSaves++);
+            return (int)guiNumNPCSaves++;
         }
 
-        return (-1);
+        return -1;
     }
 
     void RecountNPCSaves()
     {
         int uiCount;
 
-        for (uiCount = guiNumNPCSaves - 1; (uiCount >= 0); uiCount--)
+        for (uiCount = guiNumNPCSaves - 1; uiCount >= 0; uiCount--)
         {
-            if ((gNPCSaveData[uiCount].ubProfile != NO_PROFILE))
+            if (gNPCSaveData[uiCount].ubProfile != NO_PROFILE)
             {
                 guiNumNPCSaves = (int)(uiCount + 1);
                 break;
@@ -224,7 +224,7 @@ public class Meanwhile
             gNPCSaveData[cnt].ubProfile = NO_PROFILE;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -541,7 +541,7 @@ public class Meanwhile
             curr = curr.next;
         }
 
-        return (false);
+        return false;
     }
 
     void ProcessImplicationsOfMeanwhile()
@@ -637,7 +637,7 @@ public class Meanwhile
         gfInMeanwhile = false;
         giNPCReferenceCount = 0;
 
-        gTacticalStatus.uiFlags &= (~TacticalEngineStatus.ENGAGED_IN_CONV);
+        gTacticalStatus.uiFlags &= ~TacticalEngineStatus.ENGAGED_IN_CONV;
 
         GameClock.UnLockPauseState();
         GameClock.UnPauseGame();
@@ -647,7 +647,7 @@ public class Meanwhile
 
         if (gCurrentMeanwhileDef.ubMeanwhileID != Meanwhiles.INTERROGATION)
         {
-            gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_MERCS);
+            gTacticalStatus.uiFlags &= ~TacticalEngineStatus.SHOW_ALL_MERCS;
 
             // OK, load old sector again.....
 //            FadeOutNextFrame();
@@ -783,12 +783,12 @@ public class Meanwhile
 
     bool AreReloadingFromMeanwhile()
     {
-        return (gfReloadingScreenFromMeanwhile);
+        return gfReloadingScreenFromMeanwhile;
     }
 
     public static Meanwhiles GetMeanwhileID()
     {
-        return (gCurrentMeanwhileDef.ubMeanwhileID);
+        return gCurrentMeanwhileDef.ubMeanwhileID;
     }
 
 

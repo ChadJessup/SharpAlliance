@@ -37,7 +37,7 @@ public class WorldManager
 
         if (usStructIndex < TileIndexes.FIRSTOSTRUCT1 || usStructIndex >= TileIndexes.FIRSTSHADOW1)
         {
-            return (null);
+            return null;
         }
 
         usShadowIndex = usStructIndex - TileIndexes.FIRSTOSTRUCT1 + TileIndexes.FIRSTSHADOW1;
@@ -51,7 +51,7 @@ public class WorldManager
             }
             pLevelNode = pLevelNode.pNext;
         }
-        return (pLevelNode);
+        return pLevelNode;
 
     }
 
@@ -59,21 +59,21 @@ public class WorldManager
     {
         MAP_ELEMENT pMapElement;
 
-        pMapElement = (gpWorldLevelData[sGridNo]);
+        pMapElement = gpWorldLevelData[sGridNo];
         if (pMapElement.ubTerrainID == TerrainTypeDefines.DEEP_WATER)
         {
             // check for a bridge!  otherwise...
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
     public static bool WaterTooDeepForAttacks(int sGridNo)
     {
-        return (DeepWater(sGridNo));
+        return DeepWater(sGridNo);
     }
 
 
@@ -143,7 +143,7 @@ public class WorldManager
         //Add the object to the map temp file, if we have to
         SaveLoadMap.AddObjectToMapTempFile(iMapIndex, usIndex);
 
-        return (true);
+        return true;
     }
 
     public static bool TypeRangeExistsInObjectLayer(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType, out TileIndexes pusObjectIndex)
@@ -168,7 +168,7 @@ public class WorldManager
                 if (fTileType >= fStartType && fTileType <= fEndType)
                 {
                     pusObjectIndex = pOldObject.usIndex;
-                    return (true);
+                    return true;
                 }
 
             }
@@ -178,7 +178,7 @@ public class WorldManager
         // Could not find it, return false
 
         pusObjectIndex = TileIndexes.NO_TILE;
-        return (false);
+        return false;
     }
 
     public static bool AddStructToHead(int iMapIndex, TileIndexes usIndex)
@@ -243,7 +243,7 @@ public class WorldManager
         //CheckForAndAddTileCacheStructInfo( pNextStruct, (INT16)iMapIndex, usIndex );
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
-        return (true);
+        return true;
     }
 
     public static bool AddShadowToHead(int iMapIndex, TileIndexes usIndex)
@@ -261,7 +261,7 @@ public class WorldManager
         gpWorldLevelData[iMapIndex].pShadowHead = pNextShadow;
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.SHADOWS);
-        return (true);
+        return true;
     }
 
 
@@ -294,7 +294,7 @@ public class WorldManager
                 MemFree(pShadow);
                 guiLevelNodes--;
 
-                return (true);
+                return true;
             }
 
             pOldShadow = pShadow;
@@ -304,7 +304,7 @@ public class WorldManager
 
         // Could not find it, return false
 
-        return (false);
+        return false;
     }
 
     private static void SetWorldFlagsFromNewNode(int iMapIndex, TileIndexes usIndex)
@@ -372,11 +372,11 @@ public class WorldManager
                 // Same, if replace, replace here
                 if (fReplace)
                 {
-                    return (false);//ReplaceStructIndex(iMapIndex, pStruct.usIndex, usIndex));
+                    return false;//ReplaceStructIndex(iMapIndex, pStruct.usIndex, usIndex));
                 }
                 else
                 {
-                    return (false);
+                    return false;
                 }
             }
 
@@ -408,7 +408,7 @@ public class WorldManager
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
         // Could not find it, return false
-        return (true);
+        return true;
     }
 
     public static bool InsertStructIndex(int iMapIndex, TileIndexes usIndex, int ubLevel)
@@ -422,7 +422,7 @@ public class WorldManager
         // If we want to insert at head;
         if (ubLevel == 0)
         {
-            return (AddStructToHead(iMapIndex, usIndex));
+            return AddStructToHead(iMapIndex, usIndex);
         }
 
 
@@ -450,7 +450,7 @@ public class WorldManager
         {
             MemFree(pNextStruct);
             guiLevelNodes--;
-            return (false);
+            return false;
         }
 
         if (usIndex < NUMBEROFTILES)
@@ -460,7 +460,7 @@ public class WorldManager
                 {
                     MemFree(pNextStruct);
                     guiLevelNodes--;
-                    return (false);
+                    return false;
                 }
             }
         }
@@ -472,7 +472,7 @@ public class WorldManager
         //CheckForAndAddTileCacheStructInfo( pNextStruct, (INT16)iMapIndex, usIndex );
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
-        return (true);
+        return true;
     }
 
     public static bool RemoveStructFromLevelNode(int iMapIndex, LEVELNODE? pNode)
@@ -521,7 +521,7 @@ public class WorldManager
                 MemFree(pStruct);
                 guiLevelNodes--;
 
-                return (true);
+                return true;
             }
 
             pOldStruct = pStruct;
@@ -532,7 +532,7 @@ public class WorldManager
         // Could not find it, return false
         //        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
 
-        return (false);
+        return false;
 
     }
 
@@ -627,7 +627,7 @@ public class WorldManager
                 MemFree(pStruct);
                 guiLevelNodes--;
 
-                return (true);
+                return true;
             }
 
             pOldStruct = pStruct;
@@ -638,12 +638,12 @@ public class WorldManager
         // Could not find it, return false
         //        RemoveWorldFlagsFromNewNode(iMapIndex, usIndex);
 
-        return (false);
+        return false;
     }
 
     public static TerrainTypeDefines GetTerrainType(int sGridNo)
     {
-        return (gpWorldLevelData[sGridNo].ubTerrainID);
+        return gpWorldLevelData[sGridNo].ubTerrainID;
         /*
             LEVELNODE	*pNode;
 
@@ -749,7 +749,7 @@ public class WorldManager
         //CheckForAndAddTileCacheStructInfo( pNextObject, (int)iMapIndex, usIndex );
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.OBJECTS);
-        return (pNextObject);
+        return pNextObject;
 
     }
 
@@ -777,7 +777,7 @@ public class WorldManager
                 {
                     // MemFree(pOnRoof);
                     Globals.guiLevelNodes--;
-                    return (null);
+                    return null;
                 }
             }
             pOnRoof.usIndex = usIndex;
@@ -785,7 +785,7 @@ public class WorldManager
             Globals.gpWorldLevelData[iMapIndex].pOnRoofHead = pOnRoof;
 
             RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
-            return (pOnRoof);
+            return pOnRoof;
 
         }
         else
@@ -806,7 +806,7 @@ public class WorldManager
                         {
                             // MemFree(pNextOnRoof);
                             Globals.guiLevelNodes--;
-                            return (null);
+                            return null;
                         }
                     }
 
@@ -824,7 +824,7 @@ public class WorldManager
         }
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.ONROOF);
-        return (pNextOnRoof);
+        return pNextOnRoof;
     }
 
     public static bool RemoveAllTopmostsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
@@ -888,7 +888,7 @@ public class WorldManager
                 pOnRoof = null;
                 Globals.guiLevelNodes--;
 
-                return (true);
+                return true;
             }
 
             pOldOnRoof = pOnRoof;
@@ -898,7 +898,7 @@ public class WorldManager
 
         // Could not find it, return false
 
-        return (false);
+        return false;
     }
 
     public static bool RemoveAllObjectsOfTypeRange(int iMapIndex, TileTypeDefines fStartType, TileTypeDefines fEndType)
@@ -977,7 +977,7 @@ public class WorldManager
         }
 
         // Could not find it, return false
-        return (false);
+        return false;
     }
 
     public static int WhoIsThere2(int sGridNo, int bLevel)
@@ -986,7 +986,7 @@ public class WorldManager
 
         if (!IsometricUtils.GridNoOnVisibleWorldTile(sGridNo))
         {
-            return (Globals.NOBODY);
+            return Globals.NOBODY;
         }
 
         if (Globals.gpWorldLevelData[sGridNo].pStructureHead != null)
@@ -997,15 +997,15 @@ public class WorldManager
             while (pStructure is not null)
             {
                 // person must either have their pSoldier.sGridNo here or be non-passable
-                if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PERSON))
-                    && (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
+                if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PERSON)
+                    && (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)
                     || Globals.MercPtrs[pStructure.usStructureID].sGridNo == sGridNo))
                 {
                     if ((bLevel == 0 && pStructure.sCubeOffset == 0) || (bLevel > 0 && pStructure.sCubeOffset > 0))
                     {
                         // found a person, on the right level!
                         // structure ID and merc ID are identical for merc structures
-                        return (pStructure.usStructureID);
+                        return pStructure.usStructureID;
                     }
                 }
 
@@ -1013,7 +1013,7 @@ public class WorldManager
             }
         }
 
-        return (Globals.NOBODY);
+        return Globals.NOBODY;
     }
 
     public static bool RemoveTopmost(int iMapIndex, TileIndexes usIndex)
@@ -1045,7 +1045,7 @@ public class WorldManager
                 //MemFree(pTopmost);
                 Globals.guiLevelNodes--;
 
-                return (true);
+                return true;
             }
 
             pOldTopmost = pTopmost;
@@ -1053,7 +1053,7 @@ public class WorldManager
         }
 
         // Could not find it, return false
-        return (false);
+        return false;
     }
 
     public bool AddTopmostToHead(int iMapIndex, TileIndexes usIndex)
@@ -1075,7 +1075,7 @@ public class WorldManager
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
 
-        return (true);
+        return true;
     }
 
     public void AddUIElem(int iMapIndex, TileIndexes usIndex, int sRelativeX, int sRelativeY, out LEVELNODE ppNewNode)
@@ -1096,7 +1096,7 @@ public class WorldManager
 
         ppNewNode = pTopmost;
 
-        return (true);
+        return true;
     }
 
     public void RemoveUIElem(int iMapIndex, TileIndexes usIndex)
@@ -1145,7 +1145,7 @@ public class WorldManager
         }
 
         RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.TOPMOST);
-        return (pNextTopmost);
+        return pNextTopmost;
     }
 
     public bool AddOnRoofToHead(int iMapIndex, TileIndexes usIndex)
@@ -1166,7 +1166,7 @@ public class WorldManager
                 {
                     // MemFree(pNextOnRoof);
                     Globals.guiLevelNodes--;
-                    return (false);
+                    return false;
                 }
             }
         }
@@ -1196,7 +1196,7 @@ public class WorldManager
 
         Globals.guiLevelNodes++;
 
-        return (true);
+        return true;
     }
 
     public bool IsRoofVisible(int sMapPos)
@@ -1209,9 +1209,9 @@ public class WorldManager
 
             if (pStructure != null)
             {
-                if (!(Globals.gpWorldLevelData[sMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)))
+                if (!Globals.gpWorldLevelData[sMapPos].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED))
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
@@ -1221,12 +1221,12 @@ public class WorldManager
             {
                 //if ( !( gpWorldLevelData[ sMapPos ].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED )) )
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     internal void SetTreeTopStateForMap()
@@ -1239,7 +1239,7 @@ public class WorldManager
         else
         {
             WorldShowTrees();
-            gTacticalStatus.uiFlags &= (~TacticalEngineStatus.NOHIDE_REDUNDENCY);
+            gTacticalStatus.uiFlags &= ~TacticalEngineStatus.NOHIDE_REDUNDENCY;
         }
 
         // FOR THE NEXT RENDER LOOP, RE-EVALUATE REDUNDENT TILES

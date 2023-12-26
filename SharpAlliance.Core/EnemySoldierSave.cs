@@ -91,7 +91,7 @@ public class EnemySoldierSave
 
                     if (!fValidateOnly)
                     {
-                        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+                        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
                         {
                             if (curr.pDetailedPlacement is null)
                             { //need to upgrade the placement to detailed placement
@@ -177,14 +177,14 @@ public class EnemySoldierSave
             {
                 //No need to save anything, so return successfully
                 RemoveCivilianTempFile(sSectorX, sSectorY, bSectorZ);
-                return (true);
+                return true;
             }
 
         }
 
         if (fValidateOnly)
         {
-            return (true);
+            return true;
         }
 
         //STEP TWO:  Set up the temp file to write to.

@@ -2,6 +2,7 @@
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core.Managers;
 
@@ -14,7 +15,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
     //        public const int DEFAULT_NUM_REGIONS = 5;
 
     //        private readonly ILogger<VideoSurfaceManager> logger;
-            private static IVideoManager video;
+    private static IVideoManager video;
 
     //        private VSURFACE_NODE? gpVSurfaceHead = null;
     //        private VSURFACE_NODE? gpVSurfaceTail = null;
@@ -364,9 +365,118 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         return true;
     }
 
-    internal static void ShadowVideoSurfaceRect(SurfaceType uiDestBuff, int sX, int sY, int v1, int v2)
+    internal static bool ShadowVideoSurfaceRect(SurfaceType uiDestBuff, int sX, int sY, int v1, int v2)
     {
-        throw new NotImplementedException();
+        return InternalShadowVideoSurfaceRect(uiDestBuff, sX, sY, v1, v2, false);
+    }
+
+    private static bool InternalShadowVideoSurfaceRect(
+        SurfaceType uiDestVSurface,
+        int X1,
+        int Y1,
+        int X2,
+        int Y2,
+        bool fLowPercentShadeTable)
+    {
+        Image<Rgba32> pBuffer;
+        int uiPitch = 0;
+        HVSURFACE hVSurface;
+
+
+        // CLIP IT!
+        // FIRST GET SURFACE
+
+        //
+        // Get Video Surface
+        //
+        video.GetVideoSurface(out hVSurface, uiDestVSurface);
+
+        if (X1 < 0)
+        {
+            X1 = 0;
+        }
+
+        if (X2 < 0)
+        {
+            return false;
+        }
+
+        if (Y2 < 0)
+        {
+            return false;
+        }
+
+        if (Y1 < 0)
+        {
+            Y1 = 0;
+        }
+
+        if (X2 >= hVSurface.usWidth)
+        {
+            X2 = hVSurface.usWidth - 1;
+        }
+
+        if (Y2 >= hVSurface.usHeight)
+        {
+            Y2 = hVSurface.usHeight - 1;
+        }
+
+        if (X1 >= hVSurface.usWidth)
+        {
+            return false;
+        }
+
+        if (Y1 >= hVSurface.usHeight)
+        {
+            return false;
+        }
+
+        if ((X2 - X1) <= 0)
+        {
+            return false;
+        }
+
+        if ((Y2 - Y1) <= 0)
+        {
+            return false;
+        }
+
+        Rectangle area = new()
+        {
+            Y = Y1,
+            Height = Y2 - Y1,
+            X = X1,
+            Width = X2 - X1,
+        };
+
+        // Lock video surface
+        pBuffer = video.Surfaces[uiDestVSurface];
+
+        if (pBuffer == null)
+        {
+            return false;
+        }
+
+        if (!fLowPercentShadeTable)
+        {
+            // Now we have the video object and surface, call the shadow function
+            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, uiPitch, area))
+            {
+                // Blit has failed if false returned
+                return false;
+            }
+        }
+        else
+        {
+            // Now we have the video object and surface, call the shadow function
+            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, uiPitch, area))
+            {
+                // Blit has failed if false returned
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 

@@ -26,7 +26,7 @@ public class AnimationControl
 
         }
 
-        return (usAnimSurface);
+        return usAnimSurface;
     }
 
     public static bool SetSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
@@ -44,7 +44,7 @@ public class AnimationControl
         usAnimSurface = LoadSoldierAnimationSurface(pSoldier, usAnimState);
 
         // Add structure info!
-        if (pSoldier.pLevelNode != null && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PAUSEANIMOVE)))
+        if (pSoldier.pLevelNode != null && !pSoldier.uiStatusFlags.HasFlag(SOLDIER.PAUSEANIMOVE))
         {
 //            AddMercStructureInfoFromAnimSurface(pSoldier.sGridNo, pSoldier, usAnimSurface, usAnimState);
         }
@@ -54,10 +54,10 @@ public class AnimationControl
 
         if (usAnimSurface == INVALID_ANIMATION_SURFACE)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     public static AnimationSurfaceTypes DetermineSoldierAnimationSurface(SOLDIERTYPE pSoldier, AnimationStates usAnimState)
@@ -87,13 +87,13 @@ public class AnimationControl
 //            Messages.ScreenMsg(FontColor.FONT_MCOLOR_RED, MSG.BETAVERSION, "Invalid Animation File for Body %d, animation %S.", pSoldier.ubBodyType, gAnimControl[usAnimState].zAnimStr);
             // Set index to FOUND_INVALID_ANIMATION
 //            gubAnimSurfaceIndex[pSoldier.ubBodyType][usAnimState] = AnimationStates.FOUND_INVALID_ANIMATION;
-            return (AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE);
+            return AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE;
         }
 
         
         if (usAnimSurface == AnimationSurfaceTypes.FOUND_INVALID_ANIMATION)
         {
-            return (AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE);
+            return AnimationSurfaceTypes.INVALID_ANIMATION_SURFACE;
         }
 
 
@@ -107,7 +107,7 @@ public class AnimationControl
 
             // Assume a target gridno is here.... get direction...
             // ATE: use +2 in gridno because here head is far from body
-            bDir = SoldierControl.GetDirectionToGridNoFromGridNo((pSoldier.sGridNo + 2), pSoldier.sTargetGridNo);
+            bDir = SoldierControl.GetDirectionToGridNoFromGridNo(pSoldier.sGridNo + 2, pSoldier.sTargetGridNo);
 
             return 0;//(gusQueenMonsterSpitAnimPerDir[bDir]);
         }
@@ -116,7 +116,7 @@ public class AnimationControl
         // IF we are not a merc, return
         if (pSoldier.ubBodyType > SoldierBodyTypes.REGFEMALE)
         {
-            return (usAnimSurface);
+            return usAnimSurface;
         }
 
         // SWITCH TO DIFFERENT AIM ANIMATION FOR BIG GUY!
@@ -175,7 +175,7 @@ public class AnimationControl
             {
                 if ((Item[usItem].usItemClass == IC.GUN || Item[usItem].usItemClass == IC.LAUNCHER) && usItem != Items.ROCKET_LAUNCHER)
                 {
-                    if ((Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)))
+                    if (Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED))
                     {
                         ubWaterHandIndex = 0;
                     }
@@ -219,7 +219,7 @@ public class AnimationControl
                 // CHECK FOR HANDGUN
                 if ((Item[usItem].usItemClass == IC.GUN || Item[usItem].usItemClass == IC.LAUNCHER) && usItem != Items.ROCKET_LAUNCHER)
                 {
-                    if (!(Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED)))
+                    if (!Item[usItem].fFlags.HasFlag(ItemAttributes.ITEM_TWO_HANDED))
                     {
 //                        usAltAnimSurface = gubAnimSurfaceItemSubIndex[pSoldier.ubBodyType][usAnimState];
 //                        if (usAltAnimSurface != AnimationSurfaceTypes.INVALID_ANIMATION)
@@ -286,7 +286,7 @@ public class AnimationControl
             }
         }
 
-        return (usAnimSurface);
+        return usAnimSurface;
     }
 
     public static AnimationSurfaceTypes GetSoldierAnimationSurface(SOLDIERTYPE? pSoldier, AnimationStates usAnimState)
@@ -305,7 +305,7 @@ public class AnimationControl
             }
         }
 
-        return (usAnimSurface);
+        return usAnimSurface;
     }
 }
 

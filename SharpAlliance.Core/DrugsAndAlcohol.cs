@@ -23,21 +23,21 @@ public class DrugsAndAlcohol
     {
         if (usItem == Items.ADRENALINE_BOOSTER)
         {
-            return (DRUG_TYPE_ADRENALINE);
+            return DRUG_TYPE_ADRENALINE;
         }
 
         if (usItem == Items.REGEN_BOOSTER)
         {
-            return (DRUG_TYPE_REGENERATION);
+            return DRUG_TYPE_REGENERATION;
         }
 
         if (usItem == Items.ALCOHOL || usItem == Items.WINE || usItem == Items.BEER)
         {
-            return (DRUG_TYPE_ALCOHOL);
+            return DRUG_TYPE_ALCOHOL;
         }
 
 
-        return (NO_DRUG);
+        return NO_DRUG;
     }
 
 
@@ -57,7 +57,7 @@ public class DrugsAndAlcohol
         // Determine what type of drug....
         if (ubDrugType == NO_DRUG)
         {
-            return (false);
+            return false;
         }
 
         // do switch for Larry!!
@@ -96,7 +96,7 @@ public class DrugsAndAlcohol
             // Increment side effects..
             if ((pSoldier.bDrugSideEffect[ubDrugType] + ubDrugSideEffect[ubDrugType]) < 127)
             {
-                pSoldier.bDrugSideEffect[ubDrugType] += (ubDrugSideEffect[ubDrugType]);
+                pSoldier.bDrugSideEffect[ubDrugType] += ubDrugSideEffect[ubDrugType];
             }
             // Stop side effects until were done....
             pSoldier.bDrugSideEffectRate[ubDrugType] = 0;
@@ -158,11 +158,11 @@ public class DrugsAndAlcohol
 
                     // make those stats RED for a while...
                     pSoldier.uiChangeWisdomTime = GetJA2Clock();
-                    pSoldier.usValueGoneUp &= ~(WIS_INCREASE);
+                    pSoldier.usValueGoneUp &= ~WIS_INCREASE;
                     pSoldier.uiChangeDexterityTime = GetJA2Clock();
-                    pSoldier.usValueGoneUp &= ~(DEX_INCREASE);
+                    pSoldier.usValueGoneUp &= ~DEX_INCREASE;
                     pSoldier.uiChangeStrengthTime = GetJA2Clock();
-                    pSoldier.usValueGoneUp &= ~(STRENGTH_INCREASE);
+                    pSoldier.usValueGoneUp &= ~STRENGTH_INCREASE;
                 }
             }
         }
@@ -207,7 +207,7 @@ public class DrugsAndAlcohol
         // Dirty panel
         fInterfacePanelDirty = DIRTYLEVEL2;
 
-        return (true);
+        return true;
     }
 
     public static int UseKitPoints(OBJECTTYPE? pObj, int usPoints, SOLDIERTYPE? pSoldier)
@@ -222,7 +222,7 @@ public class DrugsAndAlcohol
             if (usPoints < pObj.bStatus[bLoop])
             {
                 pObj.bStatus[bLoop] -= usPoints;
-                return (usOriginalPoints);
+                return usOriginalPoints;
             }
             else
             {
@@ -244,7 +244,7 @@ public class DrugsAndAlcohol
             Interface.DirtyMercPanelInterface(pSoldier, DIRTYLEVEL2);
         }
 
-        return (usOriginalPoints - usPoints);
+        return usOriginalPoints - usPoints;
     }
 
     void HandleEndTurnDrugAdjustments(SOLDIERTYPE? pSoldier)
@@ -272,7 +272,7 @@ public class DrugsAndAlcohol
             // IF drug rate is -ve, it's being worn off...
             if (pSoldier.bDrugEffectRate[cnt] < 0)
             {
-                pSoldier.bDrugEffect[cnt] -= (-1 * pSoldier.bDrugEffectRate[cnt]);
+                pSoldier.bDrugEffect[cnt] -= -1 * pSoldier.bDrugEffectRate[cnt];
 
                 // Have we run out?
                 if (pSoldier.bDrugEffect[cnt] <= 0)
@@ -340,7 +340,7 @@ public class DrugsAndAlcohol
             else if (pSoldier.bBleeding + pSoldier.bLife > pSoldier.bLifeMax)
             {
                 // got to reduce amount of bleeding
-                pSoldier.bBleeding = (pSoldier.bLifeMax - pSoldier.bLife);
+                pSoldier.bBleeding = pSoldier.bLifeMax - pSoldier.bLife;
             }
 
             // decrement counter
@@ -350,7 +350,7 @@ public class DrugsAndAlcohol
 
     int GetDrugEffect(SOLDIERTYPE? pSoldier, int ubDrugType)
     {
-        return (pSoldier.bDrugEffect[ubDrugType]);
+        return pSoldier.bDrugEffect[ubDrugType];
     }
 
 
@@ -359,11 +359,11 @@ public class DrugsAndAlcohol
         // If we have a o-positive effect
         if (pSoldier.bDrugEffect[ubDrugType] > 0)
         {
-            return (0);
+            return 0;
         }
         else
         {
-            return (pSoldier.bDrugSideEffect[ubDrugType]);
+            return pSoldier.bDrugSideEffect[ubDrugType];
         }
     }
 
@@ -371,7 +371,7 @@ public class DrugsAndAlcohol
     {
         DrunkLevel bDrunkLevel;
         pubPoints = 0;
-        int sPoints = (pubPoints);
+        int sPoints = pubPoints;
 
         // Are we in a side effect or good effect?
         if (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] > 0)
@@ -403,7 +403,7 @@ public class DrugsAndAlcohol
             }
         }
 
-      (pubPoints) = (int)sPoints;
+      pubPoints = (int)sPoints;
     }
 
 
@@ -416,12 +416,12 @@ public class DrugsAndAlcohol
         if (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] > 0)
         {
             // Adjust!
-            (psPointReduction) -= (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] * BP.RATIO_RED_PTS_TO_NORMAL);
+            psPointReduction -= pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] * BP.RATIO_RED_PTS_TO_NORMAL;
         }
         else if (pSoldier.bDrugSideEffect[DRUG_TYPE_ADRENALINE] > 0)
         {
             // Adjust!
-            (psPointReduction) += (pSoldier.bDrugSideEffect[DRUG_TYPE_ADRENALINE] * BP.RATIO_RED_PTS_TO_NORMAL);
+            psPointReduction += pSoldier.bDrugSideEffect[DRUG_TYPE_ADRENALINE] * BP.RATIO_RED_PTS_TO_NORMAL;
         }
 
         bDrunkLevel = GetDrunkLevel(pSoldier);
@@ -429,7 +429,7 @@ public class DrugsAndAlcohol
         if (bDrunkLevel == DrunkLevel.HUNGOVER)
         {
             // Reduce....
-            (psPointReduction) += HANGOVER_BP_REDUCE;
+            psPointReduction += HANGOVER_BP_REDUCE;
         }
     }
 
@@ -441,34 +441,34 @@ public class DrugsAndAlcohol
         // If we have a -ve effect ...
         if (pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] == 0 && pSoldier.bDrugSideEffect[DRUG_TYPE_ALCOHOL] == 0)
         {
-            return (DrunkLevel.SOBER);
+            return DrunkLevel.SOBER;
         }
 
         if (pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] == 0 && pSoldier.bDrugSideEffect[DRUG_TYPE_ALCOHOL] != 0)
         {
-            return (DrunkLevel.HUNGOVER);
+            return DrunkLevel.HUNGOVER;
         }
 
         // Calculate how many dinks we have had....
-        bNumDrinks = (pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] / ubDrugEffect[DRUG_TYPE_ALCOHOL]);
+        bNumDrinks = pSoldier.bDrugEffect[DRUG_TYPE_ALCOHOL] / ubDrugEffect[DRUG_TYPE_ALCOHOL];
 
         if (bNumDrinks <= 3)
         {
-            return (DrunkLevel.FEELING_GOOD);
+            return DrunkLevel.FEELING_GOOD;
         }
         else if (bNumDrinks <= 4)
         {
-            return (DrunkLevel.BORDERLINE);
+            return DrunkLevel.BORDERLINE;
         }
         else
         {
-            return (DrunkLevel.DRUNK);
+            return DrunkLevel.DRUNK;
         }
     }
 
     public static int EffectStatForBeingDrunk(SOLDIERTYPE? pSoldier, int iStat)
     {
-        return ((iStat * giDrunkModifier[GetDrunkLevel(pSoldier)] / 100));
+        return iStat * giDrunkModifier[GetDrunkLevel(pSoldier)] / 100;
     }
 
 
@@ -477,18 +477,18 @@ public class DrugsAndAlcohol
         // Are we in a side effect or good effect?
         if (pSoldier.bDrugEffect[DRUG_TYPE_ADRENALINE] > 0)
         {
-            return (true);
+            return true;
         }
         else if (pSoldier.bDrugSideEffect[DRUG_TYPE_ADRENALINE] > 0)
         {
-            return (true);
+            return true;
         }
 
         if (GetDrunkLevel(pSoldier) != DrunkLevel.SOBER)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 }

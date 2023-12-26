@@ -59,7 +59,7 @@ public class Knowledge
         if (gTacticalStatus.Team[bTeam].IsTeamActive)
         {
             // if this team is computer-controlled, and isn't the CIVILIAN "team"
-            if (!(gTacticalStatus.Team[bTeam].IsHuman) && (bTeam != CIV_TEAM))
+            if (!gTacticalStatus.Team[bTeam].IsHuman && (bTeam != CIV_TEAM))
             {
                 // make this team (publicly) aware of the "noise"
                 gsPublicNoiseGridno[bTeam] = sGridno;
@@ -212,7 +212,7 @@ public class Knowledge
             {
                 // calculate how far this noise was, and its relative "importance"
                 iDistAway = IsometricUtils.SpacesAway(pSoldier.sGridNo, psLastLoc);
-                iNoiseValue = (pbPersOL) * iDistAway;               // always a negative number!
+                iNoiseValue = pbPersOL * iDistAway;               // always a negative number!
 
                 if (iNoiseValue > iBestValue)
                 {
@@ -227,7 +227,7 @@ public class Knowledge
             {
                 // calculate how far this noise was, and its relative "importance"
                 iDistAway = IsometricUtils.SpacesAway(pSoldier.sGridNo, gsPublicLastKnownOppLoc[pSoldier.bTeam][pTemp.ubID]);
-                iNoiseValue = (pbPublOL) * iDistAway;               // always a negative number!
+                iNoiseValue = pbPublOL * iDistAway;               // always a negative number!
 
                 if (iNoiseValue > iBestValue)
                 {
@@ -350,7 +350,7 @@ public class Knowledge
             AINumMessage("MOST IMPORTANT NOISE HEARD FROM GRID #", sBestGridNo);
 #endif
 
-        return (sBestGridNo);
+        return sBestGridNo;
     }
 
 
@@ -362,15 +362,15 @@ public class Knowledge
         SOLDIERTYPE? pTemp;
 
         // if merc knows of a more important misc. noise than his team does
-        if (!(CREATURE_OR_BLOODCAT(pSoldier)) && (pSoldier.ubNoiseVolume > gubPublicNoiseVolume[pSoldier.bTeam]))
+        if (!CREATURE_OR_BLOODCAT(pSoldier) && (pSoldier.ubNoiseVolume > gubPublicNoiseVolume[pSoldier.bTeam]))
         {
             // the difference in volume is added to the "new info" total
             ubTotal += pSoldier.ubNoiseVolume - gubPublicNoiseVolume[pSoldier.bTeam];
         }
 
         // hang pointers at start of this guy's personal and public opponent opplists
-        pbPersOL = (pSoldier.bOppList[0]);
-        pbPublOL = (gbPublicOpplist[pSoldier.bTeam][0]);
+        pbPersOL = pSoldier.bOppList[0];
+        pbPublOL = gbPublicOpplist[pSoldier.bTeam][0];
 
         // for every opponent
         //	for (iLoop = 0; iLoop < MAXMERCS; iLoop++,pbPersOL++,pbPublOL++)
@@ -421,7 +421,7 @@ public class Knowledge
         }
 #endif
 
-        return (ubTotal);
+        return ubTotal;
     }
 
 }

@@ -46,7 +46,7 @@ public class InteractiveTiles
 
     bool InitInteractiveTileManagement()
     {
-        return (true);
+        return true;
     }
 
     void ShutdownInteractiveTileManagement()
@@ -55,7 +55,7 @@ public class InteractiveTiles
 
     bool AddInteractiveTile(int sGridNo, LEVELNODE? pLevelNode, int uiFlags, int usType)
     {
-        return (true);
+        return true;
     }
 
     public static bool StartInteractiveObject(int sGridNo, int usStructureID, SOLDIERTYPE pSoldier, WorldDirections ubDirection)
@@ -68,13 +68,13 @@ public class InteractiveTiles
             || pSoldier.usAnimState == AnimationStates.BEGIN_OPENSTRUCT
             || pSoldier.usAnimState == AnimationStates.BEGIN_OPENSTRUCT_CROUCHED)
         {
-            return (false);
+            return false;
         }
 
         pStructure = WorldStructures.FindStructureByID(sGridNo, usStructureID);
         if (pStructure == null)
         {
-            return (false);
+            return false;
         }
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
         {
@@ -98,7 +98,7 @@ public class InteractiveTiles
 
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -109,7 +109,7 @@ public class InteractiveTiles
 
         if (pStructure == null)
         {
-            return (false);
+            return false;
         }
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
         {
@@ -132,7 +132,7 @@ public class InteractiveTiles
             psBPCost = AP.OPEN_DOOR;
         }
 
-        return (true);
+        return true;
     }
 
     public static bool InteractWithInteractiveObject(SOLDIERTYPE pSoldier, STRUCTURE pStructure, WorldDirections ubDirection)
@@ -141,7 +141,7 @@ public class InteractiveTiles
 
         if (pStructure == null)
         {
-            return (false);
+            return false;
         }
 
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
@@ -151,7 +151,7 @@ public class InteractiveTiles
 
 //        InteractWithOpenableStruct(pSoldier, pStructure, ubDirection, fDoor);
 
-        return (true);
+        return true;
     }
 
 
@@ -167,7 +167,7 @@ public class InteractiveTiles
         if (pStructure == null)
         {
             //DEBUG MSG!
-            return (false);
+            return false;
         }
 
         return false;//(HandleOpenableStruct(pSoldier, sGridNo, pStructure));
@@ -190,7 +190,7 @@ public class InteractiveTiles
         }
 
         // Do sound...
-        if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+        if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
             // Play Opening sound...
             //PlayJA2Sample(GetStructureOpenSound(pStructure, false), RATE_11025, SoundVolume(HIGHVOLUME, sGridNo), 1, SoundDir(sGridNo));
@@ -202,7 +202,7 @@ public class InteractiveTiles
         }
 
         // ATE: Don't handle switches!
-        if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH)))
+        if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SWITCH))
         {
             if (pSoldier.bTeam == Globals.gbPlayerNum)
             {
@@ -211,7 +211,7 @@ public class InteractiveTiles
                     && Globals.gWorldSectorY == Quests.BOBBYR_SHIPPING_DEST_SECTOR_Y
                     && Globals.gbWorldSectorZ == Quests.BOBBYR_SHIPPING_DEST_SECTOR_Z
                     && Facts.CheckFact(FACT.PABLOS_STOLE_FROM_LATEST_SHIPMENT, 0)
-                    && !(Facts.CheckFact(FACT.PLAYER_FOUND_ITEMS_MISSING, 0)))
+                    && !Facts.CheckFact(FACT.PLAYER_FOUND_ITEMS_MISSING, 0))
                 {
 //                    SayQuoteFromNearbyMercInSector(BOBBYR_SHIPPING_DEST_GRIDNO, 3, QUOTE.STUFF_MISSING_DRASSEN);
                     fDidMissingQuote = true;
@@ -230,7 +230,7 @@ public class InteractiveTiles
             if (HandleItems.GetItemPool(sGridNo, out ITEM_POOL? pItemPool, pSoldier.bLevel))
             {
                 // Update visiblity....
-                if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+                if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                 {
                     bool fDoHumm = true;
                     bool fDoLocators = true;
@@ -281,7 +281,7 @@ public class InteractiveTiles
             }
             else
             {
-                if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+                if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                 {
 //                    TacticalCharacterDialogueWithSpecialEvent(pSoldier, 0, DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND, BATTLE_SOUND.NOTHING, 500);
                 }
@@ -347,11 +347,11 @@ public class InteractiveTiles
 
                 if (fConfirm)
                 {
-                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
+                    return UICursorDefines.OKHANDCURSOR_UICURSOR;
                 }
                 else
                 {
-                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
+                    return UICursorDefines.NORMALHANDCURSOR_UICURSOR;
                 }
 
             }
@@ -367,17 +367,17 @@ public class InteractiveTiles
 
                 if (fConfirm)
                 {
-                    return (UICursorDefines.OKHANDCURSOR_UICURSOR);
+                    return UICursorDefines.OKHANDCURSOR_UICURSOR;
                 }
                 else
                 {
-                    return (UICursorDefines.NORMALHANDCURSOR_UICURSOR);
+                    return UICursorDefines.NORMALHANDCURSOR_UICURSOR;
                 }
             }
 
         }
 
-        return (uiOldCursor);
+        return uiOldCursor;
     }
 
     void GetLevelNodeScreenRect(LEVELNODE? pNode, out Rectangle pRect, int sXPos, int sYPos, int sGridNo)
@@ -397,11 +397,11 @@ public class InteractiveTiles
 
         if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.CACHEDANITILE))
         {
-            pTrav = (Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo.pETRLEObject[pNode.pAniTile.sCurrentFrame]);
+            pTrav = Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo.pETRLEObject[pNode.pAniTile.sCurrentFrame];
         }
         else
         {
-            TileElem = (Globals.gTileDatabase[pNode.usIndex]);
+            TileElem = Globals.gTileDatabase[pNode.usIndex];
 
             //Adjust for current frames and animations....
             if (TileElem.uiFlags.HasFlag(TileCategory.ANIMATED_TILE))
@@ -409,7 +409,7 @@ public class InteractiveTiles
 //                Debug.Assert(TileElem.pAnimData != null);
 //                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
-            else if ((pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION)))
+            else if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
@@ -418,7 +418,7 @@ public class InteractiveTiles
                 }
             }
 
-            pTrav = (TileElem.hTileSurface.pETRLEObject[TileElem.usRegionIndex]);
+            pTrav = TileElem.hTileSurface.pETRLEObject[TileElem.usRegionIndex];
         }
 
         sScreenX = ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2) + (int)sTempX_S;
@@ -444,11 +444,11 @@ public class InteractiveTiles
         usWidth = (int)pTrav.usWidth;
 
         // Add to start position of dest buffer
-        sScreenX += (pTrav.sOffsetX - (WORLD_TILE_X / 2));
-        sScreenY += (pTrav.sOffsetY - (WORLD_TILE_Y / 2));
+        sScreenX += pTrav.sOffsetX - (WORLD_TILE_X / 2);
+        sScreenY += pTrav.sOffsetY - (WORLD_TILE_Y / 2);
 
         // Adjust y offset!
-        sScreenY += (WORLD_TILE_Y / 2);
+        sScreenY += WORLD_TILE_Y / 2;
 
         pRect = new(sScreenX, sScreenY, sScreenX + usWidth, sScreenY + usHeight);
     }
@@ -546,7 +546,7 @@ public class InteractiveTiles
         // Check for shift down!
         if (_KeyDown(Key.LShift | Key.RShift))
         {
-            return (null);
+            return null;
         }
 
 
@@ -568,31 +568,31 @@ public class InteractiveTiles
                             {
                                 if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.HASITEMONTOP))
                                 {
-                                    return (null);
+                                    return null;
                                 }
                             }
                             else
                             {
-                                return (null);
+                                return null;
                             }
                         }
                     }
 
-                    return (pNode);
+                    return pNode;
                 }
 
                 pNode = pNode.pNext;
             }
         }
 
-        return (null);
+        return null;
     }
 
 
 
     LEVELNODE? GetCurInteractiveTile()
     {
-        return (InternalGetCurInteractiveTile(true));
+        return InternalGetCurInteractiveTile(true);
     }
 
 
@@ -611,7 +611,7 @@ public class InteractiveTiles
             psGridNo = Globals.NOWHERE;
         }
 
-        return (pNode);
+        return pNode;
     }
 
 
@@ -642,7 +642,7 @@ public class InteractiveTiles
                 if (pStructure == null)
                 {
                     ppStructure = null;
-                    return (null);
+                    return null;
                 }
                 else
                 {
@@ -651,13 +651,13 @@ public class InteractiveTiles
             }
         }
 
-        return (pNode);
+        return pNode;
     }
 
 
     public static LEVELNODE? GetCurInteractiveTileGridNoAndStructure(out int psGridNo, out STRUCTURE? ppStructure)
     {
-        return (ConditionalGetCurInteractiveTileGridNoAndStructure(out psGridNo, out ppStructure, true));
+        return ConditionalGetCurInteractiveTileGridNoAndStructure(out psGridNo, out ppStructure, true);
     }
 
 
@@ -688,7 +688,7 @@ public class InteractiveTiles
             if (Globals.gfCycleIntTile)
             {
                 // OK, we're over this cycled node
-                pCurIntTile = (Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bCur]);
+                pCurIntTile = Globals.gCurIntTileStack.bTiles[Globals.gCurIntTileStack.bCur];
             }
             else
             {
@@ -732,11 +732,11 @@ public class InteractiveTiles
 
         if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.CACHEDANITILE))
         {
-            return (false);
+            return false;
         }
 
 
-        TileElem = (Globals.gTileDatabase[pNode.usIndex]);
+        TileElem = Globals.gTileDatabase[pNode.usIndex];
 
         if (Globals.gCurIntTile.ubFlags == INTILE_CHECK_SELECTIVE)
         {
@@ -747,17 +747,17 @@ public class InteractiveTiles
             // If no data, quit
             if (pStructure == null)
             {
-                return (false);
+                return false;
             }
 
-            if (!(pStructure.fFlags.HasFlag((STRUCTUREFLAGS.OPENABLE | STRUCTUREFLAGS.HASITEMONTOP))))
+            if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE | STRUCTUREFLAGS.HASITEMONTOP))
             {
-                return (false);
+                return false;
             }
 
             if (Globals.gusSelectedSoldier != Globals.NOBODY && Globals.MercPtrs[Globals.gusSelectedSoldier].ubBodyType == SoldierBodyTypes.ROBOTNOWEAPON)
             {
-                return (false);
+                return false;
             }
 
             // If we are a door, we need a different definition of being visible than other structs
@@ -775,7 +775,7 @@ public class InteractiveTiles
                     if (Globals.gCurrentUIMode != UI_MODE.HANDCURSOR_MODE
                         && Globals.gCurrentUIMode != UI_MODE.ACTION_MODE)
                     {
-                        return (false);
+                        return false;
                     }
                 }
 
@@ -784,7 +784,7 @@ public class InteractiveTiles
                 {
                     if (Globals.gCurrentUIMode != UI_MODE.HANDCURSOR_MODE)
                     {
-                        return (false);
+                        return false;
                     }
                 }
             }
@@ -846,7 +846,7 @@ public class InteractiveTiles
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -857,12 +857,12 @@ public class InteractiveTiles
         if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.CACHEDANITILE))
         {
             //Check it!
-            return (this.CheckVideoObjectScreenCoordinateInData(Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo, pNode.pAniTile.sCurrentFrame, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
+            return this.CheckVideoObjectScreenCoordinateInData(Globals.gpTileCache[pNode.pAniTile.sCachedTileID].pImagery.vo, pNode.pAniTile.sCurrentFrame, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY)));
 
         }
         else
         {
-            TileElem = (Globals.gTileDatabase[pNode.usIndex]);
+            TileElem = Globals.gTileDatabase[pNode.usIndex];
 
             //Adjust for current frames and animations....
             if (TileElem.uiFlags.HasFlag(TileCategory.ANIMATED_TILE))
@@ -870,7 +870,7 @@ public class InteractiveTiles
 //                Debug.Assert(TileElem.pAnimData != null);
 //                TileElem = Globals.gTileDatabase[TileElem.pAnimData.pusFrames[TileElem.pAnimData.bCurrentFrame]];
             }
-            else if ((pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION)))
+            else if (pNode.uiFlags.HasFlag(LEVELNODEFLAGS.ANIMATION))
             {
                 if (pNode.sCurrentFrame != -1)
                 {
@@ -880,7 +880,7 @@ public class InteractiveTiles
             }
 
             //Check it!
-            return (this.CheckVideoObjectScreenCoordinateInData(TileElem.hTileSurface, TileElem.usRegionIndex, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY))));
+            return this.CheckVideoObjectScreenCoordinateInData(TileElem.hTileSurface, TileElem.usRegionIndex, (int)(sTestX - sSrcX), (int)(-1 * (sTestY - sSrcY)));
         }
     }
 
@@ -901,7 +901,7 @@ public class InteractiveTiles
         Debug.Assert(hSrcVObject != null);
 
         // Get Offsets from Index into structure
-        pTrav = (hSrcVObject.pETRLEObject[usIndex]);
+        pTrav = hSrcVObject.pETRLEObject[usIndex];
 //        usHeight = (int)pTrav.usHeight;
 //        usWidth = (int)pTrav.usWidth;
 //        uiOffset = pTrav.uiDataOffset;
@@ -1127,7 +1127,7 @@ public class InteractiveTiles
         Globals.gusINTOldMousePosX = Globals.gusMouseXPos;
         Globals.gusINTOldMousePosY = Globals.gusMouseYPos;
 
-        return (fOK);
+        return fOK;
     }
 
 

@@ -41,7 +41,7 @@ public class PathAI
 
     public static int DoorTravelCost(SOLDIERTYPE? pSoldier, int iGridNo, int ubMovementCost, bool fReturnPerceivedValue, out int? piDoorGridNo)
     {
-        return (InternalDoorTravelCost(pSoldier, iGridNo, ubMovementCost, fReturnPerceivedValue, out piDoorGridNo, false));
+        return InternalDoorTravelCost(pSoldier, iGridNo, ubMovementCost, fReturnPerceivedValue, out piDoorGridNo, false);
     }
 
     public static void RoofReachableTest(int sStartGridNo, int ubBuildingID)
@@ -104,7 +104,7 @@ public class PathAI
         // If we are on the same level as the interface level, continue, else return
         if (pSold.bLevel != Globals.gsInterfaceLevel)
         {
-            return (0);
+            return 0;
         }
 
         if (GameSettings.fOptions[TOPTION.ALWAYS_SHOW_MOVEMENT_PATH])
@@ -124,7 +124,7 @@ public class PathAI
             sAPBudget);
 
         Globals.gfPlotDirectPath = false;
-        return (sRet);
+        return sRet;
     }
 
     public static int PlotPath(
@@ -323,10 +323,10 @@ public class PathAI
                         // so, then we must modify it for other movement styles and accumulate
                         sPoints += usMovementModeToUseForAPs switch
                         {
-                            AnimationStates.RUNNING => (short)(double)((sTileCost / Globals.RUNDIVISOR)) + (int)sExtraCostStand,
-                            AnimationStates.WALKING => (sTileCost + Globals.WALKCOST) + (int)sExtraCostStand,
-                            AnimationStates.SWATTING => (sTileCost + Globals.SWATCOST) + (int)sExtraCostSwat,
-                            AnimationStates.CRAWLING => (sTileCost + Globals.CRAWLCOST) + (int)sExtraCostCrawl,
+                            AnimationStates.RUNNING => (short)(double)(sTileCost / Globals.RUNDIVISOR) + (int)sExtraCostStand,
+                            AnimationStates.WALKING => sTileCost + Globals.WALKCOST + (int)sExtraCostStand,
+                            AnimationStates.SWATTING => sTileCost + Globals.SWATCOST + (int)sExtraCostSwat,
+                            AnimationStates.CRAWLING => sTileCost + Globals.CRAWLCOST + (int)sExtraCostCrawl,
                             _ => sTileCost,
                         };
                     }
@@ -334,21 +334,21 @@ public class PathAI
 
                 // THIS NEXT SECTION ONLY NEEDS TO HAPPEN FOR CURSOR UI FEEDBACK, NOT ACTUAL COSTING
 
-                if (bPlot && ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))) // OR USER OPTION ON... ***)
+                if (bPlot && Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) // OR USER OPTION ON... ***)
                 {
                     // ATE; TODO: Put stuff in here to allow for fact of costs other than movement ( jump fence, open door )
 
                     // store WALK cost
-                    sPointsWalk += (sTileCost + Globals.WALKCOST) + sExtraCostStand;
+                    sPointsWalk += sTileCost + Globals.WALKCOST + sExtraCostStand;
 
                     // now get cost as if CRAWLING
-                    sPointsCrawl += (sTileCost + Globals.CRAWLCOST) + sExtraCostCrawl;
+                    sPointsCrawl += sTileCost + Globals.CRAWLCOST + sExtraCostCrawl;
 
                     // now get cost as if SWATTING
-                    sPointsSwat += (sTileCost + Globals.SWATCOST) + sExtraCostSwat;
+                    sPointsSwat += sTileCost + Globals.SWATCOST + sExtraCostSwat;
 
                     // now get cost as if RUNNING
-                    sPointsRun += (short)(double)((sTileCost / Globals.RUNDIVISOR)) + sExtraCostStand;
+                    sPointsRun += (short)(double)(sTileCost / Globals.RUNDIVISOR) + sExtraCostStand;
                 }
 
                 if (iCnt == 0 && bPlot)
@@ -417,7 +417,7 @@ public class PathAI
                         TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.FOOTPRINTS, usTileNum, out TileIndexes usTileIndex);
 
                         // Adjust based on what mode we are in...
-                        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME) || !Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                         {
                             // find out which color we're using
                             usTileIndex += (int)sFootOrder[4];
@@ -473,7 +473,7 @@ public class PathAI
                         TileDefine.GetTileIndexFromTypeSubIndex(TileTypeDefines.FOOTPRINTS, usTileNum, out usTileIndex);
 
                         // Adjust based on what mode we are in...
-                        if ((Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) || !(Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                        if (Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME) || !Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                         {
                             // find out which color we're using
                             usTileIndex += (int)sFootOrder[4];
@@ -513,7 +513,7 @@ public class PathAI
         // reset distance limit 
         Globals.gubNPCDistLimit = 0;
 
-        return (sPoints);
+        return sPoints;
     }
 
     public static void ErasePath(bool bEraseOldOne)
@@ -689,12 +689,12 @@ public class PathAI
                 pDoorStatus = Keys.GetDoorStatus((int)iDoorGridNo);
                 if (pDoorStatus is not null)
                 {
-                    fDoorIsOpen = (pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN));
+                    fDoorIsOpen = pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN);
                 }
                 else
                 {
                     // abort!
-                    return (ubMovementCost);
+                    return ubMovementCost;
                 }
             }
             else
@@ -703,12 +703,12 @@ public class PathAI
                 pDoorStructure = WorldStructures.FindStructure(iDoorGridNo, STRUCTUREFLAGS.ANYDOOR);
                 if (pDoorStructure is not null)
                 {
-                    fDoorIsOpen = (pDoorStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN));
+                    fDoorIsOpen = pDoorStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN);
                 }
                 else
                 {
                     // abort!
-                    return (ubMovementCost);
+                    return ubMovementCost;
                 }
             }
             // now determine movement cost
@@ -766,7 +766,7 @@ public class PathAI
             }
 
         }
-        return (ubMovementCost);
+        return ubMovementCost;
 
     }
 }
@@ -850,12 +850,12 @@ public class TRAVELCOST
 
     public static bool IS_TRAVELCOST_DOOR(int x)
     {
-        return (x >= TRAVELCOST.DOOR_CLOSED_HERE && x <= TRAVELCOST.DOOR_OPEN_NW_W);
+        return x >= TRAVELCOST.DOOR_CLOSED_HERE && x <= TRAVELCOST.DOOR_OPEN_NW_W;
     }
 
     public static bool IS_TRAVELCOST_CLOSED_DOOR(int x)
     {
-        return (x >= TRAVELCOST.DOOR_CLOSED_HERE && ((int)x) << (int)TRAVELCOST.DOOR_CLOSED_W > 0);
+        return x >= TRAVELCOST.DOOR_CLOSED_HERE && ((int)x) << (int)TRAVELCOST.DOOR_CLOSED_W > 0;
     }
 }
 

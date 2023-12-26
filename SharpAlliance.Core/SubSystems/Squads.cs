@@ -24,7 +24,7 @@ public class Squads
     {
         // returns which squad is current squad
 
-        return (iCurrentTacticalSquad);
+        return iCurrentTacticalSquad;
     }
 
     public static int NumberOfPeopleInSquad(SquadEnum bSquadValue)
@@ -34,7 +34,7 @@ public class Squads
 
         if (bSquadValue == NO_CURRENT_SQUAD)
         {
-            return (0);
+            return 0;
         }
 
         // find number of characters in particular squad.
@@ -50,7 +50,7 @@ public class Squads
         }
 
         // return number found
-        return (bSquadCount);
+        return bSquadCount;
     }
 
     void InitSquads()
@@ -96,12 +96,12 @@ public class Squads
             if (Squad[bSquadValue][iCounter] == null)
             {
                 // a free slot found - not full
-                return (false);
+                return false;
             }
         }
 
         // no free slots - it's full
-        return (true);
+        return true;
     }
 
     public static SquadEnum GetFirstEmptySquad()
@@ -113,7 +113,7 @@ public class Squads
             if (SquadIsEmpty(ubCounter) == true)
             {
                 // empty squad, return value
-                return (ubCounter);
+                return ubCounter;
             }
         }
 
@@ -135,7 +135,7 @@ public class Squads
 
         if (fExitingVehicleToSquad)
         {
-            return (false);
+            return false;
         }
 
 
@@ -146,9 +146,9 @@ public class Squads
             // We're not allowing anybody to go on a vehicle if they are not passengers!
             // NB: We obviously need to make sure that REAL passengers have their
             // flags set before adding them to a squad!
-            if (!(pCharacter.uiStatusFlags.HasFlag(SOLDIER.PASSENGER | SOLDIER.DRIVER | SOLDIER.VEHICLE)))
+            if (!pCharacter.uiStatusFlags.HasFlag(SOLDIER.PASSENGER | SOLDIER.DRIVER | SOLDIER.VEHICLE))
             {
-                return (false);
+                return false;
             }
         }
 
@@ -158,7 +158,7 @@ public class Squads
         if (IsThisSquadOnTheMove(bSquadValue) == true)
         {
             // nope, go away now
-            return (false);
+            return false;
         }
 
 
@@ -169,7 +169,7 @@ public class Squads
             if (Squad[bSquadValue][bCounter] == pCharacter)
             {
                 // 'successful of sorts, if there, then he's 'added'
-                return (true);
+                return true;
             }
 
             // free slot, add here
@@ -183,7 +183,7 @@ public class Squads
                     // if not same, return false
                     if ((pCharacter.sSectorX != sX) || (pCharacter.sSectorY != sY) || (pCharacter.bSectorZ != bZ))
                     {
-                        return (false);
+                        return false;
                     }
                     // remove them
                     RemoveCharacterFromSquads(pCharacter);
@@ -275,7 +275,7 @@ public class Squads
                 // assign here
                 Squad[bSquadValue][bCounter] = pCharacter;
 
-                if ((pCharacter.bAssignment != (Assignments)bSquadValue))
+                if (pCharacter.bAssignment != (Assignments)bSquadValue)
                 {
                     // check to see if we should wake them up
                     if (pCharacter.fMercAsleep)
@@ -311,11 +311,11 @@ public class Squads
                 }
 
 
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -337,7 +337,7 @@ public class Squads
             {
                 if (AddCharacterToSquad(pCharacter, bCounter) == true)
                 {
-                    return (true);
+                    return true;
                 }
             }
             else
@@ -356,13 +356,13 @@ public class Squads
         {
             if (AddCharacterToSquad(pCharacter, bFirstEmptySquad) == true)
             {
-                return (true);
+                return true;
             }
         }
 
         // should never happen!
         Debug.Assert(false);
-        return (false);
+        return false;
     }
 
     // find the first slot we can fit the guy in
@@ -382,12 +382,12 @@ public class Squads
             {
                 if (AddCharacterToSquad(pCharacter, bCounter) == true)
                 {
-                    return (bCounter);
+                    return bCounter;
                 }
             }
         }
 
-        return (SquadEnum.UNSET);
+        return SquadEnum.UNSET;
     }
 
     public static bool SquadIsEmpty(SquadEnum bSquadValue)
@@ -399,11 +399,11 @@ public class Squads
         {
             if (Squad[bSquadValue][iCounter] != null)
             {
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -442,9 +442,9 @@ public class Squads
                     // reset player mvt group id value
                     pCharacter.ubGroupID = 0;
 
-                    if ((pCharacter.fBetweenSectors) && (pCharacter.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                    if (pCharacter.fBetweenSectors && pCharacter.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                     {
-                        ubGroupId = StrategicMovement.CreateNewPlayerGroupDepartingFromSector((pCharacter.sSectorX), (pCharacter.sSectorY));
+                        ubGroupId = StrategicMovement.CreateNewPlayerGroupDepartingFromSector(pCharacter.sSectorX, pCharacter.sSectorY);
 
                         // assign to a group
                         StrategicMovement.AddPlayerToGroup(ubGroupId, pCharacter);
@@ -458,19 +458,19 @@ public class Squads
                     }
 
                     //if we are not loading a saved game
-                    if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
+                    if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)
                         && guiCurrentScreen == ScreenName.GAME_SCREEN)
                     {
                         UpdateCurrentlySelectedMerc(pCharacter, iCounterA);
                     }
 
-                    return (true);
+                    return true;
                 }
             }
         }
 
         // not found
-        return (false);
+        return false;
     }
 
     public static bool RemoveCharacterFromASquad(SOLDIERTYPE? pCharacter, SquadEnum bSquadValue)
@@ -503,12 +503,12 @@ public class Squads
 
 
                 // found
-                return (true);
+                return true;
             }
         }
 
         // not found
-        return (false);
+        return false;
     }
 
     public static bool IsCharacterInSquad(SOLDIERTYPE? pCharacter, SquadEnum bSquadValue)
@@ -521,12 +521,12 @@ public class Squads
             if (Squad[bSquadValue][iCounter] == pCharacter)
             {
                 // found
-                return (true);
+                return true;
             }
         }
 
         // not found
-        return (false);
+        return false;
     }
 
     public static int SlotCharacterIsInSquad(SOLDIERTYPE? pCharacter, SquadEnum bSquadValue)
@@ -540,12 +540,12 @@ public class Squads
             if (Squad[bSquadValue][bCounter] == pCharacter)
             {
                 // found
-                return (bCounter);
+                return bCounter;
             }
         }
 
         // not found
-        return (-1);
+        return -1;
     }
 
     public static SquadEnum SquadCharacterIsIn(SOLDIERTYPE? pCharacter)
@@ -565,7 +565,7 @@ public class Squads
                 if (Squad[iCounterA][iCounter] == pCharacter)
                 {
                     // return value
-                    return (iCounterA);
+                    return iCounterA;
                 }
             }
         }
@@ -581,7 +581,7 @@ public class Squads
 
         if (bSquadValue == NO_CURRENT_SQUAD)
         {
-            return (0);
+            return 0;
         }
 
         // find number of characters in particular squad.
@@ -597,7 +597,7 @@ public class Squads
         }
 
         // return number found
-        return (bSquadCount);
+        return bSquadCount;
     }
 
     bool IsRobotControllerInSquad(SquadEnum bSquadValue)
@@ -606,7 +606,7 @@ public class Squads
 
         if (bSquadValue == NO_CURRENT_SQUAD)
         {
-            return (false);
+            return false;
         }
 
         // find number of characters in particular squad.
@@ -616,12 +616,12 @@ public class Squads
             if ((Squad[bSquadValue][bCounter] != null) && SoldierControl.ControllingRobot(Squad[bSquadValue][bCounter]))
             {
                 // yep
-                return (true);
+                return true;
             }
         }
 
         // return number found
-        return (false);
+        return false;
     }
 
     public static bool SectorSquadIsIn(SquadEnum bSquadValue, out int sMapX, out MAP_ROW sMapY, out int sMapZ)
@@ -643,13 +643,13 @@ public class Squads
                 sMapY = Squad[bSquadValue][bCounter].sSectorY;
                 sMapZ = Squad[bSquadValue][bCounter].bSectorZ;
 
-                return (true);
+                return true;
             }
 
         }
 
         // return there is no squad
-        return (false);
+        return false;
     }
 
 
@@ -666,12 +666,12 @@ public class Squads
 //                pCharacter.pMercPath = CopyPaths(Squad[bSquadValue][bCounter].pMercPath, pCharacter.pMercPath);
 
                 // return success
-                return (true);
+                return true;
             }
         }
 
         // return failure
-        return (false);
+        return false;
     }
 
 
@@ -687,7 +687,7 @@ public class Squads
             // nope
 
             // return failure
-            return (false);
+            return false;
         }
 
         // copy each person on squad, skip this character
@@ -709,7 +709,7 @@ public class Squads
         }
 
         // return success?
-        return (fSuccess);
+        return fSuccess;
     }
 
     public static bool SetCurrentSquad(SquadEnum iCurrentSquad, bool fForce)
@@ -722,7 +722,7 @@ public class Squads
         // ATE: Adjusted conditions a bit ( sometimes were not getting selected )
         if (guiCurrentScreen == ScreenName.LAPTOP_SCREEN || guiCurrentScreen == ScreenName.MAP_SCREEN)
         {
-            return (false);
+            return false;
         }
 
         // ATE; Added to allow us to have NO current squad
@@ -737,7 +737,7 @@ public class Squads
             // set all auto faces inactive
             Faces.SetAllAutoFacesInactive();
 
-            return (false);
+            return false;
         }
 
 
@@ -745,13 +745,13 @@ public class Squads
         if ((iCurrentSquad >= NUMBER_OF_SQUADS) || (iCurrentSquad < 0))
         {
             // no
-            return (false);
+            return false;
         }
 
         // check if squad is current
         if (iCurrentSquad == iCurrentTacticalSquad && !fForce)
         {
-            return (true);
+            return true;
         }
 
         // set current squad and return success
@@ -790,7 +790,7 @@ public class Squads
 //            SelectSoldier(Squad[iCurrentTacticalSquad][0].ubID, false, true);
         }
 
-        return (true);
+        return true;
     }
 
     void RebuildCurrentSquad()
@@ -833,7 +833,7 @@ public class Squads
             {
                 if (sDeadMercs[iCurrentTacticalSquad][iCounter] != NPCID.UNSET)
                 {
-                    pDeadSoldier = SoldierProfileSubSystem.FindSoldierByProfileID((sDeadMercs[iCurrentTacticalSquad][iCounter]), true);
+                    pDeadSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(sDeadMercs[iCurrentTacticalSquad][iCounter], true);
 
                     if (pDeadSoldier is not null)
                     {
@@ -890,7 +890,7 @@ public class Squads
         if ((iCurrentSquad >= NUMBER_OF_SQUADS) || (iCurrentSquad < 0))
         {
             // no
-            return (false);
+            return false;
         }
 
         // copy pts values over
@@ -899,7 +899,7 @@ public class Squads
             pSoldierArray[iCounter] = Squad[iCurrentSquad][iCounter];
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -912,7 +912,7 @@ public class Squads
         if ((iCurrentSquad >= NUMBER_OF_SQUADS) || (iCurrentSquad < 0))
         {
             // no
-            return (false);
+            return false;
         }
 
         // go through memebrs of squad...if anyone on this map, return true
@@ -923,12 +923,12 @@ public class Squads
                 // ATE; Added more checks here for being in sector ( fBetweenSectors and SectorZ )
                 if ((Squad[iCurrentSquad][iCounter].sSectorX == gWorldSectorX) && (Squad[iCurrentSquad][iCounter].sSectorY == gWorldSectorY) && Squad[iCurrentSquad][iCounter].bSectorZ == gbWorldSectorZ && Squad[iCurrentSquad][iCounter].fBetweenSectors != true)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -981,7 +981,7 @@ public class Squads
             }
         }
 
-        return (iLastSquad);
+        return iLastSquad;
     }
 
 
@@ -1067,7 +1067,7 @@ public class Squads
         files.FileWrite(hFile, sSquadSaveStruct, uiSaveSize, out int uiNumBytesWritten);
         if (uiNumBytesWritten != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -1075,10 +1075,10 @@ public class Squads
         files.FileWrite(hFile, SquadMovementGroups, sizeof(int) * (int)NUMBER_OF_SQUADS, out uiNumBytesWritten);
         if (uiNumBytesWritten != sizeof(int) * (int)NUMBER_OF_SQUADS)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     public static unsafe bool LoadSquadInfoFromSavedGameFile(Stream hFile)
@@ -1108,7 +1108,7 @@ public class Squads
         //files.FileRead<SAVE_SQUAD_INFO_STRUCT[]>(hFile, ref sSquadSaveStruct, uiSaveSize, out uiNumBytesRead);
         if (uiNumBytesRead != uiSaveSize)
         {
-            return (false);
+            return false;
         }
 
 
@@ -1134,10 +1134,10 @@ public class Squads
         //files.FileRead(hFile, ref SquadMovementGroups, sizeof(int) * (int)NUMBER_OF_SQUADS, out uiNumBytesRead);
         if (uiNumBytesRead != sizeof(int) * (int)NUMBER_OF_SQUADS)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -1171,11 +1171,11 @@ public class Squads
         {
             if (Squad[bSquadValue][iCounter] is not null)
             {
-                return (Squad[bSquadValue][iCounter].fBetweenSectors);
+                return Squad[bSquadValue][iCounter].fBetweenSectors;
             }
         }
 
-        return (false);
+        return false;
     }
 
     // rebuild this squad after someone has been removed, to 'squeeze' together any empty spots
@@ -1238,41 +1238,41 @@ public class Squads
 
         if (pSoldier == null)
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.fBetweenSectors == true)
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.bAssignment == Assignments.IN_TRANSIT)
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
         {
-            return (false);
+            return false;
         }
 
         if (SquadIsEmpty(ubSquad) == true)
         {
-            return (true);
+            return true;
         }
 
         if ((pSoldier.sSectorX != Squad[ubSquad][0].sSectorX) || (pSoldier.sSectorY != Squad[ubSquad][0].sSectorY) || (pSoldier.bSectorZ != Squad[ubSquad][0].bSectorZ))
         {
-            return (false);
+            return false;
         }
 
         if (Squad[ubSquad][0].fBetweenSectors == true)
         {
-            return (false);
+            return false;
         }
 
 
-        return (true);
+        return true;
     }
 
 
@@ -1282,7 +1282,7 @@ public class Squads
 
         if (SquadIsEmpty(ubSquadValue) == true)
         {
-            return (false);
+            return false;
         }
 
         for (iCounter = 0; iCounter < NUMBER_OF_SOLDIERS_PER_SQUAD - 1; iCounter++)
@@ -1291,12 +1291,12 @@ public class Squads
             {
                 if (Squad[ubSquadValue][iCounter].fMercAsleep)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     public static bool AddDeadCharacterToSquadDeadGuys(SOLDIERTYPE? pSoldier, SquadEnum iSquadValue)
@@ -1307,7 +1307,7 @@ public class Squads
         // is dead guy in any squad
         if (IsDeadGuyOnAnySquad(pSoldier) == true)
         {
-            return (true);
+            return true;
         }
 
         // first find out if the guy is in the list
@@ -1316,11 +1316,11 @@ public class Squads
             // valid soldier?
             if (sDeadMercs[iSquadValue][iCounter] != NPCID.UNSET)
             {
-                pTempSoldier = SoldierProfileSubSystem.FindSoldierByProfileID((sDeadMercs[iSquadValue][iCounter]), true);
+                pTempSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(sDeadMercs[iSquadValue][iCounter], true);
 
                 if (pSoldier == pTempSoldier)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
@@ -1333,26 +1333,26 @@ public class Squads
             if (sDeadMercs[iSquadValue][iCounter] != NPCID.UNSET)
             {
                 // yep
-                pTempSoldier = SoldierProfileSubSystem.FindSoldierByProfileID((sDeadMercs[iSquadValue][iCounter]), true);
+                pTempSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(sDeadMercs[iSquadValue][iCounter], true);
 
                 // valid soldier?
                 if (pTempSoldier == null)
                 {
                     // nope
                     sDeadMercs[iSquadValue][iCounter] = pSoldier.ubProfile;
-                    return (true);
+                    return true;
                 }
             }
             else
             {
                 // nope
                 sDeadMercs[iSquadValue][iCounter] = pSoldier.ubProfile;
-                return (true);
+                return true;
             }
         }
 
         // no go
-        return (false);
+        return false;
     }
 
     public static bool IsDeadGuyOnAnySquad(SOLDIERTYPE? pSoldier)
@@ -1368,12 +1368,12 @@ public class Squads
             {
                 if (sDeadMercs[iCounterA][iCounter] == pSoldier.ubProfile)
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     bool IsDeadGuyInThisSquadSlot(int bSlotId, SquadEnum bSquadValue, ref int bNumberOfDeadGuysSoFar)
@@ -1401,12 +1401,12 @@ public class Squads
                     // far enough, start checking
                     bNumberOfDeadGuysSoFar++;
 
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     public static bool SoldierIsDeadAndWasOnSquad(SOLDIERTYPE? pSoldier, SquadEnum bSquadValue)
@@ -1415,7 +1415,7 @@ public class Squads
 
         if (bSquadValue == NO_CURRENT_SQUAD)
         {
-            return (false);
+            return false;
         }
 
         // check if guy is on squad
@@ -1423,18 +1423,18 @@ public class Squads
         {
             if (pSoldier.ubProfile == sDeadMercs[bSquadValue][iCounter])
             {
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 
     public static bool ResetDeadSquadMemberList(SquadEnum iSquadValue)
     {
         sDeadMercs[iSquadValue] = new();
 
-        return (true);
+        return true;
     }
 
 
@@ -1447,21 +1447,21 @@ public class Squads
         if (pSoldier == null)
         {
             // no
-            return (false);
+            return false;
         }
 
         // active grunt?
         if (pSoldier.bActive == false)
         {
             // no
-            return (false);
+            return false;
         }
 
         // current squad valid?
         if (iCurrentTacticalSquad >= NUMBER_OF_SQUADS)
         {
             // no
-            return (false);
+            return false;
         }
 
 
@@ -1470,11 +1470,11 @@ public class Squads
             if (Squad[iCurrentTacticalSquad][iCounter] == pSoldier)
             {
                 // found him
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 
     int NumberOfPlayerControllableMercsInSquad(SquadEnum bSquadValue)
@@ -1485,7 +1485,7 @@ public class Squads
 
         if (bSquadValue == NO_CURRENT_SQUAD)
         {
-            return (0);
+            return 0;
         }
 
         // find number of characters in particular squad.
@@ -1500,7 +1500,7 @@ public class Squads
 
                 //Kris:  This breaks the CLIENT of this function, tactical traversal.  Do NOT check for EPCS or ROBOT here.
                 //if ( !AM_AN_EPC( pSoldier ) && !AM_A_ROBOT( pSoldier ) && 
-                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                 {
                     bSquadCount++;
                 }
@@ -1508,7 +1508,7 @@ public class Squads
         }
 
         // return number found
-        return (bSquadCount);
+        return bSquadCount;
     }
 
 
@@ -1520,7 +1520,7 @@ public class Squads
 
         if (bSquadValue == NO_CURRENT_SQUAD)
         {
-            return (false);
+            return false;
         }
 
         // find number of characters in particular squad.
@@ -1533,14 +1533,14 @@ public class Squads
                 pSoldier = Squad[bSquadValue][bCounter];
 
                 // If we are an EPC or ROBOT, don't allow this
-                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)))
+                if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
                 {
-                    return (true);
+                    return true;
                 }
             }
         }
 
-        return (false);
+        return false;
     }
 
     void CheckSquadMovementGroups()

@@ -127,7 +127,7 @@ public class FontSubSystem : ISharpAllianceManager
         int xp, yp;
 
         // Compute the coordinates to right justify the text
-        xp = ((sWidth - StringPixLength(pStr, iFontIndex))) + sLeft;
+        xp = sWidth - StringPixLength(pStr, iFontIndex) + sLeft;
         yp = ((sHeight - this.GetFontHeight(iFontIndex)) / 2) + sTop;
 
         psNewX = xp;
@@ -993,7 +993,7 @@ public class FontSubSystem : ISharpAllianceManager
             FontDefault = LoadIndex;
         }
 
-        return (LoadIndex);
+        return LoadIndex;
     }
 
     //*****************************************************************************

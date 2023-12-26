@@ -93,7 +93,7 @@ public class RenderDirty
         //        this.surfaces.UnlockSurface(SurfaceType.SAVE_BUFFER);
         EmptyBackgroundRects();
 
-        return (true);
+        return true;
     }
 
     private static bool EmptyBackgroundRects()
@@ -106,7 +106,7 @@ public class RenderDirty
             {
                 gBackSaves[uiCount].fFilled = false;
 
-                if (!(gBackSaves[uiCount].fAllocated) && (gBackSaves[uiCount].fFreeMemory == true))
+                if (!gBackSaves[uiCount].fAllocated && (gBackSaves[uiCount].fFreeMemory == true))
                 {
                     if (gBackSaves[uiCount].uiFlags.HasFlag(BGND_FLAG.SAVERECT))
                     {
@@ -157,7 +157,7 @@ public class RenderDirty
             }
         }
 
-        return (true);
+        return true;
     }
 
     public static void AddBaseDirtyRect(Rectangle bounds)
@@ -238,7 +238,7 @@ public class RenderDirty
         {
             if (Globals.gVideoOverlays[iBlitterIndex].fAllocated == 0)
             {
-                return (false);
+                return false;
             }
 
             uiFlags = pTopmostDesc.uiFlags;
@@ -274,7 +274,7 @@ public class RenderDirty
                 }
 
                 // If position has changed and flags are of type that use dirty rects, adjust
-                if ((uiFlags.HasFlag(VOVERLAY_DESC.POSITION)))
+                if (uiFlags.HasFlag(VOVERLAY_DESC.POSITION))
                 {
 
                     if (Globals.gVideoOverlays[iBlitterIndex].uiFlags.HasFlag(VOVERLAY.DIRTYBYTEXT))
@@ -282,7 +282,7 @@ public class RenderDirty
                         // Get dims by supplied text
                         if (pTopmostDesc.pzText == null)
                         {
-                            return (false);
+                            return false;
                         }
 
                         uiStringLength = FontSubSystem.StringPixLength(Globals.gVideoOverlays[iBlitterIndex].zText, Globals.gVideoOverlays[iBlitterIndex].uiFontID);
@@ -292,7 +292,7 @@ public class RenderDirty
                         // Remove background
                         FreeBackgroundRectPending(Globals.gVideoOverlays[iBlitterIndex].uiBackground);
 
-                        Globals.gVideoOverlays[iBlitterIndex].uiBackground = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, (pTopmostDesc.sLeft + uiStringLength), (pTopmostDesc.sTop + uiStringHeight));
+                        Globals.gVideoOverlays[iBlitterIndex].uiBackground = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, pTopmostDesc.sLeft + uiStringLength, pTopmostDesc.sTop + uiStringHeight);
                         Globals.gVideoOverlays[iBlitterIndex].sX = pTopmostDesc.sX;
                         Globals.gVideoOverlays[iBlitterIndex].sY = pTopmostDesc.sY;
 
@@ -304,7 +304,7 @@ public class RenderDirty
 
         }
 
-        return (true);
+        return true;
     }
 
     public static bool RestoreExternBackgroundRectGivenID(int iBack)
@@ -316,7 +316,7 @@ public class RenderDirty
 
         if (!gBackSaves[iBack].fAllocated)
         {
-            return (false);
+            return false;
         }
 
         sLeft = gBackSaves[iBack].sLeft;
@@ -350,9 +350,9 @@ public class RenderDirty
         //        video.UnLockVideoSurface(Surfaces.SAVE_BUFFER);
 
         // Add rect to frame buffer queue
-        video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
+        video.InvalidateRegionEx(sLeft, sTop, sLeft + sWidth, sTop + sHeight, 0);
 
-        return (true);
+        return true;
     }
 
     public static int RegisterBackgroundRect(BGND_FLAG uiFlags, out int? pSaveArea, int sLeft, int sTop, int sRight, int sBottom)
@@ -386,20 +386,20 @@ public class RenderDirty
 
         // Clip to rect
         uiLeftSkip = Math.Min(ClipX1 - Math.Min(ClipX1, iTempX), (int)usWidth);
-        uiRightSkip = Math.Min(Math.Max(ClipX2, (iTempX + (int)usWidth)) - ClipX2, (int)usWidth);
+        uiRightSkip = Math.Min(Math.Max(ClipX2, iTempX + (int)usWidth) - ClipX2, (int)usWidth);
         uiTopSkip = Math.Min(ClipY1 - Math.Min(ClipY1, iTempY), (int)usHeight);
-        uiBottomSkip = Math.Min(Math.Max(ClipY2, (iTempY + (int)usHeight)) - ClipY2, (int)usHeight);
+        uiBottomSkip = Math.Min(Math.Max(ClipY2, iTempY + (int)usHeight) - ClipY2, (int)usHeight);
 
         // check if whole thing is clipped
         if ((uiLeftSkip >= (int)usWidth) || (uiRightSkip >= (int)usWidth))
         {
-            return (-1);
+            return -1;
         }
 
         // check if whole thing is clipped
         if ((uiTopSkip >= (int)usHeight) || (uiBottomSkip >= (int)usHeight))
         {
-            return (-1);
+            return -1;
         }
 
         // Set re-set values given based on clipping
@@ -416,7 +416,7 @@ public class RenderDirty
 
         if ((iBackIndex = GetFreeBackgroundBuffer()) == (-1))
         {
-            return (-1);
+            return -1;
         }
 
         Globals.gBackSaves[iBackIndex] = new BACKGROUND_SAVE();
@@ -425,22 +425,22 @@ public class RenderDirty
 
         if (pSaveArea == null)
         {
-            uiBufSize = ((sRight - sLeft) * 2) * (sBottom - sTop);
+            uiBufSize = (sRight - sLeft) * 2 * (sBottom - sTop);
 
             if (uiBufSize == 0)
             {
-                return (-1);
+                return -1;
             }
 
             if (uiFlags.HasFlag(BGND_FLAG.SAVERECT))
             {
-                Globals.gBackSaves[iBackIndex].pSaveArea = new Image<Rgba32>((sRight - sLeft), (sBottom - sTop));
+                Globals.gBackSaves[iBackIndex].pSaveArea = new Image<Rgba32>(sRight - sLeft, sBottom - sTop);
             }
 
 
             if (uiFlags.HasFlag(BGND_FLAG.SAVE_Z))
             {
-                Globals.gBackSaves[iBackIndex].pZSaveArea = new Image<Rgba32>((sRight - sLeft), (sBottom - sTop));
+                Globals.gBackSaves[iBackIndex].pZSaveArea = new Image<Rgba32>(sRight - sLeft, sBottom - sTop);
                 Globals.gBackSaves[iBackIndex].fZBuffer = true;
             }
 
@@ -455,12 +455,12 @@ public class RenderDirty
         Globals.gBackSaves[iBackIndex].sTop = sTop;
         Globals.gBackSaves[iBackIndex].sRight = sRight;
         Globals.gBackSaves[iBackIndex].sBottom = sBottom;
-        Globals.gBackSaves[iBackIndex].sWidth = (sRight - sLeft);
-        Globals.gBackSaves[iBackIndex].sHeight = (sBottom - sTop);
+        Globals.gBackSaves[iBackIndex].sWidth = sRight - sLeft;
+        Globals.gBackSaves[iBackIndex].sHeight = sBottom - sTop;
 
         Globals.gBackSaves[iBackIndex].fFilled = false;
 
-        return (iBackIndex);
+        return iBackIndex;
     }
 
     public static void RemoveVideoOverlay(int iVideoOverlay)
@@ -510,16 +510,16 @@ public class RenderDirty
             RecountBackgrounds();
         }
 
-        return (true);
+        return true;
     }
 
     public static void RecountBackgrounds()
     {
-        for (int uiCount = Globals.guiNumBackSaves - 1; (uiCount >= 0); uiCount--)
+        for (int uiCount = Globals.guiNumBackSaves - 1; uiCount >= 0; uiCount--)
         {
-            if ((Globals.gBackSaves[uiCount].fAllocated) || (Globals.gBackSaves[uiCount].fFilled))
+            if (Globals.gBackSaves[uiCount].fAllocated || Globals.gBackSaves[uiCount].fFilled)
             {
-                Globals.guiNumBackSaves = (uiCount + 1);
+                Globals.guiNumBackSaves = uiCount + 1;
                 break;
             }
         }
@@ -529,7 +529,7 @@ public class RenderDirty
     {
         Globals.gBackSaves[iIndex].fPendingDelete = true;
 
-        return (true);
+        return true;
     }
 
     public static bool FreeBackgroundRectNow(int uiCount)
@@ -550,7 +550,7 @@ public class RenderDirty
         Globals.gBackSaves[uiCount].pSaveArea = null;
 
         RecountBackgrounds();
-        return (true);
+        return true;
     }
 
     bool FreeBackgroundRectType(BGND_FLAG uiFlags)
@@ -580,7 +580,7 @@ public class RenderDirty
 
         RecountBackgrounds();
 
-        return (true);
+        return true;
     }
 
     public static int GetFreeBackgroundBuffer()
@@ -598,7 +598,7 @@ public class RenderDirty
             return Globals.guiNumBackSaves++;
         }
 
-        return (-1);
+        return -1;
     }
 
     public static void DisableBackgroundRect(int iIndex, bool fDisabled)
@@ -626,9 +626,9 @@ public class RenderDirty
             sWidth, sHeight);
 
         // Add rect to frame buffer queue
-        video.InvalidateRegionEx(sLeft, sTop, (sLeft + sWidth), (sTop + sHeight), 0);
+        video.InvalidateRegionEx(sLeft, sTop, sLeft + sWidth, sTop + sHeight, 0);
 
-        return (true);
+        return true;
     }
 
     public int RegisterVideoOverlay(VOVERLAY uiFlags, VIDEO_OVERLAY_DESC? pTopmostDesc)
@@ -642,13 +642,13 @@ public class RenderDirty
             // Get dims by supplied text
             if (pTopmostDesc.pzText == null)
             {
-                return (-1);
+                return -1;
             }
 
             uiStringLength = FontSubSystem.StringPixLength(pTopmostDesc.pzText, pTopmostDesc.uiFontID);
             uiStringHeight = this.fonts.GetFontHeight(pTopmostDesc.uiFontID);
 
-            iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, (pTopmostDesc.sLeft + uiStringLength), (pTopmostDesc.sTop + uiStringHeight));
+            iBackIndex = RegisterBackgroundRect(BGND_FLAG.PERMANENT, out var _, pTopmostDesc.sLeft, pTopmostDesc.sTop, pTopmostDesc.sLeft + uiStringLength, pTopmostDesc.sTop + uiStringHeight);
 
 
         }
@@ -661,14 +661,14 @@ public class RenderDirty
 
         if (iBackIndex == -1)
         {
-            return (-1);
+            return -1;
         }
 
 
         // Get next free topmost blitter index
         if ((iBlitterIndex = GetFreeVideoOverlay()) == (-1))
         {
-            return (-1);
+            return -1;
         }
 
         // Init new blitter
@@ -696,7 +696,7 @@ public class RenderDirty
 
         //DebugMsg( TOPIC_JA2, DBG_LEVEL_0, String( "Register Overlay %d %S", iBlitterIndex, gVideoOverlays[ iBlitterIndex ].zText ) );
 
-        return (iBlitterIndex);
+        return iBlitterIndex;
 
     }
 
@@ -705,18 +705,18 @@ public class RenderDirty
     {
         for (int uiCount = 0; uiCount < Globals.guiNumVideoOverlays; uiCount++)
         {
-            if ((Globals.gVideoOverlays[uiCount].fAllocated == 0))
+            if (Globals.gVideoOverlays[uiCount].fAllocated == 0)
             {
-                return (uiCount);
+                return uiCount;
             }
         }
 
         if (Globals.guiNumVideoOverlays < Globals.BACKGROUND_BUFFERS)
         {
-            return (Globals.guiNumVideoOverlays++);
+            return Globals.guiNumVideoOverlays++;
         }
 
-        return (-1);
+        return -1;
     }
 
     public static void EmptyDirtyRectQueue()

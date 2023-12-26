@@ -25,17 +25,17 @@ public class Movement
 
         if ((sGridno < 0) || (sGridno >= GRIDSIZE))
         {
-            return (0);
+            return 0;
         }
 
         // return false if gridno on different level from merc
         if (IsometricUtils.GridNoOnVisibleWorldTile(pSoldier.sGridNo) && gpWorldLevelData[pSoldier.sGridNo].sHeight != gpWorldLevelData[sGridno].sHeight)
         {
-            return (0);
+            return 0;
         }
 
         // skip mercs if turnbased and adjacent AND not doing an IGNORE_PATH check (which is used almost exclusively by GoAsFarAsPossibleTowards)
-        fSkipTilesWithMercs = (gfTurnBasedAI && ubPathMode != IGNORE_PATH && IsometricUtils.SpacesAway(pSoldier.sGridNo, sGridno) == 1);
+        fSkipTilesWithMercs = gfTurnBasedAI && ubPathMode != IGNORE_PATH && IsometricUtils.SpacesAway(pSoldier.sGridNo, sGridno) == 1;
 
         // if this gridno is an OK destination
         // AND the gridno is NOT in a tear-gassed tile when we have no gas mask
@@ -44,7 +44,7 @@ public class Movement
         // AND the gridno hasn't been black-listed for us
 
         // Nov 28 98: skip people in destination tile if in turnbased
-        if ((Overhead.NewOKDestination(pSoldier, sGridno, fSkipTilesWithMercs, pSoldier.bLevel)) &&
+        if (Overhead.NewOKDestination(pSoldier, sGridno, fSkipTilesWithMercs, pSoldier.bLevel) &&
                        (!AIUtils.InGas(pSoldier, sGridno)) &&
                        (sGridno != pSoldier.sGridNo) &&
                        (sGridno != pSoldier.sBlackList))
@@ -64,7 +64,7 @@ public class Movement
             // if water's a problem, and gridno is in a water tile (bridges are OK)
 //            if (ubWaterOK == 0 && Water(sGridno))
             {
-                return (0);
+                return 0;
             }
 
             // passed all checks, now try to make sure we can get there!
@@ -73,29 +73,29 @@ public class Movement
                 // if finding a path wasn't asked for (could have already been done,
                 // for example), don't bother
                 case IGNORE_PATH:
-                    return (1);
+                    return 1;
 
                 case ENSURE_PATH:
 //                    if (FindBestPath(pSoldier, sGridno, pSoldier.bLevel, AnimationStates.WALKING, COPYROUTE, fFlags))
                     {
-                        return (1);        // legal destination
+                        return 1;        // legal destination
                     }
 //                    else // got this far, but found no clear path,
                     {
                         // so test fails
-                        return (1);
+                        return 1;
                     }
                 // *** NOTE: movement mode hardcoded to WALKING !!!!!
                 case ENSURE_PATH_COST:
-                    return (PathAI.PlotPath(pSoldier, sGridno, null, false, null, AnimationStates.WALKING, null, null, 0));
+                    return PathAI.PlotPath(pSoldier, sGridno, null, false, null, AnimationStates.WALKING, null, null, 0);
 
                 default:
-                    return (0);
+                    return 0;
             }
         }
         else  // something failed - didn't even have to test path
         {
-            return (0);         // illegal destination
+            return 0;         // illegal destination
         }
     }
 
@@ -184,7 +184,7 @@ public class Movement
             }
         }
 
-        return (ubSuccess);
+        return ubSuccess;
     }
 
 
@@ -194,7 +194,7 @@ public class Movement
         // patrol slot 0 is UNUSED, so max patrolCnt is actually only 9
         if ((pSoldier.bPatrolCnt < 1) || (pSoldier.bPatrolCnt >= MAXPATROLGRIDS))
         {
-            return (NOWHERE);
+            return NOWHERE;
         }
 
 
@@ -207,7 +207,7 @@ public class Movement
             pSoldier.bNextPatrolPnt = 1;   // ZERO is not used!
         }
 
-        return (pSoldier.usPatrolGrid[pSoldier.bNextPatrolPnt]);
+        return pSoldier.usPatrolGrid[pSoldier.bNextPatrolPnt];
     }
 
 
@@ -243,7 +243,7 @@ public class Movement
         {
             // over-ride orders to something safer
             pSoldier.bOrders = Orders.FARPATROL;
-            return (false);
+            return false;
         }
 
 
@@ -268,11 +268,11 @@ public class Movement
             // if it's not possible to get any closer, that's OK, but fail this call
             if (NOWHERE == (int)pSoldier.usActionData)
             {
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
     bool RandomPointPatrolAI(SOLDIERTYPE? pSoldier)
@@ -316,7 +316,7 @@ public class Movement
             // do nothing this time around
             if (pSoldier.sGridNo == sPatrolPoint)
             {
-                return (false);
+                return false;
             }
         }
 
@@ -325,7 +325,7 @@ public class Movement
         {
             // over-ride orders to something safer
             pSoldier.bOrders = Orders.FARPATROL;
-            return (false);
+            return false;
         }
 
         // make sure we can get there from here at this time, if we can't get all
@@ -349,13 +349,13 @@ public class Movement
             // if it's not possible to get any closer, that's OK, but fail this call
             if (NOWHERE == (int)pSoldier.usActionData)
             {
-                return (false);
+                return false;
             }
         }
 
 
         // passed all tests - start moving towards next patrol point
-        return (true);
+        return true;
     }
 
     public static int InternalGoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, int bReserveAPs, AI_ACTION bAction, FLAG fFlags)
@@ -409,7 +409,7 @@ public class Movement
         // if soldier is ALREADY at the desired destination, quit right away
         if (sDesGrid == pSoldier.sGridNo)
         {
-            return (NOWHERE);
+            return NOWHERE;
         }
 
         // don't try to approach go after noises or enemies actually in water
@@ -450,7 +450,7 @@ public class Movement
             if (CREATURE_OR_BLOODCAT(pSoldier))
             {
                 // we tried to get close, failed; abort!
-                return (NOWHERE);
+                return NOWHERE;
             }
             else
             {
@@ -500,7 +500,7 @@ public class Movement
 
                 if (fFound == 0)
                 {
-                    return (NOWHERE);
+                    return NOWHERE;
                 }
 
                 // found a good grid #, this becomes our actual desired grid #
@@ -521,7 +521,7 @@ public class Movement
             // what is the next gridno in the path?
 
             //sTempDest = NewGridNo( sGoToGrid,DirectionInc( (int) (pSoldier.usPathingData[sLoop] + 1) ) );
-            sTempDest = IsometricUtils.NewGridNo(sGoToGrid, IsometricUtils.DirectionInc((pSoldier.usPathingData[sLoop])));
+            sTempDest = IsometricUtils.NewGridNo(sGoToGrid, IsometricUtils.DirectionInc(pSoldier.usPathingData[sLoop]));
             //NumMessage("sTempDest = ",sTempDest);
 
             // this should NEVER be out of bounds
@@ -631,7 +631,7 @@ public class Movement
         // if it turned out we couldn't go even 1 tile towards the desired gridno
         if (sGoToGrid == pSoldier.sGridNo)
         {
-            return (NOWHERE);             // then go nowhere
+            return NOWHERE;             // then go nowhere
         }
         else
         {
@@ -649,13 +649,13 @@ public class Movement
                 pSoldier.usPathDataSize = sLoop + 1;
             }
 
-            return (sGoToGrid);
+            return sGoToGrid;
         }
     }
 
     public static int GoAsFarAsPossibleTowards(SOLDIERTYPE? pSoldier, int sDesGrid, AI_ACTION bAction)
     {
-        return (InternalGoAsFarAsPossibleTowards(pSoldier, sDesGrid, -1, bAction, 0));
+        return InternalGoAsFarAsPossibleTowards(pSoldier, sDesGrid, -1, bAction, 0);
     }
 
     void SoldierTriesToContinueAlongPath(SOLDIERTYPE pSoldier)
@@ -726,7 +726,7 @@ public class Movement
     public static void HaltMoveForSoldierOutOfPoints(SOLDIERTYPE? pSoldier)
     {
         // If a special move, ignore this!
-        if ((gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.SPECIALMOVE)))
+        if (gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.SPECIALMOVE))
         {
             return;
         }
@@ -848,7 +848,7 @@ public class Movement
                     if (LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, 0) > 0)
                     {
                         // check this location out
-                        pMapElement = (gpWorldLevelData[iGridNo]);
+                        pMapElement = gpWorldLevelData[iGridNo];
                         if (pMapElement.ubSmellInfo > 0 && (Smell.SMELL_TYPE(pMapElement.ubSmellInfo) == ubSoughtSmell))
                         {
                             ubStrength = Smell.SMELL_STRENGTH(pMapElement.ubSmellInfo);
@@ -856,7 +856,7 @@ public class Movement
                             {
                                 iBestGridNo = iGridNo;
                                 ubBestStrength = ubStrength;
-                                bDir = SoldierControl.atan8(iXStart, iYStart, (iXStart + iXDiff), (iYStart + iYDiff));
+                                bDir = SoldierControl.atan8(iXStart, iYStart, iXStart + iXDiff, iYStart + iYDiff);
                                 // now convert it into a difference in degree between it and our current dir
                                 ubBestDirDiff = Math.Abs(pSoldier.bDirection - bDir);
                                 if (ubBestDirDiff > 4) // dir 0 compared with dir 6, for instance
@@ -906,9 +906,9 @@ public class Movement
         if (iBestGridNo != NOWHERE)
         {
             pSoldier.usActionData = (int)iBestGridNo;
-            return ((int)iBestGridNo);
+            return (int)iBestGridNo;
         }
-        return (0);
+        return 0;
     }
 
     /*

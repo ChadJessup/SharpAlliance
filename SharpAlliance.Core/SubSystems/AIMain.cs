@@ -42,18 +42,18 @@ public class AIMain
 #endif
 
         //If we are not loading a saved game ( if we are, this has already been called )
-        if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME)))
+        if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.LOADING_SAVED_GAME))
         {
             //init the panic system
             PanicButtons.InitPanicSystem();
         }
 
-        return (true);
+        return true;
     }
 
     bool AimingGun(SOLDIERTYPE? pSoldier)
     {
-        return (false);
+        return false;
     }
 
     void HandleSoldierAI(SOLDIERTYPE? pSoldier)
@@ -79,7 +79,7 @@ public class AIMain
         {
             // if we're in autobandage, or the AI control flag is set and the player has a quote record to perform, or is a boxer,
             // let AI process this merc; otherwise abort
-            if (!(gTacticalStatus.fAutoBandageMode)
+            if (!gTacticalStatus.fAutoBandageMode
                 && !(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PCUNDERAICONTROL)
                 && (pSoldier.ubQuoteRecord != 0
                 || pSoldier.uiStatusFlags.HasFlag(SOLDIER.BOXER))))
@@ -109,8 +109,8 @@ public class AIMain
         */
 
         // determine what sort of AI to use
-        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
-            && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
+            && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
         {
             gfTurnBasedAI = true;
         }
@@ -128,7 +128,7 @@ public class AIMain
             }
             // why do we let the quote record thing be in here?  we're in turnbased the quote record doesn't matter,
             // we can't act out of turn!
-            if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL)))
+            if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL))
             //if ( !(pSoldier.uiStatusFlags.HasFlag(SOLDIER_UNDERAICONTROL) && (pSoldier.ubQuoteRecord == 0))
             {
                 return;
@@ -147,7 +147,7 @@ public class AIMain
             }
 
         }
-        else if (!(pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_HANDLE_EVERY_FRAME))) // if set to handle every frame, ignore delay!
+        else if (!pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_HANDLE_EVERY_FRAME)) // if set to handle every frame, ignore delay!
         {
             //#ifndef AI_PROFILING
             //Time to handle guys in realtime (either combat or not )
@@ -170,7 +170,7 @@ public class AIMain
             if (pSoldier.ubQuoteActionID != QUOTE_ACTION_ID.TURNTOWARDSPLAYER)
             {
                 // turn off flag!
-                pSoldier.fAIFlags &= (~AIDEFINES.AI_HANDLE_EVERY_FRAME);
+                pSoldier.fAIFlags &= ~AIDEFINES.AI_HANDLE_EVERY_FRAME;
             }
         }
 
@@ -185,7 +185,7 @@ public class AIMain
             || gTacticalStatus.bBoxingState == BoxingStates.WON_ROUND
             || gTacticalStatus.bBoxingState == BoxingStates.LOST_ROUND)
         {
-            if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.BOXER)))
+            if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.BOXER))
             {
                 // do nothing!
                 EndAIGuysTurn(pSoldier);
@@ -213,7 +213,7 @@ public class AIMain
                 // if he's visible
                 pSoldier.fAIFlags &= ~AIDEFINES.AI_ASLEEP;
             }
-            else if (!(pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE)))
+            else if (!pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE))
             {
                 // don't do anything!
                 EndAIGuysTurn(pSoldier);
@@ -221,14 +221,14 @@ public class AIMain
             }
         }
 
-        if (pSoldier.bInSector == false && !(pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE)))
+        if (pSoldier.bInSector == false && !pSoldier.fAIFlags.HasFlag(AIDEFINES.AI_CHECK_SCHEDULE))
         {
             // don't do anything!
             EndAIGuysTurn(pSoldier);
             return;
         }
 
-        if (((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
+        if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.VEHICLE)
             && !TANK(pSoldier)) || AM_A_ROBOT(pSoldier))
         {
             // bail out!
@@ -254,7 +254,7 @@ public class AIMain
         // during turnbased, don't do any AI
         if (pSoldier.ubProfile != NO_PROFILE
             && (pSoldier.ubProfile == NPCID.SERGEANT || pSoldier.ubProfile == NPCID.MIKE || pSoldier.ubProfile == NPCID.JOE)
-            && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
+            && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)
             && (gfInTalkPanel || gfWaitingForTriggerTimer || !DialogControl.DialogueQueueIsEmpty()))
         {
             return;
@@ -300,7 +300,7 @@ public class AIMain
 
             if (fProcessNewSituation)
             {
-                if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL)) && pSoldier.ubQuoteActionID >= QUOTE_ACTION_ID.TRAVERSE_EAST && pSoldier.ubQuoteActionID <= QUOTE_ACTION_ID.TRAVERSE_NORTH && !GridNoOnVisibleWorldTile(pSoldier.sGridNo))
+                if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL) && pSoldier.ubQuoteActionID >= QUOTE_ACTION_ID.TRAVERSE_EAST && pSoldier.ubQuoteActionID <= QUOTE_ACTION_ID.TRAVERSE_NORTH && !GridNoOnVisibleWorldTile(pSoldier.sGridNo))
                 {
                     // traversing offmap, ignore new situations
                 }
@@ -346,7 +346,7 @@ public class AIMain
                 // LiveMessage("Breaking Deadlock");
 
                 this.EndAIDeadlock();
-                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL)))
+                if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.UNDERAICONTROL))
                 {
                     return;
                 }
@@ -466,7 +466,7 @@ public class AIMain
 //                    SoldierTriesToContinueAlongPath(pSoldier);
                 }
                 // ATE: Let's also test if we are in any stationary animation...
-                else if ((gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.STATIONARY)))
+                else if (gAnimControl[pSoldier.usAnimState].uiFlags.HasFlag(ANIM.STATIONARY))
                 {
                     // ATE: Put some ( MORE ) refinements on here....
                     // If we are trying to open door, or jump fence  don't continue until done...
@@ -474,7 +474,7 @@ public class AIMain
                     {
                         //ATE: just a few more.....
                         // If we have ANY pending aninmation that is movement.....
-                        if (pSoldier.usPendingAnimation != NO_PENDING_ANIMATION && (gAnimControl[pSoldier.usPendingAnimation].uiFlags.HasFlag(ANIM.MOVING)))
+                        if (pSoldier.usPendingAnimation != NO_PENDING_ANIMATION && gAnimControl[pSoldier.usPendingAnimation].uiFlags.HasFlag(ANIM.MOVING))
                         {
                             // Don't do anything, we're waiting on a pending animation....
                         }
@@ -518,7 +518,7 @@ public class AIMain
                 {
                     if (MercPtrs[ubID].fCloseCall > 0)
                     {
-                        if (!gTacticalStatus.fSomeoneHit && MercPtrs[ubID].bNumHitsThisTurn == 0 && !(MercPtrs[ubID].usQuoteSaidExtFlags.HasFlag(SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL)) && Globals.Random.Next(3) == 0)
+                        if (!gTacticalStatus.fSomeoneHit && MercPtrs[ubID].bNumHitsThisTurn == 0 && !MercPtrs[ubID].usQuoteSaidExtFlags.HasFlag(SOLDIER_QUOTE.SAID_EXT_CLOSE_CALL) && Globals.Random.Next(3) == 0)
                         {
                             // say close call quote!
                             DialogControl.TacticalCharacterDialogue(MercPtrs[ubID], QUOTE.CLOSE_CALL);
@@ -534,7 +534,7 @@ public class AIMain
             if (pSoldier.ubCivilianGroup != CIV_GROUP.NON_CIV_GROUP && pSoldier.bNeutral == 0)
             {
 
-                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.BOXER))
+                if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.BOXER)
                     || !(gTacticalStatus.bBoxingState == BoxingStates.PRE_BOXING
                     || gTacticalStatus.bBoxingState == BoxingStates.BOXING))
                 {
@@ -549,16 +549,16 @@ public class AIMain
             }
 
             if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_ROOFS)
-                && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             {
                 RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-                gTacticalStatus.uiFlags &= (~TacticalEngineStatus.SHOW_ALL_ROOFS);
+                gTacticalStatus.uiFlags &= ~TacticalEngineStatus.SHOW_ALL_ROOFS;
                 RenderWorld.InvalidateWorldRedundency();
             }
 
             // End this NPC's control, move to next dude
 //            EndRadioLocator(pSoldier.ubID);
-            pSoldier.uiStatusFlags &= (~SOLDIER.UNDERAICONTROL);
+            pSoldier.uiStatusFlags &= ~SOLDIER.UNDERAICONTROL;
             pSoldier.fTurnInProgress = false;
             pSoldier.bMoved = 1;
             pSoldier.bBypassToGreen = 0;
@@ -667,14 +667,14 @@ public class AIMain
 
         // Locate to soldier
         // If we are not in an interrupt situation!
-        if (((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED))
-            && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)
+            && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)
             && gubOutOfTurnPersons == 0)
         {
-            if (((pSoldier.bVisible != -1 && pSoldier.IsAlive) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))) && (fInValidSoldier == false))
+            if (((pSoldier.bVisible != -1 && pSoldier.IsAlive) || gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)) && (fInValidSoldier == false))
             {
                 // If we are on a roof, set flag for rendering...
-                if (pSoldier.bLevel != 0 && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                if (pSoldier.bLevel != 0 && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                 {
                     gTacticalStatus.uiFlags |= TacticalEngineStatus.SHOW_ALL_ROOFS;
                     RenderWorld.SetRenderFlags(RenderingFlags.FULL);
@@ -729,12 +729,12 @@ public class AIMain
             {
                 if (pOurTeam.sGridNo == sGridno || sGridno == (int)pOurTeam.usActionData)
                 {
-                    return (false);
+                    return false;
                 }
             }
         }
 
-        return (true);  // dest is free to go to...
+        return true;  // dest is free to go to...
     }
 
 
@@ -774,7 +774,7 @@ public class AIMain
 
         }
 
-        return (sCheapestDest);
+        return sCheapestDest;
     }
 
     int GetMostThreateningOpponent(SOLDIERTYPE? pSoldier)
@@ -827,7 +827,7 @@ public class AIMain
 
         }
 
-        return (ubTargetSoldier);
+        return ubTargetSoldier;
     }
 
 
@@ -1302,12 +1302,12 @@ public class AIMain
         {
             // don't try to pay any more APs for this, it was paid for once already!
             pSoldier.bDesiredDirection = (WorldDirections)pSoldier.usActionData;   // turn to face direction in actionData
-            return (1);
+            return 1;
         }
 
 
         // needs more time to complete action
-        return (1);
+        return 1;
     }
 
 
@@ -1671,7 +1671,7 @@ public class AIMain
             }
             else
             {
-                if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV)))
+                if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.ENGAGED_IN_CONV))
                 {
                     if (CREATURE_OR_BLOODCAT(pSoldier))
                     {
@@ -1908,7 +1908,7 @@ public class AIMain
 
             case AI_ACTION.DROP_ITEM:                    // drop item in hand
 //                SoldierDropItem(pSoldier, (pSoldier.inv[InventorySlot.HANDPOS]));
-                ItemSubSystem.DeleteObj((pSoldier.inv[InventorySlot.HANDPOS]));
+                ItemSubSystem.DeleteObj(pSoldier.inv[InventorySlot.HANDPOS]);
                 pSoldier.bAction = AI_ACTION.PENDING_ACTION;
                 break;
 
@@ -1919,12 +1919,12 @@ public class AIMain
                     pSoldier.bAction = AI_ACTION.CLIMB_ROOF;
                     if (AIUtils.IsActionAffordable(pSoldier))
                     {
-                        return (ExecuteAction(pSoldier));
+                        return ExecuteAction(pSoldier);
                     }
                     else
                     {
                         // no action started
-                        return (0);
+                        return 0;
                     }
                 }
                 break;
@@ -1976,7 +1976,7 @@ public class AIMain
                 // Randomly do growl...
                 if (pSoldier.ubBodyType == SoldierBodyTypes.BLOODCAT)
                 {
-                    if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                    if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                     {
                         if (Globals.Random.Next(2) == 0)
                         {
@@ -1994,7 +1994,7 @@ public class AIMain
                 // optimization - Ian (if up-to-date path is known, do not check again)
                 if (!pSoldier.bPathStored)
                 {
-                    if ((pSoldier.sAbsoluteFinalDestination != NOWHERE || gTacticalStatus.fAutoBandageMode) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                    if ((pSoldier.sAbsoluteFinalDestination != NOWHERE || gTacticalStatus.fAutoBandageMode) && !gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                     {
                         // NPC system move, allow path through
                         if (Movement.LegalNPCDestination(pSoldier, (int)pSoldier.usActionData, ENSURE_PATH, WATEROK, PATH.THROUGH_PEOPLE) > 0)
@@ -2016,7 +2016,7 @@ public class AIMain
                     if (!pSoldier.bPathStored)
                     {
                         // Check if we were told to move by NPC stuff
-                        if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                        if (pSoldier.sAbsoluteFinalDestination != NOWHERE && !gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                         {
                             //ScreenMsg( FONT_MCOLOR_LTYELLOW, MSG.ERROR, "AI %s failed to get path for dialogue-related move!", pSoldier.name );
 
@@ -2046,13 +2046,13 @@ public class AIMain
                             if (!pSoldier.bPathStored)
                             {
                                 CancelAIAction(pSoldier, FORCE);
-                                return (0);         // nothing is in progress
+                                return 0;         // nothing is in progress
                             }
                         }
                         else
                         {
                             CancelAIAction(pSoldier, FORCE);
-                            return (0);         // nothing is in progress
+                            return 0;         // nothing is in progress
                         }
                     }
                 }
@@ -2091,7 +2091,7 @@ public class AIMain
                     DebugAI(string.Format("Setting blacklist for %d to %d", pSoldier.ubID, pSoldier.sBlackList));
 
                     CancelAIAction(pSoldier, FORCE);
-                    return (0);         // nothing is in progress
+                    return 0;         // nothing is in progress
                 }
 
                 // cancel any old black-listed gridno, got a valid new .sDestination
@@ -2105,7 +2105,7 @@ public class AIMain
 //                if (!TryToResumeMovement(pSoldier, pSoldier.usActionData))
                 {
                     // don't black-list anything here, and action already got canceled
-                    return (0);         // nothing is in progress
+                    return 0;         // nothing is in progress
                 }
 
                 // cancel any old black-listed gridno, got a valid new .sDestination
@@ -2156,7 +2156,7 @@ public class AIMain
             case AI_ACTION.PULL_TRIGGER:          // activate an adjacent panic trigger
 
                 // turn to face trigger first
-                if (StructureInternals.FindStructure((pSoldier.sGridNo + DirectionInc(WorldDirections.NORTH)), STRUCTUREFLAGS.SWITCH) is not null)
+                if (StructureInternals.FindStructure(pSoldier.sGridNo + DirectionInc(WorldDirections.NORTH), STRUCTUREFLAGS.SWITCH) is not null)
                 {
                     SoldierControl.SendSoldierSetDesiredDirectionEvent(pSoldier, WorldDirections.NORTH);
                 }
@@ -2187,12 +2187,12 @@ public class AIMain
                 pSoldier.usActionData = NOWHERE;
                 pSoldier.bLastAction = pSoldier.bAction;
                 pSoldier.bAction = AI_ACTION.NONE;
-                return (0);           // no longer in progress
+                return 0;           // no longer in progress
             case AI_ACTION.RED_ALERT:             // tell friends opponent(s) seen
                                                   // if a computer merc, and up to now they didn't know you're here
-                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC))
+                if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.PC)
                     && ((gTacticalStatus.Team[pSoldier.bTeam].bAwareOfOpposition == 0)
-                    || ((gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE))
+                    || (gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE)
                     && gTacticalStatus.ubTheChosenOne == NOBODY)))
                 {
                     HandleInitialRedAlert(pSoldier.bTeam, 1);
@@ -2228,7 +2228,7 @@ public class AIMain
                 {
                     // abort!
                     ActionDone(pSoldier);
-                    return (0);
+                    return 0;
                 }
 
                 SkipCoverCheck = 1;
@@ -2245,7 +2245,7 @@ public class AIMain
                 {
                     // nothing to do!
                     ActionDone(pSoldier);
-                    return (0);
+                    return 0;
                 }
                 else
                 {
@@ -2265,7 +2265,7 @@ public class AIMain
                 {
                     // nothing to do!
                     ActionDone(pSoldier);
-                    return (0);
+                    return 0;
                 }
                 break;
 
@@ -2331,7 +2331,7 @@ public class AIMain
                 {
                     EndAIGuysTurn(pSoldier);
                 }
-                return (0);         // nothing is in progress
+                return 0;         // nothing is in progress
 
             case AI_ACTION.TRAVERSE_DOWN:
                 if (gfTurnBasedAI)
@@ -2348,7 +2348,7 @@ public class AIMain
 //                TacticalRemoveSoldier(pSoldier.ubID);
 //                CheckForEndOfBattle(true);
 
-                return (0);         // nothing is in progress
+                return 0;         // nothing is in progress
 
             case AI_ACTION.OFFER_SURRENDER:
                 // start the offer of surrender!
@@ -2356,11 +2356,11 @@ public class AIMain
                 break;
 
             default:
-                return (0);
+                return 0;
         }
 
         // return status indicating execution of action was properly started
-        return (1);
+        return 1;
     }
 
     public static void CheckForChangingOrders(SOLDIERTYPE pSoldier)
@@ -2452,7 +2452,7 @@ public class AIMain
         }
 
         // if there is a stealth mission in progress here, and a panic trigger exists
-        if (bTeam == ENEMY_TEAM && (gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE)))
+        if (bTeam == ENEMY_TEAM && gTacticalStatus.fPanicFlags.HasFlag(PANIC.TRIGGERS_HERE))
         {
             // they're going to be aware of us now!
 //            MakeClosestEnemyChosenOne();
@@ -2574,7 +2574,7 @@ public class AIMain
                     //DebugMsg(TOPIC_JA2, DBG_LEVEL_3, string.Format("BBBBBB bNewSituation is set for %d when ABC !=0.", pSoldier.ubID));
                 }
 
-                if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)) || (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)))
+                if (!gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT) || gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME))
                 {
                     // reset delay if necessary!
                     RESETTIMECOUNTER(ref pSoldier.AICounter, (uint)Globals.Random.Next(1000));

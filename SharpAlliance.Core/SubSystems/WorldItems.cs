@@ -20,7 +20,7 @@ public class WorldItems
         {
             if (gWorldBombs[uiBombIndex].fExists)
             {
-                pObj = (gWorldItems[gWorldBombs[uiBombIndex].iItemIndex].o);
+                pObj = gWorldItems[gWorldBombs[uiBombIndex].iItemIndex].o;
                 if (pObj.bFrequency == PANIC_FREQUENCY || pObj.bFrequency == PANIC_FREQUENCY_2 || pObj.bFrequency == PANIC_FREQUENCY_3)
                 {
                     if (pObj.usItem == Items.SWITCH)

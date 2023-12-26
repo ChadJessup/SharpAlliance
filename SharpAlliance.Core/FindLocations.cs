@@ -33,7 +33,7 @@ public class FindLocations
             PopMessage(tempstr);
 #endif
 
-            return (NOWHERE);
+            return NOWHERE;
         }
 
 
@@ -52,12 +52,12 @@ public class FindLocations
             PopMessage(tempstr);
 #endif
 
-            return (NOWHERE);
+            return NOWHERE;
         }
 
 
 
-        iPercentBetter = (iValueChange * 100) / iScaleSum;
+        iPercentBetter = iValueChange * 100 / iScaleSum;
 
 # if DEBUGCOVER
         DebugAI(String("CalcPercentBetter: %%Better %ld, old %ld, new %ld, change %ld\n\t\toldScale %ld, newScale %ld, scaleSum %ld\n",
@@ -65,7 +65,7 @@ public class FindLocations
 #endif
 
 
-        return (iPercentBetter);
+        return iPercentBetter;
     }
 
     void AICenterXY(int sGridNo, out float pdX, out float pdY)
@@ -117,7 +117,7 @@ public class FindLocations
                 }
             }
         }
-        return (bWorstCTGT);
+        return bWorstCTGT;
     }
 
     int CalcAverageCTGTForPosition(SOLDIERTYPE? pSoldier, int ubOppID, int sOppGridNo, int bLevel, int iMyAPsLeft)
@@ -151,7 +151,7 @@ public class FindLocations
             bValidCubeLevels++;
         }
         iTotalCTGT /= bValidCubeLevels;
-        return ((int)iTotalCTGT);
+        return (int)iTotalCTGT;
     }
 
 
@@ -217,7 +217,7 @@ public class FindLocations
 
                         // NOTE: GOTTA SET THESE 3 FIELDS *BACK* AFTER USING THIS FUNCTION!!!
                         pSoldier.sGridNo = sAdjSpot;     // pretend he's standing at 'sAdjSpot'
-                        this.AICenterXY(sAdjSpot, out (pSoldier.dXPos), out (pSoldier.dYPos));
+                        this.AICenterXY(sAdjSpot, out pSoldier.dXPos, out pSoldier.dYPos);
                         bThisCTGT = this.CalcWorstCTGTForPosition(pSoldier, ubOppID, sOppGridNo, bLevel, iMyAPsLeft);
                         if (bThisCTGT > bBestCTGT)
                         {
@@ -234,7 +234,7 @@ public class FindLocations
             }
         }
 
-        return (bBestCTGT);
+        return bBestCTGT;
     }
 
 
@@ -419,7 +419,7 @@ public class FindLocations
                 if (iRangeChange > 0)
                 {
                     //iRangeFactor = (iRangeChange * (morale - 1)) / 4;
-                    iRangeFactor = (iRangeChange * iRangeFactorMultiplier) / 2;
+                    iRangeFactor = iRangeChange * iRangeFactorMultiplier / 2;
 
 #if DEBUGCOVER
                     DebugAI(String("CalcCoverValue: iRangeChange %d, iRangeFactor %d\n", iRangeChange, iRangeFactor));
@@ -433,13 +433,13 @@ public class FindLocations
                     if (iRangeFactor > 0)
                     {
 
-                        iMyPosValue = (iMyPosValue * (100 + iRangeFactor)) / 100;
-                        iHisPosValue = (100 * iHisPosValue) / (100 + iRangeFactor);
+                        iMyPosValue = iMyPosValue * (100 + iRangeFactor) / 100;
+                        iHisPosValue = 100 * iHisPosValue / (100 + iRangeFactor);
                     }
                     else if (iRangeFactor < 0)
                     {
-                        iMyPosValue = (100 * iMyPosValue) / (100 - iRangeFactor);
-                        iHisPosValue = (iHisPosValue * (100 - iRangeFactor)) / 100;
+                        iMyPosValue = 100 * iMyPosValue / (100 - iRangeFactor);
+                        iHisPosValue = iHisPosValue * (100 - iRangeFactor) / 100;
                     }
                 }
             }
@@ -447,12 +447,12 @@ public class FindLocations
 
         // the farther apart we are, the less important the cover differences are
         // the less certain his position, the less important cover differences are
-        iReductionFactor = ((MAX_THREAT_RANGE - iRange) * Threat[uiThreatIndex].iCertainty) /
+        iReductionFactor = (MAX_THREAT_RANGE - iRange) * Threat[uiThreatIndex].iCertainty /
                 MAX_THREAT_RANGE;
 
         // divide by a 100 to make the numbers more managable and avoid 32-bit limit
         iThisScale = Math.Max(iMyPosValue, iHisPosValue) / 100;
-        iThisScale = (iThisScale * iReductionFactor) / 100;
+        iThisScale = iThisScale * iReductionFactor / 100;
         iTotalScale += iThisScale;
         // this helps to decide the percent improvement later
 
@@ -460,7 +460,7 @@ public class FindLocations
         // MEANS IT BENEFITS THE OTHER GUY.
         // divide by a 100 to make the numbers more managable and avoid 32-bit limit
         iCoverValue = (iMyPosValue - iHisPosValue) / 100;
-        iCoverValue = (iCoverValue * iReductionFactor) / 100;
+        iCoverValue = iCoverValue * iReductionFactor / 100;
 
 # if DEBUGCOVER
         DebugAI(String("CalcCoverValue: iCoverValue %d, sMyGridNo %d, sHisGrid %d, iRange %d, morale %d\n", iCoverValue, sMyGridNo, sHisGridNo, iRange, morale));
@@ -471,7 +471,7 @@ public class FindLocations
         DebugAI(String("CalcCoverValue: iThisScale = %d, iTotalScale = %d, iReductionFactor %d\n\n", iThisScale, *iTotalScale, iReductionFactor));
 #endif
 
-        return (iCoverValue);
+        return iCoverValue;
     }
 
 
@@ -499,7 +499,7 @@ public class FindLocations
             }
         }
 
-        return (ubCount);
+        return ubCount;
     }
 
     int FindBestNearbyCover(SOLDIERTYPE? pSoldier, int morale, int? piPercentBetter)
@@ -576,12 +576,12 @@ public class FindLocations
 
         // BUILD A LIST OF THREATENING GRID #s FROM PERSONAL & PUBLIC opplists
 
-        pusLastLoc = (gsLastKnownOppLoc[pSoldier.ubID][0]);
+        pusLastLoc = gsLastKnownOppLoc[pSoldier.ubID][0];
 
         // hang a pointer into personal opplist
-        pbPersOL = (pSoldier.bOppList[0]);
+        pbPersOL = pSoldier.bOppList[0];
         // hang a pointer into public opplist
-        pbPublOL = (gbPublicOpplist[pSoldier.bTeam][0]);
+        pbPublOL = gbPublicOpplist[pSoldier.bTeam][0];
 
         // decide how far we're gonna be looking
         //        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE, SoldierDifficultyLevel(pSoldier)];
@@ -601,7 +601,7 @@ public class FindLocations
         // maximum search range is 1 tile / 8 pts of wisdom
         if (iSearchRange > (pSoldier.bWisdom / 8))
         {
-            iSearchRange = (pSoldier.bWisdom / 8);
+            iSearchRange = pSoldier.bWisdom / 8;
         }
 
         if (!gfTurnBasedAI)
@@ -630,7 +630,7 @@ public class FindLocations
 
         if (iSearchRange <= 0)
         {
-            return (NOWHERE);
+            return NOWHERE;
         }
 
         // those within 20 tiles of any tile we'll CONSIDER as cover are important
@@ -764,20 +764,20 @@ public class FindLocations
             //PopMessage(tempstr);
         }
 
-        iCurrentCoverValue -= (iCurrentCoverValue / 10) * this.NumberOfTeamMatesAdjacent(pSoldier, pSoldier.sGridNo);
+        iCurrentCoverValue -= iCurrentCoverValue / 10 * this.NumberOfTeamMatesAdjacent(pSoldier, pSoldier.sGridNo);
 
 #if DEBUGCOVER
         //	AINumMessage("Search Range = ",iSearchRange);
 #endif
 
         // determine maximum horizontal limits
-        sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+        sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
         //NumMessage("sMaxLeft = ",sMaxLeft);
         sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
         //NumMessage("sMaxRight = ",sMaxRight);
 
         // determine maximum vertical limits
-        sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+        sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
         //NumMessage("sMaxUp = ",sMaxUp);
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
         //NumMessage("sMaxDown = ",sMaxDown);
@@ -839,7 +839,7 @@ public class FindLocations
                 {
                     continue;
                 }
-                gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+                gpWorldLevelData[sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
             }
         }
 
@@ -847,7 +847,7 @@ public class FindLocations
 
         // Turn off the "reachable" flag for his current location
         // so we don't consider it
-        gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+        gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
 
         // SET UP DOUBLE-LOOP TO STEP THROUGH POTENTIAL GRID #s
         for (sYOffset = -sMaxUp; sYOffset <= sMaxDown; sYOffset++)
@@ -884,7 +884,7 @@ public class FindLocations
                                 KeepInterfaceGoing(1);
                             }
                 */
-                if (!(gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+                if (!gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
                 {
                     continue;
                 }
@@ -952,15 +952,15 @@ public class FindLocations
                 // by 10% (so locations next to several people will be very much frowned upon
                 if (iCoverValue >= 0)
                 {
-                    iCoverValue -= (iCoverValue / 10) * this.NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
+                    iCoverValue -= iCoverValue / 10 * this.NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
                 }
                 else
                 {
                     // when negative, must add a negative to decrease the total
-                    iCoverValue += (iCoverValue / 10) * this.NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
+                    iCoverValue += iCoverValue / 10 * this.NumberOfTeamMatesAdjacent(pSoldier, sGridNo);
                 }
 
-                if (fNight && !(RenderFun.InARoom(sGridNo, out var _))) // ignore in buildings in case placed there
+                if (fNight && !RenderFun.InARoom(sGridNo, out var _)) // ignore in buildings in case placed there
                 {
                     // reduce cover at nighttime based on how bright the light is at that location
                     // using the difference in sighting distance between the background and the
@@ -968,11 +968,11 @@ public class FindLocations
 //                    ubLightPercentDifference = (gbLightSighting[0, LightTrueLevel(sGridNo, pSoldier.bLevel)] - ubBackgroundLightPercent);
                     if (iCoverValue >= 0)
                     {
-                        iCoverValue -= (iCoverValue / 100) * ubLightPercentDifference;
+                        iCoverValue -= iCoverValue / 100 * ubLightPercentDifference;
                     }
                     else
                     {
-                        iCoverValue += (iCoverValue / 100) * ubLightPercentDifference;
+                        iCoverValue += iCoverValue / 100 * ubLightPercentDifference;
                     }
                 }
 
@@ -1069,10 +1069,10 @@ public class FindLocations
                 SnuggleDebug(pSoldier, "Found Cover");
 #endif
 
-                return ((int)sBestCover);       // return the gridno of that cover
+                return (int)sBestCover;       // return the gridno of that cover
             }
         }
-        return (NOWHERE);       // return that no suitable cover was found
+        return NOWHERE;       // return that no suitable cover was found
     }
 
     int FindSpotMaxDistFromOpponents(SOLDIERTYPE pSoldier)
@@ -1116,8 +1116,8 @@ public class FindLocations
                 continue;          // next merc
             }
 
-            pbPersOL = (pSoldier.bOppList[pOpponent.ubID]);
-            pbPublOL = (gbPublicOpplist[pSoldier.bTeam][pOpponent.ubID]);
+            pbPersOL = pSoldier.bOppList[pOpponent.ubID];
+            pbPublOL = gbPublicOpplist[pSoldier.bTeam][pOpponent.ubID];
 
             // if this opponent is unknown personally and publicly
             if ((pbPersOL == NOT_HEARD_OR_SEEN) && (pbPublOL == NOT_HEARD_OR_SEEN))
@@ -1126,7 +1126,7 @@ public class FindLocations
             }
 
             // Special stuff for Carmen the bounty hunter
-            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpponent.ubProfile != (NPCID)(64))
+            if (pSoldier.bAttitude == Attitudes.ATTACKSLAYONLY && pOpponent.ubProfile != (NPCID)64)
             {
                 continue;  // next opponent
             }
@@ -1168,7 +1168,7 @@ public class FindLocations
         if (uiThreatCnt == 0)
         {
             //NameMessage(pSoldier,"has no known threats - WON'T run away");
-            return (sBestSpot);
+            return sBestSpot;
         }
 
         // get roaming range here; for civilians, running away is limited by roam range
@@ -1177,7 +1177,7 @@ public class FindLocations
             iRoamRange = AIUtils.RoamingRange(pSoldier, out sOrigin);
             if (iRoamRange == 0)
             {
-                return (sBestSpot);
+                return sBestSpot;
             }
         }
         else
@@ -1227,13 +1227,13 @@ public class FindLocations
         //NumMessage("gubNPCAPBudget = ",gubNPCAPBudget);
 
         // determine maximum horizontal limits
-        sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+        sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
         //NumMessage("sMaxLeft = ",sMaxLeft);
         sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
         //NumMessage("sMaxRight = ",sMaxRight);
 
         // determine maximum vertical limits
-        sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+        sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
         //NumMessage("sMaxUp = ",sMaxUp);
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
         //NumMessage("sMaxDown = ",sMaxDown);
@@ -1255,7 +1255,7 @@ public class FindLocations
                     continue;
                 }
 
-                gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+                gpWorldLevelData[sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
             }
         }
 
@@ -1263,7 +1263,7 @@ public class FindLocations
 
         // Turn off the "reachable" flag for his current location
         // so we don't consider it
-        gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+        gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
 
         for (sYOffset = -sMaxUp; sYOffset <= sMaxDown; sYOffset++)
         {
@@ -1277,7 +1277,7 @@ public class FindLocations
                     continue;
                 }
 
-                if (!(gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+                if (!gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
                 {
                     continue;
                 }
@@ -1368,7 +1368,7 @@ public class FindLocations
 //            pSoldier.ubQuoteActionID = GetTraversalQuoteActionID(bBestEscapeDirection);
         }
 
-        return (sBestSpot);
+        return sBestSpot;
     }
 
     int FindNearestUngassedLand(SOLDIERTYPE? pSoldier)
@@ -1386,13 +1386,13 @@ public class FindLocations
             //NumMessage("Trying iSearchRange = ", iSearchRange);
 
             // determine maximum horizontal limits
-            sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+            sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
             //NumMessage("sMaxLeft = ",sMaxLeft);
             sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
             //NumMessage("sMaxRight = ",sMaxRight);
 
             // determine maximum vertical limits
-            sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+            sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
             //NumMessage("sMaxUp = ",sMaxUp);
             sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
             //NumMessage("sMaxDown = ",sMaxDown);
@@ -1414,7 +1414,7 @@ public class FindLocations
                         continue;
                     }
 
-                    gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+                    gpWorldLevelData[sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
                 }
             }
 
@@ -1422,7 +1422,7 @@ public class FindLocations
 
             // Turn off the "reachable" flag for his current location
             // so we don't consider it
-            gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+            gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
 
             // SET UP DOUBLE-LOOP TO STEP THROUGH POTENTIAL GRID #s
             for (sYOffset = -sMaxUp; sYOffset <= sMaxDown; sYOffset++)
@@ -1437,7 +1437,7 @@ public class FindLocations
                         continue;
                     }
 
-                    if (!(gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+                    if (!gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
                     {
                         continue;
                     }
@@ -1479,7 +1479,7 @@ public class FindLocations
         }
 
         //NumMessage("closestLand = ",closestLand);
-        return (sClosestLand);
+        return sClosestLand;
     }
 
     int FindNearbyDarkerSpot(SOLDIERTYPE? pSoldier)
@@ -1500,13 +1500,13 @@ public class FindLocations
         for (iSearchRange = 5; iSearchRange <= 15; iSearchRange += 5)
         {
             // determine maximum horizontal limits
-            sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+            sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
             //NumMessage("sMaxLeft = ",sMaxLeft);
             sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
             //NumMessage("sMaxRight = ",sMaxRight);
 
             // determine maximum vertical limits
-            sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+            sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
             //NumMessage("sMaxUp = ",sMaxUp);
             sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
             //NumMessage("sMaxDown = ",sMaxDown);
@@ -1528,7 +1528,7 @@ public class FindLocations
                         continue;
                     }
 
-                    gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+                    gpWorldLevelData[sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
                 }
             }
 
@@ -1536,7 +1536,7 @@ public class FindLocations
 
             // Turn off the "reachable" flag for his current location
             // so we don't consider it
-            gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+            gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
 
             // SET UP DOUBLE-LOOP TO STEP THROUGH POTENTIAL GRID #s
             for (sYOffset = -sMaxUp; sYOffset <= sMaxDown; sYOffset++)
@@ -1551,7 +1551,7 @@ public class FindLocations
                         continue;
                     }
 
-                    if (!(gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+                    if (!gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
                     {
                         continue;
                     }
@@ -1611,7 +1611,7 @@ public class FindLocations
             }
         }
 
-        return (sClosestSpot);
+        return sClosestSpot;
     }
 
     public static AI_ACTION SearchForItems(SOLDIERTYPE pSoldier, int bReason, int usItem)
@@ -1631,12 +1631,12 @@ public class FindLocations
 
         if (pSoldier.bActionPoints < AP.PICKUP_ITEM)
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         if (!IS_MERC_BODY_TYPE(pSoldier))
         {
-            return (AI_ACTION.NONE);
+            return AI_ACTION.NONE;
         }
 
         //        iSearchRange = gbDiff[DIFF_MAX_COVER_RANGE, SoldierDifficultyLevel(pSoldier)];
@@ -1666,7 +1666,7 @@ public class FindLocations
         // maximum search range is 1 tile / 10 pts of wisdom
         if (iSearchRange > (pSoldier.bWisdom / 10))
         {
-            iSearchRange = (pSoldier.bWisdom / 10);
+            iSearchRange = pSoldier.bWisdom / 10;
         }
 
         if (!gfTurnBasedAI)
@@ -1679,13 +1679,13 @@ public class FindLocations
         iSearchRange /= 2;
 
         // determine maximum horizontal limits
-        sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+        sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
         //NumMessage("sMaxLeft = ",sMaxLeft);
         sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
         //NumMessage("sMaxRight = ",sMaxRight);
 
         // determine maximum vertical limits
-        sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+        sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
         //NumMessage("sMaxUp = ",sMaxUp);
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
         //NumMessage("sMaxDown = ",sMaxDown);
@@ -1711,7 +1711,7 @@ public class FindLocations
                     continue;
                 }
 
-                gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+                gpWorldLevelData[sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
             }
         }
 
@@ -1735,8 +1735,8 @@ public class FindLocations
                     continue;
                 }
 
-                if ((gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.ITEMPOOL_PRESENT))
-                        && (gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+                if (gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.ITEMPOOL_PRESENT)
+                        && gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
                 {
 
                     // ignore blacklisted spot
@@ -1918,7 +1918,7 @@ public class FindLocations
                         //                            }
                         //                            break;
                     }
-                    iValue = (3 * iValue) / (3 + IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo));
+                    iValue = 3 * iValue / (3 + IsometricUtils.PythSpacesAway(sGridNo, pSoldier.sGridNo));
                     if (iValue > iBestValue)
                     {
                         sBestSpot = sGridNo;
@@ -1961,10 +1961,10 @@ public class FindLocations
             }
             pSoldier.uiPendingActionData1 = iBestItemIndex;
             pSoldier.usActionData = sBestSpot;
-            return (AI_ACTION.PICKUP_ITEM);
+            return AI_ACTION.PICKUP_ITEM;
         }
 
-        return (AI_ACTION.NONE);
+        return AI_ACTION.NONE;
     }
 
     int FindClosestDoor(SOLDIERTYPE? pSoldier)
@@ -1978,13 +1978,13 @@ public class FindLocations
         iSearchRange = 5;
 
         // determine maximum horizontal limits
-        sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+        sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
         //NumMessage("sMaxLeft = ",sMaxLeft);
         sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
         //NumMessage("sMaxRight = ",sMaxRight);
 
         // determine maximum vertical limits
-        sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+        sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
         //NumMessage("sMaxUp = ",sMaxUp);
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
         //NumMessage("sMaxDown = ",sMaxDown);
@@ -2007,7 +2007,7 @@ public class FindLocations
             }
         }
 
-        return (sClosestDoor);
+        return sClosestDoor;
     }
 
     int FindNearestEdgepointOnSpecifiedEdge(int sGridNo, int bEdgeCode)
@@ -2037,7 +2037,7 @@ public class FindLocations
             //                break;
             default:
                 // WTF???
-                return (NOWHERE);
+                return NOWHERE;
         }
 
         // Do a 2D search to find the closest map edgepoint and 
@@ -2053,7 +2053,7 @@ public class FindLocations
             }
         }
 
-        return (sClosestSpot);
+        return sClosestSpot;
     }
 
     int FindNearestEdgePoint(int sGridNo)
@@ -2109,7 +2109,7 @@ public class FindLocations
             //                break;
             default:
                 // WTF???
-                return (NOWHERE);
+                return NOWHERE;
         }
 
         // Do a 2D search to find the closest map edgepoint and 
@@ -2125,7 +2125,7 @@ public class FindLocations
             }
         }
 
-        return (sClosestSpot);
+        return sClosestSpot;
     }
 
     int FindNearbyPointOnEdgeOfMap(SOLDIERTYPE? pSoldier, int? pbDirection)
@@ -2148,13 +2148,13 @@ public class FindLocations
         iSearchRange = EDGE_OF_MAP_SEARCH;
 
         // determine maximum horizontal limits
-        sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+        sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
         //NumMessage("sMaxLeft = ",sMaxLeft);
         sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
         //NumMessage("sMaxRight = ",sMaxRight);
 
         // determine maximum vertical limits
-        sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+        sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
         //NumMessage("sMaxUp = ",sMaxUp);
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
 
@@ -2169,7 +2169,7 @@ public class FindLocations
                     continue;
                 }
 
-                gpWorldLevelData[sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+                gpWorldLevelData[sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
             }
         }
 
@@ -2177,7 +2177,7 @@ public class FindLocations
 
         // Turn off the "reachable" flag for his current location
         // so we don't consider it
-        gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~(MAPELEMENTFLAGS.REACHABLE);
+        gpWorldLevelData[pSoldier.sGridNo].uiFlags &= ~MAPELEMENTFLAGS.REACHABLE;
 
         // SET UP DOUBLE-LOOP TO STEP THROUGH POTENTIAL GRID #s
         for (sYOffset = -sMaxUp; sYOffset <= sMaxDown; sYOffset++)
@@ -2191,7 +2191,7 @@ public class FindLocations
                     continue;
                 }
 
-                if (!(gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE)))
+                if (!gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REACHABLE))
                 {
                     continue;
                 }
@@ -2212,7 +2212,7 @@ public class FindLocations
         }
 
         pbDirection = bClosestDirection;
-        return (sClosestSpot);
+        return sClosestSpot;
     }
 
     int FindRouteBackOntoMap(SOLDIERTYPE? pSoldier, int sDestGridNo)
@@ -2246,7 +2246,7 @@ public class FindLocations
         iSearchRange = 7;
 
         // determine maximum horizontal limits
-        sMaxLeft = Math.Min(iSearchRange, (pSoldier.sGridNo % MAXCOL));
+        sMaxLeft = Math.Min(iSearchRange, pSoldier.sGridNo % MAXCOL);
         //NumMessage("sMaxLeft = ",sMaxLeft);
         sMaxRight = Math.Min(iSearchRange, MAXCOL - ((pSoldier.sGridNo % MAXCOL) + 1));
         //NumMessage("sMaxRight = ",sMaxRight);
@@ -2258,7 +2258,7 @@ public class FindLocations
         }
 
         // determine maximum vertical limits
-        sMaxUp = Math.Min(iSearchRange, (pSoldier.sGridNo / MAXROW));
+        sMaxUp = Math.Min(iSearchRange, pSoldier.sGridNo / MAXROW);
         //NumMessage("sMaxUp = ",sMaxUp);
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((pSoldier.sGridNo / MAXROW) + 1));
 
@@ -2270,7 +2270,7 @@ public class FindLocations
                 sGridNo = pSoldier.sGridNo + sXOffset + (MAXCOL * sYOffset);
                 if (RenderFun.InARoom(sGridNo, out int ubRoom))
                 {
-                    if ((fInRing && ubRoom == BOXING_RING) || (!fInRing && ubRoom != BOXING_RING) && Movement.LegalNPCDestination(pSoldier, sGridNo, IGNORE_PATH, NOWATER, 0) > 0)
+                    if ((fInRing && ubRoom == BOXING_RING) || !fInRing && ubRoom != BOXING_RING && Movement.LegalNPCDestination(pSoldier, sGridNo, IGNORE_PATH, NOWATER, 0) > 0)
                     {
                         iDistance = Math.Abs(sXOffset) + Math.Abs(sYOffset);
                         if (iDistance < iClosestDistance && WorldManager.WhoIsThere2(sGridNo, 0) == NOBODY)
@@ -2284,7 +2284,7 @@ public class FindLocations
             }
         }
 
-        return (sClosestSpot);
+        return sClosestSpot;
     }
 
     int FindNearestOpenableNonDoor(int sStartGridNo)
@@ -2300,13 +2300,13 @@ public class FindLocations
         iSearchRange = 7;
 
         // determine maximum horizontal limits
-        sMaxLeft = Math.Min(iSearchRange, (sStartGridNo % MAXCOL));
+        sMaxLeft = Math.Min(iSearchRange, sStartGridNo % MAXCOL);
         //NumMessage("sMaxLeft = ",sMaxLeft);
         sMaxRight = Math.Min(iSearchRange, MAXCOL - ((sStartGridNo % MAXCOL) + 1));
         //NumMessage("sMaxRight = ",sMaxRight);
 
         // determine maximum vertical limits
-        sMaxUp = Math.Min(iSearchRange, (sStartGridNo / MAXROW));
+        sMaxUp = Math.Min(iSearchRange, sStartGridNo / MAXROW);
         //NumMessage("sMaxUp = ",sMaxUp);
         sMaxDown = Math.Min(iSearchRange, MAXROW - ((sStartGridNo / MAXROW) + 1));
 
@@ -2320,7 +2320,7 @@ public class FindLocations
                 if (pStructure is not null)
                 {
                     // skip any doors
-                    while (pStructure is not null && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)))
+                    while (pStructure is not null && pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
                     {
 //                        pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.OPENABLE);
                     }
@@ -2338,7 +2338,7 @@ public class FindLocations
             }
         }
 
-        return (sClosestSpot);
+        return sClosestSpot;
 
     }
 }

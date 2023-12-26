@@ -30,27 +30,27 @@ public class Faces
 
         for (uiCount = 0; uiCount < guiNumFaces; uiCount++)
         {
-            if ((gFacesData[uiCount].fAllocated == false))
+            if (gFacesData[uiCount].fAllocated == false)
             {
-                return ((int)uiCount);
+                return (int)uiCount;
             }
         }
 
         if (guiNumFaces < NUM_FACE_SLOTS)
         {
-            return ((int)guiNumFaces++);
+            return (int)guiNumFaces++;
         }
 
-        return (-1);
+        return -1;
     }
 
     private static void RecountFaces()
     {
         int uiCount;
 
-        for (uiCount = guiNumFaces - 1; (uiCount >= 0); uiCount--)
+        for (uiCount = guiNumFaces - 1; uiCount >= 0; uiCount--)
         {
-            if ((gFacesData[uiCount].fAllocated))
+            if (gFacesData[uiCount].fAllocated)
             {
                 guiNumFaces = (int)(uiCount + 1);
                 break;
@@ -68,10 +68,10 @@ public class Faces
 
         if (iFaceIndex != -1)
         {
-            return (iFaceIndex);
+            return iFaceIndex;
         }
 
-        return (InitFace(pSoldier.ubProfile, pSoldier.ubID, 0));
+        return InitFace(pSoldier.ubProfile, pSoldier.ubID, 0);
     }
 
 
@@ -82,7 +82,7 @@ public class Faces
 
         if (usMercProfileID == NO_PROFILE)
         {
-            return (-1);
+            return -1;
         }
 
         uiBlinkFrequency = gMercProfiles[usMercProfileID].uiBlinkFrequency;
@@ -97,7 +97,7 @@ public class Faces
             uiBlinkFrequency -= Globals.Random.Next(2000);
         }
 
-        return (InternalInitFace(usMercProfileID, ubSoldierID, uiInitFlags, gMercProfiles[usMercProfileID].ubFaceIndex, uiBlinkFrequency, uiExpressionFrequency));
+        return InternalInitFace(usMercProfileID, ubSoldierID, uiInitFlags, gMercProfiles[usMercProfileID].ubFaceIndex, uiBlinkFrequency, uiExpressionFrequency);
 
     }
 
@@ -114,7 +114,7 @@ public class Faces
 
         if ((iFaceIndex = GetFreeFace()) == (-1))
         {
-            return (-1);
+            return -1;
         }
 
         // Load face file
@@ -189,12 +189,12 @@ public class Faces
         
                 if (video.GetVideoObject(VObjectDesc.ImageFile, out uiVideoObject) is null)
                 {
-                    return (-1);
+                    return -1;
                 }
             }
             else
             {
-                return (-1);
+                return -1;
             }
         }
 
@@ -262,7 +262,7 @@ public class Faces
         // Get FACE height, width
         if (video.GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, out ETRLEObject, 0) == false)
         {
-            return (-1);
+            return -1;
         }
 
         pFace.usFaceWidth = ETRLEObject.usWidth;
@@ -277,7 +277,7 @@ public class Faces
             // Get EYE height, width
             if (video.GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, out ETRLEObject, 1) == false)
             {
-                return (-1);
+                return -1;
             }
 
             pFace.usEyesWidth = ETRLEObject.usWidth;
@@ -287,7 +287,7 @@ public class Faces
             // Get Mouth height, width
             if (video.GetVideoObjectETRLEPropertiesFromIndex(uiVideoObject, out ETRLEObject, 5) == false)
             {
-                return (-1);
+                return -1;
             }
 
             pFace.usMouthWidth = ETRLEObject.usWidth;
@@ -301,7 +301,7 @@ public class Faces
         // Set id
         pFace.uiVideoObject = uiVideoObject;
 
-        return (iFaceIndex);
+        return iFaceIndex;
     }
 
 
@@ -379,11 +379,11 @@ public class Faces
         usMouthX = gMercProfiles[usMercProfileID].usMouthX;
 
         // Use some other values for x,y, base on if we are a RPC!
-        if (!(pFace.uiFlags.HasFlag(FACE.BIGFACE)) || ((pFace.uiFlags.HasFlag(FACE.FORCE_SMALL))))
+        if (!pFace.uiFlags.HasFlag(FACE.BIGFACE) || pFace.uiFlags.HasFlag(FACE.FORCE_SMALL))
         {
             // Are we a recruited merc? .. or small?
-            if ((gMercProfiles[usMercProfileID].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED | PROFILE_MISC_FLAG.EPCACTIVE))
-                || (pFace.uiFlags.HasFlag(FACE.FORCE_SMALL)))
+            if (gMercProfiles[usMercProfileID].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED | PROFILE_MISC_FLAG.EPCACTIVE)
+                || pFace.uiFlags.HasFlag(FACE.FORCE_SMALL))
             {
                 // Loop through all values of availible merc IDs to find ours!
                 for (cnt = 0; cnt < ubRPCNumSmallFaceValues; cnt++)
@@ -401,10 +401,10 @@ public class Faces
             }
         }
 
-        (pusEyesX) = usEyesX;
-        (pusEyesY) = usEyesY;
-        (pusMouthX) = usMouthX;
-        (pusMouthY) = usMouthY;
+        pusEyesX = usEyesX;
+        pusEyesY = usEyesY;
+        pusMouthX = usMouthX;
+        pusMouthY = usMouthY;
     }
 
 
@@ -600,7 +600,7 @@ public class Faces
         }
 
         // Turn off some flags
-        pFace.uiFlags &= (~FACE.INACTIVE_HANDLED_ELSEWHERE);
+        pFace.uiFlags &= ~FACE.INACTIVE_HANDLED_ELSEWHERE;
 
         // Disable!
         pFace.fDisabled = true;
@@ -760,7 +760,7 @@ public class Faces
             if (pFace.uiAutoDisplayBuffer == SurfaceType.FRAME_BUFFER && guiCurrentScreen == ScreenName.GAME_SCREEN)
             {
                 // If we are highlighted, do this now!
-                if ((pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT)))
+                if (pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT))
                 {
                     // Lock buffer
                     //                    pDestBuf = LockVideoSurface(uiBuffer, out uiDestPitchBYTES);
@@ -773,7 +773,7 @@ public class Faces
                     //
                     //                    UnLockVideoSurface(uiBuffer);
                 }
-                else if ((pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT)))
+                else if (pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT))
                 {
                     if (pFace.ubSoldierID != NOBODY)
                     {
@@ -817,7 +817,7 @@ public class Faces
         }
 
 
-        if ((pFace.fCompatibleItems && !gFacesData[iFaceIndex].fDisabled))
+        if (pFace.fCompatibleItems && !gFacesData[iFaceIndex].fDisabled)
         {
             // Lock buffer
             //            pDestBuf = LockVideoSurface(uiBuffer, uiDestPitchBYTES);
@@ -929,7 +929,7 @@ public class Faces
                 }
             }
 
-            if (!(pFace.uiFlags.HasFlag(FACE.INACTIVE_HANDLED_ELSEWHERE)))
+            if (!pFace.uiFlags.HasFlag(FACE.INACTIVE_HANDLED_ELSEWHERE))
             {
                 HandleFaceHilights(pFace, pFace.uiAutoDisplayBuffer, pFace.usFaceX, pFace.usFaceY);
             }
@@ -1007,7 +1007,7 @@ public class Faces
 
         if (pFace.iVideoOverlay == -1 && !fExternBlit)
         {
-            if ((pSoldier.bActionPoints == 0) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+            if ((pSoldier.bActionPoints == 0) && !gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.REALTIME) && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
             {
                 //                SetObjectHandleShade(pFace.uiVideoObject, FLASH_PORTRAIT.LITESHADE);
             }
@@ -1033,7 +1033,7 @@ public class Faces
         // Check for valid soldier
         CHECKF(ubSoldierID != NOBODY);
 
-        return (this.RenderAutoFace(MercPtrs[ubSoldierID].iFaceIndex));
+        return this.RenderAutoFace(MercPtrs[ubSoldierID].iFaceIndex);
     }
 
     public static void GetXYForIconPlacement(FACETYPE? pFace, int ubIndex, int sFaceX, int sFaceY, out int psX, out int psY)
@@ -1136,7 +1136,7 @@ public class Faces
         {
             pSoldier = MercPtrs[pFace.ubSoldierID];
 
-            if ((MercPtrs[pFace.ubSoldierID].bLife < CONSCIOUSNESS || MercPtrs[pFace.ubSoldierID].fDeadPanel))
+            if (MercPtrs[pFace.ubSoldierID].bLife < CONSCIOUSNESS || MercPtrs[pFace.ubSoldierID].fDeadPanel)
             {
                 // Blit Closed eyes here!
                 //                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
@@ -1151,7 +1151,7 @@ public class Faces
                 //                BltVideoObjectFromIndex(uiRenderBuffer, pFace.uiVideoObject, 1, usEyesX, usEyesY, VO_BLT.SRCTRANSPARENCY, null);
             }
 
-            if ((pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD)))
+            if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.DEAD))
             {
                 // IF we are in the process of doing any deal/close animations, show face, not skill...
                 if (!pSoldier.fClosePanel && !pSoldier.fDeadPanel && !pSoldier.fUIdeadMerc && !pSoldier.fUICloseMerc)
@@ -1171,7 +1171,7 @@ public class Faces
             }
 
             // ATE: Only do this, because we can be talking during an interrupt....
-            if ((pFace.uiFlags.HasFlag(FACE.INACTIVE_HANDLED_ELSEWHERE)) && !fUseExternBuffer)
+            if (pFace.uiFlags.HasFlag(FACE.INACTIVE_HANDLED_ELSEWHERE) && !fUseExternBuffer)
             {
                 // Don't do this if we are being handled elsewhere and it's not an extern buffer...
             }
@@ -1189,8 +1189,8 @@ public class Faces
                     FontSubSystem.SetFontForeground(FontColor.FONT_DKRED);
                     FontSubSystem.SetFontBackground(FontColor.FONT_NEARBLACK);
 
-                    sX1 = (int)(sFaceX);
-                    sY1 = (int)(sFaceY);
+                    sX1 = (int)sFaceX;
+                    sY1 = (int)sFaceY;
 
                     sX2 = sX1 + FontSubSystem.StringPixLength(sString, FontStyle.TINYFONT1) + 1;
                     sY2 = sY1 + this.fonts.GetFontHeight(FontStyle.TINYFONT1) - 1;
@@ -1209,7 +1209,7 @@ public class Faces
 
                 }
 
-                if (MercPtrs[pFace.ubSoldierID].bInSector && (((gTacticalStatus.ubCurrentTeam != OUR_TEAM) || !OK_INTERRUPT_MERC(MercPtrs[pFace.ubSoldierID])) && !gfHiddenInterrupt) || ((gfSMDisableForItems && !gfInItemPickupMenu) && gusSMCurrentMerc == pFace.ubSoldierID
+                if (MercPtrs[pFace.ubSoldierID].bInSector && ((gTacticalStatus.ubCurrentTeam != OUR_TEAM) || !OK_INTERRUPT_MERC(MercPtrs[pFace.ubSoldierID])) && !gfHiddenInterrupt || (gfSMDisableForItems && !gfInItemPickupMenu && gusSMCurrentMerc == pFace.ubSoldierID
                     && gsCurInterfacePanel == InterfacePanelDefines.SM_PANEL))
                 {
                     // Blit hatch!
@@ -1326,19 +1326,19 @@ public class Faces
 
                     switch (MercPtrs[pFace.ubSoldierID].bAssignment)
                     {
-                        case (Assignments.TRAIN_SELF):
+                        case Assignments.TRAIN_SELF:
                             //                            sPtsAvailable = GetSoldierTrainingPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
                             break;
-                        case (Assignments.TRAIN_BY_OTHER):
+                        case Assignments.TRAIN_BY_OTHER:
                             //                            sPtsAvailable = GetSoldierStudentPts(MercPtrs[pFace.ubSoldierID], MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, usMaximumPts);
                             break;
-                        case (Assignments.TRAIN_TOWN):
+                        case Assignments.TRAIN_TOWN:
                             //                            sPtsAvailable = GetTownTrainPtsForCharacter(MercPtrs[pFace.ubSoldierID], &usMaximumPts);
                             // divide both amounts by 10 to make the displayed numbers a little more user-palatable (smaller)
                             sPtsAvailable = (sPtsAvailable + 5) / 10;
                             usMaximumPts = (usMaximumPts + 5) / 10;
                             break;
-                        case (Assignments.TRAIN_TEAMMATE):
+                        case Assignments.TRAIN_TEAMMATE:
                             //                            sPtsAvailable = GetBonusTrainingPtsDueToInstructor(MercPtrs[pFace.ubSoldierID], null, MercPtrs[pFace.ubSoldierID].bTrainStat, fAtGunRange, &usMaximumPts);
                             break;
                     }
@@ -1463,14 +1463,14 @@ public class Faces
         // Restore extern rect
         if (pFace.uiAutoRestoreBuffer == SurfaceType.SAVE_BUFFER)
         {
-            FaceRestoreSavedBackgroundRect(iFaceIndex, (int)(pFace.usFaceX), (int)(pFace.usFaceY), (int)(pFace.usFaceX), (int)(pFace.usFaceY), (int)(pFace.usFaceWidth), (int)(pFace.usFaceHeight));
+            FaceRestoreSavedBackgroundRect(iFaceIndex, (int)pFace.usFaceX, (int)pFace.usFaceY, (int)pFace.usFaceX, (int)pFace.usFaceY, (int)pFace.usFaceWidth, (int)pFace.usFaceHeight);
         }
         else
         {
             FaceRestoreSavedBackgroundRect(iFaceIndex, pFace.usFaceX, pFace.usFaceY, 0, 0, pFace.usFaceWidth, pFace.usFaceHeight);
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -1479,7 +1479,7 @@ public class Faces
         // Check for valid soldier
         CHECKF(ubSoldierID != NOBODY);
 
-        return (this.ExternRenderFace(uiBuffer, MercPtrs[ubSoldierID].iFaceIndex, sX, sY));
+        return this.ExternRenderFace(uiBuffer, MercPtrs[ubSoldierID].iFaceIndex, sX, sY);
     }
 
 
@@ -1516,7 +1516,7 @@ public class Faces
             //            RestoreExternBackgroundRect(sX, sY, pFace.usFaceWidth, pFace.usFaceWidth);
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -1715,7 +1715,7 @@ public class Faces
                     }
                     else
                     {
-                        pFace.uiFlags &= (~FACE.SHOW_WHITE_HILIGHT);
+                        pFace.uiFlags &= ~FACE.SHOW_WHITE_HILIGHT;
                     }
 
                     if (pSoldier.sGridNo != pSoldier.sFinalDestination && pSoldier.sGridNo != NOWHERE)
@@ -1724,7 +1724,7 @@ public class Faces
                     }
                     else
                     {
-                        pFace.uiFlags &= (~FACE.SHOW_MOVING_HILIGHT);
+                        pFace.uiFlags &= ~FACE.SHOW_MOVING_HILIGHT;
                     }
 
                     if (pSoldier.bStealthMode != pFace.bOldStealthMode)
@@ -1777,22 +1777,22 @@ public class Faces
                         fRerender = true;
                     }
 
-                    if (!(pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT)) && pFace.fOldShowHighlight)
+                    if (!pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT) && pFace.fOldShowHighlight)
                     {
                         fRerender = true;
                     }
 
-                    if ((pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT)) && !(pFace.fOldShowHighlight))
+                    if (pFace.uiFlags.HasFlag(FACE.SHOW_WHITE_HILIGHT) && !pFace.fOldShowHighlight)
                     {
                         fRerender = true;
                     }
 
-                    if (!(pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT)) && pFace.fOldShowMoveHilight)
+                    if (!pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT) && pFace.fOldShowMoveHilight)
                     {
                         fRerender = true;
                     }
 
-                    if ((pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT)) && !(pFace.fOldShowMoveHilight))
+                    if (pFace.uiFlags.HasFlag(FACE.SHOW_MOVING_HILIGHT) && !pFace.fOldShowMoveHilight)
                     {
                         fRerender = true;
                     }
@@ -1954,7 +1954,7 @@ public class Faces
         // DOn't continue if we do not want the resotre to happen ( ei blitting entrie thing every frame...
         if (pFace.uiAutoRestoreBuffer == FACE_NO_RESTORE_BUFFER)
         {
-            return (false);
+            return false;
         }
 
 //        pDestBuf = video.LockVideoSurface(pFace.uiAutoDisplayBuffer, out uiDestPitchBYTES);
@@ -1972,10 +1972,10 @@ public class Faces
         // Add rect to frame buffer queue
         if (pFace.uiAutoDisplayBuffer == SurfaceType.FRAME_BUFFER)
         {
-            video.InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, (sDestLeft + sWidth + 3), (sDestTop + sHeight + 2), 0);
+            video.InvalidateRegionEx(sDestLeft - 2, sDestTop - 2, sDestLeft + sWidth + 3, sDestTop + sHeight + 2, 0);
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2021,7 +2021,7 @@ public class Faces
             //            pFace.uiTalkingDuration = FindDelayForString(zTextString);
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -2039,7 +2039,7 @@ public class Faces
 
         pFace.uiSoundID = uiSoundID;
 
-        return (true);
+        return true;
     }
 
     private static void InternalShutupaYoFace(int iFaceIndex, bool fForce)
@@ -2137,7 +2137,7 @@ public class Faces
         }
 
         // Setup flag to wait for advance ( because we have no text! )
-        if (GameSettings.fOptions[TOPTION.KEY_ADVANCE_SPEECH] && (pFace.uiFlags.HasFlag(FACE.POTENTIAL_KEYWAIT)))
+        if (GameSettings.fOptions[TOPTION.KEY_ADVANCE_SPEECH] && pFace.uiFlags.HasFlag(FACE.POTENTIAL_KEYWAIT))
         {
 
             // Check if we have had valid speech!

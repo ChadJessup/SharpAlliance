@@ -21,12 +21,12 @@ public class SkillChecks
         // plus 1/2 strength scaled according to how hurt we are
         bBandaged = (uint)(pSoldier.bLifeMax - pSoldier.bLife - pSoldier.bBleeding);
         iEffStrength = (uint)pSoldier.bStrength / 2;
-        iEffStrength += (uint)((pSoldier.bStrength / 2) * (pSoldier.bLife + bBandaged / 2) / (pSoldier.bLifeMax));
+        iEffStrength += (uint)(pSoldier.bStrength / 2 * (pSoldier.bLife + bBandaged / 2) / pSoldier.bLifeMax);
 
         // ATE: Make sure at least 2...
         iEffStrength = Math.Max(iEffStrength, 2);
 
-        return ((int)iEffStrength);
+        return (int)iEffStrength;
     }
 
 
@@ -38,7 +38,7 @@ public class SkillChecks
 
         iEffWisdom = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffWisdom);
 
-        return ((int)iEffWisdom);
+        return (int)iEffWisdom;
     }
 
     public static int EffectiveAgility(SOLDIERTYPE? pSoldier)
@@ -51,10 +51,10 @@ public class SkillChecks
 
         if (pSoldier.sWeightCarriedAtTurnStart > 100)
         {
-            iEffAgility = (iEffAgility * 100) / pSoldier.sWeightCarriedAtTurnStart;
+            iEffAgility = iEffAgility * 100 / pSoldier.sWeightCarriedAtTurnStart;
         }
 
-        return ((int)iEffAgility);
+        return (int)iEffAgility;
     }
 
 
@@ -66,7 +66,7 @@ public class SkillChecks
 
         iEffMechanical = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffMechanical);
 
-        return ((int)iEffMechanical);
+        return (int)iEffMechanical;
     }
 
     public static int EffectiveExplosive(SOLDIERTYPE? pSoldier)
@@ -77,7 +77,7 @@ public class SkillChecks
 
         iEffExplosive = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffExplosive);
 
-        return ((int)iEffExplosive);
+        return (int)iEffExplosive;
     }
 
 
@@ -89,7 +89,7 @@ public class SkillChecks
 
         iEffMedical = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffMedical);
 
-        return ((int)iEffMedical);
+        return (int)iEffMedical;
     }
 
     public static int EffectiveLeadership(SOLDIERTYPE? pSoldier)
@@ -104,10 +104,10 @@ public class SkillChecks
 
         if (bDrunkLevel == DrunkLevel.FEELING_GOOD)
         {
-            iEffLeadership = (iEffLeadership * 120 / 100);
+            iEffLeadership = iEffLeadership * 120 / 100;
         }
 
-        return ((int)iEffLeadership);
+        return (int)iEffLeadership;
     }
 
     public static int EffectiveExpLevel(SOLDIERTYPE? pSoldier)
@@ -141,11 +141,11 @@ public class SkillChecks
         if (iEffExpLevel < 1)
         {
             // can't go below 1
-            return (1);
+            return 1;
         }
         else
         {
-            return ((int)iEffExpLevel);
+            return (int)iEffExpLevel;
         }
     }
 
@@ -157,7 +157,7 @@ public class SkillChecks
 
         iEffMarksmanship = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffMarksmanship);
 
-        return ((int)iEffMarksmanship);
+        return (int)iEffMarksmanship;
     }
 
     public static int EffectiveDexterity(SOLDIERTYPE? pSoldier)
@@ -168,7 +168,7 @@ public class SkillChecks
 
         iEffDexterity = DrugsAndAlcohol.EffectStatForBeingDrunk(pSoldier, iEffDexterity);
 
-        return ((int)iEffDexterity);
+        return (int)iEffDexterity;
     }
 
     public static int GetPenaltyForFatigue(SOLDIERTYPE? pSoldier)
@@ -204,18 +204,18 @@ public class SkillChecks
             ubPercentPenalty = 100;
         }
 
-        return (ubPercentPenalty);
+        return ubPercentPenalty;
     }
 
     private static void ReducePointsForFatigue(SOLDIERTYPE? pSoldier, ref int pusPoints)
     {
-        pusPoints -= (pusPoints * GetPenaltyForFatigue(pSoldier)) / 100;
+        pusPoints -= pusPoints * GetPenaltyForFatigue(pSoldier) / 100;
     }
 
     private static int GetSkillCheckPenaltyForFatigue(SOLDIERTYPE? pSoldier, int iSkill)
     {
         // use only half the full effect of fatigue for skill checks
-        return (((iSkill * GetPenaltyForFatigue(pSoldier)) / 100) / 2);
+        return iSkill * GetPenaltyForFatigue(pSoldier) / 100 / 2;
     }
 
     public static int SkillCheck(SOLDIERTYPE? pSoldier, SKILLCHECKS bReason, int bChanceMod)
@@ -253,7 +253,7 @@ public class SkillChecks
                     // if we specialize in picking locks...
                     iSkill += gbSkillTraitBonus[SkillTrait.LOCKPICKING] * NUM_SKILL_TRAITS(pSoldier, SkillTrait.LOCKPICKING);
                 }
-                if (bReason == SKILLCHECKS.ELECTRONIC_LOCKPICKING_CHECK && !(HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS)))
+                if (bReason == SKILLCHECKS.ELECTRONIC_LOCKPICKING_CHECK && !HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS))
                 {
                     // if we are unfamiliar with electronics...
                     iSkill /= 2;
@@ -275,7 +275,7 @@ public class SkillChecks
                     break;
                 }
                 iSkill = (iSkill * 3 + EffectiveDexterity(pSoldier)) / 4;
-                if (bReason == SKILLCHECKS.ATTACHING_REMOTE_DETONATOR_CHECK && !(HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS)))
+                if (bReason == SKILLCHECKS.ATTACHING_REMOTE_DETONATOR_CHECK && !HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS))
                 {
                     iSkill /= 2;
                 }
@@ -287,10 +287,10 @@ public class SkillChecks
                 iSkill += EffectiveExpLevel(pSoldier) * 10;
                 iSkill = iSkill / 10; // bring the value down to a percentage
 
-                if (bReason == SKILLCHECKS.PLANTING_REMOTE_BOMB_CHECK && !(HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS)))
+                if (bReason == SKILLCHECKS.PLANTING_REMOTE_BOMB_CHECK && !HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS))
                 {
                     // deduct only a bit...
-                    iSkill = (iSkill * 3) / 4;
+                    iSkill = iSkill * 3 / 4;
                 }
 
                 // Ok, this is really damn easy, so skew the values...
@@ -331,9 +331,9 @@ public class SkillChecks
                                       // penalty based on poor wisdom
                 iSkill -= (100 - EffectiveWisdom(pSoldier)) / 5;
 
-                if (!(HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS)))
+                if (!HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS))
                 {
-                    iSkill = (iSkill * 3) / 4;
+                    iSkill = iSkill * 3 / 4;
                 }
                 break;
 
@@ -370,7 +370,7 @@ public class SkillChecks
                 iSkill = iSkill * (EffectiveDexterity(pSoldier) + 100) / 200;
                 // factor in experience
                 iSkill = iSkill + EffectiveExpLevel(pSoldier) * 3;
-                if (bReason == SKILLCHECKS.ATTACHING_SPECIAL_ELECTRONIC_ITEM_CHECK && !(HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS)))
+                if (bReason == SKILLCHECKS.ATTACHING_SPECIAL_ELECTRONIC_ITEM_CHECK && !HAS_SKILL_TRAIT(pSoldier, SkillTrait.ELECTRONICS))
                 {
                     // if we are unfamiliar with electronics...
                     iSkill /= 2;
@@ -435,7 +435,7 @@ public class SkillChecks
                         {
                             // say "I can't do this" quote
                             DialogControl.TacticalCharacterDialogue(pSoldier, QUOTE.DEFINITE_CANT_DO);
-                            return (iMadeItBy);
+                            return iMadeItBy;
                         }
                     }
                 }
@@ -503,7 +503,7 @@ public class SkillChecks
                 }
             }
         }
-        return (iMadeItBy);
+        return iMadeItBy;
     }
 
 
@@ -518,8 +518,8 @@ public class SkillChecks
         //     less 1 pt for every 20 wisdom MISSING
 
         bDetectLevel = EffectiveExpLevel(pSoldier);
-        bDetectLevel += (EffectiveExplosive(pSoldier) / 40);
-        bDetectLevel -= ((100 - EffectiveWisdom(pSoldier)) / 20);
+        bDetectLevel += EffectiveExplosive(pSoldier) / 40;
+        bDetectLevel -= (100 - EffectiveWisdom(pSoldier)) / 20;
 
         // if the examining flag is true, this isn't just a casual glance
         // and the merc should have a higher chance
@@ -539,7 +539,7 @@ public class SkillChecks
             bDetectLevel = 1;
         }
 
-        return (bDetectLevel);
+        return bDetectLevel;
     }
 }
 

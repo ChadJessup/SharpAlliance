@@ -114,7 +114,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         if (b is not null)
         {
             OldState = b.uiFlags.HasFlag(ButtonFlags.BUTTON_ENABLED);
-            b.uiFlags |= (ButtonFlags.BUTTON_ENABLED | ButtonFlags.BUTTON_DIRTY);
+            b.uiFlags |= ButtonFlags.BUTTON_ENABLED | ButtonFlags.BUTTON_DIRTY;
         }
         else
         {
@@ -171,7 +171,7 @@ public class ButtonSubSystem : ISharpAllianceManager
 
         var bp = new ButtonPic
         {
-            vobj = null,
+            vobj = new(),
             Grayed = -1,
             OffNormal = -1,
             OffHilite = -1,
@@ -663,7 +663,7 @@ public class ButtonSubSystem : ISharpAllianceManager
             // Compute the coordinates to center the text
             if (b.bTextOffset.Y == -1)
             {
-                yp = (((height) - fonts.GetFontHeight(b.usFont)) / 2) + TextY - 1;
+                yp = ((height - fonts.GetFontHeight(b.usFont)) / 2) + TextY - 1;
             }
             else
             {
@@ -676,7 +676,7 @@ public class ButtonSubSystem : ISharpAllianceManager
                 {
                     ButtonTextJustifies.BUTTON_TEXT_LEFT => TextX + 3,
                     ButtonTextJustifies.BUTTON_TEXT_RIGHT => NewClip.Width - FontSubSystem.StringPixLength(b.stringText, b.usFont) - 3,
-                    _ => (((width - 6) - FontSubSystem.StringPixLength(b.stringText, b.usFont)) / 2) + TextX,
+                    _ => ((width - 6 - FontSubSystem.StringPixLength(b.stringText, b.usFont)) / 2) + TextX,
                 };
             }
             else
@@ -1422,7 +1422,7 @@ public class ButtonSubSystem : ISharpAllianceManager
         ButtonFlags OldState;
 
         OldState = button.uiFlags & ButtonFlags.BUTTON_ENABLED;
-        button.uiFlags &= (~ButtonFlags.BUTTON_ENABLED);
+        button.uiFlags &= ~ButtonFlags.BUTTON_ENABLED;
         button.uiFlags |= ButtonFlags.BUTTON_DIRTY;
 
         // Return previous ENABLED state of button

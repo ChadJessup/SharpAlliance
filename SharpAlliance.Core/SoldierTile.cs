@@ -28,7 +28,7 @@ public class SoldierTile
         ubPerson = WorldManager.WhoIsThere2(sCauseGridNo, pSoldier.bLevel);
 
         // There may not be anybody there, but it's reserved by them!
-        if ((gpWorldLevelData[sCauseGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.MOVEMENT_RESERVED)))
+        if (gpWorldLevelData[sCauseGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.MOVEMENT_RESERVED))
         {
             ubPerson = gpWorldLevelData[sCauseGridNo].ubReservedSoldierID;
         }
@@ -101,7 +101,7 @@ public class SoldierTile
         // See if we have one reserved!
         if (pSoldier.sReservedMovementGridNo != NOWHERE)
         {
-            gpWorldLevelData[pSoldier.sReservedMovementGridNo].uiFlags &= (~MAPELEMENTFLAGS.MOVEMENT_RESERVED);
+            gpWorldLevelData[pSoldier.sReservedMovementGridNo].uiFlags &= ~MAPELEMENTFLAGS.MOVEMENT_RESERVED;
 
             pSoldier.sReservedMovementGridNo = NOWHERE;
         }
@@ -116,7 +116,7 @@ public class SoldierTile
 
         if (sGridNo == NOWHERE)
         {
-            return (MOVE_TILE_CLEAR);
+            return MOVE_TILE_CLEAR;
         }
 
         ubPerson = WorldManager.WhoIsThere2(sGridNo, bLevel);
@@ -137,9 +137,9 @@ public class SoldierTile
 
                     // Are we only temporarily blocked?
                     // Check if our final destination is = our gridno
-                    if ((MercPtrs[ubPerson].sFinalDestination == MercPtrs[ubPerson].sGridNo))
+                    if (MercPtrs[ubPerson].sFinalDestination == MercPtrs[ubPerson].sGridNo)
                     {
-                        return (MOVE_TILE_STATIONARY_BLOCKED);
+                        return MOVE_TILE_STATIONARY_BLOCKED;
                     }
                     else
                     {
@@ -173,13 +173,13 @@ public class SoldierTile
                                 // Is the next tile blocked too?
                                 sNewGridNo = IsometricUtils.NewGridNo(pSoldier.sGridNo, IsometricUtils.DirectionInc(guiPathingData[0]));
 
-                                return (this.TileIsClear(pSoldier, (WorldDirections)guiPathingData[0], sNewGridNo, pSoldier.bLevel));
+                                return this.TileIsClear(pSoldier, (WorldDirections)guiPathingData[0], sNewGridNo, pSoldier.bLevel);
                             }
                             else
                             {
 
                                 // Not for multi-tiled things...
-                                if (!(pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE)))
+                                if (!pSoldier.uiStatusFlags.HasFlag(SOLDIER.MULTITILE))
                                 {
                                     // Is the next movement cost for a door?
 //                                    if (PathAI.DoorTravelCost(pSoldier, sGridNo, gubWorldMovementCosts[sGridNo, bDirection, pSoldier.bLevel], (bool)(pSoldier.bTeam == gbPlayerNum), out var _) == TRAVELCOST.DOOR)
@@ -206,7 +206,7 @@ public class SoldierTile
                                 }
                             }
                         }
-                        return (MOVE_TILE_TEMP_BLOCKED);
+                        return MOVE_TILE_TEMP_BLOCKED;
                     }
                 }
                 else
@@ -219,22 +219,22 @@ public class SoldierTile
                         // Set to special 'I want to walk through people' value
                         pSoldier.fDelayedMovement = 150;
 
-                        return (MOVE_TILE_STATIONARY_BLOCKED);
+                        return MOVE_TILE_STATIONARY_BLOCKED;
                     }
                     if (MercPtrs[ubPerson].sGridNo == MercPtrs[ubPerson].sFinalDestination)
                     {
-                        return (MOVE_TILE_STATIONARY_BLOCKED);
+                        return MOVE_TILE_STATIONARY_BLOCKED;
                     }
-                    return (MOVE_TILE_TEMP_BLOCKED);
+                    return MOVE_TILE_TEMP_BLOCKED;
                 }
             }
         }
 
-        if ((gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.MOVEMENT_RESERVED)))
+        if (gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.MOVEMENT_RESERVED))
         {
             if (gpWorldLevelData[sGridNo].ubReservedSoldierID != pSoldier.ubID)
             {
-                return (MOVE_TILE_TEMP_BLOCKED);
+                return MOVE_TILE_TEMP_BLOCKED;
             }
         }
 
@@ -255,7 +255,7 @@ public class SoldierTile
 
                 // Unset flag for blocked by soldier...
                 pSoldier.fBlockedByAnotherMerc = false;
-                return (MOVE_TILE_STATIONARY_BLOCKED);
+                return MOVE_TILE_STATIONARY_BLOCKED;
             }
 //            else
             {
@@ -265,7 +265,7 @@ public class SoldierTile
         // Unset flag for blocked by soldier...
         pSoldier.fBlockedByAnotherMerc = false;
 
-        return (MOVE_TILE_CLEAR);
+        return MOVE_TILE_CLEAR;
     }
 
     bool HandleNextTile(SOLDIERTYPE? pSoldier, WorldDirections bDirection, int sGridNo, int sFinalDestTile)
@@ -279,13 +279,13 @@ public class SoldierTile
         // ATE: If not on visible tile, return clear ( for path out of map )
         if (!IsometricUtils.GridNoOnVisibleWorldTile(sGridNo))
         {
-            return (true);
+            return true;
         }
 
         // If animation state is crow, iall is clear
         if (pSoldier.usAnimState == AnimationStates.CROW_FLY)
         {
-            return (true);
+            return true;
         }
 
         {
@@ -301,7 +301,7 @@ public class SoldierTile
                     // Yah, well too bad, stop here.
                     this.SetFinalTile(pSoldier, pSoldier.sGridNo, false);
 
-                    return (false);
+                    return false;
                 }
                 // CHECK IF they are stationary
                 else if (bBlocked == MOVE_TILE_STATIONARY_BLOCKED)
@@ -318,7 +318,7 @@ public class SoldierTile
 
                         this.SetDelayedTileWaiting(pSoldier, sGridNo, 1);
 
-                        return (false);
+                        return false;
                     }
                 }
                 else
@@ -336,13 +336,13 @@ public class SoldierTile
                         this.SetDelayedTileWaiting(pSoldier, sGridNo, 100);
                     }
 
-                    return (false);
+                    return false;
                 }
             }
             else
             {
                 // Mark this tile as reserverd ( until we get there! )
-                if (!((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED)) && (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))))
+                if (!(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.TURNBASED) && gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
                 {
                     this.MarkMovementReserved(pSoldier, sGridNo);
                 }
@@ -375,7 +375,7 @@ public class SoldierTile
                 }
             }
         }
-        return (true);
+        return true;
     }
 
 
@@ -416,7 +416,7 @@ public class SoldierTile
                         this.SetFinalTile(pSoldier, pSoldier.sGridNo, true);
                         pSoldier.fDelayedMovement = 0;
                     }
-                    return (true);
+                    return true;
                 }
 
                 // Try new path if anything but temp blockage!
@@ -543,7 +543,7 @@ public class SoldierTile
                             SoldierControl.EVENT_GetNewSoldierPath(pSoldier, sCheckGridNo, pSoldier.usUIMovementMode);
                             gfPlotPathToExitGrid = false;
 
-                            return (true);
+                            return true;
                         }
                     }
 
@@ -597,7 +597,7 @@ public class SoldierTile
                                     NPC.NPCReachedDestination(pSoldier, false);
                                     pSoldier.bNextAction = AI_ACTION.WAIT;
                                     pSoldier.usNextActionData = 500;
-                                    return (true);
+                                    return true;
                                 }
                             }
 
@@ -634,7 +634,7 @@ public class SoldierTile
                 }
             }
         }
-        return (true);
+        return true;
     }
 
 
@@ -676,10 +676,10 @@ public class SoldierTile
 //                    LightSpriteRoofStatus(pSoldier.iLight, true);
                 }
             }
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     // Swaps 2 soldier positions...
@@ -718,34 +718,34 @@ public class SoldierTile
         {
 //            if (EnoughPoints(pSoldier2, AP.EXCHANGE_PLACES, 0, fShow))
             {
-                if ((gAnimControl[pSoldier2.usAnimState].uiFlags.HasFlag(ANIM.MOVING)))
+                if (gAnimControl[pSoldier2.usAnimState].uiFlags.HasFlag(ANIM.MOVING))
                 {
-                    return (false);
+                    return false;
                 }
 
-                if ((gAnimControl[pSoldier1.usAnimState].uiFlags.HasFlag(ANIM.MOVING)) && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)))
+                if (gAnimControl[pSoldier1.usAnimState].uiFlags.HasFlag(ANIM.MOVING) && !gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
                 {
-                    return (false);
+                    return false;
                 }
 
                 if (pSoldier2.bSide == 0)
                 {
-                    return (true);
+                    return true;
                 }
 
                 // hehe - don't allow animals to exchange places
                 if (pSoldier2.uiStatusFlags.HasFlag(SOLDIER.ANIMAL))
                 {
-                    return (false);
+                    return false;
                 }
 
                 // must NOT be hostile, must NOT have stationary orders OR militia team, must be >= OKLIFE
                 if (pSoldier2.bNeutral > 0 && pSoldier2.bLife >= OKLIFE &&
                            pSoldier2.ubCivilianGroup != CIV_GROUP.HICKS_CIV_GROUP &&
-                         ((pSoldier2.bOrders != Orders.STATIONARY || pSoldier2.bTeam == MILITIA_TEAM) ||
+                         (pSoldier2.bOrders != Orders.STATIONARY || pSoldier2.bTeam == MILITIA_TEAM ||
                          (pSoldier2.sAbsoluteFinalDestination != NOWHERE && pSoldier2.sAbsoluteFinalDestination != pSoldier2.sGridNo)))
                 {
-                    return (true);
+                    return true;
                 }
 
                 if (fShow)
@@ -763,17 +763,17 @@ public class SoldierTile
                 // ATE: OK, reduce this guy's next ai counter....
                 pSoldier2.uiAIDelay = 100;
 
-                return (false);
+                return false;
             }
 //            else
             {
-                return (false);
+                return false;
             }
         }
 //        else
         {
-            return (false);
+            return false;
         }
-        return (true);
+        return true;
     }
 }

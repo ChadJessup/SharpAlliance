@@ -54,7 +54,7 @@ public partial class Globals
     *    starting with the deletion of a MULTI SPECIAL structure
     */
 
-    public const int INVALID_STRUCTURE_ID = (Globals.TOTAL_SOLDIERS + 100);
+    public const int INVALID_STRUCTURE_ID = Globals.TOTAL_SOLDIERS + 100;
     public static int[] AtHeight = { 0x01, 0x02, 0x04, 0x08 };
     public static STRUCTURE_FILE_REF gpStructureFileRefs;
 

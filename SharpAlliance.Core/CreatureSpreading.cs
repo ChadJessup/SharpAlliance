@@ -122,7 +122,7 @@ public class CreatureSpreading
 
         if (gbWorldSectorZ == 0)
         {
-            return (false);
+            return false;
         }
 
         iSwitchValue = giLairID;
@@ -203,7 +203,7 @@ public class CreatureSpreading
                 }
                 break;
         }
-        return (false);
+        return false;
     }
 
     public static int CreaturesInUndergroundSector(SEC ubSectorID, int ubSectorZ)

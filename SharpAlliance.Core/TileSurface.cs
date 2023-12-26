@@ -122,7 +122,7 @@ public class TileSurface
 //        // the hImage is no longer needed
 //        DestroyImage(hImage);
 
-        return (pTileSurf);
+        return pTileSurf;
     }
 
 

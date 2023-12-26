@@ -36,7 +36,7 @@ public class IsometricUtils
                     if (sGridno > Globals.MAXCOL)   // if we're below top row
                     {
                         // Everything's OK - we're not on the edge of the map
-                        return (false);
+                        return false;
                     }
                 }
             }
@@ -46,26 +46,26 @@ public class IsometricUtils
 
         if (sProposedGridno < 0)
         {
-            return (true);
+            return true;
         }
 
         sPropMod = sProposedGridno % Globals.MAXCOL;
 
         if (sMod == 0 && sPropMod == Globals.RIGHTMOSTGRID)
         {
-            return (true);
+            return true;
         }
         else if (sMod == Globals.RIGHTMOSTGRID && sPropMod == 0)
         {
-            return (true);
+            return true;
         }
         else if (sGridno >= Globals.LASTROWSTART && sProposedGridno >= Globals.GRIDSIZE)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -81,7 +81,7 @@ public class IsometricUtils
         // Convert our grid-not into an XY
         ConvertGridNoToXY(sGridNo2, out int sXPos2, out int sYPos2);
 
-        return ((int)(Math.Sqrt((sXPos2 - sXPos) * (sXPos2 - sXPos) + (sYPos2 - sYPos) * (sYPos2 - sYPos))) * CELL_X_SIZE);
+        return (int)Math.Sqrt((sXPos2 - sXPos) * (sXPos2 - sXPos) + (sYPos2 - sYPos) * (sYPos2 - sYPos)) * CELL_X_SIZE;
     }
 
     public static int GetRangeFromGridNoDiff(int sGridNo1, int sGridNo2)
@@ -96,7 +96,7 @@ public class IsometricUtils
 
         uiDist = (int)Math.Sqrt((sXPos2 - sXPos) * (sXPos2 - sXPos) + (sYPos2 - sYPos) * (sYPos2 - sYPos));
 
-        return (uiDist);
+        return uiDist;
     }
 
 
@@ -129,7 +129,7 @@ public class IsometricUtils
         sRows = Math.Abs((sOrigin / MAXCOL) - (sDest / MAXCOL));
         sCols = Math.Abs((sOrigin % MAXROW) - (sDest % MAXROW));
 
-        return (Math.Max(sRows, sCols));
+        return Math.Max(sRows, sCols);
     }
 
     public static int PythSpacesAway(int sOrigin, int sDest)
@@ -143,7 +143,7 @@ public class IsometricUtils
         // dist^2 = rows^2 + cols^2, so use the square root to get the distance
         sResult = (int)Math.Sqrt((sRows * sRows) + (sCols * sCols));
 
-        return (sResult);
+        return sResult;
     }
 
 
@@ -159,22 +159,22 @@ public class IsometricUtils
         if (sWorldX > 0 && sWorldX < (Globals.gsTRX - Globals.gsTLX - 20) &&
                  sWorldY > 20 && sWorldY < (Globals.gsBLY - Globals.gsTLY - 20))
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static void ConvertGridNoToXY(int sGridNo, out int sXPos, out int sYPos)
     {
         sYPos = sGridNo / Globals.WORLD_COLS;
-        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
     }
 
     public static void ConvertGridNoToCenterCellXY(int sGridNo, out int sXPos, out int sYPos)
     {
-        sYPos = (sGridNo / Globals.WORLD_COLS);
-        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+        sYPos = sGridNo / Globals.WORLD_COLS;
+        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
 
         sYPos = (sYPos * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2);
         sXPos = (sXPos * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2);
@@ -190,10 +190,10 @@ public class IsometricUtils
 
             if (sSameCursorPos == 0)
             {
-                return (false);
+                return false;
             }
 
-            return (true);
+            return true;
         }
 
         uiOldFrameNumber = Globals.guiGameCycleCounter;
@@ -204,19 +204,19 @@ public class IsometricUtils
         {
             psMapPos = MAPROWCOLTOPOS(sWorldY, sWorldX);
             sSameCursorPos = psMapPos;
-            return (true);
+            return true;
         }
         else
         {
             psMapPos = 0;
-            sSameCursorPos = (psMapPos);
+            sSameCursorPos = psMapPos;
             return false;
         }
     }
 
     public static void ConvertGridNoToCellXY(int sGridNo, out int sXPos, out int sYPos)
     {
-        sYPos = (sGridNo / Globals.WORLD_COLS);
+        sYPos = sGridNo / Globals.WORLD_COLS;
         sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
         sYPos *= Globals.CELL_Y_SIZE;
         sXPos *= Globals.CELL_X_SIZE;
@@ -226,19 +226,19 @@ public class IsometricUtils
     {
         if ((sXPos >= pRect.Left) && (sXPos <= pRect.Right) && (sYPos >= pRect.Top) && (sYPos <= pRect.Bottom))
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
     public static int MAPROWCOLTOPOS(int r, int c)
     {
-        return (((r < 0) || (r >= Globals.WORLD_ROWS) || (c < 0) || (c >= Globals.WORLD_COLS))
-            ? (0xffff)
-            : ((r) * Globals.WORLD_COLS + (c)));
+        return ((r < 0) || (r >= Globals.WORLD_ROWS) || (c < 0) || (c >= Globals.WORLD_COLS))
+            ? 0xffff
+            : (r * Globals.WORLD_COLS + c);
     }
 
     public static void FromCellToScreenCoordinates(int sCellX, int sCellY, out int psScreenX, out int psScreenY)
@@ -249,7 +249,7 @@ public class IsometricUtils
 
     public static void FromScreenToCellCoordinates(int sScreenX, int sScreenY, out int psCellX, out int psCellY)
     {
-        psCellX = ((sScreenX + (2 * sScreenY)) / 4);
+        psCellX = (sScreenX + (2 * sScreenY)) / 4;
         psCellY = ((2 * sScreenY) - sScreenX) / 4;
     }
 
@@ -274,9 +274,9 @@ public class IsometricUtils
         int sYPos, sXPos;
 
         sYPos = sGridNo / Globals.WORLD_COLS;
-        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
 
-        return ((sXPos * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2));
+        return (sXPos * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2);
     }
 
 
@@ -286,9 +286,9 @@ public class IsometricUtils
         int sYPos, sXPos;
 
         sYPos = sGridNo / Globals.WORLD_COLS;
-        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
 
-        return ((sYPos * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2));
+        return (sYPos * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2);
     }
 
 
@@ -297,9 +297,9 @@ public class IsometricUtils
         int sYPos, sXPos;
 
         sYPos = sGridNo / Globals.WORLD_COLS;
-        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
 
-        return (sXPos);
+        return sXPos;
     }
 
 
@@ -308,9 +308,9 @@ public class IsometricUtils
         int sYPos, sXPos;
 
         sYPos = sGridNo / Globals.WORLD_COLS;
-        sXPos = (sGridNo - (sYPos * Globals.WORLD_COLS));
+        sXPos = sGridNo - (sYPos * Globals.WORLD_COLS);
 
-        return (sYPos);
+        return sYPos;
     }
 
     public static int NewGridNo(int sGridno, int sDirInc)
@@ -324,7 +324,7 @@ public class IsometricUtils
             sProposedGridno = sGridno;
         }
 
-        return (sProposedGridno);
+        return sProposedGridno;
     }
 
 
@@ -342,7 +342,7 @@ public class IsometricUtils
             sDirection = 1;
         }
 
-        return (DirIncrementer[sDirection]);
+        return DirIncrementer[sDirection];
     }
 
     public static bool GetMouseXY(out int psMouseX, out int psMouseY)
@@ -350,16 +350,16 @@ public class IsometricUtils
 
         if (!GetMouseWorldCoords(out int sWorldX, out int sWorldY))
         {
-            (psMouseX) = 0;
-            (psMouseY) = 0;
-            return (false);
+            psMouseX = 0;
+            psMouseY = 0;
+            return false;
         }
 
     // Find start block
-    (psMouseX) = (sWorldX / Globals.CELL_X_SIZE);
-        (psMouseY) = (sWorldY / Globals.CELL_Y_SIZE);
+    psMouseX = sWorldX / Globals.CELL_X_SIZE;
+        psMouseY = sWorldY / Globals.CELL_Y_SIZE;
 
-        return (true);
+        return true;
     }
 
 
@@ -373,17 +373,17 @@ public class IsometricUtils
             psCellX = 0;
             psCellY = 0;
 
-            return (false);
+            return false;
         }
 
         // Find start block
-        (psMouseX) = (sWorldX / Globals.CELL_X_SIZE);
-        (psMouseY) = (sWorldY / Globals.CELL_Y_SIZE);
+        psMouseX = sWorldX / Globals.CELL_X_SIZE;
+        psMouseY = sWorldY / Globals.CELL_Y_SIZE;
 
-        (psCellX) = sWorldX - ((psMouseX) * Globals.CELL_X_SIZE);
-        (psCellY) = sWorldY - ((psMouseY) * Globals.CELL_Y_SIZE);
+        psCellX = sWorldX - (psMouseX * Globals.CELL_X_SIZE);
+        psCellY = sWorldY - (psMouseY * Globals.CELL_Y_SIZE);
 
-        return (true);
+        return true;
     }
 
     public static bool GetMouseWorldCoords(out int psMouseX, out int psMouseY)
@@ -392,11 +392,11 @@ public class IsometricUtils
         int sStartPointX_W, sStartPointY_W;
 
         // Convert mouse screen coords into offset from center
-        if (!(Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA)))
+        if (!Globals.gViewportRegion.uiFlags.HasFlag(MouseRegionFlags.IN_AREA))
         {
             psMouseX = 0;
             psMouseY = 0;
-            return (false);
+            return false;
         }
 
         sOffsetX = Globals.gViewportRegion.MousePos.X - ((Globals.gsVIEWPORT_END_X - Globals.gsVIEWPORT_START_X) / 2); // + gsRenderWorldOffsetX;
@@ -424,16 +424,16 @@ public class IsometricUtils
         {
             psMouseX = 0;
             psMouseY = 0;
-            return (false);
+            return false;
         }
 
         // Determine Start block and render offsets
         // Find start block
         // Add adjustment for render origin as well
-        (psMouseX) = sStartPointX_W;
-        (psMouseY) = sStartPointY_W;
+        psMouseX = sStartPointX_W;
+        psMouseY = sStartPointY_W;
 
-        return (true);
+        return true;
     }
 
 
@@ -446,14 +446,14 @@ public class IsometricUtils
             psMouseX = 0;
             psMouseY = 0;
 
-            return (false);
+            return false;
         }
 
         // Now adjust these cell coords into world coords
-        psMouseX = ((sMouseX) * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2);
-        psMouseY = ((sMouseY) * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2);
+        psMouseX = (sMouseX * Globals.CELL_X_SIZE) + (Globals.CELL_X_SIZE / 2);
+        psMouseY = (sMouseY * Globals.CELL_Y_SIZE) + (Globals.CELL_Y_SIZE / 2);
 
-        return (true);
+        return true;
     }
 
     internal static bool IsPointInScreenRectWithRelative(int sX, int sY, Rectangle aRect, out int sRelX, out int sRelY)

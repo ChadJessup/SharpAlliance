@@ -19,7 +19,7 @@ public class SliderSubSystem
     private readonly IInputManager inputs;
 
     private string guiSliderBoxImageTag;
-    private bool gfSliderInited;
+    public static bool gfSliderInited;
 
     public SliderSubSystem(
         IInputManager inputManager,
@@ -71,9 +71,9 @@ public class SliderSubSystem
         else
         {
             //display the background ( the bar ) 
-            this.OptDisplayLine(new(pSlider.usPos.X + 1, pSlider.usPos.Y - 1), new((pSlider.usPos.X + pSlider.ubSliderWidth - 1), pSlider.usPos.Y - 1), pSlider.usBackGroundColor);
-            this.OptDisplayLine(new(pSlider.usPos.X, pSlider.usPos.Y), new((pSlider.usPos.X + pSlider.ubSliderWidth), pSlider.usPos.Y), pSlider.usBackGroundColor);
-            this.OptDisplayLine(new((pSlider.usPos.X + 1), (pSlider.usPos.Y + 1)), new((pSlider.usPos.X + pSlider.ubSliderWidth - 1), pSlider.usPos.Y + 1), pSlider.usBackGroundColor);
+            this.OptDisplayLine(new(pSlider.usPos.X + 1, pSlider.usPos.Y - 1), new(pSlider.usPos.X + pSlider.ubSliderWidth - 1, pSlider.usPos.Y - 1), pSlider.usBackGroundColor);
+            this.OptDisplayLine(new(pSlider.usPos.X, pSlider.usPos.Y), new(pSlider.usPos.X + pSlider.ubSliderWidth, pSlider.usPos.Y), pSlider.usBackGroundColor);
+            this.OptDisplayLine(new(pSlider.usPos.X + 1, pSlider.usPos.Y + 1), new(pSlider.usPos.X + pSlider.ubSliderWidth - 1, pSlider.usPos.Y + 1), pSlider.usBackGroundColor);
 
             //invalidate the area
             this.video.InvalidateRegion(new(
@@ -294,7 +294,7 @@ public class SliderSubSystem
         // load Slider Box Graphic graphic and add it
         this.video.GetVideoObject("INTERFACE\\SliderBox.sti", out this.guiSliderBoxImageTag);
 
-        this.gfSliderInited = true;
+        gfSliderInited = true;
     }
 
     public Slider AddSlider(
@@ -406,7 +406,7 @@ public class SliderSubSystem
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
             MouseRegionFlags flag = (MouseRegionFlags)ButtonFlags.BUTTON_CLICKED_ON;
-            pRegion.uiFlags &= (~flag);
+            pRegion.uiFlags &= ~flag;
 
             if (this.inputs.gfLeftButtonState)
             {
@@ -576,14 +576,14 @@ public class SliderSubSystem
     {
     }
 
-    internal static void RemoveSliderBar(Slider guiMusicSlider)
+    internal static void RemoveSliderBar(Slider slider)
     {
-        throw new NotImplementedException();
+        MouseSubSystem.MSYS_RemoveRegion(slider.ScrollAreaMouseRegion);
     }
 
-    internal static void ShutDownSlider()
+    public static void ShutDownSlider()
     {
-        throw new NotImplementedException();
+        gfSliderInited = false;
     }
 }
 

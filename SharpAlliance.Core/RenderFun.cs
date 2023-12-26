@@ -15,11 +15,11 @@ public class RenderFun
         {
             pubRoomNo = gubWorldRoomInfo[sGridNo];
 
-            return (true);
+            return true;
         }
 
         pubRoomNo = NO_ROOM;
-        return (false);
+        return false;
     }
 
 }

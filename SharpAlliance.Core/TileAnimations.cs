@@ -50,20 +50,20 @@ public class TileAnimations
 
         // Allocate head
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.EXISTINGTILE)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.EXISTINGTILE))
         {
             pNewAniNode.pLevelNode = pGivenNode;
             pNewAniNode.pLevelNode.pAniTile = pNewAniNode;
         }
         else
         {
-            if ((uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE)))
+            if (uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE))
             {
 //                iCachedTile = GetCachedTile(pAniParams.zCachedFile);
 
                 if (iCachedTile == -1)
                 {
-                    return (null);
+                    return null;
                 }
 
                 usTileIndex = (TileIndexes)(iCachedTile + TILE_CACHE_START_INDEX);
@@ -109,7 +109,7 @@ public class TileAnimations
 
                 default:
 
-                    return (null);
+                    return null;
             }
 
             // SET NEW TILE VALUES
@@ -118,9 +118,9 @@ public class TileAnimations
 
 //            pNewAniNode.pLevelNode = pNode;
 
-            if ((uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE)))
+            if (uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE))
             {
-                pNewAniNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.CACHEDANITILE);
+                pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.CACHEDANITILE;
                 pNewAniNode.sCachedTileID = (int)iCachedTile;
                 pNewAniNode.usCachedTileSubIndex = (int)usTileType;
                 pNewAniNode.pLevelNode.pAniTile = pNewAniNode;
@@ -130,12 +130,12 @@ public class TileAnimations
 
             }
             // Can't set relative X,Y,Z IF FLAGS ANITILE_CACHEDTILE set!
-            else if ((uiFlags.HasFlag(ANITILEFLAGS.USEABSOLUTEPOS)))
+            else if (uiFlags.HasFlag(ANITILEFLAGS.USEABSOLUTEPOS))
             {
                 pNewAniNode.pLevelNode.sRelativeX = sX;
                 pNewAniNode.pLevelNode.sRelativeY = sY;
                 pNewAniNode.pLevelNode.sRelativeZ = sZ;
-                pNewAniNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.USEABSOLUTEPOS);
+                pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.USEABSOLUTEPOS;
             }
 
         }
@@ -176,35 +176,35 @@ public class TileAnimations
         }
 
         // SET FLAGS FOR LEVELNODE
-        pNewAniNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.ANIMATION | LEVELNODEFLAGS.USEZ | LEVELNODEFLAGS.DYNAMIC);
+        pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.ANIMATION | LEVELNODEFLAGS.USEZ | LEVELNODEFLAGS.DYNAMIC;
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.NOZBLITTER)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.NOZBLITTER))
         {
             pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.NOZBLITTER;
         }
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.ALWAYS_TRANSLUCENT)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.ALWAYS_TRANSLUCENT))
         {
             pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.REVEAL;
         }
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.USEBEST_TRANSLUCENT)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.USEBEST_TRANSLUCENT))
         {
             pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.USEBESTTRANSTYPE;
         }
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.ANIMATE_Z)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.ANIMATE_Z))
         {
             pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.DYNAMICZ;
         }
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.PAUSED)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.PAUSED))
         {
-            pNewAniNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.LASTDYNAMIC | LEVELNODEFLAGS.UPDATESAVEBUFFERONCE);
-            pNewAniNode.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.DYNAMIC);
+            pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.LASTDYNAMIC | LEVELNODEFLAGS.UPDATESAVEBUFFERONCE;
+            pNewAniNode.pLevelNode.uiFlags &= ~LEVELNODEFLAGS.DYNAMIC;
         }
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.OPTIMIZEFORSMOKEEFFECT)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.OPTIMIZEFORSMOKEEFFECT))
         {
             pNewAniNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.NOWRITEZ;
         }
@@ -214,7 +214,7 @@ public class TileAnimations
         pNewAniNode.ubLevelID = ubLevel;
         pNewAniNode.usTileIndex = usTileIndex;
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE))
         {
             pNewAniNode.usNumFrames = gpTileCache[iCachedTile].ubNumFrames;
         }
@@ -224,14 +224,14 @@ public class TileAnimations
 //            pNewAniNode.usNumFrames = gTileDatabase[usTileIndex].pAnimData.ubNumFrames;
         }
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME))
         {
             // Our start frame is actually a direction indicator
             ubTempDir = gOneCDirection[pAniParams.uiUserData3];
             sStartFrame = (int)sStartFrame + (pNewAniNode.usNumFrames * (int)ubTempDir);
         }
 
-        if ((uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
+        if (uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME))
         {
             // Our start frame is actually a direction indicator
 //            ubTempDir = gb4DirectionsFrom8[pAniParams.uiUserData3];
@@ -261,7 +261,7 @@ public class TileAnimations
         pAniTileHead = pNewAniNode;
 
         // Set some special stuff 
-        return (pNewAniNode);
+        return pNewAniNode;
     }
 
     // Loop throug all ani tiles and remove...
@@ -308,7 +308,7 @@ public class TileAnimations
                     pOldAniNode.pNext = pAniNode.pNext;
                 }
 
-                if (!(pAniNode.uiFlags.HasFlag(ANITILEFLAGS.EXISTINGTILE)))
+                if (!pAniNode.uiFlags.HasFlag(ANITILEFLAGS.EXISTINGTILE))
                 {
 
                     // Delete memory assosiated with item
@@ -346,7 +346,7 @@ public class TileAnimations
 
                     }
 
-                    if ((pAniNode.uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE)))
+                    if (pAniNode.uiFlags.HasFlag(ANITILEFLAGS.CACHEDTILE))
                     {
 //                        RemoveCachedTile(pAniNode.sCachedTileID);
                     }
@@ -360,7 +360,7 @@ public class TileAnimations
                         {
                             // turn on sighting again
                             // the explosion queue handles all this at the end of the queue
-                            gTacticalStatus.uiFlags &= (~TacticalEngineStatus.DISALLOW_SIGHT);
+                            gTacticalStatus.uiFlags &= ~TacticalEngineStatus.DISALLOW_SIGHT;
                         }
 
                         // Freeup attacker from explosion
@@ -381,7 +381,7 @@ public class TileAnimations
                 }
                 else
                 {
-                    TileElem = (gTileDatabase[pAniNode.usTileIndex]);
+                    TileElem = gTileDatabase[pAniNode.usTileIndex];
 
                     // OK, update existing tile usIndex....
 //                    Debug.Assert(TileElem.pAnimData != null);
@@ -402,7 +402,7 @@ public class TileAnimations
                         pDoorStatus = Keys.GetDoorStatus(pAniNode.sGridNo);
                         if (pDoorStatus is not null)
                         {
-                            pDoorStatus.ubFlags &= ~(DOOR_STATUS_FLAGS.BUSY);
+                            pDoorStatus.ubFlags &= ~DOOR_STATUS_FLAGS.BUSY;
                         }
 
 //                        if (GridNoOnScreen(pAniNode.sGridNo))
@@ -441,21 +441,21 @@ public class TileAnimations
             pNode = pAniNode;
             pAniNode = pAniNode.pNext;
 
-            if ((uiClock - pNode.uiTimeLastUpdate) > pNode.sDelay && !(pNode.uiFlags.HasFlag(ANITILEFLAGS.PAUSED)))
+            if ((uiClock - pNode.uiTimeLastUpdate) > pNode.sDelay && !pNode.uiFlags.HasFlag(ANITILEFLAGS.PAUSED))
             {
                 pNode.uiTimeLastUpdate = GetJA2Clock();
 
-                if (pNode.uiFlags.HasFlag((ANITILEFLAGS.OPTIMIZEFORSLOWMOVING)))
+                if (pNode.uiFlags.HasFlag(ANITILEFLAGS.OPTIMIZEFORSLOWMOVING))
                 {
-                    pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.DYNAMIC);
-                    pNode.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.LASTDYNAMIC);
+                    pNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.DYNAMIC;
+                    pNode.pLevelNode.uiFlags &= ~LEVELNODEFLAGS.LASTDYNAMIC;
                 }
-                else if (pNode.uiFlags.HasFlag((ANITILEFLAGS.OPTIMIZEFORSMOKEEFFECT)))
+                else if (pNode.uiFlags.HasFlag(ANITILEFLAGS.OPTIMIZEFORSMOKEEFFECT))
                 {
                     //	pNode.pLevelNode.uiFlags |= LEVELNODE_DYNAMICZ;
                     RenderWorld.ResetSpecificLayerOptimizing(TILES_DYNAMIC.STRUCTURES);
-                    pNode.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.LASTDYNAMIC);
-                    pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.DYNAMIC);
+                    pNode.pLevelNode.uiFlags &= ~LEVELNODEFLAGS.LASTDYNAMIC;
+                    pNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.DYNAMIC;
                 }
 
                 if (pNode.uiFlags.HasFlag(ANITILEFLAGS.FORWARD))
@@ -497,7 +497,7 @@ public class TileAnimations
 
                                 case ANI_KEYFRAME.CHAIN_WATER_EXPLOSION:
 
-                                    ExplosionControl.IgniteExplosion(pNode.ubUserData2, pNode.pLevelNode.sRelativeX, pNode.pLevelNode.sRelativeY, 0, pNode.sGridNo, (Items)(pNode.uiUserData), 0);
+                                    ExplosionControl.IgniteExplosion(pNode.ubUserData2, pNode.pLevelNode.sRelativeX, pNode.pLevelNode.sRelativeY, 0, pNode.sGridNo, (Items)pNode.uiUserData, 0);
                                     break;
 
                                 case ANI_KEYFRAME.DO_SOUND:
@@ -544,14 +544,14 @@ public class TileAnimations
                         {
                             pNode.sCurrentFrame = pNode.sStartFrame;
 
-                            if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
+                            if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME))
                             {
                                 // Our start frame is actually a direction indicator
                                 ubTempDir = gOneCDirection[(WorldDirections)pNode.uiUserData3];
                                 pNode.sCurrentFrame = (int)(pNode.usNumFrames * (int)ubTempDir);
                             }
 
-                            if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
+                            if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME))
                             {
                                 // Our start frame is actually a direction indicator
 //                                ubTempDir = gb4DirectionsFrom8[(WorldDirections)pNode.uiUserData3];
@@ -562,7 +562,7 @@ public class TileAnimations
                         else if (pNode.uiFlags.HasFlag(ANITILEFLAGS.REVERSE_LOOPING))
                         {
                             // Turn off backwards flag
-                            pNode.uiFlags &= (~ANITILEFLAGS.FORWARD);
+                            pNode.uiFlags &= ~ANITILEFLAGS.FORWARD;
 
                             // Turn onn forwards flag
                             pNode.uiFlags |= ANITILEFLAGS.BACKWARD;
@@ -573,7 +573,7 @@ public class TileAnimations
                             DeleteAniTile(pNode);
 
                             // Turn back on redunency checks!
-                            gTacticalStatus.uiFlags &= (~TacticalEngineStatus.NOHIDE_REDUNDENCY);
+                            gTacticalStatus.uiFlags &= ~TacticalEngineStatus.NOHIDE_REDUNDENCY;
 
                             return;
                         }
@@ -588,7 +588,7 @@ public class TileAnimations
                         if (pNode.bFrameCountAfterStart == 0)
                         {
                             pNode.bFrameCountAfterStart = 1;
-                            pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.DYNAMIC);
+                            pNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.DYNAMIC;
 
                             // Dangerous here, since we may not even be on the screen...
                             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
@@ -602,13 +602,13 @@ public class TileAnimations
                     if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME))
                     {
                         ubTempDir = gOneCDirection[(WorldDirections)pNode.uiUserData3];
-                        usMinFrames = (pNode.usNumFrames * (int)ubTempDir);
+                        usMinFrames = pNode.usNumFrames * (int)ubTempDir;
                     }
 
                     if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME))
                     {
 //                        ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
-                        usMinFrames = (pNode.usNumFrames * (int)ubTempDir);
+                        usMinFrames = pNode.usNumFrames * (int)ubTempDir;
                     }
 
                     if ((pNode.sCurrentFrame - 1) >= usMinFrames)
@@ -629,7 +629,7 @@ public class TileAnimations
                         if (pNode.uiFlags.HasFlag(ANITILEFLAGS.PAUSE_AFTER_LOOP))
                         {
                             // Turn off backwards flag
-                            pNode.uiFlags &= (~ANITILEFLAGS.BACKWARD);
+                            pNode.uiFlags &= ~ANITILEFLAGS.BACKWARD;
 
                             // Pause
                             pNode.uiFlags |= ANITILEFLAGS.PAUSED;
@@ -639,13 +639,13 @@ public class TileAnimations
                         {
                             pNode.sCurrentFrame = pNode.sStartFrame;
 
-                            if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
+                            if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME))
                             {
                                 // Our start frame is actually a direction indicator
                                 ubTempDir = gOneCDirection[(WorldDirections)pNode.uiUserData3];
                                 pNode.sCurrentFrame = (int)(pNode.usNumFrames * (int)ubTempDir);
                             }
-                            if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
+                            if (pNode.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME))
                             {
                                 // Our start frame is actually a direction indicator
 //                                ubTempDir = gb4DirectionsFrom8[pNode.uiUserData3];
@@ -656,7 +656,7 @@ public class TileAnimations
                         else if (pNode.uiFlags.HasFlag(ANITILEFLAGS.REVERSE_LOOPING))
                         {
                             // Turn off backwards flag
-                            pNode.uiFlags &= (~ANITILEFLAGS.BACKWARD);
+                            pNode.uiFlags &= ~ANITILEFLAGS.BACKWARD;
 
                             // Turn onn forwards flag
                             pNode.uiFlags |= ANITILEFLAGS.FORWARD;
@@ -688,28 +688,28 @@ public class TileAnimations
                 if (pNode.uiFlags.HasFlag(ANITILEFLAGS.OPTIMIZEFORSLOWMOVING))
                 {
                     // ONLY TURN OFF IF PAUSED...
-                    if ((pNode.uiFlags.HasFlag(ANITILEFLAGS.ERASEITEMFROMSAVEBUFFFER)))
+                    if (pNode.uiFlags.HasFlag(ANITILEFLAGS.ERASEITEMFROMSAVEBUFFFER))
                     {
                         if (pNode.uiFlags.HasFlag(ANITILEFLAGS.PAUSED))
                         {
                             if (pNode.pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.DYNAMIC))
                             {
-                                pNode.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.DYNAMIC);
-                                pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.LASTDYNAMIC);
+                                pNode.pLevelNode.uiFlags &= ~LEVELNODEFLAGS.DYNAMIC;
+                                pNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.LASTDYNAMIC;
                                 RenderWorld.SetRenderFlags(RenderingFlags.FULL);
                             }
                         }
                     }
                     else
                     {
-                        pNode.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.DYNAMIC);
-                        pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.LASTDYNAMIC);
+                        pNode.pLevelNode.uiFlags &= ~LEVELNODEFLAGS.DYNAMIC;
+                        pNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.LASTDYNAMIC;
                     }
                 }
                 else if (pNode.uiFlags.HasFlag(ANITILEFLAGS.OPTIMIZEFORSMOKEEFFECT))
                 {
-                    pNode.pLevelNode.uiFlags |= (LEVELNODEFLAGS.LASTDYNAMIC);
-                    pNode.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.DYNAMIC);
+                    pNode.pLevelNode.uiFlags |= LEVELNODEFLAGS.LASTDYNAMIC;
+                    pNode.pLevelNode.uiFlags &= ~LEVELNODEFLAGS.DYNAMIC;
                 }
             }
         }
@@ -720,14 +720,14 @@ public class TileAnimations
         WorldDirections ubTempDir = 0;
         int sStartFrame = 0;
 
-        if ((pAniTile.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME)))
+        if (pAniTile.uiFlags.HasFlag(ANITILEFLAGS.USE_DIRECTION_FOR_START_FRAME))
         {
             // Our start frame is actually a direction indicator
             ubTempDir = gOneCDirection[(WorldDirections)pAniTile.uiUserData3];
             sStartFrame = sFrame + (pAniTile.usNumFrames * (int)ubTempDir);
         }
 
-        if ((pAniTile.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME)))
+        if (pAniTile.uiFlags.HasFlag(ANITILEFLAGS.USE_4DIRECTION_FOR_START_FRAME))
         {
             // Our start frame is actually a direction indicator
 //            ubTempDir = gb4DirectionsFrom8[pAniTile.uiUserData3];
@@ -775,7 +775,7 @@ public class TileAnimations
 
             default:
 
-                return (null);
+                return null;
         }
 
         while (pNode != null)
@@ -784,7 +784,7 @@ public class TileAnimations
             {
                 if (pNode.pAniTile.uiFlags.HasFlag(uiFlags))
                 {
-                    return (pNode.pAniTile);
+                    return pNode.pAniTile;
                 }
 
             }
@@ -792,7 +792,7 @@ public class TileAnimations
             pNode = pNode.pNext;
         }
 
-        return (null);
+        return null;
     }
 
 
@@ -804,7 +804,7 @@ public class TileAnimations
         }
         else
         {
-            pAniTile.pLevelNode.uiFlags &= (~LEVELNODEFLAGS.HIDDEN);
+            pAniTile.pLevelNode.uiFlags &= ~LEVELNODEFLAGS.HIDDEN;
         }
     }
 
@@ -816,7 +816,7 @@ public class TileAnimations
         }
         else
         {
-            pAniTile.uiFlags &= (~ANITILEFLAGS.PAUSED);
+            pAniTile.uiFlags &= ~ANITILEFLAGS.PAUSED;
         }
     }
 

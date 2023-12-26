@@ -53,7 +53,7 @@ public class LaptopSave
         var pInventoryArray = GetPtrToStoreInventory(ubDealerID);
         if (pInventoryArray == null)
         {
-            return (false);
+            return false;
         }
 
 
@@ -69,12 +69,12 @@ public class LaptopSave
                     //if there is already a qty on hand, then we found a match
                     if (pInventoryArray[(int)i].ubQtyOnHand > 0)
                     {
-                        return (true);
+                        return true;
                     }
                 }
             }
         }
-        return (false);
+        return false;
     }
 
 
@@ -90,16 +90,16 @@ public class LaptopSave
     {
         if (ubDealerID >= BOBBY_RAY.LISTS)
         {
-            return (null);
+            return null;
         }
 
         if (ubDealerID == BOBBY_RAY.NEW)
         {
-            return (LaptopSaveInfo.BobbyRayInventory);
+            return LaptopSaveInfo.BobbyRayInventory;
         }
         else if (ubDealerID == BOBBY_RAY.USED)
         {
-            return (LaptopSaveInfo.BobbyRayUsedInventory);
+            return LaptopSaveInfo.BobbyRayUsedInventory;
         }
         else
         {
@@ -109,7 +109,7 @@ public class LaptopSave
         //		return( gArmsDealersInventory[ ubDealerID - TONYS_ITEMS ] );
 
 
-        return (null);
+        return null;
     }
 
 

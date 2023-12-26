@@ -37,7 +37,7 @@ public class Interface
     private static int CalcUIMessageDuration(string wString)
     {
         // base + X per letter
-        return (1000 + 50 * wString.Length);
+        return 1000 + 50 * wString.Length;
     }
 
     private void InternalBeginUIMessage(bool fUseSkullIcon, params string[] MsgString)

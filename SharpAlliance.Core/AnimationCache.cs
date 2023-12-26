@@ -40,7 +40,7 @@ public class AnimationCache
         // Zero surface databse history for this soldeir
 //        ClearAnimationSurfacesUsageHistory(usSoldierID);
 
-        return (true);
+        return true;
     }
 
     void DeleteAnimationCache(int usSoldierID, AnimationSurfaceCacheType pAnimCache)
@@ -75,7 +75,7 @@ public class AnimationCache
                 // Found surface, return
                 Messages.AnimDebugMsg(string.Format("Anim Cache: Hit %d ( Soldier %d )", usSurfaceIndex, usSoldierID));
                 pAnimCache.sCacheHits[cnt]++;
-                return (true);
+                return true;
             }
         }
 
@@ -137,7 +137,7 @@ public class AnimationCache
             }
         }
 
-        return (true);
+        return true;
     }
 
 

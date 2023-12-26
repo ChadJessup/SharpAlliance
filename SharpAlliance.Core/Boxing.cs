@@ -11,11 +11,11 @@ public class Boxing
         {
             if (WorldManager.WhoIsThere2(gsBoxerGridNo[uiLoop], 0) != NOBODY)
             {
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 }
 

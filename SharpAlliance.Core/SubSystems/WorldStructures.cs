@@ -34,13 +34,13 @@ public class WorldStructures
         {
             if ((pCurrent.fFlags & fFlags) != 0)
             {
-                return (pCurrent);
+                return pCurrent;
             }
 
             pCurrent = pCurrent.pNext;
         }
 
-        return (null);
+        return null;
     }
 
     public static LEVELNODE? FindLevelNodeBasedOnStructure(int sGridNo, STRUCTURE? pStructure)
@@ -53,7 +53,7 @@ public class WorldStructures
         {
             if (pLevelNode.pStructureData == pStructure)
             {
-                return (pLevelNode);
+                return pLevelNode;
             }
             pLevelNode = pLevelNode.pNext;
         }
@@ -64,7 +64,7 @@ public class WorldStructures
         {
             if (pLevelNode.pStructureData == pStructure)
             {
-                return (pLevelNode);
+                return pLevelNode;
             }
             pLevelNode = pLevelNode.pNext;
         }
@@ -75,7 +75,7 @@ public class WorldStructures
         {
             if (pLevelNode.pStructureData == pStructure)
             {
-                return (pLevelNode);
+                return pLevelNode;
             }
             pLevelNode = pLevelNode.pNext;
         }
@@ -86,7 +86,7 @@ public class WorldStructures
         {
             if (pLevelNode.pStructureData == pStructure)
             {
-                return (pLevelNode);
+                return pLevelNode;
             }
             pLevelNode = pLevelNode.pNext;
         }
@@ -95,7 +95,7 @@ public class WorldStructures
         //AssertMsg(0, "FindLevelNodeBasedOnStruct failed.");
 
 
-        return (null);
+        return null;
     }
 
     public static bool AddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, LEVELNODE? pLevelN)
@@ -151,7 +151,7 @@ public class WorldStructures
         // first check to see if the structure will be blocked
         if (!OkayToAddStructureToWorld(sBaseGridNo, bLevel, pDBStructureRef, Globals.INVALID_STRUCTURE_ID))
         {
-            return (null);
+            return null;
         }
 
         for (ubLoop = (int)STRUCTUREFLAGS.BASE_TILE; ubLoop < pDBStructure.ubNumberOfTiles; ubLoop++)
@@ -165,7 +165,7 @@ public class WorldStructures
                     // MemFree(ppStructure[ubLoop2]);
                 }
                 // MemFree(ppStructure);
-                return (null);
+                return null;
             }
             ppStructure[ubLoop].sGridNo = sBaseGridNo + ppTile[ubLoop].sPosRelToBase;
             if (ubLoop != (int)STRUCTUREFLAGS.BASE_TILE)
@@ -198,7 +198,7 @@ public class WorldStructures
             {
                 // should now be unncessary
                 ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.PERSON;
-                ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.BLOCKSMOVES);
+                ppStructure[ubLoop].fFlags &= ~STRUCTUREFLAGS.BLOCKSMOVES;
             }
             else if (pLevelNode.uiFlags.HasFlag(LEVELNODEFLAGS.ROTTINGCORPSE) || ((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.CORPSE))
             {
@@ -207,12 +207,12 @@ public class WorldStructures
                 if (pDBStructure.ubNumberOfTiles < 10)
                 {
                     ppStructure[ubLoop].fFlags |= STRUCTUREFLAGS.PASSABLE;
-                    ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.BLOCKSMOVES);
+                    ppStructure[ubLoop].fFlags &= ~STRUCTUREFLAGS.BLOCKSMOVES;
                 }
                 else
                 {
                     // make sure not transparent
-                    ppStructure[ubLoop].fFlags &= ~(STRUCTUREFLAGS.TRANSPARENT);
+                    ppStructure[ubLoop].fFlags &= ~STRUCTUREFLAGS.TRANSPARENT;
                 }
             }
         }
@@ -252,23 +252,23 @@ public class WorldStructures
                     // not level ground! abort!
                     for (ubLoop2 = (int)STRUCTUREFLAGS.BASE_TILE; ubLoop2 < ubLoop; ubLoop2++)
                     {
-                        DeleteStructureFromTile((Globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
+                        DeleteStructureFromTile(Globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo], ppStructure[ubLoop2]);
                     }
                     //MemFree(ppStructure);
-                    return (null);
+                    return null;
                 }
             }
 
-            if (AddStructureToTile((Globals.gpWorldLevelData[sGridNo]), ppStructure[ubLoop], usStructureID) == false)
+            if (AddStructureToTile(Globals.gpWorldLevelData[sGridNo], ppStructure[ubLoop], usStructureID) == false)
             {
                 // error! abort!
                 for (ubLoop2 = (int)STRUCTUREFLAGS.BASE_TILE; ubLoop2 < ubLoop; ubLoop2++)
                 {
-                    DeleteStructureFromTile((Globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo]), ppStructure[ubLoop2]);
+                    DeleteStructureFromTile(Globals.gpWorldLevelData[ppStructure[ubLoop2].sGridNo], ppStructure[ubLoop2]);
                 }
 
                 //MemFree(ppStructure);
-                return (null);
+                return null;
             }
         }
 
@@ -278,7 +278,7 @@ public class WorldStructures
         //MemFree(ppStructure);
         // And we're done! return a pointer to the base structure!
 
-        return (pBaseStructure);
+        return pBaseStructure;
     }
 
     public static bool AddStructureToTile(MAP_ELEMENT? pMapElement, STRUCTURE? pStructure, int usStructureID)
@@ -310,7 +310,7 @@ public class WorldStructures
             pMapElement.uiFlags |= MAPELEMENTFLAGS.INTERACTIVETILE;
         }
 
-        return (true);
+        return true;
     }
 
     public static STRUCTURE? CreateStructureFromDB(DB_STRUCTURE_REF pDBStructureRef, int ubTileNum)
@@ -371,7 +371,7 @@ public class WorldStructures
         }
 
         pStructure.ubVehicleHitLocation = pTile.ubVehicleHitLocation;
-        return (pStructure);
+        return pStructure;
     }
 
     public static bool OkayToAddStructureToWorld(
@@ -380,12 +380,12 @@ public class WorldStructures
         DB_STRUCTURE_REF pDBStructureRef,
         int sExclusionID)
     {
-        return (InternalOkayToAddStructureToWorld(
+        return InternalOkayToAddStructureToWorld(
             sBaseGridNo,
             bLevel,
             pDBStructureRef,
             sExclusionID,
-            sExclusionID == Globals.IGNORE_PEOPLE_STRUCTURE_ID));
+            sExclusionID == Globals.IGNORE_PEOPLE_STRUCTURE_ID);
     }
 
     public static bool OkayToAddStructureToTile(
@@ -411,13 +411,13 @@ public class WorldStructures
         sGridNo = sBaseGridNo + ppTile[ubTileIndex].sPosRelToBase;
         if (sGridNo < 0 || sGridNo > WORLD_MAX)
         {
-            return (false);
+            return false;
         }
 
         if (Globals.gpWorldLevelData[sBaseGridNo].sHeight != Globals.gpWorldLevelData[sGridNo].sHeight)
         {
             // uneven terrain, one portion on top of cliff and another not! can't add!
-            return (false);
+            return false;
         }
 
         pDBStructure = pDBStructureRef.pDBStructure;
@@ -437,7 +437,7 @@ public class WorldStructures
             {
                 // CJC:
                 // If adding a mobile structure, allow addition if existing structure is passable
-                if ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE)) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
                 {
                     // Skip!
                     pExistingStructure = pExistingStructure.pNext;
@@ -475,21 +475,21 @@ public class WorldStructures
 
                     // two obstacle structures aren't allowed in the same tile at the same height
                     // ATE: There is more sophisticated logic for mobiles, so postpone this check if mobile....
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE)))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE) && !((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.MOBILE))
                     {
-                        if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE) && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)))
+                        if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE) && !pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE))
                         {
                             // no mobiles, existing structure is passable
                         }
                         else
                         {
-                            return (false);
+                            return false;
                         }
                     }
-                    else if ((pDBStructure.ubNumberOfTiles > 1) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)))
+                    else if ((pDBStructure.ubNumberOfTiles > 1) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                     {
                         // if not an open door...
-                        if (!((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))))
+                        if (!(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
                         {
 
                             // we could be trying to place a multi-tile obstacle on top of a wall; we shouldn't
@@ -500,7 +500,7 @@ public class WorldStructures
                                 {
                                     case WallOrientation.OUTSIDE_TOP_LEFT:
                                     case WallOrientation.INSIDE_TOP_LEFT:
-                                        sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((bLoop + 2)));
+                                        sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bLoop + 2));
                                         break;
                                     case WallOrientation.OUTSIDE_TOP_RIGHT:
                                     case WallOrientation.INSIDE_TOP_RIGHT:
@@ -516,7 +516,7 @@ public class WorldStructures
                                     if (sBaseGridNo + ppTile[bLoop2].sPosRelToBase == sOtherGridNo)
                                     {
                                         // obstacle will straddle wall!
-                                        return (false);
+                                        return false;
                                     }
                                 }
                             }
@@ -527,11 +527,11 @@ public class WorldStructures
                 else if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.WALLSTUFF))
                 {
                     // two walls with the same alignment aren't allowed in the same tile
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF)) && (pDBStructure.ubWallOrientation == pExistingStructure.ubWallOrientation))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.WALLSTUFF) && (pDBStructure.ubWallOrientation == pExistingStructure.ubWallOrientation))
                     {
-                        return (false);
+                        return false;
                     }
-                    else if (!(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE | STRUCTUREFLAGS.PERSON)))
+                    else if (!pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.CORPSE | STRUCTUREFLAGS.PERSON))
                     {
                         // it's possible we're trying to insert this wall on top of a multitile obstacle
                         for (bLoop = 1; bLoop < 4; bLoop++)
@@ -540,7 +540,7 @@ public class WorldStructures
                             {
                                 case WallOrientation.OUTSIDE_TOP_LEFT:
                                 case WallOrientation.INSIDE_TOP_LEFT:
-                                    sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc((bLoop + 2)));
+                                    sOtherGridNo = IsometricUtils.NewGridNo(sGridNo, IsometricUtils.DirectionInc(bLoop + 2));
                                     break;
                                 case WallOrientation.OUTSIDE_TOP_RIGHT:
                                 case WallOrientation.INSIDE_TOP_RIGHT:
@@ -556,7 +556,7 @@ public class WorldStructures
                                 pOtherExistingStructure = FindStructureByID(sOtherGridNo, pExistingStructure.usStructureID);
                                 if (pOtherExistingStructure is not null)
                                 {
-                                    return (false);
+                                    return false;
                                 }
                             }
                         }
@@ -589,14 +589,14 @@ public class WorldStructures
                     }
 
                     // ATE: Added check here - UNLESS the part we are trying to add is PASSABLE!
-                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && !(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)) && !(ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE)))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && !pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE) && !ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE))
                     {
                         // don't allow 2 people in the same tile
-                        return (false);
+                        return false;
                     }
 
                     // ATE: Another rule: allow PASSABLE *IF* the PASSABLE is *NOT* MOBILE!
-                    if (!(pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE)) && (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE)))
+                    if (!pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) && pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.PASSABLE))
                     {
                         // Skip!
                         pExistingStructure = pExistingStructure.pNext;
@@ -605,19 +605,19 @@ public class WorldStructures
 
                     // ATE: Added here - UNLESS this part is PASSABLE....
                     // two obstacle structures aren't allowed in the same tile at the same height
-                    if ((pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE)) && !(ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE)))
+                    if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OBSTACLE) && !ppTile[ubTileIndex].fFlags.HasFlag(TILE.PASSABLE))
                     {
-                        return (false);
+                        return false;
                     }
                 }
 
-                if ((((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OPENABLE)))
+                if (((STRUCTUREFLAGS)pDBStructure.fFlags).HasFlag(STRUCTUREFLAGS.OPENABLE))
                 {
                     if (pExistingStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE))
                     {
                         // don't allow two openable structures in the same tile or things will screw
                         // up on an interface level
-                        return (false);
+                        return false;
                     }
                 }
             }
@@ -626,7 +626,7 @@ public class WorldStructures
         }
 
 
-        return (true);
+        return true;
     }
 
     private static bool InternalOkayToAddStructureToWorld(int sBaseGridNo, int bLevel, DB_STRUCTURE_REF pDBStructureRef, int sExclusionID, bool fIgnorePeople)
@@ -659,7 +659,7 @@ public class WorldStructures
                 }
                 else
                 {
-                    return (false);
+                    return false;
                 }
             }
             else
@@ -668,10 +668,10 @@ public class WorldStructures
             }
             if (!OkayToAddStructureToTile(sBaseGridNo, sCubeOffset, pDBStructureRef, ubLoop, sExclusionID, fIgnorePeople))
             {
-                return (false);
+                return false;
             }
         }
-        return (true);
+        return true;
     }
 
     public static bool DeleteStructureFromWorld(STRUCTURE? pStructure)
@@ -703,8 +703,8 @@ public class WorldStructures
         }
 
         usStructureID = pBaseStructure.usStructureID;
-        fMultiStructure = ((pBaseStructure.fFlags & STRUCTUREFLAGS.MULTI) != 0);
-        fRecompileMPs = ((Globals.gsRecompileAreaLeft != 0) && !(pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) != false));
+        fMultiStructure = (pBaseStructure.fFlags & STRUCTUREFLAGS.MULTI) != 0;
+        fRecompileMPs = (Globals.gsRecompileAreaLeft != 0) && !(pBaseStructure.fFlags.HasFlag(STRUCTUREFLAGS.MOBILE) != false);
 
         if (fRecompileMPs)
         {
@@ -731,7 +731,7 @@ public class WorldStructures
                 DeleteStructureFromTile(Globals.gpWorldLevelData[sGridNo], pCurrent);
             }
 
-            if (!Globals.gfEditMode && (fRecompileMPs))
+            if (!Globals.gfEditMode && fRecompileMPs)
             {
                 if (fRecompileMPs)
                 {
@@ -752,7 +752,7 @@ public class WorldStructures
             }
         }
 
-        return (true);
+        return true;
     }
 
     public static void DeleteStructureFromTile(MAP_ELEMENT pMapElement, STRUCTURE? pStructure)
@@ -791,7 +791,7 @@ public class WorldStructures
         }
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPENABLE))
         { // only one allowed in a tile, so we are safe to do this...
-            pMapElement.uiFlags &= (~MAPELEMENTFLAGS.INTERACTIVETILE);
+            pMapElement.uiFlags &= ~MAPELEMENTFLAGS.INTERACTIVETILE;
         }
 
         pStructure = null;
@@ -807,10 +807,10 @@ public class WorldStructures
 
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.BASE_TILE))
         {
-            return (pStructure);
+            return pStructure;
         }
 
-        return (FindStructureByID(pStructure.sBaseGridNo, pStructure.usStructureID));
+        return FindStructureByID(pStructure.sBaseGridNo, pStructure.usStructureID);
     }
 
     public static STRUCTURE? FindStructureByID(int sGridNo, int usStructureID)
@@ -823,7 +823,7 @@ public class WorldStructures
         {
             if (pCurrent.usStructureID == usStructureID)
             {
-                return (pCurrent);
+                return pCurrent;
             }
 
             pCurrent = pCurrent.pNext;

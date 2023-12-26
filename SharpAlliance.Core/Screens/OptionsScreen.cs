@@ -257,7 +257,7 @@ public class OptionsScreen : IScreen
 
         // ATE: Put here to save RECTS before any fast help being drawn...
         this.video.SaveBackgroundRects();
-        this.guiManager.RenderButtonsFastHelp();
+        GuiManager.RenderButtonsFastHelp();
 
         this.video.ExecuteBaseDirtyRectQueue();
         this.video.EndFrameBufferRender();
@@ -915,7 +915,7 @@ public class OptionsScreen : IScreen
             }
             else
             {
-                this.guiOptionsToggles[cnt].uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+                this.guiOptionsToggles[cnt].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             }
         }
     }
@@ -1091,7 +1091,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
             gfSaveGame = false;
@@ -1101,7 +1101,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
@@ -1116,7 +1116,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             //Confirm the Exit to the main menu screen
             this.DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_RETURN_TO_MAIN], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, this.ConfirmQuitToMainMenuMessageBoxCallBack);
@@ -1128,7 +1128,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
@@ -1162,7 +1162,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             this.SetOptionsExitScreen(this.guiPreviousOptionScreen);
 
@@ -1171,7 +1171,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
@@ -1192,7 +1192,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
 
             this.SetOptionsExitScreen(ScreenName.SAVE_LOAD_SCREEN);
             gfSaveGame = true;
@@ -1202,7 +1202,7 @@ public class OptionsScreen : IScreen
 
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LOST_MOUSE))
         {
-            btn.uiFlags &= (~ButtonFlags.BUTTON_CLICKED_ON);
+            btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
             this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
     }
@@ -1242,9 +1242,9 @@ public class OptionsScreen : IScreen
             if (ubButton == TOPTION.SPEECH || ubButton == TOPTION.SUBTITLES)
             {
                 //make sure that at least of of the toggles is still enabled
-                if (!(this.guiOptionsToggles[TOPTION.SPEECH].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+                if (!this.guiOptionsToggles[TOPTION.SPEECH].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                 {
-                    if (!(this.guiOptionsToggles[TOPTION.SUBTITLES].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON)))
+                    if (!this.guiOptionsToggles[TOPTION.SUBTITLES].uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
                     {
                         this.settings[ubButton] = true;
                         this.guiOptionsToggles[ubButton].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
@@ -1292,10 +1292,10 @@ public class OptionsScreen : IScreen
         this.gfExitOptionsDueToMessageBox = true;
 
         // do message box and return
-        this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, (usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT), ReturnCallback, ref CenteringRect);
+        this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT, ReturnCallback, ref CenteringRect);
 
         // send back return state
-        return ((this.giOptionsMessageBox != -1));
+        return this.giOptionsMessageBox != -1;
     }
 
     private void BtnOptionsTogglesCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)

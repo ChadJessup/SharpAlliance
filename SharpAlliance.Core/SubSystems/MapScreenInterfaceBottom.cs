@@ -37,25 +37,25 @@ public class MapScreenInterfaceBottom
         // if already leaving, disallow any other attempts to exit
         if (fLeavingMapScreen)
         {
-            return (false);
+            return false;
         }
 
         // if already going someplace
         if (gbExitingMapScreenToWhere != -1)
         {
-            return (false);
+            return false;
         }
 
         // if we're locked into paused time compression by some event that enforces that
         if (GameClock.PauseStateLocked())
         {
-            return (false);
+            return false;
         }
 
         // meanwhile coming up
         if (gfMeanwhileTryingToStart)
         {
-            return (false);
+            return false;
         }
 
         // someone has something to say
@@ -83,32 +83,32 @@ public class MapScreenInterfaceBottom
         // renewing contracts
         if (gfContractRenewalSquenceOn)
         {
-            return (false);
+            return false;
         }
 
         // disabled due to battle?
-        if ((fDisableMapInterfaceDueToBattle) || (fDisableDueToBattleRoster))
+        if (fDisableMapInterfaceDueToBattle || fDisableDueToBattleRoster)
         {
-            return (false);
+            return false;
         }
 
         // if holding an inventory item
         if (fMapInventoryItem)
         {
-            return (false);
+            return false;
         }
 
         // show the inventory pool?
         if (fShowMapInventoryPool)
         {
             // prevent time compress (items get stolen over time, etc.)
-            return (false);
+            return false;
         }
 
         // no mercs have ever been hired
         if (gfAtLeastOneMercWasHired == false)
         {
-            return (false);
+            return false;
         }
 
         /*
@@ -132,10 +132,10 @@ public class MapScreenInterfaceBottom
 //        }
 
         // hostile sector / in battle
-        if ((gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT))
-            || (gTacticalStatus.fEnemyInSector))
+        if (gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)
+            || gTacticalStatus.fEnemyInSector)
         {
-            return (false);
+            return false;
         }
 
 //        if (PlayerGroupIsInACreatureInfestedMine())
@@ -143,6 +143,6 @@ public class MapScreenInterfaceBottom
 //            return false;
 //        }
 
-        return (true);
+        return true;
     }
 }

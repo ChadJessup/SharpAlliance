@@ -50,7 +50,7 @@ public class Keys
 
             if (pBaseStructure == null)
             {
-                return (null);
+                return null;
             }
 
             //Check to see if the user is adding an existing door
@@ -59,12 +59,12 @@ public class Keys
                 //if this is the door
                 if (Globals.gpDoorStatus[ubCnt].sGridNo == pBaseStructure.sGridNo)
                 {
-                    return ((Globals.gpDoorStatus[ubCnt]));
+                    return Globals.gpDoorStatus[ubCnt];
                 }
             }
         }
 
-        return (null);
+        return null;
     }
 
 
@@ -85,7 +85,7 @@ public class Keys
 
         if (pDoorStatus == null)
         {
-            return (false);
+            return false;
         }
 
         // IF IT'S THE SELECTED GUY, MAKE ANOTHER SELECTED!
@@ -139,7 +139,7 @@ public class Keys
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -161,7 +161,7 @@ public class Keys
         // Loop through all corpses....
         for (cnt = 0; cnt < Globals.gubNumDoorStatus; cnt++)
         {
-            pDoorStatus = (Globals.gpDoorStatus[cnt]);
+            pDoorStatus = Globals.gpDoorStatus[cnt];
 
             if (!InternalIsPerceivedDifferentThanReality(pDoorStatus))
             {
@@ -218,7 +218,7 @@ public class Keys
 
         }
 
-        return (false);
+        return false;
     }
 
     void SyncronizeDoorStatusToStructureData(DOOR_STATUS? pDoorStatus)
@@ -261,7 +261,7 @@ public class Keys
         if (pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN))
         {
             // IF closed.....
-            if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+            if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
             {
                 // Swap!
 //                SwapStructureForPartner(sBaseGridNo, pBaseStructure);
@@ -270,7 +270,7 @@ public class Keys
         }
         else
         {
-            if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+            if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
             {
                 // Swap!
 //                SwapStructureForPartner(sBaseGridNo, pBaseStructure);
@@ -286,7 +286,7 @@ public class Keys
 
         for (cnt = 0; cnt < gubNumDoorStatus; cnt++)
         {
-            pDoorStatus = (gpDoorStatus[cnt]);
+            pDoorStatus = gpDoorStatus[cnt];
 
             // ATE: Make sure door status flag and struct info are syncronized....
             this.SyncronizeDoorStatusToStructureData(pDoorStatus);
@@ -370,7 +370,7 @@ public class Keys
 
         // OK, we now need to test these things against the true structure data
         // we may need to only adjust the graphic here....
-        if (fWantToBeOpen && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+        if (fWantToBeOpen && pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
             bool fFound = false;
             // Adjust graphic....
@@ -404,7 +404,7 @@ public class Keys
         }
 
         // If we want to be closed but structure is closed
-        if (!fWantToBeOpen && !(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+        if (!fWantToBeOpen && !pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
             bool fFound = false;
             // Adjust graphic....
@@ -478,21 +478,21 @@ public class Keys
 
     private static bool InternalIsPerceivedDifferentThanReality(DOOR_STATUS? pDoorStatus)
     {
-        if ((pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_NOTSET)))
+        if (pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_NOTSET))
         {
-            return (true);
+            return true;
         }
 
         // Compare flags....
         if ((pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN)
             && pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN))
-            || (!(pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN))
-            && !(pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN))))
+            || (!pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN)
+            && !pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN)))
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     private static void InternalUpdateDoorsPerceivedValue(DOOR_STATUS? pDoorStatus)
@@ -517,7 +517,7 @@ public class Keys
 
         InternalUpdateDoorsPerceivedValue(pDoorStatus);
 
-        return (true);
+        return true;
     }
 
 
@@ -529,7 +529,7 @@ public class Keys
 
         if (pDoorStatus is not null && pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.PERCEIVED_OPEN))
         {
-            return (true);
+            return true;
         }
         else
         {
@@ -538,7 +538,7 @@ public class Keys
                 // ScreenMsg(FONT_MCOLOR_LTYELLOW, MSG.TESTVERSION, "WARNING! Failed to find the Perceived Open Door Status on Gridno %s", sGridNo);
             }
 
-            return (false);
+            return false;
         }
     }
 
@@ -557,7 +557,7 @@ public class Keys
         // Turn off perceived not set flag....
         pDoorStatus.ubFlags &= ~DOOR_STATUS_FLAGS.PERCEIVED_NOTSET;
 
-        return (true);
+        return true;
     }
 
 
@@ -569,7 +569,7 @@ public class Keys
 
         CHECKF(pDoorStatus != null);
 
-        return (InternalSetDoorPerceivedOpenStatus(pDoorStatus, fPerceivedOpen));
+        return InternalSetDoorPerceivedOpenStatus(pDoorStatus, fPerceivedOpen);
 
     }
 
@@ -590,11 +590,11 @@ public class Keys
             {
                 pDoorStatus.ubFlags &= ~DOOR_STATUS_FLAGS.OPEN;
             }
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
 
     }
@@ -610,7 +610,7 @@ public class Keys
         // Turn off any DOOR BUSY flags....
         for (ubCnt = 0; ubCnt < gubNumDoorStatus; ubCnt++)
         {
-            gpDoorStatus[ubCnt].ubFlags &= (~DOOR_STATUS_FLAGS.BUSY);
+            gpDoorStatus[ubCnt].ubFlags &= ~DOOR_STATUS_FLAGS.BUSY;
         }
 
 
@@ -638,7 +638,7 @@ public class Keys
         {
             //Error Writing size of array to disk
 //            files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
         //if there is some to save
@@ -650,7 +650,7 @@ public class Keys
             {
                 //Error Writing size of array to disk
                 files.FileClose(hFile);
-                return (false);
+                return false;
             }
         }
 
@@ -659,7 +659,7 @@ public class Keys
         //Set the flag indicating that there is a door status array
 //        SetSectorFlag(sSectorX, sSectorY, bSectorZ, SF.DOOR_STATUS_TEMP_FILE_EXISTS);
 
-        return (true);
+        return true;
     }
 
 
@@ -685,7 +685,7 @@ public class Keys
         //        if (hFile == 0)
         {
             //Error opening map modification file,
-            return (false);
+            return false;
         }
 
 
@@ -694,13 +694,13 @@ public class Keys
         if (uiNumBytesRead != sizeof(int))
         {
             files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
         if (gubNumDoorStatus == 0)
         {
             files.FileClose(hFile);
-            return (true);
+            return true;
         }
 
 
@@ -719,7 +719,7 @@ public class Keys
 //        if (uiNumBytesRead != (sizeof(DOOR_STATUS) * gubNumDoorStatus))
         {
             files.FileClose(hFile);
-            return (false);
+            return false;
         }
 
         files.FileClose(hFile);
@@ -734,7 +734,7 @@ public class Keys
 
         this.UpdateDoorGraphicsFromStatus(true, false);
 
-        return (true);
+        return true;
     }
 
 
@@ -747,10 +747,10 @@ public class Keys
 //        files.FileWrite(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesWritten);
 //        if (uiNumBytesWritten != sizeof(KEY) * NUM_KEYS)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     bool LoadKeyTableFromSaveedGameFile(Stream hFile)
@@ -762,10 +762,10 @@ public class Keys
 //        files.FileRead(hFile, KeyTable, sizeof(KEY) * NUM_KEYS, out uiNumBytesRead);
 //        if (uiNumBytesRead != sizeof(KEY) * NUM_KEYS)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -815,7 +815,7 @@ public class Keys
         {
             for (cnt = 0; cnt < gubNumDoorStatus; cnt++)
             {
-                pDoorStatus = (gpDoorStatus[cnt]);
+                pDoorStatus = gpDoorStatus[cnt];
 
                 // Get status of door....
 //                if (pDoorStatus.ubFlags & DOOR_STATUS_FLAGS.OPEN)
@@ -888,7 +888,7 @@ public class Keys
         {
             for (cnt = 0; cnt < gubNumDoorStatus; cnt++)
             {
-                pDoorStatus = (gpDoorStatus[cnt]);
+                pDoorStatus = gpDoorStatus[cnt];
 
                 // Get status of door....
                 if (pDoorStatus.ubFlags.HasFlag(DOOR_STATUS_FLAGS.OPEN))

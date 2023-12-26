@@ -31,27 +31,27 @@ public partial class Globals
     public const int BUCKSHOT_SHOTS = 9;
     public const int MIN_MORTAR_RANGE = 150;// minimum range of a mortar
 
-    public static int AMMO_DAMAGE_ADJUSTMENT_BUCKSHOT(int x) => (x / 4);
+    public static int AMMO_DAMAGE_ADJUSTMENT_BUCKSHOT(int x) => x / 4;
     public const int NUM_BUCKSHOT_PELLETS = 9;
 
     // hollow point bullets do lots of damage to people
-    public static int AMMO_DAMAGE_ADJUSTMENT_HP(int x) => ((x * 17) / 10);
+    public static int AMMO_DAMAGE_ADJUSTMENT_HP(int x) => x * 17 / 10;
     // but they SUCK at penetrating armour
-    public static int AMMO_ARMOUR_ADJUSTMENT_HP(int x) => ((x * 3) / 2);
+    public static int AMMO_ARMOUR_ADJUSTMENT_HP(int x) => x * 3 / 2;
     // armour piercing bullets are good at penetrating armour
-    public static int AMMO_ARMOUR_ADJUSTMENT_AP(int x) => ((x * 3) / 4);
+    public static int AMMO_ARMOUR_ADJUSTMENT_AP(int x) => x * 3 / 4;
     // "super" AP bullets are great at penetrating armour
-    public static int AMMO_ARMOUR_ADJUSTMENT_SAP(int x) => (x / 2);
+    public static int AMMO_ARMOUR_ADJUSTMENT_SAP(int x) => x / 2;
 
     // high explosive damage value (PRIOR to armour subtraction)
-    public static int AMMO_DAMAGE_ADJUSTMENT_HE(int x) => ((x * 4) / 3);
+    public static int AMMO_DAMAGE_ADJUSTMENT_HE(int x) => x * 4 / 3;
 
     // but they SUCK at penetrating armour
-    public static int AMMO_STRUCTURE_ADJUSTMENT_HP(int x) => (x * 2);
+    public static int AMMO_STRUCTURE_ADJUSTMENT_HP(int x) => x * 2;
     // armour piercing bullets are good at penetrating structure
-    public static int AMMO_STRUCTURE_ADJUSTMENT_AP(int x) => ((x * 3) / 4);
+    public static int AMMO_STRUCTURE_ADJUSTMENT_AP(int x) => x * 3 / 4;
     // "super" AP bullets are great at penetrating structures
-    public static int AMMO_STRUCTURE_ADJUSTMENT_SAP(int x) => (x / 2);
+    public static int AMMO_STRUCTURE_ADJUSTMENT_SAP(int x) => x / 2;
 
     // one quarter of punching damage is "real" rather than breath damage
     public const int PUNCH_REAL_DAMAGE_PORTION = 4;

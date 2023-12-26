@@ -47,56 +47,56 @@ public class DialogControl
 
     public NPCID[] uiExternalFaceProfileIds = new NPCID[(int)ExternalFaces.NUMBER_OF_EXTERNAL_NPC_FACES]
     {
-        (NPCID)( 97),
-        (NPCID)(106),
-        (NPCID)(148),
-        (NPCID)(156),
-        (NPCID)(157),
-        (NPCID)(158),
+        (NPCID) 97,
+        (NPCID)106,
+        (NPCID)148,
+        (NPCID)156,
+        (NPCID)157,
+        (NPCID)158,
     };
 
     public static bool TacticalCharacterDialogue(SOLDIERTYPE pSoldier, QUOTE usQuoteNum)
     {
         if (pSoldier.ubProfile == NO_PROFILE)
         {
-            return (false);
+            return false;
         }
 
         if (Meanwhile.AreInMeanwhile())
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.bLife < CONSCIOUSNESS)
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.bLife < OKLIFE && usQuoteNum != QUOTE.SERIOUSLY_WOUNDED)
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.GASSED))
         {
-            return (false);
+            return false;
         }
 
-        if ((AM_A_ROBOT(pSoldier)))
+        if (AM_A_ROBOT(pSoldier))
         {
-            return (false);
+            return false;
         }
 
         if (pSoldier.bAssignment == Assignments.ASSIGNMENT_POW)
         {
-            return (false);
+            return false;
         }
 
         // OK, let's check if this is the exact one we just played, if so, skip.
         if (pSoldier.ubProfile == gTacticalStatus.ubLastQuoteProfileNUm
             && usQuoteNum == gTacticalStatus.ubLastQuoteSaid)
         {
-            return (false);
+            return false;
         }
 
         // If we are a robot, play the controller's quote!
@@ -104,17 +104,17 @@ public class DialogControl
         {
             if (SoldierControl.CanRobotBeControlled(pSoldier))
             {
-                return (TacticalCharacterDialogue(MercPtrs[pSoldier.ubRobotRemoteHolderID], usQuoteNum));
+                return TacticalCharacterDialogue(MercPtrs[pSoldier.ubRobotRemoteHolderID], usQuoteNum);
             }
             else
             {
-                return (false);
+                return false;
             }
         }
 
-        if (AM_AN_EPC(pSoldier) && !(gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.FORCENPCQUOTE)))
+        if (AM_AN_EPC(pSoldier) && !gMercProfiles[pSoldier.ubProfile].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.FORCENPCQUOTE))
         {
-            return (false);
+            return false;
         }
 
         // Check for logging of me too bleeds...
@@ -133,7 +133,7 @@ public class DialogControl
             }
         }
 
-        return (CharacterDialogue(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false));
+        return CharacterDialogue(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false);
     }
 
     public static bool CharacterDialogue(NPCID ubCharacterNum, QUOTE usQuoteNum, int iFaceIndex, int bUIHandlerID, bool fFromSoldier, bool fDelayed)
@@ -164,30 +164,30 @@ public class DialogControl
         // Add to queue
         ghDialogueQ = AddtoQueue(ghDialogueQ, QItem);
 
-        return (true);
+        return true;
     }
 
     public static bool TacticalCharacterDialogueWithSpecialEvent(SOLDIERTYPE pSoldier, QUOTE usQuoteNum, DIALOGUE_SPECIAL_EVENT uiFlag, object uiData1, int uiData2)
     {
         if (pSoldier.ubProfile == NO_PROFILE)
         {
-            return (false);
+            return false;
         }
 
         if (uiFlag != DIALOGUE_SPECIAL_EVENT.DO_BATTLE_SND && (BATTLE_SOUND)uiData1 != BATTLE_SOUND.DIE1)
         {
             if (pSoldier.bLife < CONSCIOUSNESS)
             {
-                return (false);
+                return false;
             }
 
             if (pSoldier.uiStatusFlags.HasFlag(SOLDIER.GASSED))
             {
-                return (false);
+                return false;
             }
         }
 
-        return (CharacterDialogueWithSpecialEvent(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false, uiFlag, uiData1, uiData2));
+        return CharacterDialogueWithSpecialEvent(pSoldier.ubProfile, usQuoteNum, pSoldier.iFaceIndex, DIALOGUE_TACTICAL_UI, true, false, uiFlag, uiData1, uiData2);
     }
 
     // This function takes a profile num, quote num, faceindex and a UI hander ID.
@@ -237,7 +237,7 @@ public class DialogControl
             giNPCReferenceCount++;
         }
 
-        return (true);
+        return true;
     }
 
     public static void ShutDownLastQuoteTacticalTextBox()

@@ -28,7 +28,7 @@ public class ItemSubSystem
             if (Launchable[iLoop][0] == 0)
             {
                 // the proposed item cannot be attached to anything!
-                return (false);
+                return false;
             }
         }
         // now look through this section for the item in question
@@ -42,11 +42,11 @@ public class ItemSubSystem
             if (Launchable[iLoop][0] != usLaunchable)
             {
                 // the proposed item cannot be attached to the item in question
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
     public static InventorySlot FindLaunchable(SOLDIERTYPE pSoldier, Items usWeapon)
@@ -57,11 +57,11 @@ public class ItemSubSystem
         {
             if (ValidLaunchable(pSoldier.inv[bLoop].usItem, usWeapon))
             {
-                return (bLoop);
+                return bLoop;
             }
         }
 
-        return ((InventorySlot)ITEM_NOT_FOUND);
+        return (InventorySlot)ITEM_NOT_FOUND;
     }
 
 
@@ -77,26 +77,26 @@ public class ItemSubSystem
                     {
                         if (pSoldier.inv[InventorySlot.HANDPOS].ubImprintID != pSoldier.ubProfile)
                         {
-                            return (false);
+                            return false;
                         }
                     }
                     else
                     {
                         if (pSoldier.inv[InventorySlot.HANDPOS].ubImprintID != (NO_PROFILE + 1))
                         {
-                            return (false);
+                            return false;
                         }
                     }
                 }
             }
             if (pSoldier.inv[InventorySlot.HANDPOS].bGunStatus >= USABLE)
             {
-                return (true);
+                return true;
             }
         }
 
         // return -1 or some "broken" value if weapon is broken?
-        return (false);
+        return false;
     }
 
     public static bool ItemIsLegal(Items usItemIndex)
@@ -110,12 +110,12 @@ public class ItemSubSystem
                 // and the item is only available with the extended guns
                 if (ExtendedGunListGun(usItemIndex))
                 {
-                    return (false);
+                    return false;
                 }
             }
         }
 
-        return (true);
+        return true;
     }
 
     public static int CalculateCarriedWeight(SOLDIERTYPE? pSoldier)
@@ -143,10 +143,10 @@ public class ItemSubSystem
         ubStrengthForCarrying = SkillChecks.EffectiveStrength(pSoldier);
         if (ubStrengthForCarrying > 80)
         {
-            ubStrengthForCarrying += (ubStrengthForCarrying - 80);
+            ubStrengthForCarrying += ubStrengthForCarrying - 80;
         }
-        uiPercent = (10 * uiTotalWeight) / (ubStrengthForCarrying / 2);
-        return (uiPercent);
+        uiPercent = 10 * uiTotalWeight / (ubStrengthForCarrying / 2);
+        return uiPercent;
 
     }
 
@@ -190,25 +190,25 @@ public class ItemSubSystem
         WEAPONTYPE? pWeapon;
         int usLoop;
 
-        if (!(Item[usItem].usItemClass.HasFlag(IC.GUN)))
+        if (!Item[usItem].usItemClass.HasFlag(IC.GUN))
         {
-            return (0);
+            return 0;
         }
 
-        pWeapon = (WeaponTypes.Weapon[usItem]);
+        pWeapon = WeaponTypes.Weapon[usItem];
         usLoop = 0;
         while (WeaponTypes.Magazine[usLoop].ubCalibre != CaliberType.NOAMMO)
         {
             if (WeaponTypes.Magazine[usLoop].ubCalibre == pWeapon.ubCalibre
                 && WeaponTypes.Magazine[usLoop].ubMagSize == pWeapon.ubMagSize)
             {
-                return (ItemSubSystem.MagazineClassIndexToItemType(usLoop));
+                return ItemSubSystem.MagazineClassIndexToItemType(usLoop);
             }
 
             usLoop++;
         }
 
-        return (0);
+        return 0;
     }
 
     // also used for ammo
@@ -225,11 +225,11 @@ public class ItemSubSystem
         {
             if (pSoldier.inv[bLoop].usItem == usItem)
             {
-                return (bLoop);
+                return bLoop;
             }
         }
 
-        return (NO_SLOT);
+        return NO_SLOT;
     }
 
     public static InventorySlot FindObjClass(SOLDIERTYPE pSoldier, IC usItemClass)
@@ -240,11 +240,11 @@ public class ItemSubSystem
         {
             if (Item[pSoldier.inv[bLoop].usItem].usItemClass.HasFlag(usItemClass))
             {
-                return (bLoop);
+                return bLoop;
             }
         }
 
-        return (NO_SLOT);
+        return NO_SLOT;
     }
 
     public static Items FindObjInObjRange(SOLDIERTYPE? pSoldier, Items usItem1, Items usItem2)
@@ -269,7 +269,7 @@ public class ItemSubSystem
             }
         }
 
-        return (ITEM_NOT_FOUND);
+        return ITEM_NOT_FOUND;
     }
 
     public static bool RemoveAttachment(OBJECTTYPE? pObj, int bAttachPos, OBJECTTYPE? pNewObj)
@@ -283,16 +283,16 @@ public class ItemSubSystem
 
         if (bAttachPos < 0 || bAttachPos >= Globals.MAX_ATTACHMENTS)
         {
-            return (false);
+            return false;
         }
         if (pObj.usAttachItem[bAttachPos] == Globals.NOTHING)
         {
-            return (false);
+            return false;
         }
 
         if (Globals.Item[pObj.usAttachItem[bAttachPos]].fFlags.HasFlag(ItemAttributes.ITEM_INSEPARABLE))
         {
-            return (false);
+            return false;
         }
 
         // if pNewObj is passed in null, then we just delete the attachment
@@ -322,7 +322,7 @@ public class ItemSubSystem
         RenumberAttachments(pObj);
 
         pObj.ubWeight = CalculateObjectWeight(pObj);
-        return (true);
+        return true;
     }
 
     public static void RenumberAttachments(OBJECTTYPE? pObj)
@@ -379,15 +379,15 @@ public class ItemSubSystem
             ExplosionControl.IgniteExplosion(ubOwner, IsometricUtils.CenterX(sGridNo), IsometricUtils.CenterY(sGridNo), 0, sGridNo, pObject.usItem, bLevel);
 
             // Remove item!
-            return (true);
+            return true;
         }
         else if ((pObject.ubNumberOfObjects < 2) && (pObject.bStatus[0] < USABLE))
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -443,7 +443,7 @@ public class ItemSubSystem
                     {
                         if (ItemSubSystem.CheckForChainReaction(pObject.usItem, pObject.bStatus[bLoop], bDamage, fOnGround))
                         {
-                            return (true);
+                            return true;
                         }
                     }
 
@@ -474,7 +474,7 @@ public class ItemSubSystem
             }
         }
 
-        return (false);
+        return false;
     }
 
     private static void RemoveObjFrom(OBJECTTYPE pObject, int bLoop)
@@ -495,7 +495,7 @@ public class ItemSubSystem
         // by its armour value
         if (Item[usItem].usItemClass == IC.ARMOUR)
         {
-            iMaxDamage -= (iMaxDamage * WeaponTypes.Armour[Item[usItem].ubClassIndex].ubProtection) / 100;
+            iMaxDamage -= iMaxDamage * WeaponTypes.Armour[Item[usItem].ubClassIndex].ubProtection / 100;
         }
 
         // metal items are tough and will be damaged less
@@ -513,7 +513,7 @@ public class ItemSubSystem
             bDamage = (int)PreRandom(iMaxDamage);
         }
 
-        return (bDamage);
+        return bDamage;
     }
 
     public static bool CreateItem(Items usItem, int bStatus, OBJECTTYPE? pObj)
@@ -524,7 +524,7 @@ public class ItemSubSystem
 
         if (usItem >= Items.MAXITEMS)
         {
-            return (false);
+            return false;
         }
 
         if (Globals.Item[usItem].usItemClass == IC.GUN)
@@ -561,7 +561,7 @@ public class ItemSubSystem
                 pObj.fFlags |= OBJECT.UNDROPPABLE;
             }
         }
-        return (fRet);
+        return fRet;
     }
 
     public static bool CreateGun(Items usItem, int bStatus, OBJECTTYPE? pObj)
@@ -571,7 +571,7 @@ public class ItemSubSystem
         Debug.Assert(pObj != null);
         if (pObj == null)
         {
-            return (false);
+            return false;
         }
 
         pObj = new()
@@ -609,7 +609,7 @@ public class ItemSubSystem
             if (usAmmo == 0)
             {
                 // item's calibre & mag size not found in magazine list!
-                return (false);
+                return false;
             }
             else
             {
@@ -628,14 +628,14 @@ public class ItemSubSystem
         }
 
         // succesful
-        return (true);
+        return true;
     }
 
     public static bool CreateMagazine(Items usItem, OBJECTTYPE? pObj)
     {
         if (pObj == null)
         {
-            return (false);
+            return false;
         }
 
         pObj = new()
@@ -646,7 +646,7 @@ public class ItemSubSystem
             ubWeight = CalculateObjectWeight(pObj)
         };
 
-        return (true);
+        return true;
     }
 
     public static int CalculateObjectWeight(OBJECTTYPE? pObject)
@@ -655,7 +655,7 @@ public class ItemSubSystem
         int usWeight;
         INVTYPE? pItem;
 
-        pItem = (Globals.Item[pObject.usItem]);
+        pItem = Globals.Item[pObject.usItem];
 
         // Start with base weight
         usWeight = pItem.ubWeight;
@@ -681,7 +681,7 @@ public class ItemSubSystem
         // make sure it really fits into that int, in case we ever add anything real heavy with attachments/ammo
         Debug.Assert(usWeight <= 255);
 
-        return (usWeight);
+        return usWeight;
     }
 
     public static Items FindAttachmentByClass(OBJECTTYPE? pObj, IC uiItemClass)
@@ -690,7 +690,7 @@ public class ItemSubSystem
         {
             if (Globals.Item[pObj.usAttachItem[bLoop]].usItemClass == uiItemClass)
             {
-                return (pObj.usAttachItem[bLoop]);
+                return pObj.usAttachItem[bLoop];
             }
         }
 
@@ -705,11 +705,11 @@ public class ItemSubSystem
         {
             if (pObj.usAttachItem[bLoop] == usItem)
             {
-                return ((InventorySlot)bLoop);
+                return (InventorySlot)bLoop;
             }
         }
 
-        return (NO_SLOT);
+        return NO_SLOT;
     }
 
 

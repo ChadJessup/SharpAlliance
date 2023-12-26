@@ -158,10 +158,10 @@ public class CivQuotes
 
         if (zQuote == string.Empty)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
     public static void SurrenderMessageBoxCallBack(MessageBoxReturnCode ubExitValue)
@@ -217,7 +217,7 @@ public class CivQuotes
             RenderDirty.RemoveVideoOverlay(gCivQuoteData.iVideoOverlay);
 
             // Remove mouse region...
-            MouseSubSystem.MSYS_RemoveRegion((gCivQuoteData.MouseRegion));
+            MouseSubSystem.MSYS_RemoveRegion(gCivQuoteData.MouseRegion);
 
             MercTextBox.RemoveMercPopupBoxFromIndex(gCivQuoteData.iDialogueBox);
             gCivQuoteData.iDialogueBox = -1;
@@ -245,17 +245,17 @@ public class CivQuotes
         {
             this.ShutDownQuoteBox(true);
 
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     public static CIV_TYPE GetCivType(SOLDIERTYPE pCiv)
     {
         if (pCiv.ubProfile != NO_PROFILE)
         {
-            return (CIV_TYPE.NA);
+            return CIV_TYPE.NA;
         }
 
         // ATE: Check if this person is married.....
@@ -266,19 +266,19 @@ public class CivQuotes
             if (pCiv.ubCivilianGroup == 0 && pCiv.bTeam != gbPlayerNum && pCiv.ubBodyType == SoldierBodyTypes.REGFEMALE)
             {
                 // She's a ho!
-                return (CIV_TYPE.MARRIED_PC);
+                return CIV_TYPE.MARRIED_PC;
             }
         }
 
         // OK, look for enemy type - MUST be on enemy team, merc bodytype
         if (pCiv.bTeam == ENEMY_TEAM && IS_MERC_BODY_TYPE(pCiv))
         {
-            return (CIV_TYPE.ENEMY);
+            return CIV_TYPE.ENEMY;
         }
 
         if (pCiv.bTeam != CIV_TEAM && pCiv.bTeam != MILITIA_TEAM)
         {
-            return (CIV_TYPE.NA);
+            return CIV_TYPE.NA;
         }
 
         switch (pCiv.ubBodyType)
@@ -292,7 +292,7 @@ public class CivQuotes
             case SoldierBodyTypes.MINICIV:
             case SoldierBodyTypes.DRESSCIV:
             case SoldierBodyTypes.CRIPPLECIV:
-                return (CIV_TYPE.ADULT);
+                return CIV_TYPE.ADULT;
             case SoldierBodyTypes.ADULTFEMALEMONSTER:
             case SoldierBodyTypes.AM_MONSTER:
             case SoldierBodyTypes.YAF_MONSTER:
@@ -301,19 +301,19 @@ public class CivQuotes
             case SoldierBodyTypes.INFANT_MONSTER:
             case SoldierBodyTypes.QUEENMONSTER:
 
-                return (CIV_TYPE.NA);
+                return CIV_TYPE.NA;
 
             case SoldierBodyTypes.HATKIDCIV:
             case SoldierBodyTypes.KIDCIV:
 
-                return (CIV_TYPE.KID);
+                return CIV_TYPE.KID;
 
             default:
 
-                return (CIV_TYPE.NA);
+                return CIV_TYPE.NA;
         }
 
-        return (CIV_TYPE.NA);
+        return CIV_TYPE.NA;
     }
 
 
@@ -456,7 +456,7 @@ public class CivQuotes
         int bMineId;
         bool bMiners = false;
 
-        (pubCivHintToUse) = 0;
+        pubCivHintToUse = 0;
 
         ubCivType = GetCivType(pCiv);
 
@@ -498,7 +498,7 @@ public class CivQuotes
         // If a married PC...
         if (ubCivType == CIV_TYPE.MARRIED_PC)
         {
-            return (CIV_QUOTE.PC_MARRIED);
+            return CIV_QUOTE.PC_MARRIED;
         }
 
         // CIV GROUPS FIRST!
@@ -509,11 +509,11 @@ public class CivQuotes
             //if ( gTacticalStatus.fCivGroupHostile[ HICKS_CIV_GROUP ] < CIV_GROUP_WILL_BECOME_HOSTILE )
             if (pCiv.IsNeutral)
             {
-                return (CIV_QUOTE.HICKS_FRIENDLY);
+                return CIV_QUOTE.HICKS_FRIENDLY;
             }
             else
             {
-                return (CIV_QUOTE.HICKS_ENEMIES);
+                return CIV_QUOTE.HICKS_ENEMIES;
             }
         }
 
@@ -524,11 +524,11 @@ public class CivQuotes
             //if ( gTacticalStatus.fCivGroupHostile[ KINGPIN_CIV_GROUP ] < CIV_GROUP_WILL_BECOME_HOSTILE )
             if (pCiv.IsNeutral)
             {
-                return (CIV_QUOTE.GOONS_FRIENDLY);
+                return CIV_QUOTE.GOONS_FRIENDLY;
             }
             else
             {
-                return (CIV_QUOTE.GOONS_ENEMIES);
+                return CIV_QUOTE.GOONS_ENEMIES;
             }
         }
 
@@ -537,11 +537,11 @@ public class CivQuotes
         {
             // if (ubCivType == CIV_TYPE_ADULT)
             {
-                return (CIV_QUOTE.ADULTS_COWER);
+                return CIV_QUOTE.ADULTS_COWER;
             }
             //     else
             {
-                return (CIV_QUOTE.KIDS_COWER);
+                return CIV_QUOTE.KIDS_COWER;
             }
         }
 
@@ -845,7 +845,7 @@ public class CivQuotes
 //            return (false);
 //        }
 
-        return (true);
+        return true;
     }
 
 
@@ -861,7 +861,7 @@ public class CivQuotes
 
         this.CopyNumEntriesIntoQuoteStruct();
 
-        return (true);
+        return true;
     }
 }
 

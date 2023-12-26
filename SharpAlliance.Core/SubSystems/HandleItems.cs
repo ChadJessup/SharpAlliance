@@ -30,12 +30,12 @@ public class HandleItems
         Debug.Assert(pObject.ubNumberOfObjects <= MAX_OBJECTS_PER_SLOT);
 
         // ATE: Check if the gridno is OK
-        if ((psGridNo) == NOWHERE)
+        if (psGridNo == NOWHERE)
         {
             // Display warning.....
             //Messages.ScreenMsg(FontColor.FONT_MCOLOR_LTYELLOW, MSG.BETAVERSION, "Error: Item %d was given invalid grid location %d for item pool. Please Report.", pObject.usItem.ToString(), (psGridNo));
 
-            (psGridNo) = sNewGridNo = gMapInformation.sCenterGridNo;
+            psGridNo = sNewGridNo = gMapInformation.sCenterGridNo;
 
             //return( null );
         }
@@ -51,7 +51,7 @@ public class HandleItems
         {
             if (Item[pObject.usItem].fFlags.HasFlag(ItemAttributes.ITEM_SINKS))
             {
-                return (null);
+                return null;
             }
         }
 
@@ -82,7 +82,7 @@ public class HandleItems
             pStructure = WorldStructures.FindStructure(psGridNo, STRUCTUREFLAGS.BLOCKSMOVES);
             while (pStructure is not null)
             {
-                if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PERSON | STRUCTUREFLAGS.CORPSE))
+                if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.PERSON | STRUCTUREFLAGS.CORPSE)
                     && pStructure.sCubeOffset == sDesiredLevel)
                 {
                     // If we are going into a raised struct AND we have above level set to -1
@@ -108,10 +108,10 @@ public class HandleItems
                         usFlags |= WORLD_ITEM.DONTRENDER;
 
                         // Openable.. check if it's closed, if so, set visiblity...
-                        if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+                        if (!pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
                         {
                             // -2 means - don't reveal!
-                            bVisible = (ItemVisibility.HIDDEN_IN_OBJECT);
+                            bVisible = ItemVisibility.HIDDEN_IN_OBJECT;
                         }
 
                         bRenderZHeightAboveLevel = CONVERT_INDEX_TO_PIXELS(StructureInternals.StructureHeight(pStructure));
@@ -274,7 +274,7 @@ public class HandleItems
         pItemPool.bVisible = bVisible;
 
         // If bbisible is true, render makered world
-        if (bVisible == (ItemVisibility)1 && SoldierFind.GridNoOnScreen((psGridNo)))
+        if (bVisible == (ItemVisibility)1 && SoldierFind.GridNoOnScreen(psGridNo))
         {
             //gpWorldLevelData[*psGridNo].uiFlags|=MAPELEMENTFLAGS.REDRAW;
             //RenderWorld.SetRenderFlags(RenderingFlags.MARKED);
@@ -300,7 +300,7 @@ public class HandleItems
             piItemIndex = iWorldItem;
         }
 
-        return ((gWorldItems[iWorldItem].o));
+        return gWorldItems[iWorldItem].o;
     }
 
     public static bool ItemTypeExistsAtLocation(int sGridNo, Items usItem, int ubLevel, out int piItemIndex)
@@ -319,14 +319,14 @@ public class HandleItems
                 {
                     piItemIndex = pItemPoolTemp.iItemIndex;
 
-                    return (true);
+                    return true;
                 }
                 pItemPoolTemp = pItemPoolTemp.pNext;
             }
         }
 
         piItemIndex = -1;
-        return (false);
+        return false;
     }
 
     public static bool GetItemPool(int usMapPos, out ITEM_POOL? ppItemPool, int ubLevel)
@@ -347,16 +347,16 @@ public class HandleItems
         {
             if (pObject.uiFlags.HasFlag(LEVELNODEFLAGS.ITEM))
             {
-                (ppItemPool) = pObject.pItemPool;
+                ppItemPool = pObject.pItemPool;
 
                 //DEF added the check because pObject.pItemPool was null which was causing problems
                 if (ppItemPool is not null)
                 {
-                    return (true);
+                    return true;
                 }
                 else
                 {
-                    return (false);
+                    return false;
                 }
             }
 
@@ -364,7 +364,7 @@ public class HandleItems
         }
 
         ppItemPool = null;
-        return (false);
+        return false;
     }
 
     internal static void ToggleItemGlow(bool fOn)

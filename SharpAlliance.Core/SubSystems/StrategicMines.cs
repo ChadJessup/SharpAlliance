@@ -78,7 +78,7 @@ public class StrategicMines
             } while (Globals.gMineStatus[ubMineIndex].fEmpty);
 
             // increase mine production by 20% of the base (minimum) rate
-            Globals.gMineStatus[ubMineIndex].uiMaxRemovalRate += (Globals.guiMinimumMineProduction[ubMineIndex] / 5);
+            Globals.gMineStatus[ubMineIndex].uiMaxRemovalRate += Globals.guiMinimumMineProduction[ubMineIndex] / 5;
 
             ubMineProductionIncreases--;
         }
@@ -94,7 +94,7 @@ public class StrategicMines
 
         for (ubMineIndex = 0; ubMineIndex < MINE.MAX_NUMBER_OF_MINES; ubMineIndex++)
         {
-            pMineStatus = (Globals.gMineStatus[ubMineIndex]);
+            pMineStatus = Globals.gMineStatus[ubMineIndex];
 
             if (ubMineIndex == ubDepletedMineIndex)
             {
@@ -108,7 +108,7 @@ public class StrategicMines
                 }
 
                 // the mine that runs out has only enough ore for this many days of full production
-                pMineStatus.uiRemainingOreSupply = ubMinDaysBeforeDepletion * (Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * pMineStatus.uiMaxRemovalRate);
+                pMineStatus.uiRemainingOreSupply = ubMinDaysBeforeDepletion * Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * pMineStatus.uiMaxRemovalRate;
 
                 // ore starts running out when reserves drop to less than 25% of the initial supply
                 pMineStatus.uiOreRunningOutPoint = pMineStatus.uiRemainingOreSupply / 4;
@@ -140,7 +140,7 @@ public class StrategicMines
         // check every non-empty mine
         for (ubMineIndex = 0; ubMineIndex < MINE.MAX_NUMBER_OF_MINES; ubMineIndex++)
         {
-            pMineStatus = (Globals.gMineStatus[ubMineIndex]);
+            pMineStatus = Globals.gMineStatus[ubMineIndex];
 
             if (pMineStatus.fEmpty)
             {
@@ -214,7 +214,7 @@ public class StrategicMines
 
         Debug.Assert((bMineIndex >= 0) && (bMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
-        return (Globals.gMineStatus[bMineIndex].uiRemainingOreSupply);
+        return Globals.gMineStatus[bMineIndex].uiRemainingOreSupply;
     }
 
 
@@ -227,10 +227,10 @@ public class StrategicMines
         // if mine is shut down
         if (Globals.gMineStatus[bMineIndex].fShutDown)
         {
-            return (0);
+            return 0;
         }
 
-        return (Globals.gMineStatus[bMineIndex].uiMaxRemovalRate);
+        return Globals.gMineStatus[bMineIndex].uiMaxRemovalRate;
     }
 
 
@@ -245,7 +245,7 @@ public class StrategicMines
         // if mine is shut down
         if (Globals.gMineStatus[bMineIndex].fShutDown)
         {
-            return (0);
+            return 0;
         }
 
         uiAmtExtracted = Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * Globals.gMineStatus[bMineIndex].uiMaxRemovalRate;
@@ -257,7 +257,7 @@ public class StrategicMines
             uiAmtExtracted = Globals.gMineStatus[bMineIndex].uiRemainingOreSupply;
         }
 
-        return (uiAmtExtracted);
+        return uiAmtExtracted;
     }
 
 
@@ -265,7 +265,7 @@ public class StrategicMines
     {
         Debug.Assert((bMineIndex >= 0) && (bMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
-        return (Globals.gMineLocation[bMineIndex].bAssociatedTown);
+        return Globals.gMineLocation[bMineIndex].bAssociatedTown;
     }
 
 
@@ -280,12 +280,12 @@ public class StrategicMines
             if (Globals.gMineLocation[bCounter].bAssociatedTown == bTownId)
             {
                 // town found, return the fact
-                return (Globals.gMineLocation[bCounter].bAssociatedTown);
+                return Globals.gMineLocation[bCounter].bAssociatedTown;
             }
         }
 
         // return that no town found..a 0
-        return (0);
+        return 0;
 
     }
 
@@ -301,13 +301,13 @@ public class StrategicMines
         // if mine is shut down
         if (Globals.gMineStatus[bMineIndex].fShutDown)
         {
-            return (0);
+            return 0;
         }
 
         // if not capable of extracting anything, bail now
         if (uiAmount == 0)
         {
-            return (0);
+            return 0;
         }
 
         // will this exhaust the ore in this mine?
@@ -346,7 +346,7 @@ public class StrategicMines
                 mineStatus.fRunningOut = true;
 
                 // round all fractions UP to the next REMOVAL_RATE_INCREMENT
-                mineStatus.uiMaxRemovalRate = (int)(((float)Globals.gMineStatus[bMineIndex].uiRemainingOreSupply / 10) / REMOVAL_RATE_INCREMENT + 0.9999) * REMOVAL_RATE_INCREMENT;
+                mineStatus.uiMaxRemovalRate = (int)((float)Globals.gMineStatus[bMineIndex].uiRemainingOreSupply / 10 / REMOVAL_RATE_INCREMENT + 0.9999) * REMOVAL_RATE_INCREMENT;
 
 
                 // if we control it
@@ -366,7 +366,7 @@ public class StrategicMines
             }
         }
 
-        return (uiAmountExtracted);
+        return uiAmountExtracted;
     }
 
     private static int GetAvailableWorkForceForMineForPlayer(MINE bMineIndex)
@@ -382,13 +382,13 @@ public class StrategicMines
         // if mine is shut down
         if (Globals.gMineStatus[bMineIndex].fShutDown)
         {
-            return (0);
+            return 0;
         }
 
         // until the player contacts the head miner, production in mine ceases if in player's control
         if (!Globals.gMineStatus[bMineIndex].fSpokeToHeadMiner)
         {
-            return (0);
+            return 0;
         }
 
 
@@ -410,7 +410,7 @@ public class StrategicMines
         iWorkForceSize *= StrategicTownLoyalty.GetTownSectorsUnderControl(bTownId);
         iWorkForceSize /= StrategicMap.GetTownSectorSize(bTownId);
 
-        return (iWorkForceSize);
+        return iWorkForceSize;
     }
 
     public static int GetAvailableWorkForceForMineForEnemy(MINE bMineIndex)
@@ -426,7 +426,7 @@ public class StrategicMines
         // if mine is shut down
         if (Globals.gMineStatus[bMineIndex].fShutDown)
         {
-            return (0);
+            return 0;
         }
 
         bTownId = Globals.gMineLocation[bMineIndex].bAssociatedTown;
@@ -446,10 +446,10 @@ public class StrategicMines
         */
 
         // now adjust for town size.. the number of sectors you control
-        iWorkForceSize *= (StrategicMap.GetTownSectorSize(bTownId) - StrategicTownLoyalty.GetTownSectorsUnderControl(bTownId));
+        iWorkForceSize *= StrategicMap.GetTownSectorSize(bTownId) - StrategicTownLoyalty.GetTownSectorsUnderControl(bTownId);
         iWorkForceSize /= StrategicMap.GetTownSectorSize(bTownId);
 
-        return (iWorkForceSize);
+        return iWorkForceSize;
     }
 
     private static int GetCurrentWorkRateOfMineForPlayer(MINE bMineIndex)
@@ -457,9 +457,9 @@ public class StrategicMines
         int iWorkRate = 0;
 
         // multiply maximum possible removal rate by the percentage of workforce currently working
-        iWorkRate = (Globals.gMineStatus[bMineIndex].uiMaxRemovalRate * GetAvailableWorkForceForMineForPlayer(bMineIndex)) / 100;
+        iWorkRate = Globals.gMineStatus[bMineIndex].uiMaxRemovalRate * GetAvailableWorkForceForMineForPlayer(bMineIndex) / 100;
 
-        return (iWorkRate);
+        return iWorkRate;
     }
 
     public static int GetCurrentWorkRateOfMineForEnemy(MINE bMineIndex)
@@ -467,9 +467,9 @@ public class StrategicMines
         int iWorkRate = 0;
 
         // multiply maximum possible removal rate by the percentage of workforce currently working
-        iWorkRate = (Globals.gMineStatus[bMineIndex].uiMaxRemovalRate * GetAvailableWorkForceForMineForEnemy(bMineIndex)) / 100;
+        iWorkRate = Globals.gMineStatus[bMineIndex].uiMaxRemovalRate * GetAvailableWorkForceForMineForEnemy(bMineIndex) / 100;
 
-        return (iWorkRate);
+        return iWorkRate;
     }
 
     public static int MineAMine(MINE bMineIndex)
@@ -584,7 +584,7 @@ public class StrategicMines
             }
         }
 
-        return (uiAmtExtracted);
+        return uiAmtExtracted;
     }
 
 
@@ -599,7 +599,7 @@ public class StrategicMines
             iTotal += PredictDailyIncomeFromAMine(bCounter);
         }
 
-        return (iTotal);
+        return iTotal;
     }
 
 
@@ -612,10 +612,10 @@ public class StrategicMines
         for (bCounter = 0; bCounter < MINE.MAX_NUMBER_OF_MINES; bCounter++)
         {
             // add up the total
-            iTotal += (Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * Globals.gMineStatus[bCounter].uiMaxRemovalRate);
+            iTotal += Globals.MINE_PRODUCTION_NUMBER_OF_PERIODS * Globals.gMineStatus[bCounter].uiMaxRemovalRate;
         }
 
-        return (iTotal);
+        return iTotal;
     }
 
 
@@ -630,7 +630,7 @@ public class StrategicMines
             if ((Globals.gMineLocation[ubMineIndex].sSectorX == sX) && (Globals.gMineLocation[ubMineIndex].sSectorY == sY))
             {
                 // yep mine here
-                return (ubMineIndex);
+                return ubMineIndex;
             }
         }
 
@@ -656,7 +656,7 @@ public class StrategicMines
         {
             if (Globals.gMineLocation[ubMineIndex].bAssociatedTown == bTownId)
             {
-                return (ubMineIndex);
+                return ubMineIndex;
             }
         }
 
@@ -681,7 +681,7 @@ public class StrategicMines
         }
 
         // -1 returned if the town doesn't have a mine
-        return (sMineSector);
+        return sMineSector;
     }
 
 
@@ -695,30 +695,30 @@ public class StrategicMines
             if ((Globals.gMineLocation[ubMineIndex].sSectorX == sX)
                 && (Globals.gMineLocation[ubMineIndex].sSectorY == sY))
             {
-                return (true);
+                return true;
             }
         }
-        return (false);
+        return false;
     }
 
 
     public static bool PlayerControlsMine(MINE bMineIndex)
     {
         // a value of true is from the enemy's point of view
-        if (Globals.strategicMap[(Globals.gMineLocation[bMineIndex].sSectorX) + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[bMineIndex].sSectorY))].fEnemyControlled == true)
+        if (Globals.strategicMap[Globals.gMineLocation[bMineIndex].sSectorX + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[bMineIndex].sSectorY))].fEnemyControlled == true)
         {
-            return (false);
+            return false;
         }
         else
         {
             // player only controls the actual mine after he has made arrangements to do so with the head miner there
             if (Globals.gMineStatus[bMineIndex].fSpokeToHeadMiner)
             {
-                return (true);
+                return true;
             }
             else
             {
-                return (false);
+                return false;
             }
         }
     }
@@ -732,10 +732,10 @@ public class StrategicMines
         // FileWrite(hFile, Globals.gMineStatus, sizeof(MINE_STATUS_TYPE) * MAX_NUMBER_OF_MINES, out uiNumBytesWritten);
         //if (uiNumBytesWritten != sizeof(MINE_STATUS_TYPE) * MAX_NUMBER_OF_MINES)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -747,10 +747,10 @@ public class StrategicMines
         //FileRead(hFile, Globals.gMineStatus, sizeof(MINE_STATUS_TYPE) * MAX_NUMBER_OF_MINES, &uiNumBytesRead);
         //if (uiNumBytesRead != sizeof(MINE_STATUS_TYPE) * MAX_NUMBER_OF_MINES)
         {
-            return (false);
+            return false;
         }
 
-        return (true);
+        return true;
     }
 
 
@@ -796,7 +796,7 @@ public class StrategicMines
     {
         Debug.Assert((bMineIndex >= 0) && (bMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
-        return (Globals.gMineStatus[bMineIndex].fShutDown);
+        return Globals.gMineStatus[bMineIndex].fShutDown;
     }
 
 
@@ -814,19 +814,19 @@ public class StrategicMines
 
             if (Globals.gMercProfiles[usProfileId].bTown == Globals.gMineLocation[bMineIndex].bAssociatedTown)
             {
-                return (ubMinerIndex);
+                return ubMinerIndex;
             }
         }
 
         // not found - yack!
         Debug.Assert(false);
-        return (0);
+        return 0;
     }
 
 
     NPCID GetHeadMinerProfileIdForMine(MINE bMineIndex)
     {
-        return (Globals.gHeadMinerData[GetHeadMinerIndexForMine(bMineIndex)].usProfileId);
+        return Globals.gHeadMinerData[GetHeadMinerIndexForMine(bMineIndex)].usProfileId;
     }
 
     public static void IssueHeadMinerQuote(MINE bMineIndex, HEAD_MINER_STRATEGIC_QUOTE ubQuoteType)
@@ -917,13 +917,13 @@ public class StrategicMines
         {
             if (Globals.gMineLocation[ubMineIndex].bAssociatedTown == Globals.gMercProfiles[ubMinerProfileId].bTown)
             {
-                return (ubMineIndex);
+                return ubMineIndex;
             }
         }
 
         // not found!  Illegal profile id receieved or something is very wrong
         Debug.Assert(false);
-        return (0);
+        return 0;
     }
 
 
@@ -949,7 +949,7 @@ public class StrategicMines
         MINE ubMineIndex;
 
         ubMineIndex = GetHeadMinersMineIndex(ubMinerProfileId);
-        return (Globals.gMineStatus[ubMineIndex].fRunningOut);
+        return Globals.gMineStatus[ubMineIndex].fRunningOut;
     }
 
     public static bool IsHisMineEmpty(NPCID ubMinerProfileId)
@@ -957,7 +957,7 @@ public class StrategicMines
         MINE ubMineIndex;
 
         ubMineIndex = GetHeadMinersMineIndex(ubMinerProfileId);
-        return (Globals.gMineStatus[ubMineIndex].fEmpty);
+        return Globals.gMineStatus[ubMineIndex].fEmpty;
     }
 
     public static bool IsHisMineDisloyal(NPCID ubMinerProfileId)
@@ -969,12 +969,12 @@ public class StrategicMines
         if (Globals.gTownLoyalty[Globals.gMineLocation[ubMineIndex].bAssociatedTown].ubRating < Globals.LOW_MINE_LOYALTY_THRESHOLD)
         {
             // pretty disloyal
-            return (true);
+            return true;
         }
         else
         {
             // pretty loyal
-            return (false);
+            return false;
         }
     }
 
@@ -994,11 +994,11 @@ public class StrategicMines
 
         if (PlayerControlsMine(ubMineIndex) && Globals.gMineStatus[ubMineIndex].fQueenRetookProducingMine)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -1020,12 +1020,12 @@ public class StrategicMines
         if (GetAvailableWorkForceForMineForPlayer(ubMineIndex) == 100)
         {
             // loyalty is 100% and control is 100%
-            return (true);
+            return true;
         }
         else
         {
             // something not quite perfect yet
-            return (false);
+            return false;
         }
     }
 
@@ -1050,11 +1050,11 @@ public class StrategicMines
         {
             if (!CreatureSpreading.MineClearOfMonsters(ubMineIndex) || Globals.gMineStatus[ubMineIndex].fPrevInvadedByMonsters)
             {
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -1094,10 +1094,10 @@ public class StrategicMines
         if (Globals.gMineStatus[ubMineIndex].fMineHasProducedForPlayer &&
                 ((GameClock.GetWorldTotalMin() - Globals.gMineStatus[ubMineIndex].uiTimePlayerProductionStarted) >= (24 * 60)))
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     // gte the id of the mine for this sector x,y,z...-1 is invalid
@@ -1128,32 +1128,32 @@ public class StrategicMines
             switch (sSectorValue)
             {
                 // grumm
-                case (SEC.H3):
-                case (SEC.I3):
+                case SEC.H3:
+                case SEC.I3:
                     bMineIndex = MINE.GRUMM;
                     break;
                 // cambria
-                case (SEC.H8):
-                case (SEC.H9):
+                case SEC.H8:
+                case SEC.H9:
                     bMineIndex = MINE.CAMBRIA;
                     break;
                 // alma
-                case (SEC.I14):
-                case (SEC.J14):
+                case SEC.I14:
+                case SEC.J14:
                     bMineIndex = MINE.ALMA;
                     break;
                 // drassen
-                case (SEC.D13):
-                case (SEC.E13):
+                case SEC.D13:
+                case SEC.E13:
                     bMineIndex = MINE.DRASSEN;
                     break;
                 // chitzena
-                case (SEC.B2):
+                case SEC.B2:
                     bMineIndex = MINE.CHITZENA;
                     break;
                 // san mona
-                case (SEC.D4):
-                case (SEC.D5):
+                case SEC.D4:
+                case SEC.D5:
                     bMineIndex = MINE.SAN_MONA;
                     break;
             }
@@ -1163,15 +1163,15 @@ public class StrategicMines
             // level 2
             switch (sSectorValue)
             {
-                case (SEC.I3):
-                case (SEC.H3):
-                case (SEC.H4):
+                case SEC.I3:
+                case SEC.H3:
+                case SEC.H4:
                     bMineIndex = MINE.GRUMM;
                     break;
             }
         }
 
-        return (bMineIndex);
+        return bMineIndex;
     }
 
     // use this for miner (civilian) quotes when *underground* in a mine
@@ -1181,22 +1181,22 @@ public class StrategicMines
 
         Debug.Assert((ubMineIndex >= 0) && (ubMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
-        pMineStatus = (Globals.gMineStatus[ubMineIndex]);
+        pMineStatus = Globals.gMineStatus[ubMineIndex];
 
         // mine surface sector is player controlled
         // mine not empty
         // player hasn't spoken to the head miner, but hasn't attacked him either
         // miner is alive
-        if ((Globals.strategicMap[(Globals.gMineLocation[ubMineIndex].sSectorX) + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[ubMineIndex].sSectorY))].fEnemyControlled == false) &&
+        if ((Globals.strategicMap[Globals.gMineLocation[ubMineIndex].sSectorX + (Globals.MAP_WORLD_X * ((int)Globals.gMineLocation[ubMineIndex].sSectorY))].fEnemyControlled == false) &&
              (!pMineStatus.fEmpty) &&
              (!pMineStatus.fSpokeToHeadMiner) &&
              (!pMineStatus.fAttackedHeadMiner) &&
              (Globals.gMercProfiles[this.GetHeadMinerProfileIdForMine(ubMineIndex)].bLife > 0))
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -1209,23 +1209,23 @@ public class StrategicMines
 
         Debug.Assert((ubMineIndex >= 0) && (ubMineIndex < MINE.MAX_NUMBER_OF_MINES));
 
-        pMineStatus = (Globals.gMineStatus[ubMineIndex]);
+        pMineStatus = Globals.gMineStatus[ubMineIndex];
 
         // mine not empty
         // mine clear of any monsters
         // the "shutdown permanently" flag is only used for the player never receiving the income - miners will keep mining
         if ((!pMineStatus.fEmpty) && CreatureSpreading.MineClearOfMonsters(ubMineIndex))
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     // returns whether or not we've spoken to the head miner of a particular mine
     public static bool SpokenToHeadMiner(MINE ubMineIndex)
     {
-        return (Globals.gMineStatus[ubMineIndex].fSpokeToHeadMiner);
+        return Globals.gMineStatus[ubMineIndex].fSpokeToHeadMiner;
     }
 
 }

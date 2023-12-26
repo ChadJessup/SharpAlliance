@@ -74,7 +74,7 @@ public class WordWrap
         //combine the temp string and the '...' to form the finished string
         pString = wprintf("%s%s", zTemp, zStrDots);
 
-        return (true);
+        return true;
     }
 
     public static int IanWrappedStringHeight(int v1, int v2, int usTextWidth, int v3, FontStyle tEXT_POPUP_FONT, FontColor mERC_TEXT_COLOR, string pString, FontColor fONT_MCOLOR_BLACK, bool v4, TextJustifies lEFT_JUSTIFIED)

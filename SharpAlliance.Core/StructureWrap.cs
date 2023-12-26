@@ -14,20 +14,20 @@ public class StructureWrap
     {
         if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYFENCE) != null)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
     bool IsRoofPresentAtGridno(int sGridNo)
     {
         if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ROOF) != null)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -39,18 +39,18 @@ public class StructureWrap
 
         if (pStructure is not null)
         {
-            if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.FENCE) && !(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SPECIAL)))
+            if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.FENCE) && !pStructure.fFlags.HasFlag(STRUCTUREFLAGS.SPECIAL))
             {
-                return (true);
+                return true;
             }
             if (pStructure.pDBStructureRef.pDBStructure.ubArmour == MATERIAL.SANDBAG
                 && StructureInternals.StructureHeight(pStructure) < 2)
             {
-                return (true);
+                return true;
             }
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -58,10 +58,10 @@ public class StructureWrap
     {
         if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR) != null)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -69,10 +69,10 @@ public class StructureWrap
     {
         if (StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.TREE) != null)
         {
-            return (true);
+            return true;
         }
 
-        return (false);
+        return false;
     }
 
 
@@ -88,7 +88,7 @@ public class StructureWrap
             pNode = WorldStructures.FindLevelNodeBasedOnStructure(sGridNo, pStructure);
         }
 
-        return (pNode);
+        return pNode;
     }
 
     LEVELNODE? GetWallLevelNodeOfSameOrientationAtGridno(int sGridNo, WallOrientation ubOrientation)
@@ -104,12 +104,12 @@ public class StructureWrap
             if (pStructure.ubWallOrientation == ubOrientation)
             {
                 pNode = WorldStructures.FindLevelNodeBasedOnStructure(sGridNo, pStructure);
-                return (pNode);
+                return pNode;
             }
             pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
         }
 
-        return (null);
+        return null;
     }
 
 
@@ -118,7 +118,7 @@ public class StructureWrap
         LEVELNODE? pNode = null;
         STRUCTURE? pStructure, pBaseStructure;
 
-        (ppStructure) = null;
+        ppStructure = null;
 
         pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WALLSTUFF);
 
@@ -131,15 +131,15 @@ public class StructureWrap
 //                if (pBaseStructure)
                 {
                     pNode = WorldStructures.FindLevelNodeBasedOnStructure(pBaseStructure.sGridNo, pBaseStructure);
-                    (ppStructure) = pBaseStructure;
-                    return (pNode);
+                    ppStructure = pBaseStructure;
+                    return pNode;
                 }
             }
 
 //            pStructure = FindNextStructure(pStructure, STRUCTUREFLAGS.WALLSTUFF);
         }
 
-        return (null);
+        return null;
     }
 
 
@@ -168,7 +168,7 @@ public class StructureWrap
 
 //                        if (IsRoofVisible2(sNewGridNo))
                         {
-                            return (false);
+                            return false;
                         }
                     }
                     break;
@@ -186,7 +186,7 @@ public class StructureWrap
 
 //                        if (IsRoofVisible2(sNewGridNo))
                         {
-                            return (false);
+                            return false;
                         }
                     }
                     break;
@@ -196,7 +196,7 @@ public class StructureWrap
         }
 
         // Return true here, even if she does not exist
-        return (true);
+        return true;
     }
 
 
@@ -223,7 +223,7 @@ public class StructureWrap
         //	return( true );
         //}
 
-        return (false);
+        return false;
     }
 
     bool IsHiddenStructureVisible(int sGridNo, TileIndexes usIndex)
@@ -231,15 +231,15 @@ public class StructureWrap
         // Check if it's a hidden struct and we have not revealed anything!
         if (gTileDatabase[usIndex].uiFlags.HasFlag(TileCategory.HIDDEN_TILE))
         {
-            if (!(gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED))
-                && !(gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS)))
+            if (!gpWorldLevelData[sGridNo].uiFlags.HasFlag(MAPELEMENTFLAGS.REVEALED)
+                && !gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.SHOW_ALL_MERCS))
             {
                 // Return false
-                return (false);
+                return false;
             }
         }
 
-        return (true);
+        return true;
     }
 
     public static bool WallExistsOfTopLeftOrientation(int sGridNo)
@@ -255,14 +255,14 @@ public class StructureWrap
             if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_LEFT
                 || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
             {
-                return (true);
+                return true;
             }
 
             pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.WALL);
 
         }
 
-        return (false);
+        return false;
     }
 
     public static bool WallExistsOfTopRightOrientation(int sGridNo)
@@ -278,14 +278,14 @@ public class StructureWrap
             if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_RIGHT
                 || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
             {
-                return (true);
+                return true;
             }
 
             pStructure = StructureInternals.FindNextStructure(pStructure, STRUCTUREFLAGS.WALL);
 
         }
 
-        return (false);
+        return false;
     }
 
     bool WallOrClosedDoorExistsOfTopLeftOrientation(int sGridNo)
@@ -297,14 +297,14 @@ public class StructureWrap
         while (pStructure != null)
         {
             // skip it if it's an open door
-            if (!((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR))
-                && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))))
+            if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)
+                && pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
             {
                 // Check orientation
                 if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_LEFT
                     || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
                 {
-                    return (true);
+                    return true;
                 }
             }
 
@@ -312,7 +312,7 @@ public class StructureWrap
 
         }
 
-        return (false);
+        return false;
     }
 
     bool WallOrClosedDoorExistsOfTopRightOrientation(int sGridNo)
@@ -324,13 +324,13 @@ public class StructureWrap
         while (pStructure != null)
         {
             // skip it if it's an open door
-            if (!((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR)) && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))))
+            if (!(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.ANYDOOR) && pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
             {
                 // Check orientation
                 if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_RIGHT
                     || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
                 {
-                    return (true);
+                    return true;
                 }
             }
 
@@ -338,7 +338,7 @@ public class StructureWrap
 
         }
 
-        return (false);
+        return false;
     }
 
     bool OpenRightOrientedDoorWithDoorOnRightOfEdgeExists(int sGridNo)
@@ -347,15 +347,15 @@ public class StructureWrap
 
         pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
 
-        while (pStructure != null && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+        while (pStructure != null && pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
             // Check orientation
             if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_RIGHT
                 || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_RIGHT)
             {
-                if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DOOR)) || (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_RIGHT)))
+                if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DOOR) || pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_RIGHT))
                 {
-                    return (true);
+                    return true;
                 }
             }
 
@@ -363,7 +363,7 @@ public class StructureWrap
 
         }
 
-        return (false);
+        return false;
     }
 
     bool OpenLeftOrientedDoorWithDoorOnLeftOfEdgeExists(int sGridNo)
@@ -372,14 +372,14 @@ public class StructureWrap
 
         pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.ANYDOOR);
 
-        while (pStructure != null && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+        while (pStructure != null && pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
             // Check orientation
             if (pStructure.ubWallOrientation == WallOrientation.INSIDE_TOP_LEFT || pStructure.ubWallOrientation == WallOrientation.OUTSIDE_TOP_LEFT)
             {
-                if ((pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DOOR)) || (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_LEFT)))
+                if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DOOR) || pStructure.fFlags.HasFlag(STRUCTUREFLAGS.DDOOR_LEFT))
                 {
-                    return (true);
+                    return true;
                 }
             }
 
@@ -387,7 +387,7 @@ public class StructureWrap
 
         }
 
-        return (false);
+        return false;
     }
 
     STRUCTURE? FindCuttableWireFenceAtGridNo(int sGridNo)
@@ -395,11 +395,11 @@ public class StructureWrap
         STRUCTURE? pStructure;
 
         pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.WIREFENCE);
-        if (pStructure != null && pStructure.ubWallOrientation != WallOrientation.NO_ORIENTATION && !(pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+        if (pStructure != null && pStructure.ubWallOrientation != WallOrientation.NO_ORIENTATION && !pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
-            return (pStructure);
+            return pStructure;
         }
-        return (null);
+        return null;
     }
 
     bool CutWireFence(int sGridNo)
@@ -414,15 +414,15 @@ public class StructureWrap
             {
 //                RecompileLocalMovementCosts(sGridNo);
                 RenderWorld.SetRenderFlags(RenderingFlags.FULL);
-                return (true);
+                return true;
             }
         }
-        return (false);
+        return false;
     }
 
     bool IsCuttableWireFenceAtGridNo(int sGridNo)
     {
-        return (this.FindCuttableWireFenceAtGridNo(sGridNo) != null);
+        return this.FindCuttableWireFenceAtGridNo(sGridNo) != null;
     }
 
 
@@ -435,14 +435,14 @@ public class StructureWrap
 
         if (pubID != null)
         {
-            (pubID) = ubMerc;
+            pubID = ubMerc;
         }
 
         if (ubMerc != NOBODY)
         {
             if (MercPtrs[ubMerc].uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
             {
-                return (2);
+                return 2;
             }
         }
         // Then for over a robot....
@@ -450,11 +450,11 @@ public class StructureWrap
         // then for SAM site....
 //        if (DoesSAMExistHere(gWorldSectorX, gWorldSectorY, gbWorldSectorZ, sGridNo))
         {
-            return (3);
+            return 3;
         }
 
 
-        return (0);
+        return 0;
     }
 
 
@@ -467,17 +467,17 @@ public class StructureWrap
 
         if (pubID != null)
         {
-            (pubID) = ubMerc;
+            pubID = ubMerc;
         }
 
         if (ubMerc != NOBODY)
         {
             if (MercPtrs[ubMerc].uiStatusFlags.HasFlag(SOLDIER.VEHICLE))
             {
-                return (true);
+                return true;
             }
         }
-        return (false);
+        return false;
     }
 
     bool IsCutWireFenceAtGridNo(int sGridNo)
@@ -486,11 +486,11 @@ public class StructureWrap
 
         pStructure = WorldStructures.FindStructure(sGridNo, STRUCTUREFLAGS.WIREFENCE);
         if (pStructure != null && (pStructure.ubWallOrientation != WallOrientation.NO_ORIENTATION)
-            && (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN)))
+            && pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
         {
-            return (true);
+            return true;
         }
-        return (false);
+        return false;
     }
 
 
@@ -506,7 +506,7 @@ public class StructureWrap
         if (pStructure is not null)
         {
             pBaseStructure = WorldStructures.FindBaseStructure(pStructure);
-            return (pBaseStructure.sGridNo);
+            return pBaseStructure.sGridNo;
         }
 
         sTestGridNo = sGridNo + IsometricUtils.DirectionInc(WorldDirections.NORTH);
@@ -514,7 +514,7 @@ public class StructureWrap
         if (pStructure is not null)
         {
             pBaseStructure = WorldStructures.FindBaseStructure(pStructure);
-            return (pBaseStructure.sGridNo);
+            return pBaseStructure.sGridNo;
         }
 
         sTestGridNo = sGridNo + IsometricUtils.DirectionInc(WorldDirections.WEST);
@@ -522,10 +522,10 @@ public class StructureWrap
         if (pStructure is not null)
         {
             pBaseStructure = WorldStructures.FindBaseStructure(pStructure);
-            return (pBaseStructure.sGridNo);
+            return pBaseStructure.sGridNo;
         }
 
-        return (NOWHERE);
+        return NOWHERE;
     }
 
 
@@ -534,11 +534,11 @@ public class StructureWrap
     {
         if (RottingCorpses.GetCorpseAtGridNo(sGridNo, ubLevel) != null)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -551,7 +551,7 @@ public class StructureWrap
         pStructure = StructureInternals.FindStructure(sGridNo, STRUCTUREFLAGS.OPENABLE);
         if (pStructure is null)
         {
-            return (false);
+            return false;
         }
 
         if (pStructure.fFlags.HasFlag(STRUCTUREFLAGS.OPEN))
@@ -564,7 +564,7 @@ public class StructureWrap
             }
         }
         // else leave it as is!
-        return (true);
+        return true;
     }
 }
 

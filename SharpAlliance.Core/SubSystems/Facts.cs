@@ -29,11 +29,11 @@ public class Facts
         pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pSoldier is not null && pSoldier.bLife > (pSoldier.bLifeMax / 2) && pSoldier.bLife > 30)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
     }
 
@@ -45,11 +45,11 @@ public class Facts
         pSoldier = SoldierProfileSubSystem.FindSoldierByProfileID(ubProfileID, false);
         if (pSoldier is not null && pSoldier.IsAlive && pSoldier.bBleeding > 0)
         {
-            return (true);
+            return true;
         }
         else
         {
-            return (false);
+            return false;
         }
 
     }
@@ -62,9 +62,9 @@ public class Facts
         pSecondNPC = SoldierProfileSubSystem.FindSoldierByProfileID(ubSecondNPC, false);
         if (pFirstNPC is null || pSecondNPC is null)
         {
-            return (false);
+            return false;
         }
-        return (IsometricUtils.PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance);
+        return IsometricUtils.PythSpacesAway(pFirstNPC.sGridNo, pSecondNPC.sGridNo) <= ubMaxDistance;
     }
 
     public static bool CheckFact(FACT usFact, NPCID ubProfileID)
@@ -75,10 +75,10 @@ public class Facts
         switch (usFact)
         {
             case FACT.DIMITRI_DEAD:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.DIMITRI].bMercStatus == MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.DIMITRI].bMercStatus == MercStatus.MERC_IS_DEAD;
                 break;
             case FACT.CURRENT_SECTOR_IS_SAFE:
-                gubFact[FACT.CURRENT_SECTOR_IS_SAFE] = !(((Globals.gTacticalStatus.fEnemyInSector && Quests.NPCHeardShot(ubProfileID)) || Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT)));
+                gubFact[FACT.CURRENT_SECTOR_IS_SAFE] = !((Globals.gTacticalStatus.fEnemyInSector && Quests.NPCHeardShot(ubProfileID)) || Globals.gTacticalStatus.uiFlags.HasFlag(TacticalEngineStatus.INCOMBAT));
                 break;
             case FACT.BOBBYRAY_SHIPMENT_IN_TRANSIT:
             case FACT.NEW_BOBBYRAY_SHIPMENT_WAITING:
@@ -123,10 +123,10 @@ public class Facts
                 gubFact[FACT.IRA_NOT_PRESENT] = !Quests.CheckNPCWithin(ubProfileID, NPCID.IRA, 10);
                 break;
             case FACT.IRA_TALKING:
-                gubFact[FACT.IRA_TALKING] = (Globals.gubSrcSoldierProfile == (NPCID)59);
+                gubFact[FACT.IRA_TALKING] = Globals.gubSrcSoldierProfile == (NPCID)59;
                 break;
             case FACT.IRA_UNHIRED_AND_ALIVE:
-                if (Globals.gMercProfiles[NPCID.IRA].bMercStatus != MercStatus.MERC_IS_DEAD && Quests.CheckNPCSector(NPCID.IRA, 10, (MAP_ROW)1, 1) && !(Globals.gMercProfiles[NPCID.IRA].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)))
+                if (Globals.gMercProfiles[NPCID.IRA].bMercStatus != MercStatus.MERC_IS_DEAD && Quests.CheckNPCSector(NPCID.IRA, 10, (MAP_ROW)1, 1) && !Globals.gMercProfiles[NPCID.IRA].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED))
                 {
                     gubFact[FACT.IRA_UNHIRED_AND_ALIVE] = true;
                 }
@@ -150,27 +150,27 @@ public class Facts
                 break;
 
             case FACT.PLAYER_HAS_HEAD_AND_CARMEN_IN_SAN_MONA:
-                gubFact[usFact] = (Quests.CheckNPCSector(NPCID.CARMEN, 5, MAP_ROW.C, 0) && Quests.CheckPlayerHasHead());
+                gubFact[usFact] = Quests.CheckNPCSector(NPCID.CARMEN, 5, MAP_ROW.C, 0) && Quests.CheckPlayerHasHead();
                 break;
 
             case FACT.PLAYER_HAS_HEAD_AND_CARMEN_IN_CAMBRIA:
-                gubFact[usFact] = (Quests.CheckNPCSector(NPCID.CARMEN, 9, MAP_ROW.G, 0) && Quests.CheckPlayerHasHead());
+                gubFact[usFact] = Quests.CheckNPCSector(NPCID.CARMEN, 9, MAP_ROW.G, 0) && Quests.CheckPlayerHasHead();
                 break;
 
             case FACT.PLAYER_HAS_HEAD_AND_CARMEN_IN_DRASSEN:
-                gubFact[usFact] = (Quests.CheckNPCSector(NPCID.CARMEN, 13, MAP_ROW.C, 0) && Quests.CheckPlayerHasHead());
+                gubFact[usFact] = Quests.CheckNPCSector(NPCID.CARMEN, 13, MAP_ROW.C, 0) && Quests.CheckPlayerHasHead();
                 break;
 
             case FACT.NPC_OWED_MONEY:
-                gubFact[FACT.NPC_OWED_MONEY] = (Globals.gMercProfiles[ubProfileID].iBalance < 0);
+                gubFact[FACT.NPC_OWED_MONEY] = Globals.gMercProfiles[ubProfileID].iBalance < 0;
                 break;
 
             case FACT.FATHER_DRUNK:
-                gubFact[FACT.FATHER_DRUNK] = (Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5);
+                gubFact[FACT.FATHER_DRUNK] = Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5;
                 break;
 
             case FACT.MICKY_DRUNK:
-                gubFact[FACT.MICKY_DRUNK] = (Globals.gMercProfiles[NPCID.MICKY].bNPCData >= 5);
+                gubFact[FACT.MICKY_DRUNK] = Globals.gMercProfiles[NPCID.MICKY].bNPCData >= 5;
                 break;
 
             case FACT.BRENDA_IN_STORE_AND_ALIVE:
@@ -180,7 +180,7 @@ public class Facts
                     gubFact[FACT.BRENDA_IN_STORE_AND_ALIVE] = false;
                 }
                 // ensure in a building and nearby
-                else if (!(Quests.NPCInRoom((NPCID)85, 47)))
+                else if (!Quests.NPCInRoom((NPCID)85, 47))
                 {
                     gubFact[FACT.BRENDA_IN_STORE_AND_ALIVE] = false;
                 }
@@ -190,7 +190,7 @@ public class Facts
                 }
                 break;
             case FACT.BRENDA_DEAD:
-                gubFact[FACT.BRENDA_DEAD] = (Globals.gMercProfiles[(NPCID)85].bMercStatus == MercStatus.MERC_IS_DEAD);
+                gubFact[FACT.BRENDA_DEAD] = Globals.gMercProfiles[(NPCID)85].bMercStatus == MercStatus.MERC_IS_DEAD;
                 break;
             case FACT.NPC_IS_ENEMY:
                 gubFact[FACT.NPC_IS_ENEMY] = Quests.CheckNPCIsEnemy(ubProfileID) || Globals.gMercProfiles[ubProfileID].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.NEEDS_TO_SAY_HOSTILE_QUOTE);
@@ -204,22 +204,22 @@ public class Facts
                 gubFact[FACT.SPIKE_AT_DOOR] = Quests.CheckNPCAt((NPCID)93, 9817);
                 break;
             case FACT.WOUNDED_MERCS_NEARBY:
-                gubFact[usFact] = (Quests.NumWoundedMercsNearby(ubProfileID) > 0);
+                gubFact[usFact] = Quests.NumWoundedMercsNearby(ubProfileID) > 0;
                 break;
             case FACT.ONE_WOUNDED_MERC_NEARBY:
-                gubFact[usFact] = (Quests.NumWoundedMercsNearby(ubProfileID) == 1);
+                gubFact[usFact] = Quests.NumWoundedMercsNearby(ubProfileID) == 1;
                 break;
             case FACT.MULTIPLE_WOUNDED_MERCS_NEARBY:
-                gubFact[usFact] = (Quests.NumWoundedMercsNearby(ubProfileID) > 1);
+                gubFact[usFact] = Quests.NumWoundedMercsNearby(ubProfileID) > 1;
                 break;
             case FACT.HANS_AT_SPOT:
                 gubFact[usFact] = Quests.CheckNPCAt((NPCID)117, 13523);
                 break;
             case FACT.MULTIPLE_MERCS_CLOSE:
-                gubFact[usFact] = (Quests.NumMercsNear(ubProfileID, 3) > 1);
+                gubFact[usFact] = Quests.NumMercsNear(ubProfileID, 3) > 1;
                 break;
             case FACT.SOME_MERCS_CLOSE:
-                gubFact[usFact] = (Quests.NumMercsNear(ubProfileID, 3) > 0);
+                gubFact[usFact] = Quests.NumMercsNear(ubProfileID, 3) > 0;
                 break;
             case FACT.MARIA_ESCORTED:
                 gubFact[usFact] = Quests.CheckNPCIsEPC(NPCID.MARIA);
@@ -231,13 +231,13 @@ public class Facts
                 gubFact[usFact] = Quests.CheckNPCIsEPC(NPCID.SKYRIDER);
                 break;
             case FACT.MARIA_ESCORTED_AT_LEATHER_SHOP:
-                gubFact[usFact] = (Quests.CheckNPCIsEPC(NPCID.MARIA) && (Quests.NPCInRoom(NPCID.MARIA, 2)));
+                gubFact[usFact] = Quests.CheckNPCIsEPC(NPCID.MARIA) && Quests.NPCInRoom(NPCID.MARIA, 2);
                 break;
             case FACT.PC_STRONG_AND_LESS_THAN_3_MALES_PRESENT:
-                gubFact[usFact] = (Quests.CheckTalkerStrong() && (Quests.NumMalesPresent(ubProfileID) < 3));
+                gubFact[usFact] = Quests.CheckTalkerStrong() && (Quests.NumMalesPresent(ubProfileID) < 3);
                 break;
             case FACT.PC_STRONG_AND_3_PLUS_MALES_PRESENT:
-                gubFact[usFact] = (Quests.CheckTalkerStrong() && (Quests.NumMalesPresent(ubProfileID) >= 3));
+                gubFact[usFact] = Quests.CheckTalkerStrong() && (Quests.NumMalesPresent(ubProfileID) >= 3);
                 break;
             case FACT.FEMALE_SPEAKING_TO_NPC:
                 gubFact[usFact] = Quests.CheckTalkerFemale();
@@ -258,34 +258,34 @@ public class Facts
 //                gubFact[usFact] = (NumMercsNear(ubProfileID, 5) > 0);
                 break;
             case FACT.REBELS_HATE_PLAYER:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE);
+                gubFact[usFact] = Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.REBEL_CIV_GROUP] == CIV_GROUP_HOSTILE;
                 break;
             case FACT.CURRENT_SECTOR_G9:
-                gubFact[usFact] = (Globals.gWorldSectorX == 9 && Globals.gWorldSectorY == MAP_ROW.G && Globals.gbWorldSectorZ == 0);
+                gubFact[usFact] = Globals.gWorldSectorX == 9 && Globals.gWorldSectorY == MAP_ROW.G && Globals.gbWorldSectorZ == 0;
                 break;
             case FACT.CURRENT_SECTOR_C5:
-                gubFact[usFact] = (Globals.gWorldSectorX == 5 && Globals.gWorldSectorY == MAP_ROW.C && Globals.gbWorldSectorZ == 0);
+                gubFact[usFact] = Globals.gWorldSectorX == 5 && Globals.gWorldSectorY == MAP_ROW.C && Globals.gbWorldSectorZ == 0;
                 break;
             case FACT.CURRENT_SECTOR_C13:
-                gubFact[usFact] = (Globals.gWorldSectorX == 13 && Globals.gWorldSectorY == MAP_ROW.C && Globals.gbWorldSectorZ == 0);
+                gubFact[usFact] = Globals.gWorldSectorX == 13 && Globals.gWorldSectorY == MAP_ROW.C && Globals.gbWorldSectorZ == 0;
                 break;
             case FACT.CARMEN_HAS_TEN_THOUSAND:
-                gubFact[usFact] = (Globals.gMercProfiles[(NPCID)78].uiMoney >= 10000);
+                gubFact[usFact] = Globals.gMercProfiles[(NPCID)78].uiMoney >= 10000;
                 break;
             case FACT.SLAY_IN_SECTOR:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.SLAY].sSectorX == Globals.gWorldSectorX && Globals.gMercProfiles[NPCID.SLAY].sSectorY == Globals.gWorldSectorY && Globals.gMercProfiles[NPCID.SLAY].bSectorZ == Globals.gbWorldSectorZ);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.SLAY].sSectorX == Globals.gWorldSectorX && Globals.gMercProfiles[NPCID.SLAY].sSectorY == Globals.gWorldSectorY && Globals.gMercProfiles[NPCID.SLAY].bSectorZ == Globals.gbWorldSectorZ;
                 break;
             case FACT.SLAY_HIRED_AND_WORKED_FOR_48_HOURS:
-                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.SLAY].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)) && (Globals.gMercProfiles[NPCID.SLAY].usTotalDaysServed > 1));
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.SLAY].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED) && (Globals.gMercProfiles[NPCID.SLAY].usTotalDaysServed > 1);
                 break;
             case FACT.SHANK_IN_SQUAD_BUT_NOT_SPEAKING:
-                gubFact[usFact] = ((SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SHANK, true) != null) && (Globals.gMercProfiles[NPCID.SHANK].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED)) && (Globals.gpSrcSoldier == null || Globals.gpSrcSoldier.ubProfile != NPCID.SHANK));
+                gubFact[usFact] = (SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SHANK, true) != null) && Globals.gMercProfiles[NPCID.SHANK].ubMiscFlags.HasFlag(PROFILE_MISC_FLAG.RECRUITED) && (Globals.gpSrcSoldier == null || Globals.gpSrcSoldier.ubProfile != NPCID.SHANK);
                 break;
             case FACT.SHANK_NOT_IN_SECTOR:
-                gubFact[usFact] = (SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SHANK, false) == null);
+                gubFact[usFact] = SoldierProfileSubSystem.FindSoldierByProfileID(NPCID.SHANK, false) == null;
                 break;
             case FACT.QUEEN_DEAD:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.QUEEN].bMercStatus == MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.QUEEN].bMercStatus == MercStatus.MERC_IS_DEAD;
                 break;
             case FACT.MINE_EMPTY:
                 gubFact[usFact] = StrategicMines.IsHisMineEmpty(ubProfileID);
@@ -311,10 +311,10 @@ public class Facts
                 gubFact[usFact] = Quests.CheckNPCSector(NPCID.DYNAMO, 9, MAP_ROW.J, 0) && QueenCommand.NumEnemiesInAnySector(9, (MAP_ROW)10, 0) > 0;
                 break;
             case FACT.DYNAMO_ALIVE:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.DYNAMO].bMercStatus != MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.DYNAMO].bMercStatus != MercStatus.MERC_IS_DEAD;
                 break;
             case FACT.DYNAMO_SPEAKING_OR_NEARBY:
-                gubFact[usFact] = (Globals.gpSrcSoldier != null && (Globals.gpSrcSoldier.ubProfile == NPCID.DYNAMO || (CheckNPCWithin(Globals.gpSrcSoldier.ubProfile, NPCID.DYNAMO, 10) && Quests.CheckGuyVisible(Globals.gpSrcSoldier.ubProfile, NPCID.DYNAMO))));
+                gubFact[usFact] = Globals.gpSrcSoldier != null && (Globals.gpSrcSoldier.ubProfile == NPCID.DYNAMO || (CheckNPCWithin(Globals.gpSrcSoldier.ubProfile, NPCID.DYNAMO, 10) && Quests.CheckGuyVisible(Globals.gpSrcSoldier.ubProfile, NPCID.DYNAMO)));
                 break;
             case FACT.JOHN_EPC:
                 gubFact[usFact] = Quests.CheckNPCIsEPC(NPCID.JOHN);
@@ -326,19 +326,19 @@ public class Facts
                 gubFact[usFact] = Quests.CheckNPCIsEPC(NPCID.JOHN) && Quests.CheckNPCIsEPC(NPCID.MARY);
                 break;
             case FACT.MARY_ALIVE:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.MARY].bMercStatus != MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.MARY].bMercStatus != MercStatus.MERC_IS_DEAD;
                 break;
             case FACT.MARY_BLEEDING:
                 gubFact[usFact] = Quests.CheckNPCBleeding(NPCID.MARY);
                 break;
             case FACT.JOHN_ALIVE:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.JOHN].bMercStatus != MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.JOHN].bMercStatus != MercStatus.MERC_IS_DEAD;
                 break;
             case FACT.JOHN_BLEEDING:
                 gubFact[usFact] = Quests.CheckNPCBleeding(NPCID.JOHN);
                 break;
             case FACT.MARY_DEAD:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.MARY].bMercStatus == MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.MARY].bMercStatus == MercStatus.MERC_IS_DEAD;
                 break;
 
             case FACT.ANOTHER_FIGHT_POSSIBLE:
@@ -346,11 +346,11 @@ public class Facts
                 break;
 
             case FACT.RECEIVING_INCOME_FROM_DCAC:
-                gubFact[usFact] = (
+                gubFact[usFact] = 
                     (StrategicMines.PredictDailyIncomeFromAMine(MINE.DRASSEN) > 0) &&
                     (StrategicMines.PredictDailyIncomeFromAMine(MINE.ALMA) > 0) &&
                     (StrategicMines.PredictDailyIncomeFromAMine(MINE.CAMBRIA) > 0) &&
-                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0));
+                    (StrategicMines.PredictDailyIncomeFromAMine(MINE.CHITZENA) > 0);
                 break;
 
             case FACT.PLAYER_BEEN_TO_K4:
@@ -362,18 +362,18 @@ public class Facts
                 }
                 break;
             case FACT.WARDEN_DEAD:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.WARDEN].bMercStatus == MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.WARDEN].bMercStatus == MercStatus.MERC_IS_DEAD;
                 break;
 
             case FACT.PLAYER_PAID_FOR_TWO_IN_BROTHEL:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.MADAME].bNPCData > 1);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.MADAME].bNPCData > 1;
                 break;
 
             case FACT.LOYALTY_OKAY:
                 bTown = Globals.gMercProfiles[ubProfileID].bTown;
                 if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted && Globals.gfTownUsesLoyalty[bTown])
                 {
-                    gubFact[usFact] = ((Globals.gTownLoyalty[bTown].ubRating >= Globals.LOYALTY_LOW_THRESHOLD) && (Globals.gTownLoyalty[bTown].ubRating < Globals.LOYALTY_OK_THRESHOLD));
+                    gubFact[usFact] = (Globals.gTownLoyalty[bTown].ubRating >= Globals.LOYALTY_LOW_THRESHOLD) && (Globals.gTownLoyalty[bTown].ubRating < Globals.LOYALTY_OK_THRESHOLD);
                 }
                 else
                 {
@@ -394,7 +394,7 @@ public class Facts
                     }
                     else
                     {
-                        gubFact[usFact] = (Globals.gTownLoyalty[bTown].ubRating < Globals.LOYALTY_LOW_THRESHOLD);
+                        gubFact[usFact] = Globals.gTownLoyalty[bTown].ubRating < Globals.LOYALTY_LOW_THRESHOLD;
                     }
                 }
                 else
@@ -408,7 +408,7 @@ public class Facts
                 if ((bTown != TOWNS.BLANK_SECTOR) && Globals.gTownLoyalty[bTown].fStarted
                     && Globals.gfTownUsesLoyalty[bTown])
                 {
-                    gubFact[usFact] = (Globals.gTownLoyalty[Globals.gMercProfiles[ubProfileID].bTown].ubRating >= Globals.LOYALTY_HIGH_THRESHOLD);
+                    gubFact[usFact] = Globals.gTownLoyalty[Globals.gMercProfiles[ubProfileID].bTown].ubRating >= Globals.LOYALTY_HIGH_THRESHOLD;
                 }
                 else
                 {
@@ -417,7 +417,7 @@ public class Facts
                 break;
 
             case FACT.ELGIN_ALIVE:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.DRUGGIST].bMercStatus != MercStatus.MERC_IS_DEAD);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.DRUGGIST].bMercStatus != MercStatus.MERC_IS_DEAD;
                 break;
 
             case FACT.SPEAKER_AIM_OR_AIM_NEARBY:
@@ -425,19 +425,19 @@ public class Facts
                 break;
 
             case FACT.MALE_SPEAKING_FEMALE_PRESENT:
-                gubFact[usFact] = (!Quests.CheckTalkerFemale() && Quests.FemalePresent(ubProfileID));
+                gubFact[usFact] = !Quests.CheckTalkerFemale() && Quests.FemalePresent(ubProfileID);
                 break;
 
             case FACT.PLAYER_OWNS_2_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() == 3) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
+                gubFact[usFact] = (StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() == 3) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA);
                 break;
 
             case FACT.PLAYER_OWNS_3_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() == 5) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
+                gubFact[usFact] = (StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() == 5) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA);
                 break;
 
             case FACT.PLAYER_OWNS_4_TOWNS_INCLUDING_OMERTA:
-                gubFact[usFact] = ((StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() >= 6) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA));
+                gubFact[usFact] = (StrategicTownLoyalty.GetNumberOfWholeTownsUnderControl() >= 6) && StrategicTownLoyalty.IsTownUnderCompleteControlByPlayer(TOWNS.OMERTA);
                 break;
 
             case FACT.PLAYER_FOUGHT_THREE_TIMES_TODAY:
@@ -445,23 +445,23 @@ public class Facts
                 break;
 
             case FACT.PLAYER_DOING_POORLY:
-                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() < 20);
+                gubFact[usFact] = Campaign.CurrentPlayerProgressPercentage() < 20;
                 break;
 
             case FACT.PLAYER_DOING_WELL:
-                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 50);
+                gubFact[usFact] = Campaign.CurrentPlayerProgressPercentage() > 50;
                 break;
 
             case FACT.PLAYER_DOING_VERY_WELL:
-                gubFact[usFact] = (Campaign.CurrentPlayerProgressPercentage() > 80);
+                gubFact[usFact] = Campaign.CurrentPlayerProgressPercentage() > 80;
                 break;
 
             case FACT.FATHER_DRUNK_AND_SCIFI_OPTION_ON:
-                gubFact[usFact] = ((Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameOptions.SciFi);
+                gubFact[usFact] = (Globals.gMercProfiles[NPCID.FATHER].bNPCData >= 5) && Globals.gGameOptions.SciFi;
                 break;
 
             case FACT.BLOODCAT_QUEST_STARTED_TWO_DAYS_AGO:
-                gubFact[usFact] = ((Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED))
+                gubFact[usFact] = Globals.gubQuest[QUEST.BLOODCATS] != Globals.QUESTNOTSTARTED
                     //&& (GameClock.GetWorldTotalMin() - GetTimeQuestWasStarted(QUEST.BLOODCATS) > 2 * Globals.NUM_SEC_IN_DAY / Globals.NUM_SEC_IN_MIN))
                     ;
                 break;
@@ -475,32 +475,32 @@ public class Facts
                 break;
 
             case FACT.TOP_AND_BOTTOM_LEVELS_CLEARED:
-                gubFact[usFact] = (gubFact[FACT.TOP_LEVEL_CLEARED]
-                    & gubFact[FACT.BOTTOM_LEVEL_CLEARED]);
+                gubFact[usFact] = gubFact[FACT.TOP_LEVEL_CLEARED]
+                    & gubFact[FACT.BOTTOM_LEVEL_CLEARED];
                 break;
 
             case FACT.FIRST_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 1
+                gubFact[usFact] = Globals.gMercProfiles[ubProfileID].bNPCData == 1
                     || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
-                    & Quests.CountBartenders() == 0));
+                    & Quests.CountBartenders() == 0);
                 break;
 
             case FACT.SECOND_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 2
+                gubFact[usFact] = Globals.gMercProfiles[ubProfileID].bNPCData == 2
                     || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
-                    && Quests.CountBartenders() == 1));
+                    && Quests.CountBartenders() == 1);
                 break;
 
             case FACT.THIRD_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 3
+                gubFact[usFact] = Globals.gMercProfiles[ubProfileID].bNPCData == 3
                     || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
-                    && Quests.CountBartenders() == 2));
+                    && Quests.CountBartenders() == 2);
                 break;
 
             case FACT.FOURTH_BARTENDER:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].bNPCData == 4
+                gubFact[usFact] = Globals.gMercProfiles[ubProfileID].bNPCData == 4
                     || (Globals.gMercProfiles[ubProfileID].bNPCData == 0
-                    && Quests.CountBartenders() == 3));
+                    && Quests.CountBartenders() == 3);
                 break;
 
             case FACT.NPC_NOT_UNDER_FIRE:
@@ -515,15 +515,15 @@ public class Facts
                 break;
 
             case FACT.DONT_OWE_KINGPIN_MONEY:
-                gubFact[usFact] = (Globals.gubQuest[QUEST.KINGPIN_MONEY] != Globals.QUESTINPROGRESS);
+                gubFact[usFact] = Globals.gubQuest[QUEST.KINGPIN_MONEY] != Globals.QUESTINPROGRESS;
                 break;
 
             case FACT.NO_CLUB_FIGHTING_ALLOWED:
-                gubFact[usFact] = (Globals.gubQuest[QUEST.KINGPIN_MONEY] == Globals.QUESTINPROGRESS || Globals.gfBoxersResting);// plus other conditions
+                gubFact[usFact] = Globals.gubQuest[QUEST.KINGPIN_MONEY] == Globals.QUESTINPROGRESS || Globals.gfBoxersResting;// plus other conditions
                 break;
 
             case FACT.MADDOG_IS_SPEAKER:
-                gubFact[usFact] = (Globals.gubSrcSoldierProfile == NPCID.MADDOG);
+                gubFact[usFact] = Globals.gubSrcSoldierProfile == NPCID.MADDOG;
                 break;
 
             case FACT.PC_HAS_CONRADS_RECRUIT_OPINION:
@@ -533,7 +533,7 @@ public class Facts
                 break;
 
             case FACT.NPC_HOSTILE_OR_PISSED_OFF:
-                gubFact[usFact] = Quests.CheckNPCIsEnemy(ubProfileID) || (Globals.gMercProfiles[ubProfileID].ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.NPC_PISSED_OFF));
+                gubFact[usFact] = Quests.CheckNPCIsEnemy(ubProfileID) || Globals.gMercProfiles[ubProfileID].ubMiscFlags3.HasFlag(PROFILE_MISC_FLAG3.NPC_PISSED_OFF);
                 break;
 
             case FACT.TONY_IN_BUILDING:
@@ -541,7 +541,7 @@ public class Facts
                 break;
 
             case FACT.SHANK_SPEAKING:
-                gubFact[usFact] = (Globals.gpSrcSoldier is not null && Globals.gpSrcSoldier.ubProfile == NPCID.SHANK);
+                gubFact[usFact] = Globals.gpSrcSoldier is not null && Globals.gpSrcSoldier.ubProfile == NPCID.SHANK;
                 break;
 
             case FACT.ROCKET_RIFLE_EXISTS:
@@ -577,11 +577,11 @@ public class Facts
                 break;
 
             case FACT.I16_BLOODCATS_KILLED:
-                gubFact[usFact] = (Globals.SectorInfo[SEC.I16].bBloodCats == 0);
+                gubFact[usFact] = Globals.SectorInfo[SEC.I16].bBloodCats == 0;
                 break;
 
             case FACT.NPC_BANDAGED_TODAY:
-                gubFact[usFact] = (Globals.gMercProfiles[ubProfileID].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.BANDAGED_TODAY));
+                gubFact[usFact] = Globals.gMercProfiles[ubProfileID].ubMiscFlags2.HasFlag(PROFILE_MISC_FLAG2.BANDAGED_TODAY);
                 break;
 
             case FACT.PLAYER_IN_SAME_ROOM:
@@ -592,38 +592,38 @@ public class Facts
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.DRASSEN);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_DRASSEN_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.DRASSEN && !Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled;
                 break;
             case FACT.PLAYER_SPOKE_TO_CAMBRIA_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.CAMBRIA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CAMBRIA_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CAMBRIA && !Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled;
                 break;
             case FACT.PLAYER_SPOKE_TO_CHITZENA_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.CHITZENA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_CHITZENA_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.CHITZENA && !Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled;
                 break;
             case FACT.PLAYER_SPOKE_TO_ALMA_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.ALMA);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_ALMA_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.ALMA && !Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled;
                 break;
             case FACT.PLAYER_SPOKE_TO_GRUMM_MINER:
                 gubFact[usFact] = StrategicMines.SpokenToHeadMiner(MINE.GRUMM);
                 break;
             case FACT.PLAYER_IN_CONTROLLED_GRUMM_MINE:
-                gubFact[usFact] = (StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !(Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled));
+                gubFact[usFact] = StrategicMines.GetIdOfMineForSector(Globals.gWorldSectorX, Globals.gWorldSectorY, Globals.gbWorldSectorZ) == MINE.GRUMM && !Globals.strategicMap[Globals.gWorldSectorX + Globals.MAP_WORLD_X * (int)Globals.gWorldSectorY].fEnemyControlled;
                 break;
 
             case FACT.ENOUGH_LOYALTY_TO_TRAIN_MILITIA:
                 gubFact[usFact] = Quests.InTownSectorWithTrainingLoyalty(Globals.gWorldSectorX, Globals.gWorldSectorY);
                 break;
             case FACT.WALKER_AT_BAR:
-                gubFact[usFact] = (Globals.gMercProfiles[NPCID.FATHER].sSectorX == 13 && Globals.gMercProfiles[NPCID.FATHER].sSectorY == MAP_ROW.C);
+                gubFact[usFact] = Globals.gMercProfiles[NPCID.FATHER].sSectorX == 13 && Globals.gMercProfiles[NPCID.FATHER].sSectorY == MAP_ROW.C;
                 break;
 
             case FACT.JOEY_ALIVE:
@@ -653,7 +653,7 @@ public class Facts
                 break;
 
             case FACT.KINGPIN_IS_ENEMY:
-                gubFact[usFact] = (Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE);
+                gubFact[usFact] = Globals.gTacticalStatus.fCivGroupHostile[CIV_GROUP.KINGPIN_CIV_GROUP] >= CIV_GROUP_WILL_BECOME_HOSTILE;
                 break;
 
             case FACT.DYNAMO_NOT_SPEAKER:
@@ -684,7 +684,7 @@ public class Facts
             default:
                 break;
         }
-        return (gubFact[usFact]);
+        return gubFact[usFact];
     }
 
     public static void SetFactTrue(FACT usFact)
@@ -696,7 +696,7 @@ public class Facts
         if ((usFact == FACT.ESTONI_REFUELLING_POSSIBLE) && (CheckFact(usFact, 0) == false))
         {
             // give him some gas...
-            ArmsDealerInit.GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.JAKE, Items.GAS_CAN, (4 + Globals.Random.Next(3)));
+            ArmsDealerInit.GuaranteeAtLeastXItemsOfIndex(ARMS_DEALER.JAKE, Items.GAS_CAN, 4 + Globals.Random.Next(3));
         }
 
         gubFact[usFact] = true;
