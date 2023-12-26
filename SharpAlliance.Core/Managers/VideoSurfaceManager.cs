@@ -460,7 +460,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         if (!fLowPercentShadeTable)
         {
             // Now we have the video object and surface, call the shadow function
-            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, uiPitch, area))
+            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, area))
             {
                 // Blit has failed if false returned
                 return false;
@@ -469,7 +469,7 @@ public class VideoSurfaceManager //: IVideoSurfaceManager
         else
         {
             // Now we have the video object and surface, call the shadow function
-            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, uiPitch, area))
+            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, area))
             {
                 // Blit has failed if false returned
                 return false;

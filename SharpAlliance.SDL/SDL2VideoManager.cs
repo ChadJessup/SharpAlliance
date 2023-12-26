@@ -949,7 +949,7 @@ public class SDL2VideoManager : IVideoManager
         {
 
         }
-            //    dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
+                // dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
     }
 
     private void ScrollJA2Background(
@@ -1708,7 +1708,8 @@ public class SDL2VideoManager : IVideoManager
 # if _DEBUG
         gubVSDebugCode = DEBUGSTR_SHADOWVIDEOSURFACERECT;
 #endif
-        CHECKF(this.GetVideoSurface(out HVSURFACE hVSurface, destSurface));
+        pBuffer = this.Surfaces[destSurface];
+     //   CHECKF(this.GetVideoSurface(out HVSURFACE hVSurface, destSurface));
 
         if (X1 < 0)
         {
@@ -1730,22 +1731,22 @@ public class SDL2VideoManager : IVideoManager
             Y1 = 0;
         }
 
-        if (X2 >= hVSurface.usWidth)
+        if (X2 >= pBuffer.Width)
         {
-            X2 = hVSurface.usWidth - 1;
+            X2 = pBuffer.Width - 1;
         }
 
-        if (Y2 >= hVSurface.usHeight)
+        if (Y2 >= pBuffer.Height)
         {
-            Y2 = hVSurface.usHeight - 1;
+            Y2 = pBuffer.Height - 1;
         }
 
-        if (X1 >= hVSurface.usWidth)
+        if (X1 >= pBuffer.Width)
         {
             return (false);
         }
 
-        if (Y1 >= hVSurface.usHeight)
+        if (Y1 >= pBuffer.Height)
         {
             return (false);
         }
@@ -1763,14 +1764,14 @@ public class SDL2VideoManager : IVideoManager
         area = new(X1, Y1, X2, Y2);
 
         // Lock video surface
-        pBuffer = this.LockVideoSurface(destSurface, out int uiPitch);
+        //pBuffer = this.LockVideoSurface(destSurface, out int uiPitch);
         //UnLockVideoSurface( uiDestVSurface );
 
 
         if (!fLowPercentShadeTable)
         {
             // Now we have the video object and surface, call the shadow function
-            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, uiPitch, area))
+            if (!Blitters.Blt16BPPBufferShadowRect(pBuffer, area))
             {
                 // Blit has failed if false returned
                 return (false);
@@ -1779,7 +1780,7 @@ public class SDL2VideoManager : IVideoManager
         else
         {
             // Now we have the video object and surface, call the shadow function
-            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, uiPitch, area))
+            if (!Blitters.Blt16BPPBufferShadowRectAlternateTable(pBuffer, area))
             {
                 // Blit has failed if false returned
                 return (false);
@@ -2099,7 +2100,7 @@ public class SDL2VideoManager : IVideoManager
         };
 
         // src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-        // dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+        //dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
 
         dstSurface.Image.Mutate(ctx =>
         {
@@ -2112,10 +2113,11 @@ public class SDL2VideoManager : IVideoManager
                 1.0f);
         });
 
-        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+        // dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)
     {
-        return InternalShadowVideoSurfaceRect(buffer, rectangle, false);    }
+        return InternalShadowVideoSurfaceRect(buffer, rectangle, false);
+    }
 }

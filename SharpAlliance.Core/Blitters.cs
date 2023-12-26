@@ -17,7 +17,7 @@ public static class Blitters
 	area							An SGPRect, the area to darken
 
 *********************************************************************************************/
-    public static bool Blt16BPPBufferShadowRect(Image<Rgba32> pBuffer, int uiDestPitchBYTES, Rectangle area)
+    public static bool Blt16BPPBufferShadowRect(Image<Rgba32> pBuffer, Rectangle area)
     {
         int width, height;
         uint LineSkip;
@@ -100,7 +100,7 @@ public static class Blitters
         area							An SGPRect, the area to darken
 
     *********************************************************************************************/
-    public static bool Blt16BPPBufferShadowRectAlternateTable(Image<Rgba32> pBuffer, int uiPitch, Rectangle area)
+    public static bool Blt16BPPBufferShadowRectAlternateTable(Image<Rgba32> pBuffer, Rectangle area)
     {
         int width, height;
         int  LineSkip;

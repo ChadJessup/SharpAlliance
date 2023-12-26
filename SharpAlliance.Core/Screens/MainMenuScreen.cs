@@ -550,7 +550,7 @@ public class MainMenuScreen : IScreen
 
     public void ClearMainMenu()
     {
-        this.video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Clear(Color.AliceBlue));
+        this.video.Surfaces[SurfaceType.FRAME_BUFFER].Mutate(ctx => ctx.Clear(Color.Blue));
         this.video.InvalidateScreen();
     }
 

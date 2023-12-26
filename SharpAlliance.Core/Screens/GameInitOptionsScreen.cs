@@ -276,8 +276,6 @@ public class GameInitOptionsScreen : IScreen
 
         this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
 
-        //video.BlitBufferToBuffer(guiRENDERBUFFER, Surfaces.SAVE_BUFFER, 0, 0, 639, 439);
-
         this.gfGIOButtonsAllocated = true;
     }
 

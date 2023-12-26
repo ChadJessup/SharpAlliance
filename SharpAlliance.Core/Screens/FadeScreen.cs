@@ -21,7 +21,7 @@ public class FadeScreen : IScreen
     public ScreenState State { get; set; }
 
     public FADE_HOOK gFadeInDoneCallback { get; set; } = default!;
-    public FADE_HOOK gFadeOutDoneCallback { get; set; } = default!;
+    public FADE_HOOK? gFadeOutDoneCallback { get; set; } = default!;
     public FADE_FUNCTION gFadeFunction { get; set; } = default!;
 
     public bool gfFadeInitialized;
@@ -50,7 +50,22 @@ public class FadeScreen : IScreen
 
     public bool HandleFadeOutCallback()
     {
-        return true;
+        if (gfFadeOutDone)
+        {
+            gfFadeOutDone = false;
+
+            if (gFadeOutDoneCallback != null)
+            {
+                gFadeOutDoneCallback();
+
+                gFadeOutDoneCallback = null;
+
+                return (true);
+            }
+        }
+
+        return (false);
+
     }
 
     public void FadeOutNextFrame()
