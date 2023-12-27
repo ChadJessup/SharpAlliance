@@ -9,6 +9,7 @@ using static SharpAlliance.Core.Globals;
 using static SharpAlliance.Core.EnglishText;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Interfaces;
+using System.Collections.Generic;
 
 namespace SharpAlliance.Core;
 
@@ -1095,6 +1096,8 @@ public class GameClock
 
 
     static bool fCreated = false;
+    private static readonly IEnumerable<GUI_BUTTON> buttonList;
+
     public static void CreateDestroyScreenMaskForPauseGame()
     {
         int sX = 0, sY = 0;
@@ -1110,7 +1113,7 @@ public class GameClock
             fMapPanelDirty = true;
             fMapScreenBottomDirty = true;
             gfJustFinishedAPause = true;
-            ButtonSubSystem.MarkButtonsDirty();
+            ButtonSubSystem.MarkButtonsDirty(buttonList);
             RenderWorld.SetRenderFlags(RenderingFlags.FULL);
         }
         else if ((gfPauseDueToPlayerGamePause == true) && (fCreated == false))

@@ -57,7 +57,7 @@ public class ButtonSubSystem : ISharpAllianceManager
     private uint ButtonDestPitch = 640 * 2;
     private uint ButtonDestBPP = 16;
 
-    public static GUI_BUTTON[] ButtonList = new GUI_BUTTON[Globals.MAX_BUTTONS];
+    //    public static GUI_BUTTON[] ButtonList = new GUI_BUTTON[Globals.MAX_BUTTONS];
     private static Dictionary<ButtonPic, HVOBJECT> GenericButtonGrayed = new();
     private static Dictionary<ButtonPic, HVOBJECT> GenericButtonOffNormal = new();
     private static Dictionary<ButtonPic, HVOBJECT> GenericButtonOffHilite = new();
@@ -257,17 +257,8 @@ public class ButtonSubSystem : ISharpAllianceManager
     {
     }
 
-
-    public static void RenderButtons()
-        => RenderButtons(ButtonList);
-
     public static void RenderButtons(IEnumerable<GUI_BUTTON> buttons)
     {
-        if (!ButtonList.Any())
-        {
-            return;
-        }
-
         int iButtonID;
         bool fOldButtonDown, fOldEnabled;
 
@@ -1375,27 +1366,14 @@ public class ButtonSubSystem : ISharpAllianceManager
         }
     }
 
-    public static void MarkButtonsDirty()
+    public static void UnmarkButtonsDirty(IEnumerable<GUI_BUTTON> buttons)
     {
-        foreach (var b in ButtonList)
+        foreach (var btn in buttons)
         {
             // If the button exists, and it's not owned by another object, draw it
-            if (b is not null)
+            if (btn is not null)
             {
-                // Turn on dirty flag
-                b.uiFlags |= ButtonFlags.BUTTON_DIRTY;
-            }
-        }
-    }
-
-    public static void UnmarkButtonsDirty()
-    {
-        for (int x = 0; x < Globals.MAX_BUTTONS; x++)
-        {
-            // If the button exists, and it's not owned by another object, draw it
-            if (ButtonList[x] is not null)
-            {
-                UnMarkButtonDirty(ButtonList[x]);
+                UnMarkButtonDirty(btn);
             }
         }
     }
@@ -2226,19 +2204,6 @@ public class ButtonSubSystem : ISharpAllianceManager
     private static void RemoveButtonsMarkedForDeletion()
     {
         throw new NotImplementedException();
-    }
-
-    private int GetNextButtonNumber()
-    {
-        for (int x = 0; x < Globals.MAX_BUTTONS; x++)
-        {
-            if (ButtonSubSystem.ButtonList[x] is null)
-            {
-                return x;
-            }
-        }
-
-        return Globals.BUTTON_NO_SLOT;
     }
 
     public void Dispose()

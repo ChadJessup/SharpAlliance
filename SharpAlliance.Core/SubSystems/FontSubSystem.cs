@@ -98,6 +98,17 @@ public class FontSubSystem : ISharpAllianceManager
 
     private static Dictionary<FontStyle, Font> fontLookup = [];
     private static Dictionary<FontColor, Rgba32> fontColorLookup = [];
+    private FontStyle SaveFontDefault;
+    private SurfaceType SaveFontDestBuffer;
+    private int SaveFontDestPitch;
+    private int SaveFontDestBPP;
+    private SixLabors.ImageSharp.Rectangle SaveFontDestRegion;
+    private bool SaveFontDestWrap;
+    private FontColor SaveFontForeground16;
+    private FontShadow SaveFontShadow16;
+    private FontColor SaveFontBackground16;
+    private FontColor SaveFontForeground8;
+    private FontColor SaveFontBackground8;
 
     public bool IsInitialized { get; }
     public bool FontDestWrap { get; private set; }
@@ -158,10 +169,32 @@ public class FontSubSystem : ISharpAllianceManager
 
     public void SaveFontSettings()
     {
+        SaveFontDefault = FontDefault;
+        SaveFontDestBuffer = FontDestBuffer;
+        SaveFontDestPitch = FontDestPitch;
+        SaveFontDestBPP = FontDestBPP;
+        SaveFontDestRegion = FontDestRegion;
+        SaveFontDestWrap = FontDestWrap;
+        SaveFontForeground16 = FontForeground16;
+        SaveFontShadow16 = FontShadow16;
+        SaveFontBackground16 = FontBackground16;
+        SaveFontForeground8 = FontForeground8;
+        SaveFontBackground8 = FontBackground8;
     }
 
     public void RestoreFontSettings()
     {
+        FontDefault = SaveFontDefault;
+        FontDestBuffer = SaveFontDestBuffer;
+        FontDestPitch = SaveFontDestPitch;
+        FontDestBPP = SaveFontDestBPP;
+        FontDestRegion = SaveFontDestRegion;
+        FontDestWrap = SaveFontDestWrap;
+        FontForeground16 = SaveFontForeground16;
+        FontShadow16 = SaveFontShadow16;
+        FontBackground16 = SaveFontBackground16;
+        FontForeground8 = SaveFontForeground8;
+        FontBackground8 = SaveFontBackground8;
     }
 
     public int GetFontHeight(FontStyle usFont)

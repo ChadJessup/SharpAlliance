@@ -6,12 +6,14 @@ using static SharpAlliance.Core.Globals;
 using SharpAlliance.Core.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Collections.Generic;
 
 namespace SharpAlliance.Core.SubSystems;
 
 public class Laptop
 {
     private static IVideoManager video;
+    private static readonly IEnumerable<GUI_BUTTON> buttonList;
 
     public Laptop(IVideoManager videoManager) => video = videoManager;
     internal void LaptopScreenInit()
@@ -114,7 +116,7 @@ public class Laptop
 //        VideoObjectManager.BltVideoObject(SurfaceType.FRAME_BUFFER, hLapTopHandle, 1, 25, 23, VO_BLT.SRCTRANSPARENCY, null);
 
 
-        ButtonSubSystem.MarkButtonsDirty();
+        ButtonSubSystem.MarkButtonsDirty(buttonList);
     }
 
     public static void RenderLaptop()
@@ -280,7 +282,7 @@ public class Laptop
         //        DisplayProgramBoundingBox(false);
 
         // mark the buttons dirty at this point
-        ButtonSubSystem.MarkButtonsDirty();
+        ButtonSubSystem.MarkButtonsDirty(buttonList);
     }
 
     private static bool DrawDeskTopBackground()

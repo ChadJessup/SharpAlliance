@@ -82,15 +82,15 @@ public class MercTextBox
     }
 
     public int PrepareMercPopupBox(
-        int iBoxId, 
-        MercTextBoxBackground ubBackgroundIndex, 
-        MercTextBoxBorder ubBorderIndex, 
-        string pString, 
-        int usWidth, 
-        int usMarginX, 
-        int usMarginTopY, 
-        int usMarginBottomY, 
-        out int pActualWidth, 
+        int iBoxId,
+        MercTextBoxBackground ubBackgroundIndex,
+        MercTextBoxBorder ubBorderIndex,
+        string pString,
+        int usWidth,
+        int usMarginX,
+        int usMarginTopY,
+        int usMarginBottomY,
+        out int pActualWidth,
         out int pActualHeight)
     {
         pActualHeight = 0;
@@ -104,14 +104,12 @@ public class MercTextBox
         VSURFACE_DESC vs_desc;
         int usStringPixLength;
         Rectangle DestRect;
-        int uiDestPitchBYTES;
-        int uiSrcPitchBYTES;
         Image<Rgba32> pDestBuf;
         Image<Rgba32> pSrcBuf;
         Rgba32 usColorVal;
         int usLoopEnd;
         int sDispTextXPos;
-        MercPopUpBox pPopUpTextBox;
+        MercPopUpBox pPopUpTextBox = new();
 
         if (usWidth >= 640)
         {
@@ -183,15 +181,15 @@ public class MercTextBox
         }
 
         usNumberVerticalPixels = WordWrap.IanWrappedStringHeight(
-            0, 
-            0, 
-            usTextWidth, 
-            2, 
-            TEXT_POPUP_FONT, 
-            MERC_TEXT_COLOR, 
-            pString, 
-            FontColor.FONT_MCOLOR_BLACK, 
-            false, 
+            0,
+            0,
+            usTextWidth,
+            2,
+            TEXT_POPUP_FONT,
+            MERC_TEXT_COLOR,
+            pString,
+            FontColor.FONT_MCOLOR_BLACK,
+            false,
             TextJustifies.LEFT_JUSTIFIED);
 
         usNumberOfLines = usNumberVerticalPixels / TEXT_POPUP_GAP_BN_LINES;
@@ -230,19 +228,23 @@ public class MercTextBox
             return -1;
         }
         // Create a background video surface to blt the face onto
-        vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_DEFAULT | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
-        vs_desc.usWidth = usWidth;
-        vs_desc.usHeight = usHeight;
-        vs_desc.ubBitDepth = 16;
-        // this.video.AddVideoObject(out vs_desc, out pPopUpTextBox.uiSourceBufferIndex);
-        pPopUpTextBox.fMercTextPopupSurfaceInitialized = true;
+        vs_desc = new()
+        {
+            fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_DEFAULT | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE,
+            usWidth = usWidth,
+            usHeight = usHeight,
+            ubBitDepth = 16
+        };
 
+        Texture texture = this.video.Surfaces.CreateSurface(vs_desc);
+        pPopUpTextBox.uiSourceBufferIndex = texture.SurfaceType;
+
+        pPopUpTextBox.fMercTextPopupSurfaceInitialized = true;
         pPopUpTextBox.sWidth = usWidth;
         pPopUpTextBox.sHeight = usHeight;
 
         pActualWidth = usWidth;
         pActualHeight = usHeight;
-
 
         DestRect = new()
         {
@@ -258,35 +260,22 @@ public class MercTextBox
             // Set source transparcenty
             this.video.SetVideoSurfaceTransparency(pPopUpTextBox.uiSourceBufferIndex, FROMRGB(255, 255, 0));
 
-//            pDestBuf = video.LockVideoSurface(pPopUpTextBox.uiSourceBufferIndex, out uiDestPitchBYTES);
-
             usColorVal = new Rgba32(255, 255, 0);
 
             for (int x = 0; x < usWidth; x++)
             {
                 for (int y = 0; y < usHeight; y++)
                 {
-//                    pDestBuf[x, y] = usColorVal;
+                    texture.Image[x, y] = usColorVal;
                 }
             }
-
-//            video.UnLockVideoSurface(pPopUpTextBox.uiSourceBufferIndex);
         }
         else
         {
-            if (!this.video.GetVideoSurface(out HVSURFACE hSrcVSurface, pPopUpTextBox.uiMercTextPopUpBackground))
-            {
-                //AssertMsg(0, "Failed to GetVideoSurface for PrepareMercPopupBox.  VSurfaceID:  %d",
-                //    pPopUpTextBox.uiMercTextPopUpBackground);
-            }
+            pDestBuf = this.video.Surfaces[pPopUpTextBox.uiMercTextPopUpBackground];
+            pSrcBuf = this.video.Surfaces[pPopUpTextBox.uiMercTextPopUpBackground];
 
-//            pDestBuf = video.LockVideoSurface(pPopUpTextBox.uiSourceBufferIndex, out uiDestPitchBYTES);
-//            pSrcBuf =  video.LockVideoSurface(pPopUpTextBox.uiMercTextPopUpBackground, out uiSrcPitchBYTES);
-
-//            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, uiDestPitchBYTES, hSrcVSurface, pSrcBuf, uiSrcPitchBYTES, 0, 0, out DestRect);
-
-//            video.UnLockVideoSurface(pPopUpTextBox.uiMercTextPopUpBackground);
-//            video.UnLockVideoSurface(pPopUpTextBox.uiSourceBufferIndex);
+            video.Blt8BPPDataSubTo16BPPBuffer(pDestBuf, new(pSrcBuf.Width, pSrcBuf.Height), pSrcBuf, 0, 0, out DestRect);
         }
 
         hImageHandle = this.video.GetVideoObject(pPopUpTextBox.uiMercTextPopUpBorder);
@@ -296,28 +285,29 @@ public class MercTextBox
         for (i = TEXT_POPUP_GAP_BN_LINES; i < usWidth - TEXT_POPUP_GAP_BN_LINES; i += TEXT_POPUP_GAP_BN_LINES)
         {
             //TOP ROW
-            VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 1, i, usPosY, VO_BLT.SRCTRANSPARENCY, null);
+
+            this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 1, i, usPosY, VO_BLT.SRCTRANSPARENCY, null);
             //BOTTOM ROW
-            VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 6, i, usHeight - TEXT_POPUP_GAP_BN_LINES + 6, VO_BLT.SRCTRANSPARENCY, null);
+            this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 6, i, usHeight - TEXT_POPUP_GAP_BN_LINES + 6, VO_BLT.SRCTRANSPARENCY, null);
         }
 
         //blit the left and right row of images
         usPosX = 0;
         for (i = TEXT_POPUP_GAP_BN_LINES; i < usHeight - TEXT_POPUP_GAP_BN_LINES; i += TEXT_POPUP_GAP_BN_LINES)
         {
-            VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 3, usPosX, i, VO_BLT.SRCTRANSPARENCY, null);
-            VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 4, usPosX + usWidth - 4, i, VO_BLT.SRCTRANSPARENCY, null);
+            this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 3, usPosX, i, VO_BLT.SRCTRANSPARENCY, null);
+            this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 4, usPosX + usWidth - 4, i, VO_BLT.SRCTRANSPARENCY, null);
         }
 
         //blt the corner images for the row
         //top left
-        VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 0, 0, usPosY, VO_BLT.SRCTRANSPARENCY, null);
+        this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 0, 0, usPosY, VO_BLT.SRCTRANSPARENCY, null);
         //top right
-        VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 2, usWidth - TEXT_POPUP_GAP_BN_LINES, usPosY, VO_BLT.SRCTRANSPARENCY, null);
+        this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 2, usWidth - TEXT_POPUP_GAP_BN_LINES, usPosY, VO_BLT.SRCTRANSPARENCY, null);
         //bottom left
-        VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 5, 0, usHeight - TEXT_POPUP_GAP_BN_LINES, VO_BLT.SRCTRANSPARENCY, null);
+        this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 5, 0, usHeight - TEXT_POPUP_GAP_BN_LINES, VO_BLT.SRCTRANSPARENCY, null);
         //bottom right
-        VideoObjectManager.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 7, usWidth - TEXT_POPUP_GAP_BN_LINES, usHeight - TEXT_POPUP_GAP_BN_LINES, VO_BLT.SRCTRANSPARENCY, null);
+        this.video.BltVideoObject(pPopUpTextBox.uiSourceBufferIndex, hImageHandle, 7, usWidth - TEXT_POPUP_GAP_BN_LINES, usHeight - TEXT_POPUP_GAP_BN_LINES, VO_BLT.SRCTRANSPARENCY, null);
 
         // Icon if ness....
         if (pPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.STOPICON))
@@ -434,7 +424,7 @@ public class MercTextBox
         // attempt to add box to list
         for (int iCounter = 0; iCounter < MAX_NUMBER_OF_POPUP_BOXES; iCounter++)
         {
-            if (this.gpPopUpBoxList[iCounter] == null || !this.gpPopUpBoxList[iCounter].IsInitialized)
+            if (this.gpPopUpBoxList[iCounter] == null)
             {
                 // found a spot, inset
                 this.gpPopUpBoxList[iCounter] = pPopUpTextBox;
@@ -454,22 +444,16 @@ public class MercTextBox
     // Tactical Popup
     private bool LoadTextMercPopupImages(MercTextBoxBackground ubBackgroundIndex, MercTextBoxBorder ubBorderIndex)
     {
-        VSURFACE_DESC vs_desc;
-        VOBJECT_DESC VObjectDesc = new();
-
         // this function will load the graphics associated with the background and border index values
 
-        // the background
-        vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_FROMFILE | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
-
-
-       // Image<Rgba32> backgroundImage = this.textures.LoadTexture(zMercBackgroundPopupFilenames[(int)ubBackgroundIndex]);
-       // Image<Rgba32> backgroundImage = video.AddVideoSurface(zMercBackgroundPopupFilenames[(int)ubBackgroundIndex], out var popupboxSurface);
-        //gPopUpTextBox.uiMercTextPopUpBackground = popupboxSurface;
+        // Image<Rgba32> backgroundImage = this.textures.LoadTexture(zMercBackgroundPopupFilenames[(int)ubBackgroundIndex]);
+        var VObjectDesc = video.GetVideoObject(zMercBackgroundPopupFilenames[(int)ubBackgroundIndex], out var popupboxSurface);
+        SurfaceType surf = this.video.Surfaces.CreateSurface(VObjectDesc);
+        gPopUpTextBox.uiMercTextPopUpBackground = surf;
 
         // border
-        VObjectDesc.ImageFile = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);
-        var borderImage = this.video.GetVideoObject(VObjectDesc.ImageFile, out var key);
+        var borderFilePath = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);
+        var borderImage = this.video.GetVideoObject(borderFilePath, out var key);
 
         this.gPopUpTextBox.uiMercTextPopUpBorder = key;
         this.gPopUpTextBox.fMercTextPopupInitialized = true;
@@ -493,7 +477,7 @@ public class MercTextBox
         }
 
         // see if box inited
-        if (this.gpPopUpBoxList[uiId].IsInitialized)
+        if (this.gpPopUpBoxList[uiId] is not null)
         {
             this.gPopUpTextBox = this.gpPopUpBoxList[uiId];
             return true;
@@ -535,17 +519,6 @@ public class MercTextBox
 
     public bool RenderMercPopupBox(int sDestX, int sDestY, SurfaceType uiBuffer)
     {
-        //	int  uiDestPitchBYTES;
-        //	int  uiSrcPitchBYTES;
-        //  int  *pDestBuf;
-        //	int  *pSrcBuf;
-
-        // chad, is me - might mess up flow, we'll see
-        if (!this.gPopUpTextBox.IsInitialized)
-        {
-            return false;
-        }
-
         // will render/transfer the image from the buffer in the data structure to the buffer specified by user
         bool fReturnValue = true;
 
@@ -559,11 +532,25 @@ public class MercTextBox
         //check to see if we are wanting to blit a transparent background
         if (this.gPopUpTextBox.uiFlags.HasFlag(MERC_POPUP_PREPARE_FLAGS.TRANS_BACK))
         {
-            VideoSurfaceManager.BltVideoSurface(uiBuffer, ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown, 0, sDestX, sDestY, BlitTypes.FAST | BlitTypes.USECOLORKEY, null);
+            this.video.BltVideoSurface(
+                uiBuffer,
+                ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown,
+                0,
+                sDestX,
+                sDestY,
+                BlitTypes.FAST | BlitTypes.USECOLORKEY,
+                null);
         }
         else
         {
-            VideoSurfaceManager.BltVideoSurface(uiBuffer, ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown , 0, sDestX, sDestY, BlitTypes.FAST, null);
+            this.video.BltVideoSurface(
+                uiBuffer,
+                ((SurfaceType?)this.gPopUpTextBox.uiSourceBufferIndex) ?? SurfaceType.Unknown,
+                0,
+                sDestX,
+                sDestY,
+                BlitTypes.FAST,
+                null);
         }
 
 
@@ -573,18 +560,13 @@ public class MercTextBox
         //Invalidate!
         if (uiBuffer == SurfaceType.FRAME_BUFFER)
         {
-            this.video.InvalidateRegion(sDestX, sDestY, (int)(sDestX + this.gPopUpTextBox.sWidth), (int)(sDestY + this.gPopUpTextBox.sHeight));
+            this.video.InvalidateRegion(
+                new(sDestX,
+                sDestY,
+                sDestX + this.gPopUpTextBox.sWidth,
+                sDestY + this.gPopUpTextBox.sHeight));
         }
 
-        // unlock the video surfaces
-
-        // source
-        //	UnLockVideoSurface( gPopUpTextBox.uiSourceBufferIndex );
-
-        // destination
-        //	UnLockVideoSurface( uiBuffer );
-
-        // return success or failure
         return fReturnValue;
     }
 }
@@ -623,8 +605,6 @@ public class MercPopUpBox
     public bool fMercTextPopupInitialized { get; set; }
     public bool fMercTextPopupSurfaceInitialized { get; set; }
     public MERC_POPUP_PREPARE_FLAGS uiFlags { get; set; }
-
-    public bool IsInitialized { get; internal set; }
 }
 
 [Flags]

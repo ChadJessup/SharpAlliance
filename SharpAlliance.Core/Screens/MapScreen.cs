@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.SubSystems;
@@ -27,6 +28,7 @@ public class MapScreen : IScreen
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
     public bool fMapPanelDirty { get; set; }
+    public static IEnumerable<GUI_BUTTON> buttonList { get; private set; }
 
     public ValueTask Activate()
     {
@@ -140,7 +142,7 @@ public class MapScreen : IScreen
     public static void MapscreenMarkButtonsDirty()
     {
         // redraw buttons
-        ButtonSubSystem.MarkButtonsDirty();
+        ButtonSubSystem.MarkButtonsDirty(buttonList);
 
         // if border buttons are created
         if (!Globals.fShowMapInventoryPool)

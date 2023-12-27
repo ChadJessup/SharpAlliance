@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using SDL2;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers.VideoSurfaces;
@@ -32,7 +33,7 @@ public class SurfaceManager : ISurfaceManager
         this.width = width;
         this.height = height;
 
-        Image<Rgba32> blankImage = new(width, height, Rgba32.ParseHex("FF000000")); 
+        Image<Rgba32> blankImage = new(width, height, Rgba32.ParseHex("FF000000"));
 
         var primarySurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.PRIMARY_SURFACE);
         var frameSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.FRAME_BUFFER);
@@ -41,7 +42,7 @@ public class SurfaceManager : ISurfaceManager
         var extraSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.EXTRA_BUFFER);
         var backbufferSurface = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.BACKBUFFER);
         var zBuffer = this.CreateSurface(renderer, blankImage.Clone(), SurfaceType.Z_BUFFER);
-//        frameSurface.Image.SaveAsPng($@"c:\temp\{nameof(InitializeSurfaces)}-frameSurface.png");
+        //        frameSurface.Image.SaveAsPng($@"c:\temp\{nameof(InitializeSurfaces)}-frameSurface.png");
 
         //        this.surfaces.Add(primarySurface, primarySurface.Image);
         //        this.surfaces.Add(frameSurface, frameSurface.Image);
@@ -53,6 +54,40 @@ public class SurfaceManager : ISurfaceManager
     public Image<Rgba32> LockSurface(SurfaceType buffer)
     {
         return new Image<Rgba32>(100, 100);
+    }
+
+    public SurfaceType CreateSurface(HVOBJECT hVOBJECT, int index = 0)
+    {
+        var idx = (SurfaceType)this.surfaces.Count;
+
+        Texture texture = new()
+        {
+            Image = hVOBJECT.Images[index],
+            SurfaceType = idx,
+        };
+
+        this.SurfaceByTypes[idx] = texture;
+        this.surfaces[texture] = hVOBJECT.Images[index];
+
+        return idx;
+    }
+
+    public Texture CreateSurface(VSURFACE_DESC desc)
+    {
+        Image<Rgba32> image = new(desc.usWidth, desc.usHeight);
+
+        var idx = (SurfaceType)this.surfaces.Count;
+
+        Texture texture = new()
+        {
+            Image = image,
+            SurfaceType = idx,
+        };
+
+        this.SurfaceByTypes[idx] = texture;
+        this.surfaces[texture] = image;
+
+        return texture;
     }
 
     public unsafe Texture CreateSurface(nint renderer, Image<Rgba32> image, SurfaceType? surfaceType = null)
@@ -82,23 +117,23 @@ public class SurfaceManager : ISurfaceManager
         }
 
         var pinHandle = memory.Pin();
-      //  var surfacePtr = SDL.SDL_CreateRGBSurfaceFrom(
-      //      (nint)pinHandle.Pointer,
-      //      image.Width,
-      //      image.Height,
-      //      depth: 32,
-      //      pitch: 4 * image.Width, // unsure of this, I'd expect at least gibberish if wrong.
-      //      Rmask: 0x000000FF,
-      //      Gmask: 0x0000FF00,
-      //      Bmask: 0x00FF0000,
-      //      Amask: 0xFF000000);
+        //  var surfacePtr = SDL.SDL_CreateRGBSurfaceFrom(
+        //      (nint)pinHandle.Pointer,
+        //      image.Width,
+        //      image.Height,
+        //      depth: 32,
+        //      pitch: 4 * image.Width, // unsure of this, I'd expect at least gibberish if wrong.
+        //      Rmask: 0x000000FF,
+        //      Gmask: 0x0000FF00,
+        //      Bmask: 0x00FF0000,
+        //      Amask: 0xFF000000);
 
-       var texturePtr = SDL.SDL_CreateTexture(
-            renderer,
-            SDL.SDL_PIXELFORMAT_ABGR8888,
-            (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
-            image.Width,
-            image.Height);
+        var texturePtr = SDL.SDL_CreateTexture(
+             renderer,
+             SDL.SDL_PIXELFORMAT_ABGR8888,
+             (int)SDL.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET,
+             image.Width,
+             image.Height);
 
         if (texturePtr == IntPtr.Zero)
         {
@@ -116,7 +151,7 @@ public class SurfaceManager : ISurfaceManager
 
         this.SurfaceByTypes[idx] = texture;
         this.surfaces[texture] = image;
-        
+
         return texture;
     }
 

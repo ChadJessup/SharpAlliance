@@ -1,15 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Veldrid;
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.Screens;
 
@@ -20,6 +18,7 @@ public class MessageBoxScreen : IScreen
     private readonly MessageBoxSubSystem messageBoxSubSystem;
     private static IVideoManager video;
     private readonly MercTextBox mercTextBox;
+    private readonly List<GUI_BUTTON> buttonList = [];
 
     public MessageBoxScreen(
         ILogger<MessageBoxScreen> logger,
@@ -47,16 +46,17 @@ public class MessageBoxScreen : IScreen
 
     public ValueTask<ScreenName> Handle()
     {
-        InputAtom InputEvent;
-
         if (gfNewMessageBox)
         {
+            this.buttonList.Add(gMsgBox.uiOKButton);
+            this.buttonList.Add(gMsgBox.uiYESButton);
+            this.buttonList.Add(gMsgBox.uiNOButton);
+            this.buttonList.Add(gMsgBox.uiUnusedButton);
+            this.buttonList.AddRange(gMsgBox.uiButton);
+
             // If in game screen....
             if (gfStartedFromGameScreen || gfStartedFromMapScreen)
             {
-                //int uiDestPitchBYTES, uiSrcPitchBYTES;
-                //Ubyte	 *pDestBuf, *pSrcBuf;
-
                 if (gfStartedFromGameScreen)
                 {
                     HandleUI.HandleTacticalUILoseCursorFromOtherScreen();
@@ -75,7 +75,7 @@ public class MessageBoxScreen : IScreen
             return ValueTask.FromResult(ScreenName.MSG_BOX_SCREEN);
         }
 
-        ButtonSubSystem.UnmarkButtonsDirty();
+        ButtonSubSystem.UnmarkButtonsDirty(this.buttonList);
 
         // Render the box!
         if (gMsgBox.fRenderBox)
@@ -150,100 +150,108 @@ public class MessageBoxScreen : IScreen
                 ButtonSubSystem.MarkAButtonDirty(gMsgBox.uiNOButton);
             }
 
-            this.mercTextBox.RenderMercPopUpBoxFromIndex(gMsgBox.iBoxId, gMsgBox.sX, gMsgBox.sY, SurfaceType.FRAME_BUFFER);
+            this.mercTextBox.RenderMercPopUpBoxFromIndex(
+                gMsgBox.iBoxId, 
+                gMsgBox.sX, 
+                gMsgBox.sY, 
+                SurfaceType.FRAME_BUFFER);
             //gMsgBox.fRenderBox = false;
             // ATE: Render each frame...
         }
 
         // Render buttons
-        ButtonSubSystem.RenderButtons();
+        ButtonSubSystem.RenderButtons(this.buttonList);
 
         video.EndFrameBufferRender();
 
         // carter, need key shortcuts for clearing up message boxes
         // Check for esc 
-        // while (DequeueEvent(out InputEvent) == true)
-        // {
-        //     if (InputEvent.usEvent == KEY_UP)
-        //     {
-        //         if ((InputEvent.usParam == ESC) || (InputEvent.usParam == 'n'))
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_YESNO))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
-        //             }
-        //         }
-        // 
-        //         if (InputEvent.usParam == ENTER)
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_YESNO))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
-        //             }
-        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_OK))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-        //             }
-        //             else if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_CONTINUESTOP))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-        //             }
-        //         }
-        //         if (InputEvent.usParam == 'o')
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_OK))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-        //             }
-        //         }
-        //         if (InputEvent.usParam == 'y')
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_YESNO))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
-        //             }
-        //         }
-        //         if (InputEvent.usParam == '1')
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-        //             }
-        //         }
-        //         if (InputEvent.usParam == '2')
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-        //             }
-        //         }
-        //         if (InputEvent.usParam == '3')
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-        //             }
-        //         }
-        //         if (InputEvent.usParam == '4')
-        //         {
-        //             if (gMsgBox.usFlags.HasFlag(MessageBoxFlags.MSG.BOX_FLAG_FOUR_NUMBERED_BUTTONS))
-        //             {
-        //                 // Exit messagebox
-        //                 gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-        //             }
-        //         }
-        // 
-        //     }
-        // }
+        while (this.inputs.DequeueEvent(out var InputEvent) == true)
+        {
+            if(InputEvent.KeyCharPresses.Any())
+            {
+
+            }
+//            if (InputEvent.KeyEvents.usEvent == KEY_UP)
+//            {
+//                if ((InputEvent.usParam == ESC) || (InputEvent.usParam == 'n'))
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
+//                    }
+//                }
+//        
+//                if (InputEvent.usParam == ENTER)
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
+//                    }
+//                    else if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+//                    }
+//                    else if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.CONTINUESTOP))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+//                    }
+//                }
+//                if (InputEvent.usParam == 'o')
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+//                    }
+//                }
+//                if (InputEvent.usParam == 'y')
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
+//                    }
+//                }
+//                if (InputEvent.usParam == '1')
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+//                    }
+//                }
+//                if (InputEvent.usParam == '2')
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+//                    }
+//                }
+//                if (InputEvent.usParam == '3')
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+//                    }
+//                }
+//                if (InputEvent.usParam == '4')
+//                {
+//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+//                    {
+//                        // Exit messagebox
+//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+//                    }
+//                }
+//        
+//            }
+        }
 
         if (gMsgBox.bHandled != 0)
         {
@@ -370,17 +378,17 @@ public class MessageBoxScreen : IScreen
         if (((gMsgBox.uiExitScreen != ScreenName.GAME_SCREEN) || (fRestoreBackgroundForMessageBox == true)) && gfDontOverRideSaveBuffer)
         {
             // restore what we have under here...
-//            pSrcBuf =  video.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
-//            pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
-//
-//            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
-//                        pSrcBuf, uiSrcPitchBYTES,
-//                        gMsgBox.sX, gMsgBox.sY,
-//                        0, 0,
-//                        gMsgBox.usWidth, gMsgBox.usHeight);
+            //            pSrcBuf =  video.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
+            //            pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
+            //
+            //            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
+            //                        pSrcBuf, uiSrcPitchBYTES,
+            //                        gMsgBox.sX, gMsgBox.sY,
+            //                        0, 0,
+            //                        gMsgBox.usWidth, gMsgBox.usHeight);
 
-//            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
-//            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+            //            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
+            //            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
             video.InvalidateRegion(gMsgBox.sX, gMsgBox.sY, gMsgBox.sX + gMsgBox.usWidth, gMsgBox.sY + gMsgBox.usHeight);
         }
@@ -390,7 +398,7 @@ public class MessageBoxScreen : IScreen
 
         if (MessageBoxSubSystem.fCursorLockedToArea == true)
         {
-            this.inputs.GetMousePos(out SixLabors.ImageSharp.Point pPosition);
+            this.inputs.GetMousePos(out Point pPosition);
 
             if ((pPosition.X > MessageBoxRestrictedCursorRegion.Right)
                 || (pPosition.X > MessageBoxRestrictedCursorRegion.Left)
@@ -435,9 +443,5 @@ public class MessageBoxScreen : IScreen
         }
 
         return gMsgBox.uiExitScreen;
-    }
-
-    public void Draw(IVideoManager videoManager)
-    {
     }
 }

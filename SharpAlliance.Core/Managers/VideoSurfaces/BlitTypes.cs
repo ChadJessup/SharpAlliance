@@ -76,6 +76,17 @@ public enum SurfaceType : uint
     Z_BUFFER        = 0x00000004,
 }
 
+public enum VO_BLT
+{
+    CLIP = 0x000000001,
+    SRCTRANSPARENCY = 0x000000002,
+    TRANSSHADOW = 0x000000003,
+    DESTTRANSPARENCY = 0x000000120,
+    SHADOW = 0x000000200,
+    MIRROR_Y = 0x000001000, // must be the same as VS_BLT_MIRROR_Y for Wiz!!!
+    UNCOMPRESSED = 0x000004000,
+}
+
 [Flags]
 public enum BlitTypes
 {

@@ -27,6 +27,7 @@ public partial class Globals
 {
     public const int SOLDIER_CREATE_AUTO_TEAM = -1;
     public const int MAX_INDIVIDUALS = 148;
+    public const string gzIronManModeWarningText = "You have chosen IRON MAN mode. This setting makes the game considerably more challenging as you will not be able to save your game when in a sector occupied by enemies. This setting will affect the entire course of the game.  Are you sure want to play in IRON MAN mode?\r\n";
     public static SOLDIERINITNODE? gSoldierInitHead;
     public static SOLDIERINITNODE? gSoldierInitTail;
     public static Rectangle giClip;

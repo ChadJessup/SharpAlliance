@@ -51,7 +51,7 @@ public interface IVideoManager : ISharpAllianceManager
     void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();
     bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight);
-    void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip);
+    bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, Size size, Image<Rgba32> pSrcBuf, int iX, int iY, out Rectangle clip);
     void Blt8BPPTo8BPP(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int sLeft1, int sTop1, int sLeft2, int sTop2, int sWidth, int sHeight);
     void ColorFillVideoSurfaceArea(Rectangle rectangle, Color color);
     void ColorFillVideoSurfaceArea(Rectangle region, Rgba32 rgba32);
@@ -72,4 +72,5 @@ public interface IVideoManager : ISharpAllianceManager
         => this.BlitSurfaceToSurface(hPixHandle.Images[index], surface, new(x, y), bltFlags);
     void SetClippingRegionAndImageWidth(int width, Rectangle rectangle);
     bool ShadowVideoSurfaceRect(SurfaceType fRAME_BUFFER, Rectangle rectangle);
+    void BltVideoSurface(SurfaceType uiBuffer, SurfaceType surfaceType, int v, int sDestX, int sDestY, BlitTypes blitTypes, object value);
 }

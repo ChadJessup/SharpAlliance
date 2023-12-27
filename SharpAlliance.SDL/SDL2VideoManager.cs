@@ -9,6 +9,7 @@ using SharpAlliance.Core.Screens;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
+using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.Drawing.Processing;
 using static SharpAlliance.Core.Globals;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
@@ -225,7 +226,7 @@ public class SDL2VideoManager : IVideoManager
 **********************************************************************************************/
     public bool Blt16BPPTo16BPP(Image<Rgba32> pDest, Image<Rgba32> pSrc, Point iDestPos, Point iSrcPos, int uiWidth, int uiHeight)
     {
-        Rectangle destRect = new(iSrcPos.X, iSrcPos.Y, uiWidth, uiHeight);
+        Rectangle destRect = new(iDestPos.X, iDestPos.Y, uiWidth, uiHeight);
 
         //pDest.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-dst.png");
         //pSrc.SaveAsPng($@"C:\temp\{nameof(Blt16BPPTo16BPP)}-src.png");
@@ -2012,9 +2013,41 @@ public class SDL2VideoManager : IVideoManager
 
     public void InvalidateRegion(int v1, int v2, int v3, int v4) => this.InvalidateRegion(new(v1, v2, v3, v4));
 
-    public void Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, int uiDestPitchBYTES, HVSURFACE hSrcVSurface, Image<Rgba32> pSrcBuf, int uiSrcPitchBYTES, int v1, int v2, out Rectangle clip)
+    public bool Blt8BPPDataSubTo16BPPBuffer(Image<Rgba32> pDestBuf, Size size, Image<Rgba32> pSrcBuf, int iX, int iY, out Rectangle clip)
     {
         clip = new Rectangle(0, 0, 100, 100);
+
+        int p16BPPPalette;
+        int usHeight, usWidth;
+        int SrcPtr, DestPtr;
+        int LineSkip, LeftSkip, RightSkip, TopSkip, BlitLength, SrcSkip, BlitHeight;
+        int iTempX, iTempY;
+
+        // Get Offsets from Index into structure
+        usHeight = size.Height;
+        usWidth = size.Width;
+
+        // Add to start position of dest buffer
+        iTempX = iX;
+        iTempY = iY;
+
+        // Validations
+        CHECKF(iTempX >= 0);
+        CHECKF(iTempY >= 0);
+
+        //LeftSkip = pRect.iLeft;
+        //RightSkip = usWidth - pRect.iRight;
+        //TopSkip = pRect.iTop * uiSrcPitch;
+        //BlitLength = pRect.iRight - pRect.iLeft;
+        //BlitHeight = pRect.iBottom - pRect.iTop;
+        //SrcSkip = uiSrcPitch - BlitLength;
+        //
+        //SrcPtr = (pSrcBuffer + TopSkip + LeftSkip);
+        //DestPtr = (pBuffer + (uiDestPitchBYTES * iTempY) + (iTempX * 2));
+        //p16BPPPalette = hSrcVSurface.p16BPPPalette;
+        //LineSkip = (uiDestPitchBYTES - (BlitLength * 2));
+
+        return true;
     }
 
     public bool GetVideoObjectETRLEPropertiesFromIndex(string uiVideoObject, out ETRLEObject pETRLEObject, int usIndex)
@@ -2099,8 +2132,8 @@ public class SDL2VideoManager : IVideoManager
             Y = dstPoint.Y,
         };
 
-        // src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-        //dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+//        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
+//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
 
         dstSurface.Image.Mutate(ctx =>
         {
@@ -2113,11 +2146,19 @@ public class SDL2VideoManager : IVideoManager
                 1.0f);
         });
 
-        // dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)
     {
         return InternalShadowVideoSurfaceRect(buffer, rectangle, false);
+    }
+
+    public void BltVideoSurface(SurfaceType dstSurf, SurfaceType srcSurf, int usRegionIndex, int sDestX, int sDestY, BlitTypes blitTypes, object value)
+    {
+        var dst = this.Surfaces[dstSurf];
+        var src = this.Surfaces[srcSurf];
+
+        this.BlitSurfaceToSurface(src, dstSurf, new(sDestX, sDestY), VO_BLT.DESTTRANSPARENCY);
     }
 }

@@ -7,6 +7,7 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using System.Diagnostics;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Platform.Interfaces;
+using System.Collections.Generic;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -141,7 +142,7 @@ public class Emails
         this.CreateMailScreenButtons();
 
         // marks these buttons dirty
-        ButtonSubSystem.MarkButtonsDirty();
+        ButtonSubSystem.MarkButtonsDirty(buttonList);
 
         // no longer fitrst time in email
         this.fFirstTime = false;
@@ -2121,7 +2122,7 @@ public class Emails
                     iCurrentPage++;
                     this.fReDraw = true;
                     this.RenderEmail();
-                    ButtonSubSystem.MarkButtonsDirty();
+                    ButtonSubSystem.MarkButtonsDirty(buttonList);
                 }
             }
         }
@@ -2159,7 +2160,7 @@ public class Emails
 
                 this.fReDraw = true;
                 this.RenderEmail();
-                ButtonSubSystem.MarkButtonsDirty();
+                ButtonSubSystem.MarkButtonsDirty(buttonList);
             }
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
@@ -2201,7 +2202,7 @@ public class Emails
                 }
             }
 
-            ButtonSubSystem.MarkButtonsDirty();
+            ButtonSubSystem.MarkButtonsDirty(buttonList);
             fReDrawScreenFlag = true;
         }
         else if (reason.HasFlag(MSYS_CALLBACK_REASON.RBUTTON_UP))
@@ -2236,7 +2237,7 @@ public class Emails
                     iCurrentPage--;
                     this.fReDraw = true;
                     this.RenderEmail();
-                    ButtonSubSystem.MarkButtonsDirty();
+                    ButtonSubSystem.MarkButtonsDirty(buttonList);
                 }
             }
         }
@@ -2346,7 +2347,7 @@ public class Emails
             //EnterNewLaptopMode();
             //            DrawLapTopText();
             //            ReDrawHighLight();
-            ButtonSubSystem.MarkButtonsDirty();
+            ButtonSubSystem.MarkButtonsDirty(buttonList);
             this.fReDraw = false;
         }
 
@@ -2359,6 +2360,7 @@ public class Emails
     private readonly FontSubSystem fonts;
     private readonly ButtonSubSystem buttons;
     private readonly IFileManager files;
+    private readonly IEnumerable<GUI_BUTTON> buttonList;
 
     void CreateDestroyDeleteNoticeMailButton()
     {
@@ -2475,7 +2477,7 @@ public class Emails
         if (!fNewMailFlag)
         {
             // draw buttons
-            ButtonSubSystem.MarkButtonsDirty();
+            ButtonSubSystem.MarkButtonsDirty(buttonList);
             this.video.InvalidateRegion(EMAIL_WARNING_X, EMAIL_WARNING_Y, EMAIL_WARNING_X + EMAIL_WARNING_WIDTH, EMAIL_WARNING_Y + EMAIL_WARNING_HEIGHT);
         }
 

@@ -5,10 +5,7 @@ using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.Screens;
 using SharpAlliance.Platform;
-using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp;
-using static SharpAlliance.Core.EnglishText;
-using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
 
@@ -26,6 +23,7 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     private readonly GameContext context;
     private readonly IClockManager clock;
     private readonly MouseSubSystem mouse;
+    private readonly IVideoManager video;
     private readonly ButtonSubSystem buttons;
     private static GameSettings gGameSettings;
     private static MercTextBox mercTextBox;
@@ -52,11 +50,13 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         ButtonSubSystem buttonSubSystem,
         RenderWorld renderWorld,
         IInputManager inputManager,
+        IVideoManager videoManager,
         IScreenManager screenManager,
 //        IClockManager clockManager,
         Overhead overhead,
         GameSettings gameSettings)
     {
+        this.video = videoManager;
         this.buttons = buttonSubSystem;
         gGameSettings = gameSettings;
         MessageBoxSubSystem.mercTextBox = mercTextBox;
@@ -69,8 +69,6 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         this.overhead = overhead;
         this.context = context;
     }
-
-    public bool IsInitialized { get; }
 
     public void Dispose()
     {
@@ -88,8 +86,6 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     {
         VSURFACE_DESC vs_desc;
         Rectangle aRect = new();
-        int uiDestPitchBYTES, uiSrcPitchBYTES;
-        int pDestBuf, pSrcBuf;
         int sButtonX, sButtonY, sBlankSpace;
         MercTextBoxBackground ubMercBoxBackground = MercTextBoxBackground.BASIC_MERC_POPUP_BACKGROUND;
         MercTextBoxBorder ubMercBoxBorder = MercTextBoxBorder.BASIC_MERC_POPUP_BORDER;
@@ -253,32 +249,37 @@ public class MessageBoxSubSystem : ISharpAllianceManager
         screens.SetPendingNewScreen(ScreenName.MSG_BOX_SCREEN);
 
         // Init save buffer
-        vs_desc.fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_DEFAULT | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE;
-        vs_desc.usWidth = usTextBoxWidth;
-        vs_desc.usHeight = usTextBoxHeight;
-        vs_desc.ubBitDepth = 16;
+        vs_desc = new()
+        {
+            fCreateFlags = VSurfaceCreateFlags.VSURFACE_CREATE_DEFAULT | VSurfaceCreateFlags.VSURFACE_SYSTEM_MEM_USAGE,
+            usWidth = usTextBoxWidth,
+            usHeight = usTextBoxHeight,
+            ubBitDepth = 16
+        };
 
-        //if (AddVideoObject(vs_desc, gMsgBox.uiSaveBuffer) == false)
-        //{
-        //    return (-1);
-        //}
+        var texture = this.video.Surfaces.CreateSurface(vs_desc);
+
+        gMsgBox.uiSaveBuffer = texture.SurfaceType;
 
         //Save what we have under here...
-        //pDestBuf = LockVideoSurface(gMsgBox.uiSaveBuffer, out uiDestPitchBYTES);
-        //pSrcBuf = LockVideoSurface(FRAME_BUFFER, out uiSrcPitchBYTES);
+        var pDestBuf = this.video.Surfaces[gMsgBox.uiSaveBuffer];
+        var pSrcBuf = this.video.Surfaces[SurfaceType.FRAME_BUFFER];
 
-        // Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
-        //             pSrcBuf, uiSrcPitchBYTES,
-        //             0, 0,
-        //             gMsgBox.sX, gMsgBox.sY,
-        //             usTextBoxWidth, usTextBoxHeight);
-        // 
-        // UnLockVideoSurface(gMsgBox.uiSaveBuffer);
-        // UnLockVideoSurface(FRAME_BUFFER);
+        this.video.Blt16BPPTo16BPP(
+            pDestBuf,
+            pSrcBuf,
+            new(0, 0),
+            new(gMsgBox.sX, gMsgBox.sY),
+            usTextBoxWidth, usTextBoxHeight);
 
         // Create top-level mouse region
-        MouseSubSystem.MSYS_DefineRegion(gMsgBox.BackRegion, new(0, 0, 640, 480), MSYS_PRIORITY.HIGHEST,
-                             usCursor, null, MsgBoxClickCallback);
+        MouseSubSystem.MSYS_DefineRegion(
+            gMsgBox.BackRegion,
+            new(0, 0, 640, 480),
+            MSYS_PRIORITY.HIGHEST,
+            usCursor,
+            null,
+            MsgBoxClickCallback);
 
         if (gGameSettings[TOPTION.DONT_MOVE_MOUSE] == false)
         {
@@ -409,22 +410,36 @@ public class MessageBoxSubSystem : ISharpAllianceManager
                 sButtonX = (usTextBoxWidth - (MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP)) / 2;
                 sButtonY = usTextBoxHeight - MSGBOX_BUTTON_HEIGHT - 10;
 
-                gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.YES], FontStyle.FONT12ARIAL,
-                                                                 ubFontColor, ubFontShadowColor,
-                                                                 ubFontColor, ubFontShadowColor,
-                                                                 ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
-                                                                 null, YESMsgBoxCallback);
-                ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
+                gMsgBox.uiYESButton = ButtonSubSystem.CreateIconAndTextButton(
+                    gMsgBox.iButtonImages, 
+                    pMessageStrings[MSG.YES], 
+                    FontStyle.FONT12ARIAL,
+                    ubFontColor, ubFontShadowColor,
+                    ubFontColor, ubFontShadowColor,
+                    ButtonTextJustifies.TEXT_CJUSTIFIED,
+                    new(gMsgBox.sX + sButtonX, gMsgBox.sY + sButtonY),
+                    ButtonFlags.BUTTON_TOGGLE,
+                    MSYS_PRIORITY.HIGHEST,
+                    null,
+                    YESMsgBoxCallback);
 
+                ButtonSubSystem.SetButtonCursor(gMsgBox.uiYESButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiYESButton);
 
-                gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(gMsgBox.iButtonImages, pMessageStrings[MSG.NO], FontStyle.FONT12ARIAL,
-                                                                 ubFontColor, ubFontShadowColor,
-                                                                 ubFontColor, ubFontShadowColor,
-                                                                 ButtonTextJustifies.TEXT_CJUSTIFIED,
-                                                                 new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY), ButtonFlags.BUTTON_TOGGLE, MSYS_PRIORITY.HIGHEST,
-                                                                 null, NOMsgBoxCallback);
+                gMsgBox.uiNOButton = ButtonSubSystem.CreateIconAndTextButton(
+                    gMsgBox.iButtonImages, 
+                    pMessageStrings[MSG.NO], 
+                    FontStyle.FONT12ARIAL,
+                    ubFontColor,
+                    ubFontShadowColor,
+                    ubFontColor,
+                    ubFontShadowColor,
+                    ButtonTextJustifies.TEXT_CJUSTIFIED,
+                    new(gMsgBox.sX + sButtonX + MSGBOX_BUTTON_WIDTH + MSGBOX_BUTTON_X_SEP, gMsgBox.sY + sButtonY),
+                    ButtonFlags.BUTTON_TOGGLE,
+                    MSYS_PRIORITY.HIGHEST,
+                    null, NOMsgBoxCallback);
+
                 ButtonSubSystem.SetButtonCursor(gMsgBox.uiNOButton, usCursor);
                 ButtonSubSystem.ForceButtonUnDirty(gMsgBox.uiNOButton);
 
@@ -711,7 +726,6 @@ public class MessageBoxSubSystem : ISharpAllianceManager
     private static bool YESMsgBoxCallbackfLButtonDown = false;
     public static void YESMsgBoxCallback(ref GUI_BUTTON btn, MSYS_CALLBACK_REASON reason)
     {
-
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_DWN))
         {
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;

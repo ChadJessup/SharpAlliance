@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
@@ -10,8 +8,6 @@ using SharpAlliance.Core.Managers.VideoSurfaces;
 using SharpAlliance.Core.SubSystems;
 using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
-using static SharpAlliance.Core.EnglishText;
-using static SharpAlliance.Core.Globals;
 namespace SharpAlliance.Core.Screens;
 
 public class GameInitOptionsScreen : IScreen
@@ -49,6 +45,7 @@ public class GameInitOptionsScreen : IScreen
     public const int GIO_IRON_MAN_SETTING_X = GIO_DIF_SETTINGS_X;
     public const int GIO_IRON_MAN_SETTING_Y = GIO_GAME_SETTINGS_Y;
     public const int GIO_IRON_MAN_SETTING_WIDTH = GIO_DIF_SETTINGS_WIDTH;
+    private readonly MessageBoxSubSystem messageBoxes;
     private readonly IVideoManager video;
     private readonly FadeScreen fade;
     private readonly GameOptions gGameOptions;
@@ -78,11 +75,14 @@ public class GameInitOptionsScreen : IScreen
     private Dictionary<GameDifficulty, GUI_BUTTON> guiDifficultySettingsToggles = new();
     private Dictionary<GameStyle, GUI_BUTTON> guiGameStyleToggles = new();
 
+    private List<GUI_BUTTON> buttonList = [];
+
     public GameInitOptionsScreen(
         GameContext gameContext,
         IScreenManager screenManager,
         IInputManager inputManager,
         GuiManager guiManager,
+        MessageBoxSubSystem messageBoxSubSystem,
         IVideoManager videoManager,
         ButtonSubSystem buttonSubSystem,
         FontSubSystem fontSubSystem,
@@ -90,6 +90,7 @@ public class GameInitOptionsScreen : IScreen
         GameOptions gameOptions,
         FadeScreen fadeScreen)
     {
+        this.messageBoxes = messageBoxSubSystem;
         this.video = videoManager;
         this.fade = fadeScreen;
         this.fonts = fontSubSystem;
@@ -105,8 +106,18 @@ public class GameInitOptionsScreen : IScreen
     public bool IsInitialized { get; set; }
     public ScreenState State { get; set; }
 
-    public async ValueTask Activate()
+    public ValueTask Activate()
     {
+        return EnterGIOScreen();
+    }
+
+    private async ValueTask EnterGIOScreen()
+    {
+        if (gfGIOButtonsAllocated)
+        {
+            return;
+        }
+
         int usPosY;
 
         CursorSubSystem.SetCurrentCursorFromDatabase(CURSOR.NORMAL);
@@ -125,17 +136,15 @@ public class GameInitOptionsScreen : IScreen
             OPT_BUTTON_OFF_COLOR,
             FontShadow.DEFAULT_SHADOW,
             ButtonTextJustifies.TEXT_CJUSTIFIED,
-            new SixLabors.ImageSharp.Point(GIO_BTN_OK_X, GIO_BTN_OK_Y),
+            new Point(GIO_BTN_OK_X, GIO_BTN_OK_Y),
             ButtonFlags.BUTTON_TOGGLE,
             MSYS_PRIORITY.HIGH,
             MouseSubSystem.DefaultMoveCallback,
             this.BtnGIODoneCallback);
 
-        ButtonSubSystem.SpecifyButtonSoundScheme(
-            this.guiGIODoneButton,
-            BUTTON_SOUND_SCHEME.BIGSWITCH3);
-
+        ButtonSubSystem.SpecifyButtonSoundScheme(this.guiGIODoneButton, BUTTON_SOUND_SCHEME.BIGSWITCH3);
         ButtonSubSystem.SpecifyDisabledButtonStyle(this.guiGIODoneButton, DISABLED_STYLE.NONE);
+        buttonList.Add(this.guiGIODoneButton);
 
         //Cancel button
         this.giGIOCancelBtnImage = ButtonSubSystem.UseLoadedButtonImage(this.giGIODoneBtnImage, -1, 1, -1, 3, -1);
@@ -148,14 +157,14 @@ public class GameInitOptionsScreen : IScreen
             OPT_BUTTON_OFF_COLOR,
             FontShadow.DEFAULT_SHADOW,
             ButtonTextJustifies.TEXT_CJUSTIFIED,
-            new SixLabors.ImageSharp.Point(GIO_CANCEL_X, GIO_BTN_OK_Y),
+            new Point(GIO_CANCEL_X, GIO_BTN_OK_Y),
             ButtonFlags.BUTTON_TOGGLE,
             MSYS_PRIORITY.HIGH,
             MouseSubSystem.DefaultMoveCallback,
             this.BtnGIOCancelCallback);
 
         ButtonSubSystem.SpecifyButtonSoundScheme(this.guiGIOCancelButton, BUTTON_SOUND_SCHEME.BIGSWITCH3);
-
+        buttonList.Add(this.guiGIOCancelButton);
 
         //
         //Check box to toggle Difficulty settings
@@ -171,6 +180,7 @@ public class GameInitOptionsScreen : IScreen
                 this.BtnDifficultyTogglesCallback);
 
             ButtonSubSystem.SetButtonUserData(this.guiDifficultySettingsToggles[cnt], 0, (int)cnt);
+            buttonList.Add(this.guiDifficultySettingsToggles[cnt]);
 
             usPosY += GIO_GAP_BN_SETTINGS;
         }
@@ -191,7 +201,6 @@ public class GameInitOptionsScreen : IScreen
             this.guiDifficultySettingsToggles[GameDifficulty.GIO_DIFF_MED].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
         }
 
-
         //
         //Check box to toggle Game settings ( realistic, sci fi )
         //
@@ -205,6 +214,8 @@ public class GameInitOptionsScreen : IScreen
                 this.BtnGameStyleTogglesCallback);
 
             ButtonSubSystem.SetButtonUserData(this.guiGameStyleToggles[gameStyle], 0, (int)gameStyle);
+
+            buttonList.Add(this.guiGameStyleToggles[gameStyle]);
 
             usPosY += GIO_GAP_BN_SETTINGS;
         }
@@ -227,6 +238,8 @@ public class GameInitOptionsScreen : IScreen
                 this.BtnGameSaveTogglesCallback);
 
             ButtonSubSystem.SetButtonUserData(this.guiGameSaveToggles[opt], 0, (int)opt);
+
+            buttonList.Add(this.guiGameSaveToggles[opt]);
 
             usPosY += GIO_GAP_BN_SETTINGS;
         }
@@ -254,6 +267,8 @@ public class GameInitOptionsScreen : IScreen
 
             ButtonSubSystem.SetButtonUserData(this.guiGunOptionToggles[cnt], 0, (int)cnt);
 
+            buttonList.Add(this.guiGunOptionToggles[cnt]);
+
             usPosY += GIO_GAP_BN_SETTINGS;
         }
 
@@ -277,6 +292,7 @@ public class GameInitOptionsScreen : IScreen
         this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 639, 439));
 
         this.gfGIOButtonsAllocated = true;
+
     }
 
     public async ValueTask<ScreenName> Handle()
@@ -285,6 +301,7 @@ public class GameInitOptionsScreen : IScreen
         {
             this.gfGIOScreenEntry = false;
             this.gfGIOScreenExit = false;
+
             this.video.InvalidateRegion(new(0, 0, 640, 480));
         }
 
@@ -292,12 +309,12 @@ public class GameInitOptionsScreen : IScreen
         this.HandleGIOScreen();
 
         // render buttons marked dirty	
-        ButtonSubSystem.MarkButtonsDirty();
-        ButtonSubSystem.RenderButtons();
+        ButtonSubSystem.MarkButtonsDirty(buttonList);
+        ButtonSubSystem.RenderButtons(buttonList);
 
         // render help
         //RenderFastHelp( );
-        GuiManager.RenderButtonsFastHelp( );
+        GuiManager.RenderButtonsFastHelp();
 
         this.video.ExecuteBaseDirtyRectQueue();
         this.video.EndFrameBufferRender();
@@ -380,7 +397,7 @@ public class GameInitOptionsScreen : IScreen
 
                         this.fade.FadeOutNextFrame();
                     }
-                
+
                     break;
                 case GameMode.GIO_IRON_MAN_MODE:
                     this.DisplayMessageToUserAboutGameDifficulty();
@@ -484,7 +501,7 @@ public class GameInitOptionsScreen : IScreen
                 return true;
             }
         }
-    
+
         return false;
     }
 
@@ -510,7 +527,7 @@ public class GameInitOptionsScreen : IScreen
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -523,7 +540,7 @@ public class GameInitOptionsScreen : IScreen
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -532,9 +549,9 @@ public class GameInitOptionsScreen : IScreen
         int usPosY;
 
         //Get the main background screen graphic and blt it
-       HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
-       this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, background, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
-        //video.BltVideoObject(background, 0, 0, 0, 0);
+        HVOBJECT background = video.GetVideoObject(this.guiGIOMainBackGroundImageKey);
+        this.video.BltVideoObject(SurfaceType.FRAME_BUFFER, background, 0, 0, 0, VO_BLT.SRCTRANSPARENCY);
+        
         //Shade the background
         this.video.ShadowVideoSurfaceRect(SurfaceType.FRAME_BUFFER, new Rectangle(48, 55, 592, 378)); //358
 
@@ -551,7 +568,6 @@ public class GameInitOptionsScreen : IScreen
         //Display the Dif Settings Title Text
         //DrawTextToScreen( gzGIOScreenText[ GIO_DIF_LEVEL_TEXT ], GIO_DIF_SETTINGS_X, (GIO_DIF_SETTINGS_Y-GIO_GAP_BN_SETTINGS), GIO_DIF_SETTINGS_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
         FontSubSystem.DisplayWrappedString(new(GIO_DIF_SETTINGS_X, GIO_DIF_SETTINGS_Y - GIO_GAP_BN_SETTINGS), GIO_DIF_SETTINGS_WIDTH, 2, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, EnglishText.gzGIOScreenText[GameInitOptionScreenText.GIO_DIF_LEVEL_TEXT], FontColor.FONT_MCOLOR_BLACK, TextJustifies.LEFT_JUSTIFIED);
-
 
         usPosY = GIO_DIF_SETTINGS_Y + 2;
         //DrawTextToScreen( gzGIOScreenText[ GIO_EASY_TEXT ], (GIO_DIF_SETTINGS_X+GIO_OFFSET_TO_TEXT), usPosY, GIO_MAIN_TITLE_WIDTH, GIO_TOGGLE_TEXT_FONT, GIO_TOGGLE_TEXT_COLOR, FONT_MCOLOR_BLACK, false, LEFT_JUSTIFIED );	
@@ -616,16 +632,8 @@ public class GameInitOptionsScreen : IScreen
         return true;
     }
 
-    public void Draw(IVideoManager videoManager)
-    {
-        this.RenderGIOScreen();
-        //ButtonSubSystem.MarkButtonsDirty();
-        //ButtonSubSystem.RenderButtons();
-    }
-
     public ValueTask<bool> Initialize()
     {
-
         return ValueTask.FromResult(true);
     }
 
@@ -712,7 +720,7 @@ public class GameInitOptionsScreen : IScreen
     {
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
-            //		Ubyte	ubButton = (Ubyte)MSYS_GetBtnUserData( btn, 0 );
+            var ubButton = ButtonSubSystem.MSYS_GetBtnUserData(btn, 0);
 
             if (btn.uiFlags.HasFlag(ButtonFlags.BUTTON_CLICKED_ON))
             {
@@ -791,6 +799,7 @@ public class GameInitOptionsScreen : IScreen
             btn.uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
             this.video.InvalidateRegion(btn.MouseRegion.Bounds);
         }
+
         if (reason.HasFlag(MSYS_CALLBACK_REASON.LBUTTON_UP))
         {
             btn.uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
@@ -808,8 +817,54 @@ public class GameInitOptionsScreen : IScreen
 
     private bool DisplayMessageToUserAboutIronManMode()
     {
-        return true;
+        bool ubIronManMode = GetCurrentGameSaveButtonSetting();
+
+        //if the user has selected IRON MAN mode
+        if (ubIronManMode)
+        {
+            DoGioMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, gzIronManModeWarningText, ScreenName.GAME_INIT_OPTIONS_SCREEN, MSG_BOX_FLAG.YESNO, ConfirmGioIronManMessageBoxCallBack);
+
+            return true;
+        }
+
+        return false;
     }
+
+    private void ConfirmGioIronManMessageBoxCallBack(MessageBoxReturnCode bExitValue)
+    {
+        if (bExitValue == MessageBoxReturnCode.MSG_BOX_RETURN_YES)
+        {
+            gubGameOptionScreenHandler = GameMode.GIO_IRON_MAN_MODE;
+        }
+        else
+        {
+            guiGameSaveToggles[IronManMode.GIO_IRON_MAN].uiFlags &= ~ButtonFlags.BUTTON_CLICKED_ON;
+            guiGameSaveToggles[IronManMode.GIO_CAN_SAVE].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
+            this.buttonList.Add(guiGameSaveToggles[IronManMode.GIO_IRON_MAN]);
+            this.buttonList.Add(guiGameSaveToggles[IronManMode.GIO_CAN_SAVE]);
+        }
+    }
+
+    private bool DoGioMessageBox(MessageBoxStyle ubStyle, string zString, ScreenName uiExitScreen, MSG_BOX_FLAG usFlags, MSGBOX_CALLBACK ReturnCallback)
+    {
+        Rectangle? CenteringRect = new(0, 0, 639, 479);
+
+        // reset exit mode
+        //	gfExitGioDueToMessageBox = TRUE;
+
+        // do message box and return
+        giGioMessageBox = this.messageBoxes.DoMessageBox(
+            ubStyle,
+            zString,
+            uiExitScreen,
+            usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT,
+            ReturnCallback,
+            ref CenteringRect);
+
+        // send back return state
+        return ((giGioMessageBox != -1));
+    }
+
 
     private void DisplayMessageToUserAboutGameDifficulty()
     {

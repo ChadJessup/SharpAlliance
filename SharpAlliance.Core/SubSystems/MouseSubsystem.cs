@@ -180,7 +180,7 @@ public class MouseSubSystem : ISharpAllianceManager
 
         if (coord != CurrentCoord)
         {
-            Console.WriteLine($"Mouse: {coord} L: {leftButtonDown} R: {rightButtonDown}");
+            //Console.WriteLine($"Mouse: {coord} L: {leftButtonDown} R: {rightButtonDown}");
         }
 
 

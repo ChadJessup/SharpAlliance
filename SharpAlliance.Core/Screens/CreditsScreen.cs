@@ -655,7 +655,7 @@ public class CreditsScreen : IScreen
             //blit everything to the save buffer ( cause the save buffer can bleed through )
             this.video.BlitBufferToBuffer(SurfaceType.RENDER_BUFFER, SurfaceType.SAVE_BUFFER, new(0, 0, 640, 480));
 
-            ButtonSubSystem.UnmarkButtonsDirty();
+            // ButtonSubSystem.UnmarkButtonsDirty();
         }
 
         this.video.InvalidateScreen();
