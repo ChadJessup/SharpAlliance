@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SharpAlliance.Core.Interfaces;
 using SharpAlliance.Core.Managers;
 using SharpAlliance.Core.Managers.VideoSurfaces;
-using SharpAlliance.Platform;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -151,9 +149,9 @@ public class MessageBoxScreen : IScreen
             }
 
             this.mercTextBox.RenderMercPopUpBoxFromIndex(
-                gMsgBox.iBoxId, 
-                gMsgBox.sX, 
-                gMsgBox.sY, 
+                gMsgBox.iBoxId,
+                gMsgBox.sX,
+                gMsgBox.sY,
                 SurfaceType.FRAME_BUFFER);
             //gMsgBox.fRenderBox = false;
             // ATE: Render each frame...
@@ -168,89 +166,92 @@ public class MessageBoxScreen : IScreen
         // Check for esc 
         while (this.inputs.DequeueEvent(out var InputEvent) == true)
         {
-            if(InputEvent.KeyCharPresses.Any())
+            if (InputEvent.IsMouseDown(MouseButton.Left))
             {
 
             }
-//            if (InputEvent.KeyEvents.usEvent == KEY_UP)
-//            {
-//                if ((InputEvent.usParam == ESC) || (InputEvent.usParam == 'n'))
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
-//                    }
-//                }
-//        
-//                if (InputEvent.usParam == ENTER)
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
-//                    }
-//                    else if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-//                    }
-//                    else if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.CONTINUESTOP))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-//                    }
-//                }
-//                if (InputEvent.usParam == 'o')
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-//                    }
-//                }
-//                if (InputEvent.usParam == 'y')
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
-//                    }
-//                }
-//                if (InputEvent.usParam == '1')
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-//                    }
-//                }
-//                if (InputEvent.usParam == '2')
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-//                    }
-//                }
-//                if (InputEvent.usParam == '3')
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-//                    }
-//                }
-//                if (InputEvent.usParam == '4')
-//                {
-//                    if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
-//                    {
-//                        // Exit messagebox
-//                        gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
-//                    }
-//                }
-//        
-//            }
+
+            foreach (var keyevent in InputEvent.KeyEvents)
+            {
+                if (keyevent.Key == Key.Up)
+                {
+                    if ((keyevent.Key == Key.Escape) || (keyevent.Key == Key.N))
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_NO;
+                        }
+                    }
+
+                    if (keyevent.Key == Key.Enter)
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
+                        }
+                        else if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+                        }
+                        else if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.CONTINUESTOP))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+                        }
+                    }
+                    if (keyevent.Key == Key.O)
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.OK))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+                        }
+                    }
+                    if (keyevent.Key == Key.Y)
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.YESNO))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_YES;
+                        }
+                    }
+                    if (keyevent.Key == Key.Number1)
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+                        }
+                    }
+                    if (keyevent.Key == Key.Number2)
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+                        }
+                    }
+                    if (keyevent.Key == Key.Number3)
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+                        }
+                    }
+                    if (keyevent.Key == Key.Number4)
+                    {
+                        if (gMsgBox.usFlags.HasFlag(MSG_BOX_FLAG.FOUR_NUMBERED_BUTTONS))
+                        {
+                            // Exit messagebox
+                            gMsgBox.bHandled = MessageBoxReturnCode.MSG_BOX_RETURN_OK;
+                        }
+                    }
+                }
+            }
         }
 
         if (gMsgBox.bHandled != 0)

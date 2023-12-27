@@ -11,6 +11,7 @@ using SharpAlliance.Platform;
 using SharpAlliance.Platform.Interfaces;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.Drawing.Processing;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SharpAlliance.Core.Globals;
 using FontStyle = SharpAlliance.Core.SubSystems.FontStyle;
 using Point = SixLabors.ImageSharp.Point;
@@ -932,7 +933,7 @@ public class SDL2VideoManager : IVideoManager
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
-         //       srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
+        //       srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
         //        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-before.png");
 
         try
@@ -950,7 +951,7 @@ public class SDL2VideoManager : IVideoManager
         {
 
         }
-                // dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
+        // dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
     }
 
     private void ScrollJA2Background(
@@ -1567,9 +1568,9 @@ public class SDL2VideoManager : IVideoManager
     {
     }
 
-    public ushort[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono)
+    public ushort?[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono)
     {
-        ushort[] p16BPPPalette = new ushort[256];
+        ushort?[] p16BPPPalette = new ushort?[256];
         ushort r16, g16, b16, usColor;
         int cnt;
         uint lumin;
@@ -1710,7 +1711,7 @@ public class SDL2VideoManager : IVideoManager
         gubVSDebugCode = DEBUGSTR_SHADOWVIDEOSURFACERECT;
 #endif
         pBuffer = this.Surfaces[destSurface];
-     //   CHECKF(this.GetVideoSurface(out HVSURFACE hVSurface, destSurface));
+        //   CHECKF(this.GetVideoSurface(out HVSURFACE hVSurface, destSurface));
 
         if (X1 < 0)
         {
@@ -1863,9 +1864,109 @@ public class SDL2VideoManager : IVideoManager
 
     }
 
-    public void DeleteVideoObject(HVOBJECT? vobj)
+    public bool DeleteVideoObject(HVOBJECT hVObject)
     {
+        int usLoop;
+
+        // Assertions
+        CHECKF(hVObject != null);
+
+        DestroyObjectPaletteTables(hVObject);
+
+        // Release palette
+        if (hVObject?.pPaletteEntry != null)
+        {
+            MemFree(hVObject.pPaletteEntry);
+            //		hVObject.pPaletteEntry = null;
+        }
+
+
+        if (hVObject?.pPixData != null)
+        {
+            MemFree(hVObject.pPixData);
+            //		hVObject.pPixData = null;
+        }
+
+        if (hVObject?.pETRLEObject != null)
+        {
+            MemFree(hVObject.pETRLEObject);
+            //		hVObject.pETRLEObject = null;
+        }
+
+        if (hVObject?.ppZStripInfo != null)
+        {
+            for (usLoop = 0; usLoop < hVObject?.ppZStripInfo.Count; usLoop++)
+            {
+                if (hVObject?.ppZStripInfo[usLoop] is not null)
+                {
+                    MemFree(hVObject.ppZStripInfo[usLoop].pbZChange);
+                    MemFree(hVObject.ppZStripInfo[usLoop]);
+                }
+            }
+            MemFree(hVObject?.ppZStripInfo);
+            //		hVObject.ppZStripInfo = null;
+        }
+
+        if (hVObject?.usNumberOf16BPPObjects > 0)
+        {
+            for (usLoop = 0; usLoop < hVObject?.usNumberOf16BPPObjects; usLoop++)
+            {
+                MemFree(hVObject?.p16BPPObject[usLoop].p16BPPData);
+            }
+
+            MemFree(hVObject?.p16BPPObject);
+        }
+
+        // Release object
+        MemFree(hVObject);
+
+        return true;
     }
+
+    /**********************************************************************************************
+        DestroyObjectPaletteTables
+
+        Destroys the palette tables of a video object. All memory is deallocated, and
+        the pointers set to null. Be careful not to try and blit this object until new
+        tables are calculated, or things WILL go boom.
+
+    **********************************************************************************************/
+    private bool DestroyObjectPaletteTables(HVOBJECT hVObject)
+    {
+        int x;
+        bool f16BitPal;
+
+        for (x = 0; x < HVOBJECT.SHADE_TABLES; x++)
+        {
+            if (!(hVObject.fFlags.HasFlag(VOBJECT_FLAG.SHADETABLE_SHARED)))
+            {
+                if (hVObject.pShades[x] != null)
+                {
+                    f16BitPal = hVObject.pShades[x] == hVObject.p16BPPPalette;
+
+                    MemFree(hVObject.pShades[x]);
+                    hVObject.pShades[x] = null;
+
+                    if (f16BitPal)
+                    {
+                        hVObject.p16BPPPalette = null;
+                    }
+                }
+            }
+        }
+
+        if (hVObject.p16BPPPalette != null)
+        {
+            MemFree(hVObject.p16BPPPalette);
+            hVObject.p16BPPPalette = null;
+        }
+
+        hVObject.pShadeCurrent = null;
+        hVObject.pGlow = null;
+
+        return (true);
+    }
+
 
     public bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect)
     {
@@ -2132,8 +2233,8 @@ public class SDL2VideoManager : IVideoManager
             Y = dstPoint.Y,
         };
 
-//        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
-//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
+        //        src.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-src.png");
+        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface-before.png");
 
         dstSurface.Image.Mutate(ctx =>
         {
@@ -2146,7 +2247,7 @@ public class SDL2VideoManager : IVideoManager
                 1.0f);
         });
 
-//        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
+        //        dstSurface.Image.SaveAsPng(@$"C:\temp\{nameof(BlitSurfaceToSurface)}-dstSurface.png");
     }
 
     public bool ShadowVideoSurfaceRect(SurfaceType buffer, Rectangle rectangle)

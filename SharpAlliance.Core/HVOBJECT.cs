@@ -6,11 +6,18 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace SharpAlliance.Core;
 
+// VOBJECT FLAGS
+public enum VOBJECT_FLAG
+{
+    None = 0,
+    SHADETABLE_SHARED = 0x00000100,
+}
+
 public class HVOBJECT
 {
-    public const int HVOBJECT_SHADE_TABLES = 48;
+    public const int SHADE_TABLES = 48;
 
-    public int fFlags;                                                 // Special flags
+    public VOBJECT_FLAG fFlags;                                                 // Special flags
     public uint uiSizePixData;                                         // ETRLE data size
     public List<SGPPaletteEntry> pPaletteEntry = [];                // 8BPP Palette
     public int TransparentColor;                                       // Defaults to 0,0,0
@@ -19,8 +26,8 @@ public class HVOBJECT
 
     public byte[] pPixData = [];                       // ETRLE pixel data
     public ETRLEObject[] pETRLEObject = [];              // Object offset data etc
-    public SixteenBPPObjectInfo? p16BPPObject;
-    public ushort[][] pShades = new ushort[HVOBJECT_SHADE_TABLES][]; // Shading tables
+    public SixteenBPPObjectInfo[] p16BPPObject = [];
+    public ushort?[][] pShades = new ushort?[SHADE_TABLES][]; // Shading tables
     // public ushort[] pShadeCurrent;
     public Rgba32[] ShadeCurrentPixels = [];
     public int? pGlow;                              // glow highlight table
@@ -31,8 +38,8 @@ public class HVOBJECT
     public int usNumberOf16BPPObjects;
     public int usNumberOfObjects;   // Total number of objects
     public int ubBitDepth;                       // BPP 
-    internal ushort[] p16BPPPalette = [];
-    internal ushort pShadeCurrent;
+    public ushort?[] p16BPPPalette = [];
+    public ushort? pShadeCurrent;
 
     public string Name { get; set; } = string.Empty;
     public HIMAGE? hImage { get; set; }

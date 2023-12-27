@@ -32,7 +32,7 @@ public interface IVideoManager : ISharpAllianceManager
     bool DrawTextToScreen(string text, int x, int y, int width, FontStyle fontStyle, FontColor fontColorForeground, FontColor fontColorBackground, TextJustifies justification);
     bool GetVideoSurface(out HVSURFACE hSrcVSurface, SurfaceType uiTempMap);
     void GetVSurfacePaletteEntries(HVSURFACE hSrcVSurface, List<SGPPaletteEntry> pPalette);
-    ushort[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono);
+    ushort?[] Create16BPPPaletteShaded(List<SGPPaletteEntry> pPalette, int redScale, int greenScale, int blueScale, bool mono);
     void DeleteVideoSurfaceFromIndex(SurfaceType uiTempMap);
     void DeleteVideoObjectFromIndex(string logoKey);
     void RestoreBackgroundRects();
@@ -46,7 +46,7 @@ public interface IVideoManager : ISharpAllianceManager
     void SetClippingRect(ref Rectangle newClip);
     void ColorFillVideoSurfaceArea(Image<Rgba32> surface, Rectangle rectangle, Color color);
     bool ShadowVideoSurfaceRectUsingLowPercentTable(SurfaceType surface, Rectangle rectangle);
-    void DeleteVideoObject(HVOBJECT vobj);
+    bool DeleteVideoObject(HVOBJECT vobj);
     bool BlitBufferToBuffer(SurfaceType srcBuffer, SurfaceType dstBuffer, Rectangle srcRect);
     void SetVideoSurfaceTransparency(SurfaceType uiVideoSurfaceImage, Rgba32 pixel);
     void ClearElements();

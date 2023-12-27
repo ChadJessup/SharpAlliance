@@ -37,10 +37,13 @@ internal static class Sdl2WindowRegistry
         uint windowID = 0;
         switch (ev.type)
         {
+            case SDL.SDL_EventType.SDL_KEYDOWN:
+                windowID = ev.window.windowID;
+                handled = true;
+                break;
             case SDL.SDL_EventType.SDL_QUIT:
             case SDL.SDL_EventType.SDL_APP_TERMINATING:
             case SDL.SDL_EventType.SDL_WINDOWEVENT:
-            case SDL.SDL_EventType.SDL_KEYDOWN:
             case SDL.SDL_EventType.SDL_KEYUP:
             case SDL.SDL_EventType.SDL_TEXTEDITING:
             case SDL.SDL_EventType.SDL_TEXTINPUT:

@@ -21,10 +21,10 @@ public class MapScreenInterfaceMap
     private int[] guiLeaveListOwnerProfileId = new int[Globals.NUM_LEAVE_LIST_SLOTS];
 
     // the palettes
-    private ushort[] pMapLTRedPalette;
-    private ushort[] pMapDKRedPalette;
-    private ushort[] pMapLTGreenPalette;
-    private ushort[] pMapDKGreenPalette;
+    private ushort?[] pMapLTRedPalette;
+    private ushort?[] pMapDKRedPalette;
+    private ushort?[] pMapLTGreenPalette;
+    private ushort?[] pMapDKGreenPalette;
 
 
     public MapScreenInterfaceMap(IVideoManager videoManager)

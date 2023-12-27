@@ -1342,15 +1342,8 @@ public class ButtonSubSystem : ISharpAllianceManager
             video.BlitSurfaceToSurface(
                 b.ButtonPicture.vobj.Images[UseImage],
                 ButtonDestBuffer,
-                new(b.Loc.X, b.Loc.Y),
+                b.Loc,
                 VO_BLT.SRCTRANSPARENCY);
-
-            //            video.BltVideoObject(
-            //                b.ButtonPicture.vobj,
-            //                (ushort)UseImage,
-            //                b.Loc.X,
-            //                b.Loc.Y,
-            //                UseImage);
         }
     }
 
@@ -2374,7 +2367,7 @@ public class GUI_BUTTON
 
 public class ButtonPic
 {
-    public HVOBJECT? vobj = new();                      // The Image itself
+    public HVOBJECT vobj = new();                      // The Image itself
     public int Grayed;                   // index to use for a "Grayed-out" button
     public int OffNormal;            // index to use when button is OFF
     public int OffHilite;            // index to use when button is OFF w/ hilite on it
