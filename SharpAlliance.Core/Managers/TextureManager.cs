@@ -212,6 +212,7 @@ public class TextureManager : ITextureManager
             hVObject.Images[i] = hImage.ParsedImages[i];
         }
 
+        //hVObject.Images[0].SaveAsPng($@"C:\temp\pcxtest.png");
         this.loadedTextures.Add(assetPath, hVObject);
 
         return hVObject;

@@ -876,7 +876,8 @@ public class SDL2VideoManager : IVideoManager
                     this.Surfaces[SurfaceType.BACKBUFFER],
                     new Point(this.Region.X, this.Region.Y),
                     this.Region,
-                    this.Surfaces[SurfaceType.PRIMARY_SURFACE]);
+                    this.Surfaces[SurfaceType.PRIMARY_SURFACE],
+                    debug: false);
             }
 
             Globals.guiDirtyRegionCount = 0;
@@ -925,14 +926,18 @@ public class SDL2VideoManager : IVideoManager
         Image<Rgba32> dstImage,
         Point destinationPoint,
         Rectangle sourceRegion,
-        Image<Rgba32> srcImage)
+        Image<Rgba32> srcImage,
+        bool debug = false)
     {
         var finalRect = new Rectangle(
             new Point(destinationPoint.X, destinationPoint.Y),
             new Size(sourceRegion.Width, sourceRegion.Height));
 
-        //       srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
-        //        dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-before.png");
+        if (debug)
+        {
+            srcImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-srcImage.png");
+            dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-before.png");
+        }
 
         try
         {
@@ -949,7 +954,11 @@ public class SDL2VideoManager : IVideoManager
         {
 
         }
-        // dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
+
+        if (debug)
+        {
+            dstImage.SaveAsPng($@"C:\temp\{nameof(BlitRegion)}-dstImage-after.png");
+        }
     }
 
     private void ScrollJA2Background(

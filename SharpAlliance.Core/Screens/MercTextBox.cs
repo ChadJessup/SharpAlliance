@@ -450,7 +450,7 @@ public class MercTextBox
         SurfaceType surf = this.video.Surfaces.CreateSurface(VObjectDesc);
         gPopUpTextBox.uiMercTextPopUpBackground = surf;
 
-        VObjectDesc.Images[0].SaveAsPng($@"C:\temp\popupbackgroun.png");
+        //VObjectDesc.Images[0].SaveAsPng($@"C:\temp\popupbackgroun.png");
 
         // border
         var borderFilePath = Utils.FilenameForBPP(this.zMercBorderPopupFilenames[(int)ubBorderIndex]);

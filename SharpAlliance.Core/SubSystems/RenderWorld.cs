@@ -18,6 +18,8 @@ public class RenderWorld : IDisposable
     
     public static TILES_DYNAMIC uiLayerUsedFlags = (TILES_DYNAMIC)0xffffffff;
 
+    public static RenderingFlags gRenderFlags { get; private set; }
+
     public void Dispose()
     {
     }
@@ -366,7 +368,7 @@ public class RenderWorld : IDisposable
 
     public static void SetRenderFlags(RenderingFlags full)
     {
-        throw new NotImplementedException();
+        gRenderFlags |= full;
     }
 }
 

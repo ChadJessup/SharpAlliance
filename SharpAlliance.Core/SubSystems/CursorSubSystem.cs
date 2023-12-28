@@ -1,8 +1,6 @@
 ﻿using System;
 using SharpAlliance.Core.Interfaces;
-using SharpAlliance.Core.Managers;
-using Veldrid;
-
+using SixLabors.ImageSharp;
 using static SharpAlliance.Core.Globals;
 
 namespace SharpAlliance.Core.SubSystems;
@@ -22,12 +20,15 @@ public class CursorSubSystem : IDisposable
 
     }
 
-    public void GetRestrictedClipCursor(SixLabors.ImageSharp.Rectangle messageBoxRestrictedCursorRegion)
+    public static void GetRestrictedClipCursor(Rectangle pRectangle)
     {
+        // GetClipCursor(pRectangle);
     }
 
-    public void FreeMouseCursor()
+    public static void FreeMouseCursor()
     {
+        // ClipCursor(NULL);
+        // fCursorWasClipped = false;
     }
 
     public bool IsCursorRestricted()

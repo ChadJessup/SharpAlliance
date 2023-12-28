@@ -378,17 +378,19 @@ public class MessageBoxScreen : IScreen
         if (((gMsgBox.uiExitScreen != ScreenName.GAME_SCREEN) || (fRestoreBackgroundForMessageBox == true)) && gfDontOverRideSaveBuffer)
         {
             // restore what we have under here...
-            //            pSrcBuf =  video.LockVideoSurface(gMsgBox.uiSaveBuffer, out uiSrcPitchBYTES);
-            //            pDestBuf = video.LockVideoSurface(Surfaces.FRAME_BUFFER, out uiDestPitchBYTES);
-            //
-            //            video.Blt16BPPTo16BPP(pDestBuf, uiDestPitchBYTES,
-            //                        pSrcBuf, uiSrcPitchBYTES,
-            //                        gMsgBox.sX, gMsgBox.sY,
-            //                        0, 0,
-            //                        gMsgBox.usWidth, gMsgBox.usHeight);
+            pSrcBuf =  video.Surfaces[gMsgBox.uiSaveBuffer];
+            pDestBuf = video.Surfaces[SurfaceType.FRAME_BUFFER];
+            
+            video.Blt16BPPTo16BPP(
+                pDestBuf,
+                pSrcBuf,
+                gMsgBox.Location,
+                new(0, 0),
+                gMsgBox.Size.Width,
+                gMsgBox.Size.Height);
 
-            //            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
-            //            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
+//            video.UnLockVideoSurface(gMsgBox.uiSaveBuffer);
+//            video.UnLockVideoSurface(Surfaces.FRAME_BUFFER);
 
             video.InvalidateRegion(new(gMsgBox.Location, gMsgBox.Size));
         }

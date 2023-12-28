@@ -913,6 +913,7 @@ public class OptionsScreen : IScreen
             for (ubCnt = 0; ubCnt < TOPTION.NUM_GAME_OPTIONS; ubCnt++)
             {
                 this.guiOptionsToggles[ubCnt].MouseRegion.HasMouse = false;
+                //                this.video.InvalidateRegion(this.guiOptionsToggles[ubCnt].MouseRegion.Bounds);
             }
 
             this.gbHighLightedOptionText = -1;
@@ -1244,7 +1245,13 @@ public class OptionsScreen : IScreen
                         this.guiOptionsToggles[ubButton].uiFlags |= ButtonFlags.BUTTON_CLICKED_ON;
 
                         //Confirm the Exit to the main menu screen
-                        this.DoOptionsMessageBox(MessageBoxStyle.MSG_BOX_BASIC_STYLE, EnglishText.zOptionsText[OptionsText.OPT_NEED_AT_LEAST_SPEECH_OR_SUBTITLE_OPTION_ON], ScreenName.OPTIONS_SCREEN, MSG_BOX_FLAG.OK, null);
+                        this.DoOptionsMessageBox(
+                            MessageBoxStyle.MSG_BOX_BASIC_STYLE,
+                            EnglishText.zOptionsText[OptionsText.OPT_NEED_AT_LEAST_SPEECH_OR_SUBTITLE_OPTION_ON],
+                            ScreenName.OPTIONS_SCREEN,
+                            MSG_BOX_FLAG.OK,
+                            null);
+
                         this.gfExitOptionsDueToMessageBox = false;
                     }
                 }
@@ -1278,7 +1285,7 @@ public class OptionsScreen : IScreen
         string zString,
         ScreenName uiExitScreen,
         MSG_BOX_FLAG usFlags,
-        MSGBOX_CALLBACK ReturnCallback)
+        MSGBOX_CALLBACK? ReturnCallback)
     {
         Rectangle? CenteringRect = new(0, 0, 639, 479);
 
@@ -1286,7 +1293,13 @@ public class OptionsScreen : IScreen
         this.gfExitOptionsDueToMessageBox = true;
 
         // do message box and return
-        this.giOptionsMessageBox = this.messageBox.DoMessageBox(ubStyle, zString, uiExitScreen, usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT, ReturnCallback, ref CenteringRect);
+        this.giOptionsMessageBox = this.messageBox.DoMessageBox(
+            ubStyle,
+            zString,
+            uiExitScreen,
+            usFlags | MSG_BOX_FLAG.USE_CENTERING_RECT,
+            ReturnCallback,
+            ref CenteringRect);
 
         // send back return state
         return this.giOptionsMessageBox != -1;
